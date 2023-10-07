@@ -19,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -26,6 +27,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
+#include "sql/sql_features.h"
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement.h"
@@ -1164,6 +1166,36 @@ TEST_P(SqlRecoveryTest, RecoverIfPossibleWithClosedDatabase) {
 
   TestRecoverDatabase(db_, db_path_, /*with_meta=*/false,
                       std::move(run_recovery));
+}
+
+TEST_P(SqlRecoveryTest, RecoverIfPossibleWithPerDatabaseUma) {
+  auto run_recovery = base::BindLambdaForTesting([&]() {
+    EXPECT_TRUE(BuiltInRecovery::RecoverIfPossible(
+        &db_, SQLITE_CORRUPT, BuiltInRecovery::Strategy::kRecoverOrRaze,
+        &features::kUseBuiltInRecoveryIfSupported, "MyFeatureDatabase"));
+  });
+
+  TestRecoverDatabase(db_, db_path_, /*with_meta=*/false,
+                      std::move(run_recovery));
+
+  if (UseBuiltIn()) {
+    // Log to the overall histograms.
+    histogram_tester_.ExpectUniqueSample(kRecoveryResultHistogramName,
+                                         BuiltInRecovery::Result::kSuccess,
+                                         /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
+                                         SqliteLoggedResultCode::kNoError,
+                                         /*expected_bucket_count=*/1);
+    // And the histograms for this specific feature.
+    histogram_tester_.ExpectUniqueSample(
+        base::StrCat({kRecoveryResultHistogramName, ".MyFeatureDatabase"}),
+        BuiltInRecovery::Result::kSuccess,
+        /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample(
+        base::StrCat({kRecoveryResultCodeHistogramName, ".MyFeatureDatabase"}),
+        SqliteLoggedResultCode::kNoError,
+        /*expected_bucket_count=*/1);
+  }
 }
 
 TEST_P(SqlRecoveryTest, RecoverDatabaseWithView) {

@@ -107,6 +107,8 @@ class COMPONENT_EXPORT(SQL) BuiltInRecovery {
   // recovered according to `strategy`. After attempting recovery, the database
   // can be re-opened and assumed to be free of corruption.
   //
+  // `database_uma_name` is used to log UMA specific to the given database.
+  //
   // It is not considered an error if some or all of the data cannot be
   // recovered due to database corruption, so it is possible that some records
   // could not be salvaged from the corrupted database.
@@ -124,8 +126,10 @@ class COMPONENT_EXPORT(SQL) BuiltInRecovery {
   //
   // Returns a SQLite error code specifying whether the database was
   // successfully recovered.
-  [[nodiscard]] static SqliteResultCode RecoverDatabase(Database* database,
-                                                        Strategy strategy);
+  [[nodiscard]] static SqliteResultCode RecoverDatabase(
+      Database* database,
+      Strategy strategy,
+      std::string database_uma_name = std::string());
 
   // Similar to `RecoverDatabase()` above, but with a few key differences:
   //   - Uses `BuiltInRecovery` or the legacy `Recovery` to recover the
@@ -138,7 +142,7 @@ class COMPONENT_EXPORT(SQL) BuiltInRecovery {
   //   - Must only be called from within a database error callback.
   //   - Includes the option to pass a per-database feature flag indicating
   //     whether `BuiltInRecovery` should be used to recover this database, if
-  //     it's supported.
+  //     it's supported. A per-database UMA may optionally be logged, as well.
   //
   // Recommended usage from within a database error callback:
   //
@@ -146,7 +150,8 @@ class COMPONENT_EXPORT(SQL) BuiltInRecovery {
   //  if (sql::BuiltInRecovery::RecoverIfPossible(
   //          &db, extended_error,
   //          sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze,
-  //          &features::kMyFeatureTeamShouldUseBuiltInRecoveryIfSupported)) {
+  //          &features::kMyFeatureTeamShouldUseBuiltInRecoveryIfSupported,
+  //          "MyFeatureDatabase")) {
   //    // Recovery was attempted. The database handle has been poisoned and the
   //    // error callback has been reset.
   //
@@ -158,13 +163,16 @@ class COMPONENT_EXPORT(SQL) BuiltInRecovery {
       int extended_error,
       Strategy strategy,
       const base::Feature* const use_builtin_recovery_if_supported_flag =
-          nullptr);
+          nullptr,
+      std::string database_uma_name = std::string());
 
   BuiltInRecovery(const BuiltInRecovery&) = delete;
   BuiltInRecovery& operator=(const BuiltInRecovery&) = delete;
 
  private:
-  BuiltInRecovery(Database* database, Strategy strategy);
+  BuiltInRecovery(Database* database,
+                  Strategy strategy,
+                  std::string database_uma_name);
   ~BuiltInRecovery();
 
   // Entry point.
@@ -184,6 +192,10 @@ class COMPONENT_EXPORT(SQL) BuiltInRecovery {
   void SetRecoveryFailed(Result failure_result, SqliteResultCode result_code);
 
   const Strategy strategy_;
+
+  // If non-empty, UMA will be logged with the result of the recovery for this
+  // specific database.
+  const std::string database_uma_name_;
 
   // Result of the recovery. This value must be set to something other than
   // `kUnknown` before this object is destroyed.

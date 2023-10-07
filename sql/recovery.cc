@@ -23,6 +23,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/pass_key.h"
@@ -66,13 +67,16 @@ bool BuiltInRecovery::ShouldAttemptRecovery(Database* database,
 }
 
 // static
-SqliteResultCode BuiltInRecovery::RecoverDatabase(Database* database,
-                                                  Strategy strategy) {
+SqliteResultCode BuiltInRecovery::RecoverDatabase(
+    Database* database,
+    Strategy strategy,
+    std::string database_uma_name) {
   if (!BuiltInRecovery::IsSupported()) {
     return SqliteResultCode::kAbort;
   }
 
-  auto recovery = BuiltInRecovery(database, strategy);
+  auto recovery =
+      BuiltInRecovery(database, strategy, std::move(database_uma_name));
   return recovery.RecoverAndReplaceDatabase();
 }
 
@@ -81,7 +85,8 @@ bool BuiltInRecovery::RecoverIfPossible(
     Database* database,
     int extended_error,
     Strategy strategy,
-    const base::Feature* const use_builtin_recovery_if_supported_flag) {
+    const base::Feature* const use_builtin_recovery_if_supported_flag,
+    std::string database_uma_name) {
   // If `BuiltInRecovery` is supported at all, check the flag for this specific
   // database, provided by the feature team.
   bool use_builtin_recovery =
@@ -104,7 +109,8 @@ bool BuiltInRecovery::RecoverIfPossible(
 
   if (use_builtin_recovery) {
     CHECK(BuiltInRecovery::IsSupported());
-    auto result = BuiltInRecovery::RecoverDatabase(database, strategy);
+    auto result =
+        BuiltInRecovery::RecoverDatabase(database, strategy, database_uma_name);
     if (!IsSqliteSuccessCode(result)) {
       DLOG(ERROR) << "Database recovery failed with result code: " << result;
     }
@@ -124,8 +130,11 @@ bool BuiltInRecovery::RecoverIfPossible(
   return true;
 }
 
-BuiltInRecovery::BuiltInRecovery(Database* database, Strategy strategy)
+BuiltInRecovery::BuiltInRecovery(Database* database,
+                                 Strategy strategy,
+                                 std::string database_uma_name)
     : strategy_(strategy),
+      database_uma_name_(std::move(database_uma_name)),
       db_(database),
       recover_db_(sql::DatabaseOptions{
           .exclusive_locking = false,
@@ -160,6 +169,14 @@ BuiltInRecovery::~BuiltInRecovery() {
   base::UmaHistogramEnumeration("Sql.Recovery.Result", result_);
   UmaHistogramSqliteResult("Sql.Recovery.ResultCode",
                            static_cast<int>(sqlite_result_code_));
+
+  if (!database_uma_name_.empty()) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Sql.Recovery.Result.", database_uma_name_}), result_);
+    UmaHistogramSqliteResult(
+        base::StrCat({"Sql.Recovery.ResultCode.", database_uma_name_}),
+        static_cast<int>(sqlite_result_code_));
+  }
 
   if (db_) {
     if (result_ == Result::kSuccess) {
