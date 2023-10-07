@@ -477,8 +477,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnPressedNavigationTest,
   CreateBookmarkButton(prerender_url);
   NavigateToBookmarkByMousePressed(prerender_url, true);
 
+  EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(),
+            https_test_server()->GetURL("/empty.html?prerender"));
+
   {
     ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+    // Navigate away to flush the metrics and check.
+    ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
         content::test::kPreloadingAttemptUkmMetrics);
@@ -500,8 +505,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnPressedNavigationTest,
                                                              expected_entries);
   }
 
-  EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(),
-            https_test_server()->GetURL("/empty.html?prerender"));
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_BookmarkBar",
       kFinalStatusActivated, 1);
@@ -632,9 +635,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
 
   CreateBookmarkButton(prerender_url);
   NavigateToBookmarkByMousePressed(prerender_url, true);
+  EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(),
+            https_test_server()->GetURL("/empty.html?prerender"));
 
   {
     ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+    // Navigate away to flush the metrics and check.
+    ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
         content::test::kPreloadingAttemptUkmMetrics);
@@ -656,16 +663,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
                                                              expected_entries);
   }
 
-  EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(),
-            https_test_server()->GetURL("/empty.html?prerender"));
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_BookmarkBar",
       kFinalStatusActivated, 1);
   histogram_tester.ExpectUniqueSample(
       "Preloading.Prerender.Attempt.MouseHoverOnBookmarkBar.TriggeringOutcome",
       kPreloadingTriggeringOutcomeSuccess, 1);
-  // Navigate away to flush the metrics and check.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
   ASSERT_EQ(bookmark_navigation_list().size(), 2u);
   for (int i = 0; i < 2; ++i) {
     EXPECT_EQ(
@@ -702,9 +705,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
 
   // Prerender can trigger and activate normally after previous cancellation.
   NavigateToBookmarkByMousePressed(prerender_url, true);
+  EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(),
+            https_test_server()->GetURL("/empty.html?prerender"));
 
   {
     ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+    // Navigate away to flush the metrics and check.
+    ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
         content::test::kPreloadingAttemptUkmMetrics);
@@ -734,8 +741,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
                                                              expected_entries);
   }
 
-  EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(),
-            https_test_server()->GetURL("/empty.html?prerender"));
   histogram_tester.ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_BookmarkBar",
       kFinalStatusActivated, 1);
@@ -804,10 +809,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
   TriggerPrerenderByMouseHoverOnBookmark(false);
 
   {
-    // Navigate to a different URL other than the prerender_url to flush the
-    // metrics.
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), http_test_server()->GetURL("/empty.html")));
+    // Navigate away to flush the metrics and check.
+    ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
     ukm::SourceId ukm_source_id =
         GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
