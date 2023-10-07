@@ -6677,7 +6677,7 @@
   {
     "name": "pdf-xfa-forms",
     "owners": [ "thestig", "//pdf/OWNERS" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 135
   },
   {
     "name": "per-desk-wallpaper",
