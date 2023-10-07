@@ -5,8 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_TASK_QUEUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_TASK_QUEUE_H_
 
+#include <limits>
 #include <memory>
 
+#include "base/bits.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -182,11 +184,16 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     // to represent |prioritisation_type| in QueueTraitKeyType.
     // We need to update it whenever there is a change in
     // PrioritisationType::kCount.
-    // TODO(sreejakshetty) make the number of bits calculation automated.
-    static constexpr int kPrioritisationTypeWidthBits = 4;
-    static_assert(static_cast<int>(PrioritisationType::kCount) <=
-                      (1 << kPrioritisationTypeWidthBits),
-                  "Wrong Instanstiation for kPrioritisationTypeWidthBits");
+    static constexpr unsigned PrioritisationTypeCount =
+        static_cast<unsigned>(QueueTraits::PrioritisationType::kCount);
+
+    static constexpr unsigned kPrioritisationTypeWidthBits =
+        std::numeric_limits<unsigned>::digits -
+        base::bits::CountTrailingZeroBits(PrioritisationTypeCount - 1);
+
+    static_assert(PrioritisationTypeCount <=
+                      (1u << kPrioritisationTypeWidthBits),
+                  "Wrong instantiation for kPrioritisationTypeWidthBits");
 
     QueueTraits(const QueueTraits&) = default;
     QueueTraits& operator=(const QueueTraits&) = default;
