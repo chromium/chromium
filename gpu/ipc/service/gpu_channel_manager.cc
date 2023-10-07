@@ -989,40 +989,15 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
     return nullptr;
   }
 
-  auto gr_context_type = gpu_preferences_.gr_context_type;
-  const bool want_graphite = gr_context_type == GrContextType::kGraphiteDawn ||
-                             gr_context_type == GrContextType::kGraphiteMetal;
-  const bool force_graphite = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kSkiaGraphiteBackend);
-
-#if BUILDFLAG(IS_APPLE)
-  // Graphite requires ANGLE Metal on Mac
-  constexpr auto kRequiredANGLEImplementation = gl::ANGLEImplementation::kMetal;
-#elif BUILDFLAG(IS_WIN)
-  // Graphite requires ANGLE D3D11 on Windows
-  constexpr auto kRequiredANGLEImplementation = gl::ANGLEImplementation::kD3D11;
-#else
-  constexpr auto kRequiredANGLEImplementation = gl::ANGLEImplementation::kNone;
-#endif
-  const bool has_required_angle_impl_for_graphite =
-      kRequiredANGLEImplementation == gl::ANGLEImplementation::kNone ||
-      gl::GetANGLEImplementation() == kRequiredANGLEImplementation;
-
-  if (want_graphite && !force_graphite &&
-      !has_required_angle_impl_for_graphite) {
-    // Fallback from Graphite to Ganesh/GL if ANGLE is not using required
-    // implementation.
-    gr_context_type = GrContextType::kGL;
-  }
-
   // TODO(penghuang): https://crbug.com/899735 Handle device lost for Vulkan.
   auto shared_context_state = base::MakeRefCounted<SharedContextState>(
       std::move(share_group), std::move(surface), std::move(context),
       use_virtualized_gl_contexts,
       base::BindOnce(&GpuChannelManager::OnContextLost, base::Unretained(this),
                      context_lost_count_ + 1),
-      gr_context_type, vulkan_context_provider_, metal_context_provider_,
-      dawn_context_provider_, peak_memory_monitor_.GetWeakPtr());
+      gpu_preferences_.gr_context_type, vulkan_context_provider_,
+      metal_context_provider_, dawn_context_provider_,
+      peak_memory_monitor_.GetWeakPtr());
 
   // Initialize GL context, so Vulkan and GL interop can work properly.
   auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
