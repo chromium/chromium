@@ -585,9 +585,9 @@ void InputHandlerProxy::InjectScrollbarGestureScroll(
   gfx::Vector2dF scroll_delta = pointer_result.scroll_delta;
 
   std::unique_ptr<WebGestureEvent> synthetic_gesture_event =
-      WebGestureEvent::GenerateInjectedScrollGesture(
-          type, original_timestamp, WebGestureDevice::kScrollbar,
-          position_in_widget, scroll_delta, pointer_result.scroll_units);
+      WebGestureEvent::GenerateInjectedScrollbarGestureScroll(
+          type, original_timestamp, position_in_widget, scroll_delta,
+          pointer_result.scroll_units);
 
   if (type == WebInputEvent::Type::kGestureScrollBegin) {
     // Gesture events for scrollbars are considered synthetic because they're

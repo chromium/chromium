@@ -712,8 +712,8 @@ void Scrollbar::InjectScrollGesture(WebInputEvent::Type gesture_type,
   }
 
   pending_injected_delta_ += delta;
-  scrollable_area_->InjectGestureScrollEvent(WebGestureDevice::kScrollbar,
-                                             delta, granularity, gesture_type);
+  scrollable_area_->InjectScrollbarGestureScroll(delta, granularity,
+                                                 gesture_type);
 
   if (gesture_type == WebInputEvent::Type::kGestureScrollBegin) {
     injected_gesture_scroll_begin_ = true;

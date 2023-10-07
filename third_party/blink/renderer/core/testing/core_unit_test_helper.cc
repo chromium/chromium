@@ -69,9 +69,8 @@ void LocalFrameClientWithParent::Detached(FrameDetachType) {
   parent_->RemoveChild(parent_->FirstChild());
 }
 
-void RenderingTestChromeClient::InjectGestureScrollEvent(
+void RenderingTestChromeClient::InjectScrollbarGestureScroll(
     LocalFrame& local_frame,
-    WebGestureDevice device,
     const gfx::Vector2dF& delta,
     ui::ScrollGranularity granularity,
     CompositorElementId scrollable_area_element_id,
@@ -80,9 +79,9 @@ void RenderingTestChromeClient::InjectGestureScrollEvent(
   // would be added to the event queue and handled asynchronously but immediate
   // handling is sufficient to test scrollbar dragging.
   std::unique_ptr<WebGestureEvent> gesture_event =
-      WebGestureEvent::GenerateInjectedScrollGesture(
-          injected_type, base::TimeTicks::Now(), device, gfx::PointF(0, 0),
-          delta, granularity);
+      WebGestureEvent::GenerateInjectedScrollbarGestureScroll(
+          injected_type, base::TimeTicks::Now(), gfx::PointF(0, 0), delta,
+          granularity);
   if (injected_type == WebInputEvent::Type::kGestureScrollBegin) {
     gesture_event->data.scroll_begin.scrollable_area_element_id =
         scrollable_area_element_id.GetInternalValue();

@@ -72,11 +72,10 @@ class PLATFORM_EXPORT WidgetBaseInputHandler {
                               const gfx::Vector2dF& velocity,
                               const cc::OverscrollBehavior& behavior);
 
-  void InjectGestureScrollEvent(blink::WebGestureDevice device,
-                                const gfx::Vector2dF& delta,
-                                ui::ScrollGranularity granularity,
-                                cc::ElementId scrollable_area_element_id,
-                                blink::WebInputEvent::Type injected_type);
+  void InjectScrollbarGestureScroll(const gfx::Vector2dF& delta,
+                                    ui::ScrollGranularity granularity,
+                                    cc::ElementId scrollable_area_element_id,
+                                    blink::WebInputEvent::Type injected_type);
 
   bool handling_input_event() const { return handling_input_event_; }
   void set_handling_input_event(bool handling_input_event) {
@@ -94,7 +93,6 @@ class PLATFORM_EXPORT WidgetBaseInputHandler {
  private:
   class HandlingState;
   struct InjectScrollGestureParams {
-    WebGestureDevice device;
     gfx::Vector2dF scroll_delta;
     ui::ScrollGranularity granularity;
     cc::ElementId scrollable_area_element_id;

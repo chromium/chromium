@@ -134,13 +134,14 @@ class PLATFORM_EXPORT FrameWidget {
                              const gfx::PointF& position,
                              const gfx::Vector2dF& velocity) = 0;
 
-  // Requests that a gesture of |injected_type| be reissued at a later point in
-  // time. |injected_type| is required to be one of
-  // GestureScroll{Begin,Update,End}. The dispatched gesture will scroll the
+  // For a scrollbar scroll action, requests that a gesture of |injected_type|
+  // be reissued at a later point in time. |injected_type| is required to be one
+  // of GestureScroll{Begin,Update,End}. The dispatched gesture will scroll the
   // ScrollableArea identified by |scrollable_area_element_id| by the given
   // delta + granularity.
-  virtual void InjectGestureScrollEvent(
-      mojom::blink::GestureDevice device,
+  // See also InputHandlerProxy::InjectScrollbarGestureScroll() which may
+  // shortcut callers of this function for composited scrollbars.
+  virtual void InjectScrollbarGestureScroll(
       const gfx::Vector2dF& delta,
       ui::ScrollGranularity granularity,
       cc::ElementId scrollable_area_element_id,

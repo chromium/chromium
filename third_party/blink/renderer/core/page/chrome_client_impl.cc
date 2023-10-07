@@ -322,15 +322,14 @@ void ChromeClientImpl::DidOverscroll(
       velocity_in_viewport);
 }
 
-void ChromeClientImpl::InjectGestureScrollEvent(
+void ChromeClientImpl::InjectScrollbarGestureScroll(
     LocalFrame& local_frame,
-    WebGestureDevice device,
     const gfx::Vector2dF& delta,
     ui::ScrollGranularity granularity,
     CompositorElementId scrollable_area_element_id,
     WebInputEvent::Type injected_type) {
-  local_frame.GetWidgetForLocalRoot()->InjectGestureScrollEvent(
-      device, delta, granularity, scrollable_area_element_id, injected_type);
+  local_frame.GetWidgetForLocalRoot()->InjectScrollbarGestureScroll(
+      delta, granularity, scrollable_area_element_id, injected_type);
 }
 
 void ChromeClientImpl::FinishScrollFocusedEditableIntoView(

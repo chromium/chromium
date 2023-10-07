@@ -3639,8 +3639,7 @@ void WebFrameWidgetImpl::DidOverscroll(
   }
 }
 
-void WebFrameWidgetImpl::InjectGestureScrollEvent(
-    blink::WebGestureDevice device,
+void WebFrameWidgetImpl::InjectScrollbarGestureScroll(
     const gfx::Vector2dF& delta,
     ui::ScrollGranularity granularity,
     cc::ElementId scrollable_area_element_id,
@@ -3650,15 +3649,13 @@ void WebFrameWidgetImpl::InjectGestureScrollEvent(
   // TODO(crbug.com/1082590) ensure continuity in scroll metrics collection
   base::TimeTicks now = base::TimeTicks::Now();
   std::unique_ptr<WebGestureEvent> gesture_event =
-      WebGestureEvent::GenerateInjectedScrollGesture(
-          injected_type, now, device, gfx::PointF(0, 0), delta, granularity);
+      WebGestureEvent::GenerateInjectedScrollbarGestureScroll(
+          injected_type, now, gfx::PointF(0, 0), delta, granularity);
   if (injected_type == WebInputEvent::Type::kGestureScrollBegin) {
     gesture_event->data.scroll_begin.scrollable_area_element_id =
         scrollable_area_element_id.GetInternalValue();
     gesture_event->data.scroll_begin.main_thread_hit_tested_reasons =
-        device == WebGestureDevice::kScrollbar
-            ? cc::MainThreadScrollingReason::kScrollbarScrolling
-            : cc::MainThreadScrollingReason::kFailedHitTest;
+        cc::MainThreadScrollingReason::kScrollbarScrolling;
   }
 
   // Notifies TestWebFrameWidget of the injected event. Does nothing outside

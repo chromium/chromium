@@ -246,11 +246,10 @@ class CORE_EXPORT WebFrameWidgetImpl
                      const gfx::Vector2dF& accumulated_overscroll,
                      const gfx::PointF& position,
                      const gfx::Vector2dF& velocity) override;
-  void InjectGestureScrollEvent(WebGestureDevice device,
-                                const gfx::Vector2dF& delta,
-                                ui::ScrollGranularity granularity,
-                                cc::ElementId scrollable_area_element_id,
-                                WebInputEvent::Type injected_type) override;
+  void InjectScrollbarGestureScroll(const gfx::Vector2dF& delta,
+                                    ui::ScrollGranularity granularity,
+                                    cc::ElementId scrollable_area_element_id,
+                                    WebInputEvent::Type injected_type) override;
   void DidChangeCursor(const ui::Cursor&) override;
   void GetCompositionCharacterBoundsInWindow(
       Vector<gfx::Rect>* bounds_in_dips) override;

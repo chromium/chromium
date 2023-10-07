@@ -1263,8 +1263,7 @@ void ScrollableArea::Trace(Visitor* visitor) const {
   visitor->Trace(fade_overlay_scrollbars_timer_);
 }
 
-void ScrollableArea::InjectGestureScrollEvent(
-    WebGestureDevice device,
+void ScrollableArea::InjectScrollbarGestureScroll(
     ScrollOffset delta,
     ui::ScrollGranularity granularity,
     WebInputEvent::Type gesture_type) const {
@@ -1289,9 +1288,9 @@ void ScrollableArea::InjectGestureScrollEvent(
     delta.Scale(scale);
   }
 
-  GetChromeClient()->InjectGestureScrollEvent(
-      *GetLayoutBox()->GetFrame(), device, delta, granularity,
-      GetScrollElementId(), gesture_type);
+  GetChromeClient()->InjectScrollbarGestureScroll(
+      *GetLayoutBox()->GetFrame(), delta, granularity, GetScrollElementId(),
+      gesture_type);
 }
 
 ScrollableArea* ScrollableArea::GetForScrolling(const LayoutBox* layout_box) {

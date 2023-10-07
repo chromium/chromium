@@ -88,12 +88,12 @@ class RenderingTestChromeClient : public EmptyChromeClient {
     return device_emulation_transform_;
   }
 
-  void InjectGestureScrollEvent(LocalFrame& local_frame,
-                                WebGestureDevice device,
-                                const gfx::Vector2dF& delta,
-                                ui::ScrollGranularity granularity,
-                                CompositorElementId scrollable_area_element_id,
-                                WebInputEvent::Type injected_type) override;
+  void InjectScrollbarGestureScroll(
+      LocalFrame& local_frame,
+      const gfx::Vector2dF& delta,
+      ui::ScrollGranularity granularity,
+      CompositorElementId scrollable_area_element_id,
+      WebInputEvent::Type injected_type) override;
 
   void ScheduleAnimation(const LocalFrameView*, base::TimeDelta) override {
     animation_scheduled_ = true;

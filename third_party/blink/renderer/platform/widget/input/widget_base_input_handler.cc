@@ -565,8 +565,7 @@ bool WidgetBaseInputHandler::DidOverscrollFromBlink(
   return false;
 }
 
-void WidgetBaseInputHandler::InjectGestureScrollEvent(
-    WebGestureDevice device,
+void WidgetBaseInputHandler::InjectScrollbarGestureScroll(
     const gfx::Vector2dF& delta,
     ui::ScrollGranularity granularity,
     cc::ElementId scrollable_area_element_id,
@@ -584,14 +583,14 @@ void WidgetBaseInputHandler::InjectGestureScrollEvent(
   // of that would be an extra frame of latency if we're injecting a scroll
   // during the handling of a rAF aligned input event, such as mouse move.
   if (handling_input_state_) {
-    InjectScrollGestureParams params{device, delta, granularity,
+    InjectScrollGestureParams params{delta, granularity,
                                      scrollable_area_element_id, injected_type};
     handling_input_state_->injected_scroll_params().push_back(params);
   } else {
     base::TimeTicks now = base::TimeTicks::Now();
     std::unique_ptr<WebGestureEvent> gesture_event =
-        WebGestureEvent::GenerateInjectedScrollGesture(
-            injected_type, now, device, gfx::PointF(0, 0), delta, granularity);
+        WebGestureEvent::GenerateInjectedScrollbarGestureScroll(
+            injected_type, now, gfx::PointF(0, 0), delta, granularity);
     if (injected_type == WebInputEvent::Type::kGestureScrollBegin) {
       gesture_event->data.scroll_begin.scrollable_area_element_id =
           scrollable_area_element_id.GetInternalValue();
@@ -627,20 +626,15 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
     // allows end to end latency to be logged for the injected scroll, annotated
     // with the correct type.
     ui::LatencyInfo scrollbar_latency_info(original_latency_info);
-
-    // Currently only scrollbar is supported - if this DCHECK hits due to a
-    // new type being injected, please modify the type passed to
-    // |set_source_event_type()|.
-    DCHECK(params.device == WebGestureDevice::kScrollbar);
     scrollbar_latency_info.set_source_event_type(
         ui::SourceEventType::SCROLLBAR);
     scrollbar_latency_info.AddLatencyNumber(
         ui::LatencyComponentType::INPUT_EVENT_LATENCY_RENDERER_MAIN_COMPONENT);
 
     std::unique_ptr<WebGestureEvent> gesture_event =
-        WebGestureEvent::GenerateInjectedScrollGesture(
-            params.type, input_event.TimeStamp(), params.device, position,
-            params.scroll_delta, params.granularity);
+        WebGestureEvent::GenerateInjectedScrollbarGestureScroll(
+            params.type, input_event.TimeStamp(), position, params.scroll_delta,
+            params.granularity);
 
     std::unique_ptr<cc::EventMetrics> metrics;
     if (params.type == WebInputEvent::Type::kGestureScrollUpdate) {
