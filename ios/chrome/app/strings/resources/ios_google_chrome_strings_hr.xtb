@@ -117,6 +117,7 @@ Važne napomene:
 <translation id="5389212809648216794">Google Chrome ne može upotrebljavati vaš fotoaparat jer ga upotrebljava neka druga aplikacija</translation>
 <translation id="5395376160638294582">Provjerite možete li uvijek upotrebljavati podatke iz Chromea na svom Google računu</translation>
 <translation id="5439191312780166229">Upozorava vas na opasne web-lokacije, čak i one za koje Google još nije znao, analiziranjem više podataka s web-lokacija od standardne zaštite. Možete preskočiti Chromeova upozorenja.</translation>
+<translation id="5442013002200339429">Ako sakrijete <ph name="MODULE_NAME" />, Chrome više neće automatski pratiti vaše buduće pakete i izbrisat će sve vaše prethodne podatke o praćenju paketa.</translation>
 <translation id="5460571915754665838">4. Odaberite Chrome</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome će vam pomoći da pratite taj paket na stranici Nova kartica.}one{Chrome će vam pomoći da pratite te pakete na stranici Nova kartica.}few{Chrome će vam pomoći da pratite te pakete na stranici Nova kartica.}other{Chrome će vam pomoći da pratite te pakete na stranici Nova kartica.}}</translation>
 <translation id="5492504007368565877">Google upravitelj zaporki ne može provjeriti vaše zaporke.</translation>
@@ -188,6 +189,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="7933491483529363150">Otvori moju najnoviju karticu u Chromeu.</translation>
 <translation id="8022947259858476807">Koristite Chrome prema zadanim postavkama da biste otvarali veze, pretraživali putem widgeta i automatski popunjavali zaporke u drugim aplikacijama</translation>
 <translation id="804638182476029347">Dopustite Chromeove obavijesti da biste primali upozorenja o sniženju cijena</translation>
+<translation id="8069507567842347179">Ovaj se paket već prati na Chromeu.</translation>
 <translation id="81358522153858150">Chrome sada za vaš upravljani račun podržava korisnička pravila</translation>
 <translation id="8160472928944011082">Ažuriranje Chromea nije moguće</translation>
 <translation id="8174679664544842874">Otvara novu karticu u Chromeu.</translation>

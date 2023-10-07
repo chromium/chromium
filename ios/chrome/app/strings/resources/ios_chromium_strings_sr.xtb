@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Отвара мрежу Chromium картица.</translation>
 <translation id="1617663976202781617">Подаци из Chromium синхронизације</translation>
 <translation id="1647558790457890304">Подешавања Chromium-а</translation>
+<translation id="164952285225495380">Овај пакет се већ прати у Chromium-у.</translation>
 <translation id="1722370509450468186">Лозинка се чува на вашем налогу (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Chromium подаци су обрисани</translation>
 <translation id="1791845338122684020">Отвара страницу историје Chromium-а.</translation>
@@ -140,6 +141,7 @@
 1. Отворите подешавања
 2. Додирните Подразумевана апликација за прегледање
 3. Изаберите Chromium.</translation>
+<translation id="6197255575340902638">Ако сакријете „<ph name="MODULE_NAME" />“, Chromium више неће аутоматски пратити будуће пакете и избрисаће све раније податке о праћењу пакета.</translation>
 <translation id="6247557882553405851">Google менаџеру лозинки</translation>
 <translation id="6268381023930128611">Желите ли да се одјавите из Chromium-а?</translation>
 <translation id="6324041800010509197">Посетите мрежу картица у Chromium-у</translation>

@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Apre la griglia delle schede di Chromium.</translation>
 <translation id="1617663976202781617">Dati dalla Sincronizzazione Chromium</translation>
 <translation id="1647558790457890304">Impostazioni di Chromium</translation>
+<translation id="164952285225495380">Questo pacchetto è già stato monitorato su Chromium.</translation>
 <translation id="1722370509450468186">La password verrà salvata nel tuo Account (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Dati di Chromium cancellati</translation>
 <translation id="1791845338122684020">Apre la pagina della cronologia in Chromium.</translation>
@@ -140,6 +141,7 @@ Aspetti da considerare:
 1. Apri le Impostazioni.
 2. Tocca App browser predefinita.
 3. Seleziona Chromium.</translation>
+<translation id="6197255575340902638">Se nascondi "<ph name="MODULE_NAME" />", Chromium non monitorerà più automaticamente i tuoi futuri pacchetti ed eliminerà tutti i dati di monitoraggio della spedizione precedenti.</translation>
 <translation id="6247557882553405851">Gestore delle password di Google</translation>
 <translation id="6268381023930128611">Uscire da Chromium?</translation>
 <translation id="6324041800010509197">Visita la griglia delle schede di Chromium</translation>

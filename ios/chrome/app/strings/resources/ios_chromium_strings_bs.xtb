@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Otvaranje mreže kartica u Chromiumu.</translation>
 <translation id="1617663976202781617">Sinhronizacija podataka s Chromiuma</translation>
 <translation id="1647558790457890304">Postavke Chromiuma</translation>
+<translation id="164952285225495380">Ovaj se paket već prati na Chromiumu.</translation>
 <translation id="1722370509450468186">Vaša lozinka će se sačuvati na vašem računu (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Chromium podaci su obrisani</translation>
 <translation id="1791845338122684020">Otvara stranicu s historijom Chromiuma.</translation>
@@ -140,6 +141,7 @@ Stvari za razmatranje:
 1. Otvorite Postavke
 2. Dodirnite Zadana aplikacija preglednika
 3. Odaberite Chromium.</translation>
+<translation id="6197255575340902638">Ako sakrijete <ph name="MODULE_NAME" />, Chromium više neće automatski pratiti vaše buduće pakete i izbrisat će sve vaše prethodne podatke o praćenju paketa.</translation>
 <translation id="6247557882553405851">Google upravitelju lozinki</translation>
 <translation id="6268381023930128611">Odjaviti se iz Chromiuma?</translation>
 <translation id="6324041800010509197">Otvorite mrežu kartica u Chromiumu</translation>

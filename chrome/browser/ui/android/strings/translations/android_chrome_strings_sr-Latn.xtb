@@ -332,6 +332,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2856503607207334158">Prijavljivanje nije uspelo</translation>
 <translation id="2860954141821109167">Uverite se da je neka aplikacija za telefon omogućena na ovom uređaju</translation>
 <translation id="2861923151411510142">Neke Chrome funkcije više neće biti dostupne</translation>
+<translation id="2869430948265924908">Da biste zaštitili osetljiv sadržaj u automobilu, morate da primenite zaključavanje profila automobila.  To možete da uradite pomoću PIN-a, koda ili lozinke.</translation>
 <translation id="2870560284913253234">Sajt</translation>
 <translation id="2871733351037274014">Predučitavajte stranice</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> želi da odobrite ovaj veb-sajt:</translation>
@@ -449,6 +450,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3421726884497337397">Izaberite kada ćete blokirati kolačiće trećih strana</translation>
 <translation id="3428747202529429621">Štiti vas u Chrome-u i može da se koristi za poboljšanje bezbednosti u drugim Google aplikacijama kada ste prijavljeni</translation>
 <translation id="3429160811076349561">Probne funkcije su isključene</translation>
+<translation id="3430670036890315772">Ako isključite zaključavanje profila, uklonićete sačuvane informacije</translation>
 <translation id="3435465986463792564">Imate mnogo prozora? Njima možete da upravljate odavde.</translation>
 <translation id="3435738964857648380">Bezbednost</translation>
 <translation id="3439276997620616816">Ovde ćete pronaći nedavne kartice</translation>
@@ -618,6 +620,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="438319986296050901">Delite samo karticu</translation>
 <translation id="4384468725000734951">Koristite Sogou za pretragu</translation>
+<translation id="4387647248986092471">Primeni zaključavanje profila automobila</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – Preuzima se…</translation>
 <translation id="4404568932422911380">Nema obeleživača</translation>
 <translation id="4405224443901389797">Premesti u...</translation>
@@ -787,6 +790,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5170568018924773124">Prikaži u direktorijumu</translation>
 <translation id="5171045022955879922">Pretražite ili unesite URL adresu</translation>
 <translation id="5174700554036517242">Kartica se vratila na početnu visinu</translation>
+<translation id="5180063720319462041">Stranica je prevedena na jezik <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">Upravljajte temama i pretragama koje vas interesuju</translation>
 <translation id="5191251636205085390">Saznajte više o novim tehnologijama čiji je cilj da zamene kolačiće trećih strana i upravljajte njima</translation>
 <translation id="5193988420012215838">Kopirano je u privremenu memoriju</translation>
@@ -795,6 +799,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5210286577605176222">Prelazak na prethodnu karticu</translation>
 <translation id="5210365745912300556">Zatvori karticu</translation>
 <translation id="5222676887888702881">Odjavi me</translation>
+<translation id="5226378907213531272">Otključaćete ekran svaki put kada koristite automobil</translation>
 <translation id="5227554086496586518">Dodirnite da biste videli rezultate pretrage</translation>
 <translation id="5233638681132016545">Nova kartica</translation>
 <translation id="5234971936051226002">Plejer Slušajte ovu stranicu je umanjen.</translation>
@@ -1278,6 +1283,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7691043218961417207">Istražite sadržaj za praćenje</translation>
 <translation id="7697383401610880082">Identifikator za prevlačenje</translation>
 <translation id="7698359219371678927">Napišite imejl u aplikaciji <ph name="APP_NAME" /></translation>
+<translation id="7702388902581909985">Brisanjem podataka pregledanja ne odjavljujete se sa Google naloga. Da biste to uradili, <ph name="BEGIN_LINK1" />odjavite se iz Chrome-a<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Koristi mobilne podatke</translation>
 <translation id="7709918231054955894">Preuzmite sve kartice</translation>
 <translation id="772434085369393266">Nadograđuje navigacije na HTTPS i upozorava vas pre učitavanja sajtova koji ga ne podržavaju. Ne možete da promenite ovo podešavanje jer je omogućena Napredna zaštita.</translation>

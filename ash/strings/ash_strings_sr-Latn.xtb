@@ -704,6 +704,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="385300504083504382">Početak</translation>
 <translation id="3859364108019690">Strimovanje aplikacija nije uspelo</translation>
 <translation id="3861651314799684201">Pritisnite Enter da biste snimili ceo ekran</translation>
+<translation id="3865912916886104060">Nijedan uređaj nije povezan. WiFi će biti isključen da biste počeli da koristite hotspot.</translation>
 <translation id="3886872229787704059">Otvarano danas</translation>
 <translation id="3891340733213178823">Dvaput pritisnite Ctrl+Shift+Q da biste se odjavili.</translation>
 <translation id="3893630138897523026">ChromeVox (govorne povratne informacije)</translation>
@@ -789,6 +790,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="4197790712631116042">Isključeno</translation>
 <translation id="4201033867194214117">Funkcija <ph name="FEATURE_NAME" /> nije dostupna</translation>
 <translation id="4201051445878709314">Prikaži prethodni mesec</translation>
+<translation id="4202362334312791952">1 uređaj je povezan. WiFi će biti isključen da biste počeli da koristite hotspot.</translation>
 <translation id="4209973997261364186">WiFi je uključen</translation>
 <translation id="4212472694152630271">Pređi na PIN</translation>
 <translation id="4215497585250573029">Podešavanja VPN-a</translation>
@@ -1051,6 +1053,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5258528442992323769">Nema sačuvanih radnih površina</translation>
 <translation id="5260676007519551770">Radna površina 4</translation>
 <translation id="5268819379131021772">Lista Google zadataka</translation>
+<translation id="5275923704957843041">Pregled radne površine</translation>
 <translation id="5278086053818066789">Uključi ili isključi ChromeVox (govorne povratne informacije)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> zahteva vašu pažnju.</translation>
 <translation id="5283198616748585639">Dodaj 1 min</translation>
@@ -1167,6 +1170,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5707775774148071965">Uređaj podržava veći protok podataka u odnosu na kabl. Učinak uređaja će možda biti ograničen.</translation>
 <translation id="5710450975648804523">Režim Ne uznemiravaj je uključen</translation>
 <translation id="571295407079589142">Podaci za mobilne uređaje su isključeni</translation>
+<translation id="5716891621595980681">Povezanih uređaja: <ph name="DEVICECOUNT" />. WiFi će biti isključen da biste počeli da koristite hotspot.</translation>
 <translation id="5727460725221669831">Ako ste nedavno zaboravili lozinku ili promenili lozinku za Google nalog, probajte da vratite pristup svom korisničkom nalogu.</translation>
 <translation id="573413375004481890">Ovaj uređaj ne može da podržava sve vaše ekrane, pa je veza sa jednim od njih prekinuta</translation>
 <translation id="5740328398383587084">Deljenje u blizini</translation>

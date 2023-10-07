@@ -117,6 +117,7 @@ Aspectes que cal tenir en compte:
 <translation id="5389212809648216794">Google Chrome no pot utilitzar la càmera perquè l'està utilitzant una altra aplicació</translation>
 <translation id="5395376160638294582">Assegura't de poder utilitzar sempre les dades de Chrome al teu Compte de Google</translation>
 <translation id="5439191312780166229">T'avisa de llocs web perillosos, fins i tot dels que Google no coneixia abans, ja que analitza més dades dels llocs web que la protecció estàndard. Pots optar per ometre els advertiments de Chrome.</translation>
+<translation id="5442013002200339429">Si amagues "<ph name="MODULE_NAME" />", Chrome deixarà de fer un seguiment automàtic dels paquets futurs i suprimirà totes les teves dades anteriors de seguiment d'enviaments.</translation>
 <translation id="5460571915754665838">4. Selecciona Chrome.</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome t'ajudarà a fer un seguiment d'aquest paquet a la pàgina Pestanya nova.}other{Chrome t'ajudarà a fer un seguiment d'aquests paquets a la pàgina Pestanya nova.}}</translation>
 <translation id="5492504007368565877">El gestor de contrasenyes de Google no pot comprovar les teves contrasenyes.</translation>
@@ -188,6 +189,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="7933491483529363150">Obre la meva darrera pestanya a Chrome.</translation>
 <translation id="8022947259858476807">Utilitza Chrome de manera predeterminada per obrir enllaços, cercar des de widgets i emplenar automàticament contrasenyes en altres aplicacions</translation>
 <translation id="804638182476029347">Permet que les notificacions de Chrome incloguin alertes de baixada de preu</translation>
+<translation id="8069507567842347179">Ja s'ha fet el seguiment d'aquest paquet a Chrome.</translation>
 <translation id="81358522153858150">Chrome ara admet polítiques dels usuaris per al compte gestionat</translation>
 <translation id="8160472928944011082">Chrome no es pot actualitzar</translation>
 <translation id="8174679664544842874">Obre una pestanya nova a Chrome.</translation>

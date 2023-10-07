@@ -800,6 +800,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5360976571138293719">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez la rubrique <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /></translation>
 <translation id="5386314158584363703">Vous trouverez les sites que vous suivez ici</translation>
 <translation id="5388358297987318779">Ouvrir l'image</translation>
+<translation id="5396950905475481456">Inviter des membres de la famille</translation>
 <translation id="5407969256130905701">Supprimer les modifications</translation>
 <translation id="5414763847370083940">Vous recevrez une alerte si le prix baisse sur n'importe quel site.</translation>
 <translation id="5416022985862681400">Sept derniers jours</translation>
@@ -1551,4 +1552,5 @@ Vos données ont été chiffrées avec votre phrase de passe sur <ph name="TIME"
 <translation id="988141524645182168">Autr appar</translation>
 <translation id="989988560359834682">Modifier l'adresse</translation>
 <translation id="994757059139821576">Articles suggérés</translation>
+<translation id="999768147936949692">Pour l'instant, vous ne pouvez partager les mots de passe qu'avec les membres de la famille. <ph name="BEGIN_LINK" />Invitez des membres de la famille<ph name="END_LINK" /> à se joindre à votre groupe et profitez davantage de vos produits et de vos abonnements sur Google.</translation>
 </translationbundle>

@@ -58,6 +58,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="1264156759663453185">Il testo selezionato è troppo lungo per la traduzione parziale.</translation>
 <translation id="1265739287306757398">Scopri come</translation>
 <translation id="1272079795634619415">Interrompi</translation>
+<translation id="1273416271143914096">{count,plural, =1{{count} password}other{{count} password}}</translation>
 <translation id="1275718070701477396">Selezionato</translation>
 <translation id="1279024913354609713">Non consentire</translation>
 <translation id="1281818060020671000">Gestisci i dati</translation>
@@ -68,6 +69,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="1295289763199166823">Personalizza menu</translation>
 <translation id="1305822519689023679">Verifica la tua identità per assicurarti di poter usare sempre le password nel tuo Account Google.</translation>
 <translation id="1312721752506309252">È attiva la protezione avanzata</translation>
+<translation id="1320164290882380380">{COUNT,plural, =1{Monitora questo pacchetto}other{Monitora tutti i pacchetti}}</translation>
 <translation id="1321993286294231467">Errore durante il salvataggio dell'immagine.</translation>
 <translation id="1322735045095424339">La tua organizzazione richiede la modalità in incognito</translation>
 <translation id="1323735185997015385">Elimina</translation>
@@ -143,6 +145,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="1687475363370981210">Segna tutti come già letti</translation>
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selezionati</translation>
+<translation id="1713777106376424209">Consegnato da</translation>
 <translation id="1715515772563243997">Se ritieni attendibile <ph name="SITE" />, puoi usare una password salvata per accedere.</translation>
 <translation id="1740468249224277719">Tocca due volte per installare.</translation>
 <translation id="1750238553597293878">Continua a usare le password nel tuo Account Google</translation>
@@ -191,6 +194,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="1987779152850321833">Completa le azioni suggerite di seguito per usare al meglio Chrome.</translation>
 <translation id="1989112275319619282">Esplora</translation>
 <translation id="1990820278544963435">Trova</translation>
+<translation id="1991153180045413119">Password condivisa</translation>
 <translation id="1992055602764528852">Accedi per vedere le tue schede degli altri dispositivi.</translation>
 <translation id="199425419756152024">Visualizza password</translation>
 <translation id="2008357574463816229">Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
@@ -235,6 +239,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="2268044343513325586">Perfeziona</translation>
 <translation id="2269277877025820298">Mostra altro</translation>
 <translation id="2273327106802955778">Menu Altro</translation>
+<translation id="2274800392139890332">Annulla monitoraggio del pacchetto</translation>
 <translation id="2275480389219976105">Indirizzo rilevato</translation>
 <translation id="2286505070150039482">Testo evidenziato</translation>
 <translation id="2287614783861766820">{count,plural, =1{Questo indirizzo verrà eliminato da questo dispositivo.}other{Questi indirizzi verranno eliminati da questo dispositivo.}}</translation>
@@ -243,8 +248,10 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="2299218006564889602">Le tue password vengono criptate sul dispositivo prima di essere salvate in Gestore delle password di Google.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • Num. <ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">Cambia password sul sito web</translation>
+<translation id="2310154074101836012">Mod. caro.</translation>
 <translation id="2316709634732130529">Utilizza la password suggerita</translation>
 <translation id="2320166752086256636">Nascondi tastiera</translation>
+<translation id="2348630484974447747">Pacchetto</translation>
 <translation id="2351097562818989364">Le impostazioni di traduzione sono state reimpostate.</translation>
 <translation id="235789365079050412">Norme sulla privacy di Google</translation>
 <translation id="2359043044084662842">Traduci</translation>
@@ -527,6 +534,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803696231112616155">Proponi di tradurre questo sito</translation>
 <translation id="3810973564298564668">Gestisci</translation>
+<translation id="3818045793209708987">Monitoraggio del pacchetto interrotto</translation>
 <translation id="3818293389945649617">Trova successivo</translation>
 <translation id="3819183753496523827">Sei offline. Controlla la connessione a Internet e riprova.</translation>
 <translation id="3832419617903252251">Password salvata solo su questo dispositivo</translation>
@@ -565,6 +573,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4018310736049373830">Gestisci attività</translation>
 <translation id="4038354071007134711">Impossibile aprire il file con le app sul dispositivo.</translation>
 <translation id="4042870976416480368">Trova nella pagina</translation>
+<translation id="4043294777772912240">Ora <ph name="USERNAME" /> può usare il tuo nome utente e la tua password quando usa Gestore delle password di Google per accedere a <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Crea e condividi un link diretto a una porzione di una pagina che hai evidenziato.</translation>
 <translation id="4045648459118332842">Recupera le tue password salvate con un solo tocco in qualsiasi app</translation>
 <translation id="4049507953662678203">Controlla la connessione di rete e riprova.</translation>
@@ -608,6 +617,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4286718549648564014">Indirizzo spostato nel tuo account <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Ricerca</translation>
 <translation id="4302248187517737842">Nessun nome utente ••••••••</translation>
+<translation id="4302415908542657649">Condivisione della password in corso…</translation>
 <translation id="4304713468139749426">Gestore delle password</translation>
 <translation id="430793432425771671">Sincronizza tutto</translation>
 <translation id="4309403553630140242">Tocca due volte per ulteriori informazioni</translation>
@@ -643,6 +653,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4508750114462689118">Chiudi promo accesso</translation>
 <translation id="4514889972748124117">Suggerisci password efficace…</translation>
 <translation id="4520798012560649652">Scopri di più sulla modalità di navigazione in incognito</translation>
+<translation id="452503091941773389">{count,plural, =1{{count} preferito}other{{count} preferiti}}</translation>
 <translation id="452750746583162491">Verifica i tuoi dati sincronizzati</translation>
 <translation id="4527660062930312477">Il tuo account è gestito</translation>
 <translation id="4536418791685807335">Prova ad accedere nuovamente.</translation>
@@ -662,6 +673,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4619615317237390068">Schede di altri dispositivi</translation>
 <translation id="4620246317052452550">Pagine che hai letto</translation>
 <translation id="4620888520263267479">Mostra anteprime link</translation>
+<translation id="4622477750832577849">Abilita monitoraggio</translation>
 <translation id="4630540211544979320">Traduci pagine</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> password riutilizzate</translation>
 <translation id="4634124774493850572">Utilizza password</translation>
@@ -777,6 +789,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="519530786644929958">Download non riuscito. Impossibile riprovare.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5211488077761630279">Vuoi consentire a "<ph name="SITE_NAME" />" di usare <ph name="PERMISSION" />?</translation>
+<translation id="5215990399368742238">Monitoraggio automatico di tutti i pacchetti rilevati</translation>
 <translation id="5219295696240154694">Contribuisci a migliorare la sicurezza sul Web per tutti</translation>
 <translation id="5220945116117011963">Crea eventi nel calendario dalle date</translation>
 <translation id="5221339005270097309">Controllo delle password…</translation>
@@ -787,6 +800,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5235389474593199952">Nascondi Cronologia</translation>
 <translation id="5238301240406177137">Salva nell'account</translation>
 <translation id="5245322853195994030">Annulla sincronizzazione</translation>
+<translation id="5256908199795498284">Chrome rileverà i numeri per il monitoraggio della spedizione sui siti che visiti e mostrerà gli aggiornamenti relativi ai pacchetti nella pagina Nuova scheda. I tuoi dati verranno condivisi con Google per fornire questa funzionalità e migliorare Shopping per tutti.</translation>
 <translation id="5271265092610673171">{count,plural, =1{C'è un campo obbligatorio vuoto. Compilalo prima di salvare.}other{Ci sono alcuni campi obbligatori vuoti. Compilali prima di salvare.}}</translation>
 <translation id="5271549068863921519">Salva password</translation>
 <translation id="5283494734135414249">Tocca la scorciatoia visualizzata sotto la barra degli indirizzi.</translation>
@@ -795,6 +809,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5318298563956633672">Stai già monitorando questo prodotto.</translation>
 <translation id="5339316356165661760">Attiva la sincronizzazione</translation>
+<translation id="5345598430982201510">Non rilevare mai automaticamente i pacchetti</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Vuoi monitorare questo pacchetto?}other{Monitorare {COUNT} pacchetti?}}</translation>
 <translation id="536067926684072644">Mostra i preferiti</translation>
 <translation id="5360976571138293719">Per altre impostazioni relative a privacy, sicurezza e raccolta dei dati, consulta la sezione <ph name="BEGIN_LINK" />Servizi Google<ph name="END_LINK" />.</translation>
@@ -811,6 +826,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="54401264925851789">Info sicurezza pagina</translation>
 <translation id="5443952882982198570">Carte di credito</translation>
 <translation id="5444892875087332195">Preferiti</translation>
+<translation id="5454211924362324495">Per impedire ad altri di utilizzare la tua password, <ph name="BEGIN_LINK" />modificala su <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Apri versione offline</translation>
 <translation id="5475069061743940393">Monitoraggio della spedizione</translation>
 <translation id="5478327362747197944">Crea direttamente eventi nel calendario facendo clic su una data in una pagina web.</translation>
@@ -1030,6 +1046,7 @@ I dati sono criptati con la tua passphrase. Inseriscila per utilizzare e salvare
 
 Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="6497850081273517953">Chrome non è aggiornato; per sicurezza, esegui l'aggiornamento all'ultima versione.</translation>
+<translation id="6502142762807385617">{COUNT,plural, =1{Annulla monitoraggio del pacchetto}other{Annulla monitoraggio di tutti i pacchetti}}</translation>
 <translation id="650279896687777322">Scopri di più…</translation>
 <translation id="6507973708545996744">Accedi per visualizzare il tuo elenco di lettura su tutti i tuoi dispositivi.</translation>
 <translation id="6510072653668207258">Ricordamelo più tardi</translation>
@@ -1110,6 +1127,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="6869389390665537774">Puoi visualizzare le pagine che hai visitato o cancellarle dalla cronologia</translation>
 <translation id="687135068089457384">Mostra impostazioni</translation>
 <translation id="6873263987691478642">Visualizzazione divisa</translation>
+<translation id="687586529977635009">Chrome rileverà i numeri di riferimento sui siti che visiti e mostrerà gli aggiornamenti relativi ai pacchetti nella pagina Nuova scheda. I tuoi dati verranno condivisi con Google per fornire questa funzionalità e migliorare Shopping per tutti. Puoi modificare questa impostazione nelle <ph name="BEGIN_LINK" />impostazioni di monitoraggio della spedizione<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Sistemi di protezione standard da estensioni, siti web e download che sono noti per essere pericolosi.</translation>
 <translation id="6888009575607455378">Vuoi annullare le modifiche apportate?</translation>
 <translation id="6896758677409633944">Copia</translation>
@@ -1157,6 +1175,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7154343200458623869">Completa l'attività.</translation>
 <translation id="7161230316646448869">Sincronizza i tuoi preferiti, la tua cronologia e altro su tutti i tuoi dispositivi</translation>
 <translation id="7162168282402939716">Sblocca le schede di navigazione in incognito con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="7168959436351276050">Se nascondi questa scheda, verranno rimossi tutti i tuoi dati di monitoraggio della spedizione</translation>
 <translation id="7172852049901402487">Proteggi le tue password dai problemi di sicurezza</translation>
 <translation id="7173114856073700355">Apri Impostazioni</translation>
 <translation id="7189598951263744875">Condividi...</translation>
@@ -1213,6 +1232,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7508728395076009983">Per bloccare le schede di navigazione in incognito, configura Touch ID, Face ID o un passcode.</translation>
 <translation id="7514365320538308">Scarica</translation>
 <translation id="7524055474074101597">Accedi alle tue password e ad altro ancora nelle app.</translation>
+<translation id="7527917367892640435">Pacchetto già monitorato</translation>
 <translation id="7531345132340165516">Sito corrente</translation>
 <translation id="7537586195939242955">Spiacenti, il tuo pass non può essere installato in Passbook in questo momento.</translation>
 <translation id="754655535278952384">Ultimo controllo: <ph name="TIME" /></translation>
@@ -1416,6 +1436,7 @@ I tuoi dati sono stati criptati con la tua passphrase il giorno <ph name="TIME" 
 <translation id="8605219856220328675">Chiudi la scheda.</translation>
 <translation id="8613883225817609844">Nascondi schede recenti</translation>
 <translation id="8620640915598389714">Modifica</translation>
+<translation id="8624447588354561276">Numero pacchetto</translation>
 <translation id="8626393685701737946">Puoi cambiare la visualizzazione predefinita del sito in Desktop in Impostazioni &gt; Impostazioni contenuti</translation>
 <translation id="8636825310635137004">Attiva la sincronizzazione per trovare le tue schede degli altri dispositivi.</translation>
 <translation id="8637431369725868556">Ricevi protezione da siti pericolosi.</translation>

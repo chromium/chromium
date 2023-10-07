@@ -13,6 +13,7 @@
 <translation id="1024913885641459127">Recenzie produktov a porovnanie cien</translation>
 <translation id="1028781062521375153">Zobraziť podrobnosti</translation>
 <translation id="1030706264415084469"><ph name="URL" /> chce natrvalo ukladať veľké množstvo dát vo vašom zariadení</translation>
+<translation id="1030949145805074938">{COUNT,plural, =0{Žiadne}=1{Z jedného webu. Touto akciou sa odhlásite z väčšiny webov. }few{Z # webov. Touto akciou sa odhlásite z väčšiny webov. }many{From # sites. Signs you out of most sites. }other{Z # webov. Touto akciou sa odhlásite z väčšiny webov. }}</translation>
 <translation id="1033329911862281889">Režim inkognito neznamená, že vás na internete nie je vidieť:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Weby a nimi využívané služby vedia o vašich návštevách.<ph name="END_LIST_ITEM" />
@@ -484,6 +485,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1939059826036755332">Automatický obraz v obraze</translation>
 <translation id="1939175642807587452">Môže žiadať o povolenie odosielať upozornenia</translation>
 <translation id="1940441167050915935">Odstrániť uložené bezpečnostné kódy</translation>
+<translation id="194174710521904357">Tomuto webu ste dočasne povolili používať súbory cookie tretích strán, čo znamená menšiu ochranu prehliadania. Je však pravdepodobnejšie, že funkcie webu budú fungovať podľa očakávania.</translation>
 <translation id="1943994668912612445">Dizajn</translation>
 <translation id="1945968466830820669">Môžete stratiť prístup do účtu svojej organizácie alebo vám niekto môže ukradnúť totožnosť. Chromium odporúča, aby ste si ihneď zmenili heslo.</translation>
 <translation id="1946849748901605102">12 × 15 palcov</translation>
@@ -661,6 +663,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2300306941146563769">Nenahrané</translation>
 <translation id="230286397113210245">Tlačidlo Otvoriť okno inkognito, ktorého aktivovaním otvoríte okno inkognito na anonymné prehliadanie</translation>
 <translation id="2312234273148520048">Prísady do jedál a dresingy</translation>
+<translation id="2316087952091171402">Menej ako <ph name="UPPER_ESTIMATE" />. Pri vašej ďalšej návšteve sa môžu niektoré weby načítať pomalšie.</translation>
 <translation id="2316159751672436664">Prispôsobiť nástroje dostupnosti v nastaveniach systému Chrome OS</translation>
 <translation id="2316887270356262533">Uvoľní menej ako 1 MB. Niektoré weby sa môžu pri ďalšej návšteve načítať pomalšie.</translation>
 <translation id="2317259163369394535">Doména <ph name="DOMAIN" /> vyžaduje používateľské meno a heslo.</translation>
@@ -1102,6 +1105,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3271648667212143903"><ph name="ORIGIN" /> žiada o pripojenie</translation>
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Zadajte <ph name="NUMBER_OF_DIGITS" />‑miestny overovací kód</translation>
+<translation id="3272643614306383237">Menej ako 1 MB. Pri vašej ďalšej návšteve sa môžu niektoré weby načítať pomalšie.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Pravidlá správcu otvorenie tohto súboru v službe <ph name="DESTINATION_NAME" /> neodporúčajú}few{Pravidlá správcu otvorenie týchto súborov v službe <ph name="DESTINATION_NAME" /> neodporúčajú}many{Administrator policy doesn’t recommend opening these files in <ph name="DESTINATION_NAME" />}other{Pravidlá správcu otvorenie týchto súborov v službe <ph name="DESTINATION_NAME" /> neodporúčajú}}</translation>
 <translation id="3282085321714087552">Vaša organizácia, <ph name="ENROLLMENT_DOMAIN" />, odoslala na nasledujúce weby nejaké informácie, napríklad nastavenia alebo pravidlá.</translation>
 <translation id="3286372614333682499">na výšku</translation>
@@ -2867,6 +2871,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Pomocou predvoleného vyhľadávača budete môcť vyhľadávať na internete a využívať funkcie Chromu<ph name="END_BOLD" />, ako je vyhľadávanie z panela s adresou alebo z obrázkov na webových stránkach. Ak vyhľadávač určitú funkciu nepodporuje, nemusí byť daná funkcia k dispozícii.</translation>
 <translation id="6934672428414710184">Meno pochádza z vášho účtu Google</translation>
 <translation id="6935082727755903526">Práca v oblasti účtovníctva a financií</translation>
+<translation id="6935179587384421592"><ph name="SIZE" />. Pri vašej ďalšej návšteve sa môžu niektoré weby načítať pomalšie.</translation>
 <translation id="6936976777388162184">Toto zariadenie je súčasťou balíka a nedá sa zaregistrovať pomocou povýšenia Kiosk &amp; Signage.</translation>
 <translation id="6939469646605424232">Televízne drámy</translation>
 <translation id="6944692733090228304">Zadali ste heslo na webe, ktorý nie je spravovaný organizáciou <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Ak chcete, aby bol váš účet chránený, nepoužívajte jeho heslo pre iné aplikácie a weby.</translation>
@@ -3132,6 +3137,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7441864845853794192">Gurmánske špeciality</translation>
 <translation id="7442725080345379071">Svetlooranžová</translation>
 <translation id="7444046173054089907">Tento web je blokovaný</translation>
+<translation id="7444176988908839653">{COUNT,plural, =0{Súbory cookie budú dnes znova blokované}=1{Súbory cookie budú zajtra znova blokované}few{Do opätovného blokovania súborov cookie zostávajú # dni}many{Do opätovného blokovania súborov cookie zostáva # dňa}other{Do opätovného blokovania súborov cookie zostáva # dní}}</translation>
 <translation id="7445762425076701745">Identita servera, ku ktorému ste pripojení, sa nedá úplne overiť. Ste pripojení k serveru, ktorý používa názov platný iba v rámci vašej siete. Externá certifikačná autorita nemôže vlastníctvo názvu nijakým spôsobom overiť. Niektoré certifikačné autority však vydajú certifikát aj pre takéto názvy, a preto sa nedá zaručiť, že ste pripojení k požadovaným webovým stránkam a nie k stránkam útočníka.</translation>
 <translation id="7447234474237738389">Služby starostlivosti o odevy</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> mm)</translation>
@@ -3498,6 +3504,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="81563721597823545">Hokejové vybavenie</translation>
 <translation id="8161095570253161196">Pokračovať v prehliadaní</translation>
 <translation id="8163866351304776260">Štyri dierky vľavo</translation>
+<translation id="8164078261547504572">Chcete dostávať správy pri poklesoch cien?</translation>
 <translation id="8175796834047840627">Chrome poskytuje možnosť uložiť karty v účte Google, pretože ste sa prihlásili. Toto správanie môžete zmeniť v nastaveniach.</translation>
 <translation id="8176440868214972690">Správca tohto zariadenia odoslal na nasledujúce weby nejaké informácie, napríklad nastavenia alebo pravidlá.</translation>
 <translation id="817820454357658398">Hygienické výrobky pre ženy</translation>
@@ -3939,6 +3946,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="9078912659001679888">Mixéry a odšťavovače</translation>
 <translation id="9078964945751709336">Treba zadať ďalšie informácie</translation>
 <translation id="9080712759204168376">Súhrn objednávky</translation>
+<translation id="9084304544887760521">Nechajte si na <ph name="EMAIL" /> posielať správy, keď na ktoromkoľvek webe klesne cena položiek, ktoré sledujete.</translation>
 <translation id="908796725011587895">Školské športy</translation>
 <translation id="9089260154716455634">Pravidlo intervalov nečinnosti:</translation>
 <translation id="9090243919347147717">Prílohy</translation>
@@ -4023,6 +4031,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="944540589955480312">Použiť heslá a prístupové kľúče uložené v účte Google</translation>
 <translation id="945855313015696284">Skontrolujte informácie nižšie a odstráňte neplatné karty</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter vytvoríte rýchlym spôsobom nový web vo Weboch Google</translation>
+<translation id="947974362755924771">{COUNT,plural, =0{Chrome dnes znova obmedzí súbory cookie}=1{Chrome zajtra znova obmedzí súbory cookie}few{Do opätovného blokovania súborov cookie Chromom zostávajú # dni}many{Do opätovného blokovania súborov cookie Chromom zostáva # dňa}other{Do opätovného blokovania súborov cookie Chromom zostáva # dní}}</translation>
 <translation id="949314938206378263">Požiadal(a) si o návštevu tohto webu. Tvoj rodič môže odpovedať v aplikácii Family Link.</translation>
 <translation id="950736567201356821">Tri dierky hore</translation>
 <translation id="961663415146723894">Zviazať dolu</translation>

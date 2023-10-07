@@ -332,6 +332,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2856503607207334158">Accesso non riuscito</translation>
 <translation id="2860954141821109167">Assicurati che su questo dispositivo ci sia un'app per telefono attiva</translation>
 <translation id="2861923151411510142">Alcune funzionalità di Chrome non saranno più disponibili</translation>
+<translation id="2869430948265924908">Per proteggere i tuoi contenuti sensibili in auto, devi creare un blocco del profilo dell'auto.  Puoi farlo con un PIN, un codice o una password.</translation>
 <translation id="2870560284913253234">Sito</translation>
 <translation id="2871733351037274014">Precarica le pagine</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> ha chiesto la tua approvazione per il seguente sito web:</translation>
@@ -449,6 +450,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3421726884497337397">Scegli quando bloccare i cookie di terze parti</translation>
 <translation id="3428747202529429621">Ti protegge su Chrome e potrebbe essere utilizzata per migliorare la sicurezza su altre app Google se esegui l'accesso</translation>
 <translation id="3429160811076349561">Le funzionalità di prova non sono attive</translation>
+<translation id="3430670036890315772">Se disattivi il blocco del profilo, le informazioni salvate verranno rimosse</translation>
 <translation id="3435465986463792564">Hai tante finestre? Puoi gestirle da qui</translation>
 <translation id="3435738964857648380">Sicurezza</translation>
 <translation id="3439276997620616816">Qui troverai le schede recenti</translation>
@@ -618,6 +620,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4378154925671717803">Telefono</translation>
 <translation id="438319986296050901">Condividi solo schede</translation>
 <translation id="4384468725000734951">Sogou in uso per la ricerca</translation>
+<translation id="4387647248986092471">Crea un blocco del profilo dell'auto</translation>
 <translation id="4402611456429872546"><ph name="LANG" />: download in corso…</translation>
 <translation id="4404568932422911380">Nessun preferito</translation>
 <translation id="4405224443901389797">Sposta in…</translation>
@@ -787,6 +790,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5171045022955879922">Cerca o digita un URL</translation>
 <translation id="5174700554036517242">La scheda è tornata alla sua altezza iniziale</translation>
+<translation id="5180063720319462041">Pagina tradotta in <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">Gestisci gli argomenti e le ricerche che ti interessano</translation>
 <translation id="5191251636205085390">Scopri e gestisci le nuove tecnologie che mirano a sostituire i cookie di terze parti</translation>
 <translation id="5193988420012215838">Copiata nei tuoi appunti</translation>
@@ -795,6 +799,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5210286577605176222">Vai alla scheda precedente</translation>
 <translation id="5210365745912300556">Chiudi scheda</translation>
 <translation id="5222676887888702881">Esci</translation>
+<translation id="5226378907213531272">Sbloccherai lo schermo ogni volta che userai l'auto</translation>
 <translation id="5227554086496586518">Tocca per visualizzare i risultati di ricerca</translation>
 <translation id="5233638681132016545">Nuova scheda</translation>
 <translation id="5234971936051226002">Player "Ascolta questa pagina" ridotto a icona.</translation>
@@ -1278,6 +1283,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7691043218961417207">Esplora i contenuti da seguire</translation>
 <translation id="7697383401610880082">Punto di trascinamento</translation>
 <translation id="7698359219371678927">Crea email in <ph name="APP_NAME" /></translation>
+<translation id="7702388902581909985">Se cancelli i dati di navigazione, non uscirai dal tuo Account Google. Per farlo, <ph name="BEGIN_LINK1" />esci da Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Verranno utilizzati i dati mobili</translation>
 <translation id="7709918231054955894">Visualizza tutte le tue schede</translation>
 <translation id="772434085369393266">Esegue l'upgrade delle navigazioni all'estensione HTTPS e ti avvisa prima di caricare i siti che non la supportano Non puoi modificare questa impostazione perché hai attivato la protezione avanzata.</translation>

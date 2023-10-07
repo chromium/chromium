@@ -332,6 +332,7 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="2856503607207334158">No s'ha pogut iniciar la sessió</translation>
 <translation id="2860954141821109167">Comprova que hi hagi una aplicació de telèfon activada en aquest dispositiu</translation>
 <translation id="2861923151411510142">Algunes funcions de Chrome ja no estaran disponibles</translation>
+<translation id="2869430948265924908">Per protegir el contingut sensible al cotxe, has de crear un bloqueig de perfil.  Pots fer-ho amb un PIN, un codi o una contrasenya.</translation>
 <translation id="2870560284913253234">Lloc web</translation>
 <translation id="2871733351037274014">Precàrrega de pàgines</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> vol que aprovis aquest lloc web:</translation>
@@ -449,6 +450,7 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="3421726884497337397">Tria quan vols bloquejar galetes de tercers</translation>
 <translation id="3428747202529429621">Et protegeix a Chrome i és possible que s'utilitzi per millorar la teva seguretat en altres aplicacions de Google quan tinguis la sessió iniciada</translation>
 <translation id="3429160811076349561">Les funcions de prova estan desactivades</translation>
+<translation id="3430670036890315772">En desactivar el bloqueig de perfil, se suprimirà la informació desada</translation>
 <translation id="3435465986463792564">Tens moltes finestres obertes? Pots gestionar-les aquí.</translation>
 <translation id="3435738964857648380">Seguretat</translation>
 <translation id="3439276997620616816">Trobaràs les teves pestanyes recents aquí</translation>
@@ -618,6 +620,7 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="4378154925671717803">Telèfon</translation>
 <translation id="438319986296050901">Comparteix només la targeta</translation>
 <translation id="4384468725000734951">S'utilitza Sogou per a la cerca</translation>
+<translation id="4387647248986092471">Crea un bloqueig de perfil al cotxe</translation>
 <translation id="4402611456429872546"><ph name="LANG" />: s'està baixant…</translation>
 <translation id="4404568932422911380">Cap adreça d'interès</translation>
 <translation id="4405224443901389797">Mou a…</translation>
@@ -787,6 +790,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="5171045022955879922">Cerqueu o escriviu l'URL</translation>
 <translation id="5174700554036517242">La pestanya ha tornat a l'alçada inicial</translation>
+<translation id="5180063720319462041">Pàgina traduïda a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">Gestiona els temes i les cerques que t'interessen</translation>
 <translation id="5191251636205085390">Obtén informació sobre les noves tecnologies per substituir les galetes de tercers i controla-les</translation>
 <translation id="5193988420012215838">S'ha copiat al porta-retalls</translation>
@@ -795,6 +799,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5210286577605176222">Ves a la pestanya anterior</translation>
 <translation id="5210365745912300556">Tanca la pestanya</translation>
 <translation id="5222676887888702881">Tanca la sessió</translation>
+<translation id="5226378907213531272">Desbloquejaràs la pantalla cada vegada que utilitzis el cotxe</translation>
 <translation id="5227554086496586518">Toca per veure els resultats de la cerca</translation>
 <translation id="5233638681132016545">Pestanya nova</translation>
 <translation id="5234971936051226002">El reproductor "Escolta aquesta pàgina" s'ha minimitzat.</translation>
@@ -1278,6 +1283,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7691043218961417207">Explora contingut i segueix-lo</translation>
 <translation id="7697383401610880082">Ansa per arrossegar</translation>
 <translation id="7698359219371678927">Crea una adreça electrònica a <ph name="APP_NAME" /></translation>
+<translation id="7702388902581909985">En esborrar les dades de navegació no se't tanca la sessió del Compte de Google. Per fer-ho, <ph name="BEGIN_LINK1" />tanca la sessió de Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Utilitza dades mòbils</translation>
 <translation id="7709918231054955894">Obtén totes les teves pestanyes</translation>
 <translation id="772434085369393266">Actualitza les navegacions a HTTPS i t'avisa abans de carregar llocs web que no l'admeten. No pots canviar aquesta opció de configuració perquè tens activada la Protecció avançada.</translation>

@@ -2159,6 +2159,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2671451824761031126">Vos favoris et paramètres ont été importés</translation>
 <translation id="2672142220933875349">Mauvais fichier crx, échec du déballage.</translation>
 <translation id="2673135533890720193">Consulter votre historique de navigation</translation>
+<translation id="2673848446870717676">Assurez-vous que votre appareil Bluetooth est en mode d'association et à proximité. Associez votre appareil uniquement à des appareils de confiance. Les appareils associés sont visibles par tous les comptes sur ce Chromebook.</translation>
 <translation id="2673873887296220733">Copier 1 fichier vers <ph name="CLOUD_PROVIDER" /> pour l'ouvrir?</translation>
 <translation id="2674764818721168631">Désactivé</translation>
 <translation id="2676084251379299915">Cette extension a été désactivée par la politique de l'entreprise, car elle n'est plus offerte sur la boutique en ligne Chrome Web Store</translation>
@@ -3835,6 +3836,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4010917659463429001">Pour obtenir vos favoris sur votre appareil mobile, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Réparer « <ph name="EXTENSION_NAME" /> »?</translation>
 <translation id="4015163439792426608">Vous avez des extensions? <ph name="BEGIN_LINK" />Gérez vos extensions<ph name="END_LINK" /> à un seul et même endroit.</translation>
+<translation id="4016762287427926315">Les autorisations que vous accordez à <ph name="APP_NAME" /> seront également accordées à cette application. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Créer un code QR pour ce lien</translation>
 <translation id="4019983356493507433">Modifier la liste des favoris</translation>
 <translation id="4020327272915390518">Menu Options</translation>
@@ -6401,6 +6403,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6156863943908443225">Cache des scripts</translation>
 <translation id="6156944117133588106">Afficher les boutons de navigation en mode tablette</translation>
 <translation id="615930144153753547">Les sites peuvent afficher des images</translation>
+<translation id="6160290816917599257">Code incorrect. Votre entrée doit être au format <ph name="LPA_0" />$<ph name="LPA_1" />Adresse SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />identifiant de mise en correspondance facultatif<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Fournir des certificats pour l'authentification</translation>
 <translation id="6163363155248589649">&amp;Normal</translation>
 <translation id="6163376401832887457">Paramètres Kerberos</translation>
@@ -8433,6 +8436,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7807117920154132308">Il semble que <ph name="SUPERVISED_USER_NAME" /> ait déjà configuré l'Assistant Google sur un autre appareil. En activant la fonctionnalité Contexte à l'écran sur cet appareil, <ph name="SUPERVISED_USER_NAME" /> peut tirer encore plus parti de l'Assistant.</translation>
 <translation id="7807711621188256451">Toujours autoriser <ph name="HOST" /> à accéder à votre caméra</translation>
 <translation id="7810202088502699111">Des fenêtres contextuelles ont été bloquées sur cette page.</translation>
+<translation id="7810367892333449285">Votre entrée doit être au format <ph name="LPA_0" />$<ph name="LPA_1" />Adresse SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />identifiant de mise en correspondance facultatif<ph name="LPA_4" /></translation>
 <translation id="7814458197256864873">&amp;Copier</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Modifier le raccourci <ph name="SHORTCUT" /> pour <ph name="EXTENSION_NAME" /></translation>
@@ -9410,6 +9414,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8605428685123651449">Mémoire utilisée par SQLite</translation>
 <translation id="8607171490667464784">En mode inactif et lorsque l'appareil utilise la pile</translation>
 <translation id="8607326572516521315">La réduction des pourriels et de la fraude s'appuie sur des jetons de confiance pour aider les sites à lutter contre la fraude et à distinguer les robots des personnes.</translation>
+<translation id="8607828412110648570">Assurez-vous que votre appareil Bluetooth est en mode d'association et à proximité. Associez votre appareil uniquement à des appareils de confiance. Les appareils associés sont visibles par tous les comptes sur ce Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Ajouter un ticket Kerberos</translation>
 <translation id="8609465669617005112">Déplacer vers le haut</translation>
 <translation id="8610103157987623234">Format incorrect, veuillez réessayer.</translation>

@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Otvara rešetku kartica u Chromiumu.</translation>
 <translation id="1617663976202781617">Podaci sinkronizacije Chromiuma</translation>
 <translation id="1647558790457890304">Postavke Chromiuma</translation>
+<translation id="164952285225495380">Ovaj se paket već prati na Chromiumu.</translation>
 <translation id="1722370509450468186">Zaporka će se spremiti na vaš račun (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Podaci Chromiuma izbrisani su</translation>
 <translation id="1791845338122684020">Otvara stranicu povijesti u Chromiumu.</translation>
@@ -140,6 +141,7 @@ Važne napomene:
 1. Otvorite postavke.
 2. Dodirnite opciju Zadana aplikacija preglednika.
 3. Odaberite Chromium.</translation>
+<translation id="6197255575340902638">Ako sakrijete <ph name="MODULE_NAME" />, Chromium više neće automatski pratiti vaše buduće pakete i izbrisat će sve vaše prethodne podatke o praćenju paketa.</translation>
 <translation id="6247557882553405851">Google upravitelj zaporki</translation>
 <translation id="6268381023930128611">Želite li se odjaviti iz Chromiuma?</translation>
 <translation id="6324041800010509197">Otvaranje rešetke kartica u Chromiumu</translation>

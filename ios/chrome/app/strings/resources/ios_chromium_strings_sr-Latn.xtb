@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Otvara mrežu Chromium kartica.</translation>
 <translation id="1617663976202781617">Podaci iz Chromium sinhronizacije</translation>
 <translation id="1647558790457890304">Podešavanja Chromium-a</translation>
+<translation id="164952285225495380">Ovaj paket se već prati u Chromium-u.</translation>
 <translation id="1722370509450468186">Lozinka se čuva na vašem nalogu (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Chromium podaci su obrisani</translation>
 <translation id="1791845338122684020">Otvara stranicu istorije Chromium-a.</translation>
@@ -140,6 +141,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chromium 
 1. Otvorite podešavanja
 2. Dodirnite Podrazumevana aplikacija za pregledanje
 3. Izaberite Chromium.</translation>
+<translation id="6197255575340902638">Ako sakrijete „<ph name="MODULE_NAME" />“, Chromium više neće automatski pratiti buduće pakete i izbrisaće sve ranije podatke o praćenju paketa.</translation>
 <translation id="6247557882553405851">Google menadžeru lozinki</translation>
 <translation id="6268381023930128611">Želite li da se odjavite iz Chromium-a?</translation>
 <translation id="6324041800010509197">Posetite mrežu kartica u Chromium-u</translation>
