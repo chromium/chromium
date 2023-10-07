@@ -16,14 +16,11 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
-#include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/resource_attribution/page_context_registry.h"
 #include "components/performance_manager/public/resource_attribution/process_context_registry.h"
-#include "components/performance_manager/public/resource_attribution/worker_context_registry.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
 class BrowserChildProcessHost;
@@ -40,7 +37,6 @@ class ResourceContextRegistryStorage final
     : public FrameNode::ObserverDefaultImpl,
       public PageNode::ObserverDefaultImpl,
       public ProcessNode::ObserverDefaultImpl,
-      public WorkerNode::ObserverDefaultImpl,
       public GraphOwned {
  public:
   // Storage used from the UI thread.
@@ -82,18 +78,10 @@ class ResourceContextRegistryStorage final
   static content::BrowserChildProcessHost* BrowserChildProcessHostFromContext(
       const ProcessContext& context);
 
-  // WorkerContext accessors.
-  static absl::optional<WorkerContext> WorkerContextForWorkerToken(
-      const blink::WorkerToken& token);
-
-  static absl::optional<blink::WorkerToken> WorkerTokenFromContext(
-      const WorkerContext& context);
-
   // PM sequence accessors.
   const PageNode* GetPageNodeForContext(const PageContext& context) const;
   const ProcessNode* GetProcessNodeForContext(
       const ProcessContext& context) const;
-  const WorkerNode* GetWorkerNodeForContext(const WorkerContext& context) const;
 
   // FrameNodeObserver overrides:
   void OnFrameNodeAdded(const FrameNode* frame_node) final;
@@ -107,10 +95,6 @@ class ResourceContextRegistryStorage final
   // ProcessNodeObserver overrides:
   void OnProcessNodeAdded(const ProcessNode* process_node) final;
   void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) final;
-
-  // WorkerNodeObserver overrides:
-  void OnWorkerNodeAdded(const WorkerNode* worker_node) final;
-  void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) final;
 
   // GraphOwned overrides:
   void OnPassedToGraph(Graph* graph) final;
@@ -129,8 +113,6 @@ class ResourceContextRegistryStorage final
       GUARDED_BY_CONTEXT(sequence_checker_);
   mutable std::map<ProcessContext, base::WeakPtr<ProcessNode>>
       process_nodes_by_context_ GUARDED_BY_CONTEXT(sequence_checker_);
-  mutable std::map<WorkerContext, base::WeakPtr<WorkerNode>>
-      worker_nodes_by_context_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<UIThreadStorage> ui_thread_storage_;
 
@@ -142,7 +124,6 @@ class ResourceContextRegistryStorage final
   // these with the graph in OnPassedToGraph().
   PageContextRegistry page_registry_{*this};
   ProcessContextRegistry process_registry_{*this};
-  WorkerContextRegistry worker_registry_{*this};
 };
 
 }  // namespace performance_manager::resource_attribution

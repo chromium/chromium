@@ -134,8 +134,9 @@ void PerformanceManagerRegistryImpl::CreatePageNodeForWebContents(
   DCHECK(tab_helper);
   tab_helper->SetDestructionObserver(this);
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnPageNodeCreatedForWebContents(web_contents);
+  }
 }
 
 void PerformanceManagerRegistryImpl::SetPageType(
@@ -239,8 +240,9 @@ void PerformanceManagerRegistryImpl::TearDown() {
 
   // Notify any observers of the tear down. This lets them unregister things,
   // etc.
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnBeforePerformanceManagerDestroyed();
+  }
 
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
@@ -325,6 +327,13 @@ WorkerNodeImpl* PerformanceManagerRegistryImpl::FindWorkerNodeForToken(
     }
   }
   return nullptr;
+}
+
+WorkerWatcher* PerformanceManagerRegistryImpl::GetWorkerWatcherForTesting(
+    content::BrowserContext* browser_context) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const auto it = worker_watchers_.find(browser_context);
+  return it != worker_watchers_.end() ? it->second.get() : nullptr;
 }
 
 void PerformanceManagerRegistryImpl::OnRenderProcessHostCreated(

@@ -15,7 +15,6 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
-#include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/browser_child_process_host_id.h"
 #include "components/performance_manager/public/browser_child_process_host_proxy.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -31,7 +30,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/process_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager::resource_attribution {
 
@@ -107,9 +105,6 @@ class ResourceContextRegistryStorage::UIThreadStorage {
   content::BrowserChildProcessHost* GetBrowserChildProcessHostFromContext(
       const ProcessContext& context) const;
 
-  // WorkerContext accessors.
-  bool IsRegisteredWorkerContext(const WorkerContext& context) const;
-
   // Update storage based on changes in the PM graph.
 
   // Called when a FrameNode belonging to the page `page_context` is added to
@@ -150,10 +145,6 @@ class ResourceContextRegistryStorage::UIThreadStorage {
       const ProcessContext& process_context,
       const BrowserChildProcessHostProxy& bcph_proxy);
 
-  void OnWorkerNodeAdded(const WorkerContext& worker_context);
-
-  void OnWorkerNodeRemoved(const WorkerContext& worker_context);
-
  private:
   // Asserts that `context` isn't in any map.
   void CheckProcessContextUnregistered(const ProcessContext& context) const;
@@ -188,13 +179,6 @@ class ResourceContextRegistryStorage::UIThreadStorage {
   std::map<ProcessContext, RenderProcessHostId> rph_ids_by_process_context_;
   std::map<ProcessContext, BrowserChildProcessHostId>
       bcph_ids_by_process_context_;
-
-  // WorkerContext storage
-
-  // All contexts known to the registry. Prevents the registry from converting a
-  // randomly-generated blink::WorkerToken that doesn't correspond to a real
-  // worker into a WorkerContext.
-  std::set<WorkerContext> worker_contexts_;
 };
 
 absl::optional<PageContext> UIThreadStorage::GetPageContextForId(
@@ -319,12 +303,6 @@ UIThreadStorage::GetBrowserChildProcessHostFromContext(
              ? nullptr
              : content::BrowserChildProcessHost::FromID(
                    it->second.GetUnsafeValue());
-}
-
-bool UIThreadStorage::IsRegisteredWorkerContext(
-    const WorkerContext& context) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return base::Contains(worker_contexts_, context);
 }
 
 void UIThreadStorage::OnFrameNodeAdded(const PageContext& page_context,
@@ -491,18 +469,6 @@ void UIThreadStorage::OnBrowserChildProcessNodeRemoved(
   bcph_ids_by_process_context_.erase(bcph_it);
 }
 
-void UIThreadStorage::OnWorkerNodeAdded(const WorkerContext& worker_context) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const auto [_, inserted] = worker_contexts_.insert(worker_context);
-  CHECK(inserted);
-}
-
-void UIThreadStorage::OnWorkerNodeRemoved(const WorkerContext& worker_context) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const size_t erased = worker_contexts_.erase(worker_context);
-  CHECK_EQ(erased, 1u);
-}
-
 void UIThreadStorage::CheckProcessContextUnregistered(
     const ProcessContext& context) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -647,33 +613,6 @@ ResourceContextRegistryStorage::BrowserChildProcessHostFromContext(
              : nullptr;
 }
 
-// static
-absl::optional<WorkerContext>
-ResourceContextRegistryStorage::WorkerContextForWorkerToken(
-    const blink::WorkerToken& token) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // Re-use the WorkerToken as a ResourceContext token.
-  const resource_attribution::WorkerContext context(token);
-  if (static_ui_thread_storage_ &&
-      static_ui_thread_storage_->IsRegisteredWorkerContext(context)) {
-    return context;
-  }
-  return absl::nullopt;
-}
-
-// static
-absl::optional<blink::WorkerToken>
-ResourceContextRegistryStorage::WorkerTokenFromContext(
-    const WorkerContext& context) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (static_ui_thread_storage_ &&
-      static_ui_thread_storage_->IsRegisteredWorkerContext(context)) {
-    // The ResourceContext token is a converted WorkerToken.
-    return blink::WorkerToken(context.value());
-  }
-  return absl::nullopt;
-}
-
 const PageNode* ResourceContextRegistryStorage::GetPageNodeForContext(
     const PageContext& context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -684,12 +623,6 @@ const ProcessNode* ResourceContextRegistryStorage::GetProcessNodeForContext(
     const ProcessContext& context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetWeakNodeForContext(context, process_nodes_by_context_);
-}
-
-const WorkerNode* ResourceContextRegistryStorage::GetWorkerNodeForContext(
-    const WorkerContext& context) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetWeakNodeForContext(context, worker_nodes_by_context_);
 }
 
 void ResourceContextRegistryStorage::OnFrameNodeAdded(
@@ -845,44 +778,13 @@ void ResourceContextRegistryStorage::OnBeforeProcessNodeRemoved(
   // are done. At that point the WeakPtr will be invalidated.
 }
 
-void ResourceContextRegistryStorage::OnWorkerNodeAdded(
-    const WorkerNode* worker_node) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto [_, inserted] = worker_nodes_by_context_.emplace(
-      worker_node->GetResourceContext(),
-      WorkerNodeImpl::FromNode(worker_node)->GetWeakPtr());
-  CHECK(inserted);
-  CHECK(ui_thread_storage_);
-  // Unretained is safe because the pointer is deleted on the UI thread.
-  content::GetUIThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&UIThreadStorage::OnWorkerNodeAdded,
-                                base::Unretained(ui_thread_storage_.get()),
-                                worker_node->GetResourceContext()));
-}
-
-void ResourceContextRegistryStorage::OnBeforeWorkerNodeRemoved(
-    const WorkerNode* worker_node) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(ui_thread_storage_);
-  // Unretained is safe because the pointer is deleted on the UI thread.
-  content::GetUIThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&UIThreadStorage::OnWorkerNodeRemoved,
-                                base::Unretained(ui_thread_storage_.get()),
-                                worker_node->GetResourceContext()));
-  // Leave the WeakPtr to `worker_node` in `worker_nodes_by_context_` so it
-  // can still be resolved until all OnBeforeWorkerNodeRemoved() notifications
-  // are done. At that point the WeakPtr will be invalidated.
-}
-
 void ResourceContextRegistryStorage::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph->RegisterObject(&page_registry_);
   graph->RegisterObject(&process_registry_);
-  graph->RegisterObject(&worker_registry_);
   graph->AddFrameNodeObserver(this);
   graph->AddPageNodeObserver(this);
   graph->AddProcessNodeObserver(this);
-  graph->AddWorkerNodeObserver(this);
 }
 
 void ResourceContextRegistryStorage::OnTakenFromGraph(Graph* graph) {
@@ -890,10 +792,8 @@ void ResourceContextRegistryStorage::OnTakenFromGraph(Graph* graph) {
   graph->RemoveFrameNodeObserver(this);
   graph->RemovePageNodeObserver(this);
   graph->RemoveProcessNodeObserver(this);
-  graph->RemoveWorkerNodeObserver(this);
   graph->UnregisterObject(&page_registry_);
   graph->UnregisterObject(&process_registry_);
-  graph->UnregisterObject(&worker_registry_);
 }
 
 // static

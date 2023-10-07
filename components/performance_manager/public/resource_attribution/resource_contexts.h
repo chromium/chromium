@@ -8,6 +8,7 @@
 #include "base/types/token_type.h"
 #include "components/performance_manager/public/resource_attribution/frame_context.h"
 #include "components/performance_manager/public/resource_attribution/type_helpers.h"
+#include "components/performance_manager/public/resource_attribution/worker_context.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
@@ -48,7 +49,6 @@ namespace performance_manager::resource_attribution {
 // classes similar to FrameContext.
 using PageContext = base::TokenType<class PageContextTag>;
 using ProcessContext = base::TokenType<class ProcessContextTag>;
-using WorkerContext = TokenAlias<class WorkerContextTag, blink::WorkerToken>;
 
 // A variant holding any type of resource context.
 using ResourceContext =

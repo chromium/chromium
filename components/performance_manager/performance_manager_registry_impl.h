@@ -24,6 +24,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
+class BrowserContext;
 class RenderProcessHost;
 class WebContents;
 }  // namespace content
@@ -121,6 +122,11 @@ class PerformanceManagerRegistryImpl
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return pm_registered_.size();
   }
+
+  // Returns the WorkerWatcher for `browser_context`, or nullptr if there is
+  // none. Tests can call methods on the WorkerWatcher to simulate workers.
+  WorkerWatcher* GetWorkerWatcherForTesting(
+      content::BrowserContext* browser_context) const;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

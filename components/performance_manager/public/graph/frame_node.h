@@ -13,7 +13,7 @@
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
-#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
+#include "components/performance_manager/public/resource_attribution/frame_context.h"
 #include "content/public/browser/browsing_instance_id.h"
 #include "content/public/browser/site_instance.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -6,7 +6,6 @@
 
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
-#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace performance_manager {
@@ -158,8 +157,7 @@ const blink::WorkerToken& WorkerNodeImpl::worker_token() const {
 
 resource_attribution::WorkerContext WorkerNodeImpl::resource_context() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Re-use the WorkerToken as the ResourceContext token.
-  return resource_attribution::WorkerContext(worker_token_);
+  return resource_attribution::WorkerContext::FromWorkerNode(this);
 }
 
 const base::flat_set<FrameNodeImpl*>& WorkerNodeImpl::client_frames() const {

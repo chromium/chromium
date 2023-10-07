@@ -13,7 +13,7 @@
 #include "base/types/token_type.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node.h"
-#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
+#include "components/performance_manager/public/resource_attribution/worker_context.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 class GURL;

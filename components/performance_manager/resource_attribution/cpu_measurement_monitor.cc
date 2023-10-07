@@ -30,7 +30,7 @@
 #include "components/performance_manager/public/resource_attribution/attribution_helpers.h"
 #include "components/performance_manager/public/resource_attribution/frame_context.h"
 #include "components/performance_manager/public/resource_attribution/graph_change.h"
-#include "components/performance_manager/public/resource_attribution/worker_context_registry.h"
+#include "components/performance_manager/public/resource_attribution/worker_context.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/common/process_type.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -482,9 +482,6 @@ void CPUMeasurementMonitor::ApplyMeasurementDeltas(
     const std::map<ResourceContext, CPUTimeResult>& measurement_deltas,
     GraphChange graph_change) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(graph_);
-  const auto* worker_registry = WorkerContextRegistry::GetFromGraph(graph_);
-  CHECK(worker_registry);
   for (const auto& [context, delta] : measurement_deltas) {
     CHECK(!ContextIs<PageContext>(context));
 
@@ -502,7 +499,7 @@ void CPUMeasurementMonitor::ApplyMeasurementDeltas(
           delta);
     } else if (ContextIs<WorkerContext>(context)) {
       const WorkerNode* worker_node =
-          worker_registry->GetWorkerNodeForContext(context);
+          AsContext<WorkerContext>(context).GetWorkerNode();
       CHECK(worker_node);
       for (const PageNode* page_node :
            GetClientPages(worker_node, graph_change)) {
