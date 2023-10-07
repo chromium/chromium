@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
-import {fakeDeviceCustomLabels, fakeDeviceRegions, fakeDeviceSkus} from 'chrome://shimless-rma/fake_data.js';
+import {fakeDeviceCustomLabels, fakeDeviceRegions, fakeDeviceSkuDescriptions, fakeDeviceSkus} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {BooleanOrDefaultOptions, ReimagingDeviceInformationPage} from 'chrome://shimless-rma/reimaging_device_information_page.js';
@@ -89,6 +89,7 @@ suite('reimagingDeviceInformationPageTest', function() {
     service.setGetCustomLabelListResult(fakeDeviceCustomLabels);
     service.setGetOriginalCustomLabelResult(3);
     service.setGetSkuListResult(fakeDeviceSkus);
+    service.setGetSkuDescriptionListResult(fakeDeviceSkuDescriptions);
     service.setGetOriginalSkuResult(1);
     service.setGetOriginalDramPartNumberResult(fakeDramPartNumber);
     service.setGetOriginalFeatureLevelResult(
@@ -757,6 +758,30 @@ suite('reimagingDeviceInformationPageTest', function() {
             complianceStatusString.textContent.trim(),
             component.i18n('confirmDeviceInfoDeviceCompliant'));
       });
+
+  test('SkuDescriptionEnabled', async () => {
+    loadTimeData.overrideValues({skuDescriptionEnabled: true});
+
+    initializeReimagingDeviceInformationPage();
+    await initializeComponent();
+    await waitAfterNextRender(component);
+
+    const skuSelectComponent = component.shadowRoot.querySelector('#skuSelect');
+    assertEquals(
+        `${fakeDeviceSkus[1]}: ${fakeDeviceSkuDescriptions[1]}`,
+        skuSelectComponent.value);
+  });
+
+  test('SkuDescriptionDisabled', async () => {
+    loadTimeData.overrideValues({skuDescriptionEnabled: false});
+
+    initializeReimagingDeviceInformationPage();
+    await initializeComponent();
+    await waitAfterNextRender(component);
+
+    const skuSelectComponent = component.shadowRoot.querySelector('#skuSelect');
+    assertEquals(`${fakeDeviceSkus[1]}`, skuSelectComponent.value);
+  });
 
   // TODO(gavindodd): Add tests for the selection lists when they are
   // reimplemented and bound.

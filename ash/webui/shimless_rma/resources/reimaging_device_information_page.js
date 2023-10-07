@@ -16,7 +16,7 @@ import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://re
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {FeatureLevel, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
-import {disableNextButton, enableNextButton, focusPageTitle, isComplianceCheckEnabled} from './shimless_rma_util.js';
+import {disableNextButton, enableNextButton, focusPageTitle, isComplianceCheckEnabled, isSkuDescriptionEnabled} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -296,6 +296,16 @@ export class ReimagingDeviceInformationPage extends
         .then((result) => {
           this.skus_ = result.skus;
           this.skuIndex_ = this.originalSkuIndex_;
+          return this.shimlessRmaService_.getSkuDescriptionList();
+        })
+        .then((result) => {
+          // The SKU description list can be empty if the backend disables this
+          // feature.
+          if (isSkuDescriptionEnabled() &&
+              this.skus_.length === result.skuDescriptions.length) {
+            this.skus_ = this.skus_.map(
+                (sku, index) => `${sku}: ${result.skuDescriptions[index]}`);
+          }
 
           // Need to wait for the select options to render before setting the
           // selected index.

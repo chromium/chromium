@@ -123,3 +123,10 @@ export function focusPageTitle(element) {
 export function isComplianceCheckEnabled() {
   return loadTimeData.getBoolean('complianceCheckEnabled');
 }
+
+/**
+ * @returns whether the "SKU description" flag is enabled.
+ */
+export function isSkuDescriptionEnabled() {
+  return loadTimeData.getBoolean('skuDescriptionEnabled');
+}

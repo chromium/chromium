@@ -317,6 +317,9 @@ export const fakeDeviceSkus = [1, 2, 3];
 export const fakeDeviceCustomLabels =
     ['Custom-label 1', 'Custom-label 2', 'Custom-label 3', ''];
 
+/** @type {!Array<string>} */
+export const fakeDeviceSkuDescriptions = ['SKU 1', 'SKU 2', 'SKU 3'];
+
 /** @type {string} */
 export const fakeLog =
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod ' +
