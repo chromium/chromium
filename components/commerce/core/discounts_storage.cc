@@ -7,8 +7,11 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_types.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/proto/discounts_db_content.pb.h"
 #include "components/session_proto_db/session_proto_storage.h"
 
@@ -16,6 +19,23 @@ namespace commerce {
 
 const char kDiscountsFetchResultHistogramName[] =
     "Commerce.Discounts.FetchResult";
+
+namespace {
+bool MatchPrefixBeforeUTM(const std::string& url_with_utm,
+                          const std::string& target_url) {
+  size_t index = url_with_utm.find(commerce::kUTMPrefix);
+  if (index == std::string::npos) {
+    return false;
+  }
+  // Offset the '?' which is the starting character of URL parameters. We need
+  // this offset in case the target URL doesn't have any URL parameter.
+  if (index > 0 && url_with_utm[index - 1] == '?') {
+    index--;
+  }
+  const std::string url_prefix = url_with_utm.substr(0, index);
+  return base::StartsWith(target_url, url_prefix);
+}
+}  // namespace
 
 DiscountsStorage::DiscountsStorage(
     SessionProtoStorage<DiscountsContent>* discounts_proto_db,
@@ -100,24 +120,36 @@ void DiscountsStorage::OnLoadAllDiscounts(
   }
 
   int urls_found_in_db_number = 0;
-  for (SessionProtoStorage<DiscountsContent>::KeyAndValue& kv : data) {
-    if (std::find(urls_to_check.begin(), urls_to_check.end(), kv.first) !=
-        urls_to_check.end()) {
-      urls_found_in_db_number++;
-      std::vector<DiscountInfo> infos =
-          GetUnexpiredDiscountsFromProto(kv.second);
-      if (infos.size() == 0) {
-        DeleteDiscountsForUrl(kv.first);
-        base::UmaHistogramEnumeration(kDiscountsFetchResultHistogramName,
-                                      DiscountsFetchResult::kInvalidInfoInDb);
-      } else {
-        server_results[GURL(kv.first)] = infos;
-        base::UmaHistogramEnumeration(kDiscountsFetchResultHistogramName,
-                                      DiscountsFetchResult::kValidInfoInDb);
+  for (const std::string& url_to_check : urls_to_check) {
+    for (SessionProtoStorage<DiscountsContent>::KeyAndValue& kv : data) {
+      if (url_to_check == kv.first) {
+        urls_found_in_db_number++;
+        std::vector<DiscountInfo> infos =
+            GetUnexpiredDiscountsFromProto(kv.second);
+        if (infos.size() == 0) {
+          DeleteDiscountsForUrl(kv.first);
+          base::UmaHistogramEnumeration(kDiscountsFetchResultHistogramName,
+                                        DiscountsFetchResult::kInvalidInfoInDb);
+        } else {
+          server_results[GURL(kv.first)] = infos;
+          base::UmaHistogramEnumeration(kDiscountsFetchResultHistogramName,
+                                        DiscountsFetchResult::kValidInfoInDb);
 
-        // Update local database if expired discounts found.
-        if ((int)(infos.size()) != kv.second.discounts().size()) {
-          SaveDiscounts(GURL(kv.first), infos);
+          // Update local database if expired discounts found.
+          if ((int)(infos.size()) != kv.second.discounts().size()) {
+            SaveDiscounts(GURL(kv.first), infos);
+          }
+        }
+      } else if (commerce::UrlContainsDiscountUtmTag(GURL(url_to_check)) &&
+                 MatchPrefixBeforeUTM(url_to_check, kv.first)) {
+        // If the `url_to_check` contains discount UTM but has no corresponding
+        // discount from server, try to see if we can find a URL that has
+        // discount in storage and points to the same product by matching URL
+        // prefix.
+        std::vector<DiscountInfo> infos =
+            GetUnexpiredDiscountsFromProto(kv.second);
+        if (infos.size() != 0) {
+          server_results[GURL(url_to_check)] = infos;
         }
       }
     }
