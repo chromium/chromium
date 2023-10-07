@@ -50,6 +50,12 @@ static scoped_refptr<DecoderBuffer> CreateFakeEncryptedBuffer() {
   return buffer;
 }
 
+static scoped_refptr<DecoderBuffer> CreateClearBuffer() {
+  const int buffer_size = 16;  // Need a non-empty buffer;
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(buffer_size);
+  return buffer;
+}
+
 class DecryptingVideoDecoderTest : public testing::Test {
  public:
   DecryptingVideoDecoderTest()
@@ -297,6 +303,41 @@ TEST_F(DecryptingVideoDecoderTest, Reinitialize_EncryptedToClear) {
   Initialize();
   EnterNormalDecodingState();
   Reinitialize(TestVideoConfig::Normal());
+}
+
+// Verify that when playing encrypted content that is clearlead, Media Log logs
+// when the stream switches from clear to encrypted buffers.
+TEST_F(DecryptingVideoDecoderTest, ClearToEncryptedNormal) {
+  Initialize();
+
+  EXPECT_CALL(*decryptor_, DecryptAndDecodeVideo(_, _))
+      .WillRepeatedly(
+          RunOnceCallback<1>(Decryptor::kSuccess, decoded_video_frame_));
+
+  EXPECT_MEDIA_LOG(HasSubstr("First switch from clear to encrypted buffers."));
+
+  // Mimicking clear lead content by starting off with a clear buffer and
+  // switching to encrypted buffers.
+  DecodeAndExpect(CreateClearBuffer(), DecoderStatus::Codes::kOk);
+  DecodeAndExpect(CreateFakeEncryptedBuffer(), DecoderStatus::Codes::kOk);
+  DecodeAndExpect(CreateFakeEncryptedBuffer(), DecoderStatus::Codes::kOk);
+}
+
+// Verify that when playing encrypted content that is not clearlead, Media Log
+// does not log that the stream switches from clear to encrypted buffers.
+TEST_F(DecryptingVideoDecoderTest, EncryptedBuffersNoMediaLog) {
+  Initialize();
+
+  EXPECT_CALL(*decryptor_, DecryptAndDecodeVideo(_, _))
+      .WillRepeatedly(
+          RunOnceCallback<1>(Decryptor::kSuccess, decoded_video_frame_));
+
+  EXPECT_MEDIA_LOG(HasSubstr("First switch from clear to encrypted buffers."))
+      .Times(0);
+
+  DecodeAndExpect(CreateFakeEncryptedBuffer(), DecoderStatus::Codes::kOk);
+  DecodeAndExpect(CreateFakeEncryptedBuffer(), DecoderStatus::Codes::kOk);
+  DecodeAndExpect(CreateFakeEncryptedBuffer(), DecoderStatus::Codes::kOk);
 }
 
 TEST_F(DecryptingVideoDecoderTest, Reinitialize_Failure) {

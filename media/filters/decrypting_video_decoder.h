@@ -89,6 +89,8 @@ class MEDIA_EXPORT DecryptingVideoDecoder : public VideoDecoder {
   void CompletePendingDecode(Decryptor::Status status);
   void CompleteWaitingForDecryptionKey();
 
+  bool HasClearLead() const { return has_clear_lead_.value_or(false); }
+
   // Set in constructor.
   scoped_refptr<base::SequencedTaskRunner> const task_runner_;
   const raw_ptr<MediaLog> media_log_;
@@ -120,6 +122,10 @@ class MEDIA_EXPORT DecryptingVideoDecoder : public VideoDecoder {
   // Once Initialized() with encrypted content support, if the stream changes to
   // clear content, we want to ensure this decoder remains used.
   bool support_clear_content_ = false;
+
+  absl::optional<bool> has_clear_lead_;
+
+  bool switched_clear_to_encrypted_ = false;
 
   // To keep the CdmContext event callback registered.
   std::unique_ptr<CallbackRegistration> event_cb_registration_;

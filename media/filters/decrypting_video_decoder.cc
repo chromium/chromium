@@ -122,6 +122,21 @@ void DecryptingVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
+  // One time set of `has_clear_lead_`.
+  if (!has_clear_lead_.has_value()) {
+    has_clear_lead_ = !buffer->end_of_stream() && !buffer->decrypt_config();
+  }
+
+  // Although the stream may switch from clear to encrypted to clear multiple
+  // times (e.g ad-insertions), we only log to the Media log the first switch
+  // from clear to encrypted.
+  if (HasClearLead() && !switched_clear_to_encrypted_ &&
+      !buffer->end_of_stream() && buffer->is_encrypted()) {
+    MEDIA_LOG(INFO, media_log_)
+        << "First switch from clear to encrypted buffers.";
+    switched_clear_to_encrypted_ = true;
+  }
+
   pending_buffer_to_decode_ = std::move(buffer);
   state_ = kPendingDecode;
   DecodePendingBuffer();
