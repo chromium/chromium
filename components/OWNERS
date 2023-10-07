@@ -78,3 +78,16 @@ per-file BUILD.gn=*
 
 # Updating network error interstitial strings.
 per-file error_page_strings.grdp=edwardjung@chromium.org
+
+# Autorollers & git submodules
+per-file autofill/core/browser/form_parsing/internal_resources=*
+per-file crash/core/app/internal=*
+per-file metrics/internal=*
+per-file ntp_tiles/resources/internal=*
+per-file optimization_guide/internal=*
+per-file resources/default_100_percent/google_chrome=*
+per-file resources/default_200_percent/google_chrome=*
+per-file resources/default_300_percent/google_chrome=*
+per-file site_isolation/internal=*
+per-file test/data/autofill/heuristics-json/internal=*
+per-file vector_icons/google_chrome=*
