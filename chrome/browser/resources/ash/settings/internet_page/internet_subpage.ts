@@ -57,7 +57,7 @@ const SettingsInternetSubpageElementBase =
           CrPolicyNetworkBehaviorMojoInterface,
     };
 
-class SettingsInternetSubpageElement extends
+export class SettingsInternetSubpageElement extends
     SettingsInternetSubpageElementBase {
   static get is() {
     return 'settings-internet-subpage' as const;

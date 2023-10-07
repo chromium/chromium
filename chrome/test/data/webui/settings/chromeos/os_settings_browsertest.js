@@ -461,6 +461,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'InternetPageInternetSubpageMenu',
    'internet_page/internet_subpage_menu_test.js'
  ],
+ ['InternetPageInternetSubpage', 'internet_page/internet_subpage_test.js'],
  [
    'InternetPageNetworkAlwaysOnVpn',
    'internet_page/network_always_on_vpn_test.js'
@@ -503,7 +504,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'InternetPageTetherConnectionDialog',
    'internet_page/tether_connection_dialog_test.js'
  ],
- ['InternetSubpage', 'internet_subpage_tests.js'],
  ['KerberosPage', 'kerberos_page/kerberos_page_test.js'],
  [
    'KerberosPageKerberosAccountsSubpage',

@@ -57,7 +57,8 @@ const CellularNetworksListElementBase =
     Constructor<PolymerElement&I18nMixinInterface&WebUiListenerMixinInterface&
                 ESimManagerListenerBehaviorInterface>;
 
-class CellularNetworksListElement extends CellularNetworksListElementBase {
+export class CellularNetworksListElement extends
+    CellularNetworksListElementBase {
   static get is() {
     return 'cellular-networks-list' as const;
   }
