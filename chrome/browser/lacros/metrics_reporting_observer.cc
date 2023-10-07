@@ -24,8 +24,19 @@ constexpr base::TimeDelta kLacrosStartupMetricsUpdateDelay = base::Seconds(5);
 // turning off the metric might be a fluke, but disabling would cause the
 // entropy value to change, which will result in a metrics package loss.
 void ChangeMetricsReportingStateOnLacrosStart() {
+  // We should not call the function |ChangeMetricsReportingState| if nothing
+  // has changed.
+  const bool new_enabled =
+      chromeos::BrowserParamsProxy::Get()->AshMetricsEnabled();
+  const bool old_enabled = g_browser_process->local_state()->GetBoolean(
+      metrics::prefs::kMetricsReportingEnabled);
+
+  if (new_enabled == old_enabled) {
+    return;
+  }
+
   ChangeMetricsReportingState(
-      chromeos::BrowserParamsProxy::Get()->AshMetricsEnabled(),
+      new_enabled,
       ChangeMetricsReportingStateCalledFrom::kCrosMetricsInitializedFromAsh);
 }
 
