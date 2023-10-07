@@ -35,6 +35,8 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
                     CloseScannerCallback callback) override;
   void StartPreparedScan(const lorgnette::StartPreparedScanRequest& request,
                          StartPreparedScanCallback callback) override;
+  void ReadScanData(const lorgnette::ReadScanDataRequest& request,
+                    ReadScanDataCallback callback) override;
   bool IsRotateAlternate(const std::string& scanner_name,
                          const std::string& source_name) override;
   void Scan(const std::string& scanner_name,
@@ -69,6 +71,10 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   void SetStartPreparedScanResponse(
       const absl::optional<lorgnette::StartPreparedScanResponse>& response);
 
+  // Sets the response returned by ReadScanData().
+  void SetReadScanDataResponse(
+      const absl::optional<lorgnette::ReadScanDataResponse>& response);
+
   // Sets the response returned by Scan().
   void SetScanResponse(
       const absl::optional<std::vector<std::string>>& scan_data);
@@ -81,6 +87,7 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   absl::optional<lorgnette::CloseScannerResponse> close_scanner_response_;
   absl::optional<lorgnette::StartPreparedScanResponse>
       start_prepared_scan_response_;
+  absl::optional<lorgnette::ReadScanDataResponse> read_scan_data_response_;
   absl::optional<std::vector<std::string>> scan_data_;
 };
 

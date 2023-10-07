@@ -183,6 +183,25 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(state)));
   }
 
+  void ReadScanData(
+      const lorgnette::ReadScanDataRequest& request,
+      chromeos::DBusMethodCallback<lorgnette::ReadScanDataResponse> callback)
+      override {
+    dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
+                                 lorgnette::kReadScanDataMethod);
+    dbus::MessageWriter writer(&method_call);
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to encode ReadScanDataRequest protobuf";
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+      return;
+    }
+    lorgnette_daemon_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&LorgnetteManagerClientImpl::OnReadScanDataResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void CancelScan(chromeos::VoidDBusMethodCallback cancel_callback) override {
     // Post the task to the proper sequence (since it requires access to
     // scan_job_state_).
@@ -610,6 +629,27 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
 
     scan_job_state_[response_proto.scan_uuid()] = std::move(state);
     GetNextImage(response_proto.scan_uuid());
+  }
+
+  // Handles the response received after calling ReadScanData().
+  void OnReadScanDataResponse(
+      chromeos::DBusMethodCallback<lorgnette::ReadScanDataResponse> callback,
+      dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Failed to obtain ReadScanDataResponse";
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    lorgnette::ReadScanDataResponse response_proto;
+    dbus::MessageReader reader(response);
+    if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
+      LOG(ERROR) << "Failed to decode ReadScanDataResponse proto";
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    std::move(callback).Run(response_proto);
   }
 
   void OnCancelScanResponse(const std::string& scan_uuid,

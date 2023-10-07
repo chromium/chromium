@@ -52,6 +52,10 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) FakeLorgnetteManagerClient
       base::RepeatingCallback<void(std::string, uint32_t)> page_callback,
       base::RepeatingCallback<void(uint32_t, uint32_t)> progress_callback)
       override;
+  void ReadScanData(
+      const lorgnette::ReadScanDataRequest& request,
+      chromeos::DBusMethodCallback<lorgnette::ReadScanDataResponse> callback)
+      override;
   void CancelScan(
       chromeos::VoidDBusMethodCallback completion_callback) override;
   void StartScannerDiscovery(
@@ -91,6 +95,10 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) FakeLorgnetteManagerClient
   void SetScanResponse(
       const absl::optional<std::vector<std::string>>& scan_response);
 
+  // Sets the response returned by ReadScanData().
+  void SetReadScanDataResponse(
+      const absl::optional<lorgnette::ReadScanDataResponse>& response);
+
  private:
   absl::optional<lorgnette::ListScannersResponse> list_scanners_response_;
   absl::optional<lorgnette::ScannerCapabilities> capabilities_response_;
@@ -98,6 +106,7 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) FakeLorgnetteManagerClient
   absl::optional<lorgnette::CloseScannerResponse> close_scanner_response_;
   absl::optional<lorgnette::StartPreparedScanResponse>
       start_prepared_scan_response_;
+  absl::optional<lorgnette::ReadScanDataResponse> read_scan_data_response_;
   absl::optional<std::vector<std::string>> scan_response_;
 };
 

@@ -91,6 +91,13 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) LorgnetteManagerClient
       base::RepeatingCallback<void(std::string, uint32_t)> page_callback,
       base::RepeatingCallback<void(uint32_t, uint32_t)> progress_callback) = 0;
 
+  // Reads scan data described by |request| and returns the results using the
+  // provided |callback|.
+  virtual void ReadScanData(
+      const lorgnette::ReadScanDataRequest& request,
+      chromeos::DBusMethodCallback<lorgnette::ReadScanDataResponse>
+          callback) = 0;
+
   // Requests that lorgnette cancel the currently running scan job.
   // When this function returns, that guarantees that cancelling has been
   // requested, but the cancelled scan is not completely terminated until

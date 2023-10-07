@@ -245,6 +245,31 @@ std::unique_ptr<dbus::Response> CreateStartScanResponse(
   return start_scan_response;
 }
 
+// Convenience method for creating a lorgnette::ReadScanDataRequest.
+lorgnette::ReadScanDataRequest CreateReadScanDataRequest() {
+  lorgnette::JobHandle handle;
+  handle.set_token(kJobHandle);
+
+  lorgnette::ReadScanDataRequest request;
+  *request.mutable_job_handle() = std::move(handle);
+
+  return request;
+}
+
+// Convenience method for creating a lorgnette::ReadScanDataResponse.
+lorgnette::ReadScanDataResponse CreateReadScanDataResponse() {
+  lorgnette::JobHandle handle;
+  handle.set_token(kJobHandle);
+
+  lorgnette::ReadScanDataResponse response;
+  *response.mutable_job_handle() = std::move(handle);
+  response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+  response.set_data("test-data");
+  response.set_estimated_completion(25);
+
+  return response;
+}
+
 // Convenience method for creating a lorgnette::GetNextImageRequest. Only
 // specify |scan_uuid| if multiple scans are necessary.
 lorgnette::GetNextImageRequest CreateGetNextImageRequest(
@@ -475,6 +500,16 @@ class LorgnetteManagerClientTest : public testing::Test {
         .WillOnce(Invoke(this, &LorgnetteManagerClientTest::OnCallStartScan));
   }
 
+  // Adds an expectation to |mock_proxy_| that kReadScanDataMethod will be
+  // called. When called, |mock_proxy_| will respond with |response|.
+  void SetReadScanDataExpectation(dbus::Response* response) {
+    read_scan_data_response_ = response;
+    EXPECT_CALL(*mock_proxy_.get(),
+                DoCallMethod(HasMember(lorgnette::kReadScanDataMethod),
+                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+        .WillOnce(Invoke(this, &LorgnetteManagerClientTest::OnReadScanData));
+  }
+
   // Adds an expectation to |mock_proxy_| that kGetNextImageMethod will be
   // called. Adds |response| to the end of a FIFO queue of responses used by
   // |mock_proxy_|. Only specify |scan_uuid| if multiple scans are
@@ -668,6 +703,21 @@ class LorgnetteManagerClientTest : public testing::Test {
         FROM_HERE, base::BindOnce(std::move(*callback), start_scan_response_));
   }
 
+  // Responsible for responding to a kReadScanDataMethod call and verifying that
+  // |method_call| is formatted correctly.
+  void OnReadScanData(dbus::MethodCall* method_call,
+                      int timeout_ms,
+                      dbus::ObjectProxy::ResponseCallback* callback) {
+    // Verify that the read scan data request was created and sent correctly.
+    lorgnette::ReadScanDataRequest request;
+    ASSERT_TRUE(
+        dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request));
+    EXPECT_THAT(request, EqualsProto(CreateReadScanDataRequest()));
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(*callback), read_scan_data_response_));
+  }
+
   // Responsible for responding to a kGetNextImageMethod call and verifying that
   // |method_call| was formatted correctly.
   void OnCallGetNextImage(dbus::MethodCall* method_call,
@@ -741,6 +791,9 @@ class LorgnetteManagerClientTest : public testing::Test {
   // Used to respond to kCancelScanMethod D-Bus calls.
   raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh>
       cancel_scan_response_ = nullptr;
+  // Used to respond to kReadScanDataMethod D-Bus calls.
+  raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh>
+      read_scan_data_response_ = nullptr;
   // Used to respond to kGetNextImageMethod D-Bus calls. A single call to some
   // of LorgnetteManagerClient's methods can result in multiple
   // kGetNextImageMethod D-Bus calls, so we need to queue the responses. Also
@@ -1150,6 +1203,62 @@ TEST_F(LorgnetteManagerClientTest, StartPreparedScanInvalidResponse) {
       CreateStartPreparedScanRequest(),
       base::BindLambdaForTesting(
           [&](absl::optional<lorgnette::StartPreparedScanResponse> result) {
+            EXPECT_EQ(result, absl::nullopt);
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+}
+
+// Test that the client can read scan data.
+TEST_F(LorgnetteManagerClientTest, ReadScanData) {
+  std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
+  const lorgnette::ReadScanDataResponse kExpectedResponse =
+      CreateReadScanDataResponse();
+  ASSERT_TRUE(dbus::MessageWriter(response.get())
+                  .AppendProtoAsArrayOfBytes(kExpectedResponse));
+  SetReadScanDataExpectation(response.get());
+
+  base::RunLoop run_loop;
+  GetClient()->ReadScanData(
+      CreateReadScanDataRequest(),
+      base::BindLambdaForTesting(
+          [&](absl::optional<lorgnette::ReadScanDataResponse> result) {
+            run_loop.Quit();
+            ASSERT_TRUE(result.has_value());
+            EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
+          }));
+
+  run_loop.Run();
+}
+
+// Test that the client handles a null response to a kReadScanDataMethod D-Bus
+// call.
+TEST_F(LorgnetteManagerClientTest, ReadScanDataNullResponse) {
+  SetReadScanDataExpectation(nullptr);
+
+  base::RunLoop run_loop;
+  GetClient()->ReadScanData(
+      CreateReadScanDataRequest(),
+      base::BindLambdaForTesting(
+          [&](absl::optional<lorgnette::ReadScanDataResponse> result) {
+            EXPECT_EQ(result, absl::nullopt);
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+}
+
+// kReadScanDataMethod D-Bus call into an appropriate protobuf.
+TEST_F(LorgnetteManagerClientTest, ReadScanDataInvalidResponse) {
+  std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
+  SetReadScanDataExpectation(response.get());
+
+  base::RunLoop run_loop;
+  GetClient()->ReadScanData(
+      CreateReadScanDataRequest(),
+      base::BindLambdaForTesting(
+          [&](absl::optional<lorgnette::ReadScanDataResponse> result) {
             EXPECT_EQ(result, absl::nullopt);
             run_loop.Quit();
           }));

@@ -85,6 +85,13 @@ void FakeLorgnetteManagerClient::StartScan(
   scan_response_ = absl::nullopt;
 }
 
+void FakeLorgnetteManagerClient::ReadScanData(
+    const lorgnette::ReadScanDataRequest& request,
+    chromeos::DBusMethodCallback<lorgnette::ReadScanDataResponse> callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), read_scan_data_response_));
+}
+
 void FakeLorgnetteManagerClient::CancelScan(
     chromeos::VoidDBusMethodCallback completion_callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -134,6 +141,11 @@ void FakeLorgnetteManagerClient::SetCloseScannerResponse(
 void FakeLorgnetteManagerClient::SetStartPreparedScanResponse(
     const absl::optional<lorgnette::StartPreparedScanResponse>& response) {
   start_prepared_scan_response_ = response;
+}
+
+void FakeLorgnetteManagerClient::SetReadScanDataResponse(
+    const absl::optional<lorgnette::ReadScanDataResponse>& response) {
+  read_scan_data_response_ = response;
 }
 
 void FakeLorgnetteManagerClient::SetScanResponse(
