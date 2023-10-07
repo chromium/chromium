@@ -19502,7 +19502,7 @@ should be able to be added at any place in this file.
   <owner>gambard@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
   <description>
-    s Reported when Content Settings UI was dismissed. iOS only.
+    Is reported when the Content Settings UI was dismissed. iOS only.
   </description>
 </action>
 
