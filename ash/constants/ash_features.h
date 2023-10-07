@@ -672,6 +672,7 @@ BASE_DECLARE_FEATURE(kProjectorAccountSwitchNotification);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kProjectorServerSideRecognitionFallbackImpl);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kProjectorMuting);
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kProjectorRedirectToPwa);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kProjectorTranscriptChapterTitle);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kPromiseIcons);
@@ -1128,6 +1129,7 @@ bool IsProjectorAccountSwitchNotificationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsProjectorServerSideRecognitionFallbackImplEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorMutingEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorRedirectToPwaEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsProjectorTranscriptChapterTitleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQsRevampEnabled();

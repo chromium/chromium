@@ -2241,6 +2241,11 @@ BASE_FEATURE(kProjectorMuting,
              "ProjectorMuting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether higher version transcripts should be redirected to PWA.
+BASE_FEATURE(kProjectorRedirectToPwa,
+             "ProjectorRedirectToPwa",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the transcript chapter title feature is enabled.
 BASE_FEATURE(kProjectorTranscriptChapterTitle,
              "ProjectorTranscriptChapterTitle",
@@ -3988,6 +3993,10 @@ bool IsProjectorServerSideRecognitionFallbackImplEnabled() {
 
 bool IsProjectorMutingEnabled() {
   return base::FeatureList::IsEnabled(kProjectorMuting);
+}
+
+bool IsProjectorRedirectToPwaEnabled() {
+  return base::FeatureList::IsEnabled(kProjectorRedirectToPwa);
 }
 
 bool IsProjectorTranscriptChapterTitleEnabled() {
