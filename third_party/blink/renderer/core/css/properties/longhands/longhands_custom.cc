@@ -866,7 +866,7 @@ const CSSValue* BackgroundSize::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ParseBackgroundOrMaskSize(
+  return css_parsing_utils::ParseBackgroundSize(
       range, context, local_context, WebFeature::kNegativeBackgroundSize);
 }
 
@@ -9377,14 +9377,32 @@ const CSSValue* WebkitMaskSize::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ParseBackgroundOrMaskSize(
-      range, context, local_context, WebFeature::kNegativeMaskSize);
+  CHECK(!RuntimeEnabledFeatures::CSSMaskingInteropEnabled());
+  return css_parsing_utils::ParseMaskSize(range, context, local_context,
+                                          WebFeature::kNegativeMaskSize);
 }
 
 const CSSValue* WebkitMaskSize::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
+  const FillLayer& fill_layer = style.MaskLayers();
+  return ComputedStyleUtils::BackgroundImageOrWebkitMaskSize(style, fill_layer);
+}
+
+const CSSValue* MaskSize::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context) const {
+  return css_parsing_utils::ParseMaskSize(range, context, local_context,
+                                          WebFeature::kNegativeMaskSize);
+}
+
+const CSSValue* MaskSize::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  CHECK(RuntimeEnabledFeatures::CSSMaskingInteropEnabled());
   const FillLayer& fill_layer = style.MaskLayers();
   return ComputedStyleUtils::BackgroundImageOrWebkitMaskSize(style, fill_layer);
 }

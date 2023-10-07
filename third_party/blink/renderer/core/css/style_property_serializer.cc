@@ -1708,7 +1708,8 @@ String StylePropertySerializer::GetLayeredShorthandValue(
 
       if (!is_initial_value) {
         if (property->IDEquals(CSSPropertyID::kBackgroundSize) ||
-            property->IDEquals(CSSPropertyID::kWebkitMaskSize)) {
+            property->IDEquals(CSSPropertyID::kWebkitMaskSize) ||
+            property->IDEquals(CSSPropertyID::kMaskSize)) {
           if (found_position_y_css_property || found_position_x_css_property) {
             layer_result.Append(" / ");
           } else {

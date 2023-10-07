@@ -124,6 +124,7 @@ bool FillLayersEqual(const FillLayer& a_layers, const FillLayer& b_layers) {
         break;
       case CSSPropertyID::kBackgroundSize:
       case CSSPropertyID::kWebkitMaskSize:
+      case CSSPropertyID::kMaskSize:
         if (!(a_layer->SizeLength() == b_layer->SizeLength())) {
           return false;
         }
@@ -806,6 +807,9 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kWebkitMaskRepeatY:
       return FillLayersEqual<CSSPropertyID::kWebkitMaskRepeatY>(a.MaskLayers(),
                                                                 b.MaskLayers());
+    case CSSPropertyID::kMaskSize:
+      return FillLayersEqual<CSSPropertyID::kMaskSize>(a.MaskLayers(),
+                                                       b.MaskLayers());
     case CSSPropertyID::kWebkitMaskSize:
       return FillLayersEqual<CSSPropertyID::kWebkitMaskSize>(a.MaskLayers(),
                                                              b.MaskLayers());
@@ -920,6 +924,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kAliasWebkitAlternativeAnimationWithTimeline:
     case CSSPropertyID::kAliasWebkitAlternativeMaskClip:
     case CSSPropertyID::kAliasWebkitAlternativeMaskImage:
+    case CSSPropertyID::kAliasWebkitAlternativeMaskSize:
     case CSSPropertyID::kAliasWebkitAnimation:
     case CSSPropertyID::kAliasWebkitAnimationDelay:
     case CSSPropertyID::kAliasWebkitAnimationDirection:

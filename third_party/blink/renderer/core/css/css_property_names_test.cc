@@ -79,4 +79,39 @@ TEST(CSSPropertyNamesTest, AlternativeViewTimelineWithInset) {
   }
 }
 
+TEST(CSSPropertyNamesTest, WebkitAlternativeMaskSize) {
+  {
+    ScopedCSSMaskingInteropForTest scoped_feature(false);
+    CSSPropertyID property_id = UnresolvedCSSPropertyID(
+        /* execution_context */ nullptr, "-webkit-mask-size");
+    EXPECT_EQ(CSSPropertyID::kWebkitMaskSize, property_id);
+    EXPECT_FALSE(IsPropertyAlias(property_id));
+  }
+
+  {
+    ScopedCSSMaskingInteropForTest scoped_feature(true);
+    CSSPropertyID property_id = UnresolvedCSSPropertyID(
+        /* execution_context */ nullptr, "-webkit-mask-size");
+    EXPECT_EQ(CSSPropertyID::kAliasWebkitAlternativeMaskSize, property_id);
+    EXPECT_TRUE(IsPropertyAlias(property_id));
+    EXPECT_EQ(CSSPropertyID::kMaskSize, ResolveCSSPropertyID(property_id));
+  }
+}
+
+TEST(CSSPropertyNamesTest, WebkitAlternativeMask) {
+  {
+    ScopedCSSMaskingInteropForTest scoped_feature(false);
+    CSSPropertyID property_id = UnresolvedCSSPropertyID(
+        /* execution_context */ nullptr, "-webkit-mask");
+    EXPECT_EQ(CSSPropertyID::kWebkitMask, property_id);
+  }
+
+  {
+    ScopedCSSMaskingInteropForTest scoped_feature(true);
+    CSSPropertyID property_id = UnresolvedCSSPropertyID(
+        /* execution_context */ nullptr, "-webkit-mask");
+    EXPECT_EQ(CSSPropertyID::kWebkitAlternativeMask, property_id);
+  }
+}
+
 }  // namespace blink

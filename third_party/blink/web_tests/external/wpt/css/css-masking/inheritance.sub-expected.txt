@@ -31,8 +31,8 @@ FAIL Property mask-position has initial value 0% 0% assert_true: mask-position d
 FAIL Property mask-position does not inherit assert_true: expected true got false
 FAIL Property mask-repeat has initial value repeat assert_true: mask-repeat doesn't seem to be supported in the computed style expected true got false
 FAIL Property mask-repeat does not inherit assert_true: expected true got false
-FAIL Property mask-size has initial value auto assert_true: mask-size doesn't seem to be supported in the computed style expected true got false
-FAIL Property mask-size does not inherit assert_true: expected true got false
+PASS Property mask-size has initial value auto
+PASS Property mask-size does not inherit
 PASS Property mask-type has initial value luminance
 PASS Property mask-type does not inherit
 Harness: the test ran to completion.

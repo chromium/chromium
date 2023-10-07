@@ -28,7 +28,6 @@ All changes to this list should go through Blink's feature review process: http:
     -webkit-mask-position-y
     -webkit-mask-repeat-x
     -webkit-mask-repeat-y
-    -webkit-mask-size
     -webkit-perspective-origin-x
     -webkit-perspective-origin-y
     -webkit-print-color-adjust
@@ -254,6 +253,7 @@ All changes to this list should go through Blink's feature review process: http:
     mask
     mask-clip
     mask-image
+    mask-size
     mask-type
     math-depth
     math-shift
@@ -449,9 +449,9 @@ All changes to this list should go through Blink's feature review process: http:
         -webkit-mask-position-y
         -webkit-mask-repeat-x
         -webkit-mask-repeat-y
-        -webkit-mask-size
         mask-clip
         mask-image
+        mask-size
     -webkit-mask-box-image
         -webkit-mask-box-image-outset
         -webkit-mask-box-image-repeat
@@ -978,6 +978,8 @@ All changes to this list should go through Blink's feature review process: http:
         mask-clip
     -webkit-mask-image
         mask-image
+    -webkit-mask-size
+        mask-size
     -webkit-max-logical-height
         max-block-size
     -webkit-max-logical-width

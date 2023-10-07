@@ -276,6 +276,7 @@ markerStart
 mask
 maskClip
 maskImage
+maskSize
 maskType
 mathDepth
 mathShift

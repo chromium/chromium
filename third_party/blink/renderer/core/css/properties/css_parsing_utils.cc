@@ -4224,14 +4224,22 @@ CSSValue* ParseBackgroundBox(CSSParserTokenRange& range,
   return ConsumeCommaSeparatedList(ConsumeBackgroundBox, range);
 }
 
-CSSValue* ParseBackgroundOrMaskSize(CSSParserTokenRange& range,
-                                    const CSSParserContext& context,
-                                    const CSSParserLocalContext& local_context,
-                                    absl::optional<WebFeature> negative_size) {
+CSSValue* ParseBackgroundSize(CSSParserTokenRange& range,
+                              const CSSParserContext& context,
+                              const CSSParserLocalContext& local_context,
+                              absl::optional<WebFeature> negative_size) {
   return ConsumeCommaSeparatedList(
       ConsumeBackgroundSize, range, context, negative_size,
       local_context.UseAliasParsing() ? ParsingStyle::kLegacy
                                       : ParsingStyle::kNotLegacy);
+}
+
+CSSValue* ParseMaskSize(CSSParserTokenRange& range,
+                        const CSSParserContext& context,
+                        const CSSParserLocalContext& local_context,
+                        absl::optional<WebFeature> negative_size) {
+  return ConsumeCommaSeparatedList(ConsumeBackgroundSize, range, context,
+                                   negative_size, ParsingStyle::kNotLegacy);
 }
 
 namespace {
@@ -4263,6 +4271,7 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
                                    WebFeature::kNegativeBackgroundSize,
                                    ParsingStyle::kNotLegacy);
     case CSSPropertyID::kWebkitMaskSize:
+    case CSSPropertyID::kMaskSize:
       return ConsumeBackgroundSize(range, context,
                                    WebFeature::kNegativeMaskSize,
                                    ParsingStyle::kNotLegacy);
@@ -4345,7 +4354,8 @@ bool ParseBackgroundOrMask(bool important,
             bg_position_parsed_in_current_layer = true;
           }
         } else if (property.IDEquals(CSSPropertyID::kBackgroundSize) ||
-                   property.IDEquals(CSSPropertyID::kWebkitMaskSize)) {
+                   property.IDEquals(CSSPropertyID::kWebkitMaskSize) ||
+                   property.IDEquals(CSSPropertyID::kMaskSize)) {
           if (!ConsumeSlashIncludingWhitespace(range)) {
             continue;
           }

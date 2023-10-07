@@ -359,10 +359,14 @@ CSSValue* ConsumePrefixedBackgroundBox(CSSParserTokenRange&, AllowTextValue);
 CSSValue* ParseBackgroundBox(CSSParserTokenRange&,
                              const CSSParserLocalContext&,
                              AllowTextValue alias_allow_text_value);
-CSSValue* ParseBackgroundOrMaskSize(CSSParserTokenRange&,
-                                    const CSSParserContext&,
-                                    const CSSParserLocalContext&,
-                                    absl::optional<WebFeature> negative_size);
+CSSValue* ParseBackgroundSize(CSSParserTokenRange&,
+                              const CSSParserContext&,
+                              const CSSParserLocalContext&,
+                              absl::optional<WebFeature> negative_size);
+CSSValue* ParseMaskSize(CSSParserTokenRange&,
+                        const CSSParserContext&,
+                        const CSSParserLocalContext&,
+                        absl::optional<WebFeature> negative_size);
 bool ParseBackgroundOrMask(bool,
                            CSSParserTokenRange&,
                            const CSSParserContext&,

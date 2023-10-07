@@ -29,7 +29,6 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 -webkit-mask-position-x: 0%
 -webkit-mask-position-y: 0%
 -webkit-mask-repeat: repeat
--webkit-mask-size: auto
 -webkit-print-color-adjust: economy
 -webkit-rtl-ordering: logical
 -webkit-text-combine: none
@@ -237,6 +236,7 @@ marker-mid: none
 marker-start: none
 mask-clip: border-box
 mask-image: none
+mask-size: auto
 mask-type: luminance
 math-depth: 0
 math-shift: normal

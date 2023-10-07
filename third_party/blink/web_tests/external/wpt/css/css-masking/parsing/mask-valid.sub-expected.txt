@@ -35,7 +35,7 @@ FAIL e.style['mask'] = "none" should set mask-mode assert_equals: mask-mode shou
 FAIL e.style['mask'] = "none" should set mask-origin assert_equals: mask-origin should be canonical expected (string) "border-box" but got (undefined) undefined
 FAIL e.style['mask'] = "none" should set mask-position assert_equals: mask-position should be canonical expected (string) "0% 0%" but got (undefined) undefined
 FAIL e.style['mask'] = "none" should set mask-repeat assert_equals: mask-repeat should be canonical expected (string) "repeat" but got (undefined) undefined
-FAIL e.style['mask'] = "none" should set mask-size assert_equals: mask-size should be canonical expected (string) "auto" but got (undefined) undefined
+FAIL e.style['mask'] = "none" should set mask-size assert_equals: mask-size should be canonical expected "auto" but got ""
 FAIL e.style['mask'] = "none" should not set unrelated longhands assert_equals: expected 0 but got 1
 FAIL e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-border-outset assert_equals: mask-border-outset should be canonical expected (string) "0" but got (undefined) undefined
 FAIL e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-border-repeat assert_equals: mask-border-repeat should be canonical expected (string) "stretch" but got (undefined) undefined
@@ -49,7 +49,7 @@ FAIL e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding
 FAIL e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-origin assert_equals: mask-origin should be canonical expected (string) "border-box, padding-box" but got (undefined) undefined
 FAIL e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-position assert_equals: mask-position should be canonical expected (string) "0% 0%, 0% 0%" but got (undefined) undefined
 FAIL e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-repeat assert_equals: mask-repeat should be canonical expected (string) "repeat, repeat" but got (undefined) undefined
-FAIL e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-size assert_equals: mask-size should be canonical expected (string) "auto, auto" but got (undefined) undefined
+FAIL e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-size assert_equals: mask-size should be canonical expected "auto, auto" but got ""
 FAIL e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should not set unrelated longhands assert_true: expected true got false
 Harness: the test ran to completion.
 
