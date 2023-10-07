@@ -377,6 +377,7 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
           assertEquals('', discount);
         }
       }
+      assertEquals(0, metrics.count(`NewTabPage.HistoryClusters.HasDiscount`));
     });
 
     test('Discount initialization', async () => {
@@ -415,6 +416,7 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
         await waitAfterNextRender(moduleElement);
         assertEquals(moduleElement.discounts.length, visitCount);
       }
+      assertEquals(2, metrics.count(`NewTabPage.HistoryClusters.HasDiscount`));
 
       // Assert Module One.
       const expectedDiscountsModuleOne = ['', '15% off', ''];
@@ -461,6 +463,44 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
       for (const moduleElement of moduleElements) {
         checkInfoDialogContent(moduleElement, 'modulesHistoryWithDiscountInfo');
       }
+    });
+
+    test('Metrics for Discount click', async () => {
+      loadTimeData.overrideValues({
+        historyClustersModuleDiscountsEnabled: true,
+      });
+
+      const instanceCount = 1;
+      const visitCount = 3;
+      const clusters = createSampleClusters(instanceCount);
+      const discoutMap = new Map<Url, Discount[]>();
+      discoutMap.set(clusters[0]!.visits[1]!.normalizedUrl, [{
+                       valueInText: '15% off',
+                       annotatedVisitUrl: {url: 'https://www.annotated.com/1'},
+                     }]);
+
+      const moduleElements = await initializeModule(clusters, discoutMap);
+      assertEquals(
+          instanceCount, handler.getCallCount('getDiscountsForCluster'));
+      for (const moduleElement of moduleElements) {
+        assertTrue(!!moduleElement);
+        await waitAfterNextRender(moduleElement);
+        assertEquals(moduleElement.discounts.length, visitCount);
+      }
+      assertEquals(1, metrics.count(`NewTabPage.HistoryClusters.HasDiscount`));
+
+      const visitTiles: VisitTileModuleElement[] =
+          Array.from(moduleElements[0]!.shadowRoot!.querySelectorAll(
+              'ntp-history-clusters-visit-tile'));
+      assertEquals(visitTiles.length, visitCount - 1);
+
+      visitTiles[1]!.click();
+      assertEquals(
+          0, metrics.count(`NewTabPage.HistoryClusters.DiscountClicked`));
+
+      visitTiles[0]!.click();
+      assertEquals(
+          1, metrics.count(`NewTabPage.HistoryClusters.DiscountClicked`));
     });
   });
 });

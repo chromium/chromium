@@ -690,6 +690,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.HistoryClusters.HasDiscount" enum="Boolean"
+    expires_after="2024-02-11">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs whether the Cluster showing in the module contains a visible discount,
+    i.e. at least one visible visit has an associated discount. Logged when the
+    NewTabPage is rendering the enabled modules. Only logged in 1P NTP with the
+    history clusters module and Discount feature enabled.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.HistoryClusters.ImageLoadSuccess" enum="Boolean"
     expires_after="2024-02-11">
   <owner>romanarora@chromium.org</owner>

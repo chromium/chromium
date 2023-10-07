@@ -24195,6 +24195,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="NewTabPage.HistoryClusters.DiscountClicked">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <description>
+    User clicks on a tile with discount in the history cluster module.
+  </description>
+</action>
+
 <action name="NewTabPage.LinkOpenedFromContextMenu.WebUI">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>

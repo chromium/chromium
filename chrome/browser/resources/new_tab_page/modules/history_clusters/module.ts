@@ -169,6 +169,7 @@ export class HistoryClustersModuleElement extends I18nMixin
   private onVisitTileClick_(e: Event) {
     this.recordTileClickIndex_(e.target as HTMLElement, 'Visit');
     this.recordClick_(HistoryClusterElementType.VISIT);
+    this.maybeRecordDiscountClick_(e.target as TileModuleElement);
   }
 
   private onSuggestTileClick_(e: Event) {
@@ -202,6 +203,13 @@ export class HistoryClustersModuleElement extends I18nMixin
           buckets: 10,
         },
         index);
+  }
+
+  private maybeRecordDiscountClick_(tile: TileModuleElement) {
+    if (tile.hasDiscount) {
+      chrome.metricsPrivate.recordUserAction(
+          `NewTabPage.HistoryClusters.DiscountClicked`);
+    }
   }
 
   private onDisableButtonClick_() {
@@ -327,19 +335,28 @@ async function createElement(): Promise<HistoryClustersModuleElement|null> {
                                  visit.hasUrlKeyedImage && visit.isKnownToSync)
                          .length;
   const visitCount = element.cluster.visits.length;
+  element.discounts = [];
   if (loadTimeData.getBoolean('historyClustersModuleDiscountsEnabled')) {
     const {discounts} = await HistoryClustersProxyImpl.getInstance()
                             .handler.getDiscountsForCluster(clusters[0]);
     for (const visit of clusters[0].visits) {
       let discountInValue = '';
-      for (const [url, discount] of discounts) {
-        if (url.url === visit.normalizedUrl.url && discount.length > 0) {
-          discountInValue = discount[0].valueInText;
-          visit.normalizedUrl.url = discount[0].annotatedVisitUrl.url;
+      for (const [url, urlDiscounts] of discounts) {
+        if (url.url === visit.normalizedUrl.url && urlDiscounts.length > 0) {
+          // API is designed to support multiple discounts, but for now we only
+          // have one.
+          discountInValue = urlDiscounts[0].valueInText;
+          visit.normalizedUrl.url = urlDiscounts[0].annotatedVisitUrl.url;
         }
       }
       element.discounts.push(discountInValue);
     }
+    // For visits without discounts, discount string in corresponding index in
+    // `discounts` array is empty.
+    const hasDiscount =
+        element.discounts.some((discount) => discount.length > 0);
+    chrome.metricsPrivate.recordBoolean(
+        `NewTabPage.HistoryClusters.HasDiscount`, hasDiscount);
   } else {
     element.discounts = Array(visitCount).fill('');
   }
