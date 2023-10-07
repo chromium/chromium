@@ -7,8 +7,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase_map.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "components/performance_manager/frame_node_source.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
@@ -142,6 +145,7 @@ WorkerWatcher::~WorkerWatcher() {
   DCHECK(shared_worker_nodes_.empty());
   DCHECK(!shared_worker_service_observation_.IsObserving());
   DCHECK(service_worker_nodes_.empty());
+  CHECK(service_worker_ids_by_token_.empty());
   DCHECK(!service_worker_context_observation_.IsObserving());
 }
 
@@ -206,6 +210,7 @@ void WorkerWatcher::TearDown() {
   for (auto& node : service_worker_nodes_)
     nodes.push_back(std::move(node.second));
   service_worker_nodes_.clear();
+  service_worker_ids_by_token_.clear();
 
   PerformanceManagerImpl::BatchDeleteNodes(std::move(nodes));
 
@@ -378,6 +383,10 @@ void WorkerWatcher::OnVersionStartedRunning(
           running_info.token));
   DCHECK(insertion_result.second);
 
+  const auto& [_, token_inserted] =
+      service_worker_ids_by_token_.emplace(running_info.token, version_id);
+  CHECK(token_inserted);
+
   // Exclusively for service workers, some notifications for clients
   // (OnControlleeAdded) may have been received before the worker started.
   // Add those clients to the service worker on the PM graph.
@@ -403,6 +412,10 @@ void WorkerWatcher::OnVersionStoppedRunning(int64_t version_id) {
   PerformanceManagerImpl::DeleteNode(std::move(service_worker_node));
 
   service_worker_nodes_.erase(it);
+  size_t erased = base::EraseIf(
+      service_worker_ids_by_token_,
+      [version_id](const auto& entry) { return entry.second == version_id; });
+  CHECK_EQ(erased, 1u);
 }
 
 void WorkerWatcher::OnControlleeAdded(
@@ -524,6 +537,28 @@ void WorkerWatcher::OnControlleeNavigationCommitted(
   WorkerNodeImpl* service_worker_node = GetServiceWorkerNode(version_id);
   if (service_worker_node)
     AddFrameClientConnection(service_worker_node, render_frame_host_id);
+}
+
+WorkerNodeImpl* WorkerWatcher::FindWorkerNodeForToken(
+    const blink::WorkerToken& token) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (token.Is<blink::DedicatedWorkerToken>()) {
+    return GetDedicatedWorkerNode(token.GetAs<blink::DedicatedWorkerToken>());
+  }
+  if (token.Is<blink::SharedWorkerToken>()) {
+    return GetSharedWorkerNode(token.GetAs<blink::SharedWorkerToken>());
+  }
+  if (token.Is<blink::ServiceWorkerToken>()) {
+    // Service workers are keyed by version ID, not token.
+    const auto it = service_worker_ids_by_token_.find(
+        token.GetAs<blink::ServiceWorkerToken>());
+    if (it == service_worker_ids_by_token_.end()) {
+      return nullptr;
+    }
+    // at() asserts that the id is in `service_worker_nodes_`.
+    return service_worker_nodes_.at(it->second).get();
+  }
+  NOTREACHED_NORETURN();
 }
 
 void WorkerWatcher::AddFrameClientConnection(
@@ -875,7 +910,7 @@ void WorkerWatcher::RemoveChildWorkerConnection(
 }
 
 WorkerNodeImpl* WorkerWatcher::GetDedicatedWorkerNode(
-    const blink::DedicatedWorkerToken& dedicated_worker_token) {
+    const blink::DedicatedWorkerToken& dedicated_worker_token) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = dedicated_worker_nodes_.find(dedicated_worker_token);
@@ -886,7 +921,7 @@ WorkerNodeImpl* WorkerWatcher::GetDedicatedWorkerNode(
 }
 
 WorkerNodeImpl* WorkerWatcher::GetSharedWorkerNode(
-    const blink::SharedWorkerToken& shared_worker_token) {
+    const blink::SharedWorkerToken& shared_worker_token) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = shared_worker_nodes_.find(shared_worker_token);
@@ -896,7 +931,7 @@ WorkerNodeImpl* WorkerWatcher::GetSharedWorkerNode(
   return it->second.get();
 }
 
-WorkerNodeImpl* WorkerWatcher::GetServiceWorkerNode(int64_t version_id) {
+WorkerNodeImpl* WorkerWatcher::GetServiceWorkerNode(int64_t version_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = service_worker_nodes_.find(version_id);

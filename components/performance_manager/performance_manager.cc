@@ -10,6 +10,7 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/performance_manager_registry_impl.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
@@ -127,6 +128,17 @@ PerformanceManager::GetProcessNodeForRenderProcessHostId(
   if (!rph)
     return nullptr;
   return GetProcessNodeForRenderProcessHost(rph);
+}
+
+// static
+base::WeakPtr<WorkerNode> PerformanceManager::GetWorkerNodeForToken(
+    const blink::WorkerToken& token) {
+  auto* registry = PerformanceManagerRegistryImpl::GetInstance();
+  if (!registry) {
+    return nullptr;
+  }
+  WorkerNodeImpl* worker_node = registry->FindWorkerNodeForToken(token);
+  return worker_node ? worker_node->GetWeakPtrOnUIThread() : nullptr;
 }
 
 // static

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_WORKER_WATCHER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_WORKER_WATCHER_H_
 
+#include <map>
 #include <memory>
 #include <string>
 
@@ -119,6 +120,11 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
       const std::string& client_uuid,
       content::GlobalRenderFrameHostId render_frame_host_id) override;
 
+  // Searches all node maps for a WorkerNode matching the given `token`.
+  // Exposed so that accessors performance_manager.h can look up WorkerNodes on
+  // the UI thread.
+  WorkerNodeImpl* FindWorkerNodeForToken(const blink::WorkerToken& token) const;
+
  private:
   friend class WorkerWatcherTest;
 
@@ -189,10 +195,10 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
   // Helper functions to retrieve an existing worker node.
   // Return the requested node, or nullptr if no such node registered.
   WorkerNodeImpl* GetDedicatedWorkerNode(
-      const blink::DedicatedWorkerToken& dedicated_worker_token);
+      const blink::DedicatedWorkerToken& dedicated_worker_token) const;
   WorkerNodeImpl* GetSharedWorkerNode(
-      const blink::SharedWorkerToken& shared_worker_token);
-  WorkerNodeImpl* GetServiceWorkerNode(int64_t version_id);
+      const blink::SharedWorkerToken& shared_worker_token) const;
+  WorkerNodeImpl* GetServiceWorkerNode(int64_t version_id) const;
 
 #if DCHECK_IS_ON()
   bool IsServiceWorkerNode(WorkerNodeImpl* worker_node);
@@ -235,6 +241,11 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
   // Maps each service worker version ID to its worker node.
   base::flat_map<int64_t /*version_id*/, std::unique_ptr<WorkerNodeImpl>>
       service_worker_nodes_;
+
+  // Maps service worker tokens to a version ID that can be looked up in
+  // `service_worker_nodes_`.
+  std::map<blink::ServiceWorkerToken, int64_t /*version_id*/>
+      service_worker_ids_by_token_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Keeps track of frame clients that are awaiting the navigation commit
   // notification. Used for service workers only.

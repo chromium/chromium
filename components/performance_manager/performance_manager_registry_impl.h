@@ -21,6 +21,7 @@
 #include "components/performance_manager/render_process_user_data.h"
 #include "components/performance_manager/tab_helper_frame_node_source.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
 class RenderProcessHost;
@@ -32,6 +33,7 @@ namespace performance_manager {
 class PerformanceManagerMainThreadMechanism;
 class PerformanceManagerMainThreadObserver;
 class ServiceWorkerContextAdapter;
+class WorkerNodeImpl;
 class WorkerWatcher;
 
 class PerformanceManagerRegistryImpl
@@ -104,6 +106,11 @@ class PerformanceManagerRegistryImpl
   // usually arrive when interfaces are exposed to the renderer.
   void EnsureProcessNodeForRenderProcessHost(
       content::RenderProcessHost* render_process_host);
+
+  // Searches all WorkerWatchers for a WorkerNode matching the given `token`.
+  // Exposed so that accessors in performance_manager.h can look up WorkerNodes
+  // on the UI thread.
+  WorkerNodeImpl* FindWorkerNodeForToken(const blink::WorkerToken& token) const;
 
   size_t GetOwnedCountForTesting() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

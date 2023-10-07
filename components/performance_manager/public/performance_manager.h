@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/public/render_process_host_id.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
 class RenderFrameHost;
@@ -31,6 +32,7 @@ class PerformanceManagerMainThreadMechanism;
 class PerformanceManagerMainThreadObserver;
 class PerformanceManagerOwned;
 class PerformanceManagerRegistered;
+class WorkerNode;
 
 template <typename DerivedType>
 class PerformanceManagerRegisteredImpl;
@@ -117,6 +119,11 @@ class PerformanceManager {
   // can be used in a CallOnGraph callback).
   static base::WeakPtr<ProcessNode> GetProcessNodeForRenderProcessHostId(
       RenderProcessHostId id);
+
+  // Returns a WeakPtr to the WorkerNode associated with the given WorkerToken,
+  // or a null WeakPtr if there's no WorkerNode for this token.
+  static base::WeakPtr<WorkerNode> GetWorkerNodeForToken(
+      const blink::WorkerToken& token);
 
   // Adds / removes an observer that is notified of PerformanceManager events
   // that happen on the main thread. Can only be called on the main thread.

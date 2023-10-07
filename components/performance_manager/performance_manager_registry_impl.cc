@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/embedder/binders.h"
 #include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -312,6 +313,18 @@ void PerformanceManagerRegistryImpl::EnsureProcessNodeForRenderProcessHost(
         RenderProcessUserData::CreateForRenderProcessHost(render_process_host);
     user_data->SetDestructionObserver(this);
   }
+}
+
+WorkerNodeImpl* PerformanceManagerRegistryImpl::FindWorkerNodeForToken(
+    const blink::WorkerToken& token) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& [browser_context, worker_watcher] : worker_watchers_) {
+    WorkerNodeImpl* worker_node = worker_watcher->FindWorkerNodeForToken(token);
+    if (worker_node) {
+      return worker_node;
+    }
+  }
+  return nullptr;
 }
 
 void PerformanceManagerRegistryImpl::OnRenderProcessHostCreated(
