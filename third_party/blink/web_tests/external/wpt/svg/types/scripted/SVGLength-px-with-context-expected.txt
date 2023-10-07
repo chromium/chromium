@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS SVGLength, converting from 'px' to other units (attached), unitless
+PASS SVGLength, converting from 'px' to other units (attached), percentage
+FAIL SVGLength, converting from 'px' to other units (attached), changing percentage basis assert_equals: expected 150 but got 75
+PASS SVGLength, converting from 'px' to other units (attached), ems
+PASS SVGLength, converting from 'px' to other units (attached) , exs
+PASS SVGLength, converting from 'px' to other units (attached), exs (check style flush)
+PASS SVGLength, converting from 'px' to other units (attached), cm
+PASS SVGLength, converting from 'px' to other units (attached), mm
+PASS SVGLength, converting from 'px' to other units (attached), in
+PASS SVGLength, converting from 'px' to other units (attached), pt
+PASS SVGLength, converting from 'px' to other units (attached), pc
+Harness: the test ran to completion.
+
