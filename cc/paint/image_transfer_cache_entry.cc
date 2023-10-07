@@ -266,12 +266,6 @@ size_t SafeSizeForTargetColorParams(
         target_color_params->hdr_max_luminance_relative);
     target_color_params_size +=
         PaintOpWriter::SerializedSize(target_color_params->enable_tone_mapping);
-    // bool for whether or not there is HDR metadata.
-    target_color_params_size += PaintOpWriter::SerializedSize<bool>();
-    if (auto& hdr_metadata = target_color_params->hdr_metadata) {
-      target_color_params_size +=
-          PaintOpWriter::SerializedSize(hdr_metadata.value());
-    }
   }
   return target_color_params_size;
 }
@@ -286,12 +280,6 @@ void WriteTargetColorParams(
     writer.Write(target_color_params->sdr_max_luminance_nits);
     writer.Write(target_color_params->hdr_max_luminance_relative);
     writer.Write(target_color_params->enable_tone_mapping);
-
-    const bool has_hdr_metadata = !!target_color_params->hdr_metadata;
-    writer.Write(has_hdr_metadata);
-    if (target_color_params->hdr_metadata) {
-      writer.Write(target_color_params->hdr_metadata.value());
-    }
   }
 }
 
@@ -315,14 +303,6 @@ bool ReadTargetColorParams(
   reader.Read(&target_color_params->sdr_max_luminance_nits);
   reader.Read(&target_color_params->hdr_max_luminance_relative);
   reader.Read(&target_color_params->enable_tone_mapping);
-
-  bool has_hdr_metadata = false;
-  reader.Read(&has_hdr_metadata);
-  if (has_hdr_metadata) {
-    gfx::HDRMetadata hdr_metadata;
-    reader.Read(&hdr_metadata);
-    target_color_params->hdr_metadata = hdr_metadata;
-  }
   return true;
 }
 
@@ -550,6 +530,19 @@ ClientImageTransferCacheEntry::Image::Image(const SkPixmap yuva_pixmaps[],
 ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
     const Image& image,
     bool needs_mips,
+    const absl::optional<gfx::HDRMetadata>& hdr_metadata,
+    absl::optional<TargetColorParams> target_color_params)
+    : needs_mips_(needs_mips),
+      target_color_params_(target_color_params),
+      id_(GetNextId()),
+      image_(image),
+      hdr_metadata_(hdr_metadata) {
+  ComputeSize();
+}
+
+ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
+    const Image& image,
+    bool needs_mips,
     absl::optional<TargetColorParams> target_color_params)
     : needs_mips_(needs_mips),
       target_color_params_(target_color_params),
@@ -562,10 +555,8 @@ ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
     const Image& image,
     const Image& gainmap_image,
     const SkGainmapInfo& gainmap_info,
-    bool needs_mips,
-    absl::optional<TargetColorParams> target_color_params)
+    bool needs_mips)
     : needs_mips_(needs_mips),
-      target_color_params_(target_color_params),
       id_(GetNextId()),
       image_(image),
       gainmap_image_(gainmap_image),
@@ -597,6 +588,10 @@ bool ClientImageTransferCacheEntry::Serialize(base::span<uint8_t> data) const {
   bool has_gainmap = gainmap_image_.has_value();
   writer.Write(has_gainmap);
   writer.Write(needs_mips_);
+  writer.Write(hdr_metadata_.has_value());
+  if (hdr_metadata_.has_value()) {
+    writer.Write(hdr_metadata_.value());
+  }
   WriteTargetColorParams(writer, target_color_params_);
   WriteImage(writer, image_);
 
@@ -615,6 +610,10 @@ void ClientImageTransferCacheEntry::ComputeSize() {
   base::CheckedNumeric<uint32_t> safe_size;
   safe_size += PaintOpWriter::SerializedSize<bool>();  // has_gainmap
   safe_size += PaintOpWriter::SerializedSize<bool>();  // needs_mips
+  safe_size += PaintOpWriter::SerializedSize<bool>();  // has_hdr_metadata
+  if (hdr_metadata_.has_value()) {
+    safe_size += PaintOpWriter::SerializedSize(hdr_metadata_.value());
+  }
   safe_size += SafeSizeForTargetColorParams(target_color_params_);
   safe_size += SafeSizeForImage(image_);
   if (gainmap_image_) {
@@ -622,6 +621,7 @@ void ClientImageTransferCacheEntry::ComputeSize() {
     safe_size += SafeSizeForImage(gainmap_image_.value());
     safe_size += PaintOpWriter::SerializedSize<SkGainmapInfo>();
   }
+
   size_ = safe_size.ValueOrDefault(0);
 }
 
@@ -757,6 +757,13 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   reader.Read(&has_gainmap_);
   bool needs_mips = false;
   reader.Read(&needs_mips);
+  bool has_hdr_metadata = false;
+  reader.Read(&has_hdr_metadata);
+  if (has_hdr_metadata) {
+    gfx::HDRMetadata hdr_metadata_value;
+    reader.Read(&hdr_metadata_value);
+    tone_curve_hdr_metadata_ = hdr_metadata_value;
+  }
   absl::optional<TargetColorParams> target_color_params;
   ReadTargetColorParams(reader, target_color_params);
   const bool mip_mapped_for_upload = needs_mips && !target_color_params;
@@ -782,10 +789,6 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   // Read the gainmap image, if one was specified to exist.
   sk_sp<SkImage> gainmap_image_referencing_transfer_buffer;
   if (has_gainmap_) {
-    if (!target_color_params) {
-      DLOG(ERROR) << "Gainmap images need target parameters to render.";
-      return false;
-    }
     gainmap_image_ =
         ReadImage(reader, gr_context, graphite_recorder, mip_mapped_for_upload);
     if (!gainmap_image_) {
@@ -803,7 +806,6 @@ bool ServiceImageTransferCacheEntry::Deserialize(
                     target_color_params->enable_tone_mapping &&
                     gfx::ColorConversionSkFilterCache::UseToneCurve(image_);
   if (use_tone_curve_) {
-    tone_curve_hdr_metadata_ = target_color_params->hdr_metadata;
     tone_curve_sdr_max_luminance_nits_ =
         target_color_params->sdr_max_luminance_nits;
   }

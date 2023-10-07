@@ -19,6 +19,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/raster/playback_image_provider.h"
+#include "cc/test/fake_paint_image_generator.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "cc/tiles/gpu_image_decode_cache.h"
@@ -646,8 +647,6 @@ TEST_F(OopPixelTest, DrawImageWithTargetColorSpace) {
 TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
   constexpr gfx::Size kSize(8, 8);
   constexpr gfx::Rect kRect(kSize);
-
-  constexpr float kImageNits = 500.f;
   constexpr float kContentAvgNits = 100;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -661,7 +660,7 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
   constexpr float kEpsilon = 1 / 32.f;
 #endif
 
-  // Create `image` with `kImageNits` in PQ color space.
+  // Create `image` with 500 nits in PQ color space.
   sk_sp<SkImage> image;
   {
     constexpr float kImagePixelValue = 0.6765848107833876f;
@@ -681,36 +680,51 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
         gfx::ColorSpace::CreateHDR10().ToSkColorSpace());
   }
 
-  // Create a DisplayItemList drawing `image`.
-  const PaintImage::Id kSomeId = 32;
-  auto builder =
-      PaintImageBuilder::WithDefault().set_image(image, 0).set_id(kSomeId);
-  auto paint_image = builder.TakePaintImage();
-  auto display_item_list = base::MakeRefCounted<DisplayItemList>();
-  display_item_list->StartPaint();
-  SkSamplingOptions sampling(
-      PaintFlags::FilterQualityToSkSamplingOptions(kDefaultFilterQuality));
-  display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
-                                       nullptr);
-  display_item_list->EndPaintOfUnpaired(kRect);
-  display_item_list->Finalize();
-  RasterOptions options(kSize);
-  {
-    options.target_color_params.color_space =
-        gfx::ColorSpace::CreateSRGBLinear();
-    options.target_color_params.enable_tone_mapping = true;
+  // Create a DisplayItemList drawing `image` with 10k nits and 500 nits HDR
+  // metadata.
+  scoped_refptr<DisplayItemList> display_item_list_10k_nits;
+  scoped_refptr<DisplayItemList> display_item_list_500_nits;
+  for (int i = 0; i < 2; ++i) {
+    auto image_generator =
+        sk_make_sp<FakePaintImageGenerator>(image->imageInfo());
+    {
+      ImageHeaderMetadata image_metadata;
+      image_metadata.hdr_metadata.emplace(
+          gfx::HdrMetadataCta861_3(i == 0 ? 10000.f : 500.f, kContentAvgNits));
+      image_generator->SetImageHeaderMetadata(image_metadata);
+      EXPECT_TRUE(image->peekPixels(&image_generator->GetPixmap()));
+    }
+
+    const PaintImage::Id kSomeId = 32 + i;
+    auto paint_image = PaintImageBuilder::WithDefault()
+                           .set_id(kSomeId)
+                           .set_paint_image_generator(image_generator)
+                           .TakePaintImage();
+
+    auto display_item_list = base::MakeRefCounted<DisplayItemList>();
+    display_item_list->StartPaint();
+    SkSamplingOptions sampling(
+        PaintFlags::FilterQualityToSkSamplingOptions(kDefaultFilterQuality));
+    display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
+                                         nullptr);
+    display_item_list->EndPaintOfUnpaired(kRect);
+    display_item_list->Finalize();
+
+    if (i == 0) {
+      display_item_list_10k_nits = display_item_list;
+    } else {
+      display_item_list_500_nits = display_item_list;
+    }
   }
+  RasterOptions options(kSize);
+  options.target_color_params.color_space = gfx::ColorSpace::CreateSRGBLinear();
+  options.target_color_params.enable_tone_mapping = true;
 
-  // Draw using image HDR metadata indicating that `kImageNits` is the
-  // maximum luminance. The result should map the image to solid white (up
-  // to rounding error).
+  // Draw using image HDR metadata indicating that 500 is the maximum luminance.
+  // The result should map the image to solid white (up to rounding error).
   {
-    constexpr float kContentMaxNits = kImageNits;
     constexpr float kExpected = 1.0;
-
-    options.target_color_params.hdr_metadata = gfx::HDRMetadata(
-        gfx::HdrMetadataCta861_3(kContentMaxNits, kContentAvgNits));
-    auto actual = Raster(display_item_list, options);
+    auto actual = Raster(display_item_list_500_nits, options);
     auto color = actual.getColor4f(0, 0);
     EXPECT_NEAR(color.fR, kExpected, kEpsilon);
     EXPECT_NEAR(color.fG, kExpected, kEpsilon);
@@ -721,12 +735,8 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
   // luminance. The result should map the image to something darker than solid
   // white.
   {
-    constexpr float kContentMaxNits = 10000;
     constexpr float kExpected = 0.7114198123454021f;
-
-    options.target_color_params.hdr_metadata = gfx::HDRMetadata(
-        gfx::HdrMetadataCta861_3(kContentMaxNits, kContentAvgNits));
-    auto actual = Raster(display_item_list, options);
+    auto actual = Raster(display_item_list_10k_nits, options);
     auto color = actual.getColor4f(0, 0);
     EXPECT_NEAR(color.fR, kExpected, kEpsilon);
     EXPECT_NEAR(color.fG, kExpected, kEpsilon);
@@ -735,14 +745,10 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
 
   // Increase the destination HDR headroom. The result should now be brighter.
   {
-    constexpr float kContentMaxNits = 10000;
     constexpr float kExpected = 0.933675419515227f;
     constexpr float kDstHeadroom = 1.5f;
-
     options.target_color_params.hdr_max_luminance_relative = kDstHeadroom;
-    options.target_color_params.hdr_metadata = gfx::HDRMetadata(
-        gfx::HdrMetadataCta861_3(kContentMaxNits, kContentAvgNits));
-    auto actual = Raster(display_item_list, options);
+    auto actual = Raster(display_item_list_10k_nits, options);
     auto color = actual.getColor4f(0, 0);
     EXPECT_NEAR(color.fR, kExpected, kEpsilon);
     EXPECT_NEAR(color.fG, kExpected, kEpsilon);

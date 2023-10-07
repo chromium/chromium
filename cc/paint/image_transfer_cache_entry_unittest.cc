@@ -521,12 +521,10 @@ TEST(ImageTransferCacheEntryTestHDR, Gainmap) {
   // Read the resulting image back into a bitmap.
   SkBitmap result;
   {
-    TargetColorParams target_color_params;
-
     ClientImageTransferCacheEntry client_entry(
         ClientImageTransferCacheEntry::Image(&sdr_bitmap.pixmap()),
         ClientImageTransferCacheEntry::Image(&gainmap_bitmap.pixmap()),
-        gainmap_info, false, target_color_params);
+        gainmap_info, false);
 
     std::vector<uint8_t> storage(client_entry.SerializedSize());
     client_entry.Serialize(base::make_span(storage.data(), storage.size()));

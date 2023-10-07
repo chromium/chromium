@@ -825,6 +825,7 @@ class CC_EXPORT GpuImageDecodeCache
       const DrawImage& draw_image,
       ImageData* image_data,
       sk_sp<SkColorSpace> decoded_target_colorspace,
+      const absl::optional<gfx::HDRMetadata>& hdr_metadata,
       absl::optional<TargetColorParams> target_color_params)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void UploadImageIfNecessary_GpuCpu_YUVA(

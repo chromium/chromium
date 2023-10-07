@@ -84,10 +84,13 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
       absl::optional<TargetColorParams> target_color_params);
   ClientImageTransferCacheEntry(
       const Image& image,
-      const Image& gainmap_image,
-      const SkGainmapInfo& gainmap_info,
       bool needs_mips,
+      const absl::optional<gfx::HDRMetadata>& hdr_metadata,
       absl::optional<TargetColorParams> target_color_params);
+  ClientImageTransferCacheEntry(const Image& image,
+                                const Image& gainmap_image,
+                                const SkGainmapInfo& gainmap_info,
+                                bool needs_mips);
   ~ClientImageTransferCacheEntry() final;
 
   uint32_t Id() const final;
@@ -117,6 +120,9 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
   // be specified.
   absl::optional<Image> gainmap_image_;
   absl::optional<SkGainmapInfo> gainmap_info_;
+
+  // The HDR metadata for non-gainmap HDR metadata.
+  absl::optional<gfx::HDRMetadata> hdr_metadata_;
 };
 
 class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final

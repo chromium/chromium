@@ -358,6 +358,13 @@ class CC_PAINT_EXPORT PaintImage {
     return gainmap_info_.value();
   }
 
+  absl::optional<gfx::HDRMetadata> GetHDRMetadata() const {
+    if (const auto* image_metadata = GetImageHeaderMetadata()) {
+      return image_metadata->hdr_metadata;
+    }
+    return absl::nullopt;
+  }
+
   std::string ToString() const;
 
  private:
@@ -399,8 +406,13 @@ class CC_PAINT_EXPORT PaintImage {
   ContentId content_id_ = kInvalidContentId;
 
   sk_sp<PaintImageGenerator> paint_image_generator_;
+
+  // Gainmap HDR metadata.
   sk_sp<PaintImageGenerator> gainmap_paint_image_generator_;
   absl::optional<SkGainmapInfo> gainmap_info_;
+
+  // The HDR metadata for non-gainmap HDR rendering.
+  absl::optional<gfx::HDRMetadata> hdr_metadata_;
 
   sk_sp<TextureBacking> texture_backing_;
 

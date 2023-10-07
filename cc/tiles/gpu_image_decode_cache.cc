@@ -2599,11 +2599,9 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
   if (target_color_space) {
     target_color_params = draw_image.target_color_params();
     target_color_params->color_space = gfx::ColorSpace(*target_color_space);
-    if (const auto* image_metadata =
-            draw_image.paint_image().GetImageHeaderMetadata()) {
-      target_color_params->hdr_metadata = image_metadata->hdr_metadata;
-    }
   }
+  const absl::optional<gfx::HDRMetadata> hdr_metadata =
+      draw_image.paint_image().GetHDRMetadata();
 
   if (image_data->mode == DecodedDataMode::kTransferCache) {
     DCHECK(use_transfer_cache_);
@@ -2619,7 +2617,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
         }
       }
       UploadImageIfNecessary_TransferCache_SoftwareDecode(
-          draw_image, image_data, decoded_target_colorspace,
+          draw_image, image_data, decoded_target_colorspace, hdr_metadata,
           target_color_params);
     }
   } else {
@@ -2689,6 +2687,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_SoftwareDecode(
     const DrawImage& draw_image,
     ImageData* image_data,
     sk_sp<SkColorSpace> decoded_target_colorspace,
+    const absl::optional<gfx::HDRMetadata>& hdr_metadata,
     absl::optional<TargetColorParams> target_color_params) {
   DCHECK_EQ(image_data->mode, DecodedDataMode::kTransferCache);
   DCHECK(use_transfer_cache_);
@@ -2721,9 +2720,9 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_SoftwareDecode(
           ? ClientImageTransferCacheEntry(
                 image[kAuxImageIndexDefault], image[kAuxImageIndexGainmap],
                 draw_image.paint_image().GetGainmapInfo(),
-                image_data->needs_mips, target_color_params)
+                image_data->needs_mips)
           : ClientImageTransferCacheEntry(image[kAuxImageIndexDefault],
-                                          image_data->needs_mips,
+                                          image_data->needs_mips, hdr_metadata,
                                           target_color_params);
   if (!image_entry.IsValid())
     return;
