@@ -1,0 +1,43 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+
+option java_outer_classname = "AIUMServiceProto";
+
+package optimization_guide.proto;
+
+import "components/optimization_guide/proto/aium_metadata.proto";
+import "components/optimization_guide/proto/features/default_feature_ai_logging_data.proto";
+
+// A request to send AI data logs to the server.
+message LogAiDataRequest {
+  // Metadata for various AiLoggingData logs that can be batched.
+  BatchedLoggingMetadata batched_metadata = 1;
+
+  // AiLoggingData contains various features ai logging data.
+  repeated AiLoggingData ai_logging_data = 2;
+}
+
+// This is the response from the server. It could be an error message or a
+// status code.
+message LogAiDataResponse {}
+
+// Data logging for an AI feature with metadata specific to the logging.
+message AiLoggingData {
+  // Information about a feature's AiLoggingData, such as training opt-outs.
+  LoggingMetadata logging_metadata = 1;
+
+  // Model execution data corresponding to the AiLoggingData of a feature.
+  ModelExecutionInfo model_execution_info = 2;
+
+  oneof feature {
+    // Add feature specific AiLoggingData here.
+
+    DefaultFeatureAiLoggingData default = 1000;
+  }
+}

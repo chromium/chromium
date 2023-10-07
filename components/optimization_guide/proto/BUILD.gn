@@ -11,9 +11,12 @@ if (is_android) {
 proto_library("optimization_guide_proto") {
   proto_in_dir = "//"
   sources = [
+    "aium_metadata.proto",
+    "aium_service.proto",
     "autocomplete_scoring_model_metadata.proto",
     "client_side_phishing_model_metadata.proto",
     "common_types.proto",
+    "features/default_feature_ai_logging_data.proto",
     "hint_cache.proto",
     "hints.proto",
     "loading_predictor_metadata.proto",

@@ -1,0 +1,24 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+
+option java_outer_classname = "AIUMMetadataProto";
+
+package optimization_guide.proto;
+
+// Contains metadata about a specific feature's AiLoggingData (e.g. training
+// opt-out, etc.).
+message LoggingMetadata {}
+
+// Client-related metadata that can be batched.
+message BatchedLoggingMetadata {}
+
+// Data about model execution. This includes information about whether it was
+// done on a server or on a device. This includes an ID that can be mapped to
+// the ModelExecutionService logs on the server.
+message ModelExecutionInfo {}
