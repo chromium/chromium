@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list_types.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
 #include "base/threading/thread_restrictions.h"
@@ -106,9 +107,11 @@ struct TrustTokenAccessDetails;
 //
 // Usually, observers should only care about the current RenderViewHost as
 // returned by GetRenderViewHost().
-class CONTENT_EXPORT WebContentsObserver {
+class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
  public:
+  WebContentsObserver(WebContentsObserver&&) = delete;
   WebContentsObserver(const WebContentsObserver&) = delete;
+  WebContentsObserver& operator=(WebContentsObserver&&) = delete;
   WebContentsObserver& operator=(const WebContentsObserver&) = delete;
 
   // Frames and Views ----------------------------------------------------------
@@ -877,8 +880,7 @@ class CONTENT_EXPORT WebContentsObserver {
   // part of its lifetime.  It can then call Observe() to start and stop
   // observing.
   WebContentsObserver();
-
-  virtual ~WebContentsObserver();
+  ~WebContentsObserver() override;
 
   // Start observing a different WebContents; used with the default constructor.
   void Observe(WebContents* web_contents);

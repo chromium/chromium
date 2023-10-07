@@ -1601,13 +1601,13 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
     // Exposed to deal with IPC message handlers which need to stop iteration
     // early.
-    const base::ObserverList<WebContentsObserver>::Unchecked& observer_list() {
+    const base::ObserverList<WebContentsObserver>& observer_list() {
       return observers_;
     }
 
    private:
     bool is_notifying_observers_ = false;
-    base::ObserverList<WebContentsObserver>::Unchecked observers_;
+    base::ObserverList<WebContentsObserver> observers_;
   };
 
   // See WebContents::Create for a description of these parameters.
