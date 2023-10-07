@@ -8,6 +8,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
@@ -244,6 +245,30 @@ TEST_F(TrackingProtectionOnboardingTest,
             TrackingProtectionOnboardingStatus::kOnboarded);
   EXPECT_EQ(prefs()->GetTime(prefs::kTrackingProtectionOnboardedSince),
             base::Time::Now());
+}
+
+TEST_F(TrackingProtectionOnboardingTest, UpdatesLastNoticeShownCorrectly) {
+  // Setup
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kEligible));
+
+  // Action
+  tracking_protection_onboarding()->NoticeShown();
+  auto delay = base::Seconds(15);
+  task_env_.FastForwardBy(delay);
+  // Show the notice again.
+  tracking_protection_onboarding()->NoticeShown();
+
+  // Verification
+  EXPECT_EQ(static_cast<TrackingProtectionOnboardingStatus>(prefs()->GetInteger(
+                prefs::kTrackingProtectionOnboardingStatus)),
+            TrackingProtectionOnboardingStatus::kOnboarded);
+
+  EXPECT_EQ(prefs()->GetTime(prefs::kTrackingProtectionNoticeLastShown),
+            base::Time::Now());
+  EXPECT_EQ(prefs()->GetTime(prefs::kTrackingProtectionOnboardedSince),
+            base::Time::Now() - delay);
 }
 
 TEST_F(TrackingProtectionOnboardingTest,

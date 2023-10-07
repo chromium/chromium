@@ -150,6 +150,9 @@ void TrackingProtectionOnboarding::NoticeShown() {
   base::RecordAction(
       base::UserMetricsAction("TrackingProtection.Notice.Shown"));
 
+  pref_service_->SetTime(prefs::kTrackingProtectionNoticeLastShown,
+                         base::Time::Now());
+
   auto status = GetInternalOnboardingStatus(pref_service_);
   if (status != TrackingProtectionOnboardingStatus::kEligible) {
     return;

@@ -25,6 +25,10 @@ inline constexpr char kTrackingProtectionEligibleSince[] =
 inline constexpr char kTrackingProtectionOnboardedSince[] =
     "tracking_protection.tracking_protection_onboarded_since";
 
+// Unsynced pref that indicates when the onboarding notice was last shown.
+inline constexpr char kTrackingProtectionNoticeLastShown[] =
+    "tracking_protection.tracking_protection_notice_last_shown";
+
 // Unsynced boolean that indicates whether or not the user has acknowledged the
 // onboarding message. This is kept separate from the onboardingStatus
 // intentionally.
