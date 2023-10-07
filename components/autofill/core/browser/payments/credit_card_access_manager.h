@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
+#include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/wait_for_signal_or_timeout.h"
@@ -88,11 +89,13 @@ struct CachedServerCardInfo {
 
 // Manages logic for accessing credit cards either stored locally or stored
 // with Google Payments. Owned by BrowserAutofillManager.
-class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
+class CreditCardAccessManager
+    : public CreditCardCvcAuthenticator::Requester,
 #if !BUILDFLAG(IS_IOS)
-                                public CreditCardFidoAuthenticator::Requester,
+      public CreditCardFidoAuthenticator::Requester,
 #endif
-                                public CreditCardOtpAuthenticator::Requester {
+      public CreditCardOtpAuthenticator::Requester,
+      public CreditCardRiskBasedAuthenticator::Requester {
  public:
   class Accessor {
    public:
@@ -132,6 +135,10 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
   virtual void FetchCreditCard(const CreditCard* card,
                                base::WeakPtr<Accessor> accessor);
 
+  // Checks whether we should offer risk-based authentication for masked server
+  // card retrieval.
+  bool IsMaskedServerCardRiskBasedAuthAvailable() const;
+
   // If |opt_in| = true, opts the user into using FIDO authentication for card
   // unmasking. Otherwise, opts the user out. If |creation_options| is set,
   // WebAuthn registration prompt will be invoked to create a new credential.
@@ -170,6 +177,11 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
   void OnOtpAuthenticationComplete(
       const CreditCardOtpAuthenticator::OtpAuthenticationResponse& response)
       override;
+
+  // CreditCardRiskBasedAuthenticator::Requester:
+  void OnRiskBasedAuthenticationResponseReceived(
+      const CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse&
+          response) override;
 
   void SetUnmaskDetailsRequestInProgressForTesting(
       bool unmask_details_request_in_progress) {
@@ -351,8 +363,8 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
   // Helper function to fetch local or full server cards.
   void FetchLocalOrFullServerCard();
 
-  // Callback function invoked when risk data is fetched.
-  void OnDidGetUnmaskRiskData(const std::string& risk_data);
+  // Callback function invoked when risk data is fetched for a virtual card.
+  void OnDidGetVirtualCardUnmaskRiskData(const std::string& risk_data);
 
   // Callback function invoked when an unmask response for a virtual card has
   // been received.

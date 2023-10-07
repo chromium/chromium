@@ -73,7 +73,7 @@ void TestAuthenticationRequester::OnOtpAuthenticationComplete(
   }
 }
 
-void TestAuthenticationRequester::OnRiskBasedAuthenticationComplete(
+void TestAuthenticationRequester::OnRiskBasedAuthenticationResponseReceived(
     const CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse&
         response) {
   did_succeed_ = response.did_succeed;

@@ -43,8 +43,10 @@
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
+#include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/payments_requests/unmask_card_request.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_otp_authenticator.h"
+#include "components/autofill/core/browser/payments/test/test_credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -2596,6 +2598,91 @@ TEST_F(CreditCardAccessManagerTest, IsCardPresentInUnmaskedCache) {
       *unmasked_card));
   EXPECT_FALSE(credit_card_access_manager().IsCardPresentInUnmaskedCache(
       *personal_data().GetCreditCardByGUID(kTestGUID2)));
+}
+
+class CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest
+    : public CreditCardAccessManagerTest {
+ public:
+  CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest() = default;
+  ~CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest() override =
+      default;
+
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillEnableFpanRiskBasedAuthentication};
+};
+
+// Test the flow when the masked server card is successfully returned from
+// the server during a risk-based retrieval.
+TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
+       RiskBasedMaskedServerCardUnmasking_Success) {
+  std::string test_number = "4444333322221111";
+  CreateServerCard(kTestGUID, test_number, /*masked=*/true, kTestServerId);
+  CreditCard* masked_server_card =
+      personal_data().GetCreditCardByGUID(kTestGUID);
+
+  credit_card_access_manager().FetchCreditCard(masked_server_card,
+                                               accessor_->GetWeakPtr());
+
+  // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
+  // invoked.
+  EXPECT_TRUE(autofill_client_.risk_based_authentication_invoked());
+
+  CreditCard card = *masked_server_card;
+  card.set_record_type(CreditCard::RecordType::kFullServerCard);
+  // Mock CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse with
+  // valid card number.
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
+          .with_did_succeed(true)
+          .with_card(card));
+
+  // Ensure the accessor received the correct response.
+  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
+  EXPECT_EQ(accessor_->number(), base::UTF8ToUTF16(test_number));
+}
+
+// Ensures that the masked server card risk-based unmasking response is
+// handled correctly if the flow does not succeed (including flow cancelled or
+// retrieval failed).
+TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
+       RiskBasedMaskedServerCardUnmasking_DidNotSucceed) {
+  CreateServerCard(kTestGUID, kTestNumber, /*masked=*/true, kTestServerId);
+  CreditCard* masked_server_card =
+      personal_data().GetCreditCardByGUID(kTestGUID);
+
+  credit_card_access_manager().FetchCreditCard(masked_server_card,
+                                               accessor_->GetWeakPtr());
+
+  // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
+  // invoked.
+  EXPECT_TRUE(autofill_client_.risk_based_authentication_invoked());
+
+  // Mock the flow does not succeed.
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
+          .with_did_succeed(false));
+
+  // Expect the CreditCardAccessManager to end the session.
+  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
+}
+
+// Ensures that the masked server card risk-based authentication is not invoked
+// when the feature is disabled.
+TEST_F(
+    CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
+    RiskBasedMaskedServerCardUnmasking_RiskBasedAuthenticationNotInvoked_FeatureDisabled) {
+  feature_list_.Reset();
+  feature_list_.InitAndDisableFeature(
+      features::kAutofillEnableFpanRiskBasedAuthentication);
+  CreateServerCard(kTestGUID, kTestNumber, /*masked=*/true, kTestServerId);
+  CreditCard* masked_server_card =
+      personal_data().GetCreditCardByGUID(kTestGUID);
+
+  credit_card_access_manager().FetchCreditCard(masked_server_card,
+                                               accessor_->GetWeakPtr());
+
+  // Ensures CreditCardRiskBasedAuthenticator::Authenticate is not invoked.
+  ASSERT_FALSE(autofill_client_.risk_based_authentication_invoked());
 }
 
 TEST_F(CreditCardAccessManagerTest, IsVirtualCardPresentInUnmaskedCache) {

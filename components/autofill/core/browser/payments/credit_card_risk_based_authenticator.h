@@ -26,6 +26,10 @@ class CreditCardRiskBasedAuthenticator {
       did_succeed = b;
       return *this;
     }
+    RiskBasedAuthenticationResponse& with_card(CreditCard c) {
+      card = c;
+      return *this;
+    }
 
     // Whether the RPC call was successful.
     bool did_succeed = false;
@@ -46,7 +50,7 @@ class CreditCardRiskBasedAuthenticator {
   class Requester {
    public:
     virtual ~Requester() = default;
-    virtual void OnRiskBasedAuthenticationComplete(
+    virtual void OnRiskBasedAuthenticationResponseReceived(
         const RiskBasedAuthenticationResponse& response) = 0;
   };
 
@@ -55,16 +59,16 @@ class CreditCardRiskBasedAuthenticator {
       delete;
   CreditCardRiskBasedAuthenticator& operator=(
       const CreditCardRiskBasedAuthenticator&) = delete;
-  ~CreditCardRiskBasedAuthenticator();
+  virtual ~CreditCardRiskBasedAuthenticator();
 
   // Invokes authentication flow. Responds to `requester` with full pan or
   // necessary field for further authentication.
   //
   // Does not support concurrent calls. Once called, Authenticate must not be
-  // called again until Requestor::OnRiskBasedAuthenticationComplete has been
-  // triggered for this `requester`.
-  void Authenticate(CreditCard card,
-                    base::WeakPtr<Requester> requester);
+  // called again until Requestor::OnRiskBasedAuthenticationResponseReceived has
+  // been triggered for this `requester`.
+  virtual void Authenticate(CreditCard card,
+                            base::WeakPtr<Requester> requester);
 
   void OnUnmaskResponseReceivedForTesting(
       AutofillClient::PaymentsRpcResult result,
@@ -88,7 +92,7 @@ class CreditCardRiskBasedAuthenticator {
   void OnCardUnmaskCancelled();
 
   // Reset the authenticator to its initial state.
-  void Reset();
+  virtual void Reset();
 
   // The associated autofill client.
   const raw_ref<AutofillClient> autofill_client_;

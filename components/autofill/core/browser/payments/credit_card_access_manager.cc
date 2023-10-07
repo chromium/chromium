@@ -338,6 +338,11 @@ void CreditCardAccessManager::FetchCreditCard(
   }
 }
 
+bool CreditCardAccessManager::IsMaskedServerCardRiskBasedAuthAvailable() const {
+  return base::FeatureList::IsEnabled(
+      features::kAutofillEnableFpanRiskBasedAuthentication);
+}
+
 void CreditCardAccessManager::FIDOAuthOptChange(bool opt_in) {
 #if BUILDFLAG(IS_IOS)
   return;
@@ -1043,6 +1048,15 @@ std::string CreditCardAccessManager::GetKeyForUnmaskedCardsCache(
 void CreditCardAccessManager::FetchMaskedServerCard() {
   is_authentication_in_progress_ = true;
 
+  if (IsMaskedServerCardRiskBasedAuthAvailable()) {
+    client_->GetRiskBasedAuthenticator()->Authenticate(
+        *card_, weak_ptr_factory_.GetWeakPtr());
+    // Risk-based authentication is handled in CreditCardRiskBasedAuthenticator.
+    // Further delegation will be handled in
+    // CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived.
+    return;
+  }
+
   bool get_unmask_details_returned =
       ready_to_start_authentication_.IsSignaled();
   bool should_wait_to_authenticate =
@@ -1126,9 +1140,9 @@ void CreditCardAccessManager::FetchVirtualCard() {
       payments::GetBillingCustomerId(personal_data_manager_);
 
   payments_client_->Prepare();
-  client_->LoadRiskData(
-      base::BindOnce(&CreditCardAccessManager::OnDidGetUnmaskRiskData,
-                     weak_ptr_factory_.GetWeakPtr()));
+  client_->LoadRiskData(base::BindOnce(
+      &CreditCardAccessManager::OnDidGetVirtualCardUnmaskRiskData,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CreditCardAccessManager::FetchLocalOrFullServerCard() {
@@ -1168,7 +1182,7 @@ void CreditCardAccessManager::FetchLocalOrFullServerCard() {
   }
 }
 
-void CreditCardAccessManager::OnDidGetUnmaskRiskData(
+void CreditCardAccessManager::OnDidGetVirtualCardUnmaskRiskData(
     const std::string& risk_data) {
   virtual_card_unmask_request_details_.risk_data = risk_data;
   payments_client_->UnmaskCard(
@@ -1186,10 +1200,10 @@ void CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived(
   if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     if (!response_details.real_pan.empty()) {
       // If the real pan is not empty, then complete card information has been
-      // fetched from the server (this is ensured in Payments Client). Pass the
+      // fetched from the server (this is ensured in PaymentsClient). Pass the
       // unmasked card to `accessor_` and end the session.
-      DCHECK_EQ(response_details.card_type,
-                AutofillClient::PaymentsRpcCardType::kVirtualCard);
+      CHECK_EQ(response_details.card_type,
+               AutofillClient::PaymentsRpcCardType::kVirtualCard);
       card_->SetNumber(base::UTF8ToUTF16(response_details.real_pan));
       card_->SetExpirationMonthFromString(
           base::UTF8ToUTF16(response_details.expiration_month),
@@ -1295,6 +1309,29 @@ void CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived(
             /*is_permanent_error=*/result ==
             AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure));
   }
+  Reset();
+}
+
+void CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived(
+    const CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse&
+        response) {
+  if (!response.did_succeed) {
+    accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError,
+                                   nullptr);
+    Reset();
+    return;
+  }
+
+  // If the card is not empty, then complete card information has been
+  // fetched from the server (this is ensured in PaymentsClient). Pass the
+  // unmasked card to `accessor_` and end the session.
+  // TODO(crbug.com/1470933): Authenticate the user before filling the card
+  // if mandatory re-auth is enabled.
+  CHECK(response.card.has_value());
+  card_ = std::make_unique<CreditCard>(response.card.value());
+  accessor_->OnCreditCardFetched(CreditCardFetchResult::kSuccess, card_.get());
+
+  // TODO(crbug.com/1470933): Log the unmask result.
   Reset();
 }
 

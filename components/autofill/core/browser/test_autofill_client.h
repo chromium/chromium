@@ -35,9 +35,11 @@
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
+#include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/test/test_credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/test_address_normalizer.h"
@@ -155,6 +157,14 @@ class TestAutofillClientTemplate : public T {
       otp_authenticator_ = std::make_unique<CreditCardOtpAuthenticator>(this);
     }
     return otp_authenticator_.get();
+  }
+
+  CreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator() override {
+    if (!risk_based_authenticator_) {
+      risk_based_authenticator_ =
+          std::make_unique<TestCreditCardRiskBasedAuthenticator>(this);
+    }
+    return risk_based_authenticator_.get();
   }
 
   PrefService* GetPrefs() override {
@@ -644,6 +654,11 @@ class TestAutofillClientTemplate : public T {
            AutofillErrorDialogType::kVirtualCardPermanentError;
   }
 
+  bool risk_based_authentication_invoked() {
+    return risk_based_authenticator_ &&
+           risk_based_authenticator_->authenticate_invoked();
+  }
+
   AutofillErrorDialogContext autofill_error_dialog_context() {
     return autofill_error_dialog_context_;
   }
@@ -752,6 +767,8 @@ class TestAutofillClientTemplate : public T {
   // (or their members) keep a reference to it.
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
   std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
+  std::unique_ptr<TestCreditCardRiskBasedAuthenticator>
+      risk_based_authenticator_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
 
   GURL form_origin_{"https://example.test"};

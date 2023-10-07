@@ -64,7 +64,7 @@ class TestAuthenticationRequester
       override;
 
   // CreditCardRiskBasedAuthenticator::Requester:
-  void OnRiskBasedAuthenticationComplete(
+  void OnRiskBasedAuthenticationResponseReceived(
       const CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse&
           response) override;
 

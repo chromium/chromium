@@ -105,7 +105,7 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
     // TODO(crbug.com/1470933): Log the error metrics.
   }
   if (requester_) {
-    requester_->OnRiskBasedAuthenticationComplete(response);
+    requester_->OnRiskBasedAuthenticationResponseReceived(response);
   }
   Reset();
 }
@@ -113,7 +113,7 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
 void CreditCardRiskBasedAuthenticator::OnCardUnmaskCancelled() {
   // TODO(crbug.com/1470933): Log the cancel metrics.
   if (requester_) {
-    requester_->OnRiskBasedAuthenticationComplete(
+    requester_->OnRiskBasedAuthenticationResponseReceived(
         RiskBasedAuthenticationResponse().with_did_succeed(false));
   }
   Reset();
