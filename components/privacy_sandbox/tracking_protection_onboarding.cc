@@ -18,12 +18,30 @@ namespace privacy_sandbox {
 namespace {
 
 using ::privacy_sandbox::tracking_protection::
+    TrackingProtectionOnboardingAckAction;
+using ::privacy_sandbox::tracking_protection::
     TrackingProtectionOnboardingStatus;
 
 TrackingProtectionOnboardingStatus GetInternalOnboardingStatus(
     PrefService* pref_service) {
   return static_cast<TrackingProtectionOnboardingStatus>(
       pref_service->GetInteger(prefs::kTrackingProtectionOnboardingStatus));
+}
+
+TrackingProtectionOnboardingAckAction ToInternalAckAction(
+    TrackingProtectionOnboarding::NoticeAction action) {
+  switch (action) {
+    case TrackingProtectionOnboarding::NoticeAction::kOther:
+      return TrackingProtectionOnboardingAckAction::kOther;
+    case TrackingProtectionOnboarding::NoticeAction::kGotIt:
+      return TrackingProtectionOnboardingAckAction::kGotIt;
+    case TrackingProtectionOnboarding::NoticeAction::kSettings:
+      return TrackingProtectionOnboardingAckAction::kSettings;
+    case TrackingProtectionOnboarding::NoticeAction::kLearnMore:
+      return TrackingProtectionOnboardingAckAction::kLearnMore;
+    case TrackingProtectionOnboarding::NoticeAction::kClosed:
+      return TrackingProtectionOnboardingAckAction::kClosed;
+  }
 }
 
 void RecordActionMetrics(TrackingProtectionOnboarding::NoticeAction action) {
@@ -148,17 +166,13 @@ void TrackingProtectionOnboarding::NoticeActionTaken(
     TrackingProtectionOnboarding::NoticeAction action) {
   RecordActionMetrics(action);
 
-  switch (action) {
-    case NoticeAction::kOther:
-      return;
-    case NoticeAction::kGotIt:
-    case NoticeAction::kSettings:
-    case NoticeAction::kLearnMore:
-    case NoticeAction::kClosed:
-      pref_service_->SetBoolean(prefs::kTrackingProtectionOnboardingAcked,
-                                true);
-      return;
+  if (pref_service_->GetBoolean(prefs::kTrackingProtectionOnboardingAcked)) {
+    return;
   }
+
+  pref_service_->SetBoolean(prefs::kTrackingProtectionOnboardingAcked, true);
+  pref_service_->SetInteger(prefs::kTrackingProtectionOnboardingAckAction,
+                            static_cast<int>(ToInternalAckAction(action)));
 }
 
 bool TrackingProtectionOnboarding::ShouldShowOnboardingNotice() {

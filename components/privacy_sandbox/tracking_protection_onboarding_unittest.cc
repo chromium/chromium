@@ -21,6 +21,9 @@ namespace {
 using ::privacy_sandbox::tracking_protection::
     TrackingProtectionOnboardingStatus;
 
+using ::privacy_sandbox::tracking_protection::
+    TrackingProtectionOnboardingAckAction;
+
 class MockTrackingProtectionObserver
     : public TrackingProtectionOnboarding::Observer {
  public:
@@ -244,25 +247,19 @@ TEST_F(TrackingProtectionOnboardingTest,
 }
 
 TEST_F(TrackingProtectionOnboardingTest,
-       UserNoticeActionTakenAcknowledgedCorrectly) {
-  // Action
+       PreviouslyAcknowledgedDoesntReacknowledge) {
+  // Ack with GotIt
+  tracking_protection_onboarding()->NoticeActionTaken(
+      TrackingProtectionOnboarding::NoticeAction::kGotIt);
+  // Action: Re Ack with Learnmore
   tracking_protection_onboarding()->NoticeActionTaken(
       TrackingProtectionOnboarding::NoticeAction::kLearnMore);
 
-  // Verification
-  EXPECT_EQ(prefs()->GetBoolean(prefs::kTrackingProtectionOnboardingAcked),
-            true);
-}
-
-TEST_F(TrackingProtectionOnboardingTest,
-       NoUserNoticeActionTakenDoesntAcknowledge) {
-  // Action
-  tracking_protection_onboarding()->NoticeActionTaken(
-      TrackingProtectionOnboarding::NoticeAction::kOther);
-
-  // Verification
-  EXPECT_EQ(prefs()->GetBoolean(prefs::kTrackingProtectionOnboardingAcked),
-            false);
+  // Verification: LearnMore doesn't persit.
+  EXPECT_EQ(
+      static_cast<TrackingProtectionOnboardingAckAction>(
+          prefs()->GetInteger(prefs::kTrackingProtectionOnboardingAckAction)),
+      TrackingProtectionOnboardingAckAction::kGotIt);
 }
 
 TEST_F(TrackingProtectionOnboardingTest,
@@ -372,6 +369,41 @@ INSTANTIATE_TEST_SUITE_P(
                   TrackingProtectionOnboarding::OnboardingStatus::kEligible),
         std::pair(TrackingProtectionOnboardingStatus::kOnboarded,
                   TrackingProtectionOnboarding::OnboardingStatus::kOnboarded)));
+
+class TrackingProtectionOnboardingAckActionTest
+    : public TrackingProtectionOnboardingTest,
+      public testing::WithParamInterface<std::pair<
+          TrackingProtectionOnboarding::NoticeAction,
+          tracking_protection::TrackingProtectionOnboardingAckAction>> {};
+
+TEST_P(TrackingProtectionOnboardingAckActionTest,
+       UserNoticeActionTakenAcknowledgedCorrectly) {
+  // Action
+  tracking_protection_onboarding()->NoticeActionTaken(std::get<0>(GetParam()));
+
+  // Verification
+  EXPECT_EQ(prefs()->GetBoolean(prefs::kTrackingProtectionOnboardingAcked),
+            true);
+  EXPECT_EQ(
+      static_cast<TrackingProtectionOnboardingAckAction>(
+          prefs()->GetInteger(prefs::kTrackingProtectionOnboardingAckAction)),
+      std::get<1>(GetParam()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    TrackingProtectionOnboardingAckActionTest,
+    TrackingProtectionOnboardingAckActionTest,
+    testing::Values(
+        std::pair(TrackingProtectionOnboarding::NoticeAction::kOther,
+                  TrackingProtectionOnboardingAckAction::kOther),
+        std::pair(TrackingProtectionOnboarding::NoticeAction::kGotIt,
+                  TrackingProtectionOnboardingAckAction::kGotIt),
+        std::pair(TrackingProtectionOnboarding::NoticeAction::kSettings,
+                  TrackingProtectionOnboardingAckAction::kSettings),
+        std::pair(TrackingProtectionOnboarding::NoticeAction::kLearnMore,
+                  TrackingProtectionOnboardingAckAction::kLearnMore),
+        std::pair(TrackingProtectionOnboarding::NoticeAction::kClosed,
+                  TrackingProtectionOnboardingAckAction::kClosed)));
 
 class TrackingProtectionOnboardingWithFeatureOverrideTest
     : public TrackingProtectionOnboardingTest {

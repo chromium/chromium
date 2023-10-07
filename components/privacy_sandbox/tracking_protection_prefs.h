@@ -31,6 +31,11 @@ inline constexpr char kTrackingProtectionOnboardedSince[] =
 inline constexpr char kTrackingProtectionOnboardingAcked[] =
     "tracking_protection.tracking_protection_onboarding_acked";
 
+// Unsynced pref that indicates the action taken to acknowledge the Onboarding
+// Notice.
+inline constexpr char kTrackingProtectionOnboardingAckAction[] =
+    "tracking_protection.tracking_protection_onboarding_ack_action";
+
 // Tracking Protection Settings Prefs.
 
 // Synced boolean that indicates whether the "block all 3pc" toggle on the
@@ -69,6 +74,24 @@ enum class TrackingProtectionOnboardingStatus {
   kEligible = 1,
   kOnboarded = 2,
   kMaxValue = kOnboarded,
+};
+
+// Different tracking protection onboarding ack actions stored in the pref
+// above.
+enum class TrackingProtectionOnboardingAckAction {
+  // No Ack Action set
+  kNotSet = 0,
+  // Ack recorded through some other way
+  kOther = 1,
+  // Acked using the GotIt button
+  kGotIt = 2,
+  // Acked using the Settings button
+  kSettings = 3,
+  // Acked using the learnmore button.
+  kLearnMore = 4,
+  // Acked by clicking the close button/ESC/Swipe away.
+  kClosed = 5,
+  kMaxValue = kClosed,
 };
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
