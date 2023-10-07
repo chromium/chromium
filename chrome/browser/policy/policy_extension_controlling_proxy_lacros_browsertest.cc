@@ -27,10 +27,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/win_util.h"
-#endif
-
 namespace policy {
 
 namespace {
@@ -137,10 +133,6 @@ class PolicyExtensionControllingProxyTest
 IN_PROC_BROWSER_TEST_F(PolicyExtensionControllingProxyTest,
                        ForcedProxyExtensionHasNoEffectInIncognitoMode) {
   AddScreenplayTag();
-#if BUILDFLAG(IS_WIN)
-  // Mark as enterprise managed.
-  base::win::ScopedDomainStateForTesting scoped_domain(true);
-#endif
 
   {
     // Check that extension is not loaded.
