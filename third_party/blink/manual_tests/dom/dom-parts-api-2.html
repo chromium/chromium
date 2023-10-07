@@ -45,9 +45,7 @@ function resetTable() {
   const c1 = document.createComment('');
   const c2 = document.createComment('');
   tbodyEl.replaceChildren(c1,c2);
-  if (document.getPartRoot().getParts().length > 0) {
-    alert('error - clearing the nodes didn\'t clear the parts');
-  }
+  document.getPartRoot().getParts().forEach(part => part.disconnect());
   tbodyPart = new ChildNodePart(document.getPartRoot(),c1,c2);
   self.gc();
 }
@@ -190,10 +188,17 @@ function connectButton(button,createRowFn,tbodyRefFn,logIdref) {
         });
     }
     Object.keys(numbers).forEach(key => {
-      numbers[key] = Math.round(1000*average(numbers[key]))/1000;
+      numbers[key] = average(numbers[key]);
     });
     const logEl = document.querySelector(logIdref);
-    logEl.textContent = JSON.stringify(numbers,null,2);
+    logEl.textContent = `
+      cloning: ${(1000 * numbers.cloning / nRows).toFixed(3)} us/call
+      getParts: ${(1000 * numbers.getParts / nRows).toFixed(3)} us/call
+      accessNodes: ${(1000 * numbers.accessNodes / nRows).toFixed(3)} us/call
+      operations: ${(1000 * numbers.operations / nRows).toFixed(3)} us/call
+      replaceChildren: ${(numbers.replaceChildren).toFixed(3)} ms/call
+      total: ${(numbers.total).toFixed(3)} ms (for ${nRows} rows)
+      `;
     const storageEl = logEl.nextElementSibling;
     storageEl.value = numbers.total;
     updateRatio();

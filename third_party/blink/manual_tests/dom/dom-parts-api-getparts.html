@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+
+<template>
+  <?node-part?><tr>
+    <td class="col-md-1"><?node-part?> </td>
+    <td class="col-md-4"><?node-part?><a href="#"> </a></td>
+    <td class="col-md-1"><?node-part?><a href="#"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td>
+    <td class="col-md-6"></td>
+  </tr>
+</template>
+
+<body>
+<script>
+function log(t) {
+  const el = document.createElement('div');
+  el.innerHTML = t;
+  document.body.appendChild(el);
+}
+// Feature checks.
+if (typeof document.getPartRoot !== "function") {
+  log('<h1>DOM Parts API is not supported in this browser. Use a late-model Canary and enable Experimental Web Platform Features</h1>');
+}
+if (!self.gc) {
+  log('<h1>It helps to include --js-flags="--expose-gc" on the command line.</h1>');
+}
+
+// Pick a number that gives ~5 seconds of run time.
+const nRuns = 1000000;
+
+// Prep.
+const tmpl = document.querySelector('template');
+const root = tmpl.content.getPartRoot();
+const partCount = root.getParts().length;
+if (partCount !== 4) {
+  log(`<h1>Expected 4 parts, got ${partCount}`);
+}
+log('Running test...');
+
+// The test.
+async function run() {
+  self.gc && self.gc() && self.gc() && self.gc() && self.gc();
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  const startTime = performance.now();
+  let sumTime = 0, sumTime2 = 0;
+  for (let i = 0; i < nRuns; i++) {
+    // step (1): clone template
+    const tplCloneRoot = root.clone();
+    const tplClone = tplCloneRoot.rootContainer
+
+    // step (2): get parts
+    const t1 = performance.now();
+    const parts = tplCloneRoot.getParts();
+    const t2 = performance.now();
+    sumTime += t2-t1;
+
+    // get original parts (repeat call)
+    const t3 = performance.now();
+    root.getParts();
+    const t4 = performance.now();
+    sumTime2 += t4-t3;
+
+    // Technically cleaner to do GC each time, to avoid random GC affecting
+    // the timing. But GC makes the test quite slow.
+    // self.gc && self.gc();
+  }
+  const endTime = performance.now();
+  const elapsedMs = endTime - startTime;
+  log(`Finished. Total time ${(elapsedMs/1000).toFixed(2)} seconds.`);
+  log(`Fresh object: ${nRuns} runs in ${sumTime.toFixed(1)}ms, ${(1000*sumTime/nRuns).toFixed(4)} microseconds per call`);
+  log(`Repeat call: ${nRuns} runs in ${sumTime2.toFixed(1)}ms, ${(1000*sumTime2/nRuns).toFixed(4)} microseconds per call`);
+}
+run();
+</script>
