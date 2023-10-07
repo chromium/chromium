@@ -103,7 +103,8 @@ void AppListModel::SetItemMetadata(const std::string& id,
     SetItemName(item, data->name);
   }
 
-  if (data->progress > item->progress()) {
+  if (data->progress > item->progress() ||
+      data->app_status != item->app_status()) {
     item->SetProgress(data->progress);
     DVLOG(2) << "AppListModel::SetProgress: " << item->ToDebugString();
     for (auto& observer : observers_) {

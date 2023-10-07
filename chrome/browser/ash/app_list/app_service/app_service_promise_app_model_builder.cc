@@ -41,10 +41,9 @@ void AppServicePromiseAppModelBuilder::OnPromiseAppUpdate(
   ChromeAppListItem* item = GetAppItem(update.PackageId().ToString());
   bool show = update.ShouldShow();
   if (item) {
-    if (show) {
-      CHECK(item->GetItemType() == AppServicePromiseAppItem::kItemType);
-      static_cast<AppServicePromiseAppItem*>(item)->OnPromiseAppUpdate(update);
-    } else {
+    CHECK(item->GetItemType() == AppServicePromiseAppItem::kItemType);
+    static_cast<AppServicePromiseAppItem*>(item)->OnPromiseAppUpdate(update);
+    if (!show) {
       RemoveApp(update.PackageId().ToString(), false);
     }
   } else if (show) {
