@@ -762,15 +762,21 @@ void AutofillAgent::TriggerSuggestions(
 
 void AutofillAgent::FillFieldWithValue(FieldRendererId field_id,
                                        const std::u16string& value) {
-  if (last_queried_element_.IsNull() ||
-      field_id != form_util::GetFieldRendererId(last_queried_element_)) {
-    return;
-  }
-
-  if (form_util::IsTextAreaElementOrTextInput(last_queried_element_)) {
+  // TODO(crbug.com/1427131): Look up `field_id` rather than using
+  // `last_queried_element_` once
+  // blink::features::kAutofillUseDomNodeIdForRendererId is enabled.
+  if (!last_queried_element_.IsNull() &&
+      field_id == form_util::GetFieldRendererId(last_queried_element_) &&
+      form_util::IsTextAreaElementOrTextInput(last_queried_element_)) {
     ClearPreviewedForm();
     DoFillFieldWithValue(value, last_queried_element_,
                          WebAutofillState::kAutofilled);
+  } else if (WebElement content_editable =
+                 form_util::FindContentEditableByUniqueRendererId(field_id);
+             !content_editable.IsNull()) {
+    // TODO(crbug.com/1490373): Fill the contenteditable.
+    DVLOG(1) << "Filling contenteditable with value '" << value
+             << "' isn't implemented yet";
   }
 }
 
@@ -1174,10 +1180,11 @@ void AutofillAgent::DidCompleteFocusChangeInFrame() {
     SendFocusedInputChangedNotificationToBrowser(focused_element);
   }
 
-  if (!IsKeyboardAccessoryEnabled() && focus_requires_scroll_)
+  if (!IsKeyboardAccessoryEnabled() && focus_requires_scroll_) {
     HandleFocusChangeComplete(
         /*focused_node_was_last_clicked=*/
         last_left_mouse_down_or_gesture_tap_in_node_caused_focus_);
+  }
   last_left_mouse_down_or_gesture_tap_in_node_caused_focus_ = false;
 
   SendPotentiallySubmittedFormToBrowser();
@@ -1295,8 +1302,7 @@ void AutofillAgent::HandleFocusChangeComplete(
   if (!unsafe_render_frame()) {
     return;
   }
-  WebElement focused_element =
-      unsafe_render_frame()->GetWebFrame()->GetDocument().FocusedElement();
+
   // When using Talkback on Android, and possibly others, traversing to and
   // focusing a field will not register as a click. Thus, when screen readers
   // are used, treat the focused node as if it was the last clicked. Also check
@@ -1304,12 +1310,32 @@ void AutofillAgent::HandleFocusChangeComplete(
   // When the focus is on a non-input field on Android, keyboard accessory may
   // be shown if autofill data is available. Make sure to hide the accessory if
   // focus changes to another element.
-  if ((focused_node_was_last_clicked || is_screen_reader_enabled_) &&
-      !focused_element.IsNull() && focused_element.IsFormControlElement()) {
+  focused_node_was_last_clicked |= is_screen_reader_enabled_;
+
+  WebElement focused_element =
+      unsafe_render_frame()->GetWebFrame()->GetDocument().FocusedElement();
+  if (focused_node_was_last_clicked && !focused_element.IsNull() &&
+      focused_element.IsFormControlElement()) {
     WebFormControlElement focused_form_control_element =
         focused_element.To<WebFormControlElement>();
     if (form_util::IsTextAreaElementOrTextInput(focused_form_control_element)) {
       FormControlElementClicked(focused_form_control_element);
+    }
+  }
+
+  if (focused_node_was_last_clicked &&
+      focused_element.DynamicTo<WebFormElement>().IsNull() &&
+      focused_element.DynamicTo<WebFormControlElement>().IsNull() &&
+      focused_element.IsContentEditable() &&
+      (focused_element.ParentNode().IsNull() ||
+       !focused_element.ParentNode().IsContentEditable()) &&
+      base::FeatureList::IsEnabled(features::kAutofillContentEditables)) {
+    FormData form = form_util::FindFormForContentEditable(focused_element);
+    CHECK_EQ(form.fields.size(), 1u);
+    if (auto* autofill_driver = unsafe_autofill_driver()) {
+      autofill_driver->AskForValuesToFill(
+          form, form.fields[0], form.fields[0].bounds,
+          mojom::AutofillSuggestionTriggerSource::kContentEditableClicked);
     }
   }
 

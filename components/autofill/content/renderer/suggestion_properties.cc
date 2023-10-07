@@ -22,6 +22,7 @@ bool ShouldAutofillOnEmptyValues(
         kManualFallbackForAutocompleteUnrecognized:
     case AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed:
       return true;
+    case AutofillSuggestionTriggerSource::kContentEditableClicked:
     case AutofillSuggestionTriggerSource::kTextFieldDidChange:
       return false;
     // `kShowCardsFromAccount`, `kPasswordManager`, `kAndroidWebView` and `kiOS`
@@ -43,6 +44,7 @@ bool RequiresCaretAtEnd(AutofillSuggestionTriggerSource trigger_source) {
     case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
       return true;
     case AutofillSuggestionTriggerSource::kFormControlElementClicked:
+    case AutofillSuggestionTriggerSource::kContentEditableClicked:
     case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
     case AutofillSuggestionTriggerSource::
         kManualFallbackForAutocompleteUnrecognized:
@@ -70,6 +72,7 @@ bool ShouldShowFullSuggestionListForPasswordManager(
       // a default value filled by the website. In that case, don't elide
       // suggestions that don't have a common prefix with the default value.
       return element.IsAutofilled() || !element.UserHasEditedTheField();
+    case AutofillSuggestionTriggerSource::kContentEditableClicked:
     case AutofillSuggestionTriggerSource::kTextFieldDidChange:
     case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
     case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:

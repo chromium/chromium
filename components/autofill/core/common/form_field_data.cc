@@ -413,6 +413,8 @@ bool FormFieldData::DeepEqual(const FormFieldData& a, const FormFieldData& b) {
 
 std::string_view FormControlTypeToString(FormControlType type) {
   switch (type) {
+    case FormControlType::kContentEditable:
+      return "contenteditable";
     case FormControlType::kInputCheckbox:
       return "checkbox";
     case FormControlType::kInputEmail:

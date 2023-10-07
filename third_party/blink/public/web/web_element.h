@@ -82,6 +82,11 @@ class BLINK_EXPORT WebElement : public WebNode {
   WebString TextContent() const;
   WebString InnerHTML() const;
 
+  // Returns true if the element's contenteditable attribute is in the true
+  // state or in the plaintext-only state:
+  // https://html.spec.whatwg.org/multipage/interaction.html#attr-contenteditable
+  bool IsContentEditable() const;
+
   // Returns all <label> elements associated to this element.
   WebVector<WebLabelElement> Labels() const;
 

@@ -114,6 +114,18 @@ WebString WebElement::InnerHTML() const {
   return ConstUnwrap<Element>()->innerHTML();
 }
 
+bool WebElement::IsContentEditable() const {
+  const auto* html_element =
+      blink::DynamicTo<HTMLElement>(ConstUnwrap<Element>());
+  if (!html_element) {
+    return false;
+  }
+  ContentEditableType normalized_value =
+      html_element->contentEditableNormalized();
+  return normalized_value == ContentEditableType::kContentEditable ||
+         normalized_value == ContentEditableType::kPlaintextOnly;
+}
+
 WebVector<WebLabelElement> WebElement::Labels() const {
   auto* html_element = blink::DynamicTo<HTMLElement>(ConstUnwrap<Element>());
   if (!html_element)

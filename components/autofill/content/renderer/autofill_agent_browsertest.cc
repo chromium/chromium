@@ -211,7 +211,11 @@ class AutofillAgentTestWithFeatures : public AutofillAgentTest {
  public:
   AutofillAgentTestWithFeatures() {
     scoped_features_.InitWithFeatures(
-        {blink::features::kAutofillDetectRemovedFormControls}, {});
+        /*enabled_features=*/
+        {blink::features::kAutofillUseDomNodeIdForRendererId,
+         blink::features::kAutofillDetectRemovedFormControls,
+         features::kAutofillContentEditables},
+        /*disabled_features=*/{});
   }
 
  private:
@@ -300,6 +304,58 @@ TEST_F(AutofillAgentTestWithFeatures, TriggerFormExtractionWithResponse) {
   task_environment_.FastForwardBy(kFormsSeenThrottle / 2);
   EXPECT_CALL(mock_callback, Run(true));
   task_environment_.FastForwardBy(kFormsSeenThrottle / 2);
+}
+
+const auto IsContentEditable =
+    Field(&FormFieldData::form_control_type, FormControlType::kContentEditable);
+
+TEST_F(AutofillAgentTestWithFeatures,
+       FocusOnContentEditableTriggersAskForValuesToFill) {
+  LoadHTML("<body><div id=ce contenteditable></body>");
+  WaitForFormsSeen();
+  EXPECT_CALL(
+      autofill_driver_,
+      AskForValuesToFill(
+          Field(&FormData::fields, ElementsAre(IsContentEditable)),
+          IsContentEditable, _,
+          mojom::AutofillSuggestionTriggerSource::kContentEditableClicked))
+#if BUILDFLAG(IS_ANDROID)
+      // TODO(crbug.com/1490581): Android calls HandleFocusChangeComplete()
+      // twice, once from FocusedElementChanged() and once from
+      // DidReceiveLeftMouseDownOrGestureTapInNode().
+      .Times(2)
+#endif
+      ;
+  SimulateElementClick("ce");
+}
+
+TEST_F(AutofillAgentTestWithFeatures, FocusOnContentEditableFormIsIgnored) {
+  LoadHTML("<body><form id=ce contenteditable></form>");
+  WaitForFormsSeen();
+  EXPECT_CALL(autofill_driver_, AskForValuesToFill).Times(0);
+  SimulateElementClick("ce");
+}
+
+TEST_F(AutofillAgentTestWithFeatures,
+       FocusOnContentEditableFormControlIsIgnored) {
+  EXPECT_CALL(autofill_driver_, FormsSeen);
+  LoadHTML("<body><textarea id=ce contenteditable></textarea>");
+  WaitForFormsSeen();
+  EXPECT_CALL(autofill_driver_, AskForValuesToFill)
+#if BUILDFLAG(IS_ANDROID)
+      // TODO(crbug.com/1490581): Android calls HandleFocusChangeComplete()
+      // twice, once from FocusedElementChanged() and once from
+      // DidReceiveLeftMouseDownOrGestureTapInNode().
+      .Times(2)
+#endif
+      ;
+  EXPECT_CALL(
+      autofill_driver_,
+      AskForValuesToFill(
+          _, _, _,
+          mojom::AutofillSuggestionTriggerSource::kContentEditableClicked))
+      .Times(0);
+  SimulateElementClick("ce");
 }
 
 TEST_F(AutofillAgentTestWithFeatures,

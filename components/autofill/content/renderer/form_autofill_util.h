@@ -232,13 +232,14 @@ uint64_t GetMaxLength(const blink::WebFormControlElement& element);
 // attribute.
 std::u16string GetFormIdentifier(const blink::WebFormElement& form);
 
-// Returns the FormRendererId of a given WebFormElement. If
+// Returns the FormRendererId of a given WebFormElement or contenteditable. If
 // WebFormElement::IsNull(), returns a null form renderer id, which is the
 // renderer id of the unowned form.
-FormRendererId GetFormRendererId(const blink::WebFormElement& form);
+FormRendererId GetFormRendererId(const blink::WebElement& e);
 
-// Returns the FieldRendererId of a given WebFormControlElement.
-FieldRendererId GetFieldRendererId(const blink::WebFormControlElement& field);
+// Returns the FieldRendererId of a given WebFormControlElement or
+// contenteditable.
+FieldRendererId GetFieldRendererId(const blink::WebElement& e);
 
 // Returns text alignment for |element|.
 base::i18n::TextDirection GetTextDirectionForElement(
@@ -340,6 +341,27 @@ bool FindFormAndFieldForFormControlElement(
     const FieldDataManager* field_data_manager,
     FormData* form,
     FormFieldData* field);
+
+// Creates a FormData containing a single field out of a contenteditable
+// non-form element. The FormData is synthetic in the sense that it does not
+// correspond to any other DOM element. It is also conceptually distinct from
+// the unowned form (i.e., the collection of form control elements that aren't
+// owned by any form).
+//
+// `kAutofillUseDomNodeIdForRendererId` must be enabled.
+//
+// `contenteditable` must not be:
+// - a WebFormElement; otherwise, there could be two FormData objects with
+//   identical renderer ID referring to different conceptual forms: the one for
+//   the contenteditable and an actual <form>.
+// - a WebFormControlElement; otherwise, a <textarea contenteditable> might be a
+//   member of two FormData objects: the one for the contenteditable and the
+//   <textarea>'s associated <form>'s FormData.
+//
+// The FormData's renderer ID has the same value as its (single) FormFieldData's
+// renderer ID. This is collision-free with the renderer IDs of any other form
+// in the document because DomNodeIds are unique among all DOM elements.
+FormData FindFormForContentEditable(const blink::WebElement& content_editable);
 
 // Fills or previews the form represented by `form`.
 // `initiating_element` is the element that initiated the autofill process.
@@ -457,6 +479,9 @@ FindFormControlElementsByUniqueRendererId(
     const blink::WebDocument& doc,
     FormRendererId form_renderer_id,
     const std::vector<FieldRendererId>& queried_form_controls);
+
+blink::WebElement FindContentEditableByUniqueRendererId(
+    FieldRendererId field_renderer_id);
 
 std::string GetAutocompleteAttribute(const blink::WebElement& element);
 

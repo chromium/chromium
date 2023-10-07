@@ -11,8 +11,10 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// A subset of the WebFormControlElement::Type constants supported by Autofill.
+// The form control types supported by Autofill: a subset of
+// WebFormControlElement::Type plus kContentEditable.
 enum FormControlType {
+  kContentEditable,
   kInputCheckbox,
   kInputEmail,
   kInputMonth,
@@ -525,6 +527,9 @@ enum AutofillSuggestionTriggerSource {
   // - Focusing a text input using a screen reader.
   // Suggestion of this type can trigger FastCheckout or TouchToFill.
   kFormControlElementClicked,
+  // Suggestions triggered as above except that the target is a
+  // contenteditable element rather than a form control element.
+  kContentEditableClicked,
   // Suggestions triggered by modifying the content of a text input.
   kTextFieldDidChange,
   // Suggestions triggered by pressing the down key on a text input. This auto

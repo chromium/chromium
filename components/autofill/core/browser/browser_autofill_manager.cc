@@ -1220,7 +1220,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   }
 
   if (suggestions.empty() &&
-      field.form_control_type == FormControlType::kTextArea) {
+      (field.form_control_type == FormControlType::kTextArea ||
+       field.form_control_type == FormControlType::kContentEditable)) {
     if (absl::optional<Suggestion> maybe_compose_suggestion =
             MaybeGetComposeSuggestion(field)) {
       suggestions.push_back(*std::move(maybe_compose_suggestion));

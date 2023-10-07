@@ -2059,22 +2059,38 @@ std::u16string GetFormIdentifier(const WebFormElement& form) {
   return identifier;
 }
 
-FormRendererId GetFormRendererId(const blink::WebFormElement& form) {
-  if (form.IsNull()) {
+FormRendererId GetFormRendererId(const blink::WebElement& e) {
+  DCHECK(e.IsNull() || !e.DynamicTo<WebFormElement>().IsNull() ||
+         (e.IsContentEditable() &&
+          base::FeatureList::IsEnabled(features::kAutofillContentEditables)));
+  if (e.IsNull()) {
     return FormRendererId();
   }
-  return base::FeatureList::IsEnabled(
-             blink::features::kAutofillUseDomNodeIdForRendererId)
-             ? FormRendererId(form.GetDomNodeId())
-             : FormRendererId(form.UniqueRendererFormId());
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAutofillUseDomNodeIdForRendererId)) {
+    return FormRendererId(e.GetDomNodeId());
+  }
+  WebFormElement form = e.DynamicTo<WebFormElement>();
+  CHECK(!form.IsNull())
+      << "FormRendererIds of non-WebFormElements, i.e., contenteditables, are "
+         "only supported with DomNodeIds";
+  return FormRendererId(form.UniqueRendererFormId());
 }
 
-FieldRendererId GetFieldRendererId(const blink::WebFormControlElement& field) {
-  DCHECK(!field.IsNull());
-  return base::FeatureList::IsEnabled(
-             blink::features::kAutofillUseDomNodeIdForRendererId)
-             ? FieldRendererId(field.GetDomNodeId())
-             : FieldRendererId(field.UniqueRendererFormControlId());
+FieldRendererId GetFieldRendererId(const blink::WebElement& e) {
+  DCHECK(!e.IsNull());
+  DCHECK(!e.DynamicTo<WebFormControlElement>().IsNull() ||
+         (e.IsContentEditable() &&
+          base::FeatureList::IsEnabled(features::kAutofillContentEditables)));
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAutofillUseDomNodeIdForRendererId)) {
+    return FieldRendererId(e.GetDomNodeId());
+  }
+  WebFormControlElement form_control = e.DynamicTo<WebFormControlElement>();
+  CHECK(!form_control.IsNull())
+      << "FieldRendererIds of non-WebFormControlElements, i.e., "
+         "contenteditables, are only supported with DomNodeIds";
+  return FieldRendererId(form_control.UniqueRendererFormControlId());
 }
 
 base::i18n::TextDirection GetTextDirectionForElement(
@@ -2442,6 +2458,50 @@ bool FindFormAndFieldForFormControlElement(
     FormFieldData* field) {
   return FindFormAndFieldForFormControlElement(
       element, field_data_manager, form_util::EXTRACT_NONE, form, field);
+}
+
+FormData FindFormForContentEditable(const blink::WebElement& content_editable) {
+  CHECK(content_editable.IsContentEditable());
+  CHECK(content_editable.DynamicTo<WebFormElement>().IsNull());
+  CHECK(content_editable.DynamicTo<WebFormControlElement>().IsNull());
+  CHECK(base::FeatureList::IsEnabled(
+      blink::features::kAutofillUseDomNodeIdForRendererId));
+  CHECK(base::FeatureList::IsEnabled(features::kAutofillContentEditables));
+
+  FormData form;
+  form.unique_renderer_id = GetFormRendererId(content_editable);
+  form.is_form_tag = false;
+  form.is_action_empty = true;
+  form.fields.emplace_back();
+
+  FormFieldData& field = form.fields.back();
+  WebDocument document = content_editable.GetDocument();
+  field.id_attribute = content_editable.GetIdAttribute().Utf16();
+  field.name_attribute = GetAttribute<kName>(content_editable).Utf16();
+  field.name =
+      !field.id_attribute.empty() ? field.id_attribute : field.name_attribute;
+  field.unique_renderer_id = GetFieldRendererId(content_editable);
+  field.host_form_id = GetFormRendererId(content_editable);
+  field.form_control_type = FormControlType::kContentEditable;
+  field.autocomplete_attribute = GetAutocompleteAttribute(content_editable);
+  field.parsed_autocomplete =
+      ParseAutocompleteAttribute(field.autocomplete_attribute);
+  if (auto* local_frame = document.GetFrame()) {
+    if (auto* render_frame = content::RenderFrame::FromWebFrame(local_frame)) {
+      field.bounds = render_frame->ElementBoundsInWindow(content_editable);
+    }
+  }
+  if (base::EqualsCaseInsensitiveASCII(
+          GetAttribute<kRole>(content_editable).Utf16(), "presentation")) {
+    field.role = FormFieldData::RoleAttribute::kPresentation;
+  }
+  if (HasAttribute<kClass>(content_editable)) {
+    field.css_classes = GetAttribute<kClass>(content_editable).Utf16();
+  }
+  field.aria_label = GetAriaLabel(document, content_editable);
+  field.aria_description = GetAriaDescription(document, content_editable);
+  // TODO(crbug.com/1490372): Extract the value.
+  return form;
 }
 
 std::vector<WebFormControlElement> ApplyAutofillAction(
@@ -2844,6 +2904,17 @@ std::vector<WebFormControlElement> FindFormControlElementsByUniqueRendererId(
     result[it->second] = field;
   }
   return result;
+}
+
+WebElement FindContentEditableByUniqueRendererId(
+    FieldRendererId field_renderer_id) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kAutofillUseDomNodeIdForRendererId)) {
+    return WebElement();
+  }
+  WebElement field =
+      WebNode::FromDomNodeId(*field_renderer_id).DynamicTo<WebElement>();
+  return !field.IsNull() && field.IsContentEditable() ? field : WebElement();
 }
 
 namespace {

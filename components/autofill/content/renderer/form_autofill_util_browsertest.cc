@@ -186,8 +186,12 @@ bool HaveSameFormControlId(const WebFormControlElement& element,
 class FormAutofillUtilsTest : public content::RenderViewTest {
  public:
   FormAutofillUtilsTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillEnableSelectList);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::
+                                  kAutofillUseDomNodeIdForRendererId,
+                              features::kAutofillContentEditables,
+                              features::kAutofillEnableSelectList},
+        /*disabled_features=*/{});
   }
   ~FormAutofillUtilsTest() override = default;
 
@@ -2017,6 +2021,34 @@ TEST_F(FormAutofillUtilsTest, GetMaxLength) {
     EXPECT_FALSE(field.IsNull());
     EXPECT_EQ(test_case.expected_max_length, GetMaxLength(field));
   }
+}
+
+TEST_F(FormAutofillUtilsTest, FindFormForContentEditable) {
+  LoadHTML(
+      R"(<body>
+         <div id=my-id
+              name=my-name
+              class=my-class
+              autocomplete=given-name
+              contenteditable>
+         </div>
+         </body>)");
+  WebElement content_editable =
+      GetMainFrame()->GetDocument().GetElementById("my-id");
+  ASSERT_FALSE(content_editable.IsNull());
+  FormData form = FindFormForContentEditable(content_editable);
+  ASSERT_EQ(form.fields.size(), 1u);
+  const FormFieldData& field = form.fields[0];
+  EXPECT_TRUE(form.unique_renderer_id);
+  EXPECT_EQ(*form.unique_renderer_id, *field.unique_renderer_id);
+  EXPECT_EQ(form.unique_renderer_id, field.host_form_id);
+  EXPECT_EQ(field.parsed_autocomplete->field_type, HtmlFieldType::kGivenName);
+  EXPECT_EQ(field.name, u"my-id");
+  EXPECT_EQ(field.id_attribute, u"my-id");
+  EXPECT_EQ(field.name_attribute, u"my-name");
+  EXPECT_EQ(field.css_classes, u"my-class");
+  // TODO(crbug.com/1490372): Extract the value.
+  EXPECT_EQ(field.value, u"");
 }
 
 }  // namespace
