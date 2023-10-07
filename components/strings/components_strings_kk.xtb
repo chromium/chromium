@@ -1201,7 +1201,7 @@
 <translation id="3507869775212388416">Заңды жұмыстар</translation>
 <translation id="3507936815618196901">Айналаңыздың 3D картасын жасау және камера орнын бақылау</translation>
 <translation id="3512163584740124171">Бұл саясат еленбейді, себебі дәл сол саясаттар тобындағы басқа бір саясаттың басымдығы жоғары болып тұр.</translation>
-<translation id="3515972145999192222">Ұйымыңыз <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> доменін бөгеді, себебі ол саясатты бұзады. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="3515972145999192222">Ұйымыңыз <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> доменін бөгеді, себебі ол саясатқа қайшы. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Бірнеше нысанды өңдеу</translation>
 <translation id="3525130752944427905">10 x 14 дюйм</translation>
 <translation id="3528171143076753409">Сервер сертификаты сенімді емес.</translation>
@@ -1753,7 +1753,7 @@
 <translation id="4646534391647090355">Қазір өту</translation>
 <translation id="4648262692072505866">Хеш SHA-256 форматында болуы керек.</translation>
 <translation id="4652266463001779298">Рұқсат етілмеген</translation>
-<translation id="4652440160515225514">Ұйымыңыз бұл сайтты бөгеді, себебі ол саясатты бұзады.</translation>
+<translation id="4652440160515225514">Ұйымыңыз бұл сайтты бөгеді, себебі ол саясатқа қайшы.</translation>
 <translation id="4653167719759882810">Қосылу және қосып алу</translation>
 <translation id="4658638640878098064">Жоғарғы сол жағын қапсыру</translation>
 <translation id="4660119392514473465">Енді браузерді құпия пайдалануыңызға болады, ал осы құрылғыны пайдаланатын басқа адамдар әрекетіңізді көрмейді. Бірақ жүктеп алынған материалдар, бетбелгілер және оқу тізіміндегі элементтер сақталады.</translation>

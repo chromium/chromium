@@ -863,7 +863,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="5951816930277761335">Ossza meg a linket</translation>
 <translation id="5955891643922670672">Offline verzió</translation>
 <translation id="5957613098218939406">További lehetőségek</translation>
-<translation id="595769230373966252">Keresés a(z) <ph name="SEARCH_PROVIDER" /> keresőmotorral</translation>
+<translation id="595769230373966252">Keresőmotor: <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Nem lehet linket létrehozni a kiemelt szöveghez.</translation>
 <translation id="5965679971710331625">Sikeresen bejelentkezett</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 könyvjelző törölve}other{{count} könyvjelző törölve}}</translation>

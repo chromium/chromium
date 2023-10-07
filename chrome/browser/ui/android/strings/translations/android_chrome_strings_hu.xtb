@@ -89,7 +89,7 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="1384704387250346179">Google Lens-képfordítás <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> napja volt aktív</translation>
 <translation id="13931502444227376">A folytatáshoz a(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> megosztja az Ön nevét, e-mail-címét és profilképét ezzel a webhellyel. Tekintse meg a szóban forgó webhely <ph name="BEGIN_LINK1" />általános szerződési feltételeit<ph name="END_LINK1" />.</translation>
-<translation id="1397811292916898096">Keresés a(z) <ph name="PRODUCT_NAME" /> keresőmotorral</translation>
+<translation id="1397811292916898096">Keresőmotor: <ph name="PRODUCT_NAME" /></translation>
 <translation id="139993653570221430">Beállításait bármikor módosíthatja a Chrome-beállítások között. A próbaidőszak a jelenlegi hirdetésmegjelenítéssel párhuzamosan zajlik, így nem fognak azonnal megjelenni a változtatások.</translation>
 <translation id="1407069428457324124">Sötét téma</translation>
 <translation id="1407135791313364759">Összes megnyitása</translation>

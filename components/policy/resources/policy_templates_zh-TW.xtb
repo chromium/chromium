@@ -1899,7 +1899,7 @@
 <translation id="2593762551209145088">一律不啟用安全瀏覽功能。</translation>
 <translation id="26023406105317310">設定 Kerberos 帳戶</translation>
 <translation id="2603382859270873566">支援 PPB_VideoDecoder(Dev) API。</translation>
-<translation id="2604182581880595781">設定網路檔案共用功能相關政策。</translation>
+<translation id="2604182581880595781">設定網路檔案共用區相關政策。</translation>
 <translation id="2608039968712973520">要求使用者授予權限以執行過期的 <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="2608535066974278204">用於指定重新啟動時間範圍長度的時間段 (分鐘)。</translation>
 <translation id="2608887839902987727">禁止網頁認證入口驗證機制忽略 Proxy 設定</translation>
@@ -5456,7 +5456,7 @@
       此處的 <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> 可以指確切版本 (例如「13305.0.0」)，也可以指版本前置字元 (例如「13305」)。
       <ph name="WARNING_PERIOD_PROPERTY_NAME" /> 和 <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" /> 是選用值，以天數為單位。這兩個期間的預設值是 0 天，表示無警告期。
       <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> 是選用屬性，預設值為 False。</translation>
-<translation id="5879014913445067283">控制網路檔案共用功能是否透過 <ph name="NETBIOS_NAME" /> 搜尋檔案</translation>
+<translation id="5879014913445067283">控制能否透過 <ph name="NETBIOS_NAME" /> 搜尋網路檔案共用區</translation>
 <translation id="588135807064822874">啟用「輕觸搜尋」功能</translation>
 <translation id="5882345429632338713">在啟動替代瀏覽器前的延遲時間 (以毫秒為單位)</translation>
 <translation id="5883015257301027298">預設 Cookie 設定</translation>

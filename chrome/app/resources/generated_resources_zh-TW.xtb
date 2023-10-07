@@ -3582,7 +3582,7 @@
 <translation id="3828029223314399057">搜尋書籤</translation>
 <translation id="3828953470056652895">我已詳閱並同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》、《<ph name="BEGIN_LINK2" />Chrome 和 ChromeOS 附加服務條款<ph name="END_LINK2" />》以及《<ph name="BEGIN_LINK3" />Play 服務條款<ph name="END_LINK3" />》。</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - 高記憶體用量 - <ph name="MEMORY_VALUE" /></translation>
-<translation id="3829765597456725595">SMB 檔案共用</translation>
+<translation id="3829765597456725595">SMB 檔案共用區</translation>
 <translation id="3830470485672984938">使用其他密碼金鑰</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{系統管理員已重新開啟 1 個可能有害的擴充功能}other{系統管理員已重新開啟 {NUM_EXTENSIONS} 個可能有害的擴充功能}}</translation>
 <translation id="3834728400518755610">必須先關閉 Linux，麥克風設定的變更才會生效。請關閉 Linux 以繼續操作。</translation>
