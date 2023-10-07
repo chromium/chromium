@@ -10,7 +10,6 @@ import {constants} from '../../common/constants.js';
 import {LocalStorage} from '../../common/local_storage.js';
 import {StringUtil} from '../../common/string_util.js';
 import {BackgroundBridge} from '../common/background_bridge.js';
-import {BrailleCommandData} from '../common/braille/braille_command_data.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {Command} from '../common/command.js';
@@ -342,7 +341,6 @@ export class Panel extends PanelInterface {
       // Insert items from the bindings into the menus.
       const sawBindingSet = {};
       const bindingMap = new Map();
-      const gestures = Object.keys(GestureCommandData.GESTURE_COMMAND_MAP);
       sortedBindings.forEach(binding => {
         const command = binding.command;
         bindingMap.set(binding.command, binding);
@@ -352,29 +350,7 @@ export class Panel extends PanelInterface {
         sawBindingSet[command] = true;
         const category = CommandStore.categoryForCommand(binding.command);
         const menu = category ? categoryToMenu[category] : null;
-        if (binding.title && menu) {
-          let keyText;
-          let brailleText;
-          let gestureText;
-          if (touchScreen) {
-            for (let i = 0, gesture; gesture = gestures[i]; i++) {
-              const data = GestureCommandData.GESTURE_COMMAND_MAP[gesture];
-              if (data && data.command === command) {
-                gestureText = Msgs.getMsg(data.msgId);
-                break;
-              }
-            }
-          } else {
-            keyText = binding.keySeq;
-            brailleText =
-                BrailleCommandData.getDotShortcut(binding.command, true);
-          }
-
-          menu.addMenuItem(
-              binding.title, keyText, brailleText, gestureText,
-              () => BackgroundBridge.CommandHandler.onCommand(binding.command),
-              binding.command);
-        }
+        this.menuManager_.addMenuItemFromKeyBinding(binding, menu, touchScreen);
       });
 
       // Add Touch Gestures menu items.

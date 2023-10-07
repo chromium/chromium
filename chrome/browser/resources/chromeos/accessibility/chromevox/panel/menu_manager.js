@@ -9,10 +9,13 @@ import {AsyncUtil} from '../../common/async_util.js';
 import {EventGenerator} from '../../common/event_generator.js';
 import {KeyCode} from '../../common/key_code.js';
 import {StringUtil} from '../../common/string_util.js';
+import {BackgroundBridge} from '../common/background_bridge.js';
+import {BrailleCommandData} from '../common/braille/braille_command_data.js';
 import {Command, CommandCategory} from '../common/command.js';
 import {CommandStore} from '../common/command_store.js';
+import {GestureCommandData} from '../common/gesture_command_data.js';
 import {KeyMap} from '../common/key_map.js';
-import {KeySequence} from '../common/key_sequence.js';
+import {KeyBinding, KeySequence} from '../common/key_sequence.js';
 import {KeyUtil} from '../common/key_util.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
@@ -86,6 +89,39 @@ export class MenuManager {
     $('menus_background').appendChild(menu.menuContainerElement);
     this.menus_.push(menu);
     return menu;
+  }
+
+  /**
+   * @param {!KeyBinding} binding
+   * @param {PanelMenu} menu
+   * @param {boolean} isTouchScreen
+   */
+  addMenuItemFromKeyBinding(binding, menu, isTouchScreen) {
+    if (!binding.title || !menu) {
+      return;
+    }
+
+    const gestures = Object.keys(GestureCommandData.GESTURE_COMMAND_MAP);
+    let keyText;
+    let brailleText;
+    let gestureText;
+    if (isTouchScreen) {
+      for (let i = 0, gesture; gesture = gestures[i]; i++) {
+        const data = GestureCommandData.GESTURE_COMMAND_MAP[gesture];
+        if (data && data.command === binding.command) {
+          gestureText = Msgs.getMsg(data.msgId);
+          break;
+        }
+      }
+    } else {
+      keyText = binding.keySeq;
+      brailleText = BrailleCommandData.getDotShortcut(binding.command, true);
+    }
+
+    menu.addMenuItem(
+        binding.title, keyText, brailleText, gestureText,
+        () => BackgroundBridge.CommandHandler.onCommand(binding.command),
+        binding.command);
   }
 
   /**
@@ -239,8 +275,7 @@ export class MenuManager {
   }
 
   /**
-   * @return {!Promise<Array<Object<{command: string, sequence:
-   *     KeySequence}>>>}
+   * @return {!Promise<Array<!KeyBinding>>}
    */
   async getSortedKeyBindings() {
     // TODO(accessibility): Commands should be based off of CommandStore and
