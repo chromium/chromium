@@ -119,7 +119,8 @@
       <div id="descriptionHeader">
         <h2 id="descriptionTitle">[[i18n('descriptionLabel')]]</h2>
         <a id="feedbackWritingGuidance" href="[[feedbackWritingGuidanceUrl_()]]"
-            target="_blank">
+            target="_blank"
+            hidden$="[[!isUserLoggedIn_(feedbackContext)]]">
             [[i18n('feedbackHelpLinkLabel')]]
         </a>
       </div>
@@ -140,7 +141,7 @@
     <div>
       <iframe on-load="resolveIframeLoaded_"
           src="chrome-untrusted://os-feedback/untrusted_index.html"
-          scrolling="no" hidden$="[[isOobeOrLoginScreen_(feedbackContext)]]">
+          scrolling="no" hidden$="[[!isUserLoggedIn_(feedbackContext)]]">
       </iframe>
     </div>
     <div id="shadowShield"></div>

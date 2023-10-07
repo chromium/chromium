@@ -293,9 +293,9 @@ export class SearchPageElement extends SearchPageElementBase {
       this.hideError_();
     }
 
-    // On oobe and login screen, the feedback app does not allow access to
+    // When the user is not logged in, the feedback app does not allow access to
     // external websites. Therefore, search is not needed.
-    if (this.isOobeOrLoginScreen_()) {
+    if (!this.isUserLoggedIn_()) {
       return;
     }
 
@@ -316,11 +316,11 @@ export class SearchPageElement extends SearchPageElementBase {
   /**
    * When the feedback app is launched from OOBE or the login screen, the
    * categoryTag is set to "Login".
-   * @returns {boolean} true if the categoryTag is Login.
+   * @returns {boolean} true if the categoryTag is not equal to Login.
    * @protected
    */
-  isOobeOrLoginScreen_() {
-    return this.feedbackContext && this.feedbackContext.categoryTag === 'Login';
+  isUserLoggedIn_() {
+    return this.feedbackContext?.categoryTag !== 'Login';
   }
 
   /**
@@ -336,9 +336,9 @@ export class SearchPageElement extends SearchPageElementBase {
       return;
     }
 
-    // On oobe and login screen, the feedback app does not allow access to
+    // When the user is not logged in, the feedback app does not allow access to
     // external websites. Therefore, search is not needed.
-    if (this.isOobeOrLoginScreen_()) {
+    if (!this.isUserLoggedIn_()) {
       return;
     }
 

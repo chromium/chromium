@@ -468,7 +468,7 @@ export function searchPageTestSuite() {
 
   /**
    * Test that when the app is opened on oobe or login screen, the help content
-   * section is hidden.
+   * section and writing tips are hidden.
    */
   test('HideHelpContentSection_oobe_or_login_screen', async () => {
     await initializePage();
@@ -477,11 +477,12 @@ export function searchPageTestSuite() {
     assertEquals('Login', page.feedbackContext.categoryTag);
 
     assertFalse(isVisible(getElement('iframe')));
+    assertFalse(isVisible(getElement('#feedbackWritingGuidance')));
   });
 
   /**
    * Test that when the app is not opened on oobe or login screen, the help
-   * content section is visible.
+   * content section and writing tips are visible.
    */
   test('ShowHelpContentSection_if_not_oobe_or_login_screen', async () => {
     await initializePage();
@@ -489,6 +490,7 @@ export function searchPageTestSuite() {
     assertEquals('MediaApp', page.feedbackContext.categoryTag);
 
     assertTrue(isVisible(getElement('iframe')));
+    assertTrue(isVisible(getElement('#feedbackWritingGuidance')));
   });
 
   test('typingBluetoothWithInternalAccountShowsQuestionnaire', async () => {
