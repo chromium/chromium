@@ -12,6 +12,7 @@
 namespace blink {
 
 class ExecutionContext;
+class Observer;
 class ScriptState;
 class V8SubscribeCallback;
 
@@ -29,7 +30,7 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
   Observable(ExecutionContext*, V8SubscribeCallback*);
 
   // API methods:
-  void subscribe();
+  void subscribe(Observer*);
 
   void Trace(Visitor*) const override;
 

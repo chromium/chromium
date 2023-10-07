@@ -4,13 +4,20 @@
 
 // https://github.com/WICG/observable
 
-// TODO(crbug.com/1485981): Make this callback take a `Subscriber` as its sole
-// argument, once that interface is introduced.
 callback SubscribeCallback = void ();
+callback ObserverCallback = void (any value);
+callback ObserverCompleteCallback = void ();
+
+dictionary Observer {
+  ObserverCallback next;
+  ObserverCompleteCallback complete;
+  ObserverCallback error;
+  AbortSignal signal;
+};
 
 [Exposed=Window, RuntimeEnabled=ObservableAPI]
 interface Observable {
     [CallWith=ScriptState, MeasureAs=ObservableConstructor] constructor(SubscribeCallback callback);
-    void subscribe();
+    void subscribe(optional Observer observer = {});
 };
 

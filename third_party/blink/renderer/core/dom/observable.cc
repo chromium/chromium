@@ -27,7 +27,7 @@ Observable::Observable(ExecutionContext* execution_context,
   DCHECK(RuntimeEnabledFeatures::ObservableAPIEnabled(execution_context));
 }
 
-void Observable::subscribe() {
+void Observable::subscribe(Observer* observer) {
   DCHECK(subscribe_callback_);
   // Exceptions are "reported", per
   // https://html.spec.whatwg.org/C#report-the-exception, and do not interrupt
