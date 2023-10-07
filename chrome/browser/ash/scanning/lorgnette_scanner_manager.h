@@ -26,6 +26,8 @@ class LorgnetteScannerManager : public KeyedService {
  public:
   using GetScannerNamesCallback =
       base::OnceCallback<void(std::vector<std::string> scanner_names)>;
+  using GetScannerInfoListCallback = base::OnceCallback<void(
+      const absl::optional<lorgnette::ListScannersResponse>& response)>;
   using GetScannerCapabilitiesCallback = base::OnceCallback<void(
       const absl::optional<lorgnette::ScannerCapabilities>& capabilities)>;
   using OpenScannerCallback = base::OnceCallback<void(
@@ -48,6 +50,10 @@ class LorgnetteScannerManager : public KeyedService {
 
   // Returns the names of all available, deduplicated scanners.
   virtual void GetScannerNames(GetScannerNamesCallback callback) = 0;
+
+  // Returns ScannerInfo objects for all of the available lorgnette scanners and
+  // zeroconf scanners.
+  virtual void GetScannerInfoList(GetScannerInfoListCallback callback) = 0;
 
   // Returns the capabilities of the scanner specified by |scanner_name|. If
   // |scanner_name| does not correspond to a known scanner, absl::nullopt is

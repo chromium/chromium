@@ -37,6 +37,7 @@ namespace {
 using ::base::EqualsProto;
 using local_discovery::ServiceDescription;
 using ::testing::ElementsAreArray;
+using ::testing::UnorderedElementsAreArray;
 
 // Test device names for different types of lorgnette scanners.
 constexpr char kLorgnetteNetworkIpDeviceName[] = "test:MX3100_192.168.0.3";
@@ -50,6 +51,17 @@ constexpr char kUnknownScannerName[] = "Unknown Scanner";
 
 // Model which contains the manufacturer.
 constexpr char kModelContainingManufacturer[] = "TEST Model X";
+
+// Clear UUID fields from |response|.
+lorgnette::ListScannersResponse ClearUuids(
+    const lorgnette::ListScannersResponse& response) {
+  lorgnette::ListScannersResponse retval = response;
+  for (auto& info : *retval.mutable_scanners()) {
+    info.clear_device_uuid();
+  }
+
+  return retval;
+}
 
 // Returns a ScannerInfo object with the given |name| and |model|, if provided.
 lorgnette::ScannerInfo CreateLorgnetteScanner(
@@ -199,6 +211,14 @@ class LorgnetteScannerManagerTest : public testing::Test {
                        base::Unretained(this)));
   }
 
+  // Calls LorgnetteScannerManager::GetScannerInfoList() and binds a callback to
+  // process the result.
+  void GetScannerInfoList() {
+    lorgnette_scanner_manager_->GetScannerInfoList(
+        base::BindOnce(&LorgnetteScannerManagerTest::GetScannerInfoListCallback,
+                       base::Unretained(this)));
+  }
+
   // Calls LorgnetteScannerManager::GetScannerCapabilities() and binds a
   // callback to process the result.
   void GetScannerCapabilities(const std::string& scanner_name) {
@@ -271,6 +291,11 @@ class LorgnetteScannerManagerTest : public testing::Test {
     return scanner_names_;
   }
 
+  absl::optional<lorgnette::ListScannersResponse> list_scanners_response()
+      const {
+    return list_scanners_response_;
+  }
+
   absl::optional<lorgnette::ScannerCapabilities> scanner_capabilities() const {
     return scanner_capabilities_;
   }
@@ -292,6 +317,14 @@ class LorgnetteScannerManagerTest : public testing::Test {
   // Handles the result of calling LorgnetteScannerManager::GetScannerNames().
   void GetScannerNamesCallback(std::vector<std::string> scanner_names) {
     scanner_names_ = scanner_names;
+    run_loop_->Quit();
+  }
+
+  // Handles the result of calling
+  // LorgnetteScannerManager::GetScannerInfoList().
+  void GetScannerInfoListCallback(
+      const absl::optional<lorgnette::ListScannersResponse>& response) {
+    list_scanners_response_ = response;
     run_loop_->Quit();
   }
 
@@ -341,6 +374,7 @@ class LorgnetteScannerManagerTest : public testing::Test {
   std::unique_ptr<LorgnetteScannerManager> lorgnette_scanner_manager_;
 
   std::vector<std::string> scanner_names_;
+  absl::optional<lorgnette::ListScannersResponse> list_scanners_response_;
   absl::optional<lorgnette::ScannerCapabilities> scanner_capabilities_;
   absl::optional<lorgnette::OpenScannerResponse> open_scanner_response_;
   absl::optional<lorgnette::CloseScannerResponse> close_scanner_response_;
@@ -551,6 +585,118 @@ TEST_F(LorgnetteScannerManagerTest, RemoveScanner) {
   GetScannerNames();
   WaitForResult();
   EXPECT_TRUE(scanner_names().empty());
+}
+
+// Test GetScannerInfoList when absl::nullopt response is returned.
+TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListNull) {
+  GetScannerInfoList();
+  WaitForResult();
+  ASSERT_TRUE(list_scanners_response());
+  EXPECT_EQ(list_scanners_response().value().scanners_size(), 0);
+}
+
+// Test GetScannerInfoList when empty response is returned.
+TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListEmpty) {
+  GetLorgnetteManagerClient()->SetListScannersResponse(
+      lorgnette::ListScannersResponse());
+
+  GetScannerInfoList();
+  WaitForResult();
+  ASSERT_TRUE(list_scanners_response());
+  EXPECT_EQ(list_scanners_response().value().scanners_size(), 0);
+}
+
+// Test that a detected lorgnette scanner can be retrieved.
+TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListLorgnette) {
+  lorgnette::ListScannersResponse response =
+      CreateListScannersResponse(kLorgnetteNetworkIpDeviceName);
+  GetLorgnetteManagerClient()->SetListScannersResponse(response);
+  GetScannerInfoList();
+  WaitForResult();
+  ASSERT_TRUE(list_scanners_response());
+  ASSERT_EQ(list_scanners_response().value().scanners_size(), 1);
+  EXPECT_FALSE(
+      list_scanners_response().value().scanners(0).device_uuid().empty());
+  // Other than the UUID that gets populated, the results should be identical to
+  // |response|.  Clear the UUID from the results and compare to |response|.
+  lorgnette::ListScannersResponse filtered_response =
+      ClearUuids(list_scanners_response().value());
+  EXPECT_THAT(response, EqualsProto(filtered_response));
+}
+
+// Test that a detected zeroconf scanner can be retrieved.
+TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListZeroconf) {
+  auto expected_scanner = CreateZeroconfScanner();
+  fake_zeroconf_scanner_detector()->AddDetections({expected_scanner});
+  CompleteTasks();
+  GetScannerInfoList();
+  WaitForResult();
+  ASSERT_TRUE(list_scanners_response());
+  ASSERT_EQ(list_scanners_response().value().scanners_size(), 1);
+  const lorgnette::ScannerInfo scanner =
+      list_scanners_response().value().scanners(0);
+  EXPECT_EQ(scanner.name(), "airscan:escl:Test MX3100:https://192.168.0.3:5/");
+  EXPECT_EQ(scanner.manufacturer(), expected_scanner.manufacturer);
+  EXPECT_EQ(scanner.model(), expected_scanner.model);
+}
+
+// Test that unusable zeroconf scanner is not retrieved.
+TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListZeroconfUnusable) {
+  auto scanner = CreateZeroconfScanner(false);
+  fake_zeroconf_scanner_detector()->AddDetections({scanner});
+  CompleteTasks();
+  GetScannerInfoList();
+  WaitForResult();
+  ASSERT_TRUE(list_scanners_response());
+  EXPECT_EQ(list_scanners_response().value().scanners_size(), 0);
+}
+
+// Test that multiple zeroconf scanners have the same UUID.
+TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListZeroconfSameUuid) {
+  auto scanner = CreateZeroconfScanner();
+  ASSERT_EQ(scanner.device_names.size(), 1u);
+  // Adding a second device name to the same Scanner should cause both
+  // ScannerInfo objects to have the same UUID.
+  scanner.device_names.begin()->second.insert(
+      ScannerDeviceName("airscan:escl:Test MX3100:http://192.168.0.3:5/"));
+  fake_zeroconf_scanner_detector()->AddDetections({scanner});
+  CompleteTasks();
+  GetScannerInfoList();
+  WaitForResult();
+  ASSERT_TRUE(list_scanners_response());
+  ASSERT_EQ(list_scanners_response().value().scanners_size(), 2);
+  std::vector<std::string> actual_device_names = {
+      list_scanners_response().value().scanners(0).name(),
+      list_scanners_response().value().scanners(1).name()};
+  EXPECT_THAT(actual_device_names,
+              UnorderedElementsAreArray(
+                  {"airscan:escl:Test MX3100:https://192.168.0.3:5/",
+                   "airscan:escl:Test MX3100:http://192.168.0.3:5/"}));
+  EXPECT_EQ(list_scanners_response().value().scanners(0).device_uuid(),
+            list_scanners_response().value().scanners(1).device_uuid());
+}
+
+// Test that detected zeroconf and lorgnette scanners can be retrieved.  These
+// scanners should have different UUIDs since they represent different physical
+// hardware.
+TEST_F(LorgnetteScannerManagerTest,
+       GetScannerInfoListUniqueZeroconfAndLorgnette) {
+  lorgnette::ListScannersResponse response =
+      CreateListScannersResponse(kLorgnetteNetworkUrlDeviceName, "Model 2");
+  GetLorgnetteManagerClient()->SetListScannersResponse(response);
+  fake_zeroconf_scanner_detector()->AddDetections({CreateZeroconfScanner()});
+
+  CompleteTasks();
+  GetScannerInfoList();
+  WaitForResult();
+  ASSERT_TRUE(list_scanners_response());
+  ASSERT_EQ(list_scanners_response().value().scanners_size(), 2);
+  EXPECT_FALSE(
+      list_scanners_response().value().scanners(0).device_uuid().empty());
+  EXPECT_FALSE(
+      list_scanners_response().value().scanners(1).device_uuid().empty());
+  EXPECT_NE(list_scanners_response().value().scanners(0).device_uuid(),
+            list_scanners_response().value().scanners(1).device_uuid());
 }
 
 // Test that getting capabilities fails when GetScannerNames() has never been

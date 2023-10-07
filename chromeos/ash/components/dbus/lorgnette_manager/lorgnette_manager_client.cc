@@ -809,6 +809,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
         *session.response.add_scanners() = std::move(signal.scanner());
         break;
       case lorgnette::ScannerListChangedSignal::SCANNER_REMOVED:
+        // TODO(b/303855027): Once this is implemented in the backend, this
+        // needs to be updated to actually remove devices.
         break;
       case lorgnette::ScannerListChangedSignal::ENUM_COMPLETE: {
         lorgnette::StopScannerDiscoveryRequest request;

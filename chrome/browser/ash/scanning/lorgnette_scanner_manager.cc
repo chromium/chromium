@@ -18,6 +18,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/uuid.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_util.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -172,7 +173,15 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   void GetScannerNames(GetScannerNamesCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     GetLorgnetteManagerClient()->ListScanners(
-        base::BindOnce(&LorgnetteScannerManagerImpl::OnListScannersResponse,
+        base::BindOnce(&LorgnetteScannerManagerImpl::OnListScannerNamesResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  // LorgnetteScannerManager:
+  void GetScannerInfoList(GetScannerInfoListCallback callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
+    GetLorgnetteManagerClient()->ListScanners(
+        base::BindOnce(&LorgnetteScannerManagerImpl::OnListScannerInfoResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
@@ -320,13 +329,26 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     }
   }
 
-  // Handles the result of calling LorgnetteManagerClient::ListScanners().
-  void OnListScannersResponse(
+  // Handles the result of calling LorgnetteManagerClient::ListScanners() for
+  // GetScannerNames.
+  void OnListScannerNamesResponse(
       GetScannerNamesCallback callback,
       absl::optional<lorgnette::ListScannersResponse> response) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     RebuildDedupedScanners(response);
     FilterScannersAndRespond(std::move(callback));
+  }
+
+  // Handles the result of calling LorgnetteManagerClient::ListScanners() for
+  // GetScannerInfoList.
+  void OnListScannerInfoResponse(
+      GetScannerInfoListCallback callback,
+      absl::optional<lorgnette::ListScannersResponse> response) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
+
+    // Combine zeroconf scanners and lorgnette scanners and send in callback.
+    CreateCombinedScanners(response.value_or(lorgnette::ListScannersResponse()),
+                           std::move(callback));
   }
 
   // Handles the result of calling
@@ -368,6 +390,97 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
       CloseScannerCallback callback,
       absl::optional<lorgnette::CloseScannerResponse> response) {
     std::move(callback).Run(response);
+  }
+
+  // For a given |scanner| return a list of ScannerInfo objects.  One |scanner|
+  // may have multiple device_names where each one corresponds to a new
+  // ScannerInfo object.
+  std::vector<lorgnette::ScannerInfo> CreateScannerInfosFromScanner(
+      const Scanner& scanner) {
+    std::vector<lorgnette::ScannerInfo> retval;
+
+    // TODO(nmuggli): Scanner class should get updated to include this.
+    // ParsedMetadata in zeroconf_scanner_detector.cc should be updated to look
+    // for uuid key.
+    const std::string uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+    for (const auto& [protocol, device_names] : scanner.device_names) {
+      for (const ScannerDeviceName& device_name : device_names) {
+        if (!device_name.usable) {
+          continue;
+        }
+        lorgnette::ConnectionType connection_type =
+            lorgnette::CONNECTION_UNSPECIFIED;
+        bool secure = false;
+        switch (protocol) {
+          case (ScanProtocol::kEscl):
+            connection_type = lorgnette::CONNECTION_NETWORK;
+            secure = false;
+            break;
+          case (ScanProtocol::kEscls):
+            connection_type = lorgnette::CONNECTION_NETWORK;
+            secure = true;
+            break;
+          case (ScanProtocol::kLegacyNetwork):
+            // TODO(nmuggli): Skip these for now.  Need to ensure these can be
+            // connected to using the |device_name| before they get returned to
+            // the user.
+            continue;
+          case (ScanProtocol::kLegacyUsb):
+            connection_type = lorgnette::CONNECTION_USB;
+            secure = true;
+            break;
+          default:
+            // Use defaults from above.
+            break;
+        }
+
+        lorgnette::ScannerInfo info;
+        info.set_name(device_name.device_name);
+        info.set_manufacturer(scanner.manufacturer);
+        info.set_model(scanner.model);
+        // TODO(nmuggli): See if there's a way to determine the type of scanner.
+        info.set_type("multi-function peripheral");
+        info.set_device_uuid(uuid);
+        info.set_connection_type(connection_type);
+        info.set_secure(secure);
+        // TODO(nmuggli): Scanner class should get updated to include this.
+        // ParsedMetadata in zeroconf_scanner_detector.cc should be updated to
+        // look for pdl key.
+        info.add_image_format("image/jpeg");
+        info.add_image_format("image/png");
+        retval.emplace_back(std::move(info));
+      }
+    }
+
+    return retval;
+  }
+
+  // Use |response| and |zeroconf_scanners_| to build a combined
+  // ListScannersResponse that will be sent in |callback|.
+  void CreateCombinedScanners(const lorgnette::ListScannersResponse& response,
+                              GetScannerInfoListCallback callback) {
+    lorgnette::ListScannersResponse scanners = response;
+
+    for (const Scanner& scanner : zeroconf_scanners_) {
+      for (auto& info : CreateScannerInfosFromScanner(scanner)) {
+        *scanners.add_scanners() = std::move(info);
+      }
+    }
+
+    // TODO(nmuggli): Figure out how to associate a lorgnette scanner to a
+    // zeroconf scanner.  If they represent the same physical scanner, the
+    // ScannerInfo objects should have the same device_uuid.  For now, just
+    // ensure each ScannerInfo has a device_uuid (the lorgnette backend is not
+    // yet populating the device_uuid).
+    for (lorgnette::ScannerInfo& info : *scanners.mutable_scanners()) {
+      if (info.device_uuid().empty()) {
+        info.set_device_uuid(
+            base::Uuid::GenerateRandomV4().AsLowercaseString());
+      }
+    }
+
+    std::move(callback).Run(scanners);
   }
 
   // Uses |response| and zeroconf_scanners_ to rebuild deduped_scanners_.
