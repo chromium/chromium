@@ -12,6 +12,7 @@
 
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/shell.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -238,10 +239,12 @@ MetricData FatalCrashEventsObserver::FillFatalCrashTelemetry(
   data.set_timestamp_us(ConvertTimeToMicroseconds(info->capture_time));
   if (!info->upload_info.is_null()) {
     *data.mutable_crash_report_id() = info->upload_info->crash_report_id;
+    // If reported_local_id_manager_->HasBeenReported indicates a crash with the
+    // same local ID has been reported, it implies that it has been reported
+    // once as an unuploaded crash, which does not have a crash report ID.
+    data.set_been_reported_without_crash_report_id(
+        reported_local_id_manager_->HasBeenReported(data.local_id()));
   }
-
-  // TODO(b/266018440): was_reported_without_id is not filled. It involves logic
-  // related to determining whether a crash event should be reported.
 
   return metric_data;
 }
@@ -270,6 +273,12 @@ FatalCrashEventsObserver::ReportedLocalIdManager::Create(
       new ReportedLocalIdManager(std::move(save_file_path)));
 }
 
+bool FatalCrashEventsObserver::ReportedLocalIdManager::HasBeenReported(
+    const std::string& local_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::Contains(local_ids_, local_id);
+}
+
 bool FatalCrashEventsObserver::ReportedLocalIdManager::ShouldReport(
     const std::string& local_id,
     int64_t capture_timestamp_us) const {
@@ -284,9 +293,10 @@ bool FatalCrashEventsObserver::ReportedLocalIdManager::ShouldReport(
   }
 
   // Local ID already reported.
-  if (local_ids_.find(local_id) != local_ids_.end()) {
+  if (HasBeenReported(local_id)) {
     return false;
   }
+
   // Max number of crash events reached and the current crash event is too old.
   if (local_id_entries_.size() >= kMaxNumOfLocalIds &&
       capture_timestamp_us <= local_id_entries_.top().capture_timestamp_us) {
@@ -305,7 +315,8 @@ bool FatalCrashEventsObserver::ReportedLocalIdManager::UpdateLocalId(
     return false;
   }
 
-  // Remove the oldest local ID if too many local IDs are saved.
+  // Keep only the most recent kMaxNumOfLocalIds local IDs. Remove that oldest
+  // local IDs if too many are saved.
   if (local_ids_.size() >= kMaxNumOfLocalIds) {
     local_ids_.erase(local_id_entries_.top().local_id);
     local_id_entries_.pop();

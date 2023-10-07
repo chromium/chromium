@@ -75,6 +75,9 @@ class FatalCrashEventsObserver
     ReportedLocalIdManager& operator=(const ReportedLocalIdManager&) = delete;
     virtual ~ReportedLocalIdManager();
 
+    // Returns true if a crash with the local ID has already been reported.
+    bool HasBeenReported(const std::string& local_id) const;
+
     // Returns true unless the local ID is already in the reported Local IDs or
     // the timestamp is no later than the earliest timestamp corresponding to
     // reported local IDs.

@@ -241,6 +241,51 @@ TEST_P(FatalCrashEventsObserverTest, FieldCrashReportIdPassedThrough) {
   }
 }
 
+TEST_F(FatalCrashEventsObserverTest,
+       FieldBeenReportedWithoutCrashReportIdUnsetIfUnuploaded) {
+  const auto fatal_crash_telemetry =
+      WaitForFatalCrashTelemetry(NewCrashEventInfo(/*is_uploaded=*/false));
+  EXPECT_FALSE(
+      fatal_crash_telemetry.has_been_reported_without_crash_report_id());
+}
+
+TEST_F(
+    FatalCrashEventsObserverTest,
+    FieldBeenReportedWithoutCrashReportIdIsFalseIfUploadedNotPreviouslyReported) {
+  const auto fatal_crash_telemetry =
+      WaitForFatalCrashTelemetry(NewCrashEventInfo(/*is_uploaded=*/true));
+  ASSERT_TRUE(
+      fatal_crash_telemetry.has_been_reported_without_crash_report_id());
+  EXPECT_FALSE(fatal_crash_telemetry.been_reported_without_crash_report_id());
+}
+
+TEST_F(
+    FatalCrashEventsObserverTest,
+    FieldBeenReportedWithoutCrashReportIdIsTrueIfUploadedAndPreviouslyReported) {
+  static constexpr std::string_view kLocalId = "a local ID";
+
+  base::test::TestFuture<MetricData> result_metric_data;
+  auto fatal_crash_events_observer =
+      CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
+
+  // First an unuploaded crash with a set local ID.
+  auto crash_event_info = NewCrashEventInfo(/*is_uploaded=*/false);
+  crash_event_info->local_id = kLocalId;
+  std::ignore = WaitForFatalCrashTelemetry(std::move(crash_event_info),
+                                           fatal_crash_events_observer.get(),
+                                           &result_metric_data);
+
+  // Second an uploaded crash with the same local ID.
+  crash_event_info = NewCrashEventInfo(/*is_uploaded=*/true);
+  crash_event_info->local_id = kLocalId;
+  const auto fatal_crash_telemetry = WaitForFatalCrashTelemetry(
+      std::move(crash_event_info), fatal_crash_events_observer.get(),
+      &result_metric_data);
+  ASSERT_TRUE(
+      fatal_crash_telemetry.has_been_reported_without_crash_report_id());
+  EXPECT_TRUE(fatal_crash_telemetry.been_reported_without_crash_report_id());
+}
+
 TEST_P(FatalCrashEventsObserverTest, FieldUserEmailFilledIfAffiliated) {
   SimulateUserLogin(kUserEmail, user_manager::USER_TYPE_REGULAR,
                     /*is_user_affiliated=*/true);
