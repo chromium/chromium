@@ -141,6 +141,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 1. Otvorte nastavenia.
 2. Klepnite na položku Predvolená aplikácia prehliadača.
 3. Vyberte Chromium.</translation>
+<translation id="6197255575340902638">Ak <ph name="MODULE_NAME" /> skryjete, Chromium už nebude automaticky sledovať vaše budúce zásielky a odstráni všetky predchádzajúce údaje sledovania zásielky.</translation>
 <translation id="6247557882553405851">Správca hesiel Google</translation>
 <translation id="6268381023930128611">Odhlásiť sa z prehliadača Chromium?</translation>
 <translation id="6324041800010509197">Prejsť na mriežku kariet v prehliadači Chromium</translation>

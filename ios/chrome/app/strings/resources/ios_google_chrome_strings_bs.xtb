@@ -118,6 +118,7 @@ Stvari za razmatranje:
 <translation id="5389212809648216794">Google Chrome ne može koristiti vašu kameru jer je koristi druga aplikacija</translation>
 <translation id="5395376160638294582">Pobrinite se da uvijek možete koristiti podatke Chromea na Google računu</translation>
 <translation id="5439191312780166229">Upozorava vas o opasnim web lokacijama, čak i onim za koje Google nije ranije znao, analizirajući više podataka s web lokacija nego što se analizira standardnom zaštitom. Možete odabrati preskakanje Chromeovih upozorenja.</translation>
+<translation id="5442013002200339429">Ako sakrijete <ph name="MODULE_NAME" />, Chrome više neće automatski pratiti vaše buduće pakete i izbrisat će sve vaše prethodne podatke o praćenju paketa.</translation>
 <translation id="5460571915754665838">4. Odaberite Chrome</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome će vam pomoći da pratite ovaj paket na stranici na novoj kartici.}one{Chrome će vam pomoći da pratite ove pakete na stranici na novoj kartici.}few{Chrome će vam pomoći da pratite ove pakete na stranici na novoj kartici.}other{Chrome će vam pomoći da pratite ove pakete na stranici na novoj kartici.}}</translation>
 <translation id="5492504007368565877">Google upravitelj lozinki ne može provjeriti vaše lozinke.</translation>

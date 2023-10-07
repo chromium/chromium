@@ -215,7 +215,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1391289752476847787">Részvények és kötvények</translation>
 <translation id="1391625539203220400">Menti az IBAN-t erre az eszközre?</translation>
 <translation id="139305205187523129">A(z) <ph name="HOST_NAME" /> nem küldött adatokat.</translation>
-<translation id="1397811292916898096">Keresés a(z) <ph name="PRODUCT_NAME" /> keresőmotorral</translation>
+<translation id="1397811292916898096">Keresőmotor: <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Világoszöld</translation>
 <translation id="1406500794671479665">Ellenőrzés...</translation>
 <translation id="1406812885827747674">Egyszeri engedélyezés</translation>
@@ -2117,7 +2117,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5323043727018853753">Beágyazott tartalmak engedélyezve</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" /> elemből a következő pozícióban: <ph name="MATCH_POSITION" />.</translation>
 <translation id="5329858041417644019">A böngésző nem áll felügyelet alatt</translation>
-<translation id="5331585574693522196">Beállítás alapértelmezettként</translation>
+<translation id="5331585574693522196">Alapbeállítás</translation>
 <translation id="5332219387342487447">Szállítási mód</translation>
 <translation id="5332769172018416402">Kérés üzenetben</translation>
 <translation id="5334013548165032829">Részletes rendszernaplók</translation>
@@ -2868,7 +2868,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6917795328362592458">Kiderült, hogy a most használt jelszava adatvédelmi incidensben volt érintett. Fiókjai biztonságának megőrzése érdekében a Jelszókezelő a mentett jelszavak ellenőrzését javasolja.</translation>
 <translation id="6925267999184670015">„Észak-amerikai B+” méret</translation>
 <translation id="692638818576287323">Haszonjárművek</translation>
-<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Az alapértelmezett keresőmotor lehetővé teszi az internetes keresést, és támogatja a Chrome-funkciókat<ph name="END_BOLD" />, például a címsávból és a weboldalakon található képek alapján történő keresést. Előfordulhat, hogy egy funkció nem áll rendelkezésre, ha a keresőmotor nem támogatja.</translation>
+<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Az alapértelmezett keresőmotor lehetővé teszi az internetes keresést, és biztosítja a Chrome-funkciókat<ph name="END_BOLD" />, például a címsávból és a weboldalakon található képek alapján történő keresést. Előfordulhat, hogy egy funkció nem áll rendelkezésre, ha a keresőmotor nem támogatja.</translation>
 <translation id="6934672428414710184">Ez a név a Google-fiókjából származik</translation>
 <translation id="6935082727755903526">Könyvviteli és pénzügyi állások</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Előfordulhat, hogy egyes webhelyek lassabban töltődnek be, amikor legközelebb felkeresi őket.</translation>

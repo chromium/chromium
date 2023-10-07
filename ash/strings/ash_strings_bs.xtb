@@ -704,6 +704,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="385300504083504382">Početak</translation>
 <translation id="3859364108019690">Nije moguće prenositi aplikacije</translation>
 <translation id="3861651314799684201">Pritisnite Enter da snimite cijeli ekran</translation>
+<translation id="3865912916886104060">Nije povezan nijedan uređaj. Wi-Fi će se isključiti da bi se žarišna točka počela upotrebljavati.</translation>
 <translation id="3886872229787704059">Otvoreno danas</translation>
 <translation id="3891340733213178823">Dvaput pritisnite Ctrl + Shift + Q da se odjavite.</translation>
 <translation id="3893630138897523026">ChromeVox (govorne povratne informacije)</translation>
@@ -788,6 +789,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4197790712631116042">Isključeno</translation>
 <translation id="4201033867194214117">Funkcija <ph name="FEATURE_NAME" /> nije dostupna.</translation>
 <translation id="4201051445878709314">Prikaz prethodnog mjeseca</translation>
+<translation id="4202362334312791952">Jedan uređaj je povezan. Wi-Fi će se isključiti da bi se žarišna točka počela upotrebljavati.</translation>
 <translation id="4209973997261364186">WiFi je uključen</translation>
 <translation id="4212472694152630271">Prebaci na PIN</translation>
 <translation id="4215497585250573029">Postavke za VPN</translation>
@@ -1051,6 +1053,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5258528442992323769">Nema sačuvanih radnih površina</translation>
 <translation id="5260676007519551770">Radna površina 4</translation>
 <translation id="5268819379131021772">Lista Google Zadataka</translation>
+<translation id="5275923704957843041">Pregled radne površine</translation>
 <translation id="5278086053818066789">Uključite/isključite ChromeVox (izgovorene povratne informacije)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> traži da reagirate.</translation>
 <translation id="5283198616748585639">Dodaj 1 min</translation>
@@ -1167,6 +1170,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5707775774148071965">Uređaj podržava veću brzinu prijenosa podataka od kabla. Performanse uređaja su možda ograničene.</translation>
 <translation id="5710450975648804523">Uključen je način rada Ne ometaj</translation>
 <translation id="571295407079589142">Prijenos podataka na mobilnoj mreži je isključen</translation>
+<translation id="5716891621595980681">Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />. Wi-Fi će se isključiti da bi se žarišna točka počela upotrebljavati.</translation>
 <translation id="5727460725221669831">Ako ste zaboravili lozinku ili ste nedavno promijenili lozinku za Google račun, pokušajte oporaviti ovog korisnika.</translation>
 <translation id="573413375004481890">Ovaj uređaj ne može podržati sve vaše ekrane pa je s jednim prekinuta veza</translation>
 <translation id="5740328398383587084">Dijeljenje u blizini</translation>

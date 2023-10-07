@@ -118,6 +118,7 @@
 <translation id="5389212809648216794">Google Chrome nemôže použiť váš fotoaparát, pretože ho práve používa iná aplikácia</translation>
 <translation id="5395376160638294582">Uistite sa, že vo svojom účte Google môžete kedykoľvek použiť údaje Chromu</translation>
 <translation id="5439191312780166229">Analyzuje viac údajov z webov než štandardná ochrana a upozorňuje vás na nebezpečné weby, dokonca aj také, o ktorých Google predtým nevedel. Upozornenia z Chromu môžete preskočiť.</translation>
+<translation id="5442013002200339429">Ak <ph name="MODULE_NAME" /> skryjete, Chrome už nebude automaticky sledovať vaše budúce zásielky a odstráni všetky predchádzajúce údaje sledovania zásielky.</translation>
 <translation id="5460571915754665838">4. Vyberte Chrome</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome vám pomôže sledovať túto zásielku na stránke na novej karte.}few{Chromium vám pomôže sledovať tieto zásielky na stránke na novej karte.}many{Chrome will help track these packages on the New Tab Page.}other{Chromium vám pomôže sledovať tieto zásielky na stránke na novej karte.}}</translation>
 <translation id="5492504007368565877">Správca hesiel Google nedokáže skontrolovať vaše heslá.</translation>

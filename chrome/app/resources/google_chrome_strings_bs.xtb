@@ -124,6 +124,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="2928420929544864228">Instalacija je završena.</translation>
 <translation id="2929907241665500097">Ažuriranje Chromea nije uspjelo. Nešto nije uredu. <ph name="BEGIN_LINK" />Ispravite probleme s ažuriranjem Chromea i neuspjela ažuriranja.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – prijava na mrežu – Chrome</translation>
+<translation id="3018957014024118866">Izbriši i podatke iz Chromea (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Ponovo pokrenite da ažurirate &amp;ChromeOS Flex</translation>
 <translation id="303514781271618814">Chrome istražuje nove funkcije koje dozvoljavaju web lokacijama da pružaju isto iskustvo pregledanja korištenjem manje količine vaših podataka</translation>
 <translation id="3037838751736561277">Google Chrome radi u pozadinskom načinu rada.</translation>

@@ -58,6 +58,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="1264156759663453185">Odabrani tekst je prevelik za djelomični prijevod.</translation>
 <translation id="1265739287306757398">Saznajte kako</translation>
 <translation id="1272079795634619415">Zaustavi</translation>
+<translation id="1273416271143914096">{count,plural, =1{{count} zaporka}one{{count} zaporka}few{{count} zaporke}other{{count} zaporki}}</translation>
 <translation id="1275718070701477396">Odabrano</translation>
 <translation id="1279024913354609713">Ne dopusti</translation>
 <translation id="1281818060020671000">Upravljanje podacima</translation>
@@ -191,6 +192,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="1987779152850321833">Dovršite predložene radnje u nastavku da biste iskoristili sve prednosti Chromea.</translation>
 <translation id="1989112275319619282">Pregledaj</translation>
 <translation id="1990820278544963435">Traženje</translation>
+<translation id="1991153180045413119">Zaporka je podijeljena</translation>
 <translation id="1992055602764528852">Prijavite se kako biste vidjeli svoje kartice s drugih uređaja.</translation>
 <translation id="199425419756152024">Prikaži zaporku</translation>
 <translation id="2008357574463816229">Ako zaboravite šifru ili želite promijeniti tu postavku, <ph name="BEGIN_LINK" />izbrišite Chromeove podatke na računu<ph name="END_LINK" />.</translation>
@@ -234,6 +236,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="2268044343513325586">Pročišćavanje</translation>
 <translation id="2269277877025820298">Prikaži više</translation>
 <translation id="2273327106802955778">Izbornik Više</translation>
+<translation id="2274800392139890332">Zaustavi praćenje ovog paketa</translation>
 <translation id="2275480389219976105">Pronađena je adresa</translation>
 <translation id="2286505070150039482">Istaknuti tekst</translation>
 <translation id="2287614783861766820">{count,plural, =1{Ta će se adresa izbrisati s ovog uređaja.}one{Te će se adrese izbrisati s ovog uređaja.}few{Te će se adrese izbrisati s ovog uređaja.}other{Te će se adrese izbrisati s ovog uređaja.}}</translation>
@@ -242,6 +245,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="2299218006564889602">Vaše se zaporke šifriraju na uređaju prije spremanja na Google upravitelj zaporki.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • br. <ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">Promijenite zaporku na web-lokaciji</translation>
+<translation id="2310154074101836012">Uređivanje rotirajućeg izbornika</translation>
 <translation id="2316709634732130529">Upotrijebite predloženu zaporku</translation>
 <translation id="2320166752086256636">Sakrij tipkovnicu</translation>
 <translation id="2351097562818989364">Vaše su postavke prevođenja vraćene na zadano.</translation>
@@ -526,6 +530,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="380329542618494757">Ime</translation>
 <translation id="3803696231112616155">Ponudi prevođenje ove web-lokacije</translation>
 <translation id="3810973564298564668">Upravljanje</translation>
+<translation id="3818045793209708987">Praćenje paketa je zaustavljeno</translation>
 <translation id="3818293389945649617">Traži sljedeće</translation>
 <translation id="3819183753496523827">Niste povezani s internetom. Provjerite internetsku vezu i pokušajte ponovo.</translation>
 <translation id="3832419617903252251">Zaporka je spremljena samo na ovaj uređaj</translation>
@@ -564,6 +569,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4018310736049373830">Upravljaj aktivnostima</translation>
 <translation id="4038354071007134711">Na ovom uređaju nema aplikacije za tu datoteku.</translation>
 <translation id="4042870976416480368">Traži na stranici</translation>
+<translation id="4043294777772912240"><ph name="USERNAME" /> sada može koristiti vaše korisničko ime i zaporku kad upotrebljava Google upravitelj zaporki za prijavu na <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Izradite i dijelite izravnu vezu na dio stranice koji ste istaknuli.</translation>
 <translation id="4045648459118332842">Dohvatite svoje spremljene zaporke u bilo kojoj aplikaciju jednim dodirom</translation>
 <translation id="4049507953662678203">Provjerite mrežnu vezu i pokušajte ponovo.</translation>
@@ -607,6 +613,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4286718549648564014">Adresa je premještena na vaš račun <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Pretraživanje</translation>
 <translation id="4302248187517737842">Nema korisničkog imena ••••••••</translation>
+<translation id="4302415908542657649">Dijeljenje zaporke</translation>
 <translation id="4304713468139749426">Upravitelj zaporki</translation>
 <translation id="430793432425771671">Sinkroniziraj sve</translation>
 <translation id="4309403553630140242">Dvaput dodirnite za više informacija</translation>
@@ -642,6 +649,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4508750114462689118">Zatvori promociju za prijavu</translation>
 <translation id="4514889972748124117">Predloži snažnu zaporku...</translation>
 <translation id="4520798012560649652">Saznajte više o anonimnom načinu</translation>
+<translation id="452503091941773389">{count,plural, =1{{count} oznaka}one{{count} oznaka}few{{count} oznake}other{{count} oznaka}}</translation>
 <translation id="452750746583162491">Pregledajte svoje sinkronizirane podatke</translation>
 <translation id="4527660062930312477">Računom se upravlja</translation>
 <translation id="4536418791685807335">Pokušajte se ponovo prijaviti.</translation>
@@ -661,6 +669,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4619615317237390068">Kartice s drugih uređaja</translation>
 <translation id="4620246317052452550">Stranice koje ste pročitali</translation>
 <translation id="4620888520263267479">Prikaži pregled veze</translation>
+<translation id="4622477750832577849">Omogući praćenje</translation>
 <translation id="4630540211544979320">Prijevod stranica</translation>
 <translation id="4631335160486397366">Višestruko korištene zaporke: <ph name="COUNT" /></translation>
 <translation id="4634124774493850572">Upotrijebi zaporku</translation>
@@ -810,6 +819,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="54401264925851789">Informacije o sigurnosti stranice</translation>
 <translation id="5443952882982198570">Kreditne kartice</translation>
 <translation id="5444892875087332195">Oznake</translation>
+<translation id="5454211924362324495">Da biste drugima onemogućili da upotrebljavaju vašu zaporku, <ph name="BEGIN_LINK" />promijenite je na web-lokaciji<ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Otvori offline verziju</translation>
 <translation id="5475069061743940393">Praćenje paketa</translation>
 <translation id="5478327362747197944">Izradite događaje izravno u Kalendaru tako da kliknete datum na web-stranici.</translation>
@@ -1156,6 +1166,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7154343200458623869">Dovršite zadatak.</translation>
 <translation id="7161230316646448869">Sinkronizirajte svoje oznake, povijest i drugo na svim uređajima</translation>
 <translation id="7162168282402939716">Otključajte anonimne kartice pomoću opcije <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="7168959436351276050">Ako sakrijete tu karticu, uklonit će se svi podaci o praćenju paketa</translation>
 <translation id="7172852049901402487">Osigurajte svoje zaporke od sigurnosnih problema</translation>
 <translation id="7173114856073700355">Otvorite Postavke</translation>
 <translation id="7189598951263744875">Dijeli...</translation>

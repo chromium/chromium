@@ -2022,6 +2022,7 @@ Se il criterio viene disattivato o se non viene configurato, gli utenti possono 
 
       Quando questa norma è impostata su false o non è configurata, le icone sono visibili.</translation>
 <translation id="2744751866269053547">Registra gestori protocolli</translation>
+<translation id="2744980433176488921">Le impostazioni F11/F12 utilizzano la scorciatoia che contiene il tasto di modifica Maiusc</translation>
 <translation id="2745150813292162313">Consenti il partizionamento dello spazio di archiviazione di terze parti.</translation>
 <translation id="2746016768603629042">Questa norma è obsoleta; utilizza invece DefaultJavaScriptSetting.
 
@@ -3606,6 +3607,9 @@ Fino a Chrome 114, questo criterio richiedeva l'impostazione del criterio <ph na
 
       Se <ph name="PRODUCT_NAME" /> non si chiude correttamente (ad esempio, in caso di arresto anomalo del browser o del sistema operativo), i dati di navigazione verranno cancellati al successivo caricamento del profilo.</translation>
 <translation id="4056910949759281379">Disabilita protocollo SPDY</translation>
+<translation id="4057442294431066708">Questo criterio consente di stabilire l'opzione della scorciatoia selezionata per la rimappatura degli eventi a
+F11/F12 nella pagina secondaria per rimappare i tasti. Queste impostazioni si applicano solo alle
+tastiere di ChromeOS e sono disattivate per impostazione predefinita se il criterio non viene configurato.</translation>
 <translation id="4061107397839125009">La configurazione del criterio consente di impostare un elenco di pattern URL che specificano i siti che non possono mostrare notifiche.
 
       Se il criterio non viene configurato, <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
@@ -3718,6 +3722,7 @@ Le estensioni con installazione forzata e ospitate autonomamente vengono ignorat
 
 Se il criterio viene impostato su <ph name="ALLOW_UNPUBLISHED" /> (0) o se non viene configurato, le estensioni non pubblicate sul Chrome Web Store sono consentite.
 Se il criterio viene impostato su <ph name="DISABLE_UNPUBLISHED" /> (1), le estensioni non pubblicate sul Chrome Web Store vengono disattivate.</translation>
+<translation id="4164866067069311355">Controlla la scorciatoia utilizzata per attivare F11/F12</translation>
 <translation id="4165986682804962316">Impostazioni sito</translation>
 <translation id="4166174702671320480">Se il criterio viene impostato su Attivato, i criteri relativi a un gruppo atomico che non condividono l'origine con la priorità massima di quel gruppo vengono ignorati.
 
@@ -6104,6 +6109,7 @@ Per maggiori informazioni, visita la pagina https://developer.chrome.com/blog/im
 
       Nota: non attivare questo criterio se il criterio <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> è impostato su Attivato perché quest'ultimo ha la stessa funzione lato client. La sincronizzazione ospitata su Google viene disattivata completamente in questo caso.</translation>
 <translation id="6320935916601887506">Per impostazione predefinita verrà utilizzato il nuovo comportamento offsetParent.</translation>
+<translation id="6324274808543634377">Le impostazioni F11/F12 utilizzano la scorciatoia che contiene il tasto di modifica Alt</translation>
 <translation id="6327643515544933974">Impostazioni USB web</translation>
 <translation id="6330882599388782338">Consenti ai siti di accedere ai sensori</translation>
 <translation id="6331167725613770725">Tieni presente che questo criterio è obsoleto e verrà rimosso nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa il criterio <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
@@ -7390,6 +7396,7 @@ Se questo criterio non viene configurato, potrebbero essere utilizzati Chrome Ro
 
 Questo criterio è stato rimosso nella versione 113 di <ph name="PRODUCT_NAME" /> per <ph name="MS_WIN_NAME" /> e <ph name="MAC_OS_NAME" />, in concomitanza con la rimozione del supporto dell'utilizzo dello strumento di verifica dei certificati e dei certificati radice forniti dalla piattaforma.</translation>
 <translation id="7298197471363105063">Esegui l'override degli insiemi First-Party.</translation>
+<translation id="7300320787419338290">Le impostazioni F11/F12 utilizzano la scorciatoia che contiene i tasti di modifica Ctrl e Maiusc</translation>
 <translation id="7302043767260300182">Ritardo blocco schermo in caso di utilizzo di CA</translation>
 <translation id="7303902834678570827">Gli utenti di sessioni Ospite gestite non possono memorizzare le impostazioni di visualizzazione a livello di dispositivo.</translation>
 <translation id="7306926210354955892">La configurazione del criterio consente di specificare l'azione da eseguire quando la directory dei dati ARC dell'utente è stata creata con virtio-fs. A meno che non venga eseguita la migrazione dei dati virtio-fs su virtio-blk, le app per Android potrebbero essere eseguite più lentamente su ARC VM.
@@ -9333,6 +9340,7 @@ Se il criterio non è impostato su un dispositivo gestito, quest'ultimo non può
 
       Il valore della norma deve essere specificato in secondi.</translation>
 <translation id="9015578113567730893">Frequenza di raccolta dei dati di telemetria audio in millisecondi.</translation>
+<translation id="9015759770696099204">Le impostazioni F11/F12 sono disabilitate</translation>
 <translation id="9015952763003753868">Fai in modo che <ph name="ACAM_HEADER_NAME" /> abbia una corrispondenza in <ph name="CORS" /> per la conformità alle specifiche preflight</translation>
 <translation id="9020630127193895800">Colore della retroilluminazione della tastiera blu indaco</translation>
 <translation id="9031831501689819108">Attiva Supporto dei browser precedenti</translation>
