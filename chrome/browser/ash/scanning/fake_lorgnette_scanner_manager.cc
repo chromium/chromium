@@ -101,6 +101,14 @@ void FakeLorgnetteScannerManager::CloseScanner(
       FROM_HERE, base::BindOnce(std::move(callback), close_scanner_response_));
 }
 
+void FakeLorgnetteScannerManager::StartPreparedScan(
+    const lorgnette::StartPreparedScanRequest& request,
+    StartPreparedScanCallback callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), start_prepared_scan_response_));
+}
+
 bool FakeLorgnetteScannerManager::IsRotateAlternate(
     const std::string& scanner_name,
     const std::string& source_name) {
@@ -178,6 +186,11 @@ void FakeLorgnetteScannerManager::SetOpenScannerResponse(
 void FakeLorgnetteScannerManager::SetCloseScannerResponse(
     const absl::optional<lorgnette::CloseScannerResponse>& response) {
   close_scanner_response_ = response;
+}
+
+void FakeLorgnetteScannerManager::SetStartPreparedScanResponse(
+    const absl::optional<lorgnette::StartPreparedScanResponse>& response) {
+  start_prepared_scan_response_ = response;
 }
 
 void FakeLorgnetteScannerManager::SetScanResponse(

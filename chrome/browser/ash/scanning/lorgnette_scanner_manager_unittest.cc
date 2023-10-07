@@ -247,6 +247,15 @@ class LorgnetteScannerManagerTest : public testing::Test {
                        base::Unretained(this)));
   }
 
+  // Calls LorgnetteScannerManager::StartPreparedScan() and binds a callback to
+  // process the result.
+  void StartPreparedScan() {
+    lorgnette_scanner_manager_->StartPreparedScan(
+        lorgnette::StartPreparedScanRequest(),
+        base::BindOnce(&LorgnetteScannerManagerTest::StartPreparedScanCallback,
+                       base::Unretained(this)));
+  }
+
   // Calls LorgnetteScannerManager::IsRotateAlternate() and returns result.
   bool GetRotateAlternate(const std::string& scanner_name,
                           const std::string& source_name) {
@@ -309,6 +318,11 @@ class LorgnetteScannerManagerTest : public testing::Test {
     return close_scanner_response_;
   }
 
+  absl::optional<lorgnette::StartPreparedScanResponse>
+  start_prepared_scan_response() const {
+    return start_prepared_scan_response_;
+  }
+
   std::vector<std::string> scan_data() const { return scan_data_; }
   lorgnette::ScanFailureMode failure_mode() const { return failure_mode_; }
   bool cancel_scan_success() const { return cancel_scan_success_; }
@@ -347,6 +361,12 @@ class LorgnetteScannerManagerTest : public testing::Test {
     run_loop_->Quit();
   }
 
+  void StartPreparedScanCallback(
+      const absl::optional<lorgnette::StartPreparedScanResponse>& response) {
+    start_prepared_scan_response_ = response;
+    run_loop_->Quit();
+  }
+
   // Handles receiving a page from LorgnetteScannerManager::Scan().
   void PageCallback(std::string page_data, uint32_t /*page_number*/) {
     scan_data_.push_back(page_data);
@@ -378,6 +398,8 @@ class LorgnetteScannerManagerTest : public testing::Test {
   absl::optional<lorgnette::ScannerCapabilities> scanner_capabilities_;
   absl::optional<lorgnette::OpenScannerResponse> open_scanner_response_;
   absl::optional<lorgnette::CloseScannerResponse> close_scanner_response_;
+  absl::optional<lorgnette::StartPreparedScanResponse>
+      start_prepared_scan_response_;
   lorgnette::ScanFailureMode failure_mode_ =
       lorgnette::SCAN_FAILURE_MODE_NO_FAILURE;
   bool cancel_scan_success_ = false;
@@ -803,6 +825,26 @@ TEST_F(LorgnetteScannerManagerTest, CloseScanner) {
   WaitForResult();
   ASSERT_TRUE(close_scanner_response());
   EXPECT_THAT(response, EqualsProto(close_scanner_response().value()));
+}
+
+// Test starting a prepared scan.
+TEST_F(LorgnetteScannerManagerTest, StartPreparedScan) {
+  lorgnette::ScannerHandle handle;
+  handle.set_token("scanner-token");
+
+  lorgnette::JobHandle job_handle;
+  job_handle.set_token("job-handle-token");
+
+  lorgnette::StartPreparedScanResponse response;
+  *response.mutable_scanner() = std::move(handle);
+  response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+  *response.mutable_job_handle() = std::move(job_handle);
+
+  GetLorgnetteManagerClient()->SetStartPreparedScanResponse(response);
+  StartPreparedScan();
+  WaitForResult();
+  ASSERT_TRUE(start_prepared_scan_response());
+  EXPECT_THAT(response, EqualsProto(start_prepared_scan_response().value()));
 }
 
 // Test that scanning fails when GetScannerNames() has never been called.

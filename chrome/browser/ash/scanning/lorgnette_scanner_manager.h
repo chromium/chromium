@@ -34,6 +34,8 @@ class LorgnetteScannerManager : public KeyedService {
       const absl::optional<lorgnette::OpenScannerResponse>& response)>;
   using CloseScannerCallback = base::OnceCallback<void(
       const absl::optional<lorgnette::CloseScannerResponse>& response)>;
+  using StartPreparedScanCallback = base::OnceCallback<void(
+      const absl::optional<lorgnette::StartPreparedScanResponse>& response)>;
   using ProgressCallback =
       base::RepeatingCallback<void(uint32_t progress_percent,
                                    uint32_t page_number)>;
@@ -71,6 +73,13 @@ class LorgnetteScannerManager : public KeyedService {
   // absl::nullopt is returned in the callback.
   virtual void CloseScanner(const lorgnette::CloseScannerRequest& request,
                             CloseScannerCallback callback) = 0;
+
+  // Starts a scan using information in |request| and returns the result using
+  // the provided |callback|.  If an error occurs, absl::nullopt is returned in
+  // the callback.
+  virtual void StartPreparedScan(
+      const lorgnette::StartPreparedScanRequest& request,
+      StartPreparedScanCallback callback) = 0;
 
   // Returns whether or not an ADF scanner that flips alternate pages was
   // selected based on |scanner_name| and |source_name|.

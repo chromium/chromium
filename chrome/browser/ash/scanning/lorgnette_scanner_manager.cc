@@ -223,6 +223,15 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   }
 
   // LorgnetteScannerManager:
+  void StartPreparedScan(const lorgnette::StartPreparedScanRequest& request,
+                         StartPreparedScanCallback callback) override {
+    GetLorgnetteManagerClient()->StartPreparedScan(
+        request, base::BindOnce(
+                     &LorgnetteScannerManagerImpl::OnStartPreparedScanResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  // LorgnetteScannerManager:
   bool IsRotateAlternate(const std::string& scanner_name,
                          const std::string& source_name) override {
     if (!RE2::PartialMatch(source_name, RE2("(?i)adf duplex"))) {
@@ -389,6 +398,12 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   void OnCloseScannerResponse(
       CloseScannerCallback callback,
       absl::optional<lorgnette::CloseScannerResponse> response) {
+    std::move(callback).Run(response);
+  }
+
+  void OnStartPreparedScanResponse(
+      StartPreparedScanCallback callback,
+      absl::optional<lorgnette::StartPreparedScanResponse> response) {
     std::move(callback).Run(response);
   }
 
