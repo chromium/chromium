@@ -22,7 +22,7 @@ source_set("feature_list") {
     "flag_descriptions.cc",
     "flag_descriptions.h",
   ]
-
+  public_deps = [ ":utils" ]
   deps = [
     ":commerce_heuristics_data",
     ":pref_names",
@@ -418,6 +418,7 @@ source_set("utils") {
   ]
   deps = [
     ":commerce_constants",
+    "//base",
     "//net:net",
   ]
 }

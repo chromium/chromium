@@ -192,9 +192,6 @@ BASE_FEATURE(kPriceTrackingIconColors,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Discount on navigation
-BASE_FEATURE(kShowDiscountOnNavigation,
-             "ShowDiscountOnNavigation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kShowDiscountOnNavigationRegionLaunched,
              "ShowDiscountOnNavigationRegionLaunched",
              base::FEATURE_DISABLED_BY_DEFAULT);

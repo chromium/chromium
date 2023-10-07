@@ -27,10 +27,11 @@
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -743,6 +744,11 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
 IN_PROC_BROWSER_TEST_P(
     OfferNotificationBubbleViewsInteractiveUiTest,
     ShowShoppingServiceFreeListingOffer_WhenGPayPromoCodeOfferNotAvailable) {
+  // This test is for when commerce::kShowDiscountOnNavigation is enabled.
+  if (!base::FeatureList::IsEnabled(commerce::kShowDiscountOnNavigation)) {
+    return;
+  }
+
   const std::string domain_url = "www.merchantsite1.com";
   const GURL with_offer_url = GetUrl(domain_url, "/product1");
   const GURL without_offer_url = GetUrl(domain_url, "/product2");
@@ -758,11 +764,12 @@ IN_PROC_BROWSER_TEST_P(
       commerce::ShoppingServiceFactory::GetForBrowserContext(
           browser()->profile()));
   mock_shopping_service->SetIsDiscountEligibleToShowOnNavigation(true);
-  // Expect to call this once on every navigation, this test is navigated 4
-  // times.
+  // Expect to call this at least once on every navigation, this test is
+  // navigated 4 times.
   EXPECT_CALL(*mock_shopping_service, IsDiscountEligibleToShowOnNavigation)
-      .Times(4);
-  EXPECT_CALL(*mock_shopping_service, GetDiscountInfoForUrls).Times(4);
+      .Times(testing::AtLeast(4));
+  EXPECT_CALL(*mock_shopping_service, GetDiscountInfoForUrls)
+      .Times(testing::AtLeast(4));
 
   NavigateToAndWaitForForm(GetUrl(domain_url, "/"));
   EXPECT_FALSE(IsIconVisible());
@@ -839,8 +846,10 @@ IN_PROC_BROWSER_TEST_P(
             /*value_in_text=*/"$10 off", discount_code, discount_id,
             /*is_merchant_wide=*/false, expiry_time_sec)}}});
 
-  EXPECT_CALL(*mock_shopping_service, IsDiscountEligibleToShowOnNavigation);
-  EXPECT_CALL(*mock_shopping_service, GetDiscountInfoForUrls);
+  EXPECT_CALL(*mock_shopping_service, IsDiscountEligibleToShowOnNavigation)
+      .Times(testing::AtLeast(1));
+  EXPECT_CALL(*mock_shopping_service, GetDiscountInfoForUrls)
+      .Times(testing::AtLeast(1));
 
   SetUpGPayPromoCodeOfferDataWithDomains(
       {GetUrl("www.merchantsite1.com", "/"),
@@ -923,11 +932,12 @@ IN_PROC_BROWSER_TEST_P(
             non_merchant_wide_discount_id,
             /*is_merchant_wide=*/false, expiry_time_sec)}}});
 
-  // Expect to call this once on every navigation, this test is navigated 2
-  // times.
+  // Expect to call this at least once on every navigation, this test is
+  // navigated 3 times.
   EXPECT_CALL(*mock_shopping_service, IsDiscountEligibleToShowOnNavigation)
-      .Times(3);
-  EXPECT_CALL(*mock_shopping_service, GetDiscountInfoForUrls).Times(3);
+      .Times(testing::AtLeast(3));
+  EXPECT_CALL(*mock_shopping_service, GetDiscountInfoForUrls)
+      .Times(testing::AtLeast(3));
 
   SetUpGPayPromoCodeOfferDataWithDomains(
       {GetUrl("www.merchantsite1.com", "/"),
@@ -982,6 +992,45 @@ IN_PROC_BROWSER_TEST_P(
 
   NavigateToAndWaitForForm(with_non_merchant_wide_offer_url);
   EXPECT_TRUE(IsIconVisible());
+  EXPECT_FALSE(GetOfferNotificationBubbleViews());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest,
+    NotShowShoppingServiceFreeListingOfferWithoutUTM) {
+  const std::string non_merchant_wide_domain_url = "www.merchantsite1.com";
+  const GURL with_non_merchant_wide_offer_url =
+      GetUrl(non_merchant_wide_domain_url, "/first");
+  const std::string detail = "Discount description detail";
+  const std::string discount_code = "freelisting-discount-code";
+  const int64_t non_merchant_wide_discount_id = 123;
+  const double expiry_time_sec =
+      (AutofillClock::Now() + base::Days(2)).ToDoubleT();
+
+  auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
+      commerce::ShoppingServiceFactory::GetForBrowserContext(
+          browser()->profile()));
+  mock_shopping_service->SetIsDiscountEligibleToShowOnNavigation(true);
+  // Simulate FreeListingOffer for a product page on the
+  // `non_merchant_wide_domain_url`.
+  mock_shopping_service->SetResponseForGetDiscountInfoForUrls(
+      {{with_non_merchant_wide_offer_url,
+        {commerce::CreateValidDiscountInfo(
+            detail, /*terms_and_conditions=*/"",
+            /*value_in_text=*/"$10 off", discount_code,
+            non_merchant_wide_discount_id,
+            /*is_merchant_wide=*/false, expiry_time_sec)}}});
+
+  // Expect to call this at least once on every navigation, this test is
+  // navigated 1 time.
+  EXPECT_CALL(*mock_shopping_service, IsDiscountEligibleToShowOnNavigation)
+      .Times(testing::AtLeast(1));
+  EXPECT_CALL(*mock_shopping_service, GetDiscountInfoForUrls)
+      .Times(testing::AtLeast(1));
+
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
+  NavigateToAndWaitForForm(with_non_merchant_wide_offer_url);
+  EXPECT_FALSE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
 
