@@ -302,9 +302,11 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   def _TestWasSlow(self) -> bool:
     # Consider the test slow if it either had a relatively long time between
     # heartbeats or took up a significant chunk of the global timeout.
-    heartbeat_fraction = (self._longest_time_between_heartbeats /
-                          self._heartbeat_timeout)
-    heartbeat_was_slow = heartbeat_fraction > SLOW_HEARTBEAT_THRESHOLD
+    heartbeat_was_slow = False
+    if self._heartbeat_timeout > 0:
+      heartbeat_fraction = (self._longest_time_between_heartbeats /
+                            self._heartbeat_timeout)
+      heartbeat_was_slow = heartbeat_fraction > SLOW_HEARTBEAT_THRESHOLD
 
     global_fraction = (self._test_duration /
                        self._global_timeout_without_slow_multiplier)
