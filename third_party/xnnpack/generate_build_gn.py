@@ -33,7 +33,6 @@ import shutil
 import subprocess
 from operator import attrgetter
 
-
 _HEADER = '''
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
@@ -127,7 +126,7 @@ source_set("xnnpack_standalone") {
   ]
 
   public_configs = [ ":xnnpack_config" ]
-  
+
   if (!(is_android && use_order_profiling)) {
     assert_no_deps = [ "//base" ]
   }
@@ -180,7 +179,7 @@ source_set("%TARGET_NAME%_standalone") {
   ]
 
   public_configs = [ ":xnnpack_config" ]
-  
+
   if (!(is_android && use_order_profiling)) {
     assert_no_deps = [ "//base" ]
   }
@@ -193,6 +192,8 @@ _ANDROID_NDK_VERSION = 'android-ndk-r19c'
 _ANDROID_NDK_URL = 'https://dl.google.com/android/repository/android-ndk-r19c-linux-x86_64.zip'
 
 g_android_ndk = None
+
+
 def _ensure_android_ndk_available():
   """
   Ensures that the Android NDK is available to bazel, downloading a new copy if
@@ -203,27 +204,27 @@ def _ensure_android_ndk_available():
   global g_android_ndk
   if g_android_ndk:
     return g_android_ndk
-  g_android_ndk = '/tmp/'+_ANDROID_NDK_VERSION
+  g_android_ndk = '/tmp/' + _ANDROID_NDK_VERSION
   if os.path.exists(g_android_ndk):
     logging.info('Using existing Android NDK at ' + g_android_ndk)
     return g_android_ndk
   logging.info('Downloading new copy of the Android NDK')
   zipfile = '/tmp/{ndk}.zip'.format(ndk=_ANDROID_NDK_VERSION)
   subprocess.run(['wget', '-O', zipfile, _ANDROID_NDK_URL],
-    stdout=subprocess.DEVNULL,
-    stderr=subprocess.DEVNULL,
-    check=True)
+                 stdout=subprocess.DEVNULL,
+                 stderr=subprocess.DEVNULL,
+                 check=True)
   subprocess.run(['unzip', '-o', zipfile, '-d', '/tmp'],
-    stdout=subprocess.DEVNULL,
-    stderr=subprocess.DEVNULL,
-    check=True)
+                 stdout=subprocess.DEVNULL,
+                 stderr=subprocess.DEVNULL,
+                 check=True)
   return g_android_ndk
 
+
 # A SourceSet corresponds to a single source_set() gn tuple.
-SourceSet = collections.namedtuple(
-  'SourceSet',
-  ['dir', 'srcs', 'args'],
-  defaults=['', [], []])
+SourceSet = collections.namedtuple('SourceSet', ['dir', 'srcs', 'args'],
+                                   defaults=['', [], []])
+
 
 def NameForSourceSet(source_set):
   """
@@ -233,17 +234,18 @@ def NameForSourceSet(source_set):
     return 'xnnpack'
   if len(source_set.args) == 0:
     return source_set.dir
-  return '{dir}_{args}'.format(**{
-    'dir': source_set.dir,
-    'args': '-'.join([arg[2:] for arg in source_set.args]),
-  })
+  return '{dir}_{args}'.format(
+      **{
+          'dir': source_set.dir,
+          'args': '-'.join([arg[2:] for arg in source_set.args]),
+      })
+
 
 # An ObjectBuild corresponds to a single built object, which is parsed from a
 # single bazel compiler invocation on a single source file.
-ObjectBuild = collections.namedtuple(
-  'ObjectBuild',
-  ['src', 'dir', 'args'],
-  defaults=['', '', []])
+ObjectBuild = collections.namedtuple('ObjectBuild', ['src', 'dir', 'args'],
+                                     defaults=['', '', []])
+
 
 def _objectbuild_from_bazel_log(log_line):
   """
@@ -267,14 +269,16 @@ def _objectbuild_from_bazel_log(log_line):
       else:
         dir = src_path[2]
     if arg.startswith('-m'):
-     args.append(arg)
+      args.append(arg)
   return ObjectBuild(src=src, dir=dir, args=args)
+
 
 def _xnnpack_dir():
   """
   Returns the absolute path of //third_party/xnnpack/.
   """
   return os.path.dirname(os.path.realpath(__file__))
+
 
 def _tflite_dir():
   """
@@ -283,6 +287,7 @@ def _tflite_dir():
   tp_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
   return os.path.join(tp_dir, "tflite", "src", "tensorflow", "lite")
 
+
 def _run_bazel_cmd(args):
   """
   Runs a bazel command in the form of bazel <args...>. Returns the stdout and
@@ -290,34 +295,36 @@ def _run_bazel_cmd(args):
   """
   exec_path = shutil.which("bazel")
   if not exec_path:
-    raise Exception("bazel is not installed. Please run `sudo apt-get install "
-                   + "bazel` or put the bazel executable in $PATH")
+    raise Exception(
+        "bazel is not installed. Please run `sudo apt-get install " +
+        "bazel` or put the bazel executable in $PATH")
   cmd = [exec_path]
   cmd.extend(args)
   env = os.environ
   env.update({
-    'ANDROID_NDK_HOME': _ensure_android_ndk_available(),
+      'ANDROID_NDK_HOME': _ensure_android_ndk_available(),
   })
   proc = subprocess.Popen(cmd,
-    text=True,
-    cwd=_tflite_dir(),
-    stdout=subprocess.PIPE,
-    stderr=subprocess.PIPE,
-    env=env)
+                          text=True,
+                          cwd=_tflite_dir(),
+                          stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE,
+                          env=env)
   stdout, stderr = proc.communicate()
   if proc.returncode != 0:
     raise Exception("bazel command returned non-zero return code:\n"
-      "cmd: {cmd}\n"
-      "status: {status}\n"
-      "stdout: {stdout}\n"
-      "stderr: {stderr}".format(**{
-        'cmd': str(cmd),
-        'status': proc.returncode,
-        'stdout': stdout,
-        'stderr': stderr,
-      })
-    )
+                    "cmd: {cmd}\n"
+                    "status: {status}\n"
+                    "stdout: {stdout}\n"
+                    "stderr: {stderr}".format(
+                        **{
+                            'cmd': str(cmd),
+                            'status': proc.returncode,
+                            'stdout': stdout,
+                            'stderr': stderr,
+                        }))
   return stdout + "\n" + stderr
+
 
 def ListAllSrcs():
   """
@@ -326,16 +333,17 @@ def ListAllSrcs():
   """
   logging.info('Querying for the list of all XNNPACK srcs in :tensorflowlite')
   out = _run_bazel_cmd([
-    'cquery',
-    'kind("source file", deps(:tensorflowlite))',
-    '--define',
-    'xnn_enable_jit=false',
+      'cquery',
+      'kind("source file", deps(:tensorflowlite))',
+      '--define',
+      'xnn_enable_jit=false',
   ])
   srcs = []
   for line in out.split('\n'):
     if line.startswith('@XNNPACK//:'):
       srcs.append(os.path.join('src', line.split()[0][len("@XNNPACK//:"):]))
   return srcs
+
 
 def GenerateObjectBuilds(srcs):
   """
@@ -346,15 +354,16 @@ def GenerateObjectBuilds(srcs):
   _run_bazel_cmd(['clean'])
   logging.info('Building xnnpack with bazel...')
   logs = _run_bazel_cmd([
-    'build',
-    ':tensorflowlite',
-    '-s',
-    '-c', 'opt',
-    '--define',
-    'xnn_enable_jit=false',
+      'build',
+      ':tensorflowlite',
+      '-s',
+      '-c',
+      'opt',
+      '--define',
+      'xnn_enable_jit=false',
   ])
-  logging.info('scraping %d log lines from bazel build...'
-                % len(logs.split('\n')))
+  logging.info('scraping %d log lines from bazel build...' %
+               len(logs.split('\n')))
   obs = []
   for log in logs.split('\n'):
     ob = _objectbuild_from_bazel_log(log)
@@ -363,10 +372,11 @@ def GenerateObjectBuilds(srcs):
   logging.info('Scraped %d built objects' % len(obs))
   return obs
 
+
 def CombineObjectBuildsIntoSourceSets(obs):
   """
   Combines all the given ObjectBuild's into SourceSet's by combining source
-  files whose SourceSet name's (that is thier directory and compiler flags)
+  files whose SourceSet name's (that is their directory and compiler flags)
   match.
   """
   sss = {}
@@ -381,8 +391,9 @@ def CombineObjectBuildsIntoSourceSets(obs):
       sss[name] = ss
   xxnpack_ss = sss.pop('xnnpack')
   logging.info('Generated %d sub targets for xnnpack' % len(sss))
-  return xxnpack_ss, sorted(
-    list(sss.values()), key=lambda ss: NameForSourceSet(ss))
+  return xxnpack_ss, sorted(list(sss.values()),
+                            key=lambda ss: NameForSourceSet(ss))
+
 
 def MakeTargetSourceSet(ss):
   """
@@ -390,14 +401,13 @@ def MakeTargetSourceSet(ss):
   XNNPACK target, returning it as a string.
   """
   target = _TARGET_TMPL
-  target = target.replace('%ARGS%', ',\n'.join([
-    '    "%s"' % arg for arg in sorted(ss.args)
-  ]))
-  target = target.replace('%SRCS%', ',\n'.join([
-    '    "%s"' % src for src in sorted(ss.srcs)
-  ]))
+  target = target.replace(
+      '%ARGS%', ',\n'.join(['    "%s"' % arg for arg in sorted(ss.args)]))
+  target = target.replace(
+      '%SRCS%', ',\n'.join(['    "%s"' % src for src in sorted(ss.srcs)]))
   target = target.replace('%TARGET_NAME%', NameForSourceSet(ss))
   return target
+
 
 def MakeXNNPACKSourceSet(ss, other_targets):
   """
@@ -405,16 +415,15 @@ def MakeXNNPACKSourceSet(ss, other_targets):
   XNNPACK SourceSet and the names of all its supporting targets.
   """
   target = _MAIN_TMPL
-  target = target.replace('%SRCS%', ',\n'.join([
-    '    "%s"' % src for src in sorted(ss.srcs)
-  ]))
-  target = target.replace('%TARGETS%', ',\n'.join([
-    '    ":%s"' % t for t in sorted(other_targets)
-  ]))
-  target = target.replace('%STANDALONE_TARGETS%', ',\n'.join([
-    '    ":%s_standalone"' % t for t in sorted(other_targets)
-  ]))
+  target = target.replace(
+      '%SRCS%', ',\n'.join(['    "%s"' % src for src in sorted(ss.srcs)]))
+  target = target.replace(
+      '%TARGETS%', ',\n'.join(['    ":%s"' % t for t in sorted(other_targets)]))
+  target = target.replace(
+      '%STANDALONE_TARGETS%',
+      ',\n'.join(['    ":%s_standalone"' % t for t in sorted(other_targets)]))
   return target
+
 
 def main():
   logging.basicConfig(level=logging.INFO)
@@ -427,8 +436,7 @@ def main():
   for ss in other_sss:
     sub_targets.append(MakeTargetSourceSet(ss))
   xnnpack_target = MakeXNNPACKSourceSet(
-      xnnpack_ss,
-      [NameForSourceSet(ss) for ss in other_sss])
+      xnnpack_ss, [NameForSourceSet(ss) for ss in other_sss])
 
   out_path = os.path.join(_xnnpack_dir(), 'BUILD.gn')
   logging.info('Writing to ' + out_path)
