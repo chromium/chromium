@@ -68,6 +68,11 @@ ComponentFiles::ComponentFiles(
   // TODO(b/297824387): Consider fixing file path separators for Windows when
   // files with sub-directories are added.
   for (auto& relative_file_path : files_list) {
+    // Ignore comment lines.
+    if (relative_file_path.empty() || relative_file_path[0] == '#') {
+      continue;
+    }
+
     const base::FilePath full_path =
 #if BUILDFLAG(IS_WIN)
         component_folder.Append(base::UTF8ToWide(relative_file_path));
