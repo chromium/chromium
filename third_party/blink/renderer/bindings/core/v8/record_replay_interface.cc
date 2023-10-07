@@ -162,7 +162,7 @@ const {
   fromJsGetArgumentsInFrame,
   fromJsGetObjectByCdpId,
   fromJsIsBlinkObject,
-  fromJsGetNodeId,
+  fromJsGetNodeIdByCpdId,
   fromJsGetBoxModel,
   fromJsGetMatchedStylesForElement,
   fromJsCssGetStylesheetByCpdId,
@@ -206,8 +206,9 @@ function warning(...args) {
 
 function assert(v, msg = "") {
   if (!v) {
-    log(`[RuntimeError] Assertion failed ${msg} ${Error().stack}`);
-    throw new Error("Assertion failed!");
+    const m = `Command handler Assertion failed (${msg})`;
+    log(`[RuntimeError] ${m} - ${Error().stack}`);
+    throw new Error(m);
   }
 }
 
@@ -1076,21 +1077,12 @@ function getCdpScopeByRrpId(rrpScopeId) {
   return scope;
 }
 
-
-/**
- * Get blink's `nodeId` by `cdpId`.
- *
- * @param {*} cdpId
- */
-function getBlinkNodeIdByCdpId(cdpId) {
-  const nodeId = fromJsGetNodeId(cdpId);
-  assert(nodeId);
-  return nodeId;
-}
-
 function getBlinkNodeIdByRrpId(nodeRrpId) {
   const cdpObject = getCdpObjectByRrpId(nodeRrpId);
-  return getBlinkNodeIdByCdpId(cdpObject.objectId);
+  const nodeId = fromJsGetNodeIdByCpdId(cdpObject.objectId);
+  // Note: Don't generate assert message if assert did not fail.
+  assert(nodeId, !nodeId && `${nodeRrpId}: ${JSON.stringify(cdpObject)}`);
+  return nodeId;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2933,7 +2925,7 @@ function adjustCoordinateByTransformMatrix(coord, m) {
 __RECORD_REPLAY_ARGUMENTS__.internal = {
   getBlinkNodeIdByRrpId,
   getCdpObjectByRrpId,
-  getBlinkNodeIdByCdpId,
+  fromJsGetNodeIdByCpdId,
   getPlainObjectByRrpId,
   registerPlainObject,
   gLastBoundingClientRectsByNodeRrpId,
@@ -4742,7 +4734,7 @@ static bool checkCDPResponse(const char* label,
   return true;
 }
 
-static void fromJsGetNodeId(const v8::FunctionCallbackInfo<v8::Value>& args) {
+static void fromJsGetNodeIdByCpdId(const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(args.Length() == 1 && args[0]->IsString() &&
         "[RuntimeError] must be called with a single string");
 
@@ -4755,7 +4747,7 @@ static void fromJsGetNodeId(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
   v8::Local<v8::Object> nodeObj;
   if (getObjectByCdpId(isolate, cdpIdV8, nodeObj)) {
-    Node* node = V8Node::ToImpl(nodeObj);
+    Node* node = V8Node::ToImplWithTypeCheck(isolate, nodeObj);
     if (node) {
       // Bind node and get nodeId.
       auto* domAgent = getOrCreateInspectorDOMAgent(isolate);
@@ -4763,10 +4755,10 @@ static void fromJsGetNodeId(const v8::FunctionCallbackInfo<v8::Value>& args) {
       args.GetReturnValue().Set(v8::Number::New(isolate, nodeId));
       return;
     } else {
-      recordreplay::Print("[RuntimeError] fromJsGetNodeId failed for cdpId: \"%s\"", *cdpId);
+      // This should be reported by the caller, where we have more relevant
+      // context info.
     }
-  } else { /* already reported */
-  }
+  } else { /* already reported by getObjectByCdpId */ }
 
   args.GetReturnValue().SetNull();
 }
@@ -4943,11 +4935,11 @@ static void fromJsCollectEventListeners(const v8::FunctionCallbackInfo<v8::Value
   v8::Isolate* isolate = args.GetIsolate();
   auto context = isolate->GetCurrentContext();
   auto nodeObject = args[0].As<v8::Object>();
-  auto* node = V8Node::ToImpl(nodeObject);
+  auto* node = V8Node::ToImplWithTypeCheck(isolate, nodeObject);
 
   v8::Local<v8::Array> result = v8::Array::New(isolate);
   if (!node) {
-    recordreplay::Warning("JS fromJsCollectEventListeners invalid argument is not blink Node");
+    recordreplay::Warning("JS fromJsCollectEventListeners: invalid argument is not blink Node");
   } else {
     auto report_for_all_contexts = true;
     V8EventListenerInfoList eventListenerInfos;
@@ -5171,7 +5163,7 @@ void OnNewWindow1(v8::Isolate* isolate, LocalFrame* localFrame) {
   //                     jsGetObjectIdForAnyObject);
   // SetFunctionProperty(isolate, args, "jsPreviewBlinkObjectForObjectId",
   // jsPreviewBlinkObjectForObjectId);
-  SetFunctionProperty(isolate, args, "fromJsGetNodeId", fromJsGetNodeId);
+  SetFunctionProperty(isolate, args, "fromJsGetNodeIdByCpdId", fromJsGetNodeIdByCpdId);
   SetFunctionProperty(isolate, args, "fromJsGetBoxModel", fromJsGetBoxModel);
   SetFunctionProperty(isolate, args, "fromJsGetMatchedStylesForElement",
                       fromJsGetMatchedStylesForElement);
