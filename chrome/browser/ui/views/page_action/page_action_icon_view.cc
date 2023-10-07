@@ -199,6 +199,7 @@ void PageActionIconView::ExecuteCommand(ExecuteSource source) {
   OnExecuting(source);
   if (command_updater_)
     command_updater_->ExecuteCommand(command_id_);
+  DidExecute(source);
 }
 
 const gfx::VectorIcon& PageActionIconView::GetVectorIconBadge() const {

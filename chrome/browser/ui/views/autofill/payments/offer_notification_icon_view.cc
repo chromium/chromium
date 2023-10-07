@@ -19,11 +19,15 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_class_properties.h"
 
 namespace autofill {
 constexpr double kAnimationValueWhenLabelFullyShown = 0.5;
 constexpr base::TimeDelta kLabelPersistDuration = base::Seconds(10.8);
+
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kLabelAnimationFinished);
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kLabelExpansionFinished);
 
 OfferNotificationIconView::OfferNotificationIconView(
     CommandUpdater* command_updater,
@@ -71,6 +75,12 @@ void OfferNotificationIconView::UpdateImpl() {
   SetVisible(command_enabled);
 }
 
+void OfferNotificationIconView::OnWidgetDestroying(views::Widget* widget) {
+  CHECK(bubble_widget_observation_.IsObservingSource(widget));
+  bubble_widget_observation_.Reset();
+  UnpauseAnimation();
+}
+
 void OfferNotificationIconView::MaybeShowPageActionLabel() {
   OfferNotificationBubbleController* controller = GetController();
   if (!controller || !controller->ShouldIconExpand()) {
@@ -91,6 +101,11 @@ void OfferNotificationIconView::HidePageActionLabel() {
   ResetSlideAnimation(false);
 }
 
+base::RetainingOneShotTimer& OfferNotificationIconView::AnimateOutTimer() {
+  return animate_out_timer_for_testing_ ? *animate_out_timer_for_testing_
+                                        : animate_out_timer_;
+}
+
 void OfferNotificationIconView::AnimationProgressed(
     const gfx::Animation* animation) {
   PageActionIconView::AnimationProgressed(animation);
@@ -105,15 +120,41 @@ void OfferNotificationIconView::AnimationProgressed(
       GetAnimationValue() >= kAnimationValueWhenLabelFullyShown) {
     should_extend_label_shown_duration_ = false;
     PauseAnimation();
-    animate_out_timer_.Start(
-        FROM_HERE, kLabelPersistDuration,
-        base::BindRepeating(&OfferNotificationIconView::UnpauseAnimation,
-                            base::Unretained(this)));
+
+    auto* bubble = GetBubble();
+    if (bubble) {
+      bubble_widget_observation_.Observe(bubble->GetWidget());
+    } else {
+      AnimateOutTimer().Start(
+          FROM_HERE, kLabelPersistDuration,
+          base::BindRepeating(&OfferNotificationIconView::UnpauseAnimation,
+                              base::Unretained(this)));
+    }
+    views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+        kLabelExpansionFinished, this);
   }
 }
 
+void OfferNotificationIconView::AnimationEnded(
+    const gfx::Animation* animation) {
+  PageActionIconView::AnimationEnded(animation);
+
+  views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+      kLabelAnimationFinished, this);
+}
+
 void OfferNotificationIconView::OnExecuting(
-    PageActionIconView::ExecuteSource execute_source) {}
+    PageActionIconView::ExecuteSource execute_source) {
+  if (AnimateOutTimer().IsRunning()) {
+    AnimateOutTimer().Stop();
+  }
+}
+
+void OfferNotificationIconView::DidExecute(ExecuteSource execute_source) {
+  auto* bubble = GetBubble();
+  CHECK(bubble);
+  bubble_widget_observation_.Observe(bubble->GetWidget());
+}
 
 const gfx::VectorIcon& OfferNotificationIconView::GetVectorIcon() const {
   return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
@@ -124,6 +165,11 @@ const gfx::VectorIcon& OfferNotificationIconView::GetVectorIcon() const {
 const std::u16string& OfferNotificationIconView::GetIconLabelForTesting()
     const {
   return label()->GetText();
+}
+
+void OfferNotificationIconView::SetAnimateOutTimerForTesting(
+    base::RetainingOneShotTimer* timer) {
+  animate_out_timer_for_testing_ = timer;
 }
 
 OfferNotificationBubbleController* OfferNotificationIconView::GetController()
