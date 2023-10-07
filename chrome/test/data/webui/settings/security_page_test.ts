@@ -754,24 +754,9 @@ suite('SafeBrowsing', function() {
     assertTrue(page.$.safeBrowsingStandard.expanded);
   });
 
-  test('enhancedProtectionExpandedIfEsbCollapseDisabled', function() {
-    // Enhanced protection should be pre-expanded if the param is set to
-    // enhanced and enableEsbCollapse is false.
-    loadTimeData.overrideValues({enableEsbCollapse: false});
-    Router.getInstance().navigateTo(
-        routes.SECURITY,
-        /* dynamicParams= */ new URLSearchParams('q=enhanced'));
-    assertEquals(
-        page.prefs.generated.safe_browsing.value, SafeBrowsingSetting.STANDARD);
-    assertTrue(page.$.safeBrowsingEnhanced.expanded);
-    assertFalse(page.$.safeBrowsingStandard.expanded);
-  });
-
-  test('enhancedProtectionCollapsedIfEsbCollapseEnabled', function() {
+  test('enhancedProtectionCollapsedIfParamIsEnhanced', function() {
     // Enhanced protection should be collapsed if the param is set to
-    // enhanced and enableEsbCollapse is true.
-    loadTimeData.overrideValues({enableEsbCollapse: true});
-
+    // enhanced.
     Router.getInstance().navigateTo(
         routes.SECURITY,
         /* dynamicParams= */ new URLSearchParams('q=enhanced'));

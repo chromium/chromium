@@ -758,29 +758,6 @@ const FeatureEntry::FeatureVariation
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kEsbIphBubbleAndCollapseSettingsEnableIph[] = {
-    {"EnableEsbIphBubble", "true"}};
-
-const FeatureEntry::FeatureParam
-    kEsbIphBubbleAndCollapseSettingsEnableCollapse[] = {
-        {"EnableEsbSettingCollapse", "true"}};
-
-const FeatureEntry::FeatureParam kEsbIphBubbleAndCollapseSettingsBothEnabled[] =
-    {{"EnableEsbIphBubble", "true"}, {"EnableEsbSettingCollapse", "true"}};
-
-const FeatureEntry::FeatureVariation
-    kEsbIphBubbleAndCollapseSettingsVariations[] = {
-        {"IPH and Settings Collapse",
-         kEsbIphBubbleAndCollapseSettingsBothEnabled,
-         std::size(kEsbIphBubbleAndCollapseSettingsBothEnabled), nullptr},
-        {"IPH Only", kEsbIphBubbleAndCollapseSettingsEnableIph,
-         std::size(kEsbIphBubbleAndCollapseSettingsEnableIph), nullptr},
-        {"Settings Collapse Only",
-         kEsbIphBubbleAndCollapseSettingsEnableCollapse,
-         std::size(kEsbIphBubbleAndCollapseSettingsEnableCollapse), nullptr}};
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::FeatureParam kForceDark_SimpleHsl[] = {
     {"inversion_method", "hsl_based"},
@@ -8795,18 +8772,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"animated-image-resume", flag_descriptions::kAnimatedImageResumeName,
      flag_descriptions::kAnimatedImageResumeDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kAnimatedImageResume)},
-
-#if !BUILDFLAG(IS_ANDROID)
-    {"enable-enhanced-safe-browsing-settings-improvements",
-     flag_descriptions::kEnableEnhancedSafeBrowsingSettingsImprovementsName,
-     flag_descriptions::
-         kEnableEnhancedSafeBrowsingSettingsImprovementsDescription,
-     kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         safe_browsing::kEsbIphBubbleAndCollapseSettings,
-         kEsbIphBubbleAndCollapseSettingsVariations,
-         "EsbIphBubbleAndCollapseSettingsVariations")},
-#endif  // !BUILDFLAG(IS_ANDROID)
 
     {"enable-friendlier-safe-browsing-settings-enhanced-protection",
      flag_descriptions::

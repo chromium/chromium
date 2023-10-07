@@ -69,22 +69,6 @@ BASE_DECLARE_FEATURE(kDownloadBubbleV2);
 // server-side.
 BASE_DECLARE_FEATURE(kDownloadTailoredWarnings);
 
-// Enables instructional improvements when users are directed to the security
-// settings page to enable Enhanced Safe Browsing. Enables the In-page help
-// (IPH) Bubble to be shown when the user is referred from an ESB promotion.
-// The ESB option will also be collapsed on page load. If not enabled,
-// no IPH bubble will appear and the ESB option will be expanded on page load.
-BASE_DECLARE_FEATURE(kEsbIphBubbleAndCollapseSettings);
-
-// Specifies whether the ESB IPH bubble on the security settings page is
-// enabled or not.
-extern const base::FeatureParam<bool> kEsbIphBubbleAndCollapseSettingsEnableIph;
-
-// Specifies whether the ESB option on the security settings page is collapsed
-// or not.
-extern const base::FeatureParam<bool>
-    kEsbIphBubbleAndCollapseSettingsEnableCollapse;
-
 // Enables decreased Phishguard password length minimum.
 BASE_DECLARE_FEATURE(kEvaluateProtectedPasswordLengthMinimum);
 

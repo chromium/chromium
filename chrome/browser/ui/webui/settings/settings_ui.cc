@@ -350,14 +350,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableExtendedSettingsDescriptions",
       base::FeatureList::IsEnabled(features::kExtendedSettingsDescriptions));
 
-  html_source->AddBoolean("esbSettingsImprovementsEnabled",
-                          base::FeatureList::IsEnabled(
-                              safe_browsing::kEsbIphBubbleAndCollapseSettings));
-
-  html_source->AddBoolean(
-      "enableEsbCollapse",
-      safe_browsing::kEsbIphBubbleAndCollapseSettingsEnableCollapse.Get());
-
   html_source->AddBoolean(
       "enableFriendlierSafeBrowsingSettings",
       base::FeatureList::IsEnabled(

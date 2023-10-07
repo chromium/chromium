@@ -740,9 +740,6 @@ extern const char kDownloadRangeDescription[];
 extern const char kEarlyDocumentSwapForBackForwardTransitionsName[];
 extern const char kEarlyDocumentSwapForBackForwardTransitionsDescription[];
 
-extern const char kEnableEnhancedSafeBrowsingSettingsImprovementsName[];
-extern const char kEnableEnhancedSafeBrowsingSettingsImprovementsDescription[];
-
 extern const char kEnableFriendlierSafeBrowsingSettingsEnhancedProtectionName[];
 extern const char
     kEnableFriendlierSafeBrowsingSettingsEnhancedProtectionDescription[];

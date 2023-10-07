@@ -241,8 +241,7 @@ export class SettingsSecurityPageElement extends
       const queryParams = Router.getInstance().getQueryParameters();
       const section = queryParams.get('q');
       if (section === 'enhanced') {
-        this.$.safeBrowsingEnhanced.expanded =
-            !loadTimeData.getBoolean('enableEsbCollapse');
+        this.$.safeBrowsingEnhanced.expanded = false;
         this.$.safeBrowsingStandard.expanded = false;
       }
     }

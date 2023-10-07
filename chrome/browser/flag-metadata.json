@@ -2660,11 +2660,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-enhanced-safe-browsing-settings-improvements",
-    "owners": [ "awado", "jacastro", "chrome-counter-abuse-alerts@google.com"],
-    "expiry_milestone": 114
-  },
-  {
     "name": "enable-eol-notification-reset-dismissed-prefs",
     "owners": [ "mmourgos", "tbarzic"],
     "expiry_milestone": 116

@@ -1241,13 +1241,6 @@ const char kEarlyDocumentSwapForBackForwardTransitionsDescription[] =
     "shortly after starting some back/forward navigations to a new document, "
     "without waiting for the new navigation to complete.";
 
-const char kEnableEnhancedSafeBrowsingSettingsImprovementsName[] =
-    "Enable enhanced safe browsing settings improvements";
-const char kEnableEnhancedSafeBrowsingSettingsImprovementsDescription[] =
-    "Adds an in-product-help bubble to the ESB settings options when users are "
-    "directed to the chrome security settings page through ESB promotions and "
-    "also collapses the ESB option.";
-
 const char kEnableFriendlierSafeBrowsingSettingsEnhancedProtectionName[] =
     "Enable friendlier safe browsing settings enhanced protection";
 const char
