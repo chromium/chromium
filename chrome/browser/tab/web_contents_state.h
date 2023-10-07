@@ -48,6 +48,13 @@ class WebContentsState {
       int size,
       int saved_state_version);
 
+  static void GetRedirectChainFromByteBuffer(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& results,
+      void* data,
+      int size,
+      int saved_state_version);
+
   // Restores a WebContents from the passed in state.
   static base::android::ScopedJavaLocalRef<jobject>
   RestoreContentsFromByteBuffer(JNIEnv* env,

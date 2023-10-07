@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/logging.h"
 #include "base/pickle.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sessions/core/serialized_navigation_driver.h"
@@ -121,6 +122,7 @@ enum TypeMask {
 
 void SerializedNavigationEntry::WriteToPickle(int max_size,
                                               base::Pickle* pickle) const {
+  LOG(ERROR) << "SerializedNavigationEntry::WriteToPickle max_size=" << max_size;
   pickle->WriteInt(index_);
 
   int bytes_written = 0;
@@ -174,6 +176,15 @@ void SerializedNavigationEntry::WriteToPickle(int max_size,
   // This was used for the number of child task ids, followed by an int64
   // for each child task id.
   pickle->WriteInt(0);
+
+  int redirect_chain_size = redirect_chain_.size();
+  pickle->WriteInt(redirect_chain_size);
+  LOG(ERROR) << "SerializedNavigationEntry::WriteToPickle redirect_chain_size=" << redirect_chain_size;
+  for (std::vector<GURL>::const_iterator iter = redirect_chain_.begin();
+        iter != redirect_chain_.end(); ++iter) {
+    LOG(ERROR) << "SerializedNavigationEntry::WriteToPickle url=" << iter->spec();
+    WriteStringToPickle(pickle, &bytes_written, max_size, iter->spec());
+  }
 }
 
 bool SerializedNavigationEntry::ReadFromPickle(base::PickleIterator* iterator) {
@@ -269,6 +280,21 @@ bool SerializedNavigationEntry::ReadFromPickle(base::PickleIterator* iterator) {
     // Child task ids are no longer used.
     int children_task_ids_size = 0;
     std::ignore = iterator->ReadInt(&children_task_ids_size);
+
+    int redirect_chain_size = 0;
+    std::ignore = iterator->ReadInt(&redirect_chain_size);
+    LOG(ERROR) << "SerializedNavigationEntry::ReadFromPickle redirect_chain_size=" << redirect_chain_size;
+    if (redirect_chain_size > 0) {
+      std::string url_spec;
+      for (int i = 0; i < redirect_chain_size; i++) {
+        if (iterator->ReadString(&url_spec)) {
+          LOG(ERROR) << "SerializedNavigationEntry::ReadFromPickle url_spec=" << url_spec;
+          redirect_chain_.push_back(GURL(url_spec));
+        } else {
+          LOG(ERROR) << "SerializedNavigationEntry::ReadFromPickle url_spec read failed at " << i;
+        }
+      }
+    }
   }
 
   SerializedNavigationDriver::Get()->Sanitize(this);

@@ -2620,6 +2620,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     const absl::optional<blink::Impression>& impression,
     base::TimeTicks navigation_start_time,
     absl::optional<bool> is_fenced_frame_opaque_url) {
+  LOG(ERROR) << "NavigationControllerImpl::NavigateFromFrameProxy";
   if (is_renderer_initiated)
     DCHECK(initiator_origin.has_value());
 
@@ -2638,8 +2639,10 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   // directly, passing them to the destination RenderFrameHost.  See
   // https://crbug.com/536906.
   std::unique_ptr<NavigationEntryImpl> entry;
+  LOG(ERROR) << "NavigationControllerImpl::NavigateFromFrameProxy is_main_frame=" << render_frame_host->is_main_frame();
   if (!render_frame_host->is_main_frame()) {
     // Subframe case: create FrameNavigationEntry.
+    LOG(ERROR) << "NavigationControllerImpl::NavigateFromFrameProxy GetLastCommittedEntry=" << GetLastCommittedEntry();
     if (GetLastCommittedEntry()) {
       entry = GetLastCommittedEntry()->Clone();
       entry->set_extra_headers(extra_headers);
@@ -2651,6 +2654,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
       // If there's no last committed entry, create an entry for about:blank
       // with a subframe entry for our destination.
       // TODO(creis): Ensure this case can't exist in https://crbug.com/524208.
+      LOG(ERROR) << "NavigationControllerImpl::NavigateFromFrameProxy kAboutBlankURL";
       entry = NavigationEntryImpl::FromNavigationEntry(CreateNavigationEntry(
           GURL(url::kAboutBlankURL), referrer, initiator_origin,
           source_site_instance, page_transition, is_renderer_initiated,
@@ -3511,6 +3515,9 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
     bool override_user_agent,
     bool should_replace_current_entry,
     bool has_user_gesture) {
+  LOG(ERROR) << "NavigationControllerImpl::CreateNavigationEntryFromLoadParams"
+    << " should_replace_current_entry=" << should_replace_current_entry
+    << " url=" << params.url.spec() << " referrer=" << params.referrer.url.spec();
   // Browser initiated navigations might not have a blob_url_loader_factory set
   // in params even if the navigation is to a blob URL. If that happens, lookup
   // the correct url loader factory to use here.
@@ -3529,6 +3536,9 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
   base::ReplaceChars(params.extra_headers, "\n", "\r\n", &extra_headers_crlf);
 
   // For subframes, create a pending entry with a corresponding frame entry.
+  LOG(ERROR) << "NavigationControllerImpl::CreateNavigationEntryFromLoadParams"
+    << " IsMainFrame=" << node->IsMainFrame()
+    << " GetLastCommittedEntry=" << GetLastCommittedEntry();
   if (!node->IsMainFrame()) {
     if (GetLastCommittedEntry()) {
       entry = GetLastCommittedEntry()->Clone();
@@ -3536,6 +3546,7 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
       // If there's no last committed entry, create an entry for about:blank
       // with a subframe entry for our destination.
       // TODO(creis): Ensure this case can't exist in https://crbug.com/524208.
+      LOG(ERROR) << "NavigationControllerImpl::CreateNavigationEntryFromLoadParams kAboutBlankURL";
       entry = NavigationEntryImpl::FromNavigationEntry(CreateNavigationEntry(
           GURL(url::kAboutBlankURL), params.referrer, params.initiator_origin,
           params.source_site_instance.get(), params.transition_type,
@@ -3616,6 +3627,12 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
     FrameNavigationEntry* frame_entry,
     base::TimeTicks navigation_start_time,
     absl::optional<bool> is_fenced_frame_opaque_url) {
+  LOG(ERROR) << "NavigationControllerImpl::CreateNavigationRequestFromLoadParams"
+    << " url=" << params.url.spec()
+    << " reload_type=" << int(reload_type)
+    << " should_replace_current_entry=" << should_replace_current_entry
+    << " frame_entry.url=" << frame_entry->url().spec()
+    << " entry.originalUrl=" << entry->GetOriginalRequestURL().spec();
   DCHECK_EQ(-1, GetIndexOfEntry(entry));
   DCHECK(frame_entry);
   // All renderer-initiated navigations must have an initiator_origin.
@@ -3806,6 +3823,14 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
     bool is_same_document_history_load,
     bool is_history_navigation_in_new_child_frame,
     bool is_browser_initiated) {
+  LOG(ERROR) << "NavigationControllerImpl::CreateNavigationRequestFromEntry"
+    << " url=" << frame_entry->url().spec()
+    << " originalUrl=" << entry->GetOriginalRequestURL().spec()
+    << " reload_type=" << int(reload_type)
+    << " is_same_document_history_load=" << is_same_document_history_load
+    << " is_history_navigation_in_new_child_frame=" << is_history_navigation_in_new_child_frame
+    << " is_browser_initiated=" << is_browser_initiated
+    << " entry.reload_type=" << int(entry->reload_type());
   DCHECK(frame_entry);
   GURL dest_url = frame_entry->url();
   // We should never navigate to an existing initial NavigationEntry that is the

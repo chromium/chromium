@@ -399,6 +399,7 @@ bool RestoreFromState(content::WebContents* web_contents,
   bool success = ExtractNavigationEntries(data, size, saved_state_version,
                                           &is_off_the_record,
                                           &current_entry_index, &navigations);
+  LOG(ERROR) << "WebContentsState RestoreFromState ExtractNavigationEntries success=" << success;
   if (!success)
     return false;
 
@@ -517,6 +518,80 @@ ScopedJavaLocalRef<jstring> WebContentsState::GetVirtualUrlFromByteBuffer(
   sessions::SerializedNavigationEntry nav_entry =
       navigations.at(current_entry_index);
   return ConvertUTF8ToJavaString(env, nav_entry.virtual_url().spec());
+}
+
+void WebContentsState::GetRedirectChainFromByteBuffer(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& results,
+    void* data,
+    int size,
+    int saved_state_version) {
+  // TODO
+  bool is_off_the_record;
+  int current_entry_index;
+  std::vector<sessions::SerializedNavigationEntry> navigations;
+  bool success = ExtractNavigationEntries(data, size, saved_state_version,
+                                          &is_off_the_record,
+                                          &current_entry_index, &navigations);
+  if (!success)
+    return;
+
+/*
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  std::vector<std::unique_ptr<content::NavigationEntry>> entries =
+    sessions::ContentSerializedNavigationBuilder::ToNavigationEntries(
+      navigations, profile);
+
+
+
+  for (auto& entry : entries) {
+    if (entry->GetURL().is_empty()) {
+      // We're trying to restore an entry with an empty URL (e.g. from
+      // persisting the initial NavigationEntry [which is no longer possible but
+      // some old persisted sessions might still contain it] or when the
+      // serializer failed to write the URL because it's too long). Trying to
+      // restore and navigate to an entry with an empty URL will result in
+      // crashes, so change the URL to about:blank. See also
+      // https://crbug.com/1240138 and https://crbug.com/1299335.
+      entry->SetURL(GURL(url::kAboutBlankURL));
+    }
+    entries_.push_back(NavigationEntryImpl::FromNavigationEntry(std::move(entry)));
+  }
+  */
+
+
+
+  sessions::SerializedNavigationEntry nav_entry =
+      navigations.at(current_entry_index);
+
+  for (unsigned i = 0; i < navigations.size(); i++) {
+    sessions::SerializedNavigationEntry nav_entry = navigations.at(i);
+    const std::vector<GURL>& redirect_chain = nav_entry.redirect_chain();
+    if (redirect_chain.size() == 0) {
+      Java_WebContentsStateBridge_addUrlToRedirectChain(env, results, i,
+        ConvertUTF8ToJavaString(env, nav_entry.original_request_url().spec()));
+    } else {
+      for (std::vector<GURL>::const_iterator iter = redirect_chain.begin();
+            iter != redirect_chain.end(); ++iter) {
+        LOG(ERROR) << "WebContentsState::GetRedirectChainFromByteBuffer i=" << i << " url=" << iter->spec();
+        Java_WebContentsStateBridge_addUrlToRedirectChain(env, results, i,
+          ConvertUTF8ToJavaString(env, iter->spec()));
+      }
+    }
+  }
+  /*
+  std::string text = "";
+  const std::vector<GURL>& redirect_chain = nav_entry.redirect_chain();
+  for (std::vector<GURL>::const_iterator iter = redirect_chain.begin();
+        iter != redirect_chain.end(); ++iter) {
+    LOG(ERROR) << "WebContentsState::GetRedirectChainFromByteBuffer url=" << iter->spec();
+    if (text.size() > 0) {
+      text += ", ";
+    }
+    text += iter->spec();
+  }
+  return ConvertUTF8ToJavaString(env, text);
+  */
 }
 
 ScopedJavaLocalRef<jobject> WebContentsState::RestoreContentsFromByteBuffer(
@@ -694,4 +769,22 @@ JNI_WebContentsStateBridge_GetVirtualUrlFromByteBuffer(
       WebContentsState::GetVirtualUrlFromByteBuffer(env, data, size,
                                                     saved_state_version);
   return result;
+}
+
+static void
+JNI_WebContentsStateBridge_GetRedirectChainFromByteBuffer(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& results,
+    const JavaParamRef<jobject>& state,
+    jint saved_state_version) {
+  // TODO
+  void* data = env->GetDirectBufferAddress(state);
+  int size = env->GetDirectBufferCapacity(state);
+
+  // If the ByteBuffer is invalid for some reason, early out.
+  if (!data || size <= 0)
+    return;
+
+  WebContentsState::GetRedirectChainFromByteBuffer(env, results, data, size,
+                                                    saved_state_version);
 }

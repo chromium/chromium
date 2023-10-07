@@ -3,11 +3,14 @@ package com.ark.browser.ui.fragment.dialog;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,17 +31,19 @@ import com.ark.browser.ui.fragment.pageinfo.PageInfoFragment;
 import com.ark.browser.ui.fragment.settings.website.SingleWebsiteFragment;
 import com.ark.browser.ui.widget.DialogHeaderLayout;
 import com.ark.browser.ui.widget.FitWidthImageView;
+import com.ark.browser.ui.widget.RedirectChainView;
 import com.zpj.fragmentation.dialog.DialogAnimator;
 import com.zpj.fragmentation.dialog.base.OverDragBottomDialogFragment;
 import com.zpj.recyclerview.EasyRecycler;
 import com.zpj.recyclerview.EasyViewHolder;
 import com.zpj.recyclerview.IEasy;
 import com.zpj.recyclerview.decoration.ShadowItemDecoration;
+import com.zpj.skin.SkinEngine;
 import com.zpj.toast.ZToast;
 import com.zpj.utils.ClickHelper;
 import com.zpj.utils.ScreenUtils;
-import com.zpj.widget.checkbox.ZCheckBox;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.ui.base.Clipboard;
@@ -179,38 +184,69 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
     public void onBindViewHolder(EasyViewHolder holder, List<IPage> list, int position, List<Object> payloads) {
         PageInfo pageInfo = list.get(position).getPageInfo();
 
-//        ImageView ivThumbnail = holder.getView(R.id.iv_thumbnail);
-//        ViewGroup.LayoutParams params = ivThumbnail.getLayoutParams();
-//        params.width = mThumbnailWidth;
-//        params.height = mThumbnailHeight;
-//        ivThumbnail.setLayoutParams(params);
-//
-//        TabThumbnailManager.getInstance().loadTabThumbnail(ivThumbnail, tab);
+        ImageView ivThumbnail = holder.getView(R.id.iv_thumbnail);
+        TabGroupManager.global().getTabContentManager()
+                .loadSnapshot(pageInfo.getId(), false, new Callback<Bitmap>() {
+                    @Override
+                    public void onResult(Bitmap result) {
+                        if (result == null) {
+                            PageSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
+                        } else {
+                            ivThumbnail.setImageBitmap(result);
+                        }
+                    }
+                });
+
+        TextView tvTitle = holder.getTextView(R.id.tv_title);
+        tvTitle.setText(pageInfo.getTitle());
+        if (mSelectPosition == position) {
+            SkinEngine.setTextColor(tvTitle, R.attr.colorPrimary);
+        } else {
+            SkinEngine.setTextColor(tvTitle, R.attr.textColorMajor);
+        }
+
+//        holder.setText(R.id.tv_url, pageInfo.getUrl());
+
+        RedirectChainView urlChainContainer = holder.getView(R.id.url_chain_container);
+        urlChainContainer.setPageInfo(mTab, pageInfo);
 
 
-        FitWidthImageView ivThumbnail = holder.getView(R.id.iv_thumbnail);
-        ViewGroup.LayoutParams params = ivThumbnail.getLayoutParams();
-        params.width = mThumbnailWidth;
-        params.height = mThumbnailHeight;
-        ivThumbnail.setLayoutParams(params);
-        PageSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
+//        ArkWebContents arkWb = ArkWebManager.get(pageInfo.getId());
+//        if (arkWb != null && !arkWb.isDestroyed()) {
+//            NavigationHistory history = arkWb.getNavigationController().getNavigationHistory();
+//            for (int i = 0; i < history.getEntryCount(); i++) {
+//                NavigationEntry entry = history.getEntryAtIndex(i);
+//                if (entry.getRedirectChain() != null) {
+//                    for (int j = entry.getRedirectChain().size() - 1; j >= 0; j--) {
+//                        View chainUrl = LayoutInflater.from(context).inflate(R.layout.item_history_stack_url, null, false);
+//                        TextView tvUrl = chainUrl.findViewById(R.id.tv_url);
+//                        tvUrl.setText(entry.getRedirectChain().get(j).getSpec());
+//                        if (entry.getRedirectChain().get(j).equals(entry.getUrl())) {
+//                            SkinEngine.setTextColor(tvUrl, R.attr.colorPrimary);
+//                        }
+//                        urlChainContainer.addView(chainUrl);
+//                    }
+//                } else {
+//                    View chainUrl = LayoutInflater.from(context).inflate(R.layout.item_history_stack_url, null, false);
+//                    TextView tvUrl = chainUrl.findViewById(R.id.tv_url);
+//                    tvUrl.setText(entry.getUrl().getSpec());
+//                    SkinEngine.setTextColor(tvUrl, R.attr.colorPrimary);
+//                    urlChainContainer.addView(chainUrl);
+//                }
+//            }
+//        } else {
+//            View chainUrl = LayoutInflater.from(context).inflate(R.layout.item_history_stack_url, null, false);
+//            TextView tvUrl = chainUrl.findViewById(R.id.tv_url);
+//            tvUrl.setText(pageInfo.getUrl());
+//            SkinEngine.setTextColor(tvUrl, R.attr.colorPrimary);
+//            urlChainContainer.addView(chainUrl);
+//        }
 
-        holder.setText(R.id.tv_title, pageInfo.getTitle());
-        holder.setText(R.id.tv_url, pageInfo.getUrl());
-
-        final ZCheckBox checkBox = holder.getView(R.id.check_box);
-        checkBox.setOnClickListener(null);
-        checkBox.setChecked(mSelectPosition == position, false);
         holder.setOnItemClickListener(v -> {
-            if (!checkBox.isChecked()) {
+            if (mSelectPosition != position) {
                 mRecycler.notifyItemChanged(mSelectPosition);
-                mSelectPosition = holder.getAdapterPosition();
-                checkBox.setChecked(true, true);
-//                TabListManager.getInstance().selectTab(list.get(mSelectPosition).getId());
-//                dismiss();
-
+                mSelectPosition = position;
                 startAnim(ivThumbnail, pageInfo);
-
             }
         });
         ClickHelper.with(holder.getItemView())

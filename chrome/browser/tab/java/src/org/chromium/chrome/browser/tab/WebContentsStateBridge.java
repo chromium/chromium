@@ -7,11 +7,15 @@ package org.chromium.chrome.browser.tab;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Bridge into native serialization, deserialization, and management of {@link WebContentsState}.
@@ -101,6 +105,26 @@ public class WebContentsStateBridge {
                 contentsState.buffer(), contentsState.version());
     }
 
+    public static List<List<GURL>> getRedirectChainFromState(WebContentsState contentsState) {
+        List<List<GURL>> redirectChainList = new ArrayList<>();
+        WebContentsStateBridgeJni.get().getRedirectChainFromByteBuffer(
+                redirectChainList, contentsState.buffer(), contentsState.version());
+        return redirectChainList;
+    }
+
+    @CalledByNative
+    public static void addUrlToRedirectChain(List<List<GURL>> redirectChainList, int index, String url) {
+//        List<List<GURL>> redirectChainList = (List<List<GURL>>) redirectChain;
+
+        if (redirectChainList.size() > index) {
+            redirectChainList.get(index).add(new GURL(url));
+        } else {
+            List<GURL> urls = new ArrayList<>();
+            urls.add(new GURL(url));
+            redirectChainList.add(urls);
+        }
+    }
+
     @NativeMethods
     @VisibleForTesting
     public interface Natives {
@@ -114,5 +138,6 @@ public class WebContentsStateBridge {
                 int referrerPolicy, Origin initiatorOrigin, boolean isIncognito);
         String getDisplayTitleFromByteBuffer(ByteBuffer state, int savedStateVersion);
         String getVirtualUrlFromByteBuffer(ByteBuffer state, int savedStateVersion);
+        void getRedirectChainFromByteBuffer(List<List<GURL>> results, ByteBuffer state, int savedStateVersion);
     }
 }

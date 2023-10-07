@@ -665,6 +665,12 @@ void NavigationEntryImpl::SetOriginalRequestURL(const GURL& original_url) {
 }
 
 const GURL& NavigationEntryImpl::GetOriginalRequestURL() {
+  /*
+  const std::vector<GURL>& redirect_chain = root_node()->frame_entry->redirect_chain();
+  if (!redirect_chain.empty()) {
+    return redirect_chain[0];
+  }
+  */
   return original_request_url_;
 }
 
@@ -876,9 +882,36 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
   // TODO(https://crbug.com/1171225): Save redirect_response & redirect_infos in
   // FNE and copy them too?
   std::vector<GURL> redirects;
+  LOG(ERROR) << "NavigationEntryImpl::ConstructCommitNavigationParams"
+    << " reload_type=" << int(reload_type_)
+    << " original_url=" << original_url.spec()
+    << " virtual_url_=" << virtual_url_.spec()
+    << " original_request_url_=" << original_request_url_.spec()
+    << " frame_entry.url=" << frame_entry.url().spec()
+    << "\nintended_as_new_entry=" << intended_as_new_entry
+    << "\npending_history_list_offset=" << pending_history_list_offset
+    << "\ncurrent_history_list_offset=" << current_history_list_offset
+    << "\ncurrent_history_list_length=" << current_history_list_length
+    << "\nPageTransitionIsNewNavigation=" << ui::PageTransitionIsNewNavigation(GetTransitionType())
+    << " GetTransitionType=" << GetTransitionType()
+    << "\nframe_entry.redirect_chain.size=" << frame_entry.redirect_chain().size();
   if (ui::PageTransitionIsNewNavigation(GetTransitionType())) {
     redirects = frame_entry.redirect_chain();
+  } else if (ui::PageTransitionCoreTypeIs(transition_type_, ui::PageTransition::PAGE_TRANSITION_RELOAD)
+    || reload_type_ == ReloadType::NORMAL
+    || reload_type_ == ReloadType::BYPASSING_CACHE) {
+    // reload时保留重定向链
+    const std::vector<GURL>& redirect_chain = frame_entry.redirect_chain();
+    for (std::vector<GURL>::const_iterator iter = redirect_chain.begin();
+          iter != redirect_chain.end(); ++iter) {
+      if (*iter == original_url) {
+        break;
+      } else {
+        redirects.push_back(*iter);
+      }
+    }
   }
+  LOG(ERROR) << "NavigationEntryImpl::ConstructCommitNavigationParams redirects.size=" << redirects.size();
 
   int pending_offset_to_send = pending_history_list_offset;
   int current_offset_to_send = current_history_list_offset;

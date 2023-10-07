@@ -279,6 +279,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/item_flow.xml",
     "//chrome/android/java/res_app/layout/item_header_title.xml",
     "//chrome/android/java/res_app/layout/item_history_stack.xml",
+    "//chrome/android/java/res_app/layout/item_history_stack_url.xml",
     "//chrome/android/java/res_app/layout/item_image.xml",
     "//chrome/android/java/res_app/layout/item_menu.xml",
     "//chrome/android/java/res_app/layout/item_script.xml",

@@ -232,6 +232,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/widget/EmptyAlertEditText.java",
   "java/src/com/ark/browser/ui/widget/FitWidthImageView.java",
   "java/src/com/ark/browser/ui/widget/NavigationBarView.java",
+  "java/src/com/ark/browser/ui/widget/RedirectChainView.java",
   "java/src/com/ark/browser/ui/widget/SearchBar.java",
   "java/src/com/ark/browser/ui/widget/ShadowCircleImageView.java",
   "java/src/com/ark/browser/ui/widget/ShadowLayout.java",

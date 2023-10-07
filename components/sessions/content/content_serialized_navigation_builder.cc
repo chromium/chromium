@@ -59,6 +59,8 @@ ContentSerializedNavigationBuilder::FromNavigationEntry(
   navigation.has_post_data_ = entry->GetHasPostData();
   navigation.post_id_ = entry->GetPostID();
   navigation.original_request_url_ = entry->GetOriginalRequestURL();
+  LOG(ERROR) << "ContentSerializedNavigationBuilder::FromNavigationEntry original_request_url_="
+    << entry->GetOriginalRequestURL().spec();
   navigation.is_overriding_user_agent_ = entry->GetIsOverridingUserAgent();
   navigation.timestamp_ = entry->GetTimestamp();
   navigation.is_restored_ = entry->IsRestored();
@@ -66,6 +68,12 @@ ContentSerializedNavigationBuilder::FromNavigationEntry(
     navigation.favicon_url_ = entry->GetFavicon().url;
   navigation.http_status_code_ = entry->GetHttpStatusCode();
   navigation.redirect_chain_ = entry->GetRedirectChain();
+
+  const std::vector<GURL>& redirect_chain = entry->GetRedirectChain();
+  for (std::vector<GURL>::const_iterator iter = redirect_chain.begin();
+      iter != redirect_chain.end(); ++iter) {
+    LOG(ERROR) << "ContentSerializedNavigationBuilder::FromNavigationEntry url=" << iter->spec();
+  }
   navigation.replaced_entry_data_ =
       ConvertReplacedEntryData(entry->GetReplacedEntryData());
   navigation.password_state_ = GetPasswordStateFromNavigation(entry);
@@ -160,10 +168,17 @@ ContentSerializedNavigationBuilder::ToNavigationEntry(
   entry->SetHasPostData(navigation->has_post_data_);
   entry->SetPostID(navigation->post_id_);
   entry->SetOriginalRequestURL(navigation->original_request_url_);
+  LOG(ERROR) << "ContentSerializedNavigationBuilder::ToNavigationEntry original_request_url_="
+    << navigation->original_request_url_.spec();
   entry->SetIsOverridingUserAgent(navigation->is_overriding_user_agent_);
   entry->SetTimestamp(navigation->timestamp_);
   entry->SetHttpStatusCode(navigation->http_status_code_);
   entry->SetRedirectChain(navigation->redirect_chain_);
+  const std::vector<GURL>& redirect_chain = navigation->redirect_chain_;
+  for (std::vector<GURL>::const_iterator iter = redirect_chain.begin();
+      iter != redirect_chain.end(); ++iter) {
+    LOG(ERROR) << "ContentSerializedNavigationBuilder::ToNavigationEntry url=" << iter->spec();
+  }
   entry->SetVirtualURL(navigation->virtual_url_);
   sessions::NavigationTaskId* navigation_task_id =
       sessions::NavigationTaskId::Get(entry.get());
