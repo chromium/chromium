@@ -6,12 +6,16 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/proto/discounts_db_content.pb.h"
 #include "components/session_proto_db/session_proto_storage.h"
 
 namespace commerce {
+
+const char kDiscountsFetchResultHistogramName[] =
+    "Commerce.Discounts.FetchResult";
 
 DiscountsStorage::DiscountsStorage(
     SessionProtoStorage<DiscountsContent>* discounts_proto_db,
@@ -95,15 +99,21 @@ void DiscountsStorage::OnLoadAllDiscounts(
     return;
   }
 
+  int urls_found_in_db_number = 0;
   for (SessionProtoStorage<DiscountsContent>::KeyAndValue& kv : data) {
     if (std::find(urls_to_check.begin(), urls_to_check.end(), kv.first) !=
         urls_to_check.end()) {
+      urls_found_in_db_number++;
       std::vector<DiscountInfo> infos =
           GetUnexpiredDiscountsFromProto(kv.second);
       if (infos.size() == 0) {
         DeleteDiscountsForUrl(kv.first);
+        base::UmaHistogramEnumeration(kDiscountsFetchResultHistogramName,
+                                      DiscountsFetchResult::kInvalidInfoInDb);
       } else {
         server_results[GURL(kv.first)] = infos;
+        base::UmaHistogramEnumeration(kDiscountsFetchResultHistogramName,
+                                      DiscountsFetchResult::kValidInfoInDb);
 
         // Update local database if expired discounts found.
         if ((int)(infos.size()) != kv.second.discounts().size()) {
@@ -112,6 +122,13 @@ void DiscountsStorage::OnLoadAllDiscounts(
       }
     }
   }
+
+  int urls_not_found_number = urls_to_check.size() - urls_found_in_db_number;
+  for (int i = 0; i < urls_not_found_number; i++) {
+    base::UmaHistogramEnumeration(kDiscountsFetchResultHistogramName,
+                                  DiscountsFetchResult::kInfoNotFound);
+  }
+
   std::move(callback).Run(std::move(server_results));
 }
 

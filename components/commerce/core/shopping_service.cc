@@ -1236,6 +1236,8 @@ void ShoppingService::OnGetAllDiscountsFromOptGuide(
   for (auto res : results) {
     if (res.second.size() > 0) {
       map.insert(res);
+      base::UmaHistogramEnumeration(kDiscountsFetchResultHistogramName,
+                                    DiscountsFetchResult::kInfoFromOptGuide);
     } else {
       urls_to_check_in_db.push_back(res.first.spec());
     }

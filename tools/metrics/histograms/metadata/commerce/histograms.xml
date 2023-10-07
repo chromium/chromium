@@ -135,6 +135,19 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.Discounts.FetchResult"
+    enum="ShoppingDiscountsFetchResult" expires_after="2024-06-01">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the result of fetching discounts in the shopping service. Recorded
+    for every requested url. This is used to evaluate the local discounts
+    database. For example, we may not need the local database if it returns
+    invalid info for most requested urls / almost never returns valid info.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.Heuristics.CartExtractionScriptSource"
     enum="CommerceHeuristicsDataSource" expires_after="2023-04-23">
   <owner>yuezhanggg@chromium.org</owner>

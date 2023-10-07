@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/commerce/core/commerce_types.h"
@@ -224,6 +225,9 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_NoUrlsToCheck) {
               InsertContent(kDiscountsUrlFromServer, ExpectedServerProto(), _));
   EXPECT_CALL(*proto_db_, LoadAllEntries).Times(0);
 
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 0);
+
   base::RunLoop run_loop;
   storage_->HandleServerDiscounts(
       std::vector<std::string>(), MockServerResults(),
@@ -238,6 +242,8 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_NoUrlsToCheck) {
           },
           &run_loop));
   run_loop.Run();
+
+  histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 0);
 }
 
 TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_FailToLoad) {
@@ -249,6 +255,9 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_FailToLoad) {
                                           ExpectedServerProto(), _));
     EXPECT_CALL(*proto_db_, LoadAllEntries);
   }
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 0);
 
   base::RunLoop run_loop;
   storage_->HandleServerDiscounts(
@@ -265,6 +274,8 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_FailToLoad) {
           },
           &run_loop));
   run_loop.Run();
+
+  histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 0);
 }
 
 TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_AllDiscountsUnexpired) {
@@ -277,6 +288,9 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_AllDiscountsUnexpired) {
     EXPECT_CALL(*proto_db_, LoadAllEntries);
     EXPECT_CALL(*proto_db_, InsertContent).Times(0);
   }
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 0);
 
   base::RunLoop run_loop;
   storage_->HandleServerDiscounts(
@@ -308,6 +322,10 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_AllDiscountsUnexpired) {
           },
           &run_loop));
   run_loop.Run();
+
+  histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 2);
+  histogram_tester.ExpectBucketCount(kDiscountsFetchResultHistogramName, 1, 1);
+  histogram_tester.ExpectBucketCount(kDiscountsFetchResultHistogramName, 3, 1);
 }
 
 TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_AllDiscountsExpired) {
@@ -320,6 +338,9 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_AllDiscountsExpired) {
     EXPECT_CALL(*proto_db_, LoadAllEntries);
     EXPECT_CALL(*proto_db_, DeleteOneEntry(kDiscountsUrlInDb, _));
   }
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 0);
 
   base::RunLoop run_loop;
   storage_->HandleServerDiscounts(
@@ -336,6 +357,10 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_AllDiscountsExpired) {
           },
           &run_loop));
   run_loop.Run();
+
+  histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 2);
+  histogram_tester.ExpectBucketCount(kDiscountsFetchResultHistogramName, 2, 1);
+  histogram_tester.ExpectBucketCount(kDiscountsFetchResultHistogramName, 3, 1);
 }
 
 TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_PartDiscountsExpired) {
@@ -348,6 +373,9 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_PartDiscountsExpired) {
     EXPECT_CALL(*proto_db_, LoadAllEntries);
     EXPECT_CALL(*proto_db_, InsertContent(kDiscountsUrlInDb, _, _));
   }
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 0);
 
   base::RunLoop run_loop;
   storage_->HandleServerDiscounts(
@@ -375,6 +403,10 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_PartDiscountsExpired) {
           },
           &run_loop));
   run_loop.Run();
+
+  histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 2);
+  histogram_tester.ExpectBucketCount(kDiscountsFetchResultHistogramName, 1, 1);
+  histogram_tester.ExpectBucketCount(kDiscountsFetchResultHistogramName, 3, 1);
 }
 
 TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_NoDiscountsFound) {
@@ -387,6 +419,9 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_NoDiscountsFound) {
     EXPECT_CALL(*proto_db_, LoadAllEntries);
     EXPECT_CALL(*proto_db_, InsertContent).Times(0);
   }
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 0);
 
   base::RunLoop run_loop;
   storage_->HandleServerDiscounts(
@@ -402,6 +437,9 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_NoDiscountsFound) {
           },
           &run_loop));
   run_loop.Run();
+
+  histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 1);
+  histogram_tester.ExpectBucketCount(kDiscountsFetchResultHistogramName, 3, 1);
 }
 
 TEST_F(DiscountsStorageTest, TestOnURLsDeleted_DeleteAll) {
