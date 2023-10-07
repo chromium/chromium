@@ -61,11 +61,12 @@ bool GetUrlFromHDrop(IDataObject* data_object,
   {
     base::win::ScopedHGlobal<HDROP> hdrop(medium.hGlobal);
 
-    if (!hdrop.get())
+    if (!hdrop.data()) {
       return false;
+    }
 
     wchar_t filename[MAX_PATH];
-    if (DragQueryFileW(hdrop.get(), 0, filename, std::size(filename))) {
+    if (DragQueryFileW(hdrop.data(), 0, filename, std::size(filename))) {
       wchar_t url_buffer[INTERNET_MAX_URL_LENGTH];
       if (0 == _wcsicmp(PathFindExtensionW(filename), L".url") &&
           GetPrivateProfileStringW(L"InternetShortcut", L"url", 0, url_buffer,
@@ -211,9 +212,9 @@ base::FilePath WriteFileContentsToTempFile(const base::FilePath& suggested_name,
   if (!temp_path.empty()) {
     base::win::ScopedHGlobal<char*> data(hdata);
     // Don't write to the temp file for empty content--leave it at 0-bytes.
-    if (!(data.Size() == 1 && data.get()[0] == '\0')) {
+    if (!(data.size() == 1 && data.data()[0] == '\0')) {
       if (!base::WriteFile(temp_path,
-                           base::StringPiece(data.get(), data.Size()))) {
+                           base::StringPiece(data.data(), data.size()))) {
         base::DeleteFile(temp_path);
         return base::FilePath();
       }
@@ -337,10 +338,10 @@ HGLOBAL CopyFileContentsToHGlobal(IDataObject* data_object, LONG index) {
     // need to call ReleaseStgMedium to free the memory allocated by the drag
     // source.
     base::win::ScopedHGlobal<char*> data_source(content.hGlobal);
-    hdata = ::GlobalAlloc(GHND, data_source.Size());
+    hdata = ::GlobalAlloc(GHND, data_source.size());
     if (hdata) {
       base::win::ScopedHGlobal<char*> data_destination(hdata);
-      memcpy(data_destination.get(), data_source.get(), data_source.Size());
+      memcpy(data_destination.data(), data_source.data(), data_source.size());
     }
   }
 
@@ -391,8 +392,9 @@ bool GetVirtualFilenames(IDataObject* data_object,
 
   {
     base::win::ScopedHGlobal<FileGroupDescriptorType*> fgd(medium.hGlobal);
-    if (!fgd.get())
+    if (!fgd.data()) {
       return false;
+    }
 
     unsigned int num_files = fgd->cItems;
     // We expect there to be at least one file in here.
@@ -508,7 +510,7 @@ bool GetUrl(IDataObject* data_object,
     {
       // Mozilla URL format or Unicode URL
       base::win::ScopedHGlobal<wchar_t*> data(store.hGlobal);
-      SplitUrlAndTitle(base::WideToUTF16(data.get()), url, title);
+      SplitUrlAndTitle(base::WideToUTF16(data.data()), url, title);
     }
     ReleaseStgMedium(&store);
     return url->is_valid();
@@ -518,7 +520,7 @@ bool GetUrl(IDataObject* data_object,
     {
       // URL using ASCII
       base::win::ScopedHGlobal<char*> data(store.hGlobal);
-      SplitUrlAndTitle(base::UTF8ToUTF16(data.get()), url, title);
+      SplitUrlAndTitle(base::UTF8ToUTF16(data.data()), url, title);
     }
     ReleaseStgMedium(&store);
     return url->is_valid();
@@ -546,15 +548,17 @@ bool GetFilenames(IDataObject* data_object,
   if (GetData(data_object, ClipboardFormatType::CFHDropType(), &medium)) {
     {
       base::win::ScopedHGlobal<HDROP> hdrop(medium.hGlobal);
-      if (!hdrop.get())
+      if (!hdrop.data()) {
         return false;
+      }
 
       const int kMaxFilenameLen = 4096;
-      const unsigned num_files = DragQueryFileW(hdrop.get(), 0xffffffff, 0, 0);
+      const unsigned num_files = DragQueryFileW(hdrop.data(), 0xffffffff, 0, 0);
       for (unsigned int i = 0; i < num_files; ++i) {
         wchar_t filename[kMaxFilenameLen];
-        if (!DragQueryFileW(hdrop.get(), i, filename, kMaxFilenameLen))
+        if (!DragQueryFileW(hdrop.data(), i, filename, kMaxFilenameLen)) {
           continue;
+        }
         filenames->push_back(filename);
       }
     }
@@ -566,8 +570,9 @@ bool GetFilenames(IDataObject* data_object,
     {
       // filename using Unicode
       base::win::ScopedHGlobal<wchar_t*> data(medium.hGlobal);
-      if (data.get() && data.get()[0])
-        filenames->push_back(data.get());
+      if (data.data() && data.data()[0]) {
+        filenames->push_back(data.data());
+      }
     }
     ReleaseStgMedium(&medium);
     return true;
@@ -577,8 +582,9 @@ bool GetFilenames(IDataObject* data_object,
     {
       // filename using ASCII
       base::win::ScopedHGlobal<char*> data(medium.hGlobal);
-      if (data.get() && data.get()[0])
-        filenames->push_back(base::SysNativeMBToWide(data.get()));
+      if (data.data() && data.data()[0]) {
+        filenames->push_back(base::SysNativeMBToWide(data.data()));
+      }
     }
     ReleaseStgMedium(&medium);
     return true;
@@ -614,7 +620,7 @@ STGMEDIUM CreateStorageForFileNames(const std::vector<FileInfo>& filenames) {
   HANDLE hdata = GlobalAlloc(GHND, total_bytes);
 
   base::win::ScopedHGlobal<DROPFILES*> locked_mem(hdata);
-  DROPFILES* drop_files = locked_mem.get();
+  DROPFILES* drop_files = locked_mem.data();
   drop_files->pFiles = sizeof(DROPFILES);
   drop_files->fWide = TRUE;
 
@@ -693,7 +699,7 @@ bool GetPlainText(IDataObject* data_object, std::u16string* plain_text) {
     {
       // Unicode text
       base::win::ScopedHGlobal<wchar_t*> data(store.hGlobal);
-      plain_text->assign(base::as_u16cstr(data.get()));
+      plain_text->assign(base::as_u16cstr(data.data()));
     }
     ReleaseStgMedium(&store);
     return true;
@@ -703,7 +709,7 @@ bool GetPlainText(IDataObject* data_object, std::u16string* plain_text) {
     {
       // ASCII text
       base::win::ScopedHGlobal<char*> data(store.hGlobal);
-      plain_text->assign(base::UTF8ToUTF16(data.get()));
+      plain_text->assign(base::UTF8ToUTF16(data.data()));
     }
     ReleaseStgMedium(&store);
     return true;
@@ -733,7 +739,7 @@ bool GetHtml(IDataObject* data_object,
       base::win::ScopedHGlobal<char*> data(store.hGlobal);
 
       std::string html_utf8;
-      CFHtmlToHtml(base::StringPiece(data.get(), data.Size()), &html_utf8,
+      CFHtmlToHtml(base::StringPiece(data.data(), data.size()), &html_utf8,
                    base_url);
       html->assign(base::UTF8ToUTF16(html_utf8));
     }
@@ -750,7 +756,7 @@ bool GetHtml(IDataObject* data_object,
   {
     // text/html
     base::win::ScopedHGlobal<wchar_t*> data(store.hGlobal);
-    html->assign(base::as_u16cstr(data.get()));
+    html->assign(base::as_u16cstr(data.data()));
   }
   ReleaseStgMedium(&store);
   return true;
@@ -770,7 +776,7 @@ bool GetFileContents(IDataObject* data_object,
               &content)) {
     if (TYMED_HGLOBAL == content.tymed) {
       base::win::ScopedHGlobal<char*> data(content.hGlobal);
-      file_contents->assign(data.get(), data.Size());
+      file_contents->assign(data.data(), data.size());
     }
     ReleaseStgMedium(&content);
   }
@@ -805,7 +811,7 @@ bool GetWebCustomData(
   if (GetData(data_object, ClipboardFormatType::WebCustomDataType(), &store)) {
     {
       base::win::ScopedHGlobal<char*> data(store.hGlobal);
-      ReadCustomDataIntoMap(data.get(), data.Size(), custom_data);
+      ReadCustomDataIntoMap(data.data(), data.size(), custom_data);
     }
     ReleaseStgMedium(&store);
     return true;

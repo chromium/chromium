@@ -555,15 +555,17 @@ void ClipboardWin::ReadFilenames(ClipboardBuffer buffer,
   if (data) {
     {
       base::win::ScopedHGlobal<HDROP> hdrop(data);
-      if (!hdrop.get())
+      if (!hdrop.data()) {
         return;
+      }
 
       const int kMaxFilenameLen = 4096;
-      const unsigned num_files = DragQueryFileW(hdrop.get(), 0xffffffff, 0, 0);
+      const unsigned num_files = DragQueryFileW(hdrop.data(), 0xffffffff, 0, 0);
       for (unsigned int i = 0; i < num_files; ++i) {
         wchar_t filename[kMaxFilenameLen];
-        if (!DragQueryFileW(hdrop.get(), i, filename, kMaxFilenameLen))
+        if (!DragQueryFileW(hdrop.data(), i, filename, kMaxFilenameLen)) {
           continue;
+        }
         base::FilePath path(filename);
         result->push_back(ui::FileInfo(path, base::FilePath()));
       }
@@ -577,8 +579,8 @@ void ClipboardWin::ReadFilenames(ClipboardBuffer buffer,
     {
       // filename using Unicode
       base::win::ScopedHGlobal<wchar_t*> filename(data);
-      if (filename.get() && filename.get()[0]) {
-        base::FilePath path(filename.get());
+      if (filename.data() && filename.data()[0]) {
+        base::FilePath path(filename.data());
         result->push_back(ui::FileInfo(path, base::FilePath()));
       }
     }
@@ -591,8 +593,8 @@ void ClipboardWin::ReadFilenames(ClipboardBuffer buffer,
     {
       // filename using ASCII
       base::win::ScopedHGlobal<char*> filename(data);
-      if (filename.get() && filename.get()[0]) {
-        base::FilePath path(base::SysNativeMBToWide(filename.get()));
+      if (filename.data() && filename.data()[0]) {
+        base::FilePath path(base::SysNativeMBToWide(filename.data()));
         result->push_back(ui::FileInfo(path, base::FilePath()));
       }
     }

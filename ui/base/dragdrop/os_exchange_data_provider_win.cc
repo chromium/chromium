@@ -317,10 +317,10 @@ OSExchangeDataProviderWin::GetRendererTaintedOrigin() const {
     return absl::nullopt;
   }
   base::win::ScopedHGlobal<char*> data(medium.hGlobal);
-  if (data.Size() == 0) {
+  if (data.size() == 0) {
     return url::Origin();
   }
-  return url::Origin::Create(GURL(base::StringPiece(data.get(), data.Size())));
+  return url::Origin::Create(GURL(base::StringPiece(data.data(), data.size())));
 }
 
 void OSExchangeDataProviderWin::MarkAsFromPrivileged() {
@@ -434,7 +434,7 @@ void OSExchangeDataProviderWin::SetVirtualFileContentsForTesting(
 
   base::win::ScopedHGlobal<FILEGROUPDESCRIPTORW*> locked_mem(hdata);
 
-  FILEGROUPDESCRIPTORW* descriptor = locked_mem.get();
+  FILEGROUPDESCRIPTORW* descriptor = locked_mem.data();
   descriptor->cItems = base::checked_cast<UINT>(num_files);
 
   STGMEDIUM storage = {
@@ -646,8 +646,8 @@ bool OSExchangeDataProviderWin::GetPickledData(
   if (SUCCEEDED(source_object_->GetData(&format_etc, &medium))) {
     if (medium.tymed & TYMED_HGLOBAL) {
       base::win::ScopedHGlobal<char*> c_data(medium.hGlobal);
-      DCHECK_GT(c_data.Size(), 0u);
-      *data = base::Pickle(c_data.get(), c_data.Size());
+      DCHECK_GT(c_data.size(), 0u);
+      *data = base::Pickle(base::as_bytes(base::span(c_data)));
       success = true;
     }
     ReleaseStgMedium(&medium);
@@ -1110,7 +1110,7 @@ STGMEDIUM CreateStorageForBytes(const void* data, size_t bytes) {
   HANDLE handle = GlobalAlloc(GPTR, bytes);
   if (handle) {
     base::win::ScopedHGlobal<uint8_t*> scoped(handle);
-    memcpy(scoped.get(), data, bytes);
+    memcpy(scoped.data(), data, bytes);
   }
 
   STGMEDIUM storage = {
@@ -1185,7 +1185,7 @@ STGMEDIUM CreateIdListStorageForFileName(const base::FilePath& path) {
   HANDLE hdata = GlobalAlloc(GMEM_MOVEABLE, kCIDASize);
 
   base::win::ScopedHGlobal<CIDA*> locked_mem(hdata);
-  CIDA* cida = locked_mem.get();
+  CIDA* cida = locked_mem.data();
   cida->cidl = 1;     // We have one PIDL (not including the 0th root PIDL).
   cida->aoffset[0] = kFirstPIDLOffset;
   cida->aoffset[1] = kFirstPIDLOffset + kFirstPIDLSize;
@@ -1206,7 +1206,7 @@ STGMEDIUM CreateStorageForFileDescriptor(const base::FilePath& path) {
   HANDLE hdata = GlobalAlloc(GPTR, sizeof(FILEGROUPDESCRIPTORW));
   base::win::ScopedHGlobal<FILEGROUPDESCRIPTORW*> locked_mem(hdata);
 
-  FILEGROUPDESCRIPTORW* descriptor = locked_mem.get();
+  FILEGROUPDESCRIPTORW* descriptor = locked_mem.data();
   descriptor->cItems = 1;
   descriptor->fgd[0].dwFlags = FD_LINKUI;
   wcsncpy_s(descriptor->fgd[0].cFileName, MAX_PATH, file_name.c_str(),
