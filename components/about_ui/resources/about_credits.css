@@ -69,6 +69,7 @@ a {
 .product .homepage::before {
   content: ' - ';
 }
+.show-all,
 .product .show {
   color: var(--interactive-color);
   float: right;
@@ -90,24 +91,32 @@ a {
 }
 #print-link {
   float: right;
+  margin: 3px;
 }
 .dialog #print-link,
 .dialog .homepage {
   display: none;
 }
-input + label + div {
+input + label + div.licence {
   display: none;
 }
 input + label::after {
   content: 'show license';
   cursor: pointer;
 }
+input#show-all + label::after {
+  content: 'show all licenses';
+}
+input#show-all:checked ~ * input + label + div.licence,
 input:checked + label + div {
   display: block;
 }
 input:checked + label::after {
   content: 'hide license';
   cursor: pointer;
+}
+input#show-all:checked + label::after {
+  content: 'hide all licenses';
 }
 
 /* Strip out color and style when printing. We want dense B&W text. */
