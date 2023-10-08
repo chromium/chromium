@@ -25,13 +25,20 @@ import type Protocol from 'devtools-protocol';
 import {Deferred} from '../../../utils/Deferred.js';
 import type {EventManager} from '../events/EventManager.js';
 import {
-  type Network,
+  Network,
   type BrowsingContext,
   ChromiumBidi,
 } from '../../../protocol/protocol.js';
 import type {Result} from '../../../utils/result.js';
 import {assert} from '../../../utils/assert.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
+
+import {
+  computeResponseHeadersSize,
+  bidiNetworkHeadersFromCdpFetchHeaderEntryArray,
+  bidiNetworkHeadersFromCdpNetworkHeaders,
+} from './NetworkUtils.js';
+import type {NetworkStorage} from './NetworkStorage.js';
 
 /** Abstracts one individual network request. */
 export class NetworkRequest {
@@ -198,10 +205,69 @@ export class NetworkRequest {
   }
 
   /** Fired whenever a network request interception is hit. */
-  onRequestPaused(_event: Protocol.Fetch.RequestPausedEvent) {
+  onRequestPaused(
+    params: Protocol.Fetch.RequestPausedEvent,
+    networkStorage: NetworkStorage
+  ) {
+    // The stage of the request can be determined by presence of
+    // responseErrorReason and responseStatusCode -- the request is at
+    // the response stage if either of these fields is present and in the
+    // request stage otherwise.
+    let phase: Network.InterceptPhase;
+    if (
+      params.responseErrorReason === undefined &&
+      params.responseStatusCode === undefined
+    ) {
+      phase = Network.InterceptPhase.BeforeRequestSent;
+    } else if (
+      params.responseStatusCode === 401 &&
+      params.responseStatusText === 'Unauthorized'
+    ) {
+      // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
+      phase = Network.InterceptPhase.AuthRequired;
+    } else {
+      phase = Network.InterceptPhase.ResponseStarted;
+    }
+
+    const headers = bidiNetworkHeadersFromCdpFetchHeaderEntryArray(
+      // TODO: Use params.request.headers if request?
+      params.responseHeaders
+    );
+
+    assert(this.requestId === params.networkId);
+    networkStorage.addBlockedRequest(this.requestId, {
+      request: params.requestId, // intercept request id
+      phase,
+      // TODO: Finish populating response / ResponseData.
+      response: {
+        url: params.request.url,
+        // TODO: populate.
+        protocol: '',
+        status: params.responseStatusCode ?? 0,
+        statusText: params.responseStatusText ?? '',
+        // TODO: populate.
+        fromCache: false,
+        headers,
+        // TODO: populate.
+        mimeType: '',
+        // TODO: populate.
+        bytesReceived: 0,
+        headersSize: computeResponseHeadersSize(headers),
+        // TODO: consider removing from spec.
+        bodySize: 0,
+        // TODO: consider removing from spec.
+        content: {
+          size: 0,
+        },
+        // TODO: populate.
+        authChallenge: undefined,
+      },
+    });
+
     this.#isBlocked = true;
   }
 
+  /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-failRequest */
   async failRequest(
     fetchRequestId: Protocol.Fetch.RequestId,
     errorReason: Protocol.Network.ErrorReason
@@ -210,6 +276,28 @@ export class NetworkRequest {
       requestId: fetchRequestId,
       errorReason,
     });
+
+    this.#isBlocked = false;
+  }
+
+  /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */
+  async continueRequest(
+    fetchRequestId: Protocol.Fetch.RequestId,
+    url?: string,
+    method?: string
+  ) {
+    // TODO: Expand.
+    await this.#cdpTarget.cdpClient.sendCommand('Fetch.continueRequest', {
+      requestId: fetchRequestId,
+      url,
+      method,
+      // TODO: Set?
+      // postData:,
+      // headers:,
+      // interceptResponse:,
+    });
+
+    this.#isBlocked = false;
   }
 
   dispose() {
@@ -256,11 +344,15 @@ export class NetworkRequest {
       ? NetworkRequest.#getCookies(this.#request.extraInfo.associatedCookies)
       : [];
 
+    const headers = bidiNetworkHeadersFromCdpNetworkHeaders(
+      this.#request.info?.request.headers
+    );
+
     return {
       request: this.#request.info?.requestId ?? NetworkRequest.#unknown,
       url: this.#request.info?.request.url ?? NetworkRequest.#unknown,
       method: this.#request.info?.request.method ?? NetworkRequest.#unknown,
-      headers: NetworkRequest.#getHeaders(this.#request.info?.request.headers),
+      headers,
       cookies,
       // TODO: implement.
       headersSize: -1,
@@ -357,7 +449,7 @@ export class NetworkRequest {
       this.#response.extraInfo = undefined;
     }
 
-    const headers = NetworkRequest.#getHeaders(
+    const headers = bidiNetworkHeadersFromCdpNetworkHeaders(
       this.#response.info.response.headers
     );
 
@@ -379,7 +471,7 @@ export class NetworkRequest {
           headers,
           mimeType: this.#response.info.response.mimeType,
           bytesReceived: this.#response.info.response.encodedDataLength,
-          headersSize: this.#computeResponseHeadersSize(headers),
+          headersSize: computeResponseHeadersSize(headers),
           // TODO: consider removing from spec.
           bodySize: 0,
           content: {
@@ -391,30 +483,8 @@ export class NetworkRequest {
     };
   }
 
-  #computeResponseHeadersSize(headers: Network.Header[]): number {
-    return headers.reduce((total, header) => {
-      return (
-        total + header.name.length + header.value.value.length + 4 // 4 = ': ' + '\r\n'
-      );
-    }, 0);
-  }
-
   #isIgnoredEvent(): boolean {
     return this.#request.info?.request.url.endsWith('/favicon.ico') ?? false;
-  }
-
-  static #getHeaders(headers?: Protocol.Network.Headers): Network.Header[] {
-    if (!headers) {
-      return [];
-    }
-
-    return Object.entries(headers).map(([name, value]) => ({
-      name,
-      value: {
-        type: 'string',
-        value,
-      },
-    }));
   }
 
   static #getInitiatorType(

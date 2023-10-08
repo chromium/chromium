@@ -66,8 +66,38 @@ export class NetworkProcessor {
     };
   }
 
-  continueRequest(_params: Network.ContinueRequestParameters): EmptyResult {
-    throw new UnknownCommandException('Not implemented yet.');
+  async continueRequest(
+    params: Network.ContinueRequestParameters
+  ): Promise<EmptyResult> {
+    const networkId = params.request;
+    const blockedRequest = this.#getBlockedRequest(networkId);
+    const {request: fetchId, phase} = blockedRequest;
+
+    if (phase !== Network.InterceptPhase.BeforeRequestSent) {
+      throw new InvalidArgumentException(
+        `Blocked request for network id '${networkId}' is not in 'BeforeRequestSent' phase`
+      );
+    }
+
+    if (params.url !== undefined) {
+      NetworkProcessor.parseUrlString(params.url);
+    }
+
+    const {url, method} = params;
+    // TODO: Set / expand.
+    // ; headers
+    // ; cookies
+    // ; body
+
+    await this.#networkStorage
+      .getRequest(networkId)
+      ?.continueRequest(fetchId, url, method);
+
+    this.#networkStorage.removeBlockedRequest(networkId);
+
+    // TODO: Emit event?
+
+    return {};
   }
 
   continueResponse(_params: Network.ContinueResponseParameters): EmptyResult {
@@ -97,7 +127,7 @@ export class NetworkProcessor {
 
     this.#networkStorage.removeBlockedRequest(networkId);
 
-    // TODO: Remove from network request map?
+    // TODO: Emit event?
 
     return {};
   }
@@ -132,8 +162,8 @@ export class NetworkProcessor {
    */
   #getBlockedRequest(networkId: Network.Request): {
     request: Protocol.Fetch.RequestId;
-    phase?: Network.InterceptPhase; // TODO: make non-optional.
-    response?: Network.ResponseData; // TODO: make non-optional.
+    phase: Network.InterceptPhase;
+    response: Network.ResponseData;
   } {
     const blockedRequest = this.#networkStorage.getBlockedRequest(networkId);
     if (!blockedRequest) {
@@ -144,19 +174,25 @@ export class NetworkProcessor {
     return blockedRequest;
   }
 
+  /**
+   * Attempts to parse the given url.
+   * Throws an InvalidArgumentException if the url is invalid.
+   */
+  static parseUrlString(url: string): URL {
+    try {
+      return new URL(url);
+    } catch (error) {
+      throw new InvalidArgumentException(`Invalid URL '${url}': ${error}`);
+    }
+  }
+
   static parseUrlPatterns(
     urlPatterns: Network.UrlPattern[]
   ): Network.UrlPattern[] {
     return urlPatterns.map((urlPattern) => {
       switch (urlPattern.type) {
         case 'string': {
-          try {
-            new URL(urlPattern.pattern);
-          } catch (error) {
-            throw new InvalidArgumentException(
-              `Invalid URL '${urlPattern.pattern}': ${error}`
-            );
-          }
+          NetworkProcessor.parseUrlString(urlPattern.pattern);
           return urlPattern;
         }
         case 'pattern':

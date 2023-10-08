@@ -20,7 +20,8 @@ from uuid import uuid4
 import pytest
 import pytest_asyncio
 import websockets
-from test_helpers import execute_command, get_tree, goto_url, read_JSON_message
+from test_helpers import (execute_command, get_tree, goto_url,
+                          read_JSON_message, wait_for_event, wait_for_events)
 
 
 @pytest_asyncio.fixture
@@ -146,12 +147,37 @@ def read_sorted_messages(websocket):
 @pytest.fixture
 def assert_no_more_messages(websocket):
     """Assert that there are no more messages on the websocket."""
-    async def assert_no_more_messages(timeout: float = 0.0):
+    async def assert_no_more_messages(timeout: float | None):
         with pytest.raises(asyncio.TimeoutError):
             await asyncio.wait_for(read_JSON_message(websocket),
                                    timeout=timeout)
 
     return assert_no_more_messages
+
+
+# TODO: Rewrite this fixture in terms of assert_no_events_in_queue.
+@pytest.fixture
+def assert_no_event_in_queue(websocket):
+    """Assert that there are no more events of the given type on the websocket within the given timeout."""
+    async def assert_no_event_in_queue(event_method: str,
+                                       timeout: float | None):
+        with pytest.raises(asyncio.TimeoutError):
+            await asyncio.wait_for(wait_for_event(websocket, event_method),
+                                   timeout=timeout)
+
+    return assert_no_event_in_queue
+
+
+@pytest.fixture
+def assert_no_events_in_queue(websocket):
+    """Assert that there are no more events of the given types on the websocket within the given timeout."""
+    async def assert_no_events_in_queue(event_methods: list[str],
+                                        timeout: float | None):
+        with pytest.raises(asyncio.TimeoutError):
+            await asyncio.wait_for(wait_for_events(websocket, event_methods),
+                                   timeout=timeout)
+
+    return assert_no_events_in_queue
 
 
 @pytest.fixture

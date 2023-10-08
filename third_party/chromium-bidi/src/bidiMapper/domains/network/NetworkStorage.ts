@@ -51,8 +51,8 @@ export class NetworkStorage {
     {
       // intercept request id; form: 'interception-job-1.0'
       request: Protocol.Fetch.RequestId;
-      phase?: Network.InterceptPhase; // TODO: make non-optional.
-      response?: Network.ResponseData; // TODO: make non-optional.
+      phase: Network.InterceptPhase;
+      response: Network.ResponseData;
     }
   >();
 
@@ -112,16 +112,10 @@ export class NetworkStorage {
         const urlPattern: string =
           NetworkStorage.cdpFromSpecUrlPattern(urlPatternSpec);
         for (const phase of value.phases) {
-          if (phase === Network.InterceptPhase.AuthRequired) {
-            patterns.push({
-              urlPattern,
-            });
-          } else {
-            patterns.push({
-              urlPattern,
-              requestStage: NetworkStorage.requestStageFromPhase(phase),
-            });
-          }
+          patterns.push({
+            urlPattern,
+            requestStage: NetworkStorage.requestStageFromPhase(phase),
+          });
         }
       }
     }
@@ -221,11 +215,8 @@ export class NetworkStorage {
       case Network.InterceptPhase.BeforeRequestSent:
         return 'Request';
       case Network.InterceptPhase.ResponseStarted:
-        return 'Response';
       case Network.InterceptPhase.AuthRequired:
-        throw new Error(
-          'AuthRequired is not a valid intercept phase for request stage.'
-        );
+        return 'Response';
     }
   }
 
@@ -247,8 +238,8 @@ export class NetworkStorage {
     requestId: Network.Request,
     value: {
       request: Protocol.Fetch.RequestId;
-      phase?: Network.InterceptPhase; // TODO: make non-optional.
-      response?: Network.ResponseData; // TODO: make non-optional.
+      phase: Network.InterceptPhase;
+      response: Network.ResponseData;
     }
   ) {
     this.#blockedRequestMap.set(requestId, value);
@@ -264,8 +255,8 @@ export class NetworkStorage {
   getBlockedRequest(networkId: Network.Request):
     | {
         request: Protocol.Fetch.RequestId;
-        phase?: Network.InterceptPhase; // TODO: make non-optional.
-        response?: Network.ResponseData; // TODO: make non-optional.
+        phase: Network.InterceptPhase;
+        response: Network.ResponseData;
       }
     | undefined {
     return this.#blockedRequestMap.get(networkId);

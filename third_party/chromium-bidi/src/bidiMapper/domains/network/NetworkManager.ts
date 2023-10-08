@@ -155,18 +155,14 @@ export class NetworkManager {
       }
     );
 
+    // https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#event-requestPaused
     cdpTarget.cdpClient.on(
       'Fetch.requestPaused',
       (params: Protocol.Fetch.RequestPausedEvent) => {
         if (params.networkId) {
-          networkManager.#networkStorage.addBlockedRequest(params.networkId, {
-            request: params.requestId, // intercept request id
-            // TODO: Populate phase.
-            // TODO: Populate response / ResponseData.
-          });
           networkManager
             .#getOrCreateNetworkRequest(params.networkId)
-            .onRequestPaused(params);
+            .onRequestPaused(params, networkManager.#networkStorage);
         }
       }
     );

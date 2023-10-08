@@ -91,7 +91,19 @@ async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(
 
     assert result == {"navigation": navigation_id, "url": url}
 
-    await assert_no_more_messages()
+    message = await read_JSON_message(websocket)
+    assert message == {
+        'method': 'browsingContext.load',
+        'params': {
+            'context': iframe_id,
+            'navigation': navigation_id,
+            'timestamp': ANY_TIMESTAMP,
+            'url': url,
+        },
+        'type': 'event',
+    }
+
+    await assert_no_more_messages(timeout=1.0)
 
 
 @pytest.mark.asyncio
@@ -140,7 +152,7 @@ async def test_nestedBrowsingContext_navigateWaitComplete_navigated(
     response = await read_JSON_message(websocket)
     assert response['result'] == {"navigation": navigation_id, "url": url}
 
-    await assert_no_more_messages()
+    await assert_no_more_messages(timeout=1.0)
 
 
 @pytest.mark.asyncio

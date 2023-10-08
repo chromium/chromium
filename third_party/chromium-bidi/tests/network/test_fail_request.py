@@ -13,7 +13,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import pytest
-from anys import ANY_DICT, ANY_NUMBER, ANY_STR
+from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
 from test_helpers import (ANY_UUID, AnyExtending, execute_command,
                           send_JSON_command, subscribe, wait_for_event)
 
@@ -31,6 +31,53 @@ async def test_fail_request_non_existent_request(websocket):
     assert {
         "error": "no such request",
         "message": "No blocked request found for network id '_UNKNOWN_'"
+    } == exception_info.value.args[0]
+
+
+@pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="TODO: replace url with a server whose requests hang forever.")
+async def test_fail_request_non_blocked_request(websocket, context_id,
+                                                assert_no_events_in_queue):
+    url = "http://127.0.0.1:5000/hang"
+
+    await subscribe(websocket, [
+        "network.beforeRequestSent", "cdp.Network.responseReceived",
+        "cdp.Network.loadingFailed"
+    ])
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "context": context_id,
+                "url": url,
+                "wait": "complete",
+            }
+        })
+
+    before_request_sent_event = await wait_for_event(
+        websocket, "network.beforeRequestSent")
+
+    # Assert these events never happen, otherwise the test is ineffective.
+    await assert_no_events_in_queue(
+        ["cdp.Network.responseReceived", "cdp.Network.loadingFailed"],
+        timeout=1.0)
+
+    assert not before_request_sent_event["params"]["isBlocked"]
+
+    network_id = before_request_sent_event["params"]["request"]["request"]
+
+    with pytest.raises(Exception) as exception_info:
+        await execute_command(websocket, {
+            "method": "network.failRequest",
+            "params": {
+                "request": network_id,
+            },
+        })
+    assert {
+        "error": "no such request",
+        "message": f"No blocked request found for network id '{network_id}'",
     } == exception_info.value.args[0]
 
 
@@ -106,6 +153,97 @@ async def test_fail_request_twice(websocket, context_id):
         "error": "no such request",
         "message": f"No blocked request found for network id '{network_id}'"
     } == exception_info.value.args[0]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("phases, exception_and_response_expected", [
+    (["authRequired"], True),
+    (["responseStarted"], True),
+    (["authRequired", "responseStarted"], True),
+    (["beforeRequestSent"], False),
+    (["beforeRequestSent", "authRequired"], False),
+],
+                         ids=[
+                             "authRequired",
+                             "responseStarted",
+                             "authRequired and responseStarted",
+                             "beforeRequestSent",
+                             "beforeRequestSent and authRequired",
+                         ])
+@pytest.mark.skip(reason="TODO: Use our own test server.")
+async def test_fail_request_with_auth_required_phase(
+        websocket, context_id, phases, exception_and_response_expected):
+    # TODO: make offline.
+    # All of these URLs work, just pick one.
+    # url = "https://authenticationtest.com/HTTPAuth/"
+    # url = "http://the-internet.herokuapp.com/basic_auth"
+    url = "http://httpstat.us/401"
+
+    await subscribe(websocket, ["cdp.Fetch.requestPaused"])
+
+    result = await execute_command(
+        websocket, {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": phases,
+                "urlPatterns": [{
+                    "type": "string",
+                    "pattern": url,
+                }, ],
+            },
+        })
+
+    assert result == {
+        "intercept": ANY_UUID,
+    }
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "context": context_id,
+            }
+        })
+
+    event_response = await wait_for_event(websocket, "cdp.Fetch.requestPaused")
+    assert event_response == {
+        "method": "cdp.Fetch.requestPaused",
+        "params": {
+            "event": "Fetch.requestPaused",
+            "params": {
+                "frameId": context_id,
+                "networkId": ANY_STR,
+                "request": AnyExtending({
+                    "headers": ANY_DICT,
+                    "url": url,
+                }),
+                "requestId": ANY_STR,
+                "resourceType": "Document",
+            } | ({
+                "responseStatusCode": 401,
+                "responseStatusText": "Unauthorized",
+                "responseHeaders": ANY_LIST,
+            } if exception_and_response_expected else {}),
+            "session": ANY_STR,
+        },
+        "type": "event",
+    }
+    network_id = event_response["params"]["params"]["networkId"]
+
+    if exception_and_response_expected:
+        with pytest.raises(Exception) as exception_info:
+            await execute_command(
+                websocket, {
+                    "method": "network.failRequest",
+                    "params": {
+                        "request": network_id
+                    },
+                })
+        assert {
+            "error": "invalid argument",
+            "message": f"Blocked request for network id '{network_id}' is in 'AuthRequired' phase"
+        } == exception_info.value.args[0]
 
 
 @pytest.mark.asyncio
@@ -458,4 +596,4 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
     }
 
 
-# TODO: AuthRequired + exception test
+# TODO: assertion with isBlocked: true

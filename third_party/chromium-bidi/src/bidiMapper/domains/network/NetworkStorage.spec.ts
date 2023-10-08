@@ -45,9 +45,9 @@ describe('NetworkStorage', () => {
         Network.InterceptPhase.ResponseStarted
       )
     ).to.equal('Response');
-    expect(() =>
+    expect(
       NetworkStorage.requestStageFromPhase(Network.InterceptPhase.AuthRequired)
-    ).to.throw();
+    ).to.equal('Response');
   });
 
   describe('add intercept', () => {
@@ -228,6 +228,7 @@ describe('NetworkStorage', () => {
           handleAuthRequests: true,
           patterns: [
             {
+              requestStage: 'Response',
               urlPattern: 'http://example.org',
             },
           ],
@@ -249,6 +250,7 @@ describe('NetworkStorage', () => {
           handleAuthRequests: true,
           patterns: [
             {
+              requestStage: 'Response',
               urlPattern: 'http://example.org',
             },
             {
