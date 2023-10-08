@@ -1488,7 +1488,7 @@
     "skylab_tests": [
       {
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R117-15572.24.0",
+        "cros_img": "dedede-release/R118-15604.35.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -1501,22 +1501,6 @@
         "test_level_retries": 2,
         "timeout_sec": 10800,
         "variant_id": "DEDEDE_RELEASE_BETA"
-      },
-      {
-        "cros_board": "dedede",
-        "cros_img": "dedede-release/R118-15597.0.0",
-        "name": "lacros_all_tast_tests DEDEDE_RELEASE_DEV",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "shards": 2,
-        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "test_level_retries": 2,
-        "timeout_sec": 10800,
-        "variant_id": "DEDEDE_RELEASE_DEV"
       },
       {
         "autotest_name": "tast.lacros-from-gcs",
@@ -1537,7 +1521,7 @@
       },
       {
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R115-15474.84.0",
+        "cros_img": "dedede-release/R117-15572.63.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -1553,7 +1537,7 @@
       },
       {
         "cros_board": "puff",
-        "cros_img": "puff-release/R117-15572.24.0",
+        "cros_img": "puff-release/R118-15604.35.0",
         "dut_pool": "chrome",
         "name": "lacros_all_tast_tests PUFF_RELEASE_BETA",
         "resultdb": {
@@ -1567,23 +1551,6 @@
         "test_level_retries": 2,
         "timeout_sec": 10800,
         "variant_id": "PUFF_RELEASE_BETA"
-      },
-      {
-        "cros_board": "puff",
-        "cros_img": "puff-release/R118-15597.0.0",
-        "dut_pool": "chrome",
-        "name": "lacros_all_tast_tests PUFF_RELEASE_DEV",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "shards": 2,
-        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "test_level_retries": 2,
-        "timeout_sec": 10800,
-        "variant_id": "PUFF_RELEASE_DEV"
       },
       {
         "autotest_name": "tast.lacros-from-gcs",
@@ -1605,7 +1572,7 @@
       },
       {
         "cros_board": "puff",
-        "cros_img": "puff-release/R116-15509.63.0",
+        "cros_img": "puff-release/R117-15572.63.0",
         "dut_pool": "chrome",
         "name": "lacros_all_tast_tests PUFF_RELEASE_STABLE",
         "resultdb": {
@@ -1654,7 +1621,7 @@
     "skylab_tests": [
       {
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R117-15572.24.0",
+        "cros_img": "jacuzzi-release/R118-15604.35.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -1667,22 +1634,6 @@
         "test_level_retries": 2,
         "timeout_sec": 10800,
         "variant_id": "JACUZZI_RELEASE_BETA"
-      },
-      {
-        "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R118-15597.0.0",
-        "name": "lacros_all_tast_tests JACUZZI_RELEASE_DEV",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "shards": 2,
-        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "test_level_retries": 2,
-        "timeout_sec": 10800,
-        "variant_id": "JACUZZI_RELEASE_DEV"
       },
       {
         "autotest_name": "tast.lacros-from-gcs",
@@ -1703,7 +1654,7 @@
       },
       {
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R116-15509.63.0",
+        "cros_img": "jacuzzi-release/R117-15572.63.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
