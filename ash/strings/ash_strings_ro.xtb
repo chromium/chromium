@@ -704,6 +704,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="385300504083504382">Început</translation>
 <translation id="3859364108019690">Nu se pot reda în stream aplicațiile</translation>
 <translation id="3861651314799684201">Apasă pe Enter pentru a înregistra ecranul complet</translation>
+<translation id="3865912916886104060">Niciun dispozitiv conectat. Rețeaua Wi-Fi va fi dezactivată pentru a începe folosirea hotspotului.</translation>
 <translation id="3886872229787704059">Deschis astăzi</translation>
 <translation id="3891340733213178823">Apăsați de două ori Ctrl+Shift+Q pentru a vă deconecta.</translation>
 <translation id="3893630138897523026">ChromeVox (feedback rostit)</translation>
@@ -788,6 +789,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4197790712631116042">Dezactivat</translation>
 <translation id="4201033867194214117">Opțiunea <ph name="FEATURE_NAME" /> nu este disponibilă.</translation>
 <translation id="4201051445878709314">Afișează luna anterioară</translation>
+<translation id="4202362334312791952">Un dispozitiv conectat. Rețeaua Wi-Fi va fi dezactivată pentru a începe folosirea hotspotului.</translation>
 <translation id="4209973997261364186">Conexiunea Wi-Fi este activată</translation>
 <translation id="4212472694152630271">Comută la PIN</translation>
 <translation id="4215497585250573029">Setări VPN</translation>
@@ -1051,6 +1053,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5258528442992323769">Nu există desktopuri salvate</translation>
 <translation id="5260676007519551770">Desktop 4</translation>
 <translation id="5268819379131021772">Lista de activități Google</translation>
+<translation id="5275923704957843041">Previzualizarea desktopului</translation>
 <translation id="5278086053818066789">Activează / dezactivează ChromeVox (feedback rostit)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> are nevoie de atenție.</translation>
 <translation id="5283198616748585639">Adaugă 1 min.</translation>
@@ -1167,6 +1170,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5707775774148071965">Dispozitivul acceptă o rată mai mare de transfer de date decât cablul. Este posibil ca performanța dispozitivului să fie limitată.</translation>
 <translation id="5710450975648804523">Funcția Nu deranja este activată</translation>
 <translation id="571295407079589142">Datele mobile sunt dezactivate</translation>
+<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> dispozitive conectate. Rețeaua Wi-Fi va fi dezactivată pentru a începe folosirea hotspotului.</translation>
 <translation id="5727460725221669831">Dacă ai uitat parola sau ai schimbat recent parola Contului Google, încearcă să recuperezi acest utilizator.</translation>
 <translation id="573413375004481890">Acest dispozitiv nu acceptă toate afișajele, prin urmare unul a fost deconectat</translation>
 <translation id="5740328398383587084">Trimitere în apropiere</translation>
