@@ -37,7 +37,7 @@ void OnMultiBufferReadComplete(
           media::HlsDataSourceProvider::ReadStatus::Codes::kAborted);
     }
     default: {
-      CHECK_GT(read_size, 0);
+      CHECK_GE(read_size, 0);
       stream->UnlockStreamPostWrite(read_size,
                                     requested_read_size != read_size);
       std::move(callback).Run(std::move(stream));
