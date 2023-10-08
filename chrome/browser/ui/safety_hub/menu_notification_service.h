@@ -16,11 +16,11 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace {
-
 enum SafetyHubServiceType {
   UNUSED_SITE_PERMISSIONS,
 };
+
+namespace {
 
 enum MenuNotificationPriority {
   LOW = 0,
@@ -32,13 +32,11 @@ struct SafetyHubServiceInfoElement {
   SafetyHubServiceInfoElement();
   ~SafetyHubServiceInfoElement();
   SafetyHubServiceInfoElement(
-      const char* name,
       MenuNotificationPriority priority,
       base::TimeDelta interval,
       raw_ptr<SafetyHubService> service,
       std::unique_ptr<SafetyHubMenuNotification> notification);
 
-  const char* name;
   MenuNotificationPriority priority;
   base::TimeDelta interval;
   raw_ptr<SafetyHubService> service;
@@ -58,6 +56,7 @@ using ResultMap =
 class SafetyHubMenuNotificationService : public KeyedService {
  public:
   explicit SafetyHubMenuNotificationService(
+      PrefService* pref_service,
       UnusedSitePermissionsService* unused_site_permissions_service);
   SafetyHubMenuNotificationService(const SafetyHubMenuNotificationService&) =
       delete;
@@ -71,13 +70,29 @@ class SafetyHubMenuNotificationService : public KeyedService {
   // returned.
   absl::optional<std::pair<int, std::u16string>> GetNotificationToShow();
 
+  // Returns the |service_info_map_|. For testing purposes only.
+  SafetyHubMenuNotification* GetNotificationForTesting(
+      SafetyHubServiceType service_type);
+
  private:
   // Gets the latest result from each Safety Hub service. Will return
   // absl::nullopt when there is no result from one of the services.
   absl::optional<ResultMap> GetResultsFromAllServices();
 
+  // Stores the notifications (which should have their results updated) as a
+  // dict in the prefs.
+  void SaveNotificationsToPrefs() const;
+
+  const std::map<SafetyHubServiceType, const char*> pref_dict_key_map_ = {
+      {SafetyHubServiceType::UNUSED_SITE_PERMISSIONS,
+       "unused-site-permissions"},
+  };
+
   std::map<SafetyHubServiceType, std::unique_ptr<SafetyHubServiceInfoElement>>
       service_info_map_;
+
+  // Preference service that persists the notifications.
+  raw_ptr<PrefService> pref_service_;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_MENU_NOTIFICATION_SERVICE_H_

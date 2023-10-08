@@ -155,3 +155,8 @@ int SafetyHubMenuNotification::GetNotificationCommandId() const {
   CHECK(result_);
   return result_->GetNotificationCommandId();
 }
+
+SafetyHubService::Result* SafetyHubMenuNotification::GetResultForTesting()
+    const {
+  return result_.get();
+}

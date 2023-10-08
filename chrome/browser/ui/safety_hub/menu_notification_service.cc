@@ -7,33 +7,52 @@
 #include <memory>
 #include <utility>
 
+#include "base/values.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
+#include "components/prefs/pref_service.h"
+
 namespace {
 SafetyHubServiceInfoElement::SafetyHubServiceInfoElement() = default;
 SafetyHubServiceInfoElement::~SafetyHubServiceInfoElement() = default;
 
 SafetyHubServiceInfoElement::SafetyHubServiceInfoElement(
-    const char* name,
     MenuNotificationPriority priority,
     base::TimeDelta interval,
     raw_ptr<SafetyHubService> service,
     std::unique_ptr<SafetyHubMenuNotification> notification)
-    : name(name),
-      priority(priority),
+    : priority(priority),
       interval(interval),
       service(service),
       notification(std::move(notification)) {}
 }  // namespace
 
 SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
+    PrefService* pref_service,
     UnusedSitePermissionsService* unused_site_permissions_service) {
-  // TODO(crbug.com/1443466): Read the notifications from disk.
+  pref_service_ = std::move(pref_service);
+  const base::Value::Dict& stored_notifications =
+      pref_service_->GetDict(safety_hub_prefs::kMenuNotificationsPrefsKey);
+
+  // It can be assumed that all `SafetyHubServiceType`s are in
+  // `pref_dict_key_map_`.
+  const base::Value::Dict* unused_perms_dict = stored_notifications.FindDict(
+      pref_dict_key_map_.find(SafetyHubServiceType::UNUSED_SITE_PERMISSIONS)
+          ->second);
+  std::unique_ptr<SafetyHubMenuNotification> unused_perms_notification;
+  if (!unused_perms_dict) {
+    unused_perms_notification = std::make_unique<SafetyHubMenuNotification>();
+  } else {
+    unused_perms_notification = SafetyHubMenuNotification::FromDictValue(
+        *unused_perms_dict, unused_site_permissions_service);
+  }
+
   // TODO(crbug.com/1443466): Make the interval for each service finch
   // configurable.
   service_info_map_[SafetyHubServiceType::UNUSED_SITE_PERMISSIONS] =
       std::make_unique<SafetyHubServiceInfoElement>(
-          "unused-permissions", MenuNotificationPriority::LOW, base::Days(10),
+          MenuNotificationPriority::LOW, base::Days(10),
           unused_site_permissions_service,
-          std::make_unique<SafetyHubMenuNotification>());
+          std::move(unused_perms_notification));
 }
 
 SafetyHubMenuNotificationService::~SafetyHubMenuNotificationService() = default;
@@ -69,6 +88,8 @@ SafetyHubMenuNotificationService::GetNotificationToShow() {
     }
   }
   if (notifications_to_be_shown.empty()) {
+    // The notifications should be persisted with updated results.
+    SaveNotificationsToPrefs();
     return absl::nullopt;
   }
   SafetyHubMenuNotification* notification_to_show =
@@ -79,6 +100,9 @@ SafetyHubMenuNotificationService::GetNotificationToShow() {
     (*it)->Dismiss();
   }
   notification_to_show->Show();
+  // The information related to showing the notification needs to be persisted
+  // as well.
+  SaveNotificationsToPrefs();
   return std::make_pair(notification_to_show->GetNotificationCommandId(),
                         notification_to_show->GetNotificationString());
 }
@@ -95,4 +119,21 @@ SafetyHubMenuNotificationService::GetResultsFromAllServices() {
     result_map[item.first] = std::move(result.value());
   }
   return result_map;
+}
+
+void SafetyHubMenuNotificationService::SaveNotificationsToPrefs() const {
+  base::Value::Dict notifications;
+  for (auto const& it : pref_dict_key_map_) {
+    SafetyHubServiceInfoElement* info_element =
+        service_info_map_.find(it.first)->second.get();
+    notifications.Set(it.second, info_element->notification->ToDictValue());
+  }
+  pref_service_->SetDict(safety_hub_prefs::kMenuNotificationsPrefsKey,
+                         std::move(notifications));
+}
+
+SafetyHubMenuNotification*
+SafetyHubMenuNotificationService::GetNotificationForTesting(
+    SafetyHubServiceType service_type) {
+  return service_info_map_.find(service_type)->second.get()->notification.get();
 }

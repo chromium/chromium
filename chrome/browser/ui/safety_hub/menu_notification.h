@@ -73,6 +73,8 @@ class SafetyHubMenuNotification {
   // three-dot menu.
   int GetNotificationCommandId() const;
 
+  SafetyHubService::Result* GetResultForTesting() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SafetyHubMenuNotificationTest, ToFromDictValue);
   friend class SafetyHubMenuNotificationTest;

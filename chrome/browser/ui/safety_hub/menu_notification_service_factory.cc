@@ -46,5 +46,5 @@ SafetyHubMenuNotificationServiceFactory::BuildServiceInstanceForBrowserContext(
   UnusedSitePermissionsService* unused_site_permissions_service =
       UnusedSitePermissionsServiceFactory::GetForProfile(profile);
   return std::make_unique<SafetyHubMenuNotificationService>(
-      unused_site_permissions_service);
+      profile->GetPrefs(), unused_site_permissions_service);
 }
