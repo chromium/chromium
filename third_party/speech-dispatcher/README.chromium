@@ -1,8 +1,8 @@
 Name: Speech Dispatcher
-URL: http://devel.freebsoft.org/speechd
-Version: 0.7.1
-License: GPL (v2 or later)
-License File: COPYING
+URL: https://github.com/brailcom/speechd
+Version: 0.11.5
+License: GNU Lesser Public License
+License File: COPYING.LGPL
 Security Critical: yes
 Shipped: yes
 
