@@ -196,6 +196,9 @@ enum OptimizationType {
   SHOPPING_PAGE_TYPES = 33;
   // This optimization provides information about shopping discounts for a URL.
   SHOPPING_DISCOUNTS = 34;
+  // This optimization helps determine if this page is a good candidate for
+  // compose.
+  COMPOSE = 35;
 }
 
 // Presents semantics for how page load URLs should be matched.
