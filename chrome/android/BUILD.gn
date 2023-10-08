@@ -305,6 +305,8 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/layout_switcher_indicator.xml",
     "//chrome/android/java/res_app/layout/layout_tab_switcher.xml",
     "//chrome/android/java/res_app/layout/layout_title_text.xml",
+    "//chrome/android/java/res_app/layout/layout_toast_download_complete.xml",
+    "//chrome/android/java/res_app/layout/layout_toast_download_create.xml",
     "//chrome/android/java/res_app/layout/menu_action_mode.xml",
     "//chrome/android/java/res_app/layout/password_entry_editor_copyable_row.xml",
     "//chrome/android/java/res_app/layout/password_entry_editor_interactive.xml",

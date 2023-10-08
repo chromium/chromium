@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.ark.browser.utils.ArkLogger;
+import com.zpj.bus.ZBus;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContentUriUtils;
@@ -1434,9 +1435,20 @@ public class DownloadManagerService implements DownloadController.Observer,
         return true;
     }
 
+    private boolean mInitialized = false;
+
+    @CalledByNative
+    private void onDownloadsInitialized() {
+        Log.e(TAG, "onDownloadsInitialized");
+        mInitialized = true;
+    }
+
     // Deprecated after new download backend.
     @CalledByNative
     private void onDownloadItemCreated(DownloadItem item) {
+        if (mInitialized) {
+            ZBus.post("key_download_create", item.getDownloadInfo());
+        }
         for (DownloadObserver adapter : mDownloadObservers) {
             adapter.onDownloadItemCreated(item);
         }
@@ -1447,6 +1459,7 @@ public class DownloadManagerService implements DownloadController.Observer,
     private void onDownloadItemUpdated(DownloadItem item) {
 
         if (item.isComplete() && !item.hasBeenExternallyRemoved()) {
+            ZBus.post("key_download_complete", item.getDownloadInfo());
             for (DownloadObserver adapter : mDownloadObservers) {
                 adapter.onDownloadItemFinished(item);
             }

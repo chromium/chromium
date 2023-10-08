@@ -6,19 +6,27 @@ import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_TEXT;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.FragmentActivity;
 
 import com.ark.browser.core.ArkCompositorViewHolder;
 import com.ark.browser.core.ArkWebManager;
@@ -33,6 +41,7 @@ import com.ark.browser.ui.fragment.base.BaseFragment;
 import com.ark.browser.ui.fragment.dialog.ClipboardInterceptDialog;
 import com.ark.browser.ui.fragment.dialog.DownloadDialog;
 import com.ark.browser.ui.fragment.dialog.ExitDialog;
+import com.ark.browser.ui.fragment.download.DownloadFragment2;
 import com.ark.browser.ui.widget.homepage.TabSwitcherManager;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
@@ -43,6 +52,7 @@ import com.zpj.fragmentation.dialog.ZDialog;
 import com.zpj.fragmentation.helper.BlockActionQueue;
 import com.zpj.toast.ZToast;
 import com.zpj.utils.FileUtils;
+import com.zpj.utils.ScreenUtils;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
@@ -50,6 +60,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.download.DownloadDialogBridge;
+import org.chromium.chrome.browser.download.DownloadInfo;
 import org.chromium.chrome.browser.download.DownloadLocationDialogType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -73,6 +84,8 @@ import org.chromium.components.messages.MessagesMetrics;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.url.GURL;
+
+import java.io.File;
 
 public class ArkMainFragment extends BaseFragment implements
         PauseResumeWithNativeObserver, StartStopWithNativeObserver, InsetObserverView.WindowInsetObserver {
@@ -215,6 +228,26 @@ public class ArkMainFragment extends BaseFragment implements
                     @Override
                     public void accept(String s) {
                         mSwitcherManager.getBottomController().updateStarButton();
+                    }
+                })
+                .subscribe();
+
+        ZBus.with(this)
+                .observe("key_download_complete", DownloadInfo.class)
+                .doOnChange(new ZBus.SingleConsumer<DownloadInfo>() {
+                    @Override
+                    public void onAccept(DownloadInfo downloadInfo) {
+                        showDownloadCompleteToast(_mActivity, downloadInfo);
+                    }
+                })
+                .subscribe();
+
+        ZBus.with(this)
+                .observe("key_download_create", DownloadInfo.class)
+                .doOnChange(new ZBus.SingleConsumer<DownloadInfo>() {
+                    @Override
+                    public void onAccept(DownloadInfo downloadInfo) {
+                        showDownloadCreateToast(_mActivity, downloadInfo);
                     }
                 })
                 .subscribe();
@@ -524,6 +557,105 @@ public class ArkMainFragment extends BaseFragment implements
     public TabSwitcherManager getSwitcherManager() {
         return mSwitcherManager;
     }
+
+    public static void showDownloadCreateToast(FragmentActivity activity, DownloadInfo info) {
+        String key = info.getDownloadGuid();
+        ZBus.removeObservers(key);
+
+        View view = LayoutInflater.from(activity).inflate(R.layout.layout_toast_download_create, null);
+
+        PopupWindow window = new PopupWindow(view,
+                WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setAnimationStyle(R.style.TextBubbleAnimation);
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        ZBus.with(activity)
+                .observe(key)
+                .doOnDetach(new Runnable() {
+                    @Override
+                    public void run() {
+                        window.dismiss();
+                    }
+                })
+                .subscribe();
+
+        TextView tvInfo = view.findViewById(R.id.tv_info);
+        // TODO file name is empty
+        tvInfo.setText("文件开始下载：" + info.getFileName());
+
+        TextView tvSee = view.findViewById(R.id.tv_see);
+        tvSee.setOnClickListener(v -> {
+            DownloadFragment2.newInstance(0).show(activity);
+            ZBus.removeObservers(key);
+        });
+
+        window.setContentView(view);
+        int x = ScreenUtils.getScreenWidth() / 2;
+        int y = ScreenUtils.getScreenHeight() - ScreenUtils.dp2pxInt(56) - ScreenUtils.getStatusBarHeight();
+        window.showAtLocation(activity.getWindow().getDecorView(), Gravity.TOP, x, y);
+
+        ThreadPool.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ZBus.removeObservers(key);
+            }
+        }, 4000);
+    }
+
+    public static void showDownloadCompleteToast(FragmentActivity activity, DownloadInfo info) {
+        String key = info.getDownloadGuid();
+        ZBus.removeObservers(key);
+
+        View view = LayoutInflater.from(activity).inflate(R.layout.layout_toast_download_complete, null);
+
+        PopupWindow window = new PopupWindow(view,
+                WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setAnimationStyle(R.style.TextBubbleAnimation);
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        ZBus.with(activity)
+                .observe(key )
+                .doOnDetach(new Runnable() {
+                    @Override
+                    public void run() {
+                        window.dismiss();
+                    }
+                })
+                .subscribe();
+
+        TextView tvInfo = view.findViewById(R.id.tv_info);
+        tvInfo.setText("文件下载完成：" + info.getFileName());
+
+        TextView tvSee = view.findViewById(R.id.tv_see);
+        TextView tvOpen = view.findViewById(R.id.tv_open);
+
+        tvSee.setOnClickListener(v -> {
+            DownloadFragment2.newInstance(0).show(activity);
+//            ZBus.post(key);
+            ZBus.removeObservers(key);
+        });
+
+        tvOpen.setOnClickListener(v -> {
+            FileUtils.openFile(activity, new File(info.getFilePath()));
+//            ZBus.post(key);
+            ZBus.removeObservers(key);
+        });
+
+        window.setContentView(view);
+        int x = ScreenUtils.getScreenWidth() / 2;
+        int y = ScreenUtils.getScreenHeight() - ScreenUtils.dp2pxInt(56) - ScreenUtils.getStatusBarHeight();
+        window.showAtLocation(activity.getWindow().getDecorView(), Gravity.TOP, x, y);
+
+
+        ThreadPool.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ZBus.removeObservers(key);
+            }
+        }, 4000);
+//        ZBus.postDelayed(key, 4000);
+    }
+
 
     /**
      * Implementation of {@link MessageAutodismissDurationProvider}.

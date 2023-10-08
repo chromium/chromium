@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_toast_normal"
+        android:layout_gravity="center"
+        android:gravity="center_vertical"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="4dp"
+        android:elevation="8dp"
+        android:layout_marginHorizontal="56dp"
+        >
+
+        <TextView
+            android:id="@+id/tv_info"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableStart="@drawable/ic_file_download_24dp"
+            android:drawablePadding="4dp"
+            android:gravity="center"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:text="开始下载"
+            android:textColor="@color/google_black_400"
+            android:paddingHorizontal="8dp"
+            />
+
+
+        <TextView
+            android:id="@+id/tv_see"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="查看"
+            android:paddingVertical="8dp"
+            android:paddingHorizontal="12dp"
+            android:textColor="@color/google_black_400"
+            />
+
+    </LinearLayout>
+
+</FrameLayout>

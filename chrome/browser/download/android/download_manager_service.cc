@@ -473,6 +473,8 @@ void DownloadManagerService::OnDownloadsInitialized(
     profiles_with_pending_get_downloads_actions_.pop_back();
     GetAllDownloadsInternal(profile_key);
   }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_DownloadManagerService_onDownloadsInitialized(env, java_ref_);
 }
 
 void DownloadManagerService::OnManagerGoingDown(

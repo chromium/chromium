@@ -712,8 +712,10 @@ void DownloadItemImpl::Remove() {
   DVLOG(20) << __func__ << "() download = " << DebugString(true);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  InterruptAndDiscardPartialState(DOWNLOAD_INTERRUPT_REASON_USER_CANCELED);
-  UpdateObservers();
+  if (!IsDone()) {
+    InterruptAndDiscardPartialState(DOWNLOAD_INTERRUPT_REASON_USER_CANCELED);
+    UpdateObservers();
+  }
   NotifyRemoved();
   delegate_->DownloadRemoved(this);
   // We have now been deleted.

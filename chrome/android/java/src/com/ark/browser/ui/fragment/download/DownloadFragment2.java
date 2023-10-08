@@ -244,7 +244,6 @@ public class DownloadFragment2 extends BaseSwipeBackFragment
                 .onItemClick((holder, view1, item) -> {
                     if (item.isComplete()) {
                         File file = new File(item.getDownloadInfo().getFilePath());
-                        ZToast.success("mimetype=" + FileUtils.getMIMEType(file));
                         if (file.exists()) {
                             openFile(context, file);
                         } else {

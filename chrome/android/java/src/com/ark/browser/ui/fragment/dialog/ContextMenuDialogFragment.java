@@ -230,11 +230,9 @@ public class ContextMenuDialogFragment extends RecyclerAttachDialogFragment<MVCL
                     if (mOnItemClicked == null) {
                         return;
                     }
-
                     int viewType = holder.getViewType();
                     if (viewType == ContextMenuCoordinator.ListItemType.CONTEXT_MENU_ITEM
                             || viewType == ContextMenuCoordinator.ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON) {
-                        ZToast.normal((String) item.model.get(TEXT));
                         mOnItemClicked.onResult(item.model.get(MENU_ID));
                     } else {
                         return;
