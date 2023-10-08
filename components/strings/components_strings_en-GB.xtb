@@ -328,6 +328,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1615402009686901181">Administrator policy disables screen capture when confidential content is visible</translation>
 <translation id="1617276713587758852">Crossovers</translation>
 <translation id="1618571384971354160">Towing and roadside assistance</translation>
+<translation id="1619007254056372606">Manage on-device site data</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622571349153632031">Vegetarian cuisine</translation>
 <translation id="162285686621567578">This website is blocked by your parent.</translation>
@@ -1241,6 +1242,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3552297013052089404">Sans-serif font</translation>
 <translation id="3558573058928565255">Day time</translation>
 <translation id="355995771319966853">Undo autofill</translation>
+<translation id="3560408312959371419">Options for tracking protections and on-device site data</translation>
 <translation id="3560824484345057728">See related sites</translation>
 <translation id="3566021033012934673">Your connection is not private</translation>
 <translation id="3566336457819493938">215 mm x 315 mm</translation>
@@ -3883,6 +3885,7 @@ Additional details:
 <translation id="893332455753468063">Add name</translation>
 <translation id="8942355029279167844">Your administrator has allowed <ph name="APP_NAME" /> to collect diagnostics data to improve the product experience. See <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> for more information.</translation>
 <translation id="8943282376843390568">Lime</translation>
+<translation id="8944485226638699751">Limited</translation>
 <translation id="8949493680961858543">A1 x 4</translation>
 <translation id="8951415078585015151">Law and government</translation>
 <translation id="8954252855949068147">Apparel</translation>

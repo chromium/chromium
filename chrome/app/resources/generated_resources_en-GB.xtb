@@ -2591,6 +2591,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2990583317361835189">Don't allow sites to use motion sensors</translation>
 <translation id="2992931425024192067">Show all notification content</translation>
 <translation id="2993517869960930405">App Info</translation>
+<translation id="2996108796702395498">Your device serial number is <ph name="SERIAL_NUMBER" />. This number can be used to help activate service.</translation>
 <translation id="2996286169319737844">Data is encrypted with your sync passphrase. This doesn't include payment methods and addresses from Google Pay.</translation>
 <translation id="2996722619877761919">Flip on long edge</translation>
 <translation id="2996932914629936323">Clears history from all synced devices</translation>
@@ -2978,6 +2979,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3320630259304269485">Safe Browsing (protection from dangerous sites) and other security settings</translation>
 <translation id="3321460131042519426">Enable word wrap</translation>
 <translation id="3321494112580110651">Don’t see your printer?</translation>
+<translation id="3321776060736518525">From <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonus! You got more screen time</translation>
 <translation id="3325804108816646710">Looking for available profiles…</translation>
 <translation id="3325910708063135066">Camera and microphone are turned off in Mac System Preferences</translation>
@@ -6229,6 +6231,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Review complete for 1 site}other{Review complete for {NUM_SITES} sites}}</translation>
 <translation id="5997337190805127100">Learn more about site access</translation>
 <translation id="5998458948782718639">Help improve auto-fill</translation>
+<translation id="5999024481231496910">You have enabled testing third-party cookie phaseout. This cannot be overridden by the settings page. If you want to re-enable third-party cookies, relaunch Chrome with this feature disabled.</translation>
 <translation id="5999630716831179808">Voices</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> results for '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6001839398155993679">Let's go</translation>
@@ -6712,6 +6715,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6399675241776343019">Denied</translation>
 <translation id="6399774419735315745">Spy</translation>
 <translation id="6400360390396538896">Always on <ph name="ORIGIN" /></translation>
+<translation id="6401118106417399952">Your device EID is <ph name="EID_NUMBER" /> and device serial number is <ph name="SERIAL_NUMBER" />. These numbers can be used to help activate service.</translation>
 <translation id="6401458660421980302">To send this tab to another device, sign in to Chrome there</translation>
 <translation id="6401597285454423070">Your computer contains a Trusted Platform Module (TPM) security device, which is used to implement many critical security features in Chrome OS. Visit the Chromebook Help Centre to learn more: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404511346730675251">Edit bookmark</translation>
@@ -8227,6 +8231,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7637272932128132922">While this tab was inactive, memory saver freed up memory for other tasks. You can change this at any time in <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Not enough disk space</translation>
 <translation id="7639914187072011620">Failed to fetch the SAML redirect URL from the server</translation>
+<translation id="7640256527901510478">Your device IMEI is <ph name="IMEI_NUMBER" /> and device serial is <ph name="SERIAL_NUMBER" />. These numbers can be used to help activate service.</translation>
 <translation id="7640308610547854367">You reverted to a previous version of ChromeOS. To get updates, wait until the next version is available.</translation>
 <translation id="7641513591566880111">New profile name</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> added</translation>
@@ -9727,6 +9732,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="881799181680267069">Hide Others</translation>
 <translation id="8818152010000655963">Wallpaper</translation>
 <translation id="8818958672113348984">Verify via your phone</translation>
+<translation id="8819510664278523111">Your device EID is <ph name="EID_NUMBER" /> , device IMEI is <ph name="IMEI_NUMBER" /> and device serial number is <ph name="SERIAL_NUMBER" />. These numbers can be used to help activate service.</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8821045908425223359">Configure IP address automatically</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> is ready to use.</translation>
@@ -10277,6 +10283,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="956500788634395331">You're protected from potentially harmful extensions</translation>
 <translation id="957179356621191750">6-dot</translation>
 <translation id="957960681186851048">This site attempted to download multiple files automatically</translation>
+<translation id="958571289841636277">Navigate back and forward with a swipe gesture</translation>
 <translation id="960987915827980018">About 1 hour left</translation>
 <translation id="962802172452141067">Bookmark folder tree</translation>
 <translation id="963000966785016697">Search image with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

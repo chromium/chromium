@@ -217,6 +217,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="218608176142494674">Sharing</translation>
 <translation id="2194856509914051091">Things to consider</translation>
 <translation id="2200113223741723867">Manage usage data sharing</translation>
+<translation id="22091350895006575">Add username</translation>
 <translation id="221494669172414749">Opening Chrome without a profile lock will remove your saved passwords and payment methods from the car. Using a profile lock keeps this data secure.</translation>
 <translation id="2218567645332692482">Upgrade navigations to HTTPS and warn you before loading sites that don’t support it</translation>
 <translation id="2227444325776770048">Continue as <ph name="USER_FULL_NAME" /></translation>
@@ -244,6 +245,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="235789365079050412">Google Privacy Policy</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2362083820973145409">Signed in as <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Opens settings.</translation>
+<translation id="2364539095045928896">Close button to close privacy notice of Page Insights Hub.</translation>
 <translation id="2386938421315164605">Hide and unhide topics</translation>
 <translation id="2390510615457643724">Do you want to download <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> again?</translation>
 <translation id="2394602618534698961">Files that you download appear here</translation>
@@ -312,6 +314,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2718846868787000099">To show content in your preferred languages, the sites that you visit can see your preferences</translation>
 <translation id="2722945394406572875">Privacy Sandbox prompt closed</translation>
 <translation id="2723001399770238859">audio</translation>
+<translation id="2760805590727089264">MM / YY</translation>
 <translation id="2760989362628427051">Turn on dark theme when your device's dark theme or Battery Saver is on</translation>
 <translation id="2762000892062317888">just now</translation>
 <translation id="276969039800130567">Signed in as <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -840,6 +843,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5458366071038729214">You'll find the sites that you follow here</translation>
 <translation id="5468068603361015296">Do you want to download <ph name="FILE_NAME" /> anyway?</translation>
 <translation id="548278423535722844">Open in maps app</translation>
+<translation id="5486841595534124508">Logo of privacy notice for Page Insights Hub which redirects to My Activity page.</translation>
 <translation id="5487521232677179737">Clear data</translation>
 <translation id="5492637351392383067">On-device encryption</translation>
 <translation id="5514904542973294328">Disabled by the administrator of this device</translation>
@@ -956,6 +960,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="6112702117600201073">Refreshing page</translation>
 <translation id="6122831415929794347">Turn off Safe Browsing?</translation>
 <translation id="6127379762771434464">Item removed</translation>
+<translation id="6130303040046284160">Minimise tab</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" />’s language</translation>
 <translation id="6138832295072039549">Change your site settings here</translation>
 <translation id="6140709049082532940">Enhanced protection:</translation>
@@ -1258,6 +1263,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7588219262685291874">Turn on dark theme when your device's Battery Saver is on</translation>
 <translation id="7594687499944811403">Let <ph name="EMBEDDED_ORIGIN" /> verify that it's you for <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Operating system</translation>
+<translation id="7603168929588204083">Invalid date</translation>
 <translation id="7605594153474022051">Sync isn't working</translation>
 <translation id="7612619742409846846">Signed in to Google as</translation>
 <translation id="7612989789287281429">Signing you in…</translation>
@@ -1307,6 +1313,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7810647596859435254">Open with…</translation>
 <translation id="7815484226266492798">Long screenshot</translation>
 <translation id="7822705602465980873">When you're signed in, this data is linked to your Google Account to protect you across Google services, for example increased protection in Gmail after a security incident.</translation>
+<translation id="782705168687182233">Your activity is saved in your <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Your computer wants to register this device for signing in to a site</translation>
 <translation id="7844171778363018843">No data selected to sync</translation>
 <translation id="7846296061357476882">Google services</translation>
@@ -1399,6 +1406,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8223642481677794647">Feed card menu</translation>
 <translation id="8236097722223016103">Add to bookmarks</translation>
 <translation id="8237871086242677046">Page insights bottom sheet</translation>
+<translation id="8243077599929149377">Add your username</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8255617931166444521">Sites can only use your cookies to see your browsing activity only on their own site</translation>
 <translation id="8259179246279078674">Because the preloaded pages are encrypted, Google will not learn anything about the preloaded page content. Google servers will learn which sites are privately preloaded. This information is only used to preload the pages and is not linked to other information from your Google Account.</translation>
