@@ -5,12 +5,13 @@
 #include "third_party/blink/renderer/core/events/pointer_event_util.h"
 
 #include <cmath>
+
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 // static
-double PointerEventUtil::AzimuthFromTilt(int32_t tilt_x_degrees,
-                                         int32_t tilt_y_degrees) {
+double PointerEventUtil::AzimuthFromTilt(float tilt_x_degrees,
+                                         float tilt_y_degrees) {
   DCHECK(tilt_x_degrees >= -90 && tilt_x_degrees <= 90);
   DCHECK(tilt_y_degrees >= -90 && tilt_y_degrees <= 90);
 
@@ -50,8 +51,8 @@ double PointerEventUtil::AzimuthFromTilt(int32_t tilt_x_degrees,
 }
 
 // static
-double PointerEventUtil::AltitudeFromTilt(int32_t tilt_x_degrees,
-                                          int32_t tilt_y_degrees) {
+double PointerEventUtil::AltitudeFromTilt(float tilt_x_degrees,
+                                          float tilt_y_degrees) {
   DCHECK(tilt_x_degrees >= -90 && tilt_x_degrees <= 90);
   DCHECK(tilt_y_degrees >= -90 && tilt_y_degrees <= 90);
 

@@ -5,7 +5,6 @@
 #include "ui/events/blink/web_input_event_traits.h"
 
 #include "base/check_op.h"
-#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -71,7 +70,7 @@ void ApppendTouchPointDetails(const WebTouchPoint& point, std::string* result) {
   StringAppendF(result,
                 "  (ID: %d, State: %d, ScreenPos: (%f, %f), Pos: (%f, %f),"
                 " Radius: (%f, %f), Rot: %f, Force: %f,"
-                " Tilt: (%d, %d), Twist: %d, TangentialPressure: %f),\n",
+                " Tilt: (%f, %f), Twist: %d, TangentialPressure: %f),\n",
                 point.id, static_cast<int>(point.state),
                 point.PositionInScreen().x(), point.PositionInScreen().y(),
                 point.PositionInWidget().x(), point.PositionInWidget().y(),
@@ -98,7 +97,7 @@ void ApppendEventDetails(const WebPointerEvent& event, std::string* result) {
       "{\n Id: %d\n Button: %d\n Pos: (%f, %f)\n"
       " GlobalPos: (%f, %f)\n Movement: (%d, %d)\n width: %f\n height: "
       "%f\n Pressure: %f\n TangentialPressure: %f\n Rotation: %f\n Tilt: "
-      "(%d, %d)\n}",
+      "(%f, %f)\n}",
       event.id, static_cast<int>(event.button), event.PositionInWidget().x(),
       event.PositionInWidget().y(), event.PositionInScreen().x(),
       event.PositionInScreen().y(), event.movement_x, event.movement_y,

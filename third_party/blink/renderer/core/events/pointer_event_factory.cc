@@ -4,15 +4,14 @@
 
 #include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
+#include "third_party/blink/renderer/core/events/pointer_event_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/pointer_type_names.h"
-#include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
@@ -127,8 +126,12 @@ void UpdateCommonPointerEventInit(const WebPointerEvent& web_pointer_event,
   }
   pointer_event_init->setPressure(GetPointerEventPressure(
       web_pointer_event.force, pointer_event_init->buttons()));
-  pointer_event_init->setTiltX(web_pointer_event.tilt_x);
-  pointer_event_init->setTiltY(web_pointer_event.tilt_y);
+  pointer_event_init->setTiltX(round(web_pointer_event.tilt_x));
+  pointer_event_init->setTiltY(round(web_pointer_event.tilt_y));
+  pointer_event_init->setAltitudeAngle(PointerEventUtil::AltitudeFromTilt(
+      web_pointer_event.tilt_x, web_pointer_event.tilt_y));
+  pointer_event_init->setAzimuthAngle(PointerEventUtil::AzimuthFromTilt(
+      web_pointer_event.tilt_x, web_pointer_event.tilt_y));
   pointer_event_init->setTangentialPressure(
       web_pointer_event.tangential_pressure);
   pointer_event_init->setTwist(web_pointer_event.twist);

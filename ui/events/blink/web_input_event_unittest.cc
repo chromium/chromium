@@ -338,8 +338,8 @@ TEST(WebInputEventTest, TestMakeWebMouseEvent) {
 
     EXPECT_EQ(blink::WebPointerProperties::PointerType::kPen,
               webkit_event.pointer_type);
-    EXPECT_EQ(90, webkit_event.tilt_x);
-    EXPECT_EQ(-90, webkit_event.tilt_y);
+    EXPECT_EQ(89.5, webkit_event.tilt_x);
+    EXPECT_EQ(-89.5, webkit_event.tilt_y);
     EXPECT_FLOAT_EQ(0.8f, webkit_event.force);
     EXPECT_FLOAT_EQ(0.6f, webkit_event.tangential_pressure);
     EXPECT_EQ(269, webkit_event.twist);
