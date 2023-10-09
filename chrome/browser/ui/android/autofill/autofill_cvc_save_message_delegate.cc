@@ -34,7 +34,8 @@ void AutofillCvcSaveMessageDelegate::ShowMessage() {
   message_->SetPrimaryButtonText(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CVC_MESSAGE_SAVE_ACCEPT));
   message_->SetIconResourceId(
-      ResourceMapper::MapToJavaDrawableId(IDR_AUTOFILL_CC_GENERIC));
+      ResourceMapper::MapToJavaDrawableId(IDR_AUTOFILL_CC_GENERIC_PRIMARY));
+  message_->DisableIconTint();
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       &message_.value(), web_contents_,
       messages::MessageScopeType::WEB_CONTENTS,
