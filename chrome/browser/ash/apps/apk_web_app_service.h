@@ -97,7 +97,8 @@ class ApkWebAppService : public KeyedService,
   bool IsWebAppShellPackage(const std::string& package_name);
 
   absl::optional<std::string> GetPackageNameForWebApp(
-      const webapps::AppId& app_id);
+      const webapps::AppId& app_id,
+      bool include_installing_apks = false);
 
   absl::optional<std::string> GetPackageNameForWebApp(const GURL& url);
 
@@ -114,6 +115,14 @@ class ApkWebAppService : public KeyedService,
       WebAppCallbackForTesting web_app_installed_callback);
   void SetWebAppUninstalledCallbackForTesting(
       WebAppCallbackForTesting web_app_uninstalled_callback);
+
+  // Save a mapping of the web app ID to the package name for a web-only TWA
+  // that is currently installing.
+  void AddInstallingWebApkPackageName(const std::string& app_id,
+                                      const std::string& package_name);
+
+  // Remove the app ID from the map of currently installing APKs.
+  void RemoveInstallingWebApkPackageName(const std::string& app_id);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ApkWebAppInstallerDelayedArcStartBrowserTest,
@@ -195,6 +204,11 @@ class ApkWebAppService : public KeyedService,
   // True when ARC is fully initialized, after ArcAppLauncher has sent the
   // initial package list.
   bool arc_initialized_ = false;
+
+  // Maps the app IDs of any currently installing web app apks to their ARC
+  // package names. This allows us to track the web app apks that are currently
+  // installing.
+  std::map<std::string, std::string> currently_installing_apks_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>

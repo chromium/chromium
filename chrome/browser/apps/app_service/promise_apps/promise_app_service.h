@@ -107,6 +107,8 @@ class PromiseAppService : public AppRegistryCache::Observer {
   // specified package ID.
   bool IsRegisteredInAppRegistryCache(const PackageId& package_id);
 
+  raw_ptr<Profile> profile_;
+
   // The cache that contains all the promise apps in the system.
   std::unique_ptr<apps::PromiseAppRegistryCache> promise_app_registry_cache_;
 

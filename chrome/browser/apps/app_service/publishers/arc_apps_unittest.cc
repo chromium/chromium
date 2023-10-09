@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/arc/intent.h"
+#include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -832,6 +833,46 @@ TEST_F(ArcAppsPublisherTest, PromiseAppsAreCreatedForRvcArc) {
 
   // Verify that the promise app is registered.
   EXPECT_TRUE(cache->HasPromiseApp(package_id));
+}
+
+TEST_F(ArcAppsPublisherTest, WebOnlyTwaInstallationReplacesArcPromiseApp) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
+  app_service_proxy()->ReinitializeForTesting(profile());
+  apps::PromiseAppRegistryCache* promise_cache =
+      app_service_proxy()->PromiseAppRegistryCache();
+  apps::AppRegistryCache& app_cache = app_service_proxy()->AppRegistryCache();
+
+  std::string package_name = "com.example.this";
+  apps::PackageId package_id =
+      apps::PackageId(apps::AppType::kArc, package_name);
+  std::string app_id = "asdfghjkl";
+
+  // Add a promise app to the cache.
+  std::unique_ptr<apps::PromiseApp> promise_app =
+      std::make_unique<apps::PromiseApp>(package_id);
+  promise_app->should_show = true;
+  promise_app->status = apps::PromiseStatus::kInstalling;
+  promise_cache->OnPromiseApp(std::move(promise_app));
+
+  // Confirm that the promise app gets registered.
+  EXPECT_TRUE(promise_cache->HasPromiseApp(package_id));
+
+  raw_ptr<ash::ApkWebAppService> apk_web_app_service =
+      ash::ApkWebAppService::Get(profile());
+  apk_web_app_service->AddInstallingWebApkPackageName(app_id, package_name);
+
+  // Register the installed web app.
+  apps::AppPtr app = std::make_unique<apps::App>(apps::AppType::kWeb, app_id);
+  app->publisher_id = "https://something.com";
+  app->readiness = apps::Readiness::kReady;
+  std::vector<apps::AppPtr> apps;
+  apps.push_back(std::move(app));
+  app_cache.OnApps(std::move(apps), apps::AppType::kWeb,
+                   /*should_notify_initialized=*/false);
+
+  // Confirm that the promise app is now absent from the Promise App Registry.
+  EXPECT_FALSE(promise_cache->HasPromiseApp(package_id));
 }
 
 // Verifies that only valid intent filters will be published from ARC.

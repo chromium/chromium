@@ -78,7 +78,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 namespace apps {
 PromiseAppService::PromiseAppService(Profile* profile,
                                      AppRegistryCache& app_registry_cache)
-    : promise_app_registry_cache_(
+    : profile_(profile),
+      promise_app_registry_cache_(
           std::make_unique<apps::PromiseAppRegistryCache>()),
       promise_app_almanac_connector_(
           std::make_unique<PromiseAppAlmanacConnector>(profile)),
@@ -158,9 +159,6 @@ void PromiseAppService::LoadIcon(const PackageId& package_id,
 }
 
 void PromiseAppService::OnAppUpdate(const apps::AppUpdate& update) {
-  if (update.AppType() != AppType::kArc && update.AppType() != AppType::kWeb) {
-    return;
-  }
   // Check that the update is for a new installation.
   if (!update.ReadinessChanged() ||
       update.Readiness() != apps::Readiness::kReady ||
@@ -168,16 +166,19 @@ void PromiseAppService::OnAppUpdate(const apps::AppUpdate& update) {
     return;
   }
 
-  // TODO(b/288832707): Find a way to match installed web-only TWAs to their
-  // promise apps, which will have different package IDs.
-
-  // Check that the update corresponds to a registered promise app.
-  const PackageId package_id(update.AppType(), update.PublisherId());
-  if (!promise_app_registry_cache_->HasPromiseApp(package_id)) {
+  absl::optional<PackageId> package_id =
+      apps_util::GetPackageIdForApp(profile_.get(), update);
+  if (!package_id.has_value()) {
     return;
   }
+
+  // Check that the update corresponds to a registered promise app.
+  if (!promise_app_registry_cache_->HasPromiseApp(package_id.value())) {
+    return;
+  }
+
   // Delete the promise app.
-  PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
+  PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id.value());
   promise_app->status = PromiseStatus::kSuccess;
   OnPromiseApp(std::move(promise_app));
 }
@@ -291,9 +292,7 @@ bool PromiseAppService::IsRegisteredInAppRegistryCache(
         if (update.PublisherId() != package_id.identifier()) {
           return;
         }
-        if (update.Readiness() == Readiness::kUninstalledByUser ||
-            update.Readiness() == Readiness::kRemoved ||
-            update.Readiness() == Readiness::kUninstalledByNonUser) {
+        if (!apps_util::IsInstalled(update.Readiness())) {
           // It's possible for an app to be in the AppRegistryCache despite
           // being uninstalled. Do not consider this as a registered
           // installed app.

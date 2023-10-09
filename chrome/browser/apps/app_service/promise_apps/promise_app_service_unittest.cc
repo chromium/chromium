@@ -124,8 +124,8 @@ class PromiseAppServiceTest : public testing::Test,
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> wait_run_loop_;
-  std::unique_ptr<PromiseAppService> service_;
   std::unique_ptr<Profile> profile_;
+  std::unique_ptr<PromiseAppService> service_;
   std::unique_ptr<network::TestURLLoaderFactory> url_loader_factory_;
   base::ScopedObservation<PromiseAppRegistryCache,
                           PromiseAppRegistryCache::Observer>

@@ -96,6 +96,7 @@ absl::optional<webapps::AppId> GetWebAppIdForPackage(
                                 GURL(package->web_app_info->start_url));
 }
 
+// TODO(b/304184466): Refactor this DelegateImpl to reduce code duplication.
 // Delegate implementation that actually talks to ARC And Lacros.
 // It looks up |ArcAppListPrefs| in the profile to find the ARC connection.
 class ApkWebAppServiceDelegateImpl : public ApkWebAppService::Delegate,
@@ -147,6 +148,12 @@ class ApkWebAppServiceDelegateImpl : public ApkWebAppService::Delegate,
                           const std::string& package_name,
                           arc::mojom::WebAppInfoPtr web_app_info,
                           arc::mojom::RawIconPngDataPtr icon) {
+    // Track the upcoming installation attempt.
+    std::string web_app_id =
+        web_app::GenerateAppId(absl::nullopt, GURL(web_app_info->start_url));
+    ApkWebAppService::Get(profile_)->AddInstallingWebApkPackageName(
+        web_app_id, package_name);
+
     ApkWebAppInstaller::Install(profile_, package_name, std::move(web_app_info),
                                 std::move(icon), std::move(callback),
                                 weak_ptr_factory_.GetWeakPtr());
@@ -233,11 +240,18 @@ bool ApkWebAppService::IsWebAppShellPackage(const std::string& package_name) {
 }
 
 absl::optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
-    const webapps::AppId& app_id) {
+    const webapps::AppId& app_id,
+    bool include_installing_apks) {
   if (const base::Value::Dict* app_dict = WebAppToApks().FindDict(app_id)) {
     if (const std::string* value = app_dict->FindString(kPackageNameKey)) {
       return *value;
     }
+  }
+  // If requested, check whether there is a package name for the web app among
+  // the currently installing web app apks.
+  auto it = currently_installing_apks_.find(app_id);
+  if (include_installing_apks && it != currently_installing_apks_.end()) {
+    return it->second;
   }
   return absl::nullopt;
 }
@@ -509,6 +523,11 @@ void ApkWebAppService::OnDidGetWebAppIcon(
     const std::string& package_name,
     arc::mojom::WebAppInfoPtr web_app_info,
     arc::mojom::RawIconPngDataPtr icon) {
+  // Track the upcoming installation attempt.
+  std::string web_app_id =
+      web_app::GenerateAppId(absl::nullopt, GURL(web_app_info->start_url));
+  AddInstallingWebApkPackageName(web_app_id, package_name);
+
   ApkWebAppInstaller::Install(
       profile_, package_name, std::move(web_app_info), std::move(icon),
       base::BindOnce(&ApkWebAppService::OnDidFinishInstall,
@@ -543,6 +562,7 @@ void ApkWebAppService::OnDidFinishInstall(
     // when the container starts up again.
     web_app_dict->Set(kShouldRemoveKey, false);
   }
+  RemoveInstallingWebApkPackageName(web_app_id);
 
   // For testing.
   if (web_app_installed_callback_) {
@@ -722,6 +742,17 @@ void ApkWebAppService::RemoveObsoletePrefValues(
   base::Value::Dict* app_id_dict = dict_update->EnsureDict(web_app_id);
   app_id_dict->Remove(kIsWebOnlyTwaKey);
   app_id_dict->Remove(kSha256FingerprintKey);
+}
+
+void ApkWebAppService::AddInstallingWebApkPackageName(
+    const std::string& app_id,
+    const std::string& package_name) {
+  currently_installing_apks_[app_id] = package_name;
+}
+
+void ApkWebAppService::RemoveInstallingWebApkPackageName(
+    const std::string& app_id) {
+  currently_installing_apks_.erase(app_id);
 }
 
 }  // namespace ash
