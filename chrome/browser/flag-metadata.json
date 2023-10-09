@@ -8295,7 +8295,7 @@
   {
     "name": "user-bypass-ui",
     "owners": [ "olesiamarukhno@google.com", "kartoffel-core-eng@google.com" ],
-    "expiry_milestone": 119
+    "expiry_milestone": 124
   },
   {
     "name": "user-notes-side-panel",

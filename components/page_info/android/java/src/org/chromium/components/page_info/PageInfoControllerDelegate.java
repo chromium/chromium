@@ -202,4 +202,9 @@ public abstract class PageInfoControllerDelegate {
     public abstract FragmentManager getFragmentManager();
 
     public abstract boolean isIncognito();
+
+    /**
+     * @return Whether the Tracking Protection UI should be shown instead of the cookies one.
+     */
+    public abstract boolean showTrackingProtectionUI();
 }

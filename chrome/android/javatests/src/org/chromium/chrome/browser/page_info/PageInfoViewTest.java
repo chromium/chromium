@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.history.HistoryContentManager;
 import org.chromium.chrome.browser.history.StubbedHistoryProvider;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -234,6 +235,14 @@ public class PageInfoViewTest {
             UserPrefs.get(Profile.getLastUsedRegularProfile())
                     .setInteger(COOKIE_CONTROLS_MODE, value);
         });
+    }
+
+    private void enableTrackingProtection() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(Profile.getLastUsedRegularProfile())
+                            .setBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED, true);
+                });
     }
 
     private String runJavascriptAsync(String type) throws TimeoutException {
@@ -459,7 +468,19 @@ public class PageInfoViewTest {
     public void testShowWithPermissionsAndCookieBlockingUserBypass() throws IOException {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
-        mRenderTestRule.render(getPageInfoView(), "PageInfo_Permissions");
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_Permissions_UserBypass");
+    }
+
+    /** Tests PageInfo on a website with 3PC and permissions with Tracking Protection enabled. */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
+    public void testShowWithPermissionsAndCookieBlockingTrackingProtection() throws IOException {
+        enableTrackingProtection();
+        addSomePermissions(mTestServerRule.getServer().getURL("/"));
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_Permissions_TrackingProtection");
     }
 
     /**
