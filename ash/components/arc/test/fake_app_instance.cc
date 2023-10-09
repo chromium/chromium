@@ -190,7 +190,7 @@ arc::mojom::RawIconPngDataPtr FakeAppInstance::GenerateIconResponse(
     }
     case IconResponseType::ICON_RESPONSE_SEND_GOOD: {
       base::FilePath base_path;
-      CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &base_path));
+      CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &base_path));
       base::FilePath icon_file_path =
           base_path.AppendASCII("ash")
               .AppendASCII("components")
@@ -252,7 +252,7 @@ arc::mojom::RawIconPngDataPtr FakeAppInstance::GetFakeIcon(
 
   base::FilePath base_path;
   std::string png_data_as_string;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &base_path));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &base_path));
   base::FilePath icon_file_path = base_path.AppendASCII("ash")
                                       .AppendASCII("components")
                                       .AppendASCII("arc")

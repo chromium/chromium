@@ -40,7 +40,8 @@ bool IsSystemAppTestURL(const GURL& url) {
 void HandleRequest(const std::string& url_path,
                    content::WebUIDataSource::GotDataCallback callback) {
   base::FilePath path;
-  CHECK(base::PathService::Get(base::BasePathKey::DIR_SOURCE_ROOT, &path));
+  CHECK(
+      base::PathService::Get(base::BasePathKey::DIR_SRC_TEST_DATA_ROOT, &path));
   path = path.Append(kRootDir);
   path = path.AppendASCII(url_path.substr(0, url_path.find('?')));
 
