@@ -2841,6 +2841,8 @@ void StyleResolver::PropagateStyleToViewport() {
                    SetColorSchemeForced, false);
     PROPAGATE_FROM(document_element_style, ScrollbarGutter, SetScrollbarGutter,
                    kScrollbarGutterAuto);
+    PROPAGATE_FROM(document_element_style, ScrollbarWidth, SetScrollbarWidth,
+                   EScrollbarWidth::kAuto);
     PROPAGATE_FROM(document_element_style, ForcedColorAdjust,
                    SetForcedColorAdjust, EForcedColorAdjust::kAuto);
   }

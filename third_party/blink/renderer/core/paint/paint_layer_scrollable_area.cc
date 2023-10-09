@@ -1365,8 +1365,6 @@ void PaintLayerScrollableArea::UpdateAfterStyleChange(
 
   if (!old_style ||
       old_style->UsedColorScheme() != UsedColorSchemeScrollbars() ||
-      old_style->ScrollbarWidth() !=
-          GetLayoutBox()->StyleRef().ScrollbarWidth() ||
       old_style->ScrollbarThumbColorResolved() !=
           GetLayoutBox()->StyleRef().ScrollbarThumbColorResolved() ||
       old_style->ScrollbarTrackColorResolved() !=
@@ -1602,6 +1600,11 @@ bool PaintLayerScrollableArea::NeedsScrollbarReconstruction() const {
 
     if (current_theme != &scrollbar->GetTheme())
       return true;
+
+    EScrollbarWidth current_width = scrollbar->CSSScrollbarWidth();
+    if (current_width != style_source.StyleRef().ScrollbarWidth()) {
+      return true;
+    }
   }
   return false;
 }
