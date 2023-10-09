@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_VOICE_VOICE_SEARCH_LANGUAGE_H_
-#define IOS_CHROME_BROWSER_VOICE_VOICE_SEARCH_LANGUAGE_H_
+#ifndef IOS_CHROME_BROWSER_VOICE_MODEL_VOICE_SEARCH_LANGUAGE_H_
+#define IOS_CHROME_BROWSER_VOICE_MODEL_VOICE_SEARCH_LANGUAGE_H_
 
 #import <Foundation/Foundation.h>
 
@@ -33,4 +33,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_VOICE_VOICE_SEARCH_LANGUAGE_H_
+#endif  // IOS_CHROME_BROWSER_VOICE_MODEL_VOICE_SEARCH_LANGUAGE_H_

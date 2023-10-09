@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/voice/text_to_speech_listener.h"
+#import "ios/chrome/browser/voice/model/text_to_speech_listener.h"
 
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
@@ -24,7 +24,7 @@ NSString* const kValidVoiceSearchScript =
 
 #pragma mark - TestTTSListenerDelegate
 
-@interface TestTTSListenerDelegate : NSObject<TextToSpeechListenerDelegate> {
+@interface TestTTSListenerDelegate : NSObject <TextToSpeechListenerDelegate> {
   // Backing objects for properties of the same name.
   NSData* _expectedAudioData;
 }

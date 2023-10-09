@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_VOICE_TEXT_TO_SPEECH_PARSER_H_
-#define IOS_CHROME_BROWSER_VOICE_TEXT_TO_SPEECH_PARSER_H_
+#ifndef IOS_CHROME_BROWSER_VOICE_MODEL_TEXT_TO_SPEECH_PARSER_H_
+#define IOS_CHROME_BROWSER_VOICE_MODEL_TEXT_TO_SPEECH_PARSER_H_
 
 #import <Foundation/Foundation.h>
 
@@ -17,4 +17,4 @@ typedef void (^TextToSpeechCompletion)(NSData*);
 void ExtractVoiceSearchAudioDataFromWebState(web::WebState* webState,
                                              TextToSpeechCompletion completion);
 
-#endif  // IOS_CHROME_BROWSER_VOICE_TEXT_TO_SPEECH_PARSER_H_
+#endif  // IOS_CHROME_BROWSER_VOICE_MODEL_TEXT_TO_SPEECH_PARSER_H_

@@ -241,7 +241,7 @@ source_set("metrics_internal") {
     "//components/google/core/common",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/voice",
+    "//ios/chrome/browser/voice/model",
     "//ios/web",
     "//services/metrics/public/cpp:ukm_builders",
     "//ui/base",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_VOICE_SPEECH_INPUT_LOCALE_CONFIG_IMPL_H_
-#define IOS_CHROME_BROWSER_VOICE_SPEECH_INPUT_LOCALE_CONFIG_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_VOICE_MODEL_SPEECH_INPUT_LOCALE_CONFIG_IMPL_H_
+#define IOS_CHROME_BROWSER_VOICE_MODEL_SPEECH_INPUT_LOCALE_CONFIG_IMPL_H_
 
 #import <Foundation/Foundation.h>
 
@@ -11,9 +11,9 @@
 #include <string>
 #include <vector>
 
-#include "ios/chrome/browser/voice/speech_input_locale_config.h"
-#include "ios/chrome/browser/voice/speech_input_locale_match.h"
-#include "ios/chrome/browser/voice/voice_search_language.h"
+#include "ios/chrome/browser/voice/model/speech_input_locale_config.h"
+#include "ios/chrome/browser/voice/model/speech_input_locale_match.h"
+#include "ios/chrome/browser/voice/model/voice_search_language.h"
 
 namespace voice {
 
@@ -75,4 +75,4 @@ class SpeechInputLocaleConfigImpl : public SpeechInputLocaleConfig {
 
 }  // namespace voice
 
-#endif  // IOS_CHROME_BROWSER_VOICE_SPEECH_INPUT_LOCALE_CONFIG_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_VOICE_MODEL_SPEECH_INPUT_LOCALE_CONFIG_IMPL_H_

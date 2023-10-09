@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/voice/voice_search_url_rewriter.h"
+#import "ios/chrome/browser/voice/model/voice_search_url_rewriter.h"
 
 #import <Foundation/Foundation.h>
 
@@ -10,14 +10,15 @@
 #import "components/google/core/common/google_util.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/voice/speech_input_locale_config.h"
-#import "ios/chrome/browser/voice/voice_search_prefs.h"
+#import "ios/chrome/browser/voice/model/speech_input_locale_config.h"
+#import "ios/chrome/browser/voice/model/voice_search_prefs.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
 
 bool VoiceSearchURLRewriter(GURL* url, web::BrowserState* browser_state) {
-  if (!google_util::IsGoogleSearchUrl(*url))
+  if (!google_util::IsGoogleSearchUrl(*url)) {
     return false;
+  }
 
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(browser_state);
@@ -33,8 +34,9 @@ bool VoiceSearchURLRewriter(GURL* url, web::BrowserState* browser_state) {
   if (language.empty()) {
     voice::SpeechInputLocaleConfig* locale_config =
         voice::SpeechInputLocaleConfig::GetInstance();
-    if (locale_config)
+    if (locale_config) {
       language = locale_config->GetDefaultLocale().code;
+    }
     if (!language.length()) {
       NOTREACHED();
       language = "en-US";

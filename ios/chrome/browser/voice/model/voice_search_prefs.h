@@ -5,6 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_VOICE_MODEL_VOICE_SEARCH_PREFS_H_
 #define IOS_CHROME_BROWSER_VOICE_MODEL_VOICE_SEARCH_PREFS_H_
 
-#include "ios/chrome/browser/voice/voice_search_prefs.h"
+namespace prefs {
+
+extern const char kVoiceSearchLocale[];
+extern const char kVoiceSearchTTS[];
+
+}  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_VOICE_MODEL_VOICE_SEARCH_PREFS_H_

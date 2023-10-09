@@ -8,7 +8,7 @@
 #include "base/strings/string_piece.h"
 #include "components/handoff/pref_names_ios.h"
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#include "ios/chrome/browser/voice/voice_search_prefs.h"
+#include "ios/chrome/browser/voice/model/voice_search_prefs.h"
 
 namespace browser_sync {
 

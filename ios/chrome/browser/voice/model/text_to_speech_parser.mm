@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/voice/text_to_speech_parser.h"
+#import "ios/chrome/browser/voice/model/text_to_speech_parser.h"
 
 #import "base/base64.h"
 #import "base/logging.h"
@@ -41,12 +41,13 @@ const NSUInteger kMaxTrailingEqualsCount = 2;
 }  // namespace
 
 NSData* ExtractVoiceSearchAudioDataFromPageHTML(NSString* page_html) {
-  if (!page_html.length)
+  if (!page_html.length) {
     return nil;
+  }
 
   // The data should be near the end of the page, so search backwards.
-  NSRange data_start_tag_range =
-      [page_html rangeOfString:kTTSStartTag options:NSBackwardsSearch];
+  NSRange data_start_tag_range = [page_html rangeOfString:kTTSStartTag
+                                                  options:NSBackwardsSearch];
   if (data_start_tag_range.location == NSNotFound) {
     DLOG(ERROR) << "Did not find base tts tag in search output. "
                 << page_html.length;
@@ -59,8 +60,9 @@ NSData* ExtractVoiceSearchAudioDataFromPageHTML(NSString* page_html) {
       data_start_tag_range.location + data_start_tag_range.length;
   NSRange data_range =
       NSMakeRange(start_position, page_html.length - start_position);
-  NSRange data_end_tag_range =
-      [page_html rangeOfString:kTTSEndTag options:0 range:data_range];
+  NSRange data_end_tag_range = [page_html rangeOfString:kTTSEndTag
+                                                options:0
+                                                  range:data_range];
   if (data_end_tag_range.location == NSNotFound ||
       data_end_tag_range.location == start_position) {
     DLOG(ERROR) << "Could not find encoded data before tts closing tag.";
@@ -95,8 +97,9 @@ NSData* ExtractVoiceSearchAudioDataFromPageHTML(NSString* page_html) {
                                          range:search_range]);
 
   std::string decoded_data;
-  if (!base::Base64Decode(base64_encoded_audio_string, &decoded_data))
+  if (!base::Base64Decode(base64_encoded_audio_string, &decoded_data)) {
     return nil;
+  }
 
   return [NSData dataWithBytes:decoded_data.c_str() length:decoded_data.size()];
 }

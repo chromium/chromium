@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/voice/speech_input_locale_match.h"
+#import "ios/chrome/browser/voice/model/speech_input_locale_match.h"
 
 #import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"

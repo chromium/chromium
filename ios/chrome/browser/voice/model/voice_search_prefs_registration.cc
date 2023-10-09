@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/voice/voice_search_prefs_registration.h"
+#include "ios/chrome/browser/voice/model/voice_search_prefs_registration.h"
 
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/voice/voice_search_prefs.h"
+#include "ios/chrome/browser/voice/model/voice_search_prefs.h"
 
 void RegisterVoiceSearchBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {

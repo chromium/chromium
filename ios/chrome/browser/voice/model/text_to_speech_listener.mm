@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/voice/text_to_speech_listener.h"
+#import "ios/chrome/browser/voice/model/text_to_speech_listener.h"
 
 #import <memory>
 
 #import "base/check_op.h"
-#import "ios/chrome/browser/voice/text_to_speech_parser.h"
-#import "ios/chrome/browser/voice/voice_search_url_rewriter.h"
+#import "ios/chrome/browser/voice/model/text_to_speech_parser.h"
+#import "ios/chrome/browser/voice/model/voice_search_url_rewriter.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
@@ -17,7 +17,7 @@
 
 #pragma mark - TextToSpeechListener Private Interface
 
-@interface TextToSpeechListener ()<CRWWebStateObserver>
+@interface TextToSpeechListener () <CRWWebStateObserver>
 
 // The TextToSpeechListenerDelegate passed on initialization.
 @property(weak, nonatomic, readonly) id<TextToSpeechListenerDelegate> delegate;

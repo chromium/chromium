@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/voice/speech_input_locale_config_impl.h"
+#import "ios/chrome/browser/voice/model/speech_input_locale_config_impl.h"
 
 #import <Foundation/Foundation.h>
 
@@ -13,7 +13,7 @@
 #import "base/debug/dump_without_crashing.h"
 #import "base/strings/string_split.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/voice/speech_input_locale_match.h"
+#import "ios/chrome/browser/voice/model/speech_input_locale_match.h"
 
 namespace {
 
@@ -21,8 +21,9 @@ namespace {
 std::string GetLanguageComponentForLocaleCode(const std::string& locale_code) {
   std::vector<std::string> tokens = base::SplitString(
       locale_code, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (tokens.empty())
+  if (tokens.empty()) {
     return std::string();
+  }
   return tokens[0];
 }
 
@@ -62,8 +63,9 @@ SpeechInputLocaleConfigImpl::GetAvailableLocales() const {
 SpeechInputLocale SpeechInputLocaleConfigImpl::GetLocaleForCode(
     const std::string& locale_code) const {
   auto index_iterator = locale_indices_for_codes_.find(locale_code);
-  if (index_iterator == locale_indices_for_codes_.end())
+  if (index_iterator == locale_indices_for_codes_.end()) {
     return SpeechInputLocale();
+  }
   return available_locales_[index_iterator->second];
 }
 
@@ -82,16 +84,18 @@ SpeechInputLocale SpeechInputLocaleConfigImpl::GetMatchingLocale(
     const std::string& locale_code) const {
   // Return exact match if one is found.
   auto index_iterator = locale_indices_for_codes_.find(locale_code);
-  if (index_iterator != locale_indices_for_codes_.end())
+  if (index_iterator != locale_indices_for_codes_.end()) {
     return available_locales_[index_iterator->second];
+  }
   // If there is no exact match, search for another locale with the same
   // language component.
   std::string language = GetLanguageComponentForLocaleCode(locale_code);
   std::vector<size_t> locale_indices;
   for (auto locale_index_for_code : locale_indices_for_codes_) {
     std::string code = locale_index_for_code.first;
-    if (GetLanguageComponentForLocaleCode(code) == language)
+    if (GetLanguageComponentForLocaleCode(code) == language) {
       locale_indices.push_back(locale_index_for_code.second);
+    }
   }
   // Use en-US as a default value.
   auto it = locale_indices_for_codes_.find(kEnglishUS);
@@ -105,8 +109,10 @@ SpeechInputLocale SpeechInputLocaleConfigImpl::GetMatchingLocale(
     // (e.g. en-US, en-GB, en-AU, en-NZ), use the default language mapping.
     auto default_locale_iterator =
         default_locale_indices_for_languages_.find(language);
-    if (default_locale_iterator != default_locale_indices_for_languages_.end())
+    if (default_locale_iterator !=
+        default_locale_indices_for_languages_.end()) {
       return available_locales_[default_locale_iterator->second];
+    }
   }
   return available_locales_[locale_index];
 }
@@ -126,8 +132,9 @@ std::string SpeechInputLocaleConfigImpl::GetDefaultLocaleCode() const {
       localeWithLocaleIdentifier:[[NSLocale preferredLanguages] firstObject]];
   // Prioritize the language portion of `language_pref_locale`.
   NSString* language = [lang_pref_locale objectForKey:NSLocaleLanguageCode];
-  if (!language.length)
+  if (!language.length) {
     language = [current_locale objectForKey:NSLocaleLanguageCode];
+  }
   // In production, in very rare cases the language cannot be detected. Default
   // to en-US.
   if (!language.length) {
@@ -136,8 +143,9 @@ std::string SpeechInputLocaleConfigImpl::GetDefaultLocaleCode() const {
   }
   // Prioritize the country portion of `current_locale`.
   NSString* country = [current_locale objectForKey:NSLocaleCountryCode];
-  if (!country.length)
+  if (!country.length) {
     country = [lang_pref_locale objectForKey:NSLocaleCountryCode];
+  }
   // In production, in very rare cases the country code cannot be detected.
   // Default to en-US.
   if (!country.length) {
@@ -165,8 +173,9 @@ void SpeechInputLocaleConfigImpl::InitializeAvailableLocales(
     // Store a mapping from `language.localizationPreference` to the locale.
     std::string localization_preference =
         GetCanonicalLocaleForLocale(language.localizationPreference);
-    if (localization_preference.length())
+    if (localization_preference.length()) {
       locale_indices_for_codes_[localization_preference] = locale_index;
+    }
   }
 }
 

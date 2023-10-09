@@ -9,7 +9,7 @@ source_set("voice_search") {
     "test_voice_search.mm",
   ]
   deps = [
-    "//ios/chrome/browser/voice:voice_search_language",
+    "//ios/chrome/browser/voice/model:voice_search_language",
     "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
   ]
 }

@@ -4,7 +4,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/voice/text_to_speech_parser.h"
+#import "ios/chrome/browser/voice/model/text_to_speech_parser.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

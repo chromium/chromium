@@ -436,7 +436,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/upgrade/model:unit_tests",
     "//ios/chrome/browser/url_loading/model:unit_tests",
     "//ios/chrome/browser/variations/model:unit_tests",
-    "//ios/chrome/browser/voice:unit_tests",
+    "//ios/chrome/browser/voice/model:unit_tests",
     "//ios/chrome/browser/web:unit_tests",
     "//ios/chrome/browser/web:unit_tests_internal",
     "//ios/chrome/browser/web/font_size:unit_tests",

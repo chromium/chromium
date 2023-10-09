@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_VOICE_VOICE_SEARCH_URL_REWRITER_H_
-#define IOS_CHROME_BROWSER_VOICE_VOICE_SEARCH_URL_REWRITER_H_
+#ifndef IOS_CHROME_BROWSER_VOICE_MODEL_VOICE_SEARCH_URL_REWRITER_H_
+#define IOS_CHROME_BROWSER_VOICE_MODEL_VOICE_SEARCH_URL_REWRITER_H_
 
 class GURL;
 namespace web {
@@ -16,4 +16,4 @@ class BrowserState;
 // Search.
 bool VoiceSearchURLRewriter(GURL* url, web::BrowserState* browser_state);
 
-#endif  // IOS_CHROME_BROWSER_VOICE_VOICE_SEARCH_URL_REWRITER_H_
+#endif  // IOS_CHROME_BROWSER_VOICE_MODEL_VOICE_SEARCH_URL_REWRITER_H_

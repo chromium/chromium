@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_VOICE_SPEECH_INPUT_LOCALE_MATCH_H_
-#define IOS_CHROME_BROWSER_VOICE_SPEECH_INPUT_LOCALE_MATCH_H_
+#ifndef IOS_CHROME_BROWSER_VOICE_MODEL_SPEECH_INPUT_LOCALE_MATCH_H_
+#define IOS_CHROME_BROWSER_VOICE_MODEL_SPEECH_INPUT_LOCALE_MATCH_H_
 
 #import <Foundation/Foundation.h>
 
@@ -34,4 +34,4 @@
 // SpeechInputLocalesMatches.plist.
 NSArray<SpeechInputLocaleMatch*>* LoadSpeechInputLocaleMatches();
 
-#endif  // IOS_CHROME_BROWSER_VOICE_SPEECH_INPUT_LOCALE_MATCH_H_
+#endif  // IOS_CHROME_BROWSER_VOICE_MODEL_SPEECH_INPUT_LOCALE_MATCH_H_

@@ -7,5 +7,5 @@ source_set("voice_search_api") {
     "voice_search_api.h",
     "voice_search_controller.h",
   ]
-  deps = [ "//ios/chrome/browser/voice:voice_search_language" ]
+  deps = [ "//ios/chrome/browser/voice/model:voice_search_language" ]
 }

@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_VOICE_SPEECH_INPUT_LOCALE_H_
-#define IOS_CHROME_BROWSER_VOICE_SPEECH_INPUT_LOCALE_H_
+#ifndef IOS_CHROME_BROWSER_VOICE_MODEL_SPEECH_INPUT_LOCALE_H_
+#define IOS_CHROME_BROWSER_VOICE_MODEL_SPEECH_INPUT_LOCALE_H_
 
 #include <string>
-
 
 namespace voice {
 
@@ -20,4 +19,4 @@ typedef struct {
 
 }  // namespace voice
 
-#endif  // IOS_CHROME_BROWSER_VOICE_SPEECH_INPUT_LOCALE_H_
+#endif  // IOS_CHROME_BROWSER_VOICE_MODEL_SPEECH_INPUT_LOCALE_H_

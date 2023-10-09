@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/voice/voice_search_language.h"
+#import "ios/chrome/browser/voice/model/voice_search_language.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 
 class Browser;
