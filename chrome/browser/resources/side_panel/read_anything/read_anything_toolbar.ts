@@ -71,7 +71,6 @@ enum ReadAnythingSettingsChange {
 
 const SETTINGS_CHANGE_UMA = 'Accessibility.ReadAnything.SettingsChange';
 
-
 const ReadAnythingToolbarBase = WebUiListenerMixin(PolymerElement);
 export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   contentPage = document.querySelector('read-anything-app');
@@ -101,42 +100,29 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     const moreOptionsButton = toolbar.querySelector('#more') as HTMLElement;
     assert(moreOptionsButton);
     ReadAnythingToolbar.hideElement(moreOptionsButton, false);
-    const moreOptionsMenu = toolbar.querySelector('#moreOptionsMenu');
-    assert(moreOptionsMenu);
-    Array.from(moreOptionsMenu.children).forEach(child => {
-      ReadAnythingToolbar.hideElement(child as HTMLElement, false);
-    });
 
-    // Show all the buttons before deciding which ones to hide
-    const buttons = toolbar.querySelectorAll('.toolbar-button');
+    // Show all the buttons that would go in the overflow menu to see if they
+    // fit
+    const buttons = Array.from(toolbar.querySelectorAll('.toolbar-button'));
     assert(buttons);
-    buttons.forEach(btn => {
+    const moreOptionsButtons = toolbar.querySelectorAll('.more-options-icon');
+    assert(moreOptionsButtons);
+    const buttonsOnToolbarToMaybeHide =
+        buttons.slice(buttons.length - moreOptionsButtons.length);
+    buttonsOnToolbarToMaybeHide.forEach(btn => {
       ReadAnythingToolbar.showElement(btn as HTMLElement);
     });
 
     // When scroll width and client width are the different, then the content
-    // has overflowed
+    // has overflowed.
     if (toolbar.scrollWidth !== toolbar.clientWidth) {
-      // If x buttons are pushed off screen, put the more options button before
-      // the last x + 1 buttons since adding it will push another button off
-      // screen
-      for (let i = buttons.length - 1; i >= 0; i--) {
-        // Hide the overflowed button in case it's still partially on screen
-        const button = buttons[i] as HTMLElement;
-        ReadAnythingToolbar.hideElement(button, true);
-        // Show the button that was pushed off screen in the more options menu
-        const styleButtonInMoreOptions =
-            moreOptionsMenu.querySelector('#' + button.id) as HTMLElement;
-        if (!styleButtonInMoreOptions) {
-          break;
-        }
-        ReadAnythingToolbar.showElement(styleButtonInMoreOptions);
-        if (button.getBoundingClientRect().right < toolbar.clientWidth) {
-          ReadAnythingToolbar.showElement(moreOptionsButton);
-          toolbar.insertBefore(moreOptionsButton, button);
-          break;
-        }
-      }
+      ReadAnythingToolbar.showElement(moreOptionsButton);
+      // Hide all the buttons on the toolbar that are in the more options menu
+      buttonsOnToolbarToMaybeHide.forEach(btn => {
+        ReadAnythingToolbar.hideElement(btn as HTMLElement, true);
+      });
+      toolbar.insertBefore(moreOptionsButton, buttonsOnToolbarToMaybeHide[0]);
+      (moreOptionsButtons.item(0) as HTMLElement).style.marginLeft = '16px';
     }
   }
 
@@ -207,31 +193,31 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   private colorOptions_: Array<MenuStateItem<string>> = [
     {
       title: loadTimeData.getString('defaultColorTitle'),
-      icon: 'read-anything:default-theme',
+      icon: 'read-anything-20:default-theme',
       data: '',
       callback: () => chrome.readingMode.onDefaultTheme(),
     },
     {
       title: loadTimeData.getString('lightColorTitle'),
-      icon: 'read-anything:light-theme',
+      icon: 'read-anything-20:light-theme',
       data: '-light',
       callback: () => chrome.readingMode.onLightTheme(),
     },
     {
       title: loadTimeData.getString('darkColorTitle'),
-      icon: 'read-anything:dark-theme',
+      icon: 'read-anything-20:dark-theme',
       data: '-dark',
       callback: () => chrome.readingMode.onDarkTheme(),
     },
     {
       title: loadTimeData.getString('yellowColorTitle'),
-      icon: 'read-anything:yellow-theme',
+      icon: 'read-anything-20:yellow-theme',
       data: '-yellow',
       callback: () => chrome.readingMode.onYellowTheme(),
     },
     {
       title: loadTimeData.getString('blueColorTitle'),
-      icon: 'read-anything:blue-theme',
+      icon: 'read-anything-20:blue-theme',
       data: '-blue',
       callback: () => chrome.readingMode.onBlueTheme(),
     },
@@ -241,7 +227,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
 
   private rateOptions_: number[] = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4];
 
-  private textStyleOptions_: MenuButton[] = [
+  private moreOptionsButtons_: MenuButton[] = [
     {
       id: 'color',
       icon: 'read-anything:color',
@@ -259,6 +245,8 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     },
   ];
 
+  private textStyleOptions_: MenuButton[] = [];
+
   private showAtPositionConfig_: ShowAtPositionConfig = {
     top: 20,
     left: 8,
@@ -275,7 +263,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     super.connectedCallback();
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
     if (this.isReadAloudEnabled_) {
-      this.textStyleOptions_.unshift(
+      this.textStyleOptions_.push(
           {
             id: 'font-size',
             icon: 'read-anything:font-size',
@@ -294,6 +282,8 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
       assert(toolbar);
       new ResizeObserver(this.onToolbarResize_).observe(toolbar);
     }
+    this.textStyleOptions_ =
+        this.textStyleOptions_.concat(this.moreOptionsButtons_);
 
     this.updateFonts();
   }
@@ -384,6 +374,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
 
     this.updateStyles({
       '--audio-controls-background': 'var(--color-sys-tonal-container)',
+      '--audio-controls-right-padding': '4px',
     });
 
     const toolbar = shadowRoot.getElementById('toolbar-container');
@@ -428,6 +419,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
 
     this.updateStyles({
       '--audio-controls-background': 'transparent',
+      '--audio-controls-right-padding': '0px',
     });
 
     const toolbar = shadowRoot.getElementById('toolbar-container');
