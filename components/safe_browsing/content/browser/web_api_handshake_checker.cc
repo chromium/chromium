@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/browser/web_api_handshake_checker.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
@@ -58,6 +59,17 @@ class WebApiHandshakeChecker::CheckerOnSB
       return;
     }
 
+    // If |kSafeBrowsingSkipSubresources2| is enabled, skip Safe Browsing checks
+    // for WebTransport.
+    if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources2)) {
+      base::UmaHistogramBoolean("SafeBrowsing.WebApiHandshakeCheck.Skipped",
+                                true);
+      OnCompleteCheckInternal(/*proceed=*/true);
+      return;
+    }
+
+    base::UmaHistogramBoolean("SafeBrowsing.WebApiHandshakeCheck.Skipped",
+                              false);
     url_checker_ = std::make_unique<SafeBrowsingUrlCheckerImpl>(
         net::HttpRequestHeaders(), /*load_flags=*/0,
         network::mojom::RequestDestination::kEmpty, /*has_user_gesture=*/false,

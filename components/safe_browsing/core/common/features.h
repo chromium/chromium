@@ -230,6 +230,10 @@ BASE_DECLARE_FEATURE(kSafeBrowsingSkipImageCssFont);
 // renderer and browser URL loader throttles.
 BASE_DECLARE_FEATURE(kSafeBrowsingSkipSubresources);
 
+// Controls whether to skip Safe Browsing checks for WebSockets and Web API
+// handshakes.
+BASE_DECLARE_FEATURE(kSafeBrowsingSkipSubresources2);
+
 // Controls whether the new 7z evaluation is performed on downloads.
 BASE_DECLARE_FEATURE(kSevenZipEvaluationEnabled);
 

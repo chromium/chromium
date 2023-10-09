@@ -6,6 +6,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -16,6 +17,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -589,23 +591,34 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
 // enabled.
 class
     ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled
-    : public ExtensionTelemetryServiceBrowserTest {
+    : public ExtensionTelemetryServiceBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled() {
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
-         kExtensionTelemetryReportContactedHosts,
-         kExtensionTelemetryReportHostsContactedViaWebSocket},
-        /*disabled_features=*/
-        {});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
+        kExtensionTelemetryReportContactedHosts,
+        kExtensionTelemetryReportHostsContactedViaWebSocket};
+    std::vector<base::test::FeatureRef> disabled_features = {};
+    if (GetParam()) {
+      enabled_features.push_back(kSafeBrowsingSkipSubresources2);
+    } else {
+      disabled_features.push_back(kSafeBrowsingSkipSubresources2);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 };
 
-IN_PROC_BROWSER_TEST_F(
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled,
+    testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(
     ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled,
     InterceptsRemoteHostContactedSignalInRenderer) {
+  base::HistogramTester histogram_tester;
   SetSafeBrowsingState(browser()->profile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -672,6 +685,17 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_EQ(remote_host_contacted_info_websocket.connection_protocol(),
               RemoteHostInfo::WEBSOCKET);
   }
+  // Using MergeHistogramDeltasForTesting syncs the browser and renderer process
+  // logs.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // A log of "false" represents the data being sent, while a log of "true"
+  // represents the data being received.
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.ExtensionTelemetry.WebSocketRequestDataSentOrReceived",
+      false, 1);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.ExtensionTelemetry.WebSocketRequestDataSentOrReceived",
+      true, 1);
 }
 
 }  // namespace safe_browsing

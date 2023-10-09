@@ -13356,6 +13356,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Sent"/>
 </enum>
 
+<enum name="BooleanSentOrReceived">
+  <int value="0" label="Sent"/>
+  <int value="1" label="Received"/>
+</enum>
+
 <enum name="BooleanSet">
   <int value="0" label="Not set"/>
   <int value="1" label="Set"/>

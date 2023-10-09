@@ -1180,9 +1180,12 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceJsRequestNoInterstitialTest,
 
   // When |kSafeBrowsingSkipSubresources| is enabled, do not show a warning for
   // |JsRequestType::kFetch|.
-  // crbug.com/1488077 deals with warnings for |JsRequestType::kWebSocket|
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources) &&
-      (param.request_type != JsRequestType::kWebSocket)) {
+  // When |kSafeBrowsingSkipSubresources2| is enabled, do not show a warning for
+  // |JsRequestType::kWebSocket|.
+  if ((base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources) &&
+       param.request_type == JsRequestType::kFetch) ||
+      (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources2) &&
+       param.request_type == JsRequestType::kWebSocket)) {
     EXPECT_EQ("NOT BLOCKED", new_title);
     EXPECT_FALSE(ShowingInterstitialPage());
     EXPECT_FALSE(got_hit_report());

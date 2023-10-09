@@ -889,6 +889,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.ExtensionTelemetry.WebSocketRequestDataSentOrReceived"
+    enum="BooleanSentOrReceived" expires_after="2023-12-06">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logged when a web socket throttle triggers sending web request data to the
+    extension telemetry service. Logged also when that data is received.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.ExtensionTelemetry.{Result}UploadDuration"
     units="ms" expires_after="2024-03-05">
   <owner>anunoy@chromium.org</owner>
@@ -2986,6 +2997,26 @@ failing to fetch the updates which puts users' security at risk. -->
   <summary>
     Track return status from V4 update attempts. The buckets of this histogram
     overlap, so the counts cannot be used as percentages.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.WebApiHandshakeCheck.Skipped"
+    enum="BooleanSkipped" expires_after="2023-12-06">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logged when a web API handshake decides whether to skip its associated Safe
+    Browsing check.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.WebSocketCheck.Skipped" enum="BooleanSkipped"
+    expires_after="2023-12-06">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logged when a web socket throttle decides whether to skip its associated
+    Safe Browsing check.
   </summary>
 </histogram>
 

@@ -9,8 +9,10 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/renderer/render_frame.h"
 #include "ipc/ipc_message.h"
 #include "net/http/http_request_headers.h"
@@ -59,6 +61,10 @@ void WebSocketSBHandshakeThrottle::ThrottleHandshake(
       url_.SchemeIsWSOrWSS()) {
     const std::string& origin_extension_id =
         creator_origin.Host().Utf8().data();
+    // Logging "false" represents the data being *sent*.
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.ExtensionTelemetry.WebSocketRequestDataSentOrReceived",
+        false);
     extension_web_request_reporter_->SendWebRequestData(
         origin_extension_id, url, mojom::WebRequestProtocolType::kWebSocket);
   }
@@ -66,6 +72,17 @@ void WebSocketSBHandshakeThrottle::ThrottleHandshake(
 
   DCHECK_EQ(state_, State::kInitial);
   state_ = State::kStarted;
+
+  // If |kSafeBrowsingSkipSubresources2| is enabled, skip Safe Browsing checks
+  // on WebSockets. Note that we still want to perform the extensions telemetry
+  // code above.
+  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources2)) {
+    base::UmaHistogramBoolean("SafeBrowsing.WebSocketCheck.Skipped", true);
+    OnCompleteCheck(/*proceed=*/true, /*showed_interstitial=*/false);
+    return;
+  }
+
+  base::UmaHistogramBoolean("SafeBrowsing.WebSocketCheck.Skipped", false);
   safe_browsing_->CreateCheckerAndCheck(
       render_frame_id_, url_checker_.BindNewPipeAndPassReceiver(), url, "GET",
       net::HttpRequestHeaders(), load_flags,
