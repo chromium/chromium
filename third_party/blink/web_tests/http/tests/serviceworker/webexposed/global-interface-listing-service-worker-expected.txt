@@ -933,6 +933,10 @@ interface NotificationEvent : ExtendableEvent
     getter notification
     getter reply
     method constructor
+interface Observable
+    attribute @@toStringTag
+    method constructor
+    method subscribe
 interface OffscreenCanvas : EventTarget
     attribute @@toStringTag
     getter height
@@ -1404,6 +1408,13 @@ interface StorageManager : EventTarget
     method getDirectory
     method persisted
     setter onquotachange
+interface Subscriber
+    attribute @@toStringTag
+    getter signal
+    method complete
+    method constructor
+    method error
+    method next
 interface SubtleCrypto
     attribute @@toStringTag
     method constructor

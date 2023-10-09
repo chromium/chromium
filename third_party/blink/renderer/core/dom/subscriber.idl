@@ -4,7 +4,7 @@
 
 // https://github.com/WICG/observable
 
-[Exposed=Window, RuntimeEnabled=ObservableAPI]
+[Exposed=(Window,Worker), RuntimeEnabled=ObservableAPI]
 interface Subscriber {
   void next(any result);
   void complete();

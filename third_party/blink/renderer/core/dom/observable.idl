@@ -15,7 +15,7 @@ dictionary Observer {
   AbortSignal signal;
 };
 
-[Exposed=Window, RuntimeEnabled=ObservableAPI]
+[Exposed=(Window,Worker), RuntimeEnabled=ObservableAPI]
 interface Observable {
     [CallWith=ScriptState, MeasureAs=ObservableConstructor] constructor(SubscribeCallback callback);
     void subscribe(optional Observer observer = {});

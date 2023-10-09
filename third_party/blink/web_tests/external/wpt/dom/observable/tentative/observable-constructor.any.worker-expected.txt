@@ -1,16 +1,16 @@
 This is a testharness.js-based test.
-FAIL Observable constructor assert_implements: The Observable interface is not implemented undefined
-FAIL Subscriber interface is not constructible assert_implements: The Subscriber interface is not implemented undefined
-FAIL subscribe() can be called with no arguments Observable is not defined
-FAIL Observable constructor calls initializer on subscribe Observable is not defined
-FAIL Observable error path called synchronously Observable is not defined
-FAIL Observable should error if initializer throws Observable is not defined
-FAIL Subscription does not emit values after completion Observable is not defined
-FAIL Subscription does not emit values after error Observable is not defined
-FAIL Completing or nexting a subscriber after an error does nothing Observable is not defined
-FAIL Errors pushed to the subscriber that are not handled by the subscription are reported to the global Observable is not defined
-FAIL Errors thrown in the initializer that are not handled by the subscription are reported to the global Observable is not defined
-FAIL Subscription reports errors that are pushed after subscriber is closed by completion Observable is not defined
-FAIL Errors thrown by initializer function after subscriber is closed by completion are reported Observable is not defined
+PASS Observable constructor
+PASS Subscriber interface is not constructible
+PASS subscribe() can be called with no arguments
+PASS Observable constructor calls initializer on subscribe
+PASS Observable error path called synchronously
+FAIL Observable should error if initializer throws assert_array_equals: should emit values and the throw error synchronously lengths differ, expected array [1, object "Error: error"] length 2, got [1] length 1
+PASS Subscription does not emit values after completion
+PASS Subscription does not emit values after error
+PASS Completing or nexting a subscriber after an error does nothing
+FAIL Errors pushed to the subscriber that are not handled by the subscription are reported to the global assert_true: Exception was reported to global expected true got false
+PASS Errors thrown in the initializer that are not handled by the subscription are reported to the global
+FAIL Subscription reports errors that are pushed after subscriber is closed by completion assert_true: Exception was reported to global expected true got false
+PASS Errors thrown by initializer function after subscriber is closed by completion are reported
 Harness: the test ran to completion.
 
