@@ -10,8 +10,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_device_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_request_adapter_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_enum_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu.h"
@@ -298,46 +296,18 @@ ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise GPUAdapter::requestAdapterInfo(
-    ScriptState* script_state,
-    const Vector<String>& unmask_hints) {
+ScriptPromise GPUAdapter::requestAdapterInfo(ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  // If any unmask hints have been given, the method must also have been called
-  // during user activation. If not, reject the promise.
-  if (unmask_hints.size()) {
-    LocalDOMWindow* domWindow = gpu_->DomWindow();
-    if (!domWindow ||
-        !LocalFrame::HasTransientUserActivation(domWindow->GetFrame())) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotAllowedError,
-          "requestAdapterInfo requires user activation if any unmaskHints are "
-          "given."));
-      return promise;
-    }
-
-    // TODO(crbug.com/1405528): Handling unmask hints is not yet supported.
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError,
-        "Passing unmaskHints to requestAdapterInfo is not yet implemented. In "
-        "the future, doing so may trigger a permissions prompt."));
-
-    return promise;
-  }
-
   GPUAdapterInfo* adapter_info;
   if (RuntimeEnabledFeatures::WebGPUDeveloperFeaturesEnabled()) {
-    // If WebGPU developer features have been enabled then provide unmasked
-    // versions of all available adapter info values, including some that are
-    // only available when the flag is enabled.
+    // If WebGPU developer features have been enabled then provide all available
+    // adapter info values.
     adapter_info = MakeGarbageCollected<GPUAdapterInfo>(
         vendor_, architecture_, device_, description_, driver_,
         FromDawnEnum(backend_type_), FromDawnEnum(adapter_type_));
   } else {
-    // TODO(dawn:1427): If unmask_hints are given ask the user for consent to
-    // expose more information and, if given, include device_ and description_
-    // in the returned GPUAdapterInfo.
     adapter_info = MakeGarbageCollected<GPUAdapterInfo>(vendor_, architecture_);
   }
 
