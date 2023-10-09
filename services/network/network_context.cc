@@ -2845,6 +2845,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
       proxy_delegate_->SetIpProtectionConfigCache(
           std::make_unique<IpProtectionConfigCacheImpl>(
               std::move(params_->ip_protection_config_getter)));
+      proxy_delegate_->GetIpProtectionConfigCache()->SetUp();
     }
   }
 

@@ -11,6 +11,8 @@
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/ip_protection_config_cache_impl.h"
+#include "services/network/ip_protection_proxy_list_manager.h"
+#include "services/network/ip_protection_proxy_list_manager_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -26,6 +28,8 @@ constexpr char kTokenExpirationRateHistogram[] =
     "NetworkService.IpProtection.TokenExpirationRate";
 const base::TimeDelta kTokenRateMeasurementInterval = base::Minutes(5);
 
+// TODO(ciaramcmullin): Remove MockIpProtectionConfigGetter after auth token
+// manager is refactored out of config cache.
 struct ExpectedTryGetAuthTokensCall {
   // The expected batch_size argument for the call.
   uint32_t batch_size;
@@ -38,7 +42,7 @@ struct ExpectedTryGetAuthTokensCall {
 class MockIpProtectionConfigGetter
     : public network::mojom::IpProtectionConfigGetter {
  public:
-  ~MockIpProtectionConfigGetter() override { CHECK(GotAllExpectedMockCalls()); }
+  ~MockIpProtectionConfigGetter() override = default;
 
   // Register an expectation of a call to `TryGetAuthTokens()` returning the
   // given tokens.
@@ -65,28 +69,13 @@ class MockIpProtectionConfigGetter
         });
   }
 
-  // Register an expectation of a call to `GetProxyList()`, returning the given
-  // proxy list.
-  void ExpectGetProxyListCall(std::vector<std::string> proxy_list) {
-    expected_get_proxy_list_calls_.push_back(std::move(proxy_list));
-  }
-
-  // Register an expectation of a call to `GetProxyList()`, returning nullopt.
-  void ExpectGetProxyListCallFailure() {
-    expected_get_proxy_list_calls_.push_back(absl::nullopt);
-  }
-
   // True if all expected `TryGetAuthTokens` calls have occurred.
   bool GotAllExpectedMockCalls() {
-    return expected_try_get_auth_token_calls_.empty() &&
-           expected_get_proxy_list_calls_.empty();
+    return expected_try_get_auth_token_calls_.empty();
   }
 
   // Reset all test expectations.
-  void Reset() {
-    expected_try_get_auth_token_calls_.clear();
-    expected_get_proxy_list_calls_.clear();
-  }
+  void Reset() { expected_try_get_auth_token_calls_.clear(); }
 
   void TryGetAuthTokens(uint32_t batch_size,
                         TryGetAuthTokensCallback callback) override {
@@ -99,17 +88,38 @@ class MockIpProtectionConfigGetter
   }
 
   void GetProxyList(GetProxyListCallback callback) override {
-    ASSERT_FALSE(expected_get_proxy_list_calls_.empty())
-        << "Unexpected call to GetProxyList";
-    auto& exp = expected_get_proxy_list_calls_.front();
-    std::move(callback).Run(std::move(exp));
-    expected_get_proxy_list_calls_.pop_front();
+    NOTREACHED_NORETURN();
   }
 
  protected:
   std::deque<ExpectedTryGetAuthTokensCall> expected_try_get_auth_token_calls_;
-  std::deque<absl::optional<std::vector<std::string>>>
-      expected_get_proxy_list_calls_;
+};
+
+class MockIpProtectionProxyListManager : public IpProtectionProxyListManager {
+ public:
+  bool IsProxyListAvailable() override { return proxy_list_.has_value(); }
+
+  const std::vector<std::string>& ProxyList() override { return *proxy_list_; }
+
+  void RequestRefreshProxyList() override {
+    if (on_force_refresh_proxy_list_) {
+      std::move(on_force_refresh_proxy_list_).Run();
+    }
+  }
+
+  // Set the proxy list returned from `ProxyList()`.
+  void SetProxyList(std::vector<std::string> proxy_list) {
+    proxy_list_ = std::move(proxy_list);
+  }
+
+  void SetOnRequestRefreshProxyList(
+      base::OnceClosure on_force_refresh_proxy_list) {
+    on_force_refresh_proxy_list_ = std::move(on_force_refresh_proxy_list);
+  }
+
+ private:
+  absl::optional<std::vector<std::string>> proxy_list_;
+  base::OnceClosure on_force_refresh_proxy_list_;
 };
 
 }  // namespace
@@ -159,13 +169,6 @@ class IpProtectionConfigCacheImplTest : public testing::Test {
   // Wait until the cache fills itself.
   void WaitForTryGetAuthTokensCompletion() {
     ipp_config_cache_->SetOnTryGetAuthTokensCompletedForTesting(
-        task_environment_.QuitClosure());
-    task_environment_.RunUntilQuit();
-  }
-
-  // Wait until the proxy list is refreshed.
-  void WaitForProxyListRefresh() {
-    ipp_config_cache_->SetOnProxyListRefreshedForTesting(
         task_environment_.QuitClosure());
     task_environment_.RunUntilQuit();
   }
@@ -466,70 +469,17 @@ TEST_F(IpProtectionConfigCacheImplTest, RefillAfterExpiration) {
   EXPECT_EQ(got_token.value()->token, "exp3");
 }
 
-// The cache gets the proxy list on startup and once again on schedule.
-TEST_F(IpProtectionConfigCacheImplTest, ProxyListOnStartup) {
+// Proxy list manager returns currently cached proxy hostnames.
+TEST_F(IpProtectionConfigCacheImplTest, GetProxyListFromManager) {
   std::vector<std::string> exp_proxy_list = {"a-proxy"};
-  mock_.ExpectGetProxyListCall(exp_proxy_list);
-  ipp_config_cache_->EnableProxyListRefreshingForTesting();
-  WaitForProxyListRefresh();
-  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
-  EXPECT_TRUE(ipp_config_cache_->IsProxyListAvailable());
-  EXPECT_EQ(ipp_config_cache_->ProxyList(), exp_proxy_list);
+  auto ipp_proxy_list_manager_ =
+      std::make_unique<MockIpProtectionProxyListManager>();
+  ipp_proxy_list_manager_->SetProxyList(exp_proxy_list);
+  ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
+      std::move(ipp_proxy_list_manager_));
 
-  base::Time start = base::Time::Now();
-  mock_.ExpectGetProxyListCall({"b-proxy"});
-  WaitForProxyListRefresh();
-  base::TimeDelta delay = net::features::kIpPrivacyProxyListFetchInterval.Get();
-  EXPECT_EQ(base::Time::Now() - start, delay);
-
-  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
-  EXPECT_TRUE(ipp_config_cache_->IsProxyListAvailable());
-  exp_proxy_list = {"b-proxy"};
-  EXPECT_EQ(ipp_config_cache_->ProxyList(), exp_proxy_list);
-}
-
-// The cache refreshes the proxy list on demand, but only once even if
-// `RequestRefreshProxyList()` is called repeatedly.
-TEST_F(IpProtectionConfigCacheImplTest, ProxyListRefresh) {
-  mock_.ExpectGetProxyListCall({"a-proxy"});
-  ipp_config_cache_->RequestRefreshProxyList();
-  ipp_config_cache_->RequestRefreshProxyList();
-  WaitForProxyListRefresh();
-  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
-  EXPECT_TRUE(ipp_config_cache_->IsProxyListAvailable());
-  std::vector<std::string> exp_proxy_list = {"a-proxy"};
-  EXPECT_EQ(ipp_config_cache_->ProxyList(), exp_proxy_list);
-}
-
-// The cache gets the proxy list on startup and once again on schedule.
-TEST_F(IpProtectionConfigCacheImplTest, IsProxyListAvailableEvenIfEmpty) {
-  mock_.ExpectGetProxyListCall({});
-  ipp_config_cache_->RequestRefreshProxyList();
-  WaitForProxyListRefresh();
-  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
-  EXPECT_TRUE(ipp_config_cache_->IsProxyListAvailable());
-}
-
-// The cache keeps its existing proxy list if it fails to fetch a new one.
-TEST_F(IpProtectionConfigCacheImplTest, ProxyListKeptAfterFailure) {
-  std::vector<std::string> exp_proxy_list = {"a-proxy"};
-  mock_.ExpectGetProxyListCall(exp_proxy_list);
-  ipp_config_cache_->RequestRefreshProxyList();
-  WaitForProxyListRefresh();
-  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
-  EXPECT_TRUE(ipp_config_cache_->IsProxyListAvailable());
-  EXPECT_EQ(ipp_config_cache_->ProxyList(), exp_proxy_list);
-
-  // Fast-forward long enough that we can fetch again
-  task_environment_.FastForwardBy(
-      net::features::kIpPrivacyProxyListMinFetchInterval.Get());
-
-  mock_.ExpectGetProxyListCallFailure();
-  ipp_config_cache_->RequestRefreshProxyList();
-  WaitForProxyListRefresh();
-  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
-  EXPECT_TRUE(ipp_config_cache_->IsProxyListAvailable());
-  EXPECT_EQ(ipp_config_cache_->ProxyList(), exp_proxy_list);
+  ASSERT_TRUE(ipp_config_cache_->IsProxyListAvailable());
+  EXPECT_EQ(ipp_config_cache_->GetProxyList(), exp_proxy_list);
 }
 
 }  // namespace network

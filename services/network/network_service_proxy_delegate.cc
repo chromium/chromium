@@ -26,8 +26,9 @@ bool ApplyProxyConfigToProxyInfo(const net::ProxyConfig::ProxyRules& rules,
                                  const GURL& top_frame_url,
                                  net::ProxyInfo* proxy_info) {
   DCHECK(proxy_info);
-  if (rules.empty())
+  if (rules.empty()) {
     return false;
+  }
 
   rules.Apply(url, proxy_info);
   proxy_info->DeprioritizeBadProxies(proxy_retry_info);
@@ -167,7 +168,7 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
 
     net::ProxyList proxy_list;
     if (!net::features::kIpPrivacyDirectOnly.Get()) {
-      for (auto& proxy_hostname : ipp_config_cache_->ProxyList()) {
+      for (auto& proxy_hostname : ipp_config_cache_->GetProxyList()) {
         proxy_list.AddProxyServer(net::ProxyServer::FromSchemeHostAndPort(
             net::ProxyServer::SCHEME_HTTPS, proxy_hostname, absl::nullopt));
       }
@@ -280,8 +281,9 @@ void NetworkServiceProxyDelegate::MarkProxiesAsBad(
   //
   // TODO(eroman): Support this more directly on ProxyResolutionService.
   net::ProxyList proxy_list;
-  for (const auto& bad_proxy : bad_proxies)
+  for (const auto& bad_proxy : bad_proxies) {
     proxy_list.AddProxyServer(bad_proxy);
+  }
   proxy_list.AddProxyServer(net::ProxyServer::Direct());
 
   net::ProxyInfo proxy_info;
@@ -299,11 +301,13 @@ void NetworkServiceProxyDelegate::ClearBadProxiesCache() {
 
 bool NetworkServiceProxyDelegate::IsInProxyConfig(
     const net::ProxyServer& proxy_server) const {
-  if (!proxy_server.is_valid() || proxy_server.is_direct())
+  if (!proxy_server.is_valid() || proxy_server.is_direct()) {
     return false;
+  }
 
-  if (RulesContainsProxy(proxy_config_->rules, proxy_server))
+  if (RulesContainsProxy(proxy_config_->rules, proxy_server)) {
     return true;
+  }
 
   return false;
 }
@@ -327,7 +331,7 @@ bool NetworkServiceProxyDelegate::IsProxyForIpProtection(
   // This list will typically be quite short (2-3), so linear search is
   // adequate.
   std::string proxy_server_host = proxy_server.GetHost();
-  return base::Contains(ipp_config_cache_->ProxyList(), proxy_server_host);
+  return base::Contains(ipp_config_cache_->GetProxyList(), proxy_server_host);
 }
 
 bool NetworkServiceProxyDelegate::EligibleForProxy(

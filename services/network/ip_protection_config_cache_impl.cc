@@ -8,6 +8,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "services/network/ip_protection_proxy_list_manager.h"
+#include "services/network/ip_protection_proxy_list_manager_impl.h"
 
 namespace network {
 
@@ -23,18 +25,18 @@ const base::TimeDelta kTokenRateMeasurementInterval = base::Minutes(5);
 }  // namespace
 
 IpProtectionConfigCacheImpl::IpProtectionConfigCacheImpl(
-    mojo::PendingRemote<network::mojom::IpProtectionConfigGetter>
-        auth_token_getter,
+    mojo::PendingRemote<network::mojom::IpProtectionConfigGetter> config_getter,
     bool disable_background_tasks_for_testing)
     : batch_size_(net::features::kIpPrivacyAuthTokenCacheBatchSize.Get()),
       cache_low_water_mark_(
           net::features::kIpPrivacyAuthTokenCacheLowWaterMark.Get()),
       disable_cache_management_for_testing_(
-          disable_background_tasks_for_testing),
-      disable_proxy_refreshing_for_testing_(
           disable_background_tasks_for_testing) {
-  if (auth_token_getter.is_valid()) {
-    auth_token_getter_.Bind(std::move(auth_token_getter));
+  // Proxy list manager is null upon cache creation.
+  ipp_proxy_list_manager_ = nullptr;
+
+  if (config_getter.is_valid()) {
+    config_getter_.Bind(std::move(config_getter));
   }
 
   last_token_rate_measurement_ = base::TimeTicks::Now();
@@ -47,14 +49,14 @@ IpProtectionConfigCacheImpl::IpProtectionConfigCacheImpl(
     // cache is empty.
     ScheduleMaybeRefillCache();
   }
-
-  if (!disable_proxy_refreshing_for_testing_) {
-    // Refresh the proxy list immediately.
-    RefreshProxyList();
-  }
 }
 
 IpProtectionConfigCacheImpl::~IpProtectionConfigCacheImpl() = default;
+
+void IpProtectionConfigCacheImpl::SetUp() {
+  ipp_proxy_list_manager_ =
+      std::make_unique<IpProtectionProxyListManagerImpl>(&config_getter_);
+}
 
 bool IpProtectionConfigCacheImpl::IsAuthTokenAvailable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -63,15 +65,11 @@ bool IpProtectionConfigCacheImpl::IsAuthTokenAvailable() {
   return cache_.size() > 0;
 }
 
-bool IpProtectionConfigCacheImpl::IsProxyListAvailable() {
-  return have_fetched_proxy_list_;
-}
-
 // If this is a good time to request another batch of tokens, do so. This
 // method is idempotent, and can be called at any time.
 void IpProtectionConfigCacheImpl::MaybeRefillCache() {
   RemoveExpiredTokens();
-  if (fetching_auth_tokens_ || !auth_token_getter_ ||
+  if (fetching_auth_tokens_ || !config_getter_ ||
       disable_cache_management_for_testing_) {
     return;
   }
@@ -89,7 +87,7 @@ void IpProtectionConfigCacheImpl::MaybeRefillCache() {
   if (cache_.size() < cache_low_water_mark_) {
     fetching_auth_tokens_ = true;
     VLOG(2) << "IPPATC::MaybeRefillCache calling TryGetAuthTokens";
-    auth_token_getter_->TryGetAuthTokens(
+    config_getter_->TryGetAuthTokens(
         batch_size_,
         base::BindOnce(&IpProtectionConfigCacheImpl::OnGotAuthTokens,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -108,7 +106,7 @@ void IpProtectionConfigCacheImpl::InvalidateTryAgainAfterTime() {
 void IpProtectionConfigCacheImpl::ScheduleMaybeRefillCache() {
   // If currently getting tokens, the call will be rescheduled when that
   // completes. If there's no getter, there's nothing to do.
-  if (fetching_auth_tokens_ || !auth_token_getter_ ||
+  if (fetching_auth_tokens_ || !config_getter_ ||
       disable_cache_management_for_testing_) {
     next_maybe_refill_cache_.Stop();
     return;
@@ -186,59 +184,28 @@ IpProtectionConfigCacheImpl::GetAuthToken() {
   return result;
 }
 
-void IpProtectionConfigCacheImpl::RefreshProxyList() {
-  if (fetching_proxy_list_ || !auth_token_getter_) {
-    return;
-  }
-
-  fetching_proxy_list_ = true;
-  last_proxy_list_refresh_ = base::Time::Now();
-
-  auth_token_getter_->GetProxyList(
-      base::BindOnce(&IpProtectionConfigCacheImpl::OnGotProxyList,
-                     weak_ptr_factory_.GetWeakPtr()));
+void IpProtectionConfigCacheImpl::SetIpProtectionProxyListManagerForTesting(
+    std::unique_ptr<IpProtectionProxyListManager> ipp_proxy_list_manager) {
+  ipp_proxy_list_manager_ = std::move(ipp_proxy_list_manager);
 }
 
-void IpProtectionConfigCacheImpl::OnGotProxyList(
-    const absl::optional<std::vector<std::string>>& proxy_list) {
-  fetching_proxy_list_ = false;
-
-  // If an error occurred fetching the proxy list, continue using the existing
-  // proxy list, if any.
-  if (proxy_list.has_value()) {
-    proxy_list_ = *proxy_list;
-    have_fetched_proxy_list_ = true;
-  }
-
-  // Schedule the next refresh. If this timer was already running, this will
-  // reschedule it for the given time.
-  if (!disable_proxy_refreshing_for_testing_) {
-    base::TimeDelta delay =
-        net::features::kIpPrivacyProxyListFetchInterval.Get();
-    next_refresh_proxy_list_.Start(
-        FROM_HERE, delay,
-        base::BindOnce(&IpProtectionConfigCacheImpl::RefreshProxyList,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  if (on_proxy_list_refreshed_for_testing_) {
-    std::move(on_proxy_list_refreshed_for_testing_).Run();
-  }
+bool IpProtectionConfigCacheImpl::IsProxyListAvailable() {
+  return (ipp_proxy_list_manager_ != nullptr)
+             ? ipp_proxy_list_manager_->IsProxyListAvailable()
+             : false;
 }
 
-const std::vector<std::string>& IpProtectionConfigCacheImpl::ProxyList() {
-  return proxy_list_;
+const std::vector<std::string>& IpProtectionConfigCacheImpl::GetProxyList() {
+  static const std::vector<std::string> empty_vector;
+  return (ipp_proxy_list_manager_ != nullptr)
+             ? ipp_proxy_list_manager_->ProxyList()
+             : empty_vector;
 }
 
 void IpProtectionConfigCacheImpl::RequestRefreshProxyList() {
-  // Do not refresh the list too frequently.
-  base::TimeDelta minimum_age =
-      net::features::kIpPrivacyProxyListMinFetchInterval.Get();
-  if (base::Time::Now() - last_proxy_list_refresh_ < minimum_age) {
-    return;
+  if (ipp_proxy_list_manager_ != nullptr) {
+    ipp_proxy_list_manager_->RequestRefreshProxyList();
   }
-
-  RefreshProxyList();
 }
 
 void IpProtectionConfigCacheImpl::RemoveExpiredTokens() {
@@ -299,9 +266,9 @@ void IpProtectionConfigCacheImpl::DisableCacheManagementForTesting(
 // `on_try_get_auth_tokens_completed_for_testing_` when complete.
 void IpProtectionConfigCacheImpl::CallTryGetAuthTokensForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(auth_token_getter_);
+  CHECK(config_getter_);
   CHECK(on_try_get_auth_tokens_completed_for_testing_);
-  auth_token_getter_->TryGetAuthTokens(
+  config_getter_->TryGetAuthTokens(
       batch_size_, base::BindOnce(&IpProtectionConfigCacheImpl::OnGotAuthTokens,
                                   weak_ptr_factory_.GetWeakPtr()));
 }
