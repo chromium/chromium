@@ -1330,12 +1330,17 @@ ChromeFileSystemAccessPermissionContext::GetGrantedObjects(
     for (const auto& grant : it->second.read_grants) {
       if (grant.second->GetStatus() == PermissionStatus::GRANTED) {
         auto value = grant.second->AsValue();
-        if (base::Contains(it->second.write_grants, grant.first)) {
-          // Persisted permissions include both read and write information in
-          // one object. If a write grant for this origin/path exists, then
-          // update the value to store a writable key as well.
+
+        // Persisted permissions include both read and write information in
+        // one object. If a write grant for this origin/path exists, then
+        // update the value to store a writable key as well.
+        auto file_path = grant.first;
+        auto write_grant_it = it->second.write_grants.find(file_path);
+        if (write_grant_it != it->second.write_grants.end() &&
+            write_grant_it->second->GetStatus() == PermissionStatus::GRANTED) {
           value.Set(kPermissionWritableKey, true);
         }
+
         objects.push_back(std::make_unique<Object>(
             origin, base::Value(std::move(value)),
             content_settings::SettingSource::SETTING_SOURCE_USER,
