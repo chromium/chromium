@@ -22,6 +22,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwBrowserContext;
@@ -52,7 +53,9 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
+import org.chromium.components.safe_browsing.SafeBrowsingFeatures;
 import org.chromium.components.safe_browsing.SafetyNetApiHandler;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -81,6 +84,8 @@ public class SafeBrowsingTest {
             return new MockAwBrowserContext();
         }
     };
+
+    @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
     private SafeBrowsingContentsClient mContentsClient;
     private AwTestContainerView mContainerView;
@@ -614,6 +619,8 @@ public class SafeBrowsingTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_SKIP_SUBRESOURCES})
+    // TODO(crbug.com/1487858): Remove this test after SAFE_BROWSING_SKIP_SUBRESOURCES is launched.
     public void testSafeBrowsingShowsInterstitialForSubresource() throws Throwable {
         loadGreenPage();
         loadPathAndWaitForInterstitial(IFRAME_HTML_PATH, /* waitForVisualStateCallback = */ true);
@@ -641,6 +648,8 @@ public class SafeBrowsingTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_SKIP_SUBRESOURCES})
+    // TODO(crbug.com/1487858): Remove this test after SAFE_BROWSING_SKIP_SUBRESOURCES is launched.
     public void testSafeBrowsingProceedThroughInterstitialForSubresource() throws Throwable {
         int pageFinishedCount = mContentsClient.getOnPageFinishedHelper().getCallCount();
         loadPathAndWaitForInterstitial(IFRAME_HTML_PATH, /* waitForVisualStateCallback = */ false);
@@ -690,6 +699,8 @@ public class SafeBrowsingTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_SKIP_SUBRESOURCES})
+    // TODO(crbug.com/1487858): Remove this test after SAFE_BROWSING_SKIP_SUBRESOURCES is launched.
     public void testSafeBrowsingDontProceedNavigatesBackForSubResource() throws Throwable {
         loadGreenPage();
         loadPathAndWaitForInterstitial(IFRAME_HTML_PATH, /* waitForVisualStateCallback = */ false);
@@ -889,6 +900,8 @@ public class SafeBrowsingTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_SKIP_SUBRESOURCES})
+    // TODO(crbug.com/1487858): Remove this test after SAFE_BROWSING_SKIP_SUBRESOURCES is launched.
     public void testSafeBrowsingOnSafeBrowsingHitForSubresourceNoPreviousPage() throws Throwable {
         mContentsClient.setSafeBrowsingAction(SafeBrowsingAction.BACK_TO_SAFETY);
         final String responseUrl = mTestServer.getURL(IFRAME_HTML_PATH);
@@ -914,6 +927,8 @@ public class SafeBrowsingTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_SKIP_SUBRESOURCES})
+    // TODO(crbug.com/1487858): Remove this test after SAFE_BROWSING_SKIP_SUBRESOURCES is launched.
     public void testSafeBrowsingOnSafeBrowsingHitForSubresource() throws Throwable {
         mContentsClient.setSafeBrowsingAction(SafeBrowsingAction.BACK_TO_SAFETY);
         loadGreenPage();
