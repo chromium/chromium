@@ -38,7 +38,6 @@ namespace blink {
 class CSSValue;
 class Image;
 class ImageResourceContent;
-class SVGImage;
 class Document;
 class ComputedStyle;
 class ImageResourceObserver;
@@ -192,10 +191,6 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   virtual bool IsEqual(const StyleImage&) const = 0;
 
   static gfx::SizeF ApplyZoom(const gfx::SizeF&, float multiplier);
-  static gfx::SizeF ImageSizeForSVGImage(const SVGImage&,
-                                         float multiplier,
-                                         const gfx::SizeF& default_object_size);
-  static bool HasIntrinsicDimensionsForSVGImage(const SVGImage&);
 };
 
 constexpr bool EqualResolutions(const float res1, const float res2) {

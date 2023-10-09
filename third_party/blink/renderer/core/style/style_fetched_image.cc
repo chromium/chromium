@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
@@ -152,28 +153,35 @@ gfx::SizeF StyleFetchedImage::ImageSize(
     float multiplier,
     const gfx::SizeF& default_object_size,
     RespectImageOrientationEnum respect_orientation) const {
-  Image* image = image_->GetImage();
-
-  if (image->IsBitmapImage() && override_image_resolution_ > 0.0f) {
+  const Image& image = *image_->GetImage();
+  if (image.IsBitmapImage() && override_image_resolution_ > 0.0f) {
     multiplier /= override_image_resolution_;
   } else if (image_->HasDevicePixelRatioHeaderValue()) {
     multiplier /= image_->DevicePixelRatioHeaderValue();
   }
 
+  gfx::SizeF size;
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
-    return ImageSizeForSVGImage(*svg_image, multiplier, default_object_size);
+    const gfx::SizeF unzoomed_default_object_size =
+        gfx::ScaleSize(default_object_size, 1 / multiplier);
+    size = svg_image->ConcreteObjectSize(unzoomed_default_object_size);
+  } else {
+    size = gfx::SizeF(
+        image.Size(ForceOrientationIfNecessary(respect_orientation)));
   }
-
-  respect_orientation = ForceOrientationIfNecessary(respect_orientation);
-  gfx::SizeF size(image->Size(respect_orientation));
-
   return ApplyZoom(size, multiplier);
 }
 
 bool StyleFetchedImage::HasIntrinsicSize() const {
   const Image& image = *image_->GetImage();
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
-    return HasIntrinsicDimensionsForSVGImage(*svg_image);
+    IntrinsicSizingInfo intrinsic_sizing_info;
+    if (!svg_image->GetIntrinsicSizingInfo(intrinsic_sizing_info)) {
+      return false;
+    }
+    return intrinsic_sizing_info.has_width ||
+           intrinsic_sizing_info.has_height ||
+           !intrinsic_sizing_info.aspect_ratio.IsEmpty();
   }
   return image.HasIntrinsicSize();
 }
