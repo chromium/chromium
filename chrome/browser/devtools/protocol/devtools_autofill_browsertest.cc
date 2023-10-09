@@ -151,6 +151,31 @@ class DevToolsAutofillTest : public DevToolsProtocolTestBase {
     return *result->FindIntByDottedPath("node.backendNodeId");
   }
 
+  std::string GetOOPIFTargetId() {
+    base::Value::Dict params;
+    params.Set("discover", true);
+    SendCommandSync("Target.setDiscoverTargets", std::move(params));
+    std::string frame_target_id;
+    while (true) {
+      base::Value::Dict result;
+      result = WaitForNotification("Target.targetCreated", true);
+      if (*result.FindStringByDottedPath("targetInfo.type") == "iframe") {
+        frame_target_id =
+            std::string(*result.FindStringByDottedPath("targetInfo.targetId"));
+        break;
+      }
+    }
+    return frame_target_id;
+  }
+
+  std::string AttachToTarget(const std::string& target_id) {
+    base::Value::Dict params;
+    params.Set("targetId", target_id);
+    params.Set("flatten", true);
+    SendCommandSync("Target.attachToTarget", std::move(params));
+    return CHECK_DEREF(CHECK_DEREF(result()).FindString("sessionId"));
+  }
+
   base::Value::Dict GetTestCreditCard() {
     base::Value::Dict card;
     card.Set("number", "4444444444444444");
@@ -354,32 +379,38 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCardInOOPIFIframe) {
 
   EXPECT_TRUE(main_autofill_manager().WaitForFormWithNFields(4));
 
-  {
-    base::Value::Dict params;
-    params.Set("discover", true);
-    SendCommandSync("Target.setDiscoverTargets", std::move(params));
-    ASSERT_TRUE(result());
-  }
+  std::string frame_target_id = GetOOPIFTargetId();
+  std::string session_id = AttachToTarget(frame_target_id);
 
-  std::string frame_target_id;
-  while (true) {
-    base::Value::Dict result;
-    result = WaitForNotification("Target.targetCreated", true);
-    if (*result.FindStringByDottedPath("targetInfo.type") == "iframe") {
-      frame_target_id =
-          std::string(*result.FindStringByDottedPath("targetInfo.targetId"));
-      break;
-    }
-  }
+  int backend_node_id =
+      GetBackendNodeIdByIdAttribute("CREDIT_CARD_NUMBER", "", session_id);
 
-  {
-    base::Value::Dict params;
-    params.Set("targetId", frame_target_id);
-    params.Set("flatten", true);
-    SendCommandSync("Target.attachToTarget", std::move(params));
-    ASSERT_TRUE(result());
-  }
-  std::string session_id = CHECK_DEREF(result()->FindString("sessionId"));
+  base::Value::Dict params;
+  params.Set("fieldId", backend_node_id);
+  params.Set("frameId", frame_target_id);
+  params.Set("card", GetTestCreditCard());
+  SendSessionCommand("Autofill.trigger", std::move(params), session_id,
+                     /*wait=*/true);
+  ASSERT_TRUE(result());
+  EXPECT_EQ(*result(), base::Value::Dict());
+  EXPECT_EQ(GetFilledOutForm("", session_id), GetTestCreditCard());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCardAcrossOOPIFs) {
+  embedded_test_server()->ServeFilesFromSourceDirectory(
+      "chrome/test/data/autofill");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/autofill_creditcard_form_in_oopif.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+  Attach();
+
+  EXPECT_TRUE(main_autofill_manager().WaitForFormWithNFields(4));
+
+  std::string frame_target_id = GetOOPIFTargetId();
+  std::string session_id = AttachToTarget(frame_target_id);
 
   int backend_node_id =
       GetBackendNodeIdByIdAttribute("CREDIT_CARD_NUMBER", "", session_id);

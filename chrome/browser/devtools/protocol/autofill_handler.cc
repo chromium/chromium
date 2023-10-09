@@ -43,6 +43,9 @@ namespace {
 absl::optional<std::pair<FormData, FormFieldData>> FindFieldWithFormData(
     autofill::ContentAutofillDriver* driver,
     autofill::FieldGlobalId id) {
+  if (!driver) {
+    return absl::nullopt;
+  }
   for (const auto& [key, form] :
        driver->GetAutofillManager().form_structures()) {
     for (const auto& field : form->fields()) {
@@ -133,14 +136,15 @@ void AutofillHandler::FinishTrigger(
     autofill_driver =
         autofill::ContentAutofillDriver::GetForRenderFrameHost(frame_rfh);
 
-    if (!autofill_driver) {
-      continue;
+    // TODO(alexrudenko): This approach might lead to differences in behaviour
+    // between the real Autofill flow triggered manually and Autofill triggered
+    // over CDP. We should change how we find the form data and use the same
+    // logic as used by AutofillDriverRouter.
+    if (absl::optional<std::pair<FormData, FormFieldData>> rfh_field_data =
+            FindFieldWithFormData(autofill_driver, global_field_id)) {
+      field_data = std::move(rfh_field_data);
     }
 
-    field_data = FindFieldWithFormData(autofill_driver, global_field_id);
-    if (field_data.has_value()) {
-      break;
-    }
     frame_rfh = frame_rfh->GetParent();
   }
 
