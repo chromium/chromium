@@ -19,13 +19,10 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "cros_boards_with_qemu_images": [
-                  "amd64-generic"
-                ],
                 "target_arch": "intel",
                 "target_bits": 64,
                 "target_cros_boards": [
-                  "eve"
+                  "amd64-generic"
                 ],
                 "target_platform": "chromeos"
               },
@@ -34,7 +31,10 @@
                   "checkout_lacros_sdk",
                   "chromeos"
                 ],
-                "config": "chromium"
+                "config": "chromium_no_telemetry_dependencies"
+              },
+              "skylab_upload_location": {
+                "gs_bucket": "chromium-ci-skylab"
               }
             }
           }

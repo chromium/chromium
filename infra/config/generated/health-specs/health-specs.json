@@ -763,7 +763,7 @@
           "p50_mins": 20
         }
       },
-      "lacros-amd64-generic-rel-skylab": {
+      "lacros-amd64-generic-rel-non-skylab": {
         "build_time": {
           "p50_mins": 60
         },

@@ -140,18 +140,20 @@ try_.builder(
     mirrors = [
         "ci/lacros-amd64-generic-rel",
     ],
-    main_list_view = "try",
-)
-
-try_.builder(
-    name = "lacros-amd64-generic-rel-skylab",
-    branch_selector = branches.selector.CROS_BRANCHES,
-    mirrors = [
-        "ci/lacros-amd64-generic-rel-skylab",
-    ],
+    contact_team_email = "chrome-desktop-engprod@google.com",
     tryjob = try_.job(
         experiment_percentage = 1,
     ),
+)
+
+try_.builder(
+    name = "lacros-amd64-generic-rel-non-skylab",
+    branch_selector = branches.selector.CROS_BRANCHES,
+    mirrors = [
+        "ci/lacros-amd64-generic-rel-non-skylab",
+    ],
+    contact_team_email = "chrome-desktop-engprod@google.com",
+    main_list_view = "try",
 )
 
 try_.builder(

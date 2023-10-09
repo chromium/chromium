@@ -1649,19 +1649,19 @@
       'lacros-amd64-generic-rel': {
         'additional_compile_targets': [
           'chrome',
+        ],
+        'test_suites': {
+          'skylab_tests': 'lacros_skylab_tests_amd64_generic_rel',
+        },
+        'os_type': 'chromeos'
+      },
+      'lacros-amd64-generic-rel-non-skylab': {
+        'additional_compile_targets': [
+          'chrome',
           'browser_tests',
         ],
         'test_suites': {
           'gtest_tests': 'lacros_device_or_vm_tests',
-        },
-        'os_type': 'chromeos'
-      },
-      'lacros-amd64-generic-rel-skylab': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'test_suites': {
-          'skylab_tests': 'lacros_skylab_tests_amd64_generic_rel',
         },
         'os_type': 'chromeos'
       },
@@ -7117,7 +7117,7 @@
     'name': 'tryserver.chromium.chromiumos',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'lacros-amd64-generic-rel-skylab': {
+      'lacros-amd64-generic-rel-non-skylab': {
         'additional_compile_targets': [
           'chrome',
         ],

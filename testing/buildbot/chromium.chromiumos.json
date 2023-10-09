@@ -1125,10 +1125,83 @@
   },
   "lacros-amd64-generic-rel": {
     "additional_compile_targets": [
+      "chrome"
+    ],
+    "skylab_tests": [
+      {
+        "bucket": "chromiumos-image-archive",
+        "cros_board": "volteer",
+        "cros_img": "volteer-public/R120-15639.0.0",
+        "cros_model": "voxel",
+        "dut_pool": "chromium",
+        "name": "lacros_all_tast_tests VOLTEER_PUBLIC_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "shards": 2,
+        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test_level_retries": 2,
+        "timeout_sec": 10800,
+        "variant_id": "VOLTEER_PUBLIC_LKGM"
+      }
+    ]
+  },
+  "lacros-amd64-generic-rel-non-skylab": {
+    "additional_compile_targets": [
       "chrome",
       "browser_tests"
     ],
     "gtest_tests": [
+      {
+        "args": [
+          "--board=amd64-generic",
+          "--use-vm"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "aura_unittests amd64-generic",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "aura_unittests",
+        "test_id_prefix": "ninja://ui/aura:aura_unittests/",
+        "variant_id": "amd64-generic"
+      },
+      {
+        "args": [
+          "--board=eve",
+          "--flash"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "aura_unittests eve",
+        "swarming": {
+          "dimensions": {
+            "device_type": "eve",
+            "os": "ChromeOS"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "aura_unittests",
+        "test_id_prefix": "ninja://ui/aura:aura_unittests/",
+        "trigger_script": {
+          "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
+        },
+        "variant_id": "eve"
+      },
       {
         "args": [
           "--board=amd64-generic",
@@ -1246,7 +1319,51 @@
           "--board=amd64-generic",
           "--use-vm"
         ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "interactive_ui_tests amd64-generic",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/",
+        "variant_id": "amd64-generic"
+      },
+      {
+        "args": [
+          "--board=eve",
+          "--flash"
+        ],
         "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "interactive_ui_tests eve",
+        "swarming": {
+          "dimensions": {
+            "device_type": "eve",
+            "os": "ChromeOS"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/",
+        "trigger_script": {
+          "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
+        },
+        "variant_id": "eve"
+      },
+      {
+        "args": [
+          "--board=amd64-generic",
+          "--use-vm"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -1400,34 +1517,38 @@
         "test": "vaapi_unittest",
         "test_id_prefix": "ninja://media/gpu/vaapi:vaapi_unittest/",
         "variant_id": "amd64-generic"
-      }
-    ]
-  },
-  "lacros-amd64-generic-rel-skylab": {
-    "additional_compile_targets": [
-      "chrome"
-    ],
-    "skylab_tests": [
+      },
       {
-        "bucket": "chromiumos-image-archive",
-        "cros_board": "volteer",
-        "cros_img": "volteer-public/R120-15639.0.0",
-        "cros_model": "voxel",
-        "dut_pool": "chromium",
-        "name": "lacros_all_tast_tests VOLTEER_PUBLIC_LKGM",
-        "public_builder": "cros_test_platform_public",
-        "public_builder_bucket": "testplatform-public",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
+        "args": [
+          "--stop-ui",
+          "--env-var",
+          "LIBVA_DRIVERS_PATH",
+          "./",
+          "--env-var",
+          "LIBVA_DRIVER_NAME",
+          "libfake",
+          "--gtest_filter=\"VaapiTest.*\"",
+          "--board=eve",
+          "--flash"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "shards": 2,
-        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "test_level_retries": 2,
-        "timeout_sec": 10800,
-        "variant_id": "VOLTEER_PUBLIC_LKGM"
+        "name": "vaapi_unittest eve",
+        "swarming": {
+          "dimensions": {
+            "device_type": "eve",
+            "os": "ChromeOS"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "vaapi_unittest",
+        "test_id_prefix": "ninja://media/gpu/vaapi:vaapi_unittest/",
+        "trigger_script": {
+          "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
+        },
+        "variant_id": "eve"
       }
     ]
   },
