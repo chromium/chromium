@@ -548,11 +548,7 @@ TEST_F(TracingProfileBuilderTest, ValidModule) {
   base::TestModule module;
   TracingSamplerProfiler::TracingProfileBuilder profile_builder(
       base::PlatformThreadId(),
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-      false /* is_startup_tracing */,
-#else
       std::make_unique<TestTraceWriter>(producer()),
-#endif
       false);
   profile_builder.OnSampleCompleted({base::Frame(0x1010, &module)},
                                     base::TimeTicks());
@@ -561,11 +557,7 @@ TEST_F(TracingProfileBuilderTest, ValidModule) {
 TEST_F(TracingProfileBuilderTest, InvalidModule) {
   TracingSamplerProfiler::TracingProfileBuilder profile_builder(
       base::PlatformThreadId(),
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-      false /* is_startup_tracing */,
-#else
       std::make_unique<TestTraceWriter>(producer()),
-#endif
       false);
   profile_builder.OnSampleCompleted({base::Frame(0x1010, nullptr)},
                                     base::TimeTicks());
