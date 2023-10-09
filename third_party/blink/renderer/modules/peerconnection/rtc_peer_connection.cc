@@ -141,10 +141,6 @@
 
 namespace blink {
 
-BASE_FEATURE(kWebRtcLegacyGetStatsThrows,
-             "WebRtcLegacyGetStatsThrows",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 const char kSignalingStateClosedMessage[] =
@@ -1691,28 +1687,23 @@ ScriptPromise RTCPeerConnection::LegacyCallbackBasedGetStats(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
+  // This API is only usable if this Deprecation Trial is enabled:
+  // https://developer.chrome.com/origintrials/#/view_trial/3633278999381147649
+  // TODO(https://crbug.com/822696): In M122, delete this API.
   bool deprecation_trial_enabled =
       RuntimeEnabledFeatures::RTCLegacyCallbackBasedGetStatsEnabled(context);
   if (deprecation_trial_enabled) {
     // The deprecation trial is enabled, allow API usage without the warning.
-    // TODO(https://crbug.com/822696): In M122, delete this API.
     UseCounter::Count(context,
                       WebFeature::kRTCPeerConnectionLegacyGetStatsTrial);
   } else {
-    // The deprecation trial is NOT enabled: show a deprecation warning and
-    // maybe throw an exception.
+    // The deprecation trial is not enabled: count deprecation and throw.
     Deprecation::CountDeprecation(
         context, WebFeature::kRTCPeerConnectionGetStatsLegacyNonCompliant);
-    // The plan from the Intent to Deprecate is:
-    // - M114: Throw an exception in Canary/Beta.
-    // - M117: Throw in Stable.
-    // Which channel to throw on is controlled via the base::Feature.
-    if (base::FeatureList::IsEnabled(kWebRtcLegacyGetStatsThrows)) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNotSupportedError,
-          "The callback-based getStats() method is no longer supported.");
-      return ScriptPromise();
-    }
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "The callback-based getStats() method is no longer supported.");
+    return ScriptPromise();
   }
   auto* stats_request = MakeGarbageCollected<RTCStatsRequestImpl>(
       GetExecutionContext(), this, success_callback, selector);
