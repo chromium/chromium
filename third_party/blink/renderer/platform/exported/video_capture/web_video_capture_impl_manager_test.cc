@@ -208,9 +208,8 @@ class VideoCaptureImplManagerTest : public ::testing::Test,
     run_loop.Run();
   }
 
-  MOCK_METHOD3(OnFrameReady,
+  MOCK_METHOD2(OnFrameReady,
                void(scoped_refptr<media::VideoFrame>,
-                    std::vector<scoped_refptr<media::VideoFrame>>,
                     base::TimeTicks estimated_capture_time));
   MOCK_METHOD1(OnStarted, void(const media::VideoCaptureSessionId& id));
   MOCK_METHOD1(OnStopped, void(const media::VideoCaptureSessionId& id));

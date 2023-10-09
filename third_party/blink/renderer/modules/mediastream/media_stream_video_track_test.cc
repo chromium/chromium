@@ -235,7 +235,6 @@ class CheckThreadHelper {
 void CheckThreadVideoFrameReceiver(
     CheckThreadHelper* helper,
     scoped_refptr<media::VideoFrame> frame,
-    std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
     base::TimeTicks estimated_capture_time) {
   // Do nothing.
 }

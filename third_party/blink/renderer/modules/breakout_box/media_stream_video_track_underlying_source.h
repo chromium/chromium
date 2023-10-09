@@ -66,7 +66,6 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSource
 
   void OnFrameFromTrack(
       scoped_refptr<media::VideoFrame> media_frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_media_frames,
       base::TimeTicks estimated_capture_time);
 
   // Only used to prevent the gargabe collector from reclaiming the media

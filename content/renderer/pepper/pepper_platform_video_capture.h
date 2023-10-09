@@ -46,10 +46,8 @@ class PepperPlatformVideoCapture {
  private:
   void OnDeviceOpened(int request_id, bool succeeded, const std::string& label);
   void OnStateUpdate(blink::VideoCaptureState state);
-  void OnFrameReady(
-      scoped_refptr<media::VideoFrame> video_frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
-      base::TimeTicks estimated_capture_time);
+  void OnFrameReady(scoped_refptr<media::VideoFrame> video_frame,
+                    base::TimeTicks estimated_capture_time);
 
   // Can return NULL if the RenderFrame referenced by |render_frame_id_| has
   // gone away.

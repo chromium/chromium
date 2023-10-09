@@ -440,17 +440,14 @@ void VideoTrackRecorderImpl::Encoder::Initialize() {}
 
 void VideoTrackRecorderImpl::Encoder::StartFrameEncodeWithTimeTicksNow(
     scoped_refptr<media::VideoFrame> video_frame,
-    std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
     base::TimeTicks capture_timestamp) {
   StartFrameEncode(CrossThreadBindRepeating(base::TimeTicks::Now),
-                   std::move(video_frame), std::move(scaled_video_frames),
-                   capture_timestamp);
+                   std::move(video_frame), capture_timestamp);
 }
 
 void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
     WTF::CrossThreadRepeatingFunction<base::TimeTicks()> time_now_callback,
     scoped_refptr<media::VideoFrame> video_frame,
-    std::vector<scoped_refptr<media::VideoFrame>> /*scaled_video_frames*/,
     base::TimeTicks capture_timestamp) {
   DVLOG(3) << __func__;
   if (paused_)
@@ -788,14 +785,12 @@ void VideoTrackRecorderImpl::OnVideoFrameForTesting(
 
   if (!encoder_) {
     DCHECK(!initialize_encoder_cb_.is_null());
-    initialize_encoder_cb_.Run(/*allow_vea_encoder=*/true, frame, {},
-                               timestamp);
+    initialize_encoder_cb_.Run(/*allow_vea_encoder=*/true, frame, timestamp);
   }
   encoder_.AsyncCall(&Encoder::StartFrameEncode)
       .WithArgs(WTF::CrossThreadBindRepeating(
                     [](base::TimeTicks now) { return now; }, timestamp),
-                std::move(frame),
-                std::vector<scoped_refptr<media::VideoFrame>>(), timestamp);
+                std::move(frame), timestamp);
 }
 
 void VideoTrackRecorderImpl::ForceKeyFrameForNextFrameForTesting() {
@@ -808,12 +803,10 @@ void VideoTrackRecorderImpl::InitializeEncoder(
     uint32_t bits_per_second,
     bool allow_vea_encoder,
     scoped_refptr<media::VideoFrame> video_frame,
-    std::vector<scoped_refptr<media::VideoFrame>> /*scaled_video_frames*/,
     base::TimeTicks capture_time) {
   DVLOG(3) << __func__ << video_frame->visible_rect().size().ToString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
-  // Scaled video frames are currently ignored.
   auto on_encoder_support_known_cb = WTF::BindOnce(
       &VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown,
       weak_factory_.GetWeakPtr(), codec_profile, on_encoded_video_cb,

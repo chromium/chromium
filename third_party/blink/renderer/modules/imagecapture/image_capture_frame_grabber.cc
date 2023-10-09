@@ -75,7 +75,6 @@ class ImageCaptureFrameGrabber::SingleShotFrameHandler
   void OnVideoFrameOnIOThread(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       scoped_refptr<media::VideoFrame> frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
       base::TimeTicks current_time);
 
  private:
@@ -92,12 +91,10 @@ class ImageCaptureFrameGrabber::SingleShotFrameHandler
 void ImageCaptureFrameGrabber::SingleShotFrameHandler::OnVideoFrameOnIOThread(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     scoped_refptr<media::VideoFrame> frame,
-    std::vector<scoped_refptr<media::VideoFrame>> /*scaled_frames*/,
     base::TimeTicks /*current_time*/) {
   if (!deliver_cb_)
     return;
 
-  // Scaled video frames are not used by ImageCaptureFrameGrabber.
   PostCrossThreadTask(
       *task_runner, FROM_HERE,
       CrossThreadBindOnce(&SingleShotFrameHandler::ConvertAndDeliverFrame,

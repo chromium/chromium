@@ -267,7 +267,7 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::
                             base::TimeTicks estimated_capture_time) {
   DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT0("webrtc", "RemoteVideoSourceDelegate::DoRenderFrameOnIOThread");
-  frame_callback_.Run(std::move(video_frame), {}, estimated_capture_time);
+  frame_callback_.Run(std::move(video_frame), estimated_capture_time);
 }
 
 void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(

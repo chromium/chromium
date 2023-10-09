@@ -80,7 +80,6 @@ void PushableMediaStreamVideoSource::Broker::PushFrame(
   PostCrossThreadTask(
       *video_task_runner_, FROM_HERE,
       CrossThreadBindOnce(frame_callback_, std::move(video_frame),
-                          std::vector<scoped_refptr<media::VideoFrame>>(),
                           estimated_capture_time));
 }
 

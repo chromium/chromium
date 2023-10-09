@@ -43,7 +43,6 @@ constexpr base::TimeDelta kLowerBoundRefreshInterval =
 // This alias mimics the definition of VideoCaptureDeliverFrameCB.
 using VideoCaptureDeliverFrameInternalCallback = WTF::CrossThreadFunction<void(
     scoped_refptr<media::VideoFrame> video_frame,
-    std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
     base::TimeTicks estimated_capture_time)>;
 
 // This alias mimics the definition of VideoCaptureNotifyFrameDroppedCB.
@@ -229,7 +228,6 @@ class MediaStreamVideoTrack::FrameDeliverer
   // as parameters. Must be called on the video task runner.
   void DeliverFrameOnVideoTaskRunner(
       scoped_refptr<media::VideoFrame> frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
       base::TimeTicks estimated_capture_time);
 
   // A frame was dropped instead of delivered. This is the main handler of frame
@@ -623,7 +621,6 @@ void MediaStreamVideoTrack::FrameDeliverer::
 
 void MediaStreamVideoTrack::FrameDeliverer::DeliverFrameOnVideoTaskRunner(
     scoped_refptr<media::VideoFrame> frame,
-    std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
     base::TimeTicks estimated_capture_time) {
   DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
 
@@ -650,11 +647,9 @@ void MediaStreamVideoTrack::FrameDeliverer::DeliverFrameOnVideoTaskRunner(
     // When disabled, a black video frame is passed along instead. The original
     // frames are dropped.
     video_frame = GetBlackFrame(*frame);
-    scaled_video_frames.clear();
   }
   for (const auto& entry : callbacks_) {
-    entry.deliver_frame.Run(video_frame, scaled_video_frames,
-                            estimated_capture_time);
+    entry.deliver_frame.Run(video_frame, estimated_capture_time);
   }
   // The delay on refresh timer is reset each time a frame is received so that
   // it will not fire for at least an additional period. This means refresh

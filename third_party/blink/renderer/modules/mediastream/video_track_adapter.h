@@ -72,7 +72,6 @@ class MODULES_EXPORT VideoTrackAdapter
   // Must be called on the video task runner.
   void DeliverFrameOnVideoTaskRunner(
       scoped_refptr<media::VideoFrame> video_frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
       base::TimeTicks estimated_capture_time);
 
   // Delivers |encoded_frame| to all tracks that have registered a callback.
@@ -130,7 +129,6 @@ class MODULES_EXPORT VideoTrackAdapter
   using VideoCaptureDeliverFrameInternalCallback =
       WTF::CrossThreadFunction<void(
           scoped_refptr<media::VideoFrame> video_frame,
-          std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
           base::TimeTicks estimated_capture_time)>;
   using VideoCaptureNotifyFrameDroppedInternalCallback =
       WTF::CrossThreadFunction<void(media::VideoCaptureFrameDropReason)>;

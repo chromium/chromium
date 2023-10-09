@@ -59,9 +59,7 @@ void MockMediaStreamVideoSource::RequestRefreshFrame() {
                                             base::TimeDelta());
     PostCrossThreadTask(
         *video_task_runner(), FROM_HERE,
-        CrossThreadBindOnce(frame_callback_, frame,
-                            std::vector<scoped_refptr<media::VideoFrame>>(),
-                            base::TimeTicks()));
+        CrossThreadBindOnce(frame_callback_, frame, base::TimeTicks()));
   }
   OnRequestRefreshFrame();
 }
@@ -109,7 +107,6 @@ void MockMediaStreamVideoSource::DeliverVideoFrame(
   PostCrossThreadTask(
       *video_task_runner(), FROM_HERE,
       CrossThreadBindOnce(frame_callback_, std::move(frame),
-                          std::vector<scoped_refptr<media::VideoFrame>>(),
                           base::TimeTicks()));
 }
 

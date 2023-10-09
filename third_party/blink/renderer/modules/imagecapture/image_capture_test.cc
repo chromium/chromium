@@ -668,7 +668,6 @@ class ImageCaptureTest : public testing::Test {
                              MediaStreamVideoSink::UsesAlpha uses_alpha) {
           platform_track_->AddSink(sink, callback, is_secure, uses_alpha);
           callback.Run(media::VideoFrame::CreateBlackFrame(gfx::Size(1, 1)),
-                       /*scaled_video_frames=*/{},
                        /*estimated_capture_time=*/base::TimeTicks());
         }));
   }

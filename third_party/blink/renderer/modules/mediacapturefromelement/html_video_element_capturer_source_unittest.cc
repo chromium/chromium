@@ -138,7 +138,6 @@ class HTMLVideoElementCapturerSourceTest : public testing::TestWithParam<bool> {
                void(scoped_refptr<media::VideoFrame>, base::TimeTicks));
   void OnDeliverFrame(
       scoped_refptr<media::VideoFrame> video_frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
       base::TimeTicks estimated_capture_time) {
     DoOnDeliverFrame(std::move(video_frame), estimated_capture_time);
   }

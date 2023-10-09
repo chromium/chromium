@@ -1090,8 +1090,7 @@ void VideoCaptureImpl::OnVideoFrameReady(
   // TODO(qiangchen): Dive into the full code path to let frame metadata hold
   // reference time rather than using an extra parameter.
   for (const auto& client : clients_) {
-    client.second.deliver_frame_cb.Run(frame_preparer->frame(), {},
-                                       reference_time);
+    client.second.deliver_frame_cb.Run(frame_preparer->frame(), reference_time);
   }
 }
 

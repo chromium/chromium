@@ -71,7 +71,6 @@ class PepperMediaStreamVideoTrackHost : public PepperMediaStreamTrackHostBase,
 
   void OnVideoFrame(
       scoped_refptr<media::VideoFrame> video_frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
       base::TimeTicks estimated_capture_time);
 
   // ResourceHost overrides:

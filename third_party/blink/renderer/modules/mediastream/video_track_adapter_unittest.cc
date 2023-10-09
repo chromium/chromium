@@ -303,7 +303,6 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
           FROM_HERE,
           base::BindOnce(&VideoTrackAdapter::DeliverFrameOnVideoTaskRunner,
                          adapter_, frame,
-                         std::vector<scoped_refptr<media::VideoFrame>>(),
                          estimated_capture_time));
     };
 
@@ -319,10 +318,9 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
 
   void OnFrameDelivered(
       scoped_refptr<media::VideoFrame> frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
       base::TimeTicks estimated_capture_time) {
     if (frame_validation_callback_) {
-      frame_validation_callback_.Run(frame, {}, estimated_capture_time);
+      frame_validation_callback_.Run(frame, estimated_capture_time);
       frame_processed_.Signal();
     }
   }
@@ -360,7 +358,6 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
 
     SetFrameValidationCallback(base::BindLambdaForTesting(
         [&](scoped_refptr<media::VideoFrame> frame,
-            std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
             base::TimeTicks estimated_capture_time) {
           num_delivered++;
           if (num_delivered + num_dropped == num_frames) {
@@ -421,7 +418,6 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
     ConfigureTrack(cropped_settings);
     auto check_settings =
         [&](scoped_refptr<media::VideoFrame> frame,
-            std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
             base::TimeTicks estimated_capture_time) {
           EXPECT_FALSE(frame->visible_rect().x() & 1);
           EXPECT_FALSE(frame->visible_rect().y() & 1);
@@ -470,7 +466,6 @@ TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_GpuMemoryBuffer) {
   ConfigureTrack(settings_nonscaled);
   auto check_nonscaled =
       [&](scoped_refptr<media::VideoFrame> frame,
-          std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
           base::TimeTicks estimated_capture_time) {
         // We should get the original frame as-is here.
         EXPECT_EQ(frame->storage_type(),
@@ -489,7 +484,6 @@ TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_GpuMemoryBuffer) {
   ConfigureTrack(settings_scaled);
   auto check_scaled =
       [&](scoped_refptr<media::VideoFrame> frame,
-          std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
           base::TimeTicks estimated_capture_time) {
         // The original frame should be wrapped in a new frame, with
         // |kDesiredSize| exposed as natural size of the wrapped frame.
@@ -592,7 +586,6 @@ TEST_F(VideoTrackAdapterFixtureTest,
   // The delivered frame for the first track should have a portrait orientation.
   auto check_portrait =
       [&](scoped_refptr<media::VideoFrame> frame,
-          std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
           base::TimeTicks estimated_capture_time) {
         // We should get the original frame as-is here.
         EXPECT_EQ(frame->storage_type(),
@@ -809,9 +802,8 @@ class VideoTrackAdapterEncodedTest : public ::testing::Test {
     run_loop.Run();
   }
 
-  MOCK_METHOD3(OnFrameDelivered,
+  MOCK_METHOD2(OnFrameDelivered,
                void(scoped_refptr<media::VideoFrame> frame,
-                    std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
                     base::TimeTicks estimated_capture_time));
   MOCK_METHOD2(OnEncodedVideoFrameDelivered,
                void(scoped_refptr<EncodedVideoFrame>,

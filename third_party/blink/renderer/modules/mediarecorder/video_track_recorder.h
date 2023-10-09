@@ -179,14 +179,12 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     void StartFrameEncode(
         WTF::CrossThreadRepeatingFunction<base::TimeTicks()> time_now_callback,
         scoped_refptr<media::VideoFrame> video_frame,
-        std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
         base::TimeTicks capture_timestamp);
 
     // Like StartFrameEncode but using base::TimeTicks::Now in
     // `time_now_callback`.
     void StartFrameEncodeWithTimeTicksNow(
         scoped_refptr<media::VideoFrame> video_frame,
-        std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
         base::TimeTicks capture_timestamp);
 
     using OnEncodedVideoInternalCB = WTF::CrossThreadFunction<void(
@@ -368,7 +366,6 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
       uint32_t bits_per_second,
       bool allow_vea_encoder,
       scoped_refptr<media::VideoFrame> video_frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
       base::TimeTicks capture_time);
   void InitializeEncoderOnEncoderSupportKnown(
       CodecProfile codec_profile,
@@ -394,7 +391,6 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
   base::RepeatingCallback<void(
       bool allow_vea_encoder,
       scoped_refptr<media::VideoFrame> video_frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
       base::TimeTicks capture_time)>
       initialize_encoder_cb_;
 

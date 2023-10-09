@@ -201,7 +201,6 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
   // The source has provided us with a frame.
   void DeliverFrame(
       scoped_refptr<media::VideoFrame> frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
       const base::TimeTicks& estimated_capture_time,
       bool is_device_rotated);
   // This method is called when a frame is dropped, whether dropped by the
@@ -228,7 +227,6 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
 
   void DoDeliverFrame(
       scoped_refptr<media::VideoFrame> video_frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
       const base::TimeTicks& estimated_capture_time);
 
   // Returns |true| if the input frame rate is higher that the requested max
@@ -362,7 +360,6 @@ VideoTrackAdapter::VideoFrameResolutionAdapter::RemoveAndGetCallbacks(
 
 void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverFrame(
     scoped_refptr<media::VideoFrame> video_frame,
-    std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
     const base::TimeTicks& estimated_capture_time,
     bool is_device_rotated) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
@@ -398,16 +395,12 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverFrame(
   if (video_frame->HasTextures() &&
       video_frame->storage_type() !=
           media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    DoDeliverFrame(std::move(video_frame), std::move(scaled_video_frames),
-                   estimated_capture_time);
+    DoDeliverFrame(std::move(video_frame), estimated_capture_time);
     return;
   }
   // The video frame we deliver may or may not get cropping and scaling
   // soft-applied. Ultimately the listener will decide whether to use the
-  // |delivered_video_frame| or one of the |scaled_video_frames|. When frames
-  // arrive to their final destination, if a scaled frame already has the
-  // destination dimensions there is no need to apply the soft scale calculated
-  // here. But that is not always possible.
+  // |delivered_video_frame|.
   scoped_refptr<media::VideoFrame> delivered_video_frame = video_frame;
 
   gfx::Size desired_size;
@@ -456,8 +449,7 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverFrame(
              << " output visible rect  "
              << delivered_video_frame->visible_rect().ToString();
   }
-  DoDeliverFrame(std::move(delivered_video_frame),
-                 std::move(scaled_video_frames), estimated_capture_time);
+  DoDeliverFrame(std::move(delivered_video_frame), estimated_capture_time);
 }
 
 void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverEncodedVideoFrame(
@@ -490,7 +482,6 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::IsEmpty() const {
 
 void VideoTrackAdapter::VideoFrameResolutionAdapter::DoDeliverFrame(
     scoped_refptr<media::VideoFrame> video_frame,
-    std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
     const base::TimeTicks& estimated_capture_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
   if (callbacks_.empty()) {
@@ -499,8 +490,7 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DoDeliverFrame(
   }
   for (const auto& callback : callbacks_) {
     MaybeUpdateTrackSettings(callback.second.settings_callback, *video_frame);
-    callback.second.frame_callback.Run(video_frame, scaled_video_frames,
-                                       estimated_capture_time);
+    callback.second.frame_callback.Run(video_frame, estimated_capture_time);
   }
 }
 
@@ -867,15 +857,12 @@ void VideoTrackAdapter::ReconfigureTrackOnVideoTaskRunner(
 
 void VideoTrackAdapter::DeliverFrameOnVideoTaskRunner(
     scoped_refptr<media::VideoFrame> video_frame,
-    std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
     base::TimeTicks estimated_capture_time) {
   DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT0("media", "VideoTrackAdapter::DeliverFrameOnVideoTaskRunner");
   ++frame_counter_;
 
   bool is_device_rotated = false;
-  // It's sufficient to look at |video_frame| since |scaled_video_frames| are
-  // scaled versions of the same image.
   // TODO(guidou): Use actual device information instead of this heuristic to
   // detect frames from rotated devices. https://crbug.com/722748
   if (source_frame_size_ &&
@@ -884,8 +871,8 @@ void VideoTrackAdapter::DeliverFrameOnVideoTaskRunner(
     is_device_rotated = true;
   }
   for (const auto& adapter : adapters_) {
-    adapter->DeliverFrame(video_frame, scaled_video_frames,
-                          estimated_capture_time, is_device_rotated);
+    adapter->DeliverFrame(video_frame, estimated_capture_time,
+                          is_device_rotated);
   }
 }
 

@@ -146,7 +146,6 @@ void PepperPlatformVideoCapture::OnStateUpdate(blink::VideoCaptureState state) {
 
 void PepperPlatformVideoCapture::OnFrameReady(
     scoped_refptr<media::VideoFrame> video_frame,
-    std::vector<scoped_refptr<media::VideoFrame>> /*scaled_video_frames*/,
     base::TimeTicks estimated_capture_time) {
   if (handler_ && stop_capture_cb_) {
     // The scaled video frames are ignored by Pepper.

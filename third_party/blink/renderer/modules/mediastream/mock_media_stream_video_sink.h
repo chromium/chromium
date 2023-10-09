@@ -78,7 +78,6 @@ class MockMediaStreamVideoSink : public MediaStreamVideoSink {
  private:
   void DeliverVideoFrame(
       scoped_refptr<media::VideoFrame> frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
       base::TimeTicks estimated_capture_time);
   void DeliverEncodedVideoFrame(scoped_refptr<EncodedVideoFrame> frame,
                                 base::TimeTicks estimated_capture_time);
