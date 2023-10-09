@@ -25,6 +25,7 @@ class VolumeManagerFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns VolumeManager instance.
   static VolumeManager* Get(content::BrowserContext* context);
+  static VolumeManager* Find(content::BrowserContext* context);
 
   static VolumeManagerFactory* GetInstance();
 

@@ -89,8 +89,13 @@ class VolumeManager : public KeyedService,
 
   ~VolumeManager() override;
 
-  // Returns the instance corresponding to the |context|.
+  // Returns the instance corresponding to the `context` or creates an instance
+  // if not found.
   static VolumeManager* Get(content::BrowserContext* context);
+
+  // Returns the instance corresponding to the `context` or nullptr if not
+  // found.
+  static VolumeManager* Find(content::BrowserContext* context);
 
   // Initializes this instance.
   void Initialize();
