@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
@@ -73,6 +74,7 @@
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -373,20 +375,6 @@ void ToolbarView::Init() {
             browser_view_);
   }
 
-  std::unique_ptr<SidePanelToolbarButton> side_panel_button;
-  std::unique_ptr<SidePanelToolbarContainer> side_panel_toolbar_container;
-  if (browser_view_->unified_side_panel()) {
-    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
-      // TODO(b:299463334): Use the new SidePanelContainer which supports
-      // ActionItems
-    } else if (companion::IsCompanionFeatureEnabled()) {
-      side_panel_toolbar_container =
-          std::make_unique<SidePanelToolbarContainer>(browser_view_);
-    } else {
-      side_panel_button = std::make_unique<SidePanelToolbarButton>(browser_);
-    }
-  }
-
   // Always add children in order from left to right, for accessibility.
   back_ = container_view_->AddChildView(std::move(back));
   forward_ = container_view_->AddChildView(std::move(forward));
@@ -404,6 +392,11 @@ void ToolbarView::Init() {
         container_view_->AddChildView(std::move(toolbar_divider));
     toolbar_divider_->SetPreferredSize(
         gfx::Size(kToolbarDividerWidth, kToolbarDividerHeight));
+  }
+
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    pinned_toolbar_actions_container_ = container_view_->AddChildView(
+        std::make_unique<PinnedToolbarActionsContainer>(browser_view_));
   }
 
   if (IsChromeLabsEnabled()) {
@@ -447,12 +440,14 @@ void ToolbarView::Init() {
     send_tab_to_self_button_ =
         container_view_->AddChildView(std::move(send_tab_to_self_button));
 
-  if (side_panel_toolbar_container) {
-    side_panel_container_ =
-        container_view_->AddChildView(std::move(side_panel_toolbar_container));
-  } else if (side_panel_button) {
-    side_panel_button_ =
-        container_view_->AddChildView(std::move(side_panel_button));
+  if (!base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    if (companion::IsCompanionFeatureEnabled()) {
+      side_panel_container_ = container_view_->AddChildView(
+          std::make_unique<SidePanelToolbarContainer>(browser_view_));
+    } else {
+      side_panel_button_ = container_view_->AddChildView(
+          std::make_unique<SidePanelToolbarButton>(browser_));
+    }
   }
 
   avatar_ = container_view_->AddChildView(
@@ -534,6 +529,10 @@ void ToolbarView::Update(WebContents* tab) {
 
   if (extensions_container_)
     extensions_container_->UpdateAllIcons();
+
+  if (pinned_toolbar_actions_container_) {
+    pinned_toolbar_actions_container_->UpdateAllIcons();
+  }
 
   if (side_panel_container_) {
     side_panel_container_->UpdateAllIcons();
@@ -877,7 +876,7 @@ void ToolbarView::InitLayout() {
   // Order 1 - kOrderOffset will be assigned to new flex-able elements.
   constexpr int kOrderOffset = 1000;
   constexpr int kLocationBarFlexOrder = kOrderOffset + 1;
-  constexpr int kSidePanelFlexOrder = kOrderOffset + 2;
+  constexpr int kToolbarActionsFlexOrder = kOrderOffset + 2;
   constexpr int kExtensionsFlexOrder = kOrderOffset + 3;
 
   const views::FlexSpecification location_bar_flex_rule =
@@ -908,12 +907,21 @@ void ToolbarView::InitLayout() {
                                        extensions_flex_rule);
   }
 
-  if (side_panel_container_) {
+  if (pinned_toolbar_actions_container_) {
+    const views::FlexSpecification toolbar_actions_flex_rule =
+        views::FlexSpecification(
+            pinned_toolbar_actions_container_->GetAnimatingLayoutManager()
+                ->GetDefaultFlexRule())
+            .WithOrder(kToolbarActionsFlexOrder);
+
+    pinned_toolbar_actions_container_->SetProperty(views::kFlexBehaviorKey,
+                                                   toolbar_actions_flex_rule);
+  } else if (side_panel_container_) {
     const views::FlexSpecification side_panel_flex_rule =
         views::FlexSpecification(
             side_panel_container_->GetAnimatingLayoutManager()
                 ->GetDefaultFlexRule())
-            .WithOrder(kSidePanelFlexOrder);
+            .WithOrder(kToolbarActionsFlexOrder);
 
     side_panel_container_->SetProperty(views::kFlexBehaviorKey,
                                        side_panel_flex_rule);

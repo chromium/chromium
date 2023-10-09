@@ -13,6 +13,8 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -1686,6 +1688,22 @@ class SidePanelPinningCoordinatorTest : public SidePanelCoordinatorTest {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kSidePanelPinning);
     SidePanelCoordinatorTest::SetUp();
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    TestingProfile::TestingFactories factories =
+        TestWithBrowserView::GetTestingFactories();
+    factories.emplace_back(
+        PinnedToolbarActionsModelFactory::GetInstance(),
+        base::BindRepeating(
+            &SidePanelPinningCoordinatorTest::BuildPinnedToolbarActionsModel));
+    return factories;
+  }
+
+  static std::unique_ptr<KeyedService> BuildPinnedToolbarActionsModel(
+      content::BrowserContext* context) {
+    return std::make_unique<PinnedToolbarActionsModel>(
+        Profile::FromBrowserContext(context));
   }
 
  private:

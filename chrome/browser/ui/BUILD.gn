@@ -5770,6 +5770,8 @@ static_library("ui") {
       "views/toolbar/home_button.h",
       "views/toolbar/overflow_button.cc",
       "views/toolbar/overflow_button.h",
+      "views/toolbar/pinned_toolbar_actions_container.cc",
+      "views/toolbar/pinned_toolbar_actions_container.h",
       "views/toolbar/reload_button.cc",
       "views/toolbar/reload_button.h",
       "views/toolbar/side_panel_toolbar_button.cc",

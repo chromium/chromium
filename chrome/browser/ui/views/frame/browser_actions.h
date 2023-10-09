@@ -18,6 +18,7 @@ class ActionManager;
 class BrowserActions : public base::SupportsUserData::Data {
  public:
   static const void* UserDataKey() { return &kUserDataKey; }
+  static BrowserActions* FromBrowser(Browser* browser);
 
   explicit BrowserActions(Browser& browser);
   BrowserActions(const BrowserActions&) = delete;

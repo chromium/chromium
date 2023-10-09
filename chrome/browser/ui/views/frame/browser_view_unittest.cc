@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_actions.h"
@@ -95,6 +97,21 @@ class BrowserViewTest : public TestWithBrowserView {
   BrowserViewTest& operator=(const BrowserViewTest&) = delete;
 
   ~BrowserViewTest() override {}
+
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    TestingProfile::TestingFactories factories =
+        TestWithBrowserView::GetTestingFactories();
+    factories.emplace_back(
+        PinnedToolbarActionsModelFactory::GetInstance(),
+        base::BindRepeating(&BrowserViewTest::BuildPinnedToolbarActionsModel));
+    return factories;
+  }
+
+  static std::unique_ptr<KeyedService> BuildPinnedToolbarActionsModel(
+      content::BrowserContext* context) {
+    return std::make_unique<PinnedToolbarActionsModel>(
+        Profile::FromBrowserContext(context));
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;

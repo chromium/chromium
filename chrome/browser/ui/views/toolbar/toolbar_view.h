@@ -54,6 +54,7 @@ class IntentChipButton;
 class MediaToolbarButtonView;
 class ReloadButton;
 class SidePanelToolbarContainer;
+class PinnedToolbarActionsContainer;
 class ToolbarButton;
 class AvatarToolbarButtonBrowserTest;
 class ToolbarController;
@@ -157,6 +158,9 @@ class ToolbarView : public views::AccessiblePaneView,
   media_router::CastToolbarButton* cast_button() const { return cast_; }
   SidePanelToolbarContainer* side_panel_container() const {
     return side_panel_container_;
+  }
+  PinnedToolbarActionsContainer* pinned_toolbar_actions_container() const {
+    return pinned_toolbar_actions_container_;
   }
   SidePanelToolbarButton* GetSidePanelButton() override;
   MediaToolbarButtonView* media_button() const { return media_button_; }
@@ -283,6 +287,8 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<BatterySaverButton> battery_saver_button_ = nullptr;
   raw_ptr<media_router::CastToolbarButton> cast_ = nullptr;
   raw_ptr<SidePanelToolbarContainer> side_panel_container_ = nullptr;
+  raw_ptr<PinnedToolbarActionsContainer> pinned_toolbar_actions_container_ =
+      nullptr;
   raw_ptr<SidePanelToolbarButton> side_panel_button_ = nullptr;
   raw_ptr<AvatarToolbarButton> avatar_ = nullptr;
   raw_ptr<MediaToolbarButtonView> media_button_ = nullptr;

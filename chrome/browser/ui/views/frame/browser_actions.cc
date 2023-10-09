@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/browser_actions.h"
+
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
@@ -69,6 +70,12 @@ BrowserActions::BrowserActions(Browser& browser) : browser_(browser) {
 }
 
 BrowserActions::~BrowserActions() = default;
+
+// static
+BrowserActions* BrowserActions::FromBrowser(Browser* browser) {
+  return static_cast<BrowserActions*>(
+      browser->GetUserData(BrowserActions::UserDataKey()));
+}
 
 void BrowserActions::InitializeBrowserActions(actions::ActionManager* manager) {
   const bool rename_journeys =
