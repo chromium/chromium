@@ -6778,9 +6778,7 @@ crbug.com/1490510 external/wpt/webrtc/RTCPeerConnection-setLocalDescription-pran
 crbug.com/1481694 [ Win10.20h2 ] accessibility/selection-change-notification-on-selection-removed.html [ Failure ]
 
 # TODO(crbug.com/1428024): These tests should be updated because of the migration to new data engine
-crbug.com/1428024 virtual/plz-dedicated-worker/http/tests/devtools/tracing/timeline-misc/timeline-aggregated-details.js [ Failure Pass ]
-crbug.com/1428024 virtual/single-threaded-tests/http/tests/devtools/tracing/timeline-misc/timeline-aggregated-details.js [ Failure Pass ]
-crbug.com/1428024 virtual/threaded/http/tests/devtools/tracing/timeline-misc/timeline-aggregated-details.js [ Failure Pass ]
+crbug.com/1428024 http/tests/devtools/tracing/timeline-misc/timeline-aggregated-details.js [ Failure Pass ]
 
 # Gardener 2023-10-09
 crbug.com/1476826 [ Win ] http/tests/xmlhttprequest/small-chunks-response-text.html [ Failure Pass ]
