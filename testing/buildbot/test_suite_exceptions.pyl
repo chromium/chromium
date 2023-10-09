@@ -2793,9 +2793,10 @@
           '--no-xvfb',
         ],
         'swarming': {
+          # This must be kept in sync with linux_nvidia_gtx_1660_stable mixin
           'dimensions': {
-            'gpu': '10de:2184',
-            'os': 'Ubuntu',
+            'gpu': '10de:2184-440.100',
+            'os': 'Ubuntu-18.04.5|Ubuntu-18.04.6',
             'pool': 'chromium.tests.gpu',
           },
         },
@@ -2806,9 +2807,10 @@
           '--no-xvfb',
         ],
         'swarming': {
+          # This must be kept in sync with linux_nvidia_gtx_1660_stable mixin
           'dimensions': {
-            'gpu': '10de:2184',
-            'os': 'Ubuntu',
+            'gpu': '10de:2184-440.100',
+            'os': 'Ubuntu-18.04.5|Ubuntu-18.04.6',
             'pool': 'chromium.tests.gpu',
           },
         },
@@ -2819,9 +2821,10 @@
           '--no-xvfb',
         ],
         'swarming': {
+          # This must be kept in sync with linux_nvidia_gtx_1660_stable mixin
           'dimensions': {
-            'gpu': '10de:2184',
-            'os': 'Ubuntu',
+            'gpu': '10de:2184-440.100',
+            'os': 'Ubuntu-18.04.5|Ubuntu-18.04.6',
             'pool': 'chromium.tests.gpu',
           },
         },
@@ -2832,9 +2835,10 @@
           '--no-xvfb',
         ],
         'swarming': {
+          # This must be kept in sync with linux_nvidia_gtx_1660_stable mixin
           'dimensions': {
-            'gpu': '10de:2184',
-            'os': 'Ubuntu',
+            'gpu': '10de:2184-440.100',
+            'os': 'Ubuntu-18.04.5|Ubuntu-18.04.6',
             'pool': 'chromium.tests.gpu',
           },
         },
@@ -2845,9 +2849,10 @@
           '--no-xvfb',
         ],
         'swarming': {
+          # This must be kept in sync with linux_nvidia_gtx_1660_stable mixin
           'dimensions': {
-            'gpu': '10de:2184',
-            'os': 'Ubuntu',
+            'gpu': '10de:2184-440.100',
+            'os': 'Ubuntu-18.04.5|Ubuntu-18.04.6',
             'pool': 'chromium.tests.gpu',
           },
         },
