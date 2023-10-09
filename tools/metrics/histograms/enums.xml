@@ -27625,6 +27625,7 @@ Called by update_debug_scenarios.py.-->
   <int value="77" label="storageBucketsTree"/>
   <int value="78" label="deleteOverridesTemporarilyEnable"/>
   <int value="79" label="networkPanelFilterBarRedesign"/>
+  <int value="80" label="breadcrumbsPerformancePanel"/>
 </enum>
 
 <enum name="DevToolsGridOverlayOpenedFrom">
