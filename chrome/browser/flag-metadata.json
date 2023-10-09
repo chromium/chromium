@@ -1498,7 +1498,7 @@
   {
     "name": "crostini-qt-ime-support",
     "owners": [ "timloh", "sophialin@google.com" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 130
   },
   {
     "name": "crostini-reset-lxd-db",
@@ -1513,7 +1513,7 @@
   {
     "name": "crostini-virtual-keyboard-support",
     "owners": [ "timloh", "sophialin@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "csc-companion-enable-page-content",
