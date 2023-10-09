@@ -486,8 +486,10 @@ public class FeedSurfaceMediator
         boolean suggestionsVisible = isSuggestionsVisible();
 
         @StreamKind
-        int streamKind = mCoordinator.isPrimaryAccountSupervised() ? StreamKind.SUPERVISED_USER
-                                                                   : StreamKind.FOR_YOU;
+        int streamKind =
+                mCoordinator.shouldDisplaySupervisedFeed()
+                        ? StreamKind.SUPERVISED_USER
+                        : StreamKind.FOR_YOU;
         addHeaderAndStream(getInterestFeedHeaderText(suggestionsVisible),
                 mCoordinator.createFeedStream(streamKind, new StreamsMediatorImpl()));
         setHeaderIndicatorState(suggestionsVisible);

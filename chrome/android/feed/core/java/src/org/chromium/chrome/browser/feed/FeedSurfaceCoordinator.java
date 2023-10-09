@@ -781,9 +781,9 @@ public class FeedSurfaceCoordinator
     }
 
     /*
-     * Returns true if the primary signed-in account is subject to parental controls.
+     * Returns true if the supervised user feed should be displayed.
      */
-    public boolean isPrimaryAccountSupervised() {
+    public boolean shouldDisplaySupervisedFeed() {
         if (mProfile == null) {
             return false;
         }
@@ -796,11 +796,13 @@ public class FeedSurfaceCoordinator
             return false;
         }
 
+        // Check if the primary account is supervised.
         final @Nullable AccountInfo primaryAccountInfo =
                 identityManager.findExtendedAccountInfoByEmailAddress(primaryAccount.getEmail());
         return primaryAccountInfo != null
                 && primaryAccountInfo.getAccountCapabilities().isSubjectToParentalControls()
-                == Tribool.TRUE;
+                        == Tribool.TRUE
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.KID_FRIENDLY_CONTENT_FEED);
     }
 
     /**

@@ -311,6 +311,7 @@ public abstract class ChromeFeatureList {
     public static final String INSTANT_START = "InstantStart";
     public static final String INTEREST_FEED_V2_AUTOPLAY = "InterestFeedV2Autoplay";
     public static final String INTEREST_FEED_V2_HEARTS = "InterestFeedV2Hearts";
+    public static final String KID_FRIENDLY_CONTENT_FEED = "KidFriendlyContentFeed";
     public static final String LENS_CAMERA_ASSISTED_SEARCH = "LensCameraAssistedSearch";
     public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
     public static final String LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI =

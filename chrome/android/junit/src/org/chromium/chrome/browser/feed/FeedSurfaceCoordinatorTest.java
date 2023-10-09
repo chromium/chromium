@@ -94,25 +94,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Tests for {@link FeedSurfaceCoordinator}.
- *
- */
+/** Tests for {@link FeedSurfaceCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @DisableFeatures({
-        ChromeFeatureList.WEB_FEED,
-        ChromeFeatureList.WEB_FEED_SORT,
-        ChromeFeatureList.WEB_FEED_ONBOARDING,
-        ChromeFeatureList.INTEREST_FEED_V2_AUTOPLAY,
-        ChromeFeatureList.FEED_BACK_TO_TOP,
-        ChromeFeatureList.FEED_USER_INTERACTION_RELIABILITY_REPORT,
-        // TODO(crbug.com/1353777): Disabling the feature explicitly, because native is not
-        // available to provide a default value. This should be enabled if the feature is enabled by
-        // default or removed if the flag is removed.
-        ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS,
+    ChromeFeatureList.WEB_FEED,
+    ChromeFeatureList.WEB_FEED_SORT,
+    ChromeFeatureList.WEB_FEED_ONBOARDING,
+    ChromeFeatureList.INTEREST_FEED_V2_AUTOPLAY,
+    ChromeFeatureList.FEED_BACK_TO_TOP,
+    ChromeFeatureList.FEED_USER_INTERACTION_RELIABILITY_REPORT,
+    // TODO(crbug.com/1353777): Disabling the feature explicitly, because native is not
+    // available to provide a default value. This should be enabled if the feature is enabled by
+    // default or removed if the flag is removed.
+    ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS,
 })
-@EnableFeatures({ChromeFeatureList.FEED_HEADER_STICK_TO_TOP})
+@EnableFeatures({
+    ChromeFeatureList.FEED_HEADER_STICK_TO_TOP,
+    ChromeFeatureList.KID_FRIENDLY_CONTENT_FEED,
+})
 public class FeedSurfaceCoordinatorTest {
     private static final @SurfaceType int SURFACE_TYPE = SurfaceType.NEW_TAB_PAGE;
     private static final long SURFACE_CREATION_TIME_NS = 1234L;
@@ -516,7 +516,7 @@ public class FeedSurfaceCoordinatorTest {
         when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(account);
         when(mIdentityManager.findExtendedAccountInfoByEmailAddress(account.getEmail()))
                 .thenReturn(account);
-        assertTrue(mCoordinator.isPrimaryAccountSupervised());
+        assertTrue(mCoordinator.shouldDisplaySupervisedFeed());
     }
 
     @Test
@@ -525,13 +525,13 @@ public class FeedSurfaceCoordinatorTest {
         when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(account);
         when(mIdentityManager.findExtendedAccountInfoByEmailAddress(account.getEmail()))
                 .thenReturn(account);
-        assertFalse(mCoordinator.isPrimaryAccountSupervised());
+        assertFalse(mCoordinator.shouldDisplaySupervisedFeed());
     }
 
     @Test
     public void testIsPrimaryAccountSupervisedForSignedOutUser() {
         when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(null);
-        assertFalse(mCoordinator.isPrimaryAccountSupervised());
+        assertFalse(mCoordinator.shouldDisplaySupervisedFeed());
     }
 
     private AccountInfo createFakeAccount(boolean isChild) {
