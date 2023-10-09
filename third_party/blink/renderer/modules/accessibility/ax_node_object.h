@@ -56,6 +56,9 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   void Trace(Visitor*) const override;
 
+  // Call to force-load inline text boxes for the current subtree.
+  void LoadInlineTextBoxes() override;
+  // Should inline text boxes be considered when adding chldren to this node.
   bool ShouldLoadInlineTextBoxes() const override;
 
  protected:
@@ -290,9 +293,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void ComputeAriaOwnsChildren(
       HeapVector<Member<AXObject>>& owned_children) const;
 
-  // Inline text boxes.
-  void LoadInlineTextBoxes() override;
-  void ForceAddInlineTextBoxChildren() override;
+  // Helper method for LoadInlineTextBoxes().
+  void LoadInlineTextBoxesHelper() override;
 
   //
   // Layout object specific methods.

@@ -4367,8 +4367,6 @@ bool AXNodeObject::ShouldLoadInlineTextBoxes() const {
     return false;
   }
 
-  // TODO(crrev.com/c/4884899): Switch to using AXMode instead of a setting.
-  // Unfortunately, the popup has a different setting than the main document.
   if (!AXObjectCache().GetAXMode().has_mode(ui::AXMode::kInlineTextBoxes)) {
     return false;
   }
@@ -4391,8 +4389,9 @@ void AXNodeObject::LoadInlineTextBoxes() {
   while (!work_queue.empty()) {
     AXObject* work_obj = AXObjectCache().ObjectFromAXID(work_queue.front());
     work_queue.pop();
-    if (!work_obj || !work_obj->AccessibilityIsIncludedInTree())
+    if (!work_obj || !work_obj->LastKnownIsIncludedInTreeValue()) {
       continue;
+    }
 
     if (CanHaveInlineTextBoxChildren(work_obj)) {
       if (work_obj->CachedChildrenIncludingIgnored().empty()) {
@@ -4401,21 +4400,25 @@ void AXNodeObject::LoadInlineTextBoxes() {
         // on subtrees that may later be stale, once they are stale, the old
         // inline text boxes are cleared because SetNeedsToUpdateChildren()
         // calls ClearChildren().
-        work_obj->ForceAddInlineTextBoxChildren();
+        work_obj->LoadInlineTextBoxesHelper();
       }
     } else {
       for (const auto& child : work_obj->ChildrenIncludingIgnored())
         work_queue.push(child->AXObjectID());
     }
   }
+
+  // If the work was deferred via ChildrenChanged(), update accessibility
+  // to force that work to be performed now.
+  if (!AXObjectCache().IsProcessingDeferredEvents()) {
+    AXObjectCache().UpdateAXForAllDocuments();
+  }
 }
 
-void AXNodeObject::ForceAddInlineTextBoxChildren() {
+void AXNodeObject::LoadInlineTextBoxesHelper() {
   // The inline textbox children start empty.
   DCHECK(CachedChildrenIncludingIgnored().empty());
-  AddInlineTextBoxChildren();
-  // Avoid adding these children twice.
-  children_dirty_ = false;
+
 #if BUILDFLAG(IS_ANDROID)
   // Keep inline text box children up-to-date for this object in the future.
   // This is only necessary on Android, which tries to skip inline text boxes
@@ -4423,23 +4426,33 @@ void AXNodeObject::ForceAddInlineTextBoxChildren() {
   always_load_inline_text_boxes_ = true;
 #endif
 
-  // If inline text box children were added, mark the node dirty so that the
-  // results are serialized.
-  if (!CachedChildrenIncludingIgnored().empty()) {
-    AXObjectCache().MarkAXObjectDirtyWithDetails(
-        this, /*subtree*/ false, ax::mojom::blink::EventFrom::kNone,
-        ax::mojom::blink::Action::kNone, {});
+  if (AXObjectCache().IsProcessingDeferredEvents()) {
+    // Can only add new objects while processing deferred events.
+    AddInlineTextBoxChildren();
+    // Avoid adding these children twice.
+    children_dirty_ = false;
+    // If inline text box children were added, mark the node dirty so that the
+    // results are serialized.
+    if (!CachedChildrenIncludingIgnored().empty()) {
+      AXObjectCache().MarkAXObjectDirtyWithDetails(
+          this, /*subtree*/ false, ax::mojom::blink::EventFrom::kNone,
+          ax::mojom::blink::Action::kNone, {});
+    }
+  } else {
+    // Wait until processing deferred events.
+    AXObjectCache().ChildrenChanged(this);
   }
 }
 
 void AXNodeObject::AddInlineTextBoxChildren() {
-  DCHECK(GetDocument());
-  DCHECK(CanHaveInlineTextBoxChildren(this));
-  DCHECK(!GetLayoutObject()->NeedsLayout());
-  DCHECK(AXObjectCache().GetAXMode().has_mode(ui::AXMode::kInlineTextBoxes));
-  DCHECK(!AXObjectCache().GetAXMode().HasExperimentalFlags(
+  CHECK(GetDocument());
+  CHECK(ShouldLoadInlineTextBoxes());
+  CHECK(!GetLayoutObject()->NeedsLayout());
+  CHECK(AXObjectCache().GetAXMode().has_mode(ui::AXMode::kInlineTextBoxes));
+  CHECK(!AXObjectCache().GetAXMode().HasExperimentalFlags(
       ui::AXMode::kExperimentalFormControls))
       << "Form controls mode should not have inline text boxes turned on.";
+  CHECK(AXObjectCache().IsProcessingDeferredEvents());
 
   auto* layout_text = To<LayoutText>(GetLayoutObject());
   for (auto* box = layout_text->FirstAbstractInlineTextBox(); box;

@@ -4774,7 +4774,7 @@ bool AXObject::IsDescendantOfLandmarkDisallowedElement() const {
 
 void AXObject::LoadInlineTextBoxes() {}
 
-void AXObject::ForceAddInlineTextBoxChildren() {}
+void AXObject::LoadInlineTextBoxesHelper() {}
 
 AXObject* AXObject::NextOnLine() const {
   return nullptr;

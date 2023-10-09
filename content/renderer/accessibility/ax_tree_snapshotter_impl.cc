@@ -35,6 +35,10 @@ enum class AXTreeSnapshotErrorReason {
 AXTreeSnapshotterImpl::AXTreeSnapshotterImpl(RenderFrameImpl* render_frame,
                                              ui::AXMode ax_mode)
     : render_frame_(render_frame) {
+  // Do not generate inline textboxes, which are expensive to create and just
+  // present extra noise to snapshot consumers.
+  ax_mode.set_mode(ui::AXMode::kInlineTextBoxes, false);
+
   DCHECK(render_frame->GetWebFrame());
   blink::WebDocument document_ = render_frame->GetWebFrame()->GetDocument();
   context_ = std::make_unique<WebAXContext>(document_, ax_mode);

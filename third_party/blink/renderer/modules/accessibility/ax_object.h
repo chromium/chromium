@@ -701,9 +701,12 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual AXObject* ChooserPopup() const { return nullptr; }
 
   // Load inline text boxes for just this node, even if
-  // settings->inlineTextBoxAccessibilityEnabled() is false.
+  // AXObjectCache().GetAXMode().has_mode(ui::AXMode::kInlineTextBoxes) is
+  // false. Can be called even when layout is not clean, but in that case
+  // it will force clean layout.
   virtual void LoadInlineTextBoxes();
-  virtual void ForceAddInlineTextBoxChildren();
+  virtual void LoadInlineTextBoxesHelper();
+  // When adding children to this node, consider inline textboxes.
   virtual bool ShouldLoadInlineTextBoxes() const { return false; }
 
   // Walk the AXObjects on the same line.
