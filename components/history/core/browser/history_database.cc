@@ -321,11 +321,6 @@ int HistoryDatabase::CountUniqueHostsVisitedLastMonth() {
 DomainsVisitedResult HistoryDatabase::GetUniqueDomainsVisited(
     base::Time begin_time,
     base::Time end_time) {
-  // TODO(crbug.com/1365291): Around 2023-12 (3 months after
-  // syncer::kSyncEnableHistoryDataType was fully rolled out, to give enough
-  // time for old data to expire), the check for visit_source can be removed -
-  // it'll be enough to check for non-empty originator_cache_guid to detect
-  // foreign visits.
   sql::Statement url_sql(db_.GetUniqueStatement(
       "SELECT urls.url, visits.originator_cache_guid, "
       "IFNULL(visit_source.source, ?) "  // SOURCE_BROWSED

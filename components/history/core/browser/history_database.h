@@ -180,8 +180,6 @@ class HistoryDatabase : public DownloadDatabase,
   // foreign visits, i.e. visits coming from other syncing devices.
   // Note that this only counts visits *not* pending deletion (see below) - as
   // soon as a deletion operation is started, this will get set to false.
-  // TODO(crbug.com/1365291): After syncer::HISTORY has launched, consider
-  // whether this bit is still required.
   bool MayContainForeignVisits();
   void SetMayContainForeignVisits(bool may_contain_foreign_visits);
 
@@ -193,8 +191,6 @@ class HistoryDatabase : public DownloadDatabase,
 
   // Retrieves/updates the bit that indicates whether the DB may contain any
   // visits known to sync.
-  // TODO(crbug.com/1365291): After syncer::HISTORY has launched, consider
-  // whether this bit is still required.
   bool KnownToSyncVisitsExist();
   void SetKnownToSyncVisitsExist(bool exist);
 
