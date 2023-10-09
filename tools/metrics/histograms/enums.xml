@@ -77159,6 +77159,16 @@ Called by update_net_trust_anchors.py.-->
   <int value="28" label="SetVpnLockdown success"/>
   <int value="29" label="SetDnsRedirectionRule"/>
   <int value="30" label="SetDnsRedirectionRule success"/>
+  <int value="31" label="CreateLocalOnlyNetwork"/>
+  <int value="32" label="CreateLocalOnlyNetworkSuccess"/>
+  <int value="33" label="CreateTetheredNetwork"/>
+  <int value="34" label="CreateTetheredNetworkSuccess"/>
+  <int value="35" label="GetDownstreamNetworkInfo"/>
+  <int value="36" label="GetDownstreamNetworkInfoSuccess"/>
+  <int value="37" label="BruschettaVmStartup"/>
+  <int value="38" label="BruschettaVmStartupSuccess"/>
+  <int value="39" label="BruschettaVmShutdown"/>
+  <int value="40" label="BruschettaVmShutdownSuccess"/>
 </enum>
 
 <enum name="NetworkPatchpanelDHCPServerEvent">
