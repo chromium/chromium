@@ -494,7 +494,6 @@
 <translation id="3062298103034426069">不支持</translation>
 <translation id="3068622547379332530">版本 <ph name="VERSION_NAME" />（<ph name="OFFICIAL_STATUS" />）<ph name="CHANNEL_NAME" /><ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">任务栏位于屏幕左侧</translation>
-<translation id="3070639127620815135">搜索键 + Esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">展开菜单</translation>
 <translation id="3087734570205094154">底部</translation>
@@ -1303,7 +1302,6 @@
 <translation id="6231419273573514727">外围设备的性能可能会受到限制</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" />正在使用您的摄像头和麦克风</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="6244986124527896815">使用“<ph name="NEW_SHORTCUT" />”打开任务管理器应用。</translation>
 <translation id="6247728804802644171">打开通知</translation>
 <translation id="6254629735336163724">已锁定为横向</translation>
 <translation id="6259254695169772643">请使用您的触控笔进行选择</translation>

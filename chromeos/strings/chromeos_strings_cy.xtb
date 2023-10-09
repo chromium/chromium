@@ -24,6 +24,7 @@
 <translation id="1154390310959620237">Dim ond 5 llwybr byr y gallwch chi eu haddasu. Dileu llwybr byr i ychwanegu un newydd.</translation>
 <translation id="1164939766849482256">Arbedwr sgrîn o wawr i dywyll</translation>
 <translation id="1167755866710282443">Agorwch y ddewislen i bersonoleiddio allweddi. Llusgwch y ddewislen i'w symud.</translation>
+<translation id="1174073918202301297">Ychwanegwyd llwybr byr</translation>
 <translation id="1175697296044146566">Rheolir y <ph name="DEVICE_TYPE" /> hwn gan <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Cymedrol <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1181037720776840403">Dileu</translation>
@@ -688,6 +689,7 @@
 <translation id="6318437367327684789">am byth</translation>
 <translation id="6319207335391420837">Diweddaru'r gadarnwedd ar <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Troi'r arbedydd sgrîn ymlaen</translation>
+<translation id="6324916366299863871">Golygu'r llwybr byr</translation>
 <translation id="6325525973963619867">Wedi methu</translation>
 <translation id="6331191339300272798">Thema dywyll awtomatig</translation>
 <translation id="6340526405444716530">Personoleiddio</translation>
@@ -901,6 +903,7 @@
 <translation id="7978412674231730200">Allwedd breifat</translation>
 <translation id="7994702968232966508">Dull EAP</translation>
 <translation id="8004582292198964060">Porwr</translation>
+<translation id="8017679124341497925">Mae'r llwybr byr wedi'i newid</translation>
 <translation id="802154636333426148">Wedi methu â lawrlwytho</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Galluogi'r modd lliw awtomatig</translation>

@@ -217,6 +217,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="218608176142494674">Chia sẻ</translation>
 <translation id="2194856509914051091">Những yếu tố cần xem xét</translation>
 <translation id="2200113223741723867">Quản lý cách chia sẻ dữ liệu sử dụng</translation>
+<translation id="22091350895006575">Thêm tên người dùng</translation>
 <translation id="221494669172414749">Nếu bạn mở Chrome mà không cần khoá hồ sơ, mật khẩu và phương thức thanh toán đã lưu sẽ bị xoá khỏi ô tô. Sử dụng khoá hồ sơ giúp giữ an toàn cho dữ liệu này.</translation>
 <translation id="2218567645332692482">Nâng các hình thức chuyển hướng lên giao thức HTTPS và cảnh báo bạn trước khi tải những trang web không hỗ trợ giao thức HTTPS</translation>
 <translation id="2227444325776770048">Tiếp tục bằng tài khoản của <ph name="USER_FULL_NAME" /></translation>
@@ -244,6 +245,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="235789365079050412">Chính sách quyền riêng tư của Google</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2362083820973145409">Đã đăng nhập bằng <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Mở phần cài đặt.</translation>
+<translation id="2364539095045928896">Nút Đóng để đóng thông báo về quyền riêng tư của trung tâm thông tin chi tiết về trang.</translation>
 <translation id="2386938421315164605">Ẩn và hiện chủ đề</translation>
 <translation id="2390510615457643724">Bạn có muốn tải <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) xuống lần nữa?</translation>
 <translation id="2394602618534698961">Các tệp bạn tải xuống sẽ xuất hiện ở đây</translation>
@@ -312,6 +314,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="2718846868787000099">Để hiển thị nội dung bằng ngôn ngữ bạn ưa dùng, những trang web bạn truy cập có thể thấy tùy chọn của bạn</translation>
 <translation id="2722945394406572875">Đã đóng lời nhắc Hộp cát về quyền riêng tư</translation>
 <translation id="2723001399770238859">âm thanh</translation>
+<translation id="2760805590727089264">MM/YY</translation>
 <translation id="2760989362628427051">Bật giao diện tối khi Trình tiết kiệm pin hoặc giao diện tối trên thiết bị đang bật</translation>
 <translation id="2762000892062317888">vừa xong</translation>
 <translation id="276969039800130567">Đăng nhập bằng địa chỉ <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -332,6 +335,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="2856503607207334158">Không đăng nhập được</translation>
 <translation id="2860954141821109167">Hãy đảm bảo bạn đã bật ứng dụng điện thoại trên thiết bị này</translation>
 <translation id="2861923151411510142">Một số tính năng của Chrome sẽ không dùng được nữa</translation>
+<translation id="2869430948265924908">Để bảo vệ nội dung nhạy cảm của bạn trong ô tô, bạn phải tạo một khoá hồ sơ cho ô tô.  Bạn có thể tạo khoá bằng mã PIN, mã hoặc mật khẩu.</translation>
 <translation id="2870560284913253234">Trang web</translation>
 <translation id="2871733351037274014">Tải trước các trang</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> muốn bạn phê duyệt trang web này:</translation>
@@ -449,6 +453,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="3421726884497337397">Chọn thời điểm chặn cookie của bên thứ ba</translation>
 <translation id="3428747202529429621">Giúp bạn an toàn trên Chrome và có thể dùng để tăng cường bảo mật cho bạn trong các ứng dụng khác của Google sau khi đăng nhập</translation>
 <translation id="3429160811076349561">Các tính năng dùng thử đang tắt</translation>
+<translation id="3430670036890315772">Nếu bạn tắt khoá hồ sơ, thông tin đã lưu sẽ bị xoá</translation>
 <translation id="3435465986463792564">Có nhiều cửa sổ? Bạn có thể quản lý các trang web đó tại đây</translation>
 <translation id="3435738964857648380">Bảo mật</translation>
 <translation id="3439276997620616816">Các thẻ bạn đóng gần đây sẽ xuất hiện ở đây</translation>
@@ -618,6 +623,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="4378154925671717803">Điện thoại</translation>
 <translation id="438319986296050901">Chỉ chia sẻ thẻ</translation>
 <translation id="4384468725000734951">Sử dụng Sogou để tìm kiếm</translation>
+<translation id="4387647248986092471">Tạo khoá hồ sơ cho ô tô</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – Đang tải xuống…</translation>
 <translation id="4404568932422911380">Không có dấu trang nào</translation>
 <translation id="4405224443901389797">Chuyển tới...</translation>
@@ -787,6 +793,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5170568018924773124">Hiển thị trong thư mục</translation>
 <translation id="5171045022955879922">Tìm kiếm hoặc nhập URL</translation>
 <translation id="5174700554036517242">Thẻ đã trở về chiều cao ban đầu</translation>
+<translation id="5180063720319462041">Đã dịch trang sang <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">Quản lý các chủ đề và nội dung tìm kiếm mà bạn quan tâm</translation>
 <translation id="5191251636205085390">Tìm hiểu và kiểm soát các công nghệ mới giúp thay thế cookie của bên thứ ba</translation>
 <translation id="5193988420012215838">Đã sao chép vào bảng nhớ tạm</translation>
@@ -795,6 +802,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5210286577605176222">Quay về thẻ trước</translation>
 <translation id="5210365745912300556">Đóng thẻ</translation>
 <translation id="5222676887888702881">Đăng xuất</translation>
+<translation id="5226378907213531272">Bạn sẽ mở khoá màn hình mỗi khi dùng ô tô</translation>
 <translation id="5227554086496586518">Nhấn để xem kết quả tìm kiếm</translation>
 <translation id="5233638681132016545">Thẻ mới</translation>
 <translation id="5234971936051226002">Trình phát "Đọc trang này" đã thu nhỏ.</translation>
@@ -835,6 +843,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5458366071038729214">Bạn sẽ thấy các trang web mình theo dõi tại đây</translation>
 <translation id="5468068603361015296">Bạn vẫn muốn tải <ph name="FILE_NAME" /> xuống?</translation>
 <translation id="548278423535722844">Mở trong ứng dụng bản đồ</translation>
+<translation id="5486841595534124508">Biểu trưng của thông báo về quyền riêng tư cho trung tâm thông tin chi tiết về trang chuyển hướng đến trang hoạt động của tôi.</translation>
 <translation id="5487521232677179737">Xóa dữ liệu</translation>
 <translation id="5492637351392383067">Mã hoá trên thiết bị</translation>
 <translation id="5514904542973294328">Bị quản trị viên của thiết bị này vô hiệu hóa</translation>
@@ -951,6 +960,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="6112702117600201073">Làm mới trang</translation>
 <translation id="6122831415929794347">Tắt tính năng Duyệt web an toàn?</translation>
 <translation id="6127379762771434464">Đã xóa mục</translation>
+<translation id="6130303040046284160">Thu nhỏ thẻ</translation>
 <translation id="6137022273846704445">Ngôn ngữ của <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">Thay đổi các chế độ cài đặt trang web tại đây</translation>
 <translation id="6140709049082532940">Chế độ bảo vệ nâng cao:</translation>
@@ -1253,6 +1263,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7588219262685291874">Bật giao diện tối khi Trình tiết kiệm pin trên thiết bị đang bật</translation>
 <translation id="7594687499944811403">Cho phép <ph name="EMBEDDED_ORIGIN" /> xác minh danh tính của bạn trên <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Hệ điều hành</translation>
+<translation id="7603168929588204083">Ngày không hợp lệ</translation>
 <translation id="7605594153474022051">Đồng bộ hóa không hoạt động</translation>
 <translation id="7612619742409846846">Đã đăng nhập vào Google bằng</translation>
 <translation id="7612989789287281429">Đang đăng nhập…</translation>
@@ -1278,6 +1289,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7691043218961417207">Khám phá nội dung mà bạn có thể theo dõi</translation>
 <translation id="7697383401610880082">Nút kéo</translation>
 <translation id="7698359219371678927">Tạo email trong <ph name="APP_NAME" /></translation>
+<translation id="7702388902581909985">Việc xoá dữ liệu duyệt web sẽ không làm bạn bị đăng xuất khỏi Tài khoản Google. Nếu bạn muốn đăng xuất, hãy <ph name="BEGIN_LINK1" />đăng xuất khỏi Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Sử dụng dữ liệu di động</translation>
 <translation id="7709918231054955894">Xem tất cả thẻ của bạn</translation>
 <translation id="772434085369393266">Nâng các hình thức chuyển hướng lên giao thức HTTPS và cảnh báo bạn trước khi tải những trang web không hỗ trợ giao thức HTTPS. Bạn không thể thay đổi chế độ cài đặt này vì đã bật tính năng Bảo vệ nâng cao.</translation>
@@ -1301,6 +1313,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7810647596859435254">Mở bằng…</translation>
 <translation id="7815484226266492798">Ảnh chụp toàn bộ màn hình</translation>
 <translation id="7822705602465980873">Khi bạn đăng nhập, dữ liệu này được liên kết với Tài khoản Google của bạn nhằm bảo vệ bạn trên các dịch vụ của Google, chẳng hạn như tăng cường khả năng bảo vệ trong Gmail sau sự cố bảo mật.</translation>
+<translation id="782705168687182233">Hoạt động của bạn được lưu trong <ph name="BEGIN_LINK" />Tài khoản Google<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Máy tính của bạn muốn đăng ký thiết bị này để đăng nhập vào một trang web</translation>
 <translation id="7844171778363018843">Bạn chưa chọn dữ liệu nào để đồng bộ hóa</translation>
 <translation id="7846296061357476882">Dịch vụ của Google</translation>
@@ -1393,6 +1406,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8223642481677794647">Trình đơn thẻ nguồn cấp dữ liệu</translation>
 <translation id="8236097722223016103">Thêm vào dấu trang</translation>
 <translation id="8237871086242677046">Bảng thông tin chi tiết về trang ở dưới cùng</translation>
+<translation id="8243077599929149377">Thêm tên người dùng của bạn</translation>
 <translation id="8250920743982581267">Tài liệu</translation>
 <translation id="8255617931166444521">Các trang web chỉ có thể dùng cookie để xem hoạt động duyệt web của bạn trên trang web của riêng họ</translation>
 <translation id="8259179246279078674">Vì các trang tải trước đã được mã hóa, nên Google sẽ không tìm hiểu bất cứ điều gì về nội dung trên trang được tải trước. Máy chủ của Google sẽ tìm hiểu những trang web nào đã được tải trước ở chế độ riêng tư. Thông tin này chỉ được dùng để tải trước các trang và không được liên kết với thông tin khác trong Tài khoản Google của bạn.</translation>

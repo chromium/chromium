@@ -494,7 +494,6 @@
 <translation id="3062298103034426069">Не се поддържа</translation>
 <translation id="3068622547379332530">Версия <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />), <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Лавицата е вляво</translation>
-<translation id="3070639127620815135">клавиша „търсене“ + Esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Разгъване на менюто</translation>
 <translation id="3087734570205094154">Най-долу</translation>
@@ -1299,7 +1298,6 @@
 <translation id="6231419273573514727">Ефективността на периферните устройства може да е ограничена</translation>
 <translation id="6232891689835436217">Понастоящем <ph name="APP_NAME" /> използва камерата и микрофона ви</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="6244986124527896815">Отворете приложението „Диспечер на задачите“ посредством <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6247728804802644171">Отваряне на известията</translation>
 <translation id="6254629735336163724">Заключено в хоризонтална ориентация</translation>
 <translation id="6259254695169772643">Използвайте писалката за избиране</translation>

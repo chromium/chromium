@@ -24,6 +24,7 @@
 <translation id="1154390310959620237">Þú getur aðeins sérsniðið 5 flýtilykla. Eyddu flýtilykli til að bæta nýjum við.</translation>
 <translation id="1164939766849482256">Skjávari, frá dögun til rökkurs</translation>
 <translation id="1167755866710282443">Opnaðu valmyndina til að sérsníða lykla. Dragðu valmyndina til að færa hana.</translation>
+<translation id="1174073918202301297">Flýtileið bætt við</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> er í umsjón <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Í meðallagi (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Fjarlægja</translation>
@@ -688,6 +689,7 @@
 <translation id="6318437367327684789">endalaust</translation>
 <translation id="6319207335391420837">Uppfæra fastbúnað í <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Kveikja á skjávara</translation>
+<translation id="6324916366299863871">Breyta flýtileið</translation>
 <translation id="6325525973963619867">Mistókst</translation>
 <translation id="6331191339300272798">Sjálfvirkt dökkt þema</translation>
 <translation id="6340526405444716530">Sérstillingar</translation>
@@ -827,6 +829,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7388959671917308825">Innbyggður snertiflötur</translation>
 <translation id="7397270852490618635">Slökkva á ljósu þema</translation>
+<translation id="7401543881546089382">Eyða flýtileið</translation>
 <translation id="741244894080940828">umreikningur</translation>
 <translation id="7415801143053185905">Mjög langur HTTP-biðtími</translation>
 <translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{Kerfisstjórinn hefur stillt <ph name="APP_NAME_1" /> á að ræsa sig sjálfkrafa í hvert skipti sem þú skráir þig inn.}=2{Kerfisstjórinn hefur stillt <ph name="APP_NAME_1" /> og <ph name="APP_NAME_2" /> á að ræsa sig sjálfkrafa í hvert skipti sem þú skráir þig inn.}=3{Kerfisstjórinn hefur stillt <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> og <ph name="APP_NAME_3" /> á að ræsa sig sjálfkrafa í hvert skipti sem þú skráir þig inn.}one{Kerfisstjórinn hefur stillt <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> og # forrit í viðbót á að ræsa sig sjálfkrafa í hvert skipti sem þú skráir þig inn.}other{Kerfisstjórinn hefur stillt <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> og # forrit í viðbót á að ræsa sig sjálfkrafa í hvert skipti sem þú skráir þig inn.}}</translation>
@@ -901,6 +904,7 @@
 <translation id="7978412674231730200">Einkalykill</translation>
 <translation id="7994702968232966508">EAP-aðferð</translation>
 <translation id="8004582292198964060">Vafri</translation>
+<translation id="8017679124341497925">Flýtileið breytt</translation>
 <translation id="802154636333426148">Niðurhal mistókst</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Kveikja á sjálfvirkri litastillingu</translation>

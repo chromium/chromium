@@ -24,6 +24,7 @@
 <translation id="1154390310959620237">Тек 5 пернелер тіркесімін бейімдей аласыз. Жаңа пернелер тіркесімін қосу үшін ағымдағы тіркесімді жойыңыз.</translation>
 <translation id="1164939766849482256">Таң атқаннан күн батқанға дейінгі кезең бейнеленген скринсейвер</translation>
 <translation id="1167755866710282443">Пернелерді бейімдеу үшін мәзірді ашыңыз. Жылжыту үшін мәзірді сүйреңіз.</translation>
+<translation id="1174073918202301297">Таңбаша енгізілді</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады.</translation>
 <translation id="1175951029573070619">Орташа (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Өшіру</translation>
@@ -688,6 +689,7 @@
 <translation id="6318437367327684789">мәңгілік</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> құрылғысының микробағдарламасын жаңарту</translation>
 <translation id="6321407676395378991">Скринсейверді қосу</translation>
+<translation id="6324916366299863871">Таңбашаны өзгерту</translation>
 <translation id="6325525973963619867">Қате шықты</translation>
 <translation id="6331191339300272798">Автоматты қараңғы режим</translation>
 <translation id="6340526405444716530">Жекелендіру</translation>
@@ -827,6 +829,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7388959671917308825">Ендірілген сенсорлық тақта</translation>
 <translation id="7397270852490618635">Жарық режимді өшіру</translation>
+<translation id="7401543881546089382">Таңбашаны жою</translation>
 <translation id="741244894080940828">түрлендіру</translation>
 <translation id="7415801143053185905">HTTP кідірісі өте жоғары.</translation>
 <translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{Әкімшіңіз сіз жүйеге кірген сайын <ph name="APP_NAME_1" /> қолданбасын автоматты түрде іске қосылатын етіп орнатты.}=2{Әкімшіңіз сіз жүйеге кірген сайын <ph name="APP_NAME_1" /> және <ph name="APP_NAME_2" /> қолданбаларын автоматты түрде іске қосылатын етіп орнатты.}=3{Әкімшіңіз сіз жүйеге кірген сайын <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> және <ph name="APP_NAME_3" /> қолданбаларын автоматты түрде іске қосылатын етіп орнатты.}other{Әкімшіңіз сіз жүйеге кірген сайын <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> қолданбаларын және # басқа қолданбаны автоматты түрде іске қосылатын етіп орнатты.}}</translation>
@@ -901,6 +904,7 @@
 <translation id="7978412674231730200">Жеке кілт</translation>
 <translation id="7994702968232966508">EAP әдісі</translation>
 <translation id="8004582292198964060">Браузер</translation>
+<translation id="8017679124341497925">Таңбаша өзгерді</translation>
 <translation id="802154636333426148">Жүктеу сәтсіз аяқталды</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Автобаланс режимін қосу</translation>

@@ -117,6 +117,7 @@ Wichtige Hinweise:
 <translation id="5389212809648216794">Google Chrome kann nicht auf die Kamera zugreifen, da diese gerade von einer anderen App verwendet wird</translation>
 <translation id="5395376160638294582">Achte darauf, dass du die Chrome-Daten in deinem Google-Konto jederzeit verwenden kannst</translation>
 <translation id="5439191312780166229">Warnt dich vor schädlichen Websites, auch solchen, die Google vorher nicht bekannt waren, indem mehr Daten von Websites analysiert werden als beim Standardschutz. Du kannst Warnungen von Chrome überspringen.</translation>
+<translation id="5442013002200339429">Wenn du „<ph name="MODULE_NAME" />“ ausblendest, verfolgt Chrome zukünftige Pakete nicht mehr automatisch und löscht alle früheren Paketverfolgungsdaten.</translation>
 <translation id="5460571915754665838">4. Wähle Chrome aus</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome hilft dabei, dieses Paket auf der Seite „Neuer Tab“ zu verfolgen.}other{Chrome hilft dabei, diese Pakete auf der Seite „Neuer Tab“ zu verfolgen.}}</translation>
 <translation id="5492504007368565877">Der Google Passwortmanager kann deine Passwörter nicht prüfen.</translation>
@@ -188,6 +189,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="7933491483529363150">Aktuellen Tab in Chrome öffnen.</translation>
 <translation id="8022947259858476807">Verwende Chrome als deinen Standardbrowser, um Links zu öffnen, über Widgets zu suchen und Passwörter in anderen Apps automatisch ausfüllen zu lassen</translation>
 <translation id="804638182476029347">Chrome-Benachrichtigungen erlauben, Benachrichtigungen zu Preisnachlässen abzurufen</translation>
+<translation id="8069507567842347179">Dieses Paket wird bereits in Chrome verfolgt.</translation>
 <translation id="81358522153858150">Chrome unterstützt jetzt Nutzerrichtlinien für dein verwaltetes Konto</translation>
 <translation id="8160472928944011082">Update nicht möglich</translation>
 <translation id="8174679664544842874">Öffnet einen neuen Tab in Chrome.</translation>

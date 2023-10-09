@@ -5021,6 +5021,7 @@
 <translation id="5015344424288992913">正在解析 proxy...</translation>
 <translation id="5016491575926936899">你可以從電腦傳送訊息、分享網際網路連線、回覆對話通知，以及使用手機解鎖 <ph name="DEVICE_TYPE" />。<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5016983299133677671">試試新密碼</translation>
+<translation id="5017529052065664584">過去 15 分鐘</translation>
 <translation id="5017643436812738274">你可以透過文字游標瀏覽頁面。按下 Ctrl 鍵 + 搜尋鍵 + 7 即可關閉這項功能。</translation>
 <translation id="5018207570537526145">開啟擴充功能網站</translation>
 <translation id="5018526990965779848">傳送使用狀況與診斷資料。讓系統自動將診斷資料、裝置和應用程式的使用資料傳送給 Google，協助改善你的 Android 使用體驗。這些資料將有助於改善系統和應用程式的穩定性與其他功能。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善自己的產品和服務。如果你將「其他網路和應用程式活動」設定為開啟，這些資料可能會儲存在你的 Google 帳戶中。</translation>
@@ -10060,7 +10061,7 @@
 <translation id="9100765901046053179">進階設定</translation>
 <translation id="9101691533782776290">啟動應用程式</translation>
 <translation id="9102610709270966160">啟用擴充功能</translation>
-<translation id="9102864637938129124">網站和廣告商可以瞭解廣告成效。這項設定已開啟。</translation>
+<translation id="9102864637938129124">網站和廣告主可以瞭解廣告成效。這項設定已開啟。</translation>
 <translation id="9103479157856427471">放大的螢幕畫面會追蹤鍵盤焦點</translation>
 <translation id="9103868373786083162">按下即可返回，內容選單會顯示歷史記錄</translation>
 <translation id="9107096627210171112">翻譯(&amp;R)...</translation>

@@ -117,6 +117,7 @@ Pethau i'w hystyried:
 <translation id="5389212809648216794">Ni all Google Chrome ddefnyddio'ch camera oherwydd ei fod yn cael ei ddefnyddio gan ap arall</translation>
 <translation id="5395376160638294582">Gwnewch yn siŵr y gallwch bob amser ddefnyddio'r data Chrome yn eich Cyfrif Google</translation>
 <translation id="5439191312780166229">Yn eich rhybuddio am wefannau peryglus, hyd yn oed rhai nad oedd Google yn gwybod amdanynt o'r blaen, trwy ddadansoddi mwy o ddata o wefannau na diogelwch safonol. Gallwch ddewis hepgor rhybuddion Chrome.</translation>
+<translation id="5442013002200339429">Os ydych yn cuddio "<ph name="MODULE_NAME" />", ni fydd Chrome yn olrhain eich pecynnau yn awtomatig yn y dyfodol mwyach a bydd yn dileu eich holl ddata olrhain pecynnau o'r gorffennol.</translation>
 <translation id="5460571915754665838">4. Dewiswch Chrome</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Bydd Chrome yn helpu i dracio'r pecyn hwn ar y Dudalen Tab Newydd.}zero{Bydd Chrome yn helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}two{Bydd Chrome yn helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}few{Bydd Chrome yn helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}many{Bydd Chrome yn helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}other{Bydd Chrome yn helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}}</translation>
 <translation id="5492504007368565877">Ni all Rheolwr Cyfrineiriau Google wirio'ch cyfrineiriau.</translation>
@@ -188,6 +189,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="7933491483529363150">Agor Fy Nhab Diweddaraf yn Chrome.</translation>
 <translation id="8022947259858476807">Defnyddiwch Chrome yn ddiofyn i agor dolenni, chwilio o declynnau, ac awtolenwi cyfrineiriau mewn apiau eraill</translation>
 <translation id="804638182476029347">Caniatáu i hysbysiadau Chrome gael rhybuddion gostyngiad mewn prisiau</translation>
+<translation id="8069507567842347179">Mae'r pecyn hwn eisoes wedi'i olrhain ar Chrome.</translation>
 <translation id="81358522153858150">Mae Chrome bellach yn cefnogi polisïau defnyddwyr ar gyfer eich cyfrif a reolir</translation>
 <translation id="8160472928944011082">Ni all Chrome ddiweddaru</translation>
 <translation id="8174679664544842874">Yn Agor Tab Newydd yn Chrome.</translation>

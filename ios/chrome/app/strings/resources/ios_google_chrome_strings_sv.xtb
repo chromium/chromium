@@ -117,6 +117,7 @@ Tänk på detta:
 <translation id="5389212809648216794">Google Chrome kan inte använda kameran eftersom den används av en annan app</translation>
 <translation id="5395376160638294582">Se till att du alltid kan använda Chrome-data i Google-kontot</translation>
 <translation id="5439191312780166229">Varnar dig om farliga webbplatser, även sådana som Google inte kände till tidigare, genom att analysera mer data från webbplatser än standardskyddet. Du kan välja att hoppa över Chrome-varningar.</translation>
+<translation id="5442013002200339429">Om du döljer <ph name="MODULE_NAME" /> spåras inte längre framtida försändelser automatiskt i Chrome, och all tidigare spårningsdata för försändelser raderas.</translation>
 <translation id="5460571915754665838">4. Välj Chrome</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Du spårar det här paketet på sidan Ny flik i Chrome.}other{Du spårar de här paketen på sidan Ny flik i Chrome.}}</translation>
 <translation id="5492504007368565877">Google Lösenordshantering kan inte kontrollera dina lösenord.</translation>
@@ -188,6 +189,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="7933491483529363150">Öppna Min senaste flik i Chrome.</translation>
 <translation id="8022947259858476807">Använd Chrome som standard när du öppnar länkar och söker med en widget och få lösenord ifyllda i andra appar automatiskt</translation>
 <translation id="804638182476029347">Tillåt Chrome-aviseringar om sänkt pris</translation>
+<translation id="8069507567842347179">Den här försändelsen spåras redan i Chrome.</translation>
 <translation id="81358522153858150">Chrome har nu stöd för användarpolicyer för dina hanterade konton</translation>
 <translation id="8160472928944011082">Uppdatering inte möjlig</translation>
 <translation id="8174679664544842874">Öppnar en ny flik i Chrome.</translation>

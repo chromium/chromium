@@ -2576,6 +2576,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2990583317361835189">Niet toestaan dat sites bewegingssensoren gebruiken</translation>
 <translation id="2992931425024192067">Content van alle meldingen bekijken</translation>
 <translation id="2993517869960930405">App-informatie</translation>
+<translation id="2996108796702395498">Het serienummer van je apparaat is <ph name="SERIAL_NUMBER" />. Met dit nummer kun je de service activeren.</translation>
 <translation id="2996286169319737844">De gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Hieronder vallen geen betaalmethoden en adressen van Google Pay.</translation>
 <translation id="2996722619877761919">Omslaan aan lange zijde</translation>
 <translation id="2996932914629936323">Hiermee wordt de geschiedenis van al je gesynchroniseerde apparaten gewist</translation>
@@ -2963,6 +2964,7 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 <translation id="3320630259304269485">Safe Browsing (bescherming tegen gevaarlijke sites) en andere beveiligingsinstellingen</translation>
 <translation id="3321460131042519426">Tekstterugloop aanzetten</translation>
 <translation id="3321494112580110651">Staat je printer er niet bij?</translation>
+<translation id="3321776060736518525">Van <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonus! Je hebt meer schermtijd gekregen</translation>
 <translation id="3325804108816646710">Zoeken naar beschikbare profielen…</translation>
 <translation id="3325910708063135066">Camera en microfoon staan uit in Systeemvoorkeuren van je Mac</translation>
@@ -5030,6 +5032,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5015344424288992913">Proxy laden...</translation>
 <translation id="5016491575926936899">Je kunt sms'en vanaf je computer, de internetverbinding delen, reageren op gespreksmeldingen en je <ph name="DEVICE_TYPE" /> ontgrendelen met je telefoon.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="5016983299133677671">Een nieuw wachtwoord proberen</translation>
+<translation id="5017529052065664584">Afgelopen 15 minuten</translation>
 <translation id="5017643436812738274">Je kunt navigeren op pagina's met een tekstcursor. Druk op Ctrl+Zoeken+7 om dit uit te zetten.</translation>
 <translation id="5018207570537526145">Website voor extensie openen</translation>
 <translation id="5018526990965779848">Stuur gebruiks- en diagnostische gegevens. Verbeter je Android-functionaliteit door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet, kunnen deze gegevens worden opgeslagen in je Google-account.</translation>
@@ -6208,6 +6211,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Beoordeling afgerond voor 1 site}other{Beoordeling afgerond voor {NUM_SITES} sites}}</translation>
 <translation id="5997337190805127100">Meer informatie over sitetoegang</translation>
 <translation id="5998458948782718639">Help Automatisch invullen te verbeteren</translation>
+<translation id="5999024481231496910">Je hebt uitfasering van het testen van cookies van derden aangezet. Dit kan niet worden overschreven door de instellingenpagina. Als je cookies van derden opnieuw wilt aanzetten, start je Chrome opnieuw terwijl deze functie uitstaat.</translation>
 <translation id="5999630716831179808">Stemmen</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultaten voor '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6001839398155993679">Aan de slag</translation>
@@ -6690,6 +6694,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6399675241776343019">Geweigerd</translation>
 <translation id="6399774419735315745">Spionne</translation>
 <translation id="6400360390396538896">Altijd op <ph name="ORIGIN" /></translation>
+<translation id="6401118106417399952">Je apparaat-EID is <ph name="EID_NUMBER" /> en het serienummer van je apparaat is <ph name="SERIAL_NUMBER" />. Met deze nummers kun je de service activeren.</translation>
 <translation id="6401458660421980302">Als je dit tabblad naar een ander apparaat wilt sturen, log je hier in bij Chrome</translation>
 <translation id="6401597285454423070">Je computer bevat een TPM-beveiligingsapparaat (Trusted Platform Module) dat wordt gebruikt om veel van de belangrijke beveiligingsfuncties in Chrome OS te implementeren. Ga voor meer informatie naar het Helpcentrum voor Chromebooks: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404511346730675251">Bookmark bewerken</translation>
@@ -8203,6 +8208,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7637272932128132922">Terwijl dit tabblad inactief was, heeft Geheugenbesparing geheugen vrijgemaakt voor andere taken. Je kunt dit altijd wijzigen via <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Onvoldoende schijfruimte</translation>
 <translation id="7639914187072011620">Kan de SAML-omleidings-URL niet ophalen van de server</translation>
+<translation id="7640256527901510478">De IMEI van je apparaat is <ph name="IMEI_NUMBER" /> en het serienummer van je apparaat is <ph name="SERIAL_NUMBER" />. Met deze nummers kun je de service activeren.</translation>
 <translation id="7640308610547854367">Je hebt een eerdere versie van ChromeOS teruggezet. Voor updates moet je wachten tot de volgende versie beschikbaar is.</translation>
 <translation id="7641513591566880111">Nieuwe profielnaam</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> toegevoegd</translation>
@@ -9702,6 +9708,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="881799181680267069">Verberg andere</translation>
 <translation id="8818152010000655963">Achtergrond</translation>
 <translation id="8818958672113348984">Verifiëren via je telefoon</translation>
+<translation id="8819510664278523111">Je apparaat-EID is <ph name="EID_NUMBER" />, de IMEI van je apparaat is <ph name="IMEI_NUMBER" /> en het serienummer van je apparaat is <ph name="SERIAL_NUMBER" />. Met deze nummers kun je de service activeren.</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8821045908425223359">IP-adres automatisch configureren</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> is klaar voor gebruik.</translation>
@@ -10252,6 +10259,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="956500788634395331">Je bent beschermd tegen potentieel schadelijke extensies</translation>
 <translation id="957179356621191750">6-punts</translation>
 <translation id="957960681186851048">Deze site heeft geprobeerd automatisch meerdere bestanden te downloaden</translation>
+<translation id="958571289841636277">Vooruit- en terugnavigeren met een swipegebaar</translation>
 <translation id="960987915827980018">Ongeveer 1 uur resterend</translation>
 <translation id="962802172452141067">Mappenstructuur voor bookmarks</translation>
 <translation id="963000966785016697">Afbeelding zoeken met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

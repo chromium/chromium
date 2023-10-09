@@ -494,7 +494,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3062298103034426069">No compatible</translation>
 <translation id="3068622547379332530">Versió <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">El prestatge és a l'esquerra</translation>
-<translation id="3070639127620815135">cerca+esc</translation>
 <translation id="3077734595579995578">maj</translation>
 <translation id="3081696990447829002">Desplega el menú</translation>
 <translation id="3087734570205094154">Part inferior</translation>
@@ -1303,7 +1302,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6231419273573514727">És possible que el rendiment dels perifèrics sigui limitat</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> està utilitzant la càmera i el micròfon</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="6244986124527896815">Obre l'aplicació Gestor de tasques amb <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6247728804802644171">Obre les notificacions</translation>
 <translation id="6254629735336163724">Bloquejada en horitzontal</translation>
 <translation id="6259254695169772643">Fes servir el llapis òptic per seleccionar</translation>

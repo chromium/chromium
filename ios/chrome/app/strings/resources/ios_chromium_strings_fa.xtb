@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">‏شبکه برگه‌ها را در Chromium باز می‌کند.</translation>
 <translation id="1617663976202781617">‏داده‌های مربوط به همگام‌سازی Chromium</translation>
 <translation id="1647558790457890304">‏تنظیمات Chromium</translation>
+<translation id="164952285225495380">‏این بسته درحال‌حاضر در Chromium پیگیری می‌شود.</translation>
 <translation id="1722370509450468186">گذرواژه در «حسابتان» (<ph name="EMAIL" />) ذخیره خواهد شد.</translation>
 <translation id="1736662517232558588">‏داده‌های Chromium پاک شد</translation>
 <translation id="1791845338122684020">‏صفحه سابقه Chromium را باز می‌کند.</translation>
@@ -140,6 +141,7 @@
 ۱. «تنظیمات» را باز کنید
 ۲. روی «برنامه مرورگر پیش‌فرض» ضربه بزنید
 ۳. Chromium را انتخاب کنید.</translation>
+<translation id="6197255575340902638">‏اگر «<ph name="MODULE_NAME" />» را پنهان کنید، Chromium دیگر بسته‌های پستی بعدی‌تان را به‌طور خودکار پیگیری نخواهد کرد و همه داده‌های پیگیری بسته قبلی‌تان را حذف خواهد کرد.</translation>
 <translation id="6247557882553405851">‏مدیر گذرواژه Google</translation>
 <translation id="6268381023930128611">‏از Chromium خارج می‌شوید؟</translation>
 <translation id="6324041800010509197">‏رفتن به شبکه برگه‌ها در Chromium</translation>

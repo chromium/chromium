@@ -1891,6 +1891,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4873616204573862158">Briller</translation>
 <translation id="4876188919622883022">Forenklet visning</translation>
 <translation id="4876305945144899064">Uten brukernavn</translation>
+<translation id="4876327226315760474">Dette betyr at funksjoner på nettstedet skal fungere som forventet, men det kan hende at surfebeskyttelsen svekkes.</translation>
 <translation id="4877047577339061095">Oppbevaringsløsninger til hjemmet</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Ingen}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" />-søk</translation>
@@ -2519,6 +2520,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="61877208875190028">Dameklær</translation>
 <translation id="6194209731893739467">Se alle produktene du sporer, her</translation>
+<translation id="6195163219142236913">Informasjonskapsler fra tredjeparter er begrenset</translation>
 <translation id="6195371403461054755">Geologi</translation>
 <translation id="6196640612572343990">Blokkér informasjonskapsler fra tredjeparter</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>

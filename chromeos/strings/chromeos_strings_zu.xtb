@@ -24,6 +24,7 @@
 <translation id="1154390310959620237">Ungahlela ngendlela oyithandayo izinqamuleli ezi-5 kuphela. Sula isinqamuleli ukuze ufake esisha</translation>
 <translation id="1164939766849482256">Isigciniskrini sokusa kuya ebumnyameni</translation>
 <translation id="1167755866710282443">Vula imenyu ukuze wenze ngokwezifiso okhiye. Hudula imenyu ukuze uhambise.</translation>
+<translation id="1174073918202301297">Isinqamuleli sengeziwe</translation>
 <translation id="1175697296044146566">Le-<ph name="DEVICE_TYPE" /> iphethwe yi-<ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Ngokusesilinganisweni (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Susa</translation>
@@ -688,6 +689,7 @@
 <translation id="6318437367327684789">phakade</translation>
 <translation id="6319207335391420837">Buyekeza i-firmware ku-<ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Vula isilondolozi sesikrini</translation>
+<translation id="6324916366299863871">Hlela isinqamuleli</translation>
 <translation id="6325525973963619867">Yehlulekile</translation>
 <translation id="6331191339300272798">Itimu emnyama ngokuzenzekelayo</translation>
 <translation id="6340526405444716530">Ukwenza okomuntu siqu</translation>
@@ -827,6 +829,7 @@
 <translation id="7375053625150546623">I-EAP</translation>
 <translation id="7388959671917308825">Iphedi yokuthinta eyakhelwe ngaphakathi</translation>
 <translation id="7397270852490618635">Vala itimu ekhanyayo</translation>
+<translation id="7401543881546089382">Susa isinqamuleli</translation>
 <translation id="741244894080940828">ukuguqulwa</translation>
 <translation id="7415801143053185905">Ukubambezeleka okuphakeme kakhulu kwe-HTTP</translation>
 <translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{Umlawuli wakho usethe i-<ph name="APP_NAME_1" /> ukuqala ngokuzenzekelayo njalo uma ungena ngemvume.}=2{Umlawuli wakho usethe i-<ph name="APP_NAME_1" /> no-<ph name="APP_NAME_2" /> ukuqala ngokuzenzekelayo njalo uma ungena ngemvume.}=3{Umlawuli wakho usethe i-<ph name="APP_NAME_1" />, i-<ph name="APP_NAME_2" /> kanye ne-<ph name="APP_NAME_3" /> ukuqala ngokuzenzekelayo njalo uma ungena ngemvume.}one{Umlawuli wakho usethe i-<ph name="APP_NAME_1" /> i-<ph name="APP_NAME_2" /> kanye namanye ama-pp angu-# ukuqala ngokuzenzekelayo njalo uma ungena ngemvume.}other{Umlawuli wakho usethe i-<ph name="APP_NAME_1" /> i-<ph name="APP_NAME_2" /> kanye namanye ama-pp angu-# ukuqala ngokuzenzekelayo njalo uma ungena ngemvume.}}</translation>
@@ -902,6 +905,7 @@
 <translation id="7978412674231730200">Ukhiye oyimfihlo</translation>
 <translation id="7994702968232966508">Indlela ye-EAP</translation>
 <translation id="8004582292198964060">Isiphequluli</translation>
+<translation id="8017679124341497925">Isinqamuleli sihleliwe</translation>
 <translation id="802154636333426148">Ukulanda kwehlulekile</translation>
 <translation id="8031884997696620457">I-HSPAPlus</translation>
 <translation id="80398733265834479">Nika amandla imodi yombala ozenzakalelayo</translation>

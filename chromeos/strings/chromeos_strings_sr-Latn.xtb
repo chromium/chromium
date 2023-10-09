@@ -24,6 +24,7 @@
 <translation id="1154390310959620237">Možete da prilagodite samo 5 prečica. Izbrišite neku prečicu da biste dodali novu.</translation>
 <translation id="1164939766849482256">Čuvar ekrana koji prikazuje ceo dan od svitanja do mraka</translation>
 <translation id="1167755866710282443">Otvorite meni da biste prilagodili tastere. Prevucite meni da biste ga premestili.</translation>
+<translation id="1174073918202301297">Prečica je dodata</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> upravlja ovim <ph name="DEVICE_TYPE" /> uređajem.</translation>
 <translation id="1175951029573070619">Prosečan (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Ukloni</translation>
@@ -688,6 +689,7 @@
 <translation id="6318437367327684789">zauvek</translation>
 <translation id="6319207335391420837">Ažurirajte firmver na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Uključite čuvar ekrana</translation>
+<translation id="6324916366299863871">Izmeni prečicu</translation>
 <translation id="6325525973963619867">Neuspešno</translation>
 <translation id="6331191339300272798">Automatska tamna tema</translation>
 <translation id="6340526405444716530">Personalizacija</translation>
@@ -827,6 +829,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7388959671917308825">Ugrađeni tačped</translation>
 <translation id="7397270852490618635">Isključite svetlu temu</translation>
+<translation id="7401543881546089382">Izbrišite prečicu</translation>
 <translation id="741244894080940828">konverziju</translation>
 <translation id="7415801143053185905">Veoma veliko HTTP kašnjenje</translation>
 <translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{Administrator je podesio da se aplikacija <ph name="APP_NAME_1" /> automatski pokreće svaki put kada se prijavite.}=2{Administrator je podesio da se aplikacije <ph name="APP_NAME_1" /> i <ph name="APP_NAME_2" /> automatski pokreću svaki put kada se prijavite.}=3{Administrator je podesio da se aplikacije <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i <ph name="APP_NAME_3" /> automatski pokreću svaki put kada se prijavite.}one{Administrator je podesio da se aplikacije <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i još # automatski pokreću svaki put kada se prijavite.}few{Administrator je podesio da se aplikacije <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i još # automatski pokreću svaki put kada se prijavite.}other{Administrator je podesio da se aplikacije <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i još # automatski pokreću svaki put kada se prijavite.}}</translation>
@@ -901,6 +904,7 @@
 <translation id="7978412674231730200">Privatni ključ</translation>
 <translation id="7994702968232966508">EAP metod</translation>
 <translation id="8004582292198964060">Pregledač</translation>
+<translation id="8017679124341497925">Prečica je izmenjena</translation>
 <translation id="802154636333426148">Preuzimanje nije uspelo</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Omogućite režim autopodešavanja boja</translation>

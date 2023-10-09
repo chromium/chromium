@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Avab Chromiumi vahelehtede ruudustiku.</translation>
 <translation id="1617663976202781617">Chromiumi andmete sünkroonimine</translation>
 <translation id="1647558790457890304">Chromiumi seaded</translation>
+<translation id="164952285225495380">Seda saadetist on Chromiumis juba jälgitud.</translation>
 <translation id="1722370509450468186">Parool salvestatakse teie kontole (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Chromiumi andmed kustutati</translation>
 <translation id="1791845338122684020">Avab teie Chromiumi ajaloo lehe.</translation>
@@ -140,6 +141,7 @@ Tasub teada
 1. Avage menüü Seaded.
 2. Puudutage valikut Vaikebrauserirakendus.
 3. Valige Chromium.</translation>
+<translation id="6197255575340902638">Kui peidate mooduli „<ph name="MODULE_NAME" />”, ei jälgi Chromium enam teie tulevasi saadetisi automaatselt ja kustutab kõik teie varasemad saadetiste jälgimisandmed.</translation>
 <translation id="6247557882553405851">Google'i paroolihaldur</translation>
 <translation id="6268381023930128611">Kas logida Chromiumist välja?</translation>
 <translation id="6324041800010509197">Ava Chromiumis vahelehtede ruudustik</translation>

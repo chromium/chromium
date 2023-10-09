@@ -235,6 +235,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1175364870820465910">Štam&amp;panje...</translation>
 <translation id="1175914831232945926">Cifre</translation>
 <translation id="1176471985365269981">Nije dozvoljeno uređivanje fajlova ili foldera na vašem uređaju</translation>
+<translation id="1177440945615690056">U postavkama se možete povezati s bilo kojom mobilnom mrežom koja ispunjava kriterije</translation>
 <translation id="1177863135347784049">Prilagođeno</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1178601482396475810">Upravljanje sinhronizacijom uređaja</translation>
@@ -2217,6 +2218,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2709516037105925701">Automatsko popunjavanje</translation>
 <translation id="2710101514844343743">Podaci o upotrebi i dijagnostici</translation>
 <translation id="271033894570825754">Novo</translation>
+<translation id="2710507903599773521">Vaš je uređaj <ph name="DEVICE_TYPE" /> sada otključan</translation>
 <translation id="2711073837061989559">Probni periodi</translation>
 <translation id="2713106313042589954">Isključi kameru</translation>
 <translation id="2713444072780614174">Bijela</translation>
@@ -3500,6 +3502,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3752253558646317685">Vaše dijete treba nastaviti podizati prst da sačuva otisak prsta</translation>
 <translation id="3753033997400164841">Pohranite jednom. Koristite svugdje</translation>
 <translation id="3753142252662437130">Filteri boja</translation>
+<translation id="3753412199586870466">Otvori bočnu ploču</translation>
 <translation id="3755411799582650620">Vaš telefon <ph name="PHONE_NAME" /> sada može otključati i ovaj uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Web lokacija koristi vaš mikrofon</translation>
 <translation id="3756485814916578707">Emitiranje ekrana</translation>
@@ -5047,6 +5050,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5015344424288992913">Rješavanje problema s proksi serverom...</translation>
 <translation id="5016491575926936899">Možete slati SMS-ove sa svog računara, dijeliti internetsku vezu, odgovarati na obavještenja o razgovoru i telefonom otključati uređaj <ph name="DEVICE_TYPE" />.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5016983299133677671">Isprobajte novu lozinku</translation>
+<translation id="5017529052065664584">Posljednjih 15 minuta</translation>
 <translation id="5017643436812738274">Možete navigirati stranicama pomoću kursora za tekst. Pritisnite Ctrl+Search+7 da isključite.</translation>
 <translation id="5018207570537526145">Otvori ekstenziju web lokacije</translation>
 <translation id="5018526990965779848">Šaljite podatke o korištenju i dijagnostici. Poboljšajte svoje iskustvo s Androidom automatskim slanjem podataka o dijagnostici, uređaju i korištenju aplikacija Googleu. To će pomoći stabilnosti sistema i aplikacija, kao i drugim poboljšanjima. Neki zbirni podaci će također pomoći Googleovim aplikacijama i partnerima, kao što su Androidovi programeri. Ako vam je uključena postavka dodatna Aktivnost na webu i u aplikacijama, ti podaci će možda biti sačuvani na vašem Google računu.</translation>
@@ -7149,6 +7153,9 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6767566652486411142">Odaberite drugi jezik...</translation>
 <translation id="6767639283522617719">Nije se moguće pridružiti domeni. Provjerite jesu li postavke tačne za organizacionu jedinicu.</translation>
 <translation id="6768034047581882264">Nije dozvoljeno prikazivanje nesigurnog sadržaja</translation>
+<translation id="6769902329858794251"><ph name="BEGIN_PARAGRAPH1" />Sustav <ph name="DEVICE_OS" /> prikuplja hardverske podatke o uređajima i dijeli ih s Googleom kako bi odredio koja će ažuriranja provesti i time vam omogućio najbolji doživljaj. Googleu možete dopustiti upotrebu tih podataka i u dodatne svrhe kao što su podrška i poboljšanja za doživljaj i uslugu sustava <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Možete se prijaviti na ovom uređaju i pregledati polja navedena kao chromeosflex_ na stranici chrome://system da biste vidjeli podatke koji se šalju Googleu radi filtriranja ažuriranja te druge situacije u kojima odaberete dijeliti podatke s Googleom.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Da biste saznali više o podacima koje <ph name="DEVICE_OS" /> može dijeliti s Googleom te načinu njihovog korištenja, posjetite stranicu g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770042910635026163">Web lokacije koje posjećujete, koje definiraju vaša interesovanja</translation>
 <translation id="6770602306803890733">Poboljšava vašu i svačiju sigurnost na webu</translation>
 <translation id="6771503742377376720">Izdavač je potvrde</translation>

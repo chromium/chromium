@@ -494,7 +494,6 @@
 <translation id="3062298103034426069">지원되지 않음</translation>
 <translation id="3068622547379332530">버전 <ph name="VERSION_NAME" />(<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /><ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">왼쪽에 앱 표시줄 표시</translation>
-<translation id="3070639127620815135">검색+Esc</translation>
 <translation id="3077734595579995578">Shift</translation>
 <translation id="3081696990447829002">메뉴 펼치기</translation>
 <translation id="3087734570205094154">맨 아래</translation>
@@ -1299,7 +1298,6 @@
 <translation id="6231419273573514727">주변기기 성능이 제한될 수 있습니다</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" />에서 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="6244986124527896815">"<ph name="NEW_SHORTCUT" />"(으)로 작업 관리자 앱을 엽니다.</translation>
 <translation id="6247728804802644171">알림 열기</translation>
 <translation id="6254629735336163724">가로로 잠김</translation>
 <translation id="6259254695169772643">스타일러스로 선택하세요.</translation>

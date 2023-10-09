@@ -217,6 +217,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="218608176142494674">Bendrinimas</translation>
 <translation id="2194856509914051091">Į ką reikėtų atsižvelgti</translation>
 <translation id="2200113223741723867">Tvarkyti naudojimo duomenų bendrinimą</translation>
+<translation id="22091350895006575">Pridėti naudotojo vardą</translation>
 <translation id="221494669172414749">Atidarius „Chrome“ be profilio užrakto, išsaugoti slaptažodžiai ir mokėjimo metodai bus pašalinti iš automobilio. Naudojant profilio užraktą šie duomenys apsaugomi.</translation>
 <translation id="2218567645332692482">Naršymai naujovinami į HTTPS ir esate įspėjami prieš įkeliant jo nepalaikančias svetaines</translation>
 <translation id="2227444325776770048">Tęsti kaip <ph name="USER_FULL_NAME" /></translation>
@@ -244,6 +245,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="235789365079050412">„Google“ privatumo politika</translation>
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2362083820973145409">Prisijungta kaip <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Atidaromi nustatymai.</translation>
+<translation id="2364539095045928896">Mygtukas „Uždaryti“, kad būtų uždarytas puslapio įžvalgų centro privatumo pranešimas.</translation>
 <translation id="2386938421315164605">Slėpti temas ir jų nebeslėpti</translation>
 <translation id="2390510615457643724">Ar norite dar kartą atsisiųsti „<ph name="FILE_NAME" />“ (<ph name="FILE_SIZE" />)?</translation>
 <translation id="2394602618534698961">Čia rodomi atsisiųsti failai</translation>
@@ -312,6 +314,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2718846868787000099">Kad turinys būtų rodomas pageidaujamomis kalbomis, svetainės, kuriose lankotės, gali matyti jūsų nuostatas</translation>
 <translation id="2722945394406572875">Privatumo „sandbox“ (smėlio dėžės) raginimas uždarytas</translation>
 <translation id="2723001399770238859">garso įrašas</translation>
+<translation id="2760805590727089264">mm / MM</translation>
 <translation id="2760989362628427051">Įjungti tamsiąją temą, kai įjungta įrenginio tamsioji tema arba akumuliatoriaus tausojimo priemonė</translation>
 <translation id="2762000892062317888">ką tik</translation>
 <translation id="276969039800130567">Prisijungta kaip <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -840,6 +843,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5458366071038729214">Stebimas svetaines rasite čia</translation>
 <translation id="5468068603361015296">Ar vis tiek norite atsisiųsti „<ph name="FILE_NAME" />“?</translation>
 <translation id="548278423535722844">Atidaryti Žemėlapių programoje</translation>
+<translation id="5486841595534124508">Puslapio įžvalgų centro, peradresuojančio į „Mano veiklos“ puslapį, privatumo pranešimo logotipas.</translation>
 <translation id="5487521232677179737">Išvalyti duomenis</translation>
 <translation id="5492637351392383067">Šifruotė įrenginyje</translation>
 <translation id="5514904542973294328">Išjungė šio įrenginio administratorius</translation>
@@ -956,6 +960,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="6112702117600201073">Puslapio atnaujinimas</translation>
 <translation id="6122831415929794347">Išjungti saugų naršymą?</translation>
 <translation id="6127379762771434464">Elementas pašalintas</translation>
+<translation id="6130303040046284160">Sumažinti skirtuką</translation>
 <translation id="6137022273846704445">„<ph name="APP_NAME" />“ kalba</translation>
 <translation id="6138832295072039549">Pakeiskite svetainės nustatymus čia</translation>
 <translation id="6140709049082532940">Sustiprinta apsauga:</translation>
@@ -1258,6 +1263,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7588219262685291874">Įjungti tamsiąją temą, kai įjungta įrenginio akumuliatoriaus tausojimo priemonė</translation>
 <translation id="7594687499944811403">Leiskite <ph name="EMBEDDED_ORIGIN" /> patvirtinti jūsų tapatybę, kad galėtumėte naudotis <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Operacinė sistema</translation>
+<translation id="7603168929588204083">Netinkama data</translation>
 <translation id="7605594153474022051">Sinchronizavimas neveikia</translation>
 <translation id="7612619742409846846">Prisijungta prie „Google“ kaip</translation>
 <translation id="7612989789287281429">Prisijungiama…</translation>
@@ -1307,6 +1313,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7810647596859435254">Atidaryti naudojant...</translation>
 <translation id="7815484226266492798">Ilga ekrano kopija</translation>
 <translation id="7822705602465980873">Kai esate prisijungę, šie duomenys susiejami su jūsų „Google“ paskyra, siekiant apsaugoti jus „Google“ paslaugose, pvz., užtikrinant didesnę apsaugą sistemoje „Gmail“ po saugos incidento.</translation>
+<translation id="782705168687182233">Jūsų veikla išsaugoma <ph name="BEGIN_LINK" />„Google“ paskyroje<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Kompiuteris nori užregistruoti šį įrenginį, kad būtų galima prisijungti prie svetainės</translation>
 <translation id="7844171778363018843">Nepasirinkta sinchronizuotinų duomenų</translation>
 <translation id="7846296061357476882">„Google“ paslaugos</translation>
@@ -1399,6 +1406,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8223642481677794647">Sklaidos kanalo kortelės meniu</translation>
 <translation id="8236097722223016103">Pridėti prie žymių</translation>
 <translation id="8237871086242677046">Puslapio įžvalgų apatinis lapas</translation>
+<translation id="8243077599929149377">Naudotojo vardo pridėjimas</translation>
 <translation id="8250920743982581267">Dokumentai</translation>
 <translation id="8255617931166444521">Svetainės slapukai gali būti naudojami tik siekiant peržiūrėti naršymo veiklą toje svetainėje.</translation>
 <translation id="8259179246279078674">Kadangi iš anksto įkelti puslapiai yra šifruojami, „Google“ nežinos nieko apie iš anksto įkelto puslapio turinį. „Google“ serveriai žinos, kurios svetainės yra privačiai iš anksto įkeltos. Ši informacija naudojama tik puslapiams iš anksto įkelti ir nėra susieta su kita informacija iš jūsų „Google“ paskyros.</translation>

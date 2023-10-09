@@ -217,6 +217,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="218608176142494674">Delen</translation>
 <translation id="2194856509914051091">Overwegingen</translation>
 <translation id="2200113223741723867">Delen van gebruiksgegevens beheren</translation>
+<translation id="22091350895006575">Gebruikersnaam toevoegen</translation>
 <translation id="221494669172414749">Als je Chrome opent zonder profielvergrendeling, worden je opgeslagen wachtwoorden en betaalmethoden uit de auto verwijderd. Met een profielvergrendeling beveilig je deze gegevens.</translation>
 <translation id="2218567645332692482">Upgrade navigaties naar HTTPS en krijg een waarschuwing als er sites worden geladen die dit niet ondersteunen</translation>
 <translation id="2227444325776770048">Doorgaan als <ph name="USER_FULL_NAME" /></translation>
@@ -244,6 +245,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="235789365079050412">Privacybeleid van Google</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2362083820973145409">Ingelogd als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Hiermee worden de instellingen geopend.</translation>
+<translation id="2364539095045928896">Knop Sluiten om de privacyverklaring van de hub voor pagina-inzichten te sluiten.</translation>
 <translation id="2386938421315164605">Onderwerpen verbergen en zichtbaar maken</translation>
 <translation id="2390510615457643724">Wil je <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> opnieuw downloaden?</translation>
 <translation id="2394602618534698961">Gedownloade bestanden zie je hier</translation>
@@ -312,6 +314,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2718846868787000099">Bezochte sites kunnen je voorkeuren bekijken, zodat ze content in je voorkeurstalen kunnen bekijken</translation>
 <translation id="2722945394406572875">Prompt voor Privacy Sandbox is gesloten</translation>
 <translation id="2723001399770238859">audio</translation>
+<translation id="2760805590727089264">MM/JJ</translation>
 <translation id="2760989362628427051">Zet het donkere thema aan als het donkere thema of de batterijbesparing van je apparaat aanstaat</translation>
 <translation id="2762000892062317888">zojuist</translation>
 <translation id="276969039800130567">Ingelogd als <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -840,6 +843,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5458366071038729214">Hier vind je de sites die je volgt</translation>
 <translation id="5468068603361015296">Wil je <ph name="FILE_NAME" /> toch downloaden?</translation>
 <translation id="548278423535722844">Openen in app voor passen</translation>
+<translation id="5486841595534124508">Logo van privacyverklaring voor de hub voor pagina-inzichten die omleidt naar de pagina Mijn activiteit.</translation>
 <translation id="5487521232677179737">Gegevens wissen</translation>
 <translation id="5492637351392383067">Versleuteling op het apparaat</translation>
 <translation id="5514904542973294328">Uitgezet door de beheerder van dit apparaat</translation>
@@ -956,6 +960,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6112702117600201073">Pagina vernieuwen</translation>
 <translation id="6122831415929794347">Safe Browsing uitzetten?</translation>
 <translation id="6127379762771434464">Item verwijderd</translation>
+<translation id="6130303040046284160">Tabblad minimaliseren</translation>
 <translation id="6137022273846704445">Taal van <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">Hier kun je je instellingen wijzigen</translation>
 <translation id="6140709049082532940">Geoptimaliseerde beveiliging:</translation>
@@ -1258,6 +1263,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7588219262685291874">Donker thema aanzetten als de batterijbesparing van je apparaat aanstaat</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> laten verifiëren dat jij het bent voor <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Besturingssysteem</translation>
+<translation id="7603168929588204083">Ongeldige datum</translation>
 <translation id="7605594153474022051">Synchronisatie werkt niet</translation>
 <translation id="7612619742409846846">Ingelogd bij Google als</translation>
 <translation id="7612989789287281429">Inloggen…</translation>
@@ -1307,6 +1313,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7810647596859435254">Openen met…</translation>
 <translation id="7815484226266492798">Lang screenshot</translation>
 <translation id="7822705602465980873">Als je bent ingelogd, worden deze gegevens gekoppeld aan je Google-account om je te beschermen in Google-services, bijvoorbeeld om de beveiliging in Gmail te verbeteren na een beveiligingsincident.</translation>
+<translation id="782705168687182233">Je activiteit wordt opgeslagen in je <ph name="BEGIN_LINK" />Google-account<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Je computer wil dit apparaat registreren om in te loggen op een site</translation>
 <translation id="7844171778363018843">Geen gegevens geselecteerd om te synchroniseren</translation>
 <translation id="7846296061357476882">Google-services</translation>
@@ -1399,6 +1406,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8223642481677794647">Feedkaartmenu</translation>
 <translation id="8236097722223016103">Toevoegen aan bookmarks</translation>
 <translation id="8237871086242677046">Blad onderaan met pagina-inzichten</translation>
+<translation id="8243077599929149377">Voeg je gebruikersnaam toe</translation>
 <translation id="8250920743982581267">Documenten</translation>
 <translation id="8255617931166444521">Sites kunnen je cookies alleen gebruiken om je browse-activiteit op hun eigen site te bekijken</translation>
 <translation id="8259179246279078674">Omdat de vooraf geladen pagina's versleuteld zijn, krijgt Google geen informatie over de content van de vooraf geladen pagina. Google-servers kunnen wel zien welke sites privé vooraf worden geladen. Deze informatie wordt alleen gebruikt om de pagina's vooraf te laden en is niet gekoppeld aan andere informatie in je Google-account.</translation>

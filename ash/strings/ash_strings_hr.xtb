@@ -494,7 +494,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3062298103034426069">Nije podržano</translation>
 <translation id="3068622547379332530">Verzija <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Polica na lijevoj strani</translation>
-<translation id="3070639127620815135">Pretraživanje + Esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Proširi izbornik</translation>
 <translation id="3087734570205094154">Donji</translation>
@@ -1052,6 +1051,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5260676007519551770">Radna površina 4</translation>
 <translation id="5268819379131021772">Popis Googleovih zadataka</translation>
 <translation id="5275923704957843041">Pregled radne površine</translation>
+<translation id="5277869901083657836">Uključite/isključite alate olovke</translation>
 <translation id="5278086053818066789">Uključivanje/isključivanje ChromeVoxa (govorne povratne informacije)</translation>
 <translation id="5283099933536931082">Aplikacija <ph name="APP_ITEM_TITLE" /> zahtijeva vašu pažnju.</translation>
 <translation id="5283198616748585639">Dodaj 1 min</translation>
@@ -1302,7 +1302,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="6231419273573514727">Rad perifernih uređaja može biti ograničen</translation>
 <translation id="6232891689835436217">Aplikacija <ph name="APP_NAME" /> trenutačno koristi vaš fotoaparat i mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="6244986124527896815">Otvorite aplikaciju Upravitelj zadataka pomoću pokretača značajke <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6247728804802644171">Otvaranje obavijesti</translation>
 <translation id="6254629735336163724">Zaključan vodoravni prikaz</translation>
 <translation id="6259254695169772643">Odaberite pomoću pisaljke</translation>

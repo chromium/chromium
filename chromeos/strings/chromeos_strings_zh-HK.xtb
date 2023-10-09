@@ -24,6 +24,7 @@
 <translation id="1154390310959620237">你只可自訂 5 個快速鍵。如要新增快速鍵，請刪除現有快速鍵。</translation>
 <translation id="1164939766849482256">黎明到黑夜螢幕保護程式</translation>
 <translation id="1167755866710282443">開啟選單以自訂按鍵。拖曳選單以移動。</translation>
+<translation id="1174073918202301297">已新增捷徑</translation>
 <translation id="1175697296044146566">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="1175951029573070619">一般 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">移除</translation>
@@ -688,6 +689,7 @@
 <translation id="6318437367327684789">不限時間</translation>
 <translation id="6319207335391420837">更新「<ph name="DEVICE_NAME" />」的韌體</translation>
 <translation id="6321407676395378991">開啟螢幕保護程式</translation>
+<translation id="6324916366299863871">編輯捷徑</translation>
 <translation id="6325525973963619867">失敗</translation>
 <translation id="6331191339300272798">自動深色主題背景</translation>
 <translation id="6340526405444716530">個人化</translation>
@@ -827,6 +829,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7388959671917308825">內置觸控板</translation>
 <translation id="7397270852490618635">關閉淺色主題背景</translation>
+<translation id="7401543881546089382">刪除捷徑</translation>
 <translation id="741244894080940828">轉換</translation>
 <translation id="7415801143053185905">HTTP 延遲時間非常長</translation>
 <translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{管理員已設定在你每次登入時自動啟動「<ph name="APP_NAME_1" />」。}=2{管理員已設定在你每次登入時自動啟動「<ph name="APP_NAME_1" />」和「<ph name="APP_NAME_2" />」。}=3{管理員已設定在你每次登入時自動啟動<ph name="APP_NAME_1" />、<ph name="APP_NAME_2" />和<ph name="APP_NAME_3" />。}other{管理員已設定在你每次登入時自動啟動「<ph name="APP_NAME_1" />」、「<ph name="APP_NAME_2" />」和另外 # 個應用程式。}}</translation>
@@ -865,7 +868,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
 <translation id="7718231387947923843">鍵盤燈</translation>
-<translation id="7730077286107534951">部分帳戶和系統資訊可能會傳送給 Google。我們會依《<ph name="BEGIN_LINK2" />隱私權政策<ph name="END_LINK2" />》和《<ph name="BEGIN_LINK3" />服務條款<ph name="END_LINK3" />》的規定使用這類資訊，解決技術問題及改善服務品質。如要提出內容變更要求，請前往<ph name="BEGIN_LINK1" />法律說明中心<ph name="END_LINK1" />。</translation>
+<translation id="7730077286107534951">部分帳戶和系統資料可能會傳送給 Google。我們會按照《<ph name="BEGIN_LINK2" />私隱權政策<ph name="END_LINK2" />》和《<ph name="BEGIN_LINK3" />服務條款<ph name="END_LINK3" />》使用這些資料，協助處理技術問題並改善服務。如要提出內容變更要求，請前往<ph name="BEGIN_LINK1" />法律說明中心<ph name="END_LINK1" />。</translation>
 <translation id="773153675489693198">週期數</translation>
 <translation id="7747039790905080783">預先共用密鑰</translation>
 <translation id="7752963721013053477">黎明到黑夜 - 獨家</translation>
@@ -902,6 +905,7 @@
 <translation id="7978412674231730200">私密金鑰</translation>
 <translation id="7994702968232966508">EAP 方法</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
+<translation id="8017679124341497925">已編輯捷徑</translation>
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">啟用自動調色模式</translation>

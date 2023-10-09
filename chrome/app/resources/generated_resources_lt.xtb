@@ -2594,6 +2594,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2990583317361835189">Neleisti svetainėms naudoti judesio jutiklių</translation>
 <translation id="2992931425024192067">Rodyti visą pranešimo turinį</translation>
 <translation id="2993517869960930405">Programos informacija</translation>
+<translation id="2996108796702395498">Jūsų įrenginio serijos numeris yra <ph name="SERIAL_NUMBER" />. Šį numerį galima naudoti suaktyvinant paslaugą.</translation>
 <translation id="2996286169319737844">Duomenys užšifruoti naudojant sinchronizavimo slaptafrazę. Neįtraukiami mokėjimo metodai ir adresai iš „Google Pay“.</translation>
 <translation id="2996722619877761919">Versti pagal ilgąjį kraštą</translation>
 <translation id="2996932914629936323">Išvaloma istorija visuose sinchronizuojamuose įrenginiuose</translation>
@@ -2981,6 +2982,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3320630259304269485">Saugus naršymas (apsauga nuo pavojingų svetainių) ir kiti saugos nustatymai</translation>
 <translation id="3321460131042519426">Įgalinti teksto skaidymą į eilutes</translation>
 <translation id="3321494112580110651">Nematote spausdintuvo?</translation>
+<translation id="3321776060736518525">Iš <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Premija! Galite ilgiau naudoti įrenginį</translation>
 <translation id="3325804108816646710">Ieškoma pasiekiamų profilių...</translation>
 <translation id="3325910708063135066">Fotoaparatas ir mikrofonas išjungti „Mac“ sistemos nuostatose</translation>
@@ -5051,6 +5053,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5015344424288992913">Ieškoma proxy...</translation>
 <translation id="5016491575926936899">Galite siųsti teksto pranešimą iš kompiuterio, bendrinti interneto ryšį, atsakyti į pokalbių pranešimus ir užrakinti „<ph name="DEVICE_TYPE" />“ telefonu.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="5016983299133677671">Išbandykite naują slaptažodį</translation>
+<translation id="5017529052065664584">Pastarosios penkiolika minučių</translation>
 <translation id="5017643436812738274">Puslapius galite naršyti naudodami teksto žymeklį. Paspauskite „Ctrl“ + paieškos klavišą + 7, kad išjungtumėte.</translation>
 <translation id="5018207570537526145">Atidaryti plėtinio svetainę</translation>
 <translation id="5018526990965779848">Siųskite naudojimo ir diagnostikos duomenis. Padėkite tobulinti „Android“ funkcijas automatiškai siųsdami „Google“ diagnostikos, įrenginio ir programų naudojimo duomenis. Tai padės pagerinti sistemos bei programos stabilumą ir teikti kitus patobulinimus. Kai kurie sukaupti duomenys taip pat bus naudingi „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams. Jei papildomas Žiniatinklio ir programų veiklos nustatymas įjungtas, šie duomenys gali būti išsaugoti „Google“ paskyroje.</translation>
@@ -6233,6 +6236,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 svetainės peržiūra baigta}one{{NUM_SITES} svetainės peržiūra baigta}few{{NUM_SITES} svetainių peržiūra baigta}many{{NUM_SITES} svetainės peržiūra baigta}other{{NUM_SITES} svetainių peržiūra baigta}}</translation>
 <translation id="5997337190805127100">Sužinokite daugiau apie prieigą prie svetainės</translation>
 <translation id="5998458948782718639">Padėkite tobulinti Automatinio pildymo paslaugą</translation>
+<translation id="5999024481231496910">Įgalinote trečiųjų šalių slapukų bandymą palaipsniui. To negalima nepaisyti nustatymų puslapyje. Jei norite iš naujo įgalinti trečiųjų šalių slapukus, iš naujo paleiskite „Chrome“ išjungę šią funkciją.</translation>
 <translation id="5999630716831179808">Balsai</translation>
 <translation id="6000758707621254961">Rezultatų pagal užklausą „<ph name="SEARCH_TEXT" />“: <ph name="RESULT_COUNT" /></translation>
 <translation id="6001839398155993679">Pradėkime</translation>
@@ -6716,6 +6720,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6399675241776343019">Atmesta</translation>
 <translation id="6399774419735315745">Slaptoji agentė</translation>
 <translation id="6400360390396538896">Visada įjungta <ph name="ORIGIN" /></translation>
+<translation id="6401118106417399952">Jūsų įrenginio EID yra <ph name="EID_NUMBER" />, o įrenginio serijos numeris – <ph name="SERIAL_NUMBER" />. Šiuos numerius galima naudoti suaktyvinant paslaugą.</translation>
 <translation id="6401458660421980302">Jei norite siųsti šį skirtuką į kitą įrenginį, prisijunkite prie „Chrome“ čia</translation>
 <translation id="6401597285454423070">Jūsų kompiuteryje yra patikimos platformos modulio (TPM) saugos įrenginys, kuris naudojamas „Chrome“ OS įdiegiant daug svarbių saugos funkcijų. Jei reikia daugiau informacijos, apsilankykite „Chromebook“ pagalbos centre adresu https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404511346730675251">Redaguoti žymę</translation>
@@ -8237,6 +8242,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7637272932128132922">Kol šis skirtukas buvo neaktyvus, atminties taupymo priemonė atlaisvino atminties kitoms užduotims. Galite bet kada tai pakeisti skiltyje „<ph name="SETTINGS_LINK" />“.</translation>
 <translation id="7637593984496473097">Nepakanka vietos diske</translation>
 <translation id="7639914187072011620">Nepavyko gauti SAML peradresavimo URL iš serverio</translation>
+<translation id="7640256527901510478">Jūsų įrenginio IMEI yra <ph name="IMEI_NUMBER" />, o įrenginio serijos numeris – <ph name="SERIAL_NUMBER" />. Šiuos numerius galima naudoti suaktyvinant paslaugą.</translation>
 <translation id="7640308610547854367">Grąžinote ankstesnę „ChromeOS“ versiją. Jei norite gauti naujinių, palaukite, kol bus pasiekiama kita versija.</translation>
 <translation id="7641513591566880111">Naujas profilio pavadinimas</translation>
 <translation id="764178579712141045">Naudotojas (<ph name="USER_EMAIL" />) pridėtas</translation>
@@ -9740,6 +9746,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="881799181680267069">Slėpti kitus</translation>
 <translation id="8818152010000655963">Ekrano fonas</translation>
 <translation id="8818958672113348984">Patvirtinti telefonu</translation>
+<translation id="8819510664278523111">Jūsų įrenginio EID yra <ph name="EID_NUMBER" />, įrenginio IMEI – <ph name="IMEI_NUMBER" />, o įrenginio serijos numeris – <ph name="SERIAL_NUMBER" />. Šiuos numerius galima naudoti suaktyvinant paslaugą.</translation>
 <translation id="8820817407110198400">Žymės</translation>
 <translation id="8821045908425223359">Automatiškai konfigūruoti IP adresą</translation>
 <translation id="8821268776955756404">Programa „<ph name="APP_NAME" />“ paruošta naudoti.</translation>
@@ -10290,6 +10297,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="956500788634395331">Esate apsaugoti nuo potencialiai žalingų plėtinių</translation>
 <translation id="957179356621191750">6 taškų</translation>
 <translation id="957960681186851048">Ši svetainė bandė automatiškai atsisiųsti kelis failus</translation>
+<translation id="958571289841636277">Eikite atgal ir pirmyn naudodami perbraukimo gestą</translation>
 <translation id="960987915827980018">Liko apie 1 val.</translation>
 <translation id="962802172452141067">Žymių aplanko medis</translation>
 <translation id="963000966785016697">Ieškoti vaizdo naudojant „<ph name="VISUAL_SEARCH_PROVIDER" />“</translation>

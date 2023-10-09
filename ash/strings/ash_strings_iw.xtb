@@ -494,7 +494,6 @@
 <translation id="3062298103034426069">אין תמיכה</translation>
 <translation id="3068622547379332530">גרסה <ph name="VERSION_NAME" /> ‏(<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">המדף בצד שמאל</translation>
-<translation id="3070639127620815135">‏מקש החיפוש+Esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">הרחבת התפריט</translation>
 <translation id="3087734570205094154">תחתית</translation>
@@ -1299,7 +1298,6 @@
 <translation id="6231419273573514727">ייתכן שהביצועים של הציוד ההיקפי יוגבלו</translation>
 <translation id="6232891689835436217">המצלמה והמיקרופון בשימוש כרגע על ידי <ph name="APP_NAME" /></translation>
 <translation id="6237231532760393653">‎1X‎</translation>
-<translation id="6244986124527896815">פתיחת האפליקציה 'מנהל המשימות' באמצעות '<ph name="NEW_SHORTCUT" />'.</translation>
 <translation id="6247728804802644171">פתיחת ההתראות</translation>
 <translation id="6254629735336163724">נעול במצב אופקי</translation>
 <translation id="6259254695169772643">כדי לבחור יש להשתמש בסטיילוס</translation>

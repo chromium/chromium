@@ -24,6 +24,7 @@
 <translation id="1154390310959620237">Só é possível personalizar cinco atalhos. Exclua um para adicionar outro.</translation>
 <translation id="1164939766849482256">Protetor de tela Do amanhecer à escuridão</translation>
 <translation id="1167755866710282443">Abra o menu para personalizar as teclas. Arraste o menu para mover.</translation>
+<translation id="1174073918202301297">Atalho adicionado</translation>
 <translation id="1175697296044146566">Este <ph name="DEVICE_TYPE" /> é gerenciado por <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Médio (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Remover</translation>
@@ -688,6 +689,7 @@
 <translation id="6318437367327684789">sempre</translation>
 <translation id="6319207335391420837">Atualizar firmware no dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Ativar o protetor de tela</translation>
+<translation id="6324916366299863871">Editar atalho</translation>
 <translation id="6325525973963619867">Falha</translation>
 <translation id="6331191339300272798">Tema escuro automático</translation>
 <translation id="6340526405444716530">Personalização</translation>
@@ -827,6 +829,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7388959671917308825">Touchpad integrado</translation>
 <translation id="7397270852490618635">Desativar o tema claro</translation>
+<translation id="7401543881546089382">Excluir atalho</translation>
 <translation id="741244894080940828">conversão</translation>
 <translation id="7415801143053185905">A latência do HTTP está muito alta</translation>
 <translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{Seu administrador definiu <ph name="APP_NAME_1" /> para iniciar automaticamente sempre que você fizer login.}=2{Seu administrador definiu <ph name="APP_NAME_1" /> e <ph name="APP_NAME_2" /> para iniciar automaticamente sempre que você fizer login.}=3{Seu administrador definiu <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" /> para iniciar automaticamente sempre que você fizer login.}one{Seu administrador definiu <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> e mais # app para iniciarem automaticamente sempre que você fizer login.}other{Seu administrador definiu <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> e mais # apps para iniciarem automaticamente sempre que você fizer login.}}</translation>
@@ -901,6 +904,7 @@
 <translation id="7978412674231730200">Chave privada</translation>
 <translation id="7994702968232966508">Método EAP</translation>
 <translation id="8004582292198964060">Navegador</translation>
+<translation id="8017679124341497925">Atalho editado</translation>
 <translation id="802154636333426148">Falha no download</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Ativar o modo de cor automático</translation>

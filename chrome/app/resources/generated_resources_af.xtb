@@ -234,6 +234,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1175364870820465910">Druk uit …</translation>
 <translation id="1175914831232945926">Syfers</translation>
 <translation id="1176471985365269981">Mag nie lêers of vouers op jou toestel wysig nie</translation>
+<translation id="1177440945615690056">Jy kan in instellings aan enige kwalifiserende selnetwerk koppel</translation>
 <translation id="1177863135347784049">Gepasmaak</translation>
 <translation id="1178581264944972037">Laat wag</translation>
 <translation id="1178601482396475810">Bestuur toestelsinkronisering</translation>
@@ -2213,6 +2214,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2709516037105925701">Outovul</translation>
 <translation id="2710101514844343743">Gebruik- en diagnostiese data</translation>
 <translation id="271033894570825754">Nuut</translation>
+<translation id="2710507903599773521">Jou <ph name="DEVICE_TYPE" /> is nou ontsluit</translation>
 <translation id="2711073837061989559">Proeflopies</translation>
 <translation id="2713106313042589954">Skakel kamera af</translation>
 <translation id="2713444072780614174">Wit</translation>
@@ -3495,6 +3497,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3752253558646317685">Laat jou kind hul vinger oplig om die vingerafdruk te stoor</translation>
 <translation id="3753033997400164841">Berg een keer. Gebruik oral</translation>
 <translation id="3753142252662437130">Kleurfilters</translation>
+<translation id="3753412199586870466">Oop kantpaneel</translation>
 <translation id="3755411799582650620">Jou <ph name="PHONE_NAME" /> kan nou ook hierdie <ph name="DEVICE_TYPE" /> ontsluit.</translation>
 <translation id="375636864092143889">Werf gebruik tans jou mikrofoon</translation>
 <translation id="3756485814916578707">Skerm word tans uitgesaai</translation>
@@ -5038,6 +5041,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5015344424288992913">Besluit tans oor instaanbediener …</translation>
 <translation id="5016491575926936899">Jy kan SMS'e van jou rekenaar af stuur, jou internetverbinding deel, op gesprekkennisgewings antwoord, en jou <ph name="DEVICE_TYPE" /> met jou foon ontsluit.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="5016983299133677671">Probeer ’n nuwe wagwoord</translation>
+<translation id="5017529052065664584">Afgelope 15 minute</translation>
 <translation id="5017643436812738274">Jy kan met 'n tekspyltjie deur bladsye navigeer. Druk Ctrl+Search+7 om dit af te skakel.</translation>
 <translation id="5018207570537526145">Maak uitbreidingwebwerf oop</translation>
 <translation id="5018526990965779848">Stuur gebruik- en diagnostiese data. Help om jou Android-ervaring beter te maak deur diagnostiese, toestel- en programgebruikdata outomaties na Google toe te stuur. Dit sal met stelsel- en programstabiliteit en ander verbeteringe help. Sekere saamgestelde data sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help. As jou bykomende Web- en App-aktiwiteit-instelling aangeskakel is, kan hierdie data in jou Google-rekening gestoor word.</translation>
@@ -7133,6 +7137,9 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6767566652486411142">Kies 'n ander taal …</translation>
 <translation id="6767639283522617719">Kan nie by die domein aansluit nie. Maak seker dat die instellings vir die organisatoriese eenheid korrek is.</translation>
 <translation id="6768034047581882264">Mag nie onveilige inhoud wys nie</translation>
+<translation id="6769902329858794251"><ph name="BEGIN_PARAGRAPH1" />Om die beste ervaring te bied, samel <ph name="DEVICE_OS" /> hardewaredata oor toestelle in en deel dit met Google om te bepaal watter opdaterings gelewer moet word. Jy het die opsie om Google toe te laat om hierdie data vir bykomende doeleindes te gebruik, soos steundienste en die verbetering van die <ph name="DEVICE_OS" />-ervaring en -diens.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Jy kan op hierdie toestel aanmeld en velde bekyk wat as chromeosflex_ in chrome://system gelys is om die data te sien wat vir die filtrering van opdaterings na Google toe gestuur word, asook enige ander gevalle waar jy kies om data met Google te deel.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Vir meer besonderhede oor data wat <ph name="DEVICE_OS" /> met Google kan deel en hoe dit gebruik word, besoek: g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770042910635026163">Werwe wat jy besoek wat jou belangstellings definieer</translation>
 <translation id="6770602306803890733">Verbeter sekuriteit vir jou en almal op die web</translation>
 <translation id="6771503742377376720">Is 'n sertifikaatoutoriteit</translation>
@@ -8610,6 +8617,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="793531125873261495">Kon nie die virtuele masjien aflaai nie. Probeer asseblief weer.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% voltooi</translation>
 <translation id="7937809006412909895">Versamel tans diagnostiese data</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Gevorderde opsies</translation>
 <translation id="793923212791838">Jou toestel kan nie met hierdie werf gebruik word nie</translation>
 <translation id="7939328347457537652">Bestuur toestelsertifikate</translation>

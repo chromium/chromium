@@ -24,6 +24,7 @@
 <translation id="1154390310959620237">يمكنك تخصيص 5 اختصارات فقط. يجب حذف أحد الاختصارات لإضافة اختصار جديد.</translation>
 <translation id="1164939766849482256">شاشة استراحة تعرض منظرًا من الفجر إلى الليل</translation>
 <translation id="1167755866710282443">افتح القائمة لتخصيص المفاتيح. اسحب القائمة لنقلها.</translation>
+<translation id="1174073918202301297">تمت إضافة الاختصار</translation>
 <translation id="1175697296044146566">تتم إدارة جهاز <ph name="DEVICE_TYPE" /> هذا من خلال <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">إشارة متوسطة (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">إزالة</translation>
@@ -690,6 +691,7 @@
 <translation id="6318437367327684789">للأبد</translation>
 <translation id="6319207335391420837">تحديث البرامج الثابتة على <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">تفعيل شاشة التوقف</translation>
+<translation id="6324916366299863871">تعديل الاختصار</translation>
 <translation id="6325525973963619867">إخفاق</translation>
 <translation id="6331191339300272798">المظهر الداكن التلقائي</translation>
 <translation id="6340526405444716530">التخصيص</translation>
@@ -829,6 +831,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7388959671917308825">لوحة لمس مُدمَجة</translation>
 <translation id="7397270852490618635">إيقاف تشغيل المظهر الفاتح</translation>
+<translation id="7401543881546089382">حذف الاختصار</translation>
 <translation id="741244894080940828">التحويل</translation>
 <translation id="7415801143053185905">‏وقت استجابة بروتوكول HTTP طويل جدًا.</translation>
 <translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{لقد ضبط مشرفك "<ph name="APP_NAME_1" />" للبدء تلقائيًا مع كل تسجيل دخول.}=2{لقد ضبط مشرفك "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" للبدء تلقائيًا مع كل تسجيل دخول.}=3{لقد ضبط مشرفك "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" و"<ph name="APP_NAME_3" />" للبدء تلقائيًا مع كل تسجيل دخول.}zero{لقد ضبط مشرفك "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" و# تطبيق آخر للبدء تلقائيًا مع كل تسجيل دخول.}few{لقد ضبط مشرفك "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" و# تطبيقات أخرى للبدء تلقائيًا مع كل تسجيل دخول.}many{لقد ضبط مشرفك "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" و# تطبيقًا آخر للبدء تلقائيًا مع كل تسجيل دخول.}other{لقد ضبط مشرفك "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" و# تطبيق آخر للبدء تلقائيًا مع كل تسجيل دخول.}}</translation>
@@ -904,6 +907,7 @@
 <translation id="7978412674231730200">مفتاح خاص</translation>
 <translation id="7994702968232966508">‏طريقة EAP</translation>
 <translation id="8004582292198964060">المتصفّح</translation>
+<translation id="8017679124341497925">تمّ تعديل الاختصار</translation>
 <translation id="802154636333426148">تعذّر التنزيل</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">تفعيل وضع الألوان التلقائية</translation>

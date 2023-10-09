@@ -58,6 +58,7 @@
 <translation id="1264156759663453185">نوشتار انتخاب‌شده برای ترجمه جزئی خیلی زیاد است.</translation>
 <translation id="1265739287306757398">با نحوه انجام کار آشنا شوید</translation>
 <translation id="1272079795634619415">توقف</translation>
+<translation id="1273416271143914096">{count,plural, =1{‫{count} گذرواژه}one{‫{count} گذرواژه}other{‫{count} گذرواژه}}</translation>
 <translation id="1275718070701477396">انتخاب شد</translation>
 <translation id="1279024913354609713">مجاز نیست</translation>
 <translation id="1281818060020671000">مدیریت داده‌ها</translation>
@@ -68,6 +69,7 @@
 <translation id="1295289763199166823">سفارشی‌سازی منو</translation>
 <translation id="1305822519689023679">‏برای اطمینان از اینکه همیشه می‌توانید از گذرواژه‌های ذخیره‌شده در «حساب Google» خود استفاده کنید، هویتتان را به‌تأیید برسانید.</translation>
 <translation id="1312721752506309252">محافظت بهبودیافته روشن است</translation>
+<translation id="1320164290882380380">{COUNT,plural, =1{پیگیری این بسته}one{پیگیری همه بسته‌ها}other{پیگیری همه بسته‌ها}}</translation>
 <translation id="1321993286294231467">خطایی هنگام ذخیره کردن تصویر روی داد.</translation>
 <translation id="1322735045095424339">سازمانتان استفاده از «حالت ناشناس» را الزامی کرده است</translation>
 <translation id="1323735185997015385">حذف</translation>
@@ -143,6 +145,7 @@
 <translation id="1687475363370981210">علامت‌گذاری همه به‌‌عنوان خوانده‌شده</translation>
 <translation id="1689333818294560261">نام مستعار</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> نشانک انتخاب شده است</translation>
+<translation id="1713777106376424209">تحویل‌دهنده:</translation>
 <translation id="1715515772563243997">اگر به <ph name="SITE" /> اعتماد دارید، می‌توانید از گذرواژه ذخیره‌شده برای ورود به سیستم استفاده کنید.</translation>
 <translation id="1740468249224277719">برای نصب دو ضربه سریع بزنید.</translation>
 <translation id="1750238553597293878">‏همچنان از گذرواژه‌های ذخیره‌شده در «حساب Google» خود استفاده کنید</translation>
@@ -191,6 +194,7 @@
 <translation id="1987779152850321833">‏اقدامات پیشنهادی زیر را تکمیل کنید تا بیشترین بهره را از Chrome ببرید.</translation>
 <translation id="1989112275319619282">مشاهده محتوای موجود در فروشگاه ما</translation>
 <translation id="1990820278544963435">پیدا کردن</translation>
+<translation id="1991153180045413119">گذرواژه هم‌رسانی شد</translation>
 <translation id="1992055602764528852">برای دیدن برگه‌های دستگاه‌های دیگرتان به سیستم وارد شوید.</translation>
 <translation id="199425419756152024">مشاهده گذرواژه</translation>
 <translation id="2008357574463816229">‏اگر گذرعبارت را فراموش کردید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="BEGIN_LINK" /> داده‌های Chrome ذخیره‌شده در حسابتان را پاک کنید<ph name="END_LINK" /></translation>
@@ -235,6 +239,7 @@
 <translation id="2268044343513325586">فیلتر</translation>
 <translation id="2269277877025820298">مشاهده جزئیات بیشتر</translation>
 <translation id="2273327106802955778">منوی بیشتر</translation>
+<translation id="2274800392139890332">لغو پیگیری این بسته</translation>
 <translation id="2275480389219976105">نشانی پیدا شد</translation>
 <translation id="2286505070150039482">نوشتار برجسته‌شده</translation>
 <translation id="2287614783861766820">{count,plural, =1{این نشانی از این دستگاه حذف خواهد شد.}one{این نشانی از این دستگاه حذف خواهد شد.}other{این نشانی‌ها از این دستگاه حذف خواهند شد.}}</translation>
@@ -243,8 +248,10 @@
 <translation id="2299218006564889602">‏گذرواژه‌هایتان قبل‌از ذخیره شدن در «مدیر گذرواژه Google» در دستگاهتان رمزگذاری می‌شود.</translation>
 <translation id="2299515531293777561">‫<ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">گذرواژه را در وب‌سایت تغییر دهید</translation>
+<translation id="2310154074101836012">ویرایش گردونه</translation>
 <translation id="2316709634732130529">استفاده از گذرواژه پیشنهادی</translation>
 <translation id="2320166752086256636">پنهان کردن صفحه‌کلید</translation>
+<translation id="2348630484974447747">بسته</translation>
 <translation id="2351097562818989364">تنظیمات ترجمه شما بازنشانی شده است.</translation>
 <translation id="235789365079050412">‏خط‌مشی رازداری Google</translation>
 <translation id="2359043044084662842">مترجم</translation>
@@ -527,6 +534,7 @@
 <translation id="380329542618494757">نام</translation>
 <translation id="3803696231112616155">پیشنهاد ترجمه این سایت</translation>
 <translation id="3810973564298564668">مدیریت</translation>
+<translation id="3818045793209708987">پیگیری این بسته متوقف شد</translation>
 <translation id="3818293389945649617">یافتن بعدی</translation>
 <translation id="3819183753496523827">آفلاین هستید. اتصال اینترنت را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="3832419617903252251">گذرواژه فقط در این دستگاه ذخیره شده است</translation>
@@ -565,6 +573,7 @@
 <translation id="4018310736049373830">مدیریت فعالیت</translation>
 <translation id="4038354071007134711">برنامه‌ای در این دستگاه نمی‌تواند فایل را باز کند.</translation>
 <translation id="4042870976416480368">یافتن در صفحه</translation>
+<translation id="4043294777772912240">‏‫<ph name="USERNAME" /> اکنون می‌تواند هنگام ورود به سیستم <ph name="WEBSITE" /> بااستفاده از «مدیر گذرواژه Google»، نام کاربری و گذرواژه شما را به‌کار ببرد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">پیوند مستقیمی به بخشی از صفحه که برجسته کرده‌اید ایجاد و آن را هم‌رسانی کنید.</translation>
 <translation id="4045648459118332842">گذرواژه‌های ذخیره‌شده‌تان را با یک ضربه در هر برنامه‌ای دریافت کنید</translation>
 <translation id="4049507953662678203">مطمئن شوید اتصال شبکه دارید و دوباره امتحان کنید.</translation>
@@ -608,6 +617,7 @@
 <translation id="4286718549648564014">نشانی به حساب <ph name="USER_EMAIL" /> شما منتقل شد</translation>
 <translation id="4293080268407233932">جستجو</translation>
 <translation id="4302248187517737842">بدون نام کاربری ••••••••</translation>
+<translation id="4302415908542657649">درحال هم‌رسانی گذرواژه</translation>
 <translation id="4304713468139749426">مدیر گذرواژه</translation>
 <translation id="430793432425771671">همگام‌سازی همه چیز</translation>
 <translation id="4309403553630140242">برای اطلاعات بیشتر دو ضربه بزنید</translation>
@@ -643,6 +653,7 @@
 <translation id="4508750114462689118">بستن تبلیغ ورود به سیستم</translation>
 <translation id="4514889972748124117">پیشنهاد گذرواژه‌ای قوی…</translation>
 <translation id="4520798012560649652">درباره «حالت ناشناس» بیشتر بدانید</translation>
+<translation id="452503091941773389">{count,plural, =1{‫{count} نشانک}one{‫{count} نشانک}other{‫{count} نشانک}}</translation>
 <translation id="452750746583162491">مرور داده‌های همگام‌سازی‌شده</translation>
 <translation id="4527660062930312477">حسابتان مدیریت می‌شود</translation>
 <translation id="4536418791685807335">دوباره برای ورود به سیستم تلاش کنید.</translation>
@@ -662,6 +673,7 @@
 <translation id="4619615317237390068">برگه‌ها از دستگاه‌های دیگر</translation>
 <translation id="4620246317052452550">صفحه‌هایی که خوانده‌اید</translation>
 <translation id="4620888520263267479">نمایش پیش‌نمایش‌های پیوند</translation>
+<translation id="4622477750832577849">فعال کردن پیگیری</translation>
 <translation id="4630540211544979320">ترجمه صفحات</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> گذرواژه دوباره‌استفاده‌شده</translation>
 <translation id="4634124774493850572">استفاده از گذرواژه</translation>
@@ -777,6 +789,7 @@
 <translation id="519530786644929958">بارگیری موفق نبود و نمی‌توان آن را دوباره انجام داد.</translation>
 <translation id="5197255632782567636">اینترنت</translation>
 <translation id="5211488077761630279">«<ph name="SITE_NAME" />» مجاز باشد از <ph name="PERMISSION" /> استفاده کند؟</translation>
+<translation id="5215990399368742238">پیگیری خودکار همه بسته‌های شناسایی‌شده</translation>
 <translation id="5219295696240154694">به بهبود امنیت برای همه کاربران وب کمک کنید</translation>
 <translation id="5220945116117011963">ایجاد «رویداد تقویم» از تاریخ‌ها</translation>
 <translation id="5221339005270097309">درحال بررسی گذرواژه‌ها…</translation>
@@ -787,6 +800,7 @@
 <translation id="5235389474593199952">پنهان کردن «سابقه»</translation>
 <translation id="5238301240406177137">ذخیره در حساب</translation>
 <translation id="5245322853195994030">لغو همگام‌سازی</translation>
+<translation id="5256908199795498284">‏‫Chrome شماره‌های پیگیری بسته را در سایت‌هایی که از آن‌ها بازدید می‌کنید شناسایی می‌کند و به‌روزرسانی‌های بسته را در صفحه «برگه جدید» نشان می‌دهد. برای ارائه این ویژگی و بهبود Shopping برای همه، داده‌هایتان با Google هم‌رسانی خواهد شد.</translation>
 <translation id="5271265092610673171">{count,plural, =1{یکی‌از فیلدهای الزامی خالی است. آن را قبل‌از ذخیره کردن پر کنید.}one{تعدادی از فیلدهای الزامی خالی است. آن‌ها را قبل‌از ذخیره کردن پر کنید.}other{تعدادی از فیلدهای الزامی خالی است. آن‌ها را قبل‌از ذخیره کردن پر کنید.}}</translation>
 <translation id="5271549068863921519">ذخیره گذرواژه</translation>
 <translation id="5283494734135414249">روی میان‌بری که زیر نوار نشانی ظاهر می‌شود ضربه بزنید.</translation>
@@ -795,6 +809,7 @@
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5318298563956633672">ازقبل این محصول را پیگیری می‌کنید.</translation>
 <translation id="5339316356165661760">روشن کردن همگام‌سازی</translation>
+<translation id="5345598430982201510">بسته‌ها هرگز به‌طور خودکار پیگیری نشود</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{این بسته ردیابی شود؟}one{‫{COUNT} بسته ردیابی شود؟}other{‫{COUNT} بسته ردیابی شوند؟}}</translation>
 <translation id="536067926684072644">نمایش نشانک‌ها</translation>
 <translation id="5360976571138293719">‏برای تنظیمات بیشتر مرتبط با حریم خصوصی، امنیت، و جمع‌آوری داده، <ph name="BEGIN_LINK" />سرویس‌های Google<ph name="END_LINK" /> را ببینید.</translation>
@@ -811,6 +826,7 @@
 <translation id="54401264925851789">اطلاعات امنیتی صفحه</translation>
 <translation id="5443952882982198570">کارت‌های اعتباری</translation>
 <translation id="5444892875087332195">نشانک‌ها</translation>
+<translation id="5454211924362324495">برای اینکه دیگران از گذرواژه‌تان استفاده نکنند، <ph name="BEGIN_LINK" />آن را در <ph name="WEBSITE" /> تغییر دهید<ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">باز کردن نسخه آفلاین</translation>
 <translation id="5475069061743940393">پیگیری بسته پستی</translation>
 <translation id="5478327362747197944">با کلیک کردن روی تاریخ‌ها در صفحه وب، رویدادهای «تقویم» را مستقیماً ایجاد کنید.</translation>
@@ -1030,6 +1046,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 
 از گذرواژه غیرتکراری برای همه سایت‌ها استفاده کنید.</translation>
 <translation id="6497850081273517953">‏Chrome قدیمی است، به آخرین نسخه به‌روزرسانی کنید تا ایمن بمانید.</translation>
+<translation id="6502142762807385617">{COUNT,plural, =1{لغو پیگیری این بسته}one{لغو پیگیری همه بسته‌ها}other{لغو پیگیری همه بسته‌ها}}</translation>
 <translation id="650279896687777322">بیشتر بدانید…</translation>
 <translation id="6507973708545996744">برای دریافت فهرست خواندن در همه دستگاه‌هایتان، به سیستم وارد شوید</translation>
 <translation id="6510072653668207258">بعداً به من یادآوری شود</translation>
@@ -1110,6 +1127,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6869389390665537774">‏می‌توانید صفحه‌هایی را که از آن‌‎ها بازدید کرده‌اید ببینید یا آن‌ها را از سابقه پاک کنید</translation>
 <translation id="687135068089457384">نمایش تنظیمات</translation>
 <translation id="6873263987691478642">نمای تقسیم</translation>
+<translation id="687586529977635009">‏‫Chrome شماره‌های پیگیری را در سایت‌هایی که از آن‌ها بازدید می‌کنید شناسایی می‌کند و به‌روزرسانی‌های بسته را در صفحه «برگه جدید» نشان می‌دهد. برای ارائه این ویژگی و بهبود Shopping برای همه، داده‌هایتان با Google هم‌رسانی خواهد شد. می‌توانید این مورد را در <ph name="BEGIN_LINK" />تنظیمات پیگیری بسته پستی<ph name="END_LINK" /> تغییر دهید.</translation>
 <translation id="6882836635272038266">محافظت استاندارد دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودنشان مشخص شده است.</translation>
 <translation id="6888009575607455378">مطمئن هستید می‌خواهید از تغییراتتان صرف‌نظر کنید؟</translation>
 <translation id="6896758677409633944">کپی</translation>
@@ -1157,6 +1175,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7154343200458623869">تکلیف را کامل کنید</translation>
 <translation id="7161230316646448869">همگام‌سازی نشانک‌ها، سابقه، و موارد دیگر در همه دستگاه‌ها</translation>
 <translation id="7162168282402939716">باز کردن قفل «برگه‌های ناشناس» با <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="7168959436351276050">پنهان کردن این کارت باعث برداشته شدن همه داده‌های پیگیری بسته می‌شود</translation>
 <translation id="7172852049901402487">ایمن نگه‌داشتن گذرواژه‌ها دربرابر مشکلات امنیتی</translation>
 <translation id="7173114856073700355">باز کردن تنظیمات</translation>
 <translation id="7189598951263744875">در حال اشتراک‌گذاری...</translation>
@@ -1213,6 +1232,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7508728395076009983">برای قفل کردن برگه‌های ناشناس، راه‌اندازی شناسه لمسی، شناسه چهره، یا گذرنویسه.</translation>
 <translation id="7514365320538308">بارگیری</translation>
 <translation id="7524055474074101597">به گذرواژه‌ها و موارد دیگر در برنامه‌ها دسترسی داشته باشید.</translation>
+<translation id="7527917367892640435">بسته درحال‌حاضر پیگیری می‌شود</translation>
 <translation id="7531345132340165516">سایت فعلی</translation>
 <translation id="7537586195939242955">‏متأسفانه نصب «جواز» در Passbook فعلاً امکان‌پذیر نیست.</translation>
 <translation id="754655535278952384">آخرین بررسی: <ph name="TIME" /></translation>
@@ -1416,6 +1436,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8605219856220328675">بستن برگه</translation>
 <translation id="8613883225817609844">پنهان کردن برگه‌های اخیر</translation>
 <translation id="8620640915598389714">ویرایش</translation>
+<translation id="8624447588354561276">شماره بسته</translation>
 <translation id="8626393685701737946">می‌توانید در «تنظیمات &gt; تنظیمات محتوا»، نمای سایت پیش‌فرض را به میز کار تغییر دهید</translation>
 <translation id="8636825310635137004">برای دسترسی به برگه‌هایتان در دستگاه‌های دیگر، همگام‌سازی را روشن کنید.</translation>
 <translation id="8637431369725868556">از خودتان دربرابر سایت‌های خطرناک محافظت کنید.</translation>

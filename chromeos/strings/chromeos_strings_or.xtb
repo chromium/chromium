@@ -24,6 +24,7 @@
 <translation id="1154390310959620237">ଆପଣ କେବଳ 5ଟି ସର୍ଟକଟକୁ କଷ୍ଟମାଇଜ କରିପାରିବେ। ଏକ ନୂଆ ସର୍ଟକଟକୁ ଯୋଗ କରିବା ପାଇଁ କୌଣସି ସର୍ଟକଟକୁ ଡିଲିଟ କରନ୍ତୁ।</translation>
 <translation id="1164939766849482256">ଡନ ଟୁ ଡାର୍କ ସ୍କ୍ରିନ ସେଭର</translation>
 <translation id="1167755866710282443">କୀ'ଗୁଡ଼ିକୁ କଷ୍ଟମାଇଜ କରିବା ପାଇଁ ମେନୁ ଖୋଲନ୍ତୁ। ମୁଭ କରିବା ପାଇଁ ମେନୁକୁ ଡ୍ରାଗ କରନ୍ତୁ।</translation>
+<translation id="1174073918202301297">ସର୍ଟକଟ୍ ଯୋଗ କରାଗଲା</translation>
 <translation id="1175697296044146566">ଏହି <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।</translation>
 <translation id="1175951029573070619">ସାଧାରଣ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">କାଢ଼ି ଦିଅନ୍ତୁ</translation>
@@ -688,6 +689,7 @@
 <translation id="6318437367327684789">ସବୁଦିନ ପାଇଁ</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" />ରେ ଫାର୍ମୱେର ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="6321407676395378991">ସ୍କ୍ରିନ୍ ସେଭର୍ ଚାଲୁ କରନ୍ତୁ</translation>
+<translation id="6324916366299863871">ସର୍ଟକଟ୍‌କୁ ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="6325525973963619867">ବିଫଳ ହୋଇଛି</translation>
 <translation id="6331191339300272798">ସ୍ୱଚାଳିତ ଗାଢ଼ା ଥିମ୍</translation>
 <translation id="6340526405444716530">ପର୍ସନାଲାଇଜେସନ</translation>
@@ -901,6 +903,7 @@
 <translation id="7978412674231730200">ବ୍ୟକ୍ତିଗତ କୀ</translation>
 <translation id="7994702968232966508">EAP ପଦ୍ଧତି</translation>
 <translation id="8004582292198964060">ବ୍ରାଉଜର</translation>
+<translation id="8017679124341497925">ସର୍ଟକଟ୍ ଏଡିଟ୍ କରାଯାଇଛି</translation>
 <translation id="802154636333426148">ଡାଉନ୍‌ଲୋଡ୍ ବିଫଳ ହୋଇଛି</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ଅଟୋ କଲର ମୋଡକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>

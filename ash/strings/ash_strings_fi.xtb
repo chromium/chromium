@@ -494,7 +494,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3062298103034426069">Ei tuettu</translation>
 <translation id="3068622547379332530">Versio <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Hylly vasemmalla</translation>
-<translation id="3070639127620815135">haku+esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Laajenna valikko</translation>
 <translation id="3087734570205094154">Alaosassa</translation>
@@ -1299,7 +1298,6 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="6231419273573514727">Lisälaitteen toiminta voi olla rajoitettua</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> käyttää tällä hetkellä kameraa ja mikrofonia</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="6244986124527896815">Avaa Tehtävänhallinta-sovellus pikanäppäimellä "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6247728804802644171">Avaa ilmoitukset</translation>
 <translation id="6254629735336163724">Lukittu vaakasuuntaiseksi</translation>
 <translation id="6259254695169772643">Valitse näyttökynällä</translation>

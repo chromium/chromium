@@ -117,6 +117,7 @@ Những yếu tố cần xem xét:
 <translation id="5389212809648216794">Google Chrome không thể sử dụng máy ảnh của bạn do một ứng dụng khác đang dùng máy ảnh</translation>
 <translation id="5395376160638294582">Đảm bảo bạn luôn có thể sử dụng dữ liệu Chrome trong Tài khoản Google của mình</translation>
 <translation id="5439191312780166229">Cảnh báo cho bạn về các trang web nguy hiểm, kể cả trang web mà Google chưa từng biết, bằng cách phân tích nhiều dữ liệu trên các trang web hơn so với chế độ bảo vệ tiêu chuẩn. Bạn có thể chọn bỏ qua cảnh báo của Chrome.</translation>
+<translation id="5442013002200339429">Nếu bạn ẩn "<ph name="MODULE_NAME" />", Chrome sẽ không tự động theo dõi các gói hàng sau này nữa và sẽ xoá tất cả dữ liệu theo dõi gói hàng trước đây.</translation>
 <translation id="5460571915754665838">4. Chọn Chrome</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome sẽ giúp theo dõi gói hàng này trên trang Thẻ mới.}other{Chrome sẽ giúp theo dõi các gói hàng này trên trang Thẻ mới.}}</translation>
 <translation id="5492504007368565877">Trình quản lý mật khẩu của Google không thể kiểm tra mật khẩu của bạn.</translation>
@@ -188,6 +189,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="7933491483529363150">Mở thẻ mà tôi mở gần đây nhất trong Chrome.</translation>
 <translation id="8022947259858476807">Hãy dùng Chrome theo mặc định để mở đường liên kết, tìm kiếm trong tiện ích và tự động điền mật khẩu trên các ứng dụng khác</translation>
 <translation id="804638182476029347">Cho phép thông báo của Chrome để nhận thông báo giảm giá</translation>
+<translation id="8069507567842347179">Gói hàng này đã được theo dõi trên Chrome.</translation>
 <translation id="81358522153858150">Chrome giờ đây hỗ trợ chính sách người dùng cho tài khoản được quản lý</translation>
 <translation id="8160472928944011082">Chrome không thể cập nhật</translation>
 <translation id="8174679664544842874">Mở một thẻ mới trong Chrome.</translation>

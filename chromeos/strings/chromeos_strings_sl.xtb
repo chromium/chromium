@@ -24,6 +24,7 @@
 <translation id="1154390310959620237">Prilagodite lahko največ 5 bližnjic. Izbrišite bližnjico, če želite dodati novo.</translation>
 <translation id="1164939766849482256">Ohranjevalnik zaslona od zore do mraka</translation>
 <translation id="1167755866710282443">Odprite meni za prilagajanje tipk. Povlecite meni, če ga želite premakniti.</translation>
+<translation id="1174073918202301297">Bližnjica je bila dodana</translation>
 <translation id="1175697296044146566">To napravo <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Povprečna (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Odstrani</translation>
@@ -688,6 +689,7 @@
 <translation id="6318437367327684789">za vedno</translation>
 <translation id="6319207335391420837">Posodobitev vdelane programske opreme v napravi <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Vklop ohranjevalnika zaslona</translation>
+<translation id="6324916366299863871">Urejanje bližnjice</translation>
 <translation id="6325525973963619867">Ni uspelo</translation>
 <translation id="6331191339300272798">Samodejna temna tema</translation>
 <translation id="6340526405444716530">Prilagoditev</translation>
@@ -827,6 +829,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7388959671917308825">Vgrajena sledilna ploščica</translation>
 <translation id="7397270852490618635">Izklop svetle teme</translation>
+<translation id="7401543881546089382">Izbriši bližnjico</translation>
 <translation id="741244894080940828">pretvorba</translation>
 <translation id="7415801143053185905">Precejšnja zakasnitev HTTP</translation>
 <translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{Skrbnik je nastavil, da se aplikacija <ph name="APP_NAME_1" /> zažene samodejno ob vsaki prijavi.}=2{Skrbnik je nastavil, da se aplikaciji <ph name="APP_NAME_1" /> in <ph name="APP_NAME_2" /> zaženeta samodejno ob vsaki prijavi.}=3{Skrbnik je nastavil, da se aplikacije <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> in <ph name="APP_NAME_3" /> zaženejo samodejno ob vsaki prijavi.}one{Skrbnik je nastavil, da se <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> in še # druga aplikacija zaženejo samodejno ob vsaki prijavi.}two{Skrbnik je nastavil, da se <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> in še # drugi aplikaciji zaženejo samodejno ob vsaki prijavi.}few{Skrbnik je nastavil, da se <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> in še # druge aplikacije zaženejo samodejno ob vsaki prijavi.}other{Skrbnik je nastavil, da se <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> in še # drugih aplikacij zažene samodejno ob vsaki prijavi.}}</translation>
@@ -901,6 +904,7 @@
 <translation id="7978412674231730200">Zasebni ključ</translation>
 <translation id="7994702968232966508">Način EAP</translation>
 <translation id="8004582292198964060">Brskalnik</translation>
+<translation id="8017679124341497925">Bližnjica je bila urejena</translation>
 <translation id="802154636333426148">Prenos ni uspel</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Omogoči način samodejne barve</translation>

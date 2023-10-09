@@ -24,6 +24,7 @@
 <translation id="1154390310959620237">Μπορείτε να προσαρμόσετε μόνο 5 συντομεύσεις. Διαγράψτε μια συντόμευση, για να προσθέσετε μια νέα.</translation>
 <translation id="1164939766849482256">Προστασία οθόνης Από την αυγή μέχρι να νυχτώσει</translation>
 <translation id="1167755866710282443">Ανοίξτε το μενού για να προσαρμόσετε τα πλήκτρα. Σύρετε το μενού για μετακίνηση.</translation>
+<translation id="1174073918202301297">Η συντόμευση προστέθηκε</translation>
 <translation id="1175697296044146566">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Μέτριο (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
@@ -690,6 +691,7 @@
 <translation id="6318437367327684789">για πάντα</translation>
 <translation id="6319207335391420837">Ενημέρωση υλικολογισμικού στη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Ενεργοποίηση προφύλαξης οθόνης</translation>
+<translation id="6324916366299863871">Επεξεργασία συντόμευσης</translation>
 <translation id="6325525973963619867">Απέτυχε</translation>
 <translation id="6331191339300272798">Αυτόματο σκούρο θέμα</translation>
 <translation id="6340526405444716530">Εξατομίκευση</translation>
@@ -829,6 +831,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7388959671917308825">Ενσωματωμένη επιφάνεια αφής</translation>
 <translation id="7397270852490618635">Απενεργοποίηση φωτεινού θέματος</translation>
+<translation id="7401543881546089382">Διαγραφή συντόμευσης</translation>
 <translation id="741244894080940828">μετατροπή</translation>
 <translation id="7415801143053185905">Πολύ υψηλός λανθάνων χρόνος HTTP</translation>
 <translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{Ο διαχειριστής σας έχει ρυθμίσει την εφαρμογή <ph name="APP_NAME_1" /> να ξεκινάει αυτόματα κάθε φορά που συνδέεστε.}=2{Ο διαχειριστής σας έχει ρυθμίσει τις εφαρμογές <ph name="APP_NAME_1" /> και <ph name="APP_NAME_2" /> να ξεκινούν αυτόματα κάθε φορά που συνδέεστε.}=3{Ο διαχειριστής σας έχει ρυθμίσει τις εφαρμογές <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> και <ph name="APP_NAME_3" /> να ξεκινούν αυτόματα κάθε φορά που συνδέεστε.}other{Ο διαχειριστής σας έχει ρυθμίσει τις εφαρμογές <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> και # ακόμη εφαρμογές να ξεκινούν αυτόματα κάθε φορά που συνδέεστε.}}</translation>
@@ -904,6 +907,7 @@
 <translation id="7978412674231730200">Ιδιωτικό κλειδί</translation>
 <translation id="7994702968232966508">Μέθοδος EAP</translation>
 <translation id="8004582292198964060">Πρόγραμμα περιήγησης</translation>
+<translation id="8017679124341497925">Η συντόμευση τροποποιήθηκε</translation>
 <translation id="802154636333426148">Η λήψη απέτυχε</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Ενεργοποίηση λειτουργίας αυτόματης ρύθμισης χρώματος</translation>

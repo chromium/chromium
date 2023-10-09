@@ -494,7 +494,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3062298103034426069">Non compatible</translation>
 <translation id="3068622547379332530">Version <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Étagère à gauche</translation>
-<translation id="3070639127620815135">recherche+échap</translation>
 <translation id="3077734595579995578">maj</translation>
 <translation id="3081696990447829002">Développer le menu</translation>
 <translation id="3087734570205094154">En bas</translation>
@@ -1298,7 +1297,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6231419273573514727">Les performances du périphérique risquent d'être limitées</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> utilise actuellement votre caméra et votre micro</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="6244986124527896815">Ouvrez le Gestionnaire de tâches avec "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6247728804802644171">Ouvrir les notifications</translation>
 <translation id="6254629735336163724">Verrouillée en position horizontale</translation>
 <translation id="6259254695169772643">Effectuez une sélection à l'aide de votre stylet</translation>

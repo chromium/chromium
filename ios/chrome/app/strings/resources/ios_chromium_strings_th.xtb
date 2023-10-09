@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">เปิดตารางกริดของแท็บ Chromium</translation>
 <translation id="1617663976202781617">ข้อมูลจากการซิงค์ Chromium</translation>
 <translation id="1647558790457890304">การตั้งค่า Chromium</translation>
+<translation id="164952285225495380">ติดตามพัสดุนี้ใน Chromium แล้ว</translation>
 <translation id="1722370509450468186">ระบบจะบันทึกรหัสผ่านไว้ในบัญชี (<ph name="EMAIL" />)</translation>
 <translation id="1736662517232558588">ล้างข้อมูล Chromium แล้ว</translation>
 <translation id="1791845338122684020">เปิดหน้าประวัติการเข้าชมใน Chromium</translation>
@@ -140,6 +141,7 @@
 1. เปิดการตั้งค่า
 2. แตะแอปเบราว์เซอร์เริ่มต้น
 3. เลือก Chromium</translation>
+<translation id="6197255575340902638">หากคุณซ่อน "<ph name="MODULE_NAME" />" Chromium จะไม่ติดตามพัสดุโดยอัตโนมัติอีกในอนาคต และจะลบข้อมูลการติดตามพัสดุที่ผ่านมาทั้งหมด</translation>
 <translation id="6247557882553405851">เครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="6268381023930128611">ต้องการออกจาก Chromium ใช่ไหม</translation>
 <translation id="6324041800010509197">ไปที่ตารางกริดของแท็บใน Chromium</translation>

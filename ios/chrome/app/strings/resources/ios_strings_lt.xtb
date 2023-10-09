@@ -169,6 +169,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="1847795903283049083">Šiuos elementus taip pat galite peržiūrėti ir tvarkyti žymėse, skaitymo sąraše arba slaptažodžių tvarkyklėje.</translation>
 <translation id="1870148520156231997">Rodyti slaptažodį</translation>
 <translation id="1872096359983322073">Žibintuvėlis</translation>
+<translation id="1876851015978093044">Rodomas šis elementas</translation>
 <translation id="1882901927376062252">{count,plural, =1{Žymė išsaugota „Google“ paskyroje, {email}}one{{count} žymė išsaugota „Google“ paskyroje, {email}}few{{count} žymės išsaugotos „Google“ paskyroje, {email}}many{{count} žymės išsaugota „Google“ paskyroje, {email}}other{{count} žymių išsaugota „Google“ paskyroje, {email}}}</translation>
 <translation id="1883255238294161206">Sutraukti sąrašą</translation>
 <translation id="1890237935065108104">Šis nustatymas nepasiekiamas.</translation>
@@ -282,6 +283,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="2482878487686419369">Pranešimai</translation>
 <translation id="2484459871750294497">Kaip įgalinti šią funkciją?</translation>
 <translation id="2496626742194544812">Eiti į pirmą skirtuką</translation>
+<translation id="2499505845365628575">Visą naršymo istoriją galite rasti čia: „<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />“.</translation>
 <translation id="2500374554657206846">Slaptažodžio išsaugojimo parinktys</translation>
 <translation id="2511117522375201202">Turite pažeistų slaptažodžių (iš viso: <ph name="NUMBER_OF_PASSWORDS" />), dėl kurių gali kilti saugos pavojus.</translation>
 <translation id="2523363575747517183">Ši svetainė pakartotinai bando atidaryti kitą programą.</translation>
@@ -1112,6 +1114,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6785453220513215166">Siunčiama strigties ataskaita...</translation>
 <translation id="6790502149545262384">Netrukus atidarę naują skirtuką matysite istorijas iš „<ph name="CHANNEL_NAME" />“.</translation>
 <translation id="6797885426782475225">Paieška balsu</translation>
+<translation id="6800349425672670802">Visus atidarytus skirtukus galite pasiekti naudodami skirtukų perjungiklį.</translation>
 <translation id="6807889908376551050">Rodyti viską...</translation>
 <translation id="681368974849482173">Elementas sukurtas</translation>
 <translation id="6822587385560699678">Įjungus slaptažodžiai išsaugomi paskyroje <ph name="ACCOUNT" />. Išjungus slaptažodžiai išsaugomi tik šiame įrenginyje.</translation>
@@ -1206,6 +1209,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7367530036083223701">Saugiai pasiekite slaptažodžius pagrindiniame ekrane naudodami Slaptažodžių tvarkyklės valdiklį.</translation>
 <translation id="7380220816562673297">Kol kas slaptažodžius galite bendrinti tik su šeimos grupės nariais. <ph name="BEGIN_LINK" />Sukurkite iki šešių asmenų šeimos grupę<ph name="END_LINK" /> ir išnaudokite daugiau savo produktų ir prenumeratų teikiamų galimybių sistemoje „Google“.</translation>
 <translation id="7383797227493018512">Skaitymo sąrašas</translation>
+<translation id="7396331865858820922">Slaptažodis nebuvo bendrinamas</translation>
 <translation id="7398893703713203428">Kurti nuorodą</translation>
 <translation id="7399802613464275309">Saugos patikra</translation>
 <translation id="7400418766976504921">URL adresas</translation>
@@ -1226,6 +1230,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7488874549363591659">Pristatyta</translation>
 <translation id="7491131399623468277">Eikite į skiltį „Nustatymai“…</translation>
 <translation id="7492574581995589075">Organizacija išjungė galimybę naudoti ir išsaugoti „Chrome“ duomenis „Google“ paskyroje. Nauji slaptažodžiai, žymės ir kt. bus išsaugoti tik šiame įrenginyje.</translation>
+<translation id="749854780843431406">Naują skirtuką galite atidaryti naudodami mygtuką „<ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />“.</translation>
 <translation id="750149195207506638">Žymės paslėptos</translation>
 <translation id="750228856503700085">Naujiniai nepasiekiami</translation>
 <translation id="750493650310597496">Pasirinkta: 0</translation>
@@ -1286,6 +1291,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="778855399387580014">Pradėti paiešką naujame „Chrome“ skirtuke.</translation>
 <translation id="7791543448312431591">Pridėti</translation>
 <translation id="7807060072011926525">Pateikė „Google“</translation>
+<translation id="7812377703891978671">Visą naršymo istoriją galite pasiekti pasirinkdami „<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />“.</translation>
 <translation id="78146569776629510">Atsisiuntimai</translation>
 <translation id="7839985698273989086">Neprisijungus pasiekiamas puslapis</translation>
 <translation id="7840771868269352570">Pasirinkti elementai bus pašalinti.</translation>
@@ -1433,6 +1439,7 @@ Duomenys užšifruoti naudojant slaptafrazę <ph name="TIME" />. Įveskite ją, 
 <translation id="8560253818350321773">Pirmiausia rodykite dažnai naudojamus elementus.</translation>
 <translation id="8588404856427128947">Išjungta</translation>
 <translation id="8591976964826315682">Blokuoti trečiųjų šalių slapukus inkognito režimu</translation>
+<translation id="8593565399399144771">Čia galite atidaryti naują skirtuką.</translation>
 <translation id="8605219856220328675">Uždaryti skirtuką.</translation>
 <translation id="8613883225817609844">Slėpti naujausius skirtukus</translation>
 <translation id="8620640915598389714">Redaguoti</translation>

@@ -24,6 +24,7 @@
 <translation id="1154390310959620237">Можна наладзіць толькі 5 спалучэнняў клавіш. Каб дадаць новае спалучэнне клавіш, трэба выдаліць адно з ужо дададзеных.</translation>
 <translation id="1164939766849482256">Застаўка "Ад відна да цямна"</translation>
 <translation id="1167755866710282443">Адкрыйце меню, каб наладзіць клавішы. Перацягніце меню для перамяшчэння.</translation>
+<translation id="1174073918202301297">Ярлык дададзены</translation>
 <translation id="1175697296044146566">Гэтай прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" /></translation>
 <translation id="1175951029573070619">Сярэдні (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Выдаліць</translation>
@@ -688,6 +689,7 @@
 <translation id="6318437367327684789">назаўжды</translation>
 <translation id="6319207335391420837">Абнаўленне ўбудаванага ПЗ прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6321407676395378991">Уключыць застаўку</translation>
+<translation id="6324916366299863871">Рэдагаваць ярлык</translation>
 <translation id="6325525973963619867">Збой</translation>
 <translation id="6331191339300272798">Аўтаматычнае ўключэнне цёмнай тэмы</translation>
 <translation id="6340526405444716530">Персаналізацыя</translation>
@@ -901,6 +903,7 @@
 <translation id="7978412674231730200">Закрыты ключ</translation>
 <translation id="7994702968232966508">Метад EAP</translation>
 <translation id="8004582292198964060">Браўзер</translation>
+<translation id="8017679124341497925">Ярлык зменены</translation>
 <translation id="802154636333426148">Збой спампоўкі</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Уключыць рэжым аўтакарэкцыі колераў</translation>

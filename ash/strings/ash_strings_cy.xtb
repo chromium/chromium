@@ -494,7 +494,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3062298103034426069">Ni chefnogir</translation>
 <translation id="3068622547379332530">Fersiwn <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Silff ar y chwith</translation>
-<translation id="3070639127620815135">search+esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Ehangu'r ddewislen</translation>
 <translation id="3087734570205094154">Gwaelod</translation>
@@ -704,6 +703,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="385300504083504382">Y dechrau</translation>
 <translation id="3859364108019690">Methu â ffrydio apiau</translation>
 <translation id="3861651314799684201">Pwyswch Enter i recordio'r sgrîn lawn</translation>
+<translation id="3865912916886104060">Dim dyfeisiau yn gysylltiedig. Bydd WiFi yn cael ei ddiffodd i ddechrau defnyddio Poethfan.</translation>
 <translation id="3886872229787704059">Agorwyd heddiw</translation>
 <translation id="3891340733213178823">Pwyswch Ctrl+Shift+Q ddwywaith i allgofnodi.</translation>
 <translation id="3893630138897523026">ChromeVox (adborth ar lafar)</translation>
@@ -788,6 +788,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4197790712631116042">Diffodd</translation>
 <translation id="4201033867194214117">Nid yw <ph name="FEATURE_NAME" /> ar gael.</translation>
 <translation id="4201051445878709314">Dangos y mis blaenorol</translation>
+<translation id="4202362334312791952">Mae 1 ddyfais yn gysylltiedig. Bydd WiFi yn cael ei ddiffodd i ddechrau defnyddio Poethfan.</translation>
 <translation id="4209973997261364186">Mae Wi-Fi wedi'i droi ymlaen</translation>
 <translation id="4212472694152630271">Newid i PIN</translation>
 <translation id="4215497585250573029">Gosodiadau VPN</translation>
@@ -1050,6 +1051,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5258528442992323769">Nid oes unrhyw ddesgiau wedi'u cadw</translation>
 <translation id="5260676007519551770">Desg 4</translation>
 <translation id="5268819379131021772">Rhestr Google tasks</translation>
+<translation id="5275923704957843041">Rhagolwg desg</translation>
 <translation id="5278086053818066789">Troi ymlaen/diffodd ChromeVox (adborth ar lafar)</translation>
 <translation id="5283099933536931082">Mae angen eich sylw ar <ph name="APP_ITEM_TITLE" />.</translation>
 <translation id="5283198616748585639">Ychwanegwch 1 fun</translation>
@@ -1166,6 +1168,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5707775774148071965">Mae eich dyfais yn cefnogi cyfradd data uwch na'ch cebl. Mae'n bosib y bydd perfformiad y ddyfais yn gyfyngedig.</translation>
 <translation id="5710450975648804523">Mae Peidiwch ag Aflonyddu wedi'i droi ymlaen</translation>
 <translation id="571295407079589142">Mae data symudol wedi'u diffodd</translation>
+<translation id="5716891621595980681">Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig. Bydd WiFi yn cael ei ddiffodd i ddechrau defnyddio Poethfan.</translation>
 <translation id="5727460725221669831">Os wnaethoch anghofio'ch cyfrinair neu newid cyfrinair eich Cyfrif Google yn ddiweddar, rhowch gynnig ar adfer y defnyddiwr hwn.</translation>
 <translation id="573413375004481890">Ni allai'r ddyfais hon gefnogi'ch holl sgriniau, felly mae un wedi'i datgysylltu</translation>
 <translation id="5740328398383587084">Rhannu Gerllaw</translation>
@@ -1299,7 +1302,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="6231419273573514727">Mae'n bosib y bydd perfformiad y perifferol yn gyfyngedig</translation>
 <translation id="6232891689835436217">Mae <ph name="APP_NAME" /> yn defnyddio'ch camera a'ch meicroffon ar hyn o bryd</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="6244986124527896815">Agor ap Rheolwr Tasg gyda "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6247728804802644171">Agor hysbysiadau</translation>
 <translation id="6254629735336163724">Wedi'i gloi i lorweddol</translation>
 <translation id="6259254695169772643">Defnyddiwch eich pwyntil i ddewis</translation>

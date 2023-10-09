@@ -169,6 +169,7 @@
 <translation id="1847795903283049083">మీ బుక్‌మార్క్‌లు, రీడింగ్ లిస్ట్ లేదా పాస్‌వర్డ్ మేనేజర్‌లో కూడా మీరు ఈ ఐటెమ్‌లను చూడవచ్చు, మేనేజ్ చేయవచ్చు.</translation>
 <translation id="1870148520156231997">పాస్‌వర్డ్‌ను చూపండి</translation>
 <translation id="1872096359983322073">టార్చ్</translation>
+<translation id="1876851015978093044">ఇది ఈ ఐటెమ్‌ను చూపిస్తుంది</translation>
 <translation id="1882901927376062252">{count,plural, =1{బుక్‌మార్క్ మీ Google ఖాతా, {email}‌లో సేవ్ చేయబడింది}other{{count} బుక్‌మార్క్‌లు మీ Google ఖాతా, {email}‌లో సేవ్ చేయబడ్డాయి}}</translation>
 <translation id="1883255238294161206">లిస్ట్‌ను కుదించు</translation>
 <translation id="1890237935065108104">ఈ సెట్టింగ్ అందుబాటులో లేదు.</translation>
@@ -282,6 +283,7 @@
 <translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
 <translation id="2484459871750294497">నేను ఈ ఫీచర్‌ను ఎలా ఎనేబుల్ చేయగలను?</translation>
 <translation id="2496626742194544812">మొదటి ట్యాబ్‌కు వెళ్లండి</translation>
+<translation id="2499505845365628575">మీరు <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />‌లో మీ మొత్తం బ్రౌజింగ్ హిస్టరీని కనుగొనవచ్చు.</translation>
 <translation id="2500374554657206846">పాస్‌వర్డ్‌ను సేవ్ చేసే ఎంపికలు</translation>
 <translation id="2511117522375201202">మీ సెక్యూరిటీని ప్రమాదంలో ఉంచే <ph name="NUMBER_OF_PASSWORDS" /> చోరీకి గురైన పాస్‌వర్డ్‌లు మీ వద్ద ఉన్నాయి.</translation>
 <translation id="2523363575747517183">ఈ వెబ్‌సైట్ మరో అప్లికేషన్‌ను తెరవడానికి పలుసార్లు ప్రయత్నిస్తోంది.</translation>
@@ -1112,6 +1114,7 @@
 <translation id="6785453220513215166">క్రాష్ రిపోర్ట్‌ను పంపుతోంది...</translation>
 <translation id="6790502149545262384">త్వరలో, మీరు కొత్త ట్యాబ్‌ను తెరిచినప్పుడు మీరు <ph name="CHANNEL_NAME" /> నుండి కథనాలను చూస్తారు.</translation>
 <translation id="6797885426782475225">వాయిస్ శోధన</translation>
+<translation id="6800349425672670802">ట్యాబ్ స్విచర్ ఫీచర్‌ను ఉపయోగించి తెరిచి ఉన్న మీ ట్యాబ్‌లన్నింటినీ మీరు యాక్సెస్ చేయవచ్చు.</translation>
 <translation id="6807889908376551050">అన్నీ చూపు...</translation>
 <translation id="681368974849482173">అంశం క్రియేట్ చేయబడింది</translation>
 <translation id="6822587385560699678">ఆన్‌లో ఉన్నప్పుడు, పాస్‌వర్డ్‌లు <ph name="ACCOUNT" />‌లో సేవ్ చేయబడతాయి. ఆఫ్‌లో ఉన్నప్పుడు, పాస్‌వర్డ్‌లు ఈ పరికరంలో మాత్రమే సేవ్ చేయబడతాయి.</translation>
@@ -1206,6 +1209,7 @@
 <translation id="7367530036083223701">Password Manager విడ్జెట్‌తో మొదటి స్క్రీన్ నుండి మీ పాస్‌వర్డ్‌లను సురక్షితంగా యాక్సెస్ చేయండి.</translation>
 <translation id="7380220816562673297">ప్రస్తుతానికి, మీరు పాస్‌వర్డ్‌లను ఫ్యామిలీ మెంబర్‌లతో మాత్రమే షేర్ చేయగలరు. గరిష్ఠంగా 6 మంది మెంబర్‌లతో <ph name="BEGIN_LINK" />ఫ్యామిలీ గ్రూప్‌ను క్రియేట్ చేసి<ph name="END_LINK" />, Googleలోని మీ ప్రోడక్ట్‌లు, సబ్‌స్క్రిప్షన్‌ల నుండి ఎక్కువ ప్రయోజనాలను పొందండి.</translation>
 <translation id="7383797227493018512">పఠన లిస్ట్‌</translation>
+<translation id="7396331865858820922">పాస్‌వర్డ్ షేర్ కాలేదు</translation>
 <translation id="7398893703713203428">లింక్‌ను క్రియేట్ చేయండి</translation>
 <translation id="7399802613464275309">భద్రతా చెక్-అప్</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1226,6 +1230,7 @@
 <translation id="7488874549363591659">డెలివరీ చేయబడింది</translation>
 <translation id="7491131399623468277">సెట్టింగ్‌లకు వెళ్లండి…</translation>
 <translation id="7492574581995589075">మీ సంస్థ మీ Google ఖాతాలో Chrome డేటాను ఉపయోగించే వీలు పాటు, సేవ్ చేసే వీలును కూడా ఆఫ్ చేసింది. కొత్త బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, ఇంకా మరిన్ని ఈ పరికరంలో మాత్రమే సేవ్ అవుతాయి.</translation>
+<translation id="749854780843431406">మీరు <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" /> బటన్‌ను క్లిక్ చేయడం ద్వారా కొత్త ట్యాబ్‌ను తెరవవచ్చు.</translation>
 <translation id="750149195207506638">బుక్‌మార్క్‌లు దాచబడ్డాయి</translation>
 <translation id="750228856503700085">అప్‌డేట్‌లు అందుబాటులో లేవు</translation>
 <translation id="750493650310597496">0 ఎంచుకోబడ్డాయి</translation>
@@ -1286,6 +1291,7 @@
 <translation id="778855399387580014">కొత్త Chrome ట్యాబ్‌లో శోధనను ప్రారంభించండి.</translation>
 <translation id="7791543448312431591">జోడించండి</translation>
 <translation id="7807060072011926525">దీనిని Google అందించినది</translation>
+<translation id="7812377703891978671"><ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />‌ను ఎంచుకోవడం ద్వారా మీ మొత్తం బ్రౌజింగ్ హిస్టరీని మీరు యాక్సెస్ చేయవచ్చు.</translation>
 <translation id="78146569776629510">డౌన్‌లోడ్‌లు</translation>
 <translation id="7839985698273989086">ఆఫ్‌లైన్ పేజీ</translation>
 <translation id="7840771868269352570">మీరు ఎంచుకున్న అంశాలు తీసివేయబడతాయి.</translation>
@@ -1433,6 +1439,7 @@
 <translation id="8560253818350321773">తరచుగా ఉపయోగించే ఐటెమ్‌లను ముందుగా చూపండి.</translation>
 <translation id="8588404856427128947">ఆఫ్ చేయబడి ఉంది</translation>
 <translation id="8591976964826315682">అజ్ఞాత మోడ్‌లో థర్డ్-పార్టీ కుక్కీలను బ్లాక్ చేయండి</translation>
+<translation id="8593565399399144771">మీరు ఇక్కడ కొత్త ట్యాబ్‌ను తెరవవచ్చు.</translation>
 <translation id="8605219856220328675">ట్యాబ్‌ను మూసివేయండి.</translation>
 <translation id="8613883225817609844">ఇటీవలి ట్యాబ్‌లను దాచండి</translation>
 <translation id="8620640915598389714">ఎడిట్</translation>

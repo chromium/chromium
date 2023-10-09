@@ -13,6 +13,7 @@
 <translation id="1024913885641459127">Toodete arvustused ja hinnavõrdlused</translation>
 <translation id="1028781062521375153">Kuva üksikasjad</translation>
 <translation id="1030706264415084469"><ph name="URL" /> soovib suure koguse andmeid alaliselt teie seadmesse salvestada</translation>
+<translation id="1030949145805074938">{COUNT,plural, =0{Puudub}=1{1 saidilt. Logib teid enamikult saitidelt välja. }other{# saidilt. Logib teid enamikult saitidelt välja. }}</translation>
 <translation id="1033329911862281889">Inkognito režiim ei muuda teid veebis nähtamatuks.
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Külastatavad saidid ja teenused näevad külastusi.<ph name="END_LIST_ITEM" />
@@ -484,6 +485,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1939059826036755332">Automaatne pilt pildis režiim</translation>
 <translation id="1939175642807587452">Saab küsida luba märguannete saatmiseks</translation>
 <translation id="1940441167050915935">Kustuta salvestatud turvakoodid</translation>
+<translation id="194174710521904357">Lubasite sellel saidil ajutiselt kasutada kolmanda osapoole küpsisefaile, mis tähendab väiksemat sirvimiskaitset, kuid saidi funktsioonid töötavad tõenäolisemalt ootuspäraselt.</translation>
 <translation id="1943994668912612445">Disain</translation>
 <translation id="1945968466830820669">Võite kaotada juurdepääsu oma organisatsiooni kontole või teie identiteet võidakse varastada. Chromium soovitab teil kohe oma parooli muuta.</translation>
 <translation id="1946849748901605102">12 × 15 tolli</translation>
@@ -661,6 +663,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2300306941146563769">Üles laadimata</translation>
 <translation id="230286397113210245">Nupp Ava inkognito aken, aktiveerige nupp, et avada uus inkognito aken ja sirvida privaatselt</translation>
 <translation id="2312234273148520048">Maitseained ja kastmed</translation>
+<translation id="2316087952091171402">Vähem kui <ph name="UPPER_ESTIMATE" />. Mõned saidid võivad teie järgmise külastuse ajal aeglasemalt laadida.</translation>
 <translation id="2316159751672436664">Isikupärastage Chrome OS-i seadetes oma juurdepääsetavuse tööriistu</translation>
 <translation id="2316887270356262533">Vabastab alla 1 MB. Mõne saidi laadimine võib järgmisel külastusel rohkem aega võtta.</translation>
 <translation id="2317259163369394535">Domeen <ph name="DOMAIN" /> nõuab kasutajanime ja parooli.</translation>
@@ -1105,6 +1108,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3271648667212143903"><ph name="ORIGIN" /> soovib ühenduse luua</translation>
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Sisestage <ph name="NUMBER_OF_DIGITS" />-kohaline kinnituskood</translation>
+<translation id="3272643614306383237">Alla 1 MB. Mõned saidid võivad teie järgmise külastuse ajal aeglasemalt laadida.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Administraatori reegel ei soovita seda faili sihtkohas <ph name="DESTINATION_NAME" /> avada}other{Administraatori reegel ei soovita neid faile sihtkohas <ph name="DESTINATION_NAME" /> avada}}</translation>
 <translation id="3282085321714087552">Teie organisatsioon, <ph name="ENROLLMENT_DOMAIN" />, on järgmistele veebisaitidele teatud teavet saatnud, näiteks seadete ja eeskirjade teavet.</translation>
 <translation id="3286372614333682499">vertikaalpaigutus</translation>
@@ -2872,6 +2876,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Teie vaikeotsingumootor võimaldab teil veebist otsida ja toetab Chrome'i funktsioone<ph name="END_BOLD" />, nagu otsimine aadressiribalt ja veebilehtedel olevatelt piltidelt. Funktsioon ei pruugi olla saadaval, kui teie otsingumootor seda ei toeta.</translation>
 <translation id="6934672428414710184">Nimi pärineb teie Google'i kontolt</translation>
 <translation id="6935082727755903526">Raamatupidamis- ja finantstöökohad</translation>
+<translation id="6935179587384421592"><ph name="SIZE" />. Mõned saidid võivad teie järgmise külastuse ajal aeglasemalt laadida.</translation>
 <translation id="6936976777388162184">See on komplekti kuuluv seade ning seda ei saa kioski- ja teabeseadme täienduse saamiseks registreerida.</translation>
 <translation id="6939469646605424232">Teledraamad</translation>
 <translation id="6944692733090228304">Sisestasite oma parooli saidile, mida ei halda <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Oma konto kaitsmiseks ärge kasutage oma parooli muudes rakendustes ega saitidel.</translation>
@@ -3137,6 +3142,7 @@ Lisateave:
 <translation id="7441864845853794192">Gurmeetoidud</translation>
 <translation id="7442725080345379071">Heleoranž</translation>
 <translation id="7444046173054089907">See sait on blokeeritud</translation>
+<translation id="7444176988908839653">{COUNT,plural, =0{Küpsisefailid blokeeritakse täna uuesti}=1{Küpsisefailid blokeeritakse homme uuesti}other{# päeva, kuni küpsisefailid uuesti blokeeritakse}}</translation>
 <translation id="7445762425076701745">Serveri identiteeti, millega olete ühenduses, ei saa täielikult valideerida. Olete ühenduses serveriga nime abil, mis kehtib ainult teie võrgus, mistõttu ei saa väline sertifitseerimisorgan selle omandiõigust valideerida. Kuna mõni sertifitseerimisorgan väljastab sertifikaate hoolimata nende nimedest, puudub igasugune võimalus tagada, et olete ühenduses soovitud veebisaidi, mitte ründajaga.</translation>
 <translation id="7447234474237738389">Rõivaste teenused</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> mm)</translation>
@@ -3503,6 +3509,7 @@ Lisateave:
 <translation id="81563721597823545">Hokivarustus</translation>
 <translation id="8161095570253161196">Jätka sirvimist</translation>
 <translation id="8163866351304776260">Neli auku vasakul</translation>
+<translation id="8164078261547504572">Kas soovite hinnalanguste kohta e-kirju?</translation>
 <translation id="8175796834047840627">Chrome pakub võimalust salvestada kaardid teie Google'i kontole, kuna olete sisse logitud. Seda käitumist saab seadetes muuta.</translation>
 <translation id="8176440868214972690">Seadme administraator on järgmistele veebisaitidele teatud teavet saatnud, näiteks seadete ja eeskirjade teavet.</translation>
 <translation id="817820454357658398">Naiste hügieenitooted</translation>
@@ -3943,6 +3950,7 @@ Lisateave:
 <translation id="9078912659001679888">Miksrid ja mahlapressid</translation>
 <translation id="9078964945751709336">Vaja on rohkem teavet</translation>
 <translation id="9080712759204168376">Tellimuse kokkuvõte</translation>
+<translation id="9084304544887760521">Kui jälgitavate kaupade hind mõnel saidil langeb, saate e-kirja aadressile <ph name="EMAIL" />.</translation>
 <translation id="908796725011587895">Kolledžisport</translation>
 <translation id="9089260154716455634">Eemalolekuaegade eeskirjad:</translation>
 <translation id="9090243919347147717">Manused</translation>
@@ -4027,6 +4035,7 @@ Lisateave:
 <translation id="944540589955480312">Kasuta oma Google'i kontole salvestatud paroole ja pääsuvõtmeid</translation>
 <translation id="945855313015696284">Vaadake allolevat teavet ja kustutage sobimatud kaardid</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, rakenduses Google Sites kiirelt uue saidi loomiseks vajutage tabulaatorit ja seejärel sisestusklahvi</translation>
+<translation id="947974362755924771">{COUNT,plural, =0{Chrome piirab täna küpsisefaile uuesti}=1{Chrome piirab homme küpsisefaile uuesti}other{Chrome piirab # päeva pärast küpsisefaile uuesti}}</translation>
 <translation id="949314938206378263">Küsisid selle saidi külastamiseks luba. Sinu vanem saab Family Linkis vastata.</translation>
 <translation id="950736567201356821">Kolm auku ülal</translation>
 <translation id="961663415146723894">Köide all</translation>

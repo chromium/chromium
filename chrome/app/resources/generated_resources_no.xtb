@@ -235,6 +235,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1175364870820465910">&amp;Skriv ut...</translation>
 <translation id="1175914831232945926">Siffer</translation>
 <translation id="1176471985365269981">Nettsteder som ikke har lov til å redigere filer eller mapper på enheten</translation>
+<translation id="1177440945615690056">Du kan koble til et hvilket som helst kvalifisert mobilnettverk i innstillingene</translation>
 <translation id="1177863135347784049">Tilpasset</translation>
 <translation id="1178581264944972037">Stans midlertidig</translation>
 <translation id="1178601482396475810">Administrer enhetssynkronisering</translation>
@@ -2213,6 +2214,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2709516037105925701">Autofyll</translation>
 <translation id="2710101514844343743">Bruks- og diagnostikkdata</translation>
 <translation id="271033894570825754">Ny</translation>
+<translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> er nå låst opp</translation>
 <translation id="2711073837061989559">Prøveprosjekter</translation>
 <translation id="2713106313042589954">Slå av kameraet</translation>
 <translation id="2713444072780614174">Hvit</translation>
@@ -3496,6 +3498,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3752253558646317685">Få barnet ditt til å løfte fingeren gjentatte ganger for å lagre fingeravtrykket</translation>
 <translation id="3753033997400164841">Lagre én gang. Bruk overalt</translation>
 <translation id="3753142252662437130">Fargefiltre</translation>
+<translation id="3753412199586870466">Åpne sidepanelet</translation>
 <translation id="3755411799582650620">Du kan nå også låse opp <ph name="DEVICE_TYPE" /> med <ph name="PHONE_NAME" />.</translation>
 <translation id="375636864092143889">Nettstedet bruker mikrofonen din</translation>
 <translation id="3756485814916578707">Caster skjermen</translation>
@@ -5040,6 +5043,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5015344424288992913">Konverterer proxy ...</translation>
 <translation id="5016491575926936899">Du kan sende tekstmeldinger fra datamaskinen, dele internettilkoblingen, svare på samtalevarsler og låse opp <ph name="DEVICE_TYPE" /> med telefonen.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="5016983299133677671">Prøv et nytt passord</translation>
+<translation id="5017529052065664584">De siste 15 minuttene</translation>
 <translation id="5017643436812738274">Du kan navigere på sider med en tekstmarkør. Trykk på Ctrl + Søk + 7 for å slå av dette.</translation>
 <translation id="5018207570537526145">Åpne nettstedet for utvidelsen</translation>
 <translation id="5018526990965779848">Send bruks- og diagnostikkdata. Hjelp til med å gjøre Android-opplevelsen din bedre ved å sende diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din.</translation>
@@ -7137,6 +7141,9 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6767566652486411142">Velg et annet språk</translation>
 <translation id="6767639283522617719">Kan ikke bli med på domenet. Kontroller at innstillingene for organisasjonsenheten er riktige.</translation>
 <translation id="6768034047581882264">Nettsteder som ikke har lov til å vise usikkert innhold</translation>
+<translation id="6769902329858794251"><ph name="BEGIN_PARAGRAPH1" />For å gi deg den beste opplevelsen samler <ph name="DEVICE_OS" /> inn maskinvaredata om enheter og deler dem med Google for å fastslå hvilke oppdateringer som skal leveres. Du kan velge å la Google bruke disse dataene for tilleggsformål, som brukerstøtte og forbedringer av <ph name="DEVICE_OS" />-opplevelsen og -tjenesten.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Du kan logge på denne enheten og se feltene oppført som chromeosflex_ i chrome://system for å se dataene som sendes til Google for filtrering av oppdateringer og i andre sammenhenger hvor du velger å dele data med Google.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />For mer informasjon om hvilke data <ph name="DEVICE_OS" /> kan dele med Google, og hvordan de brukes, se g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770042910635026163">Nettsteder du besøker som definerer interessene dine</translation>
 <translation id="6770602306803890733">Øker sikkerheten for deg og alle andre på nettet</translation>
 <translation id="6771503742377376720">Er en sertifiseringsinstans</translation>

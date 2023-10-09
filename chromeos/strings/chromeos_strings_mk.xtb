@@ -24,6 +24,7 @@
 <translation id="1154390310959620237">Може да приспособите само 5 кратенки. Избришете кратенка за да додадете нова.</translation>
 <translation id="1164939766849482256">Штедач на екран Dawn to dark</translation>
 <translation id="1167755866710282443">Отворете го менито за приспособување на клучевите. Повлечете го менито за преместување.</translation>
+<translation id="1174073918202301297">Кратенката е додадена</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> управува со овој <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1175951029573070619">Просечен (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Отстрани</translation>
@@ -688,6 +689,7 @@
 <translation id="6318437367327684789">засекогаш</translation>
 <translation id="6319207335391420837">Ажурирајте го фирмверот на <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Вклучете го штедачот на екранот</translation>
+<translation id="6324916366299863871">Изменете ја кратенката</translation>
 <translation id="6325525973963619867">Неуспешно</translation>
 <translation id="6331191339300272798">Автоматска темна тема</translation>
 <translation id="6340526405444716530">Персонализација</translation>
@@ -827,6 +829,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7388959671917308825">Вградена подлога за допир</translation>
 <translation id="7397270852490618635">Исклучи ја светлата тема</translation>
+<translation id="7401543881546089382">Избриши кратенка</translation>
 <translation id="741244894080940828">конверзија</translation>
 <translation id="7415801143053185905">Многу висока латенција на HTTP</translation>
 <translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{Вашиот администратор поставил <ph name="APP_NAME_1" /> да се стартува автоматски при секое најавување.}=2{Вашиот администратор поставил <ph name="APP_NAME_1" /> и <ph name="APP_NAME_2" /> да се стартуваат автоматски при секое најавување.}=3{Вашиот администратор поставил <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> и <ph name="APP_NAME_3" /> да се стартуваат автоматски при секое најавување.}one{Вашиот администратор поставил <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> и уште # апликација да се стартуваат автоматски при секое најавување.}other{Вашиот администратор поставил <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> и уште # апликации да се стартуваат автоматски при секое најавување.}}</translation>
@@ -901,6 +904,7 @@
 <translation id="7978412674231730200">Приватен клуч</translation>
 <translation id="7994702968232966508">EAP-метод</translation>
 <translation id="8004582292198964060">Прелистувач</translation>
+<translation id="8017679124341497925">Кратенката е изменета</translation>
 <translation id="802154636333426148">Неуспешно преземање</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Овозможете режим во автоматска боја</translation>
