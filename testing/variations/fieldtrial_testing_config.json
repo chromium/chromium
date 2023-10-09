@@ -3711,13 +3711,12 @@
             ],
             "experiments": [
                 {
-                    "name": "MaxAge180SuppressAfterFirstUse",
+                    "name": "MaxAge180",
                     "params": {
                         "UIClipboardMaximumAge": "180"
                     },
                     "enable_features": [
-                        "ClipboardMaximumAge",
-                        "SuppressClipboardSuggestionAfterFirstUsed"
+                        "ClipboardMaximumAge"
                     ]
                 }
             ]
