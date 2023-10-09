@@ -11,16 +11,13 @@
 #include "base/callback_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/autofill/validation_rules_storage_factory.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/ui/country_combobox_model.h"
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 #include "third_party/libaddressinput/messages.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -35,21 +32,8 @@ AddressEditorController::AddressEditorController(
       pdm_(*pdm),
       locale_(g_browser_process->GetApplicationLocale()),
       is_validatable_(is_validatable) {
-  UpdateCountries(/*model=*/nullptr);
-  UpdateEditorFields();
-}
-
-AddressEditorController::~AddressEditorController() = default;
-
-size_t AddressEditorController::GetCountriesSize() {
-  return countries_.size();
-}
-
-std::unique_ptr<ui::ComboboxModel>
-AddressEditorController::GetCountryComboboxModel() {
-  auto model = std::make_unique<CountryComboboxModel>();
   base::RepeatingCallback<bool(const std::string&)> filter;
-  if (is_filter_out_unsupported_countries()) {
+  if (should_filter_out_unsupported_countries()) {
     // TODO(crbug.com/1432505): remove temporary unsupported countries
     // filtering.
     filter = base::BindRepeating(
@@ -59,20 +43,25 @@ AddressEditorController::GetCountryComboboxModel() {
         },
         &pdm_.get());
   }
-  model->SetCountries(pdm_.get(), std::move(filter), locale_);
-  if (model->countries().size() != countries_.size())
-    UpdateCountries(model.get());
-  return model;
+  countries_.SetCountries(pdm_.get(), std::move(filter), locale_);
+  std::u16string profile_country_code =
+      profile_to_edit_.GetRawInfo(ADDRESS_HOME_COUNTRY);
+  CHECK(!profile_country_code.empty());
+  UpdateEditorFields(base::UTF16ToASCII(profile_country_code));
 }
 
-void AddressEditorController::UpdateEditorFields() {
+AddressEditorController::~AddressEditorController() = default;
+
+CountryComboboxModel& AddressEditorController::GetCountryComboboxModel() {
+  return countries_;
+}
+
+void AddressEditorController::UpdateEditorFields(
+    const std::string& country_code) {
   editor_fields_.clear();
-  std::string chosen_country_code;
-  if (chosen_country_index_ < countries_.size())
-    chosen_country_code = countries_[chosen_country_index_].first;
 
   std::vector<std::vector<AutofillAddressUIComponent>> components;
-  GetAddressComponents(chosen_country_code, locale_,
+  GetAddressComponents(country_code, locale_,
                        /*include_literals=*/false, &components,
                        &language_code_);
   profile_to_edit_.set_language_code(language_code_);
@@ -132,48 +121,6 @@ void AddressEditorController::SetProfileInfo(ServerFieldType type,
 std::u16string AddressEditorController::GetProfileInfo(ServerFieldType type) {
   // TDOD(mamir): Update the implementation to format strings properly.
   return profile_to_edit_.GetInfo(type, locale_);
-}
-
-void AddressEditorController::UpdateCountries(CountryComboboxModel* model) {
-  CountryComboboxModel local_model;
-  if (!model) {
-    local_model.SetCountries(pdm_.get(), /*filter=*/base::NullCallback(),
-                             locale_);
-    model = &local_model;
-  }
-
-  countries_.clear();
-  for (const std::unique_ptr<AutofillCountry>& country : model->countries()) {
-    if (country) {
-      countries_.emplace_back(country->country_code(), country->name());
-    } else {
-      // Separator, kept to make sure the size of the vector stays the same.
-      countries_.emplace_back("", u"");
-    }
-  }
-
-  std::u16string chosen_country(GetProfileInfo(ADDRESS_HOME_COUNTRY));
-  bool found = false;
-  for (size_t i = 0; i < countries_.size(); ++i) {
-    if (chosen_country == countries_[i].second) {
-      found = true;
-      chosen_country_index_ = i;
-      break;
-    }
-  }
-  // Make sure the the country was actually found in |countries_| and was not
-  // empty, otherwise set |chosen_country_index_| to index 0, which is the
-  // default country based on the locale.
-  if (!found || chosen_country.empty()) {
-    // But only if there is at least one country.
-    if (!countries_.empty()) {
-      chosen_country_index_ = 0;
-      SetProfileInfo(ADDRESS_HOME_COUNTRY,
-                     countries_[chosen_country_index_].second);
-    } else {
-      chosen_country_index_ = kInvalidCountryIndex;
-    }
-  }
 }
 
 const AutofillProfile& AddressEditorController::GetAddressProfile() {

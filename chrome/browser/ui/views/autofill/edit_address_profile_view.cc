@@ -88,7 +88,7 @@ void EditAddressProfileView::ShowForWebContents(
       address_editor_controller->AddIsValidChangedCallback(
           base::BindRepeating(&EditAddressProfileView::UpdateActionButtonState,
                               base::Unretained(this)));
-  UpdateActionButtonState(address_editor_controller->get_is_valid());
+  UpdateActionButtonState(address_editor_controller->is_valid());
 
   address_editor_view_ = AddChildView(std::make_unique<AddressEditorView>(
       std::move(address_editor_controller)));

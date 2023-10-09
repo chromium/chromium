@@ -66,34 +66,13 @@ class AddressEditorViewTest : public ChromeViewsTestBase {
   std::unique_ptr<AddressEditorView> view_;
 };
 
-TEST_F(AddressEditorViewTest, FieldValidation) {
-  EXPECT_TRUE(controller_->IsValid({autofill::PHONE_HOME_WHOLE_NUMBER, u"",
-                                    EditorField::LengthHint::HINT_SHORT, false,
-                                    EditorField::ControlType::TEXTFIELD_NUMBER},
-                                   u""))
-      << "Non-validatable field should always be valid.";
-
-  EXPECT_FALSE(
-      controller_->IsValid({autofill::PHONE_HOME_WHOLE_NUMBER, u"",
-                            EditorField::LengthHint::HINT_SHORT, true,
-                            EditorField::ControlType::TEXTFIELD_NUMBER},
-                           u""));
-
-  EXPECT_FALSE(
-      controller_->IsValid({autofill::PHONE_HOME_WHOLE_NUMBER, u"  ",
-                            EditorField::LengthHint::HINT_SHORT, true,
-                            EditorField::ControlType::TEXTFIELD_NUMBER},
-                           u""))
-      << "Whitespaces should be trimmed and the field is considered invalid.";
-}
-
 TEST_F(AddressEditorViewTest, FormValidation) {
-  EXPECT_TRUE(controller_->get_is_valid())
+  EXPECT_TRUE(controller_->is_valid())
       << "The form initailized from a full profile should be valid.";
 
   view_->SetTextInputFieldValueForTesting(
       autofill::ServerFieldType::ADDRESS_HOME_STREET_ADDRESS, u"");
-  EXPECT_FALSE(controller_->get_is_valid())
+  EXPECT_FALSE(controller_->is_valid())
       << "Street address is required for US, the form should be invalid.";
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_FORM_ERROR),
@@ -110,7 +89,7 @@ TEST_F(AddressEditorViewTest, FormValidation) {
       autofill::ServerFieldType::ADDRESS_HOME_STREET_ADDRESS, u"Some text");
   view_->SetTextInputFieldValueForTesting(
       autofill::ServerFieldType::ADDRESS_HOME_CITY, u"Some text");
-  EXPECT_TRUE(controller_->get_is_valid())
+  EXPECT_TRUE(controller_->is_valid())
       << "All the required fields are filled in, the form should be valid.";
   EXPECT_EQ(u"", view_->GetValidationErrorForTesting())
       << "The error message should be empty for a valid form.";
@@ -124,7 +103,7 @@ TEST_F(AddressEditorViewTest, NoValidatableFormValidation) {
 
   view_->SetTextInputFieldValueForTesting(
       autofill::ServerFieldType::ADDRESS_HOME_STREET_ADDRESS, u"");
-  EXPECT_TRUE(controller_->get_is_valid())
+  EXPECT_TRUE(controller_->is_valid())
       << "Street address is required for US, but the form is not validatable.";
   EXPECT_EQ(u"", view_->GetValidationErrorForTesting());
 }
@@ -132,14 +111,14 @@ TEST_F(AddressEditorViewTest, NoValidatableFormValidation) {
 TEST_F(AddressEditorViewTest, CountryChangeValidity) {
   view_->SetTextInputFieldValueForTesting(
       ServerFieldType::ADDRESS_HOME_STREET_ADDRESS, u"");
-  EXPECT_FALSE(controller_->get_is_valid())
+  EXPECT_FALSE(controller_->is_valid())
       << "Street address is required for US, the form should be invalid.";
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_FORM_ERROR),
             view_->GetValidationErrorForTesting());
 
-  view_->SetCountryCodeForTesting("AF");
-  EXPECT_FALSE(controller_->get_is_valid())
+  view_->SelectCountryForTesting(u"Afghanistan");
+  EXPECT_FALSE(controller_->is_valid())
       << "Street address is required for AF, the invalid state should not be "
          "reset.";
   EXPECT_EQ(l10n_util::GetStringUTF16(
@@ -150,11 +129,11 @@ TEST_F(AddressEditorViewTest, CountryChangeValidity) {
 TEST_F(AddressEditorViewTest, CountryChangeValidity2) {
   view_->SetTextInputFieldValueForTesting(ServerFieldType::ADDRESS_HOME_ZIP,
                                           u"");
-  EXPECT_FALSE(controller_->get_is_valid())
+  EXPECT_FALSE(controller_->is_valid())
       << "ZIP code is required for US, the form should be invalid";
 
-  view_->SetCountryCodeForTesting("BY");
-  EXPECT_TRUE(controller_->get_is_valid())
+  view_->SelectCountryForTesting(u"Belarus");
+  EXPECT_TRUE(controller_->is_valid())
       << "ZIP code is not required for BY, the form should be valid";
 }
 
