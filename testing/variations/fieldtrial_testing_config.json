@@ -8936,21 +8936,6 @@
             ]
         }
     ],
-    "ImmersiveFullscreen": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ImmersiveFullscreen"
-                    ]
-                }
-            ]
-        }
-    ],
     "ImprovedDownloadBubbleWarnings": [
         {
             "platforms": [
@@ -9745,6 +9730,21 @@
                         "AdjustGpuProcessPriority",
                         "MacAllowBackgroundingRenderProcesses",
                         "MacSetDefaultTaskRole"
+                    ]
+                }
+            ]
+        }
+    ],
+    "MacImmersiveFullscreen": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ImmersiveFullscreen"
                     ]
                 }
             ]
