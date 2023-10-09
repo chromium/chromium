@@ -4084,8 +4084,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordProtection.SampleReportSent" enum="Boolean"
-    expires_after="2023-09-21">
-  <owner>drubery@chromium.org</owner>
+    expires_after="2024-09-21">
+  <owner>skrakowi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs when an event where users reuse their password or focus on a password
