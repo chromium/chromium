@@ -266,6 +266,8 @@ blink_core_sources_dom = [
   "static_node_list.h",
   "static_range.cc",
   "static_range.h",
+  "subscriber.cc",
+  "subscriber.h",
   "synchronous_mutation_observer.cc",
   "synchronous_mutation_observer.h",
   "tag_collection.cc",

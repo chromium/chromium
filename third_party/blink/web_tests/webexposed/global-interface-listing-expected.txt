@@ -9445,6 +9445,13 @@ interface SubmitEvent : Event
     attribute @@toStringTag
     getter submitter
     method constructor
+interface Subscriber
+    attribute @@toStringTag
+    getter signal
+    method complete
+    method constructor
+    method error
+    method next
 interface SubtleCrypto
     attribute @@toStringTag
     method constructor

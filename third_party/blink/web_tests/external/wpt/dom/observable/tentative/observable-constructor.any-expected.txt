@@ -1,17 +1,16 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: Cannot read properties of undefined (reading 'next')
 PASS Observable constructor
-FAIL Subscriber interface is not constructible assert_implements: The Subscriber interface is not implemented undefined
+PASS Subscriber interface is not constructible
 PASS subscribe() can be called with no arguments
-FAIL Observable constructor calls initializer on subscribe assert_array_equals: should emit values synchronously lengths differ, expected array [1, 2, 3, "complete"] length 4, got [] length 0
-FAIL Observable error path called synchronously assert_array_equals: should emit error synchronously lengths differ, expected array [1, 2, object "Error: error"] length 3, got [] length 0
-FAIL Observable should error if initializer throws assert_array_equals: should emit values and the throw error synchronously lengths differ, expected array [1, object "Error: error"] length 2, got [] length 0
-FAIL Subscription does not emit values after completion assert_array_equals: should emit values synchronously, but not nexted values after complete lengths differ, expected array [1, 2, "complete"] length 3, got [] length 0
-FAIL Subscription does not emit values after error assert_array_equals: should emit values synchronously, but not nexted values after error lengths differ, expected array [1, 2, object "Error: error"] length 3, got [] length 0
-FAIL Completing or nexting a subscriber after an error does nothing assert_array_equals: should emit synchronously lengths differ, expected array [1, 2, object "Error: error"] length 3, got [] length 0
-FAIL Errors pushed to the subscriber that are not handled by the subscription are reported to the global assert_true: expected true got false
-FAIL Errors thrown in the initializer that are not handled by the subscription are reported to the global assert_true: expected true got false
-FAIL Subscription reports errors that are pushed after subscriber is closed by completion assert_array_equals: should emit values synchronously, but not error values after complete lengths differ, expected array [1, 2, "complete"] length 3, got [] length 0
-FAIL Errors thrown by initializer function after subscriber is closed by completion are reported assert_array_equals: should emit values synchronously, but not error after complete lengths differ, expected array [1, 2, "complete"] length 3, got [] length 0
+PASS Observable constructor calls initializer on subscribe
+PASS Observable error path called synchronously
+FAIL Observable should error if initializer throws assert_array_equals: should emit values and the throw error synchronously lengths differ, expected array [1, object "Error: error"] length 2, got [1] length 1
+PASS Subscription does not emit values after completion
+PASS Subscription does not emit values after error
+PASS Completing or nexting a subscriber after an error does nothing
+FAIL Errors pushed to the subscriber that are not handled by the subscription are reported to the global assert_true: Exception was reported to global expected true got false
+PASS Errors thrown in the initializer that are not handled by the subscription are reported to the global
+FAIL Subscription reports errors that are pushed after subscriber is closed by completion assert_true: Exception was reported to global expected true got false
+PASS Errors thrown by initializer function after subscriber is closed by completion are reported
 Harness: the test ran to completion.
 

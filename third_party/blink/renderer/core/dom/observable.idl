@@ -4,7 +4,7 @@
 
 // https://github.com/WICG/observable
 
-callback SubscribeCallback = void ();
+callback SubscribeCallback = void (Subscriber subscriber);
 callback ObserverCallback = void (any value);
 callback ObserverCompleteCallback = void ();
 
