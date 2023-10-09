@@ -1384,7 +1384,7 @@
         'os_type': 'android',
         'mixins': [
           'has_native_resultdb_integration',
-          'nougat',
+          'oreo_fleet',
           'bullhead',
         ],
         'test_suites': {

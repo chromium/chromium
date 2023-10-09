@@ -27,7 +27,8 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "N2G48C",
+            "device_os": "OPR4.170623.020",
+            "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "bullhead",
             "os": "Android"
