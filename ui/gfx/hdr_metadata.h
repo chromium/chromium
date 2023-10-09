@@ -79,6 +79,22 @@ struct COLOR_SPACE_EXPORT HdrMetadataSmpteSt2086 {
   }
 };
 
+// Nominal diffuse white level (NDWL) metadata.
+struct COLOR_SPACE_EXPORT HdrMetadataNdwl {
+  constexpr HdrMetadataNdwl() = default;
+  constexpr explicit HdrMetadataNdwl(float nits) : nits(nits) {}
+
+  // The number of nits of SDR white. Default to 203 nits from ITU-R BT.2408 and
+  // ISO 22028-5.
+  float nits = 203.f;
+
+  std::string ToString() const;
+
+  bool operator==(const HdrMetadataNdwl& rhs) const { return nits == rhs.nits; }
+
+  bool operator!=(const HdrMetadataNdwl& rhs) const { return !(*this == rhs); }
+};
+
 // HDR metadata for extended range color spaces.
 struct COLOR_SPACE_EXPORT HdrMetadataExtendedRange {
   constexpr HdrMetadataExtendedRange() = default;
@@ -119,6 +135,9 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
   // Content light level information (CLLI) metadata.
   absl::optional<HdrMetadataCta861_3> cta_861_3;
 
+  // The number of nits of SDR white.
+  absl::optional<HdrMetadataNdwl> ndwl;
+
   // Brightness points for extended range color spaces.
   absl::optional<HdrMetadataExtendedRange> extended_range;
 
@@ -151,7 +170,7 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
 
   bool operator==(const HDRMetadata& rhs) const {
     return cta_861_3 == rhs.cta_861_3 && smpte_st_2086 == rhs.smpte_st_2086 &&
-           extended_range == rhs.extended_range;
+           ndwl == rhs.ndwl && extended_range == rhs.extended_range;
   }
 
   bool operator!=(const HDRMetadata& rhs) const { return !(*this == rhs); }

@@ -448,6 +448,10 @@ mojom("hdr_metadata") {
           cpp = "::gfx::HdrMetadataSmpteSt2086"
         },
         {
+          mojom = "gfx.mojom.HdrMetadataNdwl"
+          cpp = "::gfx::HdrMetadataNdwl"
+        },
+        {
           mojom = "gfx.mojom.HdrMetadataExtendedRange"
           cpp = "::gfx::HdrMetadataExtendedRange"
         },

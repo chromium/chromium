@@ -7,22 +7,28 @@ module gfx.mojom;
 import "skia/public/mojom/skcolorspace_primaries.mojom";
 
 // Mojo equivalent of gfx::HdrMetadataCta861_3. No validation is done on any of
-// these values during serialization.
+// these values during deserialization.
 struct HdrMetadataCta861_3 {
   uint32 max_content_light_level;
   uint32 max_frame_average_light_level;
 };
 
 // Mojo equivalent of gfx::HdrMetadataSmpteSt2086. No validation is done on any
-// of these values during serialization.
+// of these values during deserialization.
 struct HdrMetadataSmpteSt2086 {
   skia.mojom.SkColorSpacePrimaries primaries;
   float luminance_max;
   float luminance_min;
 };
 
+// Mojo equivalent of gfx::HdrMetadataNdwl. No validation is done on
+// any of these values during deserialization.
+struct HdrMetadataNdwl {
+  float nits;
+};
+
 // Mojo equivalent of gfx::HdrMetadataExtendedRange. No validation is done on
-// any of these values during serialization.
+// any of these values during deserialization.
 struct HdrMetadataExtendedRange {
   float current_headroom;
   float desired_headroom;
@@ -32,5 +38,6 @@ struct HdrMetadataExtendedRange {
 struct HDRMetadata {
   HdrMetadataSmpteSt2086? smpte_st_2086;
   HdrMetadataCta861_3? cta_861_3;
+  HdrMetadataNdwl? ndwl;
   HdrMetadataExtendedRange? extended_range;
 };

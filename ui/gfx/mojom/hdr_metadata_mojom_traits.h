@@ -44,6 +44,14 @@ struct StructTraits<gfx::mojom::HdrMetadataSmpteSt2086DataView,
 };
 
 template <>
+struct StructTraits<gfx::mojom::HdrMetadataNdwlDataView, gfx::HdrMetadataNdwl> {
+  static float nits(const gfx::HdrMetadataNdwl& input) { return input.nits; }
+
+  static bool Read(gfx::mojom::HdrMetadataNdwlDataView data,
+                   gfx::HdrMetadataNdwl* output);
+};
+
+template <>
 struct StructTraits<gfx::mojom::HdrMetadataExtendedRangeDataView,
                     gfx::HdrMetadataExtendedRange> {
   static float current_headroom(const gfx::HdrMetadataExtendedRange& input) {
@@ -66,6 +74,10 @@ struct StructTraits<gfx::mojom::HDRMetadataDataView, gfx::HDRMetadata> {
   static const absl::optional<gfx::HdrMetadataSmpteSt2086>& smpte_st_2086(
       const gfx::HDRMetadata& input) {
     return input.smpte_st_2086;
+  }
+  static const absl::optional<gfx::HdrMetadataNdwl>& ndwl(
+      const gfx::HDRMetadata& input) {
+    return input.ndwl;
   }
   static const absl::optional<gfx::HdrMetadataExtendedRange>& extended_range(
       const gfx::HDRMetadata& input) {
