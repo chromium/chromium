@@ -162,8 +162,10 @@ MessagePortChannel MessagePort::Disentangle() {
   DCHECK(!IsNeutered());
   port_descriptor_.GiveDisentangledHandle(connector_->PassMessagePipe());
   connector_ = nullptr;
-  if (initially_entangled_port_) {
-    initially_entangled_port_->OnEntangledPortDisconnected();
+  // Using a variable here places the WeakMember pointer on the stack, ensuring
+  // it doesn't get GCed while it's being used.
+  if (auto* entangled_port = initially_entangled_port_.Get()) {
+    entangled_port->OnEntangledPortDisconnected();
   }
   OnEntangledPortDisconnected();
   return MessagePortChannel(std::move(port_descriptor_));
@@ -339,7 +341,10 @@ bool MessagePort::Accept(mojo::Message* mojo_message) {
   // lifetime of this function.
   std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope;
-  if (initially_entangled_port_ && message.sender_origin &&
+  // Using a variable here places the WeakMember pointer on the stack, ensuring
+  // it doesn't get GCed while it's being used.
+  auto* entangled_port = initially_entangled_port_.Get();
+  if (entangled_port && message.sender_origin &&
       message.sender_origin->IsSameOriginWith(context->GetSecurityOrigin()) &&
       context->IsSameAgentCluster(message.sender_agent_cluster_id) &&
       context->IsWindow()) {
@@ -363,9 +368,9 @@ bool MessagePort::Accept(mojo::Message* mojo_message) {
               ThreadScheduler::Current()->GetTaskAttributionTracker()) {
         // Since `initially_entangled_port_` is not nullptr, neither should be
         // its `post_message_task_container_`.
-        CHECK(initially_entangled_port_->post_message_task_container_);
+        CHECK(entangled_port->post_message_task_container_);
         scheduler::TaskAttributionInfo* parent_task =
-            initially_entangled_port_->post_message_task_container_
+            entangled_port->post_message_task_container_
                 ->GetAndDecrementPostMessageTask(message.parent_task_id);
         task_attribution_scope = tracker->CreateTaskScope(
             script_state, parent_task,

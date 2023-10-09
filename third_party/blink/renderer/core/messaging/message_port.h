@@ -188,7 +188,7 @@ class CORE_EXPORT MessagePort : public EventTarget,
 
   // The entangled port. Only set on initial entanglement, and gets unset as
   // soon as the ports are disentangled.
-  Member<MessagePort> initially_entangled_port_;
+  WeakMember<MessagePort> initially_entangled_port_;
 
   Member<PostMessageTaskContainer> post_message_task_container_;
 };
