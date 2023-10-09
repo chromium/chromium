@@ -1619,9 +1619,6 @@ extern const char kRecordPermissionExpirationTimestampsDescription[];
 extern const char kPowerBookmarkBackendName[];
 extern const char kPowerBookmarkBackendDescription[];
 
-extern const char kPowerBookmarksSidePanel[];
-extern const char kPowerBookmarksSidePanelDescription[];
-
 extern const char kSupportSearchSuggestionForPrerender2Name[];
 extern const char kSupportSearchSuggestionForPrerender2Description[];
 

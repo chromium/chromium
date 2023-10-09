@@ -1391,10 +1391,7 @@ void BrowserCommandController::InitCommandState() {
   }
 #endif
 
-  if ((browser_->is_type_normal() && features::IsChromeRefresh2023()) ||
-      base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
-    command_updater_.UpdateCommandEnabled(IDC_SHOW_BOOKMARK_SIDE_PANEL, true);
-  }
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_BOOKMARK_SIDE_PANEL, true);
 
   if (features::IsChromeRefresh2023()) {
     if (browser_->is_type_normal()) {

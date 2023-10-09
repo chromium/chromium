@@ -2809,10 +2809,6 @@ const char kPowerBookmarkBackendName[] = "Power bookmark backend";
 const char kPowerBookmarkBackendDescription[] =
     "Enables storing additional metadata to support power bookmark features.";
 
-const char kPowerBookmarksSidePanel[] = "Power bookmarks side panel";
-const char kPowerBookmarksSidePanelDescription[] =
-    "Enables the power bookmarks version of the bookmarks side panel content.";
-
 const char kBookmarksImprovedSaveFlowName[] = "Improved bookmarks save flow";
 const char kBookmarksImprovedSaveFlowDescription[] =
     "Enabled an improved save flow for bookmarks.";

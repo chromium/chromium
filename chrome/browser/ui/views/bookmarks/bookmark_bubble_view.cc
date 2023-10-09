@@ -329,10 +329,8 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
                   ->GetComboboxByUniqueId(kBookmarkFolderFieldId)
                   ->selected_index());
 
-    if (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
-      browser_->window()->MaybeShowFeaturePromo(
-          feature_engagement::kIPHPowerBookmarksSidePanelFeature);
-    }
+    browser_->window()->MaybeShowFeaturePromo(
+        feature_engagement::kIPHPowerBookmarksSidePanelFeature);
   }
 
   RecentlyUsedFoldersComboModel* GetFolderModel() {
@@ -403,27 +401,17 @@ void BookmarkBubbleView::ShowBubble(
 
   auto dialog_model_builder =
       ui::DialogModel::Builder(std::move(bubble_delegate_unique));
-  if (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
-    gfx::ImageSkia main_image = product_image.AsImageSkia();
+  gfx::ImageSkia main_image = product_image.AsImageSkia();
 
-    if (product_image.IsEmpty()) {
-      // Fetch image from ImageService asynchronously
-      FetchImageForUrl(url, profile);
-      // Display favicon while awaiting ImageService response
-      const auto centered_favicon = GetFaviconForWebContents(web_contents);
-      main_image = centered_favicon;
-    }
-
-    dialog_model_builder.SetMainImage(
-        ui::ImageModel::FromImageSkia(main_image));
-  } else {
-    dialog_model_builder.AddExtraButton(
-        base::BindRepeating(&BookmarkBubbleDelegate::OnEditButton,
-                            base::Unretained(bubble_delegate)),
-        ui::DialogModelButton::Params()
-            .SetLabel(l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_OPTIONS))
-            .AddAccelerator(ui::Accelerator(ui::VKEY_E, ui::EF_ALT_DOWN)));
+  if (product_image.IsEmpty()) {
+    // Fetch image from ImageService asynchronously
+    FetchImageForUrl(url, profile);
+    // Display favicon while awaiting ImageService response
+    const auto centered_favicon = GetFaviconForWebContents(web_contents);
+    main_image = centered_favicon;
   }
+
+  dialog_model_builder.SetMainImage(ui::ImageModel::FromImageSkia(main_image));
 
   ui::ElementIdentifier initially_focused_field = kBookmarkNameFieldId;
   std::u16string secondary_button_label =
@@ -511,9 +499,6 @@ void BookmarkBubbleView::ShowBubble(
     bool is_price_tracked = shopping_service->IsSubscribedFromCache(
         commerce::BuildUserSubscriptionForClusterId(
             product_info->product_cluster_id.value()));
-    if (!base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
-      dialog_model_builder.AddSeparator();
-    }
     dialog_model_builder.AddCustomField(
         std::make_unique<views::BubbleDialogModelHost::CustomView>(
             std::make_unique<PriceTrackingView>(

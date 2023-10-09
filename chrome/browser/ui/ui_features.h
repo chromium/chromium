@@ -60,8 +60,6 @@ BASE_DECLARE_FEATURE(kHaTSWebUI);
 BASE_DECLARE_FEATURE(kLightweightExtensionOverrideConfirmations);
 #endif
 
-BASE_DECLARE_FEATURE(kPowerBookmarksSidePanel);
-
 BASE_DECLARE_FEATURE(kQuickCommands);
 
 BASE_DECLARE_FEATURE(kResponsiveToolbar);

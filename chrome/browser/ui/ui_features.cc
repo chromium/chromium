@@ -104,11 +104,6 @@ BASE_FEATURE(kLightweightExtensionOverrideConfirmations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Enables Bookmarks++ Side Panel UI.
-BASE_FEATURE(kPowerBookmarksSidePanel,
-             "PowerBookmarksSidePanel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the QuickCommands UI surface. See https://crbug.com/1014639
 BASE_FEATURE(kQuickCommands,
              "QuickCommands",

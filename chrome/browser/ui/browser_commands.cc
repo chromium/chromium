@@ -1287,8 +1287,7 @@ void BookmarkCurrentTab(Browser* browser) {
   bool was_bookmarked_by_user = bookmarks::IsBookmarkedByUser(model, url);
 #if !BUILDFLAG(IS_ANDROID)
   PrefService* prefs = browser->profile()->GetPrefs();
-  if (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel) &&
-      !prefs->GetBoolean(
+  if (!prefs->GetBoolean(
           bookmarks::prefs::kAddedBookmarkSincePowerBookmarksLaunch)) {
     bookmarks::AddIfNotBookmarked(model, url, title, model->other_node());
     prefs->SetBoolean(bookmarks::prefs::kAddedBookmarkSincePowerBookmarksLaunch,

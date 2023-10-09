@@ -627,8 +627,7 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
                                      size_t start_child_index,
                                      MenuItemView* menu) {
   DCHECK_LE(start_child_index, parent->children().size());
-  if (parent == GetBookmarkModel()->other_node() &&
-      base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
+  if (parent == GetBookmarkModel()->other_node()) {
     menu->AppendMenuItem(
         IDC_SHOW_BOOKMARK_SIDE_PANEL,
         l10n_util::GetStringUTF16(IDS_BOOKMARKS_ALL_BOOKMARKS_OPEN_SIDE_PANEL));

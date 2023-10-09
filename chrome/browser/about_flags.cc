@@ -10337,10 +10337,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"power-bookmarks-side-panel", flag_descriptions::kPowerBookmarksSidePanel,
-     flag_descriptions::kPowerBookmarksSidePanelDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kPowerBookmarksSidePanel)},
-
     {"simplified-bookmark-save-flow",
      power_bookmarks::flag_descriptions::kSimplifiedBookmarkSaveFlowName,
      power_bookmarks::flag_descriptions::kSimplifiedBookmarkSaveFlowName,

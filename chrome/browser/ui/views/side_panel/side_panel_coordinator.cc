@@ -65,9 +65,7 @@ constexpr int kSidePanelContentContainerViewId = 42;
 constexpr int kSidePanelContentWrapperViewId = 43;
 
 SidePanelEntry::Id GetDefaultEntry() {
-  return base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)
-             ? SidePanelEntry::Id::kBookmarks
-             : SidePanelEntry::Id::kReadingList;
+  return SidePanelEntry::Id::kBookmarks;
 }
 
 void ConfigureControlButton(views::ImageButton* button) {

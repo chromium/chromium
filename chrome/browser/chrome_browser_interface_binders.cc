@@ -1160,17 +1160,9 @@ void PopulateChromeWebUIFrameBinders(
     }
   }
 
-  if ((history_clusters_service &&
-       history_clusters_service->is_journeys_feature_flag_enabled() &&
-       history_clusters_service->IsJourneysImagesEnabled()) ||
-      base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule) ||
-      base::FeatureList::IsEnabled(
-          ntp_features::kNtpHistoryClustersModuleLoad) ||
-      base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
-    RegisterWebUIControllerInterfaceBinder<
-        page_image_service::mojom::PageImageServiceHandler, HistoryUI,
-        HistoryClustersSidePanelUI, NewTabPageUI, BookmarksSidePanelUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      page_image_service::mojom::PageImageServiceHandler, HistoryUI,
+      HistoryClustersSidePanelUI, NewTabPageUI, BookmarksSidePanelUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       browser_command::mojom::CommandHandlerFactory, NewTabPageUI, WhatsNewUI>(

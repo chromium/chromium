@@ -129,27 +129,12 @@ class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
       this};
 };
 
-class BookmarkBubbleViewBrowserTest : public BaseBookmarkBubbleViewBrowserTest {
- public:
-  BookmarkBubbleViewBrowserTest() {
-    test_features_.InitWithFeatures(
-        {commerce::kShoppingList}, {features::kPowerBookmarksSidePanel});
-  }
-
-  BookmarkBubbleViewBrowserTest(const BookmarkBubbleViewBrowserTest&) = delete;
-  BookmarkBubbleViewBrowserTest& operator=(
-      const BookmarkBubbleViewBrowserTest&) = delete;
-
-  ~BookmarkBubbleViewBrowserTest() override = default;
-};
-
 class PowerBookmarkBubbleViewBrowserTest
     : public BaseBookmarkBubbleViewBrowserTest {
  public:
   PowerBookmarkBubbleViewBrowserTest() {
-    test_features_.InitWithFeatures(
-        {commerce::kShoppingList, features::kPowerBookmarksSidePanel},
-        {commerce::kShoppingListTrackByDefault});
+    test_features_.InitWithFeatures({commerce::kShoppingList},
+                                    {commerce::kShoppingListTrackByDefault});
   }
 
   PowerBookmarkBubbleViewBrowserTest(
@@ -159,32 +144,6 @@ class PowerBookmarkBubbleViewBrowserTest
 
   ~PowerBookmarkBubbleViewBrowserTest() override = default;
 };
-
-// Ash always has sync ON
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewBrowserTest,
-                       InvokeUi_bookmark_details_synced_off) {
-  ShowAndVerifyUi();
-}
-#endif
-
-IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewBrowserTest,
-                       InvokeUi_bookmark_details_synced_on) {
-  ShowAndVerifyUi();
-}
-
-// TODO(crbug.com/1473858): Flaky on Windows and Chrome OS.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_InvokeUi_bookmark_details_on_trackable_product \
-  DISABLED_InvokeUi_bookmark_details_on_trackable_product
-#else
-#define MAYBE_InvokeUi_bookmark_details_on_trackable_product \
-  InvokeUi_bookmark_details_on_trackable_product
-#endif
-IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewBrowserTest,
-                       MAYBE_InvokeUi_bookmark_details_on_trackable_product) {
-  ShowAndVerifyUi();
-}
 
 IN_PROC_BROWSER_TEST_F(PowerBookmarkBubbleViewBrowserTest,
                        InvokeUi_bookmark_details_on_trackable_product) {

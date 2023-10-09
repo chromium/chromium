@@ -41,10 +41,8 @@ BubbleSyncPromoView::BubbleSyncPromoView(
     account = signin_ui_util::GetSingleAccountForPromos(profile);
 
   const views::LayoutOrientation orientation =
-      (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel) &&
-       account.IsEmpty())
-          ? views::LayoutOrientation::kHorizontal
-          : views::LayoutOrientation::kVertical;
+      account.IsEmpty() ? views::LayoutOrientation::kHorizontal
+                        : views::LayoutOrientation::kVertical;
 
   std::unique_ptr<views::FlexLayout> layout =
       std::make_unique<views::FlexLayout>();

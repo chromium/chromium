@@ -15,18 +15,6 @@ class SidePanelBookmarksTest : public WebUIMochaBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SidePanelBookmarksTest, List) {
-  RunTest("side_panel/bookmarks/bookmarks_list_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(SidePanelBookmarksTest, DragManager) {
-  RunTest("side_panel/bookmarks/bookmarks_drag_manager_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(SidePanelBookmarksTest, BookmarkFolder) {
-  RunTest("side_panel/bookmarks/bookmark_folder_test.js", "mocha.run()");
-}
-
 // TODO(crbug.com/1396268): Flaky on Mac and Linux dbg. Re-enable this test.
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
 #define MAYBE_ShoppingList DISABLED_ShoppingList
