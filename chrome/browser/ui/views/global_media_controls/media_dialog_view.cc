@@ -18,6 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_metrics.h"
@@ -63,6 +64,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/views_features.h"
 
 using media_session::mojom::MediaSessionAction;
@@ -377,6 +379,7 @@ MediaDialogView::MediaDialogView(
           std::make_unique<global_media_controls::MediaItemUIListView>())),
       web_contents_for_presentation_request_(contents),
       entry_point_(entry_point) {
+  SetProperty(views::kElementIdentifierKey, kToolbarMediaBubbleElementId);
   // Enable layer based clipping to ensure children using layers are clipped
   // appropriately.
   SetPaintClientToLayer(true);

@@ -106,15 +106,19 @@ ToolbarController::GetDefaultElementInfoMap() {
   // TODO(crbug.com/1445573): Fill in observed identifier.
   return ToolbarController::ResponsiveElementInfoMap({
       {kToolbarExtensionsContainerElementId,
-       {IDS_OVERFLOW_MENU_ITEM_TEXT_EXTENSIONS}},
+       {IDS_OVERFLOW_MENU_ITEM_TEXT_EXTENSIONS,
+        kExtensionsMenuButtonElementId}},
       {kToolbarSidePanelContainerElementId,
        {IDS_OVERFLOW_MENU_ITEM_TEXT_SIDE_PANEL}},
       {kToolbarHomeButtonElementId, {IDS_OVERFLOW_MENU_ITEM_TEXT_HOME}},
-      {kToolbarChromeLabsButtonElementId, {IDS_OVERFLOW_MENU_ITEM_TEXT_LABS}},
+      {kToolbarChromeLabsButtonElementId,
+       {IDS_OVERFLOW_MENU_ITEM_TEXT_LABS, kToolbarChromeLabsBubbleElementId}},
       {kToolbarMediaButtonElementId,
-       {IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS}},
+       {IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS,
+        kToolbarMediaBubbleElementId}},
       {kToolbarDownloadButtonElementId,
-       {IDS_OVERFLOW_MENU_ITEM_TEXT_DOWNLOADS}},
+       {IDS_OVERFLOW_MENU_ITEM_TEXT_DOWNLOADS,
+        kToolbarDownloadBubbleElementId}},
       {kToolbarForwardButtonElementId, {IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD}},
   });
 }
