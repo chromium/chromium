@@ -6411,22 +6411,6 @@ AXObject::AXObjectVector AXObject::TableCellChildren() const {
   return result;
 }
 
-const AXObject* AXObject::TableRowParent() const {
-  const AXObject* row = ParentObjectUnignored();
-  while (row && !row->IsTableRowLikeRole() &&
-         row->RoleValue() == ax::mojom::blink::Role::kGenericContainer)
-    row = row->ParentObjectUnignored();
-  return row;
-}
-
-const AXObject* AXObject::TableParent() const {
-  const AXObject* table = ParentObjectUnignored();
-  while (table && !table->IsTableLikeRole() &&
-         table->RoleValue() == ax::mojom::blink::Role::kGenericContainer)
-    table = table->ParentObjectUnignored();
-  return table;
-}
-
 int AXObject::GetDOMNodeId() const {
   Node* node = GetNode();
   if (node)

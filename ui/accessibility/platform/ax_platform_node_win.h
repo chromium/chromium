@@ -1553,6 +1553,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
 
   UIARoleProperties GetUIARoleProperties();
 
+  AXPlatformNodeWin* GetUIATableAncestor() const;
+
   // Start and end offsets of an active composition
   gfx::Range active_composition_range_;
 

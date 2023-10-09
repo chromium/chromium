@@ -6173,12 +6173,16 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
   constexpr AXNodeID tree_item_id = 25;
   constexpr AXNodeID tab_id = 26;
   constexpr AXNodeID toggle_button_with_popup_id = 27;
+  constexpr AXNodeID generic_container_id = 28;
+  constexpr AXNodeID row_group_id = 29;
+  constexpr AXNodeID row_id = 30;
+  constexpr AXNodeID cell_id = 31;
 
   AXTreeUpdate update;
   update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
   update.has_tree_data = true;
   update.root_id = root_id;
-  update.nodes.resize(27);
+  update.nodes.resize(31);
   update.nodes[0].id = root_id;
   update.nodes[0].role = ax::mojom::Role::kRootWebArea;
   update.nodes[0].child_ids = {text_field_with_combo_box_id,
@@ -6196,7 +6200,8 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
                                tree_item_unchecked_id,
                                tree_item_id,
                                tab_id,
-                               toggle_button_with_popup_id};
+                               toggle_button_with_popup_id,
+                               generic_container_id};
   update.nodes[1].id = text_field_with_combo_box_id;
   update.nodes[1].role = ax::mojom::Role::kTextFieldWithComboBox;
   update.nodes[1].AddState(ax::mojom::State::kEditable);
@@ -6278,6 +6283,17 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
   update.nodes[26].AddIntAttribute(
       ax::mojom::IntAttribute::kHasPopup,
       static_cast<int32_t>(ax::mojom::HasPopup::kTrue));
+  update.nodes[27].role = ax::mojom::Role::kGenericContainer;
+  update.nodes[27].id = generic_container_id;
+  update.nodes[27].child_ids = {row_group_id};
+  update.nodes[28].role = ax::mojom::Role::kRowGroup;
+  update.nodes[28].id = row_group_id;
+  update.nodes[28].child_ids = {row_id};
+  update.nodes[29].role = ax::mojom::Role::kRow;
+  update.nodes[29].id = row_id;
+  update.nodes[29].child_ids = {cell_id};
+  update.nodes[30].role = ax::mojom::Role::kCell;
+  update.nodes[30].id = cell_id;
 
   Init(update);
 
@@ -6373,6 +6389,9 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
   EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ExpandCollapsePatternId,
                         UIA_TextChildPatternId}),
             GetSupportedPatternsFromNodeId(toggle_button_with_popup_id));
+  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_TableItemPatternId,
+                        UIA_TextChildPatternId}),
+            GetSupportedPatternsFromNodeId(cell_id));
 }
 
 TEST_F(AXPlatformNodeWinTest, GetPatternProviderExpandCollapsePattern) {

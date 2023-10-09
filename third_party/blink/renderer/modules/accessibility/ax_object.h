@@ -1447,8 +1447,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // skipping over generic containers.
   AXObjectVector TableRowChildren() const;
   AXObjectVector TableCellChildren() const;
-  const AXObject* TableRowParent() const;
-  const AXObject* TableParent() const;
 
   // Helpers for serialization.
   void SerializeBoundingBoxAttributes(ui::AXNodeData& dst) const;

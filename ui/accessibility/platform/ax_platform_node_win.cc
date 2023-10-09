@@ -8235,7 +8235,9 @@ AXPlatformNodeWin::GetPatternProviderFactoryMethod(PATTERNID pattern_id) {
       break;
 
     case UIA_GridItemPatternId:
-      if (IsUIACellOrTableHeader(GetRole())) {
+      // Griditem pattern should not be exposed unless the
+      // the gridpattern role is exposed on an ancestor.
+      if (IsUIACellOrTableHeader(GetRole()) && GetUIATableAncestor()) {
         return &PatternProvider<IGridItemProvider>;
       }
       break;
@@ -8565,6 +8567,18 @@ void AXPlatformNodeWin::NotifyAPIObserverForPropertyRequest(
     if (uiautomation_id_requested)
       observer.OnUIAutomationIdRequested();
   }
+}
+
+AXPlatformNodeWin* AXPlatformNodeWin::GetUIATableAncestor() const {
+  AXPlatformNodeWin* parent = const_cast<AXPlatformNodeWin*>(this);
+  while (parent) {
+    if (IsUIATableLike(parent->GetRole())) {
+      return parent;
+    }
+    parent = parent->GetParentPlatformNodeWin();
+  }
+
+  return nullptr;
 }
 
 // static
