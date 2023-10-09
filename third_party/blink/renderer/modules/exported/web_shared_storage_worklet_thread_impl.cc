@@ -19,6 +19,8 @@ mojom::blink::WorkletGlobalScopeCreationParamsPtr ToBlinkMojomType(
     mojom::WorkletGlobalScopeCreationParamsPtr global_scope_creation_params) {
   return mojom::blink::WorkletGlobalScopeCreationParams::New(
       KURL(global_scope_creation_params->script_url),
+      SecurityOrigin::CreateFromUrlOrigin(
+          global_scope_creation_params->starter_origin),
       Vector<mojom::blink::OriginTrialFeature>(
           global_scope_creation_params->origin_trial_features),
       global_scope_creation_params->devtools_token,

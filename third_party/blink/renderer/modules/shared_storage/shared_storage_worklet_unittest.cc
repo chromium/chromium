@@ -478,6 +478,8 @@ class SharedStorageWorkletTest : public PageTestBase {
             std::move(receiver)),
         mojom::blink::WorkletGlobalScopeCreationParams::New(
             KURL(kModuleScriptSource),
+            /*starter_origin=*/
+            SecurityOrigin::Create(KURL(kModuleScriptSource)),
             Vector({mojom::blink::OriginTrialFeature::kSharedStorageAPI}),
             /*devtools_worker_token=*/base::UnguessableToken(),
             std::move(pending_devtools_host_remote)),

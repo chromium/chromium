@@ -961,7 +961,7 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
 
     auto global_scope_creation_params =
         blink::mojom::WorkletGlobalScopeCreationParams::New(
-            script_source_url_, origin_trial_features_,
+            script_source_url_, shared_storage_origin_, origin_trial_features_,
             devtools_handle_->devtools_token(),
             devtools_handle_->BindNewPipeAndPassRemote());
 
