@@ -44,11 +44,7 @@ FocusgroupFlags AutomaticGridFocusgroupStructureInfo::Flags() {
 unsigned AutomaticGridFocusgroupStructureInfo::ColumnCount() {
   // The actual column count of a table is not stored on an HTMLTableElement,
   // but it is on its associated layout object.
-  auto* section = Table()->FirstSection();
-  if (!section)
-    return 0;
-
-  return section->NumEffectiveColumns();
+  return Table()->EffectiveColumnCount();
 }
 
 Element* AutomaticGridFocusgroupStructureInfo::PreviousCellInRow(

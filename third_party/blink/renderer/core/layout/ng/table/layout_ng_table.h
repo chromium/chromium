@@ -204,6 +204,8 @@ class CORE_EXPORT LayoutNGTable : public LayoutBlock {
   unsigned AbsoluteColumnToEffectiveColumn(
       unsigned absolute_column_index) const;
 
+  unsigned EffectiveColumnCount() const;
+
  protected:
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();

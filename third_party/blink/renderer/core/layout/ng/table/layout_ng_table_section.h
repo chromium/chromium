@@ -76,8 +76,6 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutBlock {
 
   unsigned NumRows() const;
 
-  unsigned NumEffectiveColumns() const;
-
  protected:
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();

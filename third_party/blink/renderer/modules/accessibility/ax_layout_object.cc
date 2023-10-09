@@ -1040,11 +1040,11 @@ unsigned AXLayoutObject::ColumnCount() const {
   if (AriaRoleAttribute() != ax::mojom::blink::Role::kUnknown)
     return AXNodeObject::ColumnCount();
 
-  auto* table_section = FirstTableSection(GetLayoutObject());
-  if (!table_section)
-    return AXNodeObject::ColumnCount();
+  if (const auto* table = DynamicTo<LayoutNGTable>(GetLayoutObject())) {
+    return table->EffectiveColumnCount();
+  }
 
-  return table_section->NumEffectiveColumns();
+  return AXNodeObject::ColumnCount();
 }
 
 unsigned AXLayoutObject::RowCount() const {

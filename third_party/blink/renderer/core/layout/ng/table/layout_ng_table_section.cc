@@ -128,18 +128,6 @@ LayoutBox* LayoutNGTableSection::CreateAnonymousBoxWithSameTypeAs(
   return CreateAnonymousWithParent(*parent);
 }
 
-// TODO(crbug.com/1079133): Used by AXLayoutObject::IsDataTable, verify
-// behaviour is correct. Consider removing these methods.
-unsigned LayoutNGTableSection::NumEffectiveColumns() const {
-  NOT_DESTROYED();
-  const LayoutNGTable* table = Table();
-  DCHECK(table);
-  wtf_size_t column_count = table->ColumnCount();
-  if (column_count == 0)
-    return 0;
-  return table->AbsoluteColumnToEffectiveColumn(column_count - 1) + 1;
-}
-
 // TODO(crbug.com/1079133): Used by AXLayoutObject, verify behaviour is
 // correct, and if caching is required.
 unsigned LayoutNGTableSection::NumRows() const {

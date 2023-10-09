@@ -459,4 +459,13 @@ unsigned LayoutNGTable::AbsoluteColumnToEffectiveColumn(
   return effective_column_index;
 }
 
+unsigned LayoutNGTable::EffectiveColumnCount() const {
+  NOT_DESTROYED();
+  const wtf_size_t column_count = ColumnCount();
+  if (column_count == 0) {
+    return 0;
+  }
+  return AbsoluteColumnToEffectiveColumn(column_count - 1) + 1;
+}
+
 }  // namespace blink
