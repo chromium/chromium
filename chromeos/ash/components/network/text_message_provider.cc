@@ -86,8 +86,9 @@ bool TextMessageProvider::IsAllowTextMessagesPolicySet() {
 }
 
 bool TextMessageProvider::IsMessageSuppressedByUser(const std::string& guid) {
-  return network_metadata_store_->GetUserTextMessageSuppressionState(guid) ==
-         UserTextMessageSuppressionState::kSuppress;
+  return network_metadata_store_ &&
+         network_metadata_store_->GetUserTextMessageSuppressionState(guid) ==
+             UserTextMessageSuppressionState::kSuppress;
 }
 
 bool TextMessageProvider::ShouldAllowTextMessages(const std::string& guid) {
@@ -108,7 +109,6 @@ void TextMessageProvider::RemoveObserver(Observer* observer) {
 
 void TextMessageProvider::SetNetworkMetadataStore(
     NetworkMetadataStore* network_metadata_store) {
-  CHECK(network_metadata_store);
   network_metadata_store_ = network_metadata_store;
 }
 

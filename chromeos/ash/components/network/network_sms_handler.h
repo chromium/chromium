@@ -122,7 +122,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   // a new handler should be created for the device's new object path.
   void OnObjectPathChanged(const base::Value& object_path);
 
-  std::string GetCurrentNetworkGuid(const base::Value::Dict& device_properties);
+  std::string GetNetworkGuid(absl::optional<std::string> iccid);
 
   base::ObserverList<Observer, true>::Unchecked observers_;
   std::unique_ptr<NetworkSmsDeviceHandler> device_handler_;

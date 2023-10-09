@@ -298,6 +298,9 @@ void NetworkHandler::ShutdownPrefServices() {
   managed_cellular_pref_handler_->SetDevicePrefs(nullptr);
   ui_proxy_config_service_.reset();
   hidden_network_handler_->SetNetworkMetadataStore(nullptr);
+  if (features::IsSuppressTextMessagesEnabled()) {
+    text_message_provider_->SetNetworkMetadataStore(nullptr);
+  }
   network_metadata_store_.reset();
 }
 

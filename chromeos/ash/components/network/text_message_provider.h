@@ -73,7 +73,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) TextMessageProvider
   raw_ptr<ManagedNetworkConfigurationHandler>
       managed_network_configuration_handler_ = nullptr;
 
-  raw_ptr<NetworkMetadataStore> network_metadata_store_ = nullptr;
+  raw_ptr<NetworkMetadataStore, DanglingUntriaged | ExperimentalAsh>
+      network_metadata_store_ = nullptr;
 
   base::ObserverList<TextMessageProvider::Observer> observers_;
 };
