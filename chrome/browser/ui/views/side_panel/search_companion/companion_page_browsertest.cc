@@ -653,6 +653,17 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     ukm_recorder->ExpectEntryMetric(entry, metric_name, expected_value);
   }
 
+  void ExpectUkmEntryAtIndexToNotHaveMetric(ukm::TestUkmRecorder* ukm_recorder,
+                                            int index,
+                                            const char* metric_name) {
+    const char* entry_name = ukm::builders::Companion_PageView::kEntryName;
+    EXPECT_LE(index, static_cast<int>(
+                         ukm_recorder->GetEntriesByName(entry_name).size()));
+    auto* entry = ukm_recorder->GetEntriesByName(entry_name)[index];
+
+    EXPECT_FALSE(ukm_recorder->EntryHasMetric(entry, metric_name));
+  }
+
   size_t requests_received_on_server() const {
     return requests_received_on_server_;
   }
@@ -740,12 +751,20 @@ IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,
   // Load a page on the active tab and open companion side panel
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion,
+                                 SidePanelOpenTrigger::kComboboxSelected);
 
   WaitForCompanionToBeLoaded();
+  WaitForHistogram("Companion.SidePanel.OpenTrigger");
+  WaitForHistogram("SidePanel.Companion.ShowTriggered");
   EXPECT_EQ(1u, requests_received_on_server());
   EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kSearchCompanion);
+
+  base::StatisticsRecorder::ForgetHistogramForTesting(
+      "Companion.SidePanel.OpenTrigger");
+  base::StatisticsRecorder::ForgetHistogramForTesting(
+      "SidePanel.Companion.ShowTriggered");
 
   // Click a link on the companion page. It should open in the same tab and
   // refresh the companion.
@@ -755,12 +774,19 @@ IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,
   EvalJs(script);
   nav_observer.Wait();
 
-  // Close side panel and verify UKM of the second companion entry.
+  // Close side panel and verify that open and show triggers are not recorded in
+  // UKM or histograms for the navigation.
   side_panel_coordinator()->Close();
   ExpectUkmCount(&ukm_recorder, 2u);
-  ExpectUkmEntryAt(
-      &ukm_recorder, 1, ukm::builders::Companion_PageView::kOpenTriggerName,
-      static_cast<int>(SidePanelOpenTrigger::kOpenedInNewTabFromSidePanel));
+  ExpectUkmEntryAt(&ukm_recorder, 0,
+                   ukm::builders::Companion_PageView::kOpenTriggerName,
+                   static_cast<int>(SidePanelOpenTrigger::kComboboxSelected));
+  ExpectUkmEntryAtIndexToNotHaveMetric(
+      &ukm_recorder, 1, ukm::builders::Companion_PageView::kOpenTriggerName);
+  EXPECT_FALSE(base::StatisticsRecorder::FindHistogram(
+      "Companion.SidePanel.OpenTrigger"));
+  EXPECT_FALSE(base::StatisticsRecorder::FindHistogram(
+      "SidePanel.Companion.ShowTriggered"));
 }
 
 // This interaction tests that pages in the tab frame opened from the side panel
@@ -995,17 +1021,22 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, LinkClickOnCompanionPage) {
                                  SidePanelOpenTrigger::kComboboxSelected);
 
   WaitForCompanionToBeLoaded();
+  WaitForHistogram("Companion.SidePanel.OpenTrigger");
+  WaitForHistogram("SidePanel.Companion.ShowTriggered");
   EXPECT_EQ(1u, requests_received_on_server());
   EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kSearchCompanion);
 
   base::StatisticsRecorder::ForgetHistogramForTesting(
       "Companion.SidePanel.OpenTrigger");
+  base::StatisticsRecorder::ForgetHistogramForTesting(
+      "SidePanel.Companion.ShowTriggered");
 
   // Click a link. It should open in a new tab and open the companion side
   // panel. Wait for that event.
   EXPECT_TRUE(ExecJs("document.getElementById('some_link').click();"));
   WaitForHistogram("Companion.SidePanel.OpenTrigger");
+  WaitForHistogram("SidePanel.Companion.ShowTriggered");
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
 
   // Close side panel and verify UKM. There should be only one entry since the
@@ -1015,6 +1046,14 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, LinkClickOnCompanionPage) {
   ExpectUkmEntryAt(
       &ukm_recorder, 0, ukm::builders::Companion_PageView::kOpenTriggerName,
       static_cast<int>(SidePanelOpenTrigger::kOpenedInNewTabFromSidePanel));
+
+  // Switch to previous tab, close side panel, and verify UKM for previous tab.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  side_panel_coordinator()->Close();
+  ExpectUkmCount(&ukm_recorder, 2u);
+  ExpectUkmEntryAt(&ukm_recorder, 1,
+                   ukm::builders::Companion_PageView::kOpenTriggerName,
+                   static_cast<int>(SidePanelOpenTrigger::kComboboxSelected));
 }
 
 IN_PROC_BROWSER_TEST_F(

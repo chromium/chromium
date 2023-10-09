@@ -145,12 +145,6 @@ void CompanionPageHandler::DidFinishNavigation(
   ukm::SourceId ukm_source_id =
       web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
   metrics_logger_ = std::make_unique<CompanionMetricsLogger>(ukm_source_id);
-  auto* tab_helper =
-      companion::CompanionTabHelper::FromWebContents(web_contents());
-  auto open_trigger = tab_helper->GetAndResetMostRecentSidePanelOpenTrigger();
-  if (open_trigger.has_value()) {
-    metrics_logger_->RecordOpenTrigger(open_trigger);
-  }
 
   // Only notify the companion UI the page changed if we can share
   // information about the page URL by user consent.
