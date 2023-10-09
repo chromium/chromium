@@ -404,14 +404,10 @@ class ChromePrintContext : public PrintContext {
 
       // Draw a line for a page boundary if this isn't the first page.
       if (page_index != pages->front()) {
-        context.Save();
-        context.SetStrokeThickness(1);
-        context.SetStrokeColor(Color(0, 0, 255));
-        context.DrawLine(
-            gfx::Point(0, current_height - 1),
-            gfx::Point(spool_size_in_pixels.width(), current_height - 1),
-            AutoDarkMode::Disabled());
-        context.Restore();
+        const gfx::Rect boundary_line_rect(0, current_height - 1,
+                                           spool_size_in_pixels.width(), 1);
+        context.FillRect(boundary_line_rect, Color(0, 0, 255),
+                         AutoDarkMode::Disabled());
       }
 
       WebPrintPageDescription description =
