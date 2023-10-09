@@ -8,6 +8,7 @@
 
 #include "base/features.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/rust_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -24,6 +25,8 @@ namespace base {
 
 namespace {
 using serde_json_lenient::ContextPointer;
+
+const char kSecurityJsonParsingTime[] = "Security.JSONParser.ParsingTime";
 
 ContextPointer& ListAppendList(ContextPointer& ctx, size_t reserve) {
   auto& value = reinterpret_cast<base::Value&>(ctx);
@@ -135,6 +138,7 @@ absl::optional<Value> JSONReader::Read(StringPiece json,
                                        int options,
                                        size_t max_depth) {
 #if BUILDFLAG(BUILD_RUST_JSON_READER)
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(kSecurityJsonParsingTime);
   if (UsingRust()) {
     JSONReader::Result result = DecodeJSONInRust(json, options, max_depth);
     if (!result.has_value()) {
@@ -166,6 +170,7 @@ absl::optional<Value::Dict> JSONReader::ReadDict(StringPiece json,
 JSONReader::Result JSONReader::ReadAndReturnValueWithError(StringPiece json,
                                                            int options) {
 #if BUILDFLAG(BUILD_RUST_JSON_READER)
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(kSecurityJsonParsingTime);
   if (UsingRust()) {
     return DecodeJSONInRust(json, options, internal::kAbsoluteMaxDepth);
   } else {

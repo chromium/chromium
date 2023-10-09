@@ -19,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -69,9 +70,15 @@ TEST_P(JSONReaderTest, InvalidString) {
 }
 
 TEST_P(JSONReaderTest, SimpleBool) {
+#if BUILDFLAG(BUILD_RUST_JSON_READER)
+  base::HistogramTester histograms;
+#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
   absl::optional<Value> root = JSONReader::Read("true  ");
   ASSERT_TRUE(root);
   EXPECT_TRUE(root->is_bool());
+#if BUILDFLAG(BUILD_RUST_JSON_READER)
+  histograms.ExpectTotalCount("Security.JSONParser.ParsingTime", 1);
+#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
 }
 
 TEST_P(JSONReaderTest, EmbeddedComments) {
