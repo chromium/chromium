@@ -697,7 +697,7 @@
   {
     "name": "autofill-parse-vcn-card-on-file-standalone-cvc-fields",
     "owners": [ "jsaul@google.com", "alexandertekle@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "autofill-prevent-overriding-prefilled-values",
@@ -7793,7 +7793,7 @@
   {
     "name": "sync-autofill-wallet-usage-data",
     "owners": [ "alexandertekle@google.com", "treib" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "sync-chromeos-explicit-passphrase-sharing",
