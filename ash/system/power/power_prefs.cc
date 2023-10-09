@@ -153,7 +153,7 @@ void UpdateAdaptiveChargingConfigsFromFinch(
   // The max delay that AdaptiveCharging applies to hold the charging is capped
   // by this percentile of the device's charge history durations.
   values->adaptive_charging_max_delay_percentile =
-      base::GetFieldTrialParamByFeatureAsInt(
+      base::GetFieldTrialParamByFeatureAsDouble(
           ash::features::kAdaptiveCharging,
           "adaptive_charging_max_delay_percentile",
           kDefaultAdaptiveChargingMaxDelayPercentile);
