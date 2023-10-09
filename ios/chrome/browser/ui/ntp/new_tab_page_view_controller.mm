@@ -132,6 +132,9 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 // YES if the NTP is in the middle of animating an omnibox focus.
 @property(nonatomic, assign) BOOL isAnimatingOmniboxFocus;
 
+// `YES` when notifications indicate the omnibox is focused.
+@property(nonatomic, assign) BOOL omniboxFocused;
+
 @end
 
 @implementation NewTabPageViewController {
@@ -650,6 +653,13 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   return [self.headerViewController pinnedOffsetY] - [self heightAboveFeed];
 }
 
+- (void)omniboxDidBecomeFirstResponder {
+  self.omniboxFocused = YES;
+  if (IsIOSLargeFakeboxEnabled()) {
+    self.headerViewController.view.alpha = 0.01;
+  }
+}
+
 - (void)omniboxWillResignFirstResponder {
   if (IsIOSLargeFakeboxEnabled() && [self fakeOmniboxPinnedToTop]) {
     // Return early to allow the omnibox defocus animation show.
@@ -664,6 +674,9 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   }
 
   self.omniboxFocused = NO;
+  if (IsIOSLargeFakeboxEnabled()) {
+    self.headerViewController.view.alpha = 1;
+  }
   [self shiftTilesDownForOmniboxDefocus];
 }
 

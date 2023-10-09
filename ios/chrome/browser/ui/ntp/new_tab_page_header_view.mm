@@ -58,7 +58,7 @@ const CGFloat kEndButtonOmniboxTrailingSpace = 7.0;
 const CGFloat kHintLabelFakeboxLeadingSpace = 18.0;
 const CGFloat kHintLabelOmniboxLeadingSpace = 13.0;
 const CGFloat kLargeFakeboxHintLabelFakeboxLeadingSpace = 26.0;
-const CGFloat kLargeFakeboxHintLabelOmniboxLeadingSpace = 21.0;
+const CGFloat kLargeFakeboxHintLabelOmniboxLeadingSpace = 20.0;
 
 // The amount to inset the Fakebox from the rest of the modules on Home, when
 // Large Fakebox is enabled.
@@ -116,8 +116,8 @@ UIColor* FakeboxBottomColor() {
 
 // Returns the background color for the NTP Header view. This is the color
 // that shows when the fakebox is scrolled up.
-UIColor* HeaderBackgroundColor() {
-  if (IsIOSLargeFakeboxEnabled()) {
+UIColor* HeaderBackgroundColor(id<UITraitEnvironment> environment) {
+  if (IsIOSLargeFakeboxEnabled() && IsSplitToolbarMode(environment)) {
     return [UIColor colorNamed:kBackgroundColor];
   } else if (IsMagicStackEnabled()) {
     return [UIColor colorNamed:@"ntp_background_color"];
@@ -332,7 +332,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
         constraintEqualToAnchor:self.fakeLocationBar.heightAnchor
                        constant:-ntp_header::kHintLabelHeightMargin],
     [self.searchHintLabel.centerYAnchor
-        constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
+        constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor
+                       constant:-1.0],
   ]];
   // Set a button the same size as the fake omnibox as the accessibility
   // element. If the hint is the only accessible element, when the fake omnibox
@@ -471,7 +472,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // that content does not appear beneath it. Since the NTP background might be
   // a gradient, the opacity must be 0 by default.
   self.backgroundColor =
-      [HeaderBackgroundColor() colorWithAlphaComponent:percent];
+      [HeaderBackgroundColor(self) colorWithAlphaComponent:percent];
 
   if (IsIOSLargeFakeboxEnabled()) {
     [self setFakeboxBackgroundWithProgress:percent];

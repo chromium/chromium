@@ -477,7 +477,7 @@
 }
 
 - (void)locationBarDidBecomeFirstResponder {
-  self.NTPViewController.omniboxFocused = YES;
+  [self.NTPViewController omniboxDidBecomeFirstResponder];
 }
 
 - (void)locationBarWillResignFirstResponder {
