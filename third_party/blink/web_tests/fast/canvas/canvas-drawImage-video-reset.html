@@ -9,7 +9,7 @@
 </head>
 <body>
   <canvas id="canvas"></canvas>
-  <video id="video"></video>
+  <video id="video" preload="auto"></video>
   <script>
   var length = 150;
   var canvas = document.getElementById("canvas");
@@ -20,7 +20,6 @@
   var video = document.getElementById("video");
   video.requestVideoFrameCallback(drawImageToCanvas);
   video.src = "resources/canvas_video.webm";
-  video.play();
 
   function drawImageToCanvas() {
     ctx.fillStyle = "blue";
@@ -28,7 +27,6 @@
     ctx.drawImage(video, 0, 0);
     ctx.globalAlpha = 0.5;
     ctx.drawImage(video, 0, 60);
-    video.srcObject = null;
     if (window.testRunner)
       testRunner.notifyDone();
   }
