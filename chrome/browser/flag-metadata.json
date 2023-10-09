@@ -3246,7 +3246,7 @@
   {
     "name": "enable-notification-image-drag",
     "owners": ["andrewxu", "dmblack"],
-    "expiry_milestone": 120
+    "expiry_milestone": 122
   },
   {
     "name": "enable-notifications-revamp",
