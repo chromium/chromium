@@ -790,7 +790,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.ClearDataDialogOnClearAppDataAccepted"
-    enum="Boolean" expires_after="M114">
+    enum="Boolean" expires_after="M126">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -800,7 +800,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.ClearDataDialogOnUninstallAccepted"
-    enum="Boolean" expires_after="M114">
+    enum="Boolean" expires_after="M126">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -811,7 +811,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TrustedWebActivity.DelegatedNotificationSmallIconFallback"
     enum="TrustedWebActivityDelegatedNotificationSmallIconFallback"
-    expires_after="M114">
+    expires_after="M126">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -868,21 +868,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TrustedWebActivity.LocationUpdateErrorCode"
-    enum="TrustedWebActivityLocationErrorCode" expires_after="2022-10-23">
-  <obsolete>
-    Deprecated 2022-09. no longer needed.
-  </obsolete>
-  <owner>eirage@chromium.org</owner>
-  <owner>peconn@chromium.org</owner>
-  <summary>
-    Records an error code when we get a new location update or location error
-    from the Trusted Web Activity client app. Record
-    &quot;LocationUpdateError.NONE&quot; (value = 0) if there is no error and
-    the geoposition is valid.
-  </summary>
-</histogram>
-
 <histogram name="TrustedWebActivity.Notification.PermissionRequestResult"
     enum="ContentSetting" expires_after="2023-11-01">
   <owner>mvanouwerkerk@chromium.org</owner>
@@ -899,7 +884,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.ShareTargetRequest"
-    enum="WebShareTargetMethod" expires_after="M114">
+    enum="WebShareTargetMethod" expires_after="M126">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>Recorded when data is shared via a Trusted Web Activity.</summary>
