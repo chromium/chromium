@@ -53,6 +53,8 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
   SegmentationPlatformServiceFactoryTest() {
     scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
         kSegmentationPlatformRefreshResultsSwitch);
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        kSegmentationPlatformDisableModelExecutionDelaySwitch);
   }
 
   ~SegmentationPlatformServiceFactoryTest() override = default;

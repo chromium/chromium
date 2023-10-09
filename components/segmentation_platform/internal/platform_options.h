@@ -8,9 +8,8 @@
 namespace segmentation_platform {
 
 struct PlatformOptions {
-  explicit PlatformOptions(bool force_refresh_results);
-  PlatformOptions(bool force_refresh_results,
-                  bool disable_model_execution_delay);
+  explicit PlatformOptions(bool force_refresh_results,
+                           bool disable_model_execution_delay = false);
 
   ~PlatformOptions() = default;
 

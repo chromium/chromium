@@ -4,13 +4,25 @@
 
 #include "components/segmentation_platform/internal/selection/result_refresh_manager.h"
 
+#include "base/metrics/field_trial_params.h"
 #include "components/segmentation_platform/internal/selection/selection_utils.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/features.h"
 
 namespace segmentation_platform {
 
 namespace {
+
+const int kModelInitializationTimeoutMs = 5000;
+
+int GetModelInitializationTimeoutMs() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      features::kSegmentationPlatformModelInitializationDelay,
+      kModelInitializationDelay, kModelInitializationTimeoutMs);
+}
+
 // Checks if the model result supports multi output model.
 bool SupportMultiOutput(SegmentResultProvider::SegmentResult* result) {
   return result && result->result.has_output_config();
@@ -55,19 +67,41 @@ ResultRefreshManager::~ResultRefreshManager() = default;
 
 void ResultRefreshManager::Initialize(
     std::map<std::string, std::unique_ptr<SegmentResultProvider>>
-        result_providers) {
-  result_providers_ = std::move(result_providers);
-}
-void ResultRefreshManager::RefreshModelResults(
+        result_providers,
     ExecutionService* execution_service) {
-  for (const auto& config : config_holder_->configs()) {
-    GetCachedResultOrRunModel(config.get(), execution_service);
+  result_providers_ = std::move(result_providers);
+  execution_service_ = execution_service;
+
+  delay_state_ = platform_options_.disable_model_execution_delay
+                     ? DelayState::DELAY_EXECUTED
+                     : DelayState::DELAY_NOT_HIT;
+}
+
+void ResultRefreshManager::RefreshModelResults(bool is_startup) {
+  if (delay_state_ == DelayState::DELAY_NOT_HIT && is_startup) {
+    // Set a delay timeout to execute all the models after the delay
+    // `kModelInitializationTimeoutMs` is hit. This is to get finch seed to load
+    // before model execution.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ResultRefreshManager::RefreshModelResultsInternal,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::Milliseconds(GetModelInitializationTimeoutMs()));
+    return;
+  }
+  if (delay_state_ == DelayState::DELAY_EXECUTED) {
+    RefreshModelResultsInternal();
   }
 }
 
-void ResultRefreshManager::GetCachedResultOrRunModel(
-    const Config* config,
-    ExecutionService* execution_service) {
+void ResultRefreshManager::RefreshModelResultsInternal() {
+  delay_state_ = DelayState::DELAY_EXECUTED;
+  for (const auto& config : config_holder_->configs()) {
+    GetCachedResultOrRunModel(config.get());
+  }
+}
+
+void ResultRefreshManager::GetCachedResultOrRunModel(const Config* config) {
   if (!config->auto_execute_and_cache ||
       metadata_utils::ConfigUsesLegacyOutput(config)) {
     return;
@@ -85,28 +119,26 @@ void ResultRefreshManager::GetCachedResultOrRunModel(
   result_options->ignore_db_scores = false;
   result_options->save_results_to_db = true;
 
-  result_options->callback =
-      base::BindOnce(&ResultRefreshManager::OnGetCachedResultOrRunModel,
-                     weak_ptr_factory_.GetWeakPtr(), segment_result_provider,
-                     config, execution_service);
+  result_options->callback = base::BindOnce(
+      &ResultRefreshManager::OnGetCachedResultOrRunModel,
+      weak_ptr_factory_.GetWeakPtr(), segment_result_provider, config);
 
   segment_result_provider->GetSegmentResult(std::move(result_options));
 }
 
-void ResultRefreshManager::OnModelUpdated(proto::SegmentInfo* segment_info,
-                                          ExecutionService* execution_service) {
+void ResultRefreshManager::OnModelUpdated(proto::SegmentInfo* segment_info) {
   const Config* config =
       config_holder_->GetConfigForSegmentId(segment_info->segment_id());
-  if (config->segmentation_key.empty()) {
+  if (config->segmentation_key.empty() ||
+      delay_state_ == DelayState::DELAY_NOT_HIT) {
     return;
   }
-  GetCachedResultOrRunModel(config, execution_service);
+  GetCachedResultOrRunModel(config);
 }
 
 void ResultRefreshManager::OnGetCachedResultOrRunModel(
     SegmentResultProvider* segment_result_provider,
     const Config* config,
-    ExecutionService* execution_service,
     std::unique_ptr<SegmentResultProvider::SegmentResult> result) {
   SegmentResultProvider::ResultState result_state = result->state;
 
@@ -141,7 +173,7 @@ void ResultRefreshManager::OnGetCachedResultOrRunModel(
   cached_result_writer_->UpdatePrefsIfExpired(config, client_result,
                                               platform_options_);
 
-  CollectTrainingDataIfNeeded(config, execution_service, result_state);
+  CollectTrainingDataIfNeeded(config, execution_service_, result_state);
 }
 
 }  // namespace segmentation_platform

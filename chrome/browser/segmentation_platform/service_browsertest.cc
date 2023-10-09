@@ -93,6 +93,8 @@ class SegmentationPlatformTest : public PlatformBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch("segmentation-platform-refresh-results");
+    command_line->AppendSwitch(
+        "segmentation-platform-disable-model-execution-delay");
   }
 
   bool HasClientResultPref(const std::string& segmentation_key) {

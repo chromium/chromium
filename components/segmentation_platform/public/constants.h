@@ -225,6 +225,11 @@ const char kContextualPageActionModelInputReaderMode[] = "has_reader_mode";
 // Finch parameter key for sampling rate of the model execution results.
 constexpr char kModelExecutionSamplingRateKey[] =
     "model_execution_sampling_rate";
+
+// Finch parameter key for introducing delay(in ms) in model initialization at
+// startup.
+constexpr char kModelInitializationDelay[] = "model_initialization_delay";
+
 }  // namespace segmentation_platform
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_CONSTANTS_H_

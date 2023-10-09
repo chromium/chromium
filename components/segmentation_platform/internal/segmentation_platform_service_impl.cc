@@ -247,7 +247,8 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
         FROM_HERE, std::move(callback));
   }
 
-  result_refresh_manager_->Initialize(CreateSegmentResultProviders());
+  result_refresh_manager_->Initialize(CreateSegmentResultProviders(),
+                                      &execution_service_);
 
   // Run any daily maintenance tasks.
   RunDailyTasks(/*is_startup=*/true);
@@ -280,7 +281,7 @@ void SegmentationPlatformServiceImpl::OnSegmentationModelUpdated(
   }
 
   if (!metadata_utils::SegmentUsesLegacyOutput(segment_info.segment_id())) {
-    result_refresh_manager_->OnModelUpdated(&segment_info, &execution_service_);
+    result_refresh_manager_->OnModelUpdated(&segment_info);
     request_dispatcher_->OnModelUpdated(segment_info.segment_id());
   } else {
     execution_service_.OnNewModelInfoReadyLegacy(segment_info);
@@ -294,6 +295,7 @@ void SegmentationPlatformServiceImpl::OnSegmentationModelUpdated(
 }
 
 void SegmentationPlatformServiceImpl::OnModelRefreshNeeded() {
+  // TODO(b/303707413) : Migrate this to use RRM instead.
   execution_service_.RefreshModelResults();
 }
 
@@ -303,7 +305,7 @@ void SegmentationPlatformServiceImpl::OnServiceStatusChanged() {
 }
 
 void SegmentationPlatformServiceImpl::RunDailyTasks(bool is_startup) {
-  result_refresh_manager_->RefreshModelResults(&execution_service_);
+  result_refresh_manager_->RefreshModelResults(is_startup);
   execution_service_.RunDailyTasks(is_startup);
   storage_service_->ExecuteDatabaseMaintenanceTasks(is_startup);
 

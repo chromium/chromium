@@ -68,7 +68,8 @@ class ResultRefreshManagerTest : public testing::Test {
 
     result_refresh_manager_ = std::make_unique<ResultRefreshManager>(
         config_holder_.get(), cached_result_writer_.get(),
-        PlatformOptions(false));
+        PlatformOptions(/*force_refresh_results=*/false,
+                        /*disable_model_execution_delay=*/true));
   }
 
   std::unique_ptr<CachedResultWriter> SetupCachedResultWriter() {
@@ -160,9 +161,8 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultsSuccess) {
       result_providers;
   result_providers[kTestClient1] = std::move(client1_result_provider_);
   result_providers[kTestClient2] = std::move(client2_result_provider_);
-  result_refresh_manager_->Initialize(std::move(result_providers));
-  result_refresh_manager_->RefreshModelResults(nullptr);
-
+  result_refresh_manager_->Initialize(std::move(result_providers), nullptr);
+  result_refresh_manager_->RefreshModelResults(/*is_startup=*/true);
   VerifyIfResultUpdatedInPrefs(kTestClient1, result_from_db_for_client1);
   VerifyIfResultUpdatedInPrefs(kTestClient2, result_from_model_for_client2);
 }
@@ -190,11 +190,48 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultWithNoResult) {
       result_providers;
   result_providers[kTestClient1] = std::move(client1_result_provider_);
   result_providers[kTestClient2] = std::move(client2_result_provider_);
-  result_refresh_manager_->Initialize(std::move(result_providers));
-  result_refresh_manager_->RefreshModelResults(nullptr);
-
+  result_refresh_manager_->Initialize(std::move(result_providers), nullptr);
+  result_refresh_manager_->RefreshModelResults(/*is_startup=*/true);
   VerifyIfResultNotUpdatedInPrefs(kTestClient1);
   VerifyIfResultNotUpdatedInPrefs(kTestClient2);
+}
+
+TEST_F(ResultRefreshManagerTest, TestOnModelUpdated) {
+  // Client 1 gets model result from database.
+  proto::PredictionResult result_from_db_for_client1 =
+      metadata_utils::CreatePredictionResult(
+          /*model_scores=*/{0.8},
+          test_utils::GetTestOutputConfigForBinaryClassifier(),
+          /*timestamp=*/base::Time::Now(), /*model_version=*/1);
+
+  ExpectSegmentResult(
+      kSegmentId1, client1_result_provider_.get(), result_from_db_for_client1,
+      SegmentResultProvider::ResultState::kServerModelDatabaseScoreUsed,
+      /*ignore_db_scores=*/false);
+
+  std::map<std::string, std::unique_ptr<SegmentResultProvider>>
+      result_providers;
+  result_providers[kTestClient1] = std::move(client1_result_provider_);
+  result_refresh_manager_->Initialize(std::move(result_providers), nullptr);
+  proto::SegmentInfo segment_info;
+  segment_info.set_segment_id(kSegmentId1);
+  result_refresh_manager_->OnModelUpdated(&segment_info);
+  VerifyIfResultUpdatedInPrefs(kTestClient1, result_from_db_for_client1);
+}
+
+TEST_F(ResultRefreshManagerTest, TestOnModelUpdatedWithDelay) {
+  result_refresh_manager_ = std::make_unique<ResultRefreshManager>(
+      config_holder_.get(), cached_result_writer_.get(),
+      PlatformOptions(/*force_refresh_results=*/false));
+
+  std::map<std::string, std::unique_ptr<SegmentResultProvider>>
+      result_providers;
+  result_providers[kTestClient1] = std::move(client1_result_provider_);
+  result_refresh_manager_->Initialize(std::move(result_providers), nullptr);
+  proto::SegmentInfo segment_info;
+  segment_info.set_segment_id(kSegmentId1);
+  result_refresh_manager_->OnModelUpdated(&segment_info);
+  VerifyIfResultNotUpdatedInPrefs(kTestClient1);
 }
 
 }  // namespace
