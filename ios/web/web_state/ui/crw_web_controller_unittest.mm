@@ -1269,9 +1269,9 @@ class ScriptExecutionTest : public WebTestWithWebController {
               script_executed = true;
             }];
 
-    WaitForCondition(^{
+    EXPECT_TRUE(WaitForCondition(^{
       return script_executed;
-    });
+    }));
 
     if (error) {
       *error = script_error;

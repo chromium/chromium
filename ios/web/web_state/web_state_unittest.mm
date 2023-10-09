@@ -114,9 +114,9 @@ TEST_F(WebStateTest, UserScriptExecution) {
 TEST_F(WebStateTest, LoadingProgress) {
   EXPECT_FLOAT_EQ(0.0, web_state()->GetLoadingProgress());
   ASSERT_TRUE(LoadHtml("<html></html>"));
-  WaitForCondition(^bool() {
+  EXPECT_TRUE(WaitForCondition(^bool() {
     return web_state()->GetLoadingProgress() == 1.0;
-  });
+  }));
 }
 
 // Tests that reload with web::ReloadType::NORMAL is no-op when navigation
@@ -177,9 +177,9 @@ TEST_F(WebStateTest, Snapshot) {
             SK_ColorWHITE);
         snapshot_complete = true;
       }));
-  WaitForCondition(^{
+  EXPECT_TRUE(WaitForCondition(^{
     return snapshot_complete;
-  });
+  }));
 }
 
 // Tests that the create PDF method returns a PDF of a rendered html page when
