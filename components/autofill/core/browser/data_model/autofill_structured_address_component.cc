@@ -420,10 +420,6 @@ bool AddressComponent::UnsetValueForTypeIfSupported(
   return true;
 }
 
-bool AddressComponent::ParseValueAndAssignSubcomponentsByMethod() {
-  return false;
-}
-
 std::vector<const re2::RE2*>
 AddressComponent::GetParseRegularExpressionsByRelevance() const {
   return {};
@@ -436,11 +432,7 @@ void AddressComponent::ParseValueAndAssignSubcomponents() {
     subcomponent->SetValue(std::u16string(), VerificationStatus::kParsed);
   }
 
-  // First attempt, try to parse by method.
-  if (ParseValueAndAssignSubcomponentsByMethod())
-    return;
-
-  // Second attempt, try to parse by expressions.
+  // First attempt, try to parse by expressions.
   if (ParseValueAndAssignSubcomponentsByRegularExpressions())
     return;
 

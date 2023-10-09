@@ -234,11 +234,7 @@ class AddressComponent {
   bool UnsetValueForTypeIfSupported(ServerFieldType field_type);
 
   // Parses |value_| to assign values to the subcomponents.
-  // The method uses 3 stages:
-  //
-  // * Use |ParseValueAndAssignSubcomponentsByMethod()|. This stage exists
-  // to catch special cases and may fail. The method is virtual and can be
-  // implemented on the type level.
+  // The method uses 2 stages:
   //
   // * Use |ParseValueAndAssignSubcomponentsByRegularExpressions()|. This stage
   // uses a list of regular expressions acquired by the virtual method
@@ -394,12 +390,6 @@ class AddressComponent {
   // Returns pointers to regular expressions sorted by their relevance.
   virtual std::vector<const re2::RE2*> GetParseRegularExpressionsByRelevance()
       const;
-
-  // Method to parse |value_| into the values of |subcomponents_|. The
-  // purpose of this method is to cover special cases. This method returns true
-  // on success and is allowed to fail. On failure, the |subcomponents_| are
-  // not altered.
-  virtual bool ParseValueAndAssignSubcomponentsByMethod();
 
   // This method parses |value_| to assign values to the subcomponents.
   // The method is virtual and can be reimplemented per type.

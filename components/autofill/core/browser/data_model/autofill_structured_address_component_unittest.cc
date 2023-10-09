@@ -79,24 +79,6 @@ class TestCompoundNameAddressComponent : public AddressComponent {
   }
 };
 
-// Creates a compound name for testing purposes that uses a method for parsing.
-class TestCompoundNameMethodParsedAddressComponent : public AddressComponent {
- public:
-  TestCompoundNameMethodParsedAddressComponent()
-      : AddressComponent(NAME_FULL, {}, MergeMode::kDefault) {
-    RegisterChildNode(std::make_unique<TestAtomicFirstNameAddressComponent>());
-    RegisterChildNode(std::make_unique<TestAtomicMiddleNameAddressComponent>());
-    RegisterChildNode(std::make_unique<TestAtomicLastNameAddressComponent>());
-  }
-
-  bool ParseValueAndAssignSubcomponentsByMethod() override {
-    // Assigns everything to the first name.
-    GetNodeForTypeForTesting(NAME_FIRST)
-        ->SetValue(GetValue(), VerificationStatus::kParsed);
-    return true;
-  }
-};
-
 // Creates a compound name for testing purposes that uses an expression to
 // parse.
 class TestCompoundNameRegExParsedAddressComponent : public AddressComponent {
@@ -914,20 +896,6 @@ TEST(AutofillStructuredAddressAddressComponent,
 
   EXPECT_EQ(compound_component.GetValue(), std::u16string());
   EXPECT_EQ(compound_component.GetValueForType(NAME_FIRST), std::u16string());
-  EXPECT_EQ(compound_component.GetValueForType(NAME_MIDDLE), std::u16string());
-  EXPECT_EQ(compound_component.GetValueForType(NAME_LAST), std::u16string());
-}
-
-// Tests parsing using a defined method.
-TEST(AutofillStructuredAddressAddressComponent,
-     TestParseValueAndAssignSubcomponentsByMethod) {
-  TestCompoundNameMethodParsedAddressComponent compound_component;
-  compound_component.SetValue(u"Dr. Strangelove",
-                              VerificationStatus::kObserved);
-  compound_component.ParseValueAndAssignSubcomponents();
-
-  EXPECT_EQ(compound_component.GetValue(), u"Dr. Strangelove");
-  EXPECT_EQ(compound_component.GetValueForType(NAME_FIRST), u"Dr. Strangelove");
   EXPECT_EQ(compound_component.GetValueForType(NAME_MIDDLE), std::u16string());
   EXPECT_EQ(compound_component.GetValueForType(NAME_LAST), std::u16string());
 }

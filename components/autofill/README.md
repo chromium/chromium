@@ -347,7 +347,6 @@ See [go/autofill-new-fieldtypes-in-data-model-dd](http://go/autofill-new-fieldty
     concepts (e.g. street name and house number). See
     `AddressComponent::ParseValueAndAssignSubcomponents()`.
       * Parsing goes through a chain until one method succeeds:
-        * Via `ParseValueAndAssignSubcomponentsByMethod()`
         * Via `ParseValueAndAssignSubcomponentsByRegularExpressions()`
         * Finally `ParseValueAndAssignSubcomponentsByFallbackMethod()`
       * This is driven by the implementations of
