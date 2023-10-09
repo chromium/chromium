@@ -202,7 +202,6 @@ crbug.com/1490570 [ linux amd-0x7340 angle-vulkan passthrough ] ContextLost_WebG
 
 crbug.com/1419558 [ angle-swiftshader clang-coverage fuchsia fuchsia-board-qemu-x64 google-0xc0de ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
 
-crbug.com/1484919 [ ventura intel-0x3e9b angle-metal graphite-enabled ] ContextLost_WebGLContextLostFromQuantity [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
