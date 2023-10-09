@@ -176,7 +176,6 @@ void AccessibilityController::Install(blink::WebLocalFrame* frame) {
                                                       ui::kAXModeComplete);
   elements_ = std::make_unique<WebAXObjectProxyList>(
       frame->GetAgentGroupScheduler()->Isolate(), *ax_context_);
-  frame->View()->GetSettings()->SetInlineTextBoxAccessibilityEnabled(true);
 
   AccessibilityControllerBindings::Install(weak_factory_.GetWeakPtr(), frame);
 }

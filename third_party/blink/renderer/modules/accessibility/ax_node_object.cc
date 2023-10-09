@@ -4369,8 +4369,7 @@ bool AXNodeObject::ShouldLoadInlineTextBoxes() const {
 
   // TODO(crrev.com/c/4884899): Switch to using AXMode instead of a setting.
   // Unfortunately, the popup has a different setting than the main document.
-  Settings* settings = GetDocument()->GetSettings();
-  if (!settings || !settings->GetInlineTextBoxAccessibilityEnabled()) {
+  if (!AXObjectCache().GetAXMode().has_mode(ui::AXMode::kInlineTextBoxes)) {
     return false;
   }
 

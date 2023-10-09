@@ -700,12 +700,6 @@
       initial: false,
     },
 
-    // If true, static text nodes expose inline text box children.
-    {
-      name: "inlineTextBoxAccessibilityEnabled",
-      initial: false,
-    },
-
     // If true, context menu will be shown on mouse up instead of mouse down.
     // Typically enabled on Windows to match platform convention.
     {

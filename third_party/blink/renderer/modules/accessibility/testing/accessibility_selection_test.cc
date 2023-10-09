@@ -348,6 +348,13 @@ AccessibilitySelectionTest::AccessibilitySelectionTest(
     LocalFrameClient* local_frame_client)
     : AccessibilityTest(local_frame_client) {}
 
+void AccessibilitySelectionTest::SetUp() {
+  RenderingTest::SetUp();
+  // Do not include noisy inline textboxes in selection tests.
+  ax_context_ =
+      std::make_unique<AXContext>(GetDocument(), ui::AXMode::kWebContents);
+}
+
 std::string AccessibilitySelectionTest::GetCurrentSelectionText() const {
   const SelectionInDOMTree selection =
       GetFrame().Selection().GetSelectionInDOMTree();

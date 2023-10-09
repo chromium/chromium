@@ -48,17 +48,15 @@ TEST_F(AccessibilityTest, GetClosestElementSearchesAmongAncestors) {
       )HTML");
 
   AXObject* button = GetAXObjectByElementId("button");
-  // Need to force child update for layout tree traversals to occur
-  button->SetNeedsToUpdateChildren();
-  button->UpdateChildrenIfNecessary();
+  button->LoadInlineTextBoxes();
   // Guaranteed to have no element since this should be the AX node created from
   // pseudo element content
   const AXObject* nodeWithNoElement =
-      button->DeepestFirstChildIncludingIgnored();
+      button->DeepestFirstChildIncludingIgnored()->ParentObject();
   ASSERT_EQ(nullptr, nodeWithNoElement->GetElement());
 
-  EXPECT_TRUE(nodeWithNoElement->GetClosestElement() ==
-              button->GetElement()->GetPseudoElement(kPseudoIdBefore));
+  EXPECT_EQ(nodeWithNoElement->GetClosestElement(),
+            button->GetElement()->GetPseudoElement(kPseudoIdBefore));
 }
 
 TEST_F(AccessibilityTest, IsEditableInTextField) {
@@ -376,8 +374,9 @@ TEST_F(AccessibilityTest, SimpleTreeNavigation) {
                    <span id="ignored_b" aria-hidden="true"></span>
                    <button id="button">button</button>)HTML");
 
-  const AXObject* body = GetAXBodyObject();
+  AXObject* body = GetAXBodyObject();
   ASSERT_NE(nullptr, body);
+  body->LoadInlineTextBoxes();
   const AXObject* input = GetAXObjectByElementId("input");
   ASSERT_NE(nullptr, input);
   ASSERT_NE(nullptr, GetAXObjectByElementId("ignored_a"));
@@ -400,12 +399,17 @@ TEST_F(AccessibilityTest, SimpleTreeNavigation) {
   ASSERT_NE(nullptr, paragraph->LastChildIncludingIgnored());
   EXPECT_EQ(ax::mojom::Role::kStaticText,
             paragraph->LastChildIncludingIgnored()->RoleValue());
-  ASSERT_NE(nullptr, paragraph->DeepestFirstChildIncludingIgnored());
+  ASSERT_NE(nullptr, paragraph->FirstChildIncludingIgnored()->ParentObject());
   EXPECT_EQ(ax::mojom::Role::kStaticText,
-            paragraph->DeepestFirstChildIncludingIgnored()->RoleValue());
-  ASSERT_NE(nullptr, paragraph->DeepestLastChildIncludingIgnored());
+            paragraph->DeepestFirstChildIncludingIgnored()
+                ->ParentObject()
+                ->RoleValue());
+  ASSERT_NE(nullptr,
+            paragraph->DeepestLastChildIncludingIgnored()->ParentObject());
   EXPECT_EQ(ax::mojom::Role::kStaticText,
-            paragraph->DeepestLastChildIncludingIgnored()->RoleValue());
+            paragraph->DeepestLastChildIncludingIgnored()
+                ->ParentObject()
+                ->RoleValue());
 
   EXPECT_EQ(paragraph->PreviousSiblingIncludingIgnored(),
             GetAXObjectByElementId("ignored_a"));
@@ -433,9 +437,12 @@ TEST_F(AccessibilityTest, SimpleTreeNavigation) {
   ASSERT_NE(nullptr, button->LastChildIncludingIgnored());
   EXPECT_EQ(ax::mojom::Role::kStaticText,
             button->LastChildIncludingIgnored()->RoleValue());
-  ASSERT_NE(nullptr, button->DeepestFirstChildIncludingIgnored());
+  ASSERT_NE(nullptr,
+            button->DeepestFirstChildIncludingIgnored()->ParentObject());
   EXPECT_EQ(ax::mojom::Role::kStaticText,
-            paragraph->DeepestFirstChildIncludingIgnored()->RoleValue());
+            paragraph->DeepestFirstChildIncludingIgnored()
+                ->ParentObject()
+                ->RoleValue());
 }
 
 TEST_F(AccessibilityTest, LangAttrInteresting) {
@@ -495,7 +502,8 @@ TEST_F(AccessibilityTest, TreeNavigationWithIgnoredContainer) {
       <p id="C">more text</p>
       )HTML");
 
-  const AXObject* root = GetAXRootObject();
+  AXObject* root = GetAXRootObject();
+  root->LoadInlineTextBoxes();
   const AXObject* body = GetAXBodyObject();
   ASSERT_EQ(3, body->ChildCountIncludingIgnored());
   ASSERT_EQ(1, body->ChildAtIncludingIgnored(1)->ChildCountIncludingIgnored());
@@ -549,7 +557,7 @@ TEST_F(AccessibilityTest, TreeNavigationWithIgnoredContainer) {
   EXPECT_EQ(obj_c, obj_b->UnignoredNextSibling());
 
   EXPECT_EQ(obj_ignored, obj_b->PreviousInPreOrderIncludingIgnored());
-  EXPECT_EQ(obj_a_text, obj_b->UnignoredPreviousInPreOrder());
+  EXPECT_EQ(obj_a_text, obj_b->UnignoredPreviousInPreOrder()->ParentObject());
   EXPECT_EQ(obj_b_text, obj_b->NextInPreOrderIncludingIgnored());
   EXPECT_EQ(obj_b_text, obj_b->UnignoredNextInPreOrder());
 
@@ -558,8 +566,11 @@ TEST_F(AccessibilityTest, TreeNavigationWithIgnoredContainer) {
   EXPECT_EQ(nullptr, obj_c->NextSiblingIncludingIgnored());
   EXPECT_EQ(nullptr, obj_c->UnignoredNextSibling());
 
-  EXPECT_EQ(obj_b_text, obj_c->PreviousInPreOrderIncludingIgnored());
-  EXPECT_EQ(obj_b_text, obj_c->UnignoredPreviousInPreOrder());
+  EXPECT_EQ(
+      obj_b_text,
+      obj_c->PreviousInPreOrderIncludingIgnored()->ParentObjectUnignored());
+  EXPECT_EQ(obj_b_text,
+            obj_c->UnignoredPreviousInPreOrder()->ParentObjectUnignored());
   EXPECT_EQ(obj_c_text, obj_c->NextInPreOrderIncludingIgnored());
   EXPECT_EQ(obj_c_text, obj_c->UnignoredNextInPreOrder());
 }
@@ -1139,7 +1150,13 @@ TEST_F(AccessibilityTest, ListMarkerIsNotLineBreakingObject) {
 }
 
 TEST_F(AccessibilityTest, CheckNoDuplicateChildren) {
-  GetPage().GetSettings().SetInlineTextBoxAccessibilityEnabled(false);
+  // Clear inline text boxes and refresh the tree.
+  ui::AXMode mode(ui::kAXModeComplete);
+  mode.set_mode(ui::AXMode::kInlineTextBoxes, false);
+  ax_context_->SetAXMode(mode);
+  GetAXObjectCache().MarkDocumentDirty();
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
   SetBodyInnerHTML(R"HTML(
      <select id="sel"><option>1</option></select>
     )HTML");

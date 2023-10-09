@@ -206,11 +206,12 @@ TEST_F(AccessibilityTest, PositionBeforeLineBreak) {
 
 TEST_F(AccessibilityTest, PositionAfterLineBreak) {
   SetBodyInnerHTML(R"HTML(Hello<br id="br">there)HTML");
+  GetAXRootObject()->LoadInlineTextBoxes();
   const AXObject* ax_br = GetAXObjectByElementId("br");
   ASSERT_NE(nullptr, ax_br);
   ASSERT_EQ(ax::mojom::Role::kLineBreak, ax_br->RoleValue());
   const AXObject* ax_static_text =
-      GetAXRootObject()->DeepestLastChildIncludingIgnored();
+      GetAXRootObject()->DeepestLastChildIncludingIgnored()->ParentObject();
   ASSERT_NE(nullptr, ax_static_text);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_static_text->RoleValue());
 
@@ -235,8 +236,7 @@ TEST_F(AccessibilityTest, FirstPositionInDivContainer) {
   const AXObject* ax_div = GetAXObjectByElementId("div");
   ASSERT_NE(nullptr, ax_div);
   ASSERT_EQ(ax::mojom::Role::kGenericContainer, ax_div->RoleValue());
-  const AXObject* ax_static_text =
-      GetAXRootObject()->DeepestFirstChildIncludingIgnored();
+  const AXObject* ax_static_text = ax_div->FirstChildIncludingIgnored();
   ASSERT_NE(nullptr, ax_static_text);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_static_text->RoleValue());
 
@@ -481,11 +481,12 @@ TEST_F(AccessibilityTest, PositionBeforeLineBreakWithWhiteSpace) {
 
 TEST_F(AccessibilityTest, PositionAfterLineBreakWithWhiteSpace) {
   SetBodyInnerHTML(R"HTML(Hello     <br id="br">     there)HTML");
+  GetAXRootObject()->LoadInlineTextBoxes();
   const AXObject* ax_br = GetAXObjectByElementId("br");
   ASSERT_NE(nullptr, ax_br);
   ASSERT_EQ(ax::mojom::Role::kLineBreak, ax_br->RoleValue());
   const AXObject* ax_static_text =
-      GetAXRootObject()->DeepestLastChildIncludingIgnored();
+      GetAXRootObject()->DeepestLastChildIncludingIgnored()->ParentObject();
   ASSERT_NE(nullptr, ax_static_text);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_static_text->RoleValue());
 
@@ -511,8 +512,7 @@ TEST_F(AccessibilityTest, FirstPositionInDivContainerWithWhiteSpace) {
   const AXObject* ax_div = GetAXObjectByElementId("div");
   ASSERT_NE(nullptr, ax_div);
   ASSERT_EQ(ax::mojom::Role::kGenericContainer, ax_div->RoleValue());
-  const AXObject* ax_static_text =
-      GetAXRootObject()->DeepestFirstChildIncludingIgnored();
+  const AXObject* ax_static_text = ax_div->FirstChildIncludingIgnored();
   ASSERT_NE(nullptr, ax_static_text);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_static_text->RoleValue());
 

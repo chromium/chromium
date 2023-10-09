@@ -378,7 +378,6 @@ source_set("unit_tests") {
 
   sources = [
     "accessibility/accessibility_object_model_test.cc",
-    "accessibility/ax_inline_text_box_test.cc",
     "accessibility/ax_layout_object_test.cc",
     "accessibility/ax_node_object_test.cc",
     "accessibility/ax_object_cache_test.cc",
@@ -606,6 +605,12 @@ source_set("unit_tests") {
     "xr/xr_test_utils.cc",
     "xr/xr_view_test.cc",
   ]
+
+  if (!is_android) {
+    # Inline text box tests do not apply to Android, which only loads
+    # AXInlineTextBox tests for the focused node.
+    sources += [ "accessibility/ax_inline_text_box_test.cc" ]
+  }
 
   if (rtc_use_h264) {
     sources += [ "mediarecorder/h264_encoder_unittest.cc" ]

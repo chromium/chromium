@@ -160,7 +160,6 @@ class WebSettings {
   virtual void SetIgnoreMainFrameOverflowHiddenQuirk(bool) = 0;
   virtual void SetImageAnimationPolicy(mojom::ImageAnimationPolicy) = 0;
   virtual void SetImagesEnabled(bool) = 0;
-  virtual void SetInlineTextBoxAccessibilityEnabled(bool) = 0;
   virtual void SetJavaScriptCanAccessClipboard(bool) = 0;
   virtual void SetJavaScriptEnabled(bool) = 0;
   virtual void SetLoadsImagesAutomatically(bool) = 0;

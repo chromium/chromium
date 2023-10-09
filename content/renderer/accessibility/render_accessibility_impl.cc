@@ -246,18 +246,6 @@ void RenderAccessibilityImpl::AccessibilityModeChanged(const ui::AXMode& mode) {
   SetAccessibilityCrashKey(mode);
 
   // Initialize features based on the accessibility mode.
-#if !BUILDFLAG(IS_ANDROID)
-  // Inline text boxes can be enabled globally on all except Android.
-  // On Android they can be requested for just a specific node.
-  WebView* web_view = render_frame_->GetWebView();
-  DCHECK(web_view);
-  WebSettings* settings = web_view->GetSettings();
-  DCHECK(settings);
-  // TODO(accessibility) Remove inline text box setting and just use the AXMode.
-  bool use_inline_textboxes = mode.has_mode(ui::AXMode::kInlineTextBoxes);
-  settings->SetInlineTextBoxAccessibilityEnabled(use_inline_textboxes);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   StartOrStopLabelingImages(old_mode, mode);
 
   if (ax_context_) {

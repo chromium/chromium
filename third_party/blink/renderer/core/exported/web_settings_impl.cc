@@ -176,10 +176,6 @@ void WebSettingsImpl::SetAccessibilityPasswordValuesEnabled(bool enabled) {
   settings_->SetAccessibilityPasswordValuesEnabled(enabled);
 }
 
-void WebSettingsImpl::SetInlineTextBoxAccessibilityEnabled(bool enabled) {
-  settings_->SetInlineTextBoxAccessibilityEnabled(enabled);
-}
-
 void WebSettingsImpl::SetAccessibilityFontWeightAdjustment(int size) {
   settings_->SetAccessibilityFontWeightAdjustment(size);
 }

@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -45,6 +46,7 @@ TEST_F(AccessibilitySelectionTest, FromCurrentSelection) {
       <p id="paragraph2">How are you?</p>
       )HTML");
 
+  GetDocument().ExistingAXObjectCache()->UpdateAXForAllDocuments();
   ASSERT_FALSE(AXSelection::FromCurrentSelection(GetDocument()).IsValid());
 
   Element* const script_element =
@@ -61,7 +63,6 @@ TEST_F(AccessibilitySelectionTest, FromCurrentSelection) {
       selection.addRange(range);
       )SCRIPT");
   GetDocument().body()->AppendChild(script_element);
-  UpdateAllLifecyclePhasesForTest();
 
   const AXObject* ax_static_text_1 =
       GetAXObjectByElementId("paragraph1")->FirstChildIncludingIgnored();
@@ -71,6 +72,7 @@ TEST_F(AccessibilitySelectionTest, FromCurrentSelection) {
   ASSERT_NE(nullptr, ax_paragraph_2);
   ASSERT_EQ(ax::mojom::Role::kParagraph, ax_paragraph_2->RoleValue());
 
+  GetDocument().ExistingAXObjectCache()->UpdateAXForAllDocuments();
   const auto ax_selection = AXSelection::FromCurrentSelection(GetDocument());
   ASSERT_TRUE(ax_selection.IsValid());
 
@@ -1083,6 +1085,7 @@ TEST_F(AccessibilitySelectionTest, ForwardSelectionInTextField) {
 
   // Ensure that the selection that was just set could be successfully
   // retrieved.
+  GetDocument().ExistingAXObjectCache()->UpdateAXForAllDocuments();
   const auto ax_current_selection =
       AXSelection::FromCurrentSelection(ToTextControl(*input));
   EXPECT_EQ(ax_selection, ax_current_selection);
@@ -1118,6 +1121,7 @@ TEST_F(AccessibilitySelectionTest, BackwardSelectionInTextField) {
 
   // Ensure that the selection that was just set could be successfully
   // retrieved.
+  GetDocument().ExistingAXObjectCache()->UpdateAXForAllDocuments();
   const auto ax_current_selection =
       AXSelection::FromCurrentSelection(ToTextControl(*input));
   EXPECT_EQ(ax_selection, ax_current_selection);
@@ -1186,6 +1190,7 @@ TEST_F(AccessibilitySelectionTest, SelectEachConsecutiveCharacterInTextField) {
 
   for (unsigned int i = 0; i < text_control.InnerEditorValue().length() - 1;
        ++i) {
+    GetDocument().ExistingAXObjectCache()->UpdateAXForAllDocuments();
     AXSelection::Builder builder;
     AXSelection ax_selection =
         builder.SetBase(AXPosition::CreatePositionInTextObject(*ax_input, i))
@@ -1205,6 +1210,7 @@ TEST_F(AccessibilitySelectionTest, SelectEachConsecutiveCharacterInTextField) {
   }
 
   for (unsigned int i = text_control.InnerEditorValue().length(); i > 0; --i) {
+    GetDocument().ExistingAXObjectCache()->UpdateAXForAllDocuments();
     AXSelection::Builder builder;
     AXSelection ax_selection =
         builder.SetBase(AXPosition::CreatePositionInTextObject(*ax_input, i))
@@ -1262,6 +1268,7 @@ TEST_F(AccessibilitySelectionTest,
   // it's invalid.
   for (unsigned int i = 0; i < text_control.InnerEditorValue().length() - 1;
        ++i) {
+    GetDocument().ExistingAXObjectCache()->UpdateAXForAllDocuments();
     AXSelection::Builder builder;
     AXSelection ax_selection =
         builder.SetBase(AXPosition::CreatePositionInTextObject(*ax_input, i))
@@ -1281,6 +1288,7 @@ TEST_F(AccessibilitySelectionTest,
   }
 
   for (unsigned int i = text_control.InnerEditorValue().length(); i > 0; --i) {
+    GetDocument().ExistingAXObjectCache()->UpdateAXForAllDocuments();
     AXSelection::Builder builder;
     AXSelection ax_selection =
         builder.SetBase(AXPosition::CreatePositionInTextObject(*ax_input, i))
@@ -1323,6 +1331,7 @@ TEST_F(AccessibilitySelectionTest, InvalidSelectionInTextField) {
   ASSERT_NE(nullptr, ax_after);
   ASSERT_EQ(ax::mojom::Role::kParagraph, ax_after->RoleValue());
 
+  GetDocument().ExistingAXObjectCache()->UpdateAXForAllDocuments();
   {
     // Light tree only selection. Selects the whole of the text field.
     AXSelection::Builder builder;
@@ -1395,6 +1404,7 @@ TEST_F(AccessibilitySelectionTest, ForwardSelectionInTextarea) {
 
   // Ensure that the selection that was just set could be successfully
   // retrieved.
+  GetDocument().ExistingAXObjectCache()->UpdateAXForAllDocuments();
   const auto ax_current_selection =
       AXSelection::FromCurrentSelection(ToTextControl(*textarea));
   EXPECT_EQ(ax_selection, ax_current_selection);
@@ -1422,6 +1432,7 @@ TEST_F(AccessibilitySelectionTest, BackwardSelectionInTextarea) {
 
   // Backward selection.
   AXSelection::Builder builder;
+  GetDocument().ExistingAXObjectCache()->UpdateAXForAllDocuments();
   AXSelection ax_selection =
       builder.SetBase(AXPosition::CreatePositionInTextObject(*ax_textarea, 10))
           .SetExtent(AXPosition::CreatePositionInTextObject(*ax_textarea, 3))
@@ -1435,6 +1446,7 @@ TEST_F(AccessibilitySelectionTest, BackwardSelectionInTextarea) {
 
   // Ensure that the selection that was just set could be successfully
   // retrieved.
+  GetDocument().ExistingAXObjectCache()->UpdateAXForAllDocuments();
   const auto ax_current_selection =
       AXSelection::FromCurrentSelection(ToTextControl(*textarea));
   EXPECT_EQ(ax_selection, ax_current_selection);
@@ -1466,6 +1478,7 @@ TEST_F(AccessibilitySelectionTest, SelectTheWholeOfTheTextarea) {
   ASSERT_EQ(ax::mojom::Role::kTextField, ax_textarea->RoleValue());
 
   // Light tree only selection. Selects the whole of the textarea field.
+  GetDocument().ExistingAXObjectCache()->UpdateAXForAllDocuments();
   AXSelection::Builder builder;
   AXSelection ax_selection =
       builder.SetBase(AXPosition::CreatePositionBeforeObject(*ax_before))
@@ -1512,6 +1525,7 @@ TEST_F(AccessibilitySelectionTest, SelectEachConsecutiveCharacterInTextarea) {
   ASSERT_EQ(ax::mojom::Role::kTextField, ax_textarea->RoleValue());
 
   for (unsigned int i = 0; i < text_control.Value().length() - 1; ++i) {
+    GetDocument().ExistingAXObjectCache()->UpdateAXForAllDocuments();
     AXSelection::Builder builder;
     AXSelection ax_selection =
         builder.SetBase(AXPosition::CreatePositionInTextObject(*ax_textarea, i))
@@ -1532,6 +1546,7 @@ TEST_F(AccessibilitySelectionTest, SelectEachConsecutiveCharacterInTextarea) {
   }
 
   for (unsigned int i = text_control.Value().length(); i > 0; --i) {
+    GetDocument().ExistingAXObjectCache()->UpdateAXForAllDocuments();
     AXSelection::Builder builder;
     AXSelection ax_selection =
         builder.SetBase(AXPosition::CreatePositionInTextObject(*ax_textarea, i))
@@ -1657,6 +1672,7 @@ TEST_F(AccessibilitySelectionTest,
   ASSERT_NE(nullptr, ax_text);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_text->RoleValue());
 
+  GetDocument().ExistingAXObjectCache()->UpdateAXForAllDocuments();
   const auto ax_selection = AXSelection::FromCurrentSelection(GetDocument());
   ASSERT_TRUE(ax_selection.IsValid());
 
