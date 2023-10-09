@@ -3431,9 +3431,6 @@ extern const char kDoubleTapToZoomInTabletModeDescription[];
 extern const char kQuickSettingsPWANotificationsName[];
 extern const char kQuickSettingsPWANotificationsDescription[];
 
-extern const char kDriveFsChromeNetworkingName[];
-extern const char kDriveFsChromeNetworkingDescription[];
-
 extern const char kDriveFsShowCSEFilesName[];
 extern const char kDriveFsShowCSEFilesDescription[];
 

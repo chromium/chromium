@@ -1944,11 +1944,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "drive-fs-chrome-networking",
-    "owners": [ "travislane@google.com" ],
-    "expiry_milestone": 119
-  },
-  {
     "name": "drive-fs-show-cse-files",
     "owners": [ "cros-dlp-extended@google.com" ],
     "expiry_milestone": 125

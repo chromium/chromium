@@ -5952,12 +5952,6 @@ const char kQuickSettingsPWANotificationsDescription[] =
     "permissions in the quick settings menu. Website notification permissions "
     "settings will be migrated to the lacros - chrome browser.";
 
-const char kDriveFsChromeNetworkingName[] =
-    "Enable the DriveFS / Chrome Network Service bridge";
-const char kDriveFsChromeNetworkingDescription[] =
-    "Enable the bridge bewteen DriveFS and the Chrome Network Service for "
-    "communication with the Drive backend.";
-
 const char kDriveFsShowCSEFilesName[] = "Enable listing of CSE files";
 const char kDriveFsShowCSEFilesDescription[] =
     "Enable listing of CSE files in DriveFS, which will result in these files "

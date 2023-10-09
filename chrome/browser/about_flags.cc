@@ -3192,14 +3192,16 @@ const FeatureEntry::FeatureParam kTabStripRedesignFolio[] = {
     {"enable_folio", "true"}};
 const FeatureEntry::FeatureParam kTabStripRedesignDetached[] = {
     {"enable_detached", "true"}};
-const FeatureEntry::FeatureParam kTabStripRedesignDisableNtbAnchorAndBtnStyleFolio[] = {
-    {"disable_ntb_anchor", "true"},
-    {"disable_btn_style", "true"},
-    {"enable_folio", "true"}};
-const FeatureEntry::FeatureParam kTabStripRedesignDisableNtbAnchorAndBtnStyleDetached[] = {
-    {"disable_ntb_anchor", "true"},
-    {"disable_btn_style", "true"},
-    {"enable_detached", "true"}};
+const FeatureEntry::FeatureParam
+    kTabStripRedesignDisableNtbAnchorAndBtnStyleFolio[] = {
+        {"disable_ntb_anchor", "true"},
+        {"disable_btn_style", "true"},
+        {"enable_folio", "true"}};
+const FeatureEntry::FeatureParam
+    kTabStripRedesignDisableNtbAnchorAndBtnStyleDetached[] = {
+        {"disable_ntb_anchor", "true"},
+        {"disable_btn_style", "true"},
+        {"enable_detached", "true"}};
 const FeatureEntry::FeatureParam kTabStripRedesignDisableButtonStyleFolio[] = {
     {"disable_btn_style", "true"},
     {"enable_folio", "true"}};
@@ -3211,9 +3213,11 @@ const FeatureEntry::FeatureVariation kTabStripRedesignVariations[] = {
      nullptr},
     {"Detached", kTabStripRedesignDetached,
      std::size(kTabStripRedesignDetached), nullptr},
-    {"Folio NTB Unanchored, Remove Style", kTabStripRedesignDisableNtbAnchorAndBtnStyleFolio,
+    {"Folio NTB Unanchored, Remove Style",
+     kTabStripRedesignDisableNtbAnchorAndBtnStyleFolio,
      std::size(kTabStripRedesignDisableNtbAnchorAndBtnStyleFolio), nullptr},
-    {"Detached NTB Unanchored, Remove Style", kTabStripRedesignDisableNtbAnchorAndBtnStyleDetached,
+    {"Detached NTB Unanchored, Remove Style",
+     kTabStripRedesignDisableNtbAnchorAndBtnStyleDetached,
      std::size(kTabStripRedesignDisableNtbAnchorAndBtnStyleDetached), nullptr},
     {"Folio Remove Button Style", kTabStripRedesignDisableButtonStyleFolio,
      std::size(kTabStripRedesignDisableButtonStyleFolio), nullptr},
@@ -5944,10 +5948,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisableCameraFrameRotationAtSourceName,
      flag_descriptions::kDisableCameraFrameRotationAtSourceDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(media::features::kDisableCameraFrameRotationAtSource)},
-    {"drive-fs-chrome-networking",
-     flag_descriptions::kDriveFsChromeNetworkingName,
-     flag_descriptions::kDriveFsChromeNetworkingDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kDriveFsChromeNetworking)},
     {"file-transfer-enterprise-connector",
      flag_descriptions::kFileTransferEnterpriseConnectorName,
      flag_descriptions::kFileTransferEnterpriseConnectorDescription, kOsCrOS,
