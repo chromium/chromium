@@ -315,8 +315,9 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
 void LayoutBoxModelObject::CreateLayerAfterStyleChange() {
   NOT_DESTROYED();
   DCHECK(!HasLayer() && !Layer());
-  GetMutableForPainting().FirstFragment().SetLayer(
-      MakeGarbageCollected<PaintLayer>(this));
+  FragmentData& first_fragment = GetMutableForPainting().FirstFragment();
+  first_fragment.EnsureId();
+  first_fragment.SetLayer(MakeGarbageCollected<PaintLayer>(this));
   SetHasLayer(true);
   Layer()->InsertOnlyThisLayerAfterStyleChange();
   // Creating a layer may affect existence of the LocalBorderBoxProperties, so

@@ -105,7 +105,7 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
     if (rare_data_)
       rare_data_->paint_properties = nullptr;
   }
-  void EnsureId() { EnsureRareData(); }
+  void EnsureId() { EnsureRareData().EnsureId(); }
   bool HasUniqueId() const { return rare_data_ && rare_data_->unique_id; }
 
   // This is a complete set of property nodes that should be used as a
@@ -190,6 +190,7 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
     RareData& operator=(const RareData&) = delete;
     ~RareData();
 
+    void EnsureId();
     void SetLayer(PaintLayer*);
 
     void Trace(Visitor* visitor) const;
@@ -198,9 +199,9 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
     // avoid separate data structure for them.
     Member<PaintLayer> layer;
     Member<StickyPositionScrollingConstraints> sticky_constraints;
-    UniqueObjectId unique_id;
 
     // Fragment specific data.
+    UniqueObjectId unique_id = 0;
     std::unique_ptr<ObjectPaintProperties> paint_properties;
     std::unique_ptr<RefCountedPropertyTreeStateOrAlias>
         local_border_box_properties;

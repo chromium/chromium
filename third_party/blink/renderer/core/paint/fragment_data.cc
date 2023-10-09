@@ -11,9 +11,14 @@ namespace blink {
 
 // These are defined here because of PaintLayer dependency.
 
-FragmentData::RareData::RareData() : unique_id(NewUniqueObjectId()) {}
-
+FragmentData::RareData::RareData() = default;
 FragmentData::RareData::~RareData() = default;
+
+void FragmentData::RareData::EnsureId() {
+  if (!unique_id) {
+    unique_id = NewUniqueObjectId();
+  }
+}
 
 void FragmentData::RareData::SetLayer(PaintLayer* new_layer) {
   if (layer && layer != new_layer) {

@@ -3207,6 +3207,7 @@ void PaintPropertyTreeBuilder::InitPaintProperties() {
   }
 
   if (needs_paint_properties) {
+    fragment.EnsureId();
     fragment.EnsurePaintProperties();
   } else if (auto* properties = fragment.PaintProperties()) {
     if (properties->HasTransformNode()) {
