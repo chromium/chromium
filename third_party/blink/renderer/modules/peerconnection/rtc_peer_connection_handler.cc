@@ -1929,6 +1929,15 @@ void RTCPeerConnectionHandler::RemoveTrackOnSignalingThread(
       native_peer_connection_, track_adapter_map_, std::move(transceivers));
 }
 
+Vector<std::unique_ptr<blink::RTCRtpSenderPlatform>>
+RTCPeerConnectionHandler::GetPlatformSenders() const {
+  Vector<std::unique_ptr<blink::RTCRtpSenderPlatform>> senders;
+  for (const auto& sender : rtp_senders_) {
+    senders.push_back(sender->ShallowCopy());
+  }
+  return senders;
+}
+
 void RTCPeerConnectionHandler::CloseClientPeerConnection() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (!is_closed_)

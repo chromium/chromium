@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/webrtc/api/stats/rtcstats_objects.h"
 
 using webrtc::StatsReport;
 using webrtc::StatsReports;
@@ -578,9 +579,11 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
   InternalStandardStatsObserver(
       int lid,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread,
+      Vector<std::unique_ptr<blink::RTCRtpSenderPlatform>> senders,
       CrossThreadOnceFunction<void(int, base::Value::List)> completion_callback)
       : lid_(lid),
         main_thread_(std::move(main_thread)),
+        senders_(std::move(senders)),
         completion_callback_(std::move(completion_callback)) {}
 
   void OnStatsDelivered(
@@ -605,7 +608,19 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
 
   base::Value::List ReportToList(
       const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report) {
+    std::map<std::string, MediaStreamTrackPlatform*> tracks_by_id;
+    for (const auto& sender : senders_) {
+      MediaStreamComponent* track_component = sender->Track();
+      if (!track_component) {
+        continue;
+      }
+      tracks_by_id.insert(std::make_pair(track_component->Id().Utf8(),
+                                         track_component->GetPlatformTrack()));
+    }
+
     base::Value::List result_list;
+    // Used for string comparisons with const char* below.
+    const std::string kTypeMediaSource = "media-source";
     for (const auto& stats : *report) {
       // The format of "stats_subdictionary" is:
       // {timestamp:<milliseconds>, values: [<key-value pairs>]}
@@ -625,6 +640,31 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
         }
         name_value_pairs.Append(member->name());
         name_value_pairs.Append(MemberToValue(*member));
+      }
+      // Modify "media-source" to also contain the result of the
+      // MediaStreamTrack Statistics API, if applicable.
+      if (stats.type() == kTypeMediaSource) {
+        const webrtc::RTCMediaSourceStats& media_source =
+            static_cast<const webrtc::RTCMediaSourceStats&>(stats);
+        if (media_source.kind.has_value() && *media_source.kind == "video" &&
+            media_source.track_identifier.has_value()) {
+          auto it = tracks_by_id.find(*media_source.track_identifier);
+          if (it != tracks_by_id.end()) {
+            MediaStreamTrackPlatform::VideoFrameStats video_frame_stats =
+                it->second->GetVideoFrameStats();
+            name_value_pairs.Append("track.deliveredFrames");
+            name_value_pairs.Append(base::Value(
+                static_cast<int>(video_frame_stats.deliverable_frames)));
+            name_value_pairs.Append("track.discardedFrames");
+            name_value_pairs.Append(base::Value(
+                static_cast<int>(video_frame_stats.discarded_frames)));
+            name_value_pairs.Append("track.totalFrames");
+            name_value_pairs.Append(base::Value(
+                static_cast<int>(video_frame_stats.deliverable_frames +
+                                 video_frame_stats.discarded_frames +
+                                 video_frame_stats.dropped_frames)));
+          }
+        }
       }
       stats_subdictionary.Set("values", std::move(name_value_pairs));
 
@@ -671,6 +711,7 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
 
   const int lid_;
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
+  const Vector<std::unique_ptr<blink::RTCRtpSenderPlatform>> senders_;
   CrossThreadOnceFunction<void(int, base::Value::List)> completion_callback_;
 };
 
@@ -802,9 +843,11 @@ void PeerConnectionTracker::GetStandardStats() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
 
   for (const auto& pair : peer_connection_local_id_map_) {
+    Vector<std::unique_ptr<blink::RTCRtpSenderPlatform>> senders =
+        pair.key->GetPlatformSenders();
     rtc::scoped_refptr<InternalStandardStatsObserver> observer(
         new rtc::RefCountedObject<InternalStandardStatsObserver>(
-            pair.value, main_thread_task_runner_,
+            pair.value, main_thread_task_runner_, std::move(senders),
             CrossThreadBindOnce(&PeerConnectionTracker::AddStandardStats,
                                 WrapCrossThreadWeakPersistent(this))));
     pair.key->GetStandardStatsForTracker(observer);

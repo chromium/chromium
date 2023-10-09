@@ -220,6 +220,9 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   virtual webrtc::RTCErrorOr<std::unique_ptr<RTCRtpTransceiverPlatform>>
   RemoveTrack(blink::RTCRtpSenderPlatform* web_sender);
 
+  Vector<std::unique_ptr<blink::RTCRtpSenderPlatform>> GetPlatformSenders()
+      const;
+
   virtual rtc::scoped_refptr<webrtc::DataChannelInterface> CreateDataChannel(
       const String& label,
       const webrtc::DataChannelInit& init);
