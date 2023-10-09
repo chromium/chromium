@@ -259,16 +259,14 @@ CSSCustomPropertyDeclaration* CSSVariableParser::ParseDeclarationValue(
       &context);
 }
 
-CSSVariableReferenceValue* CSSVariableParser::ParseVariableReferenceValue(
+CSSVariableReferenceValue* CSSVariableParser::ParseUniversalSyntaxValue(
     CSSTokenizedValue value,
     const CSSParserContext& context,
     bool is_animation_tainted) {
   bool has_references;
-  bool has_positioned_braces;
-  if (!IsValidVariable(value.range, has_references, has_positioned_braces)) {
-    return nullptr;
-  }
-  if (has_positioned_braces) {
+  bool has_positioned_braces_ignored;
+  if (!IsValidVariable(value.range, has_references,
+                       has_positioned_braces_ignored)) {
     return nullptr;
   }
   if (ParseCSSWideValue(value.range)) {

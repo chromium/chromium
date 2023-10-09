@@ -28,7 +28,11 @@ class CORE_EXPORT CSSVariableParser {
       const CSSTokenizedValue&,
       bool is_animation_tainted,
       const CSSParserContext&);
-  static CSSVariableReferenceValue* ParseVariableReferenceValue(
+  // Custom properties registered with universal syntax [1] are parsed with
+  // this function.
+  //
+  // https://drafts.css-houdini.org/css-properties-values-api-1/#universal-syntax-definition
+  static CSSVariableReferenceValue* ParseUniversalSyntaxValue(
       CSSTokenizedValue,
       const CSSParserContext&,
       bool is_animation_tainted);

@@ -913,7 +913,10 @@
     "platforms": ["Linux"],
     "bases": [
       "wpt_internal/css/css-nesting/ident",
-      "inspector-protocol/css"
+      "inspector-protocol/css",
+      "external/wpt/css/css-paint-api/registered-property-value-003.https.html",
+      "external/wpt/css/css-properties-values-api/at-property.html",
+      "external/wpt/css/css-properties-values-api/register-property-syntax-parsing.html"
     ],
     "exclusive_tests": [
       "wpt_internal/css/css-nesting/ident",

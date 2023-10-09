@@ -78,7 +78,7 @@ TEST_P(ValidVariableReferenceTest, ContainsValidVariableReferences) {
   EXPECT_TRUE(CSSVariableParser::ContainsValidVariableReferences(range));
 }
 
-TEST_P(ValidVariableReferenceTest, ParseVariableReferenceValue) {
+TEST_P(ValidVariableReferenceTest, ParseUniversalSyntaxValue) {
   SCOPED_TRACE(GetParam());
   Vector<CSSParserToken, 32> tokens = Parse(GetParam());
   CSSParserTokenRange range(tokens);
@@ -86,7 +86,7 @@ TEST_P(ValidVariableReferenceTest, ParseVariableReferenceValue) {
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   EXPECT_NE(nullptr,
-            CSSVariableParser::ParseVariableReferenceValue(
+            CSSVariableParser::ParseUniversalSyntaxValue(
                 tokenized_value, *context, /* is_animation_tainted */ false));
 }
 
@@ -109,15 +109,15 @@ TEST_P(InvalidVariableReferenceTest, ContainsValidVariableReferences) {
   EXPECT_FALSE(CSSVariableParser::ContainsValidVariableReferences(range));
 }
 
-TEST_P(InvalidVariableReferenceTest, ParseVariableReferenceValue) {
+TEST_P(InvalidVariableReferenceTest, ParseUniversalSyntaxValue) {
   SCOPED_TRACE(GetParam());
   Vector<CSSParserToken, 32> tokens = Parse(GetParam());
   CSSParserTokenRange range(tokens);
   CSSTokenizedValue tokenized_value = {range, /* text */ ""};
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
-  EXPECT_EQ(nullptr,
-            CSSVariableParser::ParseVariableReferenceValue(
+  EXPECT_NE(nullptr,
+            CSSVariableParser::ParseUniversalSyntaxValue(
                 tokenized_value, *context, /* is_animation_tainted */ false));
 }
 

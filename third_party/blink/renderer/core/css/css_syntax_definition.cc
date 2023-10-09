@@ -119,8 +119,8 @@ const CSSValue* CSSSyntaxDefinition::Parse(CSSTokenizedValue value,
                                            const CSSParserContext& context,
                                            bool is_animation_tainted) const {
   if (IsUniversal()) {
-    return CSSVariableParser::ParseVariableReferenceValue(value, context,
-                                                          is_animation_tainted);
+    return CSSVariableParser::ParseUniversalSyntaxValue(value, context,
+                                                        is_animation_tainted);
   }
   value.range.ConsumeWhitespace();
   for (const CSSSyntaxComponent& component : syntax_components_) {
