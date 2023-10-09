@@ -41,8 +41,9 @@ class UserModifiableProvider : public ObservableProvider {
   // (Only settings that have lifetimes may be renewed.) If `setting_to_match`
   // is nullopt, then the first rule with the appropriate patterns and type will
   // be updated; otherwise, a rule will only be updated if its value matches
-  // `setting_to_match`. Returns true if the setting was found and updated.
-  virtual bool RenewContentSetting(
+  // `setting_to_match`. Returns the TimeDelta between now and the setting's old
+  // expiration if any setting was updated; nullopt otherwise.
+  virtual absl::optional<base::TimeDelta> RenewContentSetting(
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,

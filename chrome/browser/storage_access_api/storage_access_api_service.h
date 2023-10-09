@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_STORAGE_ACCESS_API_STORAGE_ACCESS_API_SERVICE_H_
 #define CHROME_BROWSER_STORAGE_ACCESS_API_STORAGE_ACCESS_API_SERVICE_H_
 
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace url {
 class Origin;
 }  // namespace url
@@ -14,14 +17,16 @@ class Origin;
 class StorageAccessAPIService {
  public:
   // May renew Storage Access API permission grants associated with the given
-  // origins. Should return true if any grant was renewed, for ease of testing.
+  // origins. Returns the TimeDelta between now and the permission grant's old
+  // expiration if any grant was renewed; nullopt otherwise.
   //
   // The implementations of this method may apply rate limiting and caching in
   // order to avoid unnecessary disk writes.
   //
   // `embedded_origin` and `top_frame_origin` must be non-opaque.
-  virtual bool RenewPermissionGrant(const url::Origin& embedded_origin,
-                                    const url::Origin& top_frame_origin) = 0;
+  virtual absl::optional<base::TimeDelta> RenewPermissionGrant(
+      const url::Origin& embedded_origin,
+      const url::Origin& top_frame_origin) = 0;
 };
 
 #endif  // CHROME_BROWSER_STORAGE_ACCESS_API_STORAGE_ACCESS_API_SERVICE_H_

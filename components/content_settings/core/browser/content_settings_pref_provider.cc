@@ -307,12 +307,13 @@ bool PrefProvider::UpdateLastVisitTime(
                           GetCoarseVisitedTime(clock_->Now()));
 }
 
-bool PrefProvider::RenewContentSetting(
+absl::optional<base::TimeDelta> PrefProvider::RenewContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
     absl::optional<ContentSetting> setting_to_match) {
-  return UpdateSetting(
+  absl::optional<base::TimeDelta> delta_to_expiration;
+  UpdateSetting(
       content_type,
       [&](const Rule& rule) -> bool {
         return rule.primary_pattern.Matches(primary_url) &&
@@ -333,11 +334,13 @@ bool PrefProvider::RenewContentSetting(
         }
 
         base::TimeDelta lifetime = rule.metadata.lifetime();
+        delta_to_expiration = rule.metadata.expiration() - clock_->Now();
         rule.metadata.SetExpirationAndLifetime(clock_->Now() + lifetime,
                                                lifetime);
 
         return true;
       });
+  return delta_to_expiration;
 }
 
 void PrefProvider::ClearAllContentSettingsRules(

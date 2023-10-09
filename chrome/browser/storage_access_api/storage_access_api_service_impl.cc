@@ -43,7 +43,8 @@ StorageAccessAPIServiceImpl::StorageAccessAPIServiceImpl(
 
 StorageAccessAPIServiceImpl::~StorageAccessAPIServiceImpl() = default;
 
-bool StorageAccessAPIServiceImpl::RenewPermissionGrant(
+absl::optional<base::TimeDelta>
+StorageAccessAPIServiceImpl::RenewPermissionGrant(
     const url::Origin& embedded_origin,
     const url::Origin& top_frame_origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -54,7 +55,7 @@ bool StorageAccessAPIServiceImpl::RenewPermissionGrant(
       embedded_origin.scheme() != url::kHttpsScheme ||
       top_frame_origin.scheme() != url::kHttpsScheme ||
       !updated_grants_.Insert(embedded_origin, top_frame_origin)) {
-    return false;
+    return absl::nullopt;
   }
 
   HostContentSettingsMap* settings_map =

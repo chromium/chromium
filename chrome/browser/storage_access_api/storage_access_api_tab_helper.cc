@@ -4,10 +4,20 @@
 
 #include "chrome/browser/storage_access_api/storage_access_api_tab_helper.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/storage_access_api/storage_access_api_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+namespace {
+
+void RecordRenewalDeltaSample(base::TimeDelta delta) {
+  base::UmaHistogramCounts1000(
+      "API.StorageAccess.PermissionRenewedDeltaToExpiration", delta.InHours());
+}
+
+}  // namespace
 
 StorageAccessAPITabHelper::~StorageAccessAPITabHelper() = default;
 
@@ -25,9 +35,14 @@ void StorageAccessAPITabHelper::FrameReceivedUserActivation(
     return;
   }
 
-  service_->RenewPermissionGrant(
-      rfh->GetLastCommittedOrigin(),
-      rfh->GetParentOrOuterDocument()->GetLastCommittedOrigin());
+  absl::optional<base::TimeDelta> delta_to_expiration =
+      service_->RenewPermissionGrant(
+          rfh->GetLastCommittedOrigin(),
+          rfh->GetParentOrOuterDocument()->GetLastCommittedOrigin());
+
+  if (delta_to_expiration.has_value()) {
+    RecordRenewalDeltaSample(delta_to_expiration.value());
+  }
 }
 
 StorageAccessAPITabHelper::StorageAccessAPITabHelper(

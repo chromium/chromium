@@ -4,6 +4,7 @@
 
 #include "chrome/browser/storage_access_api/storage_access_api_tab_helper.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/storage_access_api/storage_access_api_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -14,7 +15,7 @@
 
 class MockStorageAccessAPIService : public StorageAccessAPIService {
  public:
-  MOCK_METHOD(bool,
+  MOCK_METHOD(absl::optional<base::TimeDelta>,
               RenewPermissionGrant,
               (const url::Origin& embedded_origin,
                const url::Origin& top_frame_origin),
@@ -61,11 +62,15 @@ TEST_F(StorageAccessAPITabHelperTest, OnFrameReceivedUserActivation_MainFrame) {
 }
 
 TEST_F(StorageAccessAPITabHelperTest, OnFrameReceivedUserActivation_Subframe) {
+  constexpr int kExpectedDeltaHours = 42;
+
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(service(), RenewPermissionGrant(
                              url::Origin::Create(GURL("https://bar.test")),
                              url::Origin::Create(GURL("https://example.test"))))
       .Times(1)
-      .WillOnce(testing::Return(true));
+      .WillOnce(testing::Return(
+          absl::make_optional(base::Hours(kExpectedDeltaHours))));
 
   NavigateAndCommit(GURL("https://example.test/"));
 
@@ -77,6 +82,10 @@ TEST_F(StorageAccessAPITabHelperTest, OnFrameReceivedUserActivation_Subframe) {
 
   // Non-main-frame user activations cause the service to be invoked.
   tab_helper()->FrameReceivedUserActivation(subframe);
+
+  histogram_tester.ExpectUniqueSample(
+      "API.StorageAccess.PermissionRenewedDeltaToExpiration",
+      /*sample=*/kExpectedDeltaHours, /*expected_bucket_count=*/1);
 }
 
 TEST_F(StorageAccessAPITabHelperTest,

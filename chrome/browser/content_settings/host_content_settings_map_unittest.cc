@@ -36,6 +36,7 @@
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -111,10 +112,11 @@ class MockUserModifiableProvider
                     const ContentSettingsPattern& secondary_pattern,
                     ContentSettingsType content_type));
   MOCK_METHOD4(RenewContentSetting,
-               bool(const GURL& primary_url,
-                    const GURL& secondary_url,
-                    ContentSettingsType content_type,
-                    absl::optional<ContentSetting> setting_to_match));
+               absl::optional<base::TimeDelta>(
+                   const GURL& primary_url,
+                   const GURL& secondary_url,
+                   ContentSettingsType content_type,
+                   absl::optional<ContentSetting> setting_to_match));
 
   MOCK_METHOD1(SetClockForTesting, void(base::Clock*));
 };
@@ -2246,4 +2248,31 @@ TEST_F(HostContentSettingsMapTest, StorageAccessMetrics) {
   t.ExpectUniqueSample(base_histogram + ".Block", 2, 1);
   t.ExpectUniqueSample(base_histogram + ".MaxRequester", 3, 1);
   t.ExpectUniqueSample(base_histogram + ".MaxTopLevel", 4, 1);
+}
+
+TEST_F(HostContentSettingsMapTest, RenewContentSetting) {
+  TestingProfile profile;
+  const base::Time now = base::Time::Now();
+  const base::Time plus_1_hour = now + base::Hours(1);
+  const base::TimeDelta lifetime = base::Days(30);
+  const GURL primary_url("https://primary.com");
+  const GURL secondary_url("https://secondary.com");
+
+  base::SimpleTestClock test_clock;
+  test_clock.SetNow(now);
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
+
+  map->SetClockForTesting(&test_clock);
+
+  content_settings::ContentSettingConstraints constraints(plus_1_hour -
+                                                          lifetime);
+  constraints.set_lifetime(lifetime);
+  map->SetContentSettingDefaultScope(
+      primary_url, secondary_url, ContentSettingsType::STORAGE_ACCESS,
+      ContentSetting::CONTENT_SETTING_ALLOW, constraints);
+
+  EXPECT_EQ(map->RenewContentSetting(primary_url, secondary_url,
+                                     ContentSettingsType::STORAGE_ACCESS,
+                                     ContentSetting::CONTENT_SETTING_ALLOW),
+            absl::make_optional(base::Hours(1)));
 }
