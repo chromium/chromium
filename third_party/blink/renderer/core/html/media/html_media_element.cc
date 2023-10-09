@@ -139,16 +139,6 @@ using DocumentElementSetMap =
 
 namespace {
 
-// When enabled, this feature brings back the old behavior of periodically
-// dispatching the "progress" event when the source of a HTMLMediaElement is a
-// MediaStream.
-//
-// TODO(crbug.com/1260456): Cleanup in M98 if not the dispatching the "progress"
-// event periodically doesn't cause issues in M97.
-BASE_FEATURE(kRepeatProgressEventForMediaStream,
-             "RepeatProgressEventForMediaStream",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, CSS media queries are supported in <source> elements.
 BASE_FEATURE(kVideoSourceMediaQuerySupport,
              "VideoSourceMediaQuerySupport",
@@ -2248,8 +2238,7 @@ void HTMLMediaElement::ProgressEventTimerFired() {
   // was made to periodically dispatch the "progress" event to allow updates to
   // buffering UIs. Therefore, the timer is not stopped below.
   // https://groups.google.com/a/chromium.org/g/media-dev/c/Y8ITyIFmUC0/m/avBYOy_UFwAJ
-  if (GetLoadType() == WebMediaPlayer::kLoadTypeMediaStream &&
-      !base::FeatureList::IsEnabled(kRepeatProgressEventForMediaStream)) {
+  if (GetLoadType() == WebMediaPlayer::kLoadTypeMediaStream) {
     progress_event_timer_.Stop();
   }
 
