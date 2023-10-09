@@ -1224,6 +1224,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/cookies/third-party-cookies",
+      "external/wpt/workers/shared-worker-partitioned-cookies.tentative.https.html",
       "http/tests/inspector-protocol/issues/third-party-cookie-phaseout-exclusion.js"
     ],
     "exclusive_tests": "ALL",

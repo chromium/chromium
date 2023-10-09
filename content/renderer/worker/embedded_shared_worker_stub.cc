@@ -35,7 +35,7 @@ namespace content {
 EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
     blink::mojom::SharedWorkerInfoPtr info,
     const blink::SharedWorkerToken& token,
-    const url::Origin& constructor_origin,
+    const blink::StorageKey& constructor_key,
     bool is_constructor_secure_context,
     const std::string& user_agent,
     const blink::UserAgentMetadata& ua_metadata,
@@ -109,14 +109,15 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
   }
 
   scoped_refptr<blink::WebWorkerFetchContext> web_worker_fetch_context =
-      CreateWorkerFetchContext(info->url, std::move(renderer_preferences),
+      CreateWorkerFetchContext(info->url, constructor_key.IsThirdPartyContext(),
+                               std::move(renderer_preferences),
                                std::move(preference_watcher_receiver),
                                cors_exempt_header_list);
 
   impl_ = blink::WebSharedWorker::CreateAndStart(
       token, info->url, info->options->type, info->options->credentials,
       blink::WebString::FromUTF8(info->options->name),
-      blink::WebSecurityOrigin(constructor_origin),
+      blink::WebSecurityOrigin(constructor_key.origin()),
       is_constructor_secure_context, blink::WebString::FromUTF8(user_agent),
       ua_metadata,
       ToWebContentSecurityPolicies(std::move(info->content_security_policies)),
@@ -146,6 +147,7 @@ void EmbeddedSharedWorkerStub::WorkerContextDestroyed() {
 scoped_refptr<blink::WebWorkerFetchContext>
 EmbeddedSharedWorkerStub::CreateWorkerFetchContext(
     const GURL& url,
+    bool is_third_party_context,
     const blink::RendererPreferences& renderer_preferences,
     mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
         preference_watcher_receiver,
@@ -173,12 +175,9 @@ EmbeddedSharedWorkerStub::CreateWorkerFetchContext(
               web_cors_exempt_header_list,
               /*pending_resource_load_info_notifier=*/mojo::NullRemote());
 
-  // TODO(horo): To get the correct first_party_to_cookies for the shared
-  // worker, we need to check the all documents bounded by the shared worker.
-  // (crbug.com/723553)
-  // https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site-07#section-2.1.2
   web_dedicated_or_shared_worker_fetch_context->set_site_for_cookies(
-      net::SiteForCookies::FromUrl(url));
+      is_third_party_context ? net::SiteForCookies()
+                             : net::SiteForCookies::FromUrl(url));
 
   return web_dedicated_or_shared_worker_fetch_context;
 }
