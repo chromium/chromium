@@ -2735,6 +2735,9 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   }
 #endif
 
+  require_network_anonymization_key_ =
+      params_->require_network_anonymization_key;
+
   // If `require_network_anonymization_key_` is true, but the features that can
   // trigger another URLRequest are not set to respect NetworkAnonymizationKeys,
   // the URLRequests that they create might not have a NAK, so only set the
@@ -2761,9 +2764,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   }
   auto result =
       URLRequestContextOwner(std::move(pref_service), builder.Build());
-
-  require_network_anonymization_key_ =
-      params_->require_network_anonymization_key;
 
   // Subscribe the CertVerifier to configuration changes that are exposed via
   // the mojom::SSLConfig, but which are not part of the
