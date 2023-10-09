@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -93,6 +94,7 @@ namespace {
 using password_manager::CredentialFacet;
 using password_manager::CredentialUIEntry;
 using password_manager::FetchFamilyMembersRequestStatus;
+using password_manager::PasswordAccessAuthenticator;
 
 // The error message returned to the UI when Chrome refuses to start multiple
 // exports.
@@ -211,15 +213,6 @@ extensions::api::passwords_private::ImportResults ConvertImportResults(
   return private_results;
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
-    content::WebContents* web_contents) {
-  auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
-  DCHECK(client);
-  return client->GetDeviceAuthenticator();
-}
-#endif
-
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 using password_manager::prefs::kBiometricAuthenticationBeforeFilling;
@@ -276,6 +269,17 @@ webauthn::PasskeyModel* MaybeGetPasskeyModel(Profile* profile) {
   return nullptr;
 }
 
+std::u16string ConvertPurposeToMessage(
+    password_manager::ReauthPurpose purpose) {
+#if BUILDFLAG(IS_WIN)
+  return password_manager_util_win::GetMessageForLoginPrompt(purpose);
+#elif BUILDFLAG(IS_MAC)
+  return password_manager_util_mac::GetMessageForLoginPrompt(purpose);
+#else
+  return std::u16string();
+#endif
+}
+
 }  // namespace
 
 namespace extensions {
@@ -312,8 +316,6 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
       is_initialized_(false),
       web_contents_(nullptr) {
   password_access_authenticator_.Init(
-      base::BindRepeating(&PasswordsPrivateDelegateImpl::OsReauthCall,
-                          weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&PasswordsPrivateDelegateImpl::OsReauthTimeoutCall,
                           weak_ptr_factory_.GetWeakPtr()));
   saved_passwords_presenter_.AddObserver(this);
@@ -329,6 +331,23 @@ PasswordsPrivateDelegateImpl::~PasswordsPrivateDelegateImpl() {
   saved_passwords_presenter_.RemoveObserver(this);
   install_manager_observation_.Reset();
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+std::unique_ptr<device_reauth::DeviceAuthenticator>
+PasswordsPrivateDelegateImpl::GetDeviceAuthenticator(
+    content::WebContents* web_contents,
+    base::TimeDelta auth_validity_period) {
+  if (test_device_authenticator_) {
+    return std::move(test_device_authenticator_);
+  }
+
+  device_reauth::DeviceAuthParams params(
+      auth_validity_period, device_reauth::DeviceAuthSource::kPasswordManager);
+
+  return ChromeDeviceAuthenticatorFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents->GetBrowserContext()), params);
+}
+#endif
 
 void PasswordsPrivateDelegateImpl::GetSavedPasswordsList(
     UiEntriesCallback callback) {
@@ -515,14 +534,15 @@ void PasswordsPrivateDelegateImpl::RequestPlaintextPassword(
     api::passwords_private::PlaintextReason reason,
     PlaintextPasswordCallback callback,
     content::WebContents* web_contents) {
-  // Save |web_contents| so that it can be used later when OsReauthCall() is
+  // Save |web_contents| so that it can be used later when AuthenticateUser() is
   // called. Note: This is safe because the |web_contents| is used before
   // exiting this method.
   // TODO(crbug.com/495290): Pass the native window directly to the
   // reauth-handling code.
   web_contents_ = web_contents;
-  password_access_authenticator_.EnsureUserIsAuthenticated(
-      GetReauthPurpose(reason),
+  AuthenticateUser(
+      ConvertPurposeToMessage(GetReauthPurpose(reason)),
+      PasswordAccessAuthenticator::GetAuthValidityPeriod(),
       base::BindOnce(
           &PasswordsPrivateDelegateImpl::OnRequestPlaintextPasswordAuthResult,
           weak_ptr_factory_.GetWeakPtr(), id, reason, std::move(callback)));
@@ -532,34 +552,19 @@ void PasswordsPrivateDelegateImpl::RequestCredentialsDetails(
     const std::vector<int>& ids,
     UiEntriesCallback callback,
     content::WebContents* web_contents) {
-  // Save |web_contents| so that it can be used later when OsReauthCall() is
+  // Save |web_contents| so that it can be used later when AuthenticateUser() is
   // called. Note: This is safe because the |web_contents| is used before
   // exiting this method.
   // TODO(crbug.com/495290): Pass the native window directly to the
   // reauth-handling code.
   web_contents_ = web_contents;
-  password_access_authenticator_.EnsureUserIsAuthenticated(
-      GetReauthPurpose(api::passwords_private::PLAINTEXT_REASON_VIEW),
+  AuthenticateUser(
+      ConvertPurposeToMessage(
+          GetReauthPurpose(api::passwords_private::PLAINTEXT_REASON_VIEW)),
+      PasswordAccessAuthenticator::GetAuthValidityPeriod(),
       base::BindOnce(
           &PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult,
           weak_ptr_factory_.GetWeakPtr(), ids, std::move(callback)));
-}
-
-void PasswordsPrivateDelegateImpl::OsReauthCall(
-    password_manager::ReauthPurpose purpose,
-    password_manager::PasswordAccessAuthenticator::AuthResultCallback
-        callback) {
-#if BUILDFLAG(IS_WIN)
-  AuthenticateUser(password_manager_util_win::GetMessageForLoginPrompt(purpose),
-                   std::move(callback));
-#elif BUILDFLAG(IS_MAC)
-  AuthenticateUser(password_manager_util_mac::GetMessageForLoginPrompt(purpose),
-                   std::move(callback));
-#elif BUILDFLAG(IS_CHROMEOS)
-  AuthenticateUser(std::u16string(), std::move(callback));
-#else
-  std::move(callback).Run(true);
-#endif
 }
 
 void PasswordsPrivateDelegateImpl::OnFetchingFamilyMembersCompleted(
@@ -774,15 +779,16 @@ void PasswordsPrivateDelegateImpl::ContinueImport(
                           .Then(std::move(results_callback)));
     return;
   }
-  // Save |web_contents| so that it can be used later when OsReauthCall() is
+  // Save |web_contents| so that it can be used later when AuthenticateUser() is
   // called. Note: This is safe because the |web_contents| is used before
   // exiting this method.
   // TODO(crbug.com/495290): Pass the native window directly to the
   // reauth-handling code.
   web_contents_ = web_contents;
 
-  password_access_authenticator_.ForceUserReauthentication(
-      password_manager::ReauthPurpose::IMPORT,
+  AuthenticateUser(
+      ConvertPurposeToMessage(password_manager::ReauthPurpose::IMPORT),
+      base::Seconds(0),
       base::BindOnce(&PasswordsPrivateDelegateImpl::OnImportPasswordsAuthResult,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(results_callback), selected_ids));
@@ -795,14 +801,15 @@ void PasswordsPrivateDelegateImpl::ResetImporter(bool delete_file) {
 void PasswordsPrivateDelegateImpl::ExportPasswords(
     base::OnceCallback<void(const std::string&)> accepted_callback,
     content::WebContents* web_contents) {
-  // Save |web_contents| so that it can be used later when OsReauthCall() is
+  // Save |web_contents| so that it can be used later when AuthenticateUser() is
   // called. Note: This is safe because the |web_contents| is used before
   // exiting this method.
   // TODO(crbug.com/495290): Pass the native window directly to the
   // reauth-handling code.
   web_contents_ = web_contents;
-  password_access_authenticator_.ForceUserReauthentication(
-      password_manager::ReauthPurpose::EXPORT,
+  AuthenticateUser(
+      ConvertPurposeToMessage(password_manager::ReauthPurpose::EXPORT),
+      base::Seconds(0),
       base::BindOnce(&PasswordsPrivateDelegateImpl::OnExportPasswordsAuthResult,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(accepted_callback), web_contents));
@@ -872,13 +879,12 @@ void PasswordsPrivateDelegateImpl::SwitchBiometricAuthBeforeFillingState(
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
   NOTIMPLEMENTED();
 #else
-  password_manager::PasswordAccessAuthenticator::AuthResultCallback callback =
-      base::BindOnce(&ChangeBiometricAuthenticationBeforeFillingSetting,
-                     profile_->GetPrefs());
+  AuthResultCallback callback = base::BindOnce(
+      &ChangeBiometricAuthenticationBeforeFillingSetting, profile_->GetPrefs());
   web_contents_ = web_contents;
   AuthenticateUser(GetMessageForBiometricAuthenticationBeforeFillingSetting(
                        profile_->GetPrefs()),
-                   std::move(callback));
+                   base::Seconds(0), std::move(callback));
 #endif
 }
 
@@ -912,8 +918,8 @@ PasswordsPrivateDelegateImpl::GetInsecureCredentialsManager() {
   return password_check_delegate_.GetInsecureCredentialsManager();
 }
 
-void PasswordsPrivateDelegateImpl::ExtendAuthValidity() {
-  password_access_authenticator_.ExtendAuthValidity();
+void PasswordsPrivateDelegateImpl::RestartAuthTimer() {
+  password_access_authenticator_.RestartAuthTimer();
 }
 
 void PasswordsPrivateDelegateImpl::OnPasswordsExportProgress(
@@ -1033,8 +1039,11 @@ void PasswordsPrivateDelegateImpl::OnAccountStorageOptInStateChanged() {
   }
 }
 
-void PasswordsPrivateDelegateImpl::OnReauthCompleted() {
+bool PasswordsPrivateDelegateImpl::OnReauthCompleted(bool authenticated) {
   device_authenticator_.reset();
+
+  password_access_authenticator_.OnUserReauthenticationResult(authenticated);
+  return authenticated;
 }
 
 void PasswordsPrivateDelegateImpl::ExecuteFunction(base::OnceClosure callback) {
@@ -1106,10 +1115,13 @@ void PasswordsPrivateDelegateImpl::EmitHistogramsForCredentialAccess(
 
 void PasswordsPrivateDelegateImpl::AuthenticateUser(
     const std::u16string& message,
-    password_manager::PasswordAccessAuthenticator::AuthResultCallback
-        callback) {
+    base::TimeDelta auth_validity_period,
+    AuthResultCallback auth_callback) {
+  auto callback = password_manager::metrics_util::TimeCallback(
+      std::move(auth_callback), "PasswordManager.Settings.AuthenticationTime");
+
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
-  NOTIMPLEMENTED();
+  std::move(callback).Run(true);
 #else
   // Cancel any ongoing authentication attempt.
   if (device_authenticator_) {
@@ -1117,14 +1129,14 @@ void PasswordsPrivateDelegateImpl::AuthenticateUser(
     // |device_authenticator_|.
     device_authenticator_->Cancel();
   }
-  device_authenticator_ = GetDeviceAuthenticator(web_contents_);
+  device_authenticator_ =
+      GetDeviceAuthenticator(web_contents_, auth_validity_period);
 
-  base::OnceClosure on_reauth_completed =
-      base::BindOnce(&PasswordsPrivateDelegateImpl::OnReauthCompleted,
-                     weak_ptr_factory_.GetWeakPtr());
+  AuthResultIntermediateCallback on_reauth_completed =
+      base::BindOnce(&PasswordsPrivateDelegateImpl::OnReauthCompleted, this);
 
   device_authenticator_->AuthenticateWithMessage(
-      message, std::move(callback).Then(std::move(on_reauth_completed)));
+      message, std::move(on_reauth_completed).Then(std::move(callback)));
 #endif
 }
 

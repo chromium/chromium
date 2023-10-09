@@ -24,62 +24,35 @@ PasswordAccessAuthenticator::PasswordAccessAuthenticator() = default;
 
 PasswordAccessAuthenticator::~PasswordAccessAuthenticator() = default;
 
-void PasswordAccessAuthenticator::Init(ReauthCallback os_reauth_call,
-                                       TimeoutCallback timeout_call) {
-  os_reauth_call_ = std::move(os_reauth_call);
+void PasswordAccessAuthenticator::Init(TimeoutCallback timeout_call) {
   timeout_call_ = std::move(timeout_call);
 }
 
-// TODO(crbug.com/327331): Trigger Re-Auth after closing and opening the
-// settings tab.
-void PasswordAccessAuthenticator::EnsureUserIsAuthenticated(
-    ReauthPurpose purpose,
-    AuthResultCallback callback) {
-  if (auth_timer_.IsRunning()) {
-    LogPasswordSettingsReauthResult(ReauthResult::kSkipped);
-    std::move(callback).Run(true);
-  } else {
-    ForceUserReauthentication(purpose, std::move(callback));
+// static
+base::TimeDelta PasswordAccessAuthenticator::GetAuthValidityPeriod() {
+  if (!base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
+    return base::Seconds(60);
   }
+  return syncer::kPasswordNotesAuthValidity.Get();
 }
 
-void PasswordAccessAuthenticator::ForceUserReauthentication(
-    ReauthPurpose purpose,
-    AuthResultCallback callback) {
-  DCHECK(!os_reauth_call_.is_null());
-  DCHECK(!timeout_call_.is_null());
-  os_reauth_call_.Run(
-      purpose,
-      base::BindOnce(&PasswordAccessAuthenticator::OnUserReauthenticationResult,
-                     base::Unretained(this),
-                     metrics_util::TimeCallback(
-                         std::move(callback),
-                         "PasswordManager.Settings.AuthenticationTime")));
-}
-
-void PasswordAccessAuthenticator::ExtendAuthValidity() {
-  if (auth_timer_.IsRunning()) {
-    auth_timer_.Reset();
+void PasswordAccessAuthenticator::RestartAuthTimer() {
+  if (timeout_timer_.IsRunning()) {
+    timeout_timer_.Reset();
   }
 }
 
 void PasswordAccessAuthenticator::OnUserReauthenticationResult(
-    AuthResultCallback callback,
     bool authenticated) {
   if (authenticated) {
-    DCHECK(!timeout_call_.is_null());
-    auth_timer_.Start(FROM_HERE, GetAuthValidityPeriod(),
-                      base::BindRepeating(timeout_call_));
+    CHECK(!timeout_call_.is_null());
+    timeout_timer_.Start(FROM_HERE, GetAuthValidityPeriod(),
+                         base::BindRepeating(timeout_call_));
   }
+  // TODO(crbug.com/1476842): Replace this metric with one which has only 2
+  // buckets.
   LogPasswordSettingsReauthResult(authenticated ? ReauthResult::kSuccess
                                                 : ReauthResult::kFailure);
-  std::move(callback).Run(authenticated);
-}
-
-base::TimeDelta PasswordAccessAuthenticator::GetAuthValidityPeriod() {
-  if (!base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup))
-    return kAuthValidityPeriod;
-  return syncer::kPasswordNotesAuthValidity.Get();
 }
 
 }  // namespace password_manager

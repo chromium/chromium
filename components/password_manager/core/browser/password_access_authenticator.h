@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_ACCESS_AUTHENTICATOR_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_ACCESS_AUTHENTICATOR_H_
 
-#include <memory>
-
 #include "base/functional/callback.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -15,22 +13,17 @@
 
 namespace password_manager {
 
-// This class takes care of reauthentication used for accessing passwords
-// through the settings page. It is used on all platforms but iOS and Android
-// (see //ios/chrome/browser/ui/settings/reauthentication_module.* for iOS and
+// This class only records metrics and manages the timer at the end of which the
+// timeout callback is called. It does not manage authentication. It is used on
+// all platforms but iOS and Android (see
+// //ios/chrome/browser/ui/settings/reauthentication_module.* for iOS and
 // PasswordEntryEditor.java and PasswordReauthenticationFragment.java in
 // chrome/android/java/src/org/chromium/chrome/browser/preferences/password/
 // for Android).
+// TODO(crbug.com/1476842): Rename this class more suggestively
 class PasswordAccessAuthenticator {
  public:
-  using AuthResultCallback = base::OnceCallback<void(bool)>;
-  using ReauthCallback =
-      base::RepeatingCallback<void(ReauthPurpose, AuthResultCallback)>;
   using TimeoutCallback = base::RepeatingCallback<void()>;
-
-  // For how long after the last successful authentication a user is considered
-  // authenticated without repeating the challenge.
-  constexpr static base::TimeDelta kAuthValidityPeriod = base::Seconds(60);
 
   PasswordAccessAuthenticator();
 
@@ -40,60 +33,39 @@ class PasswordAccessAuthenticator {
 
   ~PasswordAccessAuthenticator();
 
-  // |os_reauth_call| is passed to |os_reauth_call_|, see the latter for
-  // explanation. |timeout_call| is passed to |timeout_call_| and will be called
-  // when |auth_timer_| runs out.
-  void Init(ReauthCallback os_reauth_call, TimeoutCallback timeout_call);
+  // |timeout_call| is passed to |timeout_call_| and will be called when
+  // |timeout_timer_| runs out.
+  void Init(TimeoutCallback timeout_call);
 
-  // Determines whether the user is able to pass the authentication challenge,
-  // which is represented by |os_reauth_call_| returning true. A successful
-  // result of |os_reauth_call_| is cached for kAuthValidityPeriod. The result
-  // is passed to |callback|.
-  void EnsureUserIsAuthenticated(ReauthPurpose purpose,
-                                 AuthResultCallback callback);
+  // Determines the |timeout_timer_| period.
+  static base::TimeDelta GetAuthValidityPeriod();
 
-  // Presents the reauthentication challenge to the user and returns whether
-  // the user passed the challenge. This call is guaranteed to present the
-  // challenge to the user. The result is passed to |callback|.
-  void ForceUserReauthentication(ReauthPurpose purpose,
-                                 AuthResultCallback callback);
-
-  // Restarts the |auth_timer_| if it is already running. Has no effect if
-  // |auth_timer_| is not running.
-  void ExtendAuthValidity();
+  // Restarts the |timeout_timer_| if it is already running. Has no effect if
+  // |timeout_timer_| is not running.
+  void RestartAuthTimer();
 
 #if defined(UNIT_TEST)
-  // Use this in tests to mock the OS-level reauthentication.
-  void set_os_reauth_call(ReauthCallback os_reauth_call) {
-    os_reauth_call_ = std::move(os_reauth_call);
-  }
-
-  // Use it in tests to mock starting |auth_timer_|.
+  // Use it in tests to mock starting |timeout_timer_|.
   void start_auth_timer(TimeoutCallback timeout_call) {
     timeout_call_ = timeout_call;
-    auth_timer_.Start(FROM_HERE, GetAuthValidityPeriod(),
-                      base::BindRepeating(timeout_call_));
+    timeout_timer_.Start(FROM_HERE, GetAuthValidityPeriod(),
+                         base::BindRepeating(timeout_call_));
   }
 #endif  // defined(UNIT_TEST)
 
- private:
   // Callback for ForceUserReauthentication().
-  void OnUserReauthenticationResult(AuthResultCallback callback,
-                                    bool authenticated);
+  void OnUserReauthenticationResult(bool authenticated);
 
-  // Determines the |auth_timer_| period.
-  base::TimeDelta GetAuthValidityPeriod();
-
-  // Used to directly present the authentication challenge (such as the login
-  // prompt) to the user.
-  ReauthCallback os_reauth_call_;
-
+ private:
   // Fired after `kAuthValidityPeriod` after successful user authentication.
   TimeoutCallback timeout_call_;
 
-  // Used to keep track of time once the user passed the auth challenge. Once it
-  // runs out, |timeout_call_| will be run.
-  base::RetainingOneShotTimer auth_timer_;
+  // Used only to keep track of time once the user passed the authentication
+  // challenge, so that, after it runs out, |timeout_call_| is run. This
+  // timer can be restarted using |RestartAuthTimer|. Restarting it merely means
+  // delaying the call of |timeout_call_|. It DOES NOT extend
+  // authentication validity period.
+  base::RetainingOneShotTimer timeout_timer_;
 };
 
 }  // namespace password_manager

@@ -584,7 +584,7 @@ ResponseAction PasswordsPrivateExtendAuthValidityFunction::Run() {
     return RespondNow(Error(kNoDelegateError));
   }
 
-  GetDelegate(browser_context())->ExtendAuthValidity();
+  GetDelegate(browser_context())->RestartAuthTimer();
   return RespondNow(NoArguments());
 }
 

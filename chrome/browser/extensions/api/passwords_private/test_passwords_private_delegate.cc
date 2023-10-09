@@ -377,7 +377,7 @@ TestPasswordsPrivateDelegate::GetInsecureCredentialsManager() {
   return nullptr;
 }
 
-void TestPasswordsPrivateDelegate::ExtendAuthValidity() {
+void TestPasswordsPrivateDelegate::RestartAuthTimer() {
   authenticator_interacted_ = true;
 }
 

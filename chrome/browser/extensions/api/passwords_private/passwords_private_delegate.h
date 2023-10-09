@@ -242,7 +242,7 @@ class PasswordsPrivateDelegate
   GetInsecureCredentialsManager() = 0;
 
   // Restarts the authentication timer if it is running.
-  virtual void ExtendAuthValidity() = 0;
+  virtual void RestartAuthTimer() = 0;
 
   // Switches Biometric authentication before filling state after
   // successful authentication.

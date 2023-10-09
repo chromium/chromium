@@ -57,6 +57,9 @@ class PasswordsPrivateDelegateImpl
       public password_manager::SavedPasswordsPresenter::Observer,
       public web_app::WebAppInstallManagerObserver {
  public:
+  using AuthResultCallback = base::OnceCallback<void(bool)>;
+  using AuthResultIntermediateCallback = base::OnceCallback<bool(bool)>;
+
   explicit PasswordsPrivateDelegateImpl(Profile* profile);
 
   PasswordsPrivateDelegateImpl(const PasswordsPrivateDelegateImpl&) = delete;
@@ -122,25 +125,31 @@ class PasswordsPrivateDelegateImpl
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;
   password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()
       override;
-  void ExtendAuthValidity() override;
+  void RestartAuthTimer() override;
   void SwitchBiometricAuthBeforeFillingState(
       content::WebContents* web_contents) override;
   void ShowAddShortcutDialog(content::WebContents* web_contents) override;
   void ShowExportedFileInShell(content::WebContents* web_contents,
                                std::string file_path) override;
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
+      content::WebContents* web_contents,
+      base::TimeDelta auth_validity_period);
+#endif
+
 #if defined(UNIT_TEST)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  void SetDeviceAuthenticatorForTesting(
+      std::unique_ptr<device_reauth::DeviceAuthenticator>
+          device_authenticator) {
+    test_device_authenticator_ = std::move(device_authenticator);
+  }
+#endif
+
   int GetIdForCredential(
       const password_manager::CredentialUIEntry& credential) {
     return credential_id_generator_.GenerateId(credential);
-  }
-
-  // Use this in tests to mock the OS-level reauthentication.
-  void set_os_reauth_call(
-      password_manager::PasswordAccessAuthenticator::ReauthCallback
-          os_reauth_call) {
-    password_access_authenticator_.set_os_reauth_call(
-        std::move(os_reauth_call));
   }
 
   void SetPorterForTesting(
@@ -214,15 +223,6 @@ class PasswordsPrivateDelegateImpl
 
   void OnAccountStorageOptInStateChanged();
 
-  // Decides whether an authentication check is successful. Passes the result
-  // to |callback|. True indicates that no extra work is needed. False
-  // indicates that OS-dependent UI to present OS account login challenge
-  // should be shown.
-  void OsReauthCall(
-      password_manager::ReauthPurpose purpose,
-      password_manager::PasswordAccessAuthenticator::AuthResultCallback
-          callback);
-
   void OnFetchingFamilyMembersCompleted(
       FetchFamilyResultsCallback callback,
       std::vector<password_manager::RecipientInfo> recipients_info,
@@ -234,16 +234,15 @@ class PasswordsPrivateDelegateImpl
       api::passwords_private::PlaintextReason reason);
 
   // Callback for biometric authentication after authentication check.
-  void OnReauthCompleted();
+  bool OnReauthCompleted(bool authenticated);
 
   // Invokes PasswordsPrivateEventRouter::OnPasswordManagerAuthTimeout().
   void OsReauthTimeoutCall();
 
   // Authenticate the user using os-authentication.
-  void AuthenticateUser(
-      const std::u16string& message,
-      password_manager::PasswordAccessAuthenticator::AuthResultCallback
-          callback);
+  void AuthenticateUser(const std::u16string& message,
+                        base::TimeDelta auth_validity_period,
+                        AuthResultCallback auth_callback);
 
   extensions::api::passwords_private::PasswordUiEntry
   CreatePasswordUiEntryFromCredentialUiEntry(
@@ -299,6 +298,9 @@ class PasswordsPrivateDelegateImpl
 
   std::unique_ptr<password_manager::RecipientsFetcher>
       sharing_password_recipients_fetcher_;
+
+  std::unique_ptr<device_reauth::DeviceAuthenticator>
+      test_device_authenticator_;
 
   base::WeakPtrFactory<PasswordsPrivateDelegateImpl> weak_ptr_factory_{this};
 };

@@ -76,6 +76,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/test_event_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,12 +90,11 @@
 #include "components/prefs/pref_service.h"
 #endif
 
-using MockReauthCallback = base::MockCallback<
-    password_manager::PasswordAccessAuthenticator::ReauthCallback>;
 using password_manager::PasswordForm;
 using password_manager::PasswordRecipient;
 using password_manager::ReauthPurpose;
 using password_manager::TestPasswordStore;
+using password_manager::metrics_util::ReauthResult;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
@@ -213,10 +213,6 @@ class MockPasswordManagerClient : public ChromePasswordManagerClient {
               (signin_metrics::ReauthAccessPoint,
                base::OnceCallback<void(ReauthSucceeded)>),
               (override));
-  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
-              GetDeviceAuthenticator,
-              (),
-              (override));
   const password_manager::MockPasswordFeatureManager*
   GetPasswordFeatureManager() const override {
     return &mock_password_feature_manager_;
@@ -231,8 +227,6 @@ class MockPasswordManagerClient : public ChromePasswordManagerClient {
       : ChromePasswordManagerClient(web_contents) {}
 
   password_manager::MockPasswordFeatureManager mock_password_feature_manager_;
-  std::unique_ptr<device_reauth::MockDeviceAuthenticator>
-      biometric_authenticator_ = nullptr;
 };
 
 // static
@@ -348,6 +342,21 @@ MATCHER_P(PasswordUiEntryDataEquals, expected, "") {
          testing::Value(expected.get().username, arg.username) &&
          testing::Value(expected.get().display_name, arg.display_name) &&
          testing::Value(expected.get().stored_in, arg.stored_in);
+}
+
+void ExpectAuthentication(scoped_refptr<PasswordsPrivateDelegateImpl> delegate,
+                          bool successful) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  auto biometric_authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+
+  EXPECT_CALL(*biometric_authenticator, AuthenticateWithMessage)
+      .WillOnce(base::test::RunOnceCallback<1>(successful));
+  delegate->SetDeviceAuthenticatorForTesting(
+      std::move(biometric_authenticator));
+#else
+  NOTIMPLEMENTED();
+#endif
 }
 
 }  // namespace
@@ -720,13 +729,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestReauthFailedOnImport) {
       password_manager::ImportResults::Status::DISMISSED;
   fake_porter_ptr->set_import_result_status(kExpectedStatus);
 
-  MockReauthCallback reauth_callback;
-  delegate->set_os_reauth_call(reauth_callback.Get());
-
-  EXPECT_CALL(reauth_callback, Run(ReauthPurpose::IMPORT, _))
-      .WillOnce(testing::WithArg<1>(
-          [](password_manager::PasswordAccessAuthenticator::AuthResultCallback
-                 callback) { std::move(callback).Run(false); }));
+  ExpectAuthentication(delegate, /*successful=*/false);
 
   base::MockCallback<PasswordsPrivateDelegate::ImportResultsCallback>
       import_callback;
@@ -958,25 +961,21 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeCredential_EmptyPassword) {
 // Checking callback result of RequestPlaintextPassword with reason Copy.
 // By implementation for Copy, callback will receive empty string.
 TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResult) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
   PasswordForm form = CreateSampleForm();
   SetUpPasswordStores({form});
 
   auto delegate = CreateDelegate();
   base::RunLoop().RunUntilIdle();
 
-  MockReauthCallback callback;
-  delegate->set_os_reauth_call(callback.Get());
-
-  EXPECT_CALL(callback, Run(ReauthPurpose::COPY_PASSWORD, _))
-      .WillOnce(testing::WithArg<1>(
-          [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
-                  callback) { std::move(callback).Run(true); }));
+  ExpectAuthentication(delegate, /*successful=*/true);
 
   MockPlaintextPasswordCallback password_callback;
   EXPECT_CALL(password_callback, Run(Eq(std::u16string())));
   delegate->RequestPlaintextPassword(
       0, api::passwords_private::PLAINTEXT_REASON_COPY, password_callback.Get(),
-      nullptr);
+      web_contents.get());
 
   std::u16string result;
   test_clipboard_->ReadText(ui::ClipboardBuffer::kCopyPaste,
@@ -1023,19 +1022,16 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   delegate->SetAccountStorageOptIn(false, web_contents.get());
 }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResultFail) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
   SetUpPasswordStores({CreateSampleForm()});
 
   auto delegate = CreateDelegate();
   base::RunLoop().RunUntilIdle();
 
-  MockReauthCallback callback;
-  delegate->set_os_reauth_call(callback.Get());
-
-  EXPECT_CALL(callback, Run(ReauthPurpose::COPY_PASSWORD, _))
-      .WillOnce(testing::WithArg<1>(
-          [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
-                  callback) { std::move(callback).Run(false); }));
+  ExpectAuthentication(delegate, /*successful=*/false);
 
   base::Time before_call = test_clipboard_->GetLastModifiedTime();
 
@@ -1043,7 +1039,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResultFail) {
   EXPECT_CALL(password_callback, Run(Eq(absl::nullopt)));
   delegate->RequestPlaintextPassword(
       0, api::passwords_private::PLAINTEXT_REASON_COPY, password_callback.Get(),
-      nullptr);
+      web_contents.get());
   // Clipboard should not be modified in case Reauth failed
   std::u16string result;
   test_clipboard_->ReadText(ui::ClipboardBuffer::kCopyPaste,
@@ -1054,8 +1050,11 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResultFail) {
   // Since Reauth had failed password was not copied and metric wasn't recorded
   histogram_tester().ExpectTotalCount(kHistogramName, 0);
 }
+#endif
 
 TEST_F(PasswordsPrivateDelegateImplTest, TestPassedReauthOnView) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
   SetUpPasswordStores({CreateSampleForm()});
 
   auto delegate = CreateDelegate();
@@ -1063,19 +1062,13 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestPassedReauthOnView) {
   // |delegate| to be completed.
   base::RunLoop().RunUntilIdle();
 
-  MockReauthCallback callback;
-  delegate->set_os_reauth_call(callback.Get());
-
-  EXPECT_CALL(callback, Run(ReauthPurpose::VIEW_PASSWORD, _))
-      .WillOnce(testing::WithArg<1>(
-          [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
-                  callback) { std::move(callback).Run(true); }));
+  ExpectAuthentication(delegate, /*successful=*/true);
 
   MockPlaintextPasswordCallback password_callback;
   EXPECT_CALL(password_callback, Run(Eq(u"test")));
   delegate->RequestPlaintextPassword(
       0, api::passwords_private::PLAINTEXT_REASON_VIEW, password_callback.Get(),
-      nullptr);
+      web_contents.get());
 
   histogram_tester().ExpectUniqueSample(
       kHistogramName, password_manager::metrics_util::ACCESS_PASSWORD_VIEWED,
@@ -1084,6 +1077,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestPassedReauthOnView) {
 
 TEST_F(PasswordsPrivateDelegateImplTest,
        TestPassedReauthOnRequestCredentialsDetails) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
   PasswordForm sample_form = CreateSampleForm();
   sample_form.notes.emplace_back(u"best note ever",
                                  /*date_created=*/base::Time::Now());
@@ -1094,13 +1089,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   // |delegate| to be completed.
   base::RunLoop().RunUntilIdle();
 
-  MockReauthCallback callback;
-  delegate->set_os_reauth_call(callback.Get());
-
-  EXPECT_CALL(callback, Run(ReauthPurpose::VIEW_PASSWORD, _))
-      .WillOnce(testing::WithArg<1>(
-          [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
-                  callback) { std::move(callback).Run(true); }));
+  ExpectAuthentication(delegate, /*successful=*/true);
 
   MockRequestCredentialsDetailsCallback password_callback;
   EXPECT_CALL(password_callback, Run)
@@ -1111,14 +1100,18 @@ TEST_F(PasswordsPrivateDelegateImplTest,
         EXPECT_THAT(entries[0].note, Eq("best note ever"));
       });
 
-  delegate->RequestCredentialsDetails({0}, password_callback.Get(), nullptr);
+  delegate->RequestCredentialsDetails({0}, password_callback.Get(),
+                                      web_contents.get());
 
   histogram_tester().ExpectUniqueSample(
       kHistogramName, password_manager::metrics_util::ACCESS_PASSWORD_VIEWED,
       1);
 }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(PasswordsPrivateDelegateImplTest, TestFailedReauthOnView) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
   SetUpPasswordStores({CreateSampleForm()});
 
   auto delegate = CreateDelegate();
@@ -1126,19 +1119,13 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestFailedReauthOnView) {
   // |delegate| to be completed.
   base::RunLoop().RunUntilIdle();
 
-  MockReauthCallback callback;
-  delegate->set_os_reauth_call(callback.Get());
-
-  EXPECT_CALL(callback, Run(ReauthPurpose::VIEW_PASSWORD, _))
-      .WillOnce(testing::WithArg<1>(
-          [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
-                  callback) { std::move(callback).Run(false); }));
+  ExpectAuthentication(delegate, /*successful=*/false);
 
   MockPlaintextPasswordCallback password_callback;
   EXPECT_CALL(password_callback, Run(Eq(absl::nullopt)));
   delegate->RequestPlaintextPassword(
       0, api::passwords_private::PLAINTEXT_REASON_VIEW, password_callback.Get(),
-      nullptr);
+      web_contents.get());
 
   // Since Reauth had failed password was not viewed and metric wasn't recorded
   histogram_tester().ExpectTotalCount(kHistogramName, 0);
@@ -1146,6 +1133,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestFailedReauthOnView) {
 
 TEST_F(PasswordsPrivateDelegateImplTest,
        TestFailedReauthOnRequestCredentialsDetails) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
   SetUpPasswordStores({CreateSampleForm()});
 
   auto delegate = CreateDelegate();
@@ -1153,23 +1142,20 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   // |delegate| to be completed.
   base::RunLoop().RunUntilIdle();
 
-  MockReauthCallback callback;
-  delegate->set_os_reauth_call(callback.Get());
-
-  EXPECT_CALL(callback, Run(ReauthPurpose::VIEW_PASSWORD, _))
-      .WillOnce(testing::WithArg<1>(
-          [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
-                  callback) { std::move(callback).Run(false); }));
+  ExpectAuthentication(delegate, /*successful=*/false);
 
   MockRequestCredentialsDetailsCallback password_callback;
   EXPECT_CALL(password_callback, Run(testing::IsEmpty()));
-  delegate->RequestCredentialsDetails({0}, password_callback.Get(), nullptr);
+  delegate->RequestCredentialsDetails({0}, password_callback.Get(),
+                                      web_contents.get());
 
   // Since Reauth had failed password was not viewed and metric wasn't recorded
   histogram_tester().ExpectTotalCount(kHistogramName, 0);
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, TestReauthFailedOnExport) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
   SetUpPasswordStores({CreateSampleForm()});
   StrictMock<base::MockCallback<base::OnceCallback<void(const std::string&)>>>
       mock_accepted;
@@ -1179,17 +1165,12 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestReauthFailedOnExport) {
   // |delegate| to be completed.
   base::RunLoop().RunUntilIdle();
 
+  ExpectAuthentication(delegate, /*successful=*/false);
+
   EXPECT_CALL(mock_accepted, Run(std::string("reauth-failed")));
-
-  MockReauthCallback callback;
-  delegate->set_os_reauth_call(callback.Get());
-
-  EXPECT_CALL(callback, Run(ReauthPurpose::EXPORT, _))
-      .WillOnce(testing::WithArg<1>(
-          [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
-                  callback) { std::move(callback).Run(false); }));
-  delegate->ExportPasswords(mock_accepted.Get(), nullptr);
+  delegate->ExportPasswords(mock_accepted.Get(), web_contents.get());
 }
+#endif
 
 TEST_F(PasswordsPrivateDelegateImplTest,
        GetUrlCollectionValueWithSchemeWhenIpAddress) {
@@ -1357,20 +1338,13 @@ TEST_F(PasswordsPrivateDelegateImplTest, VerifyCastingOfImportResultsStatus) {
 TEST_F(PasswordsPrivateDelegateImplTest,
        SwitchBiometricAuthBeforeFillingState) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  auto* client =
-      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
-
-  auto biometric_authenticator =
-      std::make_unique<device_reauth::MockDeviceAuthenticator>();
 
   profile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
-  EXPECT_CALL(*biometric_authenticator, AuthenticateWithMessage)
-      .WillOnce(base::test::RunOnceCallback<1>(/*successful=*/true));
-  EXPECT_CALL(*client, GetDeviceAuthenticator)
-      .WillOnce(Return(testing::ByMove(std::move(biometric_authenticator))));
 
   auto delegate = CreateDelegate();
+  ExpectAuthentication(delegate, /*successful=*/true);
+
   delegate->SwitchBiometricAuthBeforeFillingState(web_contents.get());
   // Expects that the switch value will change.
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
@@ -1381,8 +1355,6 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 TEST_F(PasswordsPrivateDelegateImplTest,
        SwitchBiometricAuthBeforeFillingCancelsLastTry) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  auto* client =
-      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
 
   auto biometric_authenticator =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -1390,19 +1362,15 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 
   auto delegate = CreateDelegate();
   EXPECT_CALL(*biometric_authenticator_ptr, AuthenticateWithMessage);
-  EXPECT_CALL(*client, GetDeviceAuthenticator)
-      .WillOnce(Return(testing::ByMove(std::move(biometric_authenticator))));
+  delegate->SetDeviceAuthenticatorForTesting(
+      std::move(biometric_authenticator));
 
   delegate->SwitchBiometricAuthBeforeFillingState(web_contents.get());
 
-  auto biometric_authenticator2 =
-      std::make_unique<device_reauth::MockDeviceAuthenticator>();
-
   // Invoking authentication again will cancel previous request.
   EXPECT_CALL(*biometric_authenticator_ptr, Cancel);
-  EXPECT_CALL(*biometric_authenticator2.get(), AuthenticateWithMessage);
-  EXPECT_CALL(*client, GetDeviceAuthenticator)
-      .WillOnce(Return(testing::ByMove(std::move(biometric_authenticator2))));
+  ExpectAuthentication(delegate, /*successful=*/true);
+
   delegate->SwitchBiometricAuthBeforeFillingState(web_contents.get());
 }
 
@@ -1736,6 +1704,108 @@ TEST_F(PasswordsPrivateDelegateImplTest, ShareNonExistentPassword) {
 
   delegate->SharePassword(/*id=*/100, recipients);
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+TEST_F(PasswordsPrivateDelegateImplTest, RecordSuccessAuthHistogram) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  auto delegate = CreateDelegate();
+
+  ExpectAuthentication(delegate, /*successful=*/true);
+
+  MockRequestCredentialsDetailsCallback callback;
+  EXPECT_CALL(callback, Run(testing::IsEmpty()));
+  delegate->RequestCredentialsDetails({0}, callback.Get(), web_contents.get());
+
+  histogram_tester().ExpectBucketCount(
+      "PasswordManager.ReauthToAccessPasswordInSettings",
+      ReauthResult::kSuccess, 1);
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest, RecordFailAuthHistogram) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  auto delegate = CreateDelegate();
+
+  ExpectAuthentication(delegate, /*successful=*/false);
+
+  MockRequestCredentialsDetailsCallback callback;
+  EXPECT_CALL(callback, Run(testing::IsEmpty()));
+  delegate->RequestCredentialsDetails({0}, callback.Get(), web_contents.get());
+
+  histogram_tester().ExpectBucketCount(
+      "PasswordManager.ReauthToAccessPasswordInSettings",
+      ReauthResult::kFailure, 1);
+}
+
+class PasswordsPrivateDelegateImplMockTaskEnvironmentTest
+    : public testing::Test {
+ public:
+  PasswordsPrivateDelegateImplMockTaskEnvironmentTest()
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+
+  void SetUp() override {
+    profile_manager_.SetUp();
+
+    profile_ = profile_manager_.CreateTestingProfile("test_profile");
+    web_contents_ = web_contents_factory_.CreateWebContents(profile_);
+
+    profile_store_ = CreateAndUseTestPasswordStore(profile_);
+    account_store_ = CreateAndUseTestAccountPasswordStore(profile_);
+  }
+
+  void TearDown() override { profile_manager_.DeleteAllTestingProfiles(); }
+
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
+  content::WebContents* web_contents() { return web_contents_; }
+
+  scoped_refptr<PasswordsPrivateDelegateImpl> CreateDelegate() {
+    return new PasswordsPrivateDelegateImpl(profile_);
+  }
+
+  content::BrowserTaskEnvironment& GetTaskEnvironment() {
+    return task_environment_;
+  }
+
+ private:
+  TestingProfileManager profile_manager_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::HistogramTester histogram_tester_;
+  content::TestWebContentsFactory web_contents_factory_;
+  scoped_refptr<TestPasswordStore> profile_store_;
+  scoped_refptr<TestPasswordStore> account_store_;
+  // Owned by |web_contents_factory_|
+  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<TestingProfile> profile_;
+};
+
+TEST_F(PasswordsPrivateDelegateImplMockTaskEnvironmentTest,
+       AuthenticationTimeMetric) {
+  content::WebContents* web_contents_ptr = web_contents();
+  auto delegate = CreateDelegate();
+
+  auto biometric_authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+
+  EXPECT_CALL(*biometric_authenticator, AuthenticateWithMessage)
+      .WillOnce(testing::WithArg<1>(
+          [this](PasswordsPrivateDelegateImpl::AuthResultCallback callback) {
+            // Waiting for 10 seconds to simulate a long authentication process.
+            GetTaskEnvironment().FastForwardBy(base::Seconds(10));
+            std::move(callback).Run(/*successful=*/true);
+          }));
+
+  delegate->SetDeviceAuthenticatorForTesting(
+      std::move(biometric_authenticator));
+
+  MockRequestCredentialsDetailsCallback callback;
+  EXPECT_CALL(callback, Run(testing::IsEmpty()));
+  delegate->RequestCredentialsDetails({0}, callback.Get(), web_contents_ptr);
+
+  histogram_tester().ExpectUniqueTimeSample(
+      "PasswordManager.Settings.AuthenticationTime", base::Seconds(10), 1);
+}
+#endif
 
 class PasswordsPrivateDelegateImplFetchFamilyMembersTest
     : public PasswordsPrivateDelegateImplTest {

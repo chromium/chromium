@@ -89,7 +89,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;
   password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()
       override;
-  void ExtendAuthValidity() override;
+  void RestartAuthTimer() override;
   void SwitchBiometricAuthBeforeFillingState(
       content::WebContents* web_contents) override;
   void ShowAddShortcutDialog(content::WebContents* web_contents) override;
