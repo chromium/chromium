@@ -104,6 +104,11 @@ LayoutObject* InputTypeView::CreateLayoutObject(
   return LayoutObject::CreateObject(&GetElement(), style);
 }
 
+const ComputedStyle* InputTypeView::CustomStyleForLayoutObject(
+    const ComputedStyle* original_style) const {
+  return original_style;
+}
+
 ControlPart InputTypeView::AutoAppearance() const {
   return kNoControlPart;
 }

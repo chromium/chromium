@@ -470,6 +470,8 @@ class CORE_EXPORT HTMLInputElement
 
   void AddToRadioButtonGroup();
   void RemoveFromRadioButtonGroup();
+  const ComputedStyle* CustomStyleForLayoutObject(
+      const StyleRecalcContext&) override;
   void AdjustStyle(ComputedStyleBuilder&) override;
 
   void MaybeReportPiiMetrics();

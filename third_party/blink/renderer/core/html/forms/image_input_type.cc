@@ -276,11 +276,15 @@ void ImageInputType::CreateShadowSubtree() {
   HTMLImageFallbackHelper::CreateAltTextShadowTree(GetElement());
 }
 
-void ImageInputType::AdjustStyle(ComputedStyleBuilder& builder) {
+// TODO(crbug.com/953707): Avoid marking style dirty in
+// HTMLImageFallbackHelper and use AdjustStyle instead.
+const ComputedStyle* ImageInputType::CustomStyleForLayoutObject(
+    const ComputedStyle* original_style) const {
   if (!use_fallback_content_)
-    return;
-
+    return original_style;
+  ComputedStyleBuilder builder(*original_style);
   HTMLImageFallbackHelper::CustomStyleForAltText(GetElement(), builder);
+  return builder.TakeStyle();
 }
 
 }  // namespace blink

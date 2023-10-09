@@ -109,6 +109,10 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
 
   virtual void SubtreeHasChanged();
   virtual LayoutObject* CreateLayoutObject(const ComputedStyle&) const;
+  // TODO(crbug.com/953707): Avoid marking style dirty in
+  // HTMLImageFallbackHelper and remove CustomStyleForLayoutObject.
+  virtual const ComputedStyle* CustomStyleForLayoutObject(
+      const ComputedStyle* original_style) const;
   virtual void AdjustStyle(ComputedStyleBuilder&) {}
   virtual ControlPart AutoAppearance() const;
   virtual TextDirection ComputedTextDirection();
