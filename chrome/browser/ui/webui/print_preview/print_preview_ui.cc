@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/id_map.h"
@@ -320,6 +321,9 @@ void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
   source->AddBoolean(
       "isPrintPreviewSetupAssistanceEnabled",
       base::FeatureList::IsEnabled(::features::kPrintPreviewSetupAssistance));
+  source->AddBoolean(
+      "isLocalPrinterObservingEnabled",
+      base::FeatureList::IsEnabled(::features::kLocalPrinterObserving));
 #else
   bool system_default_printer = profile->GetPrefs()->GetBoolean(
       prefs::kPrintPreviewUseSystemDefaultPrinter);

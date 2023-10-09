@@ -6,15 +6,13 @@ import {Destination, DestinationErrorType, DestinationStore, DestinationStoreEve
 // <if expr="not is_chromeos">
 import {RecentDestination} from 'chrome://print/print_preview.js';
 // </if>
-// <if expr="not is_chromeos">
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-// </if>
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 // <if expr="is_chromeos">
-import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
+import {NativeLayerCrosStub, setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, getCddTemplate, getDefaultInitialSettings, getDestinations, getSaveAsPdfDestination, setupTestListenerElement} from './print_preview_test_utils.js';
@@ -23,6 +21,10 @@ suite('DestinationStoreTest', function() {
   let destinationStore: DestinationStore;
 
   let nativeLayer: NativeLayerStub;
+
+  // <if expr="is_chromeos">
+  let nativeLayerCros: NativeLayerCrosStub;
+  // </if>
 
   let initialSettings: NativeInitialSettings;
 
@@ -41,7 +43,7 @@ suite('DestinationStoreTest', function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
     // <if expr="is_chromeos">
-    setNativeLayerCrosInstance();
+    nativeLayerCros = setNativeLayerCrosInstance();
     // </if>
 
     initialSettings = getDefaultInitialSettings();
@@ -405,6 +407,55 @@ suite('DestinationStoreTest', function() {
       assertFalse(!!destinationStore.destinations().find(
           destination => destination.id ===
               GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS));
+    });
+  });
+
+  // Tests that the destination store subscribes to the LocalPrintersObserver
+  // upon initialization after a successful destination search.
+  test('ObserveLocalPrintersAfterSuccessfulSearch', function() {
+    const printer1 = {
+      printerName: 'localPrinter1',
+      deviceName: 'localPrinter1',
+    };
+    const printer2 = {
+      printerName: 'localPrinter2',
+      deviceName: 'localPrinter2',
+    };
+    nativeLayerCros.setLocalPrinters([printer1, printer2]);
+
+    loadTimeData.overrideValues({isLocalPrinterObservingEnabled: true});
+    return setInitialSettings(/*expectPrinterFailure=*/ false).then(() => {
+      assertEquals(1, nativeLayerCros.getCallCount('observeLocalPrinters'));
+      assertTrue(!!destinationStore.destinations().find(
+          destination => destination.id === printer1.printerName));
+      assertTrue(!!destinationStore.destinations().find(
+          destination => destination.id === printer2.printerName));
+    });
+  });
+
+  // Tests that the destination store subscribes to the LocalPrintersObserver
+  // upon initialization after no destination search is started.
+  test('ObserveLocalPrintersAfterNoSearch', function() {
+    const printer1 = {
+      printerName: 'localPrinter1',
+      deviceName: 'localPrinter1',
+    };
+    const printer2 = {
+      printerName: 'localPrinter2',
+      deviceName: 'localPrinter2',
+    };
+    nativeLayerCros.setLocalPrinters([printer1, printer2]);
+
+    loadTimeData.overrideValues({isLocalPrinterObservingEnabled: true});
+    // Set to empty string so `systemDefaultDestinationId` destination store
+    // param is empty which triggers no destination search.
+    initialSettings.printerName = '';
+    return setInitialSettings(/*expectPrinterFailure=*/ false).then(() => {
+      assertEquals(1, nativeLayerCros.getCallCount('observeLocalPrinters'));
+      assertTrue(!!destinationStore.destinations().find(
+          destination => destination.id === printer1.printerName));
+      assertTrue(!!destinationStore.destinations().find(
+          destination => destination.id === printer2.printerName));
     });
   });
   // </if>

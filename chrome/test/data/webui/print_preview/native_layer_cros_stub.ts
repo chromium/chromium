@@ -41,6 +41,8 @@ export class NativeLayerCrosStub extends TestBrowserProxy implements
   /** When true, all printer status retry requests return NO_ERROR. */
   private simulateStatusRetrySuccesful_: boolean = false;
 
+  private localPrinters_: LocalDestinationInfo[] = [];
+
   constructor() {
     super([
       'getEulaUrl',
@@ -167,8 +169,12 @@ export class NativeLayerCrosStub extends TestBrowserProxy implements
     this.showManagePrinters = show;
   }
 
+  setLocalPrinters(printers: LocalDestinationInfo[]): void {
+    this.localPrinters_ = printers;
+  }
+
   observeLocalPrinters(): Promise<LocalDestinationInfo[]> {
     this.methodCalled('observeLocalPrinters');
-    return Promise.resolve([]);
+    return Promise.resolve(this.localPrinters_);
   }
 }
