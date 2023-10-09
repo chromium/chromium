@@ -2556,7 +2556,7 @@ bool Margin::IsLayoutDependent(const ComputedStyle* style,
          (!style || !style->MarginBottom().IsFixed() ||
           !style->MarginTop().IsFixed() || !style->MarginLeft().IsFixed() ||
           !style->MarginRight().IsFixed() ||
-          To<LayoutBox>(layout_object)->UsesPositionFallbackStyle());
+          style->MayHavePositionFallbackList());
 }
 
 const CSSValue* Margin::CSSValueFromComputedStyleInternal(

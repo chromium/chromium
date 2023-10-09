@@ -4505,17 +4505,6 @@ const NGBoxStrut& LayoutBox::OutOfFlowInsetsForGetComputedStyle() const {
   return GetLayoutResults().front()->OutOfFlowInsetsForGetComputedStyle();
 }
 
-bool LayoutBox::UsesPositionFallbackStyle() const {
-  if (!IsOutOfFlowPositioned()) {
-    return false;
-  }
-  if (StyleRef().PositionFallback()) {
-    return true;
-  }
-  // TODO(crbug.com/1475321): Return true for the new auto fallback syntax.
-  return false;
-}
-
 bool LayoutBox::NeedsAnchorPositionScrollAdjustmentInX() const {
   const auto& layout_results = GetLayoutResults();
   if (layout_results.empty()) {

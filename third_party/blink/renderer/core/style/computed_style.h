@@ -645,6 +645,13 @@ class ComputedStyle final : public ComputedStyleBase {
                : NGOutlineType::kDontIncludeBlockVisualOverflow;
   }
 
+  // position-fallback
+
+  // https://drafts.csswg.org/css-anchor-position-1/#position-fallback-list
+  bool MayHavePositionFallbackList() const {
+    return HasOutOfFlowPosition() && PositionFallback();
+  }
+
   // Scroll properties.
 
   PhysicalToLogicalGetter<const Length&, ComputedStyle>

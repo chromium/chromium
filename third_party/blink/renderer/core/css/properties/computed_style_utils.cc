@@ -698,7 +698,7 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
   const auto* box = DynamicTo<LayoutBox>(layout_object);
 
   // In this case, the used value is the computed value, so we resolve directly.
-  if (offset.IsFixed() && (!box || !box->UsesPositionFallbackStyle())) {
+  if (offset.IsFixed() && !style.MayHavePositionFallbackList()) {
     return ZoomAdjustedPixelValueForLength(offset, style);
   }
 
