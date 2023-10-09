@@ -13,12 +13,102 @@ gclient supports two dependency types: git and [cipd](cipd_and_3pp.md).
 
 Add your entry in DEPS file. Then, run `gclient gitmodules` to generate
 git submodules (it will contain .gitmodule change, and gitlink). Edit OWNERS
-file and add gitlink path. For example, if new dependency is "src/foo/bar.git",
-its gitlink path is "foo/bar". You can confirm that by running `git status`.
+file and add gitlink path. Then, run `git add DEPS OWNERS` to stage
+those files for commit, followed by `git commit`. Your change is now ready to be
+sent for a review using `git cl upload`.
 
-Then, run `git add DEPS OWNERS` to stage those files for commit, followed by
-`git commit`. Your change is now ready to be sent for a review using `git cl
-upload`.
+
+For example, if new dependency is "src/foo/bar.git", its gitlink path is
+"foo/bar", and OWNERS entry at the top level is `per-file foo/bar=*`. You can
+confirm that by running `git status`. [Example CL](https://crrev.com/c/4923074).
+
+```
+# manual edit of DEPS and OWNERS file (see changes below).
+
+ % gclient gitmodules                    
+.gitmodules and gitlinks updated. Please check `git diff --staged`and commit those staged changes (`git commit` without -a)
+
+ % git add OWNERS DEPS # stage files
+
+ % git diff --cached # see staged changes
+diff --git a/.gitmodules b/.gitmodules
+index 29c355fa92e3d..89866442d45aa 100644
+--- a/.gitmodules
++++ b/.gitmodules
+@@ -1,3 +1,6 @@
++[submodule "foo/bar"]
++       path = foo/bar
++       url = https://chromium.googlesource.com/foo/bar.git
+ [submodule "third_party/clang-format/script"]
+        path = third_party/clang-format/script
+        url = https://chromium.googlesource.com/external/github.com/llvm/llvm-project/clang/tools/clang-format.git
+diff --git a/DEPS b/DEPS
+index 44fbc53a0d53a..05481be5066ed 100644
+--- a/DEPS
++++ b/DEPS
+@@ -555,6 +555,10 @@ allowed_hosts = [
+ ]
+ 
+ deps = {
++  'src/foo/bar': {
++      'url': Var('chromium_git') + '/foo/bar.git' + '@' +
++        '1111111111111111111111111111111111111111',
++  },
+   'src/third_party/clang-format/script':
+     Var('chromium_git') +
+     '/external/github.com/llvm/llvm-project/clang/tools/clang-format.git@' +
+diff --git a/OWNERS b/OWNERS
+index 55bfe60fcb03b..02b4117fca1ea 100644
+--- a/OWNERS
++++ b/OWNERS
+@@ -37,6 +37,7 @@ per-file README.md=*
+ per-file WATCHLISTS=*
+ 
+ # git submodules
++per-file foo/bar=*
+ per-file third_party/clang-format/script=*
+ per-file chrome/browser/resources/preinstalled_web_apps/internal=*
+ per-file chrome/installer/mac/third_party/xz/xz=*
+diff --git a/foo/bar b/foo/bar
+new file mode 160000
+index 0000000000000..1111111111111
+--- /dev/null
++++ b/foo/bar
+@@ -0,0 +1 @@
++Subproject commit 1111111111111111111111111111111111111111
+
+ % git status 
+On branch test_newdep
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   .gitmodules
+        modified:   DEPS
+        modified:   OWNERS
+        new file:   foo/bar
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        deleted:    foo/bar
+
+
+% # At this point, you can run gclient sync if you want to get the dependency.
+% # But it's not required, and you can use `git cl upload`.
+
+ % git commit -m "[DEPS] Example of new dependency"
+[test_newdep 9731cfb680756] [DEPS] Example of new dependency
+ 4 files changed, 9 insertions(+)
+ create mode 160000 foo/bar
+
+ % git cl upload   
+Found change with 1 commit...
+Running Python 3 presubmit upload checks ...
+-- snip --
+remote:   https://chromium-review.googlesource.com/c/chromium/src/+/4923074 [DEPS] Example of new dependency [NEW]
+-- snip --
+```
 
 ## Rolling dependencies
 
