@@ -9,6 +9,7 @@
 
 #import "base/files/file_path.h"
 #import "base/values.h"
+#import "ios/web/common/annotations_utils.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "services/metrics/public/cpp/ukm_source_id.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"

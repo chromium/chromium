@@ -143,6 +143,7 @@ NSTextCheckingResult* DecodeNSTextCheckingResultData(NSString* base64_data) {
   return nil;
 }
 
+// TODO(crbug.com/1489635): remove
 base::Value::Dict ConvertMatchToAnnotation(NSString* source,
                                            NSRange range,
                                            NSString* data,
@@ -156,6 +157,20 @@ base::Value::Dict ConvertMatchToAnnotation(NSString* source,
   dict.Set(kAnnotationsTypeKey, base::Value(base::SysNSStringToUTF8(type)));
   dict.Set(kAnnotationsDataKey, base::Value(base::SysNSStringToUTF8(data)));
   return dict;
+}
+
+TextAnnotation ConvertMatchToAnnotation(NSString* source,
+                                        NSRange range,
+                                        NSTextCheckingResult* data,
+                                        NSString* type) {
+  base::Value::Dict dict;
+  NSString* start = [source substringWithRange:range];
+  dict.Set(kAnnotationsStartKey, base::Value(static_cast<int>(range.location)));
+  dict.Set(kAnnotationsEndKey,
+           base::Value(static_cast<int>(range.location + range.length)));
+  dict.Set(kAnnotationsTextKey, base::Value(base::SysNSStringToUTF8(start)));
+  dict.Set(kAnnotationsTypeKey, base::Value(base::SysNSStringToUTF8(type)));
+  return std::make_pair(std::move(dict), data);
 }
 
 bool IsNSTextCheckingResultEmail(NSTextCheckingResult* result) {

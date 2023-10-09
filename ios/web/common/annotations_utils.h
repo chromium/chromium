@@ -13,6 +13,8 @@
 
 namespace web {
 
+using TextAnnotation = std::pair<base::Value::Dict, NSTextCheckingResult*>;
+
 // Encodes the given `match` into a base64 string that can be parsed back.
 // Note that `match.range` isn't encoded because it is not needed on the
 // 'way back'.
@@ -31,10 +33,18 @@ NSTextCheckingResult* MakeNSTextCheckingResultEmail(NSString* email,
 
 // Encapsulates data into a `base::Value::Type::DICT` that can be
 // passed to JS. `data` must come from `EncodeNSTextCheckingResultData`.
+// TODO(crbug.com/1489635): remove
 base::Value::Dict ConvertMatchToAnnotation(NSString* source,
                                            NSRange range,
                                            NSString* data,
                                            NSString* type);
+
+// Encapsulates data into a `TextAnnotation` that can be
+// passed to JS.
+TextAnnotation ConvertMatchToAnnotation(NSString* source,
+                                        NSRange range,
+                                        NSTextCheckingResult* data,
+                                        NSString* type);
 
 }  // namespace web
 
