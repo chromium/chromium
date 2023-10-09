@@ -77,16 +77,16 @@ a {
   text-align: end;
   text-decoration: underline;
 }
-.licence {
+.license {
   border-radius: 3px;
   clear: both;
   display: none;
   padding: 16px;
 }
-.licence h3 {
+.license h3 {
   margin-top: 0;
 }
-.licence pre {
+.license pre {
   white-space: pre-wrap;
 }
 #print-link {
@@ -97,7 +97,7 @@ a {
 .dialog .homepage {
   display: none;
 }
-input + label + div.licence {
+input + label + div.license {
   display: none;
 }
 input + label::after {
@@ -107,7 +107,7 @@ input + label::after {
 input#show-all + label::after {
   content: 'show all licenses';
 }
-input#show-all:checked ~ * input + label + div.licence,
+input#show-all:checked ~ * input + label + div.license,
 input:checked + label + div {
   display: block;
 }
@@ -121,7 +121,7 @@ input#show-all:checked + label::after {
 
 /* Strip out color and style when printing. We want dense B&W text. */
 @media print {
-  .licence {
+  .license {
     /* The licensing content is very verbose. Make it dense. */
     display: block;
     font-size: smaller;
