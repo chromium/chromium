@@ -285,11 +285,8 @@ crbug.com/1201009 [ fuchsia ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerat
 crbug.com/1353952 [ chromeos cros-chrome chromeos-board-amd64-generic ] Pixel_WebGLContextRestored [ Skip ]
 crbug.com/1353952 [ chromeos cros-chrome chromeos-board-kevin ] Pixel_WebGLContextRestored [ Skip ]
 
-# Flakes on Nexus 5X due to timeout. Revert to RetryOnFailure once we have the Pixel tests
-# switched to using a heartbeat mechanism. crbug.com/1472852
-crbug.com/1488026 [ android android-chromium android-nexus-5x ] Pixel_Video_MP4 [ Skip ]
-crbug.com/1488026 [ android android-chromium android-nexus-5x ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Skip ]
-crbug.com/1488026 [ android android-chromium android-nexus-5x ] Pixel_Video_MP4_FourColors_Rot_180 [ Skip ]
+# Flakily causes subsequent tests to fail.
+crbug.com/1488026 [ android android-chromium android-nexus-5x ] Pixel_Video_HEVC [ Skip ]
 
 ###################
 # Failures/Flakes #
