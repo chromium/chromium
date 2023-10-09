@@ -711,20 +711,27 @@ Node::InsertionNotificationRequest HTMLAnchorElement::InsertedInto(
     sender->AddAnchorElement(*this);
   }
 
-  if (isConnected() && IsLink() &&
-      base::FeatureList::IsEnabled(features::kSpeculativeServiceWorkerWarmUp)) {
-    if (auto* observer =
-            AnchorElementObserverForServiceWorker::From(top_document)) {
-      if (features::kSpeculativeServiceWorkerWarmUpOnVisible.Get()) {
-        observer->ObserveAnchorElementVisibility(*this);
-      }
-      if (features::kSpeculativeServiceWorkerWarmUpOnInsertedIntoDom.Get()) {
-        observer->MaybeSendNavigationTargetLinks({this});
+  if (isConnected() && IsLink()) {
+    static const bool speculative_service_worker_warm_up_enabled =
+        base::FeatureList::IsEnabled(features::kSpeculativeServiceWorkerWarmUp);
+    if (speculative_service_worker_warm_up_enabled) {
+      static const bool warm_up_on_visible =
+          features::kSpeculativeServiceWorkerWarmUpOnVisible.Get();
+      static const bool warm_up_on_inserted_into_dom =
+          features::kSpeculativeServiceWorkerWarmUpOnInsertedIntoDom.Get();
+      if (warm_up_on_visible || warm_up_on_inserted_into_dom) {
+        if (auto* observer =
+                AnchorElementObserverForServiceWorker::From(top_document)) {
+          if (warm_up_on_visible) {
+            observer->ObserveAnchorElementVisibility(*this);
+          }
+          if (warm_up_on_inserted_into_dom) {
+            observer->MaybeSendNavigationTargetLinks({this});
+          }
+        }
       }
     }
-  }
 
-  if (isConnected() && IsLink()) {
     if (auto* document_rules =
             DocumentSpeculationRules::FromIfExists(GetDocument())) {
       document_rules->LinkInserted(this);
