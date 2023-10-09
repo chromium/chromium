@@ -193,6 +193,18 @@ bool V4L2StatelessVideoDecoder::CreateDecoder(VideoCodecProfile profile,
   return true;
 }
 
+bool V4L2StatelessVideoDecoder::CreateInputQueue(VideoCodecProfile profile,
+                                                 const gfx::Size resolution) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+  DVLOGF(4);
+  DCHECK(!input_queue_);
+
+  const VideoCodec codec = VideoCodecProfileToVideoCodec(profile);
+  input_queue_ = InputQueue::Create(device_, codec, resolution);
+
+  return !!input_queue_;
+}
+
 void V4L2StatelessVideoDecoder::ProcessCompressedBuffer(
     scoped_refptr<DecoderBuffer> compressed_buffer,
     VideoDecoder::DecodeCB decode_cb,
@@ -222,7 +234,14 @@ void V4L2StatelessVideoDecoder::ProcessCompressedBuffer(
       switch (decode_result) {
         case AcceleratedVideoDecoder::kConfigChange:
           VLOGF(2) << "AcceleratedVideoDecoder::kConfigChange";
-          NOTIMPLEMENTED();
+          if (!CreateInputQueue(decoder_->GetProfile(),
+                                decoder_->GetPicSize())) {
+            std::move(decode_cb).Run(
+                DecoderStatus::Codes::kPlatformDecodeFailure);
+            VLOGF(1) << "Unable to create an input queue for "
+                     << GetProfileName(decoder_->GetProfile())
+                     << " of resolution " << decoder_->GetPicSize().ToString();
+          }
           break;
         case AcceleratedVideoDecoder::kColorSpaceChange:
           VLOGF(2) << "AcceleratedVideoDecoder::kColorSpaceChange";

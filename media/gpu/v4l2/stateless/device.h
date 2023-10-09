@@ -18,6 +18,9 @@
 
 namespace media {
 
+enum class BufferType { kCompressedData, kRawFrames, kInvalid };
+enum class MemoryType { kMemoryMapped, kDmaBuf, kInvalid };
+
 // Encapsulates the v4l2 subsystem and prevents <linux/videodev2.h> from
 // being included elsewhere with the possible exception of the codec specific
 // delegates. This keeps all of the v4l2 driver specific structures in one
@@ -32,7 +35,14 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
   // These are all of the compressed formats that the driver will accept.
   std::set<VideoCodec> EnumerateInputFormats();
 
-  // VIDIOC_ENUM_FRAMESIZES
+  // Configures the driver to the requested |codec|, |resolution|, and
+  // |encoded_buffer_size| using the VIDIOC_S_FMT ioctl.
+  bool SetInputFormat(VideoCodec codec,
+                      gfx::Size resolution,
+                      size_t encoded_buffer_size);
+
+  // Query the driver for the smallest and largest uncompressed frame sizes that
+  // are supported using the VIDIOC_ENUM_FRAMESIZES ioctl.
   std::pair<gfx::Size, gfx::Size> GetFrameResolutionRange(VideoCodec codec);
 
   // Uses the VIDIOC_QUERYCTRL and VIDIOC_QUERYMENU ioctls to list the

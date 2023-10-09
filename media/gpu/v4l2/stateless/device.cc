@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #if BUILDFLAG(IS_CHROMEOS)
 #include <linux/media/av1-ctrls.h>
-#include <linux/media/vp9-ctrls-upstream.h>
 #endif
 
 #include <fcntl.h>
@@ -109,6 +108,30 @@ std::set<VideoCodec> Device::EnumerateInputFormats() {
   }
 
   return pix_fmts;
+}
+
+// VIDIOC_S_FMT
+bool Device::SetInputFormat(VideoCodec codec,
+                            gfx::Size resolution,
+                            size_t encoded_buffer_size) {
+  const uint32_t pix_fmt = VideoCodecToV4L2PixFmt(codec);
+  struct v4l2_format format;
+  memset(&format, 0, sizeof(format));
+  format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
+  format.fmt.pix_mp.pixelformat = pix_fmt;
+  format.fmt.pix_mp.width = resolution.width();
+  format.fmt.pix_mp.height = resolution.height();
+  format.fmt.pix_mp.num_planes = 1;
+  format.fmt.pix_mp.plane_fmt[0].sizeimage = encoded_buffer_size;
+
+  if (IoctlDevice(VIDIOC_S_FMT, &format) != kIoctlOk ||
+      format.fmt.pix_mp.pixelformat != pix_fmt) {
+    DVLOGF(1) << "Failed to set format fourcc: " << FourccToString(pix_fmt);
+
+    return false;
+  }
+
+  return true;
 }
 
 // VIDIOC_ENUM_FRAMESIZES
