@@ -68,4 +68,21 @@ TEST_F(ChromeProtocolHandlerRegistryTest, ExtensionHandler) {
       "news", chrome_extension_handler_url,
       blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+// Isolated Web Apps test
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ChromeProtocolHandlerRegistryTest, IsolatedWebApps) {
+  GURL isolated_web_apps_handler_url(
+      "isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/"
+      "test.html");
+
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "news", isolated_web_apps_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kStrict));
+
+  EXPECT_TRUE(ProtocolHandlerCanRegisterProtocol(
+      "news", isolated_web_apps_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kSameOrigin));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)

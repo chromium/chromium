@@ -134,6 +134,7 @@ class WebSandboxSupport;
 class WebSecurityOrigin;
 class WebThemeEngine;
 class WebVideoCaptureImplManager;
+class WebSecurityOrigin;
 struct WebContentSecurityPolicyHeader;
 
 namespace scheduler {
@@ -626,7 +627,8 @@ class BLINK_PLATFORM_EXPORT Platform {
       const WebSecurityOrigin& script_origin) {
     return false;
   }
-  virtual ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel() {
+  virtual ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel(
+      const WebSecurityOrigin& origin) {
     return ProtocolHandlerSecurityLevel::kStrict;
   }
 

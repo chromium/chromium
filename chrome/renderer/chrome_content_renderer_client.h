@@ -72,6 +72,10 @@ namespace subresource_filter {
 class UnverifiedRulesetDealer;
 }
 
+namespace url {
+class Origin;
+}
+
 namespace web_cache {
 class WebCacheImpl;
 }
@@ -137,8 +141,8 @@ class ChromeContentRendererClient
   bool AllowPopup() override;
   bool ShouldNotifyServiceWorkerOnWebSocketActivity(
       v8::Local<v8::Context> context) override;
-  blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel()
-      override;
+  blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel(
+      const url::Origin& origin) override;
   void WillSendRequest(blink::WebLocalFrame* frame,
                        ui::PageTransition transition_type,
                        const blink::WebURL& url,

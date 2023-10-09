@@ -11,6 +11,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheme_registry.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -90,6 +91,7 @@ bool IsAllowedCustomHandlerURL(const GURL& url,
                                ProtocolHandlerSecurityLevel security_level) {
   bool has_valid_scheme =
       url.SchemeIsHTTPOrHTTPS() ||
+      security_level == ProtocolHandlerSecurityLevel::kSameOrigin ||
       (security_level == ProtocolHandlerSecurityLevel::kExtensionFeatures &&
        CommonSchemeRegistry::IsExtensionScheme(url.scheme()));
   return has_valid_scheme && network::IsUrlPotentiallyTrustworthy(url);
