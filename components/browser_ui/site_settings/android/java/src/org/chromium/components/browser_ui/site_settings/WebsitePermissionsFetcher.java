@@ -385,6 +385,15 @@ public class WebsitePermissionsFetcher {
                             mBrowserContextHandle, contentSettingsType)) {
                 String address = exception.getPrimaryPattern();
                 String embedder = exception.getSecondaryPattern();
+
+                if (isEmbeddedPermission
+                        && mSiteSettingsCategory != null
+                        && mSiteSettingsCategory.getType() == SiteSettingsCategory.Type.ALL_SITES) {
+                    // AllSites should group embedded permissions by embedder.
+                    address = embedder;
+                    embedder = SITE_WILDCARD;
+                }
+
                 // If both patterns are the wildcard, dont display this rule.
                 if (address == null
                         || (address.equals(embedder) && address.equals(SITE_WILDCARD))) {
