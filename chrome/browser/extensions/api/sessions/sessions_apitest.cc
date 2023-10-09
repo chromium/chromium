@@ -203,8 +203,6 @@ void ExtensionSessionsTest::CreateSessionModels() {
   sync_sessions::SessionSyncService* service =
       SessionSyncServiceFactory::GetForProfile(browser()->profile());
 
-  service->ProxyTabsStateChanged(syncer::DataTypeController::RUNNING);
-
   base::test::TestFuture<std::unique_ptr<syncer::DataTypeActivationResponse>>
       sync_start_future;
   service->GetControllerDelegate()->OnSyncStarting(

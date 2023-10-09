@@ -50,10 +50,6 @@ SessionSyncServiceImpl::GetControllerDelegate() {
   return bridge_->change_processor()->GetControllerDelegate();
 }
 
-// TODO(crbug.com/1488009): Remove this method.
-void SessionSyncServiceImpl::ProxyTabsStateChanged(
-    syncer::DataTypeController::State state) {}
-
 void SessionSyncServiceImpl::NotifyForeignSessionUpdated() {
   foreign_sessions_changed_closure_list_.Notify();
 }

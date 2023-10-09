@@ -367,10 +367,7 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
   if (!disabled_types.Has(syncer::PROXY_TABS)) {
     controllers.push_back(
         std::make_unique<sync_sessions::ProxyTabsDataTypeController>(
-            sync_service, sync_client_->GetPrefService(),
-            base::BindRepeating(
-                &sync_sessions::SessionSyncService::ProxyTabsStateChanged,
-                base::Unretained(sync_client_->GetSessionSyncService()))));
+            sync_service, sync_client_->GetPrefService()));
   }
   if (!disabled_types.Has(syncer::SESSIONS)) {
     syncer::ModelTypeControllerDelegate* delegate =

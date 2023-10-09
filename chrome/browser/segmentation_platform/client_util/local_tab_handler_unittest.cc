@@ -48,9 +48,6 @@ class MockSessionSyncService : public sync_sessions::SessionSyncService {
   MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
               GetControllerDelegate,
               ());
-  MOCK_METHOD(void,
-              ProxyTabsStateChanged,
-              (syncer::DataTypeController::State state));
 };
 
 class LocalTabHandlerTest : public testing::Test {

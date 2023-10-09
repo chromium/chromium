@@ -25,10 +25,8 @@ namespace sync_sessions {
 class ProxyTabsDataTypeController : public syncer::DataTypeController {
  public:
   // |state_changed_cb| can be used to listen to state changes.
-  ProxyTabsDataTypeController(
-      syncer::SyncService* sync_service,
-      PrefService* pref_service,
-      const base::RepeatingCallback<void(State)>& state_changed_cb);
+  ProxyTabsDataTypeController(syncer::SyncService* sync_service,
+                              PrefService* pref_service);
 
   ProxyTabsDataTypeController(const ProxyTabsDataTypeController&) = delete;
   ProxyTabsDataTypeController& operator=(const ProxyTabsDataTypeController&) =
@@ -52,8 +50,6 @@ class ProxyTabsDataTypeController : public syncer::DataTypeController {
 
  private:
   history::HistoryModelTypeControllerHelper helper_;
-
-  const base::RepeatingCallback<void(State)> state_changed_cb_;
 
   State state_ = NOT_RUNNING;
 };

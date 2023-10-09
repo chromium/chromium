@@ -20,11 +20,9 @@ namespace sync_sessions {
 
 ProxyTabsDataTypeController::ProxyTabsDataTypeController(
     syncer::SyncService* sync_service,
-    PrefService* pref_service,
-    const base::RepeatingCallback<void(State)>& state_changed_cb)
+    PrefService* pref_service)
     : DataTypeController(syncer::PROXY_TABS),
-      helper_(syncer::PROXY_TABS, sync_service, pref_service),
-      state_changed_cb_(state_changed_cb) {}
+      helper_(syncer::PROXY_TABS, sync_service, pref_service) {}
 
 ProxyTabsDataTypeController::~ProxyTabsDataTypeController() = default;
 
@@ -39,7 +37,6 @@ void ProxyTabsDataTypeController::LoadModels(
     const ModelLoadCallback& model_load_callback) {
   DCHECK(CalledOnValidThread());
   state_ = MODEL_LOADED;
-  state_changed_cb_.Run(state_);
   model_load_callback.Run(type(), syncer::SyncError());
 }
 
@@ -48,7 +45,6 @@ ProxyTabsDataTypeController::Connect() {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(MODEL_LOADED, state_);
   state_ = RUNNING;
-  state_changed_cb_.Run(state_);
 
   // Set |skip_engine_connection| to true to indicate that, actually, this sync
   // datatype doesn't require communicating to the sync server to upload or
@@ -62,7 +58,6 @@ ProxyTabsDataTypeController::Connect() {
 void ProxyTabsDataTypeController::Stop(syncer::SyncStopMetadataFate fate,
                                        StopCallback callback) {
   state_ = NOT_RUNNING;
-  state_changed_cb_.Run(state_);
   std::move(callback).Run();
 }
 

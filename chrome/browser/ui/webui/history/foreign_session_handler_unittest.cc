@@ -69,9 +69,6 @@ class FakeSessionSyncService : public sync_sessions::SessionSyncService {
     return nullptr;
   }
 
-  void ProxyTabsStateChanged(syncer::DataTypeController::State state) override {
-  }
-
  private:
   base::RepeatingClosureList subscriber_list_;
   MockOpenTabsUIDelegate mock_open_tabs_ui_delegate_;

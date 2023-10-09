@@ -117,7 +117,6 @@ class MockSessionSyncService : public sync_sessions::SessionSyncService {
   MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
               GetControllerDelegate,
               ());
-  MOCK_METHOD(void, ProxyTabsStateChanged, (syncer::DataTypeController::State));
 };
 
 // Mock OpenTabsUIDelegate that takes the time the SyncedSession was last
