@@ -454,6 +454,7 @@ static_library("test_support") {
     "//ui/gl",
   ]
 
+  data = []
   data_deps = []
 
   if (enable_pdf) {
@@ -688,6 +689,17 @@ static_library("test_support") {
       "base/chromeos/crosier/crosier_util.cc",
       "base/chromeos/crosier/crosier_util.h",
     ]
+
+    if (is_chrome_branded) {
+      sources += [
+        "base/chromeos/crosier/test_accounts.cc",
+        "base/chromeos/crosier/test_accounts.h",
+      ]
+      data += [
+        "../browser/internal/resources/chromeos/crosier/test_accounts.json",
+      ]
+    }
+
     deps += [
       "base/chromeos/crosier:proto",
       "//base/test:proto_test_support",
@@ -1031,6 +1043,10 @@ if (is_chromeos && is_chromeos_device) {
         "base/chromeos/crosier/interactive_ash_test.h",
         "base/chromeos/crosier/interactive_ash_test_uitest.cc",
       ]
+
+      if (is_chrome_branded) {
+        sources += [ "base/chromeos/crosier/test_accounts_test.cc" ]
+      }
 
       deps += [
         "//chrome/test/base/chromeos/crosier:proto",
