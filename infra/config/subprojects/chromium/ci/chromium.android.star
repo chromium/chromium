@@ -1466,11 +1466,9 @@ ci.builder(
     execution_timeout = 4 * time.hour,
 )
 
-# TODO(crbug.com/1459433): Enable the branch once the builder is ready.
 ci.builder(
     name = "android-oreo-x86-rel",
-    # TODO(crbug.com/1487812): Enable on branches after stable.
-    # branch_selector = branches.selector.ANDROID_BRANCHES,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1488,9 +1486,8 @@ ci.builder(
         build_gs_bucket = "chromium-android-archive",
     ),
     tree_closing = True,
-    # TODO(crbug.com/1459433): Update the console view config once on CQ
     console_view_entry = consoles.console_view_entry(
-        category = "builder_tester|x86",
+        category = "on_cq|x86",
         short_name = "O",
     ),
     contact_team_email = "clank-engprod@google.com",

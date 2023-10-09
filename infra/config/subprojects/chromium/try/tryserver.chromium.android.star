@@ -645,8 +645,7 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "android-x86-rel",
-    # TODO(crbug.com/1487812): Enable on branches after stable.
-    # branch_selector = branches.selector.ANDROID_BRANCHES,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/android-oreo-x86-rel",
     ],
@@ -666,8 +665,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "android-x86-rel-compilator",
-    # TODO(crbug.com/1487812): Enable on branches after stable.
-    # branch_selector = branches.selector.ANDROID_BRANCHES,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     cores = 64 if settings.is_main else 32,
     contact_team_email = "clank-engprod@google.com",
     main_list_view = "try",
