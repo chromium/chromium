@@ -295,8 +295,14 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
     BuildViews();
   }
 
+  // Used to keep track of which OmniboxSuggestionRowButton is the first in
+  // the row, which can then be used to apply different layout/styling.
+  OmniboxSuggestionRowButton* first_button = nullptr;
+
   SetPillButtonVisibility(keyword_button_, OmniboxPopupSelection::KEYWORD_MODE);
   if (keyword_button_->GetVisible()) {
+    first_button = keyword_button_;
+
     std::u16string keyword;
     bool is_keyword_hint = false;
     match().GetKeywordUIState(
@@ -314,6 +320,10 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
     SetPillButtonVisibility(action_button,
                             OmniboxPopupSelection::FOCUSED_BUTTON_ACTION);
     if (action_button->GetVisible()) {
+      if (!first_button) {
+        first_button = action_button;
+      }
+
       const OmniboxAction* action =
           match().actions[action_button->selection().action_index].get();
       const auto label_strings = action->GetLabelStrings();
@@ -322,6 +332,14 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
       action_button->SetAccessibleName(label_strings.accessibility_hint);
       action_button->SetIcon(action->GetVectorIcon());
     }
+  }
+
+  if (OmniboxFieldTrial::IsActionsUISimplificationEnabled() && first_button) {
+    first_button->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(0, 0, 0,
+                          ChromeLayoutProvider::Get()->GetDistanceMetric(
+                              views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
   }
 
   bool is_any_button_visible =

@@ -451,7 +451,7 @@ gfx::Insets OmniboxMatchCellView::GetInsets() const {
         DISTANCE_OMNIBOX_TWO_LINE_CELL_VERTICAL_PADDING);
   }
   const int right_margin = OmniboxFieldTrial::IsActionsUISimplificationEnabled()
-                               ? 3
+                               ? 11
                                : OmniboxMatchCellView::kMarginRight;
   return gfx::Insets::TLBR(vertical_margin, OmniboxMatchCellView::kMarginLeft,
                            vertical_margin, right_margin);
@@ -564,9 +564,12 @@ gfx::Size OmniboxMatchCellView::CalculatePreferredSize() const {
   int width = 0;
   if (OmniboxFieldTrial::IsActionsUISimplificationEnabled()) {
     width = GetInsets().width() + GetTextIndent() +
-            content_view_->GetPreferredSize().width() +
-            separator_view_->GetPreferredSize().width() +
-            description_view_->GetPreferredSize().width();
+            content_view_->GetPreferredSize().width();
+
+    int description_width = description_view_->GetPreferredSize().width();
+    if (description_width > 0) {
+      width += separator_view_->GetPreferredSize().width() + description_width;
+    }
   }
 
   return gfx::Size(width, height);
