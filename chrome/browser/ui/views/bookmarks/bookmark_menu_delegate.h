@@ -188,11 +188,11 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   // an id.
   int GetAndIncrementNextMenuID();
 
-  const raw_ptr<Browser, LeakedDanglingUntriaged> browser_;
-  raw_ptr<Profile, LeakedDanglingUntriaged> profile_;
+  const raw_ptr<Browser> browser_;
+  raw_ptr<Profile> profile_;
 
   // Parent of menus.
-  raw_ptr<views::Widget, LeakedDanglingUntriaged> parent_;
+  raw_ptr<views::Widget> parent_;
 
   // Maps from menu id to BookmarkNode.
   MenuIDToNodeMap menu_id_to_node_map_;
