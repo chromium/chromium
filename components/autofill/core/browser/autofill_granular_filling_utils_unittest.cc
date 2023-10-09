@@ -36,7 +36,7 @@ TEST(
     AutofillGranularFillingUtilsTest,
     GetTargetServerFieldsForTypeAndLastTargetedFields_SingleField_ReturnsTriggeringFieldType) {
   EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
-                {ADDRESS_HOME_LINE1}, AutofillType(NAME_FIRST)),
+                {ADDRESS_HOME_LINE1}, NAME_FIRST),
             ServerFieldTypeSet({NAME_FIRST}));
 }
 
@@ -44,20 +44,19 @@ TEST(
     AutofillGranularFillingUtilsTest,
     GetTargetServerFieldsForTypeAndLastTargetedFields_AddressFieldsGroup_ReturnsTriggeringFieldTypeGroup) {
   EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
-                GetAddressFieldsForGroupFilling(), AutofillType(NAME_FIRST)),
+                GetAddressFieldsForGroupFilling(), NAME_FIRST),
             GetServerFieldTypesOfGroup(FieldTypeGroup::kName));
 }
 
 TEST(
     AutofillGranularFillingUtilsTest,
-    GetTargetServerFieldsForTypeAndLastTargetedFields_FieldsMatchGroupFillingButTargetFieldDoesnot_ReturnsAllServerTypes) {
+    GetTargetServerFieldsForTypeAndLastTargetedFields_FieldsMatchGroupFillingButTargetFieldDoesNot_ReturnsAllServerTypes) {
   // If the previously targeted fields match a group of fields (such as name or
   // address), but the triggering field is not a field for which we offer group
   // filling (such as CREDIT_CARD_NAME_FULL), we default back to full form
   // filling.
   EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
-                GetAddressFieldsForGroupFilling(),
-                AutofillType(CREDIT_CARD_NAME_FULL)),
+                GetAddressFieldsForGroupFilling(), CREDIT_CARD_NAME_FULL),
             kAllServerFieldTypes);
 }
 
@@ -69,7 +68,7 @@ TEST(
   // kAllServerFieldTypes, so that the user stays in the full form granularity
   // level.
   EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
-                kAllServerFieldTypes, AutofillType(NAME_FIRST)),
+                kAllServerFieldTypes, NAME_FIRST),
             kAllServerFieldTypes);
 }
 

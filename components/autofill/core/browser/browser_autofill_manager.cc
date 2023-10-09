@@ -714,8 +714,8 @@ void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
   DCHECK_EQ(FieldTypeGroup::kCreditCard, type.group());
 
   bool should_display_gpay_logo = false;
-  auto cards =
-      GetCreditCardSuggestions(field_data, type, should_display_gpay_logo);
+  auto cards = GetCreditCardSuggestions(field_data, type.GetStorableType(),
+                                        should_display_gpay_logo);
   DCHECK(!cards.empty());
   external_delegate_->OnSuggestionsReturned(
       field_data.global_id(), cards,
@@ -2858,7 +2858,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
                 last_address_fields_to_fill_for_section
                     ? GetTargetServerFieldsForTypeAndLastTargetedFields(
                           *last_address_fields_to_fill_for_section,
-                          autofill_field.Type())
+                          autofill_field.Type().GetStorableType())
                     : kAllServerFieldTypes,
                 /*optional_type_groups_originally_filled=*/nullptr,
                 /*skip_unrecognized_autocomplete_fields=*/trigger_source !=
@@ -2875,13 +2875,13 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     }
   }
   return suggestion_generator_->GetSuggestionsForProfiles(
-      field_types, field, autofill_field.Type(),
+      field_types, field, autofill_field.Type().GetStorableType(),
       last_address_fields_to_fill_for_section, trigger_source);
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
     const FormFieldData& field,
-    const AutofillType& type,
+    ServerFieldType trigger_field_type,
     bool& should_display_gpay_logo) const {
   credit_card_form_event_logger_->OnDidPollSuggestions(
       field, signin_state_for_metrics_);
@@ -2890,7 +2890,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
   bool with_offer = false;
   autofill_metrics::CardMetadataLoggingContext context;
   if (!IsInAutofillSuggestionsDisabledExperiment()) {
-    if ((type.GetStorableType() == CREDIT_CARD_STANDALONE_VERIFICATION_CODE) &&
+    if (trigger_field_type == CREDIT_CARD_STANDALONE_VERIFICATION_CODE &&
         !four_digit_combinations_in_dom_.empty()) {
       base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
           virtual_card_guid_to_last_four_map =
@@ -2904,7 +2904,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
       }
     } else {
       suggestions = suggestion_generator_->GetSuggestionsForCreditCards(
-          field, type, should_display_gpay_logo, with_offer, context);
+          field, trigger_field_type, should_display_gpay_logo, with_offer,
+          context);
     }
   }
 
@@ -3561,9 +3562,9 @@ void BrowserAutofillManager::GetAvailableSuggestions(
 
   if (context->is_filling_credit_card) {
     // Credit cards suggestions don't depend the `trigger_source`.
-    *suggestions =
-        GetCreditCardSuggestions(field, context->focused_field->Type(),
-                                 context->should_display_gpay_logo);
+    *suggestions = GetCreditCardSuggestions(
+        field, context->focused_field->Type().GetStorableType(),
+        context->should_display_gpay_logo);
   } else {
     // Profile suggestions fill ac=unrecognized fields only when triggered
     // through manual fallbacks. As such, suggestion labels differ depending on

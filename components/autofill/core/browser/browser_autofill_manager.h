@@ -65,7 +65,6 @@ class AutofillField;
 class AutofillClient;
 class AutofillSuggestionGenerator;
 class AutofillProfile;
-class AutofillType;
 class CreditCard;
 
 struct FormData;
@@ -564,13 +563,14 @@ class BrowserAutofillManager : public AutofillManager,
       const AutofillField& autofill_field,
       AutofillSuggestionTriggerSource trigger_source) const;
 
-  // Returns a list of values from the stored credit cards that match |type| and
-  // the value of |field| and returns the labels of the matching credit cards.
-  // |should_display_gpay_logo| will be set to true if there is no credit card
-  // suggestions or all suggestions come from Payments server.
+  // Returns a list of values from the stored credit cards that match
+  // `trigger_field_type` and the value of `field` and returns the labels of the
+  // matching credit cards. `should_display_gpay_logo` will be set to true if
+  // there is no credit card suggestions or all suggestions come from Payments
+  // server.
   std::vector<Suggestion> GetCreditCardSuggestions(
       const FormFieldData& field,
-      const AutofillType& type,
+      ServerFieldType trigger_field_type,
       bool& should_display_gpay_logo) const;
 
   // Returns a mapping of credit card guid values to virtual card last fours for

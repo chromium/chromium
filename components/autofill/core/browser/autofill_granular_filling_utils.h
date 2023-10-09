@@ -8,7 +8,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 
-// Helper methods specific for granular filling related behaviour.
+// Helper methods specific for granular filling related behavior.
 namespace autofill {
 
 // Helper method that returns all address related fields for the purpose of
@@ -18,19 +18,19 @@ namespace autofill {
 // FieldTypeGroup::kAddress and FieldTypeGroup::kCompany.
 ServerFieldTypeSet GetAddressFieldsForGroupFilling();
 
-// Returns true if `fields` matches one of granullar
-// filling groups, i.e., FieldTypeGroup::kName fields, FieldTypeGroup::kPhone
-// fields or `GetAddressFieldsForGroupFilling` (from the method above).
+// Returns true if `fields` matches one of granular filling groups, i.e.,
+// FieldTypeGroup::kName fields, FieldTypeGroup::kPhone fields or
+// `GetAddressFieldsForGroupFilling` (from the method above).
 bool AreFieldsGranularFillingGroup(const ServerFieldTypeSet& fields);
 
 // Returns a set of fields to be filled, given the last targeted fields and
-// the current field type. For example, if the last targeted fields matches
-// one of the group filling sets, we will return the set of fields that matches
-// the trigering field group. This is done so that the user stays at the same
-// granularity as the one previously chosen.
+// the current trigger field type. For example, if the last targeted fields
+// matches one of the group filling sets, we will return the set of fields that
+// matches the triggering field group. This is done so that the user stays at
+// the same granularity as the one previously chosen.
 ServerFieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
     const ServerFieldTypeSet& last_targeted_fields,
-    const AutofillType& type);
+    ServerFieldType trigger_field_type);
 
 }  // namespace autofill
 

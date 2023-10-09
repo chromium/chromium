@@ -25,9 +25,9 @@ bool AreFieldsGranularFillingGroup(const ServerFieldTypeSet& fields) {
 
 ServerFieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
     const ServerFieldTypeSet& last_targeted_fields,
-    const AutofillType& triggering_field_type) {
+    ServerFieldType triggering_field_type) {
   if (AreFieldsGranularFillingGroup(last_targeted_fields)) {
-    switch (triggering_field_type.group()) {
+    switch (GroupTypeOfServerFieldType(triggering_field_type)) {
       case FieldTypeGroup::kName:
         return GetServerFieldTypesOfGroup(FieldTypeGroup::kName);
       case FieldTypeGroup::kAddress:
@@ -44,7 +44,7 @@ ServerFieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
   } else if (last_targeted_fields == kAllServerFieldTypes) {
     return kAllServerFieldTypes;
   } else if (last_targeted_fields.size() == 1) {
-    return {triggering_field_type.GetStorableType()};
+    return {triggering_field_type};
   } else {
     NOTREACHED_NORETURN();
   }
