@@ -249,6 +249,13 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
 
   bool ShowContextMenu();
 
+  // Sets the ID of a child tree which this node will be hosting. In this way,
+  // multiple trees could be stitched together. Clears any existing descendants
+  // of the hosting node in order to maintain the consistency of the tree
+  // structure, and because they would be hidden by the child tree anyway.
+  bool SetChildTree(const ui::AXNodeID& target_node_id,
+                    const ui::AXTreeID& child_tree_id);
+
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
  protected:
   // Adds a postample page to the accessibility tree which informs the user that

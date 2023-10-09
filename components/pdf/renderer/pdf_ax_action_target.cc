@@ -69,6 +69,16 @@ bool PdfAXActionTarget::PerformAction(
       return ShowContextMenu();
     case ax::mojom::Action::kScrollToPoint:
       return ScrollToGlobalPoint(action_data.target_point);
+    case ax::mojom::Action::kStitchChildTree: {
+      ui::AXTreeData pdf_tree_data;
+      if (!pdf_accessibility_tree_source_->GetTreeData(&pdf_tree_data)) {
+        return false;
+      }
+      CHECK_EQ(action_data.target_tree_id, pdf_tree_data.tree_id);
+      CHECK_EQ(action_data.target_node_id, target_plugin_node_->id());
+      CHECK_NE(action_data.child_tree_id, ui::AXTreeIDUnknown());
+      return StitchChildTree(action_data.child_tree_id);
+    }
     default:
       return false;
   }
@@ -180,6 +190,15 @@ bool PdfAXActionTarget::ScrollToGlobalPoint(const gfx::Point& point) const {
 
   pdf_accessibility_tree_source_->HandleAction(pdf_action_data);
   return true;
+}
+
+bool PdfAXActionTarget::StitchChildTree(
+    const ui::AXTreeID& child_tree_id) const {
+  if (!target_plugin_node_->IsDataValid()) {
+    return false;
+  }
+  return pdf_accessibility_tree_source_->SetChildTree(target_plugin_node_->id(),
+                                                      child_tree_id);
 }
 
 }  // namespace pdf
