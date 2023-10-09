@@ -535,7 +535,7 @@ static_library("test_support") {
     "//content/app:for_content_tests",
     "//content/browser:for_content_tests",
     "//content/browser/attribution_reporting:mojo_bindings",
-    "//content/browser/attribution_reporting:store_source_result_mojom",
+    "//content/browser/attribution_reporting:registration_result_mojom",
     "//content/child:for_content_tests",
     "//content/common:for_content_tests",
     "//content/gpu",

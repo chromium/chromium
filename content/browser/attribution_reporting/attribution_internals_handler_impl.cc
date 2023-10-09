@@ -419,86 +419,6 @@ void AttributionInternalsHandlerImpl::OnOsRegistration(
   observer_->OnOsRegistration(std::move(web_ui_os_registration));
 }
 
-namespace {
-
-using AggregatableStatus = ::content::AttributionTrigger::AggregatableResult;
-using EventLevelStatus = ::content::AttributionTrigger::EventLevelResult;
-using WebUITriggerStatus = ::attribution_internals::mojom::WebUITrigger::Status;
-
-WebUITriggerStatus GetWebUITriggerStatus(EventLevelStatus status) {
-  switch (status) {
-    case EventLevelStatus::kSuccess:
-    case EventLevelStatus::kSuccessDroppedLowerPriority:
-      return WebUITriggerStatus::kSuccess;
-    case EventLevelStatus::kInternalError:
-      return WebUITriggerStatus::kInternalError;
-    case EventLevelStatus::kNoCapacityForConversionDestination:
-      return WebUITriggerStatus::kNoReportCapacityForDestinationSite;
-    case EventLevelStatus::kNoMatchingImpressions:
-      return WebUITriggerStatus::kNoMatchingSources;
-    case EventLevelStatus::kDeduplicated:
-      return WebUITriggerStatus::kDeduplicated;
-    case EventLevelStatus::kExcessiveAttributions:
-      return WebUITriggerStatus::kExcessiveAttributions;
-    case EventLevelStatus::kPriorityTooLow:
-      return WebUITriggerStatus::kLowPriority;
-    case EventLevelStatus::kNeverAttributedSource:
-    case EventLevelStatus::kFalselyAttributedSource:
-      return WebUITriggerStatus::kNoised;
-    case EventLevelStatus::kExcessiveReportingOrigins:
-      return WebUITriggerStatus::kExcessiveReportingOrigins;
-    case EventLevelStatus::kNoMatchingSourceFilterData:
-      return WebUITriggerStatus::kNoMatchingSourceFilterData;
-    case EventLevelStatus::kProhibitedByBrowserPolicy:
-      return WebUITriggerStatus::kProhibitedByBrowserPolicy;
-    case EventLevelStatus::kNoMatchingConfigurations:
-      return WebUITriggerStatus::kNoMatchingConfigurations;
-    case EventLevelStatus::kExcessiveReports:
-      return WebUITriggerStatus::kExcessiveReports;
-    case EventLevelStatus::kReportWindowNotStarted:
-      return WebUITriggerStatus::kReportWindowNotStarted;
-    case EventLevelStatus::kReportWindowPassed:
-      return WebUITriggerStatus::kReportWindowPassed;
-    case EventLevelStatus::kNotRegistered:
-      return WebUITriggerStatus::kNotRegistered;
-  }
-}
-
-WebUITriggerStatus GetWebUITriggerStatus(AggregatableStatus status) {
-  switch (status) {
-    case AggregatableStatus::kSuccess:
-      return WebUITriggerStatus::kSuccess;
-    case AggregatableStatus::kInternalError:
-      return WebUITriggerStatus::kInternalError;
-    case AggregatableStatus::kNoCapacityForConversionDestination:
-      return WebUITriggerStatus::kNoReportCapacityForDestinationSite;
-    case AggregatableStatus::kNoMatchingImpressions:
-      return WebUITriggerStatus::kNoMatchingSources;
-    case AggregatableStatus::kExcessiveAttributions:
-      return WebUITriggerStatus::kExcessiveAttributions;
-    case AggregatableStatus::kExcessiveReportingOrigins:
-      return WebUITriggerStatus::kExcessiveReportingOrigins;
-    case AggregatableStatus::kNoHistograms:
-      return WebUITriggerStatus::kNoHistograms;
-    case AggregatableStatus::kInsufficientBudget:
-      return WebUITriggerStatus::kInsufficientBudget;
-    case AggregatableStatus::kNoMatchingSourceFilterData:
-      return WebUITriggerStatus::kNoMatchingSourceFilterData;
-    case AggregatableStatus::kNotRegistered:
-      return WebUITriggerStatus::kNotRegistered;
-    case AggregatableStatus::kProhibitedByBrowserPolicy:
-      return WebUITriggerStatus::kProhibitedByBrowserPolicy;
-    case AggregatableStatus::kDeduplicated:
-      return WebUITriggerStatus::kDeduplicated;
-    case AggregatableStatus::kReportWindowPassed:
-      return WebUITriggerStatus::kReportWindowPassed;
-    case AggregatableStatus::kExcessiveReports:
-      return WebUITriggerStatus::kExcessiveReports;
-  }
-}
-
-}  // namespace
-
 void AttributionInternalsHandlerImpl::OnTriggerHandled(
     const AttributionTrigger& trigger,
     const absl::optional<uint64_t> cleared_debug_key,
@@ -513,10 +433,8 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
                       SerializeAttributionJson(registration.ToJson(),
                                                /*pretty_print=*/true),
                       cleared_debug_key);
-  web_ui_trigger->event_level_status =
-      GetWebUITriggerStatus(result.event_level_status());
-  web_ui_trigger->aggregatable_status =
-      GetWebUITriggerStatus(result.aggregatable_status());
+  web_ui_trigger->event_level_result = result.event_level_status();
+  web_ui_trigger->aggregatable_result = result.aggregatable_status();
   web_ui_trigger->verifications = trigger.verifications();
 
   observer_->OnTriggerHandled(std::move(web_ui_trigger));

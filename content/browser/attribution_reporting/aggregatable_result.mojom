@@ -1,0 +1,27 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module attribution_reporting.mojom;
+
+// Represents the potential aggregatable outcomes from attempting to register
+// a trigger.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum AggregatableResult {
+  kSuccess = 0,
+  kInternalError = 1,
+  kNoCapacityForConversionDestination = 2,
+  kNoMatchingImpressions = 3,
+  kExcessiveAttributions = 4,
+  kExcessiveReportingOrigins = 5,
+  kNoHistograms = 6,
+  kInsufficientBudget = 7,
+  kNoMatchingSourceFilterData = 8,
+  kNotRegistered = 9,
+  kProhibitedByBrowserPolicy = 10,
+  kDeduplicated = 11,
+  kReportWindowPassed = 12,
+  kExcessiveReports = 13,
+};

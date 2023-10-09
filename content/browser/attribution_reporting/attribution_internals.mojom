@@ -6,6 +6,8 @@ module attribution_internals.mojom;
 
 import "components/attribution_reporting/registration.mojom";
 import "components/attribution_reporting/source_type.mojom";
+import "content/browser/attribution_reporting/aggregatable_result.mojom";
+import "content/browser/attribution_reporting/event_level_result.mojom";
 import "content/browser/attribution_reporting/store_source_result.mojom";
 import "content/browser/attribution_reporting/attribution_reporting.mojom";
 import "services/network/public/mojom/attribution.mojom";
@@ -130,34 +132,8 @@ struct WebUITrigger {
   WebUIRegistration registration;
   array<network.mojom.TriggerVerification> verifications;
 
-  enum Status {
-    // Shared statuses:
-    kSuccess,
-    kInternalError,
-    kNoMatchingSources,
-    kNoMatchingSourceFilterData,
-    kNoReportCapacityForDestinationSite,
-    kExcessiveAttributions,
-    kExcessiveReportingOrigins,
-    kProhibitedByBrowserPolicy,
-    kDeduplicated,
-    kReportWindowNotStarted,
-    kReportWindowPassed,
-    kNotRegistered,
-    kExcessiveReports,
-
-    // Event-level statuses:
-    kLowPriority,
-    kNoised,
-    kNoMatchingConfigurations,
-
-    // Aggregatable statuses:
-    kNoHistograms,
-    kInsufficientBudget,
-  };
-
-  Status event_level_status;
-  Status aggregatable_status;
+  attribution_reporting.mojom.EventLevelResult event_level_result;
+  attribution_reporting.mojom.AggregatableResult aggregatable_result;
 };
 
 struct WebUISourceRegistration {

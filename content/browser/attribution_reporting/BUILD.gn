@@ -19,8 +19,12 @@ mojom("mojo_bindings") {
   disallow_interfaces = true
 }
 
-mojom("store_source_result_mojom") {
-  sources = [ "store_source_result.mojom" ]
+mojom("registration_result_mojom") {
+  sources = [
+    "aggregatable_result.mojom",
+    "event_level_result.mojom",
+    "store_source_result.mojom",
+  ]
   webui_module_path = "/"
   use_typescript_sources = true
   generate_java = false
@@ -32,7 +36,7 @@ mojom("internals_mojo_bindings") {
   sources = [ "attribution_internals.mojom" ]
   public_deps = [
     ":mojo_bindings",
-    ":store_source_result_mojom",
+    ":registration_result_mojom",
     "//components/attribution_reporting:registration_mojom",
     "//components/attribution_reporting:source_type_mojom",
     "//services/network/public/mojom:mojom_attribution",
