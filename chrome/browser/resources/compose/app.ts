@@ -14,7 +14,8 @@ import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {ComposeApiProxyImpl} from './compose_api_proxy.js';
+import {Length, StyleModifiers, Tone} from './compose.mojom-webui.js';
+import {ComposeApiProxy, ComposeApiProxyImpl} from './compose_api_proxy.js';
 import {ComposeTextareaElement} from './textarea.js';
 
 // Mock code.
@@ -68,6 +69,8 @@ export class ComposeAppElement extends PolymerElement {
     };
   }
 
+  private apiProxy_: ComposeApiProxy;
+
   private input_: string;
   private isSubmitEnabled_: boolean;
   private result_: string;
@@ -77,8 +80,8 @@ export class ComposeAppElement extends PolymerElement {
   constructor() {
     super();
     ColorChangeUpdater.forDocument().start();
+    this.apiProxy_ = ComposeApiProxyImpl.getInstance();
     // Not used yet.
-    const _ = ComposeApiProxyImpl.getInstance();
   }
 
   private computeIsSubmitEnabled_(): boolean {
@@ -89,13 +92,19 @@ export class ComposeAppElement extends PolymerElement {
     this.result_ = generateRandomText();
   }
 
-  private onSubmit_() {
+  private async onSubmit_() {
     if (!this.$.textarea.validate()) {
       return;
     }
 
     this.submitted_ = true;
-    this.result_ = generateRandomText();
+    const styleModifiers:
+        StyleModifiers = {tone: Tone.kUnset, length: Length.kUnset};
+    const composeResult =
+        await this.apiProxy_.compose(styleModifiers, this.input_);
+
+    // TODO(b/302742291) store the error if any as well.
+    this.result_ = composeResult.result || 'error';
   }
 
   private onTextareaValueChanged_() {

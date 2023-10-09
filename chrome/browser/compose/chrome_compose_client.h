@@ -12,6 +12,7 @@
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_manager.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -43,16 +44,30 @@ class ChromeComposeClient
   // ComposeDialogPageHandler
   void Compose(compose::mojom::StyleModifiersPtr style,
                const std::string& input,
-               ComposeCallback reply) override;
+               ComposeCallback callback) override;
+
+  void SetModelExecutorForTest(
+      optimization_guide::OptimizationGuideModelExecutor* model_executor);
 
  private:
   friend class content::WebContentsUserData<ChromeComposeClient>;
   explicit ChromeComposeClient(content::WebContents* web_contents);
 
+  optimization_guide::OptimizationGuideModelExecutor* GetModelExecutor();
+
+  void ModelExecutionCallback(
+      ComposeCallback callback,
+      optimization_guide::OptimizationGuideModelExecutionResult result);
+
   compose::ComposeManagerImpl manager_;
   std::unique_ptr<mojo::Receiver<compose::mojom::ComposeDialogPageHandler>>
       handler_receiver_;
   std::unique_ptr<mojo::Remote<compose::mojom::ComposeDialog>> dialog_remote_;
+
+  raw_ptr<optimization_guide::OptimizationGuideModelExecutor>
+      model_executor_for_test_;
+
+  base::WeakPtrFactory<ChromeComposeClient> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

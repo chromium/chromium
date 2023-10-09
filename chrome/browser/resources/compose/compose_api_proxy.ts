@@ -6,8 +6,7 @@ import {ComposeDialogCallbackRouter, ComposeDialogPageHandlerFactory, ComposeDia
 
 /** @interface */
 export interface ComposeApiProxy {
-  compose(style: StyleModifiers, input: string):
-      Promise<{response: ComposeResponse}>;
+  compose(style: StyleModifiers, input: string): Promise<ComposeResponse>;
 }
 
 export class ComposeApiProxyImpl implements ComposeApiProxy {
@@ -26,16 +25,17 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
   }
 
   static getInstance(): ComposeApiProxy {
-    return this.instance || (this.instance = new ComposeApiProxyImpl());
+    return ComposeApiProxyImpl.instance ||
+        (ComposeApiProxyImpl.instance = new ComposeApiProxyImpl());
   }
 
   static setInstance(newInstance: ComposeApiProxy) {
-    this.instance = newInstance;
+    ComposeApiProxyImpl.instance = newInstance;
   }
 
   /** @override */
-  compose(style: StyleModifiers, input: string):
-      Promise<{response: ComposeResponse}> {
-    return this.handler.compose(style, input);
+  compose(style: StyleModifiers, input: string): Promise<ComposeResponse> {
+    return this.composeDialogPageHandler.compose(style, input)
+        .then(composeResponse => composeResponse.response);
   }
 }

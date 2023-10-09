@@ -26,6 +26,7 @@ import("//chrome/test/include_js_tests.gni")
 import("//chrome/version.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
 import("//components/captive_portal/core/features.gni")
+import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/feed/features.gni")
 import("//components/lens/features.gni")
@@ -6856,6 +6857,15 @@ test("unit_tests") {
 
   if (enable_server_based_recognition) {
     deps += [ "//chrome/services/speech/internal:unit_tests" ]
+  }
+
+  if (enable_compose) {
+    sources += [ "../browser/compose/chrome_compose_client_unittest.cc" ]
+    deps += [
+      "//chrome/common/compose:mojo_bindings",
+      "//components/compose/core/browser:features",
+      "//components/compose/proto",
+    ]
   }
 
   public_deps = []
