@@ -926,7 +926,7 @@
 <translation id="1718835860248848330">מהשעה האחרונה</translation>
 <translation id="1719312230114180055">הערה: ייתכן ששימוש בטביעת אצבע יעניק פחות אבטחה מסיסמה או מקוד אימות חזקים.</translation>
 <translation id="1720318856472900922">‏אימות שרת TLS WWW</translation>
-<translation id="172123215662733643">מחפשים תמונות באמצעות <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="172123215662733643">חיפוש תמונות דרך <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1722460139690167654">מכשיר <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> שלך מנוהל<ph name="END_LINK" /> על ידי <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;חלון חדש</translation>
 <translation id="1724801751621173132">שיטת הקלט</translation>
@@ -7691,7 +7691,7 @@
 <translation id="7230881857327093958">השינויים יוחלו לאחר ההגדרה</translation>
 <translation id="7231260028442989757">יש לך אפשרות להציג ולסגור את ההתראות בטלפון ולהשיב להן</translation>
 <translation id="7232750842195536390">המערכת לא הצליחה לשנות את השם</translation>
-<translation id="723343421145275488">מחפשים תמונות באמצעות <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="723343421145275488">חיפוש תמונות דרך <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">‏המערכת מבטלת את שחזור Linux</translation>
 <translation id="7235716375204803342">מתבצע אחזור פעילויות...</translation>
 <translation id="7235737137505019098">במפתח האבטחה שלך אין מספיק מקום לחשבונות נוספים.</translation>
