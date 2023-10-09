@@ -29,8 +29,9 @@ void Script::RunScriptOnScriptState(
   if (!script_state)
     return;
 
-  probe::CompileAndRunScript probe_scope(ExecutionContext::From(script_state),
-                                         this);
+  probe::EvaluateScriptBlock probe_scope(
+      ExecutionContext::From(script_state), source_url_,
+      GetScriptType() == mojom::blink::ScriptType::kModule);
 
   v8::HandleScope scope(script_state->GetIsolate());
   std::ignore = RunScriptOnScriptStateAndReturnValue(

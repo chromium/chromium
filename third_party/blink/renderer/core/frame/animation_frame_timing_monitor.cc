@@ -23,7 +23,6 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
-#include "v8-microtask-queue.h"
 
 namespace blink {
 
@@ -165,6 +164,15 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
   std::swap(did_pause, did_pause_);
 
   base::TimeDelta task_duration = end_time - start_time;
+  if (pending_script_info_ && ((pending_script_info_->type ==
+                                ScriptTimingInfo::Type::kPromiseResolve) ||
+                               (pending_script_info_->type ==
+                                ScriptTimingInfo::Type::kPromiseReject))) {
+    PopScriptEntryPoint(frame ? frame->DomWindow() : nullptr,
+                        /*probe_data*/ nullptr, end_time);
+  }
+  entry_point_depth_ = 0;
+  pending_script_info_ = absl::nullopt;
 
   // If we already need an update and a new task is processed, count its
   // duration towards blockingTime.
@@ -326,7 +334,6 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
     switch (script->GetType()) {
       case ScriptTimingInfo::Type::kClassicScript:
       case ScriptTimingInfo::Type::kModuleScript:
-      case ScriptTimingInfo::Type::kExecuteScript:
         script_type_duration_script_block += execution_duration;
         break;
       case ScriptTimingInfo::Type::kEventHandler:
@@ -364,101 +371,77 @@ void AnimationFrameTimingMonitor::Trace(Visitor* visitor) const {
   visitor->Trace(current_scripts_);
 }
 
-ScriptTimingInfo* AnimationFrameTimingMonitor::MaybeAddScript(
-    ExecutionContext* context,
-    base::TimeTicks end_time) {
-  if (!pending_script_info_) {
-    return nullptr;
-  }
-
-  if ((end_time - pending_script_info_->start_time) < kLongScriptDuration) {
-    pending_script_info_ = absl::nullopt;
-    return nullptr;
-  }
-
-  ScriptTimingInfo* script_timing_info = MakeGarbageCollected<ScriptTimingInfo>(
-      context, pending_script_info_->type, pending_script_info_->start_time,
-      pending_script_info_->execution_start_time, end_time,
-      pending_script_info_->style_duration,
-      pending_script_info_->layout_duration);
-
-  script_timing_info->SetSourceLocation(pending_script_info_->source_location);
-  if (pending_script_info_->class_like_name) {
-    script_timing_info->SetClassLikeName(
-        AtomicString(pending_script_info_->class_like_name));
-  }
-
-  if (!pending_script_info_->property_like_name.IsNull()) {
-    script_timing_info->SetPropertyLikeName(
-        AtomicString(pending_script_info_->property_like_name));
-  }
-
-  script_timing_info->SetPauseDuration(pending_script_info_->pause_duration);
-
-  current_scripts_.push_back(script_timing_info);
-  pending_script_info_ = absl::nullopt;
-  return script_timing_info;
-}
-
 namespace {
 bool ShouldAllowScriptURL(const WTF::String& url) {
   KURL kurl(url);
   return kurl.ProtocolIsData() || kurl.ProtocolIsInHTTPFamily() ||
          kurl.ProtocolIs("blob") || kurl.IsEmpty();
 }
+
 }  // namespace
 
-bool AnimationFrameTimingMonitor::ShouldAddScript(ExecutionContext* context) {
-  return enabled_ && pending_script_info_ && context && context->IsWindow() &&
-         client_.ShouldReportLongAnimationFrameTiming() &&
-         ShouldAllowScriptURL(pending_script_info_->source_location.url) &&
-         state_ != State::kIdle;
+bool AnimationFrameTimingMonitor::PushScriptEntryPoint(
+    ExecutionContext* context) {
+  entry_point_depth_++;
+  // This will return true if there's a potential long animation frame, i.e.
+  // we're in a visible window, and this is the script entry point rather than
+  // a nested script (entry_point_depth is 1).
+  return enabled_ && entry_point_depth_ == 1 && context->IsWindow() &&
+         client_.ShouldReportLongAnimationFrameTiming();
 }
 
-ScriptTimingInfo* AnimationFrameTimingMonitor::DidExecuteScript(
-    const probe::ProbeBase& probe,
-    ExecutionContext* context) {
-  if (pending_script_info_ && pending_script_info_->start_time.is_null()) {
-    pending_script_info_->start_time = probe.CaptureStartTime();
+ScriptTimingInfo* AnimationFrameTimingMonitor::PopScriptEntryPoint(
+    ExecutionContext* context,
+    const probe::ProbeBase* probe,
+    base::TimeTicks end_time) {
+  if (!entry_point_depth_) {
+    return nullptr;
   }
-
-  if (!ShouldAddScript(context)) {
-    pending_script_info_ = absl::nullopt;
+  entry_point_depth_--;
+  if (entry_point_depth_ > 0 || !pending_script_info_ || !context) {
     return nullptr;
   }
 
-  v8::MicrotaskQueue* microtask_queue = ToMicrotaskQueue(context);
-  CHECK(microtask_queue);
-  if (microtask_queue->IsRunningMicrotasks() ||
-      microtask_queue->GetMicrotasksScopeDepth()) {
-    CHECK(context->GetAgent());
-    CHECK(context->GetAgent()->event_loop());
-    CHECK(pending_script_info_);
+  absl::optional<PendingScriptInfo> script_info;
+  std::swap(script_info, pending_script_info_);
 
-    context->GetAgent()->event_loop()->EnqueueEndOfMicrotaskCheckpointTask(
-        WTF::BindOnce(
-            [](WeakPersistent<AnimationFrameTimingMonitor> self,
-               WeakPersistent<ExecutionContext> context) {
-              if (self && context) {
-                self->MaybeAddScript(context, base::TimeTicks::Now());
-              }
-            },
-            WrapWeakPersistent(this), WrapWeakPersistent(context)));
+  if (!enabled_ || !context || !context->IsWindow() ||
+      !client_.ShouldReportLongAnimationFrameTiming() ||
+      !ShouldAllowScriptURL(script_info->source_location.url) ||
+      state_ == State::kIdle) {
     return nullptr;
   }
 
-  return MaybeAddScript(context, probe.CaptureEndTime());
-}
+  CHECK(probe || !end_time.is_null());
 
-void AnimationFrameTimingMonitor::OnMicrotasksCompleted(
-    ExecutionContext* context) {
-  user_callback_depth_--;
-  if (!ShouldAddScript(context)) {
-    pending_script_info_ = absl::nullopt;
-    return;
+  if (probe && end_time.is_null()) {
+    end_time = probe->CaptureEndTime();
   }
 
-  MaybeAddScript(context, base::TimeTicks::Now());
+  if ((end_time - script_info->start_time) < kLongScriptDuration) {
+    return nullptr;
+  }
+
+  ScriptTimingInfo* script_timing_info = MakeGarbageCollected<ScriptTimingInfo>(
+      context, script_info->type, script_info->start_time,
+      script_info->execution_start_time, end_time, script_info->style_duration,
+      script_info->layout_duration);
+
+  script_timing_info->SetSourceLocation(script_info->source_location);
+  if (script_info->class_like_name) {
+    script_timing_info->SetClassLikeName(
+        AtomicString(script_info->class_like_name));
+  }
+
+  if (!script_info->property_like_name.IsNull()) {
+    script_timing_info->SetPropertyLikeName(
+        AtomicString(script_info->property_like_name));
+  }
+
+  script_timing_info->SetPauseDuration(script_info->pause_duration);
+
+  current_scripts_.push_back(script_timing_info);
+  return script_timing_info;
 }
 
 void AnimationFrameTimingMonitor::WillHandlePromise(
@@ -468,28 +451,23 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
     const char* class_like_name,
     const String& property_like_name,
     const String& script_url) {
-  // Make sure we only monitor top-level promise resolvers that are outside the
-  // update-the-rendering phase (promise resolvers directly handled from a
-  // posted task).
-  if (!context->IsWindow() || !script_state->World().IsMainWorld() ||
-      pending_script_info_ || state_ != State::kProcessingTask) {
+  // Unlike other script entry points, promise resolvers don't have a "Did"
+  // probe, so we keep its depth at 1 and reset only at task end.
+  if (entry_point_depth_) {
     return;
   }
 
-  // The only "end" of resolved promises is the end of the microtask queue.
-  // A promise can have many callbacks (e.g. called with .then() and .catch()
-  // multiple times) and those callbacks are "mixed" in the microtask queue.
-  DCHECK(context->GetAgent());
-  DCHECK(context->GetAgent()->event_loop());
-  context->GetAgent()->event_loop()->EnqueueEndOfMicrotaskCheckpointTask(
-      WTF::BindOnce(
-          [](WeakPersistent<AnimationFrameTimingMonitor> self,
-             WeakPersistent<ExecutionContext> context) {
-            if (self && context) {
-              self->OnMicrotasksCompleted(context);
-            }
-          },
-          WrapWeakPersistent(this), WrapWeakPersistent(context)));
+  if (!PushScriptEntryPoint(context)) {
+    return;
+  }
+
+  // Make sure we only monitor top-level promise resolvers that are outside the
+  // update-the-rendering phase (promise resolvers directly handled from a
+  // posted task).
+  if (!script_state->World().IsMainWorld() ||
+      state_ != State::kProcessingTask) {
+    return;
+  }
 
   base::TimeTicks now = base::TimeTicks::Now();
   pending_script_info_ = PendingScriptInfo{
@@ -500,127 +478,39 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
       .class_like_name = class_like_name,
       .property_like_name = property_like_name,
       .source_location = {.url = script_url}};
-
-  user_callback_depth_++;
 }
 
 void AnimationFrameTimingMonitor::Will(
-    const probe::CompileAndRunScript& probe_data) {
-  if (!probe_data.context->IsWindow()) {
+    const probe::EvaluateScriptBlock& probe_data) {
+  if (!PushScriptEntryPoint(probe_data.context)) {
     return;
   }
-
-  KURL url = probe_data.script->SourceUrl();
+  KURL url(probe_data.source_url);
   if (url.IsEmpty() || url.IsNull()) {
     url = probe_data.context->Url();
   }
 
-  pending_script_info_ =
-      PendingScriptInfo{.type = probe_data.script->GetScriptType() ==
-                                        mojom::blink::ScriptType::kClassic
-                                    ? ScriptTimingInfo::Type::kClassicScript
-                                    : ScriptTimingInfo::Type::kModuleScript,
-                        .start_time = probe_data.CaptureStartTime(),
-                        .source_location = {.url = url}};
-}
-
-void AnimationFrameTimingMonitor::Did(
-    const probe::CompileAndRunScript& probe_data) {
-  if (!pending_script_info_ ||
-      (pending_script_info_->type != ScriptTimingInfo::Type::kClassicScript &&
-       pending_script_info_->type != ScriptTimingInfo::Type::kModuleScript)) {
-    return;
-  }
-
-  pending_script_info_->source_location = {.url =
-                                               probe_data.script->SourceUrl()};
-  DidExecuteScript(probe_data);
-}
-void AnimationFrameTimingMonitor::WillRunJavaScriptDialog() {
-  javascript_dialog_start_ = base::TimeTicks::Now();
-  did_pause_ = true;
-}
-void AnimationFrameTimingMonitor::DidRunJavaScriptDialog() {
-  // javascript_dialog_start_ can be null if DidRunJavaScriptDialog was run
-  // without WillRunJavaScriptDialog, which can happen in the case of
-  // WebView/browser-initiated dialogs.
-  if (!pending_script_info_ || javascript_dialog_start_.is_null()) {
-    return;
-  }
-
-  pending_script_info_->pause_duration +=
-      (base::TimeTicks::Now() - javascript_dialog_start_);
-  javascript_dialog_start_ = base::TimeTicks();
-}
-
-void AnimationFrameTimingMonitor::DidFinishSyncXHR(
-    base::TimeDelta blocking_time) {
-  if (pending_script_info_) {
-    pending_script_info_->pause_duration += blocking_time;
-  }
-
-  // We record did_pause_ regardless of having long scripts (e.g. short scripts
-  // with a sync XHR.
-  did_pause_ = true;
+  pending_script_info_ = PendingScriptInfo{
+      .type = probe_data.is_module ? ScriptTimingInfo::Type::kModuleScript
+                                   : ScriptTimingInfo::Type::kClassicScript,
+      .start_time = probe_data.CaptureStartTime(),
+      .source_location = {.url = url}};
 }
 
 void AnimationFrameTimingMonitor::Will(const probe::ExecuteScript& probe_data) {
-  // In some cases we get here without a CompileAndRunScript, e.g. when
+  // In some cases we get here without a EvaluateScriptBlock, e.g. when
   // executing an imported module script.
-  if (!pending_script_info_) {
-    pending_script_info_ =
-        PendingScriptInfo{.type = ScriptTimingInfo::Type::kExecuteScript};
-  }
-
   // This is true for both imported and element-created scripts.
-  pending_script_info_->execution_start_time = probe_data.CaptureStartTime();
-  if (!pending_script_info_->source_location.url) {
-    pending_script_info_->source_location = {.url = probe_data.script_url};
+  if (PushScriptEntryPoint(probe_data.context)) {
+    pending_script_info_ =
+        PendingScriptInfo{.type = ScriptTimingInfo::Type::kModuleScript,
+                          .start_time = probe_data.CaptureStartTime(),
+                          .source_location = {.url = probe_data.script_url}};
   }
-}
 
-void AnimationFrameTimingMonitor::Did(const probe::ExecuteScript& probe_data) {
   if (pending_script_info_ &&
-      pending_script_info_->type == ScriptTimingInfo::Type::kExecuteScript) {
-    DidExecuteScript(probe_data);
-  }
-}
-
-void AnimationFrameTimingMonitor::Will(
-    const probe::RecalculateStyle& probe_data) {
-  if (pending_script_info_) {
-    probe_data.CaptureStartTime();
-  }
-}
-void AnimationFrameTimingMonitor::Did(
-    const probe::RecalculateStyle& probe_data) {
-  if (pending_script_info_) {
-    probe_data.CaptureEndTime();
-    pending_script_info_->style_duration += probe_data.Duration();
-  }
-}
-void AnimationFrameTimingMonitor::Will(const probe::UpdateLayout& probe_data) {
-  if (!pending_script_info_) {
-    return;
-  }
-
-  if (!pending_script_info_->layout_depth) {
-    probe_data.CaptureStartTime();
-  }
-
-  pending_script_info_->layout_depth++;
-}
-
-void AnimationFrameTimingMonitor::Did(const probe::UpdateLayout& probe_data) {
-  if (!pending_script_info_) {
-    return;
-  }
-
-  pending_script_info_->layout_depth--;
-
-  if (!pending_script_info_->layout_depth) {
-    probe_data.CaptureEndTime();
-    pending_script_info_->layout_duration += probe_data.Duration();
+      pending_script_info_->execution_start_time.is_null()) {
+    pending_script_info_->execution_start_time = probe_data.CaptureStartTime();
   }
 }
 
@@ -668,51 +558,30 @@ bool IsCallbackFromMainWorld(v8::MaybeLocal<v8::Value> callback) {
 
 void AnimationFrameTimingMonitor::Will(
     const probe::InvokeCallback& probe_data) {
-  // Callbacks can be recursive. We only want the top-level one. We need to
-  // keep track of the depth so that we report only when the top-levle one is
-  // done.
-  user_callback_depth_++;
-  if (pending_script_info_) {
+  if (!PushScriptEntryPoint(probe_data.context)) {
     return;
   }
-
-  if (!probe_data.context->IsWindow() ||
-      !client_.ShouldReportLongAnimationFrameTiming() ||
-      (probe_data.callback &&
+  if ((probe_data.callback &&
        probe_data.callback->GetWorld().IsIsolatedWorld()) ||
       (!probe_data.function.IsEmpty() &&
        !IsCallbackFromMainWorld(probe_data.function))) {
     return;
   }
 
-  pending_script_info_ =
-      PendingScriptInfo{.type = ScriptTimingInfo::Type::kUserCallback,
-                        .start_time = probe_data.CaptureStartTime(),
-                        .execution_start_time = probe_data.CaptureStartTime()};
   v8::HandleScope handle_scope(probe_data.context->GetIsolate());
-
-  pending_script_info_->source_location = CaptureScriptSourceLocation(
-      probe_data.callback ? probe_data.callback->CallbackObject()
-                          : probe_data.function);
-}
-
-void AnimationFrameTimingMonitor::Did(const probe::InvokeCallback& probe_data) {
-  user_callback_depth_--;
-  if (user_callback_depth_) {
-    return;
-  }
-
-  if (pending_script_info_) {
-    pending_script_info_->property_like_name = probe_data.name;
-  }
-
-  DidExecuteScript(probe_data);
+  pending_script_info_ = PendingScriptInfo{
+      .type = ScriptTimingInfo::Type::kUserCallback,
+      .start_time = probe_data.CaptureStartTime(),
+      .execution_start_time = probe_data.CaptureStartTime(),
+      .property_like_name = probe_data.name,
+      .source_location = CaptureScriptSourceLocation(
+          probe_data.callback ? probe_data.callback->CallbackObject()
+                              : probe_data.function)};
 }
 
 void AnimationFrameTimingMonitor::Will(
     const probe::InvokeEventHandler& probe_data) {
-  user_callback_depth_++;
-  if (pending_script_info_) {
+  if (!PushScriptEntryPoint(probe_data.context)) {
     return;
   }
 
@@ -733,16 +602,11 @@ void AnimationFrameTimingMonitor::Will(
 
 void AnimationFrameTimingMonitor::Did(
     const probe::InvokeEventHandler& probe_data) {
-  user_callback_depth_--;
-  if (user_callback_depth_) {
-    return;
-  }
-
   if (probe_data.event->IsUIEvent() && first_ui_event_timestamp_.is_null()) {
     first_ui_event_timestamp_ = probe_data.event->PlatformTimeStamp();
   }
 
-  ScriptTimingInfo* info = DidExecuteScript(probe_data);
+  ScriptTimingInfo* info = PopScriptEntryPoint(probe_data);
   if (!info) {
     return;
   }
@@ -776,6 +640,72 @@ void AnimationFrameTimingMonitor::Did(
   info->SetSourceLocation(CaptureScriptSourceLocation(
       To<JSBasedEventListener>(probe_data.listener)
           ->GetListenerObject(*probe_data.event_target)));
+}
+
+void AnimationFrameTimingMonitor::Will(
+    const probe::RecalculateStyle& probe_data) {
+  if (pending_script_info_) {
+    probe_data.CaptureStartTime();
+  }
+}
+void AnimationFrameTimingMonitor::Did(
+    const probe::RecalculateStyle& probe_data) {
+  if (pending_script_info_) {
+    probe_data.CaptureEndTime();
+    pending_script_info_->style_duration += probe_data.Duration();
+  }
+}
+void AnimationFrameTimingMonitor::Will(const probe::UpdateLayout& probe_data) {
+  if (!pending_script_info_) {
+    return;
+  }
+
+  if (!pending_script_info_->layout_depth) {
+    probe_data.CaptureStartTime();
+  }
+
+  pending_script_info_->layout_depth++;
+}
+
+void AnimationFrameTimingMonitor::Did(const probe::UpdateLayout& probe_data) {
+  if (!pending_script_info_) {
+    return;
+  }
+
+  pending_script_info_->layout_depth--;
+
+  if (!pending_script_info_->layout_depth) {
+    probe_data.CaptureEndTime();
+    pending_script_info_->layout_duration += probe_data.Duration();
+  }
+}
+
+void AnimationFrameTimingMonitor::WillRunJavaScriptDialog() {
+  javascript_dialog_start_ = base::TimeTicks::Now();
+  did_pause_ = true;
+}
+void AnimationFrameTimingMonitor::DidRunJavaScriptDialog() {
+  // javascript_dialog_start_ can be null if DidRunJavaScriptDialog was run
+  // without WillRunJavaScriptDialog, which can happen in the case of
+  // WebView/browser-initiated dialogs.
+  if (!pending_script_info_ || javascript_dialog_start_.is_null()) {
+    return;
+  }
+
+  pending_script_info_->pause_duration +=
+      (base::TimeTicks::Now() - javascript_dialog_start_);
+  javascript_dialog_start_ = base::TimeTicks();
+}
+
+void AnimationFrameTimingMonitor::DidFinishSyncXHR(
+    base::TimeDelta blocking_time) {
+  if (pending_script_info_) {
+    pending_script_info_->pause_duration += blocking_time;
+  }
+
+  // We record did_pause_ regardless of having long scripts (e.g. short scripts
+  // with a sync XHR.
+  did_pause_ = true;
 }
 
 }  // namespace blink

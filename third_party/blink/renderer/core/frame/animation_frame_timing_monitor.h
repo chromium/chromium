@@ -80,16 +80,22 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
                          const char* class_like,
                          const String& property_like,
                          const String& script_url);
-  void Will(const probe::CompileAndRunScript&);
-  void Did(const probe::CompileAndRunScript&);
+  void Will(const probe::EvaluateScriptBlock&);
+  void Did(const probe::EvaluateScriptBlock& probe_data) {
+    PopScriptEntryPoint(probe_data);
+  }
   void Will(const probe::ExecuteScript&);
-  void Did(const probe::ExecuteScript&);
+  void Did(const probe::ExecuteScript& probe_data) {
+    PopScriptEntryPoint(probe_data);
+  }
   void Will(const probe::RecalculateStyle&);
   void Did(const probe::RecalculateStyle&);
   void Will(const probe::UpdateLayout&);
   void Did(const probe::UpdateLayout&);
   void Will(const probe::InvokeCallback&);
-  void Did(const probe::InvokeCallback&);
+  void Did(const probe::InvokeCallback& probe_data) {
+    PopScriptEntryPoint(probe_data);
+  }
   void Will(const probe::InvokeEventHandler&);
   void Did(const probe::InvokeEventHandler&);
   void WillRunJavaScriptDialog();
@@ -117,16 +123,17 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
     ScriptTimingInfo::ScriptSourceLocation source_location;
   };
 
-  ScriptTimingInfo* DidExecuteScript(const probe::ProbeBase& probe,
-                                     ExecutionContext* context);
-  ScriptTimingInfo* MaybeAddScript(ExecutionContext* context,
-                                   base::TimeTicks end_time);
-  void OnMicrotasksCompleted(ExecutionContext*);
-  bool ShouldAddScript(ExecutionContext*);
+  ScriptTimingInfo* PopScriptEntryPoint(
+      ExecutionContext* context,
+      const probe::ProbeBase* probe,
+      base::TimeTicks end_time = base::TimeTicks());
+
   template <typename Probe>
-  ScriptTimingInfo* DidExecuteScript(const Probe& probe) {
-    return DidExecuteScript(probe, probe.context);
+  ScriptTimingInfo* PopScriptEntryPoint(const Probe& probe) {
+    return PopScriptEntryPoint(probe.context, &probe);
   }
+  bool PushScriptEntryPoint(ExecutionContext*);
+  bool PopScriptEntryPoint(ExecutionContext*);
 
   void RecordLongAnimationFrameUKMAndTrace(const AnimationFrameTimingInfo&);
   void ApplyTaskDuration(base::TimeDelta task_duration);
@@ -149,14 +156,14 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   };
   State state_ = State::kIdle;
 
-  int user_callback_depth_ = 0;
-
   base::TimeTicks desired_render_start_time_;
   base::TimeTicks first_ui_event_timestamp_;
   base::TimeTicks javascript_dialog_start_;
   base::TimeDelta total_blocking_time_excluding_longest_task_;
   base::TimeDelta longest_task_duration_;
   bool did_pause_ = false;
+
+  unsigned entry_point_depth_ = 0;
 
   bool enabled_ = false;
 };

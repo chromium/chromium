@@ -22,7 +22,6 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
   enum class Type {
     kClassicScript,
     kModuleScript,
-    kExecuteScript,
     kUserCallback,
     kEventHandler,
     kPromiseResolve,

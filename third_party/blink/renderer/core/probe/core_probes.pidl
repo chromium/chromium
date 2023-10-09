@@ -165,8 +165,12 @@ interface CoreProbes {
   void WillHandlePromise([Keep] ExecutionContext* context, ScriptState* script_state, bool resolving, const char* class_like_name, const String& property_like_name, const String& script_url);
   RecalculateStyle(Document* document);
   UpdateLayout(Document* document);
+
+  /* This is called only for script generated from script blocks (script element, setTimeout with code */
+  EvaluateScriptBlock([Keep] ExecutionContext* context, const KURL& source_url, bool is_module);
+
+  /* This is called once the script is ready to execute */
   ExecuteScript([Keep] ExecutionContext* context, v8::Local<v8::Context> v8_context, const String& script_url, int script_id);
-  CompileAndRunScript([Keep] ExecutionContext* context, const blink::Script* script);
 
   CallFunction([Keep] ExecutionContext* context, v8::Local<v8::Context> v8_context, v8::Local<v8::Function> function, int depth = 0);
   UserCallback([Keep] ExecutionContext* context, const char* name, AtomicString atomic_name, bool recurring, EventTarget* event_target = nullptr, Event* event = nullptr, EventListener* listener = nullptr);

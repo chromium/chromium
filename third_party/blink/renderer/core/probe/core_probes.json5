@@ -37,12 +37,12 @@
       probes: [
         "DidFinishSyncXHR",
         "DidRunJavaScriptDialog",
+        "EvaluateScriptBlock",
         "ExecuteScript",
         "InvokeCallback",
         "InvokeEventHandler",
         "RecalculateStyle",
         "UpdateLayout",
-        "CompileAndRunScript",
         "WillHandlePromise",
       ]
     },

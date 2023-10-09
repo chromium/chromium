@@ -29,9 +29,9 @@ AtomicString GetScriptName(ScriptTimingInfo* info,
 
   switch (info->GetType()) {
     case ScriptTimingInfo::Type::kClassicScript:
-    case ScriptTimingInfo::Type::kModuleScript:
-    case ScriptTimingInfo::Type::kExecuteScript:
+    case ScriptTimingInfo::Type::kModuleScript: {
       return AtomicString(url);
+    }
     case ScriptTimingInfo::Type::kEventHandler:
     case ScriptTimingInfo::Type::kUserCallback: {
       WTF::StringBuilder builder;
@@ -147,8 +147,6 @@ AtomicString PerformanceScriptTiming::type() const {
       return AtomicString("classic-script");
     case ScriptTimingInfo::Type::kModuleScript:
       return AtomicString("module-script");
-    case ScriptTimingInfo::Type::kExecuteScript:
-      return AtomicString("execute-script");
     case ScriptTimingInfo::Type::kEventHandler:
       return AtomicString("event-listener");
     case ScriptTimingInfo::Type::kUserCallback:
