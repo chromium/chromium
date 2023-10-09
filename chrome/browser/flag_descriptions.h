@@ -1467,11 +1467,6 @@ extern const char kOmnibox2023RefreshConnectionSecurityIndicatorsDescription[];
 extern const char kWebUIOmniboxPopupName[];
 extern const char kWebUIOmniboxPopupDescription[];
 
-#if !BUILDFLAG(IS_LINUX)
-extern const char kWebUiSystemFontName[];
-extern const char kWebUiSystemFontDescription[];
-#endif
-
 extern const char kOmniboxMaxURLMatchesName[];
 extern const char kOmniboxMaxURLMatchesDescription[];
 

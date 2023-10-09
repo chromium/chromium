@@ -19,7 +19,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -39,13 +38,11 @@ namespace {
 constexpr float kMaxScaleFactor = 1000.0f;
 
 std::string GetFontFamilyMd() {
-#if !BUILDFLAG(IS_LINUX)
-  if (base::FeatureList::IsEnabled(features::kWebUiSystemFont)) {
-    return GetFontFamily();
-  }
-#endif
-
+#if BUILDFLAG(IS_LINUX)
   return "Roboto, " + GetFontFamily();
+#else
+  return GetFontFamily();
+#endif
 }
 
 std::string GetWebUiCssTextDefaults(const std::string& css_template) {

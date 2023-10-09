@@ -8558,11 +8558,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "webui-system-font",
-    "owners": [ "dpapad", "johntlee" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "webui-tab-strip",
     "owners": [
       "yuhengh",
