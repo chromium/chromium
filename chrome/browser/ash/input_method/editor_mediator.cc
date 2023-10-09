@@ -46,7 +46,6 @@ size_t NonWhitespaceAndSymbolsLength(const std::u16string& text,
 
 EditorMediator::EditorMediator(Profile* profile, std::string_view country_code)
     : profile_(profile),
-      editor_instance_impl_(this),
       panel_manager_(this),
       editor_switch_(std::make_unique<EditorSwitch>(profile, country_code)),
       consent_store_(

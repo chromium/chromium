@@ -15,7 +15,6 @@ source_set("orca") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chrome/browser/ash/input_method/mojom",
     "//chromeos/ash/services/orca/public/cpp",
     "//chromeos/ash/services/orca/public/mojom",
   ]
