@@ -16716,6 +16716,21 @@
             ]
         }
     ],
+    "TimeOfDayDlc": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TimeOfDayDlc"
+                    ]
+                }
+            ]
+        }
+    ],
     "TimedHTMLParserBudget": [
         {
             "platforms": [
