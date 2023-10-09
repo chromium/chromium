@@ -94,10 +94,6 @@ class MockMediaRouteProvider : public mojom::MediaRouteProvider {
   MOCK_METHOD2(SendRouteBinaryMessage,
                void(const std::string& media_route_id,
                     const std::vector<uint8_t>& data));
-  MOCK_METHOD1(StartListeningForRouteMessages,
-               void(const std::string& route_id));
-  MOCK_METHOD1(StopListeningForRouteMessages,
-               void(const std::string& route_id));
   MOCK_METHOD1(OnPresentationSessionDetached,
                void(const std::string& route_id));
   MOCK_METHOD0(StartObservingMediaRoutes, void());

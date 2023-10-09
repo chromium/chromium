@@ -54,8 +54,6 @@ class TestMediaRouteProvider : public mojom::MediaRouteProvider,
   void StartObservingMediaSinks(const std::string& media_source) override;
   void StopObservingMediaSinks(const std::string& media_source) override;
   void StartObservingMediaRoutes() override;
-  void StartListeningForRouteMessages(const std::string& route_id) override;
-  void StopListeningForRouteMessages(const std::string& route_id) override;
   void DetachRoute(const std::string& route_id) override;
   void EnableMdnsDiscovery() override;
   void DiscoverSinksNow() override;

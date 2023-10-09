@@ -28,7 +28,6 @@
 #include "chrome/browser/media/router/providers/cast/mock_app_activity.h"
 #include "chrome/browser/media/router/providers/cast/mock_mirroring_activity.h"
 #include "chrome/browser/media/router/providers/cast/test_util.h"
-#include "chrome/browser/media/router/providers/common/buffered_message_sender.h"
 #include "chrome/browser/media/router/test/mock_mojo_media_router.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "components/media_router/common/media_source.h"

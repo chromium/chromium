@@ -487,17 +487,7 @@ void MediaRouterDesktop::RegisterPresentationConnectionMessageObserver(
   } else {
     DCHECK(!observer_list->HasObserver(observer));
   }
-
-  bool should_listen = observer_list->empty();
   observer_list->AddObserver(observer);
-  if (should_listen) {
-    absl::optional<mojom::MediaRouteProviderId> provider_id =
-        GetProviderIdForRoute(route_id);
-    if (provider_id) {
-      media_route_providers_[*provider_id]->StartListeningForRouteMessages(
-          route_id);
-    }
-  }
 }
 
 void MediaRouterDesktop::UnregisterPresentationConnectionMessageObserver(
@@ -512,15 +502,6 @@ void MediaRouterDesktop::UnregisterPresentationConnectionMessageObserver(
   }
 
   it->second->RemoveObserver(observer);
-  if (it->second->empty()) {
-    message_observers_.erase(route_id);
-    absl::optional<mojom::MediaRouteProviderId> provider_id =
-        GetProviderIdForRoute(route_id);
-    if (provider_id) {
-      media_route_providers_[*provider_id]->StopListeningForRouteMessages(
-          route_id);
-    }
-  }
 }
 
 void MediaRouterDesktop::RegisterMediaRouteProvider(

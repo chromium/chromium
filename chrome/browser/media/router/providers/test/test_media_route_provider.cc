@@ -196,12 +196,6 @@ void TestMediaRouteProvider::StopObservingMediaSinks(
 
 void TestMediaRouteProvider::StartObservingMediaRoutes() {}
 
-void TestMediaRouteProvider::StartListeningForRouteMessages(
-    const std::string& route_id) {}
-
-void TestMediaRouteProvider::StopListeningForRouteMessages(
-    const std::string& route_id) {}
-
 void TestMediaRouteProvider::DetachRoute(const std::string& route_id) {
   media_router_->OnPresentationConnectionClosed(
       route_id, blink::mojom::PresentationConnectionCloseReason::CLOSED,

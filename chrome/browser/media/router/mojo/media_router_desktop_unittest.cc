@@ -643,15 +643,10 @@ TEST_F(MediaRouterDesktopTest, RouteMessagesSingleObserver) {
   PopulateRouteMessages(&incoming_batch1, &incoming_batch2, &incoming_batch3,
                         &all_messages);
 
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_cast_provider_, StartListeningForRouteMessages(Eq(kRouteId)))
-      .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-
   // Creating ExpectedMessagesObserver will register itself to the
   // MediaRouter, which in turn will start listening for route messages.
   ExpectedMessagesObserver observer(router(), kRouteId,
                                     std::move(all_messages));
-  run_loop.Run();  // Will quit when StartListeningForRouteMessages() is called.
   ReceiveRouteMessages(kRouteId, std::move(incoming_batch1));
   ReceiveRouteMessages(kRouteId, std::move(incoming_batch2));
   ReceiveRouteMessages(kRouteId, std::move(incoming_batch3));
@@ -670,17 +665,12 @@ TEST_F(MediaRouterDesktopTest, RouteMessagesMultipleObservers) {
     all_messages2.emplace_back(message->Clone());
   }
 
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_cast_provider_, StartListeningForRouteMessages(Eq(kRouteId)))
-      .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-
   // The ExpectedMessagesObservers will register themselves with the
   // MediaRouter, which in turn will start listening for route messages.
   ExpectedMessagesObserver observer1(router(), kRouteId,
                                      std::move(all_messages));
   ExpectedMessagesObserver observer2(router(), kRouteId,
                                      std::move(all_messages2));
-  run_loop.Run();  // Will quit when StartListeningForRouteMessages() is called.
   ReceiveRouteMessages(kRouteId, std::move(incoming_batch1));
   ReceiveRouteMessages(kRouteId, std::move(incoming_batch2));
   ReceiveRouteMessages(kRouteId, std::move(incoming_batch3));

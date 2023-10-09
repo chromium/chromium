@@ -288,17 +288,6 @@ interface MediaRouteProvider {
   // Starts reporting the state of active media routes.
   StartObservingMediaRoutes();
 
-  // Starts listening for messages from the media sink for the route given by
-  // |route_id|.
-  // |MediaRouter::OnRouteMessagesReceived| will be invoked when a batch of
-  // messages arrives, or when there is an error.
-  // |StopListeningForRouteMessages| will stop the Media Router from receiving
-  // further messages for |route_id|.
-  StartListeningForRouteMessages(string route_id);
-
-  // Called when there are no more listeners for messages for |route_id|.
-  StopListeningForRouteMessages(string route_id);
-
   // Indicates that a PresentationConnection that was connected to route
   // |route_id| has been closed (via .close(), garbage collection or
   // navigation).

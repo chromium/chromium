@@ -287,16 +287,6 @@ void CastMediaRouteProvider::StartObservingMediaRoutes() {
   activity_manager_->NotifyAllOnRoutesUpdated();
 }
 
-void CastMediaRouteProvider::StartListeningForRouteMessages(
-    const std::string& route_id) {
-  NOTIMPLEMENTED();
-}
-
-void CastMediaRouteProvider::StopListeningForRouteMessages(
-    const std::string& route_id) {
-  NOTIMPLEMENTED();
-}
-
 void CastMediaRouteProvider::DetachRoute(const std::string& route_id) {
   // DetachRoute() isn't implemented. Instead, a presentation connection
   // associated with the route will call DidClose(). See CastSessionClientImpl.

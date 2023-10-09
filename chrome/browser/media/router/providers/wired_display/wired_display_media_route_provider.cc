@@ -196,16 +196,6 @@ void WiredDisplayMediaRouteProvider::StartObservingMediaRoutes() {
   media_router_->OnRoutesUpdated(kProviderId, route_list);
 }
 
-void WiredDisplayMediaRouteProvider::StartListeningForRouteMessages(
-    const std::string& route_id) {
-  // Messages should be handled by LocalPresentationManager.
-}
-
-void WiredDisplayMediaRouteProvider::StopListeningForRouteMessages(
-    const std::string& route_id) {
-  // Messages should be handled by LocalPresentationManager.
-}
-
 void WiredDisplayMediaRouteProvider::DetachRoute(const std::string& route_id) {
   // Detaching should be handled by LocalPresentationManager.
   NOTREACHED();
