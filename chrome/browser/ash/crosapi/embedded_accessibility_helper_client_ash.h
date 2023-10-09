@@ -32,6 +32,7 @@ class EmbeddedAccessibilityHelperClientAsh
 
   // crosapi::mojom::EmbeddedAccessibilityHelperClient:
   void SpeakSelectedText() override;
+  void FocusChanged(const gfx::Rect& focus_bounds_in_screen) override;
 
   void ClipboardCopyInActiveGoogleDoc(const std::string& url);
 

@@ -19,6 +19,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/event_router.h"
@@ -133,6 +134,19 @@ void EmbeddedA11yManagerLacros::Init() {
         a11y_helper_receiver_.BindNewPipeAndPassRemote());
   }
 
+  if (impl->GetInterfaceVersion<
+          crosapi::mojom::EmbeddedAccessibilityHelperClient>() >=
+      static_cast<int>(crosapi::mojom::EmbeddedAccessibilityHelperClient::
+                           kFocusChangedMinVersion)) {
+    // Only observe focus highlight pref if the Ash version is able to support
+    // focus highlight enabled changed. Otherwise this just adds overhead.
+    focus_highlight_enabled_observer_ = std::make_unique<CrosapiPrefObserver>(
+        crosapi::mojom::PrefPath::kAccessibilityFocusHighlightEnabled,
+        base::BindRepeating(
+            &EmbeddedA11yManagerLacros::OnFocusHighlightEnabledChanged,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+
   pdf_ocr_always_active_observer_ = std::make_unique<CrosapiPrefObserver>(
       crosapi::mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive,
       base::BindRepeating(
@@ -171,6 +185,11 @@ void EmbeddedA11yManagerLacros::AddExtensionChangedCallbackForTest(
 void EmbeddedA11yManagerLacros::AddSpeakSelectedTextCallbackForTest(
     base::RepeatingClosure callback) {
   speak_selected_text_callback_for_test_ = std::move(callback);
+}
+
+void EmbeddedA11yManagerLacros::AddFocusChangedCallbackForTest(
+    base::RepeatingCallback<void(gfx::Rect)> callback) {
+  focus_changed_callback_for_test_ = std::move(callback);
 }
 
 void EmbeddedA11yManagerLacros::OnProfileWillBeDestroyed(Profile* profile) {
@@ -254,6 +273,20 @@ void EmbeddedA11yManagerLacros::OnSwitchAccessEnabledChanged(
   UpdateAllProfiles();
 }
 
+void EmbeddedA11yManagerLacros::OnFocusHighlightEnabledChanged(
+    base::Value value) {
+  CHECK(value.is_bool());
+  if (value.GetBool()) {
+    focus_changed_subscription_ =
+        content::BrowserAccessibilityState::GetInstance()
+            ->RegisterFocusChangedCallback(base::BindRepeating(
+                &EmbeddedA11yManagerLacros::OnFocusChangedInPage,
+                weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    focus_changed_subscription_ = {};
+  }
+}
+
 void EmbeddedA11yManagerLacros::OnPdfOcrAlwaysActiveChanged(base::Value value) {
   // TODO(b/289009784): Add browser test to ensure the pref is synced on all
   // profiles.
@@ -323,5 +356,15 @@ void EmbeddedA11yManagerLacros::InstallExtension(
   CHECK_EQ(actual_id, extension_id);
   if (extension_installation_changed_callback_for_test_) {
     extension_installation_changed_callback_for_test_.Run();
+  }
+}
+
+void EmbeddedA11yManagerLacros::OnFocusChangedInPage(
+    const content::FocusedNodeDetails& details) {
+  if (a11y_helper_remote_.is_bound()) {
+    a11y_helper_remote_->FocusChanged(details.node_bounds_in_screen);
+  }
+  if (focus_changed_callback_for_test_) {
+    focus_changed_callback_for_test_.Run(details.node_bounds_in_screen);
   }
 }

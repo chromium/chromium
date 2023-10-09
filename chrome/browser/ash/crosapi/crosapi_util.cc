@@ -425,6 +425,8 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<media_session::mojom::AudioFocusManagerDebug>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ParentAccess>(),
     MakeInterfaceVersionEntry<
+        crosapi::mojom::EmbeddedAccessibilityHelperClient>(),
+    MakeInterfaceVersionEntry<
         crosapi::mojom::EmbeddedAccessibilityHelperClientFactory>(),
 };
 

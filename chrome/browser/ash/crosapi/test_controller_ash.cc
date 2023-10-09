@@ -860,6 +860,10 @@ void TestControllerAsh::SetAssistiveTechnologyEnabled(
       manager->SetSwitchAccessEnabled(enabled);
       break;
     }
+    case crosapi::mojom::AssistiveTechnologyType::kFocusHighlight: {
+      manager->SetFocusHighlightEnabled(enabled);
+      break;
+    }
     case mojom::AssistiveTechnologyType::kUnknown:
       LOG(ERROR) << "Cannot enable unknown AssistiveTechnologyType";
       break;

@@ -132,10 +132,13 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    EmbeddedA11yManagerLacros::GetInstance()
-        ->AddExtensionChangedCallbackForTest(base::BindRepeating(
-            &EmbeddedA11yManagerLacrosTest::OnExtensionChanged,
-            base::Unretained(this)));
+    auto* embedded_a11y_manager = EmbeddedA11yManagerLacros::GetInstance();
+    embedded_a11y_manager->AddExtensionChangedCallbackForTest(
+        base::BindRepeating(&EmbeddedA11yManagerLacrosTest::OnExtensionChanged,
+                            base::Unretained(this)));
+    embedded_a11y_manager->AddFocusChangedCallbackForTest(
+        base::BindRepeating(&EmbeddedA11yManagerLacrosTest::OnFocusChanged,
+                            base::Unretained(this)));
     auto* lacros_service = chromeos::LacrosService::Get();
     if (!lacros_service ||
         !lacros_service->IsAvailable<crosapi::mojom::TestController>() ||
@@ -195,6 +198,13 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
     WaitForExtensionUnloaded(profile, extension_id);
   }
 
+  void WaitForFocusRingsChangedTo(gfx::Point center_point) {
+    while (center_point != last_focus_bounds_.CenterPoint()) {
+      focus_waiter_ = std::make_unique<base::RunLoop>();
+      focus_waiter_->Run();
+    }
+  }
+
   RenderViewContextMenu* LoadTestPageAndSelectTextAndRightClick() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -238,8 +248,17 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
     }
   }
 
+  void OnFocusChanged(gfx::Rect bounds) {
+    last_focus_bounds_ = bounds;
+    if (focus_waiter_ && focus_waiter_->running()) {
+      focus_waiter_->Quit();
+    }
+  }
+
   std::unique_ptr<base::RunLoop> waiter_;
+  std::unique_ptr<base::RunLoop> focus_waiter_;
   int num_context_clicks_ = 0;
+  gfx::Rect last_focus_bounds_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -477,4 +496,51 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
   SetDisabledAndWaitForExtensionUnloaded(
       profile, AssistiveTechnologyType::kSelectToSpeak,
       extension_misc::kEmbeddedA11yHelperExtensionId);
+}
+
+IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest, FocusHighlightSent) {
+  SetFeatureEnabled(crosapi::mojom::AssistiveTechnologyType::kFocusHighlight,
+                    true);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  CHECK(ui_test_utils::NavigateToURL(
+      browser(),
+      GURL(("data:text/html;charset=utf-8,<input type='button' value='first' "
+            "id='first' autofocus><input type='submit' id='second'>"))));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (lacros_service->GetInterfaceVersion<
+          crosapi::mojom::EmbeddedAccessibilityHelperClient>() <
+      static_cast<int>(crosapi::mojom::EmbeddedAccessibilityHelperClient::
+                           MethodMinVersions::kFocusChangedMinVersion)) {
+    LOG(ERROR) << "Ash version doesn't have required API, skipping test.";
+    // Nothing should explode when the page loads, we just aren't passing
+    // focus changes along to Ash because we never listened to them.
+    // Clean up.
+    SetFeatureEnabled(crosapi::mojom::AssistiveTechnologyType::kFocusHighlight,
+                      false);
+    return;
+  }
+
+  gfx::Rect first_button_bounds = GetControlBoundsInRoot(web_contents, "first");
+  gfx::Rect second_button_bounds =
+      GetControlBoundsInRoot(web_contents, "second");
+
+  WaitForFocusRingsChangedTo(first_button_bounds.CenterPoint());
+
+  // Focus the second button with tab.
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::Widget* widget = browser_view->GetWidget();
+  aura::Window* window = widget->GetNativeWindow();
+  ui::test::EventGenerator generator(window->GetRootWindow());
+  generator.PressAndReleaseKey(ui::VKEY_TAB);
+
+  WaitForFocusRingsChangedTo(second_button_bounds.CenterPoint());
+
+  // Clean up.
+  SetFeatureEnabled(crosapi::mojom::AssistiveTechnologyType::kFocusHighlight,
+                    false);
 }

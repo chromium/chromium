@@ -37,8 +37,6 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -DesksTemplatesClientLacrosTest.SystemUILaunchBrowser
 # TODO(b/277821091) Flaky
 -ChromeVoxEditingTest.GiantTextAreaPerformance
-# TODO(b/303062806): Focus highlights feature doesn't work on Lacros.
--AccessibilityHighlightsBrowserTest.FocusHighlight
 # TODO(accessibility): these are native C++ tests that need investigation.
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.LandmarkNavigation*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.NavigateChromeVoxMenu*

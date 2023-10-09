@@ -254,7 +254,17 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest, FocusHighlight) {
     auto& focus_rings = highlights->focus_layers_for_testing();
     EXPECT_EQ(focus_rings.size(), 1u);
     gfx::Rect focus_bounds = focus_rings.at(0)->layer()->GetTargetBounds();
-    EXPECT_EQ(element_bounds.CenterPoint(), focus_bounds.CenterPoint());
+    if (testCase.role == "staticText") {
+      // In the case of the text input field, the static text node we've
+      // found bounds for within the input field is slightly shorter than its
+      // parent to visually show that it will scroll. Check the center points
+      // are within one pixel of each other.
+      EXPECT_LT(
+          (element_bounds.CenterPoint() - focus_bounds.CenterPoint()).Length(),
+          2);
+    } else {
+      EXPECT_EQ(element_bounds.CenterPoint(), focus_bounds.CenterPoint());
+    }
     EXPECT_TRUE(focus_bounds.Contains(element_bounds));
   }
 }

@@ -265,6 +265,7 @@ enum AssistiveTechnologyType {
   kChromeVox = 1,
   kSelectToSpeak = 2,
   kSwitchAccess = 3,
+  [MinVersion=1] kFocusHighlight = 4,
 };
 
 // This interface is implemented by Ash-Chrome.

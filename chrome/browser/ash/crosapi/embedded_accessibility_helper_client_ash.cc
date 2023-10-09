@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/public/cpp/accessibility_controller.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
 
@@ -31,6 +32,14 @@ void EmbeddedAccessibilityHelperClientAsh::BindEmbeddedAccessibilityHelper(
 
 void EmbeddedAccessibilityHelperClientAsh::SpeakSelectedText() {
   ash::AccessibilityManager::Get()->OnSelectToSpeakContextMenuClick();
+}
+
+void EmbeddedAccessibilityHelperClientAsh::FocusChanged(
+    const gfx::Rect& focus_bounds_in_screen) {
+  if (ash::AccessibilityManager::Get()->IsFocusHighlightEnabled()) {
+    ash::AccessibilityController::Get()->SetFocusHighlightRect(
+        focus_bounds_in_screen);
+  }
 }
 
 void EmbeddedAccessibilityHelperClientAsh::ClipboardCopyInActiveGoogleDoc(

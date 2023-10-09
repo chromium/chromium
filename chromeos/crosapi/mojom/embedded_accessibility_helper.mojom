@@ -4,10 +4,14 @@
 
 module crosapi.mojom;
 
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
 // Interface for EmbeddedAccessibilityHelperClients. Implemented by ash-chrome.
 // Used by lacros-chrome (the "embedded helper") to inform when accessibility
 // features have received certain events from lacros-chrome so that
 // features can act on these events.
+// Next version: 2
+// Next method id: 2
 [Stable, Uuid="5d670d98-5c5f-4805-ba83-b77690f5f68c"]
 interface EmbeddedAccessibilityHelperClient {
  // Called by lacros-chrome when a context menu (added with chrome.contextMenus
@@ -16,6 +20,11 @@ interface EmbeddedAccessibilityHelperClient {
  // chrome.contextMenus, which is not piped through for Ash extension APIs to
  // act in lacros-chrome.
  SpeakSelectedText@0();
+
+ // Called by lacros-chrome when the focus has changed in the lacros browser
+ // and the focus highlight feature is enabled. Sends the bounds of the
+ // currently focused element to ash-chrome.
+ [MinVersion=1] FocusChanged@1(gfx.mojom.Rect focus_bounds_in_screen);
 };
 
 // Interface for EmbeddedAccessibilityHelpers. Implemented by lacros-chrome.
