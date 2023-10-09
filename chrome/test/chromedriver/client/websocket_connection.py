@@ -24,25 +24,19 @@ from exceptions import WebSocketConnectionClosedException
 from exceptions import WebSocketTimeoutException
 
 class WebSocketCommands:
-  ATTACH_WEBSOCKET_TO_SESSION = \
+  CREATE_WEBSOCKET = \
     '/session/:sessionId'
-  CREATE_UNBOUND_WEBSOCKET = \
-    '/session'
   SEND_OVER_WEBSOCKET = \
     '/session/:sessionId/chromium/send_command_from_websocket'
 
 class WebSocketConnection(object):
-  def __init__(self, server_url, session_id = None):
+  def __init__(self, server_url, session_id):
     self._server_url = server_url.replace('http', 'ws')
     self._session_id = session_id
     self._command_id = 0
-    if session_id is None:
-      path = CommandExecutor.CreatePath(
-          WebSocketCommands.CREATE_UNBOUND_WEBSOCKET, {})
-    else:
-      path = CommandExecutor.CreatePath(
-        WebSocketCommands.ATTACH_WEBSOCKET_TO_SESSION,
-        {'sessionId': session_id})
+    cmd_params = {'sessionId': session_id}
+    path = CommandExecutor.CreatePath(
+      WebSocketCommands.CREATE_WEBSOCKET, cmd_params)
     self._websocket = websocket.create_connection(self._server_url + path)
     self._responses = {}
     self._events = []
@@ -58,9 +52,9 @@ class WebSocketConnection(object):
     return cmd_params['id']
 
   def TakeEvents(self):
-    result = self._events
+    result = self._events;
     self._events = []
-    return result
+    return result;
 
   def TryGetResponse(self, command_id, channel = None):
     if channel not in self._responses:
@@ -102,7 +96,7 @@ class WebSocketConnection(object):
       raise WebSocketTimeoutException()
 
   def Close(self):
-    self._websocket.close()
+    self._websocket.close();
 
   def __enter__(self):
     return self

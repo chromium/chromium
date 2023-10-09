@@ -50,7 +50,6 @@ import chromedriver
 import websocket_connection
 import webelement
 import webshadowroot
-from websocket_connection import WebSocketConnection
 sys.path.remove(_CLIENT_DIR)
 
 sys.path.insert(1, _SERVER_DIR)
@@ -6200,74 +6199,6 @@ class HeadlessChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertRaises(chromedriver.InvalidArgument,
                       self._driver.PrintPDF, {'pageRanges': ['x-y']})
 
-class PureBidiTest(ChromeDriverBaseTestWithWebServer):
-
-  def setUp(self):
-    super().setUp()
-    self._connections = []
-
-  def tearDown(self):
-    for conn in self._connections:
-      conn.Close()
-    super().tearDown()
-
-  def createUnboundWebSocketConnection(self):
-    server_url = _CHROMEDRIVER_SERVER_URL
-    conn = WebSocketConnection(server_url)
-    conn.SetTimeout(5 * 60) # 5 minutes
-    self._connections.append(conn)
-    return conn
-
-  def testStatus(self):
-    conn = self.createUnboundWebSocketConnection()
-    cmd_id = conn.SendCommand({
-      'method': 'session.status',
-      'params': {}
-    })
-    status = conn.WaitForResponse(cmd_id)
-    self.assertEqual(False, status['ready'])
-    self.assertEqual('ChromeDriver does not yet support BiDi-only sessions.',
-                     status['message'])
-
-  def testNewSession(self):
-    conn = self.createUnboundWebSocketConnection()
-    cmd_id = conn.SendCommand({
-      'method': 'session.new',
-      'params': {
-          'capabilities': {}
-      }
-    })
-    status = conn.WaitForResponse(cmd_id)
-    self.assertEqual('session not created', status['error'])
-    self.assertEqual(''.join([
-        'session not created: ',
-        'ChromeDriver does not yet support BiDi-only sessions.']),
-        status['message'])
-
-  def testErrorMessages(self):
-    conn = self.createUnboundWebSocketConnection()
-    cmd_id = conn.SendCommand({
-      'method': 'abracadabra',
-      'params': {}
-    })
-    status = conn.WaitForResponse(cmd_id)
-    self.assertEqual('unknown command', status['error'])
-    self.assertEqual('unknown command: abracadabra', status['message'])
-
-    cmd_id = conn.SendCommand({
-      'params': {}
-    })
-    status = conn.WaitForResponse(cmd_id)
-    self.assertEqual('invalid argument', status['error'])
-    self.assertRegex(status['message'], 'no\\s+method')
-
-    cmd_id = conn.SendCommand({
-        'method': 'session.status'
-    })
-    status = conn.WaitForResponse(cmd_id)
-    self.assertEqual('invalid argument', status['error'])
-    self.assertRegex(status['message'], 'no\\s+params')
-
 class BidiTest(ChromeDriverBaseTestWithWebServer):
 
   def setUp(self):
@@ -6284,14 +6215,6 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     if driver is None:
       driver = self._driver
     conn = driver.CreateWebSocketConnection()
-    conn.SetTimeout(5 * 60) # 5 minutes
-    self._connections.append(conn)
-    return conn
-
-  def createWebSocketConnectionIPv6(self, driver=None):
-    if driver is None:
-      driver = self._driver
-    conn = driver.CreateWebSocketConnectionIPv6()
     conn.SetTimeout(5 * 60) # 5 minutes
     self._connections.append(conn)
     return conn
@@ -6521,28 +6444,6 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     context_id = self.getContextId(conn1, 0)
     self.assertIsNotNone(context_id)
     conn2 = self.createWebSocketConnection()
-    # Pre-check: make sure that the implementation does not use the same socket
-    self.assertNotEqual(conn1, conn2)
-
-    cmd_id1 = self.postEvaluate(conn1, '77', context_id = context_id)
-    cmd_id2 = self.postEvaluate(conn2, '23', context_id = context_id)
-    cmd_id3 = self.postEvaluate(conn1, '41', context_id = context_id)
-    cmd_id4 = self.postEvaluate(conn2, '98', context_id = context_id)
-
-    resp = conn1.WaitForResponse(cmd_id1)
-    self.assertEqual(77, resp['result']['result']['value'])
-    resp = conn1.WaitForResponse(cmd_id3)
-    self.assertEqual(41, resp['result']['result']['value'])
-    resp = conn2.WaitForResponse(cmd_id4)
-    self.assertEqual(98, resp['result']['result']['value'])
-    resp = conn2.WaitForResponse(cmd_id2)
-    self.assertEqual(23, resp['result']['result']['value'])
-
-  def testMultipleConnectionsDifferentIPs(self):
-    conn1 = self.createWebSocketConnection()
-    context_id = self.getContextId(conn1, 0)
-    self.assertIsNotNone(context_id)
-    conn2 = self.createWebSocketConnectionIPv6()
     # Pre-check: make sure that the implementation does not use the same socket
     self.assertNotEqual(conn1, conn2)
 

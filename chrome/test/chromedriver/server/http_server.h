@@ -19,25 +19,7 @@ typedef base::RepeatingCallback<void(const net::HttpServerRequestInfo&,
                                      const HttpResponseSenderFunc&)>
     HttpRequestHandlerFunc;
 
-class HttpServerInterface {
- public:
-  virtual ~HttpServerInterface() = default;
-  virtual void Close(int connection_id) = 0;
-
-  virtual void AcceptWebSocket(int connection_id,
-                               const net::HttpServerRequestInfo& request) = 0;
-
-  virtual void SendOverWebSocket(int connection_id,
-                                 const std::string& data) = 0;
-
-  virtual void SendResponse(
-      int connection_id,
-      const net::HttpServerResponseInfo& response,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation) = 0;
-};
-
-class HttpServer : public net::HttpServer::Delegate,
-                   public virtual HttpServerInterface {
+class HttpServer : public net::HttpServer::Delegate {
  public:
   explicit HttpServer(const std::string& url_base,
                       const std::vector<net::IPAddress>& whitelisted_ips,
@@ -63,17 +45,16 @@ class HttpServer : public net::HttpServer::Delegate,
 
   void OnClose(int connection_id) override;
 
-  void Close(int connection_id) override;
+  void Close(int connection_id);
 
   void AcceptWebSocket(int connection_id,
-                       const net::HttpServerRequestInfo& request) override;
+                       const net::HttpServerRequestInfo& request);
 
-  void SendOverWebSocket(int connection_id, const std::string& data) override;
+  void SendOverWebSocket(int connection_id, const std::string& data);
 
-  void SendResponse(
-      int connection_id,
-      const net::HttpServerResponseInfo& response,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation) override;
+  void SendResponse(int connection_id,
+                    const net::HttpServerResponseInfo& response,
+                    const net::NetworkTrafficAnnotationTag& traffic_annotation);
 
  private:
   void OnResponse(int connection_id,

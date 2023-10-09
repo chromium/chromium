@@ -31,24 +31,10 @@
 #include "chrome/test/chromedriver/session.h"
 #include "chrome/test/chromedriver/session_commands.h"
 #include "chrome/test/chromedriver/window_commands.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/selenium-atoms/atoms.h"
 
-using testing::ContainsRegex;
-using testing::Eq;
-using testing::HasSubstr;
-using testing::Optional;
-using testing::Pointee;
-
 namespace {
-
-void AssertGetStatusExtendedData(base::Value::Dict* dict) {
-  ASSERT_TRUE(dict->FindByDottedPath("os.name"));
-  ASSERT_TRUE(dict->FindByDottedPath("os.version"));
-  ASSERT_TRUE(dict->FindByDottedPath("os.arch"));
-  ASSERT_TRUE(dict->FindByDottedPath("build.version"));
-}
 
 void OnGetStatus(const Status& status,
                  std::unique_ptr<base::Value> value,
@@ -60,7 +46,10 @@ void OnGetStatus(const Status& status,
   absl::optional<bool> ready = dict->FindBool("ready");
   ASSERT_TRUE(ready.has_value() && ready.value());
   ASSERT_TRUE(dict->Find("message"));
-  AssertGetStatusExtendedData(dict);
+  ASSERT_TRUE(dict->FindByDottedPath("os.name"));
+  ASSERT_TRUE(dict->FindByDottedPath("os.version"));
+  ASSERT_TRUE(dict->FindByDottedPath("os.arch"));
+  ASSERT_TRUE(dict->FindByDottedPath("build.version"));
 }
 
 }  // namespace
@@ -68,52 +57,6 @@ void OnGetStatus(const Status& status,
 TEST(CommandsTest, GetStatus) {
   base::Value::Dict params;
   ExecuteGetStatus(params, std::string(), base::BindRepeating(&OnGetStatus));
-}
-
-namespace {
-
-void OnBidiGetStatusNoSession(const Status& status,
-                              std::unique_ptr<base::Value> value,
-                              const std::string& session_id,
-                              bool w3c_compliant) {
-  ASSERT_EQ(kOk, status.code());
-  base::Value::Dict* dict = value->GetIfDict();
-  ASSERT_TRUE(dict);
-  ASSERT_THAT(dict->FindBool("ready"), Optional(Eq(false)));
-  ASSERT_THAT(dict->FindString("message"),
-              Pointee(HasSubstr("does not yet support BiDi-only sessions")));
-  AssertGetStatusExtendedData(dict);
-}
-
-}  // namespace
-
-TEST(CommandsTest, BidiGetStatusNoSession) {
-  base::Value::Dict params;
-  ExecuteBidiGetStatus(params, std::string(),
-                       base::BindRepeating(&OnBidiGetStatusNoSession));
-}
-
-namespace {
-
-void OnBidiGetStatusWithSession(const Status& status,
-                                std::unique_ptr<base::Value> value,
-                                const std::string& session_id,
-                                bool w3c_compliant) {
-  ASSERT_EQ(kOk, status.code());
-  base::Value::Dict* dict = value->GetIfDict();
-  ASSERT_TRUE(dict);
-  ASSERT_THAT(dict->FindBool("ready"), Optional(Eq(false)));
-  ASSERT_THAT(dict->FindString("message"),
-              Pointee(HasSubstr("already connected")));
-  AssertGetStatusExtendedData(dict);
-}
-
-}  // namespace
-
-TEST(CommandsTest, BidiGetStatusWithSession) {
-  base::Value::Dict params;
-  ExecuteBidiGetStatus(params, "some_session",
-                       base::BindRepeating(&OnBidiGetStatusWithSession));
 }
 
 namespace {
