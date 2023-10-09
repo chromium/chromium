@@ -12,6 +12,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/command_buffer_id.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/gpu_fence.h"
@@ -126,7 +127,10 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   // Create a GMB here first on IO thread via sync IPC. Then create a mailbox
   // from it.
   gfx::GpuMemoryBufferHandle buffer_handle;
-  host_->CreateGpuMemoryBuffer(size, format, buffer_usage, &buffer_handle);
+  {
+    mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync_call;
+    host_->CreateGpuMemoryBuffer(size, format, buffer_usage, &buffer_handle);
+  }
 
   if (buffer_handle.is_null()) {
     LOG(ERROR) << "Buffer handle is null. Not creating a mailbox from it.";

@@ -35,6 +35,7 @@ class ScopedAllowSyncCall;
 namespace gpu {
 class CommandBufferProxyImpl;
 class GpuChannelHost;
+class SharedImageInterfaceProxy;
 }  // namespace gpu
 
 namespace ui {
@@ -129,6 +130,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   // GPU client code uses a few sync IPCs, grandfathered in from legacy IPC.
   friend class gpu::GpuChannelHost;
   friend class gpu::CommandBufferProxyImpl;
+  friend class gpu::SharedImageInterfaceProxy;
   friend class content::StreamTextureFactory;
 #if BUILDFLAG(IS_WIN)
   friend class content::DCOMPTextureFactory;
