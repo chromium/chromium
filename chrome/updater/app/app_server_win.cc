@@ -265,23 +265,8 @@ void AppServerWin::Stop() {
 }
 
 bool AppServerWin::RestoreComInterfaces(bool is_internal) {
-  VLOG(1) << __func__ << ": Subkey count for `Software\\Classes\\Interface`: "
-          << base::win::RegistryKeyIterator(
-                 UpdaterScopeToHKeyRoot(updater_scope()),
-                 L"Software\\Classes\\Interface", 0)
-                 .SubkeyCount();
-
-  if (AreComInterfacesPresent(updater_scope(), is_internal)) {
-    return true;
-  }
-
-  // Skip `DUMP_WILL_BE_CHECK` when running
-  // `IntegrationTest.UpdateAppSucceedsEvenAfterDeletingInterfaces`.
-  if (!base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_DEV_KEY, KEY_READ)
-           .HasValue(kRegValueIntegrationTestMode)) {
-    DUMP_WILL_BE_CHECK(false);
-  }
-  return InstallComInterfaces(updater_scope(), is_internal);
+  return AreComInterfacesPresent(updater_scope(), is_internal) ||
+         InstallComInterfaces(updater_scope(), is_internal);
 }
 
 HRESULT AppServerWin::RegisterClassObjects() {

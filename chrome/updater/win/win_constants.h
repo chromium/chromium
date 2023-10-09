@@ -97,9 +97,6 @@ extern const wchar_t kRegValueEnrollmentToken[];
 extern const wchar_t kRegKeyCompanyLegacyCloudManagement[];
 extern const wchar_t kRegValueCloudManagementEnrollmentToken[];
 
-#define UPDATER_DEV_KEY COMPANY_KEY L"UpdaterDev\\"
-extern const wchar_t kRegValueIntegrationTestMode[];
-
 // The name of the policy indicating that enrollment in cloud-based device
 // management is mandatory.
 extern const wchar_t kRegValueEnrollmentMandatory[];

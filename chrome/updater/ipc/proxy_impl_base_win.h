@@ -117,32 +117,6 @@ class ProxyImplBase {
 
     VLOG(2) << "Failed to query the interface: "
             << base::win::WStringFromGUID(iid) << ": " << std::hex << hr;
-    [&]() {
-      static bool dumped_once = false;
-      if (dumped_once) {
-        return;
-      }
-      dumped_once = true;
-
-      const wchar_t* hkey_root = IsSystemInstall(scope_) ? L"HKLM" : L"HKCU";
-      const wchar_t* path = IsSystemInstall(scope_)
-                                ? L"\\SOFTWARE\\WOW6432Node\\Classes"
-                                  L"\\Interface\\"
-                                : L"\\SOFTWARE\\Classes\\WOW6432Node"
-                                  L"\\Interface\\";
-      for (const auto& iid : iids_) {
-        const std::wstring reg_key =
-            base::StrCat({hkey_root, path, base::win::WStringFromGUID(iid)});
-        absl::optional<std::wstring> contents = GetRegKeyContents(reg_key);
-        LOG(ERROR) << reg_key << ": "
-                   << (contents && !base::ContainsOnlyChars(
-                                       *contents, base::kWhitespaceWide)
-                           ? *contents
-                           : L"*Missing*");
-      }
-      DUMP_WILL_BE_CHECK(false);
-    }();
-
     return base::unexpected(hr);
   }
 
