@@ -36,9 +36,6 @@
 // YES if incognito mode is forced by enterprise policy.
 @property(nonatomic, readonly, getter=isIncognitoForced) BOOL incognitoForced;
 
-// YES if the scene is presenting the signin view.
-@property(nonatomic, readonly) BOOL isPresentingSigninView;
-
 // YES if the tab grid is the main user interface at the moment.
 @property(nonatomic, readonly, getter=isTabGridVisible) BOOL tabGridVisible;
 
