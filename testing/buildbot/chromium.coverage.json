@@ -28259,9 +28259,12 @@
         "name": "extensions_browsertests",
         "swarming": {
           "dimensions": {
-            "os": "Windows-10-19045"
+            "os": "Windows-10-19045",
+            "pool": "chromium.tests.coverage",
+            "ssd": "1"
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "extensions_browsertests",
         "test_id_prefix": "ninja://extensions:extensions_browsertests/"

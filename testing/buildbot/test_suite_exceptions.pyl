@@ -2682,6 +2682,15 @@
           '--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied',
         ],
       },
+      'win10-code-coverage': {
+        'swarming': {
+          'shards': 2,
+          'dimensions': {
+            'pool': 'chromium.tests.coverage',
+            'ssd': '1',
+          },
+        }
+      },
     },
   },
   'extensions_unittests': {
