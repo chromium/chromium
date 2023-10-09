@@ -227,6 +227,21 @@ demonstrate how to bypass one of these protections then we’d like to hear abou
 it. You can see if a Safe Browsing check happened by opening
 chrome://safe-browsing before starting the download.
 
+<a name="TOC-what-about-dangerous-file-types-not-listed-in-the-file-type-policy-"></a>
+### What about dangerous file types not listed in the file type policy?
+
+The [file type
+policy](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/content/resources/download_file_types.asciipb?q=download_file_types.asciipb%20-f:%2Fgen%2F&ss=chromium)
+controls some details of which security checks to enable for a given file
+extension. Most importantly, it controls whether we contact Safe Browsing about
+a download, and whether we show a warning for all downloads of that file type.
+Starting in M74, the default for unknown file types has been to contact Safe
+Browsing. This prevents large-scale abuse from a previously unknown file type.
+Starting in M105, showing a warning for all downloads of an extension became
+reserved for exceptionally dangerous file types that can compromise a user
+without any user interaction with the file (e.g. DLL hijacking). If you discover
+a new file type that meets that condition, we’d like to hear about it.
+
 <a name="TOC-I-can-download-a-file-with-an-unsafe-extension-but-a-different-extension-or-file-type-is-shown-to-the-user-"></a>
 ### I can download a file with an unsafe extension but a different extension or file type is shown to the user - is this a security bug?
 <a name="TOC-Extensions-for-downloaded-files-are-not-shown-in-a-file-dialog-"></a>
@@ -943,4 +958,3 @@ backported. This can happen for several reasons, for example: because they
 depend upon architectural changes (e.g. breaking API changes); because the
 security improvement is a significant new feature; or because the security
 improvement is the removal of a broken feature.
-
