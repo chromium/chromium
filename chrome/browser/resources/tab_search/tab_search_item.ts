@@ -53,12 +53,18 @@ export class TabSearchItem extends TabSearchItemBase {
         value: () => loadTimeData.getBoolean('useRipples'),
       },
 
+      hideTimestamp: {
+        type: Boolean,
+        value: false,
+      },
+
       index: Number,
     };
   }
 
   data: TabData;
   private buttonRipples_: boolean;
+  hideTimestamp: boolean;
   index: number;
 
   /**

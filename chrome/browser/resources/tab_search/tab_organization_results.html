@@ -44,7 +44,7 @@
     </cr-input>
     <template is="dom-repeat" items="[[tabDatas_]]">
       <tab-search-item class="mwb-list-item" data="[[item]]"
-          on-close="onTabRemove_">
+          on-close="onTabRemove_" hide-timestamp>
       </tab-search-item>
     </template>
     <cr-button class="action-button" on-click="onCreateGroupClick_">

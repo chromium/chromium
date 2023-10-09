@@ -185,10 +185,12 @@
         hidden="[[!hasTabGroupWithTitle_(data)]]">[[data.tabGroup.title]]</div>
     <div class="separator" hidden="[[!hasTabGroupWithTitle_(data)]]">•</div>
     <div id="secondaryText"></div>
-    <div class="separator" hidden="[[!data.hostname]]">•</div>
-    <div id="secondaryTimestamp">
-      [[data.tab.lastActiveElapsedText]]
-    </div>
+    <template is="dom-if" if="[[!hideTimestamp]]">
+      <div class="separator" hidden="[[!data.hostname]]">•</div>
+      <div id="secondaryTimestamp">
+        [[data.tab.lastActiveElapsedText]]
+      </div>
+    </template>
   </div>
 </div>
 <template is="dom-if" if="[[isCloseable_(data.type)]]">
