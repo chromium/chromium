@@ -79,6 +79,8 @@ static_library("internal") {
     "//components/leveldb_proto",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   if (is_android) {
     sources += [
       "android/tracker_impl_android.cc",

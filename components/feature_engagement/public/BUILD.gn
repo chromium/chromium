@@ -45,6 +45,7 @@ source_set("public") {
     "//components/flags_ui",
     "//components/keyed_service/core",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (is_android) {
     sources += [
