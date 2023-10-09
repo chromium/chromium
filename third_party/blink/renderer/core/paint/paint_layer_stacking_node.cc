@@ -208,6 +208,10 @@ static bool OrderLessThan(const PaintLayer* first, const PaintLayer* second) {
     return false;
   }
 
+  if (first_ancestor->Parent() != second_ancestor->Parent()) {
+    return false;
+  }
+
   auto& first_style = first_ancestor->StyleRef();
   auto& second_style = second_ancestor->StyleRef();
   int first_order = 0;
