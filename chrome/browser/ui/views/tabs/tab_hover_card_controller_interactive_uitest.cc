@@ -630,16 +630,9 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
 
 // The discarded status in the hover card footer should disappear after a
 // discarded tab is reloaded
-// TODO(crbug.com/1485605): Re-enable after resolving flakiness.
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_HoverCardStopShowingDiscardStatusOnReload \
-  DISABLED_HoverCardStopShowingDiscardStatusOnReload
-#else
-#define MAYBE_HoverCardStopShowingDiscardStatusOnReload \
-  HoverCardStopShowingDiscardStatusOnReload
-#endif
+// TODO(crbug.com/1483255): Re-enable after resolving flakiness.
 IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
-                       MAYBE_HoverCardStopShowingDiscardStatusOnReload) {
+                       DISABLED_HoverCardStopShowingDiscardStatusOnReload) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetTestingURL("a.com")),
@@ -666,8 +659,9 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
 // when the memory usage data refreshes. Memory usage data should be preserved
 // and continue to show on the hover card footer when a tab with memory usage
 // data is discarded
+// TODO(crbug.com/1483255): Re-enable after resolving flakiness.
 IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
-                       HoverCardShowsMemoryOnMemoryRefresh) {
+                       DISABLED_HoverCardShowsMemoryOnMemoryRefresh) {
   constexpr char kPerformanceRowLabel[] = "performance_row_label";
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
