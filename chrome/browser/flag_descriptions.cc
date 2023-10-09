@@ -1011,10 +1011,11 @@ const char kEnableRemovingAllThirdPartyCookiesDescription[] =
     "cookies and site data.";
 
 const char kDesktopPWAsAdditionalWindowingControlsName[] =
-    "Desktop PWA Window Minimize/maximize/restore";
+    "Desktop PWA Additional Windowing Controls";
 const char kDesktopPWAsAdditionalWindowingControlsDescription[] =
-    "Enable PWAs to manually recreate the minimize, maximize and restore "
-    "window functionalities with respective APIs.";
+    "Enable PWAs to: (1) manually recreate the minimize, maximize and restore "
+    "window functionalities, (2) set windows (non-/)resizable and (3) listen "
+    "to window's move events with respective APIs.";
 
 const char kDesktopPWAsElidedExtensionsMenuName[] =
     "Desktop PWAs elided extensions menu";

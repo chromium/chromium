@@ -6646,25 +6646,28 @@ void RenderFrameHostImpl::FullscreenStateChanged(
 #if defined(USE_AURA)
 bool RenderFrameHostImpl::CanUseWindowingControls(
     base::StringPiece js_api_name) {
-  // TODO(laurila, crbug.com/1466855): Create bad_message::ENTRIES for the
-  // strings.
   if (!base::FeatureList::IsEnabled(
           blink::features::kDesktopPWAsAdditionalWindowingControls)) {
-    mojo::ReportBadMessage("API called without the feature enabled.");
+    mojo::ReportBadMessage(base::StrCat(
+        {"API called without Additional Windowing Controls feature enabled: ",
+         js_api_name}));
     return false;
   }
   if (!IsInPrimaryMainFrame()) {
-    mojo::ReportBadMessage("API called from a non-primary-main frame.");
+    mojo::ReportBadMessage(base::StrCat(
+        {"API called from a non-primary-main frame: ", js_api_name}));
     return false;
   }
   if (!IsActive()) {
+    mojo::ReportBadMessage(
+        base::StrCat({"API called from a non-active frame: ", js_api_name}));
     return false;
   }
   if (!IsWindowManagementGranted(this)) {
     mojo::ReportBadMessage(
-        base::StrCat({js_api_name,
-                      " blocked due to `window-management` permission not "
-                      "being granted."}));
+        base::StrCat({"API called without `window-management` permission "
+                      "being granted: ",
+                      js_api_name}));
     return false;
   }
   return true;
