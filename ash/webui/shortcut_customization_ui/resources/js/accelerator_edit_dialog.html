@@ -90,20 +90,20 @@
           items="[[getSortedFilteredAccelerators(acceleratorInfos)]]">
         <accelerator-edit-view class="acceleratorItem"
             accelerator-info=[[item]]
-            action=[[action]]
-            source=[[source]]>
+            action="[[action]]"
+            source="[[source]]">
+        </accelerator-edit-view>
+      </template>
+      <template id="newAccelerator" is="dom-if"
+          if="[[showNewAccelerator(pendingNewAcceleratorState, acceleratorInfos)]]"
+          restamp>
+        <accelerator-edit-view id="pendingAccelerator"
+            view-state="{{pendingNewAcceleratorState}}"
+            action="[[action]]"
+            source="[[source]]">
         </accelerator-edit-view>
       </template>
     </div>
-    <template id="newAccelerator" is="dom-if"
-        if="[[showNewAccelerator(pendingNewAcceleratorState, acceleratorInfos)]]"
-        restamp>
-      <accelerator-edit-view id="pendingAccelerator"
-          view-state="{{pendingNewAcceleratorState}}"
-          action=[[action]]
-          source=[[source]]>
-      </accelerator-edit-view>
-    </template>
     <div id="addAcceleratorContainer"
         hidden="[[!showAddButton(pendingNewAcceleratorState, acceleratorInfos,
           isAcceleratorCapturing, observableDefaultAcceleratorsWithConflict.*)]]">
