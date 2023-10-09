@@ -64,7 +64,7 @@ class CertProvisioningInvalidationHandlerTest
 
   invalidation::Invalidation CreateInvalidation(
       const invalidation::Topic& topic) {
-    return invalidation::Invalidation::InitUnknownVersion(topic);
+    return invalidation::Invalidation::Init(topic, 42, "foo");
   }
 
   invalidation::Invalidation FireInvalidation(
