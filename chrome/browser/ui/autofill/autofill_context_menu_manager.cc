@@ -9,6 +9,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
@@ -23,6 +24,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/variations/service/variations_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
@@ -78,6 +80,14 @@ base::Value::Dict LoadTriggerFormAndFieldLogs(
   return trigger_form_logs;
 }
 
+bool IsLikelyDogfoodClient() {
+  auto* variations_service = g_browser_process->variations_service();
+  if (!variations_service) {
+    return false;
+  }
+  return variations_service->IsLikelyDogfoodClient();
+}
+
 }  // namespace
 
 // static
@@ -129,7 +139,8 @@ void AutofillContextMenuManager::AppendItems() {
 
   // Includes the option of submitting feedback on Autofill.
   if (personal_data_manager_->IsAutofillEnabled() &&
-      base::FeatureList::IsEnabled(features::kAutofillFeedback)) {
+      base::FeatureList::IsEnabled(features::kAutofillFeedback) &&
+      IsLikelyDogfoodClient()) {
     menu_model_->AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
         IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,

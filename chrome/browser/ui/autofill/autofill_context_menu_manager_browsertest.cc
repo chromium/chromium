@@ -3,15 +3,20 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/autofill/autofill_context_menu_manager.h"
+
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
@@ -19,6 +24,8 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/variations/service/variations_service.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -28,6 +35,10 @@ namespace autofill {
 
 namespace {
 
+ACTION_P(QuitMessageLoop, loop) {
+  loop->Quit();
+}
+
 // Generates a ContextMenuParams for the Autofill context menu options.
 content::ContextMenuParams CreateContextMenuParams(
     absl::optional<autofill::FormRendererId> form_renderer_id = absl::nullopt,
@@ -36,8 +47,9 @@ content::ContextMenuParams CreateContextMenuParams(
   rv.is_editable = true;
   rv.page_url = GURL("http://test.page/");
   rv.input_field_type = blink::mojom::ContextMenuDataInputFieldType::kPlainText;
-  if (form_renderer_id)
+  if (form_renderer_id) {
     rv.form_renderer_id = form_renderer_id->value();
+  }
   rv.field_renderer_id = field_render_id.value();
   return rv;
 }
@@ -63,9 +75,16 @@ class MockAutofillDriver : public ContentAutofillDriver {
               (override));
 };
 
+class PersonalDataLoadedObserverMock
+    : public autofill::PersonalDataManagerObserver {
+ public:
+  MOCK_METHOD(void, OnPersonalDataChanged, (), (override));
+  MOCK_METHOD(void, OnPersonalDataFinishedProfileTasks, (), (override));
+};
+
 }  // namespace
 
-class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
+class AutofillContextMenuManagerTest : public InProcessBrowserTest {
  public:
   AutofillContextMenuManagerTest() {
     feature_.InitWithFeatures(
@@ -80,18 +99,12 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
   AutofillContextMenuManagerTest& operator=(
       const AutofillContextMenuManagerTest&) = delete;
 
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    personal_data_ = PersonalDataManagerFactory::GetForProfile(profile());
 
-    PersonalDataManagerFactory::GetInstance()->SetTestingFactory(
-        profile(), BrowserContextKeyedServiceFactory::TestingFactory());
-    NavigateAndCommit(GURL("about:blank"));
-    autofill_client()->GetPersonalDataManager()->SetPrefService(
-        profile()->GetPrefs());
-    autofill_client()->GetPersonalDataManager()->AddProfile(
-        test::GetFullProfile());
-    autofill_client()->GetPersonalDataManager()->AddCreditCard(
-        test::GetCreditCard());
+    AddAutofillProfile(test::GetFullProfile());
+    AddCreditCard(test::GetCreditCard());
 
     menu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
     render_view_context_menu_ = std::make_unique<TestRenderViewContextMenu>(
@@ -99,16 +112,69 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
     render_view_context_menu_->Init();
     autofill_context_menu_manager_ =
         std::make_unique<AutofillContextMenuManager>(
-            autofill_client()->GetPersonalDataManager(),
-            render_view_context_menu_.get(), menu_model_.get(), nullptr);
+            personal_data_, render_view_context_menu_.get(), menu_model_.get(),
+            nullptr);
     autofill_context_menu_manager()->set_params_for_testing(
         CreateContextMenuParams());
+
+    ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
   }
 
-  void TearDown() override {
+  void AddAutofillProfile(const autofill::AutofillProfile& profile) {
+    size_t profile_count = personal_data_->GetProfiles().size();
+
+    PersonalDataLoadedObserverMock personal_data_observer;
+    personal_data_->AddObserver(&personal_data_observer);
+    base::RunLoop data_loop;
+    EXPECT_CALL(personal_data_observer, OnPersonalDataFinishedProfileTasks())
+        .WillOnce(QuitMessageLoop(&data_loop));
+    EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())
+        .Times(testing::AnyNumber());
+    personal_data_->AddProfile(profile);
+    data_loop.Run();
+
+    personal_data_->RemoveObserver(&personal_data_observer);
+    EXPECT_EQ(profile_count + 1, personal_data_->GetProfiles().size());
+  }
+
+  void AddCreditCard(const autofill::CreditCard& card) {
+    if (card.record_type() != autofill::CreditCard::RecordType::kLocalCard) {
+      personal_data_->AddServerCreditCardForTest(
+          std::make_unique<autofill::CreditCard>(card));
+      return;
+    }
+    size_t card_count = personal_data_->GetCreditCards().size();
+
+    PersonalDataLoadedObserverMock personal_data_observer;
+    personal_data_->AddObserver(&personal_data_observer);
+    base::RunLoop data_loop;
+    EXPECT_CALL(personal_data_observer, OnPersonalDataFinishedProfileTasks())
+        .WillOnce(QuitMessageLoop(&data_loop));
+    EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())
+        .Times(testing::AnyNumber());
+
+    personal_data_->AddCreditCard(card);
+    data_loop.Run();
+
+    personal_data_->RemoveObserver(&personal_data_observer);
+    EXPECT_EQ(card_count + 1, personal_data_->GetCreditCards().size());
+  }
+
+  content::RenderFrameHost* main_rfh() {
+    return web_contents()->GetPrimaryMainFrame();
+  }
+
+  content::WebContents* web_contents() const {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  Profile* profile() { return browser()->profile(); }
+
+  void TearDownOnMainThread() override {
     autofill_context_menu_manager_.reset();
     render_view_context_menu_.reset();
-    ChromeRenderViewHostTestHarness::TearDown();
+    personal_data_ = nullptr;
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
  protected:
@@ -164,7 +230,9 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
     return form;
   }
 
- private:
+ protected:
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
+  raw_ptr<PersonalDataManager> personal_data_ = nullptr;
   TestAutofillClientInjector<TestContentAutofillClient>
       autofill_client_injector_;
   TestAutofillDriverInjector<MockAutofillDriver> autofill_driver_injector_;
@@ -172,19 +240,12 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<AutofillContextMenuManager> autofill_context_menu_manager_;
   base::test::ScopedFeatureList feature_;
-  test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
-
-// Tests that the Autofill context menu is correctly set up.
-TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
-  autofill_context_menu_manager()->AppendItems();
-  ASSERT_EQ(l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK),
-            menu_model()->GetLabelAt(0));
-}
 
 // Tests that the Autofill's ContentAutofillDriver is called to record metrics
 // when the context menu is triggered on a field.
-TEST_F(AutofillContextMenuManagerTest, RecordContextMenuIsShownOnField) {
+IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerTest,
+                       RecordContextMenuIsShownOnField) {
   FormRendererId form_renderer_id(test::MakeFormRendererId());
   FieldRendererId field_renderer_id(test::MakeFieldRendererId());
   autofill_context_menu_manager()->set_params_for_testing(
@@ -202,8 +263,8 @@ TEST_F(AutofillContextMenuManagerTest, RecordContextMenuIsShownOnField) {
 
 // Tests that when triggering the context menu on an ac=unrecognized field, the
 // fallback entry is part of the menu.
-TEST_F(AutofillContextMenuManagerTest,
-       AutocompleteUnrecognizedFallback_ContextMenuEntry) {
+IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerTest,
+                       AutocompleteUnrecognizedFallback_ContextMenuEntry) {
   // Simulate triggering the context menu on an ac=unrecognized field.
   FormData form = SeeAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
@@ -213,7 +274,7 @@ TEST_F(AutofillContextMenuManagerTest,
 
   // Expect to find the fallback entries at the end (after the manual fallback
   // and feedback entries).
-  ASSERT_GE(menu_model()->GetItemCount(), 3u);
+  EXPECT_GE(menu_model()->GetItemCount(), 3u);
   const size_t fallback_index = menu_model()->GetItemCount() - 3;
   EXPECT_EQ(menu_model()->GetTypeAt(fallback_index),
             ui::MenuModel::ItemType::TYPE_TITLE);
@@ -232,8 +293,8 @@ TEST_F(AutofillContextMenuManagerTest,
 // Tests that when the fallback entry for ac=unrecognized fields is selected,
 // suggestions are triggered with suggestion trigger source
 // `kManualFallbackForAutocompleteUnrecognized`.
-TEST_F(AutofillContextMenuManagerTest,
-       AutocompleteUnrecognizedFallback_TriggerSuggestions) {
+IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerTest,
+                       AutocompleteUnrecognizedFallback_TriggerSuggestions) {
   // Simulate triggering the context menu on an ac=unrecognized field.
   FormData form = SeeAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
@@ -254,8 +315,9 @@ TEST_F(AutofillContextMenuManagerTest,
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED);
 }
 
-TEST_F(AutofillContextMenuManagerTest,
-       AutocompleteUnrecognizedFallback_ExplicitlyTriggeredMetric_NotAccepted) {
+IN_PROC_BROWSER_TEST_F(
+    AutofillContextMenuManagerTest,
+    AutocompleteUnrecognizedFallback_ExplicitlyTriggeredMetric_NotAccepted) {
   // Simulate triggering the context menu on an ac=unrecognized field.
   FormData form = SeeAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
@@ -275,8 +337,9 @@ TEST_F(AutofillContextMenuManagerTest,
       "Autofill.ManualFallback.ExplicitlyTriggered.Total.Address", false, 1);
 }
 
-TEST_F(AutofillContextMenuManagerTest,
-       AutocompleteUnrecognizedFallback_ExplicitlyTriggeredMetric_Accepted) {
+IN_PROC_BROWSER_TEST_F(
+    AutofillContextMenuManagerTest,
+    AutocompleteUnrecognizedFallback_ExplicitlyTriggeredMetric_Accepted) {
   // Simulate triggering the context menu on an ac=unrecognized field.
   FormData form = SeeAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
