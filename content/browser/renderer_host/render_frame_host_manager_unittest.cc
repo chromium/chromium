@@ -1124,11 +1124,10 @@ TEST_P(RenderFrameHostManagerTest, WebUI) {
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   RenderFrameHostImpl* host = NavigateToEntry(manager, &entry);
 
-  // We commit the pending RenderFrameHost immediately because the previous
-  // RenderFrameHost was not live.  We test a case where it is live in
-  // WebUIInNewTab.
+  // The initial non-live RenderFrameHost should be reused for the new WebUI
+  // navigation.  We test a case where it is live in WebUIInNewTab.
   EXPECT_TRUE(host);
-  EXPECT_NE(initial_rfh, host);
+  EXPECT_EQ(initial_rfh, host);
   EXPECT_EQ(host, manager->current_frame_host());
   EXPECT_FALSE(GetPendingFrameHost(manager));
 
@@ -1177,10 +1176,17 @@ TEST_P(RenderFrameHostManagerTest, WebUIInNewTab) {
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   RenderFrameHostImpl* host1 = NavigateToEntry(manager1, &entry1);
 
-  // We should have a pending navigation to the WebUI RenderViewHost.
-  // It should already have bindings.
-  EXPECT_EQ(host1, GetPendingFrameHost(manager1));
-  EXPECT_NE(host1, manager1->current_frame_host());
+  // Because we've called CreateRenderView(), the initial RenderFrameHost is
+  // live prior to the navigation start, but it can still be reused for the
+  // WebUI RenderFrameHost, since it hasn't committed any navigations and it has
+  // an unassigned SiteInstance and unlocked process.  There should be no
+  // speculative RenderFrameHost.
+  EXPECT_FALSE(GetPendingFrameHost(manager1));
+  EXPECT_EQ(host1, manager1->current_frame_host());
+
+  // At this point, the initial RFH should have set the WebUI bindings.  This
+  // should happen as part of selecting that RFH for the WebUI navigation in
+  // GetFrameHostForNavigation().
   EXPECT_TRUE(host1->GetEnabledBindings() & BINDINGS_POLICY_WEB_UI);
 
   // Commit and ensure we still have bindings.
@@ -3371,11 +3377,11 @@ TEST_P(RenderFrameHostManagerTest, NavigateFromDeadRendererToWebUI) {
       );
   frame_tree_node->TakeNavigationRequest(std::move(navigation_request));
 
-  // As the initial RenderFrame was not live, the new RenderFrameHost should be
-  // made as active/current immediately along with its WebUI at request time.
+  // The initial non-live RenderFrameHost should be reused for the WebUI
+  // navigation, and it should have gotten WebUI bindings by this time.
   RenderFrameHostImpl* host = manager->current_frame_host();
   ASSERT_TRUE(host);
-  EXPECT_NE(host, initial_host);
+  EXPECT_EQ(host, initial_host);
   EXPECT_TRUE(host->IsRenderFrameLive());
   WebUIImpl* web_ui = host->web_ui();
   EXPECT_TRUE(web_ui);

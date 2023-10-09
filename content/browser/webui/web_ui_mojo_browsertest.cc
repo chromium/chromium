@@ -347,6 +347,17 @@ INSTANTIATE_TEST_SUITE_P(All, WebUIMojoTest, testing::Bool());
 // Loads a WebUI page that contains Mojo JS bindings and verifies a message
 // round-trip between the page and the browser.
 IN_PROC_BROWSER_TEST_P(WebUIMojoTest, EndToEndCommunication) {
+  // Load a dummy page in the initial RenderFrameHost.  The initial
+  // RenderFrameHost is created by the test harness prior to installing
+  // TestWebUIContentBrowserClient in WebUIMojoTest::SetUpOnMainThread().  If we
+  // were to navigate that initial RFH to WebUI directly, it would get reused,
+  // but it wouldn't have the test's browser interface binders (registered via
+  // TestWebUIContentBrowserClient::RegisterBrowserInterfaceBindersForFrame() at
+  // RFH creation time).  Navigating the initial RFH to some other page forces
+  // the subsequent WebUI navigation to create a new RenderFrameHost, and by
+  // this time, TestWebUIContentBrowserClient will take effect on that new RFH.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("data:,foo")));
+
   GURL kTestUrl(GetWebUIURL(GetMojoWebUiHost() + "/?cache"));
   const std::string kTestScript = "runTest();";
   EXPECT_TRUE(NavigateToURL(shell(), kTestUrl));
@@ -354,6 +365,7 @@ IN_PROC_BROWSER_TEST_P(WebUIMojoTest, EndToEndCommunication) {
 
   // Check that a second shell works correctly.
   Shell* other_shell = CreateBrowser();
+  EXPECT_TRUE(WaitForLoadStop(other_shell->web_contents()));
   EXPECT_TRUE(NavigateToURL(other_shell, kTestUrl));
   EXPECT_EQ(true, EvalJs(other_shell->web_contents(), kTestScript));
 
@@ -368,7 +380,14 @@ IN_PROC_BROWSER_TEST_P(WebUIMojoTest, EndToEndCommunication) {
   // limit.
   RenderProcessHost::SetMaxRendererProcessCount(1);
 
-  other_shell = CreateBrowser();
+  // Subtle: provide an explicit initial SiteInstance, since otherwise the WebUI
+  // will stay in the initial RFH's process and avoid process reuse needed for
+  // this test.
+  other_shell = Shell::CreateNewWindow(
+      shell()->web_contents()->GetBrowserContext(), GURL(),
+      SiteInstance::CreateForURL(shell()->web_contents()->GetBrowserContext(),
+                                 kTestUrl),
+      gfx::Size());
   EXPECT_TRUE(NavigateToURL(other_shell, kTestUrl));
   EXPECT_EQ(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
             other_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());

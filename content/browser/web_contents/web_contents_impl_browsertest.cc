@@ -2140,7 +2140,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
-                       NavigatingToWebUIDoesNotUsePreWarmedProcess) {
+                       NavigatingToWebUIUsesPreWarmedProcess) {
   GURL web_ui_url(std::string(kChromeUIScheme) + "://" +
                   std::string(kChromeUIGpuHost));
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -2169,8 +2169,11 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   web_contents->GetController().LoadURLWithParams(params);
   same_tab_observer.Wait();
 
-  // Check that pre-warmed process isn't used.
-  EXPECT_NE(renderer_id,
+  // Check that pre-warmed process was used.  This is possible because the
+  // initial RenderFrameHost is allowed to be reused for WebUI, even if it has a
+  // live RenderFrame, as long as its SiteInstance is unassigned and its process
+  // is unused.
+  EXPECT_EQ(renderer_id,
             web_contents->GetPrimaryMainFrame()->GetProcess()->GetID());
   EXPECT_EQ(1, web_contents->GetController().GetEntryCount());
   NavigationEntry* entry =

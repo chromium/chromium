@@ -433,17 +433,41 @@ size_t MockRenderProcessHost::GetShutdownDelayRefCount() const {
 }
 
 int MockRenderProcessHost::GetRenderFrameHostCount() const {
-  return 0;
+  return render_frame_host_id_set_.size();
 }
 
 void MockRenderProcessHost::RegisterRenderFrameHost(
-    const GlobalRenderFrameHostId& render_frame_host_id) {}
+    const GlobalRenderFrameHostId& render_frame_host_id) {
+  render_frame_host_id_set_.insert(render_frame_host_id);
+}
 
 void MockRenderProcessHost::UnregisterRenderFrameHost(
-    const GlobalRenderFrameHostId& render_frame_host_id) {}
+    const GlobalRenderFrameHostId& render_frame_host_id) {
+  render_frame_host_id_set_.erase(render_frame_host_id);
+}
 
 void MockRenderProcessHost::ForEachRenderFrameHost(
-    base::RepeatingCallback<void(RenderFrameHost*)> on_render_frame_host) {}
+    base::RepeatingCallback<void(RenderFrameHost*)> on_render_frame_host) {
+  // TODO(crbug.com/652474): Clean up MockRenderProcessHost usage and merge this
+  // implementation with RenderProcessHostImpl::ForEachRenderFrameHost().
+  for (auto rfh_id : render_frame_host_id_set_) {
+    RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(rfh_id);
+    // Note that some RenderFrameHosts in the set may not be found by FromID if
+    // we get here during their destructor (e.g., while deleting their subframe
+    // RenderFrameHosts).
+    if (!rfh) {
+      continue;
+    }
+
+    // Speculative RFHs are not exposed to //content embedders, so we have to
+    // explicitly check them here to avoid leaks.
+    if (rfh->lifecycle_state() ==
+        RenderFrameHostImpl::LifecycleStateImpl::kSpeculative) {
+      continue;
+    }
+    on_render_frame_host.Run(rfh);
+  }
+}
 
 void MockRenderProcessHost::IncrementWorkerRefCount() {
   ++worker_ref_count_;

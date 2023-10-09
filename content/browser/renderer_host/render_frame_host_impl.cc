@@ -6304,18 +6304,31 @@ void RenderFrameHostImpl::AllowBindings(int bindings_flags) {
   if (web_ui_)
     CHECK_EQ(web_ui_->GetBindings(), webui_bindings);
 
-  // Ensure we aren't granting WebUI bindings to a process that has already
-  // been used for non-privileged views.
+  // Ensure we aren't granting WebUI bindings to a process that has already been
+  // used to host other content.
   if (webui_bindings && GetProcess()->IsInitializedAndNotDead() &&
       !ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
           GetProcess()->GetID())) {
-    // This process has no bindings yet. Make sure it does not have more
-    // than this single active view.
-    // --single-process only has one renderer.
-    if (GetProcess()->GetActiveViewCount() > 1 &&
+    // This process has no bindings yet. Make sure it does not have any frames
+    // that have committed a navigation, since bindings should always be granted
+    // prior to committing the first WebUI navigation in a process.  This is a
+    // defense-in-depth check complementing the site isolation process lock
+    // checks above and in places like RenderProcessHostImpl::IsSuitableHost().
+    // --single-process only has one renderer, so it is exempt from this check.
+    size_t non_empty_frame_count = 0;
+    GetProcess()->ForEachRenderFrameHost(base::BindRepeating(
+        [](size_t& non_empty_frame_count, RenderFrameHost* rfh) {
+          if (!static_cast<RenderFrameHostImpl*>(rfh)
+                   ->is_initial_empty_document()) {
+            ++non_empty_frame_count;
+          }
+        },
+        std::ref(non_empty_frame_count)));
+    if (non_empty_frame_count > 0 &&
         !base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kSingleProcess))
+            switches::kSingleProcess)) {
       return;
+    }
   }
 
   if (webui_bindings) {
@@ -10703,6 +10716,22 @@ void RenderFrameHostImpl::SetWebUI(NavigationRequest& request) {
 
   // Verify expectation that WebUI should not be created for error pages.
   DCHECK(!GetSiteInstance()->GetSiteInfo().is_error_page());
+
+  // Ensure that the RenderFrameHost's process is locked.  Usually this happens
+  // as part of creating a speculative RFH for WebUI navigations, but it's also
+  // possible to reuse an initial RFH in an unassigned SiteInstance for a WebUI
+  // navigation. In that case, the initial RFH needs to lock its process now and
+  // also mark the process as used. The AllowBindings() call below requires that
+  // the process is properly locked to WebUI.
+  if (base::FeatureList::IsEnabled(
+          features::kReuseInitialRenderFrameHostForWebUI)) {
+    if (!GetSiteInstance()->HasSite()) {
+      // WebUI URLs should also require assigning a site.
+      CHECK(SiteInstanceImpl::ShouldAssignSiteForUrlInfo(request.GetUrlInfo()));
+      GetSiteInstance()->ConvertToDefaultOrSetSite(request.GetUrlInfo());
+    }
+    GetProcess()->SetIsUsed();
+  }
 
   WebUI::TypeID new_web_ui_type =
       WebUIControllerFactoryRegistry::GetInstance()->GetWebUIType(

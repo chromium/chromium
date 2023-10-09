@@ -2310,10 +2310,21 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
       return BrowsingContextGroupSwap::CreateSecuritySwap();
     }
   } else {
-    // Force a swap if it's a Web UI URL.
+    // Force a swap if the current frame is not WebUI but the navigation is to a
+    // Web UI URL. Exclude the case where the navigation starts from an initial
+    // RenderFrameHost in an unassigned SiteInstance and unused process, since
+    // in that case the WebUI navigation can safely reuse them.
     if (WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
             browser_context, destination_effective_url)) {
-      return BrowsingContextGroupSwap::CreateSecuritySwap();
+      bool starts_from_initial_rfh =
+          render_frame_host_->GetProcess()->IsUnused() &&
+          !current_instance->HasSite() &&
+          !render_frame_host_->has_committed_any_navigation();
+      if (!starts_from_initial_rfh ||
+          !base::FeatureList::IsEnabled(
+              features::kReuseInitialRenderFrameHostForWebUI)) {
+        return BrowsingContextGroupSwap::CreateSecuritySwap();
+      }
     }
   }
 
@@ -3061,10 +3072,10 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
                                     SiteInstanceRelation::RELATED);
     }
 
-    // For extensions, Web UI URLs (such as the new tab page), and apps we do
-    // not want to use the `current_instance` if it has no site, since it
-    // will have a non-privileged RenderProcessHost. Create a new SiteInstance
-    // for this URL instead (with the correct process type).
+    // For extensions and apps we do not want to use the `current_instance` if
+    // it has no site, since it will have a non-privileged
+    // RenderProcessHost. Create a new SiteInstance for this URL instead (with
+    // the correct process type).
     if (!current_instance->IsSuitableForUrlInfo(dest_url_info)) {
       AppendReason(reason,
                    "DetermineSiteInstanceForURL / !current->HasSite / "

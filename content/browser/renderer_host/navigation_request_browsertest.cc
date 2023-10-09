@@ -4652,18 +4652,45 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestResponseBodyBrowserTest,
   ASSERT_TRUE(manager.WaitForNavigationFinished());
 }
 
-IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+// Helper class to turn off strict site isolation, to allow testing dynamic
+// isolated origins added for future BrowsingInstances.
+class NavigationRequestNoSiteIsolationBrowserTest
+    : public NavigationRequestBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kDisableSiteIsolation);
+    command_line->RemoveSwitch(switches::kSitePerProcess);
+    NavigationRequestBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+// Test the early swap metrics logged when performing the early swap out of the
+// initial RenderFrameHost.  Currently, the vast majority of navigations are
+// allowed to reuse the initial RFH.  One exception is a navigation to a
+// future-isolated origin, which forces a BrowsingInstance swap so that the
+// isolation can take effect right away, so this is the case this test
+// exercises.
+IN_PROC_BROWSER_TEST_F(NavigationRequestNoSiteIsolationBrowserTest,
                        EarlySwapMetrics_InitialFrame) {
   base::HistogramTester histograms;
 
-  // Navigate the initial frame to a WebUI URL. Currently, the initial RFH
-  // cannot be reused for such a URL, and hence we should create a speculative
-  // RenderFrameHost and swap it in early because the initial frame is not
-  // live.
+  EXPECT_FALSE(SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
+
+  // Isolate bar.com in future BrowsingInstances.
+  GURL bar_url(embedded_test_server()->GetURL("bar.com", "/title1.html"));
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  policy->AddFutureIsolatedOrigins(
+      {url::Origin::Create(bar_url)},
+      ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
+
+  // Navigate the initial frame to bar.com which requires isolation. Currently,
+  // the isolation heuristics force a BrowsingInstance and a RenderFrameHost
+  // swap, so the initial RFH cannot be reused for such a URL, and hence we
+  // should create a speculative RenderFrameHost and swap it in early because
+  // the initial frame is not live.
   ASSERT_FALSE(
       shell()->web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive());
-  GURL web_ui_url(GetWebUIURL("gpu"));
-  ASSERT_TRUE(NavigateToURL(shell(), web_ui_url));
+  ASSERT_TRUE(NavigateToURL(shell(), bar_url));
   histograms.ExpectUniqueSample(
       "Navigation.EarlyRenderFrameHostSwapType",
       NavigationRequest::EarlyRenderFrameHostSwapType::kInitialFrame, 1);
@@ -4757,6 +4784,26 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     histograms.ExpectUniqueSample(
         "Navigation.EarlyRenderFrameHostSwap.IsInOutermostMainFrame", 0, 1);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       EarlySwapMetrics_NoSwapForWebUI) {
+  base::HistogramTester histograms;
+
+  // Navigate the initial frame to a WebUI URL. The initial RFH should be reused
+  // for such a URL, and hence there should be no early swap recorded in the
+  // metrics.
+  ASSERT_FALSE(
+      shell()->web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive());
+  GURL web_ui_url(GetWebUIURL("gpu"));
+  ASSERT_TRUE(NavigateToURL(shell(), web_ui_url));
+  histograms.ExpectUniqueSample(
+      "Navigation.EarlyRenderFrameHostSwapType",
+      NavigationRequest::EarlyRenderFrameHostSwapType::kNone, 1);
+  histograms.ExpectTotalCount(
+      "Navigation.EarlyRenderFrameHostSwap.HasCommitted", 0);
+  histograms.ExpectTotalCount(
+      "Navigation.EarlyRenderFrameHostSwap.IsInOutermostMainFrame", 0);
 }
 
 // Check the output of NavigationHandle::SandboxFlagsInitiator() when the
