@@ -16,14 +16,7 @@ class SecurityDelegate;
 class Surface;
 
 // Frame types that can be used to decorate a surface.
-enum class SurfaceFrameType {
-  NONE,
-  NORMAL,
-  SHADOW,
-  AUTOHIDE,
-  OVERLAY,
-  OVERLAP
-};
+enum class SurfaceFrameType { NONE, NORMAL, SHADOW, AUTOHIDE, OVERLAY };
 
 // Handles events on surfaces in context-specific ways.
 class SurfaceDelegate {

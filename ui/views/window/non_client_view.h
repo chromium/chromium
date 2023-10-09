@@ -86,10 +86,6 @@ class VIEWS_EXPORT NonClientFrameView : public View,
   // Return value is one of the windows HT constants (see ui/base/hit_test.h).
   virtual int NonClientHitTest(const gfx::Point& point);
 
-  // This function returns frame is overlapped with the window area, it means
-  // that the header covers the top of client view.
-  virtual bool GetFrameOverlapped() const;
-
   // Used to make the hosting widget shaped (non-rectangular). For a
   // rectangular window do nothing. For a shaped window update |window_mask|
   // accordingly. |size| is the size of the widget.

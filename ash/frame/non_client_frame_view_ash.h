@@ -96,7 +96,6 @@ class ASH_EXPORT NonClientFrameViewAsh
 
   bool GetFrameEnabled() const { return frame_enabled_; }
   virtual void SetFrameEnabled(bool enabled);
-  virtual void SetFrameOverlapped(bool overlapped);
 
   // Sets the callback to toggle the ARC++ resize-lock menu for this container
   // if applicable, which will be invoked via the keyboard shortcut.
