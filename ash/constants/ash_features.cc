@@ -512,11 +512,6 @@ BASE_FEATURE(kCrostiniMultiContainer,
              "CrostiniMultiContainer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables Crostini IME support.
-BASE_FEATURE(kCrostiniImeSupport,
-             "CrostiniImeSupport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables Crostini Qt application IME support.
 BASE_FEATURE(kCrostiniQtImeSupport,
              "CrostiniQtImeSupport",

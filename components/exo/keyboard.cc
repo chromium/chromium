@@ -103,10 +103,9 @@ bool IsImeSupportedSurface(Surface* surface) {
         static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
     switch (app_type) {
       case ash::AppType::ARC_APP:
+      case ash::AppType::CROSTINI_APP:
       case ash::AppType::LACROS:
         return true;
-      case ash::AppType::CROSTINI_APP:
-        return base::FeatureList::IsEnabled(ash::features::kCrostiniImeSupport);
       default:
         // Do nothing.
         break;
