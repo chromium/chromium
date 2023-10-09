@@ -569,6 +569,7 @@ public final class ProductionSupportedFlagList {
                     GwpAsanFeatures.GWP_ASAN_PARTITION_ALLOC, "GWP-ASan for PartitionAlloc."),
             Flag.baseFeature(CcFeatures.USE_MAP_RECT_FOR_PIXEL_MOVEMENT,
                     "Enables the usage of MapRect for computing filter pixel movement."),
+            Flag.baseFeature("UseRustJsonParser"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
