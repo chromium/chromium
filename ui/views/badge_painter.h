@@ -66,7 +66,9 @@ class VIEWS_EXPORT BadgePainter {
 
   // Highlight padding around text.
   static constexpr int kBadgeInternalPadding = 4;
-  static constexpr int kBadgeInternalPaddingTopMac = 1;
+
+  // The minimal badge height on a cocoa menu.
+  static constexpr int kBadgeMinHeightCocoa = 16;
 };
 
 }  // namespace views

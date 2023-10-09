@@ -57,18 +57,16 @@ NSImage* NewTagImage(const ui::ColorProvider* color_provider) {
 
   // 2. Calculate the size required.
 
-  NSSize badge_size = [badge_attr_string size];
-  badge_size.width = trunc(badge_size.width);
-  badge_size.height = trunc(badge_size.height);
-
-  badge_size.width += 2 * views::BadgePainter::kBadgeInternalPadding +
-                      2 * views::BadgePainter::kBadgeHorizontalMargin;
-  badge_size.height += views::BadgePainter::kBadgeInternalPaddingTopMac;
+  NSSize text_size = [badge_attr_string size];
+  NSSize canvas_size = NSMakeSize(
+      trunc(text_size.width) + 2 * views::BadgePainter::kBadgeInternalPadding +
+          2 * views::BadgePainter::kBadgeHorizontalMargin,
+      fmax(trunc(text_size.height), views::BadgePainter::kBadgeMinHeightCocoa));
 
   // 3. Craft the image.
 
   return [NSImage
-       imageWithSize:badge_size
+       imageWithSize:canvas_size
              flipped:NO
       drawingHandler:^(NSRect dest_rect) {
         NSRect badge_frame = NSInsetRect(
@@ -87,10 +85,12 @@ NSImage* NewTagImage(const ui::ColorProvider* color_provider) {
         [badge_color set];
         [rounded_badge_rect fill];
 
-        NSPoint badge_text_location = NSMakePoint(
-            NSMinX(badge_frame) + views::BadgePainter::kBadgeInternalPadding,
-            NSMinY(badge_frame) +
-                views::BadgePainter::kBadgeInternalPaddingTopMac);
+        // Place the text rect at the center of the badge frame.
+        NSPoint badge_text_location =
+            NSMakePoint(NSMinX(badge_frame) +
+                            (badge_frame.size.width - text_size.width) / 2.0,
+                        NSMinY(badge_frame) +
+                            (badge_frame.size.height - text_size.height) / 2.0);
         [badge_attr_string drawAtPoint:badge_text_location];
 
         return YES;
@@ -169,7 +169,7 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
     NSSize newTagSize = attachment.image.size;
 
     // The baseline offset of the badge image to the menu text baseline.
-    const int kBadgeBaselineOffset = features::IsChromeRefresh2023() ? -2 : -4;
+    const int kBadgeBaselineOffset = -4;
     attachment.bounds = NSMakeRect(0, kBadgeBaselineOffset, newTagSize.width,
                                    newTagSize.height);
 
