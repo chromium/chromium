@@ -983,7 +983,7 @@
   {
     "name": "calculate-native-win-occlusion",
     "owners": [ "davidbienvenu", "fdoray" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "calendar-jelly",
