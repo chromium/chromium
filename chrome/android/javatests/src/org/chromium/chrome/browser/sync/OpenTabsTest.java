@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -143,7 +142,6 @@ public class OpenTabsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @DisabledTest(message = "crbug.com/1488616")
     public void testDownloadOpenTab() {
         addFakeServerTabs(FAKE_CLIENT, URL);
         SyncTestUtil.triggerSync();
