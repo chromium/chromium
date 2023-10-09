@@ -140,25 +140,6 @@ unsigned LayoutNGTableSection::NumEffectiveColumns() const {
   return table->AbsoluteColumnToEffectiveColumn(column_count - 1) + 1;
 }
 
-// TODO(crbug.com/1079133): Used by AXLayoutObject::IsDataTable/ColumnCount,
-// verify behaviour is correct.
-unsigned LayoutNGTableSection::NumCols(unsigned row) const {
-  NOT_DESTROYED();
-  unsigned current_row = 0;
-  for (LayoutObject* layout_row = FirstChild(); layout_row;
-       layout_row = layout_row->NextSibling()) {
-    if (current_row++ == row) {
-      unsigned current_column = 0;
-      for (LayoutObject* layout_cell = FirstChild(); layout_cell;
-           layout_cell = layout_cell->NextSibling()) {
-        ++current_column;
-      }
-      return current_column;
-    }
-  }
-  return 0;
-}
-
 // TODO(crbug.com/1079133): Used by AXLayoutObject, verify behaviour is
 // correct, and if caching is required.
 unsigned LayoutNGTableSection::NumRows() const {

@@ -23,8 +23,6 @@ class CORE_EXPORT LayoutNGTableRow : public LayoutBlock {
 
   static LayoutNGTableRow* CreateAnonymousWithParent(const LayoutObject&);
 
-  bool IsEmpty() const;
-
   LayoutNGTableCell* FirstCell() const;
   LayoutNGTableCell* LastCell() const;
   LayoutNGTableRow* NextRow() const;

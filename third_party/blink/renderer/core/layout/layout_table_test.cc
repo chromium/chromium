@@ -275,7 +275,6 @@ TEST_F(LayoutTableTest, OutOfOrderHeadAndBody) {
   ASSERT_TRUE(body_section);
 
   EXPECT_EQ(head_section, table->FirstSection());
-  EXPECT_EQ(body_section, table->LastSection());
 
   EXPECT_EQ(body_section,
             table->NextSection(head_section, kDoNotSkipEmptySections));
@@ -307,7 +306,6 @@ TEST_F(LayoutTableTest, OutOfOrderFootAndBody) {
   ASSERT_TRUE(foot_section);
 
   EXPECT_EQ(body_section, table->FirstSection());
-  EXPECT_EQ(foot_section, table->LastSection());
 
   EXPECT_EQ(nullptr, table->NextSection(body_section, kSkipEmptySections));
   EXPECT_EQ(foot_section,
@@ -343,7 +341,6 @@ TEST_F(LayoutTableTest, OutOfOrderHeadFootAndBody) {
   ASSERT_TRUE(foot_section);
 
   EXPECT_EQ(head_section, table->FirstSection());
-  EXPECT_EQ(foot_section, table->LastSection());
 
   EXPECT_EQ(body_section, table->NextSection(head_section, kSkipEmptySections));
   EXPECT_EQ(foot_section, table->NextSection(body_section, kSkipEmptySections));

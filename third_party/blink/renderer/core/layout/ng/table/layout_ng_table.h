@@ -107,14 +107,12 @@ class CORE_EXPORT LayoutNGTable : public LayoutBlock {
 
   bool IsFirstCell(const LayoutNGTableCell&) const;
   LayoutNGTableSection* FirstSection() const;
-  LayoutNGTableSection* LastSection() const;
   LayoutNGTableSection* FirstNonEmptySection() const;
   LayoutNGTableSection* LastNonEmptySection() const;
   LayoutNGTableSection* NextSection(const LayoutNGTableSection*,
                                     SkipEmptySectionsValue) const;
   LayoutNGTableSection* PreviousSection(const LayoutNGTableSection*,
                                         SkipEmptySectionsValue) const;
-  LayoutNGTableSection* FirstBody() const;
 
   wtf_size_t ColumnCount() const;
 

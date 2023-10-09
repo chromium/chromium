@@ -26,11 +26,6 @@ LayoutNGTableRow* LayoutNGTableRow::CreateAnonymousWithParent(
   return new_row;
 }
 
-bool LayoutNGTableRow::IsEmpty() const {
-  NOT_DESTROYED();
-  return !FirstChild();
-}
-
 LayoutNGTableCell* LayoutNGTableRow::FirstCell() const {
   NOT_DESTROYED();
   return To<LayoutNGTableCell>(FirstChild());

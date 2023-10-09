@@ -76,8 +76,6 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutBlock {
 
   unsigned NumRows() const;
 
-  unsigned NumCols(unsigned) const;
-
   unsigned NumEffectiveColumns() const;
 
  protected:

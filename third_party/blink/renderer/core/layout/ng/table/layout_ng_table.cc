@@ -86,17 +86,6 @@ LayoutNGTableSection* LayoutNGTable::FirstSection() const {
   return nullptr;
 }
 
-LayoutNGTableSection* LayoutNGTable::LastSection() const {
-  NOT_DESTROYED();
-  NGTableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutNGTable*>(this)));
-  auto last_section = --grouped_children.end();
-  if (last_section != grouped_children.end()) {
-    return To<LayoutNGTableSection>((*last_section).GetLayoutBox());
-  }
-  return nullptr;
-}
-
 LayoutNGTableSection* LayoutNGTable::FirstNonEmptySection() const {
   NOT_DESTROYED();
   NGTableGroupedChildren grouped_children(
@@ -164,17 +153,6 @@ LayoutNGTableSection* LayoutNGTable::PreviousSection(
     }
     if (current == To<LayoutNGTableSection>(section.GetLayoutBox())) {
       found = true;
-    }
-  }
-  return nullptr;
-}
-
-LayoutNGTableSection* LayoutNGTable::FirstBody() const {
-  NOT_DESTROYED();
-  for (LayoutObject* child = FirstChild(); child;
-       child = child->NextSibling()) {
-    if (child->StyleRef().Display() == EDisplay::kTableRowGroup) {
-      return To<LayoutNGTableSection>(child);
     }
   }
   return nullptr;
