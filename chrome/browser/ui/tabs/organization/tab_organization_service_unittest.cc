@@ -57,7 +57,7 @@ class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
  private:
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
-    service_ = std::make_unique<TabOrganizationService>();
+    service_ = std::make_unique<TabOrganizationService>(profile_.get());
   }
   void TearDown() override {
     for (auto& browser : browsers_) {

@@ -10,10 +10,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
+#include "chrome/browser/ui/tabs/organization/trigger_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Browser;
 class TabOrganizationSession;
+
+namespace content {
+class BrowserContext;
+}
 
 // Provides an interface for getting Organizations for tabs.
 class TabOrganizationService : public KeyedService {
@@ -21,7 +26,7 @@ class TabOrganizationService : public KeyedService {
   using BrowserSessionMap =
       std::unordered_map<const Browser*,
                          std::unique_ptr<TabOrganizationSession>>;
-  TabOrganizationService();
+  explicit TabOrganizationService(content::BrowserContext* browser_context);
   TabOrganizationService(const TabOrganizationService&) = delete;
   TabOrganizationService& operator=(const TabOrganizationService& other) =
       delete;
@@ -53,6 +58,8 @@ class TabOrganizationService : public KeyedService {
 
   // A list of the observers of a tab organization Service.
   base::ObserverList<TabOrganizationObserver>::Unchecked observers_;
+
+  TabOrganizationTriggerObserver trigger_observer_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_ORGANIZATION_SERVICE_H_

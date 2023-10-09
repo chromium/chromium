@@ -10,7 +10,12 @@
 #include "chrome/browser/ui/tabs/organization/request_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 
-TabOrganizationService::TabOrganizationService() = default;
+TabOrganizationService::TabOrganizationService(
+    content::BrowserContext* browser_context)
+    : trigger_observer_(
+          base::BindRepeating(&TabOrganizationService::OnTriggerOccured,
+                              base::Unretained(this)),
+          browser_context) {}
 TabOrganizationService::~TabOrganizationService() = default;
 
 void TabOrganizationService::OnTriggerOccured(const Browser* browser) {

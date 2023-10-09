@@ -32,8 +32,6 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tabs/organization/metrics.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -2145,14 +2143,6 @@ void TabDragController::CompleteDrag() {
     LogTabStripOrganizationUKM(
         attached_context_->GetTabStripModel(),
         SuggestedTabStripOrganizationReason::DRAGGED_WITHIN_SAME_TABSTRIP);
-    if (features::IsTabOrganization()) {
-      Browser* browser = BrowserView::GetBrowserViewForNativeWindow(
-                             GetAttachedBrowserWidget()->GetNativeWindow())
-                             ->browser();
-      TabOrganizationService* tab_organization_service =
-          TabOrganizationServiceFactory::GetForProfile(browser->profile());
-      tab_organization_service->OnTriggerOccured(browser);
-    }
   }
 }
 

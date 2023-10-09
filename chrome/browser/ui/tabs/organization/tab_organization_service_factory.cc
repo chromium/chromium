@@ -23,7 +23,7 @@ std::unique_ptr<KeyedService>
 TabOrganizationServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   DCHECK(context);
-  return std::make_unique<TabOrganizationService>();
+  return std::make_unique<TabOrganizationService>(context);
 }
 
 // static
