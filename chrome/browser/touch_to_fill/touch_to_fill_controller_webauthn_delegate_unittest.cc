@@ -16,11 +16,11 @@
 #include "components/password_manager/content/browser/mock_keyboard_replacing_surface_visibility_controller.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
+#include "components/webauthn/android/cred_man_support.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
-#include "device/fido/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/window_android.h"
@@ -101,6 +101,8 @@ class TouchToFillControllerWebAuthnTest
 
     password_manager_launcher::
         OverrideManagePasswordWhenPasskeysPresentForTesting(false);
+    webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+        webauthn::CredManSupport::DISABLED);
 
     visibility_controller_ = std::make_unique<
         password_manager::MockKeyboardReplacingSurfaceVisibilityController>();
@@ -239,12 +241,8 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectHybrid) {
 
 TEST_F(TouchToFillControllerWebAuthnTest,
        ShowNoPasskeysSheetIfGpmNotInCredMan) {
-  webauthn::WebAuthnCredManDelegate::override_android_version_for_testing(true);
-  base::test::ScopedFeatureList feature_list;
-  base::FieldTrialParams feature_params;
-  feature_params[device::kWebAuthnAndroidGpmInCredMan.name] = "false";
-  feature_list.InitAndEnableFeatureWithParameters(
-      device::kWebAuthnAndroidCredMan, feature_params);
+  webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+      webauthn::CredManSupport::PARALLEL_WITH_FIDO_2);
 
   EXPECT_CALL(view(), Show).Times(0);
   EXPECT_CALL(jni_delegate(), Show).Times(1);
@@ -256,12 +254,8 @@ TEST_F(TouchToFillControllerWebAuthnTest,
 }
 
 TEST_F(TouchToFillControllerWebAuthnTest, ShowNothingIfGpmInCredMan) {
-  webauthn::WebAuthnCredManDelegate::override_android_version_for_testing(true);
-  base::test::ScopedFeatureList feature_list;
-  base::FieldTrialParams feature_params;
-  feature_params[device::kWebAuthnAndroidGpmInCredMan.name] = "true";
-  feature_list.InitAndEnableFeatureWithParameters(
-      device::kWebAuthnAndroidCredMan, feature_params);
+  webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+      webauthn::CredManSupport::FULL_UNLESS_INAPPLICABLE);
 
   EXPECT_CALL(view(), Show).Times(0);
   EXPECT_CALL(jni_delegate(), Show).Times(0);

@@ -6,11 +6,12 @@
 
 #include <utility>
 
-#include "base/android/build_info.h"
+#include "base/android/jni_android.h"
 #include "base/functional/callback.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/webauthn/android/cred_man_support.h"
+#include "components/webauthn/android/jni_headers/CredManSupportProvider_jni.h"
 #include "content/public/browser/web_contents.h"
-#include "device/fido/features.h"
 
 namespace content {
 class WebContents;
@@ -18,7 +19,7 @@ class WebContents;
 
 namespace webauthn {
 
-bool WebAuthnCredManDelegate::override_android_version_for_testing_ = false;
+using webauthn::CredManSupport;
 
 WebAuthnCredManDelegate::WebAuthnCredManDelegate(
     content::WebContents* web_contents) {}
@@ -75,15 +76,24 @@ void WebAuthnCredManDelegate::FillUsernameAndPassword(
 // static
 WebAuthnCredManDelegate::CredManEnabledMode
 WebAuthnCredManDelegate::CredManMode() {
-  if (!override_android_version_for_testing_ &&
-      !base::android::BuildInfo::GetInstance()->is_at_least_u()) {
-    return kNotEnabled;
+  if (!cred_man_support_.has_value()) {
+    cred_man_support_ = Java_CredManSupportProvider_getCredManSupport(
+        base::android::AttachCurrentThread());
   }
-  if (base::FeatureList::IsEnabled(device::kWebAuthnAndroidCredMan)) {
-    return device::kWebAuthnAndroidGpmInCredMan.Get() ? kAllCredMan
-                                                      : kNonGpmPasskeys;
+  switch (cred_man_support_.value()) {
+    case CredManSupport::NOT_EVALUATED:
+      NOTREACHED_NORETURN();
+    case CredManSupport::DISABLED:
+    case CredManSupport::IF_REQUIRED:
+      return CredManEnabledMode::kNotEnabled;
+    case CredManSupport::FULL_UNLESS_INAPPLICABLE:
+      return CredManEnabledMode::kAllCredMan;
+    case CredManSupport::PARALLEL_WITH_FIDO_2:
+      return CredManEnabledMode::kNonGpmPasskeys;
   }
-  return kNotEnabled;
+  return CredManEnabledMode::kNotEnabled;
 }
+
+std::optional<int> WebAuthnCredManDelegate::cred_man_support_ = absl::nullopt;
 
 }  // namespace webauthn

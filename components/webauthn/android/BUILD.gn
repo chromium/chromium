@@ -7,6 +7,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/components/webauthn/CredManSupportProvider.java",
     "java/src/org/chromium/components/webauthn/Fido2Api.java",
     "java/src/org/chromium/components/webauthn/Fido2CredentialRequest.java",
     "java/src/org/chromium/components/webauthn/InternalAuthenticator.java",
@@ -14,8 +15,16 @@ generate_jni("jni_headers") {
   ]
 }
 
+java_cpp_enum("java_enums_srcjar") {
+  sources = [ "cred_man_support.h" ]
+  visibility = [ ":*" ]
+}
+
 android_library("java") {
-  srcjar_deps = [ ":jni_headers" ]
+  srcjar_deps = [
+    ":java_enums_srcjar",
+    ":jni_headers",
+  ]
   sources = [
     "java/src/org/chromium/components/webauthn/AuthenticatorFactory.java",
     "java/src/org/chromium/components/webauthn/AuthenticatorImpl.java",
@@ -23,6 +32,7 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/Barrier.java",
     "java/src/org/chromium/components/webauthn/CredManHelper.java",
     "java/src/org/chromium/components/webauthn/CredManMetricsHelper.java",
+    "java/src/org/chromium/components/webauthn/CredManSupportProvider.java",
     "java/src/org/chromium/components/webauthn/Fido2Api.java",
     "java/src/org/chromium/components/webauthn/Fido2ApiCall.java",
     "java/src/org/chromium/components/webauthn/Fido2ApiCallHelper.java",
@@ -96,6 +106,7 @@ android_library("test_support_java") {
 
 source_set("android") {
   sources = [
+    "cred_man_support.h",
     "fido2api_native_android.cc",
     "fido2credentialrequest_native_android.cc",
     "internal_authenticator_android.cc",

@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.Parcel;
 import android.util.Pair;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -46,8 +45,6 @@ import org.chromium.device.DeviceFeatureMap;
 import org.chromium.net.GURLUtils;
 import org.chromium.url.Origin;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -72,27 +69,6 @@ public class Fido2CredentialRequest
             "One of the excluded credentials exists on the local device";
     static final String LOW_LEVEL_ERROR_MSG = "Low level error 0x6a80";
     public static final int GMSCORE_MIN_VERSION_HYBRID_API = 231206000;
-    private static final int GMSCORE_MIN_VERSION_CREDMAN = 233100000;
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({CredManSupport.NOT_EVALUATED, CredManSupport.DISABLED, CredManSupport.IF_REQUIRED,
-            CredManSupport.UNLESS_INAPPLICABLE})
-    public @interface CredManSupport {
-        // Indicates the the level of CredMan support hasn't been determined yet. This must be zero
-        // because that's the default value of a `static int`.
-        int NOT_EVALUATED = 0;
-        // Indicates that CredMan cannot be used.
-        int DISABLED = -1;
-        // Indicates that CredMan can be used if the particular request demands it.
-        int IF_REQUIRED = 1;
-        // Indicates that CredMan should be used, unless the request is incompatible. (E.g. if the
-        // request is for a non-discoverable credential in Play Services.)
-        int UNLESS_INAPPLICABLE = 2;
-    }
-
-    @VisibleForTesting
-    @CredManSupport
-    public static int sCredManSupport;
 
     private final WebAuthenticationDelegate.IntentSender mIntentSender;
     // mPlayServicesAvailable caches whether the Play Services FIDO API is
@@ -113,7 +89,6 @@ public class Fido2CredentialRequest
     private WebAuthnBrowserBridge mBrowserBridge;
     private boolean mAttestationAcceptable;
     private boolean mIsCrossOrigin;
-    private boolean mOverrideVersionCheckForTesting;
     // mIsHybridRequest is true if this request comes from a hybrid (i.e. cross-device) flow rather
     // than a WebContents. Handling the hybrid protocol can be delegated to Chrome (by Play
     // Services).
@@ -157,47 +132,31 @@ public class Fido2CredentialRequest
         mMakeCredentialCallback = null;
     }
 
-    private boolean isCredManEnabled() {
-        if (sCredManSupport == CredManSupport.NOT_EVALUATED) {
-            if (!mOverrideVersionCheckForTesting) {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    sCredManSupport = CredManSupport.DISABLED;
-                } else {
-                    int packageVersion = PackageUtils.getPackageVersion("com.google.android.gms");
-                    if (packageVersion != -1 && packageVersion < GMSCORE_MIN_VERSION_CREDMAN) {
-                        sCredManSupport = CredManSupport.DISABLED;
-                    }
-                }
-            }
-
-            if (sCredManSupport != CredManSupport.DISABLED) {
-                if (DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN)) {
-                    sCredManSupport = CredManSupport.UNLESS_INAPPLICABLE;
-                } else {
-                    sCredManSupport = CredManSupport.IF_REQUIRED;
-                }
-            }
-        }
-
-        if (sCredManSupport == CredManSupport.DISABLED) {
-            return false;
-        }
-        if (sCredManSupport == CredManSupport.UNLESS_INAPPLICABLE) {
-            return true;
-        }
-        assert (sCredManSupport == CredManSupport.IF_REQUIRED);
-        return mIsHybridRequest
-                && DeviceFeatureMap.isEnabled(
-                        DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN_FOR_HYBRID);
-    }
-
     private Barrier.Mode getBarrierMode() {
-        if (!isCredManEnabled()) return Barrier.Mode.ONLY_FIDO_2_API;
-        if (mIsHybridRequest) return Barrier.Mode.ONLY_CRED_MAN;
-        return DeviceFeatureMap.getInstance().getFieldTrialParamByFeatureAsBoolean(
-                       DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN, "gpm_in_cred_man", false)
-                ? Barrier.Mode.ONLY_CRED_MAN
-                : Barrier.Mode.BOTH;
+        @CredManSupport int support = CredManSupportProvider.getCredManSupport();
+        if (support != CredManSupport.DISABLED
+                && mIsHybridRequest
+                && DeviceFeatureMap.isEnabled(
+                        DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN_FOR_HYBRID)) {
+            return Barrier.Mode.ONLY_CRED_MAN;
+        }
+        switch (support) {
+            case CredManSupport.DISABLED:
+                return Barrier.Mode.ONLY_FIDO_2_API;
+            case CredManSupport.IF_REQUIRED:
+                if (mIsHybridRequest
+                        && DeviceFeatureMap.isEnabled(
+                                DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN_FOR_HYBRID)) {
+                    return Barrier.Mode.ONLY_CRED_MAN;
+                }
+                return Barrier.Mode.ONLY_FIDO_2_API;
+            case CredManSupport.FULL_UNLESS_INAPPLICABLE:
+                return Barrier.Mode.ONLY_CRED_MAN;
+            case CredManSupport.PARALLEL_WITH_FIDO_2:
+                return Barrier.Mode.BOTH;
+        }
+        assert support == CredManSupport.NOT_EVALUATED : "All `CredManMode`s must be handled!";
+        return Barrier.Mode.ONLY_FIDO_2_API;
     }
 
     /**
@@ -535,10 +494,6 @@ public class Fido2CredentialRequest
         mBrowserBridge = bridge;
     }
 
-    public void setOverrideVersionCheckForTesting(boolean override) {
-        mOverrideVersionCheckForTesting = override;
-    }
-
     public void setCredManHelperForTesting(CredManHelper helper) {
         mCredManHelper = helper;
     }
@@ -630,7 +585,8 @@ public class Fido2CredentialRequest
         assert options.allowCredentials.length > 0;
         assert !options.isConditional;
         assert mPlayServicesAvailable;
-        assert sCredManSupport != CredManSupport.DISABLED;
+        @CredManSupport int support = CredManSupportProvider.getCredManSupport();
+        assert support != CredManSupport.DISABLED;
 
         Fido2ApiCallHelper.getInstance().invokeFido2GetCredentials(options.relyingPartyId,
                 (credentials)
@@ -656,7 +612,8 @@ public class Fido2CredentialRequest
         assert options.allowCredentials.length > 0;
         assert !options.isConditional;
         assert mPlayServicesAvailable;
-        assert sCredManSupport != CredManSupport.DISABLED;
+        @CredManSupport int support = CredManSupportProvider.getCredManSupport();
+        assert support != CredManSupport.DISABLED;
 
         for (WebAuthnCredentialDetails credential : retrievedCredentials) {
             if (credential.mIsDiscoverable) continue;

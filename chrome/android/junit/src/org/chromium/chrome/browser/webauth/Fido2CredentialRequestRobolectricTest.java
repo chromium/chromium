@@ -44,6 +44,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.components.webauthn.Barrier;
 import org.chromium.components.webauthn.CredManHelper;
+import org.chromium.components.webauthn.CredManSupportProvider;
 import org.chromium.components.webauthn.Fido2ApiCallHelper;
 import org.chromium.components.webauthn.Fido2ApiTestHelper;
 import org.chromium.components.webauthn.Fido2CredentialRequest;
@@ -118,9 +119,6 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequestOptions = Fido2ApiTestHelper.createDefaultGetAssertionOptions();
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
 
-        // Reset any cached evaluation of whether CredMan should be supported.
-        Fido2CredentialRequest.sCredManSupport = 0;
-
         mRequest = new Fido2CredentialRequest(
                 /*intentSender=*/null);
 
@@ -138,7 +136,8 @@ public class Fido2CredentialRequestRobolectricTest {
                              any(String.class), any(Origin.class), anyBoolean()))
                 .thenReturn(new WebAuthSecurityChecksResults(AuthenticatorStatus.SUCCESS, false));
 
-        mRequest.setOverrideVersionCheckForTesting(true);
+        // Reset any cached evaluation of whether CredMan should be supported.
+        CredManSupportProvider.setupForTesting(true);
         mRequest.overrideBrowserBridgeForTesting(mBrowserBridgeMock);
         mRequest.setCredManHelperForTesting(mCredManHelperMock);
         mRequest.setBarrierForTesting(mBarrierMock);

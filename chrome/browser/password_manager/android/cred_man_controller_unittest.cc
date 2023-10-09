@@ -7,12 +7,11 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/password_manager/content/browser/mock_keyboard_replacing_surface_visibility_controller.h"
 #include "components/password_manager/core/browser/password_credential_filler.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
+#include "components/webauthn/android/cred_man_support.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
-#include "device/fido/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,6 +20,7 @@ namespace password_manager {
 using testing::_;
 using testing::Return;
 
+using webauthn::CredManSupport;
 using webauthn::WebAuthnCredManDelegate;
 using ToShowVirtualKeyboard = PasswordManagerDriver::ToShowVirtualKeyboard;
 
@@ -51,8 +51,8 @@ class CredManControllerTest : public testing::Test {
     driver_ = std::make_unique<StubPasswordManagerDriver>();
     web_authn_cred_man_delegate_ =
         std::make_unique<WebAuthnCredManDelegate>(nullptr);
-    webauthn::WebAuthnCredManDelegate::override_android_version_for_testing(
-        true);
+    WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+        CredManSupport::FULL_UNLESS_INAPPLICABLE);
   }
 
   std::unique_ptr<MockPasswordCredentialFiller> PrepareFiller() {
@@ -94,6 +94,8 @@ TEST_F(CredManControllerTest, DoesNotShowIfNonWebAuthnForm) {
 }
 
 TEST_F(CredManControllerTest, DoesNotShowIfFeatureDisabled) {
+  WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+      CredManSupport::DISABLED);
   std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
   EXPECT_CALL(visibility_controller(), SetVisible(_)).Times(0);
   EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false)));
@@ -104,8 +106,8 @@ TEST_F(CredManControllerTest, DoesNotShowIfFeatureDisabled) {
 }
 
 TEST_F(CredManControllerTest, DoesNotShowIfGpmNotInCredMan) {
-  base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
-
+  WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+      CredManSupport::PARALLEL_WITH_FIDO_2);
   std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
   EXPECT_CALL(visibility_controller(), SetVisible(_)).Times(0);
   EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false)));
@@ -116,12 +118,6 @@ TEST_F(CredManControllerTest, DoesNotShowIfGpmNotInCredMan) {
 }
 
 TEST_F(CredManControllerTest, DoesNotShowIfNoResults) {
-  base::test::ScopedFeatureList feature_list;
-  base::FieldTrialParams feature_params;
-  feature_params[device::kWebAuthnAndroidGpmInCredMan.name] = "true";
-  feature_list.InitAndEnableFeatureWithParameters(
-      device::kWebAuthnAndroidCredMan, feature_params);
-
   std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
   EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false)));
 
@@ -138,11 +134,8 @@ TEST_F(CredManControllerTest, DoesNotShowIfNoResults) {
 }
 
 TEST_F(CredManControllerTest, ShowIfResultsExist) {
-  base::test::ScopedFeatureList feature_list;
-  base::FieldTrialParams feature_params;
-  feature_params[device::kWebAuthnAndroidGpmInCredMan.name] = "true";
-  feature_list.InitAndEnableFeatureWithParameters(
-      device::kWebAuthnAndroidCredMan, feature_params);
+  WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+      CredManSupport::FULL_UNLESS_INAPPLICABLE);
   std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
 
   base::MockCallback<base::RepeatingCallback<void(bool)>>
@@ -158,11 +151,8 @@ TEST_F(CredManControllerTest, ShowIfResultsExist) {
 }
 
 TEST_F(CredManControllerTest, Fill) {
-  base::test::ScopedFeatureList feature_list;
-  base::FieldTrialParams feature_params;
-  feature_params[device::kWebAuthnAndroidGpmInCredMan.name] = "true";
-  feature_list.InitAndEnableFeatureWithParameters(
-      device::kWebAuthnAndroidCredMan, feature_params);
+  WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+      CredManSupport::FULL_UNLESS_INAPPLICABLE);
   base::HistogramTester uma_recorder;
   const std::u16string kUsername = u"test_user";
   const std::u16string kPassword = u"38kAy5Er1Sp0r38";

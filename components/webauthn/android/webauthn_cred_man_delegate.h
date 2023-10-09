@@ -77,8 +77,8 @@ class WebAuthnCredManDelegate {
   static CredManEnabledMode CredManMode();
 
 #if defined(UNIT_TEST)
-  static void override_android_version_for_testing(bool should_override) {
-    override_android_version_for_testing_ = should_override;
+  static void override_cred_man_support_for_testing(int support) {
+    cred_man_support_ = support;
   }
 #endif
 
@@ -89,10 +89,7 @@ class WebAuthnCredManDelegate {
   base::OnceCallback<void(const std::u16string&, const std::u16string&)>
       filling_callback_;
 
-  // This bool is required to override android version check in
-  // `IsCredManEnabled` because UNIT_TEST cannot be evaluated in the cc file for
-  // tests. It should be `false` for non-tests!
-  static bool override_android_version_for_testing_;
+  static std::optional<int> cred_man_support_;
 };
 
 }  // namespace webauthn

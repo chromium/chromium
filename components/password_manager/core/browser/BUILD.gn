@@ -761,7 +761,10 @@ source_set("unit_tests") {
   }
 
   if (is_android) {
-    deps += [ "//components/password_manager/core/browser:unified_password_manager_proto" ]
+    deps += [
+      "//components/password_manager/core/browser:unified_password_manager_proto",
+      "//components/webauthn/android",
+    ]
   }
 }
 
