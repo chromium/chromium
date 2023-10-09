@@ -27,6 +27,7 @@ import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.lang.ref.WeakReference;
+
 /**
  * Activity for managing downloads handled through Chrome.
  */
@@ -52,6 +53,9 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // If the profile doesn't exist, then do not perform any action.
+        if (!DownloadUtils.doesProfileExistFromIntent(getIntent())) finish();
 
         mCurrentUrl = savedInstanceState == null
                 ? UrlConstants.DOWNLOADS_URL
