@@ -177,6 +177,8 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAN_UP_STORAGE_TITLE},
       {"googleDriveOfflineCleanStorageDialogBody",
        IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAN_UP_STORAGE_BODY},
+      {"googleDriveCleanUpStorageDisabledFileSyncTooltip",
+       IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAN_UP_STORAGE_DISABLED_FILE_SYNC_TOOLTIP},
       {"googleDriveCleanUpStorageDisabledTooltip",
        IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAN_UP_STORAGE_DISABLED_TOOLTIP},
       {"googleDriveCleanUpStorageDisabledUnknownStorageTooltip",

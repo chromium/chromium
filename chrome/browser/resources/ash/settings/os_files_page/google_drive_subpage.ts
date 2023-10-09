@@ -394,6 +394,11 @@ export class SettingsGoogleDriveSubpageElement extends
           'googleDriveCleanUpStorageDisabledUnknownStorageTooltip');
     }
 
+    if (this.getPref(GOOGLE_DRIVE_BULK_PINNING_PREF).value &&
+        this.contentCacheSize_ !== '0 B') {
+      return this.i18n('googleDriveCleanUpStorageDisabledFileSyncTooltip');
+    }
+
     return this.i18n('googleDriveCleanUpStorageDisabledTooltip');
   }
 
