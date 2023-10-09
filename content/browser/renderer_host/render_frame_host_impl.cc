@@ -3205,6 +3205,13 @@ void RenderFrameHostImpl::RenderProcessGone(
   ResetOwnedNavigationRequests(NavigationDiscardReason::kRenderProcessGone);
   ResetLoadingState();
 
+  // Also, clear any pending navigations that have been blocked while the
+  // embedder is processing window.open() requests.  This is consistent
+  // with clearing NavigationRequests and loading state above, and it also
+  // makes sense because certain parts of `pending_navigate_`, like the
+  // NavigationClient remote interface, can no longer be used.
+  pending_navigate_.reset();
+
   // Any future UpdateState or UpdateTitle messages from this or a recreated
   // process should be ignored until the next commit.
   set_nav_entry_id(0);
@@ -3713,14 +3720,25 @@ void RenderFrameHostImpl::Init() {
     // BeginNavigation() should only be triggered when the navigation is
     // initiated by a document in the same process.
     const int initiator_process_id = GetProcess()->GetID();
+
+    // Transfer `pending_navigate_` to a local variable, to avoid resetting it
+    // after OnBeginNavigation since `this` might already be destroyed (see
+    // below).
+    //
+    // This shouldn't matter for early RFH swaps out of crashed frames, since
+    // `pending_navigate_` is cleared when the renderer process dies, but it
+    // may matter for other current/future use cases of the early RFH swap.
+    std::unique_ptr<PendingNavigation> pending_navigation =
+        std::move(pending_navigate_);
     frame_tree_node()->navigator().OnBeginNavigation(
-        frame_tree_node(), std::move(pending_navigate_->common_params),
-        std::move(pending_navigate_->begin_navigation_params),
-        std::move(pending_navigate_->blob_url_loader_factory),
-        std::move(pending_navigate_->navigation_client),
+        frame_tree_node(), std::move(pending_navigation->common_params),
+        std::move(pending_navigation->begin_navigation_params),
+        std::move(pending_navigation->blob_url_loader_factory),
+        std::move(pending_navigation->navigation_client),
         EnsurePrefetchedSignedExchangeCache(), initiator_process_id,
-        std::move(pending_navigate_->renderer_cancellation_listener));
-    pending_navigate_.reset();
+        std::move(pending_navigation->renderer_cancellation_listener));
+    // DO NOT ADD CODE after this, as `this` might be deleted if an early
+    // RenderFrameHost swap was performed when starting the navigation above.
   }
 }
 

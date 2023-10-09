@@ -80,6 +80,7 @@
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/mock_client_hints_controller_delegate.h"
 #include "content/public/test/mock_web_contents_observer.h"
+#include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/resource_load_observer.h"
@@ -5572,6 +5573,63 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
       ->InitializeMainRenderFrameForImmediateUse();
   frame_created_obs.WaitForRenderFrameCreated();
   EXPECT_FALSE(shell()->web_contents()->IsCrashed());
+}
+
+// Check that there's no crash if a new window is set to defer navigations (for
+// example, this is done on Android Webview and for <webview> guests), then the
+// renderer process crashes while there's a deferred new window navigation in
+// place, and then navigations are resumed. Prior to fixing
+// https://crbug.com/1487110, the deferred navigation was allowed to proceed,
+// performing an early RenderFrameHost swap and hitting a bug while clearing
+// the deferred navigation state. Now, the deferred navigation should be
+// canceled when the renderer process dies.
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       DeferredWindowOpenNavigationIsResumedWithEarlySwap) {
+  // Force WebContents in a new Shell to defer new navigations until the
+  // delegate is set.
+  shell()->set_delay_popup_contents_delegate_for_testing(true);
+
+  // Load an initial page.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Open a popup to a same-site URL via window.open.
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.open($1);", url)));
+  Shell* new_shell = new_shell_observer.GetShell();
+  WebContents* new_contents = new_shell->web_contents();
+
+  // The navigation in the new popup should be deferred.
+  EXPECT_TRUE(WaitForLoadStop(new_contents));
+  EXPECT_TRUE(new_contents->GetController().IsInitialBlankNavigation());
+  EXPECT_TRUE(new_contents->GetLastCommittedURL().is_empty());
+
+  // Set the new shell's delegate now.  This doesn't resume the navigation just
+  // yet.
+  EXPECT_FALSE(new_contents->GetDelegate());
+  new_contents->SetDelegate(new_shell);
+
+  // Crash the renderer process.  This should clear the deferred navigation
+  // state.  If this wasn't done due to a bug, it would also force the resumed
+  // navigation to use the early RenderFrameHost swap.
+  {
+    RenderProcessHost* popup_process =
+        new_contents->GetPrimaryMainFrame()->GetProcess();
+    RenderProcessHostWatcher crash_observer(
+        popup_process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    EXPECT_TRUE(popup_process->Shutdown(0));
+    crash_observer.Wait();
+  }
+
+  // Resume the navigation and verify that it gets canceled.  Ensure this
+  // doesn't crash.
+  NavigationHandleObserver handle_observer(new_contents, url);
+  new_contents->ResumeLoadingCreatedWebContents();
+  EXPECT_TRUE(WaitForLoadStop(new_contents));
+  EXPECT_FALSE(handle_observer.has_committed());
+  EXPECT_TRUE(new_contents->GetController().IsInitialBlankNavigation());
+  EXPECT_TRUE(new_contents->GetLastCommittedURL().is_empty());
 }
 
 namespace {

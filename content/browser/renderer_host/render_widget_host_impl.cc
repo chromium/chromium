@@ -758,9 +758,15 @@ void RenderWidgetHostImpl::RendererWidgetCreated(bool for_frame_widget) {
 }
 
 void RenderWidgetHostImpl::Init() {
-  DCHECK(renderer_widget_created_);
-  DCHECK(waiting_for_init_);
+  // Note that this may be called after a renderer crash. In this case, we can
+  // just exit early, as there is nothing else to do.  Note that
+  // `waiting_for_init_` should've already been reset to false in that case.
+  if (!renderer_widget_created_) {
+    DCHECK(!waiting_for_init_);
+    return;
+  }
 
+  DCHECK(waiting_for_init_);
   waiting_for_init_ = false;
 
   // These two methods avoid running while we are `waiting_for_init_`, so we
@@ -2273,6 +2279,10 @@ void RenderWidgetHostImpl::RendererExited() {
   waiting_for_init_ = false;
 
   blink_widget_.reset();
+
+  // No need to perform a deferred show after the renderer crashes, and this
+  // wouldn't work anyway as it requires a valid `blink_widget_`.
+  pending_show_params_.reset();
 
   // After the renderer crashes, the view is destroyed and so the
   // RenderWidgetHost cannot track its visibility anymore. We assume such
