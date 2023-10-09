@@ -5,15 +5,22 @@
 package org.chromium.chrome.browser.page_insights;
 
 import android.content.Context;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-
 import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.Callback;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.SpanApplier;
 
 public class PageInsightsSheetContent implements BottomSheetContent {
     /** Ratio of the height when in full mode. */
@@ -21,12 +28,14 @@ public class PageInsightsSheetContent implements BottomSheetContent {
 
     private ViewGroup mToolbarView;
     private ViewGroup mSheetContentView;
+    private final SharedPreferencesManager mSharedPreferencesManager =
+            ChromeSharedPreferences.getInstance();
 
     /**
      * Constructor.
      * @param context An Android context.
      */
-    public PageInsightsSheetContent(Context context) {
+    public PageInsightsSheetContent(Context context, Callback<View> myActivityUrlCallback) {
         // TODO(kamalchoudhury): Inflate with loading indicator instead
         mToolbarView = (ViewGroup) LayoutInflater.from(context).inflate(
             R.layout.page_insights_sheet_toolbar, null);
@@ -35,6 +44,7 @@ public class PageInsightsSheetContent implements BottomSheetContent {
             .setOnClickListener((view)-> onBackButtonPressed());
         mSheetContentView = (ViewGroup) LayoutInflater.from(context).inflate(
                 R.layout.page_insights_sheet_content, null);
+        preparePrivacyNotice(context, myActivityUrlCallback);
     }
 
     @Override
@@ -141,6 +151,9 @@ public class PageInsightsSheetContent implements BottomSheetContent {
         setVisibilityById(mToolbarView, R.id.page_insights_child_page_header, View.GONE);
         setVisibilityById(mSheetContentView, R.id.page_insights_feed_content, View.VISIBLE);
         setVisibilityById(mSheetContentView, R.id.page_insights_child_content, View.GONE);
+        if (shouldShowPrivacyNotice()) {
+            setVisibilityById(mSheetContentView, R.id.page_insights_privacy_notice, View.VISIBLE);
+        }
     }
 
     void setFeedPage(View feedPageView) {
@@ -165,5 +178,29 @@ public class PageInsightsSheetContent implements BottomSheetContent {
 
     private void setVisibilityById(ViewGroup mViewGroup, int id, int visibility) {
         mViewGroup.findViewById(id).setVisibility(visibility);
+    }
+
+    private boolean shouldShowPrivacyNotice() {
+        return !mSharedPreferencesManager.readBoolean(
+                ChromePreferenceKeys.PIH_PRIVACY_NOTICE_CLOSED, false);
+    }
+
+    private void onPrivacyNoticeClosed() {
+        mSharedPreferencesManager.writeBoolean(
+                ChromePreferenceKeys.PIH_PRIVACY_NOTICE_CLOSED, true);
+        setVisibilityById(mSheetContentView, R.id.page_insights_privacy_notice, View.GONE);
+    }
+
+    private void preparePrivacyNotice(Context context, Callback<View> myActivityUrlCallback) {
+        mSheetContentView.findViewById(R.id.page_insights_privacy_notice_close_button)
+                .setOnClickListener((view) -> onPrivacyNoticeClosed());
+        TextView privacyNoticeMessage =
+                mSheetContentView.findViewById(R.id.page_insights_privacy_notice_message);
+        privacyNoticeMessage.setMovementMethod(LinkMovementMethod.getInstance());
+        privacyNoticeMessage.setText(
+                SpanApplier.applySpans(context.getString(R.string.page_insights_hub_privacy_notice),
+                        new SpanApplier.SpanInfo("<link>", "</link>",
+                                new NoUnderlineClickableSpan(context, R.color.default_bg_color_blue,
+                                        myActivityUrlCallback))));
     }
 }

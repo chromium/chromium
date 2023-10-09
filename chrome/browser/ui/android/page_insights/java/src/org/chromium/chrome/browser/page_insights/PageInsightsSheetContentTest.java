@@ -15,6 +15,7 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -22,10 +23,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -80,7 +84,7 @@ public class PageInsightsSheetContentTest {
 
         mTestSupport = new BottomSheetTestSupport(mBottomSheetController);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSheetContent = new PageInsightsSheetContent(sTestRule.getActivity());
+            mSheetContent = new PageInsightsSheetContent(sTestRule.getActivity(), view -> {});
             mBottomSheetController.requestShowContent(mSheetContent, false);
         });
     }
@@ -203,6 +207,46 @@ public class PageInsightsSheetContentTest {
                     getToolbarViewById(R.id.page_insights_child_page_header).getVisibility());
             assertEquals(View.GONE,
                     getContentViewById(R.id.page_insights_child_content).getVisibility());
+        });
+    }
+
+    @Test
+    @MediumTest
+    public void privacyNoticeShownForFirstTime() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mSheetContent.showFeedPage();
+            assertEquals(View.VISIBLE,
+                    getContentViewById(R.id.page_insights_privacy_notice).getVisibility());
+        });
+    }
+
+    @Test
+    @MediumTest
+    public void privacyNoticeCloseButtonPressed() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mSheetContent.showFeedPage();
+            getContentViewById(R.id.page_insights_privacy_notice_close_button).performClick();
+            SharedPreferencesManager sharedPreferencesManager =
+                    ChromeSharedPreferences.getInstance();
+
+            Assert.assertTrue(sharedPreferencesManager.readBoolean(
+                    ChromePreferenceKeys.PIH_PRIVACY_NOTICE_CLOSED, false));
+            assertEquals(View.GONE,
+                    getContentViewById(R.id.page_insights_privacy_notice).getVisibility());
+        });
+    }
+
+    @Test
+    @MediumTest
+    public void sharedPreferenceSetTruePrivacyNoticeNotShown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            SharedPreferencesManager sharedPreferencesManager =
+                    ChromeSharedPreferences.getInstance();
+            sharedPreferencesManager.writeBoolean(
+                    ChromePreferenceKeys.PIH_PRIVACY_NOTICE_CLOSED, true);
+            mSheetContent.showFeedPage();
+            assertEquals(View.GONE,
+                    getContentViewById(R.id.page_insights_privacy_notice).getVisibility());
         });
     }
 

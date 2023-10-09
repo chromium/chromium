@@ -40,6 +40,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
@@ -148,7 +150,8 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             BrowserControlsSizer browserControlsSizer, BooleanSupplier isPageInsightsHubEnabled,
             long firstLoadTimeMs) {
         mContext = context;
-        mSheetContent = new PageInsightsSheetContent(mContext);
+        mSheetContent =
+                new PageInsightsSheetContent(mContext, view -> loadMyActivityUrl(tabObservable));
         mSheetController = bottomSheetController;
         mBottomUiController = bottomUiController;
         mCurrentTime = System::currentTimeMillis;
@@ -319,6 +322,13 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                 mSheetContent.showChildPage(
                         getXSurfaceView(currPage.getElementsOutput()), currPage.getTitle());
             }
+        }
+    }
+
+    private void loadMyActivityUrl(Supplier<Tab> currTabObserver) {
+        Tab currTab = currTabObserver.get();
+        if (currTab != null) {
+            currTab.loadUrl(new LoadUrlParams(UrlConstants.MY_ACTIVITY_HOME_URL));
         }
     }
 
