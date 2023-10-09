@@ -734,7 +734,24 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
       focusableElements.push(moreOptionsButton);
     }
 
-    this.onKeyDown_(e, focusableElements);
+    if (!this.maybeUpdateTabIndex_(e, focusableElements)) {
+      this.onKeyDown_(e, focusableElements);
+    }
+  }
+
+  // When the user tabs away from the toolbar and then tabs back, we want to
+  // focus the last focused item in the toolbar
+  private maybeUpdateTabIndex_(
+      e: KeyboardEvent, focusableElements: HTMLElement[]): boolean {
+    if (e.key !== 'Tab') {
+      return false;
+    }
+
+    const target = e.target as HTMLElement;
+    focusableElements.forEach(el => {
+      el.tabIndex = (el.id === target.id) ? 0 : -1;
+    });
+    return true;
   }
 
   private onFontSizeMenuKeyDown_(e: KeyboardEvent) {
