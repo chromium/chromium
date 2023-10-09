@@ -1092,6 +1092,63 @@ bool IsSharedStorageWritableForNavigationRequest(FrameTreeNode* frame_tree_node,
       blink::mojom::PermissionsPolicyFeature::kSharedStorage, origin);
 }
 
+absl::optional<base::SafeRef<RenderFrameHostImpl>>
+GetRenderFrameHostForBackForwardCacheRestore(FrameTreeNode* frame_tree_node,
+                                             NavigationEntryImpl* entry) {
+  if (!entry) {
+    return absl::nullopt;
+  }
+
+  auto restored_entry = frame_tree_node->navigator()
+                            .controller()
+                            .GetBackForwardCache()
+                            .GetOrEvictEntry(entry->GetUniqueID());
+  if (!restored_entry.has_value()) {
+    // If there is no active BFCache entry, we can't use the RFH from the
+    // BFCache entry for the history navigation.
+    return absl::nullopt;
+  }
+
+  RenderFrameHostImpl* restored_rfh =
+      restored_entry.value()->render_frame_host();
+
+  // If there is an ongoing BFCache NavigationRequest with the same entry, that
+  // NavigationRequest will be cancelled, and trigger an eviction from the
+  // NavigationRequest destructor (see comment there for details). So, we can't
+  // restore the to-be-evicted entry anymore.
+  NavigationRequest* previous_navigation_request =
+      frame_tree_node->navigation_request();
+  if (previous_navigation_request &&
+      previous_navigation_request->IsServedFromBackForwardCache() &&
+      previous_navigation_request
+              ->GetRenderFrameHostRestoredFromBackForwardCache() ==
+          restored_rfh) {
+    // Since the BFCache entry won't be restored, we evict it here with
+    // `kNavigationCancelledWhileRestoring` so that the NavigationRequest
+    // won't end up with not restored with no reason (or `Unknown` will be
+    // added instead).
+    // TODO(crbug.com/1487883): Only evict BFCache if the
+    // `BackForwardCacheCommitDeferringCondition`, which unfreezes the
+    // page and disables the eviction on the renderer side, is completed.
+    restored_rfh->EvictFromBackForwardCacheWithReason(
+        BackForwardCacheMetrics::NotRestoredReason::
+            kNavigationCancelledWhileRestoring);
+    return absl::nullopt;
+  }
+
+  if (!frame_tree_node->IsMainFrame()) {
+    // We have a matching BFCache entry for a subframe navigation. This
+    // shouldn't happen as we should've triggered deletion of BFCache
+    // entries that have the same BrowsingInstance as the current document.
+    // See https://crbug.com/1250111.
+    CaptureTraceForNavigationDebugScenario(
+        DebugScenario::kDebugBackForwardCacheEntryExistsOnSubframeHistoryNav);
+    return absl::nullopt;
+  }
+
+  return restored_rfh->GetSafeRef();
+}
+
 }  // namespace
 
 NavigationRequest::PrerenderActivationNavigationState::
@@ -1177,29 +1234,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
     navigation_params->skip_service_worker = true;
   }
 
-  absl::optional<base::SafeRef<RenderFrameHostImpl>>
-      rfh_restored_from_back_forward_cache = absl::nullopt;
-  if (entry) {
-    auto restored_entry = frame_tree_node->navigator()
-                              .controller()
-                              .GetBackForwardCache()
-                              .GetOrEvictEntry(entry->GetUniqueID());
-    if (restored_entry.has_value()) {
-      if (frame_tree_node->IsMainFrame()) {
-        rfh_restored_from_back_forward_cache =
-            restored_entry.value()->render_frame_host()->GetSafeRef();
-      } else {
-        // We have a matching BFCache entry for a subframe navigation. This
-        // shouldn't happen as we should've triggered deletion of BFCache
-        // entries that have the same BrowsingInstance as the current document.
-        // See https://crbug.com/1250111.
-        CaptureTraceForNavigationDebugScenario(
-            DebugScenario::
-                kDebugBackForwardCacheEntryExistsOnSubframeHistoryNav);
-      }
-    }
-  }
-
   scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory;
   if (frame_entry) {
     blob_url_loader_factory = frame_entry->blob_url_loader_factory();
@@ -1229,8 +1263,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
       std::move(navigation_ui_data), std::move(blob_url_loader_factory),
       mojo::NullAssociatedRemote(),
       nullptr /* prefetched_signed_exchange_cache */,
-      rfh_restored_from_back_forward_cache, initiator_process_id,
-      was_opener_suppressed, is_pdf,
+      GetRenderFrameHostForBackForwardCacheRestore(frame_tree_node, entry),
+      initiator_process_id, was_opener_suppressed, is_pdf,
       is_embedder_initiated_fenced_frame_navigation,
       mojo::NullReceiver() /* renderer_cancellation_listener */,
       embedder_shared_storage_context));
@@ -2162,6 +2196,9 @@ NavigationRequest::~NavigationRequest() {
           // rfh is still in the cache so the navigation must have failed. But
           // we have already disabled eviction so the safest thing to do here to
           // recover is to evict.
+          // TODO(crbug.com/1487883): Only evict BFCache if the
+          // `BackForwardCacheCommitDeferringCondition`, which unfreezes the
+          // page and disables the eviction on the renderer side, is completed.
           rfh->EvictFromBackForwardCacheWithReason(
               BackForwardCacheMetrics::NotRestoredReason::
                   kNavigationCancelledWhileRestoring);

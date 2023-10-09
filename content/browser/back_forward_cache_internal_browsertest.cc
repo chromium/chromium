@@ -3402,6 +3402,43 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectRestored(FROM_HERE);
 }
 
+// Test that when two back navigations are created to the same history entry one
+// after another without waiting for the first one to commit, the second one
+// should be committed as a normal back navigation without restoring the BFCache
+// entry.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       TwoBackNavigationsToTheSameEntry) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to a cacheable page A.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // 2) Navigate away.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), url_b);
+
+  // Page A should be in BFCache.
+  EXPECT_FALSE(rfh_a.IsDestroyed());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 3) Navigate back to A, but before the `CommitDeferringCondition` check
+  // happens, start another navigation back to the same entry A.
+  TestActivationManager activation_manager(web_contents(), url_a);
+  web_contents()->GetController().GoBack();
+  ASSERT_TRUE(activation_manager.WaitForAfterChecks());
+  ASSERT_TRUE(HistoryGoToIndex(web_contents(), 0));
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), url_a);
+
+  // 4) Page A should not be restored from BFCache because the first navigation
+  // is cancelled and the second navigation should be a non-BFCache navigation.
+  ExpectNotRestored({NotRestoredReason::kNavigationCancelledWhileRestoring}, {},
+                    {}, {}, {}, FROM_HERE);
+}
+
 // Injects a blank subframe into the current document just before processing
 // DidCommitNavigation for a specified URL.
 class InjectCreateChildFrame : public DidCommitNavigationInterceptor {

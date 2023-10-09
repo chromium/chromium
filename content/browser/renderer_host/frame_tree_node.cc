@@ -598,6 +598,17 @@ void FrameTreeNode::TakeNavigationRequest(
   // initiated previously.
   CancelRestartingBackForwardCacheNavigation();
 
+  // If `navigation_request` is a BFCache navigation, the RFH for BFCache
+  // restore should not be evicted before.
+  // This CHECK is added with the fix of https://crbug.com/1468984. See
+  // `BackForwardCacheBrowserTest.TwoBackNavigationsToTheSameEntry` for how
+  // BFCache entry could be evicted before the BFCache `NavigationRequest`
+  // is moved to the FrameTreeNode without the fix.
+  if (navigation_request->IsServedFromBackForwardCache()) {
+    CHECK(!navigation_request->GetRenderFrameHostRestoredFromBackForwardCache()
+               ->is_evicted_from_back_forward_cache());
+  }
+
   navigation_request_ = std::move(navigation_request);
   if (was_discarded_) {
     navigation_request_->set_was_discarded();
