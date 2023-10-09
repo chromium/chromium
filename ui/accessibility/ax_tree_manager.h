@@ -41,6 +41,9 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // in any AXTreeManager.
   static void SetFocusChangeCallbackForTesting(base::RepeatingClosure callback);
 
+  AXTreeManager();
+  explicit AXTreeManager(std::unique_ptr<AXTree> tree);
+
   AXTreeManager(const AXTreeManager&) = delete;
   AXTreeManager& operator=(const AXTreeManager&) = delete;
 
@@ -144,9 +147,6 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // It should be made private once that class is removed.
   // TODO(crbug.com/1468416): Make private.
   static AXTreeManagerMap& GetMap();
-
-  AXTreeManager();
-  explicit AXTreeManager(std::unique_ptr<AXTree> tree);
 
   virtual AXTreeManager* GetParentManager() const;
 

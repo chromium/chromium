@@ -21,6 +21,13 @@ class AXPlatformNodeDelegate;
 class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManager
     : public AXTreeManager {
  public:
+  AXPlatformTreeManager() = default;
+  explicit AXPlatformTreeManager(std::unique_ptr<AXTree> tree)
+      : AXTreeManager(std::move(tree)) {}
+  AXPlatformTreeManager(const AXPlatformTreeManager&) = delete;
+  AXPlatformTreeManager& operator=(const AXPlatformTreeManager&) = delete;
+  ~AXPlatformTreeManager() override = default;
+
   // Returns an AXPlatformNode with the specified and |node_id|.
   virtual AXPlatformNode* GetPlatformNodeFromTree(
       const AXNodeID node_id) const = 0;
@@ -33,10 +40,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManager
   virtual AXPlatformNodeDelegate* RootDelegate() const = 0;
 
   bool IsPlatformTreeManager() const override;
-
- protected:
-  explicit AXPlatformTreeManager(std::unique_ptr<AXTree> tree)
-      : AXTreeManager(std::move(tree)) {}
 };
 
 }  // namespace ui
