@@ -57,7 +57,7 @@ testcase.breadcrumbsDownloadsTranslation = async () => {
 
   // Expand Downloads folder.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  directoryTree.expandTreeItemByPath('/Downloads');
+  await directoryTree.expandTreeItemByPath('/Downloads');
 
   // Navigate to Downloads/photos.
   await directoryTree.selectItemByPath('/Downloads/photos');

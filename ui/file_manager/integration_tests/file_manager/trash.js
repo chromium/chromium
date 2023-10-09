@@ -680,7 +680,7 @@ testcase.trashDragDropRootPerformsTrashAction = async () => {
 
   // Wait for the directory tree target.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  directoryTree.waitForItemByLabel('Trash');
+  await directoryTree.waitForItemByLabel('Trash');
 
   // Send a dragdrop event to the target to start a trash operation.
   await directoryTree.dragFilesToItemByLabel(
@@ -719,7 +719,7 @@ testcase.trashDragDropNonModifiableEntriesCantBeTrashed = async () => {
   await remoteCall.waitAndClickElement(appId, source);
 
   // Wait for the directory tree target.
-  directoryTree.waitForItemByLabel('Trash');
+  await directoryTree.waitForItemByLabel('Trash');
 
   // Send a dragdrop event to the target to try Trash the downloads folder.
   await directoryTree.dragFilesToItemByLabel(

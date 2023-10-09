@@ -220,7 +220,7 @@ testcase.providerEject = async () => {
 
   // Click to eject Test (1) provider/volume.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  directoryTree.ejectItemByType('provided');
+  await directoryTree.ejectItemByType('provided');
 
   // Wait a11y-msg to have some text.
   await remoteCall.waitForElement(appId, '#a11y-msg:not(:empty)');
