@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/json/json_writer.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,14 +16,27 @@ namespace remoting {
 
 namespace {
 
-const char* kTestConfig =
-    "{\n"
-    "  \"xmpp_login\" : \"test@gmail.com\",\n"
-    "  \"oauth_refresh_token\" : \"TEST_REFRESH_TOKEN\",\n"
-    "  \"host_id\" : \"TEST_HOST_ID\",\n"
-    "  \"host_name\" : \"TEST_MACHINE_NAME\",\n"
-    "  \"private_key\" : \"TEST_PRIVATE_KEY\"\n"
-    "}\n";
+constexpr char kXmppLoginValue[] = "test@gmail.com";
+constexpr char kHostIdValue[] = "TEST_HOST_ID";
+constexpr char kHostNameValue[] = "TEST_MACHINE_NAME";
+constexpr char kRefreshTokenValue[] = "TEST_REFRESH_TOKEN";
+constexpr char kPrivateKeyValue[] = "TEST_PRIVATE_KEY";
+
+constexpr char kNewRefreshTokenValue[] = "NEW_REFRESH_TOKEN";
+
+auto kTestConfig = base::Value::Dict()
+                       .Set(kXmppLoginConfigPath, kXmppLoginValue)
+                       .Set(kOAuthRefreshTokenConfigPath, kRefreshTokenValue)
+                       .Set(kHostIdConfigPath, kHostIdValue)
+                       .Set(kHostNameConfigPath, kHostNameValue)
+                       .Set(kPrivateKeyConfigPath, kPrivateKeyValue);
+
+void WriteTestFile(const base::FilePath& filename,
+                   const base::Value::Dict& file_contents) {
+  auto json = base::WriteJson(file_contents);
+  ASSERT_TRUE(json.has_value());
+  base::WriteFile(filename, json.value());
+}
 
 }  // namespace
 
@@ -33,10 +47,6 @@ class HostConfigTest : public testing::Test {
 
  protected:
   HostConfigTest() = default;
-
-  static void WriteTestFile(const base::FilePath& filename) {
-    base::WriteFile(filename, kTestConfig);
-  }
 
   // The temporary directory used to contain the test operations.
   base::ScopedTempDir test_dir_;
@@ -51,52 +61,63 @@ TEST_F(HostConfigTest, InvalidFile) {
 
 TEST_F(HostConfigTest, Read) {
   ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
-  base::FilePath test_file = test_dir_.GetPath().AppendASCII("read.json");
-  WriteTestFile(test_file);
-  absl::optional<base::Value::Dict> target(HostConfigFromJsonFile(test_file));
+  base::FilePath test_file_path = test_dir_.GetPath().AppendASCII("read.json");
+  WriteTestFile(test_file_path, kTestConfig);
+  absl::optional<base::Value::Dict> target(
+      HostConfigFromJsonFile(test_file_path));
   ASSERT_TRUE(target.has_value());
 
   std::string* value = target->FindString(kXmppLoginConfigPath);
-  EXPECT_EQ("test@gmail.com", *value);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kXmppLoginValue);
   value = target->FindString(kOAuthRefreshTokenConfigPath);
-  EXPECT_EQ("TEST_REFRESH_TOKEN", *value);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kRefreshTokenValue);
   value = target->FindString(kHostIdConfigPath);
-  EXPECT_EQ("TEST_HOST_ID", *value);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kHostIdValue);
   value = target->FindString(kHostNameConfigPath);
-  EXPECT_EQ("TEST_MACHINE_NAME", *value);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kHostNameValue);
   value = target->FindString(kPrivateKeyConfigPath);
-  EXPECT_EQ("TEST_PRIVATE_KEY", *value);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kPrivateKeyValue);
 
   value = target->FindString("non_existent_value");
-  EXPECT_EQ(nullptr, value);
+  EXPECT_EQ(value, nullptr);
 }
 
 TEST_F(HostConfigTest, Write) {
   ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
 
-  base::FilePath test_file = test_dir_.GetPath().AppendASCII("write.json");
-  WriteTestFile(test_file);
-  absl::optional<base::Value::Dict> target(HostConfigFromJsonFile(test_file));
+  base::FilePath test_file_path = test_dir_.GetPath().AppendASCII("write.json");
+  WriteTestFile(test_file_path, kTestConfig);
+  absl::optional<base::Value::Dict> target(
+      HostConfigFromJsonFile(test_file_path));
   ASSERT_TRUE(target.has_value());
 
-  std::string new_refresh_token_value = "NEW_REFRESH_TOKEN";
-  target->Set(kOAuthRefreshTokenConfigPath, new_refresh_token_value);
-  ASSERT_TRUE(HostConfigToJsonFile(*target, test_file));
+  target->Set(kOAuthRefreshTokenConfigPath, kNewRefreshTokenValue);
+  ASSERT_TRUE(HostConfigToJsonFile(*target, test_file_path));
 
   // Now read the file again and check that the value has been written.
-  absl::optional<base::Value> reader(HostConfigFromJsonFile(test_file));
+  absl::optional<base::Value> reader(HostConfigFromJsonFile(test_file_path));
   ASSERT_TRUE(reader);
 
   std::string* value = target->FindString(kXmppLoginConfigPath);
-  EXPECT_EQ("test@gmail.com", *value);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kXmppLoginValue);
   value = target->FindString(kOAuthRefreshTokenConfigPath);
-  EXPECT_EQ(new_refresh_token_value, *value);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kNewRefreshTokenValue);
   value = target->FindString(kHostIdConfigPath);
-  EXPECT_EQ("TEST_HOST_ID", *value);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kHostIdValue);
   value = target->FindString(kHostNameConfigPath);
-  EXPECT_EQ("TEST_MACHINE_NAME", *value);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kHostNameValue);
   value = target->FindString(kPrivateKeyConfigPath);
-  EXPECT_EQ("TEST_PRIVATE_KEY", *value);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kPrivateKeyValue);
 }
 
 }  // namespace remoting
