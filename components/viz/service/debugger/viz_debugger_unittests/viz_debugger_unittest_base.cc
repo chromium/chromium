@@ -67,26 +67,23 @@ VisualDebuggerTestBase::VisualDebuggerTestBase() = default;
 VisualDebuggerTestBase::~VisualDebuggerTestBase() = default;
 
 void VisualDebuggerTestBase::SetFilter(std::vector<TestFilter> filters) {
-  base::Value::Dict filters_json;
   base::Value::List filters_list;
   for (auto&& each : filters) {
-    base::Value::Dict full_filter;
-    base::Value::Dict selector;
+    auto selector = base::Value::Dict().Set("anno", each.anno);
     if (!each.file.empty())
       selector.Set("file", each.file);
 
     if (!each.func.empty())
       selector.Set("func", each.func);
 
-    selector.Set("anno", each.anno);
-
-    full_filter.Set("selector", std::move(selector));
-    full_filter.Set("active", each.active);
-    full_filter.Set("enabled", each.enabled);
-    filters_list.Append(std::move(full_filter));
+    filters_list.Append(base::Value::Dict()
+                            .Set("selector", std::move(selector))
+                            .Set("active", each.active)
+                            .Set("enabled", each.enabled));
   }
-  filters_json.Set("filters", std::move(filters_list));
-  GetInternal()->FilterDebugStream(std::move(filters_json));
+
+  GetInternal()->FilterDebugStream(
+      base::Value::Dict().Set("filters", std::move(filters_list)));
   GetInternal()->GetRWLock()->WriteLock();
   GetInternal()->UpdateFilters();
   GetInternal()->GetRWLock()->WriteUnLock();

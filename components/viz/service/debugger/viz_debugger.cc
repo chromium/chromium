@@ -54,17 +54,15 @@ VizDebugger::FilterBlock::~FilterBlock() = default;
 VizDebugger::FilterBlock::FilterBlock(const FilterBlock& other) = default;
 
 base::Value::Dict VizDebugger::CallSubmitCommon::GetDictionaryValue() const {
-  base::Value::Dict option_dict;
-  option_dict.Set("color", base::StringPrintf("#%02x%02x%02x", option.color_r,
-                                              option.color_g, option.color_b));
-  option_dict.Set("alpha", option.color_a);
-
-  base::Value::Dict dict;
-  dict.Set("drawindex", draw_index);
-  dict.Set("source_index", source_index);
-  dict.Set("thread_id", thread_id);
-  dict.Set("option", std::move(option_dict));
-  return dict;
+  return base::Value::Dict()
+      .Set("drawindex", draw_index)
+      .Set("source_index", source_index)
+      .Set("thread_id", thread_id)
+      .Set("option",
+           base::Value::Dict()
+               .Set("color", base::StringPrintf("#%02x%02x%02x", option.color_r,
+                                                option.color_g, option.color_b))
+               .Set("alpha", option.color_a));
 }
 
 VizDebugger::StaticSource::StaticSource(const char* anno_name,
@@ -99,25 +97,25 @@ base::Value VizDebugger::FrameAsJson(const uint64_t counter,
   // by having a lock around the |json_frame_output_| object.
   submission_count_ = 0;
 
-  base::Value::Dict global_dict;
-  global_dict.Set("version", kVizDebuggerVersion);
-  global_dict.Set("frame", base::NumberToString(counter));
-  global_dict.Set("windowx", window_pix.width());
-  global_dict.Set("windowy", window_pix.height());
-  global_dict.Set(
-      "time", base::NumberToString(time_ticks.since_origin().InMicroseconds()));
+  auto global_dict =
+      base::Value::Dict()
+          .Set("version", kVizDebuggerVersion)
+          .Set("frame", base::NumberToString(counter))
+          .Set("windowx", window_pix.width())
+          .Set("windowy", window_pix.height())
+          .Set("time", base::NumberToString(
+                           time_ticks.since_origin().InMicroseconds()));
 
   base::Value::List new_sources;
   for (size_t i = last_sent_source_count_; i < sources_.size(); i++) {
     const StaticSource* each = sources_[i];
 
-    base::Value::Dict dict;
-    dict.Set("file", each->file);
-    dict.Set("line", each->line);
-    dict.Set("func", each->func);
-    dict.Set("anno", each->anno);
-    dict.Set("index", each->reg_index);
-    new_sources.Append(std::move(dict));
+    new_sources.Append(base::Value::Dict()
+                           .Set("file", each->file)
+                           .Set("line", each->line)
+                           .Set("func", each->func)
+                           .Set("anno", each->anno)
+                           .Set("index", each->reg_index));
   }
 
   // Remote connection will now have acknowledged all the new sources.
@@ -139,32 +137,23 @@ base::Value VizDebugger::FrameAsJson(const uint64_t counter,
   base::flat_set<int> registered_threads;
   for (size_t i = 0; i < max_rect_calls_index; ++i) {
     base::Value::Dict dict = draw_rect_calls_[i].GetDictionaryValue();
-    base::Value::Dict threads_dict;
-    {
-      base::Value::List list_xy;
-      list_xy.Append(draw_rect_calls_[i].obj_size.width());
-      list_xy.Append(draw_rect_calls_[i].obj_size.height());
-      dict.Set("size", std::move(list_xy));
-    }
-    {
-      base::Value::List list_xy;
-      list_xy.Append(static_cast<double>(draw_rect_calls_[i].pos.x()));
-      list_xy.Append(static_cast<double>(draw_rect_calls_[i].pos.y()));
-      dict.Set("pos", std::move(list_xy));
-    }
+    dict.Set("size", base::Value::List()
+                         .Append(draw_rect_calls_[i].obj_size.width())
+                         .Append(draw_rect_calls_[i].obj_size.height()));
+    dict.Set("pos",
+             base::Value::List()
+                 .Append(static_cast<double>(draw_rect_calls_[i].pos.x()))
+                 .Append(static_cast<double>(draw_rect_calls_[i].pos.y())));
     if (draw_rect_calls_[i].uv != DBG_DEFAULT_UV) {
-      {
-        base::Value::List list_xy;
-        list_xy.Append(static_cast<double>(draw_rect_calls_[i].uv.width()));
-        list_xy.Append(static_cast<double>(draw_rect_calls_[i].uv.height()));
-        dict.Set("uv_size", std::move(list_xy));
-      }
-      {
-        base::Value::List list_xy;
-        list_xy.Append(static_cast<double>(draw_rect_calls_[i].uv.x()));
-        list_xy.Append(static_cast<double>(draw_rect_calls_[i].uv.y()));
-        dict.Set("uv_pos", std::move(list_xy));
-      }
+      dict.Set(
+          "uv_size",
+          base::Value::List()
+              .Append(static_cast<double>(draw_rect_calls_[i].uv.width()))
+              .Append(static_cast<double>(draw_rect_calls_[i].uv.height())));
+      dict.Set("uv_pos",
+               base::Value::List()
+                   .Append(static_cast<double>(draw_rect_calls_[i].uv.x()))
+                   .Append(static_cast<double>(draw_rect_calls_[i].uv.y())));
     }
     dict.Set("buff_id", std::move(draw_rect_calls_[i].buff_id));
     if (!draw_rect_calls_[i].text.empty()) {
@@ -210,10 +199,9 @@ base::Value VizDebugger::FrameAsJson(const uint64_t counter,
   for (auto&& thread_id : registered_threads) {
     std::string cur_thread_name =
         base::ThreadIdNameManager::GetInstance()->GetName(thread_id);
-    base::Value::Dict threads_dict;
-    threads_dict.Set("thread_id", thread_id);
-    threads_dict.Set("thread_name", cur_thread_name);
-    new_threads.Append(std::move(threads_dict));
+    new_threads.Append(base::Value::Dict()
+                           .Set("thread_id", thread_id)
+                           .Set("thread_name", cur_thread_name));
     registered_threads.insert(thread_id);
   }
 
@@ -416,9 +404,8 @@ void VizDebugger::StartDebugStream(
   new_filters_.clear();
   apply_new_filters_next_frame_ = true;
 
-  base::Value::Dict dict;
-  dict.Set("connection", "ok");
-  debug_output_->LogFrame(base::Value(std::move(dict)));
+  debug_output_->LogFrame(
+      base::Value(base::Value::Dict().Set("connection", "ok")));
   enabled_.store(true);
   read_write_lock_.WriteUnLock();
 }

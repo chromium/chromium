@@ -71,12 +71,11 @@ bool ProcessRenderPassField(RenderPassField field) {
 }
 
 base::Value::Dict RectToDict(const gfx::Rect& rect) {
-  base::Value::Dict dict;
-  dict.Set("x", rect.x());
-  dict.Set("y", rect.y());
-  dict.Set("width", rect.width());
-  dict.Set("height", rect.height());
-  return dict;
+  return base::Value::Dict()
+      .Set("x", rect.x())
+      .Set("y", rect.y())
+      .Set("width", rect.width())
+      .Set("height", rect.height());
 }
 
 bool RectFromDict(const base::Value::Dict& dict, gfx::Rect* rect) {
@@ -93,12 +92,11 @@ bool RectFromDict(const base::Value::Dict& dict, gfx::Rect* rect) {
 }
 
 base::Value::Dict RectFToDict(const gfx::RectF& rect) {
-  base::Value::Dict dict;
-  dict.Set("x", rect.x());
-  dict.Set("y", rect.y());
-  dict.Set("width", rect.width());
-  dict.Set("height", rect.height());
-  return dict;
+  return base::Value::Dict()
+      .Set("x", rect.x())
+      .Set("y", rect.y())
+      .Set("width", rect.width())
+      .Set("height", rect.height());
 }
 
 bool RectFFromDict(const base::Value::Dict& dict, gfx::RectF* rect) {
@@ -117,10 +115,9 @@ bool RectFFromDict(const base::Value::Dict& dict, gfx::RectF* rect) {
 }
 
 base::Value::Dict SizeToDict(const gfx::Size& size) {
-  base::Value::Dict dict;
-  dict.Set("width", size.width());
-  dict.Set("height", size.height());
-  return dict;
+  return base::Value::Dict()
+      .Set("width", size.width())
+      .Set("height", size.height());
 }
 
 bool SizeFromDict(const base::Value::Dict& dict, gfx::Size* size) {
@@ -136,10 +133,7 @@ bool SizeFromDict(const base::Value::Dict& dict, gfx::Size* size) {
 }
 
 base::Value::Dict PointToDict(const gfx::Point& point) {
-  base::Value::Dict dict;
-  dict.Set("x", point.x());
-  dict.Set("y", point.y());
-  return dict;
+  return base::Value::Dict().Set("x", point.x()).Set("y", point.y());
 }
 
 bool PointFromDict(const base::Value::Dict& dict, gfx::Point* point) {
@@ -155,12 +149,11 @@ bool PointFromDict(const base::Value::Dict& dict, gfx::Point* point) {
 }
 
 base::Value::Dict SkColor4fToDict(const SkColor4f color) {
-  base::Value::Dict dict;
-  dict.Set("red", color.fR);
-  dict.Set("green", color.fG);
-  dict.Set("blue", color.fB);
-  dict.Set("alpha", color.fA);
-  return dict;
+  return base::Value::Dict()
+      .Set("red", color.fR)
+      .Set("green", color.fG)
+      .Set("blue", color.fB)
+      .Set("alpha", color.fA);
 }
 
 bool SkColor4fFromDict(const base::Value::Dict& dict, SkColor4f* color) {
@@ -199,10 +192,7 @@ bool ColorFromDict(const base::Value::Dict& dict,
 }
 
 base::Value::Dict PointFToDict(const gfx::PointF& point) {
-  base::Value::Dict dict;
-  dict.Set("x", point.x());
-  dict.Set("y", point.y());
-  return dict;
+  return base::Value::Dict().Set("x", point.x()).Set("y", point.y());
 }
 
 bool PointFFromDict(const base::Value::Dict& dict, gfx::PointF* point) {
@@ -362,21 +352,19 @@ bool RRectFFromDict(const base::Value::Dict& dict, gfx::RRectF* out) {
 
 base::Value::Dict LinearGradientToDict(
     const gfx::LinearGradient& gradient_mask) {
-  base::Value::Dict dict;
-  dict.Set("angle", static_cast<double>(gradient_mask.angle()));
-  dict.Set("step_count", static_cast<int>(gradient_mask.step_count()));
-
   base::Value::List steps;
   for (size_t i = 0; i < gradient_mask.step_count(); ++i) {
-    base::Value::Dict step_dict;
-    step_dict.Set("fraction",
-                  static_cast<double>(gradient_mask.steps()[i].fraction));
-    step_dict.Set("alpha", static_cast<int>(gradient_mask.steps()[i].alpha));
-    steps.Append(std::move(step_dict));
+    steps.Append(
+        base::Value::Dict()
+            .Set("fraction",
+                 static_cast<double>(gradient_mask.steps()[i].fraction))
+            .Set("alpha", static_cast<int>(gradient_mask.steps()[i].alpha)));
   }
-  dict.Set("steps", std::move(steps));
 
-  return dict;
+  return base::Value::Dict()
+      .Set("angle", static_cast<double>(gradient_mask.angle()))
+      .Set("step_count", static_cast<int>(gradient_mask.step_count()))
+      .Set("steps", std::move(steps));
 }
 
 bool LinearGradientFromDict(const base::Value::Dict& dict,
@@ -409,9 +397,9 @@ bool LinearGradientFromDict(const base::Value::Dict& dict,
 
 base::Value::Dict MaskFilterInfoToDict(
     const gfx::MaskFilterInfo& mask_filter_info) {
-  base::Value::Dict dict;
-  dict.Set("rounded_corner_bounds",
-           RRectFToDict(mask_filter_info.rounded_corner_bounds()));
+  auto dict = base::Value::Dict().Set(
+      "rounded_corner_bounds",
+      RRectFToDict(mask_filter_info.rounded_corner_bounds()));
   if (mask_filter_info.HasGradientMask()) {
     dict.Set("gradient_mask",
              LinearGradientToDict(*mask_filter_info.gradient_mask()));
@@ -894,13 +882,14 @@ bool TransferFunctionFromList(const base::Value::List& list,
 }
 
 base::Value::Dict ColorSpaceToDict(const gfx::ColorSpace& color_space) {
-  base::Value::Dict dict;
-  dict.Set("primaries",
-           ColorSpacePrimaryIdToString(color_space.GetPrimaryID()));
-  dict.Set("transfer",
-           ColorSpaceTransferIdToString(color_space.GetTransferID()));
-  dict.Set("matrix", ColorSpaceMatrixIdToString(color_space.GetMatrixID()));
-  dict.Set("range", ColorSpaceRangeIdToString(color_space.GetRangeID()));
+  auto dict =
+      base::Value::Dict()
+          .Set("primaries",
+               ColorSpacePrimaryIdToString(color_space.GetPrimaryID()))
+          .Set("transfer",
+               ColorSpaceTransferIdToString(color_space.GetTransferID()))
+          .Set("matrix", ColorSpaceMatrixIdToString(color_space.GetMatrixID()))
+          .Set("range", ColorSpaceRangeIdToString(color_space.GetRangeID()));
   if (color_space.GetPrimaryID() == gfx::ColorSpace::PrimaryID::CUSTOM) {
     skcms_Matrix3x3 mat;
     color_space.GetPrimaryMatrix(&mat);
@@ -998,17 +987,15 @@ bool DrawQuadResourcesFromList(const base::Value::List& list,
 }
 
 base::Value::Dict SurfaceIdToDict(const SurfaceId& id) {
-  base::Value::Dict dict;
-  dict.Set("client_id", static_cast<int>(id.frame_sink_id().client_id()));
-  dict.Set("sink_id", static_cast<int>(id.frame_sink_id().sink_id()));
-  dict.Set("parent_seq",
-           static_cast<int>(id.local_surface_id().parent_sequence_number()));
-  dict.Set("child_seq",
-           static_cast<int>(id.local_surface_id().child_sequence_number()));
-  dict.Set("embed_token",
+  return base::Value::Dict()
+      .Set("client_id", static_cast<int>(id.frame_sink_id().client_id()))
+      .Set("sink_id", static_cast<int>(id.frame_sink_id().sink_id()))
+      .Set("parent_seq",
+           static_cast<int>(id.local_surface_id().parent_sequence_number()))
+      .Set("child_seq",
+           static_cast<int>(id.local_surface_id().child_sequence_number()))
+      .Set("embed_token",
            base::UnguessableTokenToValue(id.local_surface_id().embed_token()));
-
-  return dict;
 }
 
 absl::optional<SurfaceId> SurfaceIdFromDict(const base::Value::Dict& dict) {
@@ -1715,20 +1702,22 @@ bool QuadListFromList(const base::Value::List& list,
 #undef UNEXPECTED_DRAW_QUAD_TYPE
 
 base::Value::Dict SharedQuadStateToDict(const SharedQuadState& sqs) {
-  base::Value::Dict dict;
-  dict.Set("quad_to_target_transform",
-           TransformToList(sqs.quad_to_target_transform));
-  dict.Set("quad_layer_rect", RectToDict(sqs.quad_layer_rect));
-  dict.Set("visible_quad_layer_rect", RectToDict(sqs.visible_quad_layer_rect));
-  dict.Set("mask_filter_info", MaskFilterInfoToDict(sqs.mask_filter_info));
+  auto dict =
+      base::Value::Dict()
+          .Set("quad_to_target_transform",
+               TransformToList(sqs.quad_to_target_transform))
+          .Set("quad_layer_rect", RectToDict(sqs.quad_layer_rect))
+          .Set("visible_quad_layer_rect",
+               RectToDict(sqs.visible_quad_layer_rect))
+          .Set("mask_filter_info", MaskFilterInfoToDict(sqs.mask_filter_info))
+          .Set("are_contents_opaque", sqs.are_contents_opaque)
+          .Set("opacity", sqs.opacity)
+          .Set("blend_mode", BlendModeToString(sqs.blend_mode))
+          .Set("sorting_context_id", sqs.sorting_context_id)
+          .Set("is_fast_rounded_corner", sqs.is_fast_rounded_corner);
   if (sqs.clip_rect) {
     dict.Set("clip_rect", RectToDict(*sqs.clip_rect));
   }
-  dict.Set("are_contents_opaque", sqs.are_contents_opaque);
-  dict.Set("opacity", sqs.opacity);
-  dict.Set("blend_mode", BlendModeToString(sqs.blend_mode));
-  dict.Set("sorting_context_id", sqs.sorting_context_id);
-  dict.Set("is_fast_rounded_corner", sqs.is_fast_rounded_corner);
   return dict;
 }
 
@@ -1860,13 +1849,12 @@ bool SharedQuadStateListFromList(const base::Value::List& list,
 
 base::Value::Dict GetRenderPassMetadata(
     const CompositorRenderPass& render_pass) {
-  base::Value::Dict dict;
-  dict.Set("render_pass_id",
-           base::NumberToString(static_cast<uint64_t>(render_pass.id)));
-  dict.Set("quad_count", static_cast<int>(render_pass.quad_list.size()));
-  dict.Set("shared_quad_state_count",
+  return base::Value::Dict()
+      .Set("render_pass_id",
+           base::NumberToString(static_cast<uint64_t>(render_pass.id)))
+      .Set("quad_count", static_cast<int>(render_pass.quad_list.size()))
+      .Set("shared_quad_state_count",
            static_cast<int>(render_pass.shared_quad_state_list.size()));
-  return dict;
 }
 
 base::Value::List GetRenderPassListMetadata(
@@ -2159,16 +2147,15 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
 
 base::Value::Dict CompositorRenderPassListToDict(
     const CompositorRenderPassList& render_pass_list) {
-  base::Value::Dict dict;
-  dict.Set("render_pass_count", static_cast<int>(render_pass_list.size()));
-  dict.Set("metadata", GetRenderPassListMetadata(render_pass_list));
-
   base::Value::List list;
   for (const auto& pass : render_pass_list) {
     list.Append(CompositorRenderPassToDict(*pass));
   }
-  dict.Set("render_pass_list", std::move(list));
-  return dict;
+
+  return base::Value::Dict()
+      .Set("render_pass_count", static_cast<int>(render_pass_list.size()))
+      .Set("metadata", GetRenderPassListMetadata(render_pass_list))
+      .Set("render_pass_list", std::move(list));
 }
 
 bool CompositorRenderPassListFromDict(
@@ -2202,20 +2189,16 @@ bool CompositorRenderPassListFromDict(
 
 base::Value::Dict CompositorFrameToDict(
     const CompositorFrame& compositor_frame) {
-  base::Value::Dict dict;
-  auto render_pass_list_dict =
-      CompositorRenderPassListToDict(compositor_frame.render_pass_list);
-  dict.Set("render_pass_list", std::move(render_pass_list_dict));
-
   base::Value::List referenced_surfaces;
   for (auto& surface_range : compositor_frame.metadata.referenced_surfaces) {
     referenced_surfaces.Append(SurfaceRangeToDict(surface_range));
   }
-  base::Value::Dict metadata_dict;
-  metadata_dict.Set("referenced_surfaces", std::move(referenced_surfaces));
-  dict.Set("metadata", std::move(metadata_dict));
 
-  return dict;
+  return base::Value::Dict()
+      .Set("render_pass_list",
+           CompositorRenderPassListToDict(compositor_frame.render_pass_list))
+      .Set("metadata", base::Value::Dict().Set("referenced_surfaces",
+                                               std::move(referenced_surfaces)));
 }
 
 bool CompositorFrameFromDict(const base::Value::Dict& dict,
@@ -2258,17 +2241,14 @@ base::Value::List FrameDataToList(
   base::Value::List list;
 
   for (auto& frame_data : frame_data_list) {
-    base::Value::Dict frame_dict;
-
-    frame_dict.Set("surface_id", SurfaceIdToDict(frame_data.surface_id));
-    // This cast will be safe because we
-    // should never have more than |INT_MAX|
-    // frames in recorded data.
-    frame_dict.Set("frame_index", static_cast<int>(frame_data.frame_index));
-    frame_dict.Set("compositor_frame",
-                   CompositorFrameToDict(frame_data.compositor_frame));
-
-    list.Append(std::move(frame_dict));
+    list.Append(
+        base::Value::Dict()
+            .Set("surface_id", SurfaceIdToDict(frame_data.surface_id))
+            // This cast will be safe because we should never have more than
+            // |INT_MAX| frames in recorded data.
+            .Set("frame_index", static_cast<int>(frame_data.frame_index))
+            .Set("compositor_frame",
+                 CompositorFrameToDict(frame_data.compositor_frame)));
   }
   return list;
 }
