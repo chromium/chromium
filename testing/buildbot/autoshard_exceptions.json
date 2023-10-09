@@ -43,36 +43,6 @@
                 },
                 "shards": "2"
             }
-        },
-        "android-nougat-x86-rel": {
-            "content_shell_test_apk": {
-                "debug": {
-                    "avg_num_builds_per_peak_hour": "86.0",
-                    "estimated_bot_hour_delta": "-3.2",
-                    "prev_avg_pending_time_sec": "13.6",
-                    "prev_p50_pending_time_sec": "0.0",
-                    "prev_p90_pending_time_sec": "42.0",
-                    "prev_percentile_duration_minutes": "12.68",
-                    "prev_shard_count": "6",
-                    "simulated_max_shard_duration": "15.22",
-                    "try_builder": "android-nougat-x86-rel"
-                },
-                "shards": "5"
-            },
-            "webview_instrumentation_test_apk": {
-                "debug": {
-                    "avg_num_builds_per_peak_hour": "86.0",
-                    "estimated_bot_hour_delta": "19.88",
-                    "prev_avg_pending_time_sec": "28.6",
-                    "prev_p50_pending_time_sec": "3.0",
-                    "prev_p90_pending_time_sec": "91.0",
-                    "prev_percentile_duration_minutes": "18.28",
-                    "prev_shard_count": "22",
-                    "simulated_max_shard_duration": "14.36",
-                    "try_builder": "android-nougat-x86-rel"
-                },
-                "shards": "28"
-            }
         }
     },
     "chromium.chromiumos": {

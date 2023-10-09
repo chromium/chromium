@@ -1,9 +1,0 @@
-# TODO(crbug.com/1189804)
--org.chromium.content.browser.input.ImeInputModeTest.testShowAndHideInputMode
--org.chromium.content.browser.input.ImeInputModeTest.testShowAndHideInputModeWithPhysicalKeyboard
-
-# TODO(crbug.com/1233309)
--org.chromium.content.browser.GestureDetectorResetTest.testSeparateClicksAreRegisteredOnReload
-
-# TODO(crbug.com/1370059)
--org.chromium.content.browser.accessibility.WebContentsAccessibilityEventsTest.test_immediateRefresh

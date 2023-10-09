@@ -42,7 +42,17 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
-    name = "android_nougat_emulator_gtests",
+    name = "android_nougat_gtests",
+    basic_suites = [
+        "android_ar_gtests",
+        "android_ddready_vr_gtests",
+        "android_monochrome_smoke_tests",
+        "android_smoke_tests",
+    ],
+)
+
+targets.legacy_compound_suite(
+    name = "android_oreo_emulator_gtests",
     basic_suites = [
         "android_emulator_specific_chrome_public_tests",
         "android_monochrome_smoke_tests",
@@ -55,16 +65,6 @@ targets.legacy_compound_suite(
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
         "webview_cts_tests_gtest",
         "webview_ui_instrumentation_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "android_nougat_gtests",
-    basic_suites = [
-        "android_ar_gtests",
-        "android_ddready_vr_gtests",
-        "android_monochrome_smoke_tests",
-        "android_smoke_tests",
     ],
 )
 
@@ -1301,7 +1301,7 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
-    name = "nougat_isolated_scripts",
+    name = "oreo_isolated_scripts",
     basic_suites = [
         "android_isolated_scripts",
         "chromium_junit_tests_scripts",

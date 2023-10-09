@@ -109,12 +109,6 @@
         },
       },
       # If you change this, make similar changes in android-x86-code-coverage below
-      'android-nougat-x86-rel': {
-        'ci_only': True,
-        'swarming': {
-          'shards': 9,
-        },
-      },
       'android-oreo-x86-rel': {
         'ci_only': True,
         'swarming': {
@@ -141,7 +135,7 @@
           },
         },
       },
-      # Keep this same as android-nougat-x86-rel above
+      # Keep this same as android-oreo-x86-rel above
       'android-x86-code-coverage': {
         'ci_only': True,
         'swarming': {
@@ -179,19 +173,13 @@
         },
       },
       # If you change this, make similar changes in android-x86-code-coverage below
-      'android-nougat-x86-rel': {
-        'ci_only': True,
-        'swarming': {
-          'shards': 2,
-        },
-      },
       'android-oreo-x86-rel': {
         'ci_only': True,
         'swarming': {
           'shards': 2,
         },
       },
-      # Keep this same as android-nougat-x86-rel above
+      # Keep this same as android-oreo-x86-rel above
       'android-x86-code-coverage': {
         'ci_only': True,
         'swarming': {
@@ -302,13 +290,6 @@
   },
   'blink_platform_unittests': {
     'modifications': {
-      # TODO(crbug.com/1303439): Remove this filter
-      # If you change this, make similar changes in android-x86-code-coverage below
-      'android-nougat-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.blink_platform_unittests.filter',
-        ],
-      },
       'android-pie-arm64-rel': {
         # TODO(crbug.com/1111436): Move this back to walleye if/when additional
         # capacity has been deployed.
@@ -317,12 +298,6 @@
             'device_type': 'sailfish',
           },
         },
-      },
-      # Keep this same as android-nougat-x86-rel above
-      'android-x86-code-coverage': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.blink_platform_unittests.filter',
-        ],
       },
       'fuchsia-code-coverage': {
         'swarming': {
@@ -1530,18 +1505,6 @@
         },
       },
       # If you change this, make similar changes in android-x86-code-coverage below
-      'android-nougat-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.chrome_public_test_apk.filter',
-        ],
-        'swarming': {
-          'shards': 75,
-          'dimensions': {
-            # use 8-core to shorten runtime
-            'cores': '8',
-          },
-        },
-      },
       'android-oreo-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_test_apk.filter',
@@ -1576,10 +1539,10 @@
           'shards': 30,
         },
       },
-      # Keep this same as android-nougat-x86-rel above
+      # Keep this same as android-oreo-x86-rel above
       'android-x86-code-coverage': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.chrome_public_test_apk.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_test_apk.filter',
         ],
         'swarming': {
           'shards': 75,
@@ -1644,6 +1607,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.chrome_public_unit_test_apk.filter',
         ],
       },
+      # If you change this, make similar changes in android-x86-code-coverage below
       'android-oreo-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_unit_test_apk.filter',
@@ -1654,6 +1618,12 @@
           # TODO(crbug.com/1462745): Temporarily increase the shard to 3 for the network issue.
           'shards': 3,
         },
+      },
+      # Keep this same as android-oreo-x86-rel above
+      'android-x86-code-coverage': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_unit_test_apk.filter',
+        ],
       },
     },
   },
@@ -1734,17 +1704,12 @@
         },
       },
       # If you change this, make similar changes in android-x86-code-coverage below
-      'android-nougat-x86-rel': {
-        'swarming': {
-          'shards': 4,
-        },
-      },
       'android-oreo-x86-rel': {
         'swarming': {
           'shards': 4,
         },
       },
-      # Keep this same as android-nougat-x86-rel above
+      # Keep this same as android-oreo-x86-rel above
       'android-x86-code-coverage': {
         'swarming': {
           'shards': 4,
@@ -2034,18 +1999,6 @@
         },
       },
       # If you change this, make similar changes in android-x86-code-coverage below
-      'android-nougat-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.content_browsertests.filter',
-        ],
-        'swarming': {
-          'shards': 75,
-          'dimensions': {
-            # use 8-core to shorten runtime
-            'cores': '8',
-          },
-        },
-      },
       'android-oreo-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.content_browsertests.filter',
@@ -2082,10 +2035,10 @@
           'shards': 30,
         },
       },
-      # Keep this same as android-nougat-x86-rel above
+      # Keep this same as android-oreo-x86-rel above
       'android-x86-code-coverage': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.content_browsertests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.content_browsertests.filter',
         ],
         'swarming': {
           'shards': 75,
@@ -2237,8 +2190,7 @@
   },
   'content_shell_crash_test': {
     'remove_from': [
-      'android-nougat-x86-rel', # crbug.com/1084353. If you remove this, also remove android-x86-code-coverage.
-      'android-oreo-x86-rel',
+      'android-oreo-x86-rel', # crbug.com/1084353. If you remove this, also remove android-x86-code-coverage.
       'android-x86-code-coverage',
     ],
     'modifications': {
@@ -2286,18 +2238,6 @@
         ],
       },
       # If you change this, make similar changes in android-x86-code-coverage below
-      'android-nougat-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.content_shell_test_apk.filter',
-        ],
-        'swarming': {
-          'shards': 6,
-          'dimensions': {
-            # use 8-core to shorten runtime
-            'cores': '8',
-          },
-        },
-      },
       'android-oreo-x86-rel': {
         'swarming': {
           'shards': 6,
@@ -2312,11 +2252,8 @@
           '--gtest_filter=-org.chromium.content.browser.input.ImeInputModeTest.testShowAndHideInputMode*',
         ],
       },
-      # Keep this same as android-nougat-x86-rel above
+      # Keep this same as android-oreo-x86-rel above
       'android-x86-code-coverage': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.content_shell_test_apk.filter',
-        ],
         'swarming': {
           'shards': 6,
           'dimensions': {
@@ -2926,14 +2863,9 @@
         ],
       },
       # If you change this, make similar changes in android-x86-code-coverage below
-      'android-nougat-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n_o_p.gl_tests.filter',
-        ],
-      },
       'android-oreo-x86-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n_o_p.gl_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p.gl_tests.filter',
         ],
       },
       'android-pie-arm64-rel': {
@@ -2943,13 +2875,13 @@
       },
       'android-pie-x86-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n_o_p.gl_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p.gl_tests.filter',
         ],
       },
-      # Keep this same as android-nougat-x86-rel above
+      # Keep this same as android-oreo-x86-rel above
       'android-x86-code-coverage': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n_o_p.gl_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p.gl_tests.filter',
         ],
       },
     },
@@ -3433,7 +3365,6 @@
   'leveldb_unittests': {
     'remove_from': [
       # TODO(https://crbug.com/1432753): Runs too slowly in this configuration.
-      'android-nougat-x86-rel',
       'android-oreo-x86-rel',
     ],
   },
@@ -3770,19 +3701,13 @@
         ],
       },
       # If you change this, make similar changes in android-x86-code-coverage below
-      'android-nougat-x86-rel': {
-        'args': [
-          # TODO(crbug.com/1260440): Fix the failed test
-          '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
-        ],
-      },
       'android-oreo-x86-rel': {
         'args': [
           # TODO(crbug.com/1260440): Fix the failed test
           '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
         ],
       },
-      # Keep this same as android-nougat-x86-rel above
+      # Keep this same as android-oreo-x86-rel above
       'android-x86-code-coverage': {
         'args': [
           # TODO(crbug.com/1260440): Fix the failed test
@@ -4084,16 +4009,6 @@
         },
       },
       # If you change this, make similar changes in android-x86-code-coverage below
-      'android-nougat-x86-rel': {
-        'args': [
-          # TODO(crbug.com/1264654): Fix the failed tests
-          '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
-        ],
-        'ci_only': True,
-        'swarming': {
-          'shards': 3,
-        },
-      },
       'android-oreo-x86-rel': {
         'ci_only': True,
         'args': [
@@ -4112,11 +4027,10 @@
           'shards': 2,
         },
       },
-      # Keep this same as android-nougat-x86-rel above
+      # Keep this same as android-oreo-x86-rel above
       'android-x86-code-coverage': {
         'args': [
-          # TODO(crbug.com/1264654): Fix the failed tests
-          '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.services_unittests.filter',
         ],
         'swarming': {
           'shards': 3,
@@ -4298,13 +4212,10 @@
   'telemetry_chromium_minidump_unittests': {
     'modifications': {
       # If you change this, make similar changes in android-x86-code-coverage below
-      'android-nougat-x86-rel': {
-        'ci_only': True,
-      },
       'android-oreo-x86-rel': {
         'ci_only': True,
       },
-      # Keep this same as android-nougat-x86-rel above
+      # Keep this same as android-oreo-x86-rel above
       'android-x86-code-coverage': {
         'ci_only': True,
       },
@@ -4313,13 +4224,10 @@
   'telemetry_monochrome_minidump_unittests': {
     'modifications': {
       # If you change this, make similar changes in android-x86-code-coverage below
-      'android-nougat-x86-rel': {
-        'ci_only': True,
-      },
       'android-oreo-x86-rel': {
         'ci_only': True,
       },
-      # Keep this same as android-nougat-x86-rel above
+      # Keep this same as android-oreo-x86-rel above
       'android-x86-code-coverage': {
         'ci_only': True,
       },
@@ -4349,14 +4257,6 @@
         'ci_only': True,
       },
       # If you change this, make similar changes in android-x86-code-coverage below
-      'android-nougat-x86-rel': {
-        'args': [
-          # For whatever reason, automatic browser selection on this bot chooses
-          # webview instead of the full browser, so explicitly specify it here.
-          '--browser=android-chromium',
-        ],
-        'ci_only': True,
-      },
       'android-oreo-x86-rel': {
         'args': [
           # For whatever reason, automatic browser selection on this bot chooses
@@ -4365,7 +4265,7 @@
         ],
         'ci_only': True,
       },
-      # Keep this same as android-nougat-x86-rel above
+      # Keep this same as android-oreo-x86-rel above
       'android-x86-code-coverage': {
         'args': [
           # For whatever reason, automatic browser selection on this bot chooses
@@ -5153,12 +5053,6 @@
   },
   'webview_cts_tests': {
     'modifications': {
-      # If you change this, make similar changes in android-x86-code-coverage below
-      'android-nougat-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_cts_tests.filter',
-        ],
-      },
       'android-pie-arm64-rel': {
         # TODO(crbug.com/1111436): Move this back to walleye if/when additional
         # capacity has been deployed.
@@ -5167,12 +5061,6 @@
             'device_type': 'sailfish',
           },
         },
-      },
-      # Keep this same as android-nougat-x86-rel above
-      'android-x86-code-coverage': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_cts_tests.filter',
-        ],
       },
     },
   },
@@ -5238,14 +5126,6 @@
         },
       },
       # If you change this, make similar changes in android-x86-code-coverage below
-      'android-nougat-x86-rel': {
-        'args': [
-          '--use-persistent-shell',
-        ],
-        'swarming': {
-          'shards': 27,
-        },
-      },
       'android-oreo-x86-rel': {
         'args': [
           '--use-persistent-shell',
@@ -5271,7 +5151,7 @@
           'shards': 13, # crbug.com/1294924
         },
       },
-      # Keep this same as android-nougat-x86-rel above
+      # Keep this same as android-oreo-x86-rel above
       'android-x86-code-coverage': {
         'args': [
           '--use-persistent-shell',
