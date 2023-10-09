@@ -71,7 +71,8 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
 
   invalidation::Invalidation CreateInvalidation(
       const invalidation::Topic& topic) {
-    return invalidation::Invalidation::InitUnknownVersion(topic);
+    return invalidation::Invalidation::Init(topic, /* version= */ 42,
+                                            /*payload=*/"foo_bar");
   }
 
   invalidation::Invalidation FireInvalidation(

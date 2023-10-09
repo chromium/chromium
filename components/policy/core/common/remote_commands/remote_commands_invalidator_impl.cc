@@ -116,8 +116,7 @@ void RemoteCommandsInvalidatorImpl::RecordInvalidationMetric(
   const auto current_time = clock_->Now();
   const bool is_expired =
       IsInvalidationExpired(invalidation, last_fetch_time, current_time);
-  const bool is_missing_payload =
-      invalidation.is_unknown_version() || invalidation.payload().empty();
+  const bool is_missing_payload = invalidation.payload().empty();
 
   base::UmaHistogramEnumeration(
       GetInvalidationMetricName(scope_),
