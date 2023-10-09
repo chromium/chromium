@@ -839,6 +839,7 @@ void AutofillSuggestionGenerator::RemoveProfilesNotUsedSinceTimestamp(
 std::u16string AutofillSuggestionGenerator::GetProfileSuggestionMainText(
     const AutofillProfile* profile,
     const AutofillType& type) {
+  // TODO(crbug.com/1490529): Remove special treatment for street addresses.
   std::string app_locale = personal_data_->app_locale();
   ::i18n::addressinput::AddressField address_field;
   if (i18n::FieldForType(type.GetStorableType(), &address_field) &&
@@ -850,30 +851,7 @@ std::u16string AutofillSuggestionGenerator::GetProfileSuggestionMainText(
     return base::UTF8ToUTF16(street_address_line);
   }
 
-  std::u16string value = profile->GetInfo(type, app_locale);
-
-  if (type.group() == FieldTypeGroup::kPhone) {
-    bool format_phone;
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    format_phone = base::FeatureList::IsEnabled(
-        features::kAutofillUseMobileLabelDisambiguation);
-#else
-    format_phone = base::FeatureList::IsEnabled(
-        features::kAutofillUseImprovedLabelDisambiguation);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
-    if (format_phone) {
-      // Formats, e.g., the US phone numbers 15084880800, 508 488 0800, and
-      // +15084880800, as (508) 488-0800, and the Brazilian phone numbers
-      // 21987650000 and +55 11 2648-0254 as (21) 98765-0000 and
-      // (11) 2648-0254, respectively.
-      value = base::UTF8ToUTF16(i18n::FormatPhoneNationallyForDisplay(
-          base::UTF16ToUTF8(value),
-          data_util::GetCountryCodeWithFallback(*profile, app_locale)));
-    }
-  }
-  return value;
+  return profile->GetInfo(type, app_locale);
 }
 
 void AutofillSuggestionGenerator::AddGranularFillingChildSuggestions(

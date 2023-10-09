@@ -734,30 +734,6 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(AutofillSuggestionGeneratorTest,
-       CreateSuggestionsFromProfiles_PhoneSubstring_ImprovedDisambiguation) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(
-      features::kAutofillUseImprovedLabelDisambiguation);
-
-  AutofillProfile profile;
-  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox",
-                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
-
-  std::vector<Suggestion> suggestions =
-      suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile}, {PHONE_HOME_WHOLE_NUMBER},
-          /*last_targeted_fields=*/absl::nullopt,
-          AutofillType(PHONE_HOME_WHOLE_NUMBER),
-          /*trigger_field_max_length=*/0);
-  ASSERT_FALSE(suggestions.empty());
-  EXPECT_EQ(u"(234) 567-8910", suggestions[0].main_text.value);
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(AutofillSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_LogProfileSuggestionsMadeWithFormatter) {
   AutofillProfile profile;
   test::SetProfileInfo(&profile, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
