@@ -3992,8 +3992,14 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_VISUAL_VIEW"  desc="Option in the bookmarks manager to show the visual view with expanded rows and images. [CHAR_LIMIT=24]">
         Visual view
       </message>
+      <message name="IDS_VISUAL_VIEW_ANNOUNCEMENT"  desc="Accessibility announcement in the bookmarks manager when the visual view with expanded rows and images is selected.">
+        Showing visual view
+      </message>
       <message name="IDS_COMPACT_VIEW"  desc="Option in the bookmarks manager to show the compact view with smaller rows and favicons. [CHAR_LIMIT=24]">
         Compact view
+      </message>
+      <message name="IDS_COMPACT_VIEW_ANNOUNCEMENT"  desc="Accessibility announcement in the bookmarks manager when the compact view with smaller rows and favicons is selected.">
+        Showing compact view
       </message>
       <message name="IDS_CREATE_NEW_FOLDER"  desc="Option in the bookmarks manager to show the create a new folder in the current context. [CHAR_LIMIT=24]">
         Create new folder

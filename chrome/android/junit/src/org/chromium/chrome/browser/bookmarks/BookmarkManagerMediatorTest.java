@@ -1840,4 +1840,15 @@ public class BookmarkManagerMediatorTest {
         mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
         verify(mRecyclerView).announceForAccessibility("Sorting from A to Z");
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void onPreferenceChanged_viewPreferenceUpdated_readsAccessibility() {
+        AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
+
+        mMediator.onBookmarkModelLoaded();
+        mMediator.openFolder(mFolderId1);
+        mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
+        verify(mRecyclerView).announceForAccessibility("Showing visual view");
+    }
 }

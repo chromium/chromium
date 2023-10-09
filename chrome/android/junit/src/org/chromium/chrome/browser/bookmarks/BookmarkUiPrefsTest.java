@@ -187,4 +187,17 @@ public class BookmarkUiPrefsTest {
                 mBookmarkUiPrefs.getSortOrderAccessibilityAnnouncementText(
                         context, BookmarkRowSortOrder.MANUAL));
     }
+
+    @Test
+    public void testViewOptionsAccessibilityAnnouncementText() {
+        Context context = ContextUtils.getApplicationContext();
+        Assert.assertEquals(
+                "Showing visual view",
+                mBookmarkUiPrefs.getViewOptionsAccessibilityAnnouncementText(
+                        context, BookmarkRowDisplayPref.VISUAL));
+        Assert.assertEquals(
+                "Showing compact view",
+                mBookmarkUiPrefs.getViewOptionsAccessibilityAnnouncementText(
+                        context, BookmarkRowDisplayPref.COMPACT));
+    }
 }

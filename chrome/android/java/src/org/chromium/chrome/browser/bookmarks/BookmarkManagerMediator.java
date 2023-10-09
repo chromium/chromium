@@ -322,8 +322,11 @@ class BookmarkManagerMediator
                             BookmarkUtils.getFaviconDisplaySize(res));
                     refresh();
 
-                    // TODO(crbug.com/1479578): Consider announcing the selected row display
-                    // preference.
+                    if (AccessibilityState.isTouchExplorationEnabled()) {
+                        mRecyclerView.announceForAccessibility(
+                                mBookmarkUiPrefs.getViewOptionsAccessibilityAnnouncementText(
+                                        mContext, displayPref));
+                    }
                 }
 
                 @Override

@@ -172,6 +172,27 @@ public class BookmarkUiPrefs {
         return context.getString(stringRes);
     }
 
+    /**
+     * Returns the text resource which is read aloud when a view option is selected (for talkback).
+     *
+     * @param context The android context to get strings.
+     * @param sortOrder The currently active display pref.
+     * @return The string to be read aloud when the view option is selected.
+     */
+    public String getViewOptionsAccessibilityAnnouncementText(
+            Context context, @BookmarkRowDisplayPref int displayPref) {
+        int stringRes = 0;
+        if (displayPref == BookmarkRowDisplayPref.VISUAL) {
+            stringRes = R.string.visual_view_announcement;
+        } else if (displayPref == BookmarkRowDisplayPref.COMPACT) {
+            stringRes = R.string.compact_view_announcement;
+        } else {
+            assert false;
+        }
+
+        return context.getString(stringRes);
+    }
+
     void notifyObserversForSortOrderChange(@BookmarkRowSortOrder int sortOrder) {
         for (Observer obs : mObservers) obs.onBookmarkRowSortOrderChanged(sortOrder);
     }
