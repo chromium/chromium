@@ -351,12 +351,6 @@ BASE_FEATURE(kPlatformHEVCEncoderSupport,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
-// Only decode preload=metadata elements upon visibility.
-// TODO(crbug.com/879406): Remove this after M76 ships to stable
-BASE_FEATURE(kPreloadMetadataLazyLoad,
-             "PreloadMetadataLazyLoad",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Let videos be resumed via remote controls (for example, the notification)
 // when in background.
 BASE_FEATURE(kResumeBackgroundVideo,

@@ -368,7 +368,7 @@ void DemuxerManager::DisableDemuxerCanChangeType() {
 PipelineStatus DemuxerManager::CreateDemuxer(
     bool load_media_source,
     DataSource::Preload preload,
-    bool has_poster,
+    bool needs_first_frame,
     DemuxerManager::DemuxerCreatedCB on_demuxer_created) {
   // TODO(crbug/1377053) return a better error
   if (!client_) {
@@ -377,7 +377,7 @@ PipelineStatus DemuxerManager::CreateDemuxer(
 
   // We can only do a universal suspend for posters, unless the flag is enabled.
   auto suspended_mode = Pipeline::StartType::kSuspendAfterMetadataForAudioOnly;
-  if (has_poster || base::FeatureList::IsEnabled(kPreloadMetadataLazyLoad)) {
+  if (!needs_first_frame) {
     suspended_mode = Pipeline::StartType::kSuspendAfterMetadata;
   }
 

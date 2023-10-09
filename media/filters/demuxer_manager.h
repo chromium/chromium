@@ -146,7 +146,7 @@ class MEDIA_EXPORT DemuxerManager {
   // if a demuxer couldn't be created.
   PipelineStatus CreateDemuxer(bool load_media_source,
                                DataSource::Preload preload,
-                               bool has_poster,
+                               bool needs_first_frame,
                                DemuxerCreatedCB on_demuxer_created);
 
 #if BUILDFLAG(IS_ANDROID)
