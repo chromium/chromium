@@ -198,9 +198,8 @@ class CONTENT_EXPORT AttributionStorageDelegate {
 
   AttributionConfig::DestinationRateLimit GetDestinationRateLimit() const;
 
-  // Sanitizes `trigger_data` according to the data limits for `source_type`.
-  uint64_t SanitizeTriggerData(uint64_t trigger_data,
-                               attribution_reporting::mojom::SourceType) const;
+  uint64_t TriggerDataCardinality(
+      attribution_reporting::mojom::SourceType) const;
 
   // Returns zero or more null aggregatable reports for the given trigger.
   virtual std::vector<NullAggregatableReport> GetNullAggregatableReports(
@@ -209,9 +208,6 @@ class CONTENT_EXPORT AttributionStorageDelegate {
       absl::optional<base::Time> attributed_source_time) const = 0;
 
  protected:
-  uint64_t TriggerDataCardinality(
-      attribution_reporting::mojom::SourceType) const;
-
   AttributionConfig config_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

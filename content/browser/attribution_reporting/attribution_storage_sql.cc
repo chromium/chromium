@@ -909,8 +909,8 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   if (attribution_logic == StoredSource::AttributionLogic::kFalsely) {
     for (const auto& fake_report : *randomized_response_data.response()) {
       DCHECK_EQ(fake_report.trigger_data,
-                delegate_->SanitizeTriggerData(fake_report.trigger_data,
-                                               common_info.source_type()));
+                SanitizeTriggerData(fake_report.trigger_data,
+                                    common_info.source_type()));
 
       DCHECK_LT(source_time, fake_report.trigger_time);
       DCHECK_LT(fake_report.trigger_time, fake_report.report_time);
@@ -1557,7 +1557,7 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
       /*initial_report_time=*/report_time, delegate_->NewReportID(),
       /*failed_send_attempts=*/0,
       AttributionReport::EventLevelData(
-          delegate_->SanitizeTriggerData(event_trigger->data, source_type),
+          SanitizeTriggerData(event_trigger->data, source_type),
           event_trigger->priority, source));
 
   dedup_key = event_trigger->dedup_key;
@@ -3305,6 +3305,13 @@ void AttributionStorageSql::SetDelegate(
   DCHECK(delegate);
   rate_limit_table_.SetDelegate(*delegate);
   delegate_ = std::move(delegate);
+}
+
+uint64_t AttributionStorageSql::SanitizeTriggerData(uint64_t trigger_data,
+                                                    SourceType source_type) {
+  uint64_t cardinality = delegate_->TriggerDataCardinality(source_type);
+  CHECK_NE(cardinality, 0u);
+  return trigger_data % cardinality;
 }
 
 }  // namespace content

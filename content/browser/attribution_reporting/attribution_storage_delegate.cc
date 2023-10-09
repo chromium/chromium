@@ -114,15 +114,6 @@ AttributionStorageDelegate::GetDestinationRateLimit() const {
   return config_.destination_rate_limit;
 }
 
-uint64_t AttributionStorageDelegate::SanitizeTriggerData(
-    uint64_t trigger_data,
-    SourceType source_type) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const uint64_t cardinality = TriggerDataCardinality(source_type);
-  return trigger_data % cardinality;
-}
-
 uint64_t AttributionStorageDelegate::TriggerDataCardinality(
     SourceType source_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

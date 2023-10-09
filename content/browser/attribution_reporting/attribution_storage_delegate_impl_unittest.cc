@@ -414,27 +414,6 @@ TEST(AttributionStorageDelegateImplTest,
   }
 }
 
-TEST(AttributionStorageDelegateImplTest, SanitizeTriggerData) {
-  const struct {
-    SourceType source_type;
-    uint64_t trigger_data;
-    uint64_t expected;
-  } kTestCases[] = {
-      {SourceType::kNavigation, 7, 7},  //
-      {SourceType::kNavigation, 8, 0},  //
-      {SourceType::kNavigation, 9, 1},  //
-      {SourceType::kEvent, 1, 1},       //
-      {SourceType::kEvent, 2, 0},       //
-      {SourceType::kEvent, 3, 1},       //
-  };
-
-  for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(test_case.expected,
-              AttributionStorageDelegateImpl().SanitizeTriggerData(
-                  test_case.trigger_data, test_case.source_type));
-  }
-}
-
 class AttributionStorageDelegateImplTestFeatureConfigured
     : public testing::Test {
  public:
