@@ -318,6 +318,49 @@ TEST_F(SearchEngineTableViewControllerTest,
       [(id)header subtitle]);
 }
 
+// Tests that items are displayed correctly when the user is eligible for the
+// search engine choice screen and a prepopulated search engine is selected as
+// default.
+TEST_F(SearchEngineTableViewControllerTest,
+       TestChoiceScreenUrlsLoadedWithPrepopulatedSearchEngineAsDefault) {
+  SetupForChoiceScreenDisplay();
+
+  const std::string kEngineC1Name = "custom-1";
+  const GURL kEngineC1Url = GURL("https://c1.com?q={searchTerms}");
+  const std::string kEngineC2Name = "custom-2";
+  const GURL kEngineC2Url = GURL("https://c2.com?q={searchTerms}");
+  AddCustomSearchEngine(kEngineC1Name, kEngineC1Url,
+                        base::Time::Now() - base::Seconds(10), false);
+  AddCustomSearchEngine(kEngineC2Name, kEngineC2Url,
+                        base::Time::Now() - base::Hours(10), false);
+
+  // GetTemplateURLForChoiceScreen checks for the default search engine. Since
+  // default fallback is deisabled for testing, we set a fake prepopulated one
+  // then change it.
+  const std::string kEngineP1Name = "prepopulated-1";
+  const GURL kEngineP1Url = GURL("https://p1.com?q={searchTerms}");
+  AddPriorSearchEngine(kEngineP1Name, kEngineP1Url, 1001, true);
+  std::vector<std::unique_ptr<TemplateURL>> prepopulated_engines =
+      template_url_service_->GetTemplateURLsForChoiceScreen();
+  // Set a real prepopulated engine as the default.
+  TemplateURL* default_search_engine = prepopulated_engines[0].get();
+  template_url_service_->SetUserSelectedDefaultSearchProvider(
+      default_search_engine);
+
+  CreateController();
+  CheckController();
+
+  ASSERT_EQ(2, NumberOfSections());
+  // There are twelve required prepopulated search egines plus the previously
+  // added default one.
+  ASSERT_EQ(13, NumberOfItemsInSection(0));
+  // TODO(b/303006727): Once we figure out how to keep a constant seed for each
+  // profile, check the actual list of prepopulated items.
+  ASSERT_EQ(2, NumberOfItemsInSection(1));
+  CheckCustomItem(kEngineC1Name, kEngineC1Url, false, 1, 0);
+  CheckCustomItem(kEngineC2Name, kEngineC2Url, false, 1, 1);
+}
+
 // Tests that items are displayed correctly when TemplateURLService is filled
 // and a custom search engine is selected as default.
 TEST_F(SearchEngineTableViewControllerTest,
@@ -363,6 +406,39 @@ TEST_F(SearchEngineTableViewControllerTest,
   ASSERT_EQ(2, NumberOfItemsInSection(1));
   CheckCustomItem(kEngineC1Name, kEngineC1Url, false, 1, 0);
   CheckCustomItem(kEngineC3Name, kEngineC3Url, false, 1, 1);
+}
+
+// Tests that items are displayed correctly when the user is eligible for the
+// search engine choice screen and a custom search engine is selected as
+// default.
+TEST_F(SearchEngineTableViewControllerTest,
+       TestChoiceScreenUrlsLoadedWithCustomSearchEngineAsDefault) {
+  SetupForChoiceScreenDisplay();
+
+  const std::string kEngineC1Name = "custom-1";
+  const GURL kEngineC1Url = GURL("https://c1.com?q={searchTerms}");
+  const std::string kEngineC2Name = "custom-2";
+  const GURL kEngineC2Url = GURL("https://c2.com?q={searchTerms}");
+  AddCustomSearchEngine(kEngineC1Name, kEngineC1Url,
+                        base::Time::Now() - base::Seconds(10), true);
+  AddCustomSearchEngine(kEngineC2Name, kEngineC2Url,
+                        base::Time::Now() - base::Hours(10), false);
+
+  std::vector<std::unique_ptr<TemplateURL>> prepopulated_engines =
+      template_url_service_->GetTemplateURLsForChoiceScreen();
+
+  CreateController();
+  CheckController();
+
+  ASSERT_EQ(2, NumberOfSections());
+  // There are twelve required prepopulated search egines plus the default
+  // custom one, which should be the first in the list.
+  ASSERT_EQ(13, NumberOfItemsInSection(0));
+  CheckCustomItem(kEngineC1Name, kEngineC1Url, true, 0, 0);
+  // TODO(b/303006727): Once we figure out how to keep a constant seed for each
+  // profile, check the actual list of prepopulated items.
+  ASSERT_EQ(1, NumberOfItemsInSection(1));
+  CheckCustomItem(kEngineC2Name, kEngineC2Url, false, 1, 0);
 }
 
 // Tests that when TemplateURLService add or remove TemplateURLs, or update
