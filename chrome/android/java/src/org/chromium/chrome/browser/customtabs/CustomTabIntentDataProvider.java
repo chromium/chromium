@@ -580,10 +580,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             addShareOption(intent, context);
         }
 
-        mActivityType = IntentUtils.safeGetBooleanExtra(
-                                intent, TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, false)
-                ? ActivityType.TRUSTED_WEB_ACTIVITY
-                : ActivityType.CUSTOM_TAB;
+        boolean isTwa = mSession != null && IntentUtils.safeGetBooleanExtra(intent,
+                TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, false);
+
+        mActivityType = isTwa ? ActivityType.TRUSTED_WEB_ACTIVITY : ActivityType.CUSTOM_TAB;
         mTrustedWebActivityAdditionalOrigins = IntentUtils.safeGetStringArrayListExtra(intent,
                 TrustedWebActivityIntentBuilder.EXTRA_ADDITIONAL_TRUSTED_ORIGINS);
         mTrustedWebActivityDisplayMode = resolveTwaDisplayMode();
