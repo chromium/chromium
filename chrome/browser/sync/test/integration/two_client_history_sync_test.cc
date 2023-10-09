@@ -11,7 +11,6 @@
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/history_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/typed_urls_helper.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -159,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, E2E_ENABLED(SyncsUrl)) {
 
   // Populate one client with a URL, wait for it to sync to the other.
   GURL new_url(kHistoryUrl);
-  typed_urls_helper::AddUrlToHistory(0, new_url);
+  history_helper::AddUrlToHistory(0, new_url);
   EXPECT_TRUE(WaitForLocalHistory(1, {{new_url, SizeIs(1)}}));
 }
 
@@ -178,11 +177,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsVisitForBookmarkedUrl) {
   // A row in the DB for client 1 should have been created as a result of
   // syncing the bookmark.
   history::URLRow row;
-  ASSERT_TRUE(typed_urls_helper::GetUrlFromClient(1, bookmark_url, &row));
+  ASSERT_TRUE(history_helper::GetUrlFromClient(1, bookmark_url, &row));
 
   // Now, add a visit for client 0 to the bookmark URL and sync it over - this
   // should not cause a crash.
-  typed_urls_helper::AddUrlToHistory(0, bookmark_url);
+  history_helper::AddUrlToHistory(0, bookmark_url);
 
   ASSERT_TRUE(WaitForLocalHistory(0, {{bookmark_url, SizeIs(1)}}));
   EXPECT_TRUE(WaitForLocalHistory(1, {{bookmark_url, SizeIs(1)}}));
@@ -235,15 +234,15 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsTimeRangeDeletion) {
 
   // Get the visit timestamps.
   history::VisitVector visits1 =
-      typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url1);
+      history_helper::GetVisitsForURLFromClient(/*index=*/0, url1);
   ASSERT_EQ(visits1.size(), 1u);
   base::Time time1 = visits1[0].visit_time;
   history::VisitVector visits2 =
-      typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url2);
+      history_helper::GetVisitsForURLFromClient(/*index=*/0, url2);
   ASSERT_EQ(visits2.size(), 1u);
   base::Time time2 = visits2[0].visit_time;
   history::VisitVector visits3 =
-      typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url3);
+      history_helper::GetVisitsForURLFromClient(/*index=*/0, url3);
   ASSERT_EQ(visits3.size(), 1u);
   base::Time time3 = visits3[0].visit_time;
 
@@ -290,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsVisitsDeletion) {
 
   // Get the visit timestamps corresponding to the first URL.
   history::VisitVector visits1 =
-      typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url1);
+      history_helper::GetVisitsForURLFromClient(/*index=*/0, url1);
   ASSERT_EQ(visits1.size(), 2u);
   base::Time time1a = visits1[0].visit_time;
   base::Time time1b = visits1[1].visit_time;
@@ -369,14 +368,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest,
   // browsing-topics-allowed bit set, but the synced visit (on the second
   // client) does not.
   std::vector<history::AnnotatedVisit> local_visits =
-      typed_urls_helper::GetAnnotatedVisitsForURLFromClient(0, url1);
+      history_helper::GetAnnotatedVisitsForURLFromClient(0, url1);
   ASSERT_EQ(local_visits.size(), 1u);
   history::AnnotatedVisit local_visit = local_visits[0];
   EXPECT_TRUE(local_visit.content_annotations.annotation_flags &
               history::VisitContentAnnotationFlag::kBrowsingTopicsEligible);
 
   std::vector<history::AnnotatedVisit> synced_visits =
-      typed_urls_helper::GetAnnotatedVisitsForURLFromClient(1, url1);
+      history_helper::GetAnnotatedVisitsForURLFromClient(1, url1);
   ASSERT_EQ(synced_visits.size(), 1u);
   history::AnnotatedVisit synced_visit = synced_visits[0];
   EXPECT_FALSE(synced_visit.content_annotations.annotation_flags &

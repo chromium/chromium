@@ -111,6 +111,52 @@ MATCHER_P(VisitRowDurationIs, duration, "") {
   return arg.visit_duration == duration;
 }
 
+// Gets the URLRow for a specific URL from a specific sync profile. Returns
+// false if the URL was not found in the history DB.
+bool GetUrlFromClient(int index, const GURL& url, history::URLRow* row);
+
+// Similar, but queries by URL ID rather than URL.
+bool GetUrlFromClient(int index, history::URLID url_id, history::URLRow* row);
+
+// Gets the visits for a URL from a specific sync profile.
+history::VisitVector GetVisitsFromClient(int index, history::URLID id);
+
+// Gets the visits for a URL from a specific sync profile. Like above, but
+// takes a GURL instead of URLID. Returns empty vector if |url| is not returned
+// by GetUrlFromClient().
+history::VisitVector GetVisitsForURLFromClient(int index, const GURL& url);
+
+// As above, but return `AnnotatedVisit` instead of just `VisitRow`.
+std::vector<history::AnnotatedVisit> GetAnnotatedVisitsFromClient(
+    int index,
+    history::URLID id);
+std::vector<history::AnnotatedVisit> GetAnnotatedVisitsForURLFromClient(
+    int index,
+    const GURL& url);
+
+history::VisitVector GetRedirectChainFromClient(int index,
+                                                history::VisitRow final_visit);
+
+// Adds a URL to the history DB for a specific sync profile (just registers a
+// new visit if the URL already exists) using a TYPED PageTransition.
+void AddUrlToHistory(int index, const GURL& url);
+
+// Adds a URL to the history DB for a specific sync profile (just registers a
+// new visit if the URL already exists), using the passed PageTransition.
+void AddUrlToHistoryWithTransition(int index,
+                                   const GURL& url,
+                                   ui::PageTransition transition,
+                                   history::VisitSource source);
+
+// Adds a URL to the history DB for a specific sync profile (just registers a
+// new visit if the URL already exists), using the passed PageTransition and
+// timestamp.
+void AddUrlToHistoryWithTimestamp(int index,
+                                  const GURL& url,
+                                  ui::PageTransition transition,
+                                  history::VisitSource source,
+                                  const base::Time& timestamp);
+
 // A helper class that waits for entries in the local history DB that match the
 // given matchers.
 // Note that this only checks URLs that were passed in - any additional URLs in

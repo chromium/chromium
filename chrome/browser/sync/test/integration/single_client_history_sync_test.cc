@@ -10,7 +10,6 @@
 #include "chrome/browser/sync/test/integration/history_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/typed_urls_helper.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -384,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
 
   // Now also verify that the local visit is marked as known to sync.
   history::VisitVector visits =
-      typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url1);
+      history_helper::GetVisitsForURLFromClient(/*index=*/0, url1);
   ASSERT_EQ(visits.size(), 1U);
   EXPECT_TRUE(visits[0].is_known_to_sync);
 }
@@ -508,8 +507,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DownloadsAndMerges) {
   const GURL url_remote("https://www.url-remote.com");
   const GURL url_both("https://www.url-both.com");
 
-  typed_urls_helper::AddUrlToHistory(/*index=*/0, url_local);
-  typed_urls_helper::AddUrlToHistory(/*index=*/0, url_both);
+  history_helper::AddUrlToHistory(/*index=*/0, url_local);
+  history_helper::AddUrlToHistory(/*index=*/0, url_both);
 
   GetFakeServer()->InjectEntity(CreateFakeServerEntity(CreateSpecifics(
       base::Time::Now() - base::Minutes(5), "other_cache_guid", url_remote)));
@@ -524,17 +523,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DownloadsAndMerges) {
   // "both" one should have two.
   history::URLRow row_local;
   EXPECT_TRUE(
-      typed_urls_helper::GetUrlFromClient(/*index=*/0, url_local, &row_local));
+      history_helper::GetUrlFromClient(/*index=*/0, url_local, &row_local));
   EXPECT_EQ(row_local.visit_count(), 1);
 
   history::URLRow row_remote;
-  EXPECT_TRUE(typed_urls_helper::GetUrlFromClient(/*index=*/0, url_remote,
-                                                  &row_remote));
+  EXPECT_TRUE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_remote, &row_remote));
   EXPECT_EQ(row_remote.visit_count(), 1);
 
   history::URLRow row_both;
   EXPECT_TRUE(
-      typed_urls_helper::GetUrlFromClient(/*index=*/0, url_both, &row_both));
+      history_helper::GetUrlFromClient(/*index=*/0, url_both, &row_both));
   EXPECT_EQ(row_both.visit_count(), 2);
 }
 
@@ -568,12 +567,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
 
   // The remote URL should have one visit marked as known to Sync.
   history::URLRow row_remote;
-  EXPECT_TRUE(typed_urls_helper::GetUrlFromClient(/*index=*/0, url_remote,
-                                                  &row_remote));
+  EXPECT_TRUE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_remote, &row_remote));
   EXPECT_EQ(row_remote.visit_count(), 1);
 
   history::VisitVector visits =
-      typed_urls_helper::GetVisitsFromClient(/*index=*/0, row_remote.id());
+      history_helper::GetVisitsFromClient(/*index=*/0, row_remote.id());
   ASSERT_EQ(visits.size(), 1U);
   EXPECT_TRUE(visits[0].is_known_to_sync);
 
@@ -602,12 +601,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
 
   // The "remote" URLs should have one visit marked as known to Sync.
   history::URLRow row_remote;
-  EXPECT_TRUE(typed_urls_helper::GetUrlFromClient(/*index=*/0, url_remote,
-                                                  &row_remote));
+  EXPECT_TRUE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_remote, &row_remote));
   EXPECT_EQ(row_remote.visit_count(), 1);
 
   history::VisitVector visits =
-      typed_urls_helper::GetVisitsFromClient(/*index=*/0, row_remote.id());
+      history_helper::GetVisitsFromClient(/*index=*/0, row_remote.id());
   ASSERT_EQ(visits.size(), 1U);
   EXPECT_TRUE(visits[0].is_known_to_sync);
 }
@@ -626,24 +625,24 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
 
   // Make sure the chain arrived intact.
   history::URLRow url_row;
-  EXPECT_TRUE(typed_urls_helper::GetUrlFromClient(/*index=*/0, url3, &url_row));
+  EXPECT_TRUE(history_helper::GetUrlFromClient(/*index=*/0, url3, &url_row));
   history::VisitVector visits =
-      typed_urls_helper::GetVisitsFromClient(/*index=*/0, url_row.id());
+      history_helper::GetVisitsFromClient(/*index=*/0, url_row.id());
   ASSERT_EQ(visits.size(), 1u);
   history::VisitVector redirect_chain =
-      typed_urls_helper::GetRedirectChainFromClient(/*index=*/0, visits[0]);
+      history_helper::GetRedirectChainFromClient(/*index=*/0, visits[0]);
   ASSERT_EQ(redirect_chain.size(), 3u);
 
   history::URLRow url_row1;
-  EXPECT_TRUE(typed_urls_helper::GetUrlFromClient(
+  EXPECT_TRUE(history_helper::GetUrlFromClient(
       /*index=*/0, redirect_chain[0].url_id, &url_row1));
   EXPECT_EQ(url_row1.url(), url1);
   history::URLRow url_row2;
-  EXPECT_TRUE(typed_urls_helper::GetUrlFromClient(
+  EXPECT_TRUE(history_helper::GetUrlFromClient(
       /*index=*/0, redirect_chain[1].url_id, &url_row2));
   EXPECT_EQ(url_row2.url(), url2);
   history::URLRow url_row3;
-  EXPECT_TRUE(typed_urls_helper::GetUrlFromClient(
+  EXPECT_TRUE(history_helper::GetUrlFromClient(
       /*index=*/0, redirect_chain[2].url_id, &url_row3));
   EXPECT_EQ(url_row3.url(), url3);
 }
@@ -674,20 +673,20 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
 
   // Make sure the chain arrived intact (i.e. was stitched back together).
   history::URLRow url_row;
-  EXPECT_TRUE(typed_urls_helper::GetUrlFromClient(/*index=*/0, url2, &url_row));
+  EXPECT_TRUE(history_helper::GetUrlFromClient(/*index=*/0, url2, &url_row));
   history::VisitVector visits =
-      typed_urls_helper::GetVisitsFromClient(/*index=*/0, url_row.id());
+      history_helper::GetVisitsFromClient(/*index=*/0, url_row.id());
   ASSERT_EQ(visits.size(), 1u);
   history::VisitVector redirect_chain =
-      typed_urls_helper::GetRedirectChainFromClient(/*index=*/0, visits[0]);
+      history_helper::GetRedirectChainFromClient(/*index=*/0, visits[0]);
   ASSERT_EQ(redirect_chain.size(), 2u);
 
   history::URLRow url_row1;
-  EXPECT_TRUE(typed_urls_helper::GetUrlFromClient(
+  EXPECT_TRUE(history_helper::GetUrlFromClient(
       /*index=*/0, redirect_chain[0].url_id, &url_row1));
   EXPECT_EQ(url_row1.url(), url1);
   history::URLRow url_row2;
-  EXPECT_TRUE(typed_urls_helper::GetUrlFromClient(
+  EXPECT_TRUE(history_helper::GetUrlFromClient(
       /*index=*/0, redirect_chain[1].url_id, &url_row2));
   EXPECT_EQ(url_row2.url(), url2);
 }
@@ -716,12 +715,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   history::VisitID visit_id2 = history::kInvalidVisitID;
   {
     history::VisitVector visits1 =
-        typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url1);
+        history_helper::GetVisitsForURLFromClient(/*index=*/0, url1);
     ASSERT_EQ(visits1.size(), 1u);
     visit_id1 = visits1[0].visit_id;
 
     history::VisitVector visits2 =
-        typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url2);
+        history_helper::GetVisitsForURLFromClient(/*index=*/0, url2);
     ASSERT_EQ(visits2.size(), 1u);
     visit_id2 = visits2[0].visit_id;
 
@@ -755,11 +754,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   // Make sure the updates arrived, and the referrer link was preserved.
   {
     history::VisitVector visits1 =
-        typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url1);
+        history_helper::GetVisitsForURLFromClient(/*index=*/0, url1);
     ASSERT_EQ(visits1.size(), 1u);
 
     history::VisitVector visits2 =
-        typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url2);
+        history_helper::GetVisitsForURLFromClient(/*index=*/0, url2);
     ASSERT_EQ(visits2.size(), 1u);
 
     // The local visit IDs shouldn't have changed.
@@ -794,7 +793,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DownloadsExternalReferrer) {
   // Make sure the visit arrived, and its referrer URL was stored as an
   // "external" referrer.
   history::VisitVector visits =
-      typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url);
+      history_helper::GetVisitsForURLFromClient(/*index=*/0, url);
   ASSERT_EQ(visits.size(), 1u);
   history::VisitRow visit = visits[0];
   EXPECT_EQ(visit.referring_visit, history::kInvalidVisitID);
@@ -825,11 +824,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
 
   // None of these should have made it into the history DB.
   EXPECT_TRUE(
-      typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url1).empty());
+      history_helper::GetVisitsForURLFromClient(/*index=*/0, url1).empty());
   EXPECT_TRUE(
-      typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url2).empty());
+      history_helper::GetVisitsForURLFromClient(/*index=*/0, url2).empty());
   EXPECT_TRUE(
-      typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url3).empty());
+      history_helper::GetVisitsForURLFromClient(/*index=*/0, url3).empty());
 }
 
 // Signing out or turning off Sync isn't possible in ChromeOS-Ash.
@@ -843,7 +842,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   const GURL url_local("https://www.url-local.com");
   const GURL url_remote("https://www.url-remote.com");
 
-  typed_urls_helper::AddUrlToHistory(/*index=*/0, url_local);
+  history_helper::AddUrlToHistory(/*index=*/0, url_local);
 
   GetFakeServer()->InjectEntity(CreateFakeServerEntity(CreateSpecifics(
       base::Time::Now() - base::Minutes(5), "other_cache_guid", url_remote)));
@@ -853,10 +852,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
 
   // Make sure the "local" and "remote" URLs both exist in the DB.
   history::URLRow row;
-  ASSERT_TRUE(
-      typed_urls_helper::GetUrlFromClient(/*index=*/0, url_local, &row));
-  ASSERT_TRUE(
-      typed_urls_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
+  ASSERT_TRUE(history_helper::GetUrlFromClient(/*index=*/0, url_local, &row));
+  ASSERT_TRUE(history_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
 
   // Turn Sync off by removing the primary account.
   GetClient(0)->SignOutPrimaryAccount();
@@ -865,10 +862,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
 
   // This should have triggered the deletion of foreign history (but left
   // local history alone).
-  EXPECT_TRUE(
-      typed_urls_helper::GetUrlFromClient(/*index=*/0, url_local, &row));
-  EXPECT_FALSE(
-      typed_urls_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
+  EXPECT_TRUE(history_helper::GetUrlFromClient(/*index=*/0, url_local, &row));
+  EXPECT_FALSE(history_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
@@ -879,7 +874,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   const GURL url_local("https://www.url-local.com");
   const GURL url_remote("https://www.url-remote.com");
 
-  typed_urls_helper::AddUrlToHistory(/*index=*/0, url_local);
+  history_helper::AddUrlToHistory(/*index=*/0, url_local);
 
   GetFakeServer()->InjectEntity(CreateFakeServerEntity(CreateSpecifics(
       base::Time::Now() - base::Minutes(5), "other_cache_guid", url_remote)));
@@ -889,10 +884,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
 
   // Make sure the "local" and "remote" URLs both exist in the DB.
   history::URLRow row;
-  ASSERT_TRUE(
-      typed_urls_helper::GetUrlFromClient(/*index=*/0, url_local, &row));
-  ASSERT_TRUE(
-      typed_urls_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
+  ASSERT_TRUE(history_helper::GetUrlFromClient(/*index=*/0, url_local, &row));
+  ASSERT_TRUE(history_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
 
   // Turn Sync off *in two steps* (similar to what actually happens in practice,
   // see crbug.com/1383912#c5):
@@ -911,10 +904,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
 
   // This should have triggered the deletion of foreign history (but left
   // local history alone).
-  EXPECT_TRUE(
-      typed_urls_helper::GetUrlFromClient(/*index=*/0, url_local, &row));
-  EXPECT_FALSE(
-      typed_urls_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
+  EXPECT_TRUE(history_helper::GetUrlFromClient(/*index=*/0, url_local, &row));
+  EXPECT_FALSE(history_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

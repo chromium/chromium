@@ -17,11 +17,11 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/sync/test/integration/history_helper.h"
 #include "chrome/browser/sync/test/integration/session_hierarchy_match_checker.h"
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/typed_urls_helper.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -57,6 +57,7 @@
 namespace {
 
 using fake_server::SessionsHierarchy;
+using history_helper::GetUrlFromClient;
 using sessions_helper::CheckInitialState;
 using sessions_helper::CloseTab;
 using sessions_helper::ExecJs;
@@ -75,7 +76,6 @@ using sessions_helper::WindowsMatch;
 using sync_sessions::SessionSyncTestHelper;
 using testing::IsEmpty;
 using testing::UnorderedElementsAre;
-using typed_urls_helper::GetUrlFromClient;
 
 static const char* kBaseFragmentURL =
     "data:text/html,<html><title>Fragment</title><body></body></html>";
