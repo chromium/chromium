@@ -552,6 +552,7 @@ class DownloadProtectionServiceTestBase
     response.set_verdict(verdict);
     response.set_upload(upload_requested);
     response.set_request_deep_scan(request_deep_scan);
+    response.set_token("response_token");
     sb_service_->GetTestURLLoaderFactory(profile())->AddResponse(
         PPAPIDownloadRequest::GetDownloadRequestUrl().spec(),
         response.SerializeAsString());
@@ -1383,6 +1384,7 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSuccess) {
     expected_response.set_verdict(ClientDownloadResponse::UNCOMMON);
     expected_response.set_upload(true);
     expected_response.set_request_deep_scan(false);
+    expected_response.set_token("response_token");
     EXPECT_EQ(expected_response.SerializeAsString(), feedback_response);
     EXPECT_TRUE(HasClientDownloadRequest());
     ClearClientDownloadRequest();
@@ -4771,6 +4773,46 @@ TEST_F(DownloadProtectionServiceTest, AdvancedProtectionRequestScan) {
                           base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
   EXPECT_TRUE(IsResult(DownloadCheckResult::PROMPT_FOR_SCANNING));
+  EXPECT_EQ("response_token",
+            DownloadProtectionService::GetDownloadPingToken(&item));
+}
+
+TEST_F(DownloadProtectionServiceTest,
+       AdvancedProtectionRequestScanWithSafeResponse) {
+  PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK,
+                  /*upload_requested=*/true, /*request_deep_scan=*/true);
+  NiceMockDownloadItem item;
+  PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
+                           "http://www.google.com/",              // referrer
+                           FILE_PATH_LITERAL("a.tmp"),            // tmp_path
+                           FILE_PATH_LITERAL("a.exe"));           // final_path
+  EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
+      .Times(1);
+  EXPECT_CALL(*sb_service_->mock_database_manager(),
+              MatchDownloadAllowlistUrl(_, _))
+      .WillRepeatedly(
+          [](const GURL& url, base::OnceCallback<void(bool)> callback) {
+            std::move(callback).Run(false);
+          });
+  EXPECT_CALL(*binary_feature_extractor_.get(),
+              ExtractImageFeatures(
+                  tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
+
+  // Testing Scenario with request_deep_scan response is true and
+  // user is enrolled in the Advanced Protection Program, but the response
+  // verdict is SAFE.
+  AdvancedProtectionStatusManagerFactory::GetForProfile(profile())
+      ->SetAdvancedProtectionStatusForTesting(/*enrolled=*/true);
+  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
+  RunLoop run_loop;
+  download_service_->CheckClientDownload(
+      &item,
+      base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
+                          base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_TRUE(IsResult(DownloadCheckResult::PROMPT_FOR_SCANNING));
+  EXPECT_EQ("response_token",
+            DownloadProtectionService::GetDownloadPingToken(&item));
 }
 
 TEST_F(DownloadProtectionServiceTest, AdvancedProtectionRequestScanFalse) {

@@ -557,22 +557,27 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
             base::Unretained(WebUIInfoSingleton::GetInstance()),
             std::make_unique<ClientDownloadResponse>(response)));
 
-    if (!token.empty())
-      SetDownloadProtectionData(token, response.verdict(),
-                                response.tailored_verdict());
-
-    bool upload_requested = response.upload();
-    MaybeStorePingsForDownload(result, upload_requested,
-                               client_download_request_data_,
-                               *response_body.get());
-
     bool should_prompt =
         ShouldPromptForDeepScanning(response.request_deep_scan());
     if (should_prompt) {
       result = DownloadCheckResult::PROMPT_FOR_SCANNING;
       reason = DownloadCheckResultReason::REASON_DEEP_SCAN_PROMPT;
+      // Always set the token if Chrome should prompt for deep scanning.
+      // Otherwise, client Safe Browsing reports may be missed when the
+      // verdict is SAFE. See https://crbug.com/1485218.
+      token = response.token();
       LogDeepScanningPrompt();
     }
+
+    if (!token.empty()) {
+      SetDownloadProtectionData(token, response.verdict(),
+                                response.tailored_verdict());
+    }
+
+    bool upload_requested = response.upload();
+    MaybeStorePingsForDownload(result, upload_requested,
+                               client_download_request_data_,
+                               *response_body.get());
 
     // Only record the UMA metric if we're in a population that potentially
     // could prompt for deep scanning.
