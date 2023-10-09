@@ -422,18 +422,8 @@ CanvasResourceDispatcher* OffscreenCanvas::GetOrCreateResourceDispatcher() {
 }
 
 CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
-  if (ResourceProvider()) {
-    // If the GPU has crashed, it is necessary to notify the OffscreenCanvas so
-    // the context can be recovered.
-    if (ResourceProvider()->IsAccelerated() &&
-        ResourceProvider()->IsGpuContextLost()) {
-      set_context_lost(true);
-      ReplaceResourceProvider(nullptr);
-      NotifyGpuContextLost();
-      return nullptr;
-    }
+  if (ResourceProvider())
     return ResourceProvider();
-  }
 
   std::unique_ptr<CanvasResourceProvider> provider;
   gfx::Size surface_size(width(), height());
@@ -573,8 +563,7 @@ UkmParameters OffscreenCanvas::GetUkmParameters() {
 void OffscreenCanvas::NotifyGpuContextLost() {
   if (context_ && !context_->isContextLost()) {
     // This code path is used only by 2D canvas, because NotifyGpuContextLost
-    // is called by Canvas2DLayerBridge and OffscreenCanvas itself, rather
-    // than the rendering context
+    // is called by Canvas2DLayerBridge rather than the rendering context
     DCHECK(context_->IsRenderingContext2D());
     context_->LoseContext(CanvasRenderingContext::kRealLostContext);
   }
