@@ -20,6 +20,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -488,8 +489,8 @@ std::unique_ptr<views::View> ManagePasswordsDetailsView::CreateTitleView(
   views::InstallCircleHighlightPathGenerator(back_button.get());
   header->AddChildView(std::move(back_button));
 
-  std::string shown_origin =
-      password_manager::GetShownOriginAndLinkUrl(password_form).first;
+  std::string shown_origin = password_manager::GetShownOrigin(
+      password_manager::CredentialUIEntry(password_form));
   header->AddChildView(views::BubbleFrameView::CreateDefaultTitleLabel(
       base::UTF8ToUTF16(shown_origin)));
   return header;

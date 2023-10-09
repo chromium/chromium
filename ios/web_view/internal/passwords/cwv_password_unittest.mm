@@ -7,6 +7,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -29,15 +30,18 @@ TEST_F(CWVPasswordTest, Blocked) {
   password_form.scheme = password_manager::PasswordForm::Scheme::kHtml;
   password_form.blocked_by_user = true;
   password_form.keychain_identifier = "test-encrypted-password";
-  auto name_and_link =
-      password_manager::GetShownOriginAndLinkUrl(password_form);
 
   CWVPassword* password =
       [[CWVPassword alloc] initWithPasswordForm:password_form];
 
   EXPECT_EQ(password_form, *[password internalPasswordForm]);
-  EXPECT_NSEQ(base::SysUTF8ToNSString(name_and_link.first), password.title);
-  EXPECT_NSEQ(base::SysUTF8ToNSString(name_and_link.second.spec()),
+  EXPECT_NSEQ(base::SysUTF8ToNSString(password_manager::GetShownOrigin(
+                  password_manager::CredentialUIEntry(password_form))),
+              password.title);
+  EXPECT_NSEQ(base::SysUTF8ToNSString(
+                  password_manager::GetShownUrl(
+                      password_manager::CredentialUIEntry(password_form))
+                      .spec()),
               password.site);
   EXPECT_TRUE(password.blocked);
   EXPECT_FALSE(password.username);
@@ -59,15 +63,18 @@ TEST_F(CWVPasswordTest, NonBlocked) {
   password_form.scheme = password_manager::PasswordForm::Scheme::kHtml;
   password_form.blocked_by_user = false;
   password_form.keychain_identifier = "test-encrypted-password";
-  auto name_and_link =
-      password_manager::GetShownOriginAndLinkUrl(password_form);
 
   CWVPassword* password =
       [[CWVPassword alloc] initWithPasswordForm:password_form];
 
   EXPECT_EQ(password_form, *[password internalPasswordForm]);
-  EXPECT_NSEQ(base::SysUTF8ToNSString(name_and_link.first), password.title);
-  EXPECT_NSEQ(base::SysUTF8ToNSString(name_and_link.second.spec()),
+  EXPECT_NSEQ(base::SysUTF8ToNSString(password_manager::GetShownOrigin(
+                  password_manager::CredentialUIEntry(password_form))),
+              password.title);
+  EXPECT_NSEQ(base::SysUTF8ToNSString(
+                  password_manager::GetShownUrl(
+                      password_manager::CredentialUIEntry(password_form))
+                      .spec()),
               password.site);
   EXPECT_FALSE(password.blocked);
   EXPECT_NSEQ(@"test@egmail.com", password.username);

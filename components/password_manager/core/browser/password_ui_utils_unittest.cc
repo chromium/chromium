@@ -4,9 +4,8 @@
 
 #include "components/password_manager/core/browser/password_ui_utils.h"
 
-#include <tuple>
-
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -46,11 +45,12 @@ TEST(GetShownOriginAndLinkUrlTest, OriginFromAndroidForm_NoAppDisplayName) {
   android_form.signon_realm = "android://hash@com.example.android";
   android_form.app_display_name.clear();
 
-  auto [shown_origin, link_url] = GetShownOriginAndLinkUrl(android_form);
+  auto shown_origin = GetShownOrigin(CredentialUIEntry(android_form));
+  auto shown_url = GetShownUrl(CredentialUIEntry(android_form));
 
   EXPECT_EQ("android.example.com", shown_origin);
   EXPECT_EQ("https://play.google.com/store/apps/details?id=com.example.android",
-            link_url.spec());
+            shown_url.spec());
 }
 
 TEST(GetShownOriginAndLinkUrlTest, OriginFromAndroidForm_WithAppDisplayName) {
@@ -58,11 +58,12 @@ TEST(GetShownOriginAndLinkUrlTest, OriginFromAndroidForm_WithAppDisplayName) {
   android_form.signon_realm = "android://hash@com.example.android";
   android_form.app_display_name = "Example Android App";
 
-  auto [shown_origin, link_url] = GetShownOriginAndLinkUrl(android_form);
+  auto shown_origin = GetShownOrigin(CredentialUIEntry(android_form));
+  auto shown_url = GetShownUrl(CredentialUIEntry(android_form));
 
   EXPECT_EQ("Example Android App", shown_origin);
   EXPECT_EQ("https://play.google.com/store/apps/details?id=com.example.android",
-            link_url.spec());
+            shown_url.spec());
 }
 
 TEST(GetShownOriginAndLinkUrlTest, OriginFromNonAndroidForm) {
@@ -70,10 +71,11 @@ TEST(GetShownOriginAndLinkUrlTest, OriginFromNonAndroidForm) {
   form.signon_realm = "https://example.com/";
   form.url = GURL("https://example.com/login?ref=1");
 
-  auto [shown_origin, link_url] = GetShownOriginAndLinkUrl(form);
+  auto shown_origin = GetShownOrigin(CredentialUIEntry(form));
+  auto shown_url = GetShownUrl(CredentialUIEntry(form));
 
   EXPECT_EQ("example.com", shown_origin);
-  EXPECT_EQ(GURL("https://example.com/login?ref=1"), link_url);
+  EXPECT_EQ(GURL("https://example.com/login?ref=1"), shown_url);
 }
 
 TEST(ToUsernameString, NonEmptyUsername) {
