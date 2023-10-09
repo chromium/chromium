@@ -189,11 +189,19 @@ base::Time EventReportWindows::ReportTimeAtWindow(base::Time source_time,
 
 EventReportWindows::WindowResult EventReportWindows::FallsWithin(
     base::TimeDelta trigger_moment) const {
-  DCHECK(!trigger_moment.is_negative());
-  if (trigger_moment < start_time_or_window_time_) {
+  // It is possible for a source to have an assigned time of T and a trigger
+  // that is attributed to it to have a time of T-X e.g. due to user-initiated
+  // clock changes.
+  //
+  // TODO(crbug.com/1489333): Assume trigger moment is not negative once
+  // attribution time resolution is implemented in storage.
+  base::TimeDelta bounded_trigger_moment =
+      trigger_moment.is_negative() ? base::Microseconds(0) : trigger_moment;
+
+  if (bounded_trigger_moment < start_time_or_window_time_) {
     return WindowResult::kNotStarted;
   }
-  if (trigger_moment >= *end_times_.rbegin()) {
+  if (bounded_trigger_moment >= *end_times_.rbegin()) {
     return WindowResult::kPassed;
   }
   return WindowResult::kFallsWithin;

@@ -475,35 +475,50 @@ TEST(EventReportWindowsTest, ReportTimeAtWindow) {
 TEST(EventReportWindowsTest, FallsWithin) {
   const EventReportWindows kDefaultReportWindows =
       *EventReportWindows::CreateWindows(base::Hours(1), {base::Hours(2)});
+  const EventReportWindows kDefaultReportWindowsNoStartTime =
+      *EventReportWindows::CreateWindows(base::Hours(0), {base::Hours(2)});
 
   const struct {
+    EventReportWindows report_windows;
     base::TimeDelta trigger_moment;
     WindowResult expected;
   } kTestCases[] = {
       {
+          .report_windows = kDefaultReportWindows,
           .trigger_moment = base::Hours(0),
           .expected = WindowResult::kNotStarted,
       },
       {
+          .report_windows = kDefaultReportWindows,
           .trigger_moment = base::Hours(1) - base::Milliseconds(1),
           .expected = WindowResult::kNotStarted,
       },
       {
+          .report_windows = kDefaultReportWindows,
           .trigger_moment = base::Hours(1),
           .expected = WindowResult::kFallsWithin,
       },
       {
+          .report_windows = kDefaultReportWindows,
           .trigger_moment = base::Hours(2) - base::Milliseconds(1),
           .expected = WindowResult::kFallsWithin,
       },
       {
+          .report_windows = kDefaultReportWindows,
           .trigger_moment = base::Hours(2),
           .expected = WindowResult::kPassed,
+      },
+      // TODO(crbug.com/1489333): Remove case once DCHECK is used in
+      // implementation.
+      {
+          .report_windows = kDefaultReportWindowsNoStartTime,
+          .trigger_moment = base::Hours(-1),
+          .expected = WindowResult::kFallsWithin,
       },
   };
 
   for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(kDefaultReportWindows.FallsWithin(test_case.trigger_moment),
+    EXPECT_EQ(test_case.report_windows.FallsWithin(test_case.trigger_moment),
               test_case.expected);
   }
 }
