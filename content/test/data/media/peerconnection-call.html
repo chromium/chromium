@@ -233,10 +233,13 @@
         .then(() => {
           throw new Error('Expected to fail, but succeeded');
         }, (error) => {
-          // Note: Per spec, error should be 'IllegalModificationError'
-          // https://crbug.com/823036
-          var expectedError = 'OperationError';
-          assertEquals(expectedError, error.name);
+          // Note: Per spec, error should be 'IllegalStateError'
+          // https://crbug.com/1490510
+          var expectedError = 'IllegalStateError';
+          // Temporarily allow OperationError (old wrong code)
+          if (error.name != 'OperationError') {
+            assertEquals(expectedError, error.name);
+          }
           return logSuccess();
         });
   }
