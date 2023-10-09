@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/browser_app_instance.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_map.h"
@@ -137,22 +136,6 @@ bool BrowserAppInstanceRegistry::IsInstanceActive(
 
   if (const BrowserWindowInstance* instance =
           GetBrowserWindowInstanceById(id)) {
-    if (aura::Window* window = GetWindowByInstanceId(id)) {
-      views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
-      if (widget->IsActive() != instance->is_active) {
-        // TODO: Replace log with DCHECK once we know better about
-        // crbug.com/1284930 and b/256952679.
-        static bool reported = false;
-        if (!reported) {
-          reported = true;
-          LOG(ERROR) << "Browser window activation is inconsistent. Registry "
-                        "is "
-                     << instance->is_active << " while widget is "
-                     << widget->IsActive() << ".";
-          base::debug::DumpWithoutCrashing();
-        }
-      }
-    }
     return instance->is_active;
   }
   return false;
