@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
@@ -120,8 +121,8 @@ public class FeedSurfaceMediator
      * TODO(huayinz): Update content and visibility through a ModelChangeProcessor.
      */
     private class FeedSignInPromo extends SignInPromo {
-        FeedSignInPromo(SigninManager signinManager) {
-            super(signinManager);
+        FeedSignInPromo(SigninManager signinManager, SyncPromoController syncPromoController) {
+            super(signinManager, syncPromoController);
             maybeUpdateSignInPromo();
         }
 
@@ -145,9 +146,11 @@ public class FeedSurfaceMediator
             // blocking the UI thread for several seconds if the accounts cache is not populated
             // yet.
             if (isVisible()) {
-                mSyncPromoController.setUpSyncPromoView(mProfileDataCache,
-                        mCoordinator.getSigninPromoView().findViewById(
-                                R.id.signin_promo_view_container),
+                mSyncPromoController.setUpSyncPromoView(
+                        mProfileDataCache,
+                        mCoordinator
+                                .getSigninPromoView()
+                                .findViewById(R.id.signin_promo_view_container),
                         this::onDismissPromo);
             }
         }
@@ -767,13 +770,16 @@ public class FeedSurfaceMediator
      */
     private boolean shouldShowSigninPromo() {
         SyncPromoController.resetNTPSyncPromoLimitsIfHiddenForTooLong();
-        if (!SignInPromo.shouldCreatePromo()
-                || !SyncPromoController.canShowSyncPromo(
-                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS)) {
+        SyncPromoController promoController =
+                new SyncPromoController(
+                        mProfile,
+                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS,
+                        SyncConsentActivityLauncherImpl.get());
+        if (!SignInPromo.shouldCreatePromo() || !promoController.canShowSyncPromo()) {
             return false;
         }
         if (mSignInPromo == null) {
-            mSignInPromo = new FeedSignInPromo(mSigninManager);
+            mSignInPromo = new FeedSignInPromo(mSigninManager, promoController);
             mSignInPromo.setCanShowPersonalizedSuggestions(isSuggestionsVisible());
         }
         return mSignInPromo.isVisible();

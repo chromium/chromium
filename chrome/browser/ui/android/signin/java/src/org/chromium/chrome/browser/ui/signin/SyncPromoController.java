@@ -100,8 +100,7 @@ public class SyncPromoController {
         String SHOWN = "Shown";
     }
 
-    private @Nullable DisplayableProfileData mProfileData;
-    private @Nullable ImpressionTracker mImpressionTracker;
+    private final Profile mProfile;
     private final @AccessPoint int mAccessPoint;
     private final String mImpressionUserActionName;
     private final @Nullable String mSyncPromoDismissedPreferenceTracker;
@@ -109,26 +108,8 @@ public class SyncPromoController {
     private final @StringRes int mDescriptionStringId;
     private final SyncConsentActivityLauncher mSyncConsentActivityLauncher;
 
-    /**
-     * Determines whether the Sync promo can be shown.
-     * @param accessPoint The access point for which the impression limit is being checked.
-     */
-    public static boolean canShowSyncPromo(@AccessPoint int accessPoint) {
-        switch (accessPoint) {
-            case SigninAccessPoint.BOOKMARK_MANAGER:
-                return canShowBookmarkPromo();
-            case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
-                return canShowNTPPromo();
-            case SigninAccessPoint.RECENT_TABS:
-                // There is no impression limit or dismiss button in Recent Tabs promo.
-                return true;
-            case SigninAccessPoint.SETTINGS:
-                return canShowSettingsPromo();
-            default:
-                assert false : "Unexpected value for access point: " + accessPoint;
-                return false;
-        }
-    }
+    private @Nullable DisplayableProfileData mProfileData;
+    private @Nullable ImpressionTracker mImpressionTracker;
 
     private static long getNTPSyncPromoResetAfterMillis() {
         if (ChromeFeatureList.isEnabled(
@@ -194,39 +175,6 @@ public class SyncPromoController {
         return StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT.getValue();
     }
 
-    private static boolean canShowNTPPromo() {
-        int promoShowCount = ChromeSharedPreferences.getInstance().readInt(
-                getPromoShowCountPreferenceName(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
-        if (promoShowCount >= getNTPMaxImpressions()) {
-            return false;
-        }
-
-        if (timeElapsedSinceFirstShownExceedsLimit()) {
-            return false;
-        }
-
-        if (ChromeSharedPreferences.getInstance().readBoolean(
-                    ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, false)) {
-            return false;
-        }
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS)) {
-            return false;
-        }
-        final @Nullable CoreAccountInfo visibleAccount = getVisibleAccount();
-        if (visibleAccount == null) {
-            return true;
-        }
-        final Promise<AccountInfo> visibleAccountPromise =
-                AccountInfoServiceProvider.get().getAccountInfoByEmail(visibleAccount.getEmail());
-
-        AccountInfo accountInfo =
-                visibleAccountPromise.isFulfilled() ? visibleAccountPromise.getResult() : null;
-        if (accountInfo == null) return false;
-
-        return accountInfo.getAccountCapabilities().canOfferExtendedSyncPromos() == Tribool.TRUE;
-    }
-
     private static boolean canShowSettingsPromo() {
         SharedPreferencesManager preferencesManager = ChromeSharedPreferences.getInstance();
         boolean isPromoDismissed = preferencesManager.readBoolean(
@@ -235,21 +183,6 @@ public class SyncPromoController {
                        getPromoShowCountPreferenceName(SigninAccessPoint.SETTINGS))
                 < MAX_IMPRESSIONS_SETTINGS
                 && !isPromoDismissed;
-    }
-
-    // Find the visible account for sync promos
-    private static @Nullable CoreAccountInfo getVisibleAccount() {
-        final IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                Profile.getLastUsedRegularProfile());
-        @Nullable
-        CoreAccountInfo visibleAccount = identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        final AccountManagerFacade accountManagerFacade =
-                AccountManagerFacadeProvider.getInstance();
-        if (visibleAccount == null) {
-            visibleAccount = AccountUtils.getDefaultCoreAccountInfoIfFulfilled(
-                    accountManagerFacade.getCoreAccountInfos());
-        }
-        return visibleAccount;
     }
 
     @VisibleForTesting
@@ -274,11 +207,16 @@ public class SyncPromoController {
 
     /**
      * Creates a new SyncPromoController.
+     *
+     * @param profile The Profile associated with the sync promo.
      * @param accessPoint Specifies the AccessPoint from which the promo is to be shown.
      * @param syncConsentActivityLauncher Launcher of {@link SyncConsentActivity}.
      */
     public SyncPromoController(
-            @AccessPoint int accessPoint, SyncConsentActivityLauncher syncConsentActivityLauncher) {
+            Profile profile,
+            @AccessPoint int accessPoint,
+            SyncConsentActivityLauncher syncConsentActivityLauncher) {
+        mProfile = profile;
         mAccessPoint = accessPoint;
         mSyncConsentActivityLauncher = syncConsentActivityLauncher;
         switch (mAccessPoint) {
@@ -315,6 +253,76 @@ public class SyncPromoController {
         }
     }
 
+    /** Determines whether the Sync promo can be shown. */
+    public boolean canShowSyncPromo() {
+        switch (mAccessPoint) {
+            case SigninAccessPoint.BOOKMARK_MANAGER:
+                return canShowBookmarkPromo();
+            case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
+                return canShowNTPPromo();
+            case SigninAccessPoint.RECENT_TABS:
+                // There is no impression limit or dismiss button in Recent Tabs promo.
+                return true;
+            case SigninAccessPoint.SETTINGS:
+                return canShowSettingsPromo();
+            default:
+                assert false : "Unexpected value for access point: " + mAccessPoint;
+                return false;
+        }
+    }
+
+    private boolean canShowNTPPromo() {
+        int promoShowCount =
+                ChromeSharedPreferences.getInstance()
+                        .readInt(
+                                getPromoShowCountPreferenceName(
+                                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+        if (promoShowCount >= getNTPMaxImpressions()) {
+            return false;
+        }
+
+        if (timeElapsedSinceFirstShownExceedsLimit()) {
+            return false;
+        }
+
+        if (ChromeSharedPreferences.getInstance()
+                .readBoolean(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, false)) {
+            return false;
+        }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS)) {
+            return false;
+        }
+        final @Nullable CoreAccountInfo visibleAccount = getVisibleAccount();
+        if (visibleAccount == null) {
+            return true;
+        }
+        final Promise<AccountInfo> visibleAccountPromise =
+                AccountInfoServiceProvider.get().getAccountInfoByEmail(visibleAccount.getEmail());
+
+        AccountInfo accountInfo =
+                visibleAccountPromise.isFulfilled() ? visibleAccountPromise.getResult() : null;
+        if (accountInfo == null) return false;
+
+        return accountInfo.getAccountCapabilities().canOfferExtendedSyncPromos() == Tribool.TRUE;
+    }
+
+    // Find the visible account for sync promos
+    private @Nullable CoreAccountInfo getVisibleAccount() {
+        final IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(mProfile);
+        @Nullable
+        CoreAccountInfo visibleAccount = identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        final AccountManagerFacade accountManagerFacade =
+                AccountManagerFacadeProvider.getInstance();
+        if (visibleAccount == null) {
+            visibleAccount =
+                    AccountUtils.getDefaultCoreAccountInfoIfFulfilled(
+                            accountManagerFacade.getCoreAccountInfos());
+        }
+        return visibleAccount;
+    }
+
     /**
      * Sets up the sync promo view.
      * @param profileDataCache The {@link ProfileDataCache} that stores profile data.
@@ -323,8 +331,8 @@ public class SyncPromoController {
      */
     public void setUpSyncPromoView(ProfileDataCache profileDataCache,
             PersonalizedSigninPromoView view, SyncPromoController.OnDismissListener listener) {
-        final IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                Profile.getLastUsedRegularProfile());
+        final IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(mProfile);
         assert !identityManager.hasPrimaryAccount(ConsentLevel.SYNC) : "Sync is already enabled!";
 
         final @Nullable CoreAccountInfo visibleAccount = getVisibleAccount();
@@ -449,8 +457,8 @@ public class SyncPromoController {
 
         view.getPrimaryButton().setOnClickListener(v -> signinWithDefaultAccount(context));
         if (IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+                .getIdentityManager(mProfile)
+                .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
             view.getSecondaryButton().setVisibility(View.GONE);
             return;

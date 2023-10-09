@@ -112,8 +112,11 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         mSignInManager = IdentityServicesProvider.get().getSigninManager(mProfile);
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
-        mSyncPromoController = new SyncPromoController(
-                SigninAccessPoint.RECENT_TABS, SyncConsentActivityLauncherImpl.get());
+        mSyncPromoController =
+                new SyncPromoController(
+                        mProfile,
+                        SigninAccessPoint.RECENT_TABS,
+                        SyncConsentActivityLauncherImpl.get());
         mSyncService = SyncServiceFactory.getForProfile(mProfile);
 
         mRecentlyClosedTabManager.setEntriesUpdatedRunnable(this::updateRecentlyClosedEntries);

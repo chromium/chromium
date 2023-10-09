@@ -39,6 +39,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
@@ -313,22 +314,31 @@ public class SyncPromoControllerUITest {
 
     private View setUpSyncPromoView(
             @AccessPoint int accessPoint, ProfileDataCache profileDataCache, int layoutResId) {
-        View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            View promoView =
-                    LayoutInflater.from(mActivityTestRule.getActivity()).inflate(layoutResId, null);
-            Activity activity = mActivityTestRule.getActivity();
-            LinearLayout content = new LinearLayout(activity);
-            content.addView(promoView,
-                    new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT));
-            activity.setContentView(content);
-            SyncPromoController syncPromoController =
-                    new SyncPromoController(accessPoint, mSyncConsentActivityLauncher);
-            syncPromoController.setUpSyncPromoView(profileDataCache,
-                    promoView.findViewById(R.id.signin_promo_view_container),
-                    accessPoint == SigninAccessPoint.RECENT_TABS ? null : () -> {});
-            return promoView;
-        });
+        View view =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            View promoView =
+                                    LayoutInflater.from(mActivityTestRule.getActivity())
+                                            .inflate(layoutResId, null);
+                            Activity activity = mActivityTestRule.getActivity();
+                            LinearLayout content = new LinearLayout(activity);
+                            content.addView(
+                                    promoView,
+                                    new LayoutParams(
+                                            ViewGroup.LayoutParams.MATCH_PARENT,
+                                            ViewGroup.LayoutParams.WRAP_CONTENT));
+                            activity.setContentView(content);
+                            SyncPromoController syncPromoController =
+                                    new SyncPromoController(
+                                            Profile.getLastUsedRegularProfile(),
+                                            accessPoint,
+                                            mSyncConsentActivityLauncher);
+                            syncPromoController.setUpSyncPromoView(
+                                    profileDataCache,
+                                    promoView.findViewById(R.id.signin_promo_view_container),
+                                    accessPoint == SigninAccessPoint.RECENT_TABS ? null : () -> {});
+                            return promoView;
+                        });
         return view;
     }
 }

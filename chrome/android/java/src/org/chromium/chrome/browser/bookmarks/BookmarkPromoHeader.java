@@ -68,10 +68,14 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
         mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
-        if (SyncPromoController.canShowSyncPromo(SigninAccessPoint.BOOKMARK_MANAGER)) {
+        SyncPromoController syncPromoController =
+                new SyncPromoController(
+                        mProfile,
+                        SigninAccessPoint.BOOKMARK_MANAGER,
+                        SyncConsentActivityLauncherImpl.get());
+        if (syncPromoController.canShowSyncPromo()) {
             mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
-            mSyncPromoController = new SyncPromoController(
-                    SigninAccessPoint.BOOKMARK_MANAGER, SyncConsentActivityLauncherImpl.get());
+            mSyncPromoController = syncPromoController;
         } else {
             mProfileDataCache = null;
             mSyncPromoController = null;
@@ -148,7 +152,8 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
      */
     private boolean shouldShowBookmarkSigninPromo() {
         return mSigninManager.isSyncOptInAllowed()
-                && SyncPromoController.canShowSyncPromo(SigninAccessPoint.BOOKMARK_MANAGER);
+                && mSyncPromoController != null
+                && mSyncPromoController.canShowSyncPromo();
     }
 
     private @SyncPromoState int calculatePromoState() {

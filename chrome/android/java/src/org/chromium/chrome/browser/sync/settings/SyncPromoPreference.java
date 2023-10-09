@@ -13,7 +13,6 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
@@ -23,7 +22,6 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -64,16 +62,20 @@ public class SyncPromoPreference extends Preference
     /**
      * Initialize the dependencies for the SyncPromoPreference.
      *
-     * Must be called before the preference is attached, which is called from the containing
+     * <p>Must be called before the preference is attached, which is called from the containing
      * settings screen's onViewCreated method.
      */
-    public void initialize(ProfileDataCache profileDataCache,
-            AccountManagerFacade accountManagerFacade, SigninManager signinManager,
-            IdentityManager identityManager) {
+    public void initialize(
+            ProfileDataCache profileDataCache,
+            AccountManagerFacade accountManagerFacade,
+            SigninManager signinManager,
+            IdentityManager identityManager,
+            SyncPromoController syncPromoController) {
         mProfileDataCache = profileDataCache;
         mAccountManagerFacade = accountManagerFacade;
         mSigninManager = signinManager;
         mIdentityManager = identityManager;
+        mSyncPromoController = syncPromoController;
     }
 
     @Override
@@ -83,8 +85,6 @@ public class SyncPromoPreference extends Preference
         mAccountManagerFacade.addObserver(this);
         mSigninManager.addSignInStateObserver(this);
         mProfileDataCache.addObserver(this);
-        mSyncPromoController = new SyncPromoController(
-                SigninAccessPoint.SETTINGS, SyncConsentActivityLauncherImpl.get());
 
         update();
     }
@@ -124,7 +124,7 @@ public class SyncPromoPreference extends Preference
             return;
         }
 
-        if (SyncPromoController.canShowSyncPromo(SigninAccessPoint.SETTINGS)) {
+        if (mSyncPromoController.canShowSyncPromo()) {
             if (!mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
                 setupPersonalizedPromo(State.PERSONALIZED_SIGNIN_PROMO);
                 return;

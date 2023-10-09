@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
+import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -176,7 +177,14 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
         SyncPromoPreference syncPromoPreference = findPreference(PREF_SYNC_PROMO);
         syncPromoPreference.initialize(
-                profileDataCache, accountManagerFacade, signinManager, identityManager);
+                profileDataCache,
+                accountManagerFacade,
+                signinManager,
+                identityManager,
+                new SyncPromoController(
+                        getProfile(),
+                        SigninAccessPoint.SETTINGS,
+                        SyncConsentActivityLauncherImpl.get()));
 
         SignInPreference signInPreference = findPreference(PREF_SIGN_IN);
         signInPreference.initialize(profileDataCache, accountManagerFacade,
