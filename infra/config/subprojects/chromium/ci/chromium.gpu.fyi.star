@@ -32,7 +32,7 @@ consoles.console_view(
         branches.selector.ANDROID_BRANCHES,
     ],
     ordering = {
-        None: ["Windows", "Mac", "Linux"],
+        None: ["Windows", "Mac", "Linux", "Fuchsia"],
         "*builder*": ["Builder"],
         "*type*": consoles.ordering(short_names = ["rel", "dbg", "exp"]),
         "*cpu*": consoles.ordering(short_names = ["x86"]),
@@ -58,6 +58,17 @@ consoles.console_view(
         "Lacros": "*builder*",
     },
 )
+
+# Include Fuchsia builders.
+[branches.console_view_entry(
+    console_view = "chromium.gpu.fyi",
+    builder = "chrome:ci/{}".format(name),
+    category = category,
+    short_name = short_name,
+) for name, category, short_name in (
+    ("fuchsia-fyi-astro", "Fuchsia", "ast"),
+    ("fuchsia-fyi-sherlock", "Fuchsia", "slk"),
+)]
 
 def gpu_fyi_windows_builder(*, name, **kwargs):
     kwargs.setdefault("execution_timeout", ci.DEFAULT_EXECUTION_TIMEOUT)
