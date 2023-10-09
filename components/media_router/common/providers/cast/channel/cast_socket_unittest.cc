@@ -1004,7 +1004,8 @@ TEST_F(MockCastSocketTest, TestConnectEndToEndWithRealTransportSync) {
 
 TEST_F(MockCastSocketTest, TestObservers) {
   CreateCastSocketSecure();
-  // Test AddObserever
+
+  // Test adding observers.
   MockCastSocketObserver observer1;
   MockCastSocketObserver observer2;
   socket_->AddObserver(&observer1);
@@ -1012,11 +1013,15 @@ TEST_F(MockCastSocketTest, TestObservers) {
   socket_->AddObserver(&observer2);
   socket_->AddObserver(&observer2);
 
-  // Test notify observers
+  // Test notifying observers.
   EXPECT_CALL(observer1, OnError(_, cast_channel::ChannelError::CONNECT_ERROR));
   EXPECT_CALL(observer2, OnError(_, cast_channel::ChannelError::CONNECT_ERROR));
   CastSocketImpl::CastSocketMessageDelegate delegate(socket_.get());
   delegate.OnError(cast_channel::ChannelError::CONNECT_ERROR);
+
+  // Finally, remove the observers to avoid the CheckedObserver CHECK.
+  socket_->RemoveObserver(&observer1);
+  socket_->RemoveObserver(&observer2);
 }
 
 TEST_F(MockCastSocketTest, TestOpenChannelConnectingSocket) {

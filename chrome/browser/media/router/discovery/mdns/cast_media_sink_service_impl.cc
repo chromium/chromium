@@ -388,6 +388,9 @@ void CastMediaSinkServiceImpl::OnMessage(
     const cast_channel::CastSocket& socket,
     const cast::channel::CastMessage& message) {}
 
+void CastMediaSinkServiceImpl::OnReadyStateChanged(
+    const cast_channel::CastSocket& socket) {}
+
 void CastMediaSinkServiceImpl::OnNetworksChanged(
     const std::string& network_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

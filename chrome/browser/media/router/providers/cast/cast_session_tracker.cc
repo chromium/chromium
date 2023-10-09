@@ -16,7 +16,11 @@ namespace media_router {
 
 CastSessionTracker::Observer::~Observer() = default;
 
-CastSessionTracker::~CastSessionTracker() = default;
+CastSessionTracker::~CastSessionTracker() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  media_sink_service_->RemoveObserver(this);
+  message_handler_->RemoveObserver(this);
+}
 
 // static
 CastSessionTracker* CastSessionTracker::GetInstance() {
@@ -213,6 +217,9 @@ void CastSessionTracker::OnSinkRemoved(const MediaSinkInternal& sink) {
       observer.OnSessionRemoved(sink);
   }
 }
+
+void CastSessionTracker::OnAppMessage(int channel_id,
+                                      const CastMessage& message) {}
 
 void CastSessionTracker::OnInternalMessage(
     int channel_id,

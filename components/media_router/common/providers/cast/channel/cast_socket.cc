@@ -88,7 +88,9 @@ void ConnectOnUIThread(
 
 }  // namespace
 
-void CastSocket::Observer::OnReadyStateChanged(const CastSocket& socket) {}
+CastSocket::Observer::~Observer() {
+  CHECK(!IsInObserverList());
+}
 
 CastSocketImpl::CastSocketImpl(NetworkContextGetter network_context_getter,
                                const CastSocketOpenParams& open_params,

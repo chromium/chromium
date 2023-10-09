@@ -87,6 +87,7 @@ class CastSessionTracker : public MediaSinkServiceBase::Observer,
   void OnSinkRemoved(const MediaSinkInternal& sink) override;
 
   // cast_channel::CastMessageHandler::Observer implementation
+  void OnAppMessage(int channel_id, const CastMessage& message) override;
   void OnInternalMessage(int channel_id,
                          const cast_channel::InternalMessage& message) override;
 

@@ -75,6 +75,10 @@ InternalMessage::InternalMessage(CastMessageType type,
       message(std::move(message)) {}
 InternalMessage::~InternalMessage() = default;
 
+CastMessageHandler::Observer::~Observer() {
+  CHECK(!IsInObserverList());
+}
+
 CastMessageHandler::CastMessageHandler(CastSocketService* socket_service,
                                        ParseJsonCallback parse_json,
                                        std::string_view user_agent,

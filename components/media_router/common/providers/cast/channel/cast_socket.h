@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -63,9 +64,9 @@ class CastSocket {
   // valid in callback function. Do not pass |socket| around.
   using OnOpenCallback = base::OnceCallback<void(CastSocket* socket)>;
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() {}
+    ~Observer() override;
 
     // Invoked when an error occurs on |socket|.
     virtual void OnError(const CastSocket& socket,
@@ -75,7 +76,7 @@ class CastSocket {
     virtual void OnMessage(const CastSocket& socket,
                            const CastMessage& message) = 0;
 
-    virtual void OnReadyStateChanged(const CastSocket& socket);
+    virtual void OnReadyStateChanged(const CastSocket& socket) = 0;
   };
 
   virtual ~CastSocket() {}
@@ -440,7 +441,7 @@ class CastSocketImpl : public CastSocket {
   raw_ptr<AuthTransportDelegate, AcrossTasksDanglingUntriaged> auth_delegate_;
 
   // List of socket observers.
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<CastSocketImpl> weak_factory_{this};
 };

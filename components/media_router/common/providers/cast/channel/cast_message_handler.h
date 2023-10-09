@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "base/time/tick_clock.h"
 #include "base/timer/timer.h"
@@ -159,12 +160,13 @@ constexpr base::TimeDelta kRequestTimeout = base::Seconds(5);
 // destructor) must be run on the same sequence that CastSocketService runs on.
 class CastMessageHandler : public CastSocket::Observer {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() = default;
-    virtual void OnAppMessage(int channel_id, const CastMessage& message) {}
+    ~Observer() override;
+
+    virtual void OnAppMessage(int channel_id, const CastMessage& message) = 0;
     virtual void OnInternalMessage(int channel_id,
-                                   const InternalMessage& message) {}
+                                   const InternalMessage& message) = 0;
   };
 
   // |parse_json|: A callback which can be used to parse a string of potentially
@@ -370,7 +372,7 @@ class CastMessageHandler : public CastSocket::Observer {
 
   int next_request_id_ = 0;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
   // Set of virtual connections opened to receivers.
   base::flat_set<VirtualConnection> virtual_connections_;

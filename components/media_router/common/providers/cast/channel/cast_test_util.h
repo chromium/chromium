@@ -46,11 +46,13 @@ class MockCastTransport : public CastTransport {
     SendMessage_(message, callback);
   }
 
-  MOCK_METHOD2(SendMessage_,
-               void(const CastMessage& message,
-                    net::CompletionOnceCallback& callback));
+  MOCK_METHOD(void,
+              SendMessage_,
+              (const CastMessage& message,
+               net::CompletionOnceCallback& callback),
+              ());
 
-  MOCK_METHOD0(Start, void(void));
+  MOCK_METHOD(void, Start, (), (override));
 
   // Gets the read delegate that is currently active for this transport.
   CastTransport::Delegate* current_delegate() const;
@@ -69,9 +71,9 @@ class MockCastTransportDelegate : public CastTransport::Delegate {
 
   ~MockCastTransportDelegate() override;
 
-  MOCK_METHOD1(OnError, void(ChannelError error));
-  MOCK_METHOD1(OnMessage, void(const CastMessage& message));
-  MOCK_METHOD0(Start, void(void));
+  MOCK_METHOD(void, OnError, (ChannelError error), (override));
+  MOCK_METHOD(void, OnMessage, (const CastMessage& message), (override));
+  MOCK_METHOD(void, Start, (), (override));
 };
 
 class MockCastSocketObserver : public CastSocket::Observer {
@@ -79,9 +81,18 @@ class MockCastSocketObserver : public CastSocket::Observer {
   MockCastSocketObserver();
   ~MockCastSocketObserver() override;
 
-  MOCK_METHOD2(OnError, void(const CastSocket& socket, ChannelError error));
-  MOCK_METHOD2(OnMessage,
-               void(const CastSocket& socket, const CastMessage& message));
+  MOCK_METHOD(void,
+              OnError,
+              (const CastSocket& socket, ChannelError error),
+              (override));
+  MOCK_METHOD(void,
+              OnMessage,
+              (const CastSocket& socket, const CastMessage& message),
+              (override));
+  MOCK_METHOD(void,
+              OnReadyStateChanged,
+              (const CastSocket& socket),
+              (override));
 };
 
 class MockCastSocketService : public CastSocketServiceImpl {
@@ -96,15 +107,20 @@ class MockCastSocketService : public CastSocketServiceImpl {
     OpenSocket_(open_params.ip_endpoint, open_cb);
   }
 
-  MOCK_METHOD2(OpenSocket_,
-               void(const net::IPEndPoint& ip_endpoint,
-                    CastSocket::OnOpenCallback& open_cb));
-  MOCK_CONST_METHOD1(GetSocket, CastSocket*(int channel_id));
+  MOCK_METHOD(void,
+              OpenSocket_,
+              (const net::IPEndPoint& ip_endpoint,
+               CastSocket::OnOpenCallback& open_cb),
+              ());
+  MOCK_METHOD(CastSocket*, GetSocket, (int channel_id), (const, override));
   MOCK_METHOD(CastSocket*,
               GetSocket,
               (const net::IPEndPoint& ip_endpoint),
-              (override, const));
-  MOCK_METHOD(std::unique_ptr<CastSocket>, RemoveSocket, (int channel_id), ());
+              (const, override));
+  MOCK_METHOD(std::unique_ptr<CastSocket>,
+              RemoveSocket,
+              (int channel_id),
+              (override));
   MOCK_METHOD(void, CloseSocket, (int channel_id), (override));
 };
 
@@ -129,11 +145,11 @@ class MockCastSocket : public CastSocket {
     Close_(callback);
   }
 
-  MOCK_METHOD1(Connect_, void(CastSocket::OnOpenCallback& callback));
-  MOCK_METHOD1(Close_, void(net::CompletionOnceCallback& callback));
-  MOCK_CONST_METHOD0(ready_state, ReadyState());
-  MOCK_METHOD1(AddObserver, void(Observer* observer));
-  MOCK_METHOD1(RemoveObserver, void(Observer* observer));
+  MOCK_METHOD(void, Connect_, (CastSocket::OnOpenCallback & callback), ());
+  MOCK_METHOD(void, Close_, (net::CompletionOnceCallback & callback), ());
+  MOCK_METHOD(ReadyState, ready_state, (), (const, override));
+  MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
 
   const net::IPEndPoint& ip_endpoint() const override { return ip_endpoint_; }
   void SetIPEndpoint(const net::IPEndPoint& ip_endpoint) {
@@ -181,44 +197,62 @@ class MockCastMessageHandler : public CastMessageHandler {
 
   ~MockCastMessageHandler() override;
 
-  MOCK_METHOD4(EnsureConnection,
-               void(int,
-                    const std::string&,
-                    const std::string&,
-                    VirtualConnectionType connection_type));
-  MOCK_METHOD3(CloseConnection,
-               void(int, const std::string&, const std::string&));
-  MOCK_METHOD3(RequestAppAvailability,
-               void(CastSocket* socket,
-                    const std::string& app_id,
-                    GetAppAvailabilityCallback callback));
-  MOCK_METHOD1(RequestReceiverStatus, void(int channel_id));
-  MOCK_METHOD6(LaunchSession,
-               void(int,
-                    const std::string&,
-                    base::TimeDelta,
-                    const std::vector<std::string>&,
-                    const absl::optional<base::Value>&,
-                    LaunchSessionCallback callback));
-  MOCK_METHOD4(StopSession,
-               void(int channel_id,
-                    const std::string& session_id,
-                    const absl::optional<std::string>& client_id,
-                    ResultCallback callback));
-  MOCK_METHOD2(SendAppMessage,
-               Result(int channel_id, const CastMessage& message));
-  MOCK_METHOD2(SendCastMessage,
-               Result(int channel_id, const CastMessage& message));
-  MOCK_METHOD4(SendMediaRequest,
-               absl::optional<int>(int channel_id,
-                                   const base::Value::Dict& body,
-                                   const std::string& source_id,
-                                   const std::string& destination_id));
-  MOCK_METHOD4(SendSetVolumeRequest,
-               void(int channel_id,
-                    const base::Value::Dict& body,
-                    const std::string& source_id,
-                    ResultCallback callback));
+  MOCK_METHOD(void,
+              EnsureConnection,
+              (int,
+               const std::string&,
+               const std::string&,
+               VirtualConnectionType connection_type),
+              (override));
+  MOCK_METHOD(void,
+              CloseConnection,
+              (int, const std::string&, const std::string&),
+              (override));
+  MOCK_METHOD(void,
+              RequestAppAvailability,
+              (CastSocket * socket,
+               const std::string& app_id,
+               GetAppAvailabilityCallback callback),
+              (override));
+  MOCK_METHOD(void, RequestReceiverStatus, (int channel_id), (override));
+  MOCK_METHOD(void,
+              LaunchSession,
+              (int,
+               const std::string&,
+               base::TimeDelta,
+               const std::vector<std::string>&,
+               const absl::optional<base::Value>&,
+               LaunchSessionCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              StopSession,
+              (int channel_id,
+               const std::string& session_id,
+               const absl::optional<std::string>& client_id,
+               ResultCallback callback),
+              (override));
+  MOCK_METHOD(Result,
+              SendAppMessage,
+              (int channel_id, const CastMessage& message),
+              (override));
+  MOCK_METHOD(Result,
+              SendCastMessage,
+              (int channel_id, const CastMessage& message),
+              (override));
+  MOCK_METHOD(absl::optional<int>,
+              SendMediaRequest,
+              (int channel_id,
+               const base::Value::Dict& body,
+               const std::string& source_id,
+               const std::string& destination_id),
+              (override));
+  MOCK_METHOD(void,
+              SendSetVolumeRequest,
+              (int channel_id,
+               const base::Value::Dict& body,
+               const std::string& source_id,
+               ResultCallback callback),
+              (override));
 };
 
 // Creates the IPEndpoint 192.168.1.1.
