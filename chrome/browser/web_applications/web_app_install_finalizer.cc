@@ -149,7 +149,14 @@ void WebAppInstallFinalizer::FinalizeInstall(
     manifest_id = GenerateManifestIdFromStartUrlOnly(web_app_info.start_url);
   }
 
-  webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_id);
+  // parent_app_manifest_id can only exist if installing as a sub-app.
+  CHECK((options.install_surface == webapps::WebappInstallSource::SUB_APP &&
+         web_app_info.parent_app_manifest_id.has_value()) ||
+        (options.install_surface != webapps::WebappInstallSource::SUB_APP &&
+         !web_app_info.parent_app_manifest_id.has_value()));
+
+  webapps::AppId app_id = GenerateAppIdFromManifestId(
+      manifest_id, web_app_info.parent_app_manifest_id);
   OnDidGetWebAppOriginAssociations origin_association_validated_callback =
       base::BindOnce(&WebAppInstallFinalizer::OnOriginAssociationValidated,
                      weak_ptr_factory_.GetWeakPtr(), web_app_info.Clone(),

@@ -32,6 +32,19 @@ TEST(WebAppHelpers, GenerateAppId) {
                                "?utm_source=web_app_manifest")));
 }
 
+TEST(WebAppHelpers, GenerateAppIdForSubApps) {
+  const std::string subapp_starturl = "https://example.com/subapp";
+  const webapps::ManifestId parent_manifest_id = GURL("https://example.com");
+
+  EXPECT_EQ("emdpgjhffapdncpmnindbhiapcohmjga",
+            GenerateAppId(/*manifest_id_path=*/absl::nullopt,
+                          GURL(subapp_starturl), parent_manifest_id));
+
+  EXPECT_EQ("jaadilplijgkeakjaoplplaeceoommee",
+            GenerateAppId("manifest.webmanifest", GURL(subapp_starturl),
+                          parent_manifest_id));
+}
+
 TEST(WebAppHelpers, GenerateManifestIdFromStartUrlOnly) {
   EXPECT_EQ(GURL("https://example.com/"),
             GenerateManifestIdFromStartUrlOnly(GURL("https://example.com/")));

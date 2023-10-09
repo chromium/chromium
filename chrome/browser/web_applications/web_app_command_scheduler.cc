@@ -115,6 +115,7 @@ void WebAppCommandScheduler::FetchManifestAndInstall(
 void WebAppCommandScheduler::FetchInstallInfoFromInstallUrl(
     webapps::ManifestId manifest_id,
     GURL install_url,
+    ManifestId parent_manifest_id,
     base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback) {
   if (IsShuttingDown()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -124,7 +125,8 @@ void WebAppCommandScheduler::FetchInstallInfoFromInstallUrl(
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<FetchInstallInfoFromInstallUrlCommand>(
-          std::move(manifest_id), std::move(install_url), std::move(callback)));
+          std::move(manifest_id), std::move(install_url),
+          std::move(parent_manifest_id), std::move(callback)));
 }
 
 void WebAppCommandScheduler::InstallFromInfo(

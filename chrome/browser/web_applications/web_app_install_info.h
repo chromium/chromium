@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
@@ -384,6 +385,11 @@ struct WebAppInstallInfo {
   // is only used when the app is installed as a sub app through the SUB_APP
   // API.
   absl::optional<webapps::AppId> parent_app_id;
+
+  // ManifestId of the app that called the SUB_APP API to install this app. This
+  // field is only used when the app is installed as a sub app through the
+  // SUB_APP API.
+  absl::optional<web_app::ManifestId> parent_app_manifest_id;
 
   // A list of additional terms to use when matching this app against
   // identifiers in admin policies (for shelf pinning, default file handlers,

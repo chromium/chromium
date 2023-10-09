@@ -346,6 +346,8 @@ IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest,
         https_server_.GetURL("app.com", "/sub-app-" + app_name);
     web_app_info->parent_app_id = app_id_;
     web_app_info->title = sub_app_name;
+    web_app_info->parent_app_manifest_id = GetAppURL();
+
     web_app::test::InstallWebApp(browser()->profile(), std::move(web_app_info),
                                  /*overwrite_existing_manifest_fields=*/true,
                                  webapps::WebappInstallSource::SUB_APP);

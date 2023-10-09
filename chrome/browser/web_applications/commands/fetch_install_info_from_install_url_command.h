@@ -24,6 +24,7 @@ enum class FetchInstallInfoResult {
   kWebContentsDestroyed,
   kInstallUrlInvalid,
   kManifestIdInvalid,
+  kParentManifestIdInvalid,
   kUrlLoadingFailure,
   kNoValidManifest,
   kWrongManifestId,
@@ -39,6 +40,7 @@ class FetchInstallInfoFromInstallUrlCommand
   FetchInstallInfoFromInstallUrlCommand(
       webapps::ManifestId manifest_id,
       GURL install_url,
+      absl::optional<ManifestId> parent_manifest_id,
       base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback);
   ~FetchInstallInfoFromInstallUrlCommand() override;
   FetchInstallInfoFromInstallUrlCommand(
@@ -77,6 +79,7 @@ class FetchInstallInfoFromInstallUrlCommand
 
   webapps::ManifestId manifest_id_;
   GURL install_url_;
+  absl::optional<ManifestId> parent_manifest_id_;
   base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)>
       web_app_install_info_callback_;
 

@@ -6,16 +6,20 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/origin.h"
 
 namespace web_app {
 
@@ -29,6 +33,8 @@ std::ostream& operator<<(std::ostream& os, FetchInstallInfoResult result) {
       return os << "kInstallUrlInvalid";
     case FetchInstallInfoResult::kManifestIdInvalid:
       return os << "kManifestIdInvalid";
+    case FetchInstallInfoResult::kParentManifestIdInvalid:
+      return os << "kParentManifestIdInvalid";
     case FetchInstallInfoResult::kUrlLoadingFailure:
       return os << "kUrlLoadingFailure";
     case FetchInstallInfoResult::kNoValidManifest:
@@ -59,16 +65,31 @@ const LockDescription& FetchInstallInfoFromInstallUrlCommand::lock_description()
 FetchInstallInfoFromInstallUrlCommand::FetchInstallInfoFromInstallUrlCommand(
     webapps::ManifestId manifest_id,
     GURL install_url,
+    absl::optional<ManifestId> parent_manifest_id,
     base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback)
     : WebAppCommandTemplate<SharedWebContentsLock>(
           "FetchInstallInfoFromInstallUrlCommand"),
       lock_description_(std::make_unique<SharedWebContentsLockDescription>()),
-      manifest_id_{manifest_id},
-      install_url_{install_url},
-      web_app_install_info_callback_{std::move(callback)},
+      manifest_id_(manifest_id),
+      install_url_(install_url),
+      parent_manifest_id_(parent_manifest_id),
+      web_app_install_info_callback_(std::move(callback)),
       install_error_log_entry_(/*background_installation=*/true,
                                webapps::WebappInstallSource::SUB_APP) {
+  CHECK(manifest_id_.is_valid());
+  CHECK(install_url_.is_valid());
+
+  if (parent_manifest_id_.has_value()) {
+    CHECK(parent_manifest_id_.value().is_valid());
+    CHECK(url::Origin::Create(manifest_id_)
+              .IsSameOriginWith(
+                  url::Origin::Create(parent_manifest_id_.value())));
+    CHECK_NE(parent_manifest_id_.value(), manifest_id_);
+  }
+
   debug_log_.Set("manifest_id", manifest_id_.spec());
+  debug_log_.Set("parent_manifest_id",
+                 parent_manifest_id_.value_or(GURL("")).spec());
   debug_log_.Set("install_url", install_url_.spec());
 }
 
@@ -142,6 +163,7 @@ void FetchInstallInfoFromInstallUrlCommand::OnGetWebAppInstallInfo(
 
   install_info->start_url = install_url_;
   install_info->install_url = install_url_;
+  install_info->parent_app_manifest_id = parent_manifest_id_;
 
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
       &lock_->shared_web_contents(), /*bypass_service_worker_check=*/false,
@@ -170,10 +192,10 @@ void FetchInstallInfoFromInstallUrlCommand::OnManifestRetrieved(
                                  web_app_info.get());
   }
 
-  webapps::AppId app_id =
-      GenerateAppIdFromManifestId(web_app_info->manifest_id);
-  const webapps::AppId expected_app_id =
-      GenerateAppIdFromManifestId(manifest_id_);
+  webapps::AppId app_id = GenerateAppIdFromManifestId(
+      web_app_info->manifest_id, web_app_info->parent_app_manifest_id);
+  const webapps::AppId expected_app_id = GenerateAppIdFromManifestId(
+      manifest_id_, web_app_info->parent_app_manifest_id);
   if (app_id != expected_app_id) {
     install_error_log_entry_.LogExpectedAppIdError(
         "OnManifestRetrieved", web_app_info->start_url.spec(), app_id,

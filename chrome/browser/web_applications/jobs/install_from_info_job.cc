@@ -33,7 +33,9 @@ InstallFromInfoJob::InstallFromInfoJob(
           install_info->manifest_id.is_empty()
               ? GenerateManifestIdFromStartUrlOnly(install_info->start_url)
               : install_info->manifest_id),
-      app_id_(GenerateAppIdFromManifestId(manifest_id_)),
+      app_id_(
+          GenerateAppIdFromManifestId(manifest_id_,
+                                      install_info->parent_app_manifest_id)),
       overwrite_existing_manifest_fields_(overwrite_existing_manifest_fields),
       install_surface_(install_surface),
       install_params_(std::move(install_params)),

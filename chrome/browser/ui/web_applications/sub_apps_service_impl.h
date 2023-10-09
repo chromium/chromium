@@ -65,7 +65,8 @@ class SubAppsServiceImpl
 
   void CollectInstallData(
       int add_call_id,
-      std::vector<std::pair<webapps::ManifestId, GURL>> requested_installs);
+      std::vector<std::pair<webapps::ManifestId, GURL>> requested_installs,
+      ManifestId parent_manifest_id);
   void ProcessInstallData(
       int add_call_id,
       std::vector<std::pair<webapps::ManifestId,

@@ -35,7 +35,9 @@ InstallFromInfoCommand::InstallFromInfoCommand(
           install_info->manifest_id.is_empty()
               ? GenerateManifestIdFromStartUrlOnly(install_info->start_url)
               : install_info->manifest_id),
-      app_id_(GenerateAppIdFromManifestId(manifest_id_)),
+      app_id_(
+          GenerateAppIdFromManifestId(manifest_id_,
+                                      install_info->parent_app_manifest_id)),
       install_callback_(base::BindOnce(
           [](OnceInstallCallback install_callback,
              const webapps::AppId& app_id,
@@ -63,7 +65,9 @@ InstallFromInfoCommand::InstallFromInfoCommand(
           install_info->manifest_id.is_empty()
               ? GenerateManifestIdFromStartUrlOnly(install_info->start_url)
               : install_info->manifest_id),
-      app_id_(GenerateAppIdFromManifestId(manifest_id_)),
+      app_id_(
+          GenerateAppIdFromManifestId(manifest_id_,
+                                      install_info->parent_app_manifest_id)),
       install_callback_(base::BindOnce(
           [](OnceInstallCallback install_callback,
              const webapps::AppId& app_id,
@@ -92,7 +96,9 @@ InstallFromInfoCommand::InstallFromInfoCommand(
           install_info->manifest_id.is_empty()
               ? GenerateManifestIdFromStartUrlOnly(install_info->start_url)
               : install_info->manifest_id),
-      app_id_(GenerateAppIdFromManifestId(manifest_id_)),
+      app_id_(
+          GenerateAppIdFromManifestId(manifest_id_,
+                                      install_info->parent_app_manifest_id)),
       install_callback_(std::move(install_callback)),
       apps_or_extensions_to_uninstall_(apps_or_extensions_to_uninstall),
       lock_description_(std::make_unique<AppLockDescription>(app_id_)) {

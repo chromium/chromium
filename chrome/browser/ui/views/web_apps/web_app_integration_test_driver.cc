@@ -276,6 +276,7 @@ void FlushShortcutTasks() {
 struct SiteConfig {
   std::string relative_url;
   std::string relative_manifest_id;
+  absl::optional<std::string> parent_manifest_id;
   std::string app_name;
   std::u16string wco_not_enabled_title;
   SkColor icon_color;
@@ -402,6 +403,7 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
      {.relative_url = "/webapps_integration/has_sub_apps/sub_app1/basic.html",
       .relative_manifest_id =
           "webapps_integration/has_sub_apps/sub_app1/basic.html",
+      .parent_manifest_id = "/webapps_integration/has_sub_apps/basic.html",
       .app_name = "Sub App 1",
       .wco_not_enabled_title = u"Sub App 1",
       .icon_color = SK_ColorBLUE}},
@@ -409,6 +411,7 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
      {.relative_url = "/webapps_integration/has_sub_apps/sub_app2/basic.html",
       .relative_manifest_id =
           "webapps_integration/has_sub_apps/sub_app2/basic.html",
+      .parent_manifest_id = "/webapps_integration/has_sub_apps/basic.html",
       .app_name = "Sub App 2",
       .wco_not_enabled_title = u"Sub App 2",
       .icon_color = SK_ColorBLUE}},
@@ -3935,7 +3938,15 @@ webapps::AppId WebAppIntegrationTestDriver::GetAppIdBySiteMode(Site site) {
   GURL start_url = GetTestServerForSiteMode(site).GetURL(relative_url);
   CHECK(start_url.is_valid());
 
-  return GenerateAppId(manifest_id, start_url);
+  auto parent_manifest = site_config.parent_manifest_id;
+  if (parent_manifest.has_value()) {
+    ManifestId parent_manifest_id =
+        GetTestServerForSiteMode(site).GetURL(parent_manifest.value());
+    return GenerateAppId(manifest_id, start_url, parent_manifest_id);
+
+  } else {
+    return GenerateAppId(manifest_id, start_url);
+  }
 }
 
 GURL WebAppIntegrationTestDriver::GetUrlForSite(Site site) {

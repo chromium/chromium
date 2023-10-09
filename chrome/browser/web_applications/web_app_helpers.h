@@ -10,6 +10,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "url/gurl.h"
 
 class GURL;
 class Profile;
@@ -44,7 +45,9 @@ webapps::AppId GetAppIdFromApplicationName(const std::string& app_name);
 // calls with absl::nullopt to `GenerateManifestIdFromStartUrlOnly`.
 webapps::AppId GenerateAppId(
     const absl::optional<std::string>& manifest_id_path,
-    const GURL& start_url);
+    const GURL& start_url,
+    const absl::optional<webapps::ManifestId>& parent_manifest_id =
+        absl::nullopt);
 
 // Returns a resolved manifest id given the relative `manifest_id_path`,
 // as per the spec algorithm at https://www.w3.org/TR/appmanifest/#id-member.
@@ -59,13 +62,19 @@ webapps::ManifestId GenerateManifestId(const std::string& manifest_id_path,
 // Generates the chrome-specific `webapps::AppId` from the spec-defined manifest
 // id. See the `webapps::AppId` type for more information.
 webapps::AppId GenerateAppIdFromManifestId(
-    const webapps::ManifestId& manifest_id);
+
+    const webapps::ManifestId& manifest_id,
+    const absl::optional<webapps::ManifestId>& parent_manifest_id =
+        absl::nullopt);
 
 // Generates the chrome-specific `webapps::AppId` from the spec-defined
 // manifest. See the `webapps::AppId` type for more information. This will
 // CHECK-fail if the `id` field is not present on the manifest.
 webapps::AppId GenerateAppIdFromManifest(
-    const blink::mojom::Manifest& manifest);
+
+    const blink::mojom::Manifest& manifest,
+    const absl::optional<webapps::ManifestId>& parent_manifest_id =
+        absl::nullopt);
 
 // Generates a manifest id by only the start_url, which matches the spec
 // algorithm in https://www.w3.org/TR/appmanifest/#id-member where the `id` json
