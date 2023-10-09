@@ -67,7 +67,7 @@ BOOL HandleIntentTypesForOneTap(
 // Returns a full set of intents of `handled_types`, located inside `text`. The
 // `model_path` for the give web state should be passed in if a detection by
 // model is required. (Note that some flags might still not allow it.)
-absl::optional<base::Value> ExtractDataElementsFromText(
+absl::optional<std::vector<web::TextAnnotation>> ExtractTextAnnotationFromText(
     const base::Value::Dict& metadata,
     const std::string& text,
     NSTextCheckingType handled_types,

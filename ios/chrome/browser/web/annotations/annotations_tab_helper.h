@@ -10,6 +10,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
 #import "base/values.h"
+#import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
 #import "ios/web/public/annotations/annotations_text_observer.h"
 #import "ios/web/public/annotations/custom_text_checking_result.h"
 #import "ios/web/public/web_state_observer.h"
@@ -84,21 +85,26 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
   // `seq_id` comes from `OnTextExtracted` and is meant to be passed on to
   // `AnnotationsTextManager::DecorateAnnotations` to validate decorations
   // against the text extracted.
-  void ApplyDeferredProcessing(int seq_id,
-                               absl::optional<base::Value> deferred);
+  void ApplyDeferredProcessing(
+      int seq_id,
+      absl::optional<std::vector<web::TextAnnotation>> deferred);
 
   // Triggers the parcel tracking UI display if the given list of annotations
   // contains at least one parcel number and the user is eligible for the
   // prompt. Removes parcels from `annotations_list`.
-  void ProcessParcelTrackingNumbers(base::Value::List& annotations_list);
+  void ProcessParcelTrackingNumbers(
+      std::vector<web::TextAnnotation>& annotations_list);
 
   // Triggers the parcel tracking UI display for the given parcel
   // list `parcels`.
   void MaybeShowParcelTrackingUI(NSArray<CustomTextCheckingResult*>* parcels);
 
   // Puts annotations data in `match_cache_` and replaces it with a uuid key
-  // to be passed to JS and expect back in `OnClick`.
-  void BuildCache(base::Value::List& annotations_list);
+  // to be passed to JS and expect back in `OnClick`. Builds `decorations`
+  // from annotations.
+  void BuildCacheAndDecorations(
+      std::vector<web::TextAnnotation>& annotations_list,
+      base::Value::List& decorations);
 
   UIViewController* base_view_controller_ = nil;
 
@@ -112,7 +118,7 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
 
   std::unique_ptr<base::Value::Dict> metadata_;
 
-  std::map<std::string, std::string> match_cache_;
+  std::map<std::string, NSTextCheckingResult*> match_cache_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

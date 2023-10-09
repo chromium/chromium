@@ -34,7 +34,7 @@ BOOL HandleIntentTypesForOneTap(
   return NO;
 }
 
-absl::optional<base::Value> ExtractDataElementsFromText(
+absl::optional<std::vector<web::TextAnnotation>> ExtractTextAnnotationFromText(
     const base::Value::Dict& metadata,
     const std::string& text,
     NSTextCheckingType handled_types,
