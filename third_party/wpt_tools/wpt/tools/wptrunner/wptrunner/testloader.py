@@ -526,7 +526,6 @@ class TestSource:
             ))
         for item in groups:
             test_queue.put(item)
-        cls.add_sentinal(test_queue, processes)
         return test_queue, processes
 
     @classmethod
@@ -546,17 +545,10 @@ class TestSource:
     def group(self):
         if not self.current_group.group or len(self.current_group.group) == 0:
             try:
-                self.current_group = self.test_queue.get(block=True, timeout=5)
+                self.current_group = self.test_queue.get_nowait()
             except Empty:
-                self.logger.warning("Timed out getting test group from queue")
                 return TestGroup(None, None, None, None)
         return self.current_group
-
-    @classmethod
-    def add_sentinal(cls, test_queue, num_of_workers):
-        # add one sentinal for each worker
-        for _ in range(num_of_workers):
-            test_queue.put(TestGroup(None, None, None, None))
 
     @classmethod
     def process_count(cls, requested_processes, num_test_groups):
