@@ -396,8 +396,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void HandleEditableTextContentChangedWithCleanLayout(Node*);
   void UpdateTableRoleWithCleanLayout(Node*);
 
-  bool InlineTextBoxAccessibilityEnabled();
-
   AXID GenerateAXID() const override;
 
   void AddAriaNotification(Node*,

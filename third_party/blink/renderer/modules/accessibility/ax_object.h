@@ -704,6 +704,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // settings->inlineTextBoxAccessibilityEnabled() is false.
   virtual void LoadInlineTextBoxes();
   virtual void ForceAddInlineTextBoxChildren();
+  virtual bool ShouldLoadInlineTextBoxes() const { return false; }
 
   // Walk the AXObjects on the same line.
   virtual AXObject* NextOnLine() const;

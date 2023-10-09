@@ -53,8 +53,10 @@ void CheckParentUnignoredOf(AXObject* parent, AXObject* child) {
 
 }  // namespace
 
-BlinkAXTreeSource::BlinkAXTreeSource(AXObjectCacheImpl& ax_object_cache)
-    : ax_object_cache_(ax_object_cache) {}
+BlinkAXTreeSource::BlinkAXTreeSource(AXObjectCacheImpl& ax_object_cache,
+                                     bool truncate_inline_textboxes)
+    : ax_object_cache_(ax_object_cache),
+      truncate_inline_textboxes_(truncate_inline_textboxes) {}
 
 BlinkAXTreeSource::~BlinkAXTreeSource() = default;
 
@@ -251,10 +253,17 @@ int32_t BlinkAXTreeSource::GetId(AXObject* node) const {
 }
 
 size_t BlinkAXTreeSource::GetChildCount(AXObject* node) const {
+  if (truncate_inline_textboxes_ &&
+      ui::CanHaveInlineTextBoxChildren(node->RoleValue())) {
+    return 0;
+  }
   return node->ChildCountIncludingIgnored();
 }
 
 AXObject* BlinkAXTreeSource::ChildAt(AXObject* node, size_t index) const {
+  if (truncate_inline_textboxes_) {
+    CHECK(!ui::CanHaveInlineTextBoxChildren(node->RoleValue()));
+  }
   auto* child = node->ChildAtIncludingIgnored(static_cast<int>(index));
 
   // The child may be invalid due to issues in blink accessibility code.

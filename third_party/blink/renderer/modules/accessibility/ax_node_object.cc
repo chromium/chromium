@@ -329,7 +329,7 @@ String GetTitle(blink::Element* element) {
   return element->title();
 }
 
-bool CanHaveInlineTextBoxChildren(blink::AXObject* obj) {
+bool CanHaveInlineTextBoxChildren(const blink::AXObject* obj) {
   if (!ui::CanHaveInlineTextBoxChildren(obj->RoleValue())) {
     return false;
   }
@@ -4360,6 +4360,31 @@ int AXNodeObject::TextOffsetInFormattingContext(int offset) const {
 // Inline text boxes.
 //
 
+bool AXNodeObject::ShouldLoadInlineTextBoxes() const {
+  CHECK(!IsDetached());
+
+  if (!CanHaveInlineTextBoxChildren(this)) {
+    return false;
+  }
+
+  // TODO(crrev.com/c/4884899): Switch to using AXMode instead of a setting.
+  // Unfortunately, the popup has a different setting than the main document.
+  Settings* settings = GetDocument()->GetSettings();
+  if (!settings || !settings->GetInlineTextBoxAccessibilityEnabled()) {
+    return false;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, once an object has loaded inline text boxes, it will keep
+  // them refreshed.
+  return always_load_inline_text_boxes_;
+#else
+  // Other platforms keep all inline text boxes in the tree and refreshed,
+  // depending on the AXMode.
+  return true;
+#endif
+}
+
 void AXNodeObject::LoadInlineTextBoxes() {
   std::queue<AXID> work_queue;
   work_queue.push(AXObjectID());
@@ -4577,22 +4602,10 @@ void AXNodeObject::AddChildrenImpl() {
     return;
   }
 
-  if (CanHaveInlineTextBoxChildren(this)) {
-#if BUILDFLAG(IS_ANDROID)
-    // On Android, once an object has loaded inline text boxes, it will keep
-    // them refreshed.
-    bool load_inline_text_box_children = always_load_inline_text_boxes_;
-#else
-    // Other platforms keep all inline text boxes in the tree and refreshed.
-    bool load_inline_text_box_children =
-        GetDocument()->GetSettings() &&
-        GetDocument()->GetSettings()->GetInlineTextBoxAccessibilityEnabled();
-#endif
-    if (load_inline_text_box_children) {
-      AddInlineTextBoxChildren();
-      CHECK_ATTACHED();
-      return;
-    }
+  if (ShouldLoadInlineTextBoxes()) {
+    AddInlineTextBoxChildren();
+    CHECK_ATTACHED();
+    return;
   }
 
   if (IsA<HTMLImageElement>(GetNode())) {

@@ -2173,7 +2173,7 @@ void AXObjectCacheImpl::TextChangedWithCleanLayout(
   if (obj) {
     if (obj->RoleValue() == ax::mojom::blink::Role::kStaticText &&
         obj->AccessibilityIsIncludedInTree()) {
-      if (InlineTextBoxAccessibilityEnabled()) {
+      if (obj->ShouldLoadInlineTextBoxes()) {
         // Update inline text box children.
         ChildrenChangedWithCleanLayout(optional_node_for_relation_update, obj);
         return;
@@ -3966,9 +3966,7 @@ void AXObjectCacheImpl::AriaOwnsChangedWithCleanLayout(Node* node) {
 }
 
 void AXObjectCacheImpl::InlineTextBoxesUpdated(LayoutObject* layout_object) {
-  if (!InlineTextBoxAccessibilityEnabled())
-    return;
-
+  CHECK(IsA<LayoutText>(layout_object));
   auto it = layout_object_mapping_.find(layout_object);
   AXID ax_id = it != layout_object_mapping_.end() ? it->value : 0;
   DCHECK(!WTF::IsHashTraitsDeletedValue<HashTraits<AXID>>(ax_id));
@@ -3984,7 +3982,7 @@ void AXObjectCacheImpl::InlineTextBoxesUpdated(LayoutObject* layout_object) {
     DCHECK(obj);
     DCHECK(obj->IsAXLayoutObject());
     DCHECK(!obj->IsDetached());
-    if (!obj->NeedsToUpdateChildren()) {
+    if (!obj->NeedsToUpdateChildren() && obj->ShouldLoadInlineTextBoxes()) {
       obj->SetNeedsToUpdateChildren();
       MarkAXObjectDirty(obj);
     }
@@ -3993,13 +3991,6 @@ void AXObjectCacheImpl::InlineTextBoxesUpdated(LayoutObject* layout_object) {
 
 Settings* AXObjectCacheImpl::GetSettings() {
   return document_->GetSettings();
-}
-
-bool AXObjectCacheImpl::InlineTextBoxAccessibilityEnabled() {
-  Settings* settings = GetSettings();
-  if (!settings)
-    return false;
-  return settings->GetInlineTextBoxAccessibilityEnabled();
 }
 
 const Element* AXObjectCacheImpl::RootAXEditableElement(const Node* node) {
@@ -4410,7 +4401,11 @@ bool AXObjectCacheImpl::SerializeEntireTree(size_t max_node_count,
   // Ensure that an initial tree exists.
   UpdateAXForAllDocuments();
 
-  BlinkAXTreeSource* tree_source = BlinkAXTreeSource::Create(*this);
+  // Pass true for truncate_inline_textboxes, as they are just extra noise for
+  // consumers of the entire tree (e.g. AXTreeSnapshotter). This avoids passing
+  // the inline text boxes, even if a previous AXContext had loaded them.
+  BlinkAXTreeSource* tree_source =
+      BlinkAXTreeSource::Create(*this, /* truncate inline textboxes */ true);
 
   // The serializer returns an ui::AXTreeUpdate, which can store a complete
   // or a partial accessibility tree. AXTreeSerializer is stateful, but the
