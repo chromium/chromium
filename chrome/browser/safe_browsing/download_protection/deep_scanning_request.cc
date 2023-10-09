@@ -320,7 +320,7 @@ void LogDeepScanResult(DownloadCheckResult download_result,
       download_result);
   if (is_encrypted_archive) {
     base::UmaHistogramEnumeration(
-        "SBClientDownload.PasswordProtectedMalwareDeepScanResult." +
+        "SBClientDownload.PasswordProtectedMalwareDeepScanResult2." +
             GetTriggerName(trigger),
         download_result);
   }
