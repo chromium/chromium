@@ -15190,6 +15190,21 @@
             ]
         }
     ],
+    "SecagentdEnableXDRAuthenticateEventsControl": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootSecagentdXDRAuthenticateEventsControl"
+                    ]
+                }
+            ]
+        }
+    ],
     "SecagentdEnableXDRNetworkEvents": [
         {
             "platforms": [
