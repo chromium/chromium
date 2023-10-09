@@ -84,11 +84,6 @@ void LayoutRubyAsBlock::StyleDidChange(StyleDifference diff,
   PropagateStyleToAnonymousChildren();
 }
 
-bool LayoutRubyAsBlock::CreatesAnonymousWrapper() const {
-  NOT_DESTROYED();
-  return true;
-}
-
 void LayoutRubyAsBlock::RemoveLeftoverAnonymousBlock(LayoutBlock*) {
   NOT_DESTROYED();
   NOTREACHED();

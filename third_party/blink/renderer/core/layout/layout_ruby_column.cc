@@ -22,11 +22,6 @@ bool LayoutRubyColumn::IsOfType(LayoutObjectType type) const {
   return type == kLayoutObjectRubyColumn || LayoutBlockFlow::IsOfType(type);
 }
 
-bool LayoutRubyColumn::CreatesAnonymousWrapper() const {
-  NOT_DESTROYED();
-  return true;
-}
-
 void LayoutRubyColumn::RemoveLeftoverAnonymousBlock(LayoutBlock*) {
   NOT_DESTROYED();
 }

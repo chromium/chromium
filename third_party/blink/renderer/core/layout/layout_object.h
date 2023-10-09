@@ -592,10 +592,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return AddChild(new_child, before_child);
   }
   virtual void RemoveChild(LayoutObject*);
-  virtual bool CreatesAnonymousWrapper() const {
-    NOT_DESTROYED();
-    return false;
-  }
   //////////////////////////////////////////
 
   UniqueObjectId UniqueId() const {

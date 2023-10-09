@@ -79,8 +79,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                 LayoutObject* before_child = nullptr) override;
   void RemoveChild(LayoutObject*) override;
 
-  bool CreatesAnonymousWrapper() const override;
-
   void MoveAllChildrenIncludingFloatsTo(LayoutBlock* to_block,
                                         bool full_remove_insert);
 

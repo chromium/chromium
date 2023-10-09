@@ -26,7 +26,6 @@ class CORE_EXPORT LayoutRubyAsBlock : public LayoutNGBlockFlow {
                 LayoutObject* before_child = nullptr) override;
   void RemoveChild(LayoutObject* child) override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
-  bool CreatesAnonymousWrapper() const override;
   void RemoveLeftoverAnonymousBlock(LayoutBlock*) override;
 };
 

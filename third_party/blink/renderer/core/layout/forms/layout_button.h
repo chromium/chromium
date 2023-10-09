@@ -23,10 +23,6 @@ class LayoutButton final : public LayoutNGFlexibleBox {
                 LayoutObject* before_child = nullptr) override;
   void RemoveChild(LayoutObject*) override;
   void RemoveLeftoverAnonymousBlock(LayoutBlock*) override { NOT_DESTROYED(); }
-  bool CreatesAnonymousWrapper() const override {
-    NOT_DESTROYED();
-    return true;
-  }
 
   static bool ShouldCountWrongBaseline(const LayoutBox& button_box,
                                        const ComputedStyle& style,

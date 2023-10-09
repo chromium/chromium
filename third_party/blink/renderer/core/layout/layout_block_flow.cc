@@ -273,10 +273,6 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
   }
 }
 
-bool LayoutBlockFlow::CreatesAnonymousWrapper() const {
-  return IsLayoutFlowThread() && Parent()->IsLayoutNGObject();
-}
-
 void LayoutBlockFlow::MoveAllChildrenIncludingFloatsTo(
     LayoutBlock* to_block,
     bool full_remove_insert) {

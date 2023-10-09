@@ -81,10 +81,6 @@ class LayoutRubyAsInline final : public LayoutInline {
     NOT_DESTROYED();
     return type == kLayoutObjectRuby || LayoutInline::IsOfType(type);
   }
-  bool CreatesAnonymousWrapper() const override {
-    NOT_DESTROYED();
-    return true;
-  }
 };
 
 }  // namespace blink
