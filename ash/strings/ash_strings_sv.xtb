@@ -704,6 +704,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="385300504083504382">Början</translation>
 <translation id="3859364108019690">Det gick inte att streama appar</translation>
 <translation id="3861651314799684201">Tryck på retur för att spela in hela skärmen</translation>
+<translation id="3865912916886104060">Inga enheter har anslutits. Wifi inaktiveras när surfzonen startas.</translation>
 <translation id="3886872229787704059">Öppnades i dag</translation>
 <translation id="3891340733213178823">Tryck på Ctrl+Skift+Q två gånger om du vill logga ut.</translation>
 <translation id="3893630138897523026">ChromeVox (talad feedback)</translation>
@@ -788,6 +789,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4197790712631116042">Av</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> är inte tillgängligt.</translation>
 <translation id="4201051445878709314">Visa föregående månad</translation>
+<translation id="4202362334312791952">1 enhet är ansluten. Wifi inaktiveras när surfzonen startas.</translation>
 <translation id="4209973997261364186">wifi är aktiverat</translation>
 <translation id="4212472694152630271">Byt till pinkod</translation>
 <translation id="4215497585250573029">VPN-inställningar</translation>
@@ -1051,6 +1053,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5258528442992323769">Det finns inga sparade skrivbord</translation>
 <translation id="5260676007519551770">Skrivbord 4</translation>
 <translation id="5268819379131021772">Google Tasks-lista</translation>
+<translation id="5275923704957843041">Förhandsgranskning av skrivbord</translation>
 <translation id="5278086053818066789">Aktivera/inaktivera ChromeVox (talad feedback)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> begär din uppmärksamhet.</translation>
 <translation id="5283198616748585639">Lägg till en min</translation>
@@ -1167,6 +1170,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5707775774148071965">Enheten har stöd för högre datahastighet än vad kabeln har. Enhetens prestanda kan försämras.</translation>
 <translation id="5710450975648804523">Stör ej har aktiverats</translation>
 <translation id="571295407079589142">Mobildata har inaktiverats</translation>
+<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> enheter är anslutna. Wifi inaktiveras när surfzonen startas.</translation>
 <translation id="5727460725221669831">Om du har glömt lösenordet eller bytt lösenord till Google-kontot nyligen kan du testa att återställa den här användaren.</translation>
 <translation id="573413375004481890">Enheten har inte stöd för alla skärmar. Därför är en av skärmarna frånkopplad.</translation>
 <translation id="5740328398383587084">Närdelning</translation>

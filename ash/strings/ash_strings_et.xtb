@@ -705,6 +705,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="385300504083504382">Algus</translation>
 <translation id="3859364108019690">Rakendusi ei saa voogesitada</translation>
 <translation id="3861651314799684201">Vajutage täisekraani salvestamiseks sisestusklahvi</translation>
+<translation id="3865912916886104060">Ükski seade pole ühendatud. Kuumkoha kasutamise alustamiseks lülitatakse WiFi välja.</translation>
 <translation id="3886872229787704059">Täna avatud</translation>
 <translation id="3891340733213178823">Väljalogimiseks vajutage kaks korda klahvikombinatsiooni Ctrl + tõstuklahv + Q.</translation>
 <translation id="3893630138897523026">ChromeVox (kõnena esitatud tagasiside)</translation>
@@ -789,6 +790,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4197790712631116042">Väljas</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> pole saadaval.</translation>
 <translation id="4201051445878709314">Eelmise kuu kuvamine</translation>
+<translation id="4202362334312791952">1 seade on ühendatud. Kuumkoha kasutamise alustamiseks lülitatakse WiFi välja.</translation>
 <translation id="4209973997261364186">WiFi on sisse lülitatud.</translation>
 <translation id="4212472694152630271">Kasuta PIN-koodi</translation>
 <translation id="4215497585250573029">VPN-i seaded</translation>
@@ -1052,6 +1054,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5258528442992323769">Salvestatud töölaudu ei ole</translation>
 <translation id="5260676007519551770">Töölaud 4</translation>
 <translation id="5268819379131021772">Google'i ülesannete loend</translation>
+<translation id="5275923704957843041">Töölaua eelvaade</translation>
 <translation id="5278086053818066789">Lülita ChromeVox (suuline tagasiside) sisse/välja</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> vajab teie tähelepanu.</translation>
 <translation id="5283198616748585639">Lisa 1 min</translation>
@@ -1168,6 +1171,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5707775774148071965">Teie seade toetab kiiremat andmesidet kui teie kaabel. Seadme toimivus võib olla piiratud.</translation>
 <translation id="5710450975648804523">Režiim Mitte segada on sees</translation>
 <translation id="571295407079589142">Mobiilne andmeside on välja lülitatud</translation>
+<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> seadet on ühendatud. Kuumkoha kasutamise alustamiseks lülitatakse WiFi välja.</translation>
 <translation id="5727460725221669831">Kui unustasite parooli või muutsite hiljuti oma Google'i konto parooli, proovige konto taastada.</translation>
 <translation id="573413375004481890">See seade ei saanud kõiki teie ekraane toetada, seetõttu ühe ühendus katkestati</translation>
 <translation id="5740328398383587084">Läheduses jagamine</translation>

@@ -118,6 +118,7 @@ Tänk på detta:
 <translation id="5389212809648216794">Google Chrome kan inte använda kameran eftersom den används av en annan app</translation>
 <translation id="5395376160638294582">Se till att du alltid kan använda Chrome-data i Google-kontot</translation>
 <translation id="5439191312780166229">Varnar dig om farliga webbplatser, även sådana som Google inte kände till tidigare, genom att analysera mer data från webbplatser än standardskyddet. Du kan välja att hoppa över Chrome-varningar.</translation>
+<translation id="5442013002200339429">Om du döljer <ph name="MODULE_NAME" /> spåras inte längre framtida försändelser automatiskt i Chrome, och all tidigare spårningsdata för försändelser raderas.</translation>
 <translation id="5460571915754665838">4. Välj Chrome</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Du spårar det här paketet på sidan Ny flik i Chrome.}other{Du spårar de här paketen på sidan Ny flik i Chrome.}}</translation>
 <translation id="5492504007368565877">Google Lösenordshantering kan inte kontrollera dina lösenord.</translation>

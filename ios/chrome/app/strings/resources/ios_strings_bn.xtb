@@ -58,6 +58,7 @@
 <translation id="1264156759663453185">আংশিক অনুবাদের জন্য বেছে নেওয়া টেক্সটের সাইজ অনেক বড়।</translation>
 <translation id="1265739287306757398">কীভাবে করবেন জানুন</translation>
 <translation id="1272079795634619415">বন্ধ</translation>
+<translation id="1273416271143914096">{count,plural, =1{{count}টি পাসওয়ার্ড}one{{count}টি পাসওয়ার্ড}other{{count}টি পাসওয়ার্ড}}</translation>
 <translation id="1275718070701477396">নির্বাচিত</translation>
 <translation id="1279024913354609713">অনুমতি দেবেন না</translation>
 <translation id="1281818060020671000">ডেটা ম্যানেজ করুন</translation>
@@ -191,6 +192,7 @@
 <translation id="1987779152850321833">Chrome ব্যবহার করার সবচেয়ে ভাল সুবিধা পেতে নিচে সাজেস্ট করা এইসব অ্যাকশন সম্পূর্ণ করুন।</translation>
 <translation id="1989112275319619282">ব্রাউজ করুন</translation>
 <translation id="1990820278544963435">খুঁজুন</translation>
+<translation id="1991153180045413119">পাসওয়ার্ড শেয়ার করা হয়েছে</translation>
 <translation id="1992055602764528852">আপনার অন্যান্য ডিভাইস থেকে আপনার ট্যাব দেখতে সাইন-ইন করুন।</translation>
 <translation id="199425419756152024">পাসওয়ার্ড দেখুন</translation>
 <translation id="2008357574463816229">আপনি নিজের পাসফ্রেজ ভুলে গেলে বা এই সেটিং পরিবর্তন করতে চাইলে, <ph name="BEGIN_LINK" />আপনার অ্যাকাউন্টে থাকা Chrome সম্পর্কিত ডেটা মুছুন<ph name="END_LINK" />।</translation>
@@ -234,6 +236,7 @@
 <translation id="2268044343513325586">রিফাইন করুন</translation>
 <translation id="2269277877025820298">আরও দেখুন</translation>
 <translation id="2273327106802955778">‘আরও’ মেনু</translation>
+<translation id="2274800392139890332">এই প্যাকেজ ট্র্যাক করা বন্ধ করুন</translation>
 <translation id="2275480389219976105">ঠিকানা পাওয়া গেছে</translation>
 <translation id="2286505070150039482">হাইলাইট করা টেক্সট</translation>
 <translation id="2287614783861766820">{count,plural, =1{এই ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}one{এই ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}other{এই ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}}</translation>
@@ -242,6 +245,7 @@
 <translation id="2299218006564889602">Google পাসওয়ার্ড ম্যানেজারে সেভ করার আগে আপনার পাসওয়ার্ড ডিভাইসে এনক্রিপ্ট করা হয়</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">ওয়েবসাইটে গিয়ে পাসওয়ার্ড পরিবর্তন করুন</translation>
+<translation id="2310154074101836012">এডিট করার ক্যারোজেল</translation>
 <translation id="2316709634732130529">সাজেস্ট করা পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="2320166752086256636">কীবোর্ড লুকান</translation>
 <translation id="2351097562818989364">আপনার অনুবাদ সেটিংস রিসেট করা হয়েছে৷</translation>
@@ -526,6 +530,7 @@
 <translation id="380329542618494757">নাম</translation>
 <translation id="3803696231112616155">এই সাইট অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="3810973564298564668">পরিচালনা করুন</translation>
+<translation id="3818045793209708987">এই প্যাকেজটি ট্র্যাক করা বন্ধ করা হয়েছে</translation>
 <translation id="3818293389945649617">পরবর্তী স্ট্রিং খুঁজুন</translation>
 <translation id="3819183753496523827">আপনি অফলাইন আছেন। ইন্টারনেট কানেকশন ঠিক আছে কিনা দেখে আবার চেষ্টা করুন।</translation>
 <translation id="3832419617903252251">পাসওয়ার্ড শুধুমাত্র এই ডিভাইসে সেভ আছে</translation>
@@ -564,6 +569,7 @@
 <translation id="4018310736049373830">অ্যাক্টিভিটি ম্যানেজ করুন</translation>
 <translation id="4038354071007134711">এই ডিভাইসের কোনো অ্যাপ্লিকেশান ফাইলটি খুলতে পারবে না।</translation>
 <translation id="4042870976416480368">পৃষ্ঠাতে খুঁজুন</translation>
+<translation id="4043294777772912240">Google Password Manager-এর সাহায্যে <ph name="WEBSITE" />-এ সাইন-ইন করার জন্য <ph name="USERNAME" /> এখন আপনার ব্যবহারকারীর নাম ও পাসওয়ার্ড ব্যবহার করতে পারবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">আপনি হাইলাইট করেছেন এমন একটি পৃষ্ঠার অংশের সরাসরি লিঙ্ক তৈরি করে শেয়ার করুন।</translation>
 <translation id="4045648459118332842">যেকোনও অ্যাপে আপনার সেভ করা পাসওয়ার্ডগুলি এক ট্যাপে পেয়ে যান</translation>
 <translation id="4049507953662678203">আপনি একটি নেটওয়ার্ক সংযোগে আছেন কিনা তা নিশ্চিত করুন এবং আবার চেষ্টা করুন।</translation>
@@ -607,6 +613,7 @@
 <translation id="4286718549648564014">আপনার অ্যাকাউন্ট <ph name="USER_EMAIL" />-এ ঠিকানা সরানো হয়েছে</translation>
 <translation id="4293080268407233932">সার্চ করুন</translation>
 <translation id="4302248187517737842">কোনও ইউজারনেম নেই ••••••••</translation>
+<translation id="4302415908542657649">পাসওয়ার্ড শেয়ার করা হচ্ছে</translation>
 <translation id="4304713468139749426">পাসওয়ার্ড ম্যানেজার</translation>
 <translation id="430793432425771671">সবকিছু সিঙ্ক করুন</translation>
 <translation id="4309403553630140242">আরও তথ্য জানতে ডবল ট্যাপ করুন</translation>
@@ -642,6 +649,7 @@
 <translation id="4508750114462689118">সাইন-ইন প্রোমো বন্ধ করুন</translation>
 <translation id="4514889972748124117">শক্তিশালী পাসওয়ার্ড সাজেস্ট করুন...</translation>
 <translation id="4520798012560649652">'ছদ্মবেশী' মোড সম্পর্কে আরও জানুন</translation>
+<translation id="452503091941773389">{count,plural, =1{{count}টি বুকমার্ক}one{{count}টি বুকমার্ক}other{{count}টি বুকমার্ক}}</translation>
 <translation id="452750746583162491">আপনার সিঙ্ক করা ডেটা পর্যালোচনা করুন</translation>
 <translation id="4527660062930312477">আপনার অ্যাকাউন্ট ম্যানেজ করা হয়</translation>
 <translation id="4536418791685807335">আবার সাইন ইন করার চেষ্টা করুন।</translation>
@@ -661,6 +669,7 @@
 <translation id="4619615317237390068">অন্যান্য ডিভাইসগুলি থেকে ট্যাব</translation>
 <translation id="4620246317052452550">আপনি যেসব পৃষ্ঠা পড়েছেন</translation>
 <translation id="4620888520263267479">লিঙ্ক প্রিভিউ দেখুন</translation>
+<translation id="4622477750832577849">ট্র্যাকিং চালু করুন</translation>
 <translation id="4630540211544979320">পৃষ্ঠা অনুবাদ করুন</translation>
 <translation id="4631335160486397366"><ph name="COUNT" />টি একই পাসওয়ার্ড যা আবার ব্যবহার করা হয়েছে</translation>
 <translation id="4634124774493850572">পাসওয়ার্ড ব্যবহার করুন</translation>
@@ -810,6 +819,7 @@
 <translation id="54401264925851789">পৃষ্ঠা নিরাপত্তা তথ্য</translation>
 <translation id="5443952882982198570">ক্রেডিট কার্ড</translation>
 <translation id="5444892875087332195">বুকমার্ক</translation>
+<translation id="5454211924362324495">আপনার পাসওয়ার্ড যাতে অন্যরা ব্যবহার করতে না পারে তার জন্য <ph name="BEGIN_LINK" /><ph name="WEBSITE" /> সাইটে গিয়ে পাসওয়ার্ড পরিবর্তন করুন<ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">ডাউনলোড করা অফলাইন পেজ খুলন</translation>
 <translation id="5475069061743940393">প্যাকেজ ট্র্যাকিং</translation>
 <translation id="5478327362747197944">ওয়েব পৃষ্ঠাতে কোনও তারিখের উপর ক্লিক করার মাধ্যমে সরাসরি ক্যালেন্ডার ইভেন্ট তৈরি করুন।</translation>
@@ -1157,6 +1167,7 @@
 <translation id="7154343200458623869">আপনার টাস্ক সম্পূর্ণ করুন।</translation>
 <translation id="7161230316646448869">সমস্ত ডিভাইসে আপনার বুকমার্ক, ইতিহাস ও আরও অনেক কিছু সিঙ্ক করুন</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> দিয়ে ছদ্মবেশী ট্যাব আনলক করুন</translation>
+<translation id="7168959436351276050">এই কার্ডটি লুকানো হলে প্যাকেজ ট্র্যাকিংয়ের সমস্ত ডেটা মুছে দেওয়া হবে</translation>
 <translation id="7172852049901402487">নিরাপত্তা সংক্রান্ত সমস্যাগুলি থেকে আপনার পাসওয়ার্ডকে সুরক্ষিত রাখুন</translation>
 <translation id="7173114856073700355">সেটিংস খুলুন</translation>
 <translation id="7189598951263744875">শেয়ার করুন...</translation>

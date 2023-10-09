@@ -118,6 +118,7 @@ Perkara yang perlu dipertimbangkan:
 <translation id="5389212809648216794">Google Chrome tidak dapat menggunakan kamera anda kerana kamera sedang digunakan oleh aplikasi lain</translation>
 <translation id="5395376160638294582">Pastikan anda dapat menggunakan data Chrome pada bila-bila masa dalam Google Account anda</translation>
 <translation id="5439191312780166229">Memberikan amaran kepada anda tentang laman berbahaya, termasuk laman yang tidak diketahui oleh Google sebelum ini, dengan menganalisis lebih banyak data daripada laman berbanding perlindungan standard. Anda boleh memilih untuk melangkau amaran Chrome.</translation>
+<translation id="5442013002200339429">Jika anda menyembunyikan "<ph name="MODULE_NAME" />", Chrome tidak akan menjejaki secara automatik pakej anda pada masa hadapan dan akan memadamkan semua data penjejakan pakej anda yang lalu.</translation>
 <translation id="5460571915754665838">4. Pilih Chrome</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome akan membantu menjejaki pakej ini pada Halaman Tab Baharu.}other{Chrome akan membantu menjejaki pakej ini pada Halaman Tab Baharu.}}</translation>
 <translation id="5492504007368565877">Google Password Manager tidak dapat menyemak kata laluan anda.</translation>
