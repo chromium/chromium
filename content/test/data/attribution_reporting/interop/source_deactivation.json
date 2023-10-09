@@ -3,7 +3,7 @@
   "input": {
     "registrations": [
       {
-        "timestamp": "1643235573000",
+        "timestamp": "0",
         "registration_request": {
           "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
@@ -22,7 +22,7 @@
         }]
       },
       {
-        "timestamp": "1643235574000",
+        "timestamp": "1000",
         "registration_request": {
           "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
@@ -41,7 +41,7 @@
         }]
       },
       {
-        "timestamp": "1643235575000",
+        "timestamp": "2000",
         "registration_request": {
           "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
@@ -64,7 +64,7 @@
       // Should not result in an event-level report as filter data doesn't match
       // and therefore should not deactivate the second and third sources.
       {
-        "timestamp": "1643235576000",
+        "timestamp": "3000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -87,7 +87,7 @@
       },
       // Should result in an event-level report and deactivate the third source.
       {
-        "timestamp": "1643321973000",
+        "timestamp": "86400000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -108,7 +108,7 @@
       // Should not result in an event-level report as the third source was
       // deactivated.
       {
-        "timestamp": "1643321973100",
+        "timestamp": "86400100",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination2.test"
@@ -129,7 +129,7 @@
       // Should not result in an event-level report as the third source was
       // deactivated.
       {
-        "timestamp": "1643321974000",
+        "timestamp": "86401000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -156,12 +156,12 @@
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0001372,
-          "scheduled_report_time": "1643321974",
+          "scheduled_report_time": "86401",
           "source_event_id": "222",
           "source_type": "navigation",
           "trigger_data": "2"
        },
-       "report_time": "1643321974000",
+       "report_time": "86401000",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
       }
     ]

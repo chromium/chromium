@@ -3,7 +3,7 @@
   "input": {
     "registrations": [
       {
-        "timestamp": "1643235573000",
+        "timestamp": "0",
         "registration_request": {
           "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
@@ -24,7 +24,7 @@
         }]
       },
       {
-        "timestamp": "1643235573001",
+        "timestamp": "1",
         "registration_request": {
           "context_origin": "https://source.test",
           "attribution_src_url": "https://another-reporter.test/register-source",
@@ -44,7 +44,7 @@
         }]
       },
       {
-        "timestamp": "1643235573002",
+        "timestamp": "2",
         "registration_request": {
           "context_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
@@ -65,7 +65,7 @@
       },
       // Will result in a debug report.
       {
-        "timestamp": "1643235574000",
+        "timestamp": "1000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -91,7 +91,7 @@
       },
       // Will not result in a debug report as debug key is not set.
       {
-        "timestamp": "1643235575000",
+        "timestamp": "2000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -116,7 +116,7 @@
       },
       // Will not result in a debug report as debug permission is not set.
       {
-        "timestamp": "1643235576000",
+        "timestamp": "3000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -141,7 +141,7 @@
       },
       // Will not result in a debug report as source debug key is not set.
       {
-        "timestamp": "1643235577000",
+        "timestamp": "4000",
         "registration_request": {
           "attribution_src_url": "https://another-reporter.test/register-trigger",
           "context_origin": "https://destination.test"
@@ -167,7 +167,7 @@
       },
       // Will not result in a debug report as source debug permission is not set.
       {
-        "timestamp": "1643235578000",
+        "timestamp": "5000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://another-destination.test"
@@ -209,7 +209,7 @@
           "trigger_debug_key": "333"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174000"
+        "report_time": "3601000"
       },
       {
         "payload": {
@@ -223,7 +223,7 @@
           "source_debug_key": "111"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239175000"
+        "report_time": "3602000"
       },
       {
         "payload": {
@@ -237,7 +237,7 @@
           "source_debug_key": "111"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239176000"
+        "report_time": "3603000"
       },
       {
         "payload": {
@@ -251,7 +251,7 @@
           "trigger_debug_key": "555"
         },
         "report_url": "https://another-reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239177000"
+        "report_time": "3604000"
       },
       {
         "payload": {
@@ -265,7 +265,7 @@
           "trigger_debug_key": "666"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239178000"
+        "report_time": "3605000"
       },
       {
         "payload": {
@@ -280,7 +280,7 @@
           "trigger_debug_key": "333"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-attribution",
-        "report_time": "1643235574000"
+        "report_time": "1000"
       }
     ]
   }
