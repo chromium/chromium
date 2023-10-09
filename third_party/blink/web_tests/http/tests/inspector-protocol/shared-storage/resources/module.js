@@ -1,3 +1,4 @@
+console.log(`loaded module, test token: ${typeof(testToken) === 'undefined' ? '<undefined>' : testToken}`);
 var globalVar = 0;
 
 class EmptyOperation {
