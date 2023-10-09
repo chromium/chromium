@@ -9,6 +9,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import * as Common from 'devtools/core/common/common.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
 import * as Sources from 'devtools/panels/sources/sources.js';
+import * as Persistence from 'devtools/models/persistence/persistence.js';
 
 (async function() {
   TestRunner.addResult('Tests accessibility in the editor pane in sources panel using the axe-core linter.');
@@ -38,7 +39,7 @@ import * as Sources from 'devtools/panels/sources/sources.js';
   async function setup() {
     const projects = Workspace.workspace.projectsForType(Workspace.projectTypes.FileSystem);
     const snippetsProject = projects.find(
-      project => Persistence.FileSystemWorkspaceBinding.fileSystemType(project) === 'snippets');
+      project => Persistence.FileSystemWorkspaceBinding.FileSystemWorkspaceBinding.fileSystemType(project) === 'snippets');
     const uiSourceCode1 = await snippetsProject.createFile('');
     await Common.Revealer.reveal(uiSourceCode1);
     const uiSourceCode2 = await snippetsProject.createFile('');

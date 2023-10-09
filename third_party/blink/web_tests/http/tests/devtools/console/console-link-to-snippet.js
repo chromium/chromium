@@ -8,6 +8,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as SourcesModule from 'devtools/panels/sources/sources.js';
+import * as Persistence from 'devtools/models/persistence/persistence.js';
 
 (async function() {
   TestRunner.addResult(`Test that link to snippet works.\n`);
@@ -62,7 +63,7 @@ console.error(null)`)
 
   async function createSnippetPromise(content) {
     const projects = Workspace.workspace.projectsForType(Workspace.projectTypes.FileSystem);
-    const snippetsProject = projects.find(project => Persistence.FileSystemWorkspaceBinding.fileSystemType(project) === 'snippets');
+    const snippetsProject = projects.find(project => Persistence.FileSystemWorkspaceBinding.FileSystemWorkspaceBinding.fileSystemType(project) === 'snippets');
     const uiSourceCode = await snippetsProject.createFile('');
     uiSourceCode.setContent(content);
     return uiSourceCode;

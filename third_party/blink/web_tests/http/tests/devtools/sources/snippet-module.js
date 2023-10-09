@@ -8,6 +8,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as SourcesModule from 'devtools/panels/sources/sources.js';
+import * as Persistence from 'devtools/models/persistence/persistence.js';
 
 (async function() {
   TestRunner.addResult(
@@ -25,7 +26,7 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
   const projects =
       Workspace.workspace.projectsForType(Workspace.projectTypes.FileSystem);
   const snippetsProject = projects.find(
-      project => Persistence.FileSystemWorkspaceBinding.fileSystemType(
+      project => Persistence.FileSystemWorkspaceBinding.FileSystemWorkspaceBinding.fileSystemType(
                      project) === 'snippets');
   const uiSourceCode = await snippetsProject.createFile('');
 

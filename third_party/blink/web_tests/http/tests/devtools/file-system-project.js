@@ -8,6 +8,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as Host from 'devtools/core/host/host.js';
+import * as Persistence from 'devtools/models/persistence/persistence.js';
 
 (async function() {
   TestRunner.addResult(`Tests file system project.\n`);
@@ -205,7 +206,7 @@ import * as Host from 'devtools/core/host/host.js';
       fs.reportCreated(dumpGitFolders);
 
       function dumpGitFolders() {
-        var isolatedFileSystem = Persistence.isolatedFileSystemManager.fileSystem('file:///var/www3');
+        var isolatedFileSystem = Persistence.IsolatedFileSystemManager.IsolatedFileSystemManager.instance().fileSystem('file:///var/www3');
         var folders = isolatedFileSystem.initialGitFolders();
         folders.sort();
         for (var gitFolder of folders)

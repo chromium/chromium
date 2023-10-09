@@ -8,6 +8,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
 
 import * as Workspace from 'devtools/models/workspace/workspace.js';
 import * as SourcesModule from 'devtools/panels/sources/sources.js';
+import * as Persistence from 'devtools/models/persistence/persistence.js';
 
 (async function() {
   TestRunner.addResult(`Verify that search across all files omits filesystem uiSourceCodes with binding to network.\n`);
@@ -50,7 +51,7 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
     function reply() {
       var paths = ['/var/www' + fsEntry.fullPath];
-      Persistence.isolatedFileSystemManager.onSearchCompleted(
+      Persistence.IsolatedFileSystemManager.IsolatedFileSystemManager.instance().onSearchCompleted(
           {data: {requestId: requestId, fileSystemPath: path, files: paths}});
     }
   };
