@@ -449,7 +449,7 @@ blink::WebFormElement FindFormByUniqueRendererId(
 // elements in it, but doesn't guarantee that the returned element will belong
 // to it. Returns the null element if there is no element with the
 // |queried_form_control| renderer id.
-blink::WebFormControlElement FindFormControlElementByUniqueRendererId(
+blink::WebFormControlElement FindFormControlByUniqueRendererId(
     const blink::WebDocument& doc,
     FieldRendererId queried_form_control,
     absl::optional<FormRendererId> form_to_be_searched = absl::nullopt);

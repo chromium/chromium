@@ -657,7 +657,7 @@ void AutofillAgent::ApplyAutofillAction(
       return;
     }
     WebDocument document = unsafe_render_frame()->GetWebFrame()->GetDocument();
-    last_queried_element_ = form_util::FindFormControlElementByUniqueRendererId(
+    last_queried_element_ = form_util::FindFormControlByUniqueRendererId(
         document, form.fields.front().unique_renderer_id);
   }
 
@@ -754,7 +754,7 @@ void AutofillAgent::TriggerSuggestions(
   }
   WebDocument document = render_frame->GetWebFrame()->GetDocument();
   last_queried_element_ =
-      form_util::FindFormControlElementByUniqueRendererId(document, field_id);
+      form_util::FindFormControlByUniqueRendererId(document, field_id);
   if (!last_queried_element_.IsNull()) {
     ShowSuggestions(last_queried_element_, trigger_source);
   }
@@ -1404,7 +1404,7 @@ void AutofillAgent::OnProvisionallySaveForm(
             formless_elements_user_edited_,
             [&doc](const FieldRendererId field_id) {
               WebFormControlElement field =
-                  form_util::FindFormControlElementByUniqueRendererId(
+                  form_util::FindFormControlByUniqueRendererId(
                       doc, field_id, /*form_to_be_searched =*/FormRendererId());
               return !field.IsNull() &&
                      form_util::IsWebElementFocusableForAutofill(field);

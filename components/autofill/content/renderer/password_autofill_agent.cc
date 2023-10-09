@@ -84,7 +84,7 @@ using password_manager::util::IsRendererRecognizedCredentialForm;
 namespace autofill {
 
 using form_util::FindFormByUniqueRendererId;
-using form_util::FindFormControlElementByUniqueRendererId;
+using form_util::FindFormControlByUniqueRendererId;
 using form_util::FindFormControlElementsByUniqueRendererId;
 using form_util::GetFieldRendererId;
 using form_util::GetFormRendererId;
@@ -409,7 +409,7 @@ void AnnotateFieldWithParsingResult(
     const std::string& password_managers_annotation) {
   if (renderer_id.is_null())
     return;
-  auto element = FindFormControlElementByUniqueRendererId(doc, renderer_id);
+  auto element = FindFormControlByUniqueRendererId(doc, renderer_id);
   if (element.IsNull())
     return;
   // Calling SetAttribute synchronously here is safe because
@@ -1233,7 +1233,7 @@ void PasswordAutofillAgent::FireSubmissionIfFormDisappear(
                 FindFormByUniqueRendererId(doc, last_updated_form_renderer_id_))
                .IsNull()) {
         fields = form.GetFormControlElements().ReleaseVector();
-      } else if (!(field = FindFormControlElementByUniqueRendererId(
+      } else if (!(field = FindFormControlByUniqueRendererId(
                        doc, last_updated_field_renderer_id_,
                        /*form_to_be_searched =*/FormRendererId()))
                       .IsNull()) {
@@ -1611,7 +1611,7 @@ void PasswordAutofillAgent::KeyboardReplacingSurfaceClosed(
 
 void PasswordAutofillAgent::TriggerFormSubmission() {
   // Find the last interacted element to simulate an enter keystroke at.
-  WebFormControlElement form_control = FindFormControlElementByUniqueRendererId(
+  WebFormControlElement form_control = FindFormControlByUniqueRendererId(
       render_frame()->GetWebFrame()->GetDocument(),
       field_renderer_id_to_submit_);
   if (form_control.IsNull()) {

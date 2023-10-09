@@ -663,13 +663,13 @@ struct FindFormControlTestParam {
   bool expectation;
 };
 
-// Tests FindFormControlElementByUniqueRendererId().
+// Tests FindFormControlByUniqueRendererId().
 class ParameterizedFindFormControlByRendererIdTest
     : public FormAutofillUtilsTest,
       public testing::WithParamInterface<FindFormControlTestParam> {};
 
 TEST_P(ParameterizedFindFormControlByRendererIdTest,
-       FindFormControlElementByUniqueRendererId) {
+       FindFormControlByUniqueRendererId) {
   LoadHTML(R"(
     <body>
       <input id="nonexistentField">
@@ -702,7 +702,7 @@ TEST_P(ParameterizedFindFormControlByRendererIdTest,
 
   EXPECT_EQ(
       GetParam().expectation,
-      queried_field == FindFormControlElementByUniqueRendererId(
+      queried_field == FindFormControlByUniqueRendererId(
                            doc, queried_field_id, form_to_be_searched_id));
 }
 

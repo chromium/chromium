@@ -408,7 +408,7 @@ void PasswordGenerationAgent::FoundFormEligibleForGeneration(
     if (doc.IsNull())
       return;
     WebFormControlElement new_password_input =
-        form_util::FindFormControlElementByUniqueRendererId(
+        form_util::FindFormControlByUniqueRendererId(
             doc, form.new_password_renderer_id);
     if (!new_password_input.IsNull()) {
       // Mark the input element with renderer id
@@ -737,7 +737,7 @@ void PasswordGenerationAgent::MaybeCreateCurrentGenerationItem(
   std::vector<blink::WebInputElement> passwords = {generation_element};
 
   WebFormControlElement confirmation_password =
-      form_util::FindFormControlElementByUniqueRendererId(
+      form_util::FindFormControlByUniqueRendererId(
           generation_element.GetDocument(), confirmation_password_renderer_id);
 
   if (!confirmation_password.IsNull()) {

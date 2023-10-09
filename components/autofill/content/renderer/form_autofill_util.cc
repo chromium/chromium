@@ -2799,7 +2799,7 @@ WebFormElement FindFormByUniqueRendererId(const WebDocument& doc,
   return WebFormElement();
 }
 
-WebFormControlElement FindFormControlElementByUniqueRendererId(
+WebFormControlElement FindFormControlByUniqueRendererId(
     const WebDocument& doc,
     FieldRendererId queried_form_control,
     absl::optional<FormRendererId> form_to_be_searched /*= absl::nullopt*/) {
@@ -2858,7 +2858,7 @@ std::vector<WebFormControlElement> FindFormControlElementsByUniqueRendererId(
     control_elements.reserve(queried_form_controls.size());
     for (FieldRendererId queried_form_control : queried_form_controls) {
       control_elements.push_back(
-          FindFormControlElementByUniqueRendererId(doc, queried_form_control));
+          FindFormControlByUniqueRendererId(doc, queried_form_control));
     }
     return control_elements;
   }
