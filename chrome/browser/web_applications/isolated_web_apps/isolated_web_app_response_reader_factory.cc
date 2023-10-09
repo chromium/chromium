@@ -157,7 +157,7 @@ void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockAndMetadataRead(
   }
 
   std::move(callback).Run(
-      std::make_unique<IsolatedWebAppResponseReader>(std::move(reader)));
+      std::make_unique<IsolatedWebAppResponseReaderImpl>(std::move(reader)));
 }
 
 }  // namespace web_app

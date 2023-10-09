@@ -95,7 +95,7 @@ TEST_F(IsolatedWebAppResponseReaderTest,
   ASSERT_THAT(status, HasValue());
 
   auto response_reader =
-      std::make_unique<IsolatedWebAppResponseReader>(std::move(reader));
+      std::make_unique<IsolatedWebAppResponseReaderImpl>(std::move(reader));
 
   {
     network::ResourceRequest request;
@@ -127,7 +127,7 @@ TEST_F(IsolatedWebAppResponseReaderTest, ReadResponseBody) {
   ASSERT_THAT(status, HasValue());
 
   auto response_reader =
-      std::make_unique<IsolatedWebAppResponseReader>(std::move(reader));
+      std::make_unique<IsolatedWebAppResponseReaderImpl>(std::move(reader));
 
   network::ResourceRequest request;
   request.url = base_url_;
@@ -160,6 +160,40 @@ TEST_F(IsolatedWebAppResponseReaderTest, ReadResponseBody) {
         response_body_future.GetCallback());
     EXPECT_THAT(response_body_future.Get(), Eq(net::ERR_FAILED));
   }
+}
+
+TEST_F(IsolatedWebAppResponseReaderTest, Close) {
+  base::FilePath web_bundle_path = CreateSignedBundleAndWriteToDisk();
+  auto reader = SignedWebBundleReader::Create(web_bundle_path, base_url_);
+  ReadIntegrityBlockAndMetadata(*reader.get());
+  auto* raw_reader = reader.get();
+
+  auto response_reader =
+      std::make_unique<IsolatedWebAppResponseReaderImpl>(std::move(reader));
+
+  network::ResourceRequest request;
+  request.url = base_url_;
+  base::test::TestFuture<base::expected<IsolatedWebAppResponseReader::Response,
+                                        IsolatedWebAppResponseReader::Error>>
+      response_future;
+  response_reader->ReadResponse(request, response_future.GetCallback());
+  IsolatedWebAppResponseReader::Response response = *response_future.Take();
+
+  base::test::TestFuture<void> close_future;
+  response_reader->Close(close_future.GetCallback());
+  close_future.Wait();
+
+  EXPECT_EQ(raw_reader->GetState(), SignedWebBundleReader::State::kClosed);
+
+  // If the response_reader is closed, then reading the response should return
+  // `net::ERR_FAILED`.
+  base::test::TestFuture<net::Error> response_body_future;
+  ReadResponseBody(
+      response.head()->payload_length,
+      base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
+                     base::Unretained(&response)),
+      response_body_future.GetCallback());
+  EXPECT_THAT(response_body_future.Get(), Eq(net::ERR_FAILED));
 }
 
 }  // namespace

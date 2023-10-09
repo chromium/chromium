@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_fake_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -146,36 +147,6 @@ std::unique_ptr<MockDataRetriever> CreateDefaultDataRetriever(
 
   return fake_data_retriever;
 }
-
-class FakeResponseReaderFactory : public IsolatedWebAppResponseReaderFactory {
- public:
-  explicit FakeResponseReaderFactory(
-      base::expected<void, UnusableSwbnFileError> bundle_status)
-      : IsolatedWebAppResponseReaderFactory(
-            nullptr,
-            base::BindRepeating(
-                []() -> std::unique_ptr<
-                         web_package::SignedWebBundleSignatureVerifier> {
-                  return nullptr;
-                })),
-        bundle_status_(std::move(bundle_status)) {}
-
-  void CreateResponseReader(const base::FilePath& web_bundle_path,
-                            const web_package::SignedWebBundleId& web_bundle_id,
-                            bool skip_signature_verification,
-                            Callback callback) override {
-    // Signatures _must_ be verified during installation and update.
-    EXPECT_THAT(skip_signature_verification, IsFalse());
-    if (!bundle_status_.has_value()) {
-      std::move(callback).Run(base::unexpected(bundle_status_.error()));
-    } else {
-      std::move(callback).Run(nullptr);
-    }
-  }
-
- private:
-  base::expected<void, UnusableSwbnFileError> bundle_status_;
-};
 
 class IsolatedWebAppInstallCommandHelperTest : public ::testing::Test {
  public:

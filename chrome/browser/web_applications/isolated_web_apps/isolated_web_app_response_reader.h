@@ -19,17 +19,12 @@ struct ResourceRequest;
 
 namespace web_app {
 
-// This class is used to read responses for requests from Isolated Web Apps. It
-// is constructed from a `SignedWebBundleReader` instance, which must have
-// already read and validated integrity block and metadata. Usually, this class
+// The definition of the interface that is used to read responses for requests
+// from Isolated Web Apps. Usually, the implementations of this interface
 // should be constructed via the `IsolatedWebAppResponseReaderFactory`, which
 // will take care of the necessary validation and verification steps.
 class IsolatedWebAppResponseReader {
  public:
-  explicit IsolatedWebAppResponseReader(
-      std::unique_ptr<SignedWebBundleReader> reader);
-  ~IsolatedWebAppResponseReader();
-
   // A `Response` object contains the response head, as well as a `ReadBody`
   // function to read the response's body. It holds weakly onto a
   // `SignedWebBundleReader` for reading the response body. This reference will
@@ -69,13 +64,30 @@ class IsolatedWebAppResponseReader {
   using ReadResponseCallback =
       base::OnceCallback<void(base::expected<Response, Error>)>;
 
+  virtual ~IsolatedWebAppResponseReader() = default;
+  virtual void ReadResponse(const network::ResourceRequest& resource_request,
+                            ReadResponseCallback callback) = 0;
+  virtual void Close(base::OnceClosure callback) = 0;
+};
+
+// The implementation of the IWA response reader. It is constructed from
+// a `SignedWebBundleReader` instance, which must have already
+// read and validated integrity block and metadata.
+class IsolatedWebAppResponseReaderImpl : public IsolatedWebAppResponseReader {
+ public:
+  explicit IsolatedWebAppResponseReaderImpl(
+      std::unique_ptr<SignedWebBundleReader> reader);
+  ~IsolatedWebAppResponseReaderImpl() override;
+
   void ReadResponse(const network::ResourceRequest& resource_request,
-                    ReadResponseCallback callback);
+                    ReadResponseCallback callback) override;
+  void Close(base::OnceClosure callback) override;
 
  private:
   void OnResponseRead(ReadResponseCallback callback,
                       base::expected<web_package::mojom::BundleResponsePtr,
                                      Error> response_head);
+  void OnClosed(base::OnceClosure callback);
 
   std::unique_ptr<SignedWebBundleReader> reader_;
 };

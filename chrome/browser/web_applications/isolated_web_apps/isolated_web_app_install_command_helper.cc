@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/overloaded.h"
@@ -153,15 +154,34 @@ void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignaturesOfBundle(
 void IsolatedWebAppInstallCommandHelper::OnTrustAndSignaturesOfBundleChecked(
     base::OnceCallback<void(base::expected<void, std::string>)> callback,
     base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
-                   UnusableSwbnFileError> status) {
-  std::move(callback).Run(
-      status
+                   UnusableSwbnFileError> result) {
+  auto status =
+      result
           .transform(
               [](const std::unique_ptr<IsolatedWebAppResponseReader>& reader)
                   -> void {})
           .transform_error([](const UnusableSwbnFileError& error) {
             return IsolatedWebAppResponseReaderFactory::ErrorToString(error);
-          }));
+          });
+  std::unique_ptr<IsolatedWebAppResponseReader> reader;
+  IsolatedWebAppResponseReader* raw_reader = nullptr;
+  if (result.has_value()) {
+    reader = std::move(result.value());
+    raw_reader = reader.get();
+  }
+
+  base::OnceClosure run_result_callback = base::BindOnce(
+      [](base::OnceCallback<void(base::expected<void, std::string>)> cb,
+         base::expected<void, std::string> status,
+         std::unique_ptr<IsolatedWebAppResponseReader>) {
+        std::move(cb).Run(std::move(status));
+      },
+      std::move(callback), std::move(status), std::move(reader));
+  if (raw_reader) {
+    raw_reader->Close(std::move(run_result_callback));
+  } else {
+    std::move(run_result_callback).Run();
+  }
 }
 
 void IsolatedWebAppInstallCommandHelper::CreateStoragePartitionIfNotPresent(
