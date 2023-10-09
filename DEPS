@@ -4215,6 +4215,11 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
+  'src/third_party/ml': {
+      'url': Var('chrome_git') + '/chrome/third_party/ml.git' + '@' + 'bfd95492122f567f2d3163bb0fb2b56f450618de',
+      'condition': 'checkout_src_internal and (checkout_win or checkout_mac or checkout_linux)',
+  },
+
   'src/third_party/soda': {
       'packages': [
           {
