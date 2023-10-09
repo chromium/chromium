@@ -112,10 +112,8 @@ async def test_remove_intercept_twice(websocket):
                          ])
 @pytest.mark.asyncio
 async def test_remove_intercept_unblocks(websocket, context_id,
-                                         another_context_id, url_patterns):
-    # TODO: make offline.
-    url = "https://www.example.com/"
-
+                                         another_context_id, url_patterns,
+                                         example_url):
     await subscribe(websocket, ["cdp.Fetch.requestPaused"])
     await subscribe(websocket, ["network"], [another_context_id])
 
@@ -137,7 +135,7 @@ async def test_remove_intercept_unblocks(websocket, context_id,
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": url,
+                "url": example_url,
                 "context": context_id,
             }
         })
@@ -152,7 +150,7 @@ async def test_remove_intercept_unblocks(websocket, context_id,
                 "networkId": ANY_STR,
                 "request": AnyExtending({
                     "headers": ANY_DICT,
-                    "url": url,
+                    "url": example_url,
                 }),
                 "requestId": ANY_STR,
                 "resourceType": "Document",
@@ -176,7 +174,7 @@ async def test_remove_intercept_unblocks(websocket, context_id,
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": url,
+                "url": example_url,
                 "wait": "complete",
                 "context": another_context_id,
             }
@@ -195,7 +193,7 @@ async def test_remove_intercept_unblocks(websocket, context_id,
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": url,
+                "url": example_url,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],

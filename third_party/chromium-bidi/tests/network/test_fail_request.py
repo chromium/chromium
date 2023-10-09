@@ -84,10 +84,7 @@ async def test_fail_request_non_blocked_request(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_fail_request_twice(websocket, context_id):
-    # TODO: make offline.
-    url = "https://www.example.com/"
-
+async def test_fail_request_twice(websocket, context_id, example_url):
     await subscribe(websocket, ["cdp.Fetch.requestPaused"])
 
     result = await execute_command(
@@ -97,7 +94,7 @@ async def test_fail_request_twice(websocket, context_id):
                 "phases": ["beforeRequestSent"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": url,
+                    "pattern": example_url,
                 }, ],
             },
         })
@@ -110,7 +107,7 @@ async def test_fail_request_twice(websocket, context_id):
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": url,
+                "url": example_url,
                 "context": context_id,
             }
         })
@@ -125,7 +122,7 @@ async def test_fail_request_twice(websocket, context_id):
                 "networkId": ANY_STR,
                 "request": AnyExtending({
                     "headers": ANY_DICT,
-                    "url": url,
+                    "url": example_url,
                 }),
                 "requestId": ANY_STR,
                 "resourceType": "Document",
@@ -175,13 +172,8 @@ async def test_fail_request_twice(websocket, context_id):
                          ])
 @pytest.mark.skip(reason="TODO: Use our own test server.")
 async def test_fail_request_with_auth_required_phase(
-        websocket, context_id, phases, exception_and_response_expected):
-    # TODO: make offline.
-    # All of these URLs work, just pick one.
-    # url = "https://authenticationtest.com/HTTPAuth/"
-    # url = "http://the-internet.herokuapp.com/basic_auth"
-    url = "http://httpstat.us/401"
-
+        websocket, context_id, phases, exception_and_response_expected,
+        auth_required_url):
     await subscribe(websocket, ["cdp.Fetch.requestPaused"])
 
     result = await execute_command(
@@ -191,7 +183,7 @@ async def test_fail_request_with_auth_required_phase(
                 "phases": phases,
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": url,
+                    "pattern": auth_required_url,
                 }, ],
             },
         })
@@ -204,7 +196,7 @@ async def test_fail_request_with_auth_required_phase(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": url,
+                "url": auth_required_url,
                 "context": context_id,
             }
         })
@@ -219,7 +211,7 @@ async def test_fail_request_with_auth_required_phase(
                 "networkId": ANY_STR,
                 "request": AnyExtending({
                     "headers": ANY_DICT,
-                    "url": url,
+                    "url": auth_required_url,
                 }),
                 "requestId": ANY_STR,
                 "resourceType": "Document",
@@ -251,10 +243,7 @@ async def test_fail_request_with_auth_required_phase(
 
 
 @pytest.mark.asyncio
-async def test_fail_request_completes(websocket, context_id):
-    # TODO: make offline.
-    url = "https://www.example.com/"
-
+async def test_fail_request_completes(websocket, context_id, example_url):
     await subscribe(websocket, ["cdp.Fetch.requestPaused"])
 
     result = await execute_command(
@@ -264,7 +253,7 @@ async def test_fail_request_completes(websocket, context_id):
                 "phases": ["beforeRequestSent"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": url,
+                    "pattern": example_url,
                 }, ],
             },
         })
@@ -277,7 +266,7 @@ async def test_fail_request_completes(websocket, context_id):
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": url,
+                "url": example_url,
                 "context": context_id,
             }
         })
@@ -292,7 +281,7 @@ async def test_fail_request_completes(websocket, context_id):
                 "networkId": ANY_STR,
                 "request": AnyExtending({
                     "headers": ANY_DICT,
-                    "url": url,
+                    "url": example_url,
                 }),
                 "requestId": ANY_STR,
                 "resourceType": "Document",
@@ -334,10 +323,7 @@ async def test_fail_request_completes(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_fail_request_completes_new_request_still_blocks(
-        websocket, context_id):
-    # TODO: make offline.
-    url = "https://www.example.com/"
-
+        websocket, context_id, example_url):
     await subscribe(websocket, ["cdp.Fetch.requestPaused"])
 
     result = await execute_command(
@@ -347,7 +333,7 @@ async def test_fail_request_completes_new_request_still_blocks(
                 "phases": ["beforeRequestSent"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": url,
+                    "pattern": example_url,
                 }, ],
             },
         })
@@ -360,7 +346,7 @@ async def test_fail_request_completes_new_request_still_blocks(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": url,
+                "url": example_url,
                 "context": context_id,
             }
         })
@@ -376,7 +362,7 @@ async def test_fail_request_completes_new_request_still_blocks(
                 "networkId": ANY_STR,
                 "request": AnyExtending({
                     "headers": ANY_DICT,
-                    "url": url,
+                    "url": example_url,
                 }),
                 "requestId": ANY_STR,
                 "resourceType": "Document",
@@ -420,7 +406,7 @@ async def test_fail_request_completes_new_request_still_blocks(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": url,
+                "url": example_url,
                 "context": context_id,
             }
         })
@@ -436,7 +422,7 @@ async def test_fail_request_completes_new_request_still_blocks(
                 "networkId": ANY_STR,
                 "request": AnyExtending({
                     "headers": ANY_DICT,
-                    "url": url,
+                    "url": example_url,
                 }),
                 "requestId": ANY_STR,
                 "resourceType": "Document",
@@ -455,10 +441,7 @@ async def test_fail_request_completes_new_request_still_blocks(
 
 @pytest.mark.asyncio
 async def test_fail_request_multiple_contexts(websocket, context_id,
-                                              another_context_id):
-    # TODO: make offline.
-    url = "https://www.example.com/"
-
+                                              another_context_id, example_url):
     await subscribe(websocket, ["cdp.Fetch.requestPaused"])
 
     result = await execute_command(
@@ -468,7 +451,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
                 "phases": ["beforeRequestSent"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": url,
+                    "pattern": example_url,
                 }, ],
             },
         })
@@ -482,7 +465,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": url,
+                "url": example_url,
                 "context": context_id,
             }
         })
@@ -498,7 +481,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
                 "networkId": ANY_STR,
                 "request": AnyExtending({
                     "headers": ANY_DICT,
-                    "url": url,
+                    "url": example_url,
                 }),
                 "requestId": ANY_STR,
                 "resourceType": "Document",
@@ -514,7 +497,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": url,
+                "url": example_url,
                 "context": another_context_id,
             }
         })
@@ -530,7 +513,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
                 "networkId": ANY_STR,
                 "request": AnyExtending({
                     "headers": ANY_DICT,
-                    "url": url,
+                    "url": example_url,
                 }),
                 "requestId": ANY_STR,
                 "resourceType": "Document",

@@ -130,6 +130,45 @@ def url_all_origins(request):
 
 
 @pytest.fixture
+def example_url():
+    """Return a generic example URL with status code 200."""
+    # TODO: Switch to a local server so that it works off-line.
+    # Alternatively: https://www.example.org/
+    return "https://www.example.com/"
+
+
+@pytest.fixture
+def another_example_url():
+    # TODO: Switch to a local server so that it works off-line.
+    """Return a generic example URL with status code 200, in a domain other than the example_url fixture."""
+    return "https://www.example.org/"
+
+
+@pytest.fixture
+def auth_required_url():
+    """Return a URL that requires authentication (status code 401)."""
+    # TODO: Switch to a local server so that it works off-line.
+    # All of these URLs work, just pick one.
+    # url = "https://authenticationtest.com/HTTPAuth/"
+    # url = "http://the-internet.herokuapp.com/basic_auth"
+    return "http://httpstat.us/401"
+
+
+@pytest.fixture
+def bad_ssl_url():
+    """
+    Return a URL with an expired SSL certificate.
+
+    In Chromium, this generates the following error:
+
+    > Your connection is not private
+    > NET::ERR_CERT_DATE_INVALID
+    """
+    # TODO: Switch to a local server so that it works off-line.
+    return "https://expired.badssl.com/"
+
+
+@pytest.fixture
 def read_sorted_messages(websocket):
     """Read the given number of messages from the websocket, and returns them
     in consistent order."""

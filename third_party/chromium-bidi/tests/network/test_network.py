@@ -216,18 +216,15 @@ async def test_network_response_completed_event_emitted(websocket, context_id):
     }
 
 
-# TODO: make offline.
 @pytest.mark.asyncio
-async def test_network_bad_ssl(websocket, context_id):
-    BAD_SSL_URL = "https://expired.badssl.com/"
-
+async def test_network_bad_ssl(websocket, context_id, bad_ssl_url):
     await subscribe(websocket, ["network.fetchError"], [context_id])
 
     await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": BAD_SSL_URL,
+                "url": bad_ssl_url,
                 "wait": "complete",
                 "context": context_id
             }
@@ -244,7 +241,7 @@ async def test_network_bad_ssl(websocket, context_id):
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": BAD_SSL_URL,
+                "url": bad_ssl_url,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],

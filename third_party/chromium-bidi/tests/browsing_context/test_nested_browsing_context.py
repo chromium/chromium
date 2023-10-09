@@ -250,14 +250,11 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitComplete
     } == result
 
 
-# TODO: make offline.
 @pytest.mark.asyncio
 async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedCrossOriginContexts_contextsReturned(
-        websocket, iframe_id, html, iframe):
-    nested_iframe = 'https://example.com/'
-    another_nested_iframe = 'https://example.org/'
-    page_with_nested_iframe = html(iframe(nested_iframe))
-    another_page_with_nested_iframe = html(iframe(another_nested_iframe))
+        websocket, iframe_id, html, iframe, example_url, another_example_url):
+    page_with_nested_iframe = html(iframe(example_url))
+    another_page_with_nested_iframe = html(iframe(another_example_url))
 
     await goto_url(websocket, iframe_id, page_with_nested_iframe, "complete")
     await goto_url(websocket, iframe_id, another_page_with_nested_iframe,
@@ -269,7 +266,7 @@ async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedCrossOrigi
             "context": iframe_id,
             "children": [{
                 "context": ANY_STR,
-                "url": another_nested_iframe,
+                "url": another_example_url,
                 "children": []
             }],
             "parent": ANY_STR,

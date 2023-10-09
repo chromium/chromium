@@ -73,13 +73,12 @@ async def test_continue_request_invalid_phase(websocket, context_id, phase,
 
 
 @pytest.mark.asyncio
-async def test_continue_request_invalid_url(websocket, context_id):
-    # TODO: make offline.
-    url = "https://www.example.com/"
+async def test_continue_request_invalid_url(websocket, context_id,
+                                            example_url):
     invalid_url = '%invalid%'
 
     network_id = await create_dummy_blocked_request(
-        websocket, context_id, url=url, phases=["beforeRequestSent"])
+        websocket, context_id, url=example_url, phases=["beforeRequestSent"])
 
     with pytest.raises(
             Exception,
@@ -148,10 +147,7 @@ async def test_continue_request_non_blocked_request(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_continue_request_completes(websocket, context_id):
-    # TODO: make offline.
-    url = "https://www.example.com/"
-
+async def test_continue_request_completes(websocket, context_id, example_url):
     await subscribe(websocket, ["cdp.Fetch.requestPaused"])
 
     await execute_command(
@@ -161,7 +157,7 @@ async def test_continue_request_completes(websocket, context_id):
                 "phases": ["beforeRequestSent"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": url,
+                    "pattern": example_url,
                 }, ],
             },
         })
@@ -169,7 +165,7 @@ async def test_continue_request_completes(websocket, context_id):
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": url,
+                "url": example_url,
                 "context": context_id,
             }
         })
@@ -183,7 +179,7 @@ async def test_continue_request_completes(websocket, context_id):
             "method": "network.continueRequest",
             "params": {
                 "request": network_id,
-                "url": url,
+                "url": example_url,
             },
         })
 
@@ -205,10 +201,7 @@ async def test_continue_request_completes(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_continue_request_twice(websocket, context_id):
-    # TODO: make offline.
-    url = "https://www.example.com/"
-
+async def test_continue_request_twice(websocket, context_id, example_url):
     await subscribe(websocket, ["cdp.Fetch.requestPaused"])
 
     await execute_command(
@@ -218,7 +211,7 @@ async def test_continue_request_twice(websocket, context_id):
                 "phases": ["beforeRequestSent"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": url,
+                    "pattern": example_url,
                 }, ],
             },
         })
@@ -226,7 +219,7 @@ async def test_continue_request_twice(websocket, context_id):
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": url,
+                "url": example_url,
                 "context": context_id,
             }
         })
@@ -240,7 +233,7 @@ async def test_continue_request_twice(websocket, context_id):
             "method": "network.continueRequest",
             "params": {
                 "request": network_id,
-                "url": url,
+                "url": example_url,
             },
         })
 
@@ -258,7 +251,7 @@ async def test_continue_request_twice(websocket, context_id):
                 "method": "network.continueRequest",
                 "params": {
                     "request": network_id,
-                    "url": url,
+                    "url": example_url,
                 },
             })
 

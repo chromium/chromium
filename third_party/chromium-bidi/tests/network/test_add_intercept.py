@@ -289,10 +289,8 @@ async def test_add_intercept_type_pattern_port_empty_invalid(websocket):
                              "pattern",
                              "string and pattern",
                          ])
-async def test_add_intercept_blocks(websocket, context_id, url_patterns):
-    # TODO: make offline.
-    url = "https://www.example.com/"
-
+async def test_add_intercept_blocks(websocket, context_id, url_patterns,
+                                    example_url):
     await subscribe(websocket, ["cdp.Fetch.requestPaused"])
 
     result = await execute_command(
@@ -312,7 +310,7 @@ async def test_add_intercept_blocks(websocket, context_id, url_patterns):
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": url,
+                "url": example_url,
                 "context": context_id,
             }
         })
@@ -327,7 +325,7 @@ async def test_add_intercept_blocks(websocket, context_id, url_patterns):
                 "networkId": ANY_STR,
                 "request": AnyExtending({
                     "headers": ANY_DICT,
-                    "url": url,
+                    "url": example_url,
                 }),
                 "requestId": ANY_STR,
                 "resourceType": "Document",
