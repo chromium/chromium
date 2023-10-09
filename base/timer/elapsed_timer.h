@@ -26,10 +26,10 @@ class BASE_EXPORT ElapsedTimer {
   TimeDelta Elapsed() const;
 
   // Returns the timestamp of the creation of this timer.
-  TimeTicks Begin() const { return begin_; }
+  TimeTicks start_time() const { return start_time_; }
 
  private:
-  TimeTicks begin_;
+  TimeTicks start_time_;
 };
 
 // A simple wrapper around ThreadTicks::Now().

@@ -76,7 +76,6 @@ ODFSMetrics::~ODFSMetrics() = default;
 void ODFSMetrics::OnRequestCreated(int request_id, RequestType type) {
   Request& request = requests_[request_id];
   request.request_type = type;
-  request.latency_timer.Begin();
 }
 
 void ODFSMetrics::OnRequestDestroyed(int request_id,

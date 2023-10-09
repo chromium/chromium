@@ -61,7 +61,7 @@ class TraceWaitableEvent {
 
   bool TimedWaitUntil(const TimeTicks& end_time) {
     ElapsedTimer timer;
-    const bool signaled = event_.TimedWait(end_time - timer.Begin());
+    const bool signaled = event_.TimedWait(end_time - timer.start_time());
     total_wait_time_ += timer.Elapsed();
     ++wait_samples_;
     return signaled;

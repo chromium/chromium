@@ -802,7 +802,6 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
       resource_provider_.get(), /*allow_access_to_gpu_thread=*/true);
 
   base::ElapsedTimer aggregate_timer;
-  aggregate_timer.Begin();
   AggregatedFrame frame;
   {
     FrameRateDecider::ScopedAggregate scoped_aggregate(
@@ -969,7 +968,8 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     if (IsScroll(frame.latency_info)) {
       boost_type = HintSession::BoostType::kScrollBoost;
     }
-    presentation_group_timing.OnDraw(params.frame_time, draw_timer->Begin(),
+    presentation_group_timing.OnDraw(params.frame_time,
+                                     draw_timer->start_time(),
                                      std::move(thread_ids), boost_type);
 
     for (const auto& surface_id : aggregator_->previous_contained_surfaces()) {

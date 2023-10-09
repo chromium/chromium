@@ -64,7 +64,6 @@ class TypedNavigationUpgradeThrottle : public content::NavigationThrottle {
 
   const GURL http_url_;
   base::OneShotTimer timer_;
-  base::ElapsedTimer metrics_timer_;
 };
 
 #endif  // CHROME_BROWSER_SSL_TYPED_NAVIGATION_UPGRADE_THROTTLE_H_
