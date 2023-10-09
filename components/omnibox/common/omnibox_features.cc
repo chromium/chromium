@@ -339,6 +339,11 @@ BASE_FEATURE(kSearchReadyOmniboxAllowQueryEdit,
              "SearchReadyOmniboxAllowQueryEdit",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, appends Query Tiles to the Omnibox ZPS on New Tab Page.
+BASE_FEATURE(kQueryTilesInZPSOnNTP,
+             "OmniboxQueryTilesInZPSOnNTP",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, adds a grey square background to search icons, and makes answer
 // icon square instead of round.
 // TODO(manukh): Partially launched; still experimenting with

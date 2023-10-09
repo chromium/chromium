@@ -6105,6 +6105,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kMostVisitedTilesHorizontalRenderGroup)},
 
+    {"omnibox-query-tiles-in-zps-on-ntp",
+     flag_descriptions::kOmniboxQueryTilesInZPSOnNTPName,
+     flag_descriptions::kOmniboxQueryTilesInZPSOnNTPDesc, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kQueryTilesInZPSOnNTP)},
+
     {"omnibox-suppress-clipboard-suggestion-after-first-used",
      flag_descriptions::kOmniboxSuppressClipboardSuggestionAfterFirstUsedName,
      flag_descriptions::

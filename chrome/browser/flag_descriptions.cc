@@ -2474,6 +2474,10 @@ const char kOmniboxPrefBasedDataCollectionConsentHelperName[] =
 const char kOmniboxPrefBasedDataCollectionConsentHelperDescription[] =
     "Enables the pref based data collection consent helper";
 
+const char kOmniboxQueryTilesInZPSOnNTPName[] = "Query Tiles in ZPS on NTP";
+const char kOmniboxQueryTilesInZPSOnNTPDesc[] =
+    "Offer Query Tiles in Zero Prefix Suggestions on a New Tab Page.";
+
 const char kOmniboxRichAutocompletionPromisingName[] =
     "Omnibox Rich Autocompletion Promising Combinations";
 const char kOmniboxRichAutocompletionPromisingDescription[] =

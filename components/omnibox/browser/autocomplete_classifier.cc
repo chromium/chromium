@@ -8,18 +8,13 @@
 
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
-#include "base/ios/ios_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/document_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/query_tiles/switches.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
 
@@ -45,40 +40,47 @@ void AutocompleteClassifier::Shutdown() {
 
 // static
 int AutocompleteClassifier::DefaultOmniboxProviders() {
-  return
+  int optional_query_tiles =
+      base::FeatureList::IsEnabled(omnibox::kQueryTilesInZPSOnNTP)
+          ? AutocompleteProvider::TYPE_QUERY_TILE
+          : 0;
+  return optional_query_tiles |
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      // Custom search engines cannot be used on mobile.
-      AutocompleteProvider::TYPE_KEYWORD | AutocompleteProvider::TYPE_OPEN_TAB |
+         // Custom search engines cannot be used on mobile.
+         AutocompleteProvider::TYPE_KEYWORD |
+         AutocompleteProvider::TYPE_OPEN_TAB |
 #else
-      AutocompleteProvider::TYPE_CLIPBOARD |
-      AutocompleteProvider::TYPE_MOST_VISITED_SITES |
-      AutocompleteProvider::TYPE_VERBATIM_MATCH |
+         AutocompleteProvider::TYPE_CLIPBOARD |
+         AutocompleteProvider::TYPE_MOST_VISITED_SITES |
+         AutocompleteProvider::TYPE_VERBATIM_MATCH |
 #endif
 #if BUILDFLAG(IS_ANDROID)
-      AutocompleteProvider::TYPE_VOICE_SUGGEST |
+         AutocompleteProvider::TYPE_VOICE_SUGGEST |
 #endif
 #if !BUILDFLAG(IS_IOS)
-      (history_clusters::GetConfig().is_journeys_enabled_no_locale_check &&
-               history_clusters::GetConfig().omnibox_history_cluster_provider
-           ? AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER
-           : 0) |
+         (history_clusters::GetConfig().is_journeys_enabled_no_locale_check &&
+                  history_clusters::GetConfig().omnibox_history_cluster_provider
+              ? AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER
+              : 0) |
 #endif
-      AutocompleteProvider::TYPE_ZERO_SUGGEST |
-      AutocompleteProvider::TYPE_ZERO_SUGGEST_LOCAL_HISTORY |
-      (base::FeatureList::IsEnabled(omnibox::kDocumentProvider)
-           ? AutocompleteProvider::TYPE_DOCUMENT
-           : 0) |
-      (OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForAnyMode()
-           ? AutocompleteProvider::TYPE_ON_DEVICE_HEAD
-           : 0) |
-      AutocompleteProvider::TYPE_BOOKMARK | AutocompleteProvider::TYPE_BUILTIN |
-      AutocompleteProvider::TYPE_HISTORY_QUICK |
-      AutocompleteProvider::TYPE_HISTORY_URL |
-      AutocompleteProvider::TYPE_SEARCH | AutocompleteProvider::TYPE_SHORTCUTS |
-      (OmniboxFieldTrial::IsFuzzyUrlSuggestionsEnabled()
-           ? AutocompleteProvider::TYPE_HISTORY_FUZZY
-           : 0) |
-      AutocompleteProvider::TYPE_CALCULATOR;
+         AutocompleteProvider::TYPE_ZERO_SUGGEST |
+         AutocompleteProvider::TYPE_ZERO_SUGGEST_LOCAL_HISTORY |
+         (base::FeatureList::IsEnabled(omnibox::kDocumentProvider)
+              ? AutocompleteProvider::TYPE_DOCUMENT
+              : 0) |
+         (OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForAnyMode()
+              ? AutocompleteProvider::TYPE_ON_DEVICE_HEAD
+              : 0) |
+         AutocompleteProvider::TYPE_BOOKMARK |
+         AutocompleteProvider::TYPE_BUILTIN |
+         AutocompleteProvider::TYPE_HISTORY_QUICK |
+         AutocompleteProvider::TYPE_HISTORY_URL |
+         AutocompleteProvider::TYPE_SEARCH |
+         AutocompleteProvider::TYPE_SHORTCUTS |
+         (OmniboxFieldTrial::IsFuzzyUrlSuggestionsEnabled()
+              ? AutocompleteProvider::TYPE_HISTORY_FUZZY
+              : 0) |
+         AutocompleteProvider::TYPE_CALCULATOR;
 }
 
 void AutocompleteClassifier::Classify(
