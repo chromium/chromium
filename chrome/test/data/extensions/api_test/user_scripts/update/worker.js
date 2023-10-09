@@ -67,7 +67,8 @@ chrome.test.runTests([
       matches: ['*://*/*'],
       js: [{file: 'user_script.js'}],
       runAt: 'document_idle',
-      allFrames: false
+      allFrames: false,
+      world: 'USER_SCRIPT'
     }];
     const registeredScripts = await chrome.userScripts.getScripts();
     chrome.test.assertEq(expectedScripts, registeredScripts);
@@ -111,7 +112,8 @@ chrome.test.runTests([
       matches: ['*://*/*'],
       js: [{file: 'user_script.js'}],
       runAt: 'document_idle',
-      allFrames: false
+      allFrames: false,
+      world: 'USER_SCRIPT'
     }];
     const registeredScripts = await chrome.userScripts.getScripts();
     chrome.test.assertEq(expectedScripts, registeredScripts);
@@ -214,7 +216,8 @@ chrome.test.runTests([
       excludeMatches: ['*://def.com/*'],
       js: [{file: 'user_script_2.js'}],
       runAt: 'document_end',
-      allFrames: false
+      allFrames: false,
+      world: 'USER_SCRIPT'
     }];
     registeredScripts = await chrome.userScripts.getScripts();
     chrome.test.assertEq(expectedScripts, registeredScripts);
@@ -230,6 +233,56 @@ chrome.test.runTests([
     tab = await openTab(url);
     chrome.test.assertEq(
         ['injected_user_script_2'], await getInjectedElementIds(tab.id));
+
+    chrome.test.succeed();
+  },
+
+  // Tests that calling userScripts.update with a specific ID updates such
+  // script and injects the script in the corresponding world.
+  async function scriptUpdated_World() {
+    await chrome.userScripts.unregister();
+
+    // Register user script with a file that changes the document title based on
+    // its execution world.
+    const scriptsToRegister = [{
+      id: 'us1',
+      matches: ['*://hostperms-a.com/*'],
+      js: [{file: 'inject_to_world.js'}],
+      world: 'MAIN'
+    }];
+    await chrome.userScripts.register(scriptsToRegister);
+
+    // Verify user script was registered.
+    let registeredScripts = await chrome.userScripts.getScripts();
+    chrome.test.assertEq(1, registeredScripts.length);
+
+    // Verify script file is injected in the main world.
+    const config = await chrome.test.getConfig();
+    const url = `http://hostperms-a.com:${
+        config.testServer.port}/extensions/main_world_script_flag.html`;
+    let tab = await openTab(url);
+    chrome.test.assertEq('MAIN_WORLD', tab.title);
+
+    // Update user script world.
+    var scriptsToUpdate =
+        [{id: 'us1', js: [{file: 'inject_to_world.js'}], world: 'USER_SCRIPT'}];
+    await chrome.userScripts.update(scriptsToUpdate);
+
+    // Verify user script was updated.
+    const expectedScripts = [{
+      id: 'us1',
+      matches: ['*://hostperms-a.com/*'],
+      js: [{file: 'inject_to_world.js'}],
+      runAt: 'document_idle',
+      allFrames: false,
+      world: 'USER_SCRIPT'
+    }];
+    registeredScripts = await chrome.userScripts.getScripts();
+    chrome.test.assertEq(expectedScripts, registeredScripts);
+
+    // Verify script file is injected in the user script world.
+    tab = await openTab(url);
+    chrome.test.assertEq('USER_SCRIPT_WORLD', tab.title);
 
     chrome.test.succeed();
   },

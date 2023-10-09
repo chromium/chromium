@@ -52,14 +52,16 @@ async function runSecondSession() {
       matches: ['*://*/*'],
       js: [{file: 'user_script.js'}],
       allFrames: false,
-      runAt: 'document_end'
+      runAt: 'document_end',
+      world: 'USER_SCRIPT'
     },
     {
       id: 'us2',
       matches: ['*://*/*'],
       js: [{file: 'user_script_2.js'}],
       allFrames: false,
-      runAt: 'document_end'
+      runAt: 'document_end',
+      world: 'USER_SCRIPT'
     }
   ];
 

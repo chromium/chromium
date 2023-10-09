@@ -5,6 +5,16 @@
 // Use the <code>userScripts</code> API to execute user scripts in the User
 // Scripts context.
 namespace userScripts {
+  // The JavaScript world for a user script to execute within.
+  enum ExecutionWorld {
+    // Specifies the execution environment of the DOM, which is the execution
+    // environment shared with the host page's JavaScript.
+    MAIN,
+    // Specifies the execution enviroment that is specific to user scripts and
+    // is exempt from the page's CSP.
+    USER_SCRIPT
+  };
+
   // The source of the script to inject.
   dictionary ScriptSource {
     // A string containing the JavaScript code to inject. Exactly one of
@@ -52,6 +62,9 @@ namespace userScripts {
     // Specifies when JavaScript files are injected into the web page. The
     // preferred and default value is <code>document_idle</code>.
     extensionTypes.RunAt? runAt;
+    // The JavaScript execution environment to run the script in. The default is
+    // <code>`USER_SCRIPT`</code>.
+    ExecutionWorld? world;
   };
 
   // An object used to filter user scripts for ${ref:getScripts}.

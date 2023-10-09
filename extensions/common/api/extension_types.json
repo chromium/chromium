@@ -120,8 +120,12 @@
         "id": "ExecutionWorld",
         "type": "string",
         "nodoc": true,
-        "enum": ["ISOLATED", "MAIN"],
-        "description": "The JavaScript world for a script to execute within. Can either be an isolated world, unique to this extension, or the main world of the DOM which is shared with the page's JavaScript."
+        "enum": [
+          "ISOLATED",
+          "MAIN",
+          "USER_SCRIPT"
+        ],
+        "description": "The JavaScript world for a script to execute within. Can either be an isolated world unique to this extension, the main world of the DOM which is shared with the page's JavaScript, or a user scripts world that is only available for scripts registered with the User Scripts API."
       }
     ]
   }
