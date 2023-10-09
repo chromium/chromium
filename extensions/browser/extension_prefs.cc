@@ -45,10 +45,12 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/api/types.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/app_display_info.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_info.h"
 #include "extensions/common/url_pattern.h"
@@ -1486,6 +1488,16 @@ absl::optional<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
       !(manifest && manifest->is_dict())) {
     LOG(WARNING) << "Missing manifest for extension " << extension_id;
     // Just a warning for now.
+  }
+
+  // Extensions with login screen context can only be policy extensions.
+  // However, the manifest location in the pref store could get corrupted
+  // (crbug.com/1466188). Thus, we don't construct the extension info for these
+  // cases.
+  int flags = GetCreationFlags(extension_id);
+  if (!Manifest::IsPolicyLocation(location) &&
+      flags & Extension::FOR_LOGIN_SCREEN) {
+    return absl::nullopt;
   }
 
   const std::string* path = extension.FindString(kPrefPath);
