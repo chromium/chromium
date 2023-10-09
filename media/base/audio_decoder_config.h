@@ -19,9 +19,6 @@
 
 namespace media {
 
-// TODO(dalecurtis): FFmpeg API uses |bytes_per_channel| instead of
-// |bits_per_channel|, we should switch over since bits are generally confusing
-// to work with.
 class MEDIA_EXPORT AudioDecoderConfig {
  public:
   // Constructs an uninitialized object. Clients should call Initialize() with
@@ -65,7 +62,6 @@ class MEDIA_EXPORT AudioDecoderConfig {
   void SetChannelsForDiscrete(int channels);
 
   AudioCodec codec() const { return codec_; }
-  int bits_per_channel() const { return bytes_per_channel_ * 8; }
   int bytes_per_channel() const { return bytes_per_channel_; }
   ChannelLayout channel_layout() const { return channel_layout_; }
   int channels() const { return channels_; }

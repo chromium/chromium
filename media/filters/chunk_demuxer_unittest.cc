@@ -1372,7 +1372,7 @@ TEST_F(ChunkDemuxerTest, Init) {
 
       const AudioDecoderConfig& config = audio_stream->audio_decoder_config();
       EXPECT_EQ(AudioCodec::kVorbis, config.codec());
-      EXPECT_EQ(32, config.bits_per_channel());
+      EXPECT_EQ(4, config.bytes_per_channel());
       EXPECT_EQ(CHANNEL_LAYOUT_STEREO, config.channel_layout());
       EXPECT_EQ(44100, config.samples_per_second());
       EXPECT_GT(config.extra_data().size(), 0u);

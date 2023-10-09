@@ -161,8 +161,8 @@ class DecryptingDemuxerStreamTest : public testing::Test {
 
     EXPECT_EQ(DemuxerStream::AUDIO, demuxer_stream_->type());
     EXPECT_FALSE(output_config.is_encrypted());
-    EXPECT_EQ(input_config.bits_per_channel(),
-              output_config.bits_per_channel());
+    EXPECT_EQ(input_config.bytes_per_channel(),
+              output_config.bytes_per_channel());
     EXPECT_EQ(input_config.channel_layout(), output_config.channel_layout());
     EXPECT_EQ(input_config.sample_format(), output_config.sample_format());
     EXPECT_EQ(input_config.samples_per_second(),

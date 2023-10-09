@@ -427,7 +427,7 @@ TEST_F(FFmpegDemuxerTest, Initialize_Successful) {
 
   const AudioDecoderConfig& audio_config = stream->audio_decoder_config();
   EXPECT_EQ(AudioCodec::kVorbis, audio_config.codec());
-  EXPECT_EQ(32, audio_config.bits_per_channel());
+  EXPECT_EQ(4, audio_config.bytes_per_channel());
   EXPECT_EQ(CHANNEL_LAYOUT_STEREO, audio_config.channel_layout());
   EXPECT_EQ(44100, audio_config.samples_per_second());
   EXPECT_EQ(kSampleFormatPlanarF32, audio_config.sample_format());
@@ -1597,7 +1597,7 @@ TEST_F(FFmpegDemuxerTest, UTCDateToTime_Invalid) {
 }
 
 static void VerifyFlacStream(DemuxerStream* stream,
-                             int expected_bits_per_channel,
+                             int expected_bytes_per_channel,
                              ChannelLayout expected_channel_layout,
                              int expected_samples_per_second,
                              SampleFormat expected_sample_format) {
@@ -1606,7 +1606,7 @@ static void VerifyFlacStream(DemuxerStream* stream,
 
   const AudioDecoderConfig& audio_config = stream->audio_decoder_config();
   EXPECT_EQ(AudioCodec::kFLAC, audio_config.codec());
-  EXPECT_EQ(expected_bits_per_channel, audio_config.bits_per_channel());
+  EXPECT_EQ(expected_bytes_per_channel, audio_config.bytes_per_channel());
   EXPECT_EQ(expected_channel_layout, audio_config.channel_layout());
   EXPECT_EQ(expected_samples_per_second, audio_config.samples_per_second());
   EXPECT_EQ(expected_sample_format, audio_config.sample_format());
@@ -1619,7 +1619,7 @@ TEST_F(FFmpegDemuxerTest, Read_Flac) {
   // Video stream should not be present.
   EXPECT_EQ(nullptr, GetStream(DemuxerStream::VIDEO));
 
-  VerifyFlacStream(GetStream(DemuxerStream::AUDIO), 32, CHANNEL_LAYOUT_MONO,
+  VerifyFlacStream(GetStream(DemuxerStream::AUDIO), 4, CHANNEL_LAYOUT_MONO,
                    44100, kSampleFormatS32);
 }
 
@@ -1630,7 +1630,7 @@ TEST_F(FFmpegDemuxerTest, Read_Flac_Mp4) {
   // Video stream should not be present.
   EXPECT_EQ(nullptr, GetStream(DemuxerStream::VIDEO));
 
-  VerifyFlacStream(GetStream(DemuxerStream::AUDIO), 32, CHANNEL_LAYOUT_STEREO,
+  VerifyFlacStream(GetStream(DemuxerStream::AUDIO), 4, CHANNEL_LAYOUT_STEREO,
                    44100, kSampleFormatS32);
 }
 
@@ -1641,7 +1641,7 @@ TEST_F(FFmpegDemuxerTest, Read_Flac_192kHz_Mp4) {
   // Video stream should not be present.
   EXPECT_EQ(nullptr, GetStream(DemuxerStream::VIDEO));
 
-  VerifyFlacStream(GetStream(DemuxerStream::AUDIO), 32, CHANNEL_LAYOUT_STEREO,
+  VerifyFlacStream(GetStream(DemuxerStream::AUDIO), 4, CHANNEL_LAYOUT_STEREO,
                    192000, kSampleFormatS32);
 }
 
