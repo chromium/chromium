@@ -123,7 +123,7 @@
     To pay faster next time, save your card to your device
   </message>
   <message name="IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_LOCAL" desc="Explanation text for the Autofill save card prompt to save a card with CVC locally. It is shown when a new card is used during checkout, and sync is not enabled. This prompt description is shown on both the Desktop bubble and the Android infobar, and the Android bottom sheet..">
-    To pay faster next time, save your card, and security code to your device
+    To pay faster next time, save your card and encrypted security code to your device
   </message>
   <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_LOCAL" desc="Title text for the Autofill save CVC prompt that offers to save CVC for existing local cards. This prompt is shown if a CVC is detected for an existing local card on form submission.">
     Save security code?
@@ -220,7 +220,7 @@
 
   <if expr="is_android">
     <message name="IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_UPLOAD" desc="Explanation for the effect of the Autofill save card prompt when the card is to be saved along with the CVC by uploading it to Google Payments. The prompt will be shown in a bottom sheet on Android devices.">
-      To pay faster next time, save your card, security code, and billing address in your Google Account
+      To pay faster next time, save your card, encrypted security code, and billing address in your Google Account
     </message>
     <message name="IDS_AUTOFILL_SAVE_CVC_MESSAGE_SAVE_ACCEPT" desc="Positive button label for the Autofill save CVC prompt that offers to save CVC for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission. The prompt is shown in a Message UI on Android devices.">
       Save

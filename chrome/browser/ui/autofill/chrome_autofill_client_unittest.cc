@@ -286,8 +286,8 @@ TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
   std::u16string expected_description;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   expected_description =
-      u"To pay faster next time, save your card, security code, and billing "
-      u"address in your Google Account";
+      u"To pay faster next time, save your card, encrypted security code, and "
+      u"billing address in your Google Account";
 #endif
 
   // Verify that `AutofillSaveCardUiInfo` has the correct attributes that
@@ -365,8 +365,8 @@ TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
               RequestShowContent(
                   AllOf(Field(&AutofillSaveCardUiInfo::is_for_upload, false),
                         Field(&AutofillSaveCardUiInfo::description_text,
-                              u"To pay faster next time, save your card, and "
-                              u"security code to your device")),
+                              u"To pay faster next time, save your card and "
+                              u"encrypted security code to your device")),
                   testing::NotNull()));
 
   autofill_client->ConfirmSaveCreditCardLocally(

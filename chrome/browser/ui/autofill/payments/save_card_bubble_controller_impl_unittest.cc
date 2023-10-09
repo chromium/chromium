@@ -663,8 +663,8 @@ TEST_F(SaveCardBubbleControllerImplTest, LocalCardSaveWithCvcDialogContent) {
   ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
   EXPECT_EQ(controller()->GetWindowTitle(), u"Save card?");
   EXPECT_EQ(controller()->GetExplanatoryMessage(),
-            u"To pay faster next time, save your card, and security code to "
-            u"your device");
+            u"To pay faster next time, save your card and encrypted security "
+            u"code to your device");
 }
 
 TEST_F(SaveCardBubbleControllerImplTest, LocalCvcOnlySaveDialogContent) {
