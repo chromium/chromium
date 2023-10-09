@@ -7,8 +7,11 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_search/side_search_config.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -27,6 +30,8 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/polling_state_observer.h"
+#include "ui/base/interaction/state_observer.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -189,4 +194,56 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest,
       // Verify the bookmarks side panel entry is shown (last seen)
       WaitForShow(kBookmarkSidePanelWebViewElementId),
       EnsureNotPresent(kReadLaterSidePanelWebViewElementId));
+}
+
+namespace {
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
+    ui::test::PollingStateObserver<absl::optional<SidePanelEntryId>>,
+    kCurrentSidePanelState);
+}
+
+// Test case for menus that only appear with the kSidePanelPinning feature
+// enabled.
+class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
+ public:
+  PinnedSidePanelInteractiveTest() = default;
+  ~PinnedSidePanelInteractiveTest() override = default;
+
+  void SetUp() override {
+    set_open_about_blank_on_browser_launch(true);
+    scoped_feature_list_.InitAndEnableFeature(features::kSidePanelPinning);
+    InteractiveBrowserTest::SetUp();
+  }
+
+  auto WatchSidePanelSelection() {
+    return PollState(kCurrentSidePanelState, [&]() {
+      auto* const side_panel = SidePanelUI::GetSidePanelUIForBrowser(browser());
+      return side_panel ? side_panel->GetCurrentEntryId() : absl::nullopt;
+    });
+  }
+
+  auto WaitForSidePanelSelection(SidePanelEntryId entry_id) {
+    return WaitForState(kCurrentSidePanelState, entry_id);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verify that we can open the ReadingMode side panel from the 3dot -> More
+// tools context menu.
+IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
+                       OpenReadingModeSidePanel) {
+  SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser())
+      ->SetNoDelaysForTesting(true);
+
+  RunTestSequence(EnsureNotPresent(kSidePanelElementId),
+                  PressButton(kToolbarAppMenuButtonElementId),
+                  SelectMenuItem(AppMenuModel::kMoreToolsMenuItem),
+                  SelectMenuItem(ToolsMenuModel::kReadingModeMenuItem),
+                  WatchSidePanelSelection(), WaitForShow(kSidePanelElementId),
+                  WaitForSidePanelSelection(SidePanelEntryId::kReadAnything),
+                  // Click on the close button to dismiss the side panel.
+                  PressButton(kSidePanelCloseButtonElementId),
+                  WaitForHide(kSidePanelElementId));
 }

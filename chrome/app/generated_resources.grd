@@ -8476,6 +8476,16 @@ Keep your key file in a safe place. You will need it to create new versions of y
 
       <!-- Reading mode strings -->
       <if expr="use_titlecase">
+        <message name="IDS_SHOW_READING_MODE_SIDE_PANEL" desc="Context menu entry point to open the reading mode feature in the side panel.">
+          Reading Mode
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_SHOW_READING_MODE_SIDE_PANEL" desc="Context menu entry point to open the reading mode feature in the side panel.">
+          Reading mode
+        </message>
+      </if>
+      <if expr="use_titlecase">
         <message name="IDS_READING_MODE_TITLE" desc="Title of the reading mode feature, which gives users an accessible reading experience.">
           Reading Mode
         </message>

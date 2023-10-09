@@ -141,6 +141,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kPasswordManagerMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kPerformanceMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kChromeLabsMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kReadingModeMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionsMenuModel,
                                       kManageExtensionsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionsMenuModel,
@@ -676,6 +677,7 @@ ToolsMenuModel::~ToolsMenuModel() = default;
 // More tools submenu is constructed as follows:
 // - Page specific actions overflow (save page, adding to desktop).
 // - Browser / OS level tools (extensions, task manager).
+// - Reading mode.
 // - Developer tools.
 // - Option to enable profiling.
 void ToolsMenuModel::Build(Browser* browser) {
@@ -684,8 +686,17 @@ void ToolsMenuModel::Build(Browser* browser) {
     AddItemWithStringId(IDC_CREATE_SHORTCUT, IDS_ADD_TO_OS_LAUNCH_SURFACE);
   }
   AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW);
-  if (commander::IsEnabled())
+  if (commander::IsEnabled()) {
     AddItemWithStringId(IDC_TOGGLE_QUICK_COMMANDS, IDS_TOGGLE_QUICK_COMMANDS);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    AddItemWithStringId(IDC_SHOW_READING_MODE_SIDE_PANEL,
+                        IDS_SHOW_READING_MODE_SIDE_PANEL);
+    SetElementIdentifierAt(
+        GetIndexOfCommandId(IDC_SHOW_READING_MODE_SIDE_PANEL).value(),
+        kReadingModeMenuItem);
+  }
 
   AddSeparator(ui::NORMAL_SEPARATOR);
   if (!features::IsChromeRefresh2023()) {
@@ -733,6 +744,8 @@ void ToolsMenuModel::Build(Browser* browser) {
     }
     SetCommandIcon(this, IDC_NAME_WINDOW, kNameWindowIcon);
     SetCommandIcon(this, IDC_TOGGLE_QUICK_COMMANDS, kQuickCommandsIcon);
+    SetCommandIcon(this, IDC_SHOW_READING_MODE_SIDE_PANEL,
+                   kMenuBookChromeRefreshIcon);
     SetCommandIcon(this, IDC_PERFORMANCE, kPerformanceIcon);
     SetCommandIcon(this, IDC_TASK_MANAGER, kTaskManagerIcon);
     SetCommandIcon(this, IDC_DEV_TOOLS, kDeveloperToolsIcon);

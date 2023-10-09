@@ -368,7 +368,8 @@
   E(kActionSidePanelShowHistoryCluster) \
   E(kActionSidePanelShowLens) \
   E(kActionSidePanelShowPerformance) \
-  E(kActionSidePanelShowReadAnything) \
+  /* Read Anything renamed to Reading Mode. */ \
+  E(kActionSidePanelShowReadAnything, IDC_SHOW_READING_MODE_SIDE_PANEL) \
   E(kActionSidePanelShowReadingList, IDC_READING_LIST_MENU_SHOW_UI) \
   E(kActionSidePanelShowSearchCompanion, IDC_SHOW_SEARCH_COMPANION) \
   E(kActionSidePanelShowShoppingInsights) \

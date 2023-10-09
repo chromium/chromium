@@ -1155,16 +1155,18 @@ void RenderViewContextMenu::InitMenu() {
     AppendPlatformEditableItems();
   }
 
-  // Show Read Anything option if text is selected and if it's not already open
-  // in the side panel.
   if (features::IsReadAnythingEnabled()) {
-    if (GetBrowser() && GetBrowser()->is_type_normal() &&
+    const bool is_content_type_supported =
+        content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_COPY) ||
+        content_type_->SupportsGroup(
+            ContextMenuContentType::ITEM_GROUP_EDITABLE);
+    const bool should_append_read_anything_item =
+        GetBrowser() && GetBrowser()->is_type_normal() &&
         !IsReadAnythingEntryShowing(GetBrowser()) &&
-        (content_type_->SupportsGroup(
-             ContextMenuContentType::ITEM_GROUP_COPY) ||
-         content_type_->SupportsGroup(
-             ContextMenuContentType::ITEM_GROUP_EDITABLE))) {
-      AppendReadAnythingItem();
+        (is_content_type_supported ||
+         base::FeatureList::IsEnabled(features::kSidePanelPinning));
+    if (should_append_read_anything_item) {
+      AppendReadingModeItem();
     }
   }
 
@@ -2120,7 +2122,7 @@ void RenderViewContextMenu::AppendMediaRouterItem() {
   }
 }
 
-void RenderViewContextMenu::AppendReadAnythingItem() {
+void RenderViewContextMenu::AppendReadingModeItem() {
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
                                   IDS_CONTENT_CONTEXT_READING_MODE);
   menu_model_.SetIsNewFeatureAt(
