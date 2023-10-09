@@ -23,6 +23,9 @@ class UrlHandlerAsh : public mojom::UrlHandler {
 
   // crosapi::mojom::UrlHandler:
   void OpenUrl(const GURL& url) override;
+  void GetExternalHandler(const GURL& url,
+                          GetExternalHandlerCallback callback) override;
+  void OpenExternal(const GURL& url) override;
 
   // Returns |false| when the URL was invalid and will not get processed and
   // |true| when the URL will get processed (synchronous or asynchronously).

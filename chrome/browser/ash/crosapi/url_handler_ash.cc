@@ -12,7 +12,9 @@
 #include "ash/webui/print_management/url_constants.h"
 #include "ash/webui/scanning/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "chrome/browser/ash/guest_os/guest_os_external_protocol_handler.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -41,6 +43,27 @@ void UrlHandlerAsh::BindReceiver(
 
 void UrlHandlerAsh::OpenUrl(const GURL& url) {
   OpenUrlInternal(url);
+}
+
+void UrlHandlerAsh::GetExternalHandler(const GURL& url,
+                                       GetExternalHandlerCallback callback) {
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
+          user_manager::UserManager::Get()->GetPrimaryUser()));
+  absl::optional<std::string> name;
+  absl::optional<guest_os::GuestOsUrlHandler> registration =
+      guest_os::GuestOsUrlHandler::GetForUrl(profile, url);
+  if (registration) {
+    name = registration->name();
+  }
+  std::move(callback).Run(name);
+}
+
+void UrlHandlerAsh::OpenExternal(const GURL& url) {
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
+          user_manager::UserManager::Get()->GetPrimaryUser()));
+  platform_util::OpenExternal(profile, url);
 }
 
 namespace {

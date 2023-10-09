@@ -13,4 +13,12 @@ interface UrlHandler {
   // Open the given URL. May be ignored if Ash does not know how to handle
   // the given URL.
   OpenUrl@0(url.mojom.Url url);
+
+  // Return the name of a handler for the external URL. Added in M120.
+  [MinVersion=1]
+  GetExternalHandler@1(url.mojom.Url url) => (string? name);
+
+  // Open the external URL using platform_util::OpenExternal(). Added in M120.
+  [MinVersion=1]
+  OpenExternal@2(url.mojom.Url url);
 };
