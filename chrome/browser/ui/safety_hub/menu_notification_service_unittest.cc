@@ -4,79 +4,108 @@
 
 #include "chrome/browser/ui/safety_hub/menu_notification_service.h"
 
+#include <ctime>
 #include <memory>
+#include <string>
 
+#include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/ui/safety_hub/menu_notification.h"
-#include "chrome/browser/ui/safety_hub/menu_notification_service.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
+#include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
+#include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/constants.h"
+#include "components/permissions/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace {
-void CreateMockUnusedSitePermissionsEntry(
-    HostContentSettingsMap* hcsm,
-    UnusedSitePermissionsService* service) {
-  // Revoke permission and update the unused site permission service.
-  const std::string url1 = "https://example1.com:443";
-  auto dict = base::Value::Dict().Set(
-      permissions::kRevokedKey, base::Value::List().Append(static_cast<int32_t>(
-                                    ContentSettingsType::GEOLOCATION)));
-  hcsm->SetWebsiteSettingDefaultScope(
-      GURL(url1), GURL(url1),
-      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
-      base::Value(dict.Clone()));
-  safety_hub_test_util::UpdateSafetyHubServiceAsync(service);
-}
-}  // namespace
-
 class SafetyHubMenuNotificationServiceTest
     : public ChromeRenderViewHostTestHarness {
  public:
+  SafetyHubMenuNotificationServiceTest()
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
-    RegisterSafetyHubProfilePrefs(prefs_.registry());
-    hcsm_ = base::MakeRefCounted<HostContentSettingsMap>(&prefs_, false, true,
-                                                         false, false);
-    unused_site_permissions_service_ =
-        std::make_unique<UnusedSitePermissionsService>(hcsm_.get(), &prefs_);
-    menu_notification_service_ =
-        std::make_unique<SafetyHubMenuNotificationService>(
-            &prefs_, unused_site_permissions_service_.get());
+    feature_list_.InitWithFeatures({features::kSafetyHub}, {});
+    prefs()->SetBoolean(
+        permissions::prefs::kUnusedSitePermissionsRevocationEnabled, true);
   }
 
   void TearDown() override {
-    hcsm_->ShutdownOnUIThread();
-    base::RunLoop().RunUntilIdle();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
  protected:
+  void CreateMockNotificationPermissionEntry() {
+    const GURL url = GURL("https://example.com:443");
+    hcsm()->SetContentSettingDefaultScope(
+        url, GURL(), ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW);
+    auto* notifications_engagement_service =
+        NotificationsEngagementServiceFactory::GetForProfile(profile());
+
+    // For simplicity, not setting an engagement score as that implies a NONE
+    // engagement level, and will mark the site for review of notification
+    // permissions.
+    notifications_engagement_service->RecordNotificationDisplayed(url, 7);
+    safety_hub_test_util::UpdateSafetyHubServiceAsync(
+        notification_permissions_service());
+  }
+
+  void CreateMockUnusedSitePermissionsEntry() {
+    // Revoke permission and update the unused site permission service.
+    const std::string url1 = "https://example1.com:443";
+    auto dict = base::Value::Dict().Set(
+        permissions::kRevokedKey,
+        base::Value::List().Append(
+            static_cast<int32_t>(ContentSettingsType::GEOLOCATION)));
+    hcsm()->SetWebsiteSettingDefaultScope(
+        GURL(url1), GURL(url1),
+        ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+        base::Value(dict.Clone()));
+    safety_hub_test_util::UpdateSafetyHubServiceAsync(
+        unused_site_permissions_service());
+  }
+
   UnusedSitePermissionsService* unused_site_permissions_service() {
-    return unused_site_permissions_service_.get();
+    return UnusedSitePermissionsServiceFactory::GetForProfile(profile());
+  }
+  NotificationPermissionsReviewService* notification_permissions_service() {
+    return NotificationPermissionsReviewServiceFactory::GetForProfile(
+        profile());
   }
   SafetyHubMenuNotificationService* menu_notification_service() {
-    return menu_notification_service_.get();
+    return SafetyHubMenuNotificationServiceFactory::GetForProfile(profile());
   }
-  HostContentSettingsMap* hcsm() { return hcsm_.get(); }
-  PrefService* prefs() { return &prefs_; }
+  sync_preferences::TestingPrefServiceSyncable* prefs() {
+    return profile()->GetTestingPrefService();
+  }
+  HostContentSettingsMap* hcsm() {
+    return HostContentSettingsMapFactory::GetForProfile(profile());
+  }
+  // Using |AdvanceClockBy| when the timers are not required to execute.
+  void AdvanceClockBy(base::TimeDelta delta) {
+    task_environment()->AdvanceClock(delta);
+  }
+  void ExpectPluralString(int string_id,
+                          int count,
+                          std::u16string notification_string) {
+    EXPECT_EQ(l10n_util::GetPluralStringFUTF16(string_id, count),
+              notification_string);
+  }
 
  private:
-  sync_preferences::TestingPrefServiceSyncable prefs_;
-  scoped_refptr<HostContentSettingsMap> hcsm_;
-  std::unique_ptr<UnusedSitePermissionsService>
-      unused_site_permissions_service_;
-  std::unique_ptr<SafetyHubMenuNotificationService> menu_notification_service_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(SafetyHubMenuNotificationServiceTest, GetNotificationToShowNoResult) {
@@ -86,17 +115,15 @@ TEST_F(SafetyHubMenuNotificationServiceTest, GetNotificationToShowNoResult) {
 }
 
 TEST_F(SafetyHubMenuNotificationServiceTest, SingleNotificationToShow) {
-  CreateMockUnusedSitePermissionsEntry(hcsm(),
-                                       unused_site_permissions_service());
+  CreateMockUnusedSitePermissionsEntry();
 
-  // The notification to show should be the unused site permissions one with one
-  // revoked permission. The relevant command should be to open Safety Hub.
+  // The notification to show should be the unused site permissions one with
+  // one revoked permission. The relevant command should be to open Safety Hub.
   absl::optional<std::pair<int, std::u16string>> notification =
       menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
-  EXPECT_EQ(
-      l10n_util::GetPluralStringFUTF16(
-          IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1),
+  ExpectPluralString(
+      IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
       notification.value().second);
   EXPECT_EQ(IDC_OPEN_SAFETY_HUB, notification.value().first);
 }
@@ -104,8 +131,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, SingleNotificationToShow) {
 TEST_F(SafetyHubMenuNotificationServiceTest, PersistInPrefs) {
   // Creating a mock result, which should result in a notification to be
   // available.
-  CreateMockUnusedSitePermissionsEntry(hcsm(),
-                                       unused_site_permissions_service());
+  CreateMockUnusedSitePermissionsEntry();
 
   absl::optional<std::pair<int, std::u16string>> notification =
       menu_notification_service()->GetNotificationToShow();
@@ -124,16 +150,16 @@ TEST_F(SafetyHubMenuNotificationServiceTest, PersistInPrefs) {
   // loaded in memory.
   std::unique_ptr<SafetyHubMenuNotificationService> new_service =
       std::make_unique<SafetyHubMenuNotificationService>(
-          prefs(), unused_site_permissions_service());
+          prefs(), unused_site_permissions_service(),
+          notification_permissions_service());
   // Getting the in-memory notification to prevent the service from generating a
   // new one.
   SafetyHubMenuNotification* new_notification =
       new_service->GetNotificationForTesting(
           SafetyHubServiceType::UNUSED_SITE_PERMISSIONS);
   EXPECT_TRUE(new_notification->IsCurrentlyActive());
-  EXPECT_EQ(
-      l10n_util::GetPluralStringFUTF16(
-          IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1),
+  ExpectPluralString(
+      IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
       new_notification->GetNotificationString());
   auto* new_result =
       static_cast<UnusedSitePermissionsService::UnusedSitePermissionsResult*>(
@@ -147,4 +173,90 @@ TEST_F(SafetyHubMenuNotificationServiceTest, PersistInPrefs) {
             new_result->GetRevokedPermissions().front().expiration);
   EXPECT_EQ(old_result->GetRevokedPermissions().front().permission_types,
             new_result->GetRevokedPermissions().front().permission_types);
+}
+
+TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsSequentially) {
+  // Creating a mock result, which should result in a notification to be
+  // available.
+  CreateMockUnusedSitePermissionsEntry();
+
+  // Show the notification sufficient days and times.
+  absl::optional<std::pair<int, std::u16string>> notification;
+  for (int i = 0; i < kSafetyHubMenuNotificationMinImpressionCount + 1; ++i) {
+    notification = menu_notification_service()->GetNotificationToShow();
+    EXPECT_TRUE(notification.has_value());
+    ExpectPluralString(
+        IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
+        notification->second);
+  }
+  AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration +
+                 base::Days(1));
+
+  // The notification has been shown sufficiently, so shouldn't be shown again.
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_FALSE(notification.has_value());
+
+  CreateMockNotificationPermissionEntry();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(
+      notification_permissions_service());
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_TRUE(notification.has_value());
+}
+
+TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsNoOverride) {
+  // Creating a mock result, which should result in a notification to be
+  // available.
+  CreateMockUnusedSitePermissionsEntry();
+
+  // Show the notification once.
+  absl::optional<std::pair<int, std::u16string>> notification;
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_TRUE(notification.has_value());
+  ExpectPluralString(
+      IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
+      notification->second);
+
+  // Creating a notification permission shouldn't cause the active notification
+  // to be overridden.
+  CreateMockNotificationPermissionEntry();
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_TRUE(notification.has_value());
+  ExpectPluralString(
+      IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
+      notification->second);
+
+  // Showing the notification sufficient days and times.
+  for (int i = 0; i < kSafetyHubMenuNotificationMinImpressionCount - 1; ++i) {
+    notification = menu_notification_service()->GetNotificationToShow();
+    EXPECT_TRUE(notification.has_value());
+    ExpectPluralString(
+        IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
+        notification->second);
+  }
+  AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration +
+                 base::Days(1));
+
+  // After the unused site permissions notification has been shown sufficient
+  // times, the notification permission review notification should be shown.
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_TRUE(notification.has_value());
+  ExpectPluralString(
+      IDS_SETTINGS_SAFETY_HUB_REVIEW_NOTIFICATION_PERMISSIONS_MENU_NOTIFICATION,
+      1, notification->second);
+
+  // Showing the new notification enough times and days.
+  for (int i = 0; i < kSafetyHubMenuNotificationMinImpressionCount; ++i) {
+    notification = menu_notification_service()->GetNotificationToShow();
+    EXPECT_TRUE(notification.has_value());
+    ExpectPluralString(
+        IDS_SETTINGS_SAFETY_HUB_REVIEW_NOTIFICATION_PERMISSIONS_MENU_NOTIFICATION,
+        1, notification->second);
+  }
+  AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration +
+                 base::Days(1));
+
+  // Both notifications have been shown sufficiently, so no new notification
+  // should be shown.
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_FALSE(notification.has_value());
 }

@@ -28,31 +28,20 @@ SafetyHubServiceInfoElement::SafetyHubServiceInfoElement(
 
 SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
     PrefService* pref_service,
-    UnusedSitePermissionsService* unused_site_permissions_service) {
+    UnusedSitePermissionsService* unused_site_permissions_service,
+    NotificationPermissionsReviewService* notification_permissions_service) {
   pref_service_ = std::move(pref_service);
   const base::Value::Dict& stored_notifications =
       pref_service_->GetDict(safety_hub_prefs::kMenuNotificationsPrefsKey);
 
-  // It can be assumed that all `SafetyHubServiceType`s are in
-  // `pref_dict_key_map_`.
-  const base::Value::Dict* unused_perms_dict = stored_notifications.FindDict(
-      pref_dict_key_map_.find(SafetyHubServiceType::UNUSED_SITE_PERMISSIONS)
-          ->second);
-  std::unique_ptr<SafetyHubMenuNotification> unused_perms_notification;
-  if (!unused_perms_dict) {
-    unused_perms_notification = std::make_unique<SafetyHubMenuNotification>();
-  } else {
-    unused_perms_notification = SafetyHubMenuNotification::FromDictValue(
-        *unused_perms_dict, unused_site_permissions_service);
-  }
-
   // TODO(crbug.com/1443466): Make the interval for each service finch
   // configurable.
-  service_info_map_[SafetyHubServiceType::UNUSED_SITE_PERMISSIONS] =
-      std::make_unique<SafetyHubServiceInfoElement>(
-          MenuNotificationPriority::LOW, base::Days(10),
-          unused_site_permissions_service,
-          std::move(unused_perms_notification));
+  SetServiceInfoElement(SafetyHubServiceType::UNUSED_SITE_PERMISSIONS,
+                        MenuNotificationPriority::LOW, base::Days(10),
+                        unused_site_permissions_service, stored_notifications);
+  SetServiceInfoElement(SafetyHubServiceType::NOTIFICATION_PERMISSIONS,
+                        MenuNotificationPriority::LOW, base::Days(10),
+                        notification_permissions_service, stored_notifications);
 }
 
 SafetyHubMenuNotificationService::~SafetyHubMenuNotificationService() = default;
@@ -136,4 +125,42 @@ SafetyHubMenuNotification*
 SafetyHubMenuNotificationService::GetNotificationForTesting(
     SafetyHubServiceType service_type) {
   return service_info_map_.find(service_type)->second.get()->notification.get();
+}
+
+std::unique_ptr<SafetyHubMenuNotification>
+SafetyHubMenuNotificationService::GetNotificationFromDict(
+    const base::Value::Dict& dict,
+    SafetyHubServiceType type,
+    SafetyHubService* service) const {
+  // It can be assumed that all `SafetyHubServiceType`s are in
+  // `pref_dict_key_map_`.
+  const base::Value::Dict* notification_dict =
+      dict.FindDict(pref_dict_key_map_.find(type)->second);
+  std::unique_ptr<SafetyHubMenuNotification> result_notification;
+  if (!notification_dict) {
+    result_notification = std::make_unique<SafetyHubMenuNotification>();
+  } else {
+    result_notification =
+        SafetyHubMenuNotification::FromDictValue(*notification_dict, service);
+  }
+  return result_notification;
+}
+
+void SafetyHubMenuNotificationService::Shutdown() {
+  for (auto const& item : service_info_map_) {
+    // Setting to nullptr to avoid dangling pointers when services are
+    // deconstructed.
+    item.second->service = nullptr;
+  }
+}
+
+void SafetyHubMenuNotificationService::SetServiceInfoElement(
+    SafetyHubServiceType type,
+    MenuNotificationPriority priority,
+    base::TimeDelta interval,
+    SafetyHubService* service,
+    const base::Value::Dict& stored_notifications) {
+  service_info_map_[type] = std::make_unique<SafetyHubServiceInfoElement>(
+      priority, interval, service,
+      GetNotificationFromDict(stored_notifications, type, service));
 }

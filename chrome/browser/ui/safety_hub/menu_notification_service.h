@@ -11,6 +11,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/ui/safety_hub/menu_notification.h"
+#include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -18,6 +19,7 @@
 
 enum SafetyHubServiceType {
   UNUSED_SITE_PERMISSIONS,
+  NOTIFICATION_PERMISSIONS,
 };
 
 namespace {
@@ -57,7 +59,8 @@ class SafetyHubMenuNotificationService : public KeyedService {
  public:
   explicit SafetyHubMenuNotificationService(
       PrefService* pref_service,
-      UnusedSitePermissionsService* unused_site_permissions_service);
+      UnusedSitePermissionsService* unused_site_permissions_service,
+      NotificationPermissionsReviewService* notification_permissions_service);
   SafetyHubMenuNotificationService(const SafetyHubMenuNotificationService&) =
       delete;
   SafetyHubMenuNotificationService& operator=(
@@ -83,16 +86,33 @@ class SafetyHubMenuNotificationService : public KeyedService {
   // dict in the prefs.
   void SaveNotificationsToPrefs() const;
 
+  // Creates a notification from the provided dictionary, for the specified
+  // Safety Hub service type.
+  std::unique_ptr<SafetyHubMenuNotification> GetNotificationFromDict(
+      const base::Value::Dict& dict,
+      SafetyHubServiceType type,
+      SafetyHubService* service) const;
+
+  void SetServiceInfoElement(SafetyHubServiceType type,
+                             MenuNotificationPriority priority,
+                             base::TimeDelta interval,
+                             SafetyHubService* service,
+                             const base::Value::Dict& stored_notifications);
+
   const std::map<SafetyHubServiceType, const char*> pref_dict_key_map_ = {
       {SafetyHubServiceType::UNUSED_SITE_PERMISSIONS,
        "unused-site-permissions"},
+      {SafetyHubServiceType::NOTIFICATION_PERMISSIONS,
+       "notification-permissions"},
   };
 
-  std::map<SafetyHubServiceType, std::unique_ptr<SafetyHubServiceInfoElement>>
-      service_info_map_;
+  void Shutdown() override;
 
   // Preference service that persists the notifications.
   raw_ptr<PrefService> pref_service_;
+
+  std::map<SafetyHubServiceType, std::unique_ptr<SafetyHubServiceInfoElement>>
+      service_info_map_;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_MENU_NOTIFICATION_SERVICE_H_

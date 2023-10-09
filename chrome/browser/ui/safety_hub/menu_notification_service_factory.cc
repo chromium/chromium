@@ -8,6 +8,8 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service.h"
+#include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
+#include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
@@ -45,6 +47,9 @@ SafetyHubMenuNotificationServiceFactory::BuildServiceInstanceForBrowserContext(
   auto* profile = Profile::FromBrowserContext(context);
   UnusedSitePermissionsService* unused_site_permissions_service =
       UnusedSitePermissionsServiceFactory::GetForProfile(profile);
+  NotificationPermissionsReviewService* notification_permission_review_service =
+      NotificationPermissionsReviewServiceFactory::GetForProfile(profile);
   return std::make_unique<SafetyHubMenuNotificationService>(
-      profile->GetPrefs(), unused_site_permissions_service);
+      profile->GetPrefs(), unused_site_permissions_service,
+      notification_permission_review_service);
 }
