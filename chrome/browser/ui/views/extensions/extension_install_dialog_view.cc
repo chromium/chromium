@@ -383,9 +383,6 @@ ExtensionInstallDialogView::ExtensionInstallDialogView(
   set_close_on_deactivate(false);
   SetShowCloseButton(false);
   CreateContents();
-
-  UMA_HISTOGRAM_ENUMERATION("Extensions.InstallPrompt.Type2", prompt_->type(),
-                            ExtensionInstallPrompt::NUM_PROMPT_TYPES);
 }
 
 ExtensionInstallDialogView::~ExtensionInstallDialogView() {
@@ -526,7 +523,6 @@ void ExtensionInstallDialogView::OnDialogCanceled() {
   // being uninstalled).
   extension_registry_observation_.Reset();
 
-  UpdateInstallResultHistogram(false);
   UpdateEnterpriseCloudExtensionRequestDialogActionHistogram(false);
   prompt_->OnDialogCanceled();
   std::move(done_callback_)
@@ -547,7 +543,6 @@ void ExtensionInstallDialogView::OnDialogAccepted() {
       ExtensionInstallPrompt::PromptType::EXTENSION_REQUEST_PROMPT;
   DCHECK(expect_justification == !!justification_view_);
 
-  UpdateInstallResultHistogram(true);
   UpdateEnterpriseCloudExtensionRequestDialogActionHistogram(true);
   prompt_->OnDialogAccepted();
 
@@ -725,22 +720,6 @@ void ExtensionInstallDialogView::ContentsChanged(
 void ExtensionInstallDialogView::EnableInstallButton() {
   install_button_enabled_ = true;
   DialogModelChanged();
-}
-
-void ExtensionInstallDialogView::UpdateInstallResultHistogram(bool accepted)
-    const {
-  // Only update histograms if |install_result_timer_| was initialized in
-  // |VisibilityChanged|.
-  if (prompt_->type() == ExtensionInstallPrompt::INSTALL_PROMPT &&
-      install_result_timer_) {
-    if (accepted) {
-      UmaHistogramMediumTimes("Extensions.InstallPrompt.TimeToInstall",
-                              install_result_timer_->Elapsed());
-    } else {
-      UmaHistogramMediumTimes("Extensions.InstallPrompt.TimeToCancel",
-                              install_result_timer_->Elapsed());
-    }
-  }
 }
 
 void ExtensionInstallDialogView::

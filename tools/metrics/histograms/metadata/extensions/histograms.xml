@@ -2887,38 +2887,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.InstallPrompt.TimeToCancel" units="ms"
-    expires_after="2022-09-20">
-  <owner>kelvinjiang@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Time from first display of the extension installation prompt until the user
-    aborts the installation through clicking the cancel button or dismissing the
-    dialog.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.InstallPrompt.TimeToInstall" units="ms"
-    expires_after="2022-09-20">
-  <owner>kelvinjiang@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Time from first display of the extension installation prompt until the user
-    accepts the installation. Will always be greater than 500ms as the install
-    option is enabled after that time has elapsed.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.InstallPrompt.Type2"
-    enum="ExtensionInstallPromptType" expires_after="2022-08-07">
-  <owner>meacer@chromium.org</owner>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>
-    Type of the extension install prompt displayed when an extension
-    installation is triggered. Replaced Extensions.InstallPrompt.Type 2019-07.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.InstallSource" enum="ExtensionLocation"
     expires_after="2023-07-07">
   <obsolete>

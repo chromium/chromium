@@ -37878,24 +37878,6 @@ Called by update_extension_histograms.py.-->
   <int value="2" label="Link is clicked"/>
 </enum>
 
-<enum name="ExtensionInstallPromptType">
-  <int value="0" label="Install prompt"/>
-  <int value="1" label="Inline install prompt (deprecated)"/>
-  <int value="2" label="Bundle install prompt (deprecated)"/>
-  <int value="3" label="Re-enable prompt"/>
-  <int value="4" label="Permissions prompt"/>
-  <int value="5" label="External install prompt"/>
-  <int value="6" label="Post install permissions prompt"/>
-  <int value="7" label="Launch prompt (deprecated)"/>
-  <int value="8" label="Remote install prompt"/>
-  <int value="9" label="Repair prompt"/>
-  <int value="10" label="Delegated permissions prompt"/>
-  <int value="11" label="Delegated bundle permissions prompt (deprecated)"/>
-  <int value="12" label="Webstore widget prompt"/>
-  <int value="13" label="Extension request prompt"/>
-  <int value="14" label="Extension pending request prompt"/>
-</enum>
-
 <enum name="ExtensionInstallVerifierGetSignatureResult">
   <int value="0" label="No signature (network error, etc)"/>
   <int value="1" label="Invalid signature"/>
