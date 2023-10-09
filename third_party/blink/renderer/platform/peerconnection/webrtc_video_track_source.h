@@ -58,9 +58,7 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
   bool remote() const override;
   bool is_screencast() const override;
   absl::optional<bool> needs_denoising() const override;
-  void OnFrameCaptured(
-      scoped_refptr<media::VideoFrame> frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_frames);
+  void OnFrameCaptured(scoped_refptr<media::VideoFrame> frame);
   void OnNotifyFrameDropped();
 
   using webrtc::VideoTrackSourceInterface::AddOrUpdateSink;
@@ -82,7 +80,6 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
   // ensure that it doesn't exceed the current system time. However,
   // |capture_time_identifier| is just |frame->timestamp()|.
   void DeliverFrame(scoped_refptr<media::VideoFrame> frame,
-                    std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
                     gfx::Rect* update_rect,
                     int64_t timestamp_us,
                     absl::optional<webrtc::Timestamp> capture_time_identifier);

@@ -90,7 +90,7 @@ class WebRtcVideoTrackSourceTest
         frame_parameters.coded_size, frame_parameters.visible_rect,
         frame_parameters.natural_size, frame_parameters.storage_type,
         frame_parameters.pixel_format, timestamp);
-    track_source_->OnFrameCaptured(frame, {});
+    track_source_->OnFrameCaptured(frame);
   }
 
   void SendTestFrameAndVerifyFeedback(const FrameParameters& frame_parameters,
@@ -100,7 +100,7 @@ class WebRtcVideoTrackSourceTest
         frame_parameters.coded_size, frame_parameters.visible_rect,
         frame_parameters.natural_size, frame_parameters.storage_type,
         frame_parameters.pixel_format, base::TimeDelta());
-    track_source_->OnFrameCaptured(frame, {});
+    track_source_->OnFrameCaptured(frame);
     EXPECT_EQ(feedback_.max_pixels, max_pixels);
     EXPECT_EQ(feedback_.max_framerate_fps, max_framerate);
   }
@@ -114,7 +114,7 @@ class WebRtcVideoTrackSourceTest
         frame_parameters.pixel_format, base::TimeDelta());
     frame->metadata().capture_counter = capture_counter;
     frame->metadata().capture_update_rect = update_rect;
-    track_source_->OnFrameCaptured(frame, {});
+    track_source_->OnFrameCaptured(frame);
   }
 
   void SendTestFrameWithColorSpace(const FrameParameters& frame_parameters,
@@ -124,7 +124,7 @@ class WebRtcVideoTrackSourceTest
         frame_parameters.natural_size, frame_parameters.storage_type,
         frame_parameters.pixel_format, base::TimeDelta());
     frame->set_color_space(color_space);
-    track_source_->OnFrameCaptured(frame, {});
+    track_source_->OnFrameCaptured(frame);
   }
 
   WebRtcVideoTrackSource::FrameAdaptationParams FrameAdaptation_KeepAsIs(

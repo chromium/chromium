@@ -201,7 +201,6 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
   explicit WebRtcVideoFrameAdapter(scoped_refptr<media::VideoFrame> frame);
   WebRtcVideoFrameAdapter(
       scoped_refptr<media::VideoFrame> frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
       scoped_refptr<SharedResources> shared_resources);
 
   scoped_refptr<media::VideoFrame> getMediaVideoFrame() const { return frame_; }
@@ -261,7 +260,6 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
 
   base::Lock adapted_frames_lock_;
   const scoped_refptr<media::VideoFrame> frame_;
-  const Vector<scoped_refptr<media::VideoFrame>> scaled_frames_;
   const scoped_refptr<SharedResources> shared_resources_;
   const ScaledBufferSize full_size_;
   // Frames that have been adapted, i.e. that were "hard-applied" and mapped.

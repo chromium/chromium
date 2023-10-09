@@ -191,7 +191,7 @@ void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
   DCHECK(libjingle_network_task_runner_->BelongsToCurrentThread());
   base::AutoLock auto_lock(video_source_stop_lock_);
   if (video_source_)
-    video_source_->OnFrameCaptured(std::move(frame), {});
+    video_source_->OnFrameCaptured(std::move(frame));
 }
 
 void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
