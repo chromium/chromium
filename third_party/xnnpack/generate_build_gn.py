@@ -27,6 +27,7 @@
 # flags set, so source sets are further split by their flags.
 
 import collections
+import json
 import logging
 import os
 import shutil
@@ -247,21 +248,21 @@ ObjectBuild = collections.namedtuple('ObjectBuild', ['src', 'dir', 'args'],
                                      defaults=['', '', []])
 
 
-def _objectbuild_from_bazel_log(log_line):
+def _objectbuild_from_bazel_log(action):
   """
   Attempts to scrape a compiler invocation from a single bazel build output
   line. If no invocation is present, None is returned.
   """
-  split = log_line.strip().split(' ')
-  if not split[0].endswith('gcc'):
+  action_args = action["arguments"]
+  if not action_args[0].endswith('gcc'):
     return None
 
   src = ''
   dir = ''
   args = []
-  for i, arg in enumerate(split):
-    if arg == '-c' and split[i + 1].startswith("external/XNNPACK/"):
-      src = os.path.join('src', split[i + 1][len("external/XNNPACK/"):])
+  for i, arg in enumerate(action_args):
+    if arg == '-c' and action_args[i + 1].startswith("external/XNNPACK/"):
+      src = os.path.join('src', action_args[i + 1][len("external/XNNPACK/"):])
       # |src| should look like 'src/src/...'.
       src_path = src.split('/')
       if len(src_path) == 3:
@@ -290,8 +291,8 @@ def _tflite_dir():
 
 def _run_bazel_cmd(args):
   """
-  Runs a bazel command in the form of bazel <args...>. Returns the stdout and
-  stderr concatenated, raising an Exception if the command failed.
+  Runs a bazel command in the form of bazel <args...>. Returns the stdout,
+  raising an Exception if the command failed.
   """
   exec_path = shutil.which("bazel")
   if not exec_path:
@@ -323,51 +324,29 @@ def _run_bazel_cmd(args):
                             'stdout': stdout,
                             'stderr': stderr,
                         }))
-  return stdout + "\n" + stderr
+  return stdout
 
 
-def ListAllSrcs():
+def GenerateObjectBuilds():
   """
-  Runs a bazel command to query and and return all source files for XNNPACK, but
-  not any dependencies, as relative paths to //third_party/xnnpack/.
+  Queries bazel for the compile commands needed for the XNNPACK source files
+  necessary to fulfill the :tensorflowlite target's dependencies.
   """
-  logging.info('Querying for the list of all XNNPACK srcs in :tensorflowlite')
-  out = _run_bazel_cmd([
-      'cquery',
-      'kind("source file", deps(:tensorflowlite))',
-      '--define',
-      'xnn_enable_jit=false',
-  ])
-  srcs = []
-  for line in out.split('\n'):
-    if line.startswith('@XNNPACK//:'):
-      srcs.append(os.path.join('src', line.split()[0][len("@XNNPACK//:"):]))
-  return srcs
-
-
-def GenerateObjectBuilds(srcs):
-  """
-  Builds XNNPACK with bazel and scrapes out all the ObjectBuild's for all
-  source files in srcs.
-  """
-  logging.info('Running `bazel clean`')
-  _run_bazel_cmd(['clean'])
-  logging.info('Building xnnpack with bazel...')
+  logging.info('Querying xnnpack compile commands with bazel...')
   logs = _run_bazel_cmd([
-      'build',
-      ':tensorflowlite',
-      '-s',
-      '-c',
-      'opt',
+      'aquery',
+      ('mnemonic("CppCompile",'
+       'filter("@XNNPACK//:", deps(:tensorflowlite)))'),
       '--define',
       'xnn_enable_jit=false',
+      "--output=jsonproto",
   ])
-  logging.info('scraping %d log lines from bazel build...' %
-               len(logs.split('\n')))
+  logging.info('parsing actions from bazel aquery...')
   obs = []
-  for log in logs.split('\n'):
-    ob = _objectbuild_from_bazel_log(log)
-    if ob and ob.src in srcs:
+  aquery_json = json.loads(logs)
+  for action in aquery_json["actions"]:
+    ob = _objectbuild_from_bazel_log(action)
+    if ob:
       obs.append(ob)
   logging.info('Scraped %d built objects' % len(obs))
   return obs
@@ -428,8 +407,7 @@ def MakeXNNPACKSourceSet(ss, other_targets):
 def main():
   logging.basicConfig(level=logging.INFO)
 
-  srcs = ListAllSrcs()
-  obs = GenerateObjectBuilds(srcs)
+  obs = GenerateObjectBuilds()
   xnnpack_ss, other_sss = CombineObjectBuildsIntoSourceSets(obs)
 
   sub_targets = []
