@@ -28,6 +28,8 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
+#include "media/remoting/device_capability_checker.h"
+#include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -45,7 +47,6 @@ void RunRouteResponseCallbacks(
     const RouteRequestResult& result) {
   if (presentation_callback)
     std::move(presentation_callback).Run(std::move(connection), result);
-  DCHECK(!connection);
   for (auto& callback : route_result_callbacks)
     std::move(callback).Run(result);
 }
@@ -93,7 +94,9 @@ MediaRouteStarter::~MediaRouteStarter() {
     bool presentation_sinks_available = base::ranges::any_of(
         GetQueryResultManager()->GetSinksWithCastModes(),
         [](const MediaSinkWithCastModes& sink) {
-          return base::Contains(sink.cast_modes, MediaCastMode::PRESENTATION);
+          return base::Contains(sink.cast_modes, MediaCastMode::PRESENTATION) ||
+                 base::Contains(sink.cast_modes,
+                                MediaCastMode::REMOTE_PLAYBACK);
         });
     if (presentation_sinks_available) {
       start_presentation_context_->InvokeErrorCallback(
@@ -190,6 +193,14 @@ void MediaRouteStarter::StartRoute(std::unique_ptr<RouteParameters> params) {
 
   MediaRouteResponseCallback presentation_callback;
 
+  // There are two ways to initialize MediaRouterUI with Presentation cast mode
+  // and each method requires different way to propagate route responses back to
+  // sites.
+  // 1. For StartPresentationContext passed by sites. We should use
+  // the StartPresentationContext for presentation response callback.
+  // 2. For the default presentation request managed by
+  // WebContentsPresentationManager. In this case, we should use
+  // WebContentsPresentationManager::OnPresentationResponse.
   if (params->cast_mode == MediaCastMode::PRESENTATION) {
     if (start_presentation_context_) {
       presentation_callback =
@@ -202,6 +213,21 @@ void MediaRouteStarter::StartRoute(std::unique_ptr<RouteParameters> params) {
     } else {
       NOTREACHED();
     }
+  }
+
+  // There are two ways to initialize MediaRouterUI for REMOTE_PLAYBACK cast
+  // mode:
+  // 1. Remote Playback API prompt() function passes a StartPresentationContext
+  // object. We should use the StartPresentationContext for presentation
+  // response callback.
+  // 2. Media Session items for Media Remoting from the GMC dialog. In this way,
+  // the site does not use the Remote Playback API and there's no need to set up
+  // presentation callback.
+  if (params->cast_mode == MediaCastMode::REMOTE_PLAYBACK &&
+      start_presentation_context_) {
+    presentation_callback =
+        base::BindOnce(&StartPresentationContext::HandleRouteResponse,
+                       std::move(start_presentation_context_));
   }
 
   GetMediaRouter()->CreateRoute(
@@ -263,8 +289,19 @@ void MediaRouteStarter::InitPresentationSources(
     return;
   }
   if (start_presentation_context_) {
-    OnDefaultPresentationChanged(
-        &start_presentation_context_->presentation_request());
+    auto media_source =
+        MediaSource(start_presentation_context_->presentation_request()
+                        .presentation_urls[0]);
+    if (media_source.IsRemotePlaybackSource()) {
+      media_source.AppendTabIdToRemotePlaybackUrlQuery(
+          sessions::SessionTabHelper::IdForTab(web_contents_).id());
+      GetQueryResultManager()->SetSourcesForCastMode(
+          MediaCastMode::REMOTE_PLAYBACK, {media_source},
+          url::Origin::Create(GURL()));
+    } else {
+      OnDefaultPresentationChanged(
+          &start_presentation_context_->presentation_request());
+    }
   } else if (presentation_manager_ &&
              presentation_manager_->HasDefaultPresentationRequest()) {
     OnDefaultPresentationChanged(

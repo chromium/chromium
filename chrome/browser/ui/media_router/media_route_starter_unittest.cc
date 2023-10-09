@@ -67,6 +67,9 @@ constexpr char kDefaultOriginUrl[] = "https://default.fakeurl/";
 constexpr char kStartPresentationUrl[] = "https://startpresentrequest.com/";
 constexpr char kStartOriginUrl[] = "https://start.fakeurl/";
 
+constexpr char kRemotePlaybackUrl[] =
+    "remote-playback://<encoded-data>?video_codec=vp8&audio_codec=mp3";
+
 class MockPresentationRequestSourceObserver
     : public PresentationRequestSourceObserver {
  public:
@@ -259,11 +262,7 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
   }
 
   std::unique_ptr<StartPresentationContext> CreateStartPresentationContext(
-      const content::PresentationRequest& presentation_request,
-      StartPresentationContext::PresentationConnectionCallback success_cb =
-          base::DoNothing(),
-      StartPresentationContext::PresentationConnectionErrorCallback error_cb =
-          base::DoNothing()) {
+      const content::PresentationRequest& presentation_request) {
     return std::make_unique<StartPresentationContext>(
         presentation_request,
         base::BindOnce(&MediaRouteStarterTest::RequestSuccess,
@@ -364,7 +363,15 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
     StartRoute(std::move(params));
   }
 
- private:
+  void StartRemotePlayback(const MediaSinkInternal& sink) {
+    UpdateSinks({sink.sink()}, std::vector<url::Origin>());
+
+    auto params = media_route_starter()->CreateRouteParameters(
+        sink.id(), MediaCastMode::REMOTE_PLAYBACK);
+    EXPECT_TRUE(params);
+    StartRoute(std::move(params));
+  }
+
   content::PresentationRequest CreatePresentationRequest(
       const std::string& presentation_url,
       const std::string& origin_url) {
@@ -374,6 +381,7 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
     return presentation_request;
   }
 
+ private:
   void StartRoute(std::unique_ptr<RouteParameters> params) {
     // To demonstrate that MediaRouteResultCallbacks are called
     params->route_result_callbacks.emplace_back(
@@ -809,7 +817,7 @@ TEST_F(MediaRouteStarterTest, StartRoute_WebContentPresentationError) {
 
 // Demonstrates that presentations routes from start presentation contexts are
 // created correctly.
-TEST_F(MediaRouteStarterTest, StartRoute_StartPresentationContext) {
+TEST_F(MediaRouteStarterTest, StartRoute_StartPresentationContext_Cast) {
   auto start_presentation_context =
       CreateStartPresentationContext(start_presentation_request());
 
@@ -827,6 +835,28 @@ TEST_F(MediaRouteStarterTest, StartRoute_StartPresentationContext) {
   EXPECT_EQ(mojom::RouteRequestResultCode::OK,
             route_request_result()->result_code());
   EXPECT_EQ(kStartPresentationUrl, route_request_result()->presentation_url());
+}
+
+TEST_F(MediaRouteStarterTest,
+       StartRoute_StartPresentationContext_RemotePlayback) {
+  auto start_presentation_context = CreateStartPresentationContext(
+      CreatePresentationRequest(kRemotePlaybackUrl, kStartOriginUrl));
+
+  CreateStarter(MediaRouterUIParameters(kDefaultModes, web_contents(),
+                                        std::move(start_presentation_context)));
+
+  set_expected_cast_result(mojom::RouteRequestResultCode::OK);
+
+  EXPECT_CALL(*this, RequestSuccess(_, _, _));
+
+  StartRemotePlayback(cast_sink());
+
+  EXPECT_EQ(mojom::RouteRequestResultCode::OK,
+            route_request_result()->result_code());
+  EXPECT_EQ(
+      "remote-playback://"
+      "<encoded-data>?video_codec=vp8&audio_codec=mp3&tab_id=1",
+      route_request_result()->presentation_url());
 }
 
 // Demonstrates that failures to create presentation routes from start

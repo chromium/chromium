@@ -735,6 +735,7 @@ void PresentationServiceDelegateImpl::NotifyDefaultPresentationChanged(
 
 void PresentationServiceDelegateImpl::NotifyMediaRoutesChanged() {
   auto routes = GetMediaRoutes();
+
   for (auto& presentation_observer : presentation_observers_)
     presentation_observer.OnPresentationsChanged(!routes.empty());
 }

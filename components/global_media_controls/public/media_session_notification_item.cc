@@ -371,16 +371,20 @@ MediaSessionNotificationItem::GetMediaSessionActions() const {
 }
 
 bool MediaSessionNotificationItem::ShouldShowNotification() const {
-  // We do not show the media notification if it is not controllable or it
-  // already has a presentation of another cast media notification.
+  // Hide the media notification if it is not controllable or the notification
+  // title is missing.
   if (!session_info_ || !session_info_->is_controllable ||
-      session_info_->has_presentation) {
+      session_metadata_.title.empty()) {
     return false;
   }
 
-  // If we do not have a title then we should hide the notification.
-  if (session_metadata_.title.empty())
+  // Hide the media notification if there exists a cast media notification item
+  // for the Cast presentation. However, show the media notification if the
+  // presentation is for a Remote Playback media source.
+  if (session_info_->has_presentation &&
+      !GetRemotePlaybackStarted(session_info_)) {
     return false;
+  }
 
   return true;
 }

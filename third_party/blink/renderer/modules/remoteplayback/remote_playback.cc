@@ -381,7 +381,7 @@ void RemotePlayback::StateChanged(
       IsInParallelAlgorithmRunnable(
           prompt_promise_resolver_->GetExecutionContext(),
           prompt_promise_resolver_->GetScriptState())) {
-    // Changing state to "disconnected" from "disconnected" or "connecting"
+    // Changing state to "CLOSED" from "CLOSED" or "CONNECTING"
     // means that establishing connection with remote playback device failed.
     // Changing state to anything else means the state change intended by
     // prompt() succeeded.
@@ -395,10 +395,6 @@ void RemotePlayback::StateChanged(
           DOMExceptionCode::kAbortError,
           "Failed to connect to the remote device."));
     } else {
-      DCHECK((state_ == mojom::blink::PresentationConnectionState::CLOSED &&
-              state == mojom::blink::PresentationConnectionState::CONNECTING) ||
-             (state_ == mojom::blink::PresentationConnectionState::CONNECTED &&
-              state == mojom::blink::PresentationConnectionState::CLOSED));
       prompt_promise_resolver_->Resolve();
     }
   }
@@ -608,6 +604,11 @@ void RemotePlayback::OnConnectionSuccess(
       PresentationController::FromContext(GetExecutionContext());
   if (!presentation_controller)
     return;
+
+#if !BUILDFLAG(IS_ANDROID)
+  media_element_->Play();
+  media_element_->GetWebMediaPlayer()->RequestMediaRemoting();
+#endif
 
   // Note: Messages on |connection_receiver| are ignored.
   target_presentation_connection_.Bind(

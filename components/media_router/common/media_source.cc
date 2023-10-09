@@ -213,4 +213,18 @@ std::string MediaSource::TruncateForLogging(size_t max_length) const {
   return id_.substr(0, length);
 }
 
+void MediaSource::AppendTabIdToRemotePlaybackUrlQuery(int tab_id) {
+  if (url_.is_empty()) {
+    return;
+  }
+
+  GURL::Replacements replacements;
+  std::string tab_id_query = base::StringPrintf("tab_id=%d", tab_id);
+  std::string new_query =
+      (url_.has_query() ? url_.query() + "&" : "") + tab_id_query;
+  replacements.SetQueryStr(new_query);
+  url_ = url_.ReplaceComponents(replacements);
+  id_ = url_.spec();
+}
+
 }  // namespace media_router

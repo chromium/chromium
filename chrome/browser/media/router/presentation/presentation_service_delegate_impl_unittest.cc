@@ -405,10 +405,13 @@ TEST_F(PresentationServiceDelegateImplTest, NotifyDefaultPresentationChanged) {
 TEST_F(PresentationServiceDelegateImplTest, NotifyMediaRoutesChanged) {
   const int render_process_id = 100;
   const int render_frame_id = 200;
+  const GURL presentation_url3{kPresentationUrl3};
+  MediaSource media_source = MediaSource::ForPresentationUrl(presentation_url3);
   content::PresentationRequest request(
       content::GlobalRenderFrameHostId(render_process_id, render_frame_id),
-      {presentation_url1_}, frame_origin_);
-  MediaRoute media_route("differentRouteId", source1_, "mediaSinkId", "", true);
+      {presentation_url3}, frame_origin_);
+  MediaRoute media_route("differentRouteId", media_source, "mediaSinkId", "",
+                         true);
   std::unique_ptr<RouteRequestResult> result =
       RouteRequestResult::FromSuccess(media_route, kPresentationId);
   StrictMock<MockWebContentsPresentationObserver> observer(GetWebContents());

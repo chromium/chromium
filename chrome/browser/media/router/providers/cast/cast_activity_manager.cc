@@ -889,8 +889,10 @@ void CastActivityManager::HandleLaunchSessionResponse(
   std::string app_id = ChooseAppId(cast_source, params.sink);
   const auto channel_id = sink.cast_data().cast_channel_id;
   const auto destination_id = session->destination_id();
+  auto media_source = MediaSource(cast_source.source_id());
 
-  if (MediaSource(cast_source.source_id()).IsCastPresentationUrl()) {
+  if (media_source.IsCastPresentationUrl() ||
+      media_source.IsRemotePlaybackSource()) {
     presentation_connection = activity_it->second->AddClient(
         cast_source, params.origin, params.frame_tree_node_id);
     if (!client_id.empty()) {

@@ -155,6 +155,15 @@ class MediaSource {
   // Returns a shortened copy of the media source ID suitable for logging.
   std::string TruncateForLogging(size_t max_length) const;
 
+  // Append the "&tab_id=xxx" string to the presentation url. The `tab_id` is
+  // used for MediaDialogView to associate the local media session notification
+  // with a Reote Playback MediaRoute so that users can control Remote Playback
+  // session from GMC.
+  // TODO(crrev.com/c/1491212): remove the `tab_id` field from the MediaSource
+  // and use the MVC model in GMC to handle Remote Playback UI presentation
+  // logic.
+  void AppendTabIdToRemotePlaybackUrlQuery(int tab_id);
+
  private:
   MediaSource::Id id_;
   GURL url_;

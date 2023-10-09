@@ -153,6 +153,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
                            GetSessionMetadata);
   FRIEND_TEST_ALL_PREFIXES(MediaSessionNotificationItemTest,
                            GetMediaSessionActions);
+  FRIEND_TEST_ALL_PREFIXES(MediaSessionNotificationItemTest,
+                           ShouldShowNotification);
 
   media_session::MediaMetadata GetSessionMetadata() const;
   base::flat_set<media_session::mojom::MediaSessionAction>
