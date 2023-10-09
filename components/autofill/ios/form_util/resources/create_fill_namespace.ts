@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+
 /**
- * Namespace for this file. It depends on |__gCrWeb| having already been
- * injected. String 'fill' is used in |__gCrWeb['fill']| as it needs to be
+ * Namespace for this file. It depends on |gCrWeb| having already been
+ * injected. String 'fill' is used in |gCrWeb['fill']| as it needs to be
  * accessed in Objective-C code.
  */
-__gCrWeb.fill = {};
+gCrWeb.fill = {};
 
 // Store fill namespace object in a global __gCrWeb object referenced by a
 // string, so it does not get renamed by closure compiler during the
 // minification.
-__gCrWeb['fill'] = __gCrWeb.fill;
+gCrWeb['fill'] = gCrWeb.fill;
