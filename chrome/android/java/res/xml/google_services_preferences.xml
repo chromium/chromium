@@ -54,5 +54,5 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="contextual_search"
         android:title="@string/contextual_search_title"
-        android:fragment="org.chromium.chrome.browser.contextualsearch.ContextualSearchPreferenceFragment"/>
+        android:fragment="org.chromium.chrome.browser.contextualsearch.ContextualSearchSettingsFragment"/>
 </PreferenceScreen>

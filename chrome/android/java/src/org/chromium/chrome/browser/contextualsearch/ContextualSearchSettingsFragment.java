@@ -15,10 +15,10 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /**
- * Fragment to manage the Contextual Search preference in Chrome Settings, and to explain to the
- * user what Contextual Search (aka Touch to Search) actually does.
+ * Fragment to manage the Contextual Search Settings in Chrome Settings, and to explain to the user
+ * what Contextual Search (aka Touch to Search) actually does.
  */
-public class ContextualSearchPreferenceFragment extends ChromeBaseSettingsFragment {
+public class ContextualSearchSettingsFragment extends ChromeBaseSettingsFragment {
     static final String PREF_CONTEXTUAL_SEARCH_SWITCH = "contextual_search_switch";
     static final String PREF_WAS_FULLY_ENABLED_SWITCH = "see_better_results_switch";
 
@@ -39,28 +39,30 @@ public class ContextualSearchPreferenceFragment extends ChromeBaseSettingsFragme
         boolean isContextualSearchEnabled = !ContextualSearchPolicy.isContextualSearchDisabled();
         contextualSearchSwitch.setChecked(isContextualSearchEnabled);
 
-        contextualSearchSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
-            ContextualSearchPolicy.setContextualSearchState((boolean) newValue);
-            ContextualSearchUma.logMainPreferenceChange((boolean) newValue);
-            seeBetterResultsSwitch.setVisible((boolean) newValue);
-            return true;
-        });
+        contextualSearchSwitch.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    ContextualSearchPolicy.setContextualSearchState((boolean) newValue);
+                    ContextualSearchUma.logMainPreferenceChange((boolean) newValue);
+                    seeBetterResultsSwitch.setVisible((boolean) newValue);
+                    return true;
+                });
 
-        contextualSearchSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate(
-                getProfile()) {
-            @Override
-            public boolean isPreferenceControlledByPolicy(Preference preference) {
-                return ContextualSearchPolicy.isContextualSearchDisabledByPolicy();
-            }
-        });
+        contextualSearchSwitch.setManagedPreferenceDelegate(
+                new ChromeManagedPreferenceDelegate(getProfile()) {
+                    @Override
+                    public boolean isPreferenceControlledByPolicy(Preference preference) {
+                        return ContextualSearchPolicy.isContextualSearchDisabledByPolicy();
+                    }
+                });
 
         seeBetterResultsSwitch.setChecked(
                 ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
-        seeBetterResultsSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
-            ContextualSearchUma.logPrivacyOptInPreferenceChange((boolean) newValue);
-            ContextualSearchPolicy.setContextualSearchFullyOptedIn((boolean) newValue);
-            return true;
-        });
+        seeBetterResultsSwitch.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    ContextualSearchUma.logPrivacyOptInPreferenceChange((boolean) newValue);
+                    ContextualSearchPolicy.setContextualSearchFullyOptedIn((boolean) newValue);
+                    return true;
+                });
 
         seeBetterResultsSwitch.setVisible(isContextualSearchEnabled);
     }
