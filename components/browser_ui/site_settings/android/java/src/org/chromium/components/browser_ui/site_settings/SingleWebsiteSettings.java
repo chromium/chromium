@@ -843,6 +843,14 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         }
     }
 
+    String getEmbeddedPermissionSummary(String embeddedHost, @ContentSettingValues int setting) {
+        int id =
+                setting == ContentSettingValues.ALLOW
+                        ? R.string.website_settings_site_allowed
+                        : R.string.website_settings_site_blocked;
+        return getContext().getResources().getString(id, embeddedHost);
+    }
+
     private void setUpEmbeddedContentSettingPreferences() {
         PreferenceScreen preferenceScreen = getPreferenceScreen();
         BrowserContextHandle handle = getSiteSettingsDelegate().getBrowserContextHandle();
@@ -855,17 +863,27 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 preference.setTitle(ContentSettingsResources.getTitle(
                         info.getContentSettingType(), getSiteSettingsDelegate()));
                 var pattern = WebsiteAddress.create(info.getPrimaryPattern());
-                preference.setSummary(pattern.getHost());
+                preference.setSummary(
+                        getEmbeddedPermissionSummary(pattern.getHost(), info.getContentSetting()));
+
                 preference.setChecked(info.getContentSetting() == ContentSettingValues.ALLOW);
-                preference.setOnPreferenceChangeListener((pref, newValue) -> {
-                    info.setContentSetting(handle,
-                            (boolean) newValue ? ContentSettingValues.ALLOW
-                                               : ContentSettingValues.BLOCK);
-                    if (mWebsiteSettingsObserver != null) {
-                        mWebsiteSettingsObserver.onPermissionChanged();
-                    }
-                    return true;
-                });
+                preference.setOnPreferenceChangeListener(
+                        (pref, newValue) -> {
+                            @ContentSettingValues
+                            int contentSetting =
+                                    (boolean) newValue
+                                            ? ContentSettingValues.ALLOW
+                                            : ContentSettingValues.BLOCK;
+                            info.setContentSetting(handle, contentSetting);
+                            preference.setSummary(
+                                    getEmbeddedPermissionSummary(
+                                            pattern.getHost(), contentSetting));
+
+                            if (mWebsiteSettingsObserver != null) {
+                                mWebsiteSettingsObserver.onPermissionChanged();
+                            }
+                            return true;
+                        });
                 if (info.getContentSettingType() == mHighlightedPermission) {
                     preference.setBackgroundColor(mHighlightColor);
                 }

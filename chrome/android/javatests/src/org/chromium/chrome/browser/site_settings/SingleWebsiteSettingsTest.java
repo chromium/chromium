@@ -175,10 +175,10 @@ public class SingleWebsiteSettingsTest {
 
         // Open site settings.
         SettingsActivity activity = SiteSettingsTestUtils.startSingleWebsitePreferences(merged);
-        onView(withText("embedded.com")).check(matches(isDisplayed()));
+        onView(withText("embedded.com allowed")).check(matches(isDisplayed()));
 
         // Toggle the second permission.
-        onView(withText("embedded2.com")).check(matches(isDisplayed())).perform(click());
+        onView(withText("embedded2.com blocked")).check(matches(isDisplayed())).perform(click());
         assertEquals(ContentSettingValues.ALLOW, getStorageAccessSetting(type, embedded2, example));
 
         // Reset permission.
