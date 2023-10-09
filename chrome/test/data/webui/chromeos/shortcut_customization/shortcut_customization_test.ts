@@ -990,20 +990,35 @@ suite('shortcutCustomizationAppTest', function() {
       },
     };
 
-    // Now simulate an update.
-    provider.setFakeAcceleratorsUpdated([testUpdatedAcceleratorConfig]);
-    provider.setFakeHasLauncherButton(true);
-    await triggerOnAcceleratorUpdated();
-    await provider.getAcceleratorsUpdatedPromiseForTesting();
+    const simulateAcceleratorUpdate = async (
+        acceleratorUpdateInProgress: boolean, expectedLength: number) => {
+      // Set acceleratorUpdateInProgress.
+      page!.setAcceleratorUpdateInProgressForTesting(
+          acceleratorUpdateInProgress);
+      // Simulate an update.
+      provider.setFakeAcceleratorsUpdated([testUpdatedAcceleratorConfig]);
+      provider.setFakeHasLauncherButton(true);
+      await triggerOnAcceleratorUpdated();
+      await provider.getAcceleratorsUpdatedPromiseForTesting();
 
-    // Dialog should be still open.
-    editDialog = getPage().shadowRoot!.querySelector('#editDialog');
-    assertTrue(!!editDialog);
-    // Verify the number of dialog accelerators has increased to 2.
-    const updatedDialogAccels =
-        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
-            'accelerator-edit-view');
-    assertEquals(2, updatedDialogAccels!.length);
+      // Dialog should be still open.
+      editDialog = getPage().shadowRoot!.querySelector('#editDialog');
+      assertTrue(!!editDialog);
+      // Verify the number of dialog accelerators is expected.
+      const updatedDialogAccels =
+          editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
+              'accelerator-edit-view');
+      assertEquals(expectedLength, updatedDialogAccels.length);
+    };
+
+    // Set acceleratorUpdateInProgress to true, dialog should not be updated.
+    await simulateAcceleratorUpdate(
+        /*acceleratorUpdateInProgress=*/ true, /*expectedLength*/ 1);
+
+    // Set acceleratorUpdateInProgress to true, dialog should be updated and the
+    // number of dialog accelerators should be increased to 2.
+    await simulateAcceleratorUpdate(
+        /*acceleratorUpdateInProgress=*/ false, /*expectedLength*/ 2);
   });
 
   test('BottomNavContentPresentInSideNav', async () => {

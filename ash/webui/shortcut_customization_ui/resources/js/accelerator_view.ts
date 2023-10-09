@@ -337,6 +337,11 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
 
   private async processPendingAccelerator(
       pendingAccelInfo: StandardAcceleratorInfo): Promise<void> {
+    // Dispatch an event indicating that accelerator update is in progress.
+    this.dispatchEvent(new CustomEvent('accelerator-update-in-progress', {
+      bubbles: true,
+      composed: true,
+    }));
     // Reset status state when processing the new accelerator.
     this.statusMessage = '';
     this.hasError = false;
