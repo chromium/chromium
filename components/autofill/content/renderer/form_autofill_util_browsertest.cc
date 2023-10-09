@@ -648,12 +648,12 @@ TEST_F(FormAutofillUtilsTest, FindFormByUniqueId) {
   WebVector<WebFormElement> forms = doc.Forms();
 
   for (const auto& form : forms)
-    EXPECT_EQ(form, FindFormByUniqueRendererId(doc, GetFormRendererId(form)));
+    EXPECT_EQ(form, FindFormByRendererId(doc, GetFormRendererId(form)));
 
   // Expect null form element for non-existing form id.
   FormRendererId non_existing_form_id(GetFormRendererId(forms[0]).value() +
                                       1000);
-  EXPECT_TRUE(FindFormByUniqueRendererId(doc, non_existing_form_id).IsNull());
+  EXPECT_TRUE(FindFormByRendererId(doc, non_existing_form_id).IsNull());
 }
 
 // Used in ParameterizedFindFormControlByRendererIdTest.
@@ -663,13 +663,13 @@ struct FindFormControlTestParam {
   bool expectation;
 };
 
-// Tests FindFormControlByUniqueRendererId().
+// Tests FindFormControlByRendererId().
 class ParameterizedFindFormControlByRendererIdTest
     : public FormAutofillUtilsTest,
       public testing::WithParamInterface<FindFormControlTestParam> {};
 
 TEST_P(ParameterizedFindFormControlByRendererIdTest,
-       FindFormControlByUniqueRendererId) {
+       FindFormControlByRendererId) {
   LoadHTML(R"(
     <body>
       <input id="nonexistentField">
@@ -702,8 +702,8 @@ TEST_P(ParameterizedFindFormControlByRendererIdTest,
 
   EXPECT_EQ(
       GetParam().expectation,
-      queried_field == FindFormControlByUniqueRendererId(
-                           doc, queried_field_id, form_to_be_searched_id));
+      queried_field == FindFormControlByRendererId(doc, queried_field_id,
+                                                   form_to_be_searched_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -732,7 +732,7 @@ TEST_F(FormAutofillUtilsTest, FindFormControlElementsByUniqueId) {
                                                non_existing_field_id,
                                                GetFieldRendererId(input1)};
 
-  auto elements = FindFormControlElementsByUniqueRendererId(doc, renderer_ids);
+  auto elements = FindFormControlElementsByRendererId(doc, renderer_ids);
 
   ASSERT_EQ(3u, elements.size());
   EXPECT_EQ(input3, elements[0]);

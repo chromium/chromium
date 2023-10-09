@@ -615,7 +615,7 @@ void AutofillAgent::TriggerRefillIfNeeded(const FormData& form) {
   if (!unsafe_render_frame()) {
     return;
   }
-  WebFormElement updated_form_element = form_util::FindFormByUniqueRendererId(
+  WebFormElement updated_form_element = form_util::FindFormByRendererId(
       unsafe_render_frame()->GetWebFrame()->GetDocument(),
       form.unique_renderer_id);
   FormData updated_form_data;
@@ -657,7 +657,7 @@ void AutofillAgent::ApplyAutofillAction(
       return;
     }
     WebDocument document = unsafe_render_frame()->GetWebFrame()->GetDocument();
-    last_queried_element_ = form_util::FindFormControlByUniqueRendererId(
+    last_queried_element_ = form_util::FindFormControlByRendererId(
         document, form.fields.front().unique_renderer_id);
   }
 
@@ -754,7 +754,7 @@ void AutofillAgent::TriggerSuggestions(
   }
   WebDocument document = render_frame->GetWebFrame()->GetDocument();
   last_queried_element_ =
-      form_util::FindFormControlByUniqueRendererId(document, field_id);
+      form_util::FindFormControlByRendererId(document, field_id);
   if (!last_queried_element_.IsNull()) {
     ShowSuggestions(last_queried_element_, trigger_source);
   }
@@ -772,7 +772,7 @@ void AutofillAgent::FillFieldWithValue(FieldRendererId field_id,
     DoFillFieldWithValue(value, last_queried_element_,
                          WebAutofillState::kAutofilled);
   } else if (WebElement content_editable =
-                 form_util::FindContentEditableByUniqueRendererId(field_id);
+                 form_util::FindContentEditableByRendererId(field_id);
              !content_editable.IsNull()) {
     // TODO(crbug.com/1490373): Fill the contenteditable.
     DVLOG(1) << "Filling contenteditable with value '" << value
@@ -1404,7 +1404,7 @@ void AutofillAgent::OnProvisionallySaveForm(
             formless_elements_user_edited_,
             [&doc](const FieldRendererId field_id) {
               WebFormControlElement field =
-                  form_util::FindFormControlByUniqueRendererId(
+                  form_util::FindFormControlByRendererId(
                       doc, field_id, /*form_to_be_searched =*/FormRendererId());
               return !field.IsNull() &&
                      form_util::IsWebElementFocusableForAutofill(field);

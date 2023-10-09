@@ -440,16 +440,15 @@ bool InferLabelForElementForTesting(const blink::WebFormControlElement& element,
 
 // Returns the form element by unique renderer id. Returns the null element if
 // there is no form with the |form_renderer_id|.
-blink::WebFormElement FindFormByUniqueRendererId(
-    const blink::WebDocument& doc,
-    FormRendererId form_renderer_id);
+blink::WebFormElement FindFormByRendererId(const blink::WebDocument& doc,
+                                           FormRendererId form_renderer_id);
 
 // Returns the form control element by unique renderer id.
 // |form_to_be_searched| could be used as an optimization to only search for
 // elements in it, but doesn't guarantee that the returned element will belong
 // to it. Returns the null element if there is no element with the
 // |queried_form_control| renderer id.
-blink::WebFormControlElement FindFormControlByUniqueRendererId(
+blink::WebFormControlElement FindFormControlByRendererId(
     const blink::WebDocument& doc,
     FieldRendererId queried_form_control,
     absl::optional<FormRendererId> form_to_be_searched = absl::nullopt);
@@ -463,8 +462,7 @@ blink::WebFormControlElement FindFormControlByUniqueRendererId(
 // the i-th element of the result corresponds to the i-th element of
 // |queried_form_controls|. The call of this function might be time
 // expensive, because it retrieves all DOM elements.
-std::vector<blink::WebFormControlElement>
-FindFormControlElementsByUniqueRendererId(
+std::vector<blink::WebFormControlElement> FindFormControlElementsByRendererId(
     const blink::WebDocument& doc,
     const std::vector<FieldRendererId>& queried_form_controls);
 
@@ -474,13 +472,12 @@ FindFormControlElementsByUniqueRendererId(
 // |form_to_be_searched| could be used as an optimization to only search for
 // elements in it, but doesn't guarantee that the returned element will belong
 // to it.
-std::vector<blink::WebFormControlElement>
-FindFormControlElementsByUniqueRendererId(
+std::vector<blink::WebFormControlElement> FindFormControlElementsByRendererId(
     const blink::WebDocument& doc,
     FormRendererId form_renderer_id,
     const std::vector<FieldRendererId>& queried_form_controls);
 
-blink::WebElement FindContentEditableByUniqueRendererId(
+blink::WebElement FindContentEditableByRendererId(
     FieldRendererId field_renderer_id);
 
 std::string GetAutocompleteAttribute(const blink::WebElement& element);

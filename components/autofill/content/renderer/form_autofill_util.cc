@@ -2777,8 +2777,8 @@ bool InferLabelForElementForTesting(const WebFormControlElement& element,
   return InferLabelForElement(element, label, label_source);
 }
 
-WebFormElement FindFormByUniqueRendererId(const WebDocument& doc,
-                                          FormRendererId form_renderer_id) {
+WebFormElement FindFormByRendererId(const WebDocument& doc,
+                                    FormRendererId form_renderer_id) {
   if (base::FeatureList::IsEnabled(
           blink::features::kAutofillUseDomNodeIdForRendererId)) {
     if (!form_renderer_id) {
@@ -2799,7 +2799,7 @@ WebFormElement FindFormByUniqueRendererId(const WebDocument& doc,
   return WebFormElement();
 }
 
-WebFormControlElement FindFormControlByUniqueRendererId(
+WebFormControlElement FindFormControlByRendererId(
     const WebDocument& doc,
     FieldRendererId queried_form_control,
     absl::optional<FormRendererId> form_to_be_searched /*= absl::nullopt*/) {
@@ -2849,7 +2849,7 @@ WebFormControlElement FindFormControlByUniqueRendererId(
   return WebFormControlElement();
 }
 
-std::vector<WebFormControlElement> FindFormControlElementsByUniqueRendererId(
+std::vector<WebFormControlElement> FindFormControlElementsByRendererId(
     const WebDocument& doc,
     const std::vector<FieldRendererId>& queried_form_controls) {
   if (base::FeatureList::IsEnabled(
@@ -2858,7 +2858,7 @@ std::vector<WebFormControlElement> FindFormControlElementsByUniqueRendererId(
     control_elements.reserve(queried_form_controls.size());
     for (FieldRendererId queried_form_control : queried_form_controls) {
       control_elements.push_back(
-          FindFormControlByUniqueRendererId(doc, queried_form_control));
+          FindFormControlByRendererId(doc, queried_form_control));
     }
     return control_elements;
   }
@@ -2881,17 +2881,16 @@ std::vector<WebFormControlElement> FindFormControlElementsByUniqueRendererId(
   return result;
 }
 
-std::vector<WebFormControlElement> FindFormControlElementsByUniqueRendererId(
+std::vector<WebFormControlElement> FindFormControlElementsByRendererId(
     const WebDocument& doc,
     FormRendererId form_renderer_id,
     const std::vector<FieldRendererId>& queried_form_controls) {
   if (base::FeatureList::IsEnabled(
           blink::features::kAutofillUseDomNodeIdForRendererId)) {
-    return FindFormControlElementsByUniqueRendererId(doc,
-                                                     queried_form_controls);
+    return FindFormControlElementsByRendererId(doc, queried_form_controls);
   }
   std::vector<WebFormControlElement> result(queried_form_controls.size());
-  WebFormElement form = FindFormByUniqueRendererId(doc, form_renderer_id);
+  WebFormElement form = FindFormByRendererId(doc, form_renderer_id);
   if (form.IsNull())
     return result;
 
@@ -2906,8 +2905,7 @@ std::vector<WebFormControlElement> FindFormControlElementsByUniqueRendererId(
   return result;
 }
 
-WebElement FindContentEditableByUniqueRendererId(
-    FieldRendererId field_renderer_id) {
+WebElement FindContentEditableByRendererId(FieldRendererId field_renderer_id) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kAutofillUseDomNodeIdForRendererId)) {
     return WebElement();
