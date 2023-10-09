@@ -168,7 +168,7 @@ void BrowserStatusMonitor::UpdateAppItemState(content::WebContents* contents,
   // It is possible to come here from Browser::SwapTabContent where the contents
   // cannot be associated with a browser. A removal however should be properly
   // processed.
-  Browser* browser = chrome::FindBrowserWithWebContents(contents);
+  Browser* browser = chrome::FindBrowserWithTab(contents);
   if (remove || (browser && multi_user_util::IsProfileFromActiveUser(
                                 browser->profile()))) {
     shelf_controller_->UpdateAppState(contents, remove);
@@ -341,7 +341,7 @@ void BrowserStatusMonitor::OnActiveTabChanged(
     Browser* browser = nullptr;
     // Use |new_contents|. |old_contents| could be nullptr.
     DCHECK(new_contents);
-    browser = chrome::FindBrowserWithWebContents(new_contents);
+    browser = chrome::FindBrowserWithTab(new_contents);
 
     // Update immediately on a tab change.
     if (old_contents &&
@@ -368,7 +368,7 @@ void BrowserStatusMonitor::OnTabReplaced(TabStripModel* tab_strip_model,
                                          content::WebContents* new_contents) {
   if (!web_app::IsWebAppsCrosapiEnabled()) {
     DCHECK(old_contents && new_contents);
-    Browser* browser = chrome::FindBrowserWithWebContents(new_contents);
+    Browser* browser = chrome::FindBrowserWithTab(new_contents);
 
     UpdateAppItemState(old_contents, true /*remove*/);
     RemoveWebContentsObserver(old_contents);
@@ -402,7 +402,7 @@ void BrowserStatusMonitor::OnTabInserted(TabStripModel* tab_strip_model,
     // (done by the web contents observer added by AddWebContentsObserver()).
     if (tab_strip_model->GetActiveWebContents() == contents &&
         !contents->GetController().GetVisibleEntry()->IsInitialEntry()) {
-      Browser* browser = chrome::FindBrowserWithWebContents(contents);
+      Browser* browser = chrome::FindBrowserWithTab(contents);
       SetShelfIDForBrowserWindowContents(browser, contents);
     }
 
@@ -436,7 +436,7 @@ void BrowserStatusMonitor::OnTabNavigationFinished(
   UpdateBrowserItemState();
 
   // Navigating may change the ShelfID associated with the WebContents.
-  Browser* browser = chrome::FindBrowserWithWebContents(contents);
+  Browser* browser = chrome::FindBrowserWithTab(contents);
   if (browser &&
       browser->tab_strip_model()->GetActiveWebContents() == contents) {
     SetShelfIDForBrowserWindowContents(browser, contents);

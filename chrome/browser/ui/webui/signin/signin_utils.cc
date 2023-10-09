@@ -37,8 +37,7 @@ extensions::WebViewGuest* GetAuthWebViewGuest(
 }
 
 Browser* GetDesktopBrowser(content::WebUI* web_ui) {
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(web_ui->GetWebContents());
   if (!browser)
     browser = chrome::FindLastActiveWithProfile(Profile::FromWebUI(web_ui));
   return browser;

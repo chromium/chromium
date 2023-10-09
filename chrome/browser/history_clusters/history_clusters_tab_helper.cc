@@ -75,7 +75,7 @@ bool IsPageInTabGroup(content::WebContents* contents) {
   DCHECK(contents);
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (Browser* browser = chrome::FindBrowserWithWebContents(contents)) {
+  if (Browser* browser = chrome::FindBrowserWithTab(contents)) {
     int tab_index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
     if (tab_index != TabStripModel::kNoTab &&
         browser->tab_strip_model()->GetTabGroupForTab(tab_index).has_value()) {

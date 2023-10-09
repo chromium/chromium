@@ -131,9 +131,9 @@ ExtensionViewHostFactory::CreateSidePanelHost(
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionSidePanelIntegration));
 
-  Profile* profile =
-      browser ? browser->profile()
-              : chrome::FindBrowserWithWebContents(web_contents)->profile();
+  Profile* profile = browser
+                         ? browser->profile()
+                         : chrome::FindBrowserWithTab(web_contents)->profile();
   return CreateViewHost(url, profile, browser, web_contents,
                         mojom::ViewType::kExtensionSidePanel);
 }

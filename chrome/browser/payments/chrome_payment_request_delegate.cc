@@ -205,7 +205,7 @@ bool ChromePaymentRequestDelegate::IsBrowserWindowActive() const {
   if (!FrameSupportsPayments(rfh))
     return false;
 
-  Browser* browser = chrome::FindBrowserWithWebContents(
+  Browser* browser = chrome::FindBrowserWithTab(
       content::WebContents::FromRenderFrameHost(rfh));
   return browser && browser->window() && browser->window()->IsActive();
 }

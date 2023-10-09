@@ -75,7 +75,7 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
     // find the associated browser.
     web_contents = GetSenderWebContents();
     if (web_contents) {
-      browser = chrome::FindBrowserWithWebContents(web_contents);
+      browser = chrome::FindBrowserWithTab(web_contents);
     }
     // Otherwise (e.g. when the extension calls the API from the background
     // page or service worker), fall back to the last active browser.

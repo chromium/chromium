@@ -492,7 +492,7 @@ void ChromeAutofillClient::ShowAutofillSettings(PopupType popup_type) {
       NOTREACHED();
   }
 #else
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (browser) {
     switch (popup_type) {
       case PopupType::kCreditCards:

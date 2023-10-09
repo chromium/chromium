@@ -396,9 +396,8 @@ void SaveCardBubbleControllerImpl::OnManageCardsClicked() {
 }
 
 void SaveCardBubbleControllerImpl::ShowPaymentsSettingsPage() {
-  chrome::ShowSettingsSubPage(
-      chrome::FindBrowserWithWebContents(web_contents()),
-      chrome::kPaymentsSubPage);
+  chrome::ShowSettingsSubPage(chrome::FindBrowserWithTab(web_contents()),
+                              chrome::kPaymentsSubPage);
 }
 
 void SaveCardBubbleControllerImpl::OnBubbleClosed(
@@ -578,7 +577,7 @@ PageActionIconType SaveCardBubbleControllerImpl::GetPageActionIconType() {
 }
 
 void SaveCardBubbleControllerImpl::DoShowBubble() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   set_bubble_view(
       browser->window()->GetAutofillBubbleHandler()->ShowSaveCreditCardBubble(
           web_contents(), this, is_reshow_));

@@ -83,10 +83,16 @@ Browser* FindBrowserWithActiveWindow();
 // browser. Returns nullptr if no such browser currently exists. `web_contents`
 // must not be nullptr.
 //
+// NOTE: Web App windows, Chrome App windows, popup windows, and other similar
+// windows are implemented as browsers containing one tab, even though the tab
+// strip is not displayed and the tab takes up the entire area of the window.
+// Because of this implementation detail, this function will return such a
+// browser if called for its contents.
+//
 // WARNING: This only will find a browser for which the specified contents is a
 // tab. Other uses of WebContents within the browser will not cause the browser
 // to be found via this method.
-Browser* FindBrowserWithWebContents(const content::WebContents* web_contents);
+Browser* FindBrowserWithTab(const content::WebContents* web_contents);
 
 // Returns the browser containing the group with ID `group` within the given
 // `profile`. If the specified profile is nullptr, returns any browser

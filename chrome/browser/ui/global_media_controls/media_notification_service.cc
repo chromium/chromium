@@ -74,7 +74,7 @@ void CancelRequest(
 // focused.
 bool IsWebContentsFocused(content::WebContents* web_contents) {
   DCHECK(web_contents);
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     return false;
   }

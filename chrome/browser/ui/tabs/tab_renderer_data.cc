@@ -49,7 +49,7 @@ TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
   data.favicon = tab_ui_helper->GetFavicon();
 
   // Tabbed web apps should use the app icon on the home tab.
-  Browser* app_browser = chrome::FindBrowserWithWebContents(contents);
+  Browser* app_browser = chrome::FindBrowserWithTab(contents);
 
   if (app_browser && app_browser->app_controller() &&
       app_browser->app_controller()->ShouldShowAppIconOnTab(index)) {

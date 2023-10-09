@@ -64,8 +64,7 @@ class SessionRestoreInteractiveTest : public InProcessBrowserTest {
     // Create a new window, which should trigger session restore.
     chrome::NewEmptyWindow(profile);
 
-    Browser* new_browser =
-        chrome::FindBrowserWithWebContents(tab_waiter.Wait());
+    Browser* new_browser = chrome::FindBrowserWithTab(tab_waiter.Wait());
 
     restore_observer.Wait();
     WaitForTabsToLoad(new_browser);

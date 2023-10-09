@@ -3969,7 +3969,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
           content::WebContents::CreateParams(browser()->profile()));
 
   // Verify that there is no browser.
-  ASSERT_FALSE(chrome::FindBrowserWithWebContents(new_web_contents.get()));
+  ASSERT_FALSE(chrome::FindBrowserWithTab(new_web_contents.get()));
 
   // Create ChromePasswordManagerClient for newly created web_contents.
   autofill::ChromeAutofillClient::CreateForWebContents(new_web_contents.get());

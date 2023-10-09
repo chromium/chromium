@@ -1090,7 +1090,7 @@ BrowserWindow* BrowserWindow::FindBrowserWindowWithWebContents(
     return BrowserView::GetBrowserViewForNativeWindow(
         widget->GetNativeWindow());
   }
-  const auto* browser = chrome::FindBrowserWithWebContents(web_contents);
+  const auto* browser = chrome::FindBrowserWithTab(web_contents);
   return browser ? browser->window() : nullptr;
 }
 
@@ -4975,7 +4975,7 @@ void BrowserView::ActivateAppModalDialog() const {
     return;
 
   Browser* modal_browser =
-      chrome::FindBrowserWithWebContents(active_dialog->web_contents());
+      chrome::FindBrowserWithTab(active_dialog->web_contents());
   if (modal_browser && (browser_.get() != modal_browser)) {
     modal_browser->window()->FlashFrame(true);
     modal_browser->window()->Activate();

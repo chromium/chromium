@@ -889,8 +889,7 @@ void AppLauncherHandler::LaunchApp(
     // To give a more "launchy" experience when using the NTP launcher, we close
     // it automatically. However, if the chrome://apps page is the LAST page in
     // the browser window, then we don't close it.
-    Browser* browser =
-        chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
+    Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
     base::WeakPtr<Browser> browser_ptr;
     WebContents* old_contents = nullptr;
     base::WeakPtr<WebContents> old_contents_ptr;
@@ -1016,8 +1015,7 @@ void AppLauncherHandler::HandleUninstallApp(const base::Value::List& args) {
           },
           weak_ptr_factory_.GetWeakPtr());
 
-      Browser* browser =
-          chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
+      Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
       web_app_provider_->ui_manager().PresentUserUninstallDialog(
           extension_id_prompting_, webapps::WebappUninstallSource::kAppsPage,
           browser->window(), std::move(uninstall_success_callback));
@@ -1064,8 +1062,7 @@ void AppLauncherHandler::HandleCreateAppShortcut(
   const std::string& app_id = args[0].GetString();
   if (web_app_provider_->registrar_unsafe().IsInstalled(app_id) &&
       !IsYoutubeExtension(app_id)) {
-    Browser* browser =
-        chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
+    Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
     chrome::ShowCreateChromeAppShortcutsDialog(
         browser->window()->GetNativeWindow(), browser->profile(), app_id,
         base::BindOnce(
@@ -1086,8 +1083,7 @@ void AppLauncherHandler::HandleCreateAppShortcut(
   if (!extension)
     return;
 
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   chrome::ShowCreateChromeAppShortcutsDialog(
       browser->window()->GetNativeWindow(), browser->profile(), extension,
       base::IgnoreArgs<bool>(std::move(done)));
@@ -1108,8 +1104,8 @@ void AppLauncherHandler::HandleShowAppInfo(const base::Value::List& args) {
     // This assumes the AppLauncherHandler is only used by chrome://apps page.
     // It needs to be updated if it's also used by other surfaces.
     chrome::ShowWebAppSettings(
-        chrome::FindBrowserWithWebContents(web_ui()->GetWebContents()),
-        extension_id, web_app::AppSettingsPageEntryPoint::kChromeAppsPage);
+        chrome::FindBrowserWithTab(web_ui()->GetWebContents()), extension_id,
+        web_app::AppSettingsPageEntryPoint::kChromeAppsPage);
     return;
   }
 
@@ -1359,8 +1355,7 @@ void AppLauncherHandler::ExtensionEnableFlowAborted(bool user_initiated) {
 
 extensions::ExtensionUninstallDialog*
 AppLauncherHandler::CreateExtensionUninstallDialog() {
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   extension_uninstall_dialog_ = extensions::ExtensionUninstallDialog::Create(
       extension_service_->profile(), browser->window()->GetNativeWindow(),
       this);

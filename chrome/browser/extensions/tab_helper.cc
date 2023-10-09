@@ -359,7 +359,7 @@ void TabHelper::DidFinishNavigation(
   DisableBackForwardCacheIfNecessary(enabled_extensions, context,
                                      navigation_handle);
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (browser && (browser->is_type_app() || browser->is_type_app_popup())) {
     const Extension* extension = registry->GetInstalledExtension(
         web_app::GetAppIdFromApplicationName(browser->app_name()));

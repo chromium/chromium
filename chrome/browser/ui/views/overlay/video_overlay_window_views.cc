@@ -278,8 +278,7 @@ std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
 
 #if BUILDFLAG(IS_WIN)
   std::wstring app_user_model_id;
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(controller->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(controller->GetWebContents());
   if (browser) {
     const base::FilePath& profile_path = browser->profile()->GetPath();
     // Set the window app id to GetAppUserModelIdForApp if the original window

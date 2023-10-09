@@ -22,7 +22,7 @@ std::string GetTwaPackageName(content::RenderFrameHost* render_frame_host) {
   if (!web_contents)
     return std::string();
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!web_app::AppBrowserController::IsWebApp(browser)) {
     return std::string();
   }

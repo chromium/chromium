@@ -103,7 +103,7 @@ void SendTabToSelfPromoBubbleView::AddedToWidget() {
 
 void SendTabToSelfPromoBubbleView::OnSignInButtonClicked() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  chrome::FindBrowserWithWebContents(web_contents())
+  chrome::FindBrowserWithTab(web_contents())
       ->signin_view_controller()
       ->ShowDiceAddAccountTab(
           signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO,

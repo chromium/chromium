@@ -297,7 +297,7 @@ void FileSystemAccessUsageBubbleView::ShowBubble(
   base::RecordAction(
       base::UserMetricsAction("NativeFileSystemAPI.OpenedBubble"));
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser)
     return;
 
@@ -368,7 +368,7 @@ FileSystemAccessUsageBubbleView::~FileSystemAccessUsageBubbleView() = default;
 
 std::u16string FileSystemAccessUsageBubbleView::GetAccessibleWindowTitle()
     const {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   // Don't crash if the web_contents is destroyed/unloaded.
   if (!browser)
     return {};

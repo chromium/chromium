@@ -29,9 +29,9 @@ DiceTabHelper::GetEnableSyncCallbackForBrowser() {
          signin_metrics::Reason reason, content::WebContents* web_contents,
          const CoreAccountInfo& account_info) {
         DCHECK(profile);
-        Browser* browser =
-            web_contents ? chrome::FindBrowserWithWebContents(web_contents)
-                         : chrome::FindBrowserWithProfile(profile);
+        Browser* browser = web_contents
+                               ? chrome::FindBrowserWithTab(web_contents)
+                               : chrome::FindBrowserWithProfile(profile);
         if (!browser) {
           return;
         }
@@ -53,9 +53,8 @@ DiceTabHelper::GetShowSigninErrorCallbackForBrowser() {
     if (!profile) {
       return;
     }
-    Browser* browser = web_contents
-                           ? chrome::FindBrowserWithWebContents(web_contents)
-                           : chrome::FindBrowserWithProfile(profile);
+    Browser* browser = web_contents ? chrome::FindBrowserWithTab(web_contents)
+                                    : chrome::FindBrowserWithProfile(profile);
     if (!browser) {
       return;
     }

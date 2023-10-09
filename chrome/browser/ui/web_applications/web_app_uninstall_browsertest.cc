@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest,
   content::WebContents* const restored_web_contents =
       new_contents_observer.GetWebContents();
   Browser* const restored_browser =
-      chrome::FindBrowserWithWebContents(restored_web_contents);
+      chrome::FindBrowserWithTab(restored_web_contents);
 
   EXPECT_FALSE(restored_browser->is_type_app());
   EXPECT_TRUE(restored_browser->is_type_normal());

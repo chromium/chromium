@@ -701,7 +701,7 @@ ExtensionFunction::ResponseAction TerminalPrivateOpenWindowFunction::Run() {
   }
 
   if (as_tab) {
-    auto* browser = chrome::FindBrowserWithWebContents(GetSenderWebContents());
+    auto* browser = chrome::FindBrowserWithTab(GetSenderWebContents());
     if (browser) {
       chrome::AddTabAt(browser, GURL(*url), -1, true);
     } else {

@@ -14,7 +14,7 @@
 namespace search {
 
 OmniboxView* GetOmniboxView(content::WebContents* web_contents) {
-  return GetOmniboxView(chrome::FindBrowserWithWebContents(web_contents));
+  return GetOmniboxView(chrome::FindBrowserWithTab(web_contents));
 }
 
 OmniboxView* GetOmniboxView(Browser* browser) {

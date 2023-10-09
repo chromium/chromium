@@ -342,8 +342,8 @@ void HatsService::LaunchSurveyForWebContents(
     const SurveyStringData& product_specific_string_data) {
   if (ShouldShowSurvey(trigger) && web_contents &&
       web_contents->GetVisibility() == content::Visibility::VISIBLE) {
-    LaunchSurveyForBrowser(chrome::FindBrowserWithWebContents(web_contents),
-                           trigger, base::DoNothing(), base::DoNothing(),
+    LaunchSurveyForBrowser(chrome::FindBrowserWithTab(web_contents), trigger,
+                           base::DoNothing(), base::DoNothing(),
                            product_specific_bits_data,
                            product_specific_string_data);
   }

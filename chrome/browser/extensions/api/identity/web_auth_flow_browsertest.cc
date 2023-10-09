@@ -461,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
 
   navigation_observer.Wait();
 
-  Browser* popup_browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* popup_browser = chrome::FindBrowserWithTab(web_contents());
   EXPECT_EQ(popup_browser->type(), Browser::Type::TYPE_POPUP);
   EXPECT_NE(browser(), popup_browser);
   TabStripModel* tabs = popup_browser->tab_strip_model();
@@ -510,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(
       web_auth_flow()->GetInfoBarDelegateForTesting();
   ASSERT_TRUE(auth_info_bar);
 
-  Browser* popup_browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* popup_browser = chrome::FindBrowserWithTab(web_contents());
   EXPECT_EQ(popup_browser->type(), Browser::Type::TYPE_POPUP);
   EXPECT_NE(browser(), popup_browser);
 
@@ -534,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(web_contents()->GetURL(), auth_url);
   // Popup window is still active.
   EXPECT_TRUE(popup_browser);
-  EXPECT_EQ(chrome::FindBrowserWithWebContents(web_contents()), popup_browser);
+  EXPECT_EQ(chrome::FindBrowserWithTab(web_contents()), popup_browser);
   // Infobar should not be closed on navigation.
   EXPECT_TRUE(auth_info_bar);
 }
@@ -640,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
 
   navigation_observer.Wait();
 
-  Browser* popup_browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* popup_browser = chrome::FindBrowserWithTab(web_contents());
   TabStripModel* tabs = popup_browser->tab_strip_model();
   EXPECT_NE(browser(), popup_browser);
   EXPECT_EQ(tabs->GetActiveWebContents()->GetLastCommittedURL(), auth_url);
@@ -669,8 +669,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
   EXPECT_EQ(chrome::GetTotalBrowserCount(), initial_browser_count + 1);
 
   // Retrieve the browser used in the WebAuthFlow, the popup window.
-  Browser* popup_window_browser =
-      chrome::FindBrowserWithWebContents(web_contents());
+  Browser* popup_window_browser = chrome::FindBrowserWithTab(web_contents());
   EXPECT_NE(popup_window_browser, browser());
 
   TabStripModel* popup_tabs = popup_window_browser->tab_strip_model();

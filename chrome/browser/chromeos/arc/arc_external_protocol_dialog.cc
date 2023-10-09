@@ -109,7 +109,7 @@ bool MaybeAddDevicesAndShowPicker(
     bool show_remember_selection,
     IntentPickerResponseWithDevices callback) {
   Browser* browser =
-      web_contents ? chrome::FindBrowserWithWebContents(web_contents) : nullptr;
+      web_contents ? chrome::FindBrowserWithTab(web_contents) : nullptr;
   if (!browser) {
     return false;
   }
@@ -615,8 +615,7 @@ void OnAppIconsReceived(
   }
 
   Browser* browser =
-      web_contents ? chrome::FindBrowserWithWebContents(web_contents.get())
-                   : nullptr;
+      web_contents ? chrome::FindBrowserWithTab(web_contents.get()) : nullptr;
 
   if (!browser) {
     return std::move(handled_cb).Run(false);

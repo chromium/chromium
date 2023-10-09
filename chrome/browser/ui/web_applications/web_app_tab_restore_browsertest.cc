@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest,
   content::WebContents* const restored_web_contents =
       new_contents_observer.GetWebContents();
   Browser* const restored_browser =
-      chrome::FindBrowserWithWebContents(restored_web_contents);
+      chrome::FindBrowserWithTab(restored_web_contents);
   EXPECT_EQ(restored_browser->override_bounds(), bounds);
 }
 
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest, RestoreAppWindow) {
   content::WebContents* const restored_web_contents =
       new_contents_observer.GetWebContents();
   Browser* const restored_browser =
-      chrome::FindBrowserWithWebContents(restored_web_contents);
+      chrome::FindBrowserWithTab(restored_web_contents);
 
   EXPECT_TRUE(restored_browser->is_type_app());
 }
@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest, RestoreAppPopupWindow) {
   content::WebContents* const restored_web_contents =
       new_contents_observer.GetWebContents();
   Browser* const restored_browser =
-      chrome::FindBrowserWithWebContents(restored_web_contents);
+      chrome::FindBrowserWithTab(restored_web_contents);
 
   EXPECT_TRUE(restored_browser->is_type_app_popup());
 }

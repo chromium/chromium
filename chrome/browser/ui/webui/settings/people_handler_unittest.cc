@@ -1590,8 +1590,8 @@ TEST_F(PeopleHandlerSignoutTest, SignoutWithSyncOn) {
   EXPECT_NE(handler()->web_ui(), nullptr);
   EXPECT_NE(nullptr, handler()->web_ui()->GetWebContents());
 
-  EXPECT_TRUE(chrome::FindBrowserWithWebContents(
-      handler()->web_ui()->GetWebContents()));
+  EXPECT_TRUE(
+      chrome::FindBrowserWithTab(handler()->web_ui()->GetWebContents()));
 
   base::Value::List args;
   args.Append(/*delete_profile=*/false);

@@ -1507,7 +1507,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       std::vector<int> indices = GetIndicesForCommand(context_index);
       DCHECK(indices.size() == 1);
       Browser* browser =
-          chrome::FindBrowserWithWebContents(GetWebContentsAt(indices.front()));
+          chrome::FindBrowserWithTab(GetWebContentsAt(indices.front()));
       UserNotesController::InitiateNoteCreationForTab(browser, indices.front());
       break;
     }
@@ -2059,8 +2059,7 @@ TabStripSelectionChange TabStripModel::SetSelection(
         // if the user backgrounds an audible tab.
         if (selection.old_contents &&
             selection.old_contents->IsCurrentlyAudible()) {
-          Browser* browser =
-              chrome::FindBrowserWithWebContents(selection.old_contents);
+          Browser* browser = chrome::FindBrowserWithTab(selection.old_contents);
           DCHECK(browser);
           browser->window()->MaybeShowFeaturePromo(
               feature_engagement::kIPHTabAudioMutingFeature);

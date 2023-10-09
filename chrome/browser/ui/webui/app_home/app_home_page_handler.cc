@@ -125,7 +125,7 @@ AppHomePageHandler::~AppHomePageHandler() {
 }
 
 Browser* AppHomePageHandler::GetCurrentBrowser() {
-  return chrome::FindBrowserWithWebContents(web_ui_->GetWebContents());
+  return chrome::FindBrowserWithTab(web_ui_->GetWebContents());
 }
 
 void AppHomePageHandler::LoadDeprecatedAppsDialogIfRequired() {

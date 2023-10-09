@@ -21,7 +21,7 @@ namespace media_router {
 MediaRouterGmcUiForTest::MediaRouterGmcUiForTest(
     content::WebContents* web_contents)
     : MediaRouterUiForTestBase(web_contents),
-      browser_(chrome::FindBrowserWithWebContents(web_contents)) {
+      browser_(chrome::FindBrowserWithTab(web_contents)) {
   DCHECK(browser_);
 }
 

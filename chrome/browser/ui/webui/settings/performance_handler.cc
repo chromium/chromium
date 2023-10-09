@@ -139,8 +139,7 @@ void PerformanceHandler::HandleOpenSpeedFeedbackDialog(
 
 void PerformanceHandler::HandleOpenFeedbackDialog(
     const std::string category_tag) {
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   DCHECK(browser);
   std::string unused;
   chrome::ShowFeedbackPage(browser,

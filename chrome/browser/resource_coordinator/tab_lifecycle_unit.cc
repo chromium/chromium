@@ -577,7 +577,7 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
   // here instead of in `CanDiscard` as not all calls to `Discard` check
   // `CanDiscard` and discarding a picture-in-picture WebContents leaves the
   // window in a bad state.
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (browser && browser->is_type_picture_in_picture()) {
     return false;
   }

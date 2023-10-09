@@ -330,8 +330,7 @@ views::Widget* FedCmAccountSelectionView::CreateBubbleWithAccessibleTitle(
     const absl::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
     bool show_auto_reauthn_checkbox) {
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(delegate_->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(delegate_->GetWebContents());
 
   // Reject the API if the browser is not found or its tab strip model does not
   // exist, as we require those to show UI. It is unclear why there are callers
@@ -416,8 +415,7 @@ void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,
   if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
     return;
   }
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(delegate_->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(delegate_->GetWebContents());
   TabStripModel* tab_strip_model = browser->tab_strip_model();
 
   DCHECK(tab_strip_model);

@@ -674,26 +674,26 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
         signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
         delete_metric);
 #else
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
-  if (browser) {
-    browser->signin_view_controller()->ShowGaiaLogoutTab(
-        signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
-  }
+    Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
+    if (browser) {
+      browser->signin_view_controller()->ShowGaiaLogoutTab(
+          signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
+    }
 
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    // Only revoke the sync consent.
-    // * If the primary account is still valid, then it will be removed by
-    // the Gaia logout tab (see http://crbug.com/1068978).
-    // * If the account is already invalid, drop the token now because it's
-    // already invalid on the web, so the Gaia logout tab won't affect it
-    // (see http://crbug.com/1114646).
-    //
-    // This operation may delete the current browser that owns |this| if force
-    // signin is enabled (see https://crbug.com/1153120).
-    identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
-        signin_metrics::ProfileSignout::kRevokeSyncFromSettings, delete_metric);
-  }
+    if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+      // Only revoke the sync consent.
+      // * If the primary account is still valid, then it will be removed by
+      // the Gaia logout tab (see http://crbug.com/1068978).
+      // * If the account is already invalid, drop the token now because it's
+      // already invalid on the web, so the Gaia logout tab won't affect it
+      // (see http://crbug.com/1114646).
+      //
+      // This operation may delete the current browser that owns |this| if force
+      // signin is enabled (see https://crbug.com/1153120).
+      identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
+          signin_metrics::ProfileSignout::kRevokeSyncFromSettings,
+          delete_metric);
+    }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
@@ -718,8 +718,7 @@ void PeopleHandler::HandlePauseSync(const base::Value::List& args) {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void PeopleHandler::HandleStartKeyRetrieval(const base::Value::List& args) {
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   if (!browser)
     return;
 

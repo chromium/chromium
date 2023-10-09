@@ -282,8 +282,7 @@ class WebContentsInteractionTestUtil::NewTabWatcher
 
     auto* const web_contents =
         change.GetInsert()->contents.front().contents.get();
-    CHECK(!browser_ ||
-          browser_ == chrome::FindBrowserWithWebContents(web_contents));
+    CHECK(!browser_ || browser_ == chrome::FindBrowserWithTab(web_contents));
     owner_->StartWatchingWebContents(web_contents);
   }
 
@@ -688,7 +687,7 @@ void WebContentsInteractionTestUtil::LoadPageInNewTab(const GURL& url,
   // a wait state.
   Browser* browser = new_tab_watcher_
                          ? new_tab_watcher_->browser()
-                         : chrome::FindBrowserWithWebContents(web_contents());
+                         : chrome::FindBrowserWithTab(web_contents());
   CHECK(browser);
   NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_TYPED);
   navigate_params.disposition = activate_tab
@@ -840,7 +839,7 @@ gfx::Rect WebContentsInteractionTestUtil::GetElementBoundsInScreen(
     DCHECK(web_view_data_->visible() && web_view_data_->web_view());
     web_view = web_view_data_->web_view();
   } else {
-    Browser* const browser = chrome::FindBrowserWithWebContents(web_contents());
+    Browser* const browser = chrome::FindBrowserWithTab(web_contents());
     if (!browser ||
         web_contents() != browser->tab_strip_model()->GetActiveWebContents()) {
       return gfx::Rect();
@@ -968,7 +967,7 @@ WebContentsInteractionTestUtil::WebContentsInteractionTestUtil(
     // This is specifically for a web view that is not a tab.
     CHECK(web_contents);
     CHECK(!browser);
-    CHECK(!chrome::FindBrowserWithWebContents(web_contents));
+    CHECK(!chrome::FindBrowserWithTab(web_contents));
     web_view_data_ = std::make_unique<WebViewData>(this, web_view);
     web_view_data_->Init();
   } else if (browser.has_value()) {
@@ -994,7 +993,7 @@ void WebContentsInteractionTestUtil::MaybeCreateElement(bool force) {
       return;
     context = web_view_data_->context();
   } else {
-    Browser* const browser = chrome::FindBrowserWithWebContents(web_contents());
+    Browser* const browser = chrome::FindBrowserWithTab(web_contents());
     if (!browser)
       return;
     context = browser->window()->GetElementContext();
@@ -1048,7 +1047,7 @@ void WebContentsInteractionTestUtil::OnPollEvent(Poller* poller) {
 void WebContentsInteractionTestUtil::StartWatchingWebContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
-  Browser* const browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* const browser = chrome::FindBrowserWithTab(web_contents);
   CHECK(browser);
   browser->tab_strip_model()->AddObserver(this);
   if (new_tab_watcher_) {

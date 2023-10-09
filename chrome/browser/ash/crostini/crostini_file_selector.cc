@@ -65,8 +65,7 @@ void CrostiniFileSelector::SelectFile(
 }
 
 gfx::NativeWindow CrostiniFileSelector::GetBrowserWindow() {
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui_->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(web_ui_->GetWebContents());
   return browser ? browser->window()->GetNativeWindow() : gfx::NativeWindow();
 }
 

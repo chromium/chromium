@@ -935,7 +935,7 @@ Browser* Browser::GetBrowserForOpeningWebUi() {
     // We should always have an opener web contents if the current browser is a
     // picture-in-picture type.
     DCHECK(opener_web_contents);
-    opener_browser_ = chrome::FindBrowserWithWebContents(opener_web_contents);
+    opener_browser_ = chrome::FindBrowserWithTab(opener_web_contents);
   }
 
   return opener_browser_;

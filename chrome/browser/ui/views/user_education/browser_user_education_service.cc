@@ -164,7 +164,7 @@ class FloatingWebUIHelpBubbleFactoryBrowser
                                ->handler()
                                ->GetWebContents();
     // Note: this checks all tabs for their WebContents.
-    if (chrome::FindBrowserWithWebContents(contents)) {
+    if (chrome::FindBrowserWithTab(contents)) {
       return false;
     }
 

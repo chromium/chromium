@@ -1055,7 +1055,7 @@ void ChromePasswordProtectionService::OpenChangePasswordUrl(
 #endif
 #if BUILDFLAG(FULL_SAFE_BROWSING)
     // Opens chrome://settings/passwords/check in a new tab.
-    chrome::ShowPasswordCheck(chrome::FindBrowserWithWebContents(web_contents));
+    chrome::ShowPasswordCheck(chrome::FindBrowserWithTab(web_contents));
     password_manager::LogPasswordCheckReferrer(
         password_manager::PasswordCheckReferrer::kPhishGuardDialog);
 #endif

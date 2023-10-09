@@ -206,8 +206,7 @@ void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {
     DCHECK(launched);
   } else {
     extensions::ExtensionTabUtil::OpenOptionsPage(
-        extension,
-        chrome::FindBrowserWithWebContents(web_ui()->GetWebContents()));
+        extension, chrome::FindBrowserWithTab(web_ui()->GetWebContents()));
   }
 }
 

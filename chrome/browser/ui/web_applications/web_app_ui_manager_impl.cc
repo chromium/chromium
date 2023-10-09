@@ -261,7 +261,7 @@ bool WebAppUiManagerImpl::IsAppInQuickLaunchBar(
 
 bool WebAppUiManagerImpl::IsInAppWindow(content::WebContents* web_contents,
                                         const webapps::AppId* app_id) const {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (app_id) {
     return AppBrowserController::IsForWebApp(browser, *app_id);
   }
@@ -398,7 +398,7 @@ content::WebContents* WebAppUiManagerImpl::CreateNewTab() {
 
 bool WebAppUiManagerImpl::IsWebContentsActiveTabInBrowser(
     content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   return browser &&
          browser->tab_strip_model() &&
          browser->tab_strip_model()->GetActiveWebContents() == web_contents;

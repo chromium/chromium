@@ -866,7 +866,7 @@ void PasswordsPrivateDelegateImpl::SwitchBiometricAuthBeforeFillingState(
 
 void PasswordsPrivateDelegateImpl::ShowAddShortcutDialog(
     content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   DCHECK(browser);
   web_app::CreateWebAppFromCurrentWebContents(
       browser, web_app::WebAppInstallFlow::kInstallSite);
@@ -879,7 +879,7 @@ void PasswordsPrivateDelegateImpl::ShowAddShortcutDialog(
 void PasswordsPrivateDelegateImpl::ShowExportedFileInShell(
     content::WebContents* web_contents,
     std::string file_path) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   DCHECK(browser);
 #if !BUILDFLAG(IS_WIN)
   base::FilePath path(file_path);

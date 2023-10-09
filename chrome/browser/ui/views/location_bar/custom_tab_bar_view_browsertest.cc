@@ -45,7 +45,7 @@ class TestTitleObserver : public TabStripModelObserver {
   // |target_title|.
   TestTitleObserver(content::WebContents* contents, std::u16string target_title)
       : contents_(contents), target_title_(target_title) {
-    browser_ = chrome::FindBrowserWithWebContents(contents_);
+    browser_ = chrome::FindBrowserWithTab(contents_);
     browser_->tab_strip_model()->AddObserver(this);
   }
 

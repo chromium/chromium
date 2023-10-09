@@ -4157,7 +4157,7 @@ bool FileManagerBrowserTestBase::PostKeyEvent(ui::KeyEvent* key_event) {
     web_contents = std::prev(swa_web_contents_.end())->second;
   }
   if (web_contents) {
-    const Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+    const Browser* browser = chrome::FindBrowserWithTab(web_contents);
     if (browser) {
       BrowserWindow* window = browser->window();
       if (window) {

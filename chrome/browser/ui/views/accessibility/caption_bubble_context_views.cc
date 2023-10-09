@@ -62,7 +62,7 @@ void CaptionBubbleContextViews::Activate() {
   // Activate the web contents and the browser window that the web contents is
   // in. Order matters: web contents needs to be active in order for the widget
   // getter to work.
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   if (!browser)
     return;
   TabStripModel* tab_strip_model = browser->tab_strip_model();

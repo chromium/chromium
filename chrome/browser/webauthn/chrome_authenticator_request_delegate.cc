@@ -1034,7 +1034,7 @@ void ChromeAuthenticatorRequestDelegate::OnCancelRequest() {
 void ChromeAuthenticatorRequestDelegate::OnManageDevicesClicked() {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(GetRenderFrameHost());
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (browser) {
     NavigateParams params(browser,
                           GURL("chrome://settings/securityKeys/phones"),

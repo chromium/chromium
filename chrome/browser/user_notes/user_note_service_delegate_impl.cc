@@ -25,7 +25,7 @@ Browser* GetBrowserFromRenderFrameHost(const content::RenderFrameHost* rfh) {
     return nullptr;
   }
 
-  return chrome::FindBrowserWithWebContents(web_contents);
+  return chrome::FindBrowserWithTab(web_contents);
 }
 
 }  // namespace

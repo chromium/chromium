@@ -186,7 +186,7 @@ class TabRestoreTest : public InProcessBrowserTest {
       EXPECT_EQ(++tab_count, browser->tab_strip_model()->count());
     }
 
-    EXPECT_EQ(chrome::FindBrowserWithWebContents(new_tab), browser);
+    EXPECT_EQ(chrome::FindBrowserWithTab(new_tab), browser);
 
     // Get a handle to the restored tab.
     ASSERT_GT(browser->tab_strip_model()->count(), expected_tabstrip_index);

@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(
                 prefs::kDiscoverTabSuggestionChipTimesLeftToShow),
             3);
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   // Close the web contents we just created to simulate what would happen in
   // production with a background page. This helps us ensure that our
   // notification shows up and can be interacted with even after the web ui
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                 prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
             3);
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   // Close the web contents we just created to simulate what would happen in
   // production with a background page. This helps us ensure that our
   // notification shows up and can be interacted with even after the web ui

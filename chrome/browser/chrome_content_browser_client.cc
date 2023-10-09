@@ -1393,7 +1393,7 @@ void MaybeAddThrottles(
 // Returns whether |web_contents| is within a hosted app.
 bool IsInHostedApp(WebContents* web_contents) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   return web_app::AppBrowserController::IsWebApp(browser);
 #else
   return false;
@@ -4246,7 +4246,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
       // if the app navigates off scope. This is not a problem because we still
       // want to use the scope of the app associated with the window, not the
       // WebContents.
-      Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+      Browser* browser = chrome::FindBrowserWithTab(web_contents);
       if (browser && browser->app_controller()) {
         web_app::WebAppProvider* const web_app_provider =
             web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);

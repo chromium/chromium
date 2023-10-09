@@ -63,7 +63,7 @@ bool IsAppBrowser(Browser* browser) {
 // performed by activating the content.
 ash::ShelfAction ActivateContentOrMinimize(content::WebContents* content,
                                            bool allow_minimize) {
-  Browser* browser = chrome::FindBrowserWithWebContents(content);
+  Browser* browser = chrome::FindBrowserWithTab(content);
   TabStripModel* tab_strip = browser->tab_strip_model();
   int index = tab_strip->GetIndexOfWebContents(content);
   DCHECK_NE(TabStripModel::kNoTab, index);
@@ -429,7 +429,7 @@ void AppShortcutShelfItemController::ExecuteCommand(bool from_context_menu,
     // invalid pointer cached in |app_menu_web_contents_| should yield a null
     // browser or kNoTab.
     content::WebContents* web_contents = app_menu_web_contents_[command_id];
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+    Browser* browser = chrome::FindBrowserWithTab(web_contents);
     TabStripModel* tab_strip = browser ? browser->tab_strip_model() : nullptr;
     const int index = tab_strip ? tab_strip->GetIndexOfWebContents(web_contents)
                                 : TabStripModel::kNoTab;
@@ -453,7 +453,7 @@ void AppShortcutShelfItemController::Close() {
       browser->tab_strip_model()->CloseAllTabs();
   } else {
     for (content::WebContents* item : GetAppWebContents(base::NullCallback())) {
-      Browser* browser = chrome::FindBrowserWithWebContents(item);
+      Browser* browser = chrome::FindBrowserWithTab(item);
       if (!browser ||
           !multi_user_util::IsProfileFromActiveUser(browser->profile())) {
         continue;
@@ -564,7 +564,7 @@ AppShortcutShelfItemController::AdvanceToNextApp(
       base::BindOnce([](const std::vector<content::WebContents*>& web_contents,
                         aura::Window** out_window) -> content::WebContents* {
         for (auto* web_content : web_contents) {
-          Browser* browser = chrome::FindBrowserWithWebContents(web_content);
+          Browser* browser = chrome::FindBrowserWithTab(web_content);
           // The active web contents is on the active browser, and matches the
           // index of the current active tab.
           if (browser->window()->IsActive()) {

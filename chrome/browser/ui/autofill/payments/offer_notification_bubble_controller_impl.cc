@@ -265,7 +265,7 @@ void OfferNotificationBubbleControllerImpl::DoShowBubble() {
   if (!IsWebContentsActive())
     return;
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   set_bubble_view(browser->window()
                       ->GetAutofillBubbleHandler()
                       ->ShowOfferNotificationBubble(web_contents(), this,

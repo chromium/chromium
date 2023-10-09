@@ -322,7 +322,7 @@ void ShowPWAInstallBubble(
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     return;
   }

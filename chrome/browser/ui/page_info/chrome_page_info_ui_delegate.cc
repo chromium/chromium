@@ -110,7 +110,7 @@ std::u16string ChromePageInfoUiDelegate::GetAutomaticallyBlockedReason(
 #if !BUILDFLAG(IS_ANDROID)
 absl::optional<page_info::proto::SiteInfo>
 ChromePageInfoUiDelegate::GetAboutThisSiteInfo() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   if (!browser || !browser->is_type_normal()) {
     // TODO(crbug.com/1435450): SidePanel is not available. Evaluate if we can
     //                          show ATP in a different way.
@@ -179,12 +179,12 @@ bool ChromePageInfoUiDelegate::IsMultipleTabsOpen() {
 }
 
 void ChromePageInfoUiDelegate::ShowPrivacySandboxAdPersonalization() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   chrome::ShowPrivacySandboxAdPersonalization(browser);
 }
 
 void ChromePageInfoUiDelegate::ShowPrivacySandboxSettings() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   chrome::ShowPrivacySandboxSettings(browser);
 }
 

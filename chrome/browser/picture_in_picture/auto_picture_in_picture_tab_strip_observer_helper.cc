@@ -107,7 +107,7 @@ TabStripModel*
 AutoPictureInPictureTabStripObserverHelper::GetCurrentTabStripModel() const {
   // If this WebContents isn't in a normal browser window, then auto
   // picture-in-picture is not supported.
-  auto* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  auto* browser = chrome::FindBrowserWithTab(web_contents_);
   if (!browser || !browser->is_type_normal()) {
     return nullptr;
   }

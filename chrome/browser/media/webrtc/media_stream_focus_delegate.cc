@@ -55,7 +55,7 @@ MediaStreamFocusDelegate::MediaStreamFocusDelegate(
     return;
   }
 
-  Browser* const browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* const browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     return;
   }
@@ -154,7 +154,7 @@ void MediaStreamFocusDelegate::FocusTab(
   }
 
   delegate->ActivateContents(web_contents);
-  Browser* const browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* const browser = chrome::FindBrowserWithTab(web_contents);
   if (browser && browser->window()) {
     browser->window()->Activate();
   }

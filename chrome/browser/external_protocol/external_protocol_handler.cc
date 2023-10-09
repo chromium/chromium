@@ -201,7 +201,7 @@ void LaunchUrlWithoutSecurityCheckWithDelegate(
   // Avoid calling CloseContents if the tab is not in this browser's tab strip
   // model; this can happen if the protocol was initiated by something
   // internal to Chrome.
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (browser && web_contents->GetController().IsInitialNavigation() &&
       browser->tab_strip_model()->count() > 1 &&
       browser->tab_strip_model()->GetIndexOfWebContents(web_contents) !=

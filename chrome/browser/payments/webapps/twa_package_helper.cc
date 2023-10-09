@@ -41,7 +41,7 @@ absl::optional<webapps::AppId> GetWebAppId(content::RenderFrameHost* rfh) {
   }
 
   DCHECK(rfh);
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!web_app::AppBrowserController::IsWebApp(browser)) {
     return absl::nullopt;
   }

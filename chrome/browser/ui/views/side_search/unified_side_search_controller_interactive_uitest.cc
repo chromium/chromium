@@ -147,9 +147,8 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
   ASSERT_EQ(new_tab_url, new_tab->GetLastCommittedURL());
 
   // Verify that new window has page action icon displayed.
-  EXPECT_TRUE(
-      GetSideSearchButtonFor(chrome::FindBrowserWithWebContents(new_tab))
-          ->GetVisible());
+  EXPECT_TRUE(GetSideSearchButtonFor(chrome::FindBrowserWithTab(new_tab))
+                  ->GetVisible());
 
   // Verify new_tab_helper has correct last_search_url_.
   auto* new_tab_helper = SideSearchTabContentsHelper::FromWebContents(new_tab);
@@ -197,8 +196,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(new_tab_url, new_tab->GetLastCommittedURL());
 
   // Verify that new window has page action icon displayed.
-  EXPECT_FALSE(
-      GetSideSearchButtonFor(chrome::FindBrowserWithWebContents(new_tab)));
+  EXPECT_FALSE(GetSideSearchButtonFor(chrome::FindBrowserWithTab(new_tab)));
 }
 
 IN_PROC_BROWSER_TEST_F(SideSearchV2Test, DisplayPageActionIconInNewTab) {
@@ -274,8 +272,8 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, DisplayPageActionIconInNewWindow) {
   ASSERT_EQ(new_tab, tab->GetLastCommittedURL());
 
   // Verify that new window has page action icon displayed.
-  EXPECT_TRUE(GetSideSearchButtonFor(chrome::FindBrowserWithWebContents(tab))
-                  ->GetVisible());
+  EXPECT_TRUE(
+      GetSideSearchButtonFor(chrome::FindBrowserWithTab(tab))->GetVisible());
 
   // Verify new_tab_helper has correct last_search_url_.
   auto* new_tab_helper = SideSearchTabContentsHelper::FromWebContents(tab);
@@ -316,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, NoPageActionIconInIncognitoWindow) {
   ASSERT_EQ(new_tab, tab->GetLastCommittedURL());
 
   // Verify that new window has page action icon displayed.
-  EXPECT_FALSE(GetSideSearchButtonFor(chrome::FindBrowserWithWebContents(tab)));
+  EXPECT_FALSE(GetSideSearchButtonFor(chrome::FindBrowserWithTab(tab)));
 }
 
 IN_PROC_BROWSER_TEST_F(SideSearchV2Test,

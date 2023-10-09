@@ -1266,7 +1266,7 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
   // TODO(crbug.com/1221189): Allow PermissionRequestManager to identify the
   // correct UI style of a permission prompt.
   const bool quiet_icon_allowed = web_app::AppBrowserController::IsWebApp(
-      chrome::FindBrowserWithWebContents(web_contents));
+      chrome::FindBrowserWithTab(web_contents));
 
   if (!quiet_icon_allowed || !manager ||
       !manager->ShouldCurrentRequestUseQuietUI()) {

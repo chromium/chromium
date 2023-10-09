@@ -420,7 +420,7 @@ void ExtensionActionRunner::ShowReloadPageBubble(
   // TODO(emiliapaz): Consider showing the dialog as a modal if container
   // doesn't exist. Currently we get the extension's icon via the action
   // controller from the container, so the container must exist.
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   ExtensionsContainer* const extensions_container =
       browser ? browser->window()->GetExtensionsContainer() : nullptr;
   if (!extensions_container)

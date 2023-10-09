@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DISABLED_TestOpenPopup) {
   {
     content::CreateAndLoadWebContentsObserver frame_observer;
     // Open a new window.
-    new_browser = chrome::FindBrowserWithWebContents(browser()->OpenURL(
+    new_browser = chrome::FindBrowserWithTab(browser()->OpenURL(
         content::OpenURLParams(GURL("about:blank"), content::Referrer(),
                                WindowOpenDisposition::NEW_WINDOW,
                                ui::PAGE_TRANSITION_TYPED, false)));

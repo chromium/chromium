@@ -292,7 +292,7 @@ bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
 bool BoundsOverlapWithOpenPermissionsPrompt(
     const gfx::Rect& screen_bounds,
     content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     return false;
   }

@@ -44,7 +44,7 @@ TabbedWebAppNavigationThrottle::MaybeCreateThrottleFor(
 
   content::WebContents* web_contents = handle->GetWebContents();
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser || !browser->app_controller())
     return nullptr;
 
@@ -76,7 +76,7 @@ TabbedWebAppNavigationThrottle::WillStartRequest() {
   WebAppProvider* provider = WebAppProvider::GetForWebContents(web_contents);
   DCHECK(provider);
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   DCHECK(browser);
   web_app::AppBrowserController* app_controller = browser->app_controller();
   DCHECK(app_controller);
@@ -130,7 +130,7 @@ TabbedWebAppNavigationThrottle::OpenInNewTab() {
 content::NavigationThrottle::ThrottleCheckResult
 TabbedWebAppNavigationThrottle::FocusHomeTab() {
   Browser* browser =
-      chrome::FindBrowserWithWebContents(navigation_handle()->GetWebContents());
+      chrome::FindBrowserWithTab(navigation_handle()->GetWebContents());
   TabStripModel* tab_strip = browser->tab_strip_model();
 
   content::OpenURLParams params =

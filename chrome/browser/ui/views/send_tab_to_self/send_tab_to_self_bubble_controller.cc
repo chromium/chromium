@@ -63,7 +63,7 @@ void SendTabToSelfBubbleController::HideBubble() {
 void SendTabToSelfBubbleController::ShowBubble(bool show_back_button) {
   show_back_button_ = show_back_button;
   bubble_shown_ = true;
-  Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(&GetWebContents());
   absl::optional<send_tab_to_self::EntryPointDisplayReason> reason =
       send_tab_to_self::GetEntryPointDisplayReason(&GetWebContents());
   DCHECK(reason);
@@ -189,7 +189,7 @@ void SendTabToSelfBubbleController::SetInitialSendAnimationShown(bool shown) {
 }
 
 void SendTabToSelfBubbleController::UpdateIcon() {
-  Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(&GetWebContents());
   // UpdateIcon() can be called during browser teardown.
   if (!browser)
     return;

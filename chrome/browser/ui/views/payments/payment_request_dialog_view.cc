@@ -154,7 +154,7 @@ void PaymentRequestDialogView::ShowPaymentHandlerScreen(
   is_showing_large_payment_handler_window_ = true;
 
   // Calculate |payment_handler_window_height_|
-  auto* browser = chrome::FindBrowserWithWebContents(request_->web_contents());
+  auto* browser = chrome::FindBrowserWithTab(request_->web_contents());
   int browser_window_content_height =
       browser->window()->GetContentsSize().height();
   payment_handler_window_height_ =

@@ -762,8 +762,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
 
   content::RenderFrameHost* popup_rfh =
       ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
-          chrome::FindBrowserWithWebContents(popup_iframe_web_contents), fs_url,
-          1);
+          chrome::FindBrowserWithTab(popup_iframe_web_contents), fs_url, 1);
 
   EXPECT_TRUE(popup_rfh->GetLastCommittedURL().SchemeIsFileSystem());
 

@@ -129,7 +129,7 @@ void LocalCardMigrationBubbleControllerImpl::DoShowBubble() {
   DCHECK(local_card_migration_bubble_closure_);
   DCHECK(!bubble_view());
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   set_bubble_view(
       browser->window()
           ->GetAutofillBubbleHandler()

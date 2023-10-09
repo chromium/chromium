@@ -126,7 +126,7 @@ base::Value LaunchWebApp(apps::AppLaunchParams params,
             params);
       }
       if (web_contents)
-        browser = chrome::FindBrowserWithWebContents(web_contents);
+        browser = chrome::FindBrowserWithTab(web_contents);
     } else {
       debug_value.Set("error", "Unknown app id.");
       // Open an empty browser window as the app_id is invalid.

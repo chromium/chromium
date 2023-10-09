@@ -192,7 +192,7 @@ std::unique_ptr<views::View> UnifiedSideSearchController::GetSideSearchView() {
 ui::ImageModel UnifiedSideSearchController::GetSideSearchIcon() {
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
-  auto* browser = chrome::FindBrowserWithWebContents(web_contents());
+  auto* browser = chrome::FindBrowserWithTab(web_contents());
   auto icon_image =
       browser ? DefaultSearchIconSource::GetOrCreateForBrowser(browser)
                     ->GetSizedIconImage(icon_size)
@@ -237,7 +237,7 @@ void UnifiedSideSearchController::CloseSidePanel() {
 }
 
 BrowserView* UnifiedSideSearchController::GetBrowserView() const {
-  auto* browser = chrome::FindBrowserWithWebContents(web_contents());
+  auto* browser = chrome::FindBrowserWithTab(web_contents());
   return browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
 }
 
@@ -246,7 +246,7 @@ Profile* UnifiedSideSearchController::GetProfile() const {
 }
 
 SidePanelUI* UnifiedSideSearchController::GetSidePanelUI() {
-  auto* browser = chrome::FindBrowserWithWebContents(web_contents());
+  auto* browser = chrome::FindBrowserWithTab(web_contents());
   return browser ? SidePanelUI::GetSidePanelUIForBrowser(browser) : nullptr;
 }
 
@@ -311,7 +311,7 @@ bool UnifiedSideSearchController::ShouldAutomaticallyTriggerAfterNavigation(
   // If the side search side panel is already open we do not need to
   // automatically retrigger the panel.
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (side_search::IsSideSearchToggleOpen(browser)) {
     return false;
   }

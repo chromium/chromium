@@ -604,7 +604,7 @@ void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
   // out the changes we are not interested in.
   if (change_type != TabChangeType::kAll)
     return;
-  Browser* browser = chrome::FindBrowserWithWebContents(contents);
+  Browser* browser = chrome::FindBrowserWithTab(contents);
   if (!browser)
     return;
   Browser* active_browser = chrome::FindLastActive();

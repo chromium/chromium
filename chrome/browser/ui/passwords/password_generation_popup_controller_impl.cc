@@ -345,7 +345,7 @@ void PasswordGenerationPopupControllerImpl::EditPasswordSelected() {
 void PasswordGenerationPopupControllerImpl::
     OnGooglePasswordManagerLinkClicked() {
   NavigateToManagePasswordsPage(
-      chrome::FindBrowserWithWebContents(GetWebContents()),
+      chrome::FindBrowserWithTab(GetWebContents()),
       password_manager::ManagePasswordsReferrer::kPasswordGenerationPrompt);
 }
 

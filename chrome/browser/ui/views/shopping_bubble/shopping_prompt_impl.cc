@@ -16,7 +16,7 @@ void ShoppingPromptImpl::ShowDiscountConsent() {
 }
 
 LocationBarView* ShoppingPromptImpl::GetLocationBarView() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
 
   return browser_view ? browser_view->GetLocationBarView() : nullptr;

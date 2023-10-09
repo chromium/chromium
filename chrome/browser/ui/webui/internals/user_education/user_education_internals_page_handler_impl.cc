@@ -205,7 +205,7 @@ void UserEducationInternalsPageHandlerImpl::ShowFeaturePromo(
   }
 
   user_education::FeaturePromoController* feature_promo_controller =
-      chrome::FindBrowserWithWebContents(web_ui_->GetWebContents())
+      chrome::FindBrowserWithTab(web_ui_->GetWebContents())
           ->window()
           ->GetFeaturePromoController();
 

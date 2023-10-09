@@ -421,7 +421,7 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
 
     CHECK(content::ExecJs(iwa_frame, "localStorage.setItem('key', 'value')"));
 
-    return chrome::FindBrowserWithWebContents(
+    return chrome::FindBrowserWithTab(
         content::WebContents::FromRenderFrameHost(iwa_frame));
   }
 

@@ -79,7 +79,7 @@ void MandatoryReauthConfirmationBubbleView::OnSettingsLinkClicked() {
   autofill_metrics::LogMandatoryReauthOptInConfirmationBubbleMetric(
       autofill_metrics::MandatoryReauthOptInConfirmationBubbleMetric::
           kSettingsLinkClicked);
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   chrome::ShowSettingsSubPage(browser, chrome::kPaymentsSubPage);
 }
 

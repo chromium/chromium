@@ -184,7 +184,7 @@ void ScreenshotCapturedBubble::DownloadButtonPressed() {
   if (!web_contents_)
     return;
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_.get());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_.get());
   content::DownloadManager* download_manager =
       browser->profile()->GetDownloadManager();
   // TODO(crbug.com/1186839): Update the annotation's |setting| and

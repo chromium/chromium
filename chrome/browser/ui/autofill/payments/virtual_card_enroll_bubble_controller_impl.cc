@@ -283,7 +283,7 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   // For reprompts after link clicks, |is_user_gesture| is set to false.
   bool user_gesture_reprompt = reprompt_required_ ? false : is_user_gesture_;
   set_bubble_view(browser->window()

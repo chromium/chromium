@@ -65,7 +65,7 @@ void SharingHubBubbleControllerDesktopImpl::ShowBubble(
     attempt.preview_image = preview_image;
   }
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
 
   sharing_hub_bubble_view_ = browser->window()->ShowSharingHubBubble(attempt);
 
@@ -108,7 +108,7 @@ SharingHubBubbleControllerDesktopImpl::GetWeakPtr() {
 
 void SharingHubBubbleControllerDesktopImpl::OnActionSelected(
     const SharingHubAction& action) {
-  Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(&GetWebContents());
   // Can be null in tests.
   if (!browser) {
     return;

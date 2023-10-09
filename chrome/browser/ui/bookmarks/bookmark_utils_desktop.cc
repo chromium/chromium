@@ -240,11 +240,11 @@ OpenedWebContentsSet OpenAllHelper(
         Profile::FromBrowserContext(opened_tab->GetBrowserContext());
     if (new_tab_profile->IsIncognitoProfile()) {
       if (!incognito_browser) {
-        incognito_browser = chrome::FindBrowserWithWebContents(opened_tab);
+        incognito_browser = chrome::FindBrowserWithTab(opened_tab);
       }
     } else {
       if (!regular_browser) {
-        regular_browser = chrome::FindBrowserWithWebContents(opened_tab);
+        regular_browser = chrome::FindBrowserWithTab(opened_tab);
       }
     }
 

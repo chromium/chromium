@@ -264,8 +264,7 @@ class BrowserAppInstanceTrackerTest : public InProcessBrowserTest {
     params.disposition = disposition;
     Navigate(&params);
     auto* contents = params.navigated_or_inserted_contents;
-    DCHECK_EQ(chrome::FindBrowserWithWebContents(
-                  params.navigated_or_inserted_contents),
+    DCHECK_EQ(chrome::FindBrowserWithTab(params.navigated_or_inserted_contents),
               browser);
     content::TestNavigationObserver observer(contents);
     observer.Wait();

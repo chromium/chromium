@@ -968,7 +968,7 @@ void ChromePasswordManagerClient::NavigateToManagePasswordsPage(
   password_manager_launcher::ShowPasswordSettings(web_contents(), referrer,
                                                   /*manage_passkeys=*/false);
 #else
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser) {
     browser = chrome::FindLastActive();
   }
@@ -1341,8 +1341,7 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
           &password_feature_manager_,
           base::BindRepeating(
               [](content::WebContents* web_contents) {
-                Browser* browser =
-                    chrome::FindBrowserWithWebContents(web_contents);
+                Browser* browser = chrome::FindBrowserWithTab(web_contents);
                 return browser ? browser->signin_view_controller() : nullptr;
               },
               web_contents)),

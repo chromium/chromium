@@ -1055,7 +1055,7 @@ void CupsPrintersHandler::HandleSelectPPDFile(const base::Value::List& args) {
       this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
 
   gfx::NativeWindow owning_window =
-      web_contents ? chrome::FindBrowserWithWebContents(web_contents)
+      web_contents ? chrome::FindBrowserWithTab(web_contents)
                          ->window()
                          ->GetNativeWindow()
                    : gfx::NativeWindow();

@@ -25,13 +25,13 @@
 namespace {
 
 BrowserWindow* GetWindowFromWebContents(content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   return browser ? browser->window() : nullptr;
 }
 
 content::WebContents* GetCurrentWebContents(
     content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   return browser ? browser->tab_strip_model()->GetActiveWebContents() : nullptr;
 }
 

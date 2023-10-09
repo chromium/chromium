@@ -153,7 +153,7 @@ bool LoginWebDialog::HandleOpenURLFromTab(WebContents* source,
   // fire an auto-reload, which in turn leads to opening a new browser window,
   // so we must suppress it.
   // http://crbug.com/443096
-  return (source && !chrome::FindBrowserWithWebContents(source));
+  return (source && !chrome::FindBrowserWithTab(source));
 }
 
 bool LoginWebDialog::HandleShouldOverrideWebContentsCreation() {

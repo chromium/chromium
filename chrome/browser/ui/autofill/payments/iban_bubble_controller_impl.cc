@@ -140,9 +140,8 @@ void IbanBubbleControllerImpl::OnAcceptButton(const std::u16string& nickname) {
 
 void IbanBubbleControllerImpl::OnManageSavedIbanExtraButtonClicked() {
   DCHECK(current_bubble_type_ == IbanBubbleType::kManageSavedIban);
-  chrome::ShowSettingsSubPage(
-      chrome::FindBrowserWithWebContents(web_contents()),
-      chrome::kPaymentsSubPage);
+  chrome::ShowSettingsSubPage(chrome::FindBrowserWithTab(web_contents()),
+                              chrome::kPaymentsSubPage);
   OnBubbleClosed(PaymentsBubbleClosedReason::kClosed);
 }
 
@@ -274,7 +273,7 @@ PageActionIconType IbanBubbleControllerImpl::GetPageActionIconType() {
 }
 
 void IbanBubbleControllerImpl::DoShowBubble() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   AutofillBubbleHandler* autofill_bubble_handler =
       browser->window()->GetAutofillBubbleHandler();
   set_bubble_view(autofill_bubble_handler->ShowIbanBubble(

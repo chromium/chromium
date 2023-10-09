@@ -114,7 +114,7 @@ void DownloadShelfUIControllerDelegate::OnNewDownloadReady(
       web_contents = inspected;
   }
   Browser* browser =
-      web_contents ? chrome::FindBrowserWithWebContents(web_contents) : nullptr;
+      web_contents ? chrome::FindBrowserWithTab(web_contents) : nullptr;
 
   // As a last resort, use the last active browser for this profile. Not ideal,
   // but better than not showing the download at all.
@@ -341,7 +341,7 @@ void DownloadUIController::OnDownloadUpdated(content::DownloadManager* manager,
 #if BUILDFLAG(IS_ANDROID)
     DownloadController::CloseTabIfEmpty(web_contents, item);
 #else
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+    Browser* browser = chrome::FindBrowserWithTab(web_contents);
     // If the download occurs in a new tab, and it's not a save page
     // download (started before initial navigation completed) close it.
     // Avoid calling CloseContents if the tab is not in this browser's tab strip

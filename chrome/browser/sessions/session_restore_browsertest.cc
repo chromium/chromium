@@ -283,8 +283,7 @@ class SessionRestoreTest : public InProcessBrowserTest {
       Navigate(&params);
     }
 
-    Browser* new_browser =
-        chrome::FindBrowserWithWebContents(tab_waiter.Wait());
+    Browser* new_browser = chrome::FindBrowserWithTab(tab_waiter.Wait());
 
     // Stop loading anything more if we are running out of space.
     if (!no_memory_pressure) {
@@ -1563,7 +1562,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, CloseSingleTabRestoresNothing) {
 
   chrome::NewEmptyWindow(profile);
 
-  Browser* new_browser = chrome::FindBrowserWithWebContents(tab_waiter.Wait());
+  Browser* new_browser = chrome::FindBrowserWithTab(tab_waiter.Wait());
 
   restore_observer.Wait();
   WaitForTabsToLoad(new_browser);
@@ -1627,7 +1626,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
   // Create a new browser from scratch and verify the tab is not restored.
   chrome::NewEmptyWindow(profile);
 
-  Browser* new_browser = chrome::FindBrowserWithWebContents(tab_waiter.Wait());
+  Browser* new_browser = chrome::FindBrowserWithTab(tab_waiter.Wait());
 
   restore_observer2.Wait();
   WaitForTabsToLoad(new_browser);

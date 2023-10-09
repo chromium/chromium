@@ -28,7 +28,7 @@ void CookieControlsBubbleCoordinator::ShowBubble(
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   views::View* anchor_view =
       browser_view->toolbar_button_provider()->GetAnchorView(

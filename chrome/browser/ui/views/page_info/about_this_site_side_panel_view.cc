@@ -150,8 +150,7 @@ bool AboutThisSiteSidePanelView::HandleKeyboardEvent(
 
 BrowserView* AboutThisSiteSidePanelView::outer_browser_view() {
   if (parent_web_contents_) {
-    auto* browser =
-        chrome::FindBrowserWithWebContents(parent_web_contents_.get());
+    auto* browser = chrome::FindBrowserWithTab(parent_web_contents_.get());
     return browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
   }
   return nullptr;

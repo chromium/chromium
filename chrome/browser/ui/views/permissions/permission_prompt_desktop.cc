@@ -19,7 +19,7 @@ PermissionPromptDesktop::PermissionPromptDesktop(
 PermissionPromptDesktop::~PermissionPromptDesktop() = default;
 
 bool PermissionPromptDesktop::UpdateBrowser() {
-  Browser* current_browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* current_browser = chrome::FindBrowserWithTab(web_contents_);
   // Browser for |web_contents_| might change when for example the tab was
   // dragged to another window.
   bool was_browser_changed = false;

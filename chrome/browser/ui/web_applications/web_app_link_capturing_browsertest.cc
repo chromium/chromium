@@ -475,9 +475,8 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
   // Links clicked within an app popup browser will also capture.
   {
     const gfx::Size size(500, 500);
-    Browser* const popup_browser =
-        OpenPopupAndWait(chrome::FindBrowserWithWebContents(parent_app),
-                         GetParentAppUrl(), size);
+    Browser* const popup_browser = OpenPopupAndWait(
+        chrome::FindBrowserWithTab(parent_app), GetParentAppUrl(), size);
 
     BrowserChangeObserver added_observer(
         nullptr, BrowserChangeObserver::ChangeType::kAdded);

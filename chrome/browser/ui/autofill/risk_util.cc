@@ -56,7 +56,7 @@ void PassRiskData(base::OnceCallback<void(const std::string&)> callback,
 // window for a platform app.
 ui::BaseWindow* GetBaseWindowForWebContents(
     content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (browser)
     return browser->window();
 

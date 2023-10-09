@@ -313,7 +313,7 @@ void ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel(
   DCHECK_EQ(host, host_.get());
   Browser* browser = IsGlobalCoordinator()
                          ? browser_.get()
-                         : chrome::FindBrowserWithWebContents(web_contents_);
+                         : chrome::FindBrowserWithTab(web_contents_);
   DCHECK(browser);
 
   auto* coordinator = SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser);

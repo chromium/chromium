@@ -146,7 +146,7 @@ void CartHandler::ShowNativeConsentDialog(
     ShowNativeConsentDialogCallback callback) {
   cart_service_->InterestedInDiscountConsent();
   cart_service_->ShowNativeConsentDialog(
-      chrome::FindBrowserWithWebContents(web_contents_), std::move(callback));
+      chrome::FindBrowserWithTab(web_contents_), std::move(callback));
 }
 
 void CartHandler::GetDiscountEnabled(GetDiscountEnabledCallback callback) {

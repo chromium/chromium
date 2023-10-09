@@ -211,8 +211,7 @@ void InlineLoginHandler::HandleCompleteLoginMessageWithCookies(
 
 void InlineLoginHandler::HandleSwitchToFullTabMessage(
     const base::Value::List& args) {
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   if (browser) {
     // |web_ui| is already presented in a full tab. Ignore this call.
     return;

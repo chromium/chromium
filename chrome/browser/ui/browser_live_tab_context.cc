@@ -323,7 +323,7 @@ sessions::LiveTabContext* BrowserLiveTabContext::Create(
 // static
 sessions::LiveTabContext* BrowserLiveTabContext::FindContextForWebContents(
     const WebContents* contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(contents);
+  Browser* browser = chrome::FindBrowserWithTab(contents);
   return browser && !browser->is_delete_scheduled()
              ? browser->live_tab_context()
              : nullptr;

@@ -197,7 +197,7 @@ base::OnceClosure ShowDeviceChooserDialogForExtension(
     const extensions::Extension* extension,
     std::unique_ptr<permissions::ChooserController> controller) {
   auto* contents = content::WebContents::FromRenderFrameHost(owner);
-  auto* browser = chrome::FindBrowserWithWebContents(contents);
+  auto* browser = chrome::FindBrowserWithTab(contents);
   if (!browser)
     return base::DoNothing();
 
@@ -253,7 +253,7 @@ base::OnceClosure ShowDeviceChooserDialog(
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  auto* browser = chrome::FindBrowserWithWebContents(contents);
+  auto* browser = chrome::FindBrowserWithTab(contents);
   if (!browser)
     return base::DoNothing();
 

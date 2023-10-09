@@ -94,9 +94,8 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
   }
 
   if (out_browser) {
-    *out_browser = web_contents
-                       ? chrome::FindBrowserWithWebContents(web_contents)
-                       : nullptr;
+    *out_browser =
+        web_contents ? chrome::FindBrowserWithTab(web_contents) : nullptr;
   }
 
   return web_contents;

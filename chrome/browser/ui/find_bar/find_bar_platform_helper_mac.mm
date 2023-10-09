@@ -62,10 +62,9 @@ class FindBarPlatformHelperMac : public FindBarPlatformHelper {
   void UpdateFindBarControllerFromPasteboard() {
     content::WebContents* active_web_contents =
         find_bar_controller_->web_contents();
-    Browser* browser =
-        active_web_contents
-            ? chrome::FindBrowserWithWebContents(active_web_contents)
-            : nullptr;
+    Browser* browser = active_web_contents
+                           ? chrome::FindBrowserWithTab(active_web_contents)
+                           : nullptr;
     if (browser) {
       TabStripModel* tab_strip_model = browser->tab_strip_model();
 

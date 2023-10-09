@@ -70,6 +70,6 @@ std::unique_ptr<views::View> PageInfoHistoryController::CreateHistoryButton(
 
 void PageInfoHistoryController::OpenHistoryPage() {
   // TODO(crbug.com/1275042): Add test for destroring web content.
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   chrome::ShowHistory(browser, site_url_.host());
 }

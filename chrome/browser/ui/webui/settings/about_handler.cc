@@ -460,16 +460,14 @@ void AboutHandler::PromoteUpdater(const base::Value::List& args) {
 
 void AboutHandler::HandleOpenFeedbackDialog(const base::Value::List& args) {
   DCHECK(args.empty());
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   chrome::OpenFeedbackDialog(browser,
                              chrome::kFeedbackSourceMdSettingsAboutPage);
 }
 
 void AboutHandler::HandleOpenHelpPage(const base::Value::List& args) {
   DCHECK(args.empty());
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   chrome::ShowHelp(browser, chrome::HELP_SOURCE_WEBUI);
 }
 
@@ -506,8 +504,7 @@ void AboutHandler::HandleLaunchReleaseNotes(const base::Value::List& args) {
 
 void AboutHandler::HandleOpenOsHelpPage(const base::Value::List& args) {
   DCHECK(args.empty());
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   chrome::ShowHelp(browser, chrome::HELP_SOURCE_WEBUI_CHROME_OS);
 }
 

@@ -170,7 +170,7 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
 #endif
 
   auto* browser =
-      chrome::FindBrowserWithWebContents(navigation_handle->GetWebContents());
+      chrome::FindBrowserWithTab(navigation_handle->GetWebContents());
 
   // If a sign-in dialog is being currently displayed, the prompt should
   // not be shown to avoid conflict.

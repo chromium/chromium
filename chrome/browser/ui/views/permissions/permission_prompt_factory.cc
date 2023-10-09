@@ -179,7 +179,7 @@ std::unique_ptr<permissions::PermissionPrompt> CreateQuietPrompt(
 std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
     content::WebContents* web_contents,
     permissions::PermissionPrompt::Delegate* delegate) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     DLOG(WARNING) << "Permission prompt suppressed because the WebContents is "
                      "not attached to any Browser window.";

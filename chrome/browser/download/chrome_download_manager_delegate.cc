@@ -929,7 +929,7 @@ void ChromeDownloadManagerDelegate::OpenDownload(DownloadItem* download) {
   content::WebContents* web_contents =
       content::DownloadItemUtils::GetWebContents(download);
   Browser* browser =
-      web_contents ? chrome::FindBrowserWithWebContents(web_contents) : nullptr;
+      web_contents ? chrome::FindBrowserWithTab(web_contents) : nullptr;
   std::unique_ptr<chrome::ScopedTabbedBrowserDisplayer> browser_displayer;
   if (!browser ||
       !browser->CanSupportWindowFeature(Browser::FEATURE_TABSTRIP)) {
@@ -1825,7 +1825,7 @@ void ChromeDownloadManagerDelegate::AttachExtraInfo(
   content::WebContents* web_contents =
       content::DownloadItemUtils::GetWebContents(item);
   Browser* browser =
-      web_contents ? chrome::FindBrowserWithWebContents(web_contents) : nullptr;
+      web_contents ? chrome::FindBrowserWithTab(web_contents) : nullptr;
   // Attach the info for whether the download came from a web app.
   if (browser && web_app::AppBrowserController::IsWebApp(browser) &&
       browser->app_controller()) {

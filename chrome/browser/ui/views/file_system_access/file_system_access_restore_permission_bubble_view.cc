@@ -148,7 +148,7 @@ FileSystemAccessRestorePermissionBubbleView::CreateAndShow(
   DCHECK(request.request_type == FileSystemAccessPermissionRequestManager::
                                      RequestType::kRestorePermissions);
 
-  auto* browser = chrome::FindBrowserWithWebContents(web_contents);
+  auto* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser || !browser->window()) {
     return nullptr;
   }

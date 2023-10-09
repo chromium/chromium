@@ -81,8 +81,7 @@ void UserImageFileSelector::SelectFile(
 }
 
 gfx::NativeWindow UserImageFileSelector::GetBrowserWindow() {
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui_->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(web_ui_->GetWebContents());
   return browser ? browser->window()->GetNativeWindow() : gfx::NativeWindow();
 }
 

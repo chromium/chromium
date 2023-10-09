@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest, LaunchQueueSetOnReload) {
   // Reload the page.
   {
     content::TestNavigationObserver navigation_observer(web_contents_);
-    chrome::Reload(chrome::FindBrowserWithWebContents(web_contents_),
+    chrome::Reload(chrome::FindBrowserWithTab(web_contents_),
                    WindowOpenDisposition::CURRENT_TAB);
     navigation_observer.Wait();
     AttachTestConsumer(web_contents_);
@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   // Reload the page.
   {
     content::TestNavigationObserver navigation_observer(web_contents_);
-    chrome::Reload(chrome::FindBrowserWithWebContents(web_contents_),
+    chrome::Reload(chrome::FindBrowserWithTab(web_contents_),
                    WindowOpenDisposition::CURRENT_TAB);
     navigation_observer.Wait();
     AttachTestConsumer(web_contents_);

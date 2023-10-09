@@ -68,7 +68,7 @@ void MediaRouterDialogControllerViews::CreateMediaRouterDialog(
       Profile::FromBrowserContext(initiator()->GetBrowserContext());
 
   InitializeMediaRouterUI();
-  Browser* browser = chrome::FindBrowserWithWebContents(initiator());
+  Browser* browser = chrome::FindBrowserWithTab(initiator());
   BrowserView* browser_view =
       browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
   if (browser_view) {
@@ -217,7 +217,7 @@ void MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialog() {
         global_media_controls::GlobalMediaControlsEntryPoint::kPresentation));
     return;
   }
-  Browser* const browser = chrome::FindBrowserWithWebContents(initiator());
+  Browser* const browser = chrome::FindBrowserWithTab(initiator());
   BrowserView* const browser_view =
       browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
   // If there exists a browser_view, anchor the dialog to the top center of the
@@ -245,7 +245,7 @@ MediaToolbarButtonView* MediaRouterDialogControllerViews::GetMediaButton() {
   if (hide_media_button_for_testing_) {
     return nullptr;
   }
-  Browser* const browser = chrome::FindBrowserWithWebContents(initiator());
+  Browser* const browser = chrome::FindBrowserWithTab(initiator());
   BrowserView* const browser_view =
       browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
   ToolbarView* const toolbar_view =

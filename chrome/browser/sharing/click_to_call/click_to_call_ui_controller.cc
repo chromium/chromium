@@ -31,7 +31,7 @@ using SharingMessage = chrome_browser_sharing::SharingMessage;
 ClickToCallUiController* ClickToCallUiController::GetOrCreateFromWebContents(
     content::WebContents* web_contents) {
   // Use active WebContents if available.
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (browser)
     web_contents = browser->tab_strip_model()->GetActiveWebContents();
   ClickToCallUiController::CreateForWebContents(web_contents);

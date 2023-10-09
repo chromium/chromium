@@ -3643,7 +3643,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, UserCloseWindow) {
 
   url_obvserver.Wait();
 
-  Browser* popup_browser = chrome::FindBrowserWithWebContents(
+  Browser* popup_browser = chrome::FindBrowserWithTab(
       function->GetWebAuthFlowForTesting()->web_contents());
   TabStripModel* tabs = popup_browser->tab_strip_model();
   EXPECT_NE(browser(), popup_browser);

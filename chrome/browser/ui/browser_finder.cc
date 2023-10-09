@@ -294,7 +294,7 @@ Browser* FindBrowserWithActiveWindow() {
   return browser && browser->window()->IsActive() ? browser : nullptr;
 }
 
-Browser* FindBrowserWithWebContents(const WebContents* web_contents) {
+Browser* FindBrowserWithTab(const WebContents* web_contents) {
   DCHECK(web_contents);
   auto& all_tabs = AllTabContentses();
   auto it = base::ranges::find(all_tabs, web_contents);

@@ -61,8 +61,7 @@ absl::optional<std::string> ChromeMediaAppUIDelegate::OpenFeedbackDialog() {
 }
 
 void ChromeMediaAppUIDelegate::ToggleBrowserFullscreenMode() {
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui_->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(web_ui_->GetWebContents());
   if (browser) {
     chrome::ToggleFullscreenMode(browser);
   }

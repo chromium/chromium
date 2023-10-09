@@ -1462,7 +1462,7 @@ void RenderViewContextMenu::RecordShownItem(int id, bool is_submenu) {
 }
 
 bool RenderViewContextMenu::IsHTML5Fullscreen() const {
-  Browser* browser = chrome::FindBrowserWithWebContents(embedder_web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(embedder_web_contents_);
   if (!browser)
     return false;
 
@@ -1472,7 +1472,7 @@ bool RenderViewContextMenu::IsHTML5Fullscreen() const {
 }
 
 bool RenderViewContextMenu::IsPressAndHoldEscRequiredToExitFullscreen() const {
-  Browser* browser = chrome::FindBrowserWithWebContents(source_web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(source_web_contents_);
   if (!browser)
     return false;
 
@@ -2196,8 +2196,7 @@ void RenderViewContextMenu::AppendSearchProvider() {
     SideSearchTabContentsHelper* helper =
         SideSearchTabContentsHelper::FromWebContents(embedder_web_contents_);
 
-    Browser* browser =
-        chrome::FindBrowserWithWebContents(embedder_web_contents_);
+    Browser* browser = chrome::FindBrowserWithTab(embedder_web_contents_);
     if (!side_search::IsSearchWebInSidePanelSupported(browser) ||
         (helper && helper->CanShowSidePanelFromContextMenuSearch())) {
       menu_model_.AddItem(
@@ -3195,16 +3194,16 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       RecordAmbientSearchQuery(
           lens::AmbientSearchEntryPoint::CONTEXT_MENU_SEARCH_WEB_FOR);
       if (companion::IsSearchWebInCompanionSidePanelSupported(
-              chrome::FindBrowserWithWebContents(embedder_web_contents_))) {
+              chrome::FindBrowserWithTab(embedder_web_contents_))) {
         ExecSearchWebInCompanionSidePanel(selection_navigation_url_);
         break;
       }
       // Searching in this side panel is dependent on the companion feature
       // being disabled.
       if (side_search::IsSearchWebInSidePanelSupported(
-              chrome::FindBrowserWithWebContents(embedder_web_contents_)) &&
+              chrome::FindBrowserWithTab(embedder_web_contents_)) &&
           !companion::IsSearchInCompanionSidePanelSupported(
-              chrome::FindBrowserWithWebContents(embedder_web_contents_))) {
+              chrome::FindBrowserWithTab(embedder_web_contents_))) {
         ExecSearchWebInSidePanel(selection_navigation_url_);
         break;
       }
@@ -3989,7 +3988,7 @@ void RenderViewContextMenu::ExecSearchLensForImage(bool is_image_translate) {
 }
 
 void RenderViewContextMenu::ExecAddANote() {
-  Browser* browser = chrome::FindBrowserWithWebContents(source_web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(source_web_contents_);
   if (!browser) {
     return;
   }
@@ -4291,7 +4290,7 @@ void RenderViewContextMenu::PluginActionAt(
 }
 
 Browser* RenderViewContextMenu::GetBrowser() const {
-  return chrome::FindBrowserWithWebContents(embedder_web_contents_);
+  return chrome::FindBrowserWithTab(embedder_web_contents_);
 }
 
 bool RenderViewContextMenu::CanTranslate(bool menu_logging) {

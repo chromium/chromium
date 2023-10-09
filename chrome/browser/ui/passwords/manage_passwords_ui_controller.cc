@@ -289,7 +289,7 @@ void ManagePasswordsUIController::OnPasswordAutofilled(
   }
   // There nothing to do if this controller is not attached to currently active
   // tab.
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser) {
     return;
   }
@@ -662,7 +662,7 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
   // The icon is to be updated after the bubble (either "Save password" or "Sign
   // in to Chrome") is closed.
   bubble_status_ = BubbleStatus::SHOWN_PENDING_ICON_UPDATE;
-  if (Browser* browser = chrome::FindBrowserWithWebContents(web_contents())) {
+  if (Browser* browser = chrome::FindBrowserWithTab(web_contents())) {
     if (browser->window()->MaybeShowFeaturePromo(
             feature_engagement::
                 kIPHPasswordsManagementBubbleAfterSaveFeature)) {
@@ -734,13 +734,13 @@ void ManagePasswordsUIController::ChooseCredential(
 
 void ManagePasswordsUIController::NavigateToPasswordManagerSettingsPage(
     password_manager::ManagePasswordsReferrer referrer) {
-  NavigateToManagePasswordsPage(
-      chrome::FindBrowserWithWebContents(web_contents()), referrer);
+  NavigateToManagePasswordsPage(chrome::FindBrowserWithTab(web_contents()),
+                                referrer);
 }
 
 void ManagePasswordsUIController::NavigateToPasswordCheckup(
     password_manager::PasswordCheckReferrer referrer) {
-  chrome::ShowPasswordCheck(chrome::FindBrowserWithWebContents(web_contents()));
+  chrome::ShowPasswordCheck(chrome::FindBrowserWithTab(web_contents()));
   password_manager::LogPasswordCheckReferrer(referrer);
 }
 
@@ -841,7 +841,7 @@ void ManagePasswordsUIController::
 
 void ManagePasswordsUIController::MaybeShowIOSPasswordPromo() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser) {
     return;
   }
@@ -882,7 +882,7 @@ void ManagePasswordsUIController::UpdateBubbleAndIconVisibility() {
     passwords_data_.OnInactive();
   }
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser)
     return;
   browser->window()->UpdatePageActionIcon(PageActionIconType::kManagePasswords);
@@ -904,7 +904,7 @@ CredentialLeakPrompt* ManagePasswordsUIController::CreateCredentialLeakPrompt(
 }
 
 bool ManagePasswordsUIController::HasBrowserWindow() const {
-  return chrome::FindBrowserWithWebContents(web_contents()) != nullptr;
+  return chrome::FindBrowserWithTab(web_contents()) != nullptr;
 }
 
 void ManagePasswordsUIController::PrimaryPageChanged(content::Page& page) {
@@ -937,7 +937,7 @@ base::TimeDelta ManagePasswordsUIController::GetTimeoutForSaveFallback() {
 
 void ManagePasswordsUIController::ShowBubbleWithoutUserInteraction() {
   DCHECK(IsAutomaticallyOpeningBubble());
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   // Can be zero in the tests.
   if (!browser)
     return;

@@ -679,7 +679,7 @@ void GoBack(content::WebContents* web_contents) {
 
   if (CanGoBack(web_contents)) {
     web_contents->GetController().GoBack();
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+    Browser* browser = chrome::FindBrowserWithTab(web_contents);
     if (browser) {
       browser->window()->NotifyFeatureEngagementEvent(
           kBackForwardNavigationIsTriggered);
@@ -714,7 +714,7 @@ void GoForward(content::WebContents* web_contents) {
   base::RecordAction(UserMetricsAction("Forward"));
   if (CanGoForward(web_contents)) {
     web_contents->GetController().GoForward();
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+    Browser* browser = chrome::FindBrowserWithTab(web_contents);
     if (browser) {
       browser->window()->NotifyFeatureEngagementEvent(
           kBackForwardNavigationIsTriggered);

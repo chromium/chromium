@@ -122,7 +122,7 @@ Browser* CreateAndShowBrowser(Profile* profile,
 // take care of setting the id to TAB_ID_NONE if necessary (for
 // example with devtools).
 int GetTabIdForExtensions(const WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (browser && !ExtensionTabUtil::BrowserSupportsTabs(browser))
     return -1;
   return sessions::SessionTabHelper::IdForTab(web_contents).id();
@@ -949,7 +949,7 @@ void ExtensionTabUtil::ForEachTab(
 // static
 WindowController* ExtensionTabUtil::GetWindowControllerOfTab(
     const WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (browser != nullptr)
     return browser->extension_window_controller();
 
@@ -1070,7 +1070,7 @@ bool ExtensionTabUtil::TabIsInSavedTabGroup(content::WebContents* contents,
   // If the tab_strip_model is empty, find the contents in one of the browsers.
   if (!tab_strip_model) {
     CHECK(contents);
-    Browser* browser = chrome::FindBrowserWithWebContents(contents);
+    Browser* browser = chrome::FindBrowserWithTab(contents);
 
     // if the webcontents isn't in any tabstrip, its not in a saved tab group.
     if (!browser) {

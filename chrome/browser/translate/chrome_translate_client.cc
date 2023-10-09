@@ -402,7 +402,7 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
     translate::TranslateErrors error_type,
     bool is_user_gesture) {
   DCHECK(translate_manager_);
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
 
   // |browser| might be NULL when testing. In this case, Show(...) should be
   // called because the implementation for testing is used.

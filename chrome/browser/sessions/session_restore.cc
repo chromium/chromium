@@ -1209,7 +1209,7 @@ WebContents* SessionRestore::RestoreForeignSessionTab(
     const sessions::SessionTab& tab,
     WindowOpenDisposition disposition,
     bool skip_renderer_creation) {
-  Browser* browser = chrome::FindBrowserWithWebContents(source_web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(source_web_contents);
   Profile* profile = browser->profile();
   StartupTabs startup_tabs;
   SessionRestoreImpl restorer(profile, browser, true, false, false,

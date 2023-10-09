@@ -239,8 +239,9 @@ void HungRendererDialogView::Show(
     return;
 
   // Only show for WebContents in a browser window.
-  if (!chrome::FindBrowserWithWebContents(contents))
+  if (!chrome::FindBrowserWithTab(contents)) {
     return;
+  }
 
   // Don't show the warning unless the foreground window is the frame. If the
   // user has another window or application selected, activating ourselves is

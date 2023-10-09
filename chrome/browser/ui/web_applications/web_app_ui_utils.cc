@@ -28,7 +28,7 @@ namespace {
 
 absl::optional<webapps::AppId> GetAppIdForManagementLinkInWebContents(
     content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser)
     return absl::nullopt;
 
@@ -94,8 +94,8 @@ bool HandleAppManagementLinkClickedInPageInfo(
   ShowAppManagementPage(*app_id);
   return true;
 #else
-  chrome::ShowWebAppSettings(chrome::FindBrowserWithWebContents(web_contents),
-                             *app_id, AppSettingsPageEntryPoint::kPageInfoView);
+  chrome::ShowWebAppSettings(chrome::FindBrowserWithTab(web_contents), *app_id,
+                             AppSettingsPageEntryPoint::kPageInfoView);
   return true;
 #endif
 }

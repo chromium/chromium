@@ -1481,7 +1481,7 @@ ash::ShelfItemStatus ChromeShelfController::GetAppState(
     const std::string& app_id) {
   for (auto [web_contents, to_app_id] : web_contents_to_app_id_) {
     if (app_id == to_app_id) {
-      Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+      Browser* browser = chrome::FindBrowserWithTab(web_contents);
       // Usually there should never be an item in our |web_contents_to_app_id_|
       // list which got deleted already. However - in some situations e.g.
       // Browser::SwapTabContent there is temporarily no associated browser.

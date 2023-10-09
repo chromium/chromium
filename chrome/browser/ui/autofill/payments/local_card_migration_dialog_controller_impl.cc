@@ -270,7 +270,7 @@ void LocalCardMigrationDialogControllerImpl::OpenUrl(const GURL& url) {
 }
 
 void LocalCardMigrationDialogControllerImpl::UpdateLocalCardMigrationIcon() {
-  Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(&GetWebContents());
   if (browser) {
     browser->window()->UpdatePageActionIcon(
         PageActionIconType::kLocalCardMigration);

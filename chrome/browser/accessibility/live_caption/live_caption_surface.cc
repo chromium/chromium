@@ -58,7 +58,7 @@ void LiveCaptionSurface::Activate() {
   // Activate the web contents and the browser window that the web contents is
   // in. Order matters: web contents needs to be active in order for the widget
   // getter to work.
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser) {
     return;
   }

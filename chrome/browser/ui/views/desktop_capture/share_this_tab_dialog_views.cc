@@ -147,8 +147,7 @@ ShareThisTabDialogView::ShareThisTabDialogView(
   if (params.web_contents &&
       !params.web_contents->GetDelegate()->IsNeverComposited(
           params.web_contents)) {
-    const Browser* browser =
-        chrome::FindBrowserWithWebContents(params.web_contents);
+    const Browser* browser = chrome::FindBrowserWithTab(params.web_contents);
     // Close the extension popup to prevent spoofing.
     if (browser && browser->window() &&
         browser->window()->GetExtensionsContainer()) {

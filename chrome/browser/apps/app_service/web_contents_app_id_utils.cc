@@ -78,7 +78,7 @@ absl::optional<std::string> GetInstanceAppIdForWebContents(
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   // Note: It is possible to come here after a tab got removed from the browser
   // before it gets destroyed, in which case there is no browser.
-  Browser* browser = chrome::FindBrowserWithWebContents(tab);
+  Browser* browser = chrome::FindBrowserWithTab(tab);
 
   // Use the Browser's app name to determine the web app for app windows and use
   // the tab's url for app tabs.

@@ -383,7 +383,7 @@ void UserNotesPageHandler::OpenUrl(const ::GURL& url,
       open_location == WindowOpenDisposition::OFF_THE_RECORD;
   if (opening_in_new_window && handle) {
     content::WebContents* opened_tab = handle->GetWebContents();
-    auto* new_browser = chrome::FindBrowserWithWebContents(opened_tab);
+    auto* new_browser = chrome::FindBrowserWithTab(opened_tab);
     UserNotesController::ShowUserNotesForBrowser(new_browser);
   }
 }

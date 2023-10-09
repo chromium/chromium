@@ -90,8 +90,7 @@ std::vector<SharingHubAction> SharingHubModel::GetFirstPartyActionList(
       if (follow_state == TabWebFeedFollowState::kFollowed)
         results.push_back(action);
     } else if (action.command_id == IDC_SAVE_PAGE) {
-      if (chrome::CanSavePage(
-              chrome::FindBrowserWithWebContents(web_contents))) {
+      if (chrome::CanSavePage(chrome::FindBrowserWithTab(web_contents))) {
         results.push_back(action);
       }
     } else {

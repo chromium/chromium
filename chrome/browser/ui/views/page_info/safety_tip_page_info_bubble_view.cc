@@ -229,7 +229,7 @@ void ShowSafetyTipDialog(
     security_state::SafetyTipStatus safety_tip_status,
     const GURL& suggested_url,
     base::OnceCallback<void(SafetyTipInteraction)> close_callback) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser)
     return;
 

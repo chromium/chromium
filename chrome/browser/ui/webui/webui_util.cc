@@ -106,7 +106,7 @@ ui::NativeTheme* GetNativeTheme(content::WebContents* web_contents) {
   ui::NativeTheme* native_theme = nullptr;
 
   if (web_contents) {
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+    Browser* browser = chrome::FindBrowserWithTab(web_contents);
 
     if (browser) {
       // Find for WebContents hosted in a tab.

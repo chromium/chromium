@@ -97,7 +97,7 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
                                            const webapps::AppId& app_id,
                                            bool as_pinned_home_tab) {
   DCHECK(target_browser->is_type_app());
-  Browser* source_browser = chrome::FindBrowserWithWebContents(contents);
+  Browser* source_browser = chrome::FindBrowserWithTab(contents);
 
   // In a reparent, the owning session service needs to be told it's tab
   // has been removed, otherwise it will reopen the tab on restoration.
@@ -311,7 +311,7 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
           WebAppLaunchProcess::CreateAndRun(
               *profile, registrar, provider->os_integration_manager(), params);
       contents->Close();
-      return chrome::FindBrowserWithWebContents(new_web_contents);
+      return chrome::FindBrowserWithTab(new_web_contents);
     }
   }
 

@@ -42,7 +42,7 @@ void CustomizeChromeFeaturePromoHelper::MaybeShowCustomizeChromeFeaturePromo(
       features::IsChromeRefresh2023() && features::IsChromeWebuiRefresh2023()
           ? feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature
           : feature_engagement::kIPHDesktopCustomizeChromeFeature;
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser || !DefaultSearchProviderIsGoogle(browser->profile())) {
     return;
   }
@@ -65,6 +65,6 @@ void CustomizeChromeFeaturePromoHelper::CloseCustomizeChromeFeaturePromo(
 
 bool CustomizeChromeFeaturePromoHelper::IsSigninModalDialogOpen(
     content::WebContents* web_contents) {
-  auto* browser = chrome::FindBrowserWithWebContents(web_contents);
+  auto* browser = chrome::FindBrowserWithTab(web_contents);
   return browser->signin_view_controller()->ShowsModalDialog();
 }

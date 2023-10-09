@@ -359,7 +359,7 @@ void ChromeSecurityBlockingPageFactory::DoChromeSpecificSetup(
 void ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(
     content::WebContents* web_contents,
     bool focus) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
 
   // If the Profile doesn't have a tabbed browser window open, do nothing.
   if (!browser)
@@ -378,8 +378,7 @@ void ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(
       captive_portal::CaptivePortalTabHelper* captive_portal_tab_helper =
           captive_portal::CaptivePortalTabHelper::FromWebContents(contents);
       if (captive_portal_tab_helper->IsLoginTab()) {
-        Browser* browser_with_login_tab =
-            chrome::FindBrowserWithWebContents(contents);
+        Browser* browser_with_login_tab = chrome::FindBrowserWithTab(contents);
         browser_with_login_tab->window()->Show();
         browser_with_login_tab->tab_strip_model()->ActivateTabAt(
             browser_with_login_tab->tab_strip_model()->GetIndexOfWebContents(

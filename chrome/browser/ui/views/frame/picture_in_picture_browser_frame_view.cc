@@ -966,7 +966,7 @@ PictureInPictureBrowserFrameView::GetContentSettingWebContents() {
 ContentSettingBubbleModelDelegate*
 PictureInPictureBrowserFrameView::GetContentSettingBubbleModelDelegate() {
   // Use the opener browser delegate to open any new tab.
-  Browser* browser = chrome::FindBrowserWithWebContents(GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(GetWebContents());
   return browser->content_setting_bubble_model_delegate();
 }
 

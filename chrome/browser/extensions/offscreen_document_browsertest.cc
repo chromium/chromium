@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
   EXPECT_EQ(offscreen_url, contents->GetLastCommittedURL());
   // - The offscreen document should be, well, offscreen; it should not be
   //   contained within any Browser window.
-  EXPECT_EQ(nullptr, chrome::FindBrowserWithWebContents(contents));
+  EXPECT_EQ(nullptr, chrome::FindBrowserWithTab(contents));
   // - The view type should be correctly set (it should not be considered a
   //   background page, tab, or other type of view).
   EXPECT_EQ(mojom::ViewType::kOffscreenDocument,

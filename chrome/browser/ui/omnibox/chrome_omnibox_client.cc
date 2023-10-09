@@ -427,7 +427,7 @@ void ChromeOmniboxClient::DiscardNonCommittedNavigations() {
 void ChromeOmniboxClient::OpenUpdateChromeDialog() {
   const content::WebContents* contents = location_bar_->GetWebContents();
   if (contents) {
-    Browser* browser = chrome::FindBrowserWithWebContents(contents);
+    Browser* browser = chrome::FindBrowserWithTab(contents);
     if (browser) {
       // Here we record and take action more directly than
       // chrome::OpenUpdateChromeDialog because that call is intended for use

@@ -83,7 +83,7 @@ LocationBarBubbleDelegateView::LocationBarBubbleDelegateView(
       WebContentsObserver(web_contents) {
   // Add observer to close the bubble if the fullscreen state changes.
   if (web_contents) {
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+    Browser* browser = chrome::FindBrowserWithTab(web_contents);
     // |browser| can be null in tests.
     if (browser) {
       fullscreen_observation_.Observe(

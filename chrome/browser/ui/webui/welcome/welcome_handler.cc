@@ -114,7 +114,7 @@ Browser* WelcomeHandler::GetBrowser() {
   DCHECK(web_ui());
   content::WebContents* contents = web_ui()->GetWebContents();
   DCHECK(contents);
-  Browser* browser = chrome::FindBrowserWithWebContents(contents);
+  Browser* browser = chrome::FindBrowserWithTab(contents);
   DCHECK(browser);
   return browser;
 }

@@ -43,7 +43,7 @@ void SearchEngineChoiceTabHelper::DidFinishNavigation(
   }
 
   Browser& browser = CHECK_DEREF(
-      chrome::FindBrowserWithWebContents(navigation_handle->GetWebContents()));
+      chrome::FindBrowserWithTab(navigation_handle->GetWebContents()));
   SearchEngineChoiceService* search_engine_choice_service =
       SearchEngineChoiceServiceFactory::GetForProfile(browser.profile());
   if (!search_engine_choice_service ||

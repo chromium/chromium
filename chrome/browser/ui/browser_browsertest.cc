@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CaptivePortalWindowTitle) {
   captive_portal_params.is_captive_portal_popup = true;
   ui_test_utils::NavigateToURL(&captive_portal_params);
   std::u16string captive_portal_window_title =
-      chrome::FindBrowserWithWebContents(
+      chrome::FindBrowserWithTab(
           captive_portal_params.navigated_or_inserted_contents)
           ->GetWindowTitleForCurrentTab(true /* include_app_name */);
 
@@ -508,8 +508,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CaptivePortalWindowTitle) {
   normal_params.disposition = WindowOpenDisposition::NEW_POPUP;
   ui_test_utils::NavigateToURL(&normal_params);
   std::u16string normal_window_title =
-      chrome::FindBrowserWithWebContents(
-          normal_params.navigated_or_inserted_contents)
+      chrome::FindBrowserWithTab(normal_params.navigated_or_inserted_contents)
           ->GetWindowTitleForCurrentTab(true /* include_app_name */);
 
   ASSERT_NE(captive_portal_window_title, normal_window_title);

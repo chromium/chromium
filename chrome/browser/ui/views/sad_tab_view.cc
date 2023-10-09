@@ -623,7 +623,7 @@ void SadTabView::RemovedFromWidget() {
 }
 
 void SadTabView::AttachToWebView() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   // This can be null during prefetch.
   if (!browser)
     return;

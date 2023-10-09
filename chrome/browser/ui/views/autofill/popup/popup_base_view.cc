@@ -218,7 +218,7 @@ PopupBaseView::~PopupBaseView() {
 
 Browser* PopupBaseView::GetBrowser() {
   if (content::WebContents* web_contents = GetWebContents()) {
-    return chrome::FindBrowserWithWebContents(web_contents);
+    return chrome::FindBrowserWithTab(web_contents);
   }
   return nullptr;
 }

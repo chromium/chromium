@@ -108,7 +108,7 @@ bool HasNotificationExemption(const GURL& url) {
 // Find browser or app window from a given |web_contents|.
 gfx::NativeWindow FindParentWindowForWebContents(
     content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (browser && browser->window())
     return browser->window()->GetNativeWindow();
 

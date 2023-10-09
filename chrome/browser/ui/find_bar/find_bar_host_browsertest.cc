@@ -160,7 +160,7 @@ class FindInPageControllerTest : public InProcessBrowserTest {
                    bool forward,
                    bool case_sensitive,
                    int* ordinal) {
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+    Browser* browser = chrome::FindBrowserWithTab(web_contents);
     browser->GetFindBarController()->find_bar()->SetFindTextAndSelectedRange(
         search_str, gfx::Range());
     return ui_test_utils::FindInPage(web_contents, search_str, forward,

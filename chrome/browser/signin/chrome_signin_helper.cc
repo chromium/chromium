@@ -230,7 +230,7 @@ void ProcessMirrorHeader(
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
       account_reconcilor->GetState());
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   // Do not do anything if the navigation happened in the "background".
   if (!browser || !browser->window()->IsActive()) {
     return;

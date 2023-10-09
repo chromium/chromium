@@ -124,7 +124,7 @@ void TrackingProtectionNoticeService::MaybeUpdateNoticeVisibility(
     return;
   }
 
-  auto* browser = chrome::FindBrowserWithWebContents(web_content);
+  auto* browser = chrome::FindBrowserWithTab(web_content);
 
   if (!browser || !browser->window() || !browser->location_bar_model() ||
       !browser->tab_strip_model()) {

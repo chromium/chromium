@@ -111,7 +111,7 @@ class WebAppOfflineTest : public InProcessBrowserTest {
   }
 
   void CloseBrowser(content::WebContents* web_contents) {
-    Browser* app_browser = chrome::FindBrowserWithWebContents(web_contents);
+    Browser* app_browser = chrome::FindBrowserWithTab(web_contents);
     app_browser->window()->Close();
     ui_test_utils::WaitForBrowserToClose(app_browser);
   }

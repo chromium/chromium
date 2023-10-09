@@ -35,10 +35,11 @@ void ChromeSettingsPageHelper::OpenEnhancedProtectionSettings(
   // than crash.
   // TODO(crbug.com/1219535): Remove and find a better way, e.g. not showing the
   // enhanced protection promo at all.
-  if (!chrome::FindBrowserWithWebContents(web_contents))
+  if (!chrome::FindBrowserWithTab(web_contents)) {
     return;
+  }
   chrome::ShowSafeBrowsingEnhancedProtection(
-      chrome::FindBrowserWithWebContents(web_contents));
+      chrome::FindBrowserWithTab(web_contents));
 #endif
 }
 
@@ -50,11 +51,11 @@ void ChromeSettingsPageHelper::OpenEnhancedProtectionSettingsWithIph(
   // than crash.
   // TODO(crbug.com/1219535): Remove and find a better way, e.g. not showing the
   // enhanced protection promo at all.
-  if (!chrome::FindBrowserWithWebContents(web_contents)) {
+  if (!chrome::FindBrowserWithTab(web_contents)) {
     return;
   }
   chrome::ShowSafeBrowsingEnhancedProtectionWithIph(
-      chrome::FindBrowserWithWebContents(web_contents), referral_method);
+      chrome::FindBrowserWithTab(web_contents), referral_method);
 #endif
 }
 

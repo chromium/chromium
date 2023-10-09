@@ -355,7 +355,7 @@ int GetSessionIdForRestoreFromWebContents(
     return SessionID::InvalidValue().id();
   }
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     return SessionID::InvalidValue().id();
   }

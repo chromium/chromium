@@ -134,6 +134,6 @@ CustomizeChromeSidePanelController::CreateCustomizeChromeWebView() {
 }
 
 SidePanelUI* CustomizeChromeSidePanelController::GetSidePanelUI() const {
-  auto* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  auto* browser = chrome::FindBrowserWithTab(web_contents_);
   return browser ? SidePanelUI::GetSidePanelUIForBrowser(browser) : nullptr;
 }

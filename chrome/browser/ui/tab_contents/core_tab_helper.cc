@@ -100,7 +100,7 @@ std::u16string CoreTabHelper::GetStatusText() const {
 void CoreTabHelper::UpdateContentRestrictions(int content_restrictions) {
   content_restrictions_ = content_restrictions;
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser)
     return;
 
@@ -356,7 +356,7 @@ std::unique_ptr<content::WebContents> CoreTabHelper::SwapWebContents(
   return tab->SwapWebContents(std::move(new_contents), did_start_load,
                               did_finish_load);
 #else
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   return browser->SwapWebContents(web_contents(), std::move(new_contents));
 #endif
 }
@@ -491,7 +491,7 @@ void CoreTabHelper::NavigationEntriesDeleted() {
 void CoreTabHelper::OnWebContentsFocused(
     content::RenderWidgetHost* render_widget_host) {
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (browser)
     browser->command_controller()->WebContentsFocusChanged();
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -500,7 +500,7 @@ void CoreTabHelper::OnWebContentsFocused(
 void CoreTabHelper::OnWebContentsLostFocus(
     content::RenderWidgetHost* render_widget_host) {
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (browser)
     browser->command_controller()->WebContentsFocusChanged();
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -603,7 +603,7 @@ void CoreTabHelper::DoSearchByImage(
 
 bool CoreTabHelper::IsImageSearchSupportedForCompanion() {
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (browser) {
     return companion::IsSearchImageInCompanionSidePanelSupported(browser);
   }
@@ -661,7 +661,7 @@ void CoreTabHelper::OpenOpenURLParams(content::OpenURLParams open_url_params,
                                       bool use_side_panel) {
   if (use_side_panel) {
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-    lens::OpenLensSidePanel(chrome::FindBrowserWithWebContents(web_contents()),
+    lens::OpenLensSidePanel(chrome::FindBrowserWithTab(web_contents()),
                             open_url_params);
 #else
     web_contents()->OpenURL(open_url_params);

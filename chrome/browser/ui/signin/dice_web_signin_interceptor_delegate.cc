@@ -113,7 +113,7 @@ DiceWebSigninInterceptorDelegate::~DiceWebSigninInterceptorDelegate() = default;
 
 bool DiceWebSigninInterceptorDelegate::IsSigninInterceptionSupported(
     const content::WebContents& web_contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(&web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(&web_contents);
   // The profile creation flow has no browser.
   if (!browser) {
     return false;
@@ -143,12 +143,12 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble(
           WebSigninInterceptor::SigninInterceptionType::
               kEnterpriseAcceptManagement) {
     return std::make_unique<ForcedEnterpriseSigninInterceptionHandle>(
-        chrome::FindBrowserWithWebContents(web_contents), bubble_parameters,
+        chrome::FindBrowserWithTab(web_contents), bubble_parameters,
         std::move(callback));
   }
 
   return ShowSigninInterceptionBubbleInternal(
-      chrome::FindBrowserWithWebContents(web_contents), bubble_parameters,
+      chrome::FindBrowserWithTab(web_contents), bubble_parameters,
       std::move(callback));
 }
 

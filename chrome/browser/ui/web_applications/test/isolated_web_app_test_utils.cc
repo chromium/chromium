@@ -60,7 +60,7 @@ IsolatedWebAppBrowserTestHarness::InstallDevModeProxyIsolatedWebApp(
 
 Browser* IsolatedWebAppBrowserTestHarness::GetBrowserFromFrame(
     content::RenderFrameHost* frame) {
-  Browser* browser = chrome::FindBrowserWithWebContents(
+  Browser* browser = chrome::FindBrowserWithTab(
       content::WebContents::FromRenderFrameHost(frame));
   EXPECT_TRUE(browser);
   return browser;

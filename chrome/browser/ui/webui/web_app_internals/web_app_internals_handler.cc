@@ -529,8 +529,7 @@ void WebAppInternalsHandler::SelectFileAndInstallIsolatedWebAppFromDevBundle(
     return;
   }
 
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui_->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(web_ui_->GetWebContents());
   if (!browser) {
     SendError(std::move(callback), "could not get browser");
     return;

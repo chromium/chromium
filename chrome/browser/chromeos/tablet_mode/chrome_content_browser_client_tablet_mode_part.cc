@@ -64,7 +64,7 @@ void OverrideWebkitPrefsForTabletMode(
 
   // Do this only for webcontents displayed in browsers and are not of hosted
   // apps.
-  auto* browser = chrome::FindBrowserWithWebContents(contents);
+  auto* browser = chrome::FindBrowserWithTab(contents);
   if (!browser || browser->is_type_app() || browser->is_type_app_popup())
     return;
 

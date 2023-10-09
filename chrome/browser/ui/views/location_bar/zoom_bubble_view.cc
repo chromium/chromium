@@ -201,7 +201,7 @@ ZoomBubbleView* ZoomBubbleView::zoom_bubble_ = nullptr;
 // static
 void ZoomBubbleView::ShowBubble(content::WebContents* web_contents,
                                 DisplayReason reason) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   // |web_contents| could have been unloaded if a tab gets closed and a mouse
   // event arrives before the zoom icon gets hidden.
   if (!browser)
@@ -258,7 +258,7 @@ bool ZoomBubbleView::CanRefresh(const content::WebContents* web_contents) {
   if (!zoom_bubble_ || (zoom_bubble_->web_contents() != web_contents))
     return false;
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser ||
       (zoom_bubble_->GetAnchorView() != GetAnchorViewForBrowser(browser)))
     return false;
@@ -302,8 +302,7 @@ ZoomBubbleView::ZoomBubbleView(
       auto_close_duration_(kBubbleCloseDelayDefault),
       auto_close_(reason == AUTOMATIC),
       immersive_mode_controller_(immersive_mode_controller),
-      session_id_(
-          chrome::FindBrowserWithWebContents(web_contents)->session_id()) {
+      session_id_(chrome::FindBrowserWithTab(web_contents)->session_id()) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
   SetNotifyEnterExitOnChild(true);
@@ -603,8 +602,7 @@ void ZoomBubbleView::ImageButtonPressed() {
 }
 
 Browser* ZoomBubbleView::GetBrowser() const {
-  return web_contents() ? chrome::FindBrowserWithWebContents(web_contents())
-                        : nullptr;
+  return web_contents() ? chrome::FindBrowserWithTab(web_contents()) : nullptr;
 }
 
 ZoomBubbleView::ZoomBubbleExtensionInfo::ZoomBubbleExtensionInfo() {}

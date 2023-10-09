@@ -194,7 +194,7 @@ content::PermissionResult ChromePageInfoDelegate::GetPermissionResult(
 
 #if !BUILDFLAG(IS_ANDROID)
 void ChromePageInfoDelegate::FocusWebContents() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   browser->ActivateContents(web_contents_);
 }
 
@@ -248,18 +248,18 @@ void ChromePageInfoDelegate::ShowSiteSettings(const GURL& site_url) {
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   chrome::ShowSiteSettings(browser, site_url);
 }
 
 void ChromePageInfoDelegate::ShowCookiesSettings() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   chrome::ShowSettingsSubPage(browser, chrome::kCookieSettingsSubPage);
 }
 
 void ChromePageInfoDelegate::ShowAllSitesSettingsFilteredByFpsOwner(
     const std::u16string& fps_owner) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   chrome::ShowAllSitesSettingsFilteredByFpsOwner(browser,
                                                  base::UTF16ToUTF8(fps_owner));
 }

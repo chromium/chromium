@@ -1188,7 +1188,7 @@ void PasskeysHandler::HandleManagePasskeys(const base::Value::List& args) {
 
   // If no system management exists, fall back to Chrome's own settings UI.
   chrome::ShowSettingsSubPage(
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents()),
+      chrome::FindBrowserWithTab(web_ui()->GetWebContents()),
       chrome::kPasskeysSubPage);
 }
 

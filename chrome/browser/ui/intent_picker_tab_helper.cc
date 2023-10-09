@@ -108,7 +108,7 @@ bool ShouldConsiderWebContentsForIntentPicker(
     return false;
   }
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (browser && (browser->is_type_app() || browser->is_type_app_popup())) {
     return false;
   }
@@ -125,7 +125,7 @@ void ShowIntentPickerBubbleForApps(
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     return;
   }
@@ -340,7 +340,7 @@ void IntentPickerTabHelper::ShowIconForLinkIntent(bool should_show_icon) {
 void IntentPickerTabHelper::ShowOrHideIconInternal(bool should_show_icon) {
   should_show_icon_ = should_show_icon;
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser)
     return;
   browser->window()->UpdatePageActionIcon(PageActionIconType::kIntentPicker);

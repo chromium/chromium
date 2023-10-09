@@ -39,7 +39,7 @@ bool IsSidePanelEnabled(content::WebContents* web_contents) {
 
 bool IsInProgressiveWebApp(content::WebContents* web_contents) {
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   return browser && (browser->is_type_app() || browser->is_type_app_popup());
 #else
   return false;
@@ -61,7 +61,7 @@ TemplateURLService* GetTemplateURLService(content::WebContents* web_contents) {
 gfx::Size GetSidePanelInitialContentSizeUpperBound(
     content::WebContents* web_contents) {
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   const SidePanel* side_panel =
       BrowserView::GetBrowserViewForBrowser(browser)->unified_side_panel();
   return side_panel->GetContentSizeUpperBound();

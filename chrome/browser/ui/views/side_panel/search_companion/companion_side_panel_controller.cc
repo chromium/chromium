@@ -45,7 +45,7 @@ CompanionSidePanelController::~CompanionSidePanelController() = default;
 
 void CompanionSidePanelController::CreateAndRegisterEntry() {
   auto* registry = SidePanelRegistry::Get(web_contents_);
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   if (!browser) {
     // If no browser was found via WebContents, it is probably because the
     // web_contents has not been attached to a window yet. Since we are only
@@ -97,7 +97,7 @@ void CompanionSidePanelController::DeregisterEntry() {
 
 void CompanionSidePanelController::ShowCompanionSidePanel(
     SidePanelOpenTrigger side_panel_open_trigger) {
-  if (Browser* browser = chrome::FindBrowserWithWebContents(web_contents_)) {
+  if (Browser* browser = chrome::FindBrowserWithTab(web_contents_)) {
     auto* coordinator =
         SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(browser);
     coordinator->Show(side_panel_open_trigger);
@@ -106,7 +106,7 @@ void CompanionSidePanelController::ShowCompanionSidePanel(
 
 void CompanionSidePanelController::UpdateNewTabButton(GURL url_to_open) {
   open_in_new_tab_url_ = url_to_open;
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   if (!browser) {
     return;
   }
@@ -160,7 +160,7 @@ void CompanionSidePanelController::OnEntryShown(SidePanelEntry* entry) {
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   if (!browser) {
     return;
   }
@@ -177,7 +177,7 @@ void CompanionSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   if (!browser) {
     return;
   }
@@ -286,7 +286,7 @@ void CompanionSidePanelController::DidOpenRequestedURL(
                            ? WindowOpenDisposition::CURRENT_TAB
                            : WindowOpenDisposition::NEW_FOREGROUND_TAB;
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   if (!browser) {
     return;
   }
@@ -402,7 +402,7 @@ void CompanionSidePanelController::CreateAndRegisterLensEntry(
     std::u16string combobox_label,
     const ui::ImageModel favicon) {
   CHECK(web_contents_);
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   auto* registry = SidePanelRegistry::Get(web_contents_);
   if (!browser || !registry) {
     return;
@@ -423,7 +423,7 @@ std::unique_ptr<views::View>
 CompanionSidePanelController::CreateContextualLensView(
     const content::OpenURLParams& params) {
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   if (!browser) {
     return nullptr;
   }
@@ -467,7 +467,7 @@ GURL CompanionSidePanelController::GetLensOpenInNewTabButtonURL() {
 
 void CompanionSidePanelController::UpdateNewTabButtonState() {
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   if (!browser) {
     return;
   }

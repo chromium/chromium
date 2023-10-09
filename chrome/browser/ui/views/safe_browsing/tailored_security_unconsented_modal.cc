@@ -52,10 +52,11 @@ void EnableEsbAndShowSettings(content::WebContents* web_contents) {
   SetSafeBrowsingState(profile->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION,
                        /*is_esb_enabled_in_sync=*/false);
-  if (!chrome::FindBrowserWithWebContents(web_contents))
+  if (!chrome::FindBrowserWithTab(web_contents)) {
     return;
+  }
   chrome::ShowSafeBrowsingEnhancedProtection(
-      chrome::FindBrowserWithWebContents(web_contents));
+      chrome::FindBrowserWithTab(web_contents));
 }
 
 class SuperimposedOffsetImageSource : public gfx::CanvasImageSource {

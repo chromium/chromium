@@ -446,8 +446,7 @@ void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* web_contents) {
     return;
   }
 
-  auto* window =
-      GetWindowWithBrowser(chrome::FindBrowserWithWebContents(web_contents));
+  auto* window = GetWindowWithBrowser(chrome::FindBrowserWithTab(web_contents));
   if (!window) {
     return;
   }

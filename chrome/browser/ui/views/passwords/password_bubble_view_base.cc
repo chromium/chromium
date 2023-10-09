@@ -42,7 +42,7 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::g_manage_passwords_bubble_ =
 // static
 void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
                                         DisplayReason reason) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   DCHECK(browser);
   DCHECK(browser->window());
   DCHECK(!g_manage_passwords_bubble_ ||

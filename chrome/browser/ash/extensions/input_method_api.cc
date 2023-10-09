@@ -328,7 +328,7 @@ InputMethodPrivateOpenOptionsPageFunction::Run() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     content::WebContents* web_contents = GetSenderWebContents();
     if (web_contents) {
-      Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+      Browser* browser = chrome::FindBrowserWithTab(web_contents);
       content::OpenURLParams url_params(options_page_url, content::Referrer(),
                                         WindowOpenDisposition::SINGLETON_TAB,
                                         ui::PAGE_TRANSITION_LINK, false);

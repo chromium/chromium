@@ -212,7 +212,7 @@ const BrowserAppInstance* BrowserAppInstanceTracker::GetAppInstance(
   // Then app window instance, which should be at most one per WebContents,
   // although multiple WebContents can map to a single app window instance, in
   // case of app windows with tab strips.
-  Browser* browser = chrome::FindBrowserWithWebContents(contents);
+  Browser* browser = chrome::FindBrowserWithTab(contents);
   if (!browser) {
     return nullptr;
   }
@@ -233,7 +233,7 @@ void BrowserAppInstanceTracker::ActivateTabInstance(base::UnguessableToken id) {
   for (const auto& pair : app_tab_instances_) {
     const BrowserAppInstance& instance = *pair.second;
     if (instance.id == id) {
-      Browser* browser = chrome::FindBrowserWithWebContents(pair.first);
+      Browser* browser = chrome::FindBrowserWithTab(pair.first);
       TabStripModel* tab_strip = browser->tab_strip_model();
       int index = tab_strip->GetIndexOfWebContents(pair.first);
       DCHECK_NE(TabStripModel::kNoTab, index);
@@ -252,7 +252,7 @@ void BrowserAppInstanceTracker::StopInstancesOfApp(const std::string& app_id) {
     }
   }
   for (content::WebContents* web_contents : web_contents_to_close) {
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+    Browser* browser = chrome::FindBrowserWithTab(web_contents);
     if (!browser) {
       continue;
     }
@@ -546,7 +546,7 @@ void BrowserAppInstanceTracker::OnTabClosing(Browser* browser,
 
 void BrowserAppInstanceTracker::OnWebContentsUpdated(
     content::WebContents* contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(contents);
+  Browser* browser = chrome::FindBrowserWithTab(contents);
   if (browser) {
     OnTabUpdated(browser, contents);
   }

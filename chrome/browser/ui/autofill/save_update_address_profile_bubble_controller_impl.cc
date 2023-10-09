@@ -395,7 +395,7 @@ SaveUpdateAddressProfileBubbleControllerImpl::GetPageActionIconType() {
 
 void SaveUpdateAddressProfileBubbleControllerImpl::DoShowBubble() {
   DCHECK(!bubble_view());
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (IsSaveBubble()) {
     set_bubble_view(browser->window()
                         ->GetAutofillBubbleHandler()

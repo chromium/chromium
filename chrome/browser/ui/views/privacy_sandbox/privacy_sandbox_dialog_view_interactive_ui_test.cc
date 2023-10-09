@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewInteractiveUiTestM1,
       browser(), GURL(chrome::kChromeUINewTabPageURL),
       WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  auto* new_browser = chrome::FindBrowserWithWebContents(
+  auto* new_browser = chrome::FindBrowserWithTab(
       content::WebContents::FromRenderFrameHost(new_rfh));
   ShowPrivacySandboxDialog(new_browser,
                            PrivacySandboxService::PromptType::kM1Consent);
