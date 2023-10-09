@@ -28,6 +28,9 @@ class AutomationTestUtils {
   // strings.
   void WaitForPageLoad(const std::string& url);
 
+  // Gets the value of the node with the given `class_name`.
+  std::string GetValueForNodeWithClassName(const std::string& class_name);
+
   // Gets the bounds of the automation node with the given
   // `name` and `role` in density-independent pixels. Will wait
   // for the node to exist if it does not exist already.

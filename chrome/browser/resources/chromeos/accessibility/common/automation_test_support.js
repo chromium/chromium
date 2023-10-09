@@ -143,6 +143,17 @@ class AutomationTestSupport {
     this.notifyCcTests_('ready');
   }
 
+  /** @param {string} className */
+  async getValueForNodeWithClassName(className) {
+    const findParams = {attributes: {className}};
+    const node = await this.findNode_(findParams);
+    if (!node || !node.value) {
+      return;
+    }
+
+    this.notifyCcTests_(node.value);
+  }
+
   /**
    * @param {string} The result to send to the C++ tests.
    * @private

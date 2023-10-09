@@ -14,10 +14,6 @@
 class Browser;
 class Profile;
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 namespace speech {
 enum class SpeechRecognitionType;
 }  // namespace speech
@@ -79,7 +75,7 @@ class DictationTestUtils {
   void DisablePumpkin();
 
   // Methods for interacting with the editable.
-  std::string GetEditableValue(content::WebContents* web_contents);
+  std::string GetEditableValue();
   void WaitForEditableValue(const std::string& value);
   void WaitForSelection(int start, int end);
 

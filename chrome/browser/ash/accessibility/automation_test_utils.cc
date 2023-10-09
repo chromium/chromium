@@ -103,6 +103,15 @@ void AutomationTestUtils::WaitForValueChangedEvent() {
   ExecuteScriptInExtensionPage(script);
 }
 
+std::string AutomationTestUtils::GetValueForNodeWithClassName(
+    const std::string& class_name) {
+  std::string script = base::StringPrintf(R"(
+    globalThis.automationTestSupport.getValueForNodeWithClassName(`%s`);
+  )",
+                                          class_name.c_str());
+  return ExecuteScriptInExtensionPage(script);
+}
+
 std::string AutomationTestUtils::ExecuteScriptInExtensionPage(
     const std::string& script) {
   // Note SpokenFeedbackTest uses ExecuteScriptInBackgroundPageDeprecated.

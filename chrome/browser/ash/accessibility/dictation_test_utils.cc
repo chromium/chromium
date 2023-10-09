@@ -280,24 +280,9 @@ void DictationTestUtils::DisablePumpkin() {
   ExecuteAccessibilityCommonScript(script);
 }
 
-std::string DictationTestUtils::GetEditableValue(
-    content::WebContents* web_contents) {
-  std::string script;
-  switch (editable_type_) {
-    case EditableType::kTextArea:
-    case EditableType::kInput:
-      script = "document.getElementById('input').value";
-      break;
-    case EditableType::kContentEditable:
-    case EditableType::kFormattedContentEditable:
-      // Replace all non-breaking spaces with regular spaces. Otherwise,
-      // string comparisons will unexpectedly fail.
-      script =
-          "document.getElementById('input').innerText.replaceAll("
-          "'\u00a0', ' ');";
-      break;
-  }
-  return content::EvalJs(web_contents, script).ExtractString();
+std::string DictationTestUtils::GetEditableValue() {
+  return automation_test_utils_->GetValueForNodeWithClassName(
+      "editableForDictation");
 }
 
 void DictationTestUtils::WaitForEditableValue(const std::string& value) {

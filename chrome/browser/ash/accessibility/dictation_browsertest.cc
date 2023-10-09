@@ -250,10 +250,7 @@ class DictationTestBase : public InProcessBrowserTest,
     utils_->SendFinalResultAndWaitForClipboardChanged(result);
   }
 
-  std::string GetEditableValue() {
-    return utils_->GetEditableValue(
-        browser()->tab_strip_model()->GetWebContentsAt(0));
-  }
+  std::string GetEditableValue() { return utils_->GetEditableValue(); }
 
   void WaitForEditableValue(const std::string& value) {
     utils_->WaitForEditableValue(value);
