@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_BUBBLE_CONTENTS_VIEW_INFO_H_
 
 #include "chrome/browser/ui/download/download_bubble_info.h"
-#include "chrome/browser/ui/download/download_bubble_primary_view_info.h"
+#include "chrome/browser/ui/download/download_bubble_row_list_view_info.h"
 
 // Info class for DownloadBubbleContentsView
 class DownloadBubbleContentsViewInfo
@@ -16,12 +16,12 @@ class DownloadBubbleContentsViewInfo
       std::vector<DownloadUIModel::DownloadUIModelPtr> models);
   ~DownloadBubbleContentsViewInfo();
 
-  const DownloadBubblePrimaryViewInfo& primary_view_info() const {
-    return primary_view_info_;
+  const DownloadBubbleRowListViewInfo& row_list_view_info() const {
+    return row_list_view_info_;
   }
 
  private:
-  DownloadBubblePrimaryViewInfo primary_view_info_;
+  DownloadBubbleRowListViewInfo row_list_view_info_;
 };
 
 #endif  // CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_BUBBLE_CONTENTS_VIEW_INFO_H_

@@ -6,6 +6,6 @@
 
 DownloadBubbleContentsViewInfo::DownloadBubbleContentsViewInfo(
     std::vector<DownloadUIModel::DownloadUIModelPtr> models)
-    : primary_view_info_(std::move(models)) {}
+    : row_list_view_info_(std::move(models)) {}
 
 DownloadBubbleContentsViewInfo::~DownloadBubbleContentsViewInfo() = default;

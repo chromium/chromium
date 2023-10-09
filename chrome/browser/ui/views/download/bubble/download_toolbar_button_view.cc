@@ -794,11 +794,7 @@ SkColor DownloadToolbarButtonView::GetProgressColor(bool is_disabled,
 }
 
 void DownloadToolbarButtonView::OnAnyRowRemoved() {
-  if (bubble_contents_->info()
-          .primary_view_info()
-          .row_list_view_info()
-          .rows()
-          .empty()) {
+  if (bubble_contents_->info().row_list_view_info().rows().empty()) {
     CloseDialog(views::Widget::ClosedReason::kUnspecified);
   } else {
     ResizeDialog();

@@ -207,7 +207,7 @@ DownloadBubblePartialView::DownloadBubblePartialView(
     base::WeakPtr<Browser> browser,
     base::WeakPtr<DownloadBubbleUIController> bubble_controller,
     base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
-    const DownloadBubblePrimaryViewInfo& info,
+    const DownloadBubbleRowListViewInfo& info,
     base::OnceClosure on_interacted_closure)
     : on_interacted_closure_(std::move(on_interacted_closure)) {
   MaybeAddOtrInfoRow(browser.get());
@@ -225,12 +225,10 @@ DownloadBubblePartialView::DownloadBubblePartialView(
         std::max(preferred_width, setting_row->GetPreferredSize().width());
   }
 
-  last_download_completed_time_ =
-      info.row_list_view_info().last_completed_time();
+  last_download_completed_time_ = info.last_completed_time();
 
   BuildAndAddScrollView(std::move(browser), std::move(bubble_controller),
-                        std::move(navigation_handler),
-                        info.row_list_view_info(), preferred_width);
+                        std::move(navigation_handler), info, preferred_width);
 
   if (setting_row) {
     const int separator_spacing =

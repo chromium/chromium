@@ -7,7 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/download/download_ui_model.h"
-#include "chrome/browser/ui/download/download_bubble_primary_view_info.h"
+#include "chrome/browser/ui/download/download_bubble_row_list_view_info.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_primary_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -28,7 +28,7 @@ class DownloadBubblePartialView : public DownloadBubblePrimaryView,
       base::WeakPtr<Browser> browser,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
-      const DownloadBubblePrimaryViewInfo& info,
+      const DownloadBubbleRowListViewInfo& info,
       base::OnceClosure on_interacted_closure);
   DownloadBubblePartialView(const DownloadBubblePartialView&) = delete;
   DownloadBubblePartialView& operator=(const DownloadBubblePartialView&) =

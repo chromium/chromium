@@ -35,7 +35,7 @@ DownloadBubbleContentsView::DownloadBubbleContentsView(
     std::unique_ptr<DownloadBubbleContentsViewInfo> info,
     views::BubbleDialogDelegate* bubble_delegate)
     : info_(std::move(info)), bubble_controller_(bubble_controller) {
-  CHECK(!info_->primary_view_info().row_list_view_info().rows().empty());
+  CHECK(!info_->row_list_view_info().rows().empty());
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
@@ -43,13 +43,13 @@ DownloadBubbleContentsView::DownloadBubbleContentsView(
   if (primary_view_is_partial_view) {
     primary_view = std::make_unique<DownloadBubblePartialView>(
         browser, bubble_controller, navigation_handler,
-        info_->primary_view_info(),
+        info_->row_list_view_info(),
         base::BindOnce(&DownloadBubbleNavigationHandler::OnDialogInteracted,
                        navigation_handler));
   } else {
     primary_view = std::make_unique<DownloadDialogView>(
         browser, bubble_controller, navigation_handler,
-        info_->primary_view_info());
+        info_->row_list_view_info());
   }
 
   primary_view_ = AddChildView(std::move(primary_view));
