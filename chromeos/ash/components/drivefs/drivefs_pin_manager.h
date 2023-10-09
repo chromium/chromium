@@ -239,9 +239,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
     return observers_.HasObserver(observer);
   }
 
-  // Processes a syncing status event. Returns true if the event was useful.
-  bool OnSyncingEvent(mojom::ItemEvent& event);
-
   // Stable ID provided by DriveFS.
   enum class Id : int64_t { kNone = 0 };
 
@@ -249,7 +246,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   void NotifyDelete(Id id, const Path& path);
 
   // DriveFsHost::Observer implementation.
-  void OnSyncingStatusUpdate(const mojom::SyncingStatus& status) override;
   void OnUnmounted() override;
   void OnFilesChanged(const std::vector<mojom::FileChange>& changes) override;
   void OnError(const mojom::DriveError& error) override;
@@ -480,10 +476,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   // Is this the first full sync after the size estimation?
   bool is_first_sync_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
-
-  // Should the feature use `OnItemProgress`, if false it will fall back to
-  // `OnSyncingStatusUpdate`.
-  bool use_on_item_progress_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
 
   // Stop at the `PinSomeFiles` stage during testing to perform assertions, this
   // should always be true and only overridden in browser tests.

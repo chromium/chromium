@@ -145,10 +145,6 @@ ostream& operator<<(ostream& out, Quoter<Path> q) {
   return out << "'***'";
 }
 
-ostream& operator<<(ostream& out, Quoter<std::string> q) {
-  return out << "'" << (*q.value) << "'";
-}
-
 template <typename T>
 ostream& operator<<(ostream& out, Quoter<absl::optional<T>> q) {
   const absl::optional<T>& v = *q.value;
@@ -204,16 +200,6 @@ ostream& operator<<(ostream& out, Quoter<FileMetadata> q) {
   }
 
   return out << "}";
-}
-
-ostream& operator<<(ostream& out, Quoter<mojom::ItemEvent> q) {
-  const mojom::ItemEvent& e = *q.value;
-  return out << "{" << Quote(e.state) << " " << PinManager::Id(e.stable_id)
-             << " " << Quote(e.path) << ", bytes_transferred: "
-             << HumanReadableSize(e.bytes_transferred)
-             << ", bytes_to_transfer: "
-             << HumanReadableSize(e.bytes_to_transfer)
-             << ", is_download: " << e.is_download << "}";
 }
 
 ostream& operator<<(ostream& out, Quoter<mojom::ProgressEvent> q) {
@@ -1335,99 +1321,8 @@ void PinManager::OnFilePinned(const Id id,
   DCHECK(!files_to_pin_.contains(id));
 }
 
-// TODO(b/297442320): Remove `OnSyncingStatusUpdate` now we entirely rely on
-// `OnItemProgress.
-void PinManager::OnSyncingStatusUpdate(const mojom::SyncingStatus& status) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (use_on_item_progress_) {
-    return;
-  }
-
-  for (const mojom::ItemEventPtr& event : status.item_events) {
-    DCHECK(event);
-
-    if (!InProgress(progress_.stage)) {
-      VLOG(2) << "Ignored " << Quote(*event);
-      continue;
-    }
-
-    if (OnSyncingEvent(*event)) {
-      progress_.useful_events++;
-    } else {
-      progress_.duplicated_events++;
-      VLOG(3) << "Discarded " << Quote(*event);
-    }
-  }
-
-  PinSomeFiles();
-}
-
-// TODO(b/297442320): Remove `OnSyncingEvent`.
-bool PinManager::OnSyncingEvent(mojom::ItemEvent& event) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!event.is_download) {
-    // We're only interested in download events.
-    VLOG(3) << "Ignored upload-related event " << Quote(event);
-    return false;
-  }
-
-  const Id id = Id(event.stable_id);
-  const Path path = Path(event.path);
-
-  using State = mojom::ItemEvent::State;
-  switch (event.state) {
-    case State::kQueued:
-    case State::kInProgress:
-      if (!Update(id, path, event.bytes_transferred, event.bytes_to_transfer)) {
-        return false;
-      }
-
-      VLOG(3) << Quote(event.state) << " " << id << " " << Quote(path) << ": "
-              << Quote(event);
-      VLOG_IF(2, !VLOG_IS_ON(3))
-          << Quote(event.state) << " " << id << " " << Quote(path);
-      return true;
-
-    case State::kCompleted:
-      if (!Remove(id, path)) {
-        return false;
-      }
-
-      VLOG(2) << "Synced " << id << " " << Quote(path) << ": " << Quote(event);
-      VLOG_IF(1, !VLOG_IS_ON(2)) << "Synced " << id << " " << Quote(path);
-      progress_.pinned_files++;
-      UmaHistogramBoolean("FileBrowser.GoogleDrive.BulkPinning.PinnedFiles",
-                          true);
-      return true;
-
-    case State::kFailed:
-      if (!Remove(id, path, 0)) {
-        return false;
-      }
-
-      LOG(ERROR) << Quote(event.state) << " " << id << " " << Quote(path)
-                 << ": " << Quote(event);
-      progress_.failed_files++;
-      UmaHistogramBoolean("FileBrowser.GoogleDrive.BulkPinning.PinnedFiles",
-                          false);
-      return true;
-    case State::kCancelledAndDeleted:
-    case State::kCancelledAndTrashed:
-      return false;
-  }
-
-  LOG(ERROR) << "Unexpected event type: " << Quote(event);
-  return false;
-}
-
 void PinManager::OnItemProgress(const mojom::ProgressEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!use_on_item_progress_) {
-    return;
-  }
 
   if (!InProgress(progress_.stage)) {
     VLOG(2) << "Ignored " << Quote(event);
