@@ -8,6 +8,21 @@
 function testKeyOperations(writingMode) {
     if (!window.eventSender)
         return;
+    let stepDownKey;
+    let stepUpKey;
+    let focusNextKey;
+    let focusPrevKey;
+    if (writingMode == "horizontal-tb") {
+      stepDownKey = 'ArrowDown';
+      stepUpKey = 'ArrowUp';
+      focusNextKey = 'ArrowRight';
+      focusPrevKey = 'ArrowLeft';
+    } else {
+      stepDownKey = 'ArrowLeft';
+      stepUpKey = 'ArrowRight';
+      focusNextKey = 'ArrowDown';
+      focusPrevKey = 'ArrowUp';
+    }
     test(() => {
         const input = document.createElement('input');
         document.body.appendChild(input);
@@ -17,12 +32,12 @@ function testKeyOperations(writingMode) {
         input.min = "2023-07-22";
         input.max = "2023-07-24";
         input.focus();
-        // Using arrow down goes to max value
-        eventSender.keyDown('ArrowDown');
+        // Using step down goes to max value
+        eventSender.keyDown(stepDownKey);
         assert_equals(input.value, "2023-07-24");
-        eventSender.keyDown('ArrowDown');
+        eventSender.keyDown(stepDownKey);
         assert_equals(input.value, "2023-07-23");
-        eventSender.keyDown('ArrowUp');
+        eventSender.keyDown(stepUpKey);
         assert_equals(input.value, "2023-07-24");
         document.body.removeChild(input);
     }, `input[type=date writing-mode=${writingMode}] key operations should respect max/min`);
@@ -34,17 +49,17 @@ function testKeyOperations(writingMode) {
         input.style.writingMode = writingMode;
         input.value = "2023-07-22";
         input.focus();
-        eventSender.keyDown('ArrowDown');
-        eventSender.keyDown('ArrowRight');
-        eventSender.keyDown('ArrowDown');
-        eventSender.keyDown('ArrowRight');
-        eventSender.keyDown('ArrowDown');
+        eventSender.keyDown(stepDownKey);
+        eventSender.keyDown(focusNextKey);
+        eventSender.keyDown(stepDownKey);
+        eventSender.keyDown(focusNextKey);
+        eventSender.keyDown(stepDownKey);
         assert_equals(input.value, "2022-06-21");
-        eventSender.keyDown('ArrowUp');
-        eventSender.keyDown('ArrowLeft');
-        eventSender.keyDown('ArrowUp');
-        eventSender.keyDown('ArrowLeft');
-        eventSender.keyDown('ArrowUp');
+        eventSender.keyDown(stepUpKey);
+        eventSender.keyDown(focusPrevKey);
+        eventSender.keyDown(stepUpKey);
+        eventSender.keyDown(focusPrevKey);
+        eventSender.keyDown(stepUpKey);
         assert_equals(input.value, "2023-07-22");
         document.body.removeChild(input);
     }, `input[type=date writing-mode=${writingMode}] key operations should move between DD/MM/YYYY`);
@@ -58,12 +73,12 @@ function testKeyOperations(writingMode) {
         input.min = "2023-W25";
         input.max = "2023-W27";
         input.focus();
-        eventSender.keyDown('ArrowDown');
+        eventSender.keyDown(stepDownKey);
         assert_equals(input.value, "2023-W25");
-        // Using arrow down goes to max value
-        eventSender.keyDown('ArrowDown');
+        // Using step down goes to max value
+        eventSender.keyDown(stepDownKey);
         assert_equals(input.value, "2023-W27");
-        eventSender.keyDown('ArrowUp');
+        eventSender.keyDown(stepUpKey);
         assert_equals(input.value, "2023-W25");
         document.body.removeChild(input);
     }, `input[type=week writing-mode=${writingMode}] key operations should respect max/min`);
@@ -75,13 +90,13 @@ function testKeyOperations(writingMode) {
         input.style.writingMode = writingMode;
         input.value = "2023-W10";
         input.focus();
-        eventSender.keyDown('ArrowDown');
-        eventSender.keyDown('ArrowRight');
-        eventSender.keyDown('ArrowDown');
+        eventSender.keyDown(stepDownKey);
+        eventSender.keyDown(focusNextKey);
+        eventSender.keyDown(stepDownKey);
         assert_equals(input.value, "2022-W09");
-        eventSender.keyDown('ArrowUp');
-        eventSender.keyDown('ArrowLeft');
-        eventSender.keyDown('ArrowUp');
+        eventSender.keyDown(stepUpKey);
+        eventSender.keyDown(focusPrevKey);
+        eventSender.keyDown(stepUpKey);
         assert_equals(input.value, "2023-W10");
         document.body.removeChild(input);
     }, `input[type=week writing-mode=${writingMode}] key operations should move between YYYY-WW`);
@@ -95,11 +110,11 @@ function testKeyOperations(writingMode) {
         input.min = "2023-05";
         input.max = "2023-10";
         input.focus();
-        eventSender.keyDown('ArrowDown');
+        eventSender.keyDown(stepDownKey);
         assert_equals(input.value, "2023-06");
-        // Using arrow right cannot access year
-        eventSender.keyDown('ArrowRight');
-        eventSender.keyDown('ArrowUp');
+        // Using step up cannot access year
+        eventSender.keyDown(focusNextKey);
+        eventSender.keyDown(stepUpKey);
         assert_equals(input.value, "2023-07");
         document.body.removeChild(input);
     }, `input[type=month writing-mode=${writingMode}] key operations should respect max/min`);
@@ -111,13 +126,13 @@ function testKeyOperations(writingMode) {
         input.style.writingMode = writingMode;
         input.value = "2023-07";
         input.focus();
-        eventSender.keyDown('ArrowDown');
-        eventSender.keyDown('ArrowRight');
-        eventSender.keyDown('ArrowDown');
+        eventSender.keyDown(stepDownKey);
+        eventSender.keyDown(focusNextKey);
+        eventSender.keyDown(stepDownKey);
         assert_equals(input.value, "2022-06");
-        eventSender.keyDown('ArrowUp');
-        eventSender.keyDown('ArrowLeft');
-        eventSender.keyDown('ArrowUp');
+        eventSender.keyDown(stepUpKey);
+        eventSender.keyDown(focusPrevKey);
+        eventSender.keyDown(stepUpKey);
         assert_equals(input.value, "2023-07");
         document.body.removeChild(input);
     }, `input[type=month writing-mode=${writingMode}] key operations should move between MM YYYY`);
@@ -130,19 +145,19 @@ function testKeyOperations(writingMode) {
         input.value = "10:00";
         input.step = 60 * 5;
         input.focus();
-        eventSender.keyDown('ArrowDown');
+        eventSender.keyDown(stepDownKey);
         assert_equals(input.value, "09:00");
-        eventSender.keyDown('ArrowRight');
-        eventSender.keyDown('ArrowDown');
+        eventSender.keyDown(focusNextKey);
+        eventSender.keyDown(stepDownKey);
         assert_equals(input.value, "09:55");
-        eventSender.keyDown('ArrowUp');
+        eventSender.keyDown(stepUpKey);
         assert_equals(input.value, "09:00");
-        eventSender.keyDown('ArrowRight');
-        eventSender.keyDown('ArrowUp');
+        eventSender.keyDown(focusNextKey);
+        eventSender.keyDown(stepUpKey);
         assert_equals(input.value, "21:00");
-        eventSender.keyDown('ArrowLeft');
-        eventSender.keyDown('ArrowLeft');
-        eventSender.keyDown('ArrowUp');
+        eventSender.keyDown(focusPrevKey);
+        eventSender.keyDown(focusPrevKey);
+        eventSender.keyDown(stepUpKey);
         assert_equals(input.value, "22:00");
         document.body.removeChild(input);
     }, `input[type=time writing-mode=${writingMode}] key operations should respect step and move between HH:MM`);
@@ -158,35 +173,35 @@ function testKeyOperations(writingMode) {
         input.min = "2023-06-10T00:00";
         input.step = 60 * 30;
         input.focus();
-        eventSender.keyDown('ArrowDown');
+        eventSender.keyDown(stepDownKey);
         assert_equals(input.value, "2023-06-11T19:30");
-        eventSender.keyDown('ArrowRight');
-        eventSender.keyDown('ArrowDown');
+        eventSender.keyDown(focusNextKey);
+        eventSender.keyDown(stepDownKey);
         assert_equals(input.value, "2023-06-11T18:30");
-        eventSender.keyDown('ArrowRight');
-        eventSender.keyDown('ArrowDown');
+        eventSender.keyDown(focusNextKey);
+        eventSender.keyDown(stepDownKey);
         assert_equals(input.value, "2023-06-11T18:00");
-        eventSender.keyDown('ArrowRight');
-        eventSender.keyDown('ArrowDown');
+        eventSender.keyDown(focusNextKey);
+        eventSender.keyDown(stepDownKey);
         assert_equals(input.value, "2023-06-11T06:00");
 
-        eventSender.keyDown('ArrowUp');
-        eventSender.keyDown('ArrowLeft');
-        eventSender.keyDown('ArrowUp');
-        eventSender.keyDown('ArrowLeft');
-        eventSender.keyDown('ArrowUp');
-        eventSender.keyDown('ArrowLeft');
-        eventSender.keyDown('ArrowUp');
+        eventSender.keyDown(stepUpKey);
+        eventSender.keyDown(focusPrevKey);
+        eventSender.keyDown(stepUpKey);
+        eventSender.keyDown(focusPrevKey);
+        eventSender.keyDown(stepUpKey);
+        eventSender.keyDown(focusPrevKey);
+        eventSender.keyDown(stepUpKey);
         assert_equals(input.value, "2023-06-12T19:30");
         // Cannot modify month and year so moving left will still modify day
-        eventSender.keyDown('ArrowLeft');
-        eventSender.keyDown('ArrowUp');
+        eventSender.keyDown(focusPrevKey);
+        eventSender.keyDown(stepUpKey);
         assert_equals(input.value, "2023-06-13T19:30");
         document.body.removeChild(input);
     }, `input[type=datetime writing-mode=${writingMode}] key operations should respect max/min, step and move between YYYY-MM-DDTHH:MM`);
 }
 
-testKeyOperations('horizonta-tb');
+testKeyOperations('horizontal-tb');
 testKeyOperations('vertical-lr');
 testKeyOperations('vertical-rl');
 </script>
