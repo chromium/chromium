@@ -198,15 +198,20 @@ const char kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness[] =
 const char kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness[] =
     "ios.magic_stack_segmentation.tab_resumption_freshness";
 
-// Boolean to represent if the parcel tracking opt-in prompt has been displayed
-// for the user.
-const char kIosParcelTrackingOptInPromptDisplayed[] =
+// Boolean to represent if the parcel tracking opt-in prompt has met its display
+// limit for the user. Was previously kIosParcelTrackingOptInPromptDisplayed.
+const char kIosParcelTrackingOptInPromptDisplayLimitMet[] =
     "ios.parcel_tracking.opt_in_prompt_displayed";
 
 // Integer that maps to IOSParcelTrackingOptInStatus, the enum type of the
 // user's preference for automatically tracking parcels.
 const char kIosParcelTrackingOptInStatus[] =
     "ios.parcel_tracking.opt_in_status";
+
+// Boolean to represent if the user has swiped down on the parcel trackinf
+// opt-in prompt.
+const char kIosParcelTrackingOptInPromptSwipedDown[] =
+    "ios.parcel_tracking.opt_in_prompt_swiped_down";
 
 // The number of consecutive times the user dismissed the password bottom sheet.
 // This gets reset to 0 whenever the user selects a password from the bottom

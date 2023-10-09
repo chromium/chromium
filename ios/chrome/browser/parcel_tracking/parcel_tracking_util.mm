@@ -34,7 +34,7 @@ bool IsUserEligibleParcelTrackingOptInPrompt(
     commerce::ShoppingService* shopping_service) {
   return IsIOSParcelTrackingEnabled() &&
          !pref_service->GetBoolean(
-             prefs::kIosParcelTrackingOptInPromptDisplayed) &&
+             prefs::kIosParcelTrackingOptInPromptDisplayLimitMet) &&
          shopping_service->IsParcelTrackingEligible();
 }
 

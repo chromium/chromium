@@ -53,8 +53,6 @@
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
-  self.browser->GetBrowserState()->GetPrefs()->SetBoolean(
-      prefs::kIosParcelTrackingOptInPromptDisplayed, true);
   base::UmaHistogramBoolean(parcel_tracking::kOptInPromptDisplayedHistogramName,
                             true);
 }
@@ -70,7 +68,9 @@
 
 - (void)alwaysTrackTapped {
   [self dismissPrompt];
-  self.browser->GetBrowserState()->GetPrefs()->SetInteger(
+  PrefService* prefs = self.browser->GetBrowserState()->GetPrefs();
+  prefs->SetBoolean(prefs::kIosParcelTrackingOptInPromptDisplayLimitMet, true);
+  prefs->SetInteger(
       prefs::kIosParcelTrackingOptInStatus,
       static_cast<int>(IOSParcelTrackingOptInStatus::kAlwaysTrack));
   [_mediator didTapAlwaysTrack:_parcels];
@@ -81,7 +81,9 @@
 
 - (void)askToTrackTapped {
   [self dismissPrompt];
-  self.browser->GetBrowserState()->GetPrefs()->SetInteger(
+  PrefService* prefs = self.browser->GetBrowserState()->GetPrefs();
+  prefs->SetBoolean(prefs::kIosParcelTrackingOptInPromptDisplayLimitMet, true);
+  prefs->SetInteger(
       prefs::kIosParcelTrackingOptInStatus,
       static_cast<int>(IOSParcelTrackingOptInStatus::kAskToTrack));
   [_mediator didTapAskToTrack:_parcels];
@@ -92,7 +94,9 @@
 
 - (void)noThanksTapped {
   [self dismissPrompt];
-  self.browser->GetBrowserState()->GetPrefs()->SetInteger(
+  PrefService* prefs = self.browser->GetBrowserState()->GetPrefs();
+  prefs->SetBoolean(prefs::kIosParcelTrackingOptInPromptDisplayLimitMet, true);
+  prefs->SetInteger(
       prefs::kIosParcelTrackingOptInStatus,
       static_cast<int>(IOSParcelTrackingOptInStatus::kNeverTrack));
   base::UmaHistogramEnumeration(
@@ -102,6 +106,8 @@
 
 - (void)parcelTrackingSettingsPageLinkTapped {
   [self dismissPrompt];
+  self.browser->GetBrowserState()->GetPrefs()->SetBoolean(
+      prefs::kIosParcelTrackingOptInPromptDisplayLimitMet, true);
   id<ApplicationSettingsCommands> settingsCommandHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationSettingsCommands);
   [settingsCommandHandler
@@ -112,10 +118,19 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  // TODO(crbug.com/1473449): show prompt once more after swipe to dimiss.
-  self.browser->GetBrowserState()->GetPrefs()->SetInteger(
-      prefs::kIosParcelTrackingOptInStatus,
-      static_cast<int>(IOSParcelTrackingOptInStatus::kNeverTrack));
+  // If user has swiped down on the prompt before as well, set
+  // kIosParcelTrackingOptInPromptDisplayLimitMet to true to avoid showing the
+  // prompt again.
+  PrefService* prefs = self.browser->GetBrowserState()->GetPrefs();
+  if (prefs->GetBoolean(prefs::kIosParcelTrackingOptInPromptSwipedDown)) {
+    prefs->SetBoolean(prefs::kIosParcelTrackingOptInPromptDisplayLimitMet,
+                      true);
+    prefs->SetInteger(
+        prefs::kIosParcelTrackingOptInStatus,
+        static_cast<int>(IOSParcelTrackingOptInStatus::kNeverTrack));
+  } else {
+    prefs->SetBoolean(prefs::kIosParcelTrackingOptInPromptSwipedDown, true);
+  }
   base::UmaHistogramEnumeration(
       parcel_tracking::kOptInPromptActionHistogramName,
       parcel_tracking::OptInPromptActionType::kSwipeToDismiss);

@@ -58,7 +58,7 @@ class ParcelTrackingUtilTest : public PlatformTest {
 
   void SetPromptDisplayedStatus(bool displayed) {
     browser_state_->GetPrefs()->SetBoolean(
-        prefs::kIosParcelTrackingOptInPromptDisplayed, displayed);
+        prefs::kIosParcelTrackingOptInPromptDisplayLimitMet, displayed);
   }
 
  protected:
