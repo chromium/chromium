@@ -26,7 +26,7 @@ import {
   type ChromeReleaseChannel,
   computeSystemExecutablePath,
   launch,
-  Process,
+  type Process,
 } from '@puppeteer/browsers';
 import debug from 'debug';
 import WebSocket from 'ws';
@@ -66,6 +66,7 @@ export class BrowserInstance extends EventEmitter<Record<'message', string>> {
     const chromeArguments = [
       ...(headless ? ['--headless', '--hide-scrollbars', '--mute-audio'] : []),
       // keep-sorted start
+      '--allow-browser-signin=false',
       '--disable-component-update',
       '--disable-default-apps',
       '--disable-features=DialMediaRouteProvider',
