@@ -452,8 +452,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromReadOnlyFileSystem) {
 }
 
 // Test that when the sync to Drive fails, the file is not moved to Drive.
-// TODO(b/300861997): Fix test.
-IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, DISABLED_UploadFails) {
+IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFails) {
   fail_sync_ = true;
   SetUpObservers();
   SetUpMyFiles();
