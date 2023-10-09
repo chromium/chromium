@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -258,8 +259,9 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
   std::string GetId() const override { return "iCloudKeychain"; }
 
   const AuthenticatorSupportedOptions& Options() const override {
-    static const AuthenticatorSupportedOptions options = AuthenticatorOptions();
-    return options;
+    static const base::NoDestructor<AuthenticatorSupportedOptions> options(
+        AuthenticatorOptions());
+    return *options;
   }
 
   absl::optional<FidoTransportProtocol> AuthenticatorTransport()

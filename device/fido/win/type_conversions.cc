@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -282,7 +282,7 @@ uint32_t ToWinLargeBlobSupport(LargeBlobSupport large_blob_support) {
 }
 
 CtapDeviceResponseCode WinErrorNameToCtapDeviceResponseCode(
-    const std::u16string& error_name) {
+    std::u16string_view error_name) {
   // See WebAuthNGetErrorName in <webauthn.h> for these string literals.
   //
   // Note that the set of errors that browser are allowed to return in a
@@ -291,8 +291,8 @@ CtapDeviceResponseCode WinErrorNameToCtapDeviceResponseCode(
   // permissible errors are "InvalidStateError" (aka CREDENTIAL_EXCLUDED in
   // Chromium code) and "NotAllowedError". Hence, we can collapse the set of
   // Windows errors to a smaller set of CtapDeviceResponseCodes.
-  static base::flat_map<std::u16string, CtapDeviceResponseCode>
-      kResponseCodeMap({
+  constexpr auto kResponseCodeMap =
+      base::MakeFixedFlatMap<std::u16string_view, CtapDeviceResponseCode>({
           {u"Success", CtapDeviceResponseCode::kSuccess},
           {u"InvalidStateError",
            CtapDeviceResponseCode::kCtap2ErrCredentialExcluded},
@@ -304,11 +304,12 @@ CtapDeviceResponseCode WinErrorNameToCtapDeviceResponseCode(
            CtapDeviceResponseCode::kCtap2ErrOperationDenied},
           {u"UnknownError", CtapDeviceResponseCode::kCtap2ErrOperationDenied},
       });
-  if (!base::Contains(kResponseCodeMap, error_name)) {
+  const auto* it = kResponseCodeMap.find(error_name);
+  if (it == kResponseCodeMap.end()) {
     FIDO_LOG(ERROR) << "Unexpected error name: " << error_name;
     return CtapDeviceResponseCode::kCtap2ErrOperationDenied;
   }
-  return kResponseCodeMap[error_name];
+  return it->second;
 }
 
 COMPONENT_EXPORT(DEVICE_FIDO)

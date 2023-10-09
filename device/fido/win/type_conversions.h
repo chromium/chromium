@@ -66,7 +66,7 @@ uint32_t ToWinLargeBlobSupport(LargeBlobSupport large_blob_support);
 // WinCtapDeviceResponseCodeTo{MakeCredential,GetAssertion}Status().
 COMPONENT_EXPORT(DEVICE_FIDO)
 CtapDeviceResponseCode WinErrorNameToCtapDeviceResponseCode(
-    const std::u16string& error_name);
+    std::u16string_view error_name);
 
 // WinCtapDeviceResponseCodeToMakeCredentialStatus returns the
 // MakeCredentialStatus that corresponds to a synthetic CtapDeviceResponseCode

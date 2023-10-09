@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
+#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
@@ -212,9 +213,9 @@ std::string EnclaveAuthenticator::GetId() const {
 }
 
 const AuthenticatorSupportedOptions& EnclaveAuthenticator::Options() const {
-  static const AuthenticatorSupportedOptions options =
-      EnclaveAuthenticatorOptions();
-  return options;
+  static const base::NoDestructor<AuthenticatorSupportedOptions> options(
+      EnclaveAuthenticatorOptions());
+  return *options;
 }
 
 absl::optional<FidoTransportProtocol>

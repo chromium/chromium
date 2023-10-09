@@ -31,7 +31,7 @@ namespace device {
 
 namespace {
 
-raw_ptr<WinWebAuthnApi> g_api_override = nullptr;
+WinWebAuthnApi* g_api_override = nullptr;
 
 // Time out all Windows API requests after 5 minutes. We maintain our own
 // timeout and cancel the operation when it expires, so this value simply needs

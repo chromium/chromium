@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #import "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
@@ -142,9 +143,9 @@ AuthenticatorSupportedOptions TouchIdAuthenticatorOptions() {
 }  // namespace
 
 const AuthenticatorSupportedOptions& TouchIdAuthenticator::Options() const {
-  static const AuthenticatorSupportedOptions options =
-      TouchIdAuthenticatorOptions();
-  return options;
+  static const base::NoDestructor<AuthenticatorSupportedOptions> options(
+      TouchIdAuthenticatorOptions());
+  return *options;
 }
 
 void TouchIdAuthenticator::GetTouch(base::OnceClosure callback) {

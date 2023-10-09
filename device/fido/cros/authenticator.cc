@@ -12,6 +12,7 @@
 #include "base/barrier_closure.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
@@ -66,9 +67,9 @@ AuthenticatorSupportedOptions ChromeOSAuthenticatorOptions(bool u2f_enabled) {
 }  // namespace
 
 const AuthenticatorSupportedOptions& ChromeOSAuthenticator::Options() const {
-  static const AuthenticatorSupportedOptions options =
-      ChromeOSAuthenticatorOptions(u2f_enabled_);
-  return options;
+  static const base::NoDestructor<AuthenticatorSupportedOptions> options(
+      ChromeOSAuthenticatorOptions(u2f_enabled_));
+  return *options;
 }
 
 absl::optional<FidoTransportProtocol>

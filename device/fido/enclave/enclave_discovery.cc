@@ -41,9 +41,9 @@ void EnclaveAuthenticatorDiscovery::AddAuthenticator() {
 
   // TODO(kenrb): These temporary hard-coded values will be replaced by real
   // values, plumbed from chrome layer.
-  static GURL localUrl = GURL("http://127.0.0.1:8880");
-  static char testUsername[] = "testuser";
-  static uint8_t peerPublicKey[kP256X962Length] = {
+  const GURL local_url = GURL("http://127.0.0.1:8880");
+  static const char test_username[] = "testuser";
+  static const uint8_t peer_public_key[kP256X962Length] = {
       4,   244, 60,  222, 80,  52,  238, 134, 185, 2,   84,  48,  248,
       87,  211, 219, 145, 204, 130, 45,  180, 44,  134, 205, 239, 90,
       127, 34,  229, 225, 93,  163, 51,  206, 28,  47,  134, 238, 116,
@@ -51,8 +51,8 @@ void EnclaveAuthenticatorDiscovery::AddAuthenticator() {
       179, 110, 145, 23,  34,  208, 25,  171, 184, 129, 14,  84,  80};
   std::vector<uint8_t> device_id = {1, 2, 3, 4};
   authenticator_ = std::make_unique<EnclaveAuthenticator>(
-      localUrl, peerPublicKey, std::move(passkeys_), std::move(device_id),
-      testUsername, EnclaveRequestSigningCallback());
+      local_url, peer_public_key, std::move(passkeys_), std::move(device_id),
+      test_username, EnclaveRequestSigningCallback());
   observer()->DiscoveryStarted(this, /*success=*/true, {authenticator_.get()});
 }
 

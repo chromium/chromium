@@ -83,6 +83,8 @@ component("fido") {
     "//services/device/public/mojom",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   # Android implementation of FIDO is delegated to GMSCore.
   if (!is_android) {
     sources += [
@@ -322,6 +324,7 @@ static_library("cablev2_registration") {
     "//components/gcm_driver/instance_id",
     "//third_party/boringssl",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("cablev2_authenticator") {
@@ -336,6 +339,7 @@ static_library("cablev2_authenticator") {
     "//content/public/common",  # for authenticator.mojom
     "//services/network/public/mojom",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("cablev2_test_util") {
