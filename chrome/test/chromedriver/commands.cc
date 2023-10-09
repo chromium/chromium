@@ -34,6 +34,20 @@
 #include "chrome/test/chromedriver/session_thread_map.h"
 #include "chrome/test/chromedriver/util.h"
 
+namespace {
+void WriteChromeDriverExtendedStatus(base::Value::Dict& info) {
+  base::Value::Dict build;
+  build.Set("version", kChromeDriverVersion);
+  info.Set("build", std::move(build));
+
+  base::Value::Dict os;
+  os.Set("name", base::SysInfo::OperatingSystemName());
+  os.Set("version", base::SysInfo::OperatingSystemVersion());
+  os.Set("arch", base::SysInfo::OperatingSystemArchitecture());
+  info.Set("os", std::move(os));
+}
+}  // namespace
+
 void ExecuteGetStatus(const base::Value::Dict& params,
                       const std::string& session_id,
                       const CommandCallback& callback) {
@@ -46,15 +60,34 @@ void ExecuteGetStatus(const base::Value::Dict& params,
                                          kChromeDriverProductShortName));
 
   // ChromeDriver specific data:
-  base::Value::Dict build;
-  build.Set("version", kChromeDriverVersion);
-  info.Set("build", std::move(build));
+  WriteChromeDriverExtendedStatus(info);
 
-  base::Value::Dict os;
-  os.Set("name", base::SysInfo::OperatingSystemName());
-  os.Set("version", base::SysInfo::OperatingSystemVersion());
-  os.Set("arch", base::SysInfo::OperatingSystemArchitecture());
-  info.Set("os", std::move(os));
+  callback.Run(Status(kOk), std::make_unique<base::Value>(std::move(info)),
+               std::string(), kW3CDefault);
+}
+
+void ExecuteBidiGetStatus(const base::Value::Dict& params,
+                          const std::string& session_id,
+                          const CommandCallback& callback) {
+  base::Value::Dict info;
+  info.Set("ready", false);
+  if (session_id.empty()) {
+    info.Set("message",
+             base::StringPrintf("%s does not yet support BiDi-only sessions.",
+                                kChromeDriverProductShortName));
+  } else {
+    // The error message is borrowed from BiDiMapper code.
+    // See bidiMapper/domains/session/SessionProcessor.ts of chromium-bidi
+    // repository.
+    info.Set("message", "already connected");
+  }
+  absl::optional<double> maybe_id = params.FindDouble("id");
+  if (maybe_id) {
+    info.Set("id", *maybe_id);
+  }
+
+  // ChromeDriver specific data:
+  WriteChromeDriverExtendedStatus(info);
 
   callback.Run(Status(kOk), std::make_unique<base::Value>(std::move(info)),
                std::string(), kW3CDefault);
@@ -81,6 +114,24 @@ void ExecuteCreateSession(SessionThreadMap* session_thread_map,
       FROM_HERE, base::BindOnce(&SetThreadLocalSession, std::move(session)));
   session_thread_map->insert(std::make_pair(new_id, std::move(thread_info)));
   init_session_cmd.Run(params, new_id, callback);
+}
+
+void ExecuteBidiCreateSession(const base::Value::Dict& params,
+                              const std::string& session_id,
+                              const CommandCallback& callback) {
+  Status new_session_not_supported = {
+      kSessionNotCreated,
+      base::StringPrintf("%s does not yet support BiDi-only sessions.",
+                         kChromeDriverProductShortName)};
+  base::Value::Dict ret;
+  ret.Set("message", new_session_not_supported.message());
+  ret.Set("error", StatusCodeToString(new_session_not_supported.code()));
+  absl::optional<double> maybe_id = params.FindDouble("id");
+  if (maybe_id) {
+    ret.Set("id", std::move(*maybe_id));
+  }
+  callback.Run(Status(kOk), std::make_unique<base::Value>(std::move(ret)),
+               std::string(), kW3CDefault);
 }
 
 namespace {
