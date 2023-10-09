@@ -47,7 +47,7 @@ void AddUiColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
       kColorButtonBackgroundProminent};
   mixer[kColorButtonBackgroundTonal] = {kColorSysTonalContainer};
   mixer[kColorButtonBackgroundTonalDisabled] = {
-      kColorSysStateDisabledContainer};
+      kColorButtonBackgroundProminentDisabled};
   mixer[kColorButtonBackgroundTonalFocused] = {kColorButtonBackgroundTonal};
   mixer[kColorButtonBackgroundWithAttention] = {
       dark_mode ? SkColorSetRGB(0x35, 0x36, 0x3A) : SK_ColorWHITE};
