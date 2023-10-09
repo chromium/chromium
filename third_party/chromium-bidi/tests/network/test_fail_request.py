@@ -20,7 +20,12 @@ from test_helpers import (ANY_UUID, AnyExtending, execute_command,
 
 @pytest.mark.asyncio
 async def test_fail_request_non_existent_request(websocket):
-    with pytest.raises(Exception) as exception_info:
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "no such request",
+                "message": "No blocked request found for network id '_UNKNOWN_'"
+            })):
         await execute_command(
             websocket, {
                 "method": "network.failRequest",
@@ -28,10 +33,6 @@ async def test_fail_request_non_existent_request(websocket):
                     "request": '_UNKNOWN_',
                 },
             })
-    assert {
-        "error": "no such request",
-        "message": "No blocked request found for network id '_UNKNOWN_'"
-    } == exception_info.value.args[0]
 
 
 @pytest.mark.asyncio
@@ -68,17 +69,18 @@ async def test_fail_request_non_blocked_request(websocket, context_id,
 
     network_id = before_request_sent_event["params"]["request"]["request"]
 
-    with pytest.raises(Exception) as exception_info:
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "no such request",
+                "message": f"No blocked request found for network id '{network_id}'",
+            })):
         await execute_command(websocket, {
             "method": "network.failRequest",
             "params": {
                 "request": network_id,
             },
         })
-    assert {
-        "error": "no such request",
-        "message": f"No blocked request found for network id '{network_id}'",
-    } == exception_info.value.args[0]
 
 
 @pytest.mark.asyncio
@@ -142,17 +144,18 @@ async def test_fail_request_twice(websocket, context_id):
     })
     assert result == {}
 
-    with pytest.raises(Exception) as exception_info:
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "no such request",
+                "message": f"No blocked request found for network id '{network_id}'"
+            })):
         await execute_command(websocket, {
             "method": "network.failRequest",
             "params": {
                 "request": network_id
             },
         })
-    assert {
-        "error": "no such request",
-        "message": f"No blocked request found for network id '{network_id}'"
-    } == exception_info.value.args[0]
 
 
 @pytest.mark.asyncio
@@ -232,7 +235,12 @@ async def test_fail_request_with_auth_required_phase(
     network_id = event_response["params"]["params"]["networkId"]
 
     if exception_and_response_expected:
-        with pytest.raises(Exception) as exception_info:
+        with pytest.raises(
+                Exception,
+                match=str({
+                    "error": "invalid argument",
+                    "message": f"Blocked request for network id '{network_id}' is in 'AuthRequired' phase"
+                })):
             await execute_command(
                 websocket, {
                     "method": "network.failRequest",
@@ -240,10 +248,6 @@ async def test_fail_request_with_auth_required_phase(
                         "request": network_id
                     },
                 })
-        assert {
-            "error": "invalid argument",
-            "message": f"Blocked request for network id '{network_id}' is in 'AuthRequired' phase"
-        } == exception_info.value.args[0]
 
 
 @pytest.mark.asyncio

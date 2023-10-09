@@ -13,17 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
 from unittest.mock import ANY
 
 import pytest
-from anys import ANY_DICT, ANY_STR, AnyContains, AnyWithEntries
+from anys import ANY_DICT, ANY_STR, AnyWithEntries
 from test_helpers import (ANY_TIMESTAMP, execute_command, get_next_command_id,
                           read_JSON_message, send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
 async def test_subscribeForUnknownContext_exceptionReturned(websocket):
-    with pytest.raises(Exception) as exception_info:
+    with pytest.raises(Exception,
+                       match=str({
+                           'error': 'no such frame',
+                           'message': 'Context UNKNOWN_CONTEXT_ID not found'
+                       })):
         await execute_command(
             websocket, {
                 "method": "session.subscribe",
@@ -32,10 +37,6 @@ async def test_subscribeForUnknownContext_exceptionReturned(websocket):
                     "contexts": ["UNKNOWN_CONTEXT_ID"]
                 }
             })
-    assert {
-        'error': 'no such frame',
-        'message': 'Context UNKNOWN_CONTEXT_ID not found'
-    } == exception_info.value.args[0]
 
 
 @pytest.mark.asyncio
@@ -513,7 +514,13 @@ async def test_subscribeWithoutContext_bufferedEventsFromNotClosedContextsAreRet
 async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id):
     await subscribe(websocket, ["log.entryAdded"], [iframe_id])
 
-    with pytest.raises(Exception) as exception_info:
+    with pytest.raises(
+            Exception,
+            match=re.compile(
+                str({
+                    "error": "invalid argument",
+                    "message": 'Cannot unsubscribe from network.responseCompleted, .*. No subscription found.'
+                }))):
         await execute_command(
             websocket,
             {
@@ -526,13 +533,6 @@ async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id):
                     "contexts": [context_id]
                 }
             })
-
-    assert {
-        "error": "invalid argument",
-        "message":
-            AnyContains("Cannot unsubscribe from network.responseCompleted")
-            & AnyContains("No subscription found")
-    } == exception_info.value.args[0]
 
     await send_JSON_command(
         websocket, {

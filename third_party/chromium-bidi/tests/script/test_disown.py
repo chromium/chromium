@@ -128,7 +128,11 @@ async def test_disown_releasesObject(websocket, default_realm, sandbox_realm):
     assert {} == result
 
     # Assert the object is disposed.
-    with pytest.raises(Exception) as exception_info:
+    with pytest.raises(Exception,
+                       match=str({
+                           "error": "no such handle",
+                           "message": "Handle was not found."
+                       })):
         await execute_command(
             websocket, {
                 "method": "script.callFunction",
@@ -144,8 +148,3 @@ async def test_disown_releasesObject(websocket, default_realm, sandbox_realm):
                     "resultOwnership": "none"
                 }
             })
-
-    assert {
-        "error": "no such handle",
-        "message": "Handle was not found."
-    } == exception_info.value.args[0]

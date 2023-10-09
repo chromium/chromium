@@ -13,8 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
+
 import pytest
-from anys import AnyContains
 from test_helpers import execute_command, goto_url, set_html_content
 
 
@@ -166,7 +167,13 @@ async def test_sharedId_in_different_navigable(websocket, context_id, html):
 
     await goto_url(websocket, context_id, html("some other page"))
 
-    with pytest.raises(Exception) as exception_info:
+    with pytest.raises(
+            Exception,
+            match=re.compile(
+                str({
+                    "error": "no such node",
+                    "message": 'SharedId ".*" belongs to different document. Current document is .*'
+                }))):
         await execute_command(
             websocket, {
                 "method": "script.callFunction",
@@ -184,11 +191,6 @@ async def test_sharedId_in_different_navigable(websocket, context_id, html):
                     }
                 }
             })
-
-    assert {
-        "error": "no such node",
-        "message": AnyContains("different document")
-    } == exception_info.value.args[0]
 
 
 @pytest.mark.asyncio
@@ -209,7 +211,12 @@ async def test_sharedId_not_found(websocket, context_id, html):
 
     shared_id = result["result"]["sharedId"] + "9999"
 
-    with pytest.raises(Exception) as exception_info:
+    with pytest.raises(Exception,
+                       match=re.compile(
+                           str({
+                               "error": "no such node",
+                               "message": 'SharedId ".*" was not found.'
+                           }))):
         await execute_command(
             websocket, {
                 "method": "script.callFunction",
@@ -227,8 +234,3 @@ async def test_sharedId_not_found(websocket, context_id, html):
                     }
                 }
             })
-
-    assert {
-        "error": "no such node",
-        "message": AnyContains("was not found")
-    } == exception_info.value.args[0]

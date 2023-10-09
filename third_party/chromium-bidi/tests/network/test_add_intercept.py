@@ -20,7 +20,11 @@ from test_helpers import (ANY_UUID, AnyExtending, execute_command,
 
 @pytest.mark.asyncio
 async def test_add_intercept_invalid_empty_phases(websocket):
-    with pytest.raises(Exception) as exception_info:
+    with pytest.raises(Exception,
+                       match=str({
+                           "error": "invalid argument",
+                           "message": "At least one phase must be specified."
+                       })):
         await execute_command(
             websocket, {
                 "method": "network.addIntercept",
@@ -32,11 +36,6 @@ async def test_add_intercept_invalid_empty_phases(websocket):
                     }],
                 },
             })
-
-    assert {
-        "error": "invalid argument",
-        "message": "At least one phase must be specified."
-    } == exception_info.value.args[0]
 
 
 @pytest.mark.asyncio
@@ -81,7 +80,12 @@ async def test_add_intercept_type_pattern_valid(websocket):
 
 @pytest.mark.asyncio
 async def test_add_intercept_type_pattern_invalid(websocket):
-    with pytest.raises(Exception) as exception_info:
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "invalid argument",
+                "message": "TypeError: Failed to construct 'URL': Invalid URL"
+            })):
         await execute_command(
             websocket, {
                 "method": "network.addIntercept",
@@ -94,15 +98,15 @@ async def test_add_intercept_type_pattern_invalid(websocket):
                 },
             })
 
-    assert {
-        "error": "invalid argument",
-        "message": "TypeError: Failed to construct 'URL': Invalid URL"
-    } == exception_info.value.args[0]
-
 
 @pytest.mark.asyncio
 async def test_add_intercept_type_string_invalid(websocket):
-    with pytest.raises(Exception) as exception_info:
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "invalid argument",
+                "message": "Invalid URL 'foo': TypeError: Failed to construct 'URL': Invalid URL"
+            })):
         await execute_command(
             websocket, {
                 "method": "network.addIntercept",
@@ -115,15 +119,15 @@ async def test_add_intercept_type_string_invalid(websocket):
                 },
             })
 
-    assert {
-        "error": "invalid argument",
-        "message": "Invalid URL 'foo': TypeError: Failed to construct 'URL': Invalid URL"
-    } == exception_info.value.args[0]
-
 
 @pytest.mark.asyncio
 async def test_add_intercept_type_string_one_valid_and_one_invalid(websocket):
-    with pytest.raises(Exception) as exception_info:
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "invalid argument",
+                "message": "Invalid URL 'foo': TypeError: Failed to construct 'URL': Invalid URL"
+            })):
         await execute_command(
             websocket, {
                 "method": "network.addIntercept",
@@ -139,15 +143,14 @@ async def test_add_intercept_type_string_one_valid_and_one_invalid(websocket):
                 },
             })
 
-    assert {
-        "error": "invalid argument",
-        "message": "Invalid URL 'foo': TypeError: Failed to construct 'URL': Invalid URL"
-    } == exception_info.value.args[0]
-
 
 @pytest.mark.asyncio
 async def test_add_intercept_type_pattern_protocol_empty_invalid(websocket):
-    with pytest.raises(Exception) as exception_info:
+    with pytest.raises(Exception,
+                       match=str({
+                           "error": "invalid argument",
+                           "message": "URL pattern must specify a protocol"
+                       })):
         await execute_command(
             websocket, {
                 "method": "network.addIntercept",
@@ -161,11 +164,6 @@ async def test_add_intercept_type_pattern_protocol_empty_invalid(websocket):
                     }],
                 },
             })
-
-    assert {
-        "error": "invalid argument",
-        "message": "URL pattern must specify a protocol"
-    } == exception_info.value.args[0]
 
 
 @pytest.mark.asyncio
@@ -192,7 +190,11 @@ async def test_add_intercept_type_pattern_protocol_non_special_success(
 
 @pytest.mark.asyncio
 async def test_add_intercept_type_pattern_hostname_empty_invalid(websocket):
-    with pytest.raises(Exception) as exception_info:
+    with pytest.raises(Exception,
+                       match=str({
+                           "error": "invalid argument",
+                           "message": "URL pattern must specify a hostname"
+                       })):
         await execute_command(
             websocket, {
                 "method": "network.addIntercept",
@@ -207,17 +209,17 @@ async def test_add_intercept_type_pattern_hostname_empty_invalid(websocket):
                 },
             })
 
-    assert {
-        "error": "invalid argument",
-        "message": "URL pattern must specify a hostname"
-    } == exception_info.value.args[0]
-
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("hostname", ["abc:com", "abc::com"])
 async def test_add_intercept_type_pattern_hostname_invalid(
         websocket, hostname):
-    with pytest.raises(Exception) as exception_info:
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "invalid argument",
+                "message": "URL pattern hostname must not contain a colon"
+            })):
         await execute_command(
             websocket, {
                 "method": "network.addIntercept",
@@ -230,15 +232,14 @@ async def test_add_intercept_type_pattern_hostname_invalid(
                 },
             })
 
-    assert {
-        "error": "invalid argument",
-        "message": "URL pattern hostname must not contain a colon"
-    } == exception_info.value.args[0]
-
 
 @pytest.mark.asyncio
 async def test_add_intercept_type_pattern_port_empty_invalid(websocket):
-    with pytest.raises(Exception) as exception_info:
+    with pytest.raises(Exception,
+                       match=str({
+                           "error": "invalid argument",
+                           "message": "URL pattern must specify a port"
+                       })):
         await execute_command(
             websocket, {
                 "method": "network.addIntercept",
@@ -252,11 +253,6 @@ async def test_add_intercept_type_pattern_port_empty_invalid(websocket):
                     }],
                 },
             })
-
-    assert {
-        "error": "invalid argument",
-        "message": "URL pattern must specify a port"
-    } == exception_info.value.args[0]
 
 
 @pytest.mark.asyncio
