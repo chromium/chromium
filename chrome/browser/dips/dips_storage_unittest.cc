@@ -78,7 +78,8 @@ TEST(DIPSGetSitesToClearTest, FiltersByTriggerParam) {
   // Call 'GetSitesToClear' when the trigger is unset.
   {
     base::test::ScopedFeatureList features;
-    features.InitAndEnableFeature(features::kDIPS);
+    features.InitAndEnableFeatureWithParameters(
+        features::kDIPS, {{"triggering_action", "none"}});
     EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
   }
   // Call 'GetSitesToClear' when DIPS is triggered by bounces.

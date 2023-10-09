@@ -248,7 +248,7 @@ const base::FeatureParam<bool> kDIPSPersistedDatabaseEnabled{
     &kDIPS, "persist_database", true};
 
 // Set whether DIPS performs deletion.
-const base::FeatureParam<bool> kDIPSDeletionEnabled{&kDIPS, "delete", false};
+const base::FeatureParam<bool> kDIPSDeletionEnabled{&kDIPS, "delete", true};
 
 // Set the time period that Chrome will wait for before clearing storage for a
 // site after it performs some action (e.g. bouncing the user or using storage)
@@ -287,7 +287,7 @@ constexpr base::FeatureParam<content::DIPSTriggeringAction>::Option
 // Note: Maintain a matching nomenclature of the options with the feature flag
 // entries at about_flags.cc.
 const base::FeatureParam<content::DIPSTriggeringAction> kDIPSTriggeringAction{
-    &kDIPS, "triggering_action", content::DIPSTriggeringAction::kNone,
+    &kDIPS, "triggering_action", content::DIPSTriggeringAction::kStatefulBounce,
     &kDIPSTriggeringActionOptions};
 
 // Denotes the length of a time interval within which any client-side redirect
