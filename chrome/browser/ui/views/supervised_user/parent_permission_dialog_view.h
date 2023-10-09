@@ -45,6 +45,7 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
                                    public GaiaAuthConsumer {
  public:
   METADATA_HEADER(ParentPermissionDialogView);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDialogViewIdForTesting);
 
   class Observer {
    public:
