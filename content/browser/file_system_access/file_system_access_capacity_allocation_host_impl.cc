@@ -9,7 +9,8 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "storage/browser/file_system/file_system_util.h"
+#include "storage/browser/file_system/file_observers.h"
+#include "storage/browser/file_system/task_runner_bound_observer_list.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 
@@ -118,6 +119,15 @@ void FileSystemAccessCapacityAllocationHostImpl::DidGetUsageAndQuota(
       base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
       base::DoNothing());
   std::move(callback).Run(capacity_delta);
+}
+
+void FileSystemAccessCapacityAllocationHostImpl::OnContentsModified() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (const storage::ChangeObserverList* change_observers =
+          manager_->context()->GetChangeObservers(url_.type())) {
+    change_observers->Notify(&storage::FileChangeObserver::OnModifyFile, url_);
+  }
 }
 
 }  // namespace content

@@ -255,6 +255,115 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
                      "observer.disconnect(); })()"));
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
+                       ObserveSyncAccessHandleWrite) {
+  const GURL& test_url =
+      embedded_test_server()->GetURL("/run_async_code_on_worker.html");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url,
+                                             /*number_of_navigations=*/1);
+  const std::string script =
+      // clang-format off
+      R"(runOnWorkerAndWaitForResult(`)"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_OBSERVING_FILE(TestFileSystemType::kBucket)
+         "const accessHandle = await file.createSyncAccessHandle();"
+         "const writeBuffer = new TextEncoder().encode('contents');"
+         "accessHandle.write(writeBuffer);"
+         SET_CHANGE_TIMEOUT
+         "accessHandle.close();"
+      R"(`);)";
+  // clang-format on
+  auto records = EvalJs(shell(), script).ExtractList();
+  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+  EXPECT_THAT(*records.GetList().front().GetDict().FindString("type"),
+              testing::StrEq("modified"));
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
+                       ObserveSyncAccessHandleMultipleWrites) {
+  const GURL& test_url =
+      embedded_test_server()->GetURL("/run_async_code_on_worker.html");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url,
+                                             /*number_of_navigations=*/1);
+  const std::string script =
+      // clang-format off
+      R"(runOnWorkerAndWaitForResult(`)"
+         CREATE_PROMISE_AND_RESOLVERS
+         "let timesCallbackFired = 0;"
+         "let serializedRecords = [];"
+         "async function onChange(records, observer) {"
+         "  timesCallbackFired++;"
+         "  for (const record of records) {"
+         "    let info = {};"
+         "    info.type = record.type;"
+         "    serializedRecords.push(info);"
+         "  }"
+         "  if (timesCallbackFired >= 3) {"  // Expect three events.
+         "    promiseResolve(serializedRecords);"
+         "  }"
+         "}"
+         START_OBSERVING_FILE(TestFileSystemType::kBucket)
+         "const accessHandle = await file.createSyncAccessHandle();"
+         "const writeBuffer = new TextEncoder().encode('contents');"
+         "accessHandle.write(writeBuffer);"
+         "accessHandle.write(writeBuffer);"
+         "accessHandle.write(writeBuffer);"  // Write thrice.
+         SET_CHANGE_TIMEOUT
+         "accessHandle.close();"
+      R"(`);)";
+  // clang-format on
+  auto records = EvalJs(shell(), script).ExtractList();
+  ASSERT_THAT(records.GetList(), testing::SizeIs(3));
+  EXPECT_THAT(*records.GetList().front().GetDict().FindString("type"),
+              testing::StrEq("modified"));
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
+                       ObserveSyncAccessHandleTruncate) {
+  const GURL& test_url =
+      embedded_test_server()->GetURL("/run_async_code_on_worker.html");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url,
+                                             /*number_of_navigations=*/1);
+  const std::string script =
+      // clang-format off
+      R"(runOnWorkerAndWaitForResult(`)"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_OBSERVING_FILE(TestFileSystemType::kBucket)
+         "const accessHandle = await file.createSyncAccessHandle();"
+         "accessHandle.truncate(20);"
+         SET_CHANGE_TIMEOUT
+         "accessHandle.close();"
+      R"(`);)";
+  // clang-format on
+  auto records = EvalJs(shell(), script).ExtractList();
+  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+  EXPECT_THAT(*records.GetList().front().GetDict().FindString("type"),
+              testing::StrEq("modified"));
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
+                       DoNotObserveSyncAccessHandleWithNoChanges) {
+  const GURL& test_url =
+      embedded_test_server()->GetURL("/run_async_code_on_worker.html");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url,
+                                             /*number_of_navigations=*/1);
+  const std::string script =
+      // clang-format off
+      R"(runOnWorkerAndWaitForResult(`)"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_OBSERVING_FILE(TestFileSystemType::kBucket)
+         "const accessHandle = await file.createSyncAccessHandle();"
+         "const readBuffer = new Uint8Array(24);"
+         "accessHandle.read(readBuffer);"
+         "accessHandle.flush();"
+         "accessHandle.close();"
+         SET_CHANGE_TIMEOUT
+      R"(`);)";
+  // clang-format on
+  auto records = EvalJs(shell(), script).ExtractList();
+  EXPECT_THAT(records.GetList(), testing::IsEmpty());
+}
+
 class FileSystemAccessObserverBrowserTest
     : public FileSystemAccessObserverBrowserTestBase,
       public testing::WithParamInterface<TestFileSystemType> {

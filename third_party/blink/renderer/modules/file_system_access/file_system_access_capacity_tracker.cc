@@ -103,7 +103,7 @@ bool FileSystemAccessCapacityTracker::RequestFileCapacityChangeSync(
   return file_capacity_ >= required_capacity;
 }
 
-void FileSystemAccessCapacityTracker::CommitFileSizeChange(int64_t new_size) {
+void FileSystemAccessCapacityTracker::OnFileContentsModified(int64_t new_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(file_size_, 0) << "A file's size should never be negative.";
   DCHECK_GE(file_capacity_, file_size_)
@@ -111,6 +111,8 @@ void FileSystemAccessCapacityTracker::CommitFileSizeChange(int64_t new_size) {
   DCHECK_GE(new_size, 0) << "A file's size should never be negative.";
 
   file_size_ = new_size;
+
+  capacity_allocation_host_->OnContentsModified();
 }
 
 void FileSystemAccessCapacityTracker::DidRequestCapacityChange(

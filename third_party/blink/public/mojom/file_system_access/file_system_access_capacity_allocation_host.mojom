@@ -9,6 +9,9 @@ module blink.mojom;
 //
 // Capacity allocations are used for non-incognito files only. In incognito
 // mode, quota is fully managed in the browser process.
+//
+// TODO(https://crbug.com/1490686): Consider renaming this to be more generic,
+// since it now does more than just handle quota.
 interface FileSystemAccessCapacityAllocationHost {
   // Requests or releases storage capacity.
   //
@@ -31,4 +34,13 @@ interface FileSystemAccessCapacityAllocationHost {
   [Sync]
   RequestCapacityChange(int64 capacity_delta) =>
       (int64 granted_capacity_delta);
+
+  // Signal to the browser process that the file has been modified. Since this
+  // write happened directly from the renderer, the observer hooks in
+  // storage/browser/file_system/ were bypassed.
+  //
+  // This is intentionally fire-and-forget, since SyncAccessHandle writes are
+  // synchronous and requiring round-trip IPC to complete before synchronously
+  // returning would be detrimental to performance.
+  OnContentsModified();
 };
