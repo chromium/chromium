@@ -33,7 +33,7 @@ class AXFragmentRootPlatformNodeWin : public AXPlatformNodeWin,
     CComObject<AXFragmentRootPlatformNodeWin>* instance = nullptr;
     HRESULT hr =
         CComObject<AXFragmentRootPlatformNodeWin>::CreateInstance(&instance);
-    DCHECK(SUCCEEDED(hr));
+    CHECK(SUCCEEDED(hr));
     instance->Init(delegate);
     instance->AddRef();
     return instance;
