@@ -68,13 +68,13 @@ bool ShouldHaveChildTree(const ui::AXNode& node,
   if (node.IsInvisibleOrIgnored())
     return false;
 
-  // If has a child tree owner role or a child tree id, then expect some
-  // child tree content. In some cases IsChildTreeOwner(role) will be false,
+  // If it has an embedding element role or a child tree id, then expect some
+  // child tree content. In some cases IsEmbeddingElement(role) will be false,
   // if an ARIA role was used, e.g. <iframe role="region">.
   if (data.HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId)) {
     return true;
   }
-  if (!ui::IsChildTreeOwner(node.GetRole())) {
+  if (!ui::IsEmbeddingElement(node.GetRole())) {
     return false;
   }
   std::string url = node.GetStringAttribute(ax::mojom::StringAttribute::kUrl);

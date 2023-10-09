@@ -775,7 +775,8 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
   if (AXObject::ComputeAccessibilityIsIgnored(ignored_reasons)) {
     // Fallback elements inside of a <canvas> are invisible, but are not ignored
     // if they are semantic and not aria-hidden or hidden via style.
-    if (IsAriaHidden() || IsHiddenViaStyle() || !GetNode()->parentElement() ||
+    if (IsAriaHidden() || IsHiddenViaStyle() || IsHiddenByChildTree() ||
+        !GetNode()->parentElement() ||
         !GetNode()->parentElement()->IsInCanvasSubtree()) {
       return true;
     }
@@ -2006,8 +2007,8 @@ bool AXNodeObject::IsNativeSpinButton() const {
   return false;
 }
 
-bool AXNodeObject::IsChildTreeOwner() const {
-  return ui::IsChildTreeOwner(native_role_);
+bool AXNodeObject::IsEmbeddingElement() const {
+  return ui::IsEmbeddingElement(native_role_);
 }
 
 bool AXNodeObject::IsClickable() const {

@@ -566,6 +566,7 @@ void AutomationV8Bindings::SendGetTextLocationResult(
     const absl::optional<gfx::Rect>& rect) {
   base::Value::Dict params;
   params.Set("treeID", data.target_tree_id.ToString());
+  params.Set("childTreeID", data.child_tree_id.ToString());
   params.Set("nodeID", data.target_node_id);
   params.Set("result", false);
   if (rect) {

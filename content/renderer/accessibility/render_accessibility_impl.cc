@@ -461,6 +461,7 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
     case ax::mojom::Action::kScrollDown:
     case ax::mojom::Action::kScrollLeft:
     case ax::mojom::Action::kScrollRight:
+    case ax::mojom::Action::kStitchChildTree:
       target->PerformAction(data);
       break;
     case ax::mojom::Action::kCustomAction:

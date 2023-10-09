@@ -14,7 +14,10 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_tree_id.h"
 
 namespace blink {
 namespace test {
@@ -1573,6 +1576,143 @@ TEST_F(AccessibilityTest, CanComputeAsNaturalParent) {
   EXPECT_TRUE(AXObject::CanComputeAsNaturalParent(elem));
   elem = GetDocument().QuerySelector(AtomicString("input"));
   EXPECT_FALSE(AXObject::CanComputeAsNaturalParent(elem));
+}
+
+TEST_F(AccessibilityTest, StitchChildTree) {
+  // Nodes that are descendants of the node at which a child tree was stitched
+  // (the host node) make all descendants accessibility ignored, hence the
+  // "ignored text" and "ignoredButton" nomenclature. The child tree will take
+  // their place.
+  //
+  // If the host node is accessibility ignored, it should be altered to become
+  // unignored, unless the host node was "ignored but included in tree" whereby
+  // a change is not necessary.
+  SetBodyInnerHTML(R"HTML(
+      <!-- role="banner" so that it is included in the tree. -->
+      <div id="div">
+        <p id="paragraph">Ignored text.</P>
+      </div>
+      <input id="button" type="button" value="Test"
+          style="display: none;">
+      <canvas id="canvas" aria-hidden="true">
+        <input id="ignoredButton" type="button" aria-hidden="false" value="Test">
+        <p aria-hidden="false>More fallback content.</p>
+      </canvas>)HTML");
+
+  AXObject* root = GetAXRootObject();
+  ASSERT_NE(nullptr, root);
+  root->LoadInlineTextBoxes();
+
+  AXObject* div = GetAXObjectByElementId("div");
+  ASSERT_NE(nullptr, div);
+  AXObject* paragraph = GetAXObjectByElementId("paragraph");
+  ASSERT_NE(nullptr, paragraph);
+  AXObject* paragraph_text = paragraph->DeepestFirstChildIncludingIgnored();
+  ASSERT_NE(nullptr, paragraph_text);
+  ASSERT_EQ(paragraph_text->RoleValue(),
+            ax::mojom::blink::Role::kInlineTextBox);
+  AXObject* button = GetAXObjectByElementId("button");
+  ASSERT_NE(nullptr, button);
+  AXObject* canvas = GetAXObjectByElementId("canvas");
+  ASSERT_NE(nullptr, canvas);
+  AXObject* ignored_button = GetAXObjectByElementId("ignoredButton");
+  ASSERT_NE(nullptr, ignored_button);
+
+  EXPECT_TRUE(div->AccessibilityIsIncludedInTree());
+  EXPECT_TRUE(div->IsVisible());
+  EXPECT_EQ(1, div->ChildCountIncludingIgnored());
+  EXPECT_TRUE(paragraph->AccessibilityIsIncludedInTree());
+  EXPECT_TRUE(paragraph->IsVisible());
+  EXPECT_TRUE(paragraph_text->AccessibilityIsIncludedInTree());
+  EXPECT_TRUE(paragraph_text->IsVisible());
+  EXPECT_TRUE(button->AccessibilityIsIgnored());
+  EXPECT_FALSE(button->IsVisible());
+  EXPECT_TRUE(canvas->AccessibilityIsIgnored());
+  EXPECT_FALSE(canvas->IsVisible());
+  EXPECT_EQ(1, canvas->ChildCountIncludingIgnored());
+  EXPECT_TRUE(ignored_button->AccessibilityIsIncludedInTree());
+  EXPECT_FALSE(ignored_button->IsVisible());
+  EXPECT_FALSE(paragraph->IsHiddenByChildTree());
+  EXPECT_FALSE(paragraph_text->IsHiddenByChildTree());
+  EXPECT_FALSE(ignored_button->IsHiddenByChildTree());
+
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::blink::Action::kStitchChildTree;
+
+  const ui::AXTreeID div_child_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  action_data.target_node_id = div->AXObjectID();
+  action_data.child_tree_id = div_child_tree_id;
+  div->PerformAction(action_data);
+
+  const ui::AXTreeID button_child_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  action_data.target_node_id = button->AXObjectID();
+  action_data.child_tree_id = button_child_tree_id;
+  button->PerformAction(action_data);
+
+  const ui::AXTreeID canvas_child_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  action_data.target_node_id = canvas->AXObjectID();
+  action_data.child_tree_id = canvas_child_tree_id;
+  canvas->PerformAction(action_data);
+
+  ui::AXNodeData div_node_data;
+  div->Serialize(&div_node_data, ui::AXMode::kScreenReader);
+  ui::AXNodeData button_node_data;
+  button->Serialize(&button_node_data, ui::AXMode::kScreenReader);
+  ui::AXNodeData canvas_node_data;
+  canvas->Serialize(&canvas_node_data, ui::AXMode::kScreenReader);
+
+  EXPECT_EQ(div_child_tree_id.ToString(),
+            div_node_data.GetStringAttribute(
+                ax::mojom::blink::StringAttribute::kChildTreeId));
+  EXPECT_EQ(button_child_tree_id.ToString(),
+            button_node_data.GetStringAttribute(
+                ax::mojom::blink::StringAttribute::kChildTreeId));
+  EXPECT_EQ(canvas_child_tree_id.ToString(),
+            canvas_node_data.GetStringAttribute(
+                ax::mojom::blink::StringAttribute::kChildTreeId));
+
+  // Fetch the hosting nodes again to ensure that we have their latest
+  // incurnations, if any.
+  div = GetAXObjectByElementId("div");
+  ASSERT_NE(nullptr, div);
+  button = GetAXObjectByElementId("button");
+  ASSERT_NE(nullptr, button);
+  canvas = GetAXObjectByElementId("canvas");
+  ASSERT_NE(nullptr, canvas);
+
+  EXPECT_TRUE(div->AccessibilityIsIncludedInTree());
+  EXPECT_TRUE(div->IsVisible());
+  EXPECT_EQ(0, div->ChildCountIncludingIgnored());
+  EXPECT_TRUE(paragraph->IsDetached());
+  EXPECT_TRUE(paragraph_text->IsDetached());
+  EXPECT_TRUE(button->AccessibilityIsIncludedInTree())
+      << "`button` should switch from ignored due to `display:none`, to "
+         "included in the tree.";
+  EXPECT_FALSE(button->IsVisible())
+      << "The visibility state should not change, only the inclusion in the "
+         "tree.";
+  EXPECT_EQ(0, button->ChildCountIncludingIgnored());
+  EXPECT_TRUE(canvas->AccessibilityIsIgnoredButIncludedInTree());
+  EXPECT_FALSE(canvas->IsVisible())
+      << "The visibility state should not change, only the inclusion in the "
+         "tree.";
+  EXPECT_EQ(0, canvas->ChildCountIncludingIgnored());
+  EXPECT_TRUE(ignored_button->IsDetached());
+
+  // Re-create the detached objects and check that they are still "hidden by the
+  // child tree". We need to do this because Blink will re-create the objects
+  // once it walks the DOM tree again.
+  paragraph = GetAXObjectByElementId("paragraph");
+  ASSERT_NE(nullptr, paragraph);
+  ignored_button = GetAXObjectByElementId("ignoredButton");
+  ASSERT_NE(nullptr, ignored_button);
+
+  EXPECT_TRUE(paragraph->IsHiddenByChildTree());
+  EXPECT_TRUE(paragraph->AccessibilityIsIgnored());
+  EXPECT_FALSE(paragraph->IsVisible());
+  EXPECT_TRUE(ignored_button->IsHiddenByChildTree());
+  EXPECT_TRUE(ignored_button->AccessibilityIsIgnored());
+  EXPECT_FALSE(ignored_button->IsVisible());
 }
 
 }  // namespace test

@@ -708,11 +708,11 @@ _CONFIG = [
             # serialization. Please keep alphabetized.
             'ui::CanHaveInlineTextBoxChildren',
             'ui::IsCellOrTableHeader',
-            'ui::IsChildTreeOwner',
             'ui::IsClickable',
             'ui::IsComboBox',
             'ui::IsContainerWithSelectableChildren',
             'ui::IsDialog',
+            'ui::IsEmbeddingElement',
             'ui::IsHeading',
             'ui::IsPlainContentElement',
             'ui::IsLandmark',

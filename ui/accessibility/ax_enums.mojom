@@ -384,8 +384,8 @@ enum State {
 // An action to be taken on an accessibility node.
 // In contrast to |AXDefaultActionVerb|, these describe what happens to the
 // object, e.g. "FOCUS".
-// Next version: 4
-// Next value: 40
+// Next version: 5
+// Next value: 41
 [Extensible, Stable, Uuid="ed8e4466-0522-4f98-ac28-59a523b70232"]
 enum Action {
   [Default]kNone = 0,
@@ -488,6 +488,13 @@ enum Action {
   // Send an event signaling the end of a test.
   kSignalEndOfTest = 32,
   kShowTooltip = 33,
+
+  // Joins the current tree with another tree by adding the latter as a child
+  // tree at a particular node.
+  //
+  // The closest example in HTML is an iframe, but this action extends the same
+  // functionality to all accessibility nodes.
+  [MinVersion=4] kStitchChildTree = 40,
 
   [MinVersion=1] kStartDuckingMedia = 35,
   [MinVersion=1] kStopDuckingMedia = 36,

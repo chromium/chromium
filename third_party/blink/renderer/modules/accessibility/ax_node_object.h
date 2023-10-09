@@ -112,7 +112,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool IsSpinButton() const override;
   bool IsNativeSlider() const override;
   bool IsNativeSpinButton() const override;
-  bool IsChildTreeOwner() const override;
+  bool IsEmbeddingElement() const override;
 
   // Check object state.
   bool IsClickable() const final;

@@ -5,10 +5,16 @@
 #ifndef UI_ACCESSIBILITY_MOJOM_AX_ACTION_DATA_MOJOM_TRAITS_H_
 #define UI_ACCESSIBILITY_MOJOM_AX_ACTION_DATA_MOJOM_TRAITS_H_
 
+#include <stdint.h>
+
+#include <string>
+
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/mojom/ax_action_data.mojom-shared.h"
-#include "ui/accessibility/mojom/ax_tree_id_mojom_traits.h"
-#include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace mojo {
 
@@ -63,6 +69,10 @@ struct StructTraits<ax::mojom::AXActionDataDataView, ui::AXActionData> {
   }
   static ax::mojom::ScrollBehavior scroll_behavior(const ui::AXActionData& a) {
     return a.scroll_behavior;
+  }
+  static const absl::optional<ui::AXTreeID> child_tree_id(
+      const ui::AXActionData& a) {
+    return a.child_tree_id;
   }
 
   // Returns false if `data` could not be read into `out`, which may occur if

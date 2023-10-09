@@ -300,9 +300,10 @@ AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
       break;
     case api::automation::ActionType::kAnnotatePageImages:
     case api::automation::ActionType::kSignalEndOfTest:
+    case api::automation::ActionType::kStitchChildTree:
     case api::automation::ActionType::kInternalInvalidateTree:
     case api::automation::ActionType::kNone:
-      break;
+      break;  // Actions that are only internally used.
   }
   return success_result;
 }

@@ -57,6 +57,7 @@
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/quad_f.h"
 
 namespace gfx {
@@ -529,10 +530,14 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool ShouldIgnoreForHiddenOrInert(IgnoredReasons* = nullptr) const;
   bool IsInert() const;
   bool IsAriaHidden() const;
+  bool IsHiddenByChildTree() const;
   bool CachedIsAriaHidden() { return cached_is_aria_hidden_; }
   const AXObject* AriaHiddenRoot() const;
   bool ComputeIsInert(IgnoredReasons* = nullptr) const;
   bool ComputeIsAriaHidden(IgnoredReasons* = nullptr) const;
+  // Determines if the object is hidden because a child tree has been stitched
+  // into one of its ancestor objects.
+  bool ComputeIsHiddenByChildTree(IgnoredReasons* = nullptr) const;
   bool IsBlockedByAriaModalDialog(IgnoredReasons* = nullptr) const;
   bool IsDescendantOfDisabledNode() const;
   bool ComputeAccessibilityIsIgnoredButIncludedInTree() const;
@@ -1325,7 +1330,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   static bool IsFrame(const Node*);
   static bool HasARIAOwns(Element* element);
   // Should this own a child tree (e.g. an iframe).
-  virtual bool IsChildTreeOwner() const { return false; }
+  virtual bool IsEmbeddingElement() const { return false; }
   // Is this a widget that requires container widget.
   bool IsSubWidget() const;
   static ax::mojom::blink::Role AriaRoleStringToRoleEnum(const String&);
@@ -1493,6 +1498,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   mutable bool cached_is_ignored_but_included_in_tree_ : 1;
   mutable bool cached_is_inert_ : 1;
   mutable bool cached_is_aria_hidden_ : 1;
+  mutable bool cached_is_hidden_by_child_tree_ : 1;
   mutable bool cached_is_hidden_via_style_ : 1;
   mutable bool cached_is_descendant_of_disabled_node_ : 1;
   mutable bool cached_can_set_focus_attribute_ : 1;
@@ -1542,7 +1548,26 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // from the parent.
   bool ShouldDestroyWhenDetachingFromParent() const;
 
+  const absl::optional<ui::AXTreeID>& child_tree_id() const {
+    return child_tree_id_;
+  }
+  // Attaches the tree with the given ID to this object as a child tree and
+  // updates the cache.
+  void SetChildTree(const ui::AXTreeID& child_tree_id);
+
   static unsigned number_of_live_ax_objects_;
+
+  // The ID of another tree that should be attached to this object as a child
+  // tree. This should not be used for iframes since the child tree for an
+  // iframe can be retrieved from the child frame's embedding token. It should
+  // only be used whenever the `ax::mojom::Action::kStitchChildTree` is sent to
+  // the renderer requesting that another tree is joined with the existing tree.
+  // This might be needed when another tree with some generated content should
+  // be stitched into the current tree.
+  //
+  // TODO(nektar): Use sparse data to store this value since it is not needed by
+  // most objects taking up valuable space.
+  absl::optional<ui::AXTreeID> child_tree_id_;
 
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, GetParentNodeForComputeParent);
 };

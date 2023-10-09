@@ -1154,6 +1154,8 @@ const char* ToString(ax::mojom::Action action) {
       return "hideTooltip";
     case ax::mojom::Action::kInternalInvalidateTree:
       return "internalInvalidateTree";
+    case ax::mojom::Action::kStitchChildTree:
+      return "stitchChildTree";
     case ax::mojom::Action::kStartDuckingMedia:
       return "startDuckingMedia";
     case ax::mojom::Action::kStopDuckingMedia:
