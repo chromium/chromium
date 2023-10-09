@@ -82294,7 +82294,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Page Insights is in Expanded state"/>
   <int value="4" label="Dismiss Page Insights from Peek state"/>
   <int value="5" label="Dismiss Page Insights from Expanded state"/>
-  <int value="6" label="Tap on a xSurface in Page Insights"/>
+  <int value="6"
+      label="Tap on XSurface view in Page Insights feature that opens a new
+             URL"/>
+  <int value="7"
+      label="Tap on XSurface view in Page Insights feature that shares a URL"/>
+  <int value="8"
+      label="Tap on XSurface view in Page Insights feature that opens a new
+             child page within the feature"/>
 </enum>
 
 <enum name="PageLoadBackForwardCacheEvent">
