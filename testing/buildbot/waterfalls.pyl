@@ -6474,7 +6474,7 @@
         'skip_merge_script': True,
         'mixins': [
           'bullhead',
-          'nougat',
+          'oreo_fleet',
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_nexus5x_telemetry_tests_v8',
