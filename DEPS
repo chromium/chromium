@@ -135,6 +135,9 @@ vars = {
   # Checkout SODA (Speech On-Device API go/chrome-live-caption)
   'checkout_soda': False,
 
+  # Controls whether third_party/ml is fetched.
+  'checkout_third_party_ml': False,
+
   # Fetch the additional packages and files needed to run all of the
   # telemetry tests. This is false by default as some stuff is only
   # privately accessible.
@@ -4217,7 +4220,7 @@ deps = {
 
   'src/third_party/ml': {
       'url': Var('chrome_git') + '/chrome/third_party/ml.git' + '@' + 'bfd95492122f567f2d3163bb0fb2b56f450618de',
-      'condition': 'checkout_src_internal and (checkout_win or checkout_mac or checkout_linux)',
+      'condition': 'checkout_third_party_ml',
   },
 
   'src/third_party/soda': {
