@@ -41,10 +41,10 @@ class ParcelTrackingOptInCoordinatorTest : public PlatformTest {
 };
 
 // Test that the kIosParcelTrackingOptInStatus pref is properly set when the
-// primary action button is tapped.
-TEST_F(ParcelTrackingOptInCoordinatorTest, PrimaryAction) {
+// "always track" button is tapped.
+TEST_F(ParcelTrackingOptInCoordinatorTest, AlwaysTrack) {
   base::HistogramTester histogram_tester;
-  [coordinator_ confirmationAlertPrimaryAction];
+  [coordinator_ alwaysTrackTapped];
   EXPECT_EQ(static_cast<int>(IOSParcelTrackingOptInStatus::kAlwaysTrack),
             browser_state_->GetPrefs()->GetInteger(
                 prefs::kIosParcelTrackingOptInStatus));
@@ -54,10 +54,10 @@ TEST_F(ParcelTrackingOptInCoordinatorTest, PrimaryAction) {
 }
 
 // Test that the kIosParcelTrackingOptInStatus pref is properly set when the
-// secondary action button is tapped.
-TEST_F(ParcelTrackingOptInCoordinatorTest, SecondaryAction) {
+// "no thanks" button is tapped.
+TEST_F(ParcelTrackingOptInCoordinatorTest, NeverTrack) {
   base::HistogramTester histogram_tester;
-  [coordinator_ confirmationAlertSecondaryAction];
+  [coordinator_ noThanksTapped];
   EXPECT_EQ(static_cast<int>(IOSParcelTrackingOptInStatus::kNeverTrack),
             browser_state_->GetPrefs()->GetInteger(
                 prefs::kIosParcelTrackingOptInStatus));
@@ -67,10 +67,10 @@ TEST_F(ParcelTrackingOptInCoordinatorTest, SecondaryAction) {
 }
 
 // Test that the kIosParcelTrackingOptInStatus pref is properly set when the
-// tertiary action button is tapped.
-TEST_F(ParcelTrackingOptInCoordinatorTest, TertiaryAction) {
+// "ask to track" button is tapped.
+TEST_F(ParcelTrackingOptInCoordinatorTest, AskToTrack) {
   base::HistogramTester histogram_tester;
-  [coordinator_ confirmationAlertTertiaryAction];
+  [coordinator_ askToTrackTapped];
   EXPECT_EQ(static_cast<int>(IOSParcelTrackingOptInStatus::kAskToTrack),
             browser_state_->GetPrefs()->GetInteger(
                 prefs::kIosParcelTrackingOptInStatus));

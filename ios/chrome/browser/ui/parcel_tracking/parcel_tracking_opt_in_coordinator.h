@@ -7,13 +7,13 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_view_controller_delegate.h"
 #import "ios/web/public/annotations/custom_text_checking_result.h"
 #import "ios/web/public/web_state.h"
 
 // Coordinator that manages the parcel tracking opt-in half sheet presentation.
 @interface ParcelTrackingOptInCoordinator
-    : ChromeCoordinator <ConfirmationAlertActionHandler>
+    : ChromeCoordinator <ParcelTrackingOptInViewControllerDelegate>
 
 // Creates a coordinator that uses `viewController`, `browser`, `webState`, and
 // list of parcels `parcels`.

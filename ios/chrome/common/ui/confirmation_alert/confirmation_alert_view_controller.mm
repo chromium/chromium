@@ -57,7 +57,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
 // References to the UI properties that need to be updated when the trait
 // collection changes.
-@property(nonatomic, strong) UIButton* primaryActionButton;
 @property(nonatomic, strong) UIButton* secondaryActionButton;
 @property(nonatomic, strong) UIButton* tertiaryActionButton;
 @property(nonatomic, strong) UINavigationBar* navigationBar;
@@ -778,7 +777,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
   actionStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
   if (self.primaryActionString) {
-    self.primaryActionButton = [self createPrimaryActionButton];
+    _primaryActionButton = [self createPrimaryActionButton];
     [actionStackView addArrangedSubview:self.primaryActionButton];
   }
 

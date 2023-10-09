@@ -24,13 +24,11 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Handles user tap on primary action.
-- (void)didTapPrimaryActionButton:
-    (NSArray<CustomTextCheckingResult*>*)parcelList;
+// Handles user tap on "always track".
+- (void)didTapAlwaysTrack:(NSArray<CustomTextCheckingResult*>*)parcelList;
 
-// Handles user tap on tertiary action.
-- (void)didTapTertiaryActionButton:
-    (NSArray<CustomTextCheckingResult*>*)parcelList;
+// Handles user tap on "ask to track".
+- (void)didTapAskToTrack:(NSArray<CustomTextCheckingResult*>*)parcelList;
 
 @end
 

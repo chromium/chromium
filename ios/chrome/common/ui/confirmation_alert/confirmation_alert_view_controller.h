@@ -141,6 +141,9 @@
 // Bottom margin for the action stack view.
 @property(nonatomic, assign) CGFloat actionStackBottomMargin;
 
+// Button for the primary action string.
+@property(nonatomic, readonly) UIButton* primaryActionButton;
+
 // Designated initializer.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

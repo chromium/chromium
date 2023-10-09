@@ -182,6 +182,8 @@ NSString* const kListBulletRectangleSymbol = @"list.bullet.rectangle.portrait";
 NSString* const kBoxTruckFillSymbol = @"box.truck.fill";
 NSString* const kExclamationMarkBubbleSymbol = @"exclamationmark.bubble";
 NSString* const kShippingBoxFillSymbol = @"shippingbox.fill";
+NSString* const kButtonProgrammableSymbol = @"button.programmable";
+NSString* const kCircleCircleFillSymbol = @"circle.circle.fill";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

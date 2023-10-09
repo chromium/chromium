@@ -22,8 +22,7 @@
   return self;
 }
 
-- (void)didTapPrimaryActionButton:
-    (NSArray<CustomTextCheckingResult*>*)parcelList {
+- (void)didTapAlwaysTrack:(NSArray<CustomTextCheckingResult*>*)parcelList {
   commerce::ShoppingService* shoppingService =
       commerce::ShoppingServiceFactory::GetForBrowserState(
           _webState->GetBrowserState());
@@ -31,8 +30,7 @@
                _parcelTrackingCommandsHandler, true);
 }
 
-- (void)didTapTertiaryActionButton:
-    (NSArray<CustomTextCheckingResult*>*)parcelList {
+- (void)didTapAskToTrack:(NSArray<CustomTextCheckingResult*>*)parcelList {
   [_parcelTrackingCommandsHandler
       showParcelTrackingInfobarWithParcels:parcelList
                                    forStep:ParcelTrackingStep::
