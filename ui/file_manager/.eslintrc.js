@@ -7,14 +7,16 @@ module.exports = {
     'no-console' : 'off',
   },
 
-  'overrides': [{
-    'files': ['**/*.ts'],
-    'parser': '../../third_party/node/node_modules/@typescript-eslint/parser/dist/index.js',
-    'plugins': [
-      '@typescript-eslint',
-    ],
-    'rules': {
-      // rule override goes here.
-    },
-  }],
+  'overrides' : [{
+                'files' : ['**/*.ts'],
+                'parser' : '../../third_party/node/node_modules/@typescript-eslint/parser/dist/index.js',
+                'plugins' :
+                          [
+                            '@typescript-eslint',
+                          ],
+                'rules' : {
+                  // rule override goes here.
+                  'no-fallthrough' : 'error',
+                },
+              }],
 };

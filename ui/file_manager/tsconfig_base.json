@@ -15,6 +15,7 @@
     ],
     "experimentalDecorators": true,
     "noEmitHelpers": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": false
   }
 }

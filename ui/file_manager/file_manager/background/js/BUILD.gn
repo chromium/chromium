@@ -22,7 +22,6 @@ group("closure_compile") {
 group("js_modules") {
   deps = [
     ":file_manager_base",
-    ":file_operation_handler",
     ":file_operation_manager",
     ":file_operation_util",
     ":progress_center",
@@ -36,7 +35,6 @@ visibility = [ ":*" ]
 js_type_check("closure_compile_jsmodules") {
   deps = [
     ":file_manager_base",
-    ":file_operation_handler",
     ":file_operation_manager",
     ":file_operation_util",
     ":mock_progress_center",
@@ -87,7 +85,6 @@ js_type_check("test_support_modules_type_check") {
 js_library("file_manager_base") {
   visibility += [ "//ui/file_manager/file_manager/foreground/js:file_manager" ]
   deps = [
-    ":file_operation_handler",
     ":file_operation_manager",
     ":file_operation_util",
     ":progress_center",
@@ -110,19 +107,8 @@ js_library("mock_crostini") {
   deps = [ "//ui/file_manager/file_manager/externs/background:crostini" ]
 }
 
-js_library("file_operation_handler") {
-  deps = [
-    "//ui/file_manager/file_manager/common/js:progress_center_common",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/externs/background:file_operation_manager",
-    "//ui/file_manager/file_manager/externs/background:progress_center",
-    "//ui/file_manager/file_manager/externs/ts:store",
-  ]
-}
-
 js_unittest("file_operation_handler_unittest") {
   deps = [
-    ":file_operation_handler",
     ":file_operation_util",
     ":mock_file_operation_manager",
     ":mock_progress_center",

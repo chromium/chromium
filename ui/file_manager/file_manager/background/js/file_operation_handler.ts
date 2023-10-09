@@ -7,53 +7,33 @@ import {PolicyErrorType, ProgressCenterItem, ProgressItemState, ProgressItemType
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
-import {State} from '../../externs/ts/state.js';
 import {getStore} from '../../state/store.js';
 
 /**
  * An event handler of the background page for file operations.
  */
 export class FileOperationHandler {
-  /**
-   * @param {!ProgressCenter} progressCenter
-   */
-  constructor(progressCenter) {
-
-    /**
-     * Progress center.
-     * @type {!ProgressCenter}
-     * @private
-     */
-    this.progressCenter_ = progressCenter;
-
-    /**
-     * Toast element to emit notifications.
-     * @type {Object|null}
-     * @private
-     */
-    this.toast_ = null;
-
+  constructor(private progressCenter_: ProgressCenter) {
     chrome.fileManagerPrivate.onIOTaskProgressStatus.addListener(
-        this.onIOTaskProgressStatus_.bind(this));
+        this.onIoTaskProgressStatus_.bind(this));
   }
 
   /**
    * Process the IO Task ProgressStatus events.
-   * @param {!chrome.fileManagerPrivate.ProgressStatus} event
-   * @private
    */
-  onIOTaskProgressStatus_(event) {
+  private onIoTaskProgressStatus_(
+      event: chrome.fileManagerPrivate.ProgressStatus) {
     const taskId = String(event.taskId);
     let newItem = false;
-    /** @type {ProgressCenterItem} */
-    let item = this.progressCenter_.getItemById(taskId);
+    let item: ProgressCenterItem|null =
+        this.progressCenter_.getItemById(taskId);
     if (!item) {
       item = new ProgressCenterItem();
       newItem = true;
       item.id = taskId;
-      item.type = getTypeFromIOTaskType_(event.type);
+      item.type = getTypeFromIOTaskType(event.type);
       item.itemCount = event.itemCount;
-      const state = /** @type {State} */ (getStore().getState());
+      const state = getStore().getState();
       const volume = state.volumes[event.destinationVolumeId];
       item.isDestinationDrive =
           volume?.volumeType === VolumeManagerCommon.VolumeType.DRIVE;
@@ -61,7 +41,7 @@ export class FileOperationHandler {
         chrome.fileManagerPrivate.cancelIOTask(event.taskId);
       };
     }
-    item.message = getMessageFromProgressEvent_(event);
+    item.message = getMessageFromProgressEvent(event);
     item.sourceMessage = event.sourceName;
     item.destinationMessage = event.destinationName;
 
@@ -87,13 +67,13 @@ export class FileOperationHandler {
           item.state = ProgressItemState.PAUSED;
           item.policyFileCount = event.pauseParams.policyParams.policyFileCount;
           item.policyFileName = event.pauseParams.policyParams.fileName;
-          const extraButtonText = getPolicyExtraButtonText_(event);
+          const extraButtonText = getPolicyExtraButtonText(event);
           if (event.pauseParams.policyParams.policyFileCount === 1) {
             item.setExtraButton(
                 ProgressItemState.PAUSED, extraButtonText, () => {
                   // Proceed/cancel the action directly from the notification.
                   chrome.fileManagerPrivate.resumeIOTask(event.taskId, {
-                    policyParams: {type: event.pauseParams.policyParams.type},
+                    policyParams: {type: event.pauseParams!.policyParams!.type},
                     conflictParams: undefined,
                   });
                 });
@@ -128,9 +108,9 @@ export class FileOperationHandler {
           item.progressValue = item.progressMax;
           item.remainingTime = event.remainingSeconds;
           if (item.type === ProgressItemType.TRASH) {
-            /** @type {!Array<!Entry>} */
-            const infoEntries =
-                event.outputs.filter(o => o.name.endsWith('.trashinfo'));
+            const infoEntries: Entry[] =
+                (event.outputs ||
+                 []).filter((o: Entry) => o.name.endsWith('.trashinfo'));
             item.setExtraButton(
                 ProgressItemState.COMPLETED, str('UNDO_DELETE_ACTION_LABEL'),
                 () => {
@@ -147,7 +127,7 @@ export class FileOperationHandler {
           // Check if there was a policy error.
           if (event.policyError) {
             item.policyError =
-                getPolicyErrorFromIOTaskPolicyError_(event.policyError.type);
+                getPolicyErrorFromIOTaskPolicyError(event.policyError.type);
             item.policyFileCount = event.policyError.policyFileCount;
             item.policyFileName = event.policyError.fileName;
             item.dismissCallback = () => {
@@ -157,7 +137,7 @@ export class FileOperationHandler {
               chrome.fileManagerPrivate.dismissIOTask(
                   event.taskId, util.checkAPIError);
             };
-            const extraButtonText = getPolicyExtraButtonText_(event);
+            const extraButtonText = getPolicyExtraButtonText(event);
             if (event.policyError.type !==
                     PolicyErrorType.DLP_WARNING_TIMEOUT &&
                 event.policyError.policyFileCount > 1) {
@@ -192,64 +172,13 @@ export class FileOperationHandler {
 
     this.progressCenter_.updateItem(item);
   }
-
-  get toast() {
-    if (!this.toast_) {
-      // The background page does not contain the requisite types to include the
-      // FilesToast type without type checking the Polymer element.
-      this.toast_ = /** @type {!Object} */ (document.getElementById('toast'));
-    }
-
-    return this.toast_;
-  }
-
-  /**
-   * On a successful trash operation, show a toast notification on Files app
-   * with an undo action to restore the files that were just trashed.
-   * @param {!chrome.fileManagerPrivate.ProgressStatus} event
-   * @private
-   */
-  showRestoreTrashToast_(event) {
-    if (event.type !== chrome.fileManagerPrivate.IOTaskType.TRASH ||
-        event.state !== chrome.fileManagerPrivate.IOTaskState.SUCCESS) {
-      return;
-    }
-
-    const message = (event.itemCount === 1) ?
-        strf('UNDO_DELETE_ONE', event.sourceName) :
-        strf('UNDO_DELETE_SOME', event.itemCount);
-    /** @type {!Array<!Entry>} */
-    const infoEntries =
-        event.outputs.filter(o => o.name.endsWith('.trashinfo'));
-    this.toast.show(message, {
-      text: str('UNDO_DELETE_ACTION_LABEL'),
-      callback: () => {
-        startIOTask(
-            chrome.fileManagerPrivate.IOTaskType.RESTORE, infoEntries,
-            /*params=*/ {});
-      },
-    });
-  }
 }
 
 /**
- * Pending time before a delete item is added to the progress center.
- *
- * @type {number}
- * @const
- * @private
- */
-FileOperationHandler.PENDING_TIME_MS_ = 500;
-
-/**
  * Obtains ProgressItemType from OperationType of ProgressStatus.type.
- * @param {!chrome.fileManagerPrivate.IOTaskType} type Operation type
- *     ProgressStatus.
- * @return {!ProgressItemType} corresponding to the
- *     specified operation type.
- * @private
  */
-function getTypeFromIOTaskType_(type) {
+function getTypeFromIOTaskType(type: chrome.fileManagerPrivate.IOTaskType):
+    ProgressItemType {
   switch (type) {
     case chrome.fileManagerPrivate.IOTaskType.COPY:
       return ProgressItemType.COPY;
@@ -277,11 +206,9 @@ function getTypeFromIOTaskType_(type) {
 
 /**
  * Generate a progress message from the event.
- * @param {!chrome.fileManagerPrivate.ProgressStatus} event Progress event.
- * @return {string} message.
- * @private
  */
-function getMessageFromProgressEvent_(event) {
+function getMessageFromProgressEvent(
+    event: chrome.fileManagerPrivate.ProgressStatus): string {
   // The non-error states text is managed directly in the
   // ProgressCenterPanel.
   if (event.state !== chrome.fileManagerPrivate.IOTaskState.ERROR) {
@@ -298,40 +225,37 @@ function getMessageFromProgressEvent_(event) {
         return str('DELETE_IN_USE_ERROR');
     }
   }
-    const detail = util.getFileErrorString(event.errorName);
-    switch (event.type) {
-      case chrome.fileManagerPrivate.IOTaskType.COPY:
-        return strf('COPY_FILESYSTEM_ERROR', detail);
-      case chrome.fileManagerPrivate.IOTaskType.EMPTY_TRASH:
-        return str('EMPTY_TRASH_UNEXPECTED_ERROR');
-      case chrome.fileManagerPrivate.IOTaskType.EXTRACT:
-        return strf('EXTRACT_FILESYSTEM_ERROR', detail);
-      case chrome.fileManagerPrivate.IOTaskType.MOVE:
-        return strf('MOVE_FILESYSTEM_ERROR', detail);
-      case chrome.fileManagerPrivate.IOTaskType.ZIP:
-        return strf('ZIP_FILESYSTEM_ERROR', detail);
-      case chrome.fileManagerPrivate.IOTaskType.DELETE:
-        return str('DELETE_ERROR');
-      case chrome.fileManagerPrivate.IOTaskType.RESTORE:
-      case chrome.fileManagerPrivate.IOTaskType.RESTORE_TO_DESTINATION:
-        return str('RESTORE_FROM_TRASH_ERROR');
-      case chrome.fileManagerPrivate.IOTaskType.TRASH:
-        return str('TRASH_UNEXPECTED_ERROR');
-      default:
-        console.warn(`Unexpected operation type: ${event.type}`);
-        return strf('FILE_ERROR_GENERIC');
-    }
+  const detail = util.getFileErrorString(event.errorName);
+  switch (event.type) {
+    case chrome.fileManagerPrivate.IOTaskType.COPY:
+      return strf('COPY_FILESYSTEM_ERROR', detail);
+    case chrome.fileManagerPrivate.IOTaskType.EMPTY_TRASH:
+      return str('EMPTY_TRASH_UNEXPECTED_ERROR');
+    case chrome.fileManagerPrivate.IOTaskType.EXTRACT:
+      return strf('EXTRACT_FILESYSTEM_ERROR', detail);
+    case chrome.fileManagerPrivate.IOTaskType.MOVE:
+      return strf('MOVE_FILESYSTEM_ERROR', detail);
+    case chrome.fileManagerPrivate.IOTaskType.ZIP:
+      return strf('ZIP_FILESYSTEM_ERROR', detail);
+    case chrome.fileManagerPrivate.IOTaskType.DELETE:
+      return str('DELETE_ERROR');
+    case chrome.fileManagerPrivate.IOTaskType.RESTORE:
+    case chrome.fileManagerPrivate.IOTaskType.RESTORE_TO_DESTINATION:
+      return str('RESTORE_FROM_TRASH_ERROR');
+    case chrome.fileManagerPrivate.IOTaskType.TRASH:
+      return str('TRASH_UNEXPECTED_ERROR');
+    default:
+      console.warn(`Unexpected operation type: ${event.type}`);
+      return str('FILE_ERROR_GENERIC');
+  }
 }
 
 /**
  * Converts fileManagerPrivate.PolicyErrorType to
  * ProgressCenterItem.PolicyErrorType.
- * @param {!chrome.fileManagerPrivate.PolicyErrorType|undefined} error
- * @return {?PolicyErrorType} corresponding to the error type, or null if not
- *     defined.
- * @private
  */
-function getPolicyErrorFromIOTaskPolicyError_(error) {
+function getPolicyErrorFromIOTaskPolicyError(
+    error?: chrome.fileManagerPrivate.PolicyErrorType): PolicyErrorType|null {
   if (!error) {
     return null;
   }
@@ -352,11 +276,9 @@ function getPolicyErrorFromIOTaskPolicyError_(error) {
  * Returns the extra button text for policy panel items. Currently only
  * supported for PAUSED and ERROR states due to policy, and for COPY or MOVE
  * operation types.
- * @param {!chrome.fileManagerPrivate.ProgressStatus} event
- * @return {string} button text or empty string if not applicable.
- * @private
  */
-function getPolicyExtraButtonText_(event) {
+function getPolicyExtraButtonText(
+    event: chrome.fileManagerPrivate.ProgressStatus): string {
   if (event.state === chrome.fileManagerPrivate.IOTaskState.PAUSED &&
       event.pauseParams && event.pauseParams.policyParams) {
     if (event.pauseParams.policyParams.policyFileCount > 1) {
