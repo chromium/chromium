@@ -46,13 +46,6 @@ bool GetRemoteCommandTopicFromPolicy(
 bool IsInvalidationExpired(const invalidation::Invalidation& invalidation,
                            const base::Time& last_fetch_time,
                            const base::Time& current_time) {
-  // If the version is unknown, consider the invalidation invalid if the
-  // fetch was very recently.
-  if (invalidation.is_unknown_version()) {
-    base::TimeDelta elapsed = current_time - last_fetch_time;
-    return elapsed < invalidation_timeouts::kUnknownVersionIgnorePeriod;
-  }
-
   // The invalidation version is the timestamp in microseconds. If the
   // invalidation occurred before the last fetch, then the invalidation
   // is expired.

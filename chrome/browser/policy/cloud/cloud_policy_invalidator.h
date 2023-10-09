@@ -231,11 +231,6 @@ class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
   // invalidated policy is up to date.
   int64_t invalidation_version_;
 
-  // The number of invalidations with unknown version received. Since such
-  // invalidations do not provide a version number, this count is used to set
-  // invalidation_version_ when such invalidations occur.
-  int unknown_version_invalidation_count_;
-
   // The highest invalidation version that was handled already.
   int64_t highest_handled_invalidation_version_;
 

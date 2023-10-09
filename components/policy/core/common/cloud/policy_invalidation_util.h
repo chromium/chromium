@@ -26,11 +26,6 @@ namespace policy {
 
 namespace invalidation_timeouts {
 
-// Time for which unknown version invalidations are ignored after
-// fetching a policy or command.
-constexpr base::TimeDelta kUnknownVersionIgnorePeriod =
-    base::Seconds(30);
-
 // The max tolerated discrepancy between policy or remote commands
 // timestamps and invalidation timestamps when determining if an invalidation
 // is expired.

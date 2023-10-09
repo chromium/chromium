@@ -200,7 +200,6 @@ CloudPolicyInvalidator::CloudPolicyInvalidator(
       is_registered_(false),
       invalid_(false),
       invalidation_version_(0),
-      unknown_version_invalidation_count_(0),
       highest_handled_invalidation_version_(
           highest_handled_invalidation_version),
       max_fetch_delay_(kMaxFetchDelayDefault),
@@ -342,13 +341,11 @@ void CloudPolicyInvalidator::OnStoreError(CloudPolicyStore* store) {}
 void CloudPolicyInvalidator::HandleInvalidation(
     const invalidation::Invalidation& invalidation) {
   // Ignore old invalidations.
-  if (invalid_ && !invalidation.is_unknown_version() &&
-      invalidation.version() <= invalidation_version_) {
+  if (invalid_ && invalidation.version() <= invalidation_version_) {
     return;
   }
 
-  if (!invalidation.is_unknown_version() &&
-      invalidation.version() <= highest_handled_invalidation_version_) {
+  if (invalidation.version() <= highest_handled_invalidation_version_) {
     // If this invalidation version was handled already, acknowledge the
     // invalidation but ignore it otherwise.
     invalidation.Acknowledge();
@@ -361,18 +358,8 @@ void CloudPolicyInvalidator::HandleInvalidation(
     AcknowledgeInvalidation();
 
   // Get the version and payload from the invalidation.
-  // When an invalidation with unknown version is received, use negative
-  // numbers based on the number of such invalidations received. This
-  // ensures that the version numbers do not collide with "real" versions
-  // (which are positive) or previous invalidations with unknown version.
-  int64_t version;
-  std::string payload;
-  if (invalidation.is_unknown_version()) {
-    version = -(++unknown_version_invalidation_count_);
-  } else {
-    version = invalidation.version();
-    payload = invalidation.payload();
-  }
+  const int64_t version = invalidation.version();
+  const std::string payload = invalidation.payload();
 
   // Ignore the invalidation if it is expired.
   const auto last_fetch_time =
