@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/overlays/public/overlay_presentation_context.h"
@@ -291,7 +292,7 @@
       transitionToStateOmniboxFocused:focused
                       toolbarExpanded:focused && !IsRegularXRegularSizeClass(
                                                      self.traitEnvironment)
-              animateFromLargeFakebox:[self isNTP]
+              animateFromLargeFakebox:[self animateFromLargeFakebox]
                              animated:animateTransition
                            completion:completion];
   self.locationBarFocused = focused;
@@ -575,19 +576,23 @@
                       toolbarExpanded:omniboxFocused &&
                                       !IsRegularXRegularSizeClass(
                                           self.traitEnvironment)
-              animateFromLargeFakebox:[self isNTP]
+              animateFromLargeFakebox:[self animateFromLargeFakebox]
                              animated:NO
                            completion:nil];
 }
 
-/// Returns YES if the current webstate is an NTP.
-- (BOOL)isNTP {
+/// Returns YES if the transition animation is from/to an NTP with a large
+/// fakebox.
+- (BOOL)animateFromLargeFakebox {
+  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
+    return NO;
+  }
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
   if (!webState) {
     return NO;
   }
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
-  return NTPHelper && NTPHelper->IsActive();
+  return NTPHelper && NTPHelper->IsActive() && IsIOSLargeFakeboxEnabled();
 }
 @end

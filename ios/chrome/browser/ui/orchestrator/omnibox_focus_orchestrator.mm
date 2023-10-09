@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/orchestrator/omnibox_focus_orchestrator.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ui/orchestrator/edit_view_animatee.h"
 #import "ios/chrome/browser/ui/orchestrator/location_bar_animatee.h"
 #import "ios/chrome/browser/ui/orchestrator/toolbar_animatee.h"
@@ -254,7 +253,7 @@
     // Use UIView animateWithDuration instead of UIViewPropertyAnimator to
     // avoid UIKit bug. See https://crbug.com/856155.
     self.inProgressAnimationCount += 1;
-    if (_animateFromLargeFakebox && IsIOSLargeFakeboxEnabled()) {
+    if (_animateFromLargeFakebox) {
       [self.toolbarAnimatee setLocationBarHeightToMatchFakeOmnibox];
     }
     [UIView animateKeyframesWithDuration:kMaterialDuration1
@@ -347,7 +346,7 @@
     if (_completion) {
       _completion();
       _completion = nil;
-      if (_animateFromLargeFakebox && IsIOSLargeFakeboxEnabled()) {
+      if (_animateFromLargeFakebox) {
         // Reset the location bar height back to the default.
         [self.toolbarAnimatee setLocationBarHeightExpanded];
       }
@@ -362,7 +361,7 @@
 - (void)expansion {
   [self.toolbarAnimatee expandLocationBar];
   [self.toolbarAnimatee showCancelButton];
-  if (_animateFromLargeFakebox && IsIOSLargeFakeboxEnabled()) {
+  if (_animateFromLargeFakebox) {
     [self.toolbarAnimatee setLocationBarHeightExpanded];
   }
 }
@@ -370,7 +369,7 @@
 // Visually contracts the location bar for defocus.
 - (void)contraction {
   [self.toolbarAnimatee contractLocationBar];
-  if (_animateFromLargeFakebox && IsIOSLargeFakeboxEnabled()) {
+  if (_animateFromLargeFakebox) {
     [self.toolbarAnimatee setLocationBarHeightToMatchFakeOmnibox];
   }
 }
