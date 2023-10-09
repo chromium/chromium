@@ -10,7 +10,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -28,6 +27,10 @@
 namespace content {
 
 namespace {
+
+using ::testing::AllOf;
+using ::testing::Field;
+using ::testing::UnorderedElementsAreArray;
 
 constexpr char kDefaultConfigFileName[] = "default_config.json";
 
@@ -58,22 +61,16 @@ std::vector<base::FilePath> GetInputs() {
   return input_paths;
 }
 
-void ProcessReports(base::Value::Dict& dict) {
-  base::Value::List* list = dict.FindList(kReportsKey);
-  if (!list) {
-    return;
-  }
-  base::ranges::sort(*list);
-
+void PreProcessOutput(AttributionInteropOutput& output) {
   // Ensure that integral values for this field are replaced with the equivalent
   // double, since they are equivalent at the JSON level.
-  for (base::Value& v : *list) {
-    if (!v.is_dict()) {
+  for (auto& report : output.reports) {
+    base::Value::Dict* dict = report.payload.GetIfDict();
+    if (!dict) {
       continue;
     }
 
-    base::Value* rate =
-        v.GetDict().FindByDottedPath("payload.randomized_trigger_rate");
+    base::Value* rate = dict->Find("randomized_trigger_rate");
     if (!rate || !rate->is_int()) {
       continue;
     }
@@ -125,17 +122,26 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
   absl::optional<base::Value> input = dict.Extract("input");
   ASSERT_TRUE(input && input->is_dict());
 
+  absl::optional<base::Value> output = dict.Extract("output");
+  ASSERT_TRUE(output && output->is_dict());
+
   ASSERT_OK_AND_ASSIGN(
-      auto actual_output,
+      auto expected_output,
+      AttributionInteropOutput::Parse(std::move(*output).TakeDict()));
+
+  ASSERT_OK_AND_ASSIGN(
+      AttributionInteropOutput actual_output,
       RunAttributionInteropSimulation(std::move(*input).TakeDict(), config));
 
-  absl::optional<base::Value> expected_output = dict.Extract("output");
-  ASSERT_TRUE(expected_output.has_value());
+  PreProcessOutput(expected_output);
+  PreProcessOutput(actual_output);
 
-  ProcessReports(actual_output);
-  ProcessReports(expected_output->GetDict());
-
-  EXPECT_THAT(actual_output, base::test::IsJson(*expected_output));
+  EXPECT_THAT(actual_output,
+              AllOf(Field(&AttributionInteropOutput::reports,
+                          UnorderedElementsAreArray(expected_output.reports)),
+                    Field(&AttributionInteropOutput::unparsable_registrations,
+                          UnorderedElementsAreArray(
+                              expected_output.unparsable_registrations))));
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -5,6 +5,7 @@
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
 
 #include <cmath>
+#include <functional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -19,6 +20,7 @@
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -82,7 +84,13 @@ bool operator==(const AttributionConfig& a, const AttributionConfig& b) {
 
 namespace {
 
+using ::base::test::ErrorIs;
+using ::base::test::ValueIs;
+
+using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Field;
 using ::testing::HasSubstr;
 using ::testing::IsEmpty;
 
@@ -777,6 +785,87 @@ TEST(AttributionInteropParserTest, InvalidConfigMaxInfGain) {
     EXPECT_THAT(error,
                 HasSubstr("[\"max_event_info_gain\"]: must be \"inf\" or a "
                           "non-negative double formated as a base-10 string"));
+  }
+}
+
+TEST(AttributionInteropParserTest, ParseOutput) {
+  const base::Value kExpectedPayload("abc");
+
+  const struct {
+    const char* desc;
+    const char* json;
+    ::testing::Matcher<base::expected<AttributionInteropOutput, std::string>>
+        matches;
+  } kTestCases[] = {
+      {
+          "top_level_errors",
+          R"json({"foo": []})json",
+          ErrorIs(AllOf(
+              HasSubstr(R"(["reports"]: must be present)"),
+              HasSubstr(R"(["unparsable_registrations"]: must be present)"),
+              HasSubstr(R"(["foo"]: unknown field)"))),
+      },
+      {
+          "second_level_errors",
+          R"json({
+            "reports": [{"foo": null}],
+            "unparsable_registrations": [{"bar": 123}]
+          })json",
+          ErrorIs(AllOf(
+              HasSubstr(R"(["reports"][0]["report_time"]: must be an integer)"),
+              HasSubstr(R"(["reports"][0]["report_url"]: must be a valid URL)"),
+              HasSubstr(R"(["reports"][0]["payload"]: required)"),
+              HasSubstr(R"(["reports"][0]["foo"]: unknown field)"),
+              HasSubstr(
+                  R"(["unparsable_registrations"][0]["time"]: must be an integer)"),
+              HasSubstr(
+                  R"(["unparsable_registrations"][0]["type"]: must be either)"),
+              HasSubstr(
+                  R"(["unparsable_registrations"][0]["bar"]: unknown field)"))),
+      },
+      {
+          "ok",
+          R"json({
+            "reports": [{
+              "report_time": "123",
+              "report_url": "https://a.test/x",
+              "payload": "abc"
+            }],
+            "unparsable_registrations": [{
+              "time": "456",
+              "type": "trigger"
+            }]
+          })json",
+          ValueIs(AllOf(
+              Field(
+                  &AttributionInteropOutput::reports,
+                  ElementsAre(AllOf(
+                      Field(&AttributionInteropOutput::Report::time,
+                            base::Time::UnixEpoch() + base::Milliseconds(123)),
+                      Field(&AttributionInteropOutput::Report::url,
+                            GURL("https://a.test/x")),
+                      Field(&AttributionInteropOutput::Report::payload,
+                            // `std::ref` needed because `base::Value` isn't
+                            // copyable
+                            Eq(std::ref(kExpectedPayload)))))),
+              Field(
+                  &AttributionInteropOutput::unparsable_registrations,
+                  ElementsAre(AllOf(
+                      Field(&AttributionInteropOutput::UnparsableRegistration::
+                                time,
+                            base::Time::UnixEpoch() + base::Milliseconds(456)),
+                      Field(&AttributionInteropOutput::UnparsableRegistration::
+                                type,
+                            attribution_reporting::mojom::RegistrationType::
+                                kTrigger)))))),
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+    base::Value::Dict value = base::test::ParseJsonDict(test_case.json);
+    EXPECT_THAT(AttributionInteropOutput::Parse(std::move(value)),
+                test_case.matches);
   }
 }
 

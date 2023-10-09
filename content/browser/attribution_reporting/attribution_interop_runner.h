@@ -13,15 +13,13 @@
 namespace content {
 
 struct AttributionConfig;
-
-constexpr char kReportsKey[] = "reports";
-constexpr char kUnparsableRegistrationsKey[] = "unparsable_registrations";
+struct AttributionInteropOutput;
 
 // Simulates the Attribution Reporting API for a single user on sources and
 // triggers specified in `input`. Returns the generated reports.
-base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
-    base::Value::Dict input,
-    const AttributionConfig&);
+base::expected<AttributionInteropOutput, std::string>
+RunAttributionInteropSimulation(base::Value::Dict input,
+                                const AttributionConfig&);
 
 }  // namespace content
 

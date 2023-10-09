@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <ostream>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -27,6 +28,7 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -35,16 +37,32 @@ namespace content {
 namespace {
 
 using ::attribution_reporting::SuitableOrigin;
+using ::attribution_reporting::mojom::RegistrationType;
 using ::attribution_reporting::mojom::SourceType;
 
 constexpr char kAttributionSrcUrlKey[] = "attribution_src_url";
+constexpr char kPayloadKey[] = "payload";
 constexpr char kRegistrationRequestKey[] = "registration_request";
+constexpr char kReportTimeKey[] = "report_time";
+constexpr char kReportUrlKey[] = "report_url";
+constexpr char kReportsKey[] = "reports";
 constexpr char kResponseKey[] = "response";
 constexpr char kResponsesKey[] = "responses";
 constexpr char kSourceTypeKey[] = "source_type";
+constexpr char kTimeKey[] = "time";
+constexpr char kTypeKey[] = "type";
+constexpr char kUnparsableRegistrationsKey[] = "unparsable_registrations";
+
+constexpr char kSource[] = "source";
+constexpr char kTrigger[] = "trigger";
 
 using Context = absl::variant<base::StringPiece, size_t>;
 using ContextPath = std::vector<Context>;
+
+std::string TimeAsUnixMillisecondString(base::Time time) {
+  return base::NumberToString(
+      (time - base::Time::UnixEpoch()).InMilliseconds());
+}
 
 class ScopedContext {
  public:
@@ -101,7 +119,8 @@ class ErrorWriter {
 
 class AttributionInteropParser {
  public:
-  explicit AttributionInteropParser(base::Time offset_time = base::Time())
+  explicit AttributionInteropParser(
+      base::Time offset_time = base::Time::UnixEpoch())
       : offset_time_(offset_time) {}
 
   ~AttributionInteropParser() = default;
@@ -130,6 +149,37 @@ class AttributionInteropParser {
 
     base::ranges::sort(events);
     return events;
+  }
+
+  base::expected<AttributionInteropOutput, std::string> ParseOutput(
+      base::Value::Dict dict) && {
+    AttributionInteropOutput output;
+
+    {
+      absl::optional<base::Value> reports = dict.Extract(kReportsKey);
+      auto context = PushContext(kReportsKey);
+      ParseListOfDicts(base::OptionalToPtr(reports),
+                       [&](base::Value::Dict report) {
+                         ParseReport(std::move(report), output.reports);
+                       });
+    }
+
+    {
+      absl::optional<base::Value> regs =
+          dict.Extract(kUnparsableRegistrationsKey);
+      auto context = PushContext(kUnparsableRegistrationsKey);
+      ParseListOfDicts(base::OptionalToPtr(regs), [&](base::Value::Dict reg) {
+        ParseUnparsableRegistration(std::move(reg),
+                                    output.unparsable_registrations);
+      });
+    }
+
+    CheckUnknown(dict);
+
+    if (has_error_) {
+      return base::unexpected(error_stream_.str());
+    }
+    return output;
   }
 
   [[nodiscard]] std::string ParseConfig(const base::Value::Dict& dict,
@@ -285,7 +335,7 @@ class AttributionInteropParser {
 
   void ParseRegistration(base::Value::Dict dict,
                          std::vector<AttributionSimulationEvent>& events) {
-    const base::Time time = ParseDistinctTime(dict, events);
+    const base::Time time = ParseTime(dict, &events, /*key=*/"timestamp");
 
     absl::optional<SuitableOrigin> context_origin;
     absl::optional<SuitableOrigin> reporting_origin;
@@ -362,6 +412,80 @@ class AttributionInteropParser {
     }
   }
 
+  void ParseReport(base::Value::Dict dict,
+                   std::vector<AttributionInteropOutput::Report>& reports) {
+    AttributionInteropOutput::Report report;
+
+    report.time = ParseTime(dict, /*events=*/nullptr, kReportTimeKey);
+    dict.Remove(kReportTimeKey);
+
+    if (absl::optional<base::Value> url = dict.Extract(kReportUrlKey);
+        const std::string* str = url ? url->GetIfString() : nullptr) {
+      report.url = GURL(*str);
+    }
+    if (!report.url.is_valid()) {
+      auto context = PushContext(kReportUrlKey);
+      *Error() << "must be a valid URL";
+    }
+
+    if (absl::optional<base::Value> payload = dict.Extract(kPayloadKey)) {
+      report.payload = std::move(*payload);
+    } else {
+      auto context = PushContext(kPayloadKey);
+      *Error() << "required";
+    }
+
+    CheckUnknown(dict);
+
+    if (!has_error_) {
+      reports.push_back(std::move(report));
+    }
+  }
+
+  void ParseUnparsableRegistration(
+      base::Value::Dict dict,
+      std::vector<AttributionInteropOutput::UnparsableRegistration>&
+          unparsable_registrations) {
+    AttributionInteropOutput::UnparsableRegistration reg;
+
+    reg.time = ParseTime(dict, /*events=*/nullptr, kTimeKey);
+    dict.Remove(kTimeKey);
+
+    {
+      absl::optional<base::Value> type = dict.Extract(kTypeKey);
+      bool ok = false;
+
+      if (const std::string* str = type ? type->GetIfString() : nullptr) {
+        if (*str == kSource) {
+          reg.type = RegistrationType::kSource;
+          ok = true;
+        } else if (*str == kTrigger) {
+          reg.type = RegistrationType::kTrigger;
+          ok = true;
+        }
+      }
+
+      if (!ok) {
+        auto context = PushContext(kTypeKey);
+        *Error() << "must be either \"" << kSource << "\" or \"" << kTrigger
+                 << "\"";
+      }
+    }
+
+    CheckUnknown(dict);
+
+    if (!has_error_) {
+      unparsable_registrations.push_back(std::move(reg));
+    }
+  }
+
+  void CheckUnknown(const base::Value::Dict& dict) {
+    for (auto [key, value] : dict) {
+      auto context = PushContext(key);
+      *Error() << "unknown field";
+    }
+  }
+
   absl::optional<SuitableOrigin> ParseOrigin(const base::Value::Dict& dict,
                                              base::StringPiece key) {
     auto context = PushContext(key);
@@ -378,23 +502,23 @@ class AttributionInteropParser {
     return origin;
   }
 
-  base::Time ParseDistinctTime(
-      const base::Value::Dict& dict,
-      const std::vector<AttributionSimulationEvent>& events) {
-    static constexpr char kTimestampKey[] = "timestamp";
+  base::Time ParseTime(const base::Value::Dict& dict,
+                       const std::vector<AttributionSimulationEvent>* events,
+                       base::StringPiece key) {
+    auto context = PushContext(key);
 
-    auto context = PushContext(kTimestampKey);
-
-    const std::string* v = dict.FindString(kTimestampKey);
+    const std::string* v = dict.FindString(key);
     int64_t milliseconds;
 
     if (v && base::StringToInt64(*v, &milliseconds)) {
       base::Time time = offset_time_ + base::Milliseconds(milliseconds);
       if (!time.is_null() && !time.is_inf()) {
-        auto iter =
-            base::ranges::find(events, time, &AttributionSimulationEvent::time);
-        if (iter != events.end()) {
-          *Error() << "must be distinct from all others: " << milliseconds;
+        if (events) {
+          auto iter = base::ranges::find(*events, time,
+                                         &AttributionSimulationEvent::time);
+          if (iter != events->end()) {
+            *Error() << "must be distinct from all others: " << milliseconds;
+          }
         }
         return time;
       }
@@ -596,6 +720,111 @@ std::string MergeAttributionConfig(const base::Value::Dict& dict,
                                    AttributionConfig& config) {
   return AttributionInteropParser().ParseConfig(dict, config,
                                                 /*required=*/false);
+}
+
+// static
+base::expected<AttributionInteropOutput, std::string>
+AttributionInteropOutput::Parse(base::Value::Dict dict) {
+  return AttributionInteropParser().ParseOutput(std::move(dict));
+}
+
+AttributionInteropOutput::AttributionInteropOutput() = default;
+
+AttributionInteropOutput::~AttributionInteropOutput() = default;
+
+AttributionInteropOutput::AttributionInteropOutput(AttributionInteropOutput&&) =
+    default;
+
+AttributionInteropOutput& AttributionInteropOutput::operator=(
+    AttributionInteropOutput&&) = default;
+
+AttributionInteropOutput::Report::Report() = default;
+
+AttributionInteropOutput::Report::Report(base::Time time,
+                                         GURL url,
+                                         base::Value payload)
+    : time(time), url(std::move(url)), payload(std::move(payload)) {}
+
+AttributionInteropOutput::Report::Report(const Report& other)
+    : Report(other.time, other.url, other.payload.Clone()) {}
+
+base::Value::Dict AttributionInteropOutput::Report::ToJson() const {
+  return base::Value::Dict()
+      .Set(kReportTimeKey, TimeAsUnixMillisecondString(time))
+      .Set(kReportUrlKey, url.spec())
+      .Set(kPayloadKey, payload.Clone());
+}
+
+base::Value::Dict AttributionInteropOutput::UnparsableRegistration::ToJson()
+    const {
+  const char* type_str;
+  switch (type) {
+    case RegistrationType::kSource:
+      type_str = kSource;
+      break;
+    case RegistrationType::kTrigger:
+      type_str = kTrigger;
+      break;
+  }
+
+  return base::Value::Dict()
+      .Set(kTimeKey, TimeAsUnixMillisecondString(time))
+      .Set(kTypeKey, type_str);
+}
+
+base::Value::Dict AttributionInteropOutput::ToJson() const {
+  base::Value::List report_list;
+  for (const auto& report : reports) {
+    report_list.Append(report.ToJson());
+  }
+
+  base::Value::List unparsable_registration_list;
+  for (const auto& reg : unparsable_registrations) {
+    unparsable_registration_list.Append(reg.ToJson());
+  }
+
+  return base::Value::Dict()
+      .Set(kReportsKey, std::move(report_list))
+      .Set(kUnparsableRegistrationsKey,
+           std::move(unparsable_registration_list));
+}
+
+AttributionInteropOutput::Report& AttributionInteropOutput::Report::operator=(
+    const Report& other) {
+  time = other.time;
+  url = other.url;
+  payload = other.payload.Clone();
+  return *this;
+}
+
+// TODO(apaseltiner): The payload comparison here is too brittle. Reports can
+// be logically equivalent without having exactly the same JSON structure.
+bool operator==(const AttributionInteropOutput::Report& a,
+                const AttributionInteropOutput::Report& b) {
+  return a.time == b.time &&  //
+         a.url == b.url &&    //
+         a.payload == b.payload;
+}
+
+bool operator==(const AttributionInteropOutput::UnparsableRegistration& a,
+                const AttributionInteropOutput::UnparsableRegistration& b) {
+  return a.time == b.time && a.type == b.type;
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionInteropOutput::Report& report) {
+  return out << report.ToJson();
+}
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const AttributionInteropOutput::UnparsableRegistration& reg) {
+  return out << reg.ToJson();
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionInteropOutput& output) {
+  return out << output.ToJson();
 }
 
 }  // namespace content
