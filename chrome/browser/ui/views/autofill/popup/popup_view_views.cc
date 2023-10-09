@@ -646,17 +646,19 @@ void PopupViewViews::CreateChildViews() {
           // set them earlier to make sure the elements are discoverable later
           // during popup's visibility change and the promo bubble showing.
           if (feature_for_iph ==
-                  feature_engagement::kIPHAutofillVirtualCardSuggestionFeature
-                      .name ||
-              feature_for_iph ==
-                  feature_engagement::
-                      kIPHAutofillVirtualCardCVCSuggestionFeature.name) {
+              feature_engagement::kIPHAutofillVirtualCardSuggestionFeature
+                  .name) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillCreditCardSuggestionEntryElementId);
-          }
-          if (feature_for_iph ==
-              feature_engagement::
-                  kIPHAutofillExternalAccountProfileSuggestionFeature.name) {
+          } else if (feature_for_iph ==
+                     feature_engagement::
+                         kIPHAutofillVirtualCardCVCSuggestionFeature.name) {
+            row_view->SetProperty(views::kElementIdentifierKey,
+                                  kAutofillStandaloneCvcSuggestionElementId);
+          } else if (feature_for_iph ==
+                     feature_engagement::
+                         kIPHAutofillExternalAccountProfileSuggestionFeature
+                             .name) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillSuggestionElementId);
           }

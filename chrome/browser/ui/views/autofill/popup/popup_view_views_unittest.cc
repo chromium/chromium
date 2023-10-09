@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_separator_view.h"
@@ -31,6 +32,7 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
@@ -51,6 +53,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/test/ax_event_counter.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -1024,6 +1027,28 @@ TEST_F(PopupViewViewsTest, GetPopupScreenLocation) {
                             PopupScreenLocation::ArrowPosition::kTopLeft));
 }
 #endif  // !BUILDFLAG(IS_MAC)
+
+TEST_F(PopupViewViewsTest, StandaloneCvcSuggestion_ElementId) {
+  Suggestion suggestion;
+  suggestion.feature_for_iph =
+      feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature.name;
+  controller().set_suggestions({suggestion});
+  CreateAndShowView();
+
+  EXPECT_EQ(GetPopupRowViewAt(0).GetProperty(views::kElementIdentifierKey),
+            kAutofillStandaloneCvcSuggestionElementId);
+}
+
+TEST_F(PopupViewViewsTest, VirtualCardSuggestion_ElementId) {
+  Suggestion suggestion;
+  suggestion.feature_for_iph =
+      feature_engagement::kIPHAutofillVirtualCardSuggestionFeature.name;
+  controller().set_suggestions({suggestion});
+  CreateAndShowView();
+
+  EXPECT_EQ(GetPopupRowViewAt(0).GetProperty(views::kElementIdentifierKey),
+            kAutofillCreditCardSuggestionEntryElementId);
+}
 
 #if defined(MEMORY_SANITIZER) && BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ShowClickTest DISABLED_ShowClickTest
