@@ -658,6 +658,66 @@ TEST_P(DisplayChangeObserverTest, VSyncRateMin) {
   }
 }
 
+TEST_P(DisplayChangeObserverTest, DisplayModeNativeCalculation) {
+  ui::DeviceDataManager::CreateInstance();
+  DisplayManager manager(nullptr);
+  DisplayChangeObserver observer(&manager);
+
+  // For external display, verify that native attribute is determined by
+  // comparing current mode with the DisplaySnapshot's native mode. Native is
+  // true when they are the same.
+  {
+    const std::unique_ptr<DisplaySnapshot> display_snapshot =
+        FakeDisplaySnapshot::Builder()
+            .SetId(123)
+            .SetType(DISPLAY_CONNECTION_TYPE_DISPLAYPORT)
+            .SetNativeMode(MakeDisplayMode(1920, 1080, true, 60))
+            .SetCurrentMode(MakeDisplayMode(1920, 1080, true, 60))
+            .Build();
+
+    const DisplayMode* display_mode = display_snapshot->current_mode();
+    const ManagedDisplayInfo display_info = CreateManagedDisplayInfo(
+        &observer, display_snapshot.get(), display_mode);
+
+    EXPECT_TRUE(display_info.native());
+  }
+
+  // For external display, verify that native attribute is determined by
+  // comparing current mode with the DisplaySnapshot's native mode. Native is
+  // false when they are different.
+  {
+    const std::unique_ptr<DisplaySnapshot> display_snapshot =
+        FakeDisplaySnapshot::Builder()
+            .SetId(123)
+            .SetType(DISPLAY_CONNECTION_TYPE_DISPLAYPORT)
+            .SetNativeMode(MakeDisplayMode(3840, 2160, true, 60))
+            .SetCurrentMode(MakeDisplayMode(1920, 1080, true, 60))
+            .Build();
+
+    const DisplayMode* display_mode = display_snapshot->current_mode();
+    const ManagedDisplayInfo display_info = CreateManagedDisplayInfo(
+        &observer, display_snapshot.get(), display_mode);
+
+    EXPECT_FALSE(display_info.native());
+  }
+
+  // For internal display, verify that native attribute is always true.
+  {
+    const std::unique_ptr<DisplaySnapshot> display_snapshot =
+        FakeDisplaySnapshot::Builder()
+            .SetId(123)
+            .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
+            .SetCurrentMode(MakeDisplayMode(1920, 1080, true, 60))
+            .Build();
+
+    const DisplayMode* display_mode = display_snapshot->current_mode();
+    const ManagedDisplayInfo display_info = CreateManagedDisplayInfo(
+        &observer, display_snapshot.get(), display_mode);
+
+    EXPECT_TRUE(display_info.native());
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          DisplayChangeObserverTest,
                          ::testing::Values(false, true));

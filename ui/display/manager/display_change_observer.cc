@@ -419,12 +419,14 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfoInternal(
     native = true;
     device_scale_factor = FindDeviceScaleFactor(dpi, mode_info->size());
   } else {
-    ManagedDisplayMode mode;
-    if (display_manager_->GetSelectedModeForDisplayId(snapshot->display_id(),
-                                                      &mode)) {
-      device_scale_factor = mode.device_scale_factor();
-      native = mode.native();
-    }
+    // DisplaySnapshot stores the native_mode info. For external display, use it
+    // to determine if current mode_info is native or not.
+    const DisplayMode* native_mode = snapshot->native_mode();
+    native = *mode_info == *native_mode;
+
+    // External display scale factor is always 1.
+    CHECK(snapshot->type() != DISPLAY_CONNECTION_TYPE_INTERNAL);
+    device_scale_factor = 1.0f;
   }
   std::string name = (snapshot->type() == DISPLAY_CONNECTION_TYPE_INTERNAL)
                          ? l10n_util::GetStringUTF8(IDS_DISPLAY_NAME_INTERNAL)
