@@ -167,6 +167,8 @@ class ReadAnythingAppController
   void Draw();
   void DrawSelection();
 
+  void ExecuteJavaScript(std::string script);
+
   void UnserializeUpdates(std::vector<ui::AXTreeUpdate> updates,
                           const ui::AXTreeID& tree_id);
 
