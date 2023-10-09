@@ -85,7 +85,7 @@ namespace autofill {
 
 using form_util::FindFormByRendererId;
 using form_util::FindFormControlByRendererId;
-using form_util::FindFormControlElementsByRendererId;
+using form_util::FindFormControlsByRendererId;
 using form_util::GetFieldRendererId;
 using form_util::GetFormRendererId;
 using form_util::IsElementEditable;
@@ -1565,10 +1565,9 @@ void PasswordAutofillAgent::InformNoSavedCredentials(
 
   // Clear the actual field values.
   WebDocument doc = render_frame()->GetWebFrame()->GetDocument();
-  std::vector<WebFormControlElement> elements =
-      FindFormControlElementsByRendererId(
-          doc, std::vector<FieldRendererId>(all_autofilled_elements_.begin(),
-                                            all_autofilled_elements_.end()));
+  std::vector<WebFormControlElement> elements = FindFormControlsByRendererId(
+      doc, std::vector<FieldRendererId>(all_autofilled_elements_.begin(),
+                                        all_autofilled_elements_.end()));
   for (WebFormControlElement& element : elements) {
     if (element.IsNull())
       continue;
@@ -2036,10 +2035,9 @@ PasswordAutofillAgent::FindUsernamePasswordElements(
   WebDocument doc = render_frame()->GetWebFrame()->GetDocument();
   bool wrapped_in_form_tag = !form_data.form_renderer_id.is_null();
   std::vector<WebFormControlElement> elements =
-      wrapped_in_form_tag
-          ? FindFormControlElementsByRendererId(doc, form_data.form_renderer_id,
-                                                element_ids)
-          : FindFormControlElementsByRendererId(doc, element_ids);
+      wrapped_in_form_tag ? FindFormControlsByRendererId(
+                                doc, form_data.form_renderer_id, element_ids)
+                          : FindFormControlsByRendererId(doc, element_ids);
 
   // Set password element.
   WebInputElement password_field;

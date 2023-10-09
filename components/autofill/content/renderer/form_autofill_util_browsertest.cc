@@ -732,7 +732,7 @@ TEST_F(FormAutofillUtilsTest, FindFormControlElementsByUniqueId) {
                                                non_existing_field_id,
                                                GetFieldRendererId(input1)};
 
-  auto elements = FindFormControlElementsByRendererId(doc, renderer_ids);
+  auto elements = FindFormControlsByRendererId(doc, renderer_ids);
 
   ASSERT_EQ(3u, elements.size());
   EXPECT_EQ(input3, elements[0]);

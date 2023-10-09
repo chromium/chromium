@@ -462,7 +462,7 @@ blink::WebFormControlElement FindFormControlByRendererId(
 // the i-th element of the result corresponds to the i-th element of
 // |queried_form_controls|. The call of this function might be time
 // expensive, because it retrieves all DOM elements.
-std::vector<blink::WebFormControlElement> FindFormControlElementsByRendererId(
+std::vector<blink::WebFormControlElement> FindFormControlsByRendererId(
     const blink::WebDocument& doc,
     const std::vector<FieldRendererId>& queried_form_controls);
 
@@ -472,7 +472,7 @@ std::vector<blink::WebFormControlElement> FindFormControlElementsByRendererId(
 // |form_to_be_searched| could be used as an optimization to only search for
 // elements in it, but doesn't guarantee that the returned element will belong
 // to it.
-std::vector<blink::WebFormControlElement> FindFormControlElementsByRendererId(
+std::vector<blink::WebFormControlElement> FindFormControlsByRendererId(
     const blink::WebDocument& doc,
     FormRendererId form_renderer_id,
     const std::vector<FieldRendererId>& queried_form_controls);
