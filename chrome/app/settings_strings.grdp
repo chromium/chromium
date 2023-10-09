@@ -2558,6 +2558,9 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_SORT_METHOD_NAME" desc="A selection menu option to sort the All Sites list by the name of the site, which is derived from its URL." meaning="Name of an inanimate object">
     Name
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_SITE_LIST_HEADER" desc="The header name for a list of origins that the user has granted edit permissions from the File System Access API.">
+    Allowed to edit files or folders on your device
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_SITE_LIST_EDIT_HEADER" desc="The header name for a list of files that the user has granted edit permissions from the File System Access API.">
     Can edit files or folders on your device
   </message>

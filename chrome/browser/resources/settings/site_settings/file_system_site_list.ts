@@ -7,6 +7,9 @@
  * 'file-system-site-list' is an element representing a list of origin-specific
  * permission entries for the File System Access API.
  */
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import '../settings_shared.css.js';
 import './file_system_site_entry.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -102,6 +105,14 @@ export class FileSystemSiteListElement extends FileSystemSiteListElementBase {
   private async populateList_() {
     const response = await this.browserProxy.getFileSystemGrants();
     this.set('allowedGrants_', response);
+  }
+
+  /**
+   * Determines whether there are any allowed File System Access permission
+   * grants.
+   */
+  private hasAllowedGrants_(): boolean {
+    return this.allowedGrants_.length > 0;
   }
 
   /**
