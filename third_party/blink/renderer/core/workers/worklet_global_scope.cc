@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
+#include "third_party/blink/renderer/core/inspector/worker_inspector_controller.h"
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
@@ -240,9 +241,14 @@ CodeCacheHost* WorkletGlobalScope::GetCodeCacheHost() {
 }
 
 CoreProbeSink* WorkletGlobalScope::GetProbeSink() {
-  if (IsMainThreadWorkletGlobalScope())
-    return probe::ToCoreProbeSink(frame_);
-  return nullptr;
+  switch (thread_type_) {
+    case ThreadType::kMainThread:
+      DCHECK(frame_);
+      return probe::ToCoreProbeSink(frame_);
+    case ThreadType::kOffMainThread:
+      DCHECK(worker_thread_);
+      return worker_thread_->GetWorkerInspectorController()->GetProbeSink();
+  }
 }
 
 scoped_refptr<base::SingleThreadTaskRunner> WorkletGlobalScope::GetTaskRunner(
