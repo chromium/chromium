@@ -236,6 +236,12 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     // Delay if an update event is fired.
     if (shouldDelay) {
       await new Promise(resolve => setTimeout(resolve, kAnimationTimeoutMs));
+      // Dispatch event to update subsections and dialog accelerators.
+      this.dispatchEvent(new CustomEvent('request-update-accelerator', {
+        bubbles: true,
+        composed: true,
+        detail: {source: this.source, action: this.action},
+      }));
     }
 
     this.viewState = ViewState.VIEW;
@@ -637,14 +643,6 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
 
     // Always end input capturing if an update event was fired.
     this.endCapture(/*should_delay=*/ true);
-
-    setTimeout(() => {
-      this.dispatchEvent(new CustomEvent('request-update-accelerator', {
-        bubbles: true,
-        composed: true,
-        detail: {source: this.source, action: this.action},
-      }));
-    }, kAnimationTimeoutMs);
   }
 
   private shouldShowLockIcon(): boolean {
