@@ -8,14 +8,12 @@
 // Add new breakages to the top of the list
 
 // TODO(b/304215720): add change id verifier test/presubmit
-
 [
   {
-    "bad_commit": "I9e28d3a0617e27614451e3b2d8e4cf3e2e6d3145",
-    "good_commit": "Icc888cec884c77a12f47f4cd2b0fcdb3046a02b2",
+    "bad_change_id": "I9e28d3a0617e27614451e3b2d8e4cf3e2e6d3145",
+    "good_change_id": "Icc888cec884c77a12f47f4cd2b0fcdb3046a02b2",
     "bug": "crbug/1449478",
     "comment": "Connection migration crash"
   }
-
   // Add new breakages to the top of the list
 ]
