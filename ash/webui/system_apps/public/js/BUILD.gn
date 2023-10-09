@@ -66,6 +66,6 @@ js_library("message_pipe_browsertest_js") {
   ]
   externs_list = [
     "//ash/webui/web_applications/js2gtest_support.externs.js",
-    "//third_party/chaijs/externs/chai-3.5.js",
+    "//third_party/closure_compiler/externs/chai-3.5.js",
   ]
 }

@@ -59,7 +59,6 @@
       "sql/test/data/.*",
       "third_party/accessibility-audit/axs_testing.js",
       "third_party/angle/DEPS",
-      "third_party/chaijs/.*(css|html|js)",
       "third_party/closure_compiler/.*(css|html|js)",
       "third_party/dawn/DEPS",
       "third_party/hunspell_dictionaries/.*",

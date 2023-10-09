@@ -456,7 +456,6 @@ third_party/blink/web_tests/wpt_internal/html/semantics/parser-blocking-styleshe
 third_party/boringssl 1 1
 third_party/brotli 2 1
 third_party/brotli/enc 1 1
-third_party/chaijs 5 4
 third_party/chevron 2 1
 third_party/closure_compiler/compiler 1 1
 third_party/closure_compiler/externs 5 1

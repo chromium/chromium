@@ -172,7 +172,7 @@ js_library("test_guest_query_receiver_js") {
 js_library("test_driver_js") {
   testonly = true
   sources = [ "test/driver.js" ]
-  externs_list = [ "//third_party/chaijs/externs/chai-3.5.js" ]
+  externs_list = [ "//third_party/closure_compiler/externs/chai-3.5.js" ]
   deps = [
     ":test_driver_api_js",
     "//ash/webui/media_app_ui/resources/js:launch",

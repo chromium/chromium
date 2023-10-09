@@ -26,7 +26,7 @@ js_type_check("closure_compile_local") {
 }
 
 js_library("chai_assert") {
-  externs_list = [ "//third_party/chaijs/externs/chai-3.5.js" ]
+  externs_list = [ "//third_party/closure_compiler/externs/chai-3.5.js" ]
 }
 
 js_library("fake_network_config_mojom") {
