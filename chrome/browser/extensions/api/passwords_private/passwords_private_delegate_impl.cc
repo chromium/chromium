@@ -313,8 +313,7 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
                                &saved_passwords_presenter_,
                                &credential_id_generator_),
       current_entries_initialized_(false),
-      is_initialized_(false),
-      web_contents_(nullptr) {
+      is_initialized_(false) {
   password_access_authenticator_.Init(
       base::BindRepeating(&PasswordsPrivateDelegateImpl::OsReauthTimeoutCall,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -534,15 +533,9 @@ void PasswordsPrivateDelegateImpl::RequestPlaintextPassword(
     api::passwords_private::PlaintextReason reason,
     PlaintextPasswordCallback callback,
     content::WebContents* web_contents) {
-  // Save |web_contents| so that it can be used later when AuthenticateUser() is
-  // called. Note: This is safe because the |web_contents| is used before
-  // exiting this method.
-  // TODO(crbug.com/495290): Pass the native window directly to the
-  // reauth-handling code.
-  web_contents_ = web_contents;
   AuthenticateUser(
+      web_contents, PasswordAccessAuthenticator::GetAuthValidityPeriod(),
       ConvertPurposeToMessage(GetReauthPurpose(reason)),
-      PasswordAccessAuthenticator::GetAuthValidityPeriod(),
       base::BindOnce(
           &PasswordsPrivateDelegateImpl::OnRequestPlaintextPasswordAuthResult,
           weak_ptr_factory_.GetWeakPtr(), id, reason, std::move(callback)));
@@ -552,16 +545,10 @@ void PasswordsPrivateDelegateImpl::RequestCredentialsDetails(
     const std::vector<int>& ids,
     UiEntriesCallback callback,
     content::WebContents* web_contents) {
-  // Save |web_contents| so that it can be used later when AuthenticateUser() is
-  // called. Note: This is safe because the |web_contents| is used before
-  // exiting this method.
-  // TODO(crbug.com/495290): Pass the native window directly to the
-  // reauth-handling code.
-  web_contents_ = web_contents;
   AuthenticateUser(
+      web_contents, PasswordAccessAuthenticator::GetAuthValidityPeriod(),
       ConvertPurposeToMessage(
           GetReauthPurpose(api::passwords_private::PLAINTEXT_REASON_VIEW)),
-      PasswordAccessAuthenticator::GetAuthValidityPeriod(),
       base::BindOnce(
           &PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult,
           weak_ptr_factory_.GetWeakPtr(), ids, std::move(callback)));
@@ -779,16 +766,10 @@ void PasswordsPrivateDelegateImpl::ContinueImport(
                           .Then(std::move(results_callback)));
     return;
   }
-  // Save |web_contents| so that it can be used later when AuthenticateUser() is
-  // called. Note: This is safe because the |web_contents| is used before
-  // exiting this method.
-  // TODO(crbug.com/495290): Pass the native window directly to the
-  // reauth-handling code.
-  web_contents_ = web_contents;
 
   AuthenticateUser(
+      web_contents, base::Seconds(0),
       ConvertPurposeToMessage(password_manager::ReauthPurpose::IMPORT),
-      base::Seconds(0),
       base::BindOnce(&PasswordsPrivateDelegateImpl::OnImportPasswordsAuthResult,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(results_callback), selected_ids));
@@ -801,15 +782,9 @@ void PasswordsPrivateDelegateImpl::ResetImporter(bool delete_file) {
 void PasswordsPrivateDelegateImpl::ExportPasswords(
     base::OnceCallback<void(const std::string&)> accepted_callback,
     content::WebContents* web_contents) {
-  // Save |web_contents| so that it can be used later when AuthenticateUser() is
-  // called. Note: This is safe because the |web_contents| is used before
-  // exiting this method.
-  // TODO(crbug.com/495290): Pass the native window directly to the
-  // reauth-handling code.
-  web_contents_ = web_contents;
   AuthenticateUser(
+      web_contents, base::Seconds(0),
       ConvertPurposeToMessage(password_manager::ReauthPurpose::EXPORT),
-      base::Seconds(0),
       base::BindOnce(&PasswordsPrivateDelegateImpl::OnExportPasswordsAuthResult,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(accepted_callback), web_contents));
@@ -881,10 +856,11 @@ void PasswordsPrivateDelegateImpl::SwitchBiometricAuthBeforeFillingState(
 #else
   AuthResultCallback callback = base::BindOnce(
       &ChangeBiometricAuthenticationBeforeFillingSetting, profile_->GetPrefs());
-  web_contents_ = web_contents;
-  AuthenticateUser(GetMessageForBiometricAuthenticationBeforeFillingSetting(
+
+  AuthenticateUser(web_contents, base::Seconds(0),
+                   GetMessageForBiometricAuthenticationBeforeFillingSetting(
                        profile_->GetPrefs()),
-                   base::Seconds(0), std::move(callback));
+                   std::move(callback));
 #endif
 }
 
@@ -1114,8 +1090,9 @@ void PasswordsPrivateDelegateImpl::EmitHistogramsForCredentialAccess(
 }
 
 void PasswordsPrivateDelegateImpl::AuthenticateUser(
-    const std::u16string& message,
+    content::WebContents* web_contents,
     base::TimeDelta auth_validity_period,
+    const std::u16string& message,
     AuthResultCallback auth_callback) {
   auto callback = password_manager::metrics_util::TimeCallback(
       std::move(auth_callback), "PasswordManager.Settings.AuthenticationTime");
@@ -1123,6 +1100,8 @@ void PasswordsPrivateDelegateImpl::AuthenticateUser(
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
   std::move(callback).Run(true);
 #else
+  CHECK(web_contents);
+
   // Cancel any ongoing authentication attempt.
   if (device_authenticator_) {
     // TODO(crbug.com/1371026): Remove Cancel and instead simply destroy
@@ -1130,7 +1109,7 @@ void PasswordsPrivateDelegateImpl::AuthenticateUser(
     device_authenticator_->Cancel();
   }
   device_authenticator_ =
-      GetDeviceAuthenticator(web_contents_, auth_validity_period);
+      GetDeviceAuthenticator(web_contents, auth_validity_period);
 
   AuthResultIntermediateCallback on_reauth_completed =
       base::BindOnce(&PasswordsPrivateDelegateImpl::OnReauthCompleted, this);

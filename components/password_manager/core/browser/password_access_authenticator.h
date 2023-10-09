@@ -53,7 +53,7 @@ class PasswordAccessAuthenticator {
   }
 #endif  // defined(UNIT_TEST)
 
-  // Callback for ForceUserReauthentication().
+  // Callback to start |timeout_timer_| after authentication.
   void OnUserReauthenticationResult(bool authenticated);
 
  private:

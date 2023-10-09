@@ -240,8 +240,9 @@ class PasswordsPrivateDelegateImpl
   void OsReauthTimeoutCall();
 
   // Authenticate the user using os-authentication.
-  void AuthenticateUser(const std::u16string& message,
+  void AuthenticateUser(content::WebContents* web_contents,
                         base::TimeDelta auth_validity_period,
+                        const std::u16string& message,
                         AuthResultCallback auth_callback);
 
   extensions::api::passwords_private::PasswordUiEntry
@@ -284,10 +285,6 @@ class PasswordsPrivateDelegateImpl
   std::vector<base::OnceClosure> pre_initialization_callbacks_;
   std::vector<UiEntriesCallback> get_saved_passwords_list_callbacks_;
   std::vector<ExceptionEntriesCallback> get_password_exception_list_callbacks_;
-
-  // The WebContents used when invoking this API. Used to fetch the
-  // NativeWindow for the window where the API was called.
-  raw_ptr<content::WebContents> web_contents_;
 
   // Device authenticator used to authenticate users in settings.
   std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator_;
