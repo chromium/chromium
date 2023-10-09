@@ -20,6 +20,7 @@
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "google_apis/google_api_keys.h"
 #include "remoting/base/rsa_key_pair.h"
+#include "remoting/host/host_config.h"
 #include "remoting/host/pin_hash.h"
 #include "remoting/host/setup/daemon_controller.h"
 #include "remoting/host/setup/host_stopper.h"
@@ -264,18 +265,18 @@ void HostStarterImpl::StartHostProcess() {
   std::string host_secret_hash =
       remoting::MakeHostPinHash(start_host_params_.id, start_host_params_.pin);
   base::Value::Dict config;
-  config.Set("host_owner", start_host_params_.owner_email);
+  config.Set(kHostOwnerConfigPath, start_host_params_.owner_email);
   // Note: `xmpp_login` is a legacy term which was used with Google Talk. Though
   // we no longer rely on that service, existing hosts still use this key in
   // their configuration file so we continue to use it.
   // TODO(joedow): Update this key and modify the config file parsing logic to
   // look for a new, more accurate key or fallback to the value of `xmpp_login`.
-  config.Set("xmpp_login", service_account_email_);
-  config.Set("oauth_refresh_token", host_refresh_token_);
-  config.Set("host_id", start_host_params_.id);
-  config.Set("host_name", start_host_params_.name);
-  config.Set("private_key", key_pair_->ToString());
-  config.Set("host_secret_hash", host_secret_hash);
+  config.Set(kXmppLoginConfigPath, service_account_email_);
+  config.Set(kOAuthRefreshTokenConfigPath, host_refresh_token_);
+  config.Set(kHostIdConfigPath, start_host_params_.id);
+  config.Set(kHostNameConfigPath, start_host_params_.name);
+  config.Set(kPrivateKeyConfigPath, key_pair_->ToString());
+  config.Set(kHostSecretHashConfigPath, host_secret_hash);
 
   daemon_controller_->SetConfigAndStart(
       std::move(config), start_host_params_.enable_crash_reporting,
