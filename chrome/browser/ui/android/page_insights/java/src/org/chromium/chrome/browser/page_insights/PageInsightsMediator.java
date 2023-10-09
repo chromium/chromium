@@ -13,6 +13,7 @@ import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.ByteString;
 
@@ -40,8 +41,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
@@ -100,7 +101,8 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     private PageInsightsDataLoader mPageInsightsDataLoader;
     @Nullable
     private PageInsightsSurfaceRenderer mSurfaceRenderer;
-
+    private GURL mCurrentUrl;
+    private PageInsightsMetadata mDisplayedMetadata;
     private boolean mAutoTriggerReady;
 
     // Caches the sheet height at the current state. Avoids the repeated call to resize the content
@@ -247,6 +249,19 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mHandler.removeCallbacks(mAutoTriggerRunnable);
     }
 
+    // TODO: Race condition: Often PIH is opened before the URL is set
+    @Override
+    public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+        if (params.getUrl() == null) return;
+        mCurrentUrl = GURL.deserialize(params.getUrl());
+    }
+
+    @Override
+    public void onUpdateUrl(Tab tab, GURL url) {
+        if (url == null) return;
+        mCurrentUrl = url;
+    }
+
     @Override
     public void onPageLoadStarted(Tab tab, GURL url) {
         resetAutoTriggerTimer();
@@ -279,15 +294,18 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             return;
         }
 
-        mPageInsightsDataLoader.loadInsightsData();
-        PageInsightsMetadata metadata = mPageInsightsDataLoader.getData();
-        boolean hasEnoughConfidence =
-                metadata.getAutoPeekConditions().getConfidence() > MINIMUM_CONFIDENCE;
-        if (hasEnoughConfidence) {
-            logPageInsightsEvent(PageInsightsEvent.AUTO_PEEK_TRIGGERED);
-            openInPeekState(metadata);
-            resetAutoTriggerTimer();
-        }
+        mPageInsightsDataLoader.loadInsightsData(
+                mCurrentUrl,
+                metadata -> {
+                    mDisplayedMetadata = metadata;
+                    boolean hasEnoughConfidence =
+                            metadata.getAutoPeekConditions().getConfidence() > MINIMUM_CONFIDENCE;
+                    if (hasEnoughConfidence) {
+                        logPageInsightsEvent(PageInsightsEvent.AUTO_PEEK_TRIGGERED);
+                        openInPeekState(metadata);
+                        resetAutoTriggerTimer();
+                    }
+                });
     }
 
     private void openInPeekState(PageInsightsMetadata metadata) {
@@ -300,13 +318,17 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     void launch() {
         mSheetContent.showLoadingIndicator();
         mSheetController.requestShowContent(mSheetContent, true);
-        mPageInsightsDataLoader.loadInsightsData();
-        PageInsightsMetadata metadata = mPageInsightsDataLoader.getData();
-        mSheetContent.setFeedPage(getXSurfaceView(metadata.getFeedPage().getElementsOutput()));
-        mSheetContent.showFeedPage();
-        setCornerRadiusPx(mMaxCornerRadiusPx);
-        logPageInsightsEvent(PageInsightsEvent.USER_INVOKES_PIH);
-        mSheetController.expandSheet();
+        mPageInsightsDataLoader.loadInsightsData(
+                mCurrentUrl,
+                metadata -> {
+                    mDisplayedMetadata = metadata;
+                    mSheetContent.setFeedPage(
+                            getXSurfaceView(metadata.getFeedPage().getElementsOutput()));
+                    mSheetContent.showFeedPage();
+                    setCornerRadiusPx(mMaxCornerRadiusPx);
+                    logPageInsightsEvent(PageInsightsEvent.USER_INVOKES_PIH);
+                    mSheetController.expandSheet();
+                });
     }
 
     private View getXSurfaceView(ByteString elementsOutput) {
@@ -314,10 +336,15 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                 elementsOutput.toByteArray(), mSurfaceRendererContextValues);
     }
 
-    private void changeToChildPage(int id) {
-        PageInsightsMetadata metadata = mPageInsightsDataLoader.getData();
-        for (int i = 0; i < metadata.getPagesCount(); i++) {
-            Page currPage = metadata.getPages(i);
+    @VisibleForTesting
+    // TODO(kamalchoudhury): Make this function private when xUIKit code is written
+    void changeToChildPage(int id) {
+        if (mDisplayedMetadata == null) {
+            return;
+        }
+
+        for (int i = 0; i < mDisplayedMetadata.getPagesCount(); i++) {
+            Page currPage = mDisplayedMetadata.getPages(i);
             if (id == currPage.getId().getNumber()) {
                 mSheetContent.showChildPage(
                         getXSurfaceView(currPage.getElementsOutput()), currPage.getTitle());

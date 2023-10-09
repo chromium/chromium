@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -39,6 +41,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
@@ -55,10 +59,13 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
 import org.chromium.chrome.browser.page_insights.PageInsightsMediator.PageInsightsEvent;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.AutoPeekConditions;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.Page;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.PageInsightsMetadata;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
@@ -75,8 +82,11 @@ import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetControll
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
+import org.chromium.components.optimization_guide.OptimizationGuideDecision;
+import org.chromium.components.optimization_guide.proto.CommonTypesProto;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -96,6 +106,8 @@ public class PageInsightsMediatorTest {
     public JniMocker jniMocker = new JniMocker();
 
     @Mock
+    protected OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
+    @Mock
     private LayoutInflater mLayoutInflater;
     @Mock
     private ObservableSupplier<Tab> mMockTabProvider;
@@ -112,9 +124,9 @@ public class PageInsightsMediatorTest {
     @Mock
     private Tab mTab;
     @Mock
-    private PageInsightsDataLoader mPageInsightsDataLoader;
-    @Mock
     private ProcessScope mProcessScope;
+    @Mock
+    private Profile mProfile;
     @Mock
     private PageInsightsSurfaceScope mSurfaceScope;
     @Mock
@@ -125,17 +137,16 @@ public class PageInsightsMediatorTest {
     private ShareDelegate mShareDelegate;
     @Mock
     private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
+
     @Captor
     private ArgumentCaptor<BrowserControlsStateProvider.Observer>
             mBrowserControlsStateProviderObserver;
-    @Captor
-    private ArgumentCaptor<Map<String, Object>> mSurfaceRendererContextValues;
-    @Captor
-    private ArgumentCaptor<LoadUrlParams> mLoadUrlParams;
-    @Captor
-    private ArgumentCaptor<ShareParams> mShareParams;
-    @Captor
-    private ArgumentCaptor<Callback<Tab>> mTabObserver;
+
+    @Captor private ArgumentCaptor<Map<String, Object>> mSurfaceRendererContextValues;
+    @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParams;
+    @Captor private ArgumentCaptor<ShareParams> mShareParams;
+    @Captor private ArgumentCaptor<Callback<PageInsightsMetadata>> mCallbackCaptor;
+    @Captor private ArgumentCaptor<Callback<Tab>> mTabObserver;
 
     private ShadowLooper mShadowLooper;
 
@@ -150,13 +161,15 @@ public class PageInsightsMediatorTest {
                 .thenAnswer((invocation) -> {
                     return new GURL((String) invocation.getArguments()[0]);
                 });
+        jniMocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
+        doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
+        Profile.setLastUsedProfileForTesting(mProfile);
         XSurfaceProcessScopeProvider.setProcessScopeForTesting(mProcessScope);
         when(mProcessScope.obtainPageInsightsSurfaceScope(
                      any(PageInsightsSurfaceScopeDependencyProviderImpl.class)))
                 .thenReturn(mSurfaceScope);
         when(mSurfaceScope.provideSurfaceRenderer()).thenReturn(mSurfaceRenderer);
         when(mControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1.0f);
-        when(mPageInsightsDataLoader.getData()).thenReturn(getPageInsightsMetadata());
         when(mMockTabProvider.get()).thenReturn(mTab);
         when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);
     }
@@ -179,8 +192,9 @@ public class PageInsightsMediatorTest {
         mMediator = new PageInsightsMediator(context, mMockTabProvider, mShareDelegateSupplier,
                 mBottomSheetController, mBottomUiController, mExpandedSheetHelper,
                 mControlsStateProvider, mBrowserControlsSizer, () -> true, firstLoadTimeMs);
-        mMediator.setPageInsightsDataLoaderForTesting(mPageInsightsDataLoader);
         verify(mControlsStateProvider).addObserver(mBrowserControlsStateProviderObserver.capture());
+        mMediator.onUpdateUrl(mTab, JUnitTestGURLs.EXAMPLE_URL);
+        mockOptimizationGuideResponse(getPageInsightsMetadata());
         setBackgroundDrawable();
     }
 
@@ -521,6 +535,40 @@ public class PageInsightsMediatorTest {
                 .addPages(childPage)
                 .setAutoPeekConditions(mAutoPeekConditions)
                 .build();
+    }
+
+    private void mockOptimizationGuideResponse(PageInsightsMetadata metadata) {
+        doAnswer(
+                        new Answer<Void>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) {
+                                OptimizationGuideBridge.OnDemandOptimizationGuideCallback callback =
+                                        (OptimizationGuideBridge.OnDemandOptimizationGuideCallback)
+                                                invocation.getArguments()[4];
+                                callback.onOnDemandOptimizationGuideDecision(
+                                        JUnitTestGURLs.EXAMPLE_URL,
+                                        org.chromium.components.optimization_guide.proto.HintsProto
+                                                .OptimizationType.PAGE_INSIGHTS,
+                                        OptimizationGuideDecision.TRUE,
+                                        CommonTypesProto.Any.newBuilder()
+                                                .setValue(
+                                                        ByteString.copyFrom(metadata.toByteArray()))
+                                                .build());
+                                return null;
+                            }
+                        })
+                .when(mOptimizationGuideBridgeJniMock)
+                .canApplyOptimizationOnDemand(
+                        eq(1L),
+                        eq(new GURL[] {JUnitTestGURLs.EXAMPLE_URL}),
+                        eq(
+                                new int[] {
+                                    org.chromium.components.optimization_guide.proto.HintsProto
+                                            .OptimizationType.PAGE_INSIGHTS
+                                            .getNumber()
+                                }),
+                        eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB.getNumber()),
+                        any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class));
     }
 
     private void setBackgroundDrawable() {

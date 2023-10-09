@@ -4,56 +4,81 @@
 
 package org.chromium.chrome.browser.page_insights;
 
-import org.chromium.chrome.browser.page_insights.proto.PageInsights.AutoPeekConditions;
-import org.chromium.chrome.browser.page_insights.proto.PageInsights.Page;
+import static org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType.PAGE_INSIGHTS;
+
+import android.util.LruCache;
+
+import com.google.protobuf.InvalidProtocolBufferException;
+
+import org.chromium.base.Callback;
+import org.chromium.base.Log;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.PageInsightsMetadata;
+import org.chromium.components.optimization_guide.OptimizationGuideDecision;
+import org.chromium.components.optimization_guide.proto.CommonTypesProto.RequestContext;
+import org.chromium.url.GURL;
 
-/**
- *  Class to provide a {@link PageInsights} data and helper methods
- */
-public class PageInsightsDataLoader {
-    private float mConfidence = 0.51f;
+import java.util.List;
+import java.util.Locale;
 
-    private PageInsightsMetadata mPageInsightsMetadata;
+/** Class to provide a {@link PageInsights} data and helper methods */
+class PageInsightsDataLoader {
+    private static final String TAG = "PIDataLoader";
+    private static final int LRU_CACHE_SIZE = 10;
+    private LruCache<GURL, PageInsightsMetadata> mCache =
+            new LruCache<GURL, PageInsightsMetadata>(LRU_CACHE_SIZE);
 
-    public PageInsightsDataLoader() {
-        Page childPage = Page.newBuilder()
-                                 .setId(Page.PageID.PEOPLE_ALSO_VIEW)
-                                 .setTitle("People also view")
-                                 .build();
-        Page feedPage = Page.newBuilder()
-                                .setId(Page.PageID.SINGLE_FEED_ROOT)
-                                .setTitle("Related Insights")
-                                .build();
-        AutoPeekConditions mAutoPeekConditions = AutoPeekConditions.newBuilder()
-                                                         .setConfidence(mConfidence)
-                                                         .setPageScrollFraction(0.4f)
-                                                         .setMinimumSecondsOnPage(30)
-                                                         .build();
-        mPageInsightsMetadata = PageInsightsMetadata.newBuilder()
-                                        .setFeedPage(feedPage)
-                                        .addPages(childPage)
-                                        .setAutoPeekConditions(mAutoPeekConditions)
-                                        .build();
+    PageInsightsDataLoader() {}
+
+    void loadInsightsData(GURL url, Callback<PageInsightsMetadata> callback) {
+        if (url == null) {
+            Log.e(TAG, "Error fetching Page Insights data: Url cannot be null.");
+            return;
+        }
+        if (mCache.get(url) != null) {
+            callback.bind(mCache.get(url)).run();
+            return;
+        }
+        OptimizationGuideBridgeFactoryHolder.sOptimizationGuideBridgeFactory
+                .create()
+                .canApplyOptimizationOnDemand(
+                        List.of(url),
+                        List.of(PAGE_INSIGHTS),
+                        RequestContext.CONTEXT_PAGE_INSIGHTS_HUB,
+                        (gurl, optimizationType, decision, metadata) -> {
+                            try {
+                                if (decision != OptimizationGuideDecision.TRUE) {
+                                    return;
+                                }
+                                PageInsightsMetadata pageInsightsMetadata =
+                                        PageInsightsMetadata.parseFrom(metadata.getValue());
+                                mCache.put(url, pageInsightsMetadata);
+                                callback.bind(pageInsightsMetadata).run();
+                            } catch (InvalidProtocolBufferException e) {
+                                Log.e(
+                                        TAG,
+                                        String.format(
+                                                Locale.US,
+                                                "There was a problem "
+                                                        + "parsing "
+                                                        + "PageInsightsMetadata"
+                                                        + "proto. "
+                                                        + "Details %s.",
+                                                e));
+                            }
+                        });
     }
 
-    PageInsightsDataLoader loadInsightsData() {
-        // TODO(mako): Fetch page insights real data
-        return this;
+    void clearCacheForTesting() {
+        mCache = new LruCache<GURL, PageInsightsMetadata>(LRU_CACHE_SIZE);
     }
 
-    PageInsightsMetadata getData() {
-        return mPageInsightsMetadata;
-    }
+    // Lazy initialization of OptimizationGuideBridgeFactory
+    private static class OptimizationGuideBridgeFactoryHolder {
+        private static final OptimizationGuideBridgeFactory sOptimizationGuideBridgeFactory;
 
-    void setConfidenceForTesting(float confidence) {
-        // TODO(mako): Return real confidence
-        mPageInsightsMetadata =
-                mPageInsightsMetadata.toBuilder()
-                        .setAutoPeekConditions(mPageInsightsMetadata.getAutoPeekConditions()
-                                                       .toBuilder()
-                                                       .setConfidence(confidence)
-                                                       .build())
-                        .build();
+        static {
+            sOptimizationGuideBridgeFactory = new OptimizationGuideBridgeFactory();
+        }
     }
 }
