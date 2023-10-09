@@ -18,14 +18,15 @@ enum class Edge;
 class TabOrganizationButton;
 class TabOrganizationService;
 class TabSearchButton;
-class TabStrip;
+class TabStripController;
 
 class TabSearchContainer : public views::View,
                            public views::AnimationDelegateViews,
                            public TabOrganizationObserver {
  public:
   METADATA_HEADER(TabSearchContainer);
-  TabSearchContainer(TabStrip* tab_strip, bool before_tab_strip);
+  TabSearchContainer(TabStripController* tab_strip_controller,
+                     bool before_tab_strip);
   TabSearchContainer(const TabSearchContainer&) = delete;
   TabSearchContainer& operator=(const TabSearchContainer&) = delete;
   ~TabSearchContainer() override;

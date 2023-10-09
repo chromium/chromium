@@ -35,17 +35,17 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
     scoped_feature_list_.InitWithFeatures(
         {features::kTabOrganization, features::kChromeRefresh2023}, {});
 
-    auto controller = std::make_unique<FakeBaseTabStripControllerWithProfile>();
-    tab_strip_ = std::make_unique<TabStrip>(std::move(controller));
+    tab_strip_controller_ =
+        std::make_unique<FakeBaseTabStripControllerWithProfile>();
     container_before_tab_strip_ =
-        std::make_unique<TabSearchContainer>(tab_strip_.get(), true);
-    container_after_tab_strip_ =
-        std::make_unique<TabSearchContainer>(tab_strip_.get(), false);
+        std::make_unique<TabSearchContainer>(tab_strip_controller_.get(), true);
+    container_after_tab_strip_ = std::make_unique<TabSearchContainer>(
+        tab_strip_controller_.get(), false);
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<TabStrip> tab_strip_;
+  std::unique_ptr<TabStripController> tab_strip_controller_;
   std::unique_ptr<TabSearchContainer> container_before_tab_strip_;
   std::unique_ptr<TabSearchContainer> container_after_tab_strip_;
 };

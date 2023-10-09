@@ -27,14 +27,14 @@ Edge GetFlatEdge(bool is_search_button, bool before_tab_strip) {
 
 }  // namespace
 
-TabSearchContainer::TabSearchContainer(TabStrip* tab_strip,
+TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
                                        bool before_tab_strip)
     : AnimationDelegateViews(this) {
   std::unique_ptr<TabSearchButton> tab_search_button =
       std::make_unique<TabSearchButton>(
-          tab_strip, features::IsTabOrganization()
-                         ? GetFlatEdge(true, before_tab_strip)
-                         : Edge::kNone);
+          tab_strip_controller, features::IsTabOrganization()
+                                    ? GetFlatEdge(true, before_tab_strip)
+                                    : Edge::kNone);
   tab_search_button->SetProperty(views::kCrossAxisAlignmentKey,
                                  views::LayoutAlignment::kCenter);
 
@@ -44,13 +44,13 @@ TabSearchContainer::TabSearchContainer(TabStrip* tab_strip,
 
   if (features::IsTabOrganization()) {
     tab_organization_service_ = TabOrganizationServiceFactory::GetForProfile(
-        tab_strip->controller()->GetProfile());
+        tab_strip_controller->GetProfile());
     tab_organization_service_->AddObserver(this);
     // TODO(1469126): Consider hiding the button when the request has started,
     // vs. when the button as clicked.
     tab_organization_button_ =
         AddChildView(std::make_unique<TabOrganizationButton>(
-            tab_strip,
+            tab_strip_controller,
             base::BindRepeating(&TabSearchContainer::HideTabOrganization,
                                 base::Unretained(this)),
             features::IsTabOrganization() ? GetFlatEdge(false, before_tab_strip)

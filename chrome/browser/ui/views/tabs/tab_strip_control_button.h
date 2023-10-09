@@ -16,7 +16,7 @@ namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
 
-class TabStrip;
+class TabStripController;
 
 enum class Edge {
   kNone = 0,
@@ -32,17 +32,17 @@ class TabStripControlButton : public views::LabelButton,
   static const int kIconSize;
   static const gfx::Size kButtonSize;
 
-  TabStripControlButton(TabStrip* tab_strip,
+  TabStripControlButton(TabStripController* tab_strip,
                         PressedCallback callback,
                         const gfx::VectorIcon& icon,
                         Edge flat_edge = Edge::kNone);
 
-  TabStripControlButton(TabStrip* tab_strip,
+  TabStripControlButton(TabStripController* tab_strip,
                         PressedCallback callback,
                         const std::u16string& text,
                         Edge flat_edge = Edge::kNone);
 
-  TabStripControlButton(TabStrip* tab_strip,
+  TabStripControlButton(TabStripController* tab_strip,
                         PressedCallback callback,
                         const gfx::VectorIcon& icon,
                         const std::u16string& text,
@@ -131,7 +131,8 @@ class TabStripControlButton : public views::LabelButton,
   float flat_edge_factor_ = 1;
 
   // Tab strip that contains this button.
-  raw_ptr<TabStrip, AcrossTasksDanglingUntriaged> tab_strip_;
+  raw_ptr<TabStripController, AcrossTasksDanglingUntriaged>
+      tab_strip_controller_;
 
   // Stored ColorId values to differentiate for ChromeRefresh.
   ui::ColorId foreground_frame_active_color_id_;

@@ -9,12 +9,12 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class TabOrganizationSession;
-class TabStrip;
+class TabStripController;
 
 class TabOrganizationButton : public TabStripControlButton {
  public:
   METADATA_HEADER(TabOrganizationButton);
-  TabOrganizationButton(TabStrip* tab_strip,
+  TabOrganizationButton(TabStripController* tab_strip_controller,
                         PressedCallback pressed_callback,
                         Edge flat_edge);
   TabOrganizationButton(const TabOrganizationButton&) = delete;

@@ -99,7 +99,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
   std::unique_ptr<TabSearchContainer> tab_search_container;
   if (browser && browser->is_type_normal()) {
     tab_search_container = std::make_unique<TabSearchContainer>(
-        tab_strip_, render_tab_search_before_tab_strip_);
+        tab_strip_->controller(), render_tab_search_before_tab_strip_);
     tab_search_container->SetProperty(views::kCrossAxisAlignmentKey,
                                       views::LayoutAlignment::kCenter);
   }
@@ -145,7 +145,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
   if (ShouldShowNewTabButton(browser)) {
     if (features::IsChromeRefresh2023()) {
       new_tab_button_ = AddChildView(std::make_unique<TabStripControlButton>(
-          tab_strip_,
+          tab_strip_->controller(),
           base::BindRepeating(&TabStrip::NewTabButtonPressed,
                               base::Unretained(tab_strip_)),
           vector_icons::kAddChromeRefreshIcon));

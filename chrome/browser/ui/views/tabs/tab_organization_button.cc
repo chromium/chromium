@@ -19,11 +19,12 @@ constexpr int kTabOrganizeFlatCornerRadius = 2;
 constexpr int kTabOrganizeInsetsWidth = 20;
 }
 
-TabOrganizationButton::TabOrganizationButton(TabStrip* tab_strip,
-                                             PressedCallback pressed_callback,
-                                             Edge flat_edge)
+TabOrganizationButton::TabOrganizationButton(
+    TabStripController* tab_strip_controller,
+    PressedCallback pressed_callback,
+    Edge flat_edge)
     : TabStripControlButton(
-          tab_strip,
+          tab_strip_controller,
           base::BindRepeating(&TabOrganizationButton::ButtonPressed,
                               base::Unretained(this)),
           l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),

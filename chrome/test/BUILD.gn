@@ -9706,6 +9706,7 @@ test("unit_tests") {
       "../browser/ui/views/tabs/tab_hover_card_controller_unittest.cc",
       "../browser/ui/views/tabs/tab_organization_button_unittest.cc",
       "../browser/ui/views/tabs/tab_search_container_unittest.cc",
+      "../browser/ui/views/tabs/tab_strip_control_button_unittest.cc",
       "../browser/ui/views/tabs/tab_strip_layout_unittest.cc",
       "../browser/ui/views/tabs/tab_strip_scroll_container_unittest.cc",
       "../browser/ui/views/tabs/tab_strip_scroll_session_unittest.cc",

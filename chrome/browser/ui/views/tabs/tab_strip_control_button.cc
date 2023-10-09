@@ -56,31 +56,38 @@ const int TabStripControlButton::kIconSize = 16;
 const gfx::Size TabStripControlButton::kButtonSize{28, 28};
 const gfx::VectorIcon kEmptyIcon;
 
-TabStripControlButton::TabStripControlButton(TabStrip* tab_strip,
-                                             PressedCallback callback,
-                                             const gfx::VectorIcon& icon,
-                                             Edge flat_edge)
-    : TabStripControlButton(tab_strip,
+TabStripControlButton::TabStripControlButton(
+    TabStripController* tab_strip_controller,
+    PressedCallback callback,
+    const gfx::VectorIcon& icon,
+    Edge flat_edge)
+    : TabStripControlButton(tab_strip_controller,
                             callback,
                             icon,
                             std::u16string(),
                             flat_edge) {}
 
-TabStripControlButton::TabStripControlButton(TabStrip* tab_strip,
-                                             PressedCallback callback,
-                                             const std::u16string& text,
-                                             Edge flat_edge)
-    : TabStripControlButton(tab_strip, callback, kEmptyIcon, text, flat_edge) {}
+TabStripControlButton::TabStripControlButton(
+    TabStripController* tab_strip_controller,
+    PressedCallback callback,
+    const std::u16string& text,
+    Edge flat_edge)
+    : TabStripControlButton(tab_strip_controller,
+                            callback,
+                            kEmptyIcon,
+                            text,
+                            flat_edge) {}
 
-TabStripControlButton::TabStripControlButton(TabStrip* tab_strip,
-                                             PressedCallback callback,
-                                             const gfx::VectorIcon& icon,
-                                             const std::u16string& text,
-                                             Edge flat_edge)
+TabStripControlButton::TabStripControlButton(
+    TabStripController* tab_strip_controller,
+    PressedCallback callback,
+    const gfx::VectorIcon& icon,
+    const std::u16string& text,
+    Edge flat_edge)
     : views::LabelButton(std::move(callback), text),
       icon_(icon),
       flat_edge_(flat_edge),
-      tab_strip_(tab_strip) {
+      tab_strip_controller_(tab_strip_controller) {
   SetImageCentered(true);
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
@@ -189,7 +196,8 @@ void TabStripControlButton::UpdateBackground() {
   }
 
   const absl::optional<int> bg_id =
-      tab_strip_->GetCustomBackgroundId(BrowserFrameActiveState::kUseCurrent);
+      tab_strip_controller_->GetCustomBackgroundId(
+          BrowserFrameActiveState::kUseCurrent);
 
   // Paint the background as transparent for image based themes.
   if (bg_id.has_value() && paint_transparent_for_custom_image_theme_) {
@@ -242,7 +250,7 @@ void TabStripControlButton::OnThemeChanged() {
 }
 
 bool TabStripControlButton::GetHitTestMask(SkPath* mask) const {
-  const bool extend_to_top = tab_strip_->controller()->IsFrameCondensed();
+  const bool extend_to_top = tab_strip_controller_->IsFrameCondensed();
 
   const SkScalar bottom_radius = GetCornerRadius();
   const SkScalar top_radius = extend_to_top ? 0.0f : bottom_radius;
@@ -261,7 +269,7 @@ bool TabStripControlButton::GetHitTestMask(SkPath* mask) const {
 
   gfx::Rect rect = GetContentsBounds();
   if (extend_to_top) {
-    rect.set_y(0);
+    rect.SetVerticalBounds(0, rect.bottom());
   }
 
   mask->addRoundRect(gfx::RectToSkRect(rect), radii);

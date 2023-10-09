@@ -8,12 +8,11 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
+#include "chrome/browser/ui/views/tabs/tab_search_button.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
-#include "new_tab_button.h"
-#include "tab_search_button.h"
-#include "tab_strip_control_button.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
@@ -26,8 +25,9 @@ constexpr int kCRTabSearchCornerRadius = 10;
 constexpr int kCRTabSearchFlatCornerRadius = 2;
 }
 
-TabSearchButton::TabSearchButton(TabStrip* tab_strip, Edge flat_edge)
-    : TabStripControlButton(tab_strip,
+TabSearchButton::TabSearchButton(TabStripController* tab_strip_controller,
+                                 Edge flat_edge)
+    : TabStripControlButton(tab_strip_controller,
                             PressedCallback(),
                             features::IsChromeRefresh2023()
                                 ? vector_icons::kExpandMoreIcon
@@ -35,7 +35,7 @@ TabSearchButton::TabSearchButton(TabStrip* tab_strip, Edge flat_edge)
                             flat_edge),
       tab_search_bubble_host_(std::make_unique<TabSearchBubbleHost>(
           this,
-          tab_strip->controller()->GetProfile())) {
+          tab_strip_controller->GetProfile())) {
   SetProperty(views::kElementIdentifierKey, kTabSearchButtonElementId);
 
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_SEARCH));
