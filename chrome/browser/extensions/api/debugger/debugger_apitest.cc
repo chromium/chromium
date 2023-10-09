@@ -464,6 +464,92 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBarIsRemovedAfterFiveSeconds) {
   EXPECT_EQ(0u, manager->infobar_count());
 }
 
+IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
+                       InfoBarIsNotRemovedWhenAnotherDebuggerAttached) {
+  const int tab_id1 = sessions::SessionTabHelper::IdForTab(
+                          browser()->tab_strip_model()->GetActiveWebContents())
+                          .id();
+  infobars::ContentInfoBarManager* manager =
+      infobars::ContentInfoBarManager::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents());
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/simple.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  const int tab_id2 = sessions::SessionTabHelper::IdForTab(
+                          browser()->tab_strip_model()->GetActiveWebContents())
+                          .id();
+
+  // Attaching to a tab should create an infobar.
+  {
+    auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
+    attach_function->set_extension(extension());
+    ASSERT_TRUE(api_test_utils::RunFunction(
+        attach_function.get(),
+        base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id1), profile()));
+  }
+
+  EXPECT_EQ(1u, manager->infobar_count());
+
+  // Attaching to a 2nd tab, to have another attached debugger.
+  {
+    auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
+    attach_function->set_extension(extension());
+    ASSERT_TRUE(api_test_utils::RunFunction(
+        attach_function.get(),
+        base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id2), profile()));
+  }
+
+  EXPECT_EQ(1u, manager->infobar_count());
+
+  // Detaching from the tab should not remove the infobar after 5 seconds, as
+  // another debugger is still attached.
+  {
+    auto detach_function = base::MakeRefCounted<DebuggerDetachFunction>();
+    detach_function->set_extension(extension());
+    ASSERT_TRUE(api_test_utils::RunFunction(
+        detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id1),
+        profile()));
+  }
+
+  // Advance the clock by 5 seconds.
+  {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(),
+        ExtensionDevToolsInfoBarDelegate::kAutoCloseDelay);
+    AdvanceClock(ExtensionDevToolsInfoBarDelegate::kAutoCloseDelay);
+    run_loop.Run();
+  }
+
+  // Verify inforbar not removed.
+  EXPECT_EQ(1u, manager->infobar_count());
+
+  // Now detach the last debugger.
+  {
+    auto detach_function = base::MakeRefCounted<DebuggerDetachFunction>();
+    detach_function->set_extension(extension());
+    ASSERT_TRUE(api_test_utils::RunFunction(
+        detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id2),
+        profile()));
+  }
+
+  // Advance the clock by 5 seconds, once again.
+  {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(),
+        ExtensionDevToolsInfoBarDelegate::kAutoCloseDelay);
+    AdvanceClock(ExtensionDevToolsInfoBarDelegate::kAutoCloseDelay);
+    run_loop.Run();
+  }
+
+  // Verify inforbar removed.
+  EXPECT_EQ(0u, manager->infobar_count());
+}
+
 class CrossProfileDebuggerApiTest : public DebuggerApiTest {
  protected:
   Profile* other_profile() { return other_profile_; }

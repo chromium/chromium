@@ -61,18 +61,6 @@ ExtensionDevToolsInfoBarDelegate::~ExtensionDevToolsInfoBarDelegate() {
   DCHECK(erased);
 }
 
-void ExtensionDevToolsInfoBarDelegate::NotifyExtensionDetached(
-    const std::string& extension_id) {
-  const Delegates& delegates = g_delegates.Get();
-  const auto iter = delegates.find(extension_id);
-  if (iter != delegates.cend()) {
-    // Infobar_ was set in Create() which makes the following access safe.
-    iter->second->timer_.Start(FROM_HERE, kAutoCloseDelay,
-                               iter->second->infobar_.get(),
-                               &GlobalConfirmInfoBar::Close);
-  }
-}
-
 infobars::InfoBarDelegate::InfoBarIdentifier
 ExtensionDevToolsInfoBarDelegate::GetIdentifier() const {
   return EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE;
@@ -114,12 +102,24 @@ ExtensionDevToolsInfoBarDelegate::ExtensionDevToolsInfoBarDelegate(
     std::string extension_id,
     const std::string& extension_name)
     : extension_id_(std::move(extension_id)),
-      extension_name_(base::UTF8ToUTF16(extension_name)) {}
+      extension_name_(base::UTF8ToUTF16(extension_name)) {
+  callback_list_.set_removal_callback(base::BindRepeating(
+      &ExtensionDevToolsInfoBarDelegate::MaybeStartAutocloseTimer,
+      base::Unretained(this)));
+}
 
 base::CallbackListSubscription
 ExtensionDevToolsInfoBarDelegate::RegisterDestroyedCallback(
     base::OnceClosure destroyed_callback) {
   return callback_list_.Add(std::move(destroyed_callback));
+}
+
+void ExtensionDevToolsInfoBarDelegate::MaybeStartAutocloseTimer() {
+  if (callback_list_.empty()) {
+    // infobar_ was set in Create() which makes the following access safe.
+    timer_.Start(FROM_HERE, kAutoCloseDelay, infobar_.get(),
+                 &GlobalConfirmInfoBar::Close);
+  }
 }
 
 }  // namespace extensions
