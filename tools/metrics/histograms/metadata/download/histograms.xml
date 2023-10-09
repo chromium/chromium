@@ -838,16 +838,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.ResultsRenderedTime" units="ms" expires_after="M90">
-  <owner>calamity@chromium.org</owner>
-  <owner>dbeam@chromium.org</owner>
-  <summary>
-    Records the time taken to load the downloads Web UI and render (at least) a
-    screen full of items. This is roughly equivalent to 'time to first
-    meaningful paint' for the downloads page.
-  </summary>
-</histogram>
-
 <histogram name="Download.Retry.InterruptReason" enum="InterruptReason"
     expires_after="2023-12-03">
   <owner>chlily@chromium.org</owner>

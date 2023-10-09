@@ -142,9 +142,6 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
 
     this.loaded_.promise.then(() => {
       requestIdleCallback(function() {
-        chrome.send(
-            'metricsHandler:recordTime',
-            ['Download.ResultsRenderedTime', window.performance.now()]);
         // https://github.com/microsoft/TypeScript/issues/13569
         (document as any).fonts.load('bold 12px Roboto');
       });
