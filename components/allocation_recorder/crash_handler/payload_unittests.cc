@@ -7,6 +7,7 @@
 #include "base/bits.h"
 #include "base/containers/span.h"
 #include "base/debug/allocation_trace.h"
+#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::debug::tracer::AllocationTraceRecorder;
@@ -66,11 +67,11 @@ void VerifyAllocationEntriesAreEqual(
 
   const auto& report_frames = report_entry.stack_trace().frames();
   std::vector<const void*> converted_frames;
-  std::transform(std::begin(report_frames), std::end(report_frames),
-                 std::back_inserter(converted_frames),
-                 [](const allocation_recorder::StackFrame& frame) {
-                   return reinterpret_cast<const void*>(frame.address());
-                 });
+  base::ranges::transform(
+      report_frames, std::back_inserter(converted_frames),
+      [](const allocation_recorder::StackFrame& frame) {
+        return reinterpret_cast<const void*>(frame.address());
+      });
 
   const auto [converted_call_stack_mismatch, source_call_stack_mismatch] =
       std::mismatch(std::begin(converted_frames), std::end(converted_frames),

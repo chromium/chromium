@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -51,14 +52,13 @@ syncer::LocalDataDescription CreateLocalDataDescription(syncer::ModelType type,
   // Using a set to get only the distinct domains. This also ensures an
   // alphabetical ordering of the domains.
   std::set<std::string> domains;
-  std::transform(
-      items.begin(), items.end(), std::inserter(domains, domains.end()),
+  base::ranges::transform(
+      items, std::inserter(domains, domains.end()),
       [&](const auto& item) { return GetDomainFromUrl(url_extractor(item)); });
   auto it = domains.begin();
   // Add up to 3 domains as examples to be used in a string shown to the user.
-  for (int i = 0; i < 3 && it != domains.end(); ++i, ++it) {
-    desc.domains.push_back(*it);
-  }
+  base::ranges::copy_n(it, std::min(size_t{3}, domains.size()),
+                       std::back_inserter(desc.domains));
   desc.domain_count = domains.size();
   return desc;
 }
