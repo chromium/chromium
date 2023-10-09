@@ -21,12 +21,14 @@
 namespace {
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierDataTypes = kSectionIdentifierEnumZero,
+  SectionIdentifierDataTypesHeader = kSectionIdentifierEnumZero,
+  SectionIdentifierDataTypes,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
-  // SectionIdentifierDataTypes
+  // SectionIdentifierDataTypesHeader
   ItemTypeHeader = kItemTypeEnumZero,
+  // SectionIdentifierDataTypes
   ItemTypeModel,
 };
 
@@ -53,18 +55,32 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)loadModel {
   [super loadModel];
-  [self.tableViewModel addSectionWithIdentifier:SectionIdentifierDataTypes];
 
+  [self.tableViewModel
+      addSectionWithIdentifier:SectionIdentifierDataTypesHeader];
   TableViewTextHeaderFooterItem* headerItem =
       [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
   headerItem.subtitle = l10n_util::GetNSString(
       IDS_IOS_BULK_UPLOAD_ON_THIS_DEVICE_SETTINGS_HEADER);
   [self.tableViewModel setHeader:headerItem
-        forSectionWithIdentifier:SectionIdentifierDataTypes];
+        forSectionWithIdentifier:SectionIdentifierDataTypesHeader];
 
+  [self.tableViewModel addSectionWithIdentifier:SectionIdentifierDataTypes];
   for (BulkUploadViewItem* viewItem in _viewItems) {
     [self addSwitchItemWithBulkUploadViewItem:viewItem];
   }
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
+  // Customize height of emtpy footer for the header section to achieve desired
+  // vertical spacing to next item.
+  if ([self.tableViewModel sectionIdentifierForSectionIndex:section] ==
+      SectionIdentifierDataTypesHeader) {
+    return 0.0;
+  }
+
+  return [super tableView:tableView heightForFooterInSection:section];
 }
 
 #pragma mark - UITableViewDataSource
@@ -109,6 +125,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Reloads the model and the table view.
 - (void)reloadModel {
+  [self.tableViewModel
+      deleteAllItemsFromSectionWithIdentifier:SectionIdentifierDataTypesHeader];
   [self.tableViewModel
       deleteAllItemsFromSectionWithIdentifier:SectionIdentifierDataTypes];
   for (BulkUploadViewItem* viewItem in _viewItems) {
