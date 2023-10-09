@@ -460,6 +460,10 @@ class GSL_POINTER span : public internal::ExtentStorage<Extent> {
 template <class T, size_t Extent>
 constexpr size_t span<T, Extent>::extent;
 
+template <typename It,
+          typename T = std::remove_reference_t<iter_reference_t<It>>>
+span(It it, StrictNumeric<size_t> size) -> span<T>;
+
 template <typename Container,
           typename T = std::remove_pointer_t<
               decltype(std::data(std::declval<Container>()))>,

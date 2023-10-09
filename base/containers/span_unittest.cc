@@ -27,6 +27,38 @@ using ::testing::Pointwise;
 
 namespace base {
 
+namespace {
+
+// Tests for span(It, StrictNumeric<size_t>) deduction guide. These tests use a
+// helper function to wrap the static_asserts, as most STL containers don't work
+// well in a constexpr context. std::array<T, N> does, but base::span has
+// specific overloads for std::array<T, n>, so that ends up being less helpful
+// than it would initially appear.
+//
+// Another alternative would be to use std::declval, but that would be fairly
+// verbose.
+[[maybe_unused]] void DeductionGuidesWithIteratorAndSize() {
+  {
+    const std::vector<int> v;
+    static_assert(
+        std::is_same_v<decltype(span(v.cbegin(), v.size())), span<const int>>);
+    static_assert(
+        std::is_same_v<decltype(span(v.begin(), v.size())), span<const int>>);
+    static_assert(
+        std::is_same_v<decltype(span(v.data(), v.size())), span<const int>>);
+  }
+
+  {
+    std::vector<int> v;
+    static_assert(
+        std::is_same_v<decltype(span(v.cbegin(), v.size())), span<const int>>);
+    static_assert(
+        std::is_same_v<decltype(span(v.begin(), v.size())), span<int>>);
+    static_assert(
+        std::is_same_v<decltype(span(v.data(), v.size())), span<int>>);
+  }
+}
+
 // Tests for span(Container&&) deduction guide.
 static_assert(std::is_same_v<decltype(span(std::declval<const std::string&>())),
                              span<const char>>);
@@ -59,6 +91,8 @@ static_assert(
 static_assert(
     std::is_same_v<decltype(span(std::declval<std::array<float, 9>&&>())),
                    span<const float, 9>>);
+
+}  // namespace
 
 TEST(SpanTest, DefaultConstructor) {
   span<int> dynamic_span;
