@@ -149,7 +149,7 @@ void StartupUtils::RegisterOobeProfilePrefs(PrefRegistrySimple* registry) {
     registry->RegisterListPref(prefs::kChoobeCompletedScreens);
   }
 
-  if (drive::util::IsOobeDrivePinningAvailable(nullptr)) {
+  if (drive::util::IsOobeDrivePinningScreenEnabled()) {
     registry->RegisterBooleanPref(prefs::kOobeDrivePinningEnabledDeferred,
                                   false);
   }
