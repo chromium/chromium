@@ -354,24 +354,6 @@ TEST_F(QuickStartDecoderTest, DecodeBootstrapConfigurations_NullPayload) {
 }
 
 TEST_F(QuickStartDecoderTest,
-       DecodeBootstrapConfigurations_EmptyMessagePayload) {
-  QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
-  message.GetPayload()->Set(kBootstrapConfigurationsKey, base::Value::Dict());
-
-  base::test::TestFuture<
-      ::ash::quick_start::mojom::BootstrapConfigurationsPtr,
-      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
-      future;
-
-  DoDecodeBootstrapConfigurations(ConvertMessageToBytes(&message),
-                                  future.GetCallback());
-
-  EXPECT_TRUE(future.Get<0>().is_null());
-  EXPECT_EQ(future.Get<1>(),
-            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
-}
-
-TEST_F(QuickStartDecoderTest,
        DecodeBootstrapConfigurations_UnexpectedMessageType) {
   // Build a valid SecondDeviceAuthPayload
   std::string expected_credential_id(kValidCredentialId.begin(),
@@ -407,9 +389,9 @@ TEST_F(QuickStartDecoderTest,
 
   DoDecodeBootstrapConfigurations(ConvertMessageToBytes(&message),
                                   future.GetCallback());
-  EXPECT_TRUE(future.Get<0>().is_null());
-  EXPECT_EQ(future.Get<1>(),
-            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+  EXPECT_FALSE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<0>()->cryptauth_device_id, "");
+  EXPECT_EQ(future.Get<1>(), absl::nullopt);
 }
 
 TEST_F(QuickStartDecoderTest,

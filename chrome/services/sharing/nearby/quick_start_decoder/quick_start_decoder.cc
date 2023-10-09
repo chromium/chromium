@@ -634,10 +634,10 @@ QuickStartDecoder::DecodeBootstrapConfigurations(
     const base::Value::Dict& payload) {
   const base::Value::Dict* device_details = payload.FindDict(kDeviceDetailsKey);
   if (!device_details) {
-    LOG(ERROR)
+    LOG(WARNING)
         << "DeviceDetails cannot be found within BootstrapConfigurations.";
-    return base::unexpected(
-        mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return mojom::QuickStartMessage::NewBootstrapConfigurations(
+        mojom::BootstrapConfigurations::New(/*cryptauth_device_id=*/""));
   }
   const std::string* cryptauth_device_id_ptr =
       device_details->FindString(kCryptauthDeviceIdKey);
