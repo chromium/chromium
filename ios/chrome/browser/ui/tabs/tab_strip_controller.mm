@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -52,7 +51,6 @@
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_constants.h"
@@ -70,7 +68,6 @@
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
-#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -685,11 +682,6 @@ const CGFloat kSymbolSize = 18;
   [view setIncognitoStyle:(_style == INCOGNITO)];
   [view setContentMode:UIViewContentModeRedraw];
   [self updateTabView:view withWebState:webState];
-  if (IsMagicStackEnabled()) {
-    // webstate:didStartNavigation: for `view` is slow to be called on startup,
-    // so update the coloring sooner.
-    [view setShowingNTP:IsVisibleURLNewTabPage(webState)];
-  }
   // Install a long press gesture recognizer to handle drag and drop.
   UILongPressGestureRecognizer* longPress =
       [[UILongPressGestureRecognizer alloc]
@@ -1197,21 +1189,6 @@ const CGFloat kSymbolSize = 18;
   [view setNeedsDisplay];
 }
 
-- (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
-  if (IsMagicStackEnabled() && IsUrlNtp(webState->GetVisibleURL())) {
-    TabView* view = [self tabViewForWebState:webState];
-    [view setShowingNTP:YES];
-  }
-}
-
-- (void)webState:(web::WebState*)webState
-    didStartNavigation:(web::NavigationContext*)navigationContext {
-  if (IsMagicStackEnabled()) {
-    TabView* view = [self tabViewForWebState:webState];
-    [view setShowingNTP:IsUrlNtp(navigationContext->GetUrl())];
-  }
-}
-
 #pragma mark - WebStateListObserving methods
 
 - (void)didChangeWebStateList:(WebStateList*)webStateList
@@ -1302,7 +1279,6 @@ const CGFloat kSymbolSize = 18;
 
     NSUInteger index =
         [self indexForWebStateListIndex:webStateList->active_index()];
-
     TabView* activeView = [_tabArray objectAtIndex:index];
     [activeView setSelected:YES];
 

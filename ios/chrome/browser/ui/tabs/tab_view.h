@@ -34,8 +34,6 @@
 - (void)startProgressSpinner;
 // Stops the progress spinner animation.
 - (void)stopProgressSpinner;
-// Updates the view for a `showingNTP` state.
-- (void)setShowingNTP:(BOOL)showingNTP;
 
 @end
 

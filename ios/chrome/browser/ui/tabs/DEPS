@@ -2,5 +2,4 @@ include_rules = [
   "+ios/chrome/browser/ui/bubble",
   "+ios/chrome/browser/ui/fullscreen",
   "+ios/chrome/browser/ui/tab_switcher",
-  "+ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h",
 ]
