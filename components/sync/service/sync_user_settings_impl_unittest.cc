@@ -104,6 +104,9 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
       MakeSyncUserSettings(GetUserTypes());
 
   ModelTypeSet expected_types = GetUserTypes();
+  // TODO(crbug.com/1488009): PROXY_TABS is not a real data type, and not
+  // considered preferred. Eventually it should be removed entirely.
+  expected_types.Remove(PROXY_TABS);
   EXPECT_TRUE(sync_user_settings->IsSyncEverythingEnabled());
   EXPECT_EQ(expected_types, GetPreferredUserTypes(*sync_user_settings));
 
@@ -214,6 +217,9 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncAllOsTypes) {
       MakeSyncUserSettings(GetUserTypes());
 
   ModelTypeSet expected_types = GetUserTypes();
+  // TODO(crbug.com/1488009): PROXY_TABS is not a real data type, and not
+  // considered preferred. Eventually it should be removed entirely.
+  expected_types.Remove(PROXY_TABS);
   EXPECT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
   EXPECT_EQ(expected_types, GetPreferredUserTypes(*sync_user_settings));
 
@@ -436,7 +442,6 @@ TEST_F(SyncUserSettingsImplTest, ShouldSyncSessionsOnlyIfOpenTabsIsSelected) {
   ASSERT_FALSE(AlwaysPreferredUserTypes().Has(HISTORY));
   ASSERT_FALSE(AlwaysPreferredUserTypes().Has(HISTORY_DELETE_DIRECTIVES));
   ASSERT_FALSE(AlwaysPreferredUserTypes().Has(SESSIONS));
-  ASSERT_FALSE(AlwaysPreferredUserTypes().Has(PROXY_TABS));
 
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
@@ -454,12 +459,11 @@ TEST_F(SyncUserSettingsImplTest, ShouldSyncSessionsOnlyIfOpenTabsIsSelected) {
   sync_user_settings->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{UserSelectableType::kHistory, UserSelectableType::kTabs});
-  EXPECT_EQ(
-      GetPreferredUserTypes(*sync_user_settings),
-      Union(AlwaysPreferredUserTypes(), {HISTORY, HISTORY_DELETE_DIRECTIVES,
-                                         SESSIONS, PROXY_TABS, USER_EVENTS}));
+  EXPECT_EQ(GetPreferredUserTypes(*sync_user_settings),
+            Union(AlwaysPreferredUserTypes(),
+                  {HISTORY, HISTORY_DELETE_DIRECTIVES, SESSIONS, USER_EVENTS}));
 
-  // History only: PROXY_TABS and SESSIONS are gone.
+  // History only: SESSIONS is gone.
   sync_user_settings->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{UserSelectableType::kHistory});
@@ -467,13 +471,12 @@ TEST_F(SyncUserSettingsImplTest, ShouldSyncSessionsOnlyIfOpenTabsIsSelected) {
             Union(AlwaysPreferredUserTypes(),
                   {HISTORY, HISTORY_DELETE_DIRECTIVES, USER_EVENTS}));
 
-  // OpenTabs only: SESSIONS (the actual data) and PROXY_TABS (as a "flag"
-  // indicating OpenTabs is enabled).
+  // OpenTabs only: Only SESSIONS is there.
   sync_user_settings->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{UserSelectableType::kTabs});
   EXPECT_EQ(GetPreferredUserTypes(*sync_user_settings),
-            Union(AlwaysPreferredUserTypes(), {SESSIONS, PROXY_TABS}));
+            Union(AlwaysPreferredUserTypes(), {SESSIONS}));
 }
 
 TEST_F(SyncUserSettingsImplTest, ShouldMutePassphrasePrompt) {

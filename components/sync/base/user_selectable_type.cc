@@ -8,7 +8,6 @@
 
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -86,7 +85,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
     case UserSelectableType::kReadingList:
       return {kReadingListTypeName, READING_LIST, {READING_LIST}};
     case UserSelectableType::kTabs:
-      return {kTabsTypeName, PROXY_TABS, {PROXY_TABS, SESSIONS}};
+      return {kTabsTypeName, SESSIONS, {SESSIONS}};
     case UserSelectableType::kSavedTabGroups:
       return {kSavedTabGroupsTypeName, SAVED_TAB_GROUP, {SAVED_TAB_GROUP}};
     case UserSelectableType::kPayments:

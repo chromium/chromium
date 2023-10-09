@@ -116,7 +116,6 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
       syncer::DEVICE_INFO,
       syncer::PRIORITY_PREFERENCES,
       syncer::WEB_APPS,
-      syncer::PROXY_TABS,
       syncer::NIGORI};
 
   if (base::FeatureList::IsEnabled(features::kTabGroupsSave)) {

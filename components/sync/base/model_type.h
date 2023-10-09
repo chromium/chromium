@@ -157,7 +157,7 @@ enum ModelType {
   //
   // Tab sync. This is a placeholder type, which implicitly enables Sessions
   // for tabs sync.
-  // TODO(crbug.com/1365291): Now that TYPED_URLS is gone, it should be possible
+  // TODO(crbug.com/1488009): Now that TYPED_URLS is gone, it should be possible
   // to remove this type, and the whole concept of "proxy types".
   PROXY_TABS,
   LAST_USER_MODEL_TYPE = PROXY_TABS,
