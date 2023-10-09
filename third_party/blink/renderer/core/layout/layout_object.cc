@@ -465,6 +465,10 @@ LayoutObject::LayoutObject(Node* node)
       previous_(nullptr),
       next_(nullptr),
       fragment_(MakeGarbageCollected<FragmentData>()) {
+#if DCHECK_IS_ON()
+  fragment_->SetIsFirst();
+#endif
+
   InstanceCounters::IncrementCounter(InstanceCounters::kLayoutObjectCounter);
   if (node_)
     GetFrameView()->IncrementLayoutObjectCount();

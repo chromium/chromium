@@ -70,6 +70,7 @@ FragmentData::RareData& FragmentData::EnsureRareData() {
 }
 
 void FragmentData::SetLayer(PaintLayer* layer) {
+  AssertIsFirst();
   if (rare_data_ || layer)
     EnsureRareData().SetLayer(layer);
 }

@@ -55,13 +55,18 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
 
   // The PaintLayer associated with this LayoutBoxModelObject. This can be null
   // depending on the return value of LayoutBoxModelObject::LayerTypeRequired().
-  PaintLayer* Layer() const { return rare_data_ ? rare_data_->layer : nullptr; }
+  PaintLayer* Layer() const {
+    AssertIsFirst();
+    return rare_data_ ? rare_data_->layer : nullptr;
+  }
   void SetLayer(PaintLayer*);
 
   StickyPositionScrollingConstraints* StickyConstraints() const {
+    AssertIsFirst();
     return rare_data_ ? rare_data_->sticky_constraints : nullptr;
   }
   void SetStickyConstraints(StickyPositionScrollingConstraints* constraints) {
+    AssertIsFirst();
     if (!rare_data_ && !constraints)
       return;
     EnsureRareData().sticky_constraints = constraints;
@@ -176,11 +181,21 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
   const ClipPaintPropertyNodeOrAlias& ContentsClip() const;
   const EffectPaintPropertyNodeOrAlias& ContentsEffect() const;
 
+#if DCHECK_IS_ON()
+  void SetIsFirst() { is_first_ = true; }
+#endif
+
   ~FragmentData() = default;
   void Trace(Visitor* visitor) const { visitor->Trace(rare_data_); }
 
  private:
   friend class FragmentDataTest;
+
+#if DCHECK_IS_ON()
+  void AssertIsFirst() const { DCHECK(is_first_); }
+#else
+  void AssertIsFirst() const {}
+#endif
 
   // Contains rare data that that is not needed on all fragments.
   struct CORE_EXPORT RareData final : public GarbageCollected<RareData> {
@@ -196,7 +211,8 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
     void Trace(Visitor* visitor) const;
 
     // The following data fields are not fragment specific. Placed here just to
-    // avoid separate data structure for them.
+    // avoid separate data structure for them. They are only to be accessed in
+    // the first fragment.
     Member<PaintLayer> layer;
     Member<StickyPositionScrollingConstraints> sticky_constraints;
 
@@ -217,6 +233,10 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
 
   PhysicalOffset paint_offset_;
   Member<RareData> rare_data_;
+
+#if DCHECK_IS_ON()
+  bool is_first_ = false;
+#endif
 };
 
 }  // namespace blink
