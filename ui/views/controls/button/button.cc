@@ -179,8 +179,9 @@ Button::ButtonState Button::GetButtonStateFrom(ui::NativeTheme::State state) {
 Button::~Button() = default;
 
 void Button::SetTooltipText(const std::u16string& tooltip_text) {
-  if (tooltip_text == tooltip_text_)
+  if (tooltip_text == tooltip_text_) {
     return;
+  }
 
   if (GetAccessibleName().empty() || GetAccessibleName() == tooltip_text_) {
     SetAccessibleName(tooltip_text);
@@ -212,8 +213,9 @@ Button::ButtonState Button::GetState() const {
 }
 
 void Button::SetState(ButtonState state) {
-  if (state == state_)
+  if (state == state_) {
     return;
+  }
 
   if (animate_on_state_change_) {
     if ((state_ == STATE_HOVERED) && (state == STATE_NORMAL)) {
@@ -243,8 +245,9 @@ int Button::GetTag() const {
 }
 
 void Button::SetTag(int tag) {
-  if (tag_ == tag)
+  if (tag_ == tag) {
     return;
+  }
   tag_ = tag;
   OnPropertyChanged(&tag_, kPropertyEffectsNone);
 }
@@ -254,8 +257,9 @@ void Button::SetAnimationDuration(base::TimeDelta duration) {
 }
 
 void Button::SetTriggerableEventFlags(int triggerable_event_flags) {
-  if (triggerable_event_flags == triggerable_event_flags_)
+  if (triggerable_event_flags == triggerable_event_flags_) {
     return;
+  }
   triggerable_event_flags_ = triggerable_event_flags;
   OnPropertyChanged(&triggerable_event_flags_, kPropertyEffectsNone);
 }
@@ -268,8 +272,9 @@ void Button::SetRequestFocusOnPress(bool value) {
 // On Mac, buttons should not request focus on a mouse press. Hence keep the
 // default value i.e. false.
 #if !BUILDFLAG(IS_MAC)
-  if (request_focus_on_press_ == value)
+  if (request_focus_on_press_ == value) {
     return;
+  }
   request_focus_on_press_ = value;
   OnPropertyChanged(&request_focus_on_press_, kPropertyEffectsNone);
 #endif
@@ -280,8 +285,9 @@ bool Button::GetRequestFocusOnPress() const {
 }
 
 void Button::SetAnimateOnStateChange(bool value) {
-  if (value == animate_on_state_change_)
+  if (value == animate_on_state_change_) {
     return;
+  }
   animate_on_state_change_ = value;
   OnPropertyChanged(&animate_on_state_change_, kPropertyEffectsNone);
 }
@@ -291,8 +297,9 @@ bool Button::GetAnimateOnStateChange() const {
 }
 
 void Button::SetHideInkDropWhenShowingContextMenu(bool value) {
-  if (value == hide_ink_drop_when_showing_context_menu_)
+  if (value == hide_ink_drop_when_showing_context_menu_) {
     return;
+  }
   hide_ink_drop_when_showing_context_menu_ = value;
   OnPropertyChanged(&hide_ink_drop_when_showing_context_menu_,
                     kPropertyEffectsNone);
@@ -303,8 +310,9 @@ bool Button::GetHideInkDropWhenShowingContextMenu() const {
 }
 
 void Button::SetShowInkDropWhenHotTracked(bool value) {
-  if (value == show_ink_drop_when_hot_tracked_)
+  if (value == show_ink_drop_when_hot_tracked_) {
     return;
+  }
   show_ink_drop_when_hot_tracked_ = value;
   OnPropertyChanged(&show_ink_drop_when_hot_tracked_, kPropertyEffectsNone);
 }
@@ -314,8 +322,9 @@ bool Button::GetShowInkDropWhenHotTracked() const {
 }
 
 void Button::SetHasInkDropActionOnClick(bool value) {
-  if (value == has_ink_drop_action_on_click_)
+  if (value == has_ink_drop_action_on_click_) {
     return;
+  }
   has_ink_drop_action_on_click_ = value;
   OnPropertyChanged(&has_ink_drop_action_on_click_, kPropertyEffectsNone);
 }
@@ -325,8 +334,9 @@ bool Button::GetHasInkDropActionOnClick() const {
 }
 
 void Button::SetInstallFocusRingOnFocus(bool install) {
-  if (install == GetInstallFocusRingOnFocus())
+  if (install == GetInstallFocusRingOnFocus()) {
     return;
+  }
   if (install) {
     FocusRing::Install(this);
   } else {
@@ -349,8 +359,9 @@ void Button::SetHotTracked(bool is_hot_tracked) {
     }
   }
 
-  if (is_hot_tracked)
+  if (is_hot_tracked) {
     NotifyAccessibilityEvent(ax::mojom::Event::kHover, true);
+  }
 }
 
 bool Button::IsHotTracked() const {
@@ -409,8 +420,9 @@ gfx::Point Button::GetMenuPosition() const {
   // The position of the menu depends on whether or not the locale is
   // right-to-left.
   gfx::Point menu_position(lb.right(), lb.bottom());
-  if (base::i18n::IsRTL())
+  if (base::i18n::IsRTL()) {
     menu_position.set_x(lb.x());
+  }
 
   View::ConvertPointToScreen(this, &menu_position);
   if (base::i18n::IsRTL())
@@ -476,8 +488,9 @@ void Button::OnMouseCaptureLost() {
   // Starting a drag results in a MouseCaptureLost. Reset button state.
   // TODO(varkha): Reset the state even while in drag. The same logic may
   // applies everywhere so gather any feedback and update.
-  if (state_ != STATE_DISABLED)
+  if (state_ != STATE_DISABLED) {
     SetState(STATE_NORMAL);
+  }
   InkDrop::Get(ink_drop_view_)
       ->AnimateToState(views::InkDropState::HIDDEN, nullptr /* event */);
   InkDrop::Get(ink_drop_view_)->GetInkDrop()->SetHovered(false);
@@ -527,13 +540,15 @@ std::u16string Button::GetTooltipText(const gfx::Point& p) const {
 
 void Button::ShowContextMenu(const gfx::Point& p,
                              ui::MenuSourceType source_type) {
-  if (!context_menu_controller())
+  if (!context_menu_controller()) {
     return;
+  }
 
   // We're about to show the context menu. Showing the context menu likely means
   // we won't get a mouse exited and reset state. Reset it now to be sure.
-  if (state_ != STATE_DISABLED)
+  if (state_ != STATE_DISABLED) {
     SetState(STATE_NORMAL);
+  }
   if (hide_ink_drop_when_showing_context_menu_) {
     InkDrop::Get(ink_drop_view_)->GetInkDrop()->SetHovered(false);
     InkDrop::Get(ink_drop_view_)
@@ -545,8 +560,9 @@ void Button::ShowContextMenu(const gfx::Point& p,
 void Button::OnDragDone() {
   // Only reset the state to normal if the button isn't currently disabled
   // (since disabled buttons may still be able to be dragged).
-  if (state_ != STATE_DISABLED)
+  if (state_ != STATE_DISABLED) {
     SetState(STATE_NORMAL);
+  }
   InkDrop::Get(ink_drop_view_)
       ->AnimateToState(InkDropState::HIDDEN, nullptr /* event */);
 }
@@ -585,8 +601,9 @@ void Button::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void Button::VisibilityChanged(View* starting_from, bool visible) {
   View::VisibilityChanged(starting_from, visible);
-  if (state_ == STATE_DISABLED)
+  if (state_ == STATE_DISABLED) {
     return;
+  }
   SetState(visible && ShouldEnterHoveredState() ? STATE_HOVERED : STATE_NORMAL);
 }
 
@@ -598,8 +615,9 @@ void Button::ViewHierarchyChanged(const ViewHierarchyChangedDetails& details) {
 
 void Button::OnFocus() {
   View::OnFocus();
-  if (focus_painter_)
+  if (focus_painter_) {
     SchedulePaint();
+  }
 }
 
 void Button::OnBlur() {
@@ -616,8 +634,9 @@ void Button::OnBlur() {
     // it is possible for a Mouse Release to trigger an action however there
     // would be no visual cue to the user that this will occur.
   }
-  if (focus_painter_)
+  if (focus_painter_) {
     SchedulePaint();
+  }
 }
 
 void Button::AnimationProgressed(const gfx::Animation* animation) {
@@ -651,8 +670,9 @@ Button::Button(PressedCallback callback)
 }
 
 void Button::RequestFocusFromEvent() {
-  if (request_focus_on_press_)
+  if (request_focus_on_press_) {
     RequestFocus();
+  }
 }
 
 void Button::NotifyClick(const ui::Event& event) {
@@ -670,8 +690,9 @@ void Button::NotifyClick(const ui::Event& event) {
                                                                    this);
   }
 
-  if (callback_)
+  if (callback_) {
     callback_.Run(event);
+  }
 }
 
 void Button::OnClickCanceled(const ui::Event& event) {
@@ -706,8 +727,9 @@ bool Button::ShouldEnterPushedState(const ui::Event& event) {
 void Button::PaintButtonContents(gfx::Canvas* canvas) {}
 
 bool Button::ShouldEnterHoveredState() {
-  if (!GetVisible())
+  if (!GetVisible()) {
     return false;
+  }
 
   bool check_mouse_position = true;
 #if defined(USE_AURA)
@@ -755,7 +777,7 @@ void Button::ReleaseAnchorHighlight() {
   }
 }
 
-BEGIN_METADATA(Button, View)
+BEGIN_METADATA(Button)
 ADD_PROPERTY_METADATA(PressedCallback, Callback)
 ADD_PROPERTY_METADATA(bool, AnimateOnStateChange)
 ADD_PROPERTY_METADATA(bool, HasInkDropActionOnClick)

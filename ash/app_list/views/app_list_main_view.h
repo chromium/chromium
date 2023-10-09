@@ -28,9 +28,9 @@ class SearchBoxViewBase;
 // when the user is signed in.
 class ASH_EXPORT AppListMainView : public views::View,
                                    public SearchBoxViewDelegate {
- public:
-  METADATA_HEADER(AppListMainView);
+  METADATA_HEADER(AppListMainView, views::View)
 
+ public:
   AppListMainView(AppListViewDelegate* delegate, AppListView* app_list_view);
 
   AppListMainView(const AppListMainView&) = delete;

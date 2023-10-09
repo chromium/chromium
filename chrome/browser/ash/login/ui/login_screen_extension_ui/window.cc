@@ -7,12 +7,11 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/create_options.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/dialog_delegate.h"
-#include "chrome/browser/ash/login/ui/login_screen_extension_ui/web_dialog_view.h"
+#include "chrome/browser/ash/login/ui/login_screen_extension_ui/login_web_view.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
-#include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -28,9 +27,9 @@ std::unique_ptr<Window> WindowFactory::Create(CreateOptions* create_options) {
 Window::Window(CreateOptions* create_options)
     : dialog_delegate_(new DialogDelegate(create_options)),
       dialog_view_(
-          new WebDialogView(ProfileHelper::GetSigninProfile(),
-                            dialog_delegate_,
-                            std::make_unique<ChromeWebContentsHandler>())) {
+          new LoginWebView(ProfileHelper::GetSigninProfile(),
+                           dialog_delegate_,
+                           std::make_unique<ChromeWebContentsHandler>())) {
   dialog_widget_ = new views::Widget;
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
   params.delegate = dialog_view_.get();

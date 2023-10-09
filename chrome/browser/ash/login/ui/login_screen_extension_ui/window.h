@@ -17,7 +17,7 @@ namespace ash {
 namespace login_screen_extension_ui {
 struct CreateOptions;
 class DialogDelegate;
-class WebDialogView;
+class LoginWebView;
 
 // This class represents the window that can be created by the
 // chrome.loginScreenUi API. It manages the window's widget, view and delegate,
@@ -38,7 +38,7 @@ class Window {
 
  private:
   raw_ptr<DialogDelegate, ExperimentalAsh> dialog_delegate_ = nullptr;
-  raw_ptr<WebDialogView, ExperimentalAsh> dialog_view_ = nullptr;
+  raw_ptr<LoginWebView, ExperimentalAsh> dialog_view_ = nullptr;
   raw_ptr<views::Widget, ExperimentalAsh> dialog_widget_ = nullptr;
 };
 

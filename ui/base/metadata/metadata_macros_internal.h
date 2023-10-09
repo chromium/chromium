@@ -15,14 +15,16 @@
 
 #define METADATA_CLASS_NAME_INTERNAL(class_name) class_name##_MetaData
 
+// TODO(kylixrd@): Remove kViewClassName[] from macros once all references to it
+// have been eradicated and IsViewClass<T> is being used instead.
+
 // Metadata Accessors ---------------------------------------------------------
-#define METADATA_ACCESSORS_INTERNAL(class_name)   \
-  using kMetadataTag = class_name;                \
-  static const char kViewClassName[];             \
-  const char* GetClassName() const override;      \
-  static ui::metadata::ClassMetaData* MetaData(); \
-  /* Don't hide non-const base class version. */  \
-  using MetaDataProvider::GetClassMetaData;       \
+#define METADATA_ACCESSORS_INTERNAL(class_name)        \
+  using kMetadataTag = class_name;                     \
+  [[maybe_unused]] static const char kViewClassName[]; \
+  static ui::metadata::ClassMetaData* MetaData();      \
+  /* Don't hide non-const base class version. */       \
+  using MetaDataProvider::GetClassMetaData;            \
   const ui::metadata::ClassMetaData* GetClassMetaData() const override;
 
 // A version of METADATA_ACCESSORS_INTERNAL for View, the root of the metadata
@@ -38,14 +40,14 @@
 // reinterpret_cast<> provides more information to the compiler in order to
 // obtain the proper result from the static_cast<>. See |AsClass(void* obj)|
 // in property_metadata.h for additional info.
-#define METADATA_ACCESSORS_INTERNAL_BASE(class_name) \
-  using kMetadataTag = class_name;                   \
-  static const char kViewClassName[];                \
-  virtual const char* GetClassName() const;          \
-  static ui::metadata::ClassMetaData* MetaData();    \
-  class_name* ReinterpretToBaseClass(void* obj);     \
-  /* Don't hide non-const base class version. */     \
-  using MetaDataProvider::GetClassMetaData;          \
+#define METADATA_ACCESSORS_INTERNAL_BASE(class_name)   \
+  using kMetadataTag = class_name;                     \
+  [[maybe_unused]] static const char kViewClassName[]; \
+  virtual const char* GetClassName() const;            \
+  static ui::metadata::ClassMetaData* MetaData();      \
+  class_name* ReinterpretToBaseClass(void* obj);       \
+  /* Don't hide non-const base class version. */       \
+  using MetaDataProvider::GetClassMetaData;            \
   const ui::metadata::ClassMetaData* GetClassMetaData() const override;
 
 // Metadata Class -------------------------------------------------------------
@@ -110,13 +112,19 @@
     return MetaData();                                                        \
   }                                                                           \
                                                                               \
-  const char* qualified_class_name::GetClassName() const {                    \
-    return kViewClassName;                                                    \
-  }                                                                           \
   const char qualified_class_name::kViewClassName[] = #qualified_class_name;  \
                                                                               \
   void qualified_class_name::metadata_class_name::BuildMetaData() {           \
     SetTypeName(std::string(#qualified_class_name));
+
+#define BEGIN_METADATA_INTERNAL_BASE(qualified_class_name,                   \
+                                     metadata_class_name, parent_class_name) \
+  const char* qualified_class_name::GetClassName() const {                   \
+    return GetClassMetaData()->type_name().c_str();                          \
+  }                                                                          \
+                                                                             \
+  BEGIN_METADATA_INTERNAL(qualified_class_name, metadata_class_name,         \
+                          parent_class_name)
 
 // See the comment above on the METADATA_ACCESSORS_INTERNAL_BASE macro for more
 // information. NOTE: This function should not be modified to access |this|,
