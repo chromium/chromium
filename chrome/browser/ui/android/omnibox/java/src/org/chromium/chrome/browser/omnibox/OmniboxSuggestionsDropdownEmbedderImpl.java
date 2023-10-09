@@ -212,11 +212,16 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
             paddingRight = 0;
         }
 
-        int mKeyboardHeight = mDeferredIMEWindowInsetApplicationCallback != null
-                ? mDeferredIMEWindowInsetApplicationCallback.getCurrentKeyboardHeight()
-                : 0;
-        int height = DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), mWindowHeightDp) - top
-                - mKeyboardHeight;
+        int keyboardHeight =
+                mDeferredIMEWindowInsetApplicationCallback != null
+                        ? mDeferredIMEWindowInsetApplicationCallback.getCurrentKeyboardHeight()
+                        : 0;
+        int windowSpace =
+                DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), mWindowHeightDp) - keyboardHeight;
+        // If content view is null, then omnibox might not be in the activity content.
+        int contentSpace =
+                contentView == null ? Integer.MAX_VALUE : contentView.getMeasuredHeight();
+        int height = Math.min(windowSpace, contentSpace) - top;
 
         // TODO(pnoland@, https://crbug.com/1416985): avoid pushing changes that are identical to
         // the previous alignment value.
