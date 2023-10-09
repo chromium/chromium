@@ -173,6 +173,10 @@ TabAndroid::GetWebContentsByteBuffer() {
   return std::make_unique<WebContentsStateByteBuffer>(state, version);
 }
 
+base::WeakPtr<TabAndroid> TabAndroid::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 int TabAndroid::GetAndroidId() const {
   return tab_id_;
 }

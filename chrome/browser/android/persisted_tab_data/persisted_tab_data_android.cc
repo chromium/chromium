@@ -46,7 +46,7 @@ void PersistedTabDataAndroid::From(TabAndroid* tab_android,
   if (!deferred_startup_complete_) {
     std::unique_ptr<DeferredRequest> deferred_request =
         std::make_unique<DeferredRequest>();
-    deferred_request->tab_android = tab_android;
+    deferred_request->tab_android = tab_android->GetWeakPtr();
     deferred_request->user_data_key = user_data_key;
     deferred_request->supplier_callback = std::move(supplier_callback);
     deferred_request->from_callback = std::move(from_callback);
@@ -168,10 +168,15 @@ void PersistedTabDataAndroid::OnDeferredStartup() {
   std::unique_ptr<PersistedTabDataAndroid::DeferredRequest> deferred_request =
       std::move(deferred_requests->front());
   deferred_requests->pop_front();
+  if (!deferred_request->tab_android) {
+    // Recursively clear rest of the DeferredRequest queue.
+    PersistedTabDataAndroid::OnDeferredStartup();
+    return;
+  }
   // Process deferred requests one at a time (to minimize risk of
   // resource over-utilization which could lead to jank).
   PersistedTabDataAndroid::From(
-      deferred_request->tab_android, deferred_request->user_data_key,
+      deferred_request->tab_android.get(), deferred_request->user_data_key,
       std::move(deferred_request->supplier_callback),
       base::BindOnce(
           [](FromCallback from_callback,
