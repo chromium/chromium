@@ -267,7 +267,9 @@ struct CHROME_MSG {
 
 // The trailing white-spaces after this macro are required, for compatibility
 // with the definition in winnt.h.
+// clang-format off
 #define RTL_SRWLOCK_INIT {0}                            // NOLINT
+// clang-format on
 #define SRWLOCK_INIT RTL_SRWLOCK_INIT
 
 // clang-format on
