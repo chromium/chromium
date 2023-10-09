@@ -35,7 +35,7 @@ DXGI_FORMAT GetDXGIFormatForCreateTexture(viz::SharedImageFormat format) {
   } else if (format == viz::SinglePlaneFormat::kRGBA_8888) {
     return DXGI_FORMAT_R8G8B8A8_UNORM;
   } else if (format == viz::SinglePlaneFormat::kBGRX_8888) {
-    return DXGI_FORMAT_B8G8R8X8_UNORM;
+    return DXGI_FORMAT_B8G8R8A8_UNORM;
   } else if (format == viz::SinglePlaneFormat::kRGBX_8888) {
     return DXGI_FORMAT_R8G8B8A8_UNORM;
   } else if (format == viz::SinglePlaneFormat::kR_8) {

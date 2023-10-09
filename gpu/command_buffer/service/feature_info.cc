@@ -1506,11 +1506,17 @@ void FeatureInfo::InitializeFeatures() {
     feature_flags_.gpu_memory_buffer_formats.Put(gfx::BufferFormat::RG_88);
   }
 
-  if (IsWebGL2OrES3OrHigherContext() &&
+  const bool is_texture_norm16_supported_for_webgl2_or_es3 =
+      IsWebGL2OrES3OrHigherContext() &&
       (gl_version_info_->is_desktop_core_profile ||
        (gl_version_info_->IsAtLeastGL(2, 1) &&
         gfx::HasExtension(extensions, "GL_ARB_texture_rg")) ||
-       gfx::HasExtension(extensions, "GL_EXT_texture_norm16"))) {
+       gfx::HasExtension(extensions, "GL_EXT_texture_norm16"));
+  const bool is_texture_norm16_supported_for_angle_es2 =
+      is_passthrough_cmd_decoder_ && context_type_ == CONTEXT_TYPE_OPENGLES2 &&
+      gfx::HasExtension(extensions, "GL_EXT_texture_norm16");
+  if (is_texture_norm16_supported_for_webgl2_or_es3 ||
+      is_texture_norm16_supported_for_angle_es2) {
     AddExtensionString("GL_EXT_texture_norm16");
     feature_flags_.ext_texture_norm16 = true;
 

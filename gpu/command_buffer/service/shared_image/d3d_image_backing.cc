@@ -52,19 +52,6 @@ namespace gpu {
 
 namespace {
 
-bool SupportsVideoFormat(DXGI_FORMAT dxgi_format) {
-  switch (dxgi_format) {
-    case DXGI_FORMAT_NV12:
-    case DXGI_FORMAT_P010:
-    case DXGI_FORMAT_B8G8R8A8_UNORM:
-    case DXGI_FORMAT_R10G10B10A2_UNORM:
-    case DXGI_FORMAT_R16G16B16A16_FLOAT:
-      return true;
-    default:
-      return false;
-  }
-}
-
 size_t NumPlanes(DXGI_FORMAT dxgi_format) {
   switch (dxgi_format) {
     case DXGI_FORMAT_NV12:
@@ -72,49 +59,44 @@ size_t NumPlanes(DXGI_FORMAT dxgi_format) {
       return 2;
     case DXGI_FORMAT_R8_UNORM:
     case DXGI_FORMAT_R8G8_UNORM:
+    case DXGI_FORMAT_R16_UNORM:
+    case DXGI_FORMAT_R16G16_UNORM:
     case DXGI_FORMAT_R8G8B8A8_UNORM:
     case DXGI_FORMAT_B8G8R8A8_UNORM:
     case DXGI_FORMAT_R10G10B10A2_UNORM:
     case DXGI_FORMAT_R16G16B16A16_FLOAT:
       return 1;
     default:
-      NOTREACHED() << "Unsupported DXGI format: " << dxgi_format;
-      return 0;
+      NOTREACHED_NORETURN() << "Unsupported DXGI format: " << dxgi_format;
   }
 }
 
-viz::SharedImageFormat PlaneFormat(DXGI_FORMAT dxgi_format, size_t plane) {
+viz::SharedImageFormat VideoPlaneFormat(DXGI_FORMAT dxgi_format, size_t plane) {
   DCHECK_LT(plane, NumPlanes(dxgi_format));
   viz::SharedImageFormat format;
   switch (dxgi_format) {
     case DXGI_FORMAT_NV12:
-      // Y plane is accessed as R8 and UV plane is accessed as RG88 in D3D.
-      format = plane == 0 ? viz::SinglePlaneFormat::kR_8
-                          : viz::SinglePlaneFormat::kRG_88;
-      break;
+      // Y plane is accessed as R8 and UV plane is accessed as R8G8 in D3D.
+      return plane == 0 ? viz::SinglePlaneFormat::kR_8
+                        : viz::SinglePlaneFormat::kRG_88;
     case DXGI_FORMAT_P010:
-      format = plane == 0 ? viz::SinglePlaneFormat::kR_16
-                          : viz::SinglePlaneFormat::kRG_1616;
-      break;
+      // Y plane is accessed as R16 and UV plane is accessed as R16G16 in D3D.
+      return plane == 0 ? viz::SinglePlaneFormat::kR_16
+                        : viz::SinglePlaneFormat::kRG_1616;
     case DXGI_FORMAT_B8G8R8A8_UNORM:
-      format = viz::SinglePlaneFormat::kBGRA_8888;
-      break;
+      return viz::SinglePlaneFormat::kBGRA_8888;
     case DXGI_FORMAT_R10G10B10A2_UNORM:
-      format = viz::SinglePlaneFormat::kRGBA_1010102;
-      break;
+      return viz::SinglePlaneFormat::kRGBA_1010102;
     case DXGI_FORMAT_R16G16B16A16_FLOAT:
-      format = viz::SinglePlaneFormat::kRGBA_F16;
-      break;
+      return viz::SinglePlaneFormat::kRGBA_F16;
     default:
-      NOTREACHED();
-      format = viz::SinglePlaneFormat::kBGRA_8888;
+      NOTREACHED_NORETURN() << "Unsupported DXGI video format: " << dxgi_format;
   }
-  return format;
 }
 
-gfx::Size PlaneSize(DXGI_FORMAT dxgi_format,
-                    const gfx::Size& size,
-                    size_t plane) {
+gfx::Size VideoPlaneSize(DXGI_FORMAT dxgi_format,
+                         const gfx::Size& size,
+                         size_t plane) {
   DCHECK_LT(plane, NumPlanes(dxgi_format));
   switch (dxgi_format) {
     case DXGI_FORMAT_NV12:
@@ -126,8 +108,7 @@ gfx::Size PlaneSize(DXGI_FORMAT dxgi_format,
     case DXGI_FORMAT_R16G16B16A16_FLOAT:
       return size;
     default:
-      NOTREACHED();
-      return gfx::Size();
+      NOTREACHED_NORETURN() << "Unsupported DXGI video format: " << dxgi_format;
   }
 }
 
@@ -347,7 +328,6 @@ D3DImageBacking::CreateFromVideoTexture(
     unsigned array_slice,
     scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state) {
   CHECK(d3d11_texture);
-  CHECK(SupportsVideoFormat(dxgi_format));
   CHECK_EQ(mailboxes.size(), NumPlanes(dxgi_format));
 
   // DXGI shared handle is required for WebGPU/Dawn/D3D12 interop.
@@ -360,8 +340,8 @@ D3DImageBacking::CreateFromVideoTexture(
        plane_index++) {
     const auto& mailbox = mailboxes[plane_index];
 
-    const auto plane_format = PlaneFormat(dxgi_format, plane_index);
-    const auto plane_size = PlaneSize(dxgi_format, size, plane_index);
+    const auto plane_format = VideoPlaneFormat(dxgi_format, plane_index);
+    const auto plane_size = VideoPlaneSize(dxgi_format, size, plane_index);
 
     // Shared image does not need to store the colorspace since it is already
     // stored on the VideoFrame which is provided upon presenting the overlay.

@@ -360,9 +360,12 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
   // We use |supports_ar30_| and |supports_ab30_| to detect RGB10A2/BGR10A2
   // support. It's possible Skia might support these formats even if the Chrome
   // feature flags are false. We just check here that the feature flags don't
-  // allow Chrome to do something that Skia doesn't support.
+  // allow Chrome to do something that Skia doesn't support. Skia also doesn't
+  // support using R16/RG16 SkSurfaces with Ganesh so disallow those too.
   if ((format != viz::SinglePlaneFormat::kBGRA_1010102 || supports_ar30_) &&
-      (format != viz::SinglePlaneFormat::kRGBA_1010102 || supports_ab30_)) {
+      (format != viz::SinglePlaneFormat::kRGBA_1010102 || supports_ab30_) &&
+      format != viz::SinglePlaneFormat::kR_16 &&
+      format != viz::SinglePlaneFormat::kRG_1616) {
     ASSERT_TRUE(scoped_write_access);
     auto* surface = scoped_write_access->surface(/*plane_index=*/0);
     ASSERT_TRUE(surface);
