@@ -5,7 +5,6 @@
   <if expr="_google_chrome">
     <structure type="chrome_scaled_image" name="IDR_GOOGLE_COM_PNG" file="google_chrome/google_search_logo.png" />
   </if>
-  <structure type="chrome_scaled_image" name="IDR_ASK_COM_PNG" file="search_engine_choice/ask_com.png" />
   <structure type="chrome_scaled_image" name="IDR_BAIDU_COM_PNG" file="search_engine_choice/baidu_com.png" />
   <structure type="chrome_scaled_image" name="IDR_BING_COM_PNG" file="search_engine_choice/bing_com.png" />
   <structure type="chrome_scaled_image" name="IDR_SEARCH_BRAVE_COM_PNG" file="search_engine_choice/search_brave_com.png" />
@@ -20,8 +19,6 @@
   <structure type="chrome_scaled_image" name="IDR_NAVER_COM_PNG" file="search_engine_choice/naver_com.png" />
   <structure type="chrome_scaled_image" name="IDR_NONA_DE_PNG" file="search_engine_choice/nona_de.png" />
   <structure type="chrome_scaled_image" name="IDR_PANDA_SEARCH_ORG_PNG" file="search_engine_choice/panda_search_org.png" />
-  <structure type="chrome_scaled_image" name="IDR_PETALSEARCH_COM_PNG" file="search_engine_choice/default_favicon.png" />
-  <structure type="chrome_scaled_image" name="IDR_PRESEARCH_COM_PNG" file="search_engine_choice/presearch_com.png" />
   <structure type="chrome_scaled_image" name="IDR_QUENDU_COM_PNG" file="search_engine_choice/quendu_com.png" />
   <structure type="chrome_scaled_image" name="IDR_QWANT_COM_PNG" file="search_engine_choice/qwant_com.png" />
   <structure type="chrome_scaled_image" name="IDR_SEZNAM_CZ_PNG" file="search_engine_choice/seznam_cz.png" />
