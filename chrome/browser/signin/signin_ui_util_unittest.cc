@@ -322,7 +322,7 @@ TEST_F(SigninUiUtilTest, EnableSyncWithAccountThatNeedsReauth) {
     content::WebContents* active_contents = tab_strip->GetActiveWebContents();
     ASSERT_TRUE(active_contents);
     EXPECT_EQ(signin::GetChromeSyncURLForDice(
-                  {kMainEmail, google_util::kGoogleHomepageURL}),
+                  {kMainEmail, GURL(google_util::kGoogleHomepageURL)}),
               active_contents->GetVisibleURL());
     tab_strip->CloseWebContentsAt(
         tab_strip->GetIndexOfWebContents(active_contents),
@@ -351,7 +351,7 @@ TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithNoTab) {
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
   EXPECT_EQ(signin::GetChromeSyncURLForDice(
-                {.continue_url = google_util::kGoogleHomepageURL}),
+                {.continue_url = GURL(google_util::kGoogleHomepageURL)}),
             active_contents->GetVisibleURL());
 }
 
@@ -399,7 +399,7 @@ TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithOneTab) {
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
   EXPECT_EQ(signin::GetChromeSyncURLForDice(
-                {.continue_url = google_util::kGoogleHomepageURL}),
+                {.continue_url = GURL(google_util::kGoogleHomepageURL)}),
             active_contents->GetVisibleURL());
 }
 

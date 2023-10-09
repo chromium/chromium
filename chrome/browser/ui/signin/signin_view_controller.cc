@@ -331,10 +331,10 @@ void SigninViewController::ShowDiceSigninTab(
   // error 400. This seems to happen in particular if the continue URL is not a
   // Google-owned domain. Chrome cannot enforce that only valid URLs are used,
   // because the set of valid URLs is not specified.
-  std::string continue_url =
+  GURL continue_url =
       (redirect_url.is_empty() || !redirect_url.SchemeIsHTTPOrHTTPS())
-          ? UIThreadSearchTermsData().GoogleBaseURLValue()
-          : redirect_url.spec();
+          ? GURL(UIThreadSearchTermsData().GoogleBaseURLValue())
+          : redirect_url;
 
   GURL signin_url =
       signin_reason == signin_metrics::Reason::kAddSecondaryAccount

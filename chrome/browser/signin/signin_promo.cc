@@ -77,8 +77,8 @@ GURL GetChromeSyncURLForDice(ChromeSyncUrlArgs args) {
   if (!args.email.empty()) {
     url = net::AppendQueryParameter(url, "email_hint", args.email);
   }
-  if (!args.continue_url.empty()) {
-    url = net::AppendQueryParameter(url, "continue", args.continue_url);
+  if (!args.continue_url.is_empty()) {
+    url = net::AppendQueryParameter(url, "continue", args.continue_url.spec());
   }
   if (args.request_dark_scheme) {
     url = net::AppendQueryParameter(url, "color_scheme", "dark");
@@ -102,19 +102,20 @@ GURL GetChromeReauthURL(ChromeSyncUrlArgs args) {
   if (!args.email.empty()) {
     url = net::AppendQueryParameter(url, "Email", args.email);
   }
-  if (!args.continue_url.empty()) {
-    url = net::AppendQueryParameter(url, "continue", args.continue_url);
+  if (!args.continue_url.is_empty()) {
+    url = net::AppendQueryParameter(url, "continue", args.continue_url.spec());
   }
   return url;
 }
 
 GURL GetAddAccountURLForDice(const std::string& email,
-                             const std::string& continue_url) {
+                             const GURL& continue_url) {
   GURL url = GaiaUrls::GetInstance()->add_account_url();
   if (!email.empty())
     url = net::AppendQueryParameter(url, "Email", email);
-  if (!continue_url.empty())
-    url = net::AppendQueryParameter(url, "continue", continue_url);
+  if (!continue_url.is_empty()) {
+    url = net::AppendQueryParameter(url, "continue", continue_url.spec());
+  }
   return url;
 }
 

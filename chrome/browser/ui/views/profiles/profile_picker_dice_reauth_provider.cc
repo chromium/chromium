@@ -119,7 +119,7 @@ void ProfilePickerDiceReauthProvider::ShowReauth() {
   // case no refresh token were generated.
   GURL reauth_url = signin::GetChromeReauthURL(
       {.email = email_to_reauth_,
-       .continue_url = GaiaUrls::GetInstance()->blank_page_url().spec()});
+       .continue_url = GaiaUrls::GetInstance()->blank_page_url()});
   host_->ShowScreen(
       contents_.get(), reauth_url,
       base::BindOnce(&ProfilePickerWebContentsHost::SetNativeToolbarVisible,

@@ -97,5 +97,5 @@ GURL WithProfilePickerTestHelpers::GetChromeReauthURL(
     const std::string& email) {
   return signin::GetChromeReauthURL(
       {.email = email,
-       .continue_url = GaiaUrls::GetInstance()->blank_page_url().spec()});
+       .continue_url = GaiaUrls::GetInstance()->blank_page_url()});
 }

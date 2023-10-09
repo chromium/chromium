@@ -72,7 +72,7 @@ struct ChromeSyncUrlArgs {
   // autofilled by Gaia.
   const std::string email;
   // If empty, after login, Gaia may redirect to myaccount.
-  const std::string continue_url;
+  const GURL continue_url;
   // If true, the dark mode version of the page will be requested.
   bool request_dark_scheme = false;
   // Sets the "flow" parameter in the gaia sign in url.
@@ -104,7 +104,7 @@ GURL GetChromeReauthURL(ChromeSyncUrlArgs args);
 // will be autofilled by Gaia.
 // If |continue_url| is empty, this may redirect to myaccount.
 GURL GetAddAccountURLForDice(const std::string& email,
-                             const std::string& continue_url);
+                             const GURL& continue_url);
 
 // Gets the partition for the embedded sign in frame/webview.
 content::StoragePartition* GetSigninPartition(
