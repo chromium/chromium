@@ -125,10 +125,7 @@ bool DesktopWindowTreeHostWin::is_cursor_visible_ = true;
 DesktopWindowTreeHostWin::DesktopWindowTreeHostWin(
     internal::NativeWidgetDelegate* native_widget_delegate,
     DesktopNativeWidgetAura* desktop_native_widget_aura)
-    : message_handler_(new HWNDMessageHandler(
-          this,
-          native_widget_delegate->AsWidget()->GetName())),
-      native_widget_delegate_(native_widget_delegate->AsWidget()->GetWeakPtr()),
+    : native_widget_delegate_(native_widget_delegate->AsWidget()->GetWeakPtr()),
       desktop_native_widget_aura_(desktop_native_widget_aura),
       drag_drop_client_(nullptr),
       should_animate_window_close_(false),
@@ -175,6 +172,10 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
       !params.remove_standard_frame)
     content_window()->SetProperty(aura::client::kAnimationsDisabledKey, true);
 
+  message_handler_ = HWNDMessageHandler::Create(
+      this, native_widget_delegate_->AsWidget()->GetName(),
+      params.headless_mode);
+
   ConfigureWindowStyles(message_handler_.get(), params,
                         GetWidget()->widget_delegate(),
                         native_widget_delegate_.get());
@@ -190,7 +191,7 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
   // We don't have an HWND yet, so scale relative to the nearest screen.
   gfx::Rect pixel_bounds =
       display::win::ScreenWin::DIPToScreenRect(nullptr, params.bounds);
-  message_handler_->Init(parent_hwnd, pixel_bounds, params.headless_mode);
+  message_handler_->Init(parent_hwnd, pixel_bounds);
   CreateCompositor(params.force_software_compositing);
   OnAcceleratedWidgetAvailable();
   InitHost();

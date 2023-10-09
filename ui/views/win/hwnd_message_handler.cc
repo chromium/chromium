@@ -18,6 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -58,8 +59,6 @@
 #include "ui/events/win/system_event_state_lookup.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/resize_utils.h"
 #include "ui/gfx/icon_util.h"
 #include "ui/gfx/path_win.h"
@@ -71,6 +70,7 @@
 #include "ui/views/widget/widget_hwnd_utils.h"
 #include "ui/views/win/fullscreen_handler.h"
 #include "ui/views/win/hwnd_message_handler_delegate.h"
+#include "ui/views/win/hwnd_message_handler_headless.h"
 #include "ui/views/win/hwnd_util.h"
 #include "ui/views/win/pen_event_handler_util.h"
 #include "ui/views/win/scoped_fullscreen_visibility.h"
@@ -206,24 +206,6 @@ BOOL CALLBACK EnumChildWindowsForRedraw(HWND hwnd, LPARAM lparam) {
   return TRUE;
 }
 
-bool GetMonitorAndRects(const RECT& rect,
-                        HMONITOR* monitor,
-                        gfx::Rect* monitor_rect,
-                        gfx::Rect* work_area) {
-  DCHECK(monitor);
-  DCHECK(monitor_rect);
-  DCHECK(work_area);
-  *monitor = MonitorFromRect(&rect, MONITOR_DEFAULTTONULL);
-  if (!*monitor)
-    return false;
-  MONITORINFO monitor_info = {0};
-  monitor_info.cbSize = sizeof(monitor_info);
-  GetMonitorInfo(*monitor, &monitor_info);
-  *monitor_rect = gfx::Rect(monitor_info.rcMonitor);
-  *work_area = gfx::Rect(monitor_info.rcWork);
-  return true;
-}
-
 // Enables or disables the menu item for the specified command and menu.
 void EnableMenuItemByCommand(HMENU menu, UINT command, bool enabled) {
   UINT flags = MF_BYCOMMAND | (enabled ? MF_ENABLED : MF_DISABLED | MF_GRAYED);
@@ -232,14 +214,6 @@ void EnableMenuItemByCommand(HMENU menu, UINT command, bool enabled) {
 
 // The thickness of an auto-hide taskbar in pixels.
 constexpr int kAutoHideTaskbarThicknessPx = 2;
-
-bool IsTopLevelWindow(HWND window) {
-  LONG style = ::GetWindowLong(window, GWL_STYLE);
-  if (!(style & WS_CHILD))
-    return true;
-  HWND parent = ::GetParent(window);
-  return !parent || (parent == ::GetDesktopWindow());
-}
 
 ui::EventType GetTouchEventType(POINTER_FLAGS pointer_flags) {
   if (pointer_flags & POINTER_FLAG_DOWN)
@@ -305,20 +279,6 @@ constexpr auto kTouchDownContextResetTimeout = base::Milliseconds(500);
 // between the touch/pen message and the mouse move is within 500 ms and at the
 // same location as the cursor.
 constexpr int kSynthesizedMouseMessagesTimeDifference = 500;
-
-// This is used in headless mode where we have to manually scale window
-// bounds because we cannot rely on the platform window size since it gets
-// clamped to the monitor work area.
-gfx::Rect ScaleWindowBoundsMaybe(HWND hwnd, const gfx::Rect& bounds) {
-  const float scale = display::win::ScreenWin::GetScaleFactorForHWND(hwnd);
-  if (scale > 1.0) {
-    gfx::RectF scaled_bounds(bounds);
-    scaled_bounds.Scale(scale);
-    return gfx::ToEnclosingRect(scaled_bounds);
-  }
-
-  return bounds;
-}
 
 // Returns true if the window is arranged via Snap. For example, the browser
 // window is snapped via buttons shown when the mouse is hovered over window
@@ -424,6 +384,17 @@ LONG HWNDMessageHandler::last_touch_or_pen_message_time_ = 0;
 bool HWNDMessageHandler::is_pen_active_in_client_area_ = false;
 bool HWNDMessageHandler::handle_pen_events_in_client_area_ = true;
 
+// static
+std::unique_ptr<HWNDMessageHandler> HWNDMessageHandler::Create(
+    HWNDMessageHandlerDelegate* delegate,
+    const std::string& debugging_id,
+    bool headless_mode) {
+  HWNDMessageHandler* message_handler =
+      headless_mode ? new HWNDMessageHandlerHeadless(delegate, debugging_id)
+                    : new HWNDMessageHandler(delegate, debugging_id);
+  return base::WrapUnique(message_handler);
+}
+
 HWNDMessageHandler::HWNDMessageHandler(HWNDMessageHandlerDelegate* delegate,
                                        const std::string& debugging_id)
     : WindowImpl(debugging_id),
@@ -462,77 +433,17 @@ HWNDMessageHandler::~HWNDMessageHandler() {
   ClearUserData();
 }
 
-void HWNDMessageHandler::Init(HWND parent,
-                              const gfx::Rect& bounds,
-                              bool headless_mode) {
+void HWNDMessageHandler::Init(HWND parent, const gfx::Rect& bounds) {
   TRACE_EVENT0("views", "HWNDMessageHandler::Init");
   GetMonitorAndRects(bounds.ToRECT(), &last_monitor_, &last_monitor_rect_,
                      &last_work_area_);
 
   initial_bounds_valid_ = !bounds.IsEmpty();
 
-  // Provide the headless mode window state container.
-  if (headless_mode) {
-    headless_mode_window_ = absl::make_optional<HeadlessModeWindow>();
-  }
-
-  // Create the window.
+  // Create the platform window.
   WindowImpl::Init(parent, bounds);
 
-  // In headless mode remember the expected window bounds possibly adjusted
-  // according to the scale factor.
-  if (headless_mode) {
-    if (initial_bounds_valid_) {
-      SetHeadlessWindowBounds(bounds);
-    } else {
-      // If initial window bounds were not provided, use the newly created
-      // platform window size or fall back to the default headless window size
-      // as the last resort.
-      RECT window_rect;
-      if (GetWindowRect(hwnd(), &window_rect)) {
-        SetHeadlessWindowBounds(gfx::Rect(window_rect));
-      } else {
-        // Even if the window rectangle cannot be retrieved, there is still a
-        // chance that ScreenWin::GetScaleFactorForHWND() will be able to figure
-        // out the scale factor.
-        constexpr gfx::Rect kDefaultHeadlessBounds(800, 600);
-        SetHeadlessWindowBounds(
-            ScaleWindowBoundsMaybe(hwnd(), kDefaultHeadlessBounds));
-      }
-    }
-  }
-
-  if (!called_enable_non_client_dpi_scaling_ && delegate_->HasFrame()) {
-    // Derived signature; not available in headers.
-    // This call gets Windows to scale the non-client area when
-    // WM_DPICHANGED is fired.
-    using EnableChildWindowDpiMessagePtr = LRESULT(WINAPI*)(HWND, BOOL);
-    static const auto enable_child_window_dpi_message_func =
-        reinterpret_cast<EnableChildWindowDpiMessagePtr>(
-            base::win::GetUser32FunctionPointer("EnableChildWindowDpiMessage"));
-    if (enable_child_window_dpi_message_func)
-      enable_child_window_dpi_message_func(hwnd(), TRUE);
-  }
-
-  prop_window_target_ = std::make_unique<ui::ViewProp>(
-      hwnd(), ui::WindowEventTarget::kWin32InputEventTarget,
-      static_cast<ui::WindowEventTarget*>(this));
-  DCHECK(delegate_->GetHWNDMessageDelegateInputMethod());
-  observation_.Observe(delegate_->GetHWNDMessageDelegateInputMethod());
-
-  // The usual way for UI Automation to obtain a fragment root is through
-  // WM_GETOBJECT. However, if there's a relation such as "Controller For"
-  // between element A in one window and element B in another window, UIA might
-  // call element A to discover the relation, receive a pointer to element B,
-  // then ask element B for its fragment root, without having sent WM_GETOBJECT
-  // to element B's window.
-  // So we create the fragment root now to ensure it's ready if asked for.
-  if (::features::IsUiaProviderEnabled()) {
-    ax_fragment_root_ = std::make_unique<ui::AXFragmentRootWin>(hwnd(), this);
-  }
-
-  // Disable pen flicks (http://crbug.com/506977)
-  base::win::DisableFlicks(hwnd());
+  InitExtras();
 }
 
 void HWNDMessageHandler::InitModalType(ui::ModalType modal_type) {
@@ -585,48 +496,12 @@ void HWNDMessageHandler::CloseNow() {
 }
 
 gfx::Rect HWNDMessageHandler::GetWindowBoundsInScreen() const {
-  // In headless mode return the expected window rectangle set in Init() and
-  // updated in SetBounds() and SetSize().
-  if (IsHeadless()) {
-    return headless_mode_window_->bounds;
-  }
-
   RECT r;
   GetWindowRect(hwnd(), &r);
   return gfx::Rect(r);
 }
 
 gfx::Rect HWNDMessageHandler::GetClientAreaBoundsInScreen() const {
-  // In headless mode calculate the client rectangle using the difference
-  // between platform window and client rectangles.
-  if (IsHeadless()) {
-    gfx::Insets client_insets;
-    if (!GetClientAreaInsets(&client_insets, last_monitor_)) {
-      RECT window_rect;
-      if (!GetWindowRect(hwnd(), &window_rect)) {
-        return gfx::Rect();
-      }
-
-      RECT client_rect;
-      if (!GetClientRect(hwnd(), &client_rect)) {
-        return gfx::Rect(window_rect);
-      }
-
-      client_insets.set_left(client_rect.left - window_rect.left);
-      client_insets.set_right(window_rect.right - client_rect.right);
-      client_insets.set_top(client_rect.top - window_rect.top);
-      client_insets.set_bottom(window_rect.bottom - client_rect.bottom);
-    }
-
-    gfx::Rect bounds = headless_mode_window_->bounds;
-    bounds.Inset(client_insets);
-    if (bounds.IsEmpty()) {
-      return headless_mode_window_->bounds;
-    }
-
-    return bounds;
-  }
-
   RECT r;
   GetClientRect(hwnd(), &r);
   POINT point = {r.left, r.top};
@@ -635,12 +510,6 @@ gfx::Rect HWNDMessageHandler::GetClientAreaBoundsInScreen() const {
 }
 
 gfx::Rect HWNDMessageHandler::GetRestoredBounds() const {
-  // Headless mode window never goes fullscreen, so just return the expected
-  // bounds rectangle here.
-  if (IsHeadless()) {
-    return headless_mode_window_->bounds;
-  }
-
   // If we're in fullscreen mode, we've changed the normal bounds to the monitor
   // rect, so return the saved bounds instead.
   if (IsFullscreen())
@@ -718,19 +587,6 @@ void HWNDMessageHandler::SetDwmFrameExtension(DwmFrameState state) {
 }
 
 void HWNDMessageHandler::SetSize(const gfx::Size& size) {
-  // In headless mode update the expected window size and pretend the platform
-  // window size was updated.
-  if (IsHeadless()) {
-    bool size_changed = headless_mode_window_->bounds.size() != size;
-    gfx::Rect bounds = headless_mode_window_->bounds;
-    bounds.set_size(size);
-    SetHeadlessWindowBounds(bounds);
-    if (size_changed) {
-      delegate_->HandleClientSizeChanged(GetClientAreaBounds().size());
-    }
-    return;
-  }
-
   SetWindowPos(hwnd(), nullptr, 0, 0, size.width(), size.height(),
                SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE);
 }
@@ -764,21 +620,6 @@ void HWNDMessageHandler::StackAtTop() {
 void HWNDMessageHandler::Show(ui::WindowShowState show_state,
                               const gfx::Rect& pixel_restore_bounds) {
   TRACE_EVENT0("views", "HWNDMessageHandler::Show");
-
-  // In headless mode the platform window is always hidden, so instead of
-  // showing it just maintain a local flag to track the expected headless
-  // window visibility state and explicitly activate window just like
-  // platform window manager would do.
-  if (IsHeadless()) {
-    if (!headless_mode_window_->visibility_state) {
-      headless_mode_window_->visibility_state = true;
-      delegate_->HandleVisibilityChanged(/*visible=*/true);
-    }
-    if (show_state != ui::SHOW_STATE_INACTIVE) {
-      Activate();
-    }
-    return;
-  }
 
   int native_show_state;
   if (show_state == ui::SHOW_STATE_MAXIMIZED &&
@@ -850,17 +691,6 @@ void HWNDMessageHandler::Show(ui::WindowShowState show_state,
 }
 
 void HWNDMessageHandler::Hide() {
-  // In headless mode the platform window is always hidden, so instead of
-  // hiding it just maintain a local flag to track the expected headless
-  // window visibility state.
-  if (IsHeadless()) {
-    if (headless_mode_window_->visibility_state) {
-      headless_mode_window_->visibility_state = false;
-      delegate_->HandleVisibilityChanged(/*visible=*/false);
-    }
-    return;
-  }
-
   if (IsWindow(hwnd())) {
     // NOTE: Be careful not to activate any windows here (for example, calling
     // ShowWindow(SW_HIDE) will automatically activate another window).  This
@@ -873,77 +703,19 @@ void HWNDMessageHandler::Hide() {
 }
 
 void HWNDMessageHandler::Maximize() {
-  if (IsHeadless()) {
-    if (headless_mode_window_->minmax_state != HeadlessModeWindow::kMaximized) {
-      headless_mode_window_->minmax_state = HeadlessModeWindow::kMaximized;
-      headless_mode_window_->restored_bounds = headless_mode_window_->bounds;
-      gfx::Rect bounds = headless_mode_window_->bounds;
-      // When running in headless mode there is no screen size that would define
-      // maximized window dimensions. Instead just double the current window
-      // size assuming the user will expect it to increase.
-      bounds.set_width(bounds.width() * 2);
-      bounds.set_height(bounds.height() * 2);
-      SetBoundsInternal(bounds, /*force_size_changed=*/false);
-      delegate_->HandleCommand(static_cast<int>(SC_MAXIMIZE));
-    }
-    return;
-  }
-
   ExecuteSystemMenuCommand(SC_MAXIMIZE);
 }
 
 void HWNDMessageHandler::Minimize() {
-  if (IsHeadless()) {
-    if (headless_mode_window_->minmax_state != HeadlessModeWindow::kMinimized) {
-      headless_mode_window_->minmax_state = HeadlessModeWindow::kMinimized;
-      delegate_->HandleWindowMinimizedOrRestored(/*restored=*/false);
-      delegate_->HandleCommand(static_cast<int>(SC_MINIMIZE));
-      delegate_->HandleNativeBlur(nullptr);
-    }
-    return;
-  }
-
   ExecuteSystemMenuCommand(SC_MINIMIZE);
   delegate_->HandleNativeBlur(nullptr);
 }
 
 void HWNDMessageHandler::Restore() {
-  if (IsHeadless()) {
-    if (headless_mode_window_->minmax_state != HeadlessModeWindow::kNormal) {
-      auto prev_state = headless_mode_window_->minmax_state;
-      headless_mode_window_->minmax_state = HeadlessModeWindow::kNormal;
-
-      if (headless_mode_window_->restored_bounds) {
-        gfx::Rect bounds = *headless_mode_window_->restored_bounds;
-        headless_mode_window_->restored_bounds.reset();
-        SetBoundsInternal(bounds, /*force_size_changed=*/false);
-      }
-
-      if (prev_state == HeadlessModeWindow::kMinimized) {
-        delegate_->HandleWindowMinimizedOrRestored(/*restored=*/true);
-      }
-      delegate_->HandleCommand(static_cast<int>(SC_RESTORE));
-    }
-    return;
-  }
-
   ExecuteSystemMenuCommand(SC_RESTORE);
 }
 
 void HWNDMessageHandler::Activate() {
-  // In headless mode the platform window is always hidden, so instead of
-  // activating it just maintain a local flag to track the expected headless
-  // window activation state.
-  if (IsHeadless()) {
-    if (!headless_mode_window_->active_state) {
-      headless_mode_window_->active_state = true;
-      if (delegate_->CanActivate() && IsTopLevelWindow(hwnd())) {
-        delegate_->HandleActivationChanged(/*active=*/true);
-      }
-    }
-    return;
-  }
-
   if (IsMinimized()) {
     base::AutoReset<bool> restoring_activate(&notify_restore_on_activate_,
                                              true);
@@ -955,16 +727,6 @@ void HWNDMessageHandler::Activate() {
 }
 
 void HWNDMessageHandler::Deactivate() {
-  if (IsHeadless()) {
-    if (headless_mode_window_->active_state) {
-      headless_mode_window_->active_state = false;
-      if (delegate_->CanActivate() && IsTopLevelWindow(hwnd())) {
-        delegate_->HandleActivationChanged(/*active=*/false);
-      }
-    }
-    return;
-  }
-
   HWND next_hwnd = ::GetNextWindow(hwnd(), GW_HWNDNEXT);
   while (next_hwnd) {
     if (::IsWindowVisible(next_hwnd)) {
@@ -981,37 +743,23 @@ void HWNDMessageHandler::SetAlwaysOnTop(bool on_top) {
 }
 
 bool HWNDMessageHandler::IsVisible() const {
-  // In headless mode the platform window is always hidden, so instead of
-  // returning the actual window visibility state return the expected visibility
-  // state maintained by Show/Hide() calls.
-  return IsHeadless() ? headless_mode_window_->visibility_state
-                      : !!::IsWindowVisible(hwnd());
+  return !!::IsWindowVisible(hwnd());
 }
 
 bool HWNDMessageHandler::IsActive() const {
-  // In headless mode return expected activation state instead of the
-  // actual one. This ensures that onfocus/onblur notifications work
-  // as expected and no unexpected throttling occurs.
-  return IsHeadless() ? headless_mode_window_->active_state
-                      : GetActiveWindow() == hwnd();
+  return ::GetActiveWindow() == hwnd();
 }
 
 bool HWNDMessageHandler::IsMinimized() const {
-  return IsHeadless() ? headless_mode_window_->IsMinimized()
-                      : !!::IsIconic(hwnd());
+  return !!::IsIconic(hwnd());
 }
 
 bool HWNDMessageHandler::IsMaximized() const {
-  return (IsHeadless() ? headless_mode_window_->IsMaximized()
-                       : !!::IsZoomed(hwnd())) &&
-         !IsFullscreen();
+  return !!::IsZoomed(hwnd()) && !IsFullscreen();
 }
 
 bool HWNDMessageHandler::IsFullscreen() const {
-  // In headless mode report the requested window state instead of the actual
-  // one.
-  return IsHeadless() ? headless_mode_window_->fullscreen_state
-                      : fullscreen_handler_->fullscreen();
+  return fullscreen_handler_->fullscreen();
 }
 
 bool HWNDMessageHandler::IsAlwaysOnTop() const {
@@ -1019,7 +767,7 @@ bool HWNDMessageHandler::IsAlwaysOnTop() const {
 }
 
 bool HWNDMessageHandler::IsHeadless() const {
-  return headless_mode_window_.has_value();
+  return false;
 }
 
 bool HWNDMessageHandler::RunMoveLoop(const gfx::Vector2d& drag_offset,
@@ -1064,12 +812,7 @@ void HWNDMessageHandler::FlashFrame(bool flash) {
 }
 
 void HWNDMessageHandler::ClearNativeFocus() {
-  // Headless windows don't get native focus, so just pretend we grabbed one.
-  if (IsHeadless()) {
-    delegate_->HandleNativeFocus(0);
-  } else {
     ::SetFocus(hwnd());
-  }
 }
 
 void HWNDMessageHandler::SetCapture() {
@@ -1092,6 +835,10 @@ void HWNDMessageHandler::ReleaseCapture() {
 
 bool HWNDMessageHandler::HasCapture() const {
   return ::GetCapture() == hwnd();
+}
+
+FullscreenHandler* HWNDMessageHandler::fullscreen_handler() {
+  return fullscreen_handler_.get();
 }
 
 void HWNDMessageHandler::SetVisibilityChangedAnimationsEnabled(bool enabled) {
@@ -1158,15 +905,13 @@ void HWNDMessageHandler::SetWindowIcons(const gfx::ImageSkia& window_icon,
   }
 }
 
+void HWNDMessageHandler::set_use_system_default_icon(
+    bool use_system_default_icon) {
+  use_system_default_icon_ = use_system_default_icon;
+}
+
 void HWNDMessageHandler::SetFullscreen(bool fullscreen,
                                        int64_t target_display_id) {
-  // Avoid setting fullscreen mode when in headless mode, but keep track
-  // of the requested state for IsFullscreen() to report.
-  if (IsHeadless()) {
-    headless_mode_window_->fullscreen_state = fullscreen;
-    return;
-  }
-
   // Erase any prior reference to this window in the fullscreen window map.
   HMONITOR monitor = MonitorFromWindow(hwnd(), MONITOR_DEFAULTTOPRIMARY);
   FullscreenWindowMonitorMap::iterator iter =
@@ -1248,6 +993,14 @@ bool HWNDMessageHandler::HasChildRenderingWindow() {
       hwnd());
 }
 
+void HWNDMessageHandler::set_is_translucent(bool is_translucent) {
+  is_translucent_ = is_translucent;
+}
+
+bool HWNDMessageHandler::is_translucent() const {
+  return is_translucent_;
+}
+
 std::unique_ptr<aura::ScopedEnableUnadjustedMouseEvents>
 HWNDMessageHandler::RegisterUnadjustedMouseEvent() {
   std::unique_ptr<ScopedEnableUnadjustedMouseEventsWin> scoped_enable =
@@ -1255,6 +1008,14 @@ HWNDMessageHandler::RegisterUnadjustedMouseEvent() {
 
   DCHECK(using_wm_input_);
   return scoped_enable;
+}
+
+void HWNDMessageHandler::set_using_wm_input(bool using_wm_input) {
+  using_wm_input_ = using_wm_input;
+}
+
+bool HWNDMessageHandler::using_wm_input() const {
+  return using_wm_input_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1550,6 +1311,41 @@ bool HWNDMessageHandler::IsAXFragmentRootAControlElement() {
 ////////////////////////////////////////////////////////////////////////////////
 // HWNDMessageHandler, private:
 
+void HWNDMessageHandler::InitExtras() {
+  if (!called_enable_non_client_dpi_scaling_ && delegate_->HasFrame()) {
+    // Derived signature; not available in headers.
+    // This call gets Windows to scale the non-client area when
+    // WM_DPICHANGED is fired.
+    using EnableChildWindowDpiMessagePtr = LRESULT(WINAPI*)(HWND, BOOL);
+    static const auto enable_child_window_dpi_message_func =
+        reinterpret_cast<EnableChildWindowDpiMessagePtr>(
+            base::win::GetUser32FunctionPointer("EnableChildWindowDpiMessage"));
+    if (enable_child_window_dpi_message_func) {
+      enable_child_window_dpi_message_func(hwnd(), TRUE);
+    }
+  }
+
+  prop_window_target_ = std::make_unique<ui::ViewProp>(
+      hwnd(), ui::WindowEventTarget::kWin32InputEventTarget,
+      static_cast<ui::WindowEventTarget*>(this));
+  DCHECK(delegate_->GetHWNDMessageDelegateInputMethod());
+  observation_.Observe(delegate_->GetHWNDMessageDelegateInputMethod());
+
+  // The usual way for UI Automation to obtain a fragment root is through
+  // WM_GETOBJECT. However, if there's a relation such as "Controller For"
+  // between element A in one window and element B in another window, UIA might
+  // call element A to discover the relation, receive a pointer to element B,
+  // then ask element B for its fragment root, without having sent WM_GETOBJECT
+  // to element B's window.
+  // So we create the fragment root now to ensure it's ready if asked for.
+  if (::features::IsUiaProviderEnabled()) {
+    ax_fragment_root_ = std::make_unique<ui::AXFragmentRootWin>(hwnd(), this);
+  }
+
+  // Disable pen flicks (http://crbug.com/506977)
+  base::win::DisableFlicks(hwnd());
+}
+
 int HWNDMessageHandler::GetAppbarAutohideEdges(HMONITOR monitor) {
   autohide_factory_.InvalidateWeakPtrs();
   return ViewsDelegate::GetInstance()->GetAppbarAutohideEdges(
@@ -1572,7 +1368,7 @@ void HWNDMessageHandler::SetInitialFocus() {
     // The window does not get keyboard messages unless we focus it.
     // Headless windows don't get native focus, so just pretend we grabbed one.
     if (IsHeadless()) {
-      delegate_->HandleNativeFocus(0);
+      delegate_->HandleNativeFocus(/*last_focused_window=*/0);
     } else {
       ::SetFocus(hwnd());
     }
@@ -3785,16 +3581,6 @@ void HWNDMessageHandler::SetBoundsInternal(const gfx::Rect& bounds_in_pixels,
                                            bool force_size_changed) {
   gfx::Size old_size = GetClientAreaBounds().size();
 
-  // In headless update the expected window bounds and notify the delegate
-  // pretending the platform window size has been changed.
-  if (IsHeadless()) {
-    SetHeadlessWindowBounds(bounds_in_pixels);
-    if (old_size != bounds_in_pixels.size() || force_size_changed) {
-      delegate_->HandleClientSizeChanged(GetClientAreaBounds().size());
-    }
-    return;
-  }
-
   SetWindowPos(hwnd(), nullptr, bounds_in_pixels.x(), bounds_in_pixels.y(),
                bounds_in_pixels.width(), bounds_in_pixels.height(),
                SWP_NOACTIVATE | SWP_NOZORDER);
@@ -3871,13 +3657,34 @@ POINT HWNDMessageHandler::GetCursorPos() const {
   return cursor_pos;
 }
 
-void HWNDMessageHandler::SetHeadlessWindowBounds(const gfx::Rect& bounds) {
-  DCHECK(IsHeadless());
-
-  if (headless_mode_window_->bounds != bounds) {
-    headless_mode_window_->bounds = bounds;
-    delegate_->HandleHeadlessWindowBoundsChanged(bounds);
+// static
+bool HWNDMessageHandler::IsTopLevelWindow(HWND window) {
+  LONG style = ::GetWindowLong(window, GWL_STYLE);
+  if (!(style & WS_CHILD)) {
+    return true;
   }
+  HWND parent = ::GetParent(window);
+  return !parent || (parent == ::GetDesktopWindow());
+}
+
+// static
+bool HWNDMessageHandler::GetMonitorAndRects(const RECT& rect,
+                                            HMONITOR* monitor,
+                                            gfx::Rect* monitor_rect,
+                                            gfx::Rect* work_area) {
+  DCHECK(monitor);
+  DCHECK(monitor_rect);
+  DCHECK(work_area);
+  *monitor = MonitorFromRect(&rect, MONITOR_DEFAULTTONULL);
+  if (!*monitor) {
+    return false;
+  }
+  MONITORINFO monitor_info = {0};
+  monitor_info.cbSize = sizeof(monitor_info);
+  GetMonitorInfo(*monitor, &monitor_info);
+  *monitor_rect = gfx::Rect(monitor_info.rcMonitor);
+  *work_area = gfx::Rect(monitor_info.rcWork);
+  return true;
 }
 
 // Declared in pen_event_handler_util.h.
