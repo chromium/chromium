@@ -607,7 +607,9 @@ config("compiler") {
 
     # TODO(crbug.com/1488374): This causes binary size growth and potentially
     # other problems.
-    if (default_toolchain != "//build/toolchain/cros:target") {
+    # TODO(crbug.com/1491036): This isn't supported by Cronet's mainline llvm version.
+    if (default_toolchain != "//build/toolchain/cros:target" &&
+        !llvm_android_mainline) {
       cflags += [
         "-mllvm",
         "-split-threshold-for-reg-with-hint=0",
