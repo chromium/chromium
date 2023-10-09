@@ -33,6 +33,7 @@ include_rules = [
   "+base/threading/sequenced_task_runner_handle.h",
   "+base/threading/thread.h",
   "+base/traits_bag.h",
+  "+components/miracle_parameter",
   "+services/metrics",
 
   "+third_party/blink/renderer/platform/allow_discouraged_type.h",

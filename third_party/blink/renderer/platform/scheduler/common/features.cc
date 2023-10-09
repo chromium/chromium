@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 
 #include "base/command_line.h"
+#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 
@@ -101,16 +102,17 @@ base::TimeDelta GetForegroundTimersThrottledWakeUpInterval() {
       kForegroundTimersThrottledWakeUpIntervalMills.Get());
 }
 
+// TODO(crbug.com/1475915): convert this param value to TimeDelta instead of int
+// after the experiment.
+MIRACLE_PARAMETER_FOR_INT(
+    GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis,
+    features::kLoadingPhaseBufferTimeAfterFirstMeaningfulPaint,
+    "LoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis",
+    0)
+
 base::TimeDelta GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint() {
-  constexpr int kLoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis_Default =
-      0;
-  static const base::FeatureParam<int>
-      kLoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis{
-          &features::kLoadingPhaseBufferTimeAfterFirstMeaningfulPaint,
-          "LoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis",
-          kLoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis_Default};
   return base::Milliseconds(
-      kLoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis.Get());
+      GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis());
 }
 
 BASE_FEATURE(kThreadedScrollPreventRenderingStarvation,
