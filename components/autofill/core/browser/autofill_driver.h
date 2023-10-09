@@ -95,6 +95,9 @@ class AutofillDriver {
   // necessary when a form is seen in a child frame and it is not known which
   // form is its parent.
   //
+  // Unlike other events, this is *not* be routed or broadcast to other frames;
+  // it refers to the frame associated with the driver.
+  //
   // Generally, this may happen because AutofillAgent is only notified about
   // newly created form control elements, but not about newly created or loaded
   // child frames.
@@ -106,7 +109,7 @@ class AutofillDriver {
   // form's FormData::child_frames may be outdated. When a form is now seen in
   // the child frame, it is not known *which form* in the parent frame is its
   // parent form. In this scenario, a form extraction should be triggered.
-  virtual void TriggerFormExtraction() = 0;
+  virtual void TriggerFormExtractionInDriverFrame() = 0;
 
   // Triggers a form_extraction on all frames of the same frame tree. Calls
   // `form_extraction_finished_callback` when all frames reported back

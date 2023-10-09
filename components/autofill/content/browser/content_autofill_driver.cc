@@ -77,7 +77,7 @@ ContentAutofillDriver::~ContentAutofillDriver() {
                                     /*driver_is_dying=*/true);
 }
 
-void ContentAutofillDriver::TriggerFormExtraction() {
+void ContentAutofillDriver::TriggerFormExtractionInDriverFrame() {
   GetAutofillAgent()->TriggerFormExtraction();
 }
 

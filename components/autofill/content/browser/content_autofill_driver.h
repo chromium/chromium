@@ -169,13 +169,6 @@ class ContentAutofillDriver : public AutofillDriver,
   void PopupHidden() override;
   net::IsolationInfo IsolationInfo() override;
 
-  // Called to inform the browser that in the field with `form_global_id` and
-  // `field_global_id`, the context menu was triggered. This is different from
-  // the usual Autofill flow where the renderer calls the browser or the browser
-  // informs the renderer of some event.
-  virtual void OnContextMenuShownInField(const FormGlobalId& form_global_id,
-                                         const FieldGlobalId& field_global_id);
-
   // Indicates that the `potentially_submitted_form_` has probably been
   // submitted if the feature AutofillProbableFormSubmissionInBrowser is
   // enabled.
@@ -184,16 +177,57 @@ class ContentAutofillDriver : public AutofillDriver,
   // Called on certain types of navigations by ContentAutofillDriverFactory.
   void Reset();
 
+  // Called to inform the browser that in the field with `form_global_id` and
+  // `field_global_id`, the context menu was triggered. This is different from
+  // the usual Autofill flow where the renderer calls the browser or the browser
+  // informs the renderer of some event.
+  //
+  // This is tricky because the context-menu event may refer to a renderer form
+  // in a certain frame, but the form is managed by the AutofillManager of
+  // another frame.
+  //
+  // TODO(crbug.com/1490899): Let callers call AutofillManager directly once
+  // AutofillManager is per-tab.
+  //
+  // Virtual for testing.
+  virtual void OnContextMenuShownInField(const FormGlobalId& form_global_id,
+                                         const FieldGlobalId& field_global_id);
+
  private:
   friend class ContentAutofillDriverTestApi;
 
-  // autofill::AutofillDriver:
-  // Events triggered by the browser. These events are routed by
-  // AutofillDriverRouter to potentially a different ContentAutofillDriver and
-  // then passed to AutofillAgent in the renderer.
+  // Communication falls into two groups:
   //
-  // These events are private to avoid accidental use in the browser.
-  // They can be accessed explicitly through browser_events().
+  // (1) Browser -> renderer (autofill::AutofillDriver):
+  //     These events are triggered by an AutofillManager or similar and are
+  //     passed to one or multiple AutofillAgents. They fall into three groups:
+  //     (1a) Broadcast events are sent to many AutofillAgents.
+  //     (1b) Routed events are sent to a single AutofillAgent, which may
+  //          be not this driver's AutofillAgent.
+  //     (1c) Unrouted events are sent to this driver's AutofillAgent.
+  // (2) Renderer -> browser (mojom::AutofillDriver):
+  //     These events are triggered by an AutofillAgent and are passed to one or
+  //     multiple AutofillManagers. They fall into two groups:
+  //     (2a) Broadcast events are sent to many AutofillManagers.
+  //     (2b) Routed events are sent to a single AutofillManager, which may
+  //          be not this driver's AutofillManager.
+  //
+  // These events are private to avoid accidental use in the browser process.
+  // Groups (1) and (2) can be accessed explicitly through browser_events() and
+  // renderer_events(), respectively.
+  //
+  // Keep the events of each group in alphabetic order.
+
+  // Group (1a): browser -> renderer events, broadcast (see comment above).
+  // autofill::AutofillDriver:
+  void TriggerFormExtractionInAllFrames(
+      base::OnceCallback<void(bool success)> form_extraction_finished_callback)
+      override;
+  void RendererShouldClearFilledSection() override;
+  void RendererShouldClearPreviewedForm() override;
+
+  // Group (1b): browser -> renderer events, routed (see comment above).
+  // autofill::AutofillDriver:
   std::vector<FieldGlobalId> ApplyAutofillAction(
       mojom::AutofillActionType action_type,
       mojom::AutofillActionPersistence action_persistence,
@@ -201,16 +235,9 @@ class ContentAutofillDriver : public AutofillDriver,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
       override;
-  void SendAutofillTypePredictionsToRenderer(
-      const std::vector<FormStructure*>& forms) override;
   void RendererShouldAcceptDataListSuggestion(
       const FieldGlobalId& field_id,
       const std::u16string& value) override;
-  void RendererShouldClearFilledSection() override;
-  void RendererShouldClearPreviewedForm() override;
-  void RendererShouldTriggerSuggestions(
-      const FieldGlobalId& field_id,
-      AutofillSuggestionTriggerSource trigger_source) override;
   void RendererShouldFillFieldWithValue(const FieldGlobalId& field_id,
                                         const std::u16string& value) override;
   void RendererShouldPreviewFieldWithValue(
@@ -219,34 +246,56 @@ class ContentAutofillDriver : public AutofillDriver,
   void RendererShouldSetSuggestionAvailability(
       const FieldGlobalId& field_id,
       const mojom::AutofillState state) override;
+  void RendererShouldTriggerSuggestions(
+      const FieldGlobalId& field_id,
+      AutofillSuggestionTriggerSource trigger_source) override;
+  void SendAutofillTypePredictionsToRenderer(
+      const std::vector<FormStructure*>& forms) override;
   void SendFieldsEligibleForManualFillingToRenderer(
       const std::vector<FieldGlobalId>& fields) override;
-  void TriggerFormExtraction() override;
-  void TriggerFormExtractionInAllFrames(
-      base::OnceCallback<void(bool success)> form_extraction_finished_callback)
-      override;
+
+  // Group (1c): browser -> renderer events, unrouted (see comment above).
+  // autofill::AutofillDriver:
+  // TODO(crbug.com/1281695): This event is currently not routed, but it looks
+  // like it should be breadcast to all renderers.
   void GetFourDigitCombinationsFromDOM(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override;
+  void TriggerFormExtractionInDriverFrame() override;
 
+  // Group (2a): renderer -> browser events, broadcast (see comment above).
   // mojom::AutofillDriver:
-  // Events triggered by the renderer. These events are routed by
-  // AutofillDriverRouter to potentially a different ContentAutofillDriver and
-  // then passed to AutofillManager.
-  //
-  // We do not expect to receive Autofill related messages from a prerendered
-  // page, so we validate calls accordingly. If we receive an unexpected call,
-  // we shut down the renderer and log the bad message.
-  //
-  // These events are private to avoid accidental use in the browser.
-  // They can be accessed explicitly through renderer_events().
-  void SetFormToBeProbablySubmitted(
-      const absl::optional<FormData>& form) override;
+  void DidEndTextFieldEditing() override;
+  void FocusNoLongerOnForm(bool had_interacted_form) override;
+  void HidePopup() override;
+
+  // Group (2b): renderer -> browser events, routed (see comment above).
+  // mojom::AutofillDriver:
+  void AskForValuesToFill(
+      const FormData& form,
+      const FormFieldData& field,
+      const gfx::RectF& bounding_box,
+      AutofillSuggestionTriggerSource trigger_source) override;
+  void DidFillAutofillFormData(const FormData& form,
+                               base::TimeTicks timestamp) override;
+  void FocusOnFormField(const FormData& form,
+                        const FormFieldData& field,
+                        const gfx::RectF& bounding_box) override;
   void FormsSeen(const std::vector<FormData>& updated_forms,
                  const std::vector<FormRendererId>& removed_forms) override;
   void FormSubmitted(const FormData& form,
                      bool known_success,
                      mojom::SubmissionSource submission_source) override;
+  void JavaScriptChangedAutofilledValue(
+      const FormData& form,
+      const FormFieldData& field,
+      const std::u16string& old_value) override;
+  void SelectControlDidChange(const FormData& form,
+                              const FormFieldData& field,
+                              const gfx::RectF& bounding_box) override;
+  void SelectOrSelectListFieldOptionsDidChange(const FormData& form) override;
+  void SetFormToBeProbablySubmitted(
+      const absl::optional<FormData>& form) override;
   void TextFieldDidChange(const FormData& form,
                           const FormFieldData& field,
                           const gfx::RectF& bounding_box,
@@ -254,27 +303,6 @@ class ContentAutofillDriver : public AutofillDriver,
   void TextFieldDidScroll(const FormData& form,
                           const FormFieldData& field,
                           const gfx::RectF& bounding_box) override;
-  void SelectControlDidChange(const FormData& form,
-                              const FormFieldData& field,
-                              const gfx::RectF& bounding_box) override;
-  void AskForValuesToFill(
-      const FormData& form,
-      const FormFieldData& field,
-      const gfx::RectF& bounding_box,
-      AutofillSuggestionTriggerSource trigger_source) override;
-  void HidePopup() override;
-  void FocusNoLongerOnForm(bool had_interacted_form) override;
-  void FocusOnFormField(const FormData& form,
-                        const FormFieldData& field,
-                        const gfx::RectF& bounding_box) override;
-  void DidFillAutofillFormData(const FormData& form,
-                               base::TimeTicks timestamp) override;
-  void DidEndTextFieldEditing() override;
-  void SelectOrSelectListFieldOptionsDidChange(const FormData& form) override;
-  void JavaScriptChangedAutofilledValue(
-      const FormData& form,
-      const FormFieldData& field,
-      const std::u16string& old_value) override;
 
   // Sets parameters of |form| and |optional_field| that can be extracted from
   // |render_frame_host_|. |optional_field| is treated as if it is a field of

@@ -143,7 +143,7 @@ void AutofillDriverIOS::RendererShouldAcceptDataListSuggestion(
 void AutofillDriverIOS::SendFieldsEligibleForManualFillingToRenderer(
     const std::vector<FieldGlobalId>& fields) {}
 
-void AutofillDriverIOS::TriggerFormExtraction() {
+void AutofillDriverIOS::TriggerFormExtractionInDriverFrame() {
   NOTIMPLEMENTED();  // TODO(crbug.com/1441921) implement.
 }
 

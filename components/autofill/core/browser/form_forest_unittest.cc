@@ -319,7 +319,7 @@ class FakeAutofillDriver : public TestAutofillDriver {
     }
   }
 
-  MOCK_METHOD(void, TriggerFormExtraction, (), (override));
+  MOCK_METHOD(void, TriggerFormExtractionInDriverFrame, (), (override));
 
   // Fakes whether a subframe is a root frame from the perspective of
   // MockFlattening(). In the real world, this can happen, for example, because
@@ -585,9 +585,9 @@ TEST_F(FormForestTestUpdateTree, MultipleRoots) {
   EXPECT_THAT(ff, Equals(flattened_forms_));
 }
 
-// Tests that (only) for forms with unseen parent form TriggerFormExtraction is
-// called on the parent frame.
-TEST_F(FormForestTestUpdateTree, TriggerFormExtraction) {
+// Tests that (only) for forms with unseen parent form,
+// TriggerFormExtractionInDriverFrame() is called on the parent frame.
+TEST_F(FormForestTestUpdateTree, TriggerFormExtractionInDriverFrame) {
   MockFormForest(
       {.forms = {
            {.name = "main1", .frames = {{.forms = {{.name = "child1"}}}}},
@@ -595,15 +595,20 @@ TEST_F(FormForestTestUpdateTree, TriggerFormExtraction) {
   MockFlattening({{"main1"}, {"child1"}});
   MockFlattening({{"main2"}, {"child2"}});
   FormForest ff;
-  EXPECT_CALL(GetDriverOfForm("main1"), TriggerFormExtraction).Times(1);
+  EXPECT_CALL(GetDriverOfForm("main1"), TriggerFormExtractionInDriverFrame)
+      .Times(1);
   UpdateTreeOfRendererForm(ff, "child1");
-  EXPECT_CALL(GetDriverOfForm("main1"), TriggerFormExtraction).Times(0);
+  EXPECT_CALL(GetDriverOfForm("main1"), TriggerFormExtractionInDriverFrame)
+      .Times(0);
   UpdateTreeOfRendererForm(ff, "main1");
-  EXPECT_CALL(GetDriverOfForm("main1"), TriggerFormExtraction).Times(0);
+  EXPECT_CALL(GetDriverOfForm("main1"), TriggerFormExtractionInDriverFrame)
+      .Times(0);
   UpdateTreeOfRendererForm(ff, "child1");
-  EXPECT_CALL(GetDriverOfForm("main2"), TriggerFormExtraction).Times(1);
+  EXPECT_CALL(GetDriverOfForm("main2"), TriggerFormExtractionInDriverFrame)
+      .Times(1);
   UpdateTreeOfRendererForm(ff, "child2");
-  EXPECT_CALL(GetDriverOfForm("main2"), TriggerFormExtraction).Times(0);
+  EXPECT_CALL(GetDriverOfForm("main2"), TriggerFormExtractionInDriverFrame)
+      .Times(0);
   UpdateTreeOfRendererForm(ff, "main2");
   EXPECT_THAT(ff, Equals(flattened_forms_));
 }

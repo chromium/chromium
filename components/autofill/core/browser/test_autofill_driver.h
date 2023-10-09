@@ -85,7 +85,7 @@ class TestAutofillDriverTemplate : public T {
   net::IsolationInfo IsolationInfo() override { return isolation_info_; }
   void SendFieldsEligibleForManualFillingToRenderer(
       const std::vector<FieldGlobalId>& fields) override {}
-  void TriggerFormExtraction() override {}
+  void TriggerFormExtractionInDriverFrame() override {}
   void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool)> form_extraction_finished_callback)
       override {}
