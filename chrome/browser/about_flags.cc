@@ -262,7 +262,6 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
-#include "chrome/browser/ash/android_sms/android_sms_switches.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
@@ -4420,13 +4419,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"qs-revamp", flag_descriptions::kQsRevampName,
      flag_descriptions::kQsRevampDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kQsRevamp)},
-    {"use_messages_staging_url", flag_descriptions::kUseMessagesStagingUrlName,
-     flag_descriptions::kUseMessagesStagingUrlDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kUseMessagesStagingUrl)},
-    {"use-custom-messages-domain",
-     flag_descriptions::kUseCustomMessagesDomainName,
-     flag_descriptions::kUseCustomMessagesDomainDescription, kOsCrOS,
-     ORIGIN_LIST_VALUE_TYPE(switches::kCustomAndroidMessagesDomain, "")},
     {"disable-cancel-all-touches",
      flag_descriptions::kDisableCancelAllTouchesName,
      flag_descriptions::kDisableCancelAllTouchesDescription, kOsCrOS,
