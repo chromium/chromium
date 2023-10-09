@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFails) {
   }
 
   histogram_.ExpectUniqueSample(kGoogleDriveUploadResultMetricName,
-                                OfficeFilesUploadResult::kCloudError, 1);
+                                OfficeFilesUploadResult::kSyncError, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromMyFilesNoConnection) {

@@ -163,7 +163,12 @@ enum class OfficeFilesUploadResult {
   kDestinationUrlError = 15,
   kInvalidURL = 16,
   kCloudReauthRequired = 17,
-  kMaxValue = kCloudReauthRequired,
+  kInvalidAlternateUrl = 18,
+  kUnexpectedAlternateUrlHost = 19,
+  kSyncError = 20,
+  kSyncCancelledAndDeleted = 21,
+  kSyncCancelledAndTrashed = 22,
+  kMaxValue = kSyncCancelledAndTrashed,
 };
 
 constexpr char kGoogleDriveTaskResultMetricName[] =
