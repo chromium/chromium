@@ -10,7 +10,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 #include "chrome/browser/download/download_shelf.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -24,10 +23,6 @@
 class Browser;
 class BrowserView;
 class DownloadItemView;
-
-namespace base {
-class Time;
-}
 
 namespace views {
 class ImageButton;
@@ -121,16 +116,6 @@ class DownloadShelfView : public DownloadShelf,
 
   // The window this shelf belongs to.
   raw_ptr<BrowserView> parent_;
-
-  // Time since the last time the download shelf was opened.
-  base::Time last_opened_;
-
-  // Set the time when the download shelf becomes visible.
-  void SetLastOpened();
-
-  // Emits a histogram recording the time between the shelf being visible
-  // and it being closed.
-  void RecordShelfVisibleTime();
 
   views::MouseWatcher mouse_watcher_{
       std::make_unique<views::MouseWatcherViewHost>(this, gfx::Insets()), this};

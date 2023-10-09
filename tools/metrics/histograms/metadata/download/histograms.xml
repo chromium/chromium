@@ -1105,17 +1105,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.Shelf.VisibleTime" units="ms"
-    expires_after="2023-11-20">
-  <owner>chlily@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The time that the download shelf was visible until it was closed. This
-    histogram excludes times when DoUnhide() and DoHide() are called (i.e., when
-    the full screen state changes).
-  </summary>
-</histogram>
-
 <histogram name="Download.ShelfContextMenuAction"
     enum="DownloadShelfContextMenuAction" expires_after="2024-02-25">
   <owner>chlily@chromium.org</owner>
