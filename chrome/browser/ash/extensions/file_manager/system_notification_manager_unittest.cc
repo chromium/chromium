@@ -1154,6 +1154,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   EXPECT_EQ(0u, notification_count_);
 
   file_manager_private::BulkPinProgress progress;
+  progress.should_pin = true;
 
   // Handle an unparsable event.
   notification_manager_->HandleEvent(
@@ -1174,6 +1175,49 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
             List().Append(progress.ToValue())));
 
   // There should be no notification.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, notification_count_);
+
+  // Listing files.
+  progress.stage = BULK_PIN_STAGE_LISTING_FILES;
+  notification_manager_->HandleEvent(
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
+            List().Append(progress.ToValue())));
+
+  // There should be no notification.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, notification_count_);
+
+  // Not enough space after listing phase.
+  progress.stage = BULK_PIN_STAGE_NOT_ENOUGH_SPACE;
+  notification_manager_->HandleEvent(
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
+            List().Append(progress.ToValue())));
+
+  // There should be one notification.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(1u, notification_count_);
+
+  // Get the strings for the displayed notification.
+  const std::string notification_id = "drive-bulk-pinning-error";
+  {
+    const Strings strings = bridge_->GetStrings(notification_id);
+    EXPECT_EQ(strings.title, u"Couldn’t finish setting up file sync");
+    EXPECT_EQ(strings.message,
+              u"There isn’t enough storage space to sync all of your files");
+    EXPECT_THAT(strings.buttons, IsEmpty());
+  }
+
+  // Click the notification body.
+  bridge_->ClickNotification(notification_id);
+
+  // The notification should have been closed.
   display_service_->GetDisplayed(
       BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                weak_ptr_factory_.GetWeakPtr()));
@@ -1204,7 +1248,6 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   EXPECT_EQ(1u, notification_count_);
 
   // Get the strings for the displayed notification.
-  const std::string notification_id = "drive-bulk-pinning-error";
   {
     const Strings strings = bridge_->GetStrings(notification_id);
     EXPECT_EQ(strings.title, u"Couldn’t finish setting up file sync");
@@ -1289,7 +1332,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
                weak_ptr_factory_.GetWeakPtr()));
   EXPECT_EQ(0u, notification_count_);
 
-  // Error duing syncing phase.
+  // Error during syncing phase.
   progress.stage = BULK_PIN_STAGE_CANNOT_GET_FREE_SPACE;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
@@ -1313,6 +1356,31 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   bridge_->ClickNotification(notification_id);
 
   // The notification should have been closed.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, notification_count_);
+
+  // Listing files without having the intent of pinning them.
+  progress.stage = BULK_PIN_STAGE_LISTING_FILES;
+  progress.should_pin = false;
+  notification_manager_->HandleEvent(
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
+            List().Append(progress.ToValue())));
+
+  // There should be no notification.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, notification_count_);
+
+  // Not enough space after listing phase.
+  progress.stage = BULK_PIN_STAGE_NOT_ENOUGH_SPACE;
+  notification_manager_->HandleEvent(
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
+            List().Append(progress.ToValue())));
+
+  // There should be no notification.
   display_service_->GetDisplayed(
       BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                weak_ptr_factory_.GetWeakPtr()));

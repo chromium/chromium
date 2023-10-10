@@ -500,7 +500,12 @@ NotificationPtr SystemNotificationManager::MakeBulkPinningErrorNotification(
   const BulkPinStage old_stage = bulk_pin_stage_;
   bulk_pin_stage_ = progress.stage;
 
-  if (old_stage != BULK_PIN_STAGE_SYNCING) {
+  if (!progress.should_pin) {
+    return nullptr;
+  }
+
+  if (old_stage != BULK_PIN_STAGE_LISTING_FILES &&
+      old_stage != BULK_PIN_STAGE_SYNCING) {
     return nullptr;
   }
 
