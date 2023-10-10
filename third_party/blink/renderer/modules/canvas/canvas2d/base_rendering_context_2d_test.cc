@@ -166,7 +166,6 @@ class TestRenderingContext2D final
   void WillOverwriteCanvas() override {}
 
  private:
-  void DidPinImage(size_t bytes) override {}
   void InitializeForRecording(cc::PaintCanvas* canvas) const override {
     if (restore_matrix_enabled_) {
       RestoreMatrixClipStack(canvas);

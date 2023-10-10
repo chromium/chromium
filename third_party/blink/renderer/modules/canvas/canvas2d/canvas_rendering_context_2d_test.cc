@@ -1297,13 +1297,13 @@ TEST_P(CanvasRenderingContext2DTest, OverdrawResetsPinnedImageBytes) {
   Context2D()->drawImage(&unique_image, 0, 0, 10, 10, 0, 0, 10, 10,
                          exception_state);
   size_t initial_op_count = CanvasElement().ResourceProvider()->TotalOpCount();
-  ASSERT_EQ(CanvasElement().ResourceProvider()->TotalPinnedImageBytes(),
+  ASSERT_EQ(CanvasElement().ResourceProvider()->TotalImageBytesUsed(),
             kBytesPerImage);
 
   Context2D()->clearRect(0, 0, 10, 10);  // Overdraw
   ASSERT_EQ(CanvasElement().ResourceProvider()->TotalOpCount(),
             initial_op_count);
-  ASSERT_EQ(CanvasElement().ResourceProvider()->TotalPinnedImageBytes(), 0u);
+  ASSERT_EQ(CanvasElement().ResourceProvider()->TotalImageBytesUsed(), 0u);
 }
 
 TEST_P(CanvasRenderingContext2DTest, AutoFlushSameImage) {

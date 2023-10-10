@@ -259,9 +259,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   size_t TotalOpCount() const { return recorder_.TotalOpCount(); }
   size_t TotalOpBytesUsed() const { return recorder_.OpBytesUsed(); }
-  size_t TotalPinnedImageBytes() const { return total_pinned_image_bytes_; }
+  size_t TotalImageBytesUsed() const { return recorder_.ImageBytesUsed(); }
 
-  void DidPinImage(size_t bytes) override;
   void InitializeForRecording(cc::PaintCanvas* canvas) const override;
 
   bool IsPrinting() { return resource_host_ && resource_host_->IsPrinting(); }
@@ -364,8 +363,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   MemoryManagedPaintRecorder recorder_{this};
-
-  size_t total_pinned_image_bytes_ = 0;
 
   const cc::PaintImage::Id snapshot_paint_image_id_;
   cc::PaintImage::ContentId snapshot_paint_image_content_id_ =

@@ -34,7 +34,7 @@ namespace blink {
 
 class PLATFORM_EXPORT MemoryManagedPaintRecorder {
  public:
-  class Client : public MemoryManagedPaintCanvas::Client {
+  class Client {
    public:
     virtual void InitializeForRecording(cc::PaintCanvas* canvas) const = 0;
   };
@@ -57,6 +57,9 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
   size_t OpBytesUsed() const {
     DCHECK(canvas_);
     return canvas_->OpBytesUsed();
+  }
+  size_t ImageBytesUsed() const {
+    return canvas_ == nullptr ? 0 : canvas_->ImageBytesUsed();
   }
 
   // Only valid while recording.

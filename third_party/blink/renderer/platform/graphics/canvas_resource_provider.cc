@@ -1325,7 +1325,7 @@ void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
     return;
   }
   if (UNLIKELY(TotalOpBytesUsed() > max_recorded_op_bytes_) ||
-      UNLIKELY(total_pinned_image_bytes_ > max_pinned_image_bytes_)) {
+      UNLIKELY(TotalImageBytesUsed() > max_pinned_image_bytes_)) {
     FlushCanvas(FlushReason::kRecordingLimitExceeded);
   }
 }
@@ -1384,10 +1384,6 @@ CanvasResourceProvider::GetOrCreateCanvasImageProvider() {
         raster_mode);
   }
   return canvas_image_provider_.get();
-}
-
-void CanvasResourceProvider::DidPinImage(size_t bytes) {
-  total_pinned_image_bytes_ += bytes;
 }
 
 void CanvasResourceProvider::InitializeForRecording(
@@ -1524,7 +1520,6 @@ absl::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
   }
   cc::PaintRecord recording = recorder_.finishRecordingAsPicture();
   RasterRecord(recording);
-  total_pinned_image_bytes_ = 0;
   last_recording_ =
       preserve_recording ? absl::optional(recording) : absl::nullopt;
   return recording;
@@ -1732,7 +1727,6 @@ void CanvasResourceProvider::SkipQueuedDrawCommands() {
   if (!HasRecordedDrawOps())
     return;
   recorder_.finishRecordingAsPicture();
-  total_pinned_image_bytes_ = 0;
 }
 
 void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {

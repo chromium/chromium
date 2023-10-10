@@ -40,7 +40,7 @@ cc::PaintCanvas* MemoryManagedPaintRecorder::beginRecording(
   is_recording_ = true;
 
   if (!canvas_ || size != size_) {
-    canvas_ = std::make_unique<MemoryManagedPaintCanvas>(size, client_);
+    canvas_ = std::make_unique<MemoryManagedPaintCanvas>(size);
   }
   size_ = size;
   client_->InitializeForRecording(canvas_.get());
