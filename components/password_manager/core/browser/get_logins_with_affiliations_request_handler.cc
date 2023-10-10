@@ -96,9 +96,7 @@ LoginsResultOrError ProccessExactAndPSLForms(
         break;
     }
   }
-  // Erase any form which has no match_type assigned.
-  base::EraseIf(absl::get<LoginsResult>(logins_or_error),
-                [](const auto& form) { return !form->match_type.has_value(); });
+
   return logins_or_error;
 }
 
@@ -279,8 +277,12 @@ LoginsResultOrError GetLoginsHelper::MergeResults(
         break;
       }
     }
-    CHECK(form->match_type.has_value());
   }
+  // Erase any form which has no match_type assigned. This can happen if PSL
+  // matched form was not marked as such inside ProccessExactAndPSLForms()
+  // because of PSL extension list.
+  base::EraseIf(final_result,
+                [](const auto& form) { return !form->match_type.has_value(); });
 
   password_manager_util::TrimUsernameOnlyCredentials(&final_result);
   password_manager::metrics_util::LogGroupedPasswordsResults(final_result);
