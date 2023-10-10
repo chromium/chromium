@@ -110,7 +110,7 @@ function copyBuildFiles(srcDir, dstDir) {
 function prepareLinuxBinaries(buildId) {
   const buildArchive = `${buildId}.tar.xz`;
 
-  spawnChecked("sudo", ["rm", "-rf", "replay-chromium"], { stdio: "inherit" });
+  spawnChecked("rm", ["-rf", "replay-chromium"], { stdio: "inherit" });
 
   fs.mkdirSync("replay-chromium");
 
@@ -125,7 +125,7 @@ function prepareLinuxBinaries(buildId) {
     }
   );
 
-  spawnChecked("sudo", ["rm", "-rf", "replay-chromium"], { stdio: "inherit" });
+  spawnChecked("rm", ["-rf", "replay-chromium"], { stdio: "inherit" });
   return [buildArchive];
 }
 
