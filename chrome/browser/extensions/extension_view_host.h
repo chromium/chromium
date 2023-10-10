@@ -8,14 +8,12 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_registry.h"
-#include "extensions/common/mojom/view_type.mojom.h"
 
 class Browser;
 
@@ -52,8 +50,6 @@ class ExtensionViewHost
 
   void set_view(ExtensionView* view) { view_ = view; }
   ExtensionView* view() { return view_; }
-
-  void SetAssociatedWebContents(content::WebContents* web_contents);
 
   // Returns the browser associated with this ExtensionViewHost.
   virtual Browser* GetBrowser();
@@ -110,7 +106,6 @@ class ExtensionViewHost
 
   // extensions::ExtensionFunctionDispatcher::Delegate
   WindowController* GetExtensionWindowController() const override;
-  content::WebContents* GetAssociatedWebContents() const override;
   content::WebContents* GetVisibleWebContents() const override;
 
   // ExtensionHostRegistry::Observer:
@@ -131,9 +126,6 @@ class ExtensionViewHost
 
   // View that shows the rendered content in the UI.
   raw_ptr<ExtensionView, DanglingUntriaged> view_ = nullptr;
-
-  // The relevant WebContents associated with this ExtensionViewHost, if any.
-  base::WeakPtr<content::WebContents> associated_web_contents_;
 
   base::ScopedObservation<ExtensionHostRegistry,
                           ExtensionHostRegistry::Observer>

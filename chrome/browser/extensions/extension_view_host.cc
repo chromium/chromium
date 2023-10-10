@@ -75,12 +75,6 @@ ExtensionViewHost::~ExtensionViewHost() {
     manager->SetDelegate(nullptr);
 }
 
-void ExtensionViewHost::SetAssociatedWebContents(
-    content::WebContents* web_contents) {
-  associated_web_contents_ =
-      web_contents ? web_contents->GetWeakPtr() : nullptr;
-}
-
 Browser* ExtensionViewHost::GetBrowser() {
   return browser_;
 }
@@ -243,13 +237,7 @@ WindowController* ExtensionViewHost::GetExtensionWindowController() const {
   return browser_ ? browser_->extension_window_controller() : nullptr;
 }
 
-content::WebContents* ExtensionViewHost::GetAssociatedWebContents() const {
-  return associated_web_contents_.get();
-}
-
 content::WebContents* ExtensionViewHost::GetVisibleWebContents() const {
-  if (associated_web_contents_)
-    return associated_web_contents_.get();
   return (extension_host_type() == mojom::ViewType::kExtensionPopup)
              ? host_contents()
              : nullptr;
