@@ -6,12 +6,16 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/test/gtest_util.h"
+#include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/performance_manager_main_thread_mechanism.h"
 #include "components/performance_manager/public/performance_manager_main_thread_observer.h"
 #include "components/performance_manager/public/performance_manager_owned.h"
 #include "components/performance_manager/public/performance_manager_registered.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
+#include "components/performance_manager/test_support/run_in_graph.h"
+#include "components/performance_manager/test_support/test_browser_child_process.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/common/process_type.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,11 +25,8 @@ namespace performance_manager {
 
 namespace {
 
-class PerformanceManagerRegistryImplTest
-    : public PerformanceManagerTestHarness {
- public:
-  PerformanceManagerRegistryImplTest() = default;
-};
+using PerformanceManagerRegistryImplTest = PerformanceManagerTestHarness;
+using PerformanceManagerRegistryImplDeathTest = PerformanceManagerTestHarness;
 
 class LenientMockObserver : public PerformanceManagerMainThreadObserver {
  public:
@@ -247,6 +248,72 @@ TEST_F(PerformanceManagerRegistryImplTest, RegistrationWorks) {
 
   PerformanceManager::UnregisterObject(&foo);
   EXPECT_EQ(0u, registry->GetRegisteredCountForTesting());
+}
+
+// Tests that accessors for browser and utility ProcessNodes work. Renderer
+// ProcessNodes are handled by RenderProcessUserData.
+
+TEST_F(PerformanceManagerRegistryImplDeathTest, BrowserProcessNode) {
+  PerformanceManagerRegistryImpl* registry =
+      PerformanceManagerRegistryImpl::GetInstance();
+  ASSERT_TRUE(registry);
+
+  const ProcessNodeImpl* browser_node = registry->GetBrowserProcessNode();
+  ASSERT_TRUE(browser_node);
+  RunInGraph([&] {
+    EXPECT_EQ(browser_node->process_type(), content::PROCESS_TYPE_BROWSER);
+  });
+
+  DeleteBrowserProcessNodeForTesting();
+  EXPECT_FALSE(registry->GetBrowserProcessNode());
+
+  // Can't delete twice.
+  EXPECT_CHECK_DEATH(DeleteBrowserProcessNodeForTesting());
+}
+
+TEST_F(PerformanceManagerRegistryImplDeathTest, BrowserChildProcessNodes) {
+  PerformanceManagerRegistryImpl* registry =
+      PerformanceManagerRegistryImpl::GetInstance();
+  ASSERT_TRUE(registry);
+
+  TestBrowserChildProcess utility_process(content::PROCESS_TYPE_UTILITY);
+  TestBrowserChildProcess gpu_process(content::PROCESS_TYPE_GPU);
+  EXPECT_FALSE(registry->GetBrowserChildProcessNode(utility_process.GetId()));
+  EXPECT_FALSE(registry->GetBrowserChildProcessNode(gpu_process.GetId()));
+
+  utility_process.SimulateLaunch();
+  const ProcessNodeImpl* utility_node =
+      registry->GetBrowserChildProcessNode(utility_process.GetId());
+  ASSERT_TRUE(utility_node);
+  EXPECT_FALSE(registry->GetBrowserChildProcessNode(gpu_process.GetId()));
+
+  gpu_process.SimulateLaunch();
+  const ProcessNodeImpl* gpu_node =
+      registry->GetBrowserChildProcessNode(gpu_process.GetId());
+  ASSERT_TRUE(gpu_node);
+  EXPECT_NE(utility_node, gpu_node);
+
+  RunInGraph([&] {
+    EXPECT_EQ(utility_node->process_type(), content::PROCESS_TYPE_UTILITY);
+    EXPECT_EQ(gpu_node->process_type(), content::PROCESS_TYPE_GPU);
+  });
+
+  utility_process.SimulateDisconnect();
+  utility_node = nullptr;  // No longer safe.
+  EXPECT_FALSE(registry->GetBrowserChildProcessNode(utility_process.GetId()));
+  EXPECT_EQ(registry->GetBrowserChildProcessNode(gpu_process.GetId()),
+            gpu_node);
+
+  // Can't delete twice.
+  EXPECT_CHECK_DEATH(utility_process.SimulateDisconnect());
+
+  // Should be able to re-create `utility_node` after it's deleted, but not
+  // create two simultaneous copies.
+  utility_process.SimulateLaunch();
+  EXPECT_TRUE(registry->GetBrowserChildProcessNode(utility_process.GetId()));
+  EXPECT_DCHECK_DEATH(utility_process.SimulateLaunch());
+
+  // `gpu_node` still exists. It should be safely deleted during teardown.
 }
 
 }  // namespace performance_manager

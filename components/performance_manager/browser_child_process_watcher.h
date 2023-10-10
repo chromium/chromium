@@ -9,7 +9,12 @@
 
 #include "base/containers/flat_map.h"
 #include "base/process/process.h"
+#include "components/performance_manager/public/browser_child_process_host_id.h"
 #include "content/public/browser/browser_child_process_observer.h"
+
+namespace base {
+class Process;
+}
 
 namespace performance_manager {
 
@@ -33,6 +38,34 @@ class BrowserChildProcessWatcher : public content::BrowserChildProcessObserver {
   // Tear down this watcher and any state it's gathered.
   void TearDown();
 
+  // Returns the ProcessNode for the browser process or nullptr if it does not
+  // exist, which can happen in tests.
+  ProcessNodeImpl* browser_process_node() {
+    return browser_process_node_.get();
+  }
+
+  // Returns the ProcessNode for `id` or nullptr if it does not exist.
+  ProcessNodeImpl* GetChildProcessNode(BrowserChildProcessHostId id);
+
+  // Allows tests to create a ProcessNode for `data`. In production the
+  // ProcessNode is created when the host's child process is launched, but it's
+  // not always possible to launch a real process in tests so this can simulate
+  // it by passing a running process, possibly base::Process::Current(), in
+  // data.GetProcess(). The ProcessNode must not already exist. It will not be
+  // tied to the lifetime of the process.
+  void CreateChildProcessNodeForTesting(const content::ChildProcessData& data);
+
+  // Allows tests to delete the ProcessNode for `data`. In production this
+  // happens when the host's child process exits, but nodes created with
+  // CreateChildProcessNodeForTesting() won't be tied to the lifetime of
+  // a real process. Must not be called again if the node was already deleted.
+  void DeleteChildProcessNodeForTesting(const content::ChildProcessData& data);
+
+  // Allows tests to delete the browser process node, which is created by
+  // default in Initialize(). Must not be called again if the node was already
+  // deleted.
+  void DeleteBrowserProcessNodeForTesting();
+
  private:
   // BrowserChildProcessObserver overrides.
   void BrowserChildProcessLaunchedAndConnected(
@@ -46,7 +79,7 @@ class BrowserChildProcessWatcher : public content::BrowserChildProcessObserver {
       const content::ChildProcessData& data,
       const content::ChildProcessTerminationInfo& info) override;
 
-  void TrackedProcessExited(int id, int exit_code);
+  void TrackedProcessExited(BrowserChildProcessHostId id, int exit_code);
 
   static void OnProcessLaunched(const base::Process& process,
                                 const std::string& metrics_name,
@@ -57,7 +90,8 @@ class BrowserChildProcessWatcher : public content::BrowserChildProcessObserver {
   // This map keeps track of all GPU and Utility processes by their unique ID
   // from |content::ChildProcessData|. Apparently more than one GPU process can
   // be existent at a time, though secondaries are very transient.
-  base::flat_map<int, std::unique_ptr<ProcessNodeImpl>> tracked_process_nodes_;
+  base::flat_map<BrowserChildProcessHostId, std::unique_ptr<ProcessNodeImpl>>
+      tracked_process_nodes_;
 };
 
 }  // namespace performance_manager

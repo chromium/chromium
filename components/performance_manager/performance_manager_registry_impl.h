@@ -16,6 +16,7 @@
 #include "components/performance_manager/owned_objects.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
 #include "components/performance_manager/process_node_source.h"
+#include "components/performance_manager/public/browser_child_process_host_id.h"
 #include "components/performance_manager/public/performance_manager_owned.h"
 #include "components/performance_manager/public/performance_manager_registered.h"
 #include "components/performance_manager/registered_objects.h"
@@ -109,10 +110,18 @@ class PerformanceManagerRegistryImpl
   void EnsureProcessNodeForRenderProcessHost(
       content::RenderProcessHost* render_process_host);
 
+  // Gets the ProcessNode for the browser process from the
+  // BrowserChildProcessWatcher.
+  ProcessNodeImpl* GetBrowserProcessNode();
+
+  // Gets the ProcessNode for the non-renderer child process with the given `id`
+  // from the BrowserChildProcessWatcher.
+  ProcessNodeImpl* GetBrowserChildProcessNode(BrowserChildProcessHostId id);
+
   // Searches all WorkerWatchers for a WorkerNode matching the given `token`.
   // Exposed so that accessors in performance_manager.h can look up WorkerNodes
   // on the UI thread.
-  WorkerNodeImpl* FindWorkerNodeForToken(const blink::WorkerToken& token) const;
+  WorkerNodeImpl* FindWorkerNodeForToken(const blink::WorkerToken& token);
 
   size_t GetOwnedCountForTesting() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -127,13 +136,20 @@ class PerformanceManagerRegistryImpl
   // Returns the WorkerWatcher for `browser_context`, or nullptr if there is
   // none. Tests can call methods on the WorkerWatcher to simulate workers.
   WorkerWatcher* GetWorkerWatcherForTesting(
-      content::BrowserContext* browser_context) const;
+      content::BrowserContext* browser_context);
 
  private:
-  SEQUENCE_CHECKER(sequence_checker_);
+  friend class TestBrowserChildProcess;
+  friend void DeleteBrowserProcessNodeForTesting();
+
+  // Allow unit tests to register simulated child processes with
+  // BrowserChildProcessWatcher.
+  BrowserChildProcessWatcher& GetBrowserChildProcessWatcherForTesting();
 
   // content::RenderProcessHostCreationObserver:
   void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Tracks WebContents and RenderProcessHost for which we have created user
   // data. Used to destroy all user data when the registry is destroyed.

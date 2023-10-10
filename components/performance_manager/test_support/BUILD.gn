@@ -13,6 +13,8 @@ source_set("test_support_common") {
     "graph_impl.h",
     "run_in_graph.cc",
     "run_in_graph.h",
+    "test_browser_child_process.cc",
+    "test_browser_child_process.h",
     "test_harness_helper.cc",
     "test_harness_helper.h",
     "voting.h",

@@ -8,8 +8,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/process/process.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
@@ -44,14 +46,41 @@ void BrowserChildProcessWatcher::TearDown() {
   std::vector<std::unique_ptr<NodeBase>> nodes;
   nodes.reserve(tracked_process_nodes_.size() + 1);
 
-  nodes.push_back(std::move(browser_process_node_));
-
+  if (browser_process_node_) {
+    nodes.push_back(std::move(browser_process_node_));
+  }
   for (auto& node : tracked_process_nodes_) {
     nodes.push_back(std::move(node.second));
   }
   tracked_process_nodes_.clear();
 
   PerformanceManagerImpl::BatchDeleteNodes(std::move(nodes));
+}
+
+ProcessNodeImpl* BrowserChildProcessWatcher::GetChildProcessNode(
+    BrowserChildProcessHostId id) {
+  const auto it = tracked_process_nodes_.find(id);
+  return it != tracked_process_nodes_.end() ? it->second.get() : nullptr;
+}
+
+void BrowserChildProcessWatcher::CreateChildProcessNodeForTesting(
+    const content::ChildProcessData& data) {
+  CHECK(!base::Contains(tracked_process_nodes_,
+                        BrowserChildProcessHostId(data.id)));
+  BrowserChildProcessLaunchedAndConnected(data);
+}
+
+void BrowserChildProcessWatcher::DeleteChildProcessNodeForTesting(
+    const content::ChildProcessData& data) {
+  CHECK(base::Contains(tracked_process_nodes_,
+                       BrowserChildProcessHostId(data.id)));
+  BrowserChildProcessHostDisconnected(data);
+}
+
+void BrowserChildProcessWatcher::DeleteBrowserProcessNodeForTesting() {
+  CHECK(browser_process_node_);
+  NodeBase* node_base = browser_process_node_.release();
+  PerformanceManagerImpl::DeleteNode(base::WrapUnique(node_base));
 }
 
 void BrowserChildProcessWatcher::BrowserChildProcessLaunchedAndConnected(
@@ -63,7 +92,9 @@ void BrowserChildProcessWatcher::BrowserChildProcessLaunchedAndConnected(
             static_cast<content::ProcessType>(data.process_type),
             BrowserChildProcessHostProxy(BrowserChildProcessHostId(data.id)));
     OnProcessLaunched(data.GetProcess(), data.metrics_name, process_node.get());
-    tracked_process_nodes_[data.id] = std::move(process_node);
+    const auto [_, inserted] = tracked_process_nodes_.emplace(
+        BrowserChildProcessHostId(data.id), std::move(process_node));
+    CHECK(inserted);
   }
 }
 
@@ -71,7 +102,7 @@ void BrowserChildProcessWatcher::BrowserChildProcessHostDisconnected(
     const content::ChildProcessData& data) {
   if (data.process_type == content::PROCESS_TYPE_GPU ||
       data.process_type == content::PROCESS_TYPE_UTILITY) {
-    auto it = tracked_process_nodes_.find(data.id);
+    auto it = tracked_process_nodes_.find(BrowserChildProcessHostId(data.id));
     // Apparently there are cases where a disconnect notification arrives here
     // either multiple times for the same process, or else before a
     // launch-and-connect notification arrives.
@@ -88,7 +119,7 @@ void BrowserChildProcessWatcher::BrowserChildProcessCrashed(
     const content::ChildProcessTerminationInfo& info) {
   if (data.process_type == content::PROCESS_TYPE_GPU ||
       data.process_type == content::PROCESS_TYPE_UTILITY) {
-    TrackedProcessExited(data.id, info.exit_code);
+    TrackedProcessExited(BrowserChildProcessHostId(data.id), info.exit_code);
   }
 }
 
@@ -97,17 +128,18 @@ void BrowserChildProcessWatcher::BrowserChildProcessKilled(
     const content::ChildProcessTerminationInfo& info) {
   if (data.process_type == content::PROCESS_TYPE_GPU ||
       data.process_type == content::PROCESS_TYPE_UTILITY) {
-    TrackedProcessExited(data.id, info.exit_code);
+    TrackedProcessExited(BrowserChildProcessHostId(data.id), info.exit_code);
   }
 }
 
-void BrowserChildProcessWatcher::TrackedProcessExited(int id, int exit_code) {
+void BrowserChildProcessWatcher::TrackedProcessExited(
+    BrowserChildProcessHostId id,
+    int exit_code) {
   // It appears the exit code can be delivered either after the host is
   // disconnected, or perhaps before the HostConnected notification,
   // specifically on crash.
-  if (base::Contains(tracked_process_nodes_, id)) {
-    auto* process_node = tracked_process_nodes_[id].get();
-
+  ProcessNodeImpl* process_node = GetChildProcessNode(id);
+  if (process_node) {
     DCHECK(PerformanceManagerImpl::IsAvailable());
     PerformanceManagerImpl::CallOnGraphImpl(
         FROM_HERE, base::BindOnce(&ProcessNodeImpl::SetProcessExitStatus,

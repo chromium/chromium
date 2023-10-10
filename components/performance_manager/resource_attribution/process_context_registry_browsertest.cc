@@ -6,14 +6,9 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "components/performance_manager/graph/graph_impl.h"
-#include "components/performance_manager/graph/node_base.h"
-#include "components/performance_manager/graph/process_node_impl.h"
-#include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/public/browser_child_process_host_id.h"
 #include "components/performance_manager/public/browser_child_process_host_proxy.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -23,9 +18,8 @@
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/test_support/resource_attribution/registry_browsertest_harness.h"
 #include "components/performance_manager/test_support/run_in_graph.h"
+#include "components/performance_manager/test_support/test_browser_child_process.h"
 #include "content/public/browser/browser_child_process_host.h"
-#include "content/public/browser/browser_child_process_host_delegate.h"
-#include "content/public/browser/child_process_data.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -39,31 +33,6 @@
 namespace performance_manager::resource_attribution {
 
 namespace {
-
-// A wrapper that owns a BrowserChildProcessHost and acts as a no-op
-// BrowserChildProcessHostDelegate.
-class TestBrowserChildProcess final
-    : public content::BrowserChildProcessHostDelegate {
- public:
-  explicit TestBrowserChildProcess(content::ProcessType process_type)
-      : host_(content::BrowserChildProcessHost::Create(
-            process_type,
-            this,
-            content::ChildProcessHost::IpcMode::kNormal)) {}
-
-  content::BrowserChildProcessHost* host() const { return host_.get(); }
-
-  BrowserChildProcessHostId id() const {
-    return BrowserChildProcessHostId(host_->GetData().id);
-  }
-
-  BrowserChildProcessHostProxy proxy() const {
-    return BrowserChildProcessHostProxy::CreateForTesting(id());
-  }
-
- private:
-  std::unique_ptr<content::BrowserChildProcessHost> host_;
-};
 
 class ProcessContextRegistryTest : public RegistryBrowserTestHarness {
  public:
@@ -79,12 +48,10 @@ class ProcessContextRegistryTest : public RegistryBrowserTestHarness {
     // hooked up in content/browsertests.
     utility_process_ = std::make_unique<TestBrowserChildProcess>(
         content::ProcessType::PROCESS_TYPE_UTILITY);
-    std::unique_ptr<ProcessNodeImpl> utility_process_node =
-        PerformanceManagerImpl::CreateProcessNode(
-            content::ProcessType::PROCESS_TYPE_UTILITY,
-            utility_process_->proxy());
-    weak_utility_process_node_ = utility_process_node->GetWeakPtrOnUIThread();
-    tracked_nodes_.push_back(std::move(utility_process_node));
+    utility_process_->SimulateLaunch();
+    weak_utility_process_node_ =
+        PerformanceManager::GetProcessNodeForBrowserChildProcessHost(
+            utility_process_->host());
 
     // Navigate the WebContents to create renderer processes.
     Super::CreateNodes();
@@ -105,7 +72,6 @@ class ProcessContextRegistryTest : public RegistryBrowserTestHarness {
 
   void DeleteNodes() override {
     utility_process_.reset();
-    PerformanceManagerImpl::BatchDeleteNodes(std::move(tracked_nodes_));
     Super::DeleteNodes();
   }
 
@@ -115,9 +81,6 @@ class ProcessContextRegistryTest : public RegistryBrowserTestHarness {
   RenderProcessHostId render_process_id_b_;
   std::unique_ptr<TestBrowserChildProcess> utility_process_;
   base::WeakPtr<ProcessNode> weak_utility_process_node_;
-
-  // PM nodes created in CreateNodes() that must be deleted manually.
-  std::vector<std::unique_ptr<NodeBase>> tracked_nodes_;
 };
 
 class ProcessContextRegistryDisabledTest : public ProcessContextRegistryTest {
@@ -126,19 +89,8 @@ class ProcessContextRegistryDisabledTest : public ProcessContextRegistryTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ProcessContextRegistryTest, BrowserProcessContext) {
-  // Find the process node for the browser process.
-  base::WeakPtr<ProcessNode> weak_browser_process_node;
-  bool found_browser_process_node = false;
-  RunInGraph([&](GraphImpl* graph_impl) {
-    for (ProcessNodeImpl* node : graph_impl->GetAllProcessNodeImpls()) {
-      if (node->process_type() == content::ProcessType::PROCESS_TYPE_BROWSER) {
-        weak_browser_process_node = node->GetWeakPtr();
-        found_browser_process_node = true;
-        return;
-      }
-    }
-  });
-  ASSERT_TRUE(found_browser_process_node);
+  base::WeakPtr<ProcessNode> weak_browser_process_node =
+      PerformanceManager::GetProcessNodeForBrowserProcess();
 
   ASSERT_TRUE(ProcessContextRegistry::BrowserProcessContext().has_value());
   const ProcessContext browser_context =
@@ -168,9 +120,11 @@ IN_PROC_BROWSER_TEST_F(ProcessContextRegistryTest, BrowserProcessContext) {
                   registry->GetProcessNodeForContext(resource_context));
       });
 
-#if 0
-  // TODO(joenotcharles): Re-enable this when there's a test helper to delete
-  // the browser process node.
+  DeleteBrowserProcessNodeForTesting();
+
+  // Wait for PerformanceManager to register the delete.
+  RunInGraph([&] { EXPECT_FALSE(weak_browser_process_node); });
+
   EXPECT_EQ(absl::nullopt, ProcessContextRegistry::BrowserProcessContext());
   EXPECT_FALSE(
       ProcessContextRegistry::IsBrowserProcessContext(browser_context));
@@ -178,12 +132,10 @@ IN_PROC_BROWSER_TEST_F(ProcessContextRegistryTest, BrowserProcessContext) {
       ProcessContextRegistry::IsBrowserProcessContext(resource_context));
   RunInGraphWithRegistry<ProcessContextRegistry>(
       [&](const ProcessContextRegistry* registry) {
-        EXPECT_FALSE(weak_browser_process_node_);
         EXPECT_EQ(nullptr, registry->GetProcessNodeForContext(browser_context));
         EXPECT_EQ(nullptr,
                   registry->GetProcessNodeForContext(resource_context));
       });
-#endif
 }
 
 IN_PROC_BROWSER_TEST_F(ProcessContextRegistryTest, RenderProcessContext) {
@@ -266,7 +218,8 @@ IN_PROC_BROWSER_TEST_F(ProcessContextRegistryTest, BrowserChildProcessContext) {
 
   ASSERT_TRUE(utility_process_);
   ASSERT_TRUE(utility_process_->host());
-  const BrowserChildProcessHostId utility_process_id = utility_process_->id();
+  const BrowserChildProcessHostId utility_process_id =
+      utility_process_->GetId();
   ASSERT_FALSE(utility_process_id.is_null());
 
   absl::optional<ProcessContext> context_from_utility_host =
@@ -340,11 +293,11 @@ IN_PROC_BROWSER_TEST_F(ProcessContextRegistryTest, InvalidProcessContexts) {
       BrowserChildProcessHostId(content::ChildProcessHost::kInvalidUniqueID);
   constexpr auto kInvalidId4 = BrowserChildProcessHostId(0);
 
-#if 0
-  // TODO(joenotcharles): Re-enable this when there's a test helper to delete
-  // the browser process node.
+  DeleteBrowserProcessNodeForTesting();
+  // Wait for PerformanceManager to register the delete.
+  RunInGraph([&] {});
+
   EXPECT_EQ(absl::nullopt, ProcessContextRegistry::BrowserProcessContext());
-#endif
   EXPECT_EQ(absl::nullopt,
             ProcessContextRegistry::ContextForRenderProcessHost(nullptr));
   EXPECT_EQ(absl::nullopt,
@@ -409,13 +362,9 @@ IN_PROC_BROWSER_TEST_F(ProcessContextRegistryTest, OnBeforeProcessNodeRemoved) {
               process_node);
   };
 
-#if 0
-  // TODO(joenotcharles): Re-enable this when there's a test helper to delete
-  // the browser process node.
   RemoveProcessNodeWaiter browser_process_waiter(
-      weak_browser_process_node_,
+      PerformanceManager::GetProcessNodeForBrowserProcess(),
       base::BindOnce(expect_process_context, browser_process_context.value()));
-#endif
   RemoveProcessNodeWaiter render_process_waiter(
       PerformanceManager::GetProcessNodeForRenderProcessHost(rph),
       base::BindOnce(expect_process_context, render_process_context.value()));
@@ -425,9 +374,8 @@ IN_PROC_BROWSER_TEST_F(ProcessContextRegistryTest, OnBeforeProcessNodeRemoved) {
                      browser_child_process_context.value()));
 
   DeleteNodes();
-#if 0
+  DeleteBrowserProcessNodeForTesting();
   browser_process_waiter.Wait();
-#endif
   render_process_waiter.Wait();
   browser_child_process_waiter.Wait();
 }
@@ -437,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(ProcessContextRegistryDisabledTest, UIThreadAccess) {
 
   ASSERT_TRUE(utility_process_);
   ASSERT_TRUE(utility_process_->host());
-  ASSERT_FALSE(utility_process_->id().is_null());
+  ASSERT_FALSE(utility_process_->GetId().is_null());
 
   // Static accessors should safely return null if ProcessContextRegistry is not
   // enabled in Performance Manager.
@@ -453,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(ProcessContextRegistryDisabledTest, UIThreadAccess) {
                 utility_process_->host()));
   EXPECT_EQ(absl::nullopt,
             ProcessContextRegistry::ContextForBrowserChildProcessHostId(
-                utility_process_->id()));
+                utility_process_->GetId()));
 
   const auto kDummyProcessContext = ProcessContext();
   const ResourceContext kDummyResourceContext = kDummyProcessContext;

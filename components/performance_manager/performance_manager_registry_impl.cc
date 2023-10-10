@@ -322,8 +322,19 @@ void PerformanceManagerRegistryImpl::EnsureProcessNodeForRenderProcessHost(
   }
 }
 
+ProcessNodeImpl* PerformanceManagerRegistryImpl::GetBrowserProcessNode() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return browser_child_process_watcher_.browser_process_node();
+}
+
+ProcessNodeImpl* PerformanceManagerRegistryImpl::GetBrowserChildProcessNode(
+    BrowserChildProcessHostId id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return browser_child_process_watcher_.GetChildProcessNode(id);
+}
+
 WorkerNodeImpl* PerformanceManagerRegistryImpl::FindWorkerNodeForToken(
-    const blink::WorkerToken& token) const {
+    const blink::WorkerToken& token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& [browser_context, worker_watcher] : worker_watchers_) {
     WorkerNodeImpl* worker_node = worker_watcher->FindWorkerNodeForToken(token);
@@ -335,10 +346,16 @@ WorkerNodeImpl* PerformanceManagerRegistryImpl::FindWorkerNodeForToken(
 }
 
 WorkerWatcher* PerformanceManagerRegistryImpl::GetWorkerWatcherForTesting(
-    content::BrowserContext* browser_context) const {
+    content::BrowserContext* browser_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto it = worker_watchers_.find(browser_context);
   return it != worker_watchers_.end() ? it->second.get() : nullptr;
+}
+
+BrowserChildProcessWatcher&
+PerformanceManagerRegistryImpl::GetBrowserChildProcessWatcherForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return browser_child_process_watcher_;
 }
 
 void PerformanceManagerRegistryImpl::OnRenderProcessHostCreated(

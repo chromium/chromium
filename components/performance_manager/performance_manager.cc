@@ -15,6 +15,8 @@
 #include "components/performance_manager/performance_manager_registry_impl.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
 #include "components/performance_manager/public/performance_manager_owned.h"
+#include "content/public/browser/browser_child_process_host.h"
+#include "content/public/browser/child_process_data.h"
 #include "content/public/browser/render_process_host.h"
 
 namespace performance_manager {
@@ -106,6 +108,17 @@ base::WeakPtr<FrameNode> PerformanceManager::GetFrameNodeForRenderFrameHost(
 
 // static
 base::WeakPtr<ProcessNode>
+PerformanceManager::GetProcessNodeForBrowserProcess() {
+  auto* registry = PerformanceManagerRegistryImpl::GetInstance();
+  if (!registry) {
+    return nullptr;
+  }
+  ProcessNodeImpl* process_node = registry->GetBrowserProcessNode();
+  return process_node ? process_node->GetWeakPtrOnUIThread() : nullptr;
+}
+
+// static
+base::WeakPtr<ProcessNode>
 PerformanceManager::GetProcessNodeForRenderProcessHost(
     content::RenderProcessHost* rph) {
   DCHECK(rph);
@@ -128,6 +141,28 @@ PerformanceManager::GetProcessNodeForRenderProcessHostId(
   if (!rph)
     return nullptr;
   return GetProcessNodeForRenderProcessHost(rph);
+}
+
+// static
+base::WeakPtr<ProcessNode>
+PerformanceManager::GetProcessNodeForBrowserChildProcessHost(
+    content::BrowserChildProcessHost* bcph) {
+  DCHECK(bcph);
+  return GetProcessNodeForBrowserChildProcessHostId(
+      BrowserChildProcessHostId(bcph->GetData().id));
+}
+
+// static
+base::WeakPtr<ProcessNode>
+PerformanceManager::GetProcessNodeForBrowserChildProcessHostId(
+    BrowserChildProcessHostId id) {
+  DCHECK(id);
+  auto* registry = PerformanceManagerRegistryImpl::GetInstance();
+  if (!registry) {
+    return nullptr;
+  }
+  ProcessNodeImpl* process_node = registry->GetBrowserChildProcessNode(id);
+  return process_node ? process_node->GetWeakPtrOnUIThread() : nullptr;
 }
 
 // static
