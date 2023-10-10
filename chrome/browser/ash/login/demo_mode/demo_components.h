@@ -14,6 +14,10 @@
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class Version;
+}
+
 namespace ash {
 
 // Loads Demo Mode ChromeOS components and exposes component-related data such
@@ -104,11 +108,11 @@ class DemoComponents {
     return app_component_error_;
   }
 
-  const absl::optional<std::string>& app_component_version() const {
+  const absl::optional<base::Version>& app_component_version() const {
     return app_component_version_;
   }
 
-  const absl::optional<std::string>& resources_component_version() const {
+  const absl::optional<base::Version>& resources_component_version() const {
     return resources_component_version_;
   }
 
@@ -163,8 +167,8 @@ class DemoComponents {
   // List of pending callbacks passed to EnsureLoaded().
   std::list<base::OnceClosure> load_callbacks_;
 
-  absl::optional<std::string> app_component_version_;
-  absl::optional<std::string> resources_component_version_;
+  absl::optional<base::Version> app_component_version_;
+  absl::optional<base::Version> resources_component_version_;
 
   base::WeakPtrFactory<DemoComponents> weak_ptr_factory_{this};
 };

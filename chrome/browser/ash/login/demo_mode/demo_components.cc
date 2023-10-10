@@ -141,13 +141,13 @@ void DemoComponents::LoadResourcesComponent(base::OnceClosure load_callback) {
 
 void DemoComponents::OnAppVersionReady(base::OnceClosure callback,
                                        const base::Version& version) {
-  app_component_version_ = version.GetString();
+  app_component_version_ = version;
   std::move(callback).Run();
 }
 
 void DemoComponents::OnResourcesVersionReady(const base::FilePath& path,
                                              const base::Version& version) {
-  resources_component_version_ = version.GetString();
+  resources_component_version_ = version;
   OnDemoResourcesLoaded(absl::make_optional(path));
 }
 
