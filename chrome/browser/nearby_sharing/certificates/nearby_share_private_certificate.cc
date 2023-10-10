@@ -345,25 +345,21 @@ NearbySharePrivateCertificate::ToPublicCertificate() const {
 }
 
 base::Value::Dict NearbySharePrivateCertificate::ToDictionary() const {
-  base::Value::Dict dict;
-
-  dict.Set(kVisibility, static_cast<int>(visibility_));
-  dict.Set(kNotBefore, base::TimeToValue(not_before_));
-  dict.Set(kNotAfter, base::TimeToValue(not_after_));
-
   std::vector<uint8_t> key_pair;
   key_pair_->ExportPrivateKey(&key_pair);
-  dict.Set(kKeyPair, BytesToEncodedString(key_pair));
 
-  dict.Set(kSecretKey, EncodeString(secret_key_->key()));
-  dict.Set(kMetadataEncryptionKey,
-           BytesToEncodedString(metadata_encryption_key_));
-  dict.Set(kId, BytesToEncodedString(id_));
-  dict.Set(kUnencryptedMetadata,
-           EncodeString(unencrypted_metadata_.SerializeAsString()));
-  dict.Set(kConsumedSalts, SaltsToString(consumed_salts_));
-
-  return dict;
+  return base::Value::Dict()
+      .Set(kVisibility, static_cast<int>(visibility_))
+      .Set(kNotBefore, base::TimeToValue(not_before_))
+      .Set(kNotAfter, base::TimeToValue(not_after_))
+      .Set(kKeyPair, BytesToEncodedString(key_pair))
+      .Set(kSecretKey, EncodeString(secret_key_->key()))
+      .Set(kMetadataEncryptionKey,
+           BytesToEncodedString(metadata_encryption_key_))
+      .Set(kId, BytesToEncodedString(id_))
+      .Set(kUnencryptedMetadata,
+           EncodeString(unencrypted_metadata_.SerializeAsString()))
+      .Set(kConsumedSalts, SaltsToString(consumed_salts_));
 }
 
 absl::optional<NearbySharePrivateCertificate>
