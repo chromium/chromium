@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_access_authenticator.h"
+#include "components/password_manager/core/browser/password_access_auth_timeout_handler.h"
 
 #include <utility>
 
@@ -20,29 +20,29 @@ namespace password_manager {
 using metrics_util::LogPasswordSettingsReauthResult;
 using metrics_util::ReauthResult;
 
-PasswordAccessAuthenticator::PasswordAccessAuthenticator() = default;
+PasswordAccessAuthTimeoutHandler::PasswordAccessAuthTimeoutHandler() = default;
 
-PasswordAccessAuthenticator::~PasswordAccessAuthenticator() = default;
+PasswordAccessAuthTimeoutHandler::~PasswordAccessAuthTimeoutHandler() = default;
 
-void PasswordAccessAuthenticator::Init(TimeoutCallback timeout_call) {
+void PasswordAccessAuthTimeoutHandler::Init(TimeoutCallback timeout_call) {
   timeout_call_ = std::move(timeout_call);
 }
 
 // static
-base::TimeDelta PasswordAccessAuthenticator::GetAuthValidityPeriod() {
+base::TimeDelta PasswordAccessAuthTimeoutHandler::GetAuthValidityPeriod() {
   if (!base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
     return base::Seconds(60);
   }
   return syncer::kPasswordNotesAuthValidity.Get();
 }
 
-void PasswordAccessAuthenticator::RestartAuthTimer() {
+void PasswordAccessAuthTimeoutHandler::RestartAuthTimer() {
   if (timeout_timer_.IsRunning()) {
     timeout_timer_.Reset();
   }
 }
 
-void PasswordAccessAuthenticator::OnUserReauthenticationResult(
+void PasswordAccessAuthTimeoutHandler::OnUserReauthenticationResult(
     bool authenticated) {
   if (authenticated) {
     CHECK(!timeout_call_.is_null());

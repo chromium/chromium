@@ -50,7 +50,6 @@
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
-#include "components/password_manager/core/browser/password_access_authenticator.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
@@ -94,7 +93,7 @@ namespace {
 using password_manager::CredentialFacet;
 using password_manager::CredentialUIEntry;
 using password_manager::FetchFamilyMembersRequestStatus;
-using password_manager::PasswordAccessAuthenticator;
+using password_manager::PasswordAccessAuthTimeoutHandler;
 
 // The error message returned to the UI when Chrome refuses to start multiple
 // exports.
@@ -314,7 +313,7 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
                                &credential_id_generator_),
       current_entries_initialized_(false),
       is_initialized_(false) {
-  password_access_authenticator_.Init(
+  auth_timeout_handler_.Init(
       base::BindRepeating(&PasswordsPrivateDelegateImpl::OsReauthTimeoutCall,
                           weak_ptr_factory_.GetWeakPtr()));
   saved_passwords_presenter_.AddObserver(this);
@@ -534,7 +533,7 @@ void PasswordsPrivateDelegateImpl::RequestPlaintextPassword(
     PlaintextPasswordCallback callback,
     content::WebContents* web_contents) {
   AuthenticateUser(
-      web_contents, PasswordAccessAuthenticator::GetAuthValidityPeriod(),
+      web_contents, PasswordAccessAuthTimeoutHandler::GetAuthValidityPeriod(),
       ConvertPurposeToMessage(GetReauthPurpose(reason)),
       base::BindOnce(
           &PasswordsPrivateDelegateImpl::OnRequestPlaintextPasswordAuthResult,
@@ -546,7 +545,7 @@ void PasswordsPrivateDelegateImpl::RequestCredentialsDetails(
     UiEntriesCallback callback,
     content::WebContents* web_contents) {
   AuthenticateUser(
-      web_contents, PasswordAccessAuthenticator::GetAuthValidityPeriod(),
+      web_contents, PasswordAccessAuthTimeoutHandler::GetAuthValidityPeriod(),
       ConvertPurposeToMessage(
           GetReauthPurpose(api::passwords_private::PLAINTEXT_REASON_VIEW)),
       base::BindOnce(
@@ -895,7 +894,7 @@ PasswordsPrivateDelegateImpl::GetInsecureCredentialsManager() {
 }
 
 void PasswordsPrivateDelegateImpl::RestartAuthTimer() {
-  password_access_authenticator_.RestartAuthTimer();
+  auth_timeout_handler_.RestartAuthTimer();
 }
 
 void PasswordsPrivateDelegateImpl::OnPasswordsExportProgress(
@@ -1018,7 +1017,7 @@ void PasswordsPrivateDelegateImpl::OnAccountStorageOptInStateChanged() {
 bool PasswordsPrivateDelegateImpl::OnReauthCompleted(bool authenticated) {
   device_authenticator_.reset();
 
-  password_access_authenticator_.OnUserReauthenticationResult(authenticated);
+  auth_timeout_handler_.OnUserReauthenticationResult(authenticated);
   return authenticated;
 }
 

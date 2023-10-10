@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_ACCESS_AUTHENTICATOR_H_
-#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_ACCESS_AUTHENTICATOR_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_ACCESS_AUTH_TIMEOUT_HANDLER_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_ACCESS_AUTH_TIMEOUT_HANDLER_H_
 
 #include "base/functional/callback.h"
 #include "base/time/clock.h"
@@ -20,18 +20,18 @@ namespace password_manager {
 // PasswordEntryEditor.java and PasswordReauthenticationFragment.java in
 // chrome/android/java/src/org/chromium/chrome/browser/preferences/password/
 // for Android).
-// TODO(crbug.com/1476842): Rename this class more suggestively
-class PasswordAccessAuthenticator {
+class PasswordAccessAuthTimeoutHandler {
  public:
   using TimeoutCallback = base::RepeatingCallback<void()>;
 
-  PasswordAccessAuthenticator();
+  PasswordAccessAuthTimeoutHandler();
 
-  PasswordAccessAuthenticator(const PasswordAccessAuthenticator&) = delete;
-  PasswordAccessAuthenticator& operator=(const PasswordAccessAuthenticator&) =
+  PasswordAccessAuthTimeoutHandler(const PasswordAccessAuthTimeoutHandler&) =
       delete;
+  PasswordAccessAuthTimeoutHandler& operator=(
+      const PasswordAccessAuthTimeoutHandler&) = delete;
 
-  ~PasswordAccessAuthenticator();
+  ~PasswordAccessAuthTimeoutHandler();
 
   // |timeout_call| is passed to |timeout_call_| and will be called when
   // |timeout_timer_| runs out.
@@ -70,4 +70,4 @@ class PasswordAccessAuthenticator {
 
 }  // namespace password_manager
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_ACCESS_AUTHENTICATOR_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_ACCESS_AUTH_TIMEOUT_HANDLER_H_

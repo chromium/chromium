@@ -26,7 +26,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/export/export_progress_status.h"
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
-#include "components/password_manager/core/browser/password_access_authenticator.h"
+#include "components/password_manager/core/browser/password_access_auth_timeout_handler.h"
 #include "components/password_manager/core/browser/password_account_storage_settings_watcher.h"
 #include "components/password_manager/core/browser/reauth_purpose.h"
 #include "components/password_manager/core/browser/sharing/recipients_fetcher.h"
@@ -258,7 +258,7 @@ class PasswordsPrivateDelegateImpl
   // Used to control the export and import flows.
   std::unique_ptr<PasswordManagerPorterInterface> password_manager_porter_;
 
-  password_manager::PasswordAccessAuthenticator password_access_authenticator_;
+  password_manager::PasswordAccessAuthTimeoutHandler auth_timeout_handler_;
 
   std::unique_ptr<password_manager::PasswordAccountStorageSettingsWatcher>
       password_account_storage_settings_watcher_;

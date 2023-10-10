@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_access_authenticator.h"
+#include "components/password_manager/core/browser/password_access_auth_timeout_handler.h"
 
 #include <utility>
 
@@ -21,23 +21,24 @@ using ::testing::Values;
 namespace password_manager {
 
 using MockTimeoutCallback =
-    base::MockCallback<PasswordAccessAuthenticator::TimeoutCallback>;
+    base::MockCallback<PasswordAccessAuthTimeoutHandler::TimeoutCallback>;
 
-class PasswordAccessAuthenticatorTest
+class PasswordAccessAuthTimeoutHandlerTest
     : public TestWithParam<std::tuple<ReauthPurpose, bool>> {
  public:
-  PasswordAccessAuthenticatorTest() = default;
+  PasswordAccessAuthTimeoutHandlerTest() = default;
 
   ReauthPurpose purpose() { return std::get<0>(GetParam()); }
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
   MockTimeoutCallback& timeout_callback() { return timeout_callback_; }
-  PasswordAccessAuthenticator& authenticator() { return authenticator_; }
+  PasswordAccessAuthTimeoutHandler& handler() { return handler_; }
 
  protected:
   void SetUp() override {
-    if (std::get<1>(GetParam()))
+    if (std::get<1>(GetParam())) {
       feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
-    authenticator_.Init(timeout_callback_.Get());
+    }
+    handler_.Init(timeout_callback_.Get());
   }
 
   void TearDown() override { feature_list.Reset(); }
@@ -46,32 +47,34 @@ class PasswordAccessAuthenticatorTest
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockTimeoutCallback timeout_callback_;
-  PasswordAccessAuthenticator authenticator_;
+  PasswordAccessAuthTimeoutHandler handler_;
   base::test::ScopedFeatureList feature_list;
 };
 
-TEST_P(PasswordAccessAuthenticatorTest, RestartAuthTimer) {
+TEST_P(PasswordAccessAuthTimeoutHandlerTest, RestartAuthTimer) {
   // Timeout callback will not be run because the timer was not started.
-  authenticator().RestartAuthTimer();
+  handler().RestartAuthTimer();
   EXPECT_CALL(timeout_callback(), Run).Times(0);
   task_environment().FastForwardBy(
-      PasswordAccessAuthenticator::GetAuthValidityPeriod() + base::Seconds(1));
+      PasswordAccessAuthTimeoutHandler::GetAuthValidityPeriod() +
+      base::Seconds(1));
 
   // Timeout callback will not be run because not enough time has passed.
-  authenticator().start_auth_timer(timeout_callback().Get());
+  handler().start_auth_timer(timeout_callback().Get());
   task_environment().FastForwardBy(
-      PasswordAccessAuthenticator::GetAuthValidityPeriod() - base::Seconds(1));
+      PasswordAccessAuthTimeoutHandler::GetAuthValidityPeriod() -
+      base::Seconds(1));
 
   // Timeout callback will be run.
-  authenticator().RestartAuthTimer();
+  handler().RestartAuthTimer();
   EXPECT_CALL(timeout_callback(), Run).Times(1);
   task_environment().FastForwardBy(
-      PasswordAccessAuthenticator::GetAuthValidityPeriod());
+      PasswordAccessAuthTimeoutHandler::GetAuthValidityPeriod());
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    PasswordAccessAuthenticatorTest,
+    PasswordAccessAuthTimeoutHandlerTest,
     testing::Combine(testing::Values(ReauthPurpose::VIEW_PASSWORD,
                                      ReauthPurpose::COPY_PASSWORD,
                                      ReauthPurpose::EDIT_PASSWORD,
