@@ -80,15 +80,8 @@ class AtpAccessibilityPrivate {
     for (let focusRingInfo of focusRingInfos) {
       let mojomFocusRing = new ax.mojom.FocusRingInfo();
       if (focusRingInfo.rects && focusRingInfo.rects.length) {
-        mojomFocusRing.rects = [];
-        for (let rect of focusRingInfo.rects) {
-          let mojomRect = new gfx.mojom.Rect();
-          mojomRect.x = rect.left;
-          mojomRect.y = rect.top;
-          mojomRect.width = rect.width;
-          mojomRect.height = rect.height;
-          mojomFocusRing.rects.push(mojomRect);
-        }
+        mojomFocusRing.rects =
+            AtpAccessibilityPrivate.convertRectsToMojom_(focusRingInfo.rects);
       }
       if (focusRingInfo.type !== undefined) {
         switch (focusRingInfo.type) {
@@ -106,20 +99,17 @@ class AtpAccessibilityPrivate {
         }
       }
       if (focusRingInfo.color !== undefined) {
-        mojomFocusRing.color = new skia.mojom.SkColor();
-        mojomFocusRing.color.value =
-            AtpAccessibilityPrivate.parseHexColor_(focusRingInfo.color);
+        mojomFocusRing.color =
+            AtpAccessibilityPrivate.convertColorToMojom_(focusRingInfo.color);
       }
       if (focusRingInfo.secondaryColor !== undefined) {
-        mojomFocusRing.secondaryColor = new skia.mojom.SkColor();
-        mojomFocusRing.secondaryColor.value =
-            AtpAccessibilityPrivate.parseHexColor_(
+        mojomFocusRing.secondaryColor =
+            AtpAccessibilityPrivate.convertColorToMojom_(
                 focusRingInfo.secondaryColor);
       }
       if (focusRingInfo.backgroundColor !== undefined) {
-        mojomFocusRing.backgroundColor = new skia.mojom.SkColor();
-        mojomFocusRing.backgroundColor.value =
-            AtpAccessibilityPrivate.parseHexColor_(
+        mojomFocusRing.backgroundColor =
+            AtpAccessibilityPrivate.convertColorToMojom_(
                 focusRingInfo.backgroundColor);
       }
       if (focusRingInfo.stackingOrder !== undefined) {
@@ -146,11 +136,52 @@ class AtpAccessibilityPrivate {
     this.userInterfaceRemote_.setFocusRings(mojomFocusRings, mojomAtType);
   }
 
-  static parseHexColor_(colorString) {
+  /**
+   * Sets the given focus highlights.
+   * @param {!Array<!chrome.accessibilityPrivate.ScreenRect>} rects
+   * @param {string} color
+   */
+  setHighlights(rects, color) {
+    const mojomColor = AtpAccessibilityPrivate.convertColorToMojom_(color);
+    const mojomRects = AtpAccessibilityPrivate.convertRectsToMojom_(rects);
+    this.userInterfaceRemote_.setHighlights(mojomRects, mojomColor);
+  }
+
+  /**
+   * Convert array of accessibilityPrivate.ScreenRect to gfx.mojom.Rects.
+   * @param {!Array<!chrome.accessibilityPrivate.ScreenRect>} rects
+   * @return {!Array<!gfx.mojom.Rect>}
+   * @private
+   */
+  static convertRectsToMojom_(rects) {
+    let mojomRects = [];
+    for (const rect of rects) {
+      let mojomRect = new gfx.mojom.Rect();
+      mojomRect.x = rect.left;
+      mojomRect.y = rect.top;
+      mojomRect.width = rect.width;
+      mojomRect.height = rect.height;
+      mojomRects.push(mojomRect);
+    }
+    return mojomRects;
+  }
+
+  /**
+   * Converts a hex string to SkColor object.
+   * @param {string} colorString
+   * @return {skia.mojom.SkColor}
+   * @private
+   */
+  static convertColorToMojom_(colorString) {
+    let result = new skia.mojom.SkColor();
     if (colorString[0] === '#') {
       colorString = colorString.substr(1);
     }
-    return parseInt(colorString, 16);
+    if (colorString.length === 6) {
+      colorString = 'FF' + colorString;
+    }
+    result.value = parseInt(colorString, 16);
+    return result;
   }
 }
 

@@ -208,4 +208,12 @@ void FakeAccessibilityService::RequestSetFocusRings(
   }
 }
 
+void FakeAccessibilityService::RequestSetHighlights(
+    const std::vector<gfx::Rect>& rects,
+    SkColor color) {
+  for (auto& ux_client : ux_remotes_) {
+    ux_client->SetHighlights(rects, color);
+  }
+}
+
 }  // namespace ash

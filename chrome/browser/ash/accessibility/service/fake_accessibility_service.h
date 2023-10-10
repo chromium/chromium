@@ -142,6 +142,8 @@ class FakeAccessibilityService
       std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
       ax::mojom::AssistiveTechnologyType at_type);
 
+  void RequestSetHighlights(const std::vector<gfx::Rect>& rects, SkColor color);
+
   // Getters for automation events.
   std::vector<ui::AXTreeID> tree_destroyed_events() const {
     return tree_destroyed_events_;

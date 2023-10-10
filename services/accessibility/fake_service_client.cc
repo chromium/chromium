@@ -114,6 +114,13 @@ void FakeServiceClient::SetFocusRings(
     focus_rings_callback_.Run();
   }
 }
+
+void FakeServiceClient::SetHighlights(const std::vector<gfx::Rect>& rects,
+                                      SkColor color) {
+  if (highlights_callback_) {
+    highlights_callback_.Run(rects, color);
+  }
+}
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 
 void FakeServiceClient::BindAccessibilityServiceClientForTest() {
@@ -147,6 +154,13 @@ void FakeServiceClient::SetFocusRingsCallback(
     base::RepeatingCallback<void()> callback) {
   focus_rings_callback_ = std::move(callback);
 }
+
+void FakeServiceClient::SetHighlightsCallback(
+    base::RepeatingCallback<void(const std::vector<gfx::Rect>& rects,
+                                 SkColor color)> callback) {
+  highlights_callback_ = callback;
+}
+
 bool FakeServiceClient::UserInterfaceIsBound() const {
   return ux_receivers_.size();
 }

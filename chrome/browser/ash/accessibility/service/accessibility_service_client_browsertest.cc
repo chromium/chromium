@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
+#include "ash/accessibility/ui/accessibility_highlight_layer.h"
 #include "ash/public/cpp/accessibility_focus_ring_info.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
@@ -955,6 +956,33 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, SetFocusRings) {
   fake_service_->RequestSetFocusRings(
       std::move(focus_rings),
       ax::mojom::AssistiveTechnologyType::kSwitchAccess);
+
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, SetHighlights) {
+  auto client =
+      TurnOnAccessibilityService(AssistiveTechnologyType::kSwitchAccess);
+  fake_service_->BindAnotherUserInterface();
+
+  std::vector<gfx::Rect> rects;
+  rects.emplace_back(gfx::Rect(0, 1, 22, 1973));
+
+  base::RunLoop waiter;
+  AccessibilityManager::Get()->SetHighlightsObserverForTest(
+      base::BindLambdaForTesting([&waiter, &rects] {
+        waiter.Quit();
+        AccessibilityFocusRingControllerImpl* controller =
+            Shell::Get()->accessibility_focus_ring_controller();
+        AccessibilityHighlightLayer* highlight_layer =
+            controller->highlight_layer_for_testing();
+        EXPECT_TRUE(highlight_layer);
+        ASSERT_EQ(1u, highlight_layer->rects_for_test().size());
+        EXPECT_EQ(rects[0], highlight_layer->rects_for_test()[0]);
+        EXPECT_EQ(SK_ColorMAGENTA, highlight_layer->color_for_test());
+      }));
+
+  fake_service_->RequestSetHighlights(rects, SK_ColorMAGENTA);
 
   waiter.Run();
 }

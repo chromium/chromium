@@ -65,6 +65,8 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   // ax::mojom::UserInterface:
   void SetFocusRings(std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
                      ax::mojom::AssistiveTechnologyType at_type) override;
+  void SetHighlights(const std::vector<gfx::Rect>& rects,
+                     SkColor color) override;
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 
   // Methods for testing.
@@ -83,6 +85,9 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   void SetFocusRingsCallback(base::RepeatingCallback<void()> callback);
   const std::vector<ax::mojom::FocusRingInfoPtr>& GetFocusRingsForType(
       mojom::AssistiveTechnologyType type) const;
+  void SetHighlightsCallback(
+      base::RepeatingCallback<void(const std::vector<gfx::Rect>& rects,
+                                   SkColor color)> callback);
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   base::WeakPtr<FakeServiceClient> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -105,6 +110,10 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   std::map<mojom::AssistiveTechnologyType,
            std::vector<ax::mojom::FocusRingInfoPtr>>
       focus_rings_for_type_;
+
+  base::RepeatingCallback<void(const std::vector<gfx::Rect>& rects,
+                               SkColor color)>
+      highlights_callback_;
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   mojo::Receiver<mojom::AccessibilityServiceClient> a11y_client_receiver_{this};
 

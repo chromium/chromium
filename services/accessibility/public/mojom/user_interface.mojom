@@ -59,4 +59,7 @@ interface UserInterface {
     // FocusRingInfo.
     SetFocusRings(array<FocusRingInfo> focus_rings,
         AssistiveTechnologyType at_type);
+
+    // Sets the bounds and color of the accessibility highlight.
+    SetHighlights(array<gfx.mojom.Rect> rects, skia.mojom.SkColor color);
 };

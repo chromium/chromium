@@ -436,7 +436,7 @@ TEST_F(AccessibilityPrivateJSApiTest, SetFocusRings) {
     ASSERT_EQ(focus_rings.size(), 1u);
     auto& focus_ring = focus_rings[0];
     EXPECT_EQ(focus_ring->type, mojom::FocusType::kGlow);
-    EXPECT_EQ(focus_ring->color, 13369395u);
+    EXPECT_EQ(focus_ring->color, SK_ColorRED);
     ASSERT_EQ(focus_ring->rects.size(), 1u);
     EXPECT_EQ(focus_ring->rects[0], gfx::Rect(50, 100, 200, 300));
 
@@ -450,7 +450,7 @@ TEST_F(AccessibilityPrivateJSApiTest, SetFocusRings) {
     const focusRingInfo = {
       rects: [{left: 50, top: 100, width: 200, height: 300}],
       type: 'glow',
-      color: '#cc0033',
+      color: '#ff0000',
     };
     chrome.accessibilityPrivate.setFocusRings([focusRingInfo],
         chrome.accessibilityPrivate.AssistiveTechnologyType.CHROME_VOX);
@@ -484,7 +484,7 @@ TEST_F(AccessibilityPrivateJSApiTest, SetFocusRingsOptionalValues) {
     ASSERT_EQ(focus_rings.size(), 2u);
     auto& focus_ring1 = focus_rings[0];
     EXPECT_EQ(focus_ring1->type, mojom::FocusType::kSolid);
-    EXPECT_EQ(focus_ring1->color, 13369378u);
+    EXPECT_EQ(focus_ring1->color, SK_ColorWHITE);
     ASSERT_EQ(focus_ring1->rects.size(), 2u);
     EXPECT_EQ(focus_ring1->rects[0], gfx::Rect(150, 200, 300, 400));
     EXPECT_EQ(focus_ring1->rects[1], gfx::Rect(0, 50, 150, 250));
@@ -492,24 +492,24 @@ TEST_F(AccessibilityPrivateJSApiTest, SetFocusRingsOptionalValues) {
     EXPECT_EQ(focus_ring1->stacking_order.value(),
               mojom::FocusRingStackingOrder::kAboveAccessibilityBubbles);
     ASSERT_TRUE(focus_ring1->background_color.has_value());
-    EXPECT_EQ(focus_ring1->background_color.value(), 11259375u);
+    EXPECT_EQ(focus_ring1->background_color.value(), SK_ColorYELLOW);
     ASSERT_TRUE(focus_ring1->secondary_color.has_value());
-    EXPECT_EQ(focus_ring1->secondary_color.value(), 1193046u);
+    EXPECT_EQ(focus_ring1->secondary_color.value(), SK_ColorMAGENTA);
     ASSERT_TRUE(focus_ring1->id.has_value());
     EXPECT_EQ(focus_ring1->id.value(), "lovelace");
 
     auto& focus_ring2 = focus_rings[1];
     EXPECT_EQ(focus_ring2->type, mojom::FocusType::kDashed);
-    EXPECT_EQ(focus_ring2->color, 0u);
+    EXPECT_EQ(focus_ring2->color, SK_ColorBLACK);
     ASSERT_EQ(focus_ring2->rects.size(), 1u);
     EXPECT_EQ(focus_ring2->rects[0], gfx::Rect(4, 3, 2, 1));
     ASSERT_TRUE(focus_ring2->stacking_order.has_value());
     EXPECT_EQ(focus_ring2->stacking_order.value(),
               mojom::FocusRingStackingOrder::kBelowAccessibilityBubbles);
     ASSERT_TRUE(focus_ring2->background_color.has_value());
-    EXPECT_EQ(focus_ring2->background_color.value(), 16702650u);
+    EXPECT_EQ(focus_ring2->background_color.value(), SK_ColorRED);
     ASSERT_TRUE(focus_ring2->secondary_color.has_value());
-    EXPECT_EQ(focus_ring2->secondary_color.value(), 6636321u);
+    EXPECT_EQ(focus_ring2->secondary_color.value(), SK_ColorCYAN);
     ASSERT_TRUE(focus_ring2->id.has_value());
     EXPECT_EQ(focus_ring2->id.value(), "curie");
   }));
@@ -521,9 +521,10 @@ TEST_F(AccessibilityPrivateJSApiTest, SetFocusRingsOptionalValues) {
         {left: 0, top: 50, width: 150, height: 250}
       ],
       type: 'solid',
-      color: '#cc0022',
-      backgroundColor: '#abcdef',
-      secondaryColor: '#123456',
+      color: '#ffffff',
+      backgroundColor: '#ffff00',
+      // Ensure capitalization doesn't matter.
+      secondaryColor: '#FF00ff',
       stackingOrder:
           stackingOrder.ABOVE_ACCESSIBILITY_BUBBLES,
       id: 'lovelace',
@@ -532,8 +533,8 @@ TEST_F(AccessibilityPrivateJSApiTest, SetFocusRingsOptionalValues) {
       rects: [{left: 4, top: 3, width: 2, height: 1}],
       type: 'dashed',
       color: '#000000',
-      backgroundColor: 'fedcba',
-      secondaryColor: '#654321',
+      backgroundColor: 'ff0000',
+      secondaryColor: '#00FFFF',
       stackingOrder:
           stackingOrder.BELOW_ACCESSIBILITY_BUBBLES,
       id: 'curie',
@@ -541,6 +542,39 @@ TEST_F(AccessibilityPrivateJSApiTest, SetFocusRingsOptionalValues) {
     chrome.accessibilityPrivate.setFocusRings(
       [focusRingInfo1, focusRingInfo2],
       chrome.accessibilityPrivate.AssistiveTechnologyType.SELECT_TO_SPEAK);
+  )JS");
+  waiter.Run();
+}
+
+TEST_F(AccessibilityPrivateJSApiTest, SetHighlights) {
+  base::RunLoop waiter;
+  client_->SetHighlightsCallback(base::BindLambdaForTesting(
+      [&waiter](const std::vector<gfx::Rect>& rects, SkColor color) {
+        waiter.Quit();
+        ASSERT_EQ(rects.size(), 2u);
+        EXPECT_EQ(rects[0], gfx::Rect(1, 22, 1973, 100));
+        EXPECT_EQ(rects[1], gfx::Rect(2, 4, 6, 8));
+        EXPECT_EQ(color, SK_ColorGREEN);
+      }));
+  ExecuteJS(R"JS(
+    const rects = [
+        {left: 1, top: 22, width: 1973, height: 100},
+        {left: 2, top: 4, width: 6, height: 8}
+    ];
+    chrome.accessibilityPrivate.setHighlights(rects, '#00FF00');
+  )JS");
+  waiter.Run();
+}
+
+TEST_F(AccessibilityPrivateJSApiTest, SetHighlightsEmptyRects) {
+  base::RunLoop waiter;
+  client_->SetHighlightsCallback(base::BindLambdaForTesting(
+      [&waiter](const std::vector<gfx::Rect>& rects, SkColor color) {
+        waiter.Quit();
+        ASSERT_EQ(rects.size(), 0u);
+      }));
+  ExecuteJS(R"JS(
+    chrome.accessibilityPrivate.setHighlights([], '#FF0000');
   )JS");
   waiter.Run();
 }

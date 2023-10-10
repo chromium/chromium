@@ -81,4 +81,9 @@ void UserInterfaceImpl::SetFocusRings(
   }
 }
 
+void UserInterfaceImpl::SetHighlights(const std::vector<gfx::Rect>& rects,
+                                      SkColor color) {
+  AccessibilityManager::Get()->SetHighlights(rects, color);
+}
+
 }  // namespace ash
