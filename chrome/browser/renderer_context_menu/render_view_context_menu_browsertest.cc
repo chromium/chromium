@@ -63,6 +63,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/compose/buildflags.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/lens/buildflags.h"
@@ -133,6 +134,10 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+#include "components/compose/core/browser/compose_features.h"
+#endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -1147,6 +1152,41 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_EMOJI));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+class ContextMenuForComposeBrowserTest : public ContextMenuBrowserTest {
+ public:
+  ContextMenuForComposeBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{compose::features::kEnableCompose},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextMenuForComposeBrowserTest,
+                       ContextMenuForCompose_Editable) {
+  content::ContextMenuParams params;
+  params.is_editable = true;
+
+  auto menu = CreateContextMenuFromParams(params);
+
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTEXT_COMPOSE));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextMenuForComposeBrowserTest,
+                       ContextMenuForCompose_NonEditable) {
+  content::ContextMenuParams params;
+  params.is_editable = false;
+
+  auto menu = CreateContextMenuFromParams(params);
+
+  // Compose context menu item should never be present on a non-editable field.
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTEXT_COMPOSE));
+}
+#endif  // BUILDFLAG(ENABLE_COMPOSE)
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, CopyLinkTextMouse) {
   std::unique_ptr<TestRenderViewContextMenu> menu = CreateContextMenu(

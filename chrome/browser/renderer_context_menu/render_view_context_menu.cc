@@ -129,6 +129,7 @@
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/compose/core/browser/compose_features.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/feed/feed_feature_list.h"
@@ -499,13 +500,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        // Removed: {IDC_CONTENT_CONTEXT_ORCA, 136},
        {IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION, 137},
        {IDC_CONTENT_PASTE_FROM_CLIPBOARD, 138},
+       {IDC_CONTEXT_COMPOSE, 139},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 139}});
+       {0, 140}});
 
   // These UMA values are for the the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -2246,18 +2248,28 @@ void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
     AppendSearchProvider();
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
   }
+  bool render_separator = false;
   if (params_.misspelled_word.empty()) {
-    bool render_separator = false;
     if (DoesInputFieldTypeSupportEmoji(params_.input_field_type) &&
         ui::IsEmojiPanelSupported()) {
       render_separator = true;
       menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_EMOJI,
                                       IDS_CONTENT_CONTEXT_EMOJI);
     }
+  }
+  // TODO(b/301371110): Update enabling constraints.
+  if (base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
+    menu_model_.AddItemWithStringId(IDC_CONTEXT_COMPOSE,
+                                    IDS_COMPOSE_SUGGESTION_MAIN_TEXT);
+    // TODO(b/303646344): Remove new feature tag when no longer new.
+    menu_model_.SetIsNewFeatureAt(
+        menu_model_.GetItemCount() - 1,
+        !content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_LINK));
 
-    if (render_separator) {
-      menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
-    }
+    render_separator = true;
+  }
+  if (render_separator) {
+    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
   }
 }
 
@@ -2783,6 +2795,8 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
     case IDC_CONTENT_CONTEXT_EMOJI:
       return params_.is_editable;
+    case IDC_CONTEXT_COMPOSE:
+      return params_.is_editable;
 
     case IDC_CONTENT_CONTEXT_START_SMART_SELECTION_ACTION1:
     case IDC_CONTENT_CONTEXT_START_SMART_SELECTION_ACTION2:
@@ -3260,6 +3274,11 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
         // process. This fails in print preview for PWA windows on Mac.
         ui::ShowEmojiPanel();
       }
+      break;
+    }
+
+    case IDC_CONTEXT_COMPOSE: {
+      // TODO(b/301371110): implement the click functionality.
       break;
     }
 
