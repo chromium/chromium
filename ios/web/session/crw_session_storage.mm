@@ -245,14 +245,23 @@ NSString* const kTabIdKey = @"TabId";
       _uniqueIdentifier = web::WebStateID::NewUnique();
     }
 
+    if ([decoder containsValueForKey:kCreationTimeKey]) {
+      _creationTime = base::Time::FromDeltaSinceWindowsEpoch(
+          base::Microseconds([decoder decodeInt64ForKey:kCreationTimeKey]));
+    }
+
     if ([decoder containsValueForKey:kLastActiveTimeKey]) {
       _lastActiveTime = base::Time::FromDeltaSinceWindowsEpoch(
           base::Microseconds([decoder decodeInt64ForKey:kLastActiveTimeKey]));
     }
 
-    if ([decoder containsValueForKey:kCreationTimeKey]) {
-      _creationTime = base::Time::FromDeltaSinceWindowsEpoch(
-          base::Microseconds([decoder decodeInt64ForKey:kCreationTimeKey]));
+    // There was a regression found in M-119 but pre-existing that caused
+    // WebState to initialize `GetLastActiveTime()` to base::Time(). This
+    // is considered as an infinitely old point in time. Fix the value if
+    // found while loading a session written before the initialisation of
+    // WebState was fixed (see https://crbug.com/1490604 for details).
+    if (_lastActiveTime < _creationTime) {
+      _lastActiveTime = _creationTime;
     }
   }
   return self;
