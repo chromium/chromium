@@ -18188,6 +18188,32 @@
             ]
         }
     ],
+    "V8WasmGenericWrapper": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebAssemblyGenericWrapper"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "WebAssemblyGenericWrapper"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8WasmInlining": [
         {
             "platforms": [
