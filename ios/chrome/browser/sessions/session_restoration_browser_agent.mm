@@ -41,7 +41,7 @@ namespace {
 class OrderControllerSourceFromSessionWindowIOS final
     : public OrderControllerSource {
  public:
-  // Constructor taking the `session_window` used to return the data,
+  // Constructor taking the `session_window` used to return the data.
   explicit OrderControllerSourceFromSessionWindowIOS(
       SessionWindowIOS* session_window);
 
@@ -85,6 +85,9 @@ int OrderControllerSourceFromSessionWindowIOS::GetPinnedCount() const {
 
 int OrderControllerSourceFromSessionWindowIOS::GetOpenerOfItemAt(
     int index) const {
+  DCHECK_GE(index, 0);
+  DCHECK_LT(index, GetCount());
+
   CRWSessionUserData* user_data = session_window_.sessions[index].userData;
   NSNumber* opener_index_obj = base::apple::ObjCCast<NSNumber>(
       [user_data objectForKey:kLegacyWebStateListOpenerIndexKey]);
@@ -99,6 +102,9 @@ bool OrderControllerSourceFromSessionWindowIOS::IsOpenerOfItemAt(
     int index,
     int opener_index,
     bool check_navigation_index) const {
+  DCHECK_GE(index, 0);
+  DCHECK_LT(index, GetCount());
+
   // `check_navigation_index` is only used for `DetermineInsertionIndex()`
   // which should not be used, so we can assert that the parameter is false.
   DCHECK(!check_navigation_index);
