@@ -19,6 +19,22 @@
 
 namespace content {
 
+namespace {
+
+bool AppendRules(const std::vector<perfetto::protos::gen::TriggerRule>& configs,
+                 std::vector<std::unique_ptr<BackgroundTracingRule>>& rules) {
+  for (const auto& rule_config : configs) {
+    auto rule = BackgroundTracingRule::Create(rule_config);
+    if (!rule) {
+      return false;
+    }
+    rules.push_back(std::move(rule));
+  }
+  return true;
+}
+
+}  // namespace
+
 void TracingScenario::TracingSessionDeleter::operator()(
     perfetto::TracingSession* ptr) const {
   ptr->SetOnErrorCallback({});
@@ -69,21 +85,23 @@ TracingScenarioBase::TracingScenarioBase(const std::string scenario_name)
     : scenario_name_(scenario_name),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
+// static
+std::unique_ptr<NestedTracingScenario> NestedTracingScenario::Create(
+    const perfetto::protos::gen::NestedScenarioConfig& config,
+    Delegate* scenario_delegate) {
+  auto scenario =
+      base::WrapUnique(new NestedTracingScenario(config, scenario_delegate));
+  if (!scenario->Initialize(config)) {
+    return nullptr;
+  }
+  return scenario;
+}
+
 NestedTracingScenario::NestedTracingScenario(
     const perfetto::protos::gen::NestedScenarioConfig& config,
     Delegate* scenario_delegate)
     : TracingScenarioBase(config.scenario_name()),
-      scenario_delegate_(scenario_delegate) {
-  for (const auto& rule : config.start_rules()) {
-    start_rules_.push_back(BackgroundTracingRule::Create(rule));
-  }
-  for (const auto& rule : config.stop_rules()) {
-    stop_rules_.push_back(BackgroundTracingRule::Create(rule));
-  }
-  for (const auto& rule : config.upload_rules()) {
-    upload_rules_.push_back(BackgroundTracingRule::Create(rule));
-  }
-}
+      scenario_delegate_(scenario_delegate) {}
 
 NestedTracingScenario::~NestedTracingScenario() = default;
 
@@ -108,6 +126,13 @@ void NestedTracingScenario::Stop() {
     rule->Uninstall();
   }
   SetState(State::kStopping);
+}
+
+bool NestedTracingScenario::Initialize(
+    const perfetto::protos::gen::NestedScenarioConfig& config) {
+  return AppendRules(config.start_rules(), start_rules_) &&
+         AppendRules(config.stop_rules(), stop_rules_) &&
+         AppendRules(config.upload_rules(), upload_rules_);
 }
 
 bool NestedTracingScenario::OnStartTrigger(
@@ -170,7 +195,7 @@ std::unique_ptr<TracingScenario> TracingScenario::Create(
     Delegate* scenario_delegate) {
   auto scenario =
       base::WrapUnique(new TracingScenario(config, scenario_delegate));
-  if (!scenario->Initialize(requires_anonymized_data,
+  if (!scenario->Initialize(config, requires_anonymized_data,
                             enable_package_name_filter)) {
     return nullptr;
   }
@@ -182,32 +207,30 @@ TracingScenario::TracingScenario(
     Delegate* scenario_delegate)
     : TracingScenarioBase(config.scenario_name()),
       trace_config_(config.trace_config()),
-      scenario_delegate_(scenario_delegate) {
-  for (const auto& scenario_config : config.nested_scenarios()) {
-    nested_scenarios_.push_back(
-        std::make_unique<NestedTracingScenario>(scenario_config, this));
-  }
-  for (const auto& rule : config.start_rules()) {
-    start_rules_.push_back(BackgroundTracingRule::Create(rule));
-  }
-  for (const auto& rule : config.stop_rules()) {
-    stop_rules_.push_back(BackgroundTracingRule::Create(rule));
-  }
-  for (const auto& rule : config.upload_rules()) {
-    upload_rules_.push_back(BackgroundTracingRule::Create(rule));
-  }
-  for (const auto& rule : config.setup_rules()) {
-    setup_rules_.push_back(BackgroundTracingRule::Create(rule));
-  }
-}
+      scenario_delegate_(scenario_delegate) {}
 
 TracingScenario::~TracingScenario() = default;
 
-bool TracingScenario::Initialize(bool requires_anonymized_data,
-                                 bool enable_package_name_filter) {
-  return tracing::AdaptPerfettoConfigForChrome(
-      &trace_config_, requires_anonymized_data, enable_package_name_filter,
-      perfetto::protos::gen::ChromeConfig::BACKGROUND);
+bool TracingScenario::Initialize(
+    const perfetto::protos::gen::ScenarioConfig& config,
+    bool requires_anonymized_data,
+    bool enable_package_name_filter) {
+  if (!tracing::AdaptPerfettoConfigForChrome(
+          &trace_config_, requires_anonymized_data, enable_package_name_filter,
+          perfetto::protos::gen::ChromeConfig::BACKGROUND)) {
+    return false;
+  }
+  for (const auto& nested_config : config.nested_scenarios()) {
+    auto nested_scenario = NestedTracingScenario::Create(nested_config, this);
+    if (!nested_scenario) {
+      return false;
+    }
+    nested_scenarios_.push_back(std::move(nested_scenario));
+  }
+  return AppendRules(config.start_rules(), start_rules_) &&
+         AppendRules(config.stop_rules(), stop_rules_) &&
+         AppendRules(config.upload_rules(), upload_rules_) &&
+         AppendRules(config.setup_rules(), setup_rules_);
 }
 
 void TracingScenario::Disable() {

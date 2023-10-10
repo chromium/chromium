@@ -85,8 +85,8 @@ bool BackgroundTracingRule::OnRuleTriggered() {
   if (trigger_chance_ < 1.0 && base::RandDouble() > trigger_chance_) {
     return false;
   }
-  if (!delay_.is_zero()) {
-    timer_.Start(FROM_HERE, delay_,
+  if (delay_) {
+    timer_.Start(FROM_HERE, *delay_,
                  base::BindOnce(base::IgnoreResult(trigger_callback_),
                                 base::Unretained(this)));
     return true;
@@ -132,8 +132,8 @@ perfetto::protos::gen::TriggerRule BackgroundTracingRule::ToProtoForTesting()
     config.set_trigger_chance(trigger_chance_);
   }
 
-  if (!delay_.is_zero()) {
-    config.set_delay_ms(delay_.InMilliseconds());
+  if (delay_) {
+    config.set_delay_ms(delay_->InMilliseconds());
   }
 
   config.set_name(rule_id_);
@@ -584,8 +584,10 @@ std::unique_ptr<BackgroundTracingRule> BackgroundTracingRule::Create(
     tracing_rule = HistogramRule::Create(config);
   } else if (config.has_repeating_interval()) {
     tracing_rule = RepeatingIntervalRule::Create(config);
-  } else {
+  } else if (config.has_delay_ms()) {
     tracing_rule = TimerRule::Create(config);
+  } else {
+    return nullptr;
   }
   if (tracing_rule) {
     tracing_rule->Setup(config);

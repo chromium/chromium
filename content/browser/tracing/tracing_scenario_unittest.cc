@@ -221,11 +221,23 @@ class TracingScenarioForTesting : public TracingScenario {
  public:
   TracingScenarioForTesting(const perfetto::protos::gen::ScenarioConfig& config,
                             TestTracingScenarioDelegate* delegate)
-      : TracingScenario(config, delegate) {}
+      : TracingScenario(config, delegate) {
+    EXPECT_TRUE(Initialize(config, false, false));
+  }
 
  protected:
   std::unique_ptr<perfetto::TracingSession> CreateTracingSession() override {
     return std::make_unique<TestTracingSession>();
+  }
+};
+
+class NestedTracingScenarioForTesting : public NestedTracingScenario {
+ public:
+  NestedTracingScenarioForTesting(
+      const perfetto::protos::gen::NestedScenarioConfig& config,
+      NestedTracingScenario::Delegate* delegate)
+      : NestedTracingScenario(config, delegate) {
+    EXPECT_TRUE(Initialize(config));
   }
 };
 
@@ -692,7 +704,7 @@ TEST_F(TracingScenarioTest, NestedUpload) {
 }
 
 TEST_F(NestedTracingScenarioTest, Disabled) {
-  NestedTracingScenario tracing_scenario(
+  NestedTracingScenarioForTesting tracing_scenario(
       ParseNestedScenarioConfigFromText(kDefaultNestedConfig), &delegate);
 
   EXPECT_CALL(delegate, OnNestedScenarioStart(&tracing_scenario)).Times(0);
@@ -714,7 +726,7 @@ TEST_F(NestedTracingScenarioTest, Disabled) {
 }
 
 TEST_F(NestedTracingScenarioTest, StartStop) {
-  NestedTracingScenario tracing_scenario(
+  NestedTracingScenarioForTesting tracing_scenario(
       ParseNestedScenarioConfigFromText(kDefaultNestedConfig), &delegate);
 
   tracing_scenario.Enable();
@@ -735,7 +747,7 @@ TEST_F(NestedTracingScenarioTest, StartStop) {
 }
 
 TEST_F(NestedTracingScenarioTest, Upload) {
-  NestedTracingScenario tracing_scenario(
+  NestedTracingScenarioForTesting tracing_scenario(
       ParseNestedScenarioConfigFromText(kDefaultNestedConfig), &delegate);
 
   tracing_scenario.Enable();
@@ -752,7 +764,7 @@ TEST_F(NestedTracingScenarioTest, Upload) {
 }
 
 TEST_F(NestedTracingScenarioTest, StopUpload) {
-  NestedTracingScenario tracing_scenario(
+  NestedTracingScenarioForTesting tracing_scenario(
       ParseNestedScenarioConfigFromText(kDefaultNestedConfig), &delegate);
 
   tracing_scenario.Enable();

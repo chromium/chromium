@@ -84,9 +84,10 @@ class CONTENT_EXPORT NestedTracingScenario : public TracingScenarioBase {
     ~Delegate() = default;
   };
 
-  NestedTracingScenario(
+  static std::unique_ptr<NestedTracingScenario> Create(
       const perfetto::protos::gen::NestedScenarioConfig& config,
       Delegate* scenario_delegate);
+
   ~NestedTracingScenario() override;
 
   // Disables a scenario.
@@ -99,6 +100,13 @@ class CONTENT_EXPORT NestedTracingScenario : public TracingScenarioBase {
   void Stop();
 
   State current_state() const { return current_state_; }
+
+ protected:
+  NestedTracingScenario(
+      const perfetto::protos::gen::NestedScenarioConfig& config,
+      Delegate* scenario_delegate);
+
+  bool Initialize(const perfetto::protos::gen::NestedScenarioConfig& config);
 
  private:
   bool OnStartTrigger(const BackgroundTracingRule* rule) override;
@@ -183,6 +191,10 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
   TracingScenario(const perfetto::protos::gen::ScenarioConfig& config,
                   Delegate* scenario_delegate);
 
+  bool Initialize(const perfetto::protos::gen::ScenarioConfig& config,
+                  bool requires_anonymized_data,
+                  bool enable_package_name_filter);
+
   virtual std::unique_ptr<perfetto::TracingSession> CreateTracingSession();
 
  private:
@@ -198,9 +210,6 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
   using TracingSession =
       std::unique_ptr<perfetto::TracingSession, TracingSessionDeleter>;
   class TraceReader;
-
-  bool Initialize(bool requires_anonymized_data,
-                  bool enable_package_name_filter);
 
   void SetupTracingSession();
   void OnTracingError(perfetto::TracingError error);

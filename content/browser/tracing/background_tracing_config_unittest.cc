@@ -628,6 +628,16 @@ TEST_F(BackgroundTracingConfigTest, NamedRuleFromValidProto) {
   EXPECT_EQ("test_trigger", result.manual_trigger_name());
 }
 
+TEST_F(BackgroundTracingConfigTest, RuleFromEmptyProto) {
+  perfetto::protos::gen::TriggerRule config;
+  CreateRuleConfig(R"pb(
+                     name: "test_rule"
+                   )pb",
+                   config);
+  auto rule = BackgroundTracingRule::Create(config);
+  EXPECT_EQ(nullptr, rule);
+}
+
 TEST_F(BackgroundTracingConfigTest, TimerRuleFromValidProto) {
   perfetto::protos::gen::TriggerRule config;
   CreateRuleConfig(R"pb(
