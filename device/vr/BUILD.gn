@@ -71,6 +71,7 @@ if (enable_vr) {
       "//base",
       "//mojo/public/cpp/bindings",
     ]
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
 
   # Contains useful helper classes that are used by either multiple XR Devices,
@@ -104,6 +105,8 @@ if (enable_vr) {
       "//device/vr/public/mojom:isolated_xr_service",
       "//ui/gfx",
     ]
+
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
 
   if (enable_openxr) {
@@ -118,6 +121,8 @@ if (enable_vr) {
         "//device/gamepad/public/cpp:shared_with_blink",
         "//third_party/openxr:openxr_headers",
       ]
+
+      configs += [ "//build/config/compiler:wexit_time_destructors" ]
     }
   }
 
@@ -147,6 +152,8 @@ if (enable_vr) {
       "//ui/gfx",
       "//ui/gfx/mojom",
     ]
+
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     if (enable_gvr_services) {
       sources += [

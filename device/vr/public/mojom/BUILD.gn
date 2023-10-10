@@ -98,6 +98,8 @@ component("vr_public_typemaps") {
     "//ui/gfx/geometry",
     "//ui/gfx/geometry:geometry_skia",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 mojom_component("xr_common") {

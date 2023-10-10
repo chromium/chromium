@@ -4,7 +4,11 @@
 
 #include "device/vr/openxr/openxr_scene_understanding_manager.h"
 
-#include <chrono>
+#include <algorithm>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
@@ -72,9 +76,9 @@ void OpenXRSceneUnderstandingManager::OnFrameUpdate(
         DCHECK(scene_observer_);
         scene_bounds_.space_ = mojo_space_;
         scene_bounds_.time_ = predicted_display_time;
-        static const std::vector<XrSceneComputeFeatureMSFT> scene_features{
+        static constexpr XrSceneComputeFeatureMSFT kSceneFeatures[] = {
             XR_SCENE_COMPUTE_FEATURE_PLANE_MSFT};
-        if (XR_SUCCEEDED(scene_observer_->ComputeNewScene(scene_features,
+        if (XR_SUCCEEDED(scene_observer_->ComputeNewScene(kSceneFeatures,
                                                           scene_bounds_))) {
           scene_compute_state_ = SceneComputeState::Waiting;
         }

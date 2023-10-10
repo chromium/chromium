@@ -110,6 +110,10 @@ component("vr_ui") {
     "//ui/gfx/animation/keyframe",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  defines = [ "VR_UI_IMPLEMENTATION" ]
+
   if (use_native_partitions) {
     # Mark symbols in this library as belonging to the VR partition. Only
     # exported symbols (module entrypoints) are affected.
@@ -119,8 +123,6 @@ component("vr_ui") {
   if (is_android) {
     sources += [ "jni_onload.cc" ]
   }
-
-  defines = [ "VR_UI_IMPLEMENTATION" ]
 
   if (use_command_buffer) {
     sources += [
@@ -195,6 +197,10 @@ component("vr_common") {
     "//ui/display",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  defines = [ "VR_IMPLEMENTATION" ]
+
   if (is_win) {
     sources += [
       "win/graphics_delegate_win.cc",
@@ -215,8 +221,6 @@ component("vr_common") {
     # Windows doesn't have app bundles, so include the UI directly.
     deps += [ ":vr_ui" ]
   }
-
-  defines = [ "VR_IMPLEMENTATION" ]
 
   if (!use_command_buffer) {
     sources += [
@@ -279,6 +283,8 @@ component("vr_base") {
     "//services/metrics/public/cpp:ukm_builders",
     "//skia",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (is_android) {
     deps += [ "//chrome/android/features/vr:split_jni_headers" ]

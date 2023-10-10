@@ -4,6 +4,7 @@
 
 #include "device/vr/openxr/openxr_scene_observer.h"
 
+#include "base/check.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
@@ -29,7 +30,7 @@ OpenXrSceneObserver::OpenXrSceneObserver(
 OpenXrSceneObserver::~OpenXrSceneObserver() = default;
 
 XrResult OpenXrSceneObserver::ComputeNewScene(
-    const std::vector<XrSceneComputeFeatureMSFT>& requested_features,
+    base::span<const XrSceneComputeFeatureMSFT> requested_features,
     const OpenXrSceneBounds& bounds) {
   XrNewSceneComputeInfoMSFT compute_info{XR_TYPE_NEW_SCENE_COMPUTE_INFO_MSFT};
   compute_info.requestedFeatureCount =

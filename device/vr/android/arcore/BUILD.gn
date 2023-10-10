@@ -58,5 +58,8 @@ component("arcore") {
     "//ui/gl/init",
   ]
 
-  configs += [ "//third_party/arcore-android-sdk:libarcore_config" ]
+  configs += [
+    "//third_party/arcore-android-sdk:libarcore_config",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
 }

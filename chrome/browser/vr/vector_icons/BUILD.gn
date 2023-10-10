@@ -21,4 +21,6 @@ source_set("vector_icons") {
     "//skia",
     "//ui/gfx",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

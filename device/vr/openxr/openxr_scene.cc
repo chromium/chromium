@@ -4,6 +4,9 @@
 
 #include "device/vr/openxr/openxr_scene.h"
 
+#include <array>
+#include <vector>
+
 #include "base/check_op.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
@@ -39,15 +42,15 @@ XrResult OpenXrScene::GetPlanes(std::vector<OpenXrScenePlane>& out_planes) {
   XrSceneComponentsGetInfoMSFT get_info{XR_TYPE_SCENE_COMPONENTS_GET_INFO_MSFT};
   get_info.componentType = XR_SCENE_COMPONENT_TYPE_PLANE_MSFT;
 
-  static const std::vector<OpenXrSceneObject::Type> plane_filters{
+  static constexpr std::array<OpenXrSceneObject::Type, 6> kPlaneFilters{
       XR_SCENE_OBJECT_TYPE_BACKGROUND_MSFT, XR_SCENE_OBJECT_TYPE_WALL_MSFT,
       XR_SCENE_OBJECT_TYPE_FLOOR_MSFT,      XR_SCENE_OBJECT_TYPE_CEILING_MSFT,
       XR_SCENE_OBJECT_TYPE_PLATFORM_MSFT,   XR_SCENE_OBJECT_TYPE_INFERRED_MSFT};
 
   XrSceneObjectTypesFilterInfoMSFT types_filter{
       XR_TYPE_SCENE_OBJECT_TYPES_FILTER_INFO_MSFT};
-  types_filter.objectTypeCount = static_cast<uint32_t>(plane_filters.size());
-  types_filter.objectTypes = plane_filters.data();
+  types_filter.objectTypeCount = static_cast<uint32_t>(kPlaneFilters.size());
+  types_filter.objectTypes = kPlaneFilters.data();
   device::InsertExtensionStruct(get_info, types_filter);
 
   // Before we get back the array of components/planes, we need to query
