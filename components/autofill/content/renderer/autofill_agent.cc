@@ -26,6 +26,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/autofill/content/renderer/a11y_utils.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
 #include "components/autofill/content/renderer/form_tracker.h"
@@ -809,28 +810,7 @@ void AutofillAgent::SetSuggestionAvailability(
     return;
   }
 
-  WebInputElement input_element =
-      last_queried_element_.DynamicTo<WebInputElement>();
-  if (!input_element.IsNull()) {
-    switch (state) {
-      case mojom::AutofillState::kAutofillAvailable:
-        WebAXObject::FromWebNode(input_element)
-            .HandleAutofillStateChanged(
-                blink::WebAXAutofillState::kAutofillAvailable);
-        return;
-      case mojom::AutofillState::kAutocompleteAvailable:
-        WebAXObject::FromWebNode(input_element)
-            .HandleAutofillStateChanged(
-                blink::WebAXAutofillState::kAutocompleteAvailable);
-        return;
-      case mojom::AutofillState::kNoSuggestions:
-        WebAXObject::FromWebNode(input_element)
-            .HandleAutofillStateChanged(
-                blink::WebAXAutofillState::kNoSuggestions);
-        return;
-    }
-    NOTREACHED();
-  }
+  SetAutofillState(last_queried_element_.DynamicTo<WebInputElement>(), state);
 }
 
 void AutofillAgent::AcceptDataListSuggestion(

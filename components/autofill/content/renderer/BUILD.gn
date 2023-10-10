@@ -4,6 +4,8 @@
 
 static_library("renderer") {
   sources = [
+    "a11y_utils.cc",
+    "a11y_utils.h",
     "autofill_agent.cc",
     "autofill_agent.h",
     "form_autofill_issues.cc",
