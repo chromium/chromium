@@ -1376,6 +1376,9 @@ class CONTENT_EXPORT NavigationRequest
   // kOriginKeyedProcessesByDefault is enabled.
   bool IsIsolationImplied();
 
+  // Returns whether the navigation type is a restore navigation.
+  bool IsRestore() const;
+
   // The Origin-Agent-Cluster end result is determined early in the lifecycle of
   // a NavigationRequest, but used late. In particular, we want to trigger use
   // counters and console warnings once navigation has committed.

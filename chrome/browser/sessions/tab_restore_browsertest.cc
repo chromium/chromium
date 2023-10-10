@@ -58,6 +58,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
@@ -1922,4 +1923,86 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, WindowTabGroupsMatchesWindowTabs) {
   // The window should no longer track the double entry group.
   ASSERT_EQ(window_entry->tab_groups.find(double_entry_group),
             window_entry->tab_groups.end());
+}
+
+class SoftNavigationTabRestoreTest : public TabRestoreTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    TabRestoreTest::SetUpCommandLine(command_line);
+    features_list_.InitWithFeatures({blink::features::kSoftNavigationHeuristics,
+                                     blink::features::kNavigationId},
+                                    {});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_list_;
+};
+
+// Test is flaky on LACROS and ASH, most probably due to mouseclicks not working
+// consistently.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_SoftNavigationToRestoredTab DISABLED_SoftNavigationToRestoredTab
+#else
+#define MAYBE_SoftNavigationToRestoredTab SoftNavigationToRestoredTab
+#endif
+IN_PROC_BROWSER_TEST_F(SoftNavigationTabRestoreTest,
+                       MAYBE_SoftNavigationToRestoredTab) {
+  // Set up a test web server.
+  embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+  content::SetupCrossSiteRedirector(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to the first page.
+  int starting_tab_count = browser()->tab_strip_model()->count();
+  GURL soft_nav_url = embedded_test_server()->GetURL(
+      "/session_history/soft-navigation-and-back.html");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), soft_nav_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  int tab_count = browser()->tab_strip_model()->count();
+
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Observe soft navigations.
+  ASSERT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(), R"(
+    window.soft_nav_promise = new Promise(r => {
+      new PerformanceObserver(r).observe({
+        type: 'soft-navigation',
+      })
+    });
+  )",
+                     content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Perform a soft navigation and wait until it's reported.
+  content::SimulateMouseClickAt(
+      browser()->tab_strip_model()->GetActiveWebContents(), 0,
+      blink::WebMouseEvent::Button::kLeft, gfx::Point(100, 100));
+  ASSERT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(), R"(
+    window.soft_nav_promise;
+  )"));
+
+  // Close the tab.
+  int closed_tab_index = tab_count - 1;
+  CloseTab(closed_tab_index);
+  EXPECT_EQ(starting_tab_count, browser()->tab_strip_model()->count());
+
+  // Restore the tab.
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, closed_tab_index));
+
+  // Soft-navigate back.
+  content::SimulateMouseClickAt(
+      browser()->tab_strip_model()->GetActiveWebContents(), 0,
+      blink::WebMouseEvent::Button::kLeft, gfx::Point(100, 100));
+
+  // TODO(https://crbug.com/1487628) - We're not actually getting a report on
+  // the second navigation, as they are not committed. We need to actually wait
+  // for the second soft navigation and see that it fires, once the bug is
+  // fixed.
+
+  // And make sure everything looks right.
+  EXPECT_EQ(starting_tab_count + 1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(closed_tab_index, browser()->tab_strip_model()->active_index());
+  // TODO(https://crbug.com/1487628) - validate the the URL is back to the
+  // original one, once the bug is fixed.
 }

@@ -6558,6 +6558,10 @@ bool NavigationRequest::IsSameDocument() const {
   return NavigationTypeUtils::IsSameDocument(common_params_->navigation_type);
 }
 
+bool NavigationRequest::IsRestore() const {
+  return NavigationTypeUtils::IsRestore(common_params_->navigation_type);
+}
+
 void NavigationRequest::RecordDownloadUseCountersPrePolicyCheck() {
   RenderFrameHost* rfh = frame_tree_node_->current_frame_host();
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(
@@ -9721,6 +9725,16 @@ void NavigationRequest::CheckSoftNavigationHeuristicsInvariants() {
   if (!commit_params_->soft_navigation_heuristics_task_id) {
     return;
   }
+  // TODO(https://crbug.com/1487628): Checking for a restore here, to
+  // accommodate for restored same document navigations. They are currently
+  // NOT executed as same-document. The task ID is cleared to ensure it never
+  // leak toward a different document.
+  if (IsRestore()) {
+    DCHECK(!IsSameDocument());
+    commit_params_->soft_navigation_heuristics_task_id = {};
+    return;
+  }
+
   // In NavigationControllerImpl::NavigateToExistingPendingEntry we're verifying
   // that the task ID is only passed along if the initiator RFH is the same as
   // the navigated RFH.
