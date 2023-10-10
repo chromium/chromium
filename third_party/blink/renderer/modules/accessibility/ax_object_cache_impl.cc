@@ -729,6 +729,8 @@ AXObjectCacheImpl::AXObjectCacheImpl(Document& document,
                                      const ui::AXMode& ax_mode)
     : document_(document),
       ax_mode_(ax_mode),
+      serialize_post_lifecycle_(base::FeatureList::IsEnabled(
+          blink::features::kSerializeAccessibilityPostLifecycle)),
       validation_message_axid_(0),
       active_aria_modal_dialog_(nullptr),
       accessibility_event_permission_(mojom::blink::PermissionStatus::ASK),
@@ -4455,9 +4457,9 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     bool& need_to_send_location_changes) {
   // TODO(accessibility) Remove this once non-postlifecycle serialization code
   // is completely removed, as it is redundant with other calls.
-#if BUILDFLAG(IS_FUCHSIA)
-  CheckTreeIsUpdated();
-#endif
+  if (!serialize_post_lifecycle_) {
+    CheckTreeIsUpdated();
+  }
 
   // Make a copy of the events, because it's possible that
   // actions inside this loop will cause more events to be

@@ -145,12 +145,12 @@ class MODULES_EXPORT AXObjectCacheImpl
   void Dispose() override;
 
   void Freeze() override {
-    // TODO(crbug.com/1477047, fuchsia:132924): Remove Fuchsia case once post
-    // lifecycle serialization is enabled for it.
-#if BUILDFLAG(IS_FUCHSIA)
-    pause_tree_updates_until_more_loaded_content_ = false;
-    UpdateAXForAllDocuments();
-#endif
+    if (!serialize_post_lifecycle_) {
+      // TODO(accessibility) Remove this once non-postlifecycle serialization
+      // code is completely removed, as it is redundant with other calls.
+      pause_tree_updates_until_more_loaded_content_ = false;
+      UpdateAXForAllDocuments();
+    }
     ax_tree_source_->Freeze();
     is_frozen_ = true;
   }
@@ -796,6 +796,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   Member<Document> popup_document_;
 
   ui::AXMode ax_mode_;
+  const bool serialize_post_lifecycle_;
+
   HeapHashMap<AXID, Member<AXObject>> objects_;
   HeapHashMap<Member<AccessibleNode>, AXID> accessible_node_mapping_;
   HeapHashMap<Member<const LayoutObject>, AXID> layout_object_mapping_;
