@@ -187,9 +187,12 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
     for (NSString* type in items) {
       for (NSString* item in items[type]) {
         NSRange range = [source rangeOfString:item];
-        annotations.Append(web::ConvertMatchToAnnotation(
-            source, range, [NSString stringWithFormat:@"%@-%@", type, item],
-            type));
+        web::TextAnnotation annotation =
+            web::ConvertMatchToAnnotation(source, range, nil, type);
+        annotation.first.Set(
+            "data", base::SysNSStringToUTF8(
+                        [NSString stringWithFormat:@"%@-%@", type, item]));
+        annotations.Append(base::Value(std::move(annotation.first)));
       }
     }
     auto* manager = AnnotationsTextManager::FromWebState(web_state());
