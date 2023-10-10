@@ -36,6 +36,7 @@
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gl/android/egl_fence_utils.h"
 #include "ui/gl/gl_utils.h"
+#include "ui/gl/scoped_restore_texture.h"
 
 namespace gpu {
 
@@ -48,6 +49,10 @@ void CreateAndBindEglImageFromAHB(AHardwareBuffer* buffer, GLuint service_id) {
   base::AndroidHardwareBufferCompat::GetInstance().Describe(buffer, &desc);
   auto egl_image = CreateEGLImageFromAHardwareBuffer(buffer);
   if (egl_image.is_valid()) {
+    // We should never alter gl binding without updating state tracking, which
+    // we can't do here, so restore previous after we done.
+    gl::ScopedRestoreTexture scoped_restore(gl::g_current_gl_context,
+                                            GL_TEXTURE_EXTERNAL_OES);
     glBindTexture(GL_TEXTURE_EXTERNAL_OES, service_id);
     glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, egl_image.get());
   } else {
