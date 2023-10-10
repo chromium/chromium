@@ -9,6 +9,8 @@
  * bounding boxes.
  */
 function getCharAdvances(element) {
+  const style = getComputedStyle(element);
+  const is_vertical = style.writingMode.startsWith('vertical');
   const range = document.createRange();
   const advances = [];
   let origin = undefined;
@@ -21,7 +23,12 @@ function getCharAdvances(element) {
         for (let i = 0; i < text.length; ++i) {
           range.setStart(node, i);
           range.setEnd(node, i + 1);
-          const bounds = range.getBoundingClientRect();
+          let bounds = range.getBoundingClientRect();
+          // Transpose if it's in vertical flow.
+          if (is_vertical) {
+            bounds = {left: bounds.top, top: bounds.right,
+                      right: bounds.bottom, bottom: bounds.left};
+          }
           // Check if this is on the same line.
           if (bounds.top >= blockEnd) {
             origin = undefined;
