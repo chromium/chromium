@@ -18,6 +18,7 @@
 
 namespace file_manager {
 
+// TODO(b/304383409): convert to enum class.
 // Identifiers for volume types managed by Chrome OS file manager.
 // The enum values must be kept in sync with FileManagerVolumeType and
 // OfficeFilesSourceVolume defined in tools/metrics/histograms/enums.xml.

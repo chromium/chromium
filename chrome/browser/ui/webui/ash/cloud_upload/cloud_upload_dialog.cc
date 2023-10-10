@@ -442,23 +442,23 @@ bool CloudOpenTask::ExecuteInternal() {
 // the files before opening.
 void CloudOpenTask::OpenOrMoveFiles() {
   // Record the source volume type of the opened file.
-  int source_type;
+  OfficeFilesSourceVolume source_volume;
   if (UrlIsOnODFS(profile_, file_urls_.front())) {
-    source_type = static_cast<int>(OfficeFilesSourceVolume::kMicrosoftOneDrive);
+    source_volume = OfficeFilesSourceVolume::kMicrosoftOneDrive;
   } else {
     auto* volume_manager = file_manager::VolumeManager::Get(profile_);
     base::WeakPtr<file_manager::Volume> source =
         volume_manager->FindVolumeFromPath(file_urls_.front().path());
     if (source) {
-      source_type = source->type();
+      source_volume = VolumeTypeToSourceVolume(source->type());
     } else {
-      source_type = static_cast<int>(OfficeFilesSourceVolume::kUnknown);
+      source_volume = OfficeFilesSourceVolume::kUnknown;
     }
   }
   if (cloud_provider_ == CloudProvider::kGoogleDrive) {
-    UMA_HISTOGRAM_SPARSE(kDriveOpenSourceVolumeMetric, source_type);
+    UMA_HISTOGRAM_ENUMERATION(kDriveOpenSourceVolumeMetric, source_volume);
   } else if (cloud_provider_ == CloudProvider::kOneDrive) {
-    UMA_HISTOGRAM_SPARSE(kOneDriveOpenSourceVolumeMetric, source_type);
+    UMA_HISTOGRAM_ENUMERATION(kOneDriveOpenSourceVolumeMetric, source_volume);
   }
 
   if (cloud_provider_ == CloudProvider::kGoogleDrive &&

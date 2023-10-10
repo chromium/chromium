@@ -61,6 +61,43 @@ storage::FileSystemURL FilePathToFileSystemURL(
   return file_system_context->CrackURLInFirstPartyContext(url);
 }
 
+OfficeFilesSourceVolume VolumeTypeToSourceVolume(
+    file_manager::VolumeType volume_type) {
+  switch (volume_type) {
+    case file_manager::VOLUME_TYPE_GOOGLE_DRIVE:
+      return OfficeFilesSourceVolume::kGoogleDrive;
+    case file_manager::VOLUME_TYPE_DOWNLOADS_DIRECTORY:
+      return OfficeFilesSourceVolume::kDownloadsDirectory;
+    case file_manager::VOLUME_TYPE_REMOVABLE_DISK_PARTITION:
+      return OfficeFilesSourceVolume::kRemovableDiskPartition;
+    case file_manager::VOLUME_TYPE_MOUNTED_ARCHIVE_FILE:
+      return OfficeFilesSourceVolume::kMountedArchiveFile;
+    case file_manager::VOLUME_TYPE_PROVIDED:
+      return OfficeFilesSourceVolume::kProvided;
+    case file_manager::VOLUME_TYPE_MTP:
+      return OfficeFilesSourceVolume::kMtp;
+    case file_manager::VOLUME_TYPE_MEDIA_VIEW:
+      return OfficeFilesSourceVolume::kMediaView;
+    case file_manager::VOLUME_TYPE_CROSTINI:
+      return OfficeFilesSourceVolume::kCrostini;
+    case file_manager::VOLUME_TYPE_ANDROID_FILES:
+      return OfficeFilesSourceVolume::kAndriodFiles;
+    case file_manager::VOLUME_TYPE_DOCUMENTS_PROVIDER:
+      return OfficeFilesSourceVolume::kDocumentsProvider;
+    case file_manager::VOLUME_TYPE_SMB:
+      return OfficeFilesSourceVolume::kSmb;
+    case file_manager::VOLUME_TYPE_SYSTEM_INTERNAL:
+      return OfficeFilesSourceVolume::kSystemInternal;
+    case file_manager::VOLUME_TYPE_GUEST_OS:
+      return OfficeFilesSourceVolume::kGuestOS;
+    // TODO(b/304383409): remove default class after making VolumeType an enum
+    // class.
+    default:
+      LOG(ERROR) << "Unknown VolumeType " << volume_type;
+      return OfficeFilesSourceVolume::kUnknown;
+  }
+}
+
 SourceType GetSourceType(Profile* profile,
                          const storage::FileSystemURL& source_url) {
   file_manager::VolumeManager* volume_manager =

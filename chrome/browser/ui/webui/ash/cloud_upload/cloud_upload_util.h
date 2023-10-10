@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/ash/file_manager/volume.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/ash/file_system_provider/provider_interface.h"
 #include "chrome/browser/platform_util.h"
@@ -110,15 +111,28 @@ enum class OfficeOneDriveOpenErrors {
   kMaxValue = kEmailsDoNotMatch,
 };
 
-// Records the source volume that an office file is opened from. These values
-// represent the source volume types that are only relevant to office file
-// handling code - the rest are obtained from file_manager::VolumeType.
+// Records the source volume that an office file is opened from. The values up
+// to 12 must be kept in sync with file_manager::VolumeType.
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class OfficeFilesSourceVolume {
+  kGoogleDrive = 0,
+  kDownloadsDirectory = 1,
+  kRemovableDiskPartition = 2,
+  kMountedArchiveFile = 3,
+  kProvided = 4,  // File system provided by FileSystemProvider API.
+  kMtp = 5,
+  kMediaView = 6,
+  kCrostini = 7,
+  kAndriodFiles = 8,
+  kDocumentsProvider = 9,
+  kSmb = 10,
+  kSystemInternal = 11,  // Internal volume never exposed to users.
+  kGuestOS = 12,         // Guest OS volumes (Crostini, Bruschetta, etc)
   kUnknown = 100,
   kMicrosoftOneDrive = 101,
+  kMaxValue = kMicrosoftOneDrive,
 };
 
 // List of UMA enum value for Web Drive Office task results. The enum values
@@ -231,6 +245,10 @@ void CreateDirectoryOnIOThread(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     storage::FileSystemURL destination_folder_url,
     base::OnceCallback<void(base::File::Error)> complete_callback);
+
+// Converts the `volume_type` to the equivalent `OfficeFilesSourceVolume`.
+OfficeFilesSourceVolume VolumeTypeToSourceVolume(
+    ::file_manager::VolumeType volume_type);
 
 // Returns the type of the source location from which the file is getting
 // uploaded (see SourceType values).

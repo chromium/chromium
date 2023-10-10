@@ -1271,8 +1271,9 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackTryAgain) {
   // Wait for file to open in web drive office.
   navigation_observer_office.Wait();
 
-  histogram_.ExpectUniqueSample(ash::cloud_upload::kDriveOpenSourceVolumeMetric,
-                                VolumeType::VOLUME_TYPE_GOOGLE_DRIVE, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kDriveOpenSourceVolumeMetric,
+      ash::cloud_upload::OfficeFilesSourceVolume::kGoogleDrive, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kDriveTransferRequiredMetric,
       ash::cloud_upload::OfficeFilesTransferRequired::kNotRequired, 1);
@@ -1309,8 +1310,9 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OpenFileInDrive) {
   // Wait for file to open in web drive office.
   navigation_observer_office.Wait();
 
-  histogram_.ExpectUniqueSample(ash::cloud_upload::kDriveOpenSourceVolumeMetric,
-                                VolumeType::VOLUME_TYPE_GOOGLE_DRIVE, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kDriveOpenSourceVolumeMetric,
+      ash::cloud_upload::OfficeFilesSourceVolume::kGoogleDrive, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kDriveTransferRequiredMetric,
       ash::cloud_upload::OfficeFilesTransferRequired::kNotRequired, 1);
@@ -1642,9 +1644,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackTryAgain) {
 
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveOpenSourceVolumeMetric,
-      static_cast<int>(
-          ash::cloud_upload::OfficeFilesSourceVolume::kMicrosoftOneDrive),
-      1);
+      ash::cloud_upload::OfficeFilesSourceVolume::kMicrosoftOneDrive, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTransferRequiredMetric,
       ash::cloud_upload::OfficeFilesTransferRequired::kNotRequired, 1);
@@ -1734,9 +1734,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromODFS) {
 
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveOpenSourceVolumeMetric,
-      static_cast<int>(
-          ash::cloud_upload::OfficeFilesSourceVolume::kMicrosoftOneDrive),
-      1);
+      ash::cloud_upload::OfficeFilesSourceVolume::kMicrosoftOneDrive, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTransferRequiredMetric,
       ash::cloud_upload::OfficeFilesTransferRequired::kNotRequired, 1);
@@ -1775,7 +1773,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileNotFromODFS) {
 
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveOpenSourceVolumeMetric,
-      VolumeType::VOLUME_TYPE_DOWNLOADS_DIRECTORY, 1);
+      ash::cloud_upload::OfficeFilesSourceVolume::kDownloadsDirectory, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTransferRequiredMetric,
       ash::cloud_upload::OfficeFilesTransferRequired::kMove, 1);
@@ -1811,9 +1809,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
 
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveOpenSourceVolumeMetric,
-      static_cast<int>(
-          ash::cloud_upload::OfficeFilesSourceVolume::kMicrosoftOneDrive),
-      1);
+      ash::cloud_upload::OfficeFilesSourceVolume::kMicrosoftOneDrive, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTransferRequiredMetric,
       ash::cloud_upload::OfficeFilesTransferRequired::kNotRequired, 1);
@@ -1859,9 +1855,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FailToOpenFileFromODFSOtherAccessError) {
 
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveOpenSourceVolumeMetric,
-      static_cast<int>(
-          ash::cloud_upload::OfficeFilesSourceVolume::kMicrosoftOneDrive),
-      1);
+      ash::cloud_upload::OfficeFilesSourceVolume::kMicrosoftOneDrive, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTransferRequiredMetric,
       ash::cloud_upload::OfficeFilesTransferRequired::kNotRequired, 1);
@@ -1914,9 +1908,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromAndroidOneDriveViaODFS) {
   // VOLUME_TYPE_DOCUMENTS_PROVIDER to be logged in the test.
   histogram_.ExpectBucketCount(
       ash::cloud_upload::kOneDriveOpenSourceVolumeMetric,
-      static_cast<int>(
-          ash::cloud_upload::OfficeFilesSourceVolume::kMicrosoftOneDrive),
-      0);
+      ash::cloud_upload::OfficeFilesSourceVolume::kMicrosoftOneDrive, 0);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTransferRequiredMetric,
       ash::cloud_upload::OfficeFilesTransferRequired::kNotRequired, 1);
