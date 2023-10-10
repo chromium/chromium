@@ -15,7 +15,7 @@
  * to an HTML string.
  * Otherwise its placeholders won't be expanded. */
 
-<if expr="not chromeos_ash and not is_android">
+<if expr="is_linux">
 @import url(//resources/css/roboto.css);
 </if>
 

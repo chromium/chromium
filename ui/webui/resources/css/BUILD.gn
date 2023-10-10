@@ -35,7 +35,7 @@ preprocess_if_expr("preprocess") {
     "widgets.css",
   ]
 
-  if (!is_chromeos_ash && !is_android) {
+  if (is_linux) {
     in_files += [ "roboto.css" ]
   }
 
