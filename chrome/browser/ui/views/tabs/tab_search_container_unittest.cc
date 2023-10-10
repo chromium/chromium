@@ -37,15 +37,17 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
 
     tab_strip_controller_ =
         std::make_unique<FakeBaseTabStripControllerWithProfile>();
-    container_before_tab_strip_ =
-        std::make_unique<TabSearchContainer>(tab_strip_controller_.get(), true);
+    locked_expansion_view_ = std::make_unique<views::View>();
+    container_before_tab_strip_ = std::make_unique<TabSearchContainer>(
+        tab_strip_controller_.get(), true, locked_expansion_view_.get());
     container_after_tab_strip_ = std::make_unique<TabSearchContainer>(
-        tab_strip_controller_.get(), false);
+        tab_strip_controller_.get(), false, locked_expansion_view_.get());
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TabStripController> tab_strip_controller_;
+  std::unique_ptr<views::View> locked_expansion_view_;
   std::unique_ptr<TabSearchContainer> container_before_tab_strip_;
   std::unique_ptr<TabSearchContainer> container_after_tab_strip_;
 };

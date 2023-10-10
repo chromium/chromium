@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/mouse_watcher.h"
+#include "ui/views/mouse_watcher_view_host.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -28,8 +30,15 @@ Edge GetFlatEdge(bool is_search_button, bool before_tab_strip) {
 }  // namespace
 
 TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
-                                       bool before_tab_strip)
-    : AnimationDelegateViews(this) {
+                                       bool before_tab_strip,
+                                       View* locked_expansion_view)
+    : AnimationDelegateViews(this),
+      locked_expansion_view_(locked_expansion_view) {
+  mouse_watcher_ = std::make_unique<views::MouseWatcher>(
+      std::make_unique<views::MouseWatcherViewHost>(locked_expansion_view,
+                                                    gfx::Insets()),
+      this);
+
   std::unique_ptr<TabSearchButton> tab_search_button =
       std::make_unique<TabSearchButton>(
           tab_strip_controller, features::IsTabOrganization()
@@ -81,6 +90,42 @@ TabSearchContainer::~TabSearchContainer() {
 }
 
 void TabSearchContainer::ShowTabOrganization() {
+  if (locked_expansion_view_->IsMouseHovered()) {
+    SetLockedExpansionMode(LockedExpansionMode::kWillShow);
+  }
+  if (locked_expansion_mode_ == LockedExpansionMode::kNone) {
+    ExecuteShowTabOrganization();
+  }
+}
+
+void TabSearchContainer::HideTabOrganization() {
+  if (locked_expansion_view_->IsMouseHovered()) {
+    SetLockedExpansionMode(LockedExpansionMode::kWillHide);
+  }
+  if (locked_expansion_mode_ == LockedExpansionMode::kNone) {
+    ExecuteHideTabOrganization();
+  }
+}
+
+void TabSearchContainer::SetLockedExpansionModeForTesting(
+    LockedExpansionMode mode) {
+  SetLockedExpansionMode(mode);
+}
+
+void TabSearchContainer::SetLockedExpansionMode(LockedExpansionMode mode) {
+  if (mode == LockedExpansionMode::kNone) {
+    if (locked_expansion_mode_ == LockedExpansionMode::kWillShow) {
+      ExecuteShowTabOrganization();
+    } else if (locked_expansion_mode_ == LockedExpansionMode::kWillHide) {
+      ExecuteHideTabOrganization();
+    }
+  } else {
+    mouse_watcher_->Start(GetWidget()->GetNativeWindow());
+  }
+  locked_expansion_mode_ = mode;
+}
+
+void TabSearchContainer::ExecuteShowTabOrganization() {
   expansion_animation_.Show();
 
   const base::TimeDelta delta = base::Seconds(16);
@@ -88,8 +133,12 @@ void TabSearchContainer::ShowTabOrganization() {
                                      &TabSearchContainer::HideTabOrganization);
 }
 
-void TabSearchContainer::HideTabOrganization() {
+void TabSearchContainer::ExecuteHideTabOrganization() {
   expansion_animation_.Hide();
+}
+
+void TabSearchContainer::MouseMovedOutOfHost() {
+  SetLockedExpansionMode(LockedExpansionMode::kNone);
 }
 
 void TabSearchContainer::AnimationCanceled(const gfx::Animation* animation) {

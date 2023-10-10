@@ -17,6 +17,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/test/event_generator.h"
 
 class TabSearchContainerBrowserTest : public InProcessBrowserTest {
  public:
@@ -61,4 +62,41 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, TogglesActionUIState) {
   ASSERT_NE(
       nullptr,
       tab_search_container()->tab_organization_button()->session_for_testing());
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, DelaysShow) {
+  ASSERT_FALSE(
+      tab_search_container()->expansion_animation_for_testing()->IsShowing());
+
+  tab_search_container()->SetLockedExpansionModeForTesting(
+      LockedExpansionMode::kWillShow);
+  tab_search_container()->ShowTabOrganization();
+
+  ASSERT_FALSE(
+      tab_search_container()->expansion_animation_for_testing()->IsShowing());
+
+  tab_search_container()->SetLockedExpansionModeForTesting(
+      LockedExpansionMode::kNone);
+
+  ASSERT_TRUE(
+      tab_search_container()->expansion_animation_for_testing()->IsShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, DelaysHide) {
+  tab_search_container()->expansion_animation_for_testing()->Reset(1);
+  ASSERT_FALSE(
+      tab_search_container()->expansion_animation_for_testing()->IsClosing());
+
+  tab_search_container()->SetLockedExpansionModeForTesting(
+      LockedExpansionMode::kWillHide);
+  tab_search_container()->HideTabOrganization();
+
+  ASSERT_FALSE(
+      tab_search_container()->expansion_animation_for_testing()->IsClosing());
+
+  tab_search_container()->SetLockedExpansionModeForTesting(
+      LockedExpansionMode::kNone);
+
+  ASSERT_TRUE(
+      tab_search_container()->expansion_animation_for_testing()->IsClosing());
 }
