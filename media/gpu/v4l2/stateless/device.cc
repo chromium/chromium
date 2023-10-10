@@ -104,7 +104,12 @@ std::set<VideoCodec> Device::EnumerateInputFormats() {
     DVLOGF(4) << "Enumerated codec: "
               << media::FourccToString(fmtdesc.pixelformat) << " ("
               << fmtdesc.description << ")";
-    pix_fmts.insert(V4L2PixFmtToVideoCodec(fmtdesc.pixelformat));
+    VideoCodec enumerated_codec = V4L2PixFmtToVideoCodec(fmtdesc.pixelformat);
+
+    // Not all codecs returned from the device are supported by ChromeOS
+    if (VideoCodec::kUnknown != enumerated_codec) {
+      pix_fmts.insert(enumerated_codec);
+    }
   }
 
   return pix_fmts;
