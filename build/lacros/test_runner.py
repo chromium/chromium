@@ -14,7 +14,7 @@ Example usages
   ./build/lacros/test_runner.py test out/lacros/url_unittests
   ./build/lacros/test_runner.py test out/lacros/browser_tests
 
-  The commands above run url_unittests and browser_tests respecitively, and more
+  The commands above run url_unittests and browser_tests respectively, and more
   specifically, url_unitests is executed directly while browser_tests is
   executed with the latest version of prebuilt ash-chrome, and the behavior is
   controlled by |_TARGETS_REQUIRE_ASH_CHROME|, and it's worth noting that the
