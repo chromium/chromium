@@ -2698,6 +2698,12 @@ component("i18n") {
   }
 }
 
+executable("containers_memory_benchmark") {
+  sources = [ "containers/containers_memory_benchmark.cc" ]
+  deps = [ ":base" ]
+  testonly = true
+}
+
 test("base_perftests") {
   sources = [
     "big_endian_perftest.cc",
