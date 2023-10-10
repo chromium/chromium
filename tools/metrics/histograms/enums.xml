@@ -9518,30 +9518,31 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="No suggestion, user changed form, form submitted"/>
   <int value="3" label="No suggestion, user changed form, no form submitted"/>
   <int value="4"
-      label="No suggestion, user didn't change form, form submitted"/>
+      label="No suggestion, user did not change form, form submitted"/>
   <int value="5"
-      label="No suggestion, user didn't change form, no form submitted"/>
+      label="No suggestion, user did not change form, no form submitted"/>
   <int value="6"
-      label="user selected suggestion, user changed form, form submitted"/>
+      label="User selected suggestion, user changed form, form submitted"/>
   <int value="7"
-      label="user selected suggestion, user changed form, no form submitted"/>
+      label="User selected suggestion, user changed form, no form submitted"/>
   <int value="8"
-      label="user selected suggestion, user didn't change form, form
+      label="User selected suggestion, user did not change form, form
              submitted"/>
   <int value="9"
-      label="user selected suggestion, user didn't change form, no form
+      label="User selected suggestion, user did not change form, no form
              submitted"/>
   <int value="10"
-      label="user not selected suggestion, user changed form, form submitted"/>
+      label="User did not select suggestion, user changed form, form
+             submitted"/>
   <int value="11"
-      label="user not selected suggestion, user changed form, no form
+      label="User did not select suggestion, user changed form, no form
              submitted"/>
   <int value="12"
-      label="user not selected suggestion, user didn't change form, form
+      label="User did not select suggestion, user did not change form, form
              submitted"/>
-  <int value="14"
-      label="user not selected suggestion, user didn't change form, no form
-             submitted"/>
+  <int value="13"
+      label="User did not select suggestion, user did not change form, no
+             form submitted"/>
 </enum>
 
 <enum name="AutofillSettingsVisibleTypes">
