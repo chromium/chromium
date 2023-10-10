@@ -143,11 +143,12 @@ class AuthenticatorRequestDialogModel
     kSelectAccount,
     kSelectSingleAccount,
 
-    // TODO(crbug.com/1459273): Remove after new passkey selection UI launches.
     kPreSelectAccount,
+
+    // TODO(crbug.com/1490293): Merge with kSelectPriorityMechanism.
     kPreSelectSingleAccount,
 
-    // kSelectPriorityPasskey lets the user confirm a single "priority"
+    // kSelectPriorityMechanism lets the user confirm a single "priority"
     // mechanism.
     kSelectPriorityMechanism,
 
