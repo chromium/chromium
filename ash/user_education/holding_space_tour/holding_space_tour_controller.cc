@@ -277,6 +277,11 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
     CHECK(wallpaper_highlight_);
     wallpaper_highlight_.reset();
 
+    // Immediately close the help bubble so that it does not block the holding
+    // space. If it has already closed, e.g. due to timeout, the internal
+    // callback will have already been canceled and no-op.
+    scoped_help_bubble_closer_.RunAndReset();
+
     // No-op if no holding space `client` is registered since we will be unable
     // to handle the dropped `data`.
     HoldingSpaceClient* const client = HoldingSpaceController::Get()->client();
@@ -389,11 +394,18 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
                     HoldingSpaceController::ScopedForceShowInShelf>()));
 
     // Attempt to show the help bubble.
-    if (UserEducationHelpBubbleController::Get()->CreateHelpBubble(
-            HelpBubbleId::kHoldingSpaceTour, std::move(help_bubble_params),
-            kHoldingSpaceTrayElementId,
-            views::ElementTrackerViews::GetContextForView(holding_space_tray),
-            std::move(close_callback))) {
+    if (auto scoped_help_bubble_closer =
+            UserEducationHelpBubbleController::Get()->CreateScopedHelpBubble(
+                HelpBubbleId::kHoldingSpaceTour, std::move(help_bubble_params),
+                kHoldingSpaceTrayElementId,
+                views::ElementTrackerViews::GetContextForView(
+                    holding_space_tray),
+                std::move(close_callback))) {
+      // If we successfully created a help bubble, then it is safe to replace
+      // the current `base::ScopedClosureRunner` because any previous help
+      // bubbles have already closed.
+      scoped_help_bubble_closer_ = std::move(scoped_help_bubble_closer);
+
       // If successful in showing the help bubble, ping the `holding_space_tray`
       // to further attract the user's attention.
       UserEducationPingController::Get()->CreatePing(PingId::kHoldingSpaceTour,
@@ -413,6 +425,9 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
   // while an observed drag-and-drop sequence is in progress.
   std::unique_ptr<HoldingSpaceController::ScopedForceShowInShelf>
       force_holding_space_show_in_shelf_;
+
+  // Used to close the help bubble on drop-to-pin.
+  base::ScopedClosureRunner scoped_help_bubble_closer_;
 
   // Used to highlight the wallpaper when data is dragged over it so that the
   // user better understands the wallpaper is a drop target.

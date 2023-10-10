@@ -562,10 +562,16 @@ TEST_P(HoldingSpaceTourControllerDragAndDropTest, DragAndDrop) {
   ReleaseLeftButton();
   FlushMessageLoop();
 
-  // Expect the holding space tray on the primary display to have a help bubble
-  // and a ping if and only if Files app data was dragged. The holding space
-  // tray on the secondary display should have neither.
-  EXPECT_EQ(HasHelpBubble(primary_tray), drag_files_app_data());
+  // Expect the holding space tray on the primary display to have a ping if and
+  // only if Files app data was dragged. If Files app data was dragged and the
+  // drop-to-pin action was not taken, then expect the help bubble on the
+  // primary display to still exist. The help bubble should have been closed
+  // immediately if the drop-to-pin action was taken. The holding space tray on
+  // the secondary display should have neither.
+  const bool help_bubble_should_be_fast_closed =
+      complete_drop() && drop_to_pin_enabled().value_or(false);
+  EXPECT_EQ(HasHelpBubble(primary_tray),
+            drag_files_app_data() && !help_bubble_should_be_fast_closed);
   EXPECT_EQ(HasPing(primary_tray), drag_files_app_data());
   EXPECT_FALSE(HasHelpBubble(secondary_tray));
   EXPECT_FALSE(HasPing(secondary_tray));
