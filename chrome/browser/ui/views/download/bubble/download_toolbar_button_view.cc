@@ -243,6 +243,10 @@ gfx::RenderText& DownloadToolbarButtonView::GetBadgeText(
   return *render_text;
 }
 
+bool DownloadToolbarButtonView::ShouldShowScanningAnimation() const {
+  return state_ == IconState::kDeepScanning || !progress_info_.progress_certain;
+}
+
 void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   redraw_progress_soon_ = false;
 
@@ -270,7 +274,7 @@ void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   int diameter = 2 * ring_radius;
   gfx::RectF ring_bounds(x, y, /*width=*/diameter, /*height=*/diameter);
 
-  if (state_ == IconState::kDeepScanning || !progress_info_.progress_certain) {
+  if (ShouldShowScanningAnimation()) {
     if (!scanning_animation_.is_animating()) {
       scanning_animation_.Reset();
       scanning_animation_.Show();
@@ -325,14 +329,21 @@ void DownloadToolbarButtonView::UpdateDownloadIcon(
   if (updates.new_active) {
     active_ = *updates.new_active;
   }
-  UpdateIcon();
-}
 
-void DownloadToolbarButtonView::UpdateIconProgress(const ProgressInfo& info) {
-  if (progress_info_ != info) {
+  if (updates.new_progress) {
+    const ProgressInfo& new_progress = *updates.new_progress;
+    if (progress_info_ != new_progress) {
+      redraw_progress_soon_ = true;
+    }
+    progress_info_ = new_progress;
+  }
+  // We need to redraw the ring constantly while the scanning animation is
+  // running.
+  if (ShouldShowScanningAnimation()) {
     redraw_progress_soon_ = true;
   }
-  progress_info_ = info;
+
+  UpdateIcon();
 }
 
 bool DownloadToolbarButtonView::IsFullscreenWithParentViewHidden() const {
