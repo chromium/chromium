@@ -4043,7 +4043,6 @@
     'lacros_device_or_vm_gtests': {
       'aura_unittests': {},
       'cc_unittests': {},
-      'interactive_ui_tests': {},
       'ozone_unittests': {},
       'vaapi_unittest': {
         'args': [

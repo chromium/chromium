@@ -3279,20 +3279,6 @@
       },
     },
   },
-  'interactive_ui_tests amd64-generic': {
-    'remove_from': [
-      # TODO(crbug.com/1204231): Re-enable.
-      'lacros-amd64-generic-rel',
-      'lacros-amd64-generic-rel-fyi',
-    ]
-  },
-  'interactive_ui_tests eve': {
-    'remove_from': [
-      # TODO(crbug.com/1204231): Re-enable.
-      'lacros-amd64-generic-rel',
-      'lacros-amd64-generic-rel-fyi',
-    ]
-  },
   'interactive_ui_tests_no_field_trial': {
     'remove_from': [
       'win10-rel-no-external-ip',

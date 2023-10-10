@@ -4730,7 +4730,6 @@ targets.legacy_basic_suite(
     tests = {
         "aura_unittests": None,
         "cc_unittests": None,
-        "interactive_ui_tests": None,
         "ozone_unittests": None,
         "vaapi_unittest": targets.legacy_test_config(
             args = [
