@@ -26,6 +26,7 @@ source_set("background_service") {
   ]
   frameworks = [ "Foundation.framework" ]
   public_deps = [ "//components/download/public/background_service:public" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {

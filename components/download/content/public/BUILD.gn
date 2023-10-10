@@ -25,6 +25,8 @@ source_set("public") {
     "//components/download/public/background_service:public",
     "//content/public/browser",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {

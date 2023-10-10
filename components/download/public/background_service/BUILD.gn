@@ -57,4 +57,6 @@ source_set("public") {
   } else {
     public_deps += [ "//components/download/public/task:public" ]
   }
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

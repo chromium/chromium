@@ -24,6 +24,8 @@ static_library("network") {
     "//services/network/public/cpp",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   if (is_android) {
     sources += [
       "android/network_status_listener_android.cc",

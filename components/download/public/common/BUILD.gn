@@ -72,7 +72,10 @@ component("public") {
     "url_loader_factory_provider.h",
   ]
 
-  configs += [ ":components_download_implementation" ]
+  configs += [
+    ":components_download_implementation",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
 
   public_deps = [
     ":interfaces",
