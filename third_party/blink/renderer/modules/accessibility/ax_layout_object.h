@@ -31,7 +31,6 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 
 namespace gfx {
 class Point;
@@ -141,7 +140,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
                                          const gfx::Point&) const;
   bool FindAllTableCellsWithRole(ax::mojom::blink::Role, AXObjectVector&) const;
 
-  LayoutRect ComputeElementRect() const;
   bool IsPlaceholder() const;
 };
 

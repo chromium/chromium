@@ -990,15 +990,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;
   PhysicalRect ClipRect(const PhysicalOffset& location) const;
 
-  // This version is for legacy code that has not switched to the new physical
-  // geometry yet.
-  LayoutRect DeprecatedOverflowClipRect(const LayoutPoint& location,
-                                        OverlayScrollbarClipBehavior behavior =
-                                            kIgnoreOverlayScrollbarSize) const {
-    NOT_DESTROYED();
-    return OverflowClipRect(PhysicalOffset(location), behavior).ToLayoutRect();
-  }
-
   // Returns the combination of overflow clip, contain: paint clip and CSS clip
   // for this object.
   PhysicalRect ClippingRect(const PhysicalOffset& location) const;
@@ -1087,10 +1078,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                                         ? flipped_blocks_container
                                         : LocationContainer());
   }
-
-  // Convert a local rect in this box's blocks direction into parent's blocks
-  // direction, for parent to accumulate layout or visual overflow.
-  LayoutRect RectForOverflowPropagation(const LayoutRect&) const;
 
   bool HasSelfVisualOverflow() const {
     NOT_DESTROYED();

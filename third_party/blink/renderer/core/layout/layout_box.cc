@@ -3743,22 +3743,6 @@ LayoutUnit LayoutBox::FirstLineHeight() const {
   return LayoutUnit();
 }
 
-DISABLE_CFI_PERF
-LayoutRect LayoutBox::RectForOverflowPropagation(const LayoutRect& rect) const {
-  NOT_DESTROYED();
-  // If the child and parent are in the same blocks direction, then we don't
-  // have to do anything fancy. Just return the rect.
-  if (Parent()->StyleRef().IsFlippedBlocksWritingMode() ==
-      StyleRef().IsFlippedBlocksWritingMode())
-    return rect;
-
-  // Convert the rect into parent's blocks direction by flipping along the y
-  // axis.
-  LayoutRect result = rect;
-  result.SetX(Size().width - rect.MaxX());
-  return result;
-}
-
 NGPhysicalBoxStrut LayoutBox::BorderOutsetsForClipping() const {
   auto padding_box = -BorderOutsets();
   if (!ShouldApplyOverflowClipMargin())
