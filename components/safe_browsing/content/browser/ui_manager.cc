@@ -24,6 +24,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
@@ -124,16 +125,35 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
 
   // Whether we have a FrameTreeNode id or a RenderFrameHost id depends on
   // whether SB was triggered for a frame navigation or a document's subresource
-  // load respectively. We consider both cases here.
+  // load respectively. We consider both cases here. Also, we need to cancel
+  // corresponding prerenders for both case.
   const content::GlobalRenderFrameHostId rfh_id(resource.render_process_id,
                                                 resource.render_frame_id);
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(rfh_id);
-  const bool is_prerender =
-      web_contents->IsPrerenderedFrame(resource.frame_tree_node_id) ||
-      (rfh && rfh->GetLifecycleState() ==
-                  content::RenderFrameHost::LifecycleState::kPrerendering);
 
-  if (is_prerender) {
+  // Handle subresource load in prerendered pages.
+  if (rfh && rfh->GetLifecycleState() ==
+                 content::RenderFrameHost::LifecycleState::kPrerendering) {
+    // Cancel prerenders directly when its subresource or its subframe’s
+    // subresource is unsafe.
+    bool is_inactive = rfh->IsInactiveAndDisallowActivation(
+        content::DisallowActivationReasonId::kSafeBrowsingUnsafeSubresource);
+    CHECK(is_inactive);
+
+    resource.DispatchCallback(FROM_HERE, false /*proceed*/,
+                              false /*showed_interstitial*/);
+    return;
+  }
+
+  // Handle main frame or its sub frame navigation in prerendered pages.
+  // TODO(crbug.com/1445438): For latter case, the cancellation of prerender is
+  // currently done by canceling them with BLOCKED_BY_CLIENT in loader
+  // throttle, because current implementation of Prerender cancels
+  // prerenders when the navigation of prerender's subframes (not only the
+  // main frame) are canceled with BLOCKED_BY_CLIENT, as the TODO comment
+  // below also mentions. We plan to change the cancellation way from using
+  // BLOCKED_BY_CLIENT as the subresource load case.
+  if (web_contents->IsPrerenderedFrame(resource.frame_tree_node_id)) {
     // TODO(mcnee): If we were to indicate that this does not show an
     // interstitial, the loader throttle would cancel with ERR_ABORTED to
     // suppress an error page, instead of blocking using ERR_BLOCKED_BY_CLIENT.

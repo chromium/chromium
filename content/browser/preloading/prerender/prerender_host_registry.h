@@ -255,10 +255,6 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(Visibility visibility) override;
-  void ResourceLoadComplete(
-      RenderFrameHost* render_frame_host,
-      const GlobalRequestID& request_id,
-      const blink::mojom::ResourceLoadInfo& resource_load_info) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
