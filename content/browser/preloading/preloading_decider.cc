@@ -45,7 +45,7 @@ EagernessSet EagernessSetFromFeatureParam(base::StringPiece value) {
   return set;
 }
 
-void PrefetchDestructionCallback(WeakDocumentPtr document, const GURL& url) {
+void OnPrefetchDestroyed(WeakDocumentPtr document, const GURL& url) {
   PreloadingDecider* preloading_decider =
       PreloadingDecider::GetForCurrentDocument(
           document.AsRenderFrameHostIfValid());
@@ -55,7 +55,7 @@ void PrefetchDestructionCallback(WeakDocumentPtr document, const GURL& url) {
   }
 }
 
-void PrerenderCancellationCallback(WeakDocumentPtr document, const GURL& url) {
+void OnPrerenderCanceled(WeakDocumentPtr document, const GURL& url) {
   PreloadingDecider* preloading_decider =
       PreloadingDecider::GetForCurrentDocument(
           document.AsRenderFrameHostIfValid());
@@ -113,12 +113,12 @@ PreloadingDecider::PreloadingDecider(RenderFrameHost* rfh)
   if (PrefetchNewLimitsEnabled()) {
     PrefetchDocumentManager::GetOrCreateForCurrentDocument(rfh)
         ->SetPrefetchDestructionCallback(base::BindRepeating(
-            &PrefetchDestructionCallback, rfh->GetWeakDocumentPtr()));
+            &OnPrefetchDestroyed, rfh->GetWeakDocumentPtr()));
   }
 
   if (base::FeatureList::IsEnabled(features::kPrerender2NewLimitAndScheduler)) {
-    prerenderer_->SetPrerenderCancellationCallback(base::BindRepeating(
-        &PrerenderCancellationCallback, rfh->GetWeakDocumentPtr()));
+    prerenderer_->SetPrerenderCancellationCallback(
+        base::BindRepeating(&OnPrerenderCanceled, rfh->GetWeakDocumentPtr()));
   }
 }
 
