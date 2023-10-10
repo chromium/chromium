@@ -1151,6 +1151,12 @@ public class StartSurfaceCoordinator implements StartSurface {
                             : 0,
                     (int) (fakeButtonSize + (realButtonSize - fakeButtonSize) * expansionFraction),
                     (int) (fakeLensButtonStartMargin * (1 - expansionFraction)), fakeHeight);
+
+            if(mIsSurfacePolishEnabled && scrolledHeight > appBarLayout.getHeight()){
+                ViewUtils.requestLayout(appBarLayout,
+                    "StartSurfaceCoordinator#initializeOffsetChangedListener "
+                        + "AppBarLayout.OnOffsetChangedListener");
+            }
         };
     }
 
