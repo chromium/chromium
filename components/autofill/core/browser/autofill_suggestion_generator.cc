@@ -351,51 +351,49 @@ void AddFooterChildSuggestions(
 }
 
 // Sets the `popup_item_id` for `suggestion` depending on
-// `last_filling_granularity`. If the `last_filling_granularity` for a certain
-// form was group filling, also add labels to give users feedback about the next
-// filling behaviour.
+// `last_filling_granularity`.
 // `last_targeted_fields` specified the last set of fields target by the user.
 // When not present, we default to full form.
 // TODO(crbug.com/1466116): Add tests when this is actually used.
-// TODO(crbug.com/1466116): Add labels when `last_filling_granularity` is group
-// filling.
-void AddSuggestionDetailsForCurrentFillingGranularity(
+PopupItemId GetProfileSuggestionPopupItemId(
     absl::optional<ServerFieldTypeSet> optional_last_targeted_fields,
-    FieldTypeGroup triggering_field_type_group,
-    Suggestion& suggestion) {
+    FieldTypeGroup triggering_field_type_group) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillGranularFillingAvailable)) {
+    return PopupItemId::kAddressEntry;
+  }
   const ServerFieldTypeSet& last_targeted_fields =
       optional_last_targeted_fields.value_or(kAllServerFieldTypes);
 
   if (AreFieldsGranularFillingGroup(last_targeted_fields)) {
     switch (triggering_field_type_group) {
       case FieldTypeGroup::kName:
-        suggestion.popup_item_id = PopupItemId::kFillFullName;
-        break;
+        return PopupItemId::kFillFullName;
       case FieldTypeGroup::kAddress:
-        suggestion.popup_item_id = PopupItemId::kFillFullAddress;
-        break;
+      case FieldTypeGroup::kCompany:
+        return PopupItemId::kFillFullAddress;
       case FieldTypeGroup::kPhone:
-        suggestion.popup_item_id = PopupItemId::kFillFullPhoneNumber;
-        break;
+        return PopupItemId::kFillFullPhoneNumber;
       default:
         // If the 'current_granularity' is group filling, BUT the current
         // focused field is not one for which group we offer group filling
         // (kName, kAddress and kPhone), we default back to fill full form
         // behaviour/pre-granular filling popup id.
-        suggestion.popup_item_id = PopupItemId::kAddressEntry;
+        return PopupItemId::kAddressEntry;
     }
-  } else if (last_targeted_fields == kAllServerFieldTypes) {
-    suggestion.popup_item_id = PopupItemId::kAddressEntry;
-  } else if (last_targeted_fields.size() == 1) {
+  }
+  if (last_targeted_fields == kAllServerFieldTypes) {
+    return PopupItemId::kAddressEntry;
+  }
+  if (last_targeted_fields.size() == 1) {
     // Note: This does not affect SingleFieldFormFillers such
     // Autocomplete, IBANs and merchand promo. Even though they also fill only
     // one field, they have different code paths, therefore their suggestions
     // are not generated here. Furthermore, we do not store
     // `last_targeted_fields` for them.
-    suggestion.popup_item_id = PopupItemId::kFieldByFieldFilling;
-  } else {
-    NOTREACHED_NORETURN();
+    return PopupItemId::kFieldByFieldFilling;
   }
+  NOTREACHED_NORETURN();
 }
 
 // Returns for each profile in `profiles` one label string to be used as a
@@ -668,6 +666,8 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
     suggestions.back().payload = Suggestion::BackendId(profile->guid());
     suggestions.back().acceptance_a11y_announcement =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
+    suggestions.back().popup_item_id = GetProfileSuggestionPopupItemId(
+        last_targeted_fields, trigger_field_type_group);
 
     // We add an icon to the address (profile) suggestion if there is more than
     // one profile related field in the form.
@@ -697,12 +697,6 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
       AddGranularFillingChildSuggestions(trigger_field_type_group,
                                          last_targeted_fields, *profile,
                                          suggestions.back());
-      AddSuggestionDetailsForCurrentFillingGranularity(
-          last_targeted_fields, trigger_field_type_group, suggestions.back());
-    } else {
-      // Granular filling handles assigning the popup type where the suggestion
-      // is created.
-      suggestions.back().popup_item_id = PopupItemId::kAddressEntry;
     }
   }
 
