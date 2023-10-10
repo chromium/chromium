@@ -12,10 +12,9 @@ from gpu_tests import webgpu_cts_integration_test_base
 
 import gpu_path_util
 
-# TODO(crbug.com/dawn/1996): Change this to the actual compat expectation file
-# once it is available.
 EXPECTATIONS_FILE = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'third_party',
-                                 'dawn', 'webgpu-cts', 'expectations.txt')
+                                 'dawn', 'webgpu-cts',
+                                 'compat-expectations.txt')
 
 
 class WebGpuCompatCtsIntegrationTest(
@@ -36,7 +35,7 @@ class WebGpuCompatCtsIntegrationTest(
 
   @classmethod
   def ExpectationsFiles(cls) -> List[str]:
-    return []
+    return [EXPECTATIONS_FILE]
 
 
 def load_tests(_loader: unittest.TestLoader, _tests: Any,
