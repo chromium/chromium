@@ -65,7 +65,6 @@ class AmbientAnimationUiLauncher : public AmbientUiLauncher,
   base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
       ambient_backend_model_observer_{this};
   ScopedSessionObserver session_observer_{this};
-  std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate_;
   std::unique_ptr<AmbientWeatherController::ScopedRefresher> weather_refresher_;
   std::unique_ptr<AmbientAnimationMetricsRecorder> animation_metrics_recorder_;
 };

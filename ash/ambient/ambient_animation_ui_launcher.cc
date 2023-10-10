@@ -38,9 +38,12 @@ AmbientAnimationUiLauncher::AmbientAnimationUiLauncher(
                         backup_photo_cache,
                         *view_delegate,
                         CreateAmbientAnimationPhotoConfig(
+                            animation_->GetImageAssetMetadata()),
+                        std::make_unique<AmbientTopicQueueAnimationDelegate>(
                             animation_->GetImageAssetMetadata())),
       current_ui_settings_(current_ui_settings),
       frame_rate_controller_(Shell::Get()->frame_throttling_controller()) {}
+
 AmbientAnimationUiLauncher::~AmbientAnimationUiLauncher() = default;
 
 void AmbientAnimationUiLauncher::OnImagesReady() {
@@ -63,13 +66,10 @@ void AmbientAnimationUiLauncher::Initialize(InitializationCallback on_done) {
                            ->ambient_controller()
                            ->ambient_weather_controller()
                            ->CreateScopedRefresher();
-  topic_queue_delegate_ = std::make_unique<AmbientTopicQueueAnimationDelegate>(
-      animation_->GetImageAssetMetadata());
   animation_metrics_recorder_ =
       std::make_unique<AmbientAnimationMetricsRecorder>(current_ui_settings_);
   ambient_backend_model_observer_.Observe(GetAmbientBackendModel());
-  GetAmbientPhotoController()->StartScreenUpdate(
-      std::move(topic_queue_delegate_));
+  GetAmbientPhotoController()->StartScreenUpdate();
 }
 
 std::unique_ptr<views::View> AmbientAnimationUiLauncher::CreateView() {

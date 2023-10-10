@@ -23,7 +23,8 @@ AmbientSlideshowUiLauncher::AmbientSlideshowUiLauncher(
     : photo_controller_(photo_cache,
                         backup_photo_cache,
                         *view_delegate,
-                        CreateAmbientSlideshowPhotoConfig()),
+                        CreateAmbientSlideshowPhotoConfig(),
+                        std::make_unique<AmbientTopicQueueSlideshowDelegate>()),
       view_delegate_(view_delegate) {}
 
 AmbientSlideshowUiLauncher::~AmbientSlideshowUiLauncher() = default;
@@ -49,8 +50,7 @@ void AmbientSlideshowUiLauncher::Initialize(InitializationCallback on_done) {
                            ->ambient_weather_controller()
                            ->CreateScopedRefresher();
   ambient_backend_model_observer_.Observe(GetAmbientBackendModel());
-  photo_controller_.StartScreenUpdate(
-      std::make_unique<AmbientTopicQueueSlideshowDelegate>());
+  photo_controller_.StartScreenUpdate();
 }
 
 std::unique_ptr<views::View> AmbientSlideshowUiLauncher::CreateView() {

@@ -73,21 +73,23 @@ AmbientPhotoController::AmbientPhotoController(
     AmbientPhotoCache& photo_cache,
     AmbientPhotoCache& backup_photo_cache,
     AmbientViewDelegate& view_delegate,
-    AmbientPhotoConfig photo_config)
-    : ambient_backend_model_(std::move(photo_config)),
+    AmbientPhotoConfig photo_config,
+    std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate)
+    : topic_queue_delegate_(std::move(topic_queue_delegate)),
+      ambient_backend_model_(std::move(photo_config)),
       resume_fetch_image_backoff_(&kResumeFetchImageBackoffPolicy),
       photo_cache_(&photo_cache),
       backup_photo_cache_(&backup_photo_cache),
       task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits())) {
+  CHECK(topic_queue_delegate_);
   scoped_view_delegate_observation_.Observe(&view_delegate);
   ScheduleFetchBackupImages();
 }
 
 AmbientPhotoController::~AmbientPhotoController() = default;
 
-void AmbientPhotoController::Init(
-    std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate) {
+void AmbientPhotoController::Init() {
   state_ = State::kPreparingNextTopicSet;
   topic_index_ = 0;
   retries_to_read_from_cache_ = kMaxNumberOfCachedImages;
@@ -100,19 +102,18 @@ void AmbientPhotoController::Init(
           : kMaxNumberOfCachedImages,
       /*topic_fetch_size=*/kTopicsBatchSize, kTopicFetchInterval,
       ambient_backend_model_.photo_config().should_split_topics,
-      std::move(topic_queue_delegate),
+      topic_queue_delegate_.get(),
       Shell::Get()->ambient_controller()->ambient_backend_controller());
 }
 
-void AmbientPhotoController::StartScreenUpdate(
-    std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate) {
+void AmbientPhotoController::StartScreenUpdate() {
   if (state_ != State::kInactive) {
     DVLOG(3) << "AmbientPhotoController is already active. Ignoring "
                 "StartScreenUpdate().";
     return;
   }
 
-  Init(std::move(topic_queue_delegate));
+  Init();
   if (backup_photo_refresh_timer_.IsRunning()) {
     // Would use |timer_.FireNow()| but this does not execute if screen is
     // locked. Manually call the expected callback instead.

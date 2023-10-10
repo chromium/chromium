@@ -107,10 +107,12 @@ namespace ash {
 // set.
 class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
  public:
-  AmbientPhotoController(AmbientPhotoCache& photo_cache,
-                         AmbientPhotoCache& backup_photo_cache,
-                         AmbientViewDelegate& view_delegate,
-                         AmbientPhotoConfig photo_config);
+  AmbientPhotoController(
+      AmbientPhotoCache& photo_cache,
+      AmbientPhotoCache& backup_photo_cache,
+      AmbientViewDelegate& view_delegate,
+      AmbientPhotoConfig photo_config,
+      std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate);
 
   AmbientPhotoController(const AmbientPhotoController&) = delete;
   AmbientPhotoController& operator=(const AmbientPhotoController&) = delete;
@@ -118,8 +120,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
   ~AmbientPhotoController() override;
 
   // Start/stop updating the screen contents.
-  void StartScreenUpdate(
-      std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate);
+  void StartScreenUpdate();
   void StopScreenUpdate();
   bool IsScreenUpdateActive() const;
 
@@ -142,7 +143,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
   friend std::ostream& operator<<(std::ostream& os, State state);
 
   // Initialize variables.
-  void Init(std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate);
+  void Init();
 
   void ScheduleFetchBackupImages();
 
@@ -194,6 +195,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
   // Kicks off preparation of the next topic.
   void StartPreparingNextTopic();
 
+  const std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate_;
   std::unique_ptr<AmbientTopicQueue> ambient_topic_queue_;
   AmbientBackendModel ambient_backend_model_;
 
