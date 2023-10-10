@@ -5,16 +5,19 @@
 package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -22,9 +25,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
+import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /** Unit tests for {@link ExpandedPlayerSheetContent}. */
@@ -32,6 +38,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 @Config(manifest = Config.NONE)
 public class ExpandedPlayerSheetContentUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private InteractionHandler mInteractionHandler;
 
     private Context mContext;
     private Drawable mPlayDrawable;
@@ -41,6 +48,8 @@ public class ExpandedPlayerSheetContentUnitTest {
     private ImageView mBackButton;
     private ImageView mForwardButton;
     private ImageView mPlayPauseButton;
+    private View mContentView;
+    private Activity mActivity;
 
     @Before
     public void setUp() {
@@ -48,12 +57,18 @@ public class ExpandedPlayerSheetContentUnitTest {
         mContext = ApplicationProvider.getApplicationContext();
         mPlayDrawable = mContext.getDrawable(R.drawable.play_button);
         mPauseDrawable = mContext.getDrawable(R.drawable.pause_button);
-        mContent = new ExpandedPlayerSheetContent(mContext, mBottomSheetController);
-        final View contentView = mContent.getContentView();
-        mSpeedView = (TextView) contentView.findViewById(R.id.readaloud_playback_speed);
-        mBackButton = (ImageView) contentView.findViewById(R.id.readaloud_seek_back_button);
-        mForwardButton = (ImageView) contentView.findViewById(R.id.readaloud_seek_forward_button);
-        mPlayPauseButton = (ImageView) contentView.findViewById(R.id.readaloud_play_pause_button);
+        mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
+        // Need to set theme before inflating layout.
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mContentView =
+                mActivity
+                        .getLayoutInflater()
+                        .inflate(R.layout.readaloud_expanded_player_layout, null);
+        mSpeedView = (TextView) mContentView.findViewById(R.id.readaloud_playback_speed);
+        mBackButton = (ImageView) mContentView.findViewById(R.id.readaloud_seek_back_button);
+        mForwardButton = (ImageView) mContentView.findViewById(R.id.readaloud_seek_forward_button);
+        mPlayPauseButton = (ImageView) mContentView.findViewById(R.id.readaloud_play_pause_button);
+        mContent = new ExpandedPlayerSheetContent(mContext, mBottomSheetController, mContentView);
     }
 
     @Test
@@ -62,6 +77,12 @@ public class ExpandedPlayerSheetContentUnitTest {
         assertEquals("Playback speed: 1.0. Click to change.", mSpeedView.getContentDescription());
         assertEquals("Back 10 seconds", mBackButton.getContentDescription());
         assertEquals("Forward 30 seconds", mForwardButton.getContentDescription());
+    }
+
+    @Test
+    public void testSetInteractionHandler() {
+        mContent.setInteractionHandler(mInteractionHandler);
+        assertTrue(mPlayPauseButton.performClick());
     }
 
     @Test

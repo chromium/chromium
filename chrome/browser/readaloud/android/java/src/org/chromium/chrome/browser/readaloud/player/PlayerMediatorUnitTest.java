@@ -18,10 +18,19 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.modules.readaloud.Playback;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
+import org.chromium.chrome.modules.readaloud.Player;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /** Unit tests for {@link PlayerMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -85,6 +94,49 @@ public class PlayerMediatorUnitTest {
     }
     private TestPlaybackData mPlaybackData;
 
+    private static class TestPlayer implements Player.Delegate {
+        @Override
+        public BottomSheetController getBottomSheetController() {
+            return null;
+        }
+
+        @Override
+        public boolean isHighlightingSupported() {
+            return true;
+        }
+
+        @Override
+        public ObservableSupplierImpl<Boolean> getHighlightingEnabledSupplier() {
+            return new ObservableSupplierImpl<Boolean>();
+        }
+
+        @Override
+        public ObservableSupplier<List<PlaybackVoice>> getCurrentLanguageVoicesSupplier() {
+            return new ObservableSupplierImpl<List<PlaybackVoice>>();
+        }
+
+        @Override
+        public ObservableSupplier<String> getVoiceIdSupplier() {
+            return new ObservableSupplierImpl<String>();
+        }
+
+        @Override
+        public Map<String, String> getVoiceOverrides() {
+            return new HashMap<String, String>();
+        }
+
+        @Override
+        public void setVoiceOverride(PlaybackVoice voice) {}
+
+        @Override
+        public void previewVoice(PlaybackVoice voice) {}
+
+        @Override
+        public void navigateToPlayingTab() {}
+    }
+
+    private TestPlayer mPlayer;
+
     private PlayerMediator mMediator;
 
     @Before
@@ -95,7 +147,7 @@ public class PlayerMediatorUnitTest {
         doReturn(PUBLISHER).when(mPlaybackMetadata).publisher();
         mPlaybackData = new TestPlaybackData();
         mModel = new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build();
-        mMediator = new PlayerMediator(mPlayerCoordinator, mModel);
+        mMediator = new PlayerMediator(mPlayerCoordinator, mPlayer, mModel);
     }
 
     @Test

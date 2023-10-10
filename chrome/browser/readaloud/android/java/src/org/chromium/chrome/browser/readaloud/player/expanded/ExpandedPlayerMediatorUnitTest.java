@@ -9,7 +9,6 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
@@ -21,8 +20,9 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.readaloud.PlayerState;
-import org.chromium.chrome.modules.readaloud.ExpandedPlayer;
+import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
+import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
+import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -32,7 +32,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 @Config(manifest = Config.NONE)
 public class ExpandedPlayerMediatorUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
-    @Mock private ExpandedPlayer.Observer mObserver;
+    @Mock private PlayerCoordinator.Delegate mDelegate;
     @Mock private Playback mPlayback;
 
     private PropertyModel mModel;
@@ -43,65 +43,55 @@ public class ExpandedPlayerMediatorUnitTest {
         MockitoAnnotations.initMocks(this);
         mModel =
                 Mockito.spy(
-                        new PropertyModel.Builder(ExpandedPlayerProperties.ALL_KEYS)
-                                .with(ExpandedPlayerProperties.STATE_KEY, PlayerState.GONE)
+                        new PropertyModel.Builder(PlayerProperties.ALL_KEYS)
+                                .with(
+                                        PlayerProperties.EXPANDED_PLAYER_VISIBILITY,
+                                        VisibilityState.GONE)
                                 .build());
 
-        mMediator = new ExpandedPlayerMediator(mBottomSheetController, mModel, mObserver);
-    }
-
-    @Test
-    public void testInitialStateAfterConstructMediator() {
-        verify(mBottomSheetController, times(1)).addObserver(eq(mMediator));
-        assertEquals(PlayerState.GONE, mMediator.getState());
-    }
-
-    @Test
-    public void testDestroy() {
-        mMediator.destroy();
-        verify(mBottomSheetController, times(1)).removeObserver(eq(mMediator));
+        mMediator = new ExpandedPlayerMediator(mModel);
     }
 
     @Test
     public void testShow() {
-        mMediator.show(mPlayback);
-        assertEquals(PlayerState.SHOWING, mMediator.getState());
+        mMediator.show();
+        assertEquals(VisibilityState.SHOWING, mMediator.getVisibility());
     }
 
     @Test
     public void testShowAlreadyShowing() {
-        mModel.set(ExpandedPlayerProperties.STATE_KEY, PlayerState.SHOWING);
+        mModel.set(PlayerProperties.EXPANDED_PLAYER_VISIBILITY, VisibilityState.SHOWING);
         reset(mModel);
-        mMediator.show(mPlayback);
-        assertEquals(PlayerState.SHOWING, mMediator.getState());
-        verify(mModel, never()).set(any(), any());
+        mMediator.show();
+        assertEquals(VisibilityState.SHOWING, mMediator.getVisibility());
+        verify(mModel, never()).set(eq(PlayerProperties.EXPANDED_PLAYER_VISIBILITY), any());
 
-        mModel.set(ExpandedPlayerProperties.STATE_KEY, PlayerState.VISIBLE);
+        mModel.set(PlayerProperties.EXPANDED_PLAYER_VISIBILITY, VisibilityState.VISIBLE);
         reset(mModel);
-        mMediator.show(mPlayback);
-        assertEquals(PlayerState.VISIBLE, mMediator.getState());
-        verify(mModel, never()).set(any(), any());
+        mMediator.show();
+        assertEquals(VisibilityState.VISIBLE, mMediator.getVisibility());
+        verify(mModel, never()).set(eq(PlayerProperties.EXPANDED_PLAYER_VISIBILITY), any());
     }
 
     @Test
     public void testDismissAlreadyHiding() {
-        mModel.set(ExpandedPlayerProperties.STATE_KEY, PlayerState.HIDING);
+        mModel.set(PlayerProperties.EXPANDED_PLAYER_VISIBILITY, VisibilityState.HIDING);
         reset(mModel);
         mMediator.dismiss();
-        assertEquals(PlayerState.HIDING, mMediator.getState());
+        assertEquals(VisibilityState.HIDING, mMediator.getVisibility());
         verify(mModel, never()).set(any(), any());
 
-        mModel.set(ExpandedPlayerProperties.STATE_KEY, PlayerState.GONE);
+        mModel.set(PlayerProperties.EXPANDED_PLAYER_VISIBILITY, VisibilityState.GONE);
         reset(mModel);
         mMediator.dismiss();
-        assertEquals(PlayerState.GONE, mMediator.getState());
+        assertEquals(VisibilityState.GONE, mMediator.getVisibility());
         verify(mModel, never()).set(any(), any());
     }
 
     @Test
     public void testDismiss() {
-        mMediator.show(mPlayback);
+        mMediator.show();
         mMediator.dismiss();
-        assertEquals(PlayerState.HIDING, mMediator.getState());
+        assertEquals(VisibilityState.HIDING, mMediator.getVisibility());
     }
 }

@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.readaloud.player.expanded;
 
-import org.chromium.chrome.browser.readaloud.PlayerState;
+import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
+import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -13,20 +14,24 @@ import org.chromium.ui.modelutil.PropertyModel;
  * state.
  */
 public class ExpandedPlayerViewBinder {
-    /** Called by {@link PropertyModelChangeProcessor} each time the model is updated. */
+    /**
+     * Called by {@link PropertyModelChangeProcessor} on creation and each time the model is
+     * updated.
+     */
     public static void bind(
             PropertyModel model, ExpandedPlayerSheetContent content, PropertyKey key) {
-        if (key == ExpandedPlayerProperties.STATE_KEY) {
-            @PlayerState int state = model.get(ExpandedPlayerProperties.STATE_KEY);
-            if (state == PlayerState.SHOWING) {
+        if (key == PlayerProperties.EXPANDED_PLAYER_VISIBILITY) {
+            @VisibilityState int state = model.get(PlayerProperties.EXPANDED_PLAYER_VISIBILITY);
+            if (state == VisibilityState.SHOWING) {
                 content.show();
-            } else if (state == PlayerState.HIDING) {
+            } else if (state == VisibilityState.HIDING) {
                 content.hide();
             }
-        } else if (key == ExpandedPlayerProperties.SPEED_KEY) {
-            content.setSpeed(model.get(ExpandedPlayerProperties.SPEED_KEY));
-        } else if (key == ExpandedPlayerProperties.ON_CLOSE_CLICK_KEY) {
-            content.setCloseButtonHandler(model.get(ExpandedPlayerProperties.ON_CLOSE_CLICK_KEY));
+            // TODO: set title and publisher
+        } else if (key == PlayerProperties.SPEED) {
+            content.setSpeed(model.get(PlayerProperties.SPEED));
+        } else if (key == PlayerProperties.INTERACTION_HANDLER) {
+            content.setInteractionHandler(model.get(PlayerProperties.INTERACTION_HANDLER));
         }
     }
 }

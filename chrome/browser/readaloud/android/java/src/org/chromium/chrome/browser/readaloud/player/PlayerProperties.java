@@ -13,6 +13,8 @@ public class PlayerProperties {
     // VisibilityState
     public static final WritableObjectPropertyKey<Integer> MINI_PLAYER_VISIBILITY =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Integer> EXPANDED_PLAYER_VISIBILITY =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Boolean> MINI_PLAYER_ANIMATE_VISIBILITY_CHANGES =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
@@ -22,18 +24,21 @@ public class PlayerProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Float> PROGRESS =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Float> SPEED = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<InteractionHandler> INTERACTION_HANDLER =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<MiniPlayerMediator> MINI_PLAYER_MEDIATOR =
             new WritableObjectPropertyKey<>();
     public static final PropertyKey[] ALL_KEYS = {
         MINI_PLAYER_VISIBILITY, //
+        EXPANDED_PLAYER_VISIBILITY, //
         MINI_PLAYER_ANIMATE_VISIBILITY_CHANGES, //
         TITLE, //
         PUBLISHER, //
         PLAYBACK_STATE, //
         PROGRESS, //
-        INTERACTION_HANDLER, //
-        MINI_PLAYER_MEDIATOR //
+        MINI_PLAYER_MEDIATOR, //
+        SPEED, //
+        INTERACTION_HANDLER //
     };
 }

@@ -15,14 +15,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.readaloud.player.expanded.ExpandedPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerLayout;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
+import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link PlayerCoordinator}. */
@@ -33,8 +36,8 @@ public class PlayerCoordinatorUnitTest {
     private ViewStub mMiniPlayerViewStub;
     @Mock
     private MiniPlayerLayout mMiniPlayerLayout;
-    @Mock
-    private Playback mPlayback;
+    @Mock private MiniPlayerCoordinator mMiniPlayerCoordinator;
+    @Mock private Playback mPlayback;
     @Mock
     private PlayerCoordinator.Observer mObserver;
     @Mock
@@ -44,10 +47,14 @@ public class PlayerCoordinatorUnitTest {
     private PlayerCoordinator mPlayerCoordinator;
     private PropertyModel mModel;
 
+    @Mock private Player.Delegate mDelegate;
+    @Mock private ExpandedPlayerCoordinator mExpandedPlayer;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mPlayerCoordinator = new PlayerCoordinator(mMiniPlayer, mMediator);
+        mPlayerCoordinator =
+                new PlayerCoordinator(mMiniPlayer, mMediator, mDelegate, mExpandedPlayer);
     }
 
     @Test
@@ -100,7 +107,8 @@ public class PlayerCoordinatorUnitTest {
     @Test
     public void testCloseClicked() {
         doReturn(mMiniPlayerLayout).when(mMiniPlayerViewStub).inflate();
-        mPlayerCoordinator = new PlayerCoordinator(null, mMiniPlayerViewStub, null);
+        mPlayerCoordinator =
+                new PlayerCoordinator(mMiniPlayer, mMediator, mDelegate, mExpandedPlayer);
         mPlayerCoordinator.addObserver(mObserver);
         mPlayerCoordinator.closeClicked();
         verify(mObserver).onRequestClosePlayers();
@@ -118,7 +126,8 @@ public class PlayerCoordinatorUnitTest {
         verify(mMediator).setPlayback(eq(null));
         verify(mMediator).setPlaybackState(eq(PlaybackListener.State.STOPPED));
         verify(mMediator).destroy();
-
+        verify(mMiniPlayer).dismiss(Mockito.anyBoolean());
+        verify(mExpandedPlayer).dismiss();
         verify(mObserver, never()).onRequestClosePlayers();
     }
 }

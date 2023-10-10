@@ -20,21 +20,28 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Mediator class in charge of updating player UI property model. */
 class PlayerMediator implements InteractionHandler {
     private final PlayerCoordinator mCoordinator;
+    private final PlayerCoordinator.Delegate mDelegate;
     private final PropertyModel mModel;
-    private final PlaybackListener mPlaybackListener = new PlaybackListener() {
-        @Override
-        public void onPlaybackDataChanged(PlaybackData data) {
-            mModel.set(PlayerProperties.PLAYBACK_STATE, data.state());
-            float percent =
-                    (float) data.absolutePositionNanos() / (float) data.totalDurationNanos();
-            mModel.set(PlayerProperties.PROGRESS, percent);
-        }
-    };
+    private final PlaybackListener mPlaybackListener =
+            new PlaybackListener() {
+                @Override
+                public void onPlaybackDataChanged(PlaybackData data) {
+                    setPlaybackState(data.state());
+                    float percent =
+                            (float) data.absolutePositionNanos()
+                                    / (float) data.totalDurationNanos();
+                    mModel.set(PlayerProperties.PROGRESS, percent);
+                }
+            };
 
     private Playback mPlayback;
 
-    PlayerMediator(PlayerCoordinator coordinator, PropertyModel model) {
+    PlayerMediator(
+            PlayerCoordinator coordinator,
+            PlayerCoordinator.Delegate delegate,
+            PropertyModel model) {
         mCoordinator = coordinator;
+        mDelegate = delegate;
         mModel = model;
         mModel.set(PlayerProperties.INTERACTION_HANDLER, this);
     }
@@ -121,5 +128,7 @@ class PlayerMediator implements InteractionHandler {
     public void onTranslateLanguageChange(String targetLanguage) {}
 
     @Override
-    public void onMiniPlayerExpandClick() {}
+    public void onMiniPlayerExpandClick() {
+        // TODO: implement expand
+    }
 }

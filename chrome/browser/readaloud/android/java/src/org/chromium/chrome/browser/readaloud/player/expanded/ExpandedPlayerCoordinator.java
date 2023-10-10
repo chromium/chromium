@@ -6,87 +6,91 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import android.content.Context;
 
-import org.chromium.base.ObserverList;
-import org.chromium.chrome.browser.readaloud.PlayerState;
-import org.chromium.chrome.modules.readaloud.ExpandedPlayer;
-import org.chromium.chrome.modules.readaloud.ExpandedPlayer.Observer;
-import org.chromium.chrome.modules.readaloud.Playback;
+import androidx.annotation.Nullable;
+
+import org.chromium.chrome.browser.readaloud.player.VisibilityState;
+import org.chromium.chrome.modules.readaloud.Player.Delegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-public class ExpandedPlayerCoordinator implements ExpandedPlayer {
+public class ExpandedPlayerCoordinator {
     private final Context mContext;
-    private final BottomSheetController mBottomSheetController;
-    private final ObserverList<Observer> mObserverList;
-    private ExpandedPlayerSheetContent mSheetContent;
+    private final Delegate mDelegate;
+    private final BottomSheetObserver mBottomSheetObserver =
+            new EmptyBottomSheetObserver() {
+                private BottomSheetContent mTrackedContent;
+
+                @Override
+                public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
+                    // TODO: implement
+                }
+
+                @Override
+                public void onSheetOpened(@StateChangeReason int reason) {
+                    // TODO: implement
+                }
+
+                @Override
+                public void onSheetClosed(@StateChangeReason int reason) {
+                    // TODO: notify ExpandedPlayerSheetContent of sheet closed
+                }
+            };
     private PropertyModel mModel;
+    private ExpandedPlayerSheetContent mSheetContent;
     private PropertyModelChangeProcessor<PropertyModel, ExpandedPlayerSheetContent, PropertyKey>
             mModelChangeProcessor;
     private ExpandedPlayerMediator mMediator;
 
-    public ExpandedPlayerCoordinator(Context context, BottomSheetController bottomSheetController) {
+    public ExpandedPlayerCoordinator(Context context, Delegate delegate, PropertyModel model) {
         mContext = context;
-        mBottomSheetController = bottomSheetController;
-        mObserverList = new ObserverList<Observer>();
+        mDelegate = delegate;
+        mModel = model;
+        mDelegate.getBottomSheetController().addObserver(mBottomSheetObserver);
     }
 
-    @Override
-    public void addObserver(Observer observer) {
-        mObserverList.addObserver(observer);
-    }
-
-    @Override
-    public void removeObserver(Observer observer) {
-        mObserverList.removeObserver(observer);
-    }
-
-    @Override
-    public void show(Playback playback) {
-        assert playback != null;
+    public void show() {
         if (mSheetContent == null) {
-            mSheetContent = new ExpandedPlayerSheetContent(mContext, mBottomSheetController);
-            mModel =
-                    new PropertyModel.Builder(ExpandedPlayerProperties.ALL_KEYS)
-                            .with(ExpandedPlayerProperties.STATE_KEY, PlayerState.GONE)
-                            .build();
+            makeSheetContent();
             mModelChangeProcessor =
                     PropertyModelChangeProcessor.create(
                             mModel, mSheetContent, ExpandedPlayerViewBinder::bind);
-            mMediator =
-                    new ExpandedPlayerMediator(
-                            mBottomSheetController,
-                            mModel,
-                            new Observer() {
-                                @Override
-                                public void onCloseClicked() {
-                                    for (Observer observer : mObserverList) {
-                                        observer.onCloseClicked();
-                                    }
-                                }
-                            });
+            makeMediator();
         }
-        mMediator.show(playback);
+        mMediator.show();
     }
 
-    @Override
+    public void makeSheetContent() {
+        mSheetContent =
+                new ExpandedPlayerSheetContent(mContext, mDelegate.getBottomSheetController());
+    }
+
+    public void makeMediator() {
+        mMediator = new ExpandedPlayerMediator(mModel);
+    }
+
     public void dismiss() {
         if (mMediator != null) {
             mMediator.dismiss();
         }
     }
 
-    @Override
-    public @PlayerState int getState() {
+    public @VisibilityState int getVisibility() {
         if (mMediator == null) {
-            return PlayerState.GONE;
+            return VisibilityState.GONE;
         }
-        return mMediator.getState();
+        return mMediator.getVisibility();
     }
 
-    BottomSheetContent getSheetContentForTesting() {
-        return mSheetContent;
+    void setMediatorForTesting(ExpandedPlayerMediator mediator) {
+        mMediator = mediator;
+    }
+
+    void setSheetContentForTesting(ExpandedPlayerSheetContent sheetContent) {
+        mSheetContent = sheetContent;
     }
 }

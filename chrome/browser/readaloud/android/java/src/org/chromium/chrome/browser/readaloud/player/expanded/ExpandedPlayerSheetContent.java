@@ -12,8 +12,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -30,15 +32,22 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private final BottomSheetController mBottomSheetController;
     private View mContentView;
 
-    // TODO remove hard-coded strings
-    @SuppressWarnings("SetTextI18n")
     public ExpandedPlayerSheetContent(
             Context context, BottomSheetController bottomSheetController) {
+        this(
+                context,
+                bottomSheetController,
+                LayoutInflater.from(context)
+                        .inflate(R.layout.readaloud_expanded_player_layout, null));
+    }
+
+    @SuppressWarnings("SetTextI18n")
+    @VisibleForTesting
+    ExpandedPlayerSheetContent(
+            Context context, BottomSheetController bottomSheetController, View contentView) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
-        mContentView =
-                LayoutInflater.from(context)
-                        .inflate(R.layout.readaloud_expanded_player_layout, null);
+        mContentView = contentView;
         ((TextView) mContentView.findViewById(R.id.readaloud_expanded_player_title))
                 .setText("Page title");
         ((TextView) mContentView.findViewById(R.id.readaloud_expanded_player_publisher))
@@ -67,6 +76,14 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mContentView
                 .findViewById(R.id.readaloud_expanded_player_close_button)
                 .setOnClickListener(onClick);
+    }
+
+    void setInteractionHandler(InteractionHandler handler) {
+        setOnClickListener(R.id.readaloud_expanded_player_close_button, handler::onCloseClick);
+        setOnClickListener(R.id.readaloud_play_pause_button, handler::onPlayPauseClick);
+        setOnClickListener(R.id.readaloud_seek_back_button, handler::onSeekBackClick);
+        setOnClickListener(R.id.readaloud_seek_forward_button, handler::onSeekForwardClick);
+        setOnClickListener(R.id.readaloud_expanded_player_publisher, handler::onPublisherClick);
     }
 
     @SuppressWarnings({"SetTextI18n", "DefaultLocale"})
@@ -185,5 +202,14 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     public int getSheetClosedAccessibilityStringId() {
         // "Read Aloud player minimized."
         return R.string.readaloud_player_minimized;
+    }
+
+    private void setOnClickListener(int id, Runnable onClick) {
+        mContentView
+                .findViewById(id)
+                .setOnClickListener(
+                        (view) -> {
+                            onClick.run();
+                        });
     }
 }

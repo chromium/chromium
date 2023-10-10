@@ -13,16 +13,16 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
-import org.chromium.chrome.browser.readaloud.player.expanded.ExpandedPlayerCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelTabObserver;
 import org.chromium.chrome.browser.translate.TranslateBridge;
-import org.chromium.chrome.modules.readaloud.ExpandedPlayer;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooks;
@@ -35,13 +35,14 @@ import org.chromium.url.GURL;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 /**
  * The main entrypoint component for Read Aloud feature. It's responsible for checking its
  * availability and triggering playback.
  */
-public class ReadAloudController implements Player.Observer, PlaybackListener {
+public class ReadAloudController implements Player.Observer, Player.Delegate, PlaybackListener {
     private static final String TAG = "ReadAloudController";
 
     private final ObservableSupplier<Profile> mProfileSupplier;
@@ -49,12 +50,13 @@ public class ReadAloudController implements Player.Observer, PlaybackListener {
     private final Map<String, Boolean> mTimepointsSupportedMap = new HashMap<>();
     private final HashSet<String> mPendingRequests = new HashSet<>();
     private final TabModel mTabModel;
-    private final ExpandedPlayer mExpandedPlayer;
     private final PlayerCoordinator mPlayerCoordinator;
     @Nullable
     private static PlayerCoordinator sPlayerCoordinatorForTesting;
 
     private TabModelTabObserver mTabObserver;
+
+    private final BottomSheetController mBottomSheetController;
 
     private final ReadAloudReadabilityHooks mReadabilityHooks;
     @Nullable
@@ -122,11 +124,11 @@ public class ReadAloudController implements Player.Observer, PlaybackListener {
         mReadabilityHooks = sReadabilityHooksForTesting != null
                 ? sReadabilityHooksForTesting
                 : new ReadAloudReadabilityHooksImpl(context, ReadAloudFeatures.getApiKeyOverride());
-        mExpandedPlayer = new ExpandedPlayerCoordinator(context, bottomSheetController);
-        mPlayerCoordinator = sPlayerCoordinatorForTesting != null
-                ? sPlayerCoordinatorForTesting
-                : new PlayerCoordinator(context, miniPlayerStub);
-
+        mBottomSheetController = bottomSheetController;
+        mPlayerCoordinator =
+                sPlayerCoordinatorForTesting != null
+                        ? sPlayerCoordinatorForTesting
+                        : new PlayerCoordinator(context, miniPlayerStub, this);
         if (mReadabilityHooks.isEnabled()) {
             mTabObserver =
                     new TabModelTabObserver(mTabModel) {
@@ -319,6 +321,57 @@ public class ReadAloudController implements Player.Observer, PlaybackListener {
                 && tab.getUrl().getSpec().equals(newUrl.getSpec())) {
             mHighligher.handleTabReloaded(tab);
         }
+    }
+
+    // Player.Delegate
+    @Override
+    public BottomSheetController getBottomSheetController() {
+        return mBottomSheetController;
+    }
+
+    @Override
+    public boolean isHighlightingSupported() {
+        // TODO: implement
+        return false;
+    }
+
+    @Override
+    public ObservableSupplierImpl<Boolean> getHighlightingEnabledSupplier() {
+        // TODO: implement
+        return new ObservableSupplierImpl<Boolean>();
+    }
+
+    @Override
+    public ObservableSupplier<List<PlaybackVoice>> getCurrentLanguageVoicesSupplier() {
+        // TODO: implement
+        return new ObservableSupplierImpl<List<PlaybackVoice>>();
+    }
+
+    @Override
+    public ObservableSupplier<String> getVoiceIdSupplier() {
+        // TODO: implement
+        return new ObservableSupplierImpl<String>();
+    }
+
+    @Override
+    public Map<String, String> getVoiceOverrides() {
+        // TODO: implement
+        return new HashMap<String, String>();
+    }
+
+    @Override
+    public void setVoiceOverride(PlaybackVoice voice) {
+        // TODO: implement
+    }
+
+    @Override
+    public void previewVoice(PlaybackVoice voice) {
+        // TODO: implement
+    }
+
+    @Override
+    public void navigateToPlayingTab() {
+        // TODO: implement
     }
 
     // Player.Observer
