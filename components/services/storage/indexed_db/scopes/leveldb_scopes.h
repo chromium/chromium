@@ -41,7 +41,7 @@ class LevelDBScopes {
   // |tear_down_callback| will not be called after the destruction of this
   // class.
   LevelDBScopes(std::vector<uint8_t> metadata_key_prefix,
-                size_t max_write_batch_size_bytes_bytes,
+                size_t max_write_batch_size_bytes,
                 scoped_refptr<LevelDBState> level_db,
                 PartitionedLockManager* lock_manager,
                 TearDownCallback tear_down_callback);
@@ -59,12 +59,7 @@ class LevelDBScopes {
   // Schedules any pending cleanup or revert tasks.
   void StartRecoveryAndCleanupTasks();
 
-  // In |empty_ranges|, |pair.first| is the inclusive range begin, and
-  // |pair.end| is the exclusive range end. The ranges must be disjoint (they
-  // cannot overlap).
-  std::unique_ptr<LevelDBScope> CreateScope(
-      std::vector<PartitionedLock> locks,
-      std::vector<EmptyRange> empty_ranges);
+  std::unique_ptr<LevelDBScope> CreateScope(std::vector<PartitionedLock> locks);
 
   leveldb::Status Commit(std::unique_ptr<LevelDBScope> scope,
                          bool sync_on_commit);
@@ -96,13 +91,6 @@ class LevelDBScopes {
   using StartupScopeToRevert = std::pair<int64_t, std::vector<PartitionedLock>>;
   using StartupScopeToCleanup = std::pair<int64_t, StartupCleanupType>;
   using RecoveryLocksList = std::list<std::vector<PartitionedLock>>;
-
-  leveldb::Status InitializeGlobalMetadata(
-      const leveldb::ReadOptions& read_options,
-      const leveldb::WriteOptions& write_options);
-  leveldb::Status InitializeScopesAndTasks(
-      const leveldb::ReadOptions& read_options,
-      const leveldb::WriteOptions& write_options);
 
   void Rollback(int64_t scope_id, std::vector<PartitionedLock> locks);
 

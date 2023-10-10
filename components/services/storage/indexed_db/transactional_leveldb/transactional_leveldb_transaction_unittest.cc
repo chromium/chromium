@@ -138,9 +138,8 @@ class TransactionalLevelDBTransactionTest : public LevelDBScopesTestBase {
 
   scoped_refptr<TransactionalLevelDBTransaction> CreateTransaction() {
     return transactional_leveldb_factory_.CreateLevelDBTransaction(
-        db(),
-        db()->scopes()->CreateScope(
-            AcquireLocksSync(&lock_manager_, {CreateSimpleSharedLock()}), {}));
+        db(), db()->scopes()->CreateScope(AcquireLocksSync(
+                  &lock_manager_, {CreateSimpleSharedLock()})));
   }
 
   leveldb::Status failure_status_;

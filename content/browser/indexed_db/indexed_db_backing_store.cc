@@ -3862,8 +3862,7 @@ void IndexedDBBackingStore::Transaction::Begin(
           ->transactional_leveldb_factory()
           .CreateLevelDBTransaction(
               backing_store_->db_.get(),
-              backing_store_->db_->scopes()->CreateScope(
-                  std::move(locks), std::vector<LevelDBScopes::EmptyRange>()));
+              backing_store_->db_->scopes()->CreateScope(std::move(locks)));
 
   // If incognito, this snapshots blobs just as the above transaction_
   // constructor snapshots the leveldb.

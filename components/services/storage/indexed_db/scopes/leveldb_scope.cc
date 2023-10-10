@@ -106,28 +106,12 @@ class LevelDBScope::UndoLogWriter : public leveldb::WriteBatch::Handler {
   leveldb::Status error_ = leveldb::Status::OK();
 };
 
-LevelDBScope::EmptyRangeLessThan::EmptyRangeLessThan() = default;
-LevelDBScope::EmptyRangeLessThan::EmptyRangeLessThan(
-    const leveldb::Comparator* comparator)
-    : comparator_(comparator) {}
-LevelDBScope::EmptyRangeLessThan::EmptyRangeLessThan(
-    const LevelDBScope::EmptyRangeLessThan& other) = default;
-LevelDBScope::EmptyRangeLessThan& LevelDBScope::EmptyRangeLessThan::operator=(
-    const LevelDBScope::EmptyRangeLessThan& other) = default;
-
-// The ranges are expected to be disjoint.
-bool LevelDBScope::EmptyRangeLessThan::operator()(const EmptyRange& lhs,
-                                                  const EmptyRange& rhs) const {
-  return comparator_->Compare(lhs.first, rhs.first) < 0;
-}
-
 LevelDBScope::LevelDBScope(
     int64_t scope_id,
     std::vector<uint8_t> prefix,
     size_t write_batch_size,
     scoped_refptr<LevelDBState> level_db,
     std::vector<PartitionedLock> locks,
-    std::vector<std::pair<std::string, std::string>> empty_ranges,
     RollbackCallback rollback_callback,
     TearDownCallback tear_down_callback)
     : scope_id_(scope_id),
@@ -138,19 +122,6 @@ LevelDBScope::LevelDBScope(
       rollback_callback_(std::move(rollback_callback)),
       tear_down_callback_(std::move(tear_down_callback)) {
   DCHECK(!locks_.empty());
-  std::vector<std::pair<EmptyRange, bool>> map_values;
-  map_values.reserve(empty_ranges.size());
-  for (EmptyRange& range : empty_ranges) {
-    // Moving the range here technically messes up the sorting order of
-    // empty_ranges, but it's not used again anyways so we don't mind.
-    map_values.emplace_back(std::move(range), false);
-  }
-  empty_ranges_ = base::flat_map<EmptyRange, bool, EmptyRangeLessThan>(
-      std::move(map_values), EmptyRangeLessThan(level_db_->comparator()));
-
-#if DCHECK_IS_ON()
-  ValidateEmptyRanges();
-#endif
 }
 
 LevelDBScope::~LevelDBScope() {
@@ -430,32 +401,8 @@ void LevelDBScope::SetModeToUndoLog() {
 }
 
 bool LevelDBScope::CanSkipWritingUndoEntry(const leveldb::Slice& key) {
-  const leveldb::Comparator* const comparator = level_db_->comparator();
-  if (key.starts_with(leveldb::Slice(
-          reinterpret_cast<const char*>(prefix_.data()), prefix_.size())))
-    return true;
-  const auto it = std::upper_bound(
-      empty_ranges_.begin(), empty_ranges_.end(), key,
-      [comparator](const leveldb::Slice& key,
-                   const std::pair<EmptyRange, bool>& range) {
-        // Compare the key to the end of the range.
-        const EmptyRange& empty_range = range.first;
-        return comparator->Compare(key, empty_range.second) < 0;
-      });
-  // If the key wasn't found (iterator is at the end, or the key is before the
-  // beginning).
-  if (LIKELY(it == empty_ranges_.end() ||
-             comparator->Compare(key, it->first.first) < 0)) {
-    return false;
-  }
-
-  // The key is within an empty range.
-  if (!it->second) {
-    // Only add the delete range once.
-    AddUndoDeleteRangeTask(it->first.first, it->first.second);
-    it->second = true;
-  }
-  return true;
+  return key.starts_with(leveldb::Slice(
+      reinterpret_cast<const char*>(prefix_.data()), prefix_.size()));
 }
 
 void LevelDBScope::AddCommitPoint() {
@@ -484,22 +431,6 @@ leveldb::Status LevelDBScope::WriteBufferBatch(bool sync) {
 }
 
 #if DCHECK_IS_ON()
-bool LevelDBScope::IsRangeEmpty(const EmptyRange& range) {
-  leveldb::ReadOptions read_options;
-  read_options.verify_checksums = true;
-  // This is a debug-only operation, so it shouldn't fill the cache.
-  read_options.fill_cache = false;
-  const std::unique_ptr<leveldb::Iterator> it =
-      base::WrapUnique(level_db_->db()->NewIterator(read_options));
-  const leveldb::Comparator* const comparator = level_db_->comparator();
-
-  it->Seek(range.first);
-  DCHECK(!it->Valid() || it->status().ok())
-      << "leveldb::Iterator::Valid() should imply an OK status";
-  return !it->Valid() ||
-         !IsKeyBeforeEndOfRange(comparator, it->key(), range.second, true);
-}
-
 bool LevelDBScope::IsInDeferredDeletionRange(const leveldb::Slice& key) {
   const leveldb::Comparator* comparator = level_db_->comparator();
   for (const auto& range : deferred_delete_ranges_) {
@@ -514,29 +445,6 @@ bool LevelDBScope::IsInDeferredDeletionRange(const leveldb::Slice& key) {
     return endCompare > 0;
   }
   return false;
-}
-
-void LevelDBScope::ValidateEmptyRanges() {
-  for (auto it = empty_ranges_.begin(); it != empty_ranges_.end(); ++it) {
-    auto range = it->first;
-    DCHECK(IsRangeEmpty(range))
-        << "Range [" << range.first << ", " << range.second
-        << ") was reported empty, but keys were found.";
-    auto next_it = it;
-    ++next_it;
-    if (next_it != empty_ranges_.end()) {
-      DCHECK(level_db_->comparator()->Compare(range.second,
-                                              next_it->first.first) <= 0)
-          << "The |empty_ranges| are not disjoint.";
-    }
-    auto last_it = it;
-    if (last_it != empty_ranges_.begin()) {
-      --last_it;
-      DCHECK(level_db_->comparator()->Compare(last_it->first.second,
-                                              range.first) <= 0)
-          << "The |empty_ranges| are not disjoint.";
-    }
-  }
 }
 #endif
 

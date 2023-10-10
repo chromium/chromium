@@ -500,7 +500,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
       TransactionalLevelDBDatabase* db = db_->backing_store()->db();
       if (db) {
         txn = db->class_factory()->CreateLevelDBTransaction(
-            db, db->scopes()->CreateScope(std::move(lock_receiver_.locks), {}));
+            db, db->scopes()->CreateScope(std::move(lock_receiver_.locks)));
         txn->set_commit_cleanup_complete_callback(
             std::move(on_database_deleted_));
       }

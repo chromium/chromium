@@ -32,12 +32,12 @@
 namespace content {
 
 LevelDBScopes::LevelDBScopes(std::vector<uint8_t> metadata_key_prefix,
-                             size_t max_write_batch_size,
+                             size_t max_write_batch_size_bytes,
                              scoped_refptr<LevelDBState> level_db,
                              PartitionedLockManager* lock_manager,
                              TearDownCallback tear_down_callback)
     : metadata_key_prefix_(std::move(metadata_key_prefix)),
-      max_write_batch_size_bytes_(max_write_batch_size),
+      max_write_batch_size_bytes_(max_write_batch_size_bytes),
       level_db_(std::move(level_db)),
       lock_manager_(lock_manager),
       tear_down_callback_(std::move(tear_down_callback)) {}
@@ -228,8 +228,7 @@ void LevelDBScopes::StartRecoveryAndCleanupTasks() {
 }
 
 std::unique_ptr<LevelDBScope> LevelDBScopes::CreateScope(
-    std::vector<PartitionedLock> locks,
-    std::vector<std::pair<std::string, std::string>> empty_ranges) {
+    std::vector<PartitionedLock> locks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(recovery_finished_);
   int scope_id = next_scope_id_;
@@ -244,8 +243,7 @@ std::unique_ptr<LevelDBScope> LevelDBScopes::CreateScope(
       weak_factory_.GetWeakPtr());
   return base::WrapUnique(new LevelDBScope(
       scope_id, metadata_key_prefix_, max_write_batch_size_bytes_, level_db_,
-      std::move(locks), std::move(empty_ranges), std::move(rollback_callback),
-      tear_down_callback_));
+      std::move(locks), std::move(rollback_callback), tear_down_callback_));
 }
 
 leveldb::Status LevelDBScopes::Commit(std::unique_ptr<LevelDBScope> scope,
