@@ -33,6 +33,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
+class ScopedProfileKeepAlive;
 
 namespace web_app {
 
@@ -336,6 +337,13 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
       const webapps::AppId& app_id,
       std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
       base::OnceClosure callback);
+
+  // Called when ForceUnregisterOsIntegrationSubManager has finished
+  // unregistering sub managers. `keep_alive` is reset to allow the
+  // profile to be deleted.
+  void SubManagersUnregistered(
+      const webapps::AppId& app_id,
+      std::unique_ptr<ScopedProfileKeepAlive> keep_alive);
 
   // Used to call ForceUnregister() on all sub managers to remove
   // any OS integrations from the OS. This runs synchronously in the order that

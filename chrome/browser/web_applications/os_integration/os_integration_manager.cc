@@ -23,6 +23,8 @@
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/file_handling_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
@@ -920,12 +922,25 @@ void OsIntegrationManager::OnShortcutsUpdatedForProtocolHandlers(
   UnregisterProtocolHandlers(app_id, std::move(unregister_callback));
 }
 
+void OsIntegrationManager::SubManagersUnregistered(
+    const webapps::AppId& app_id,
+    std::unique_ptr<ScopedProfileKeepAlive> keep_alive) {
+  force_unregister_callback_for_testing_.Run(app_id);
+  keep_alive.reset();
+}
+
 void OsIntegrationManager::OnWebAppProfileWillBeDeleted(
     const webapps::AppId& app_id) {
   if (AreSubManagersExecuteEnabled()) {
+    // This is used to keep the profile from being deleted while doing a
+    // ForceUnregister when profile deletion is started.
+    auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+        profile_, ProfileKeepAliveOrigin::kOsIntegrationForceUnregistration);
     ForceUnregisterOsIntegrationOnSubManager(
         app_id, 0,
-        base::BindOnce(force_unregister_callback_for_testing_, app_id));
+        base::BindOnce(&OsIntegrationManager::SubManagersUnregistered,
+                       weak_ptr_factory_.GetWeakPtr(), app_id,
+                       std::move(profile_keep_alive)));
   } else {
     UninstallAllOsHooks(app_id,
                         base::IgnoreArgs<OsHooksErrors>(base::BindOnce(

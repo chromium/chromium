@@ -157,7 +157,10 @@ enum class ProfileKeepAliveOrigin {
   // A web app is being uninstalled.
   kWebAppUninstall = 36,
 
-  kMaxValue = kWebAppUninstall,
+  // Used during ForceUnregistration of OsIntegrationManger's sub managers.
+  kOsIntegrationForceUnregistration = 37,
+
+  kMaxValue = kOsIntegrationForceUnregistration,
 };
 
 std::ostream& operator<<(std::ostream& out,
