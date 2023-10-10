@@ -114,9 +114,9 @@ static OSStatus GetInputDeviceStreamFormat(
   UInt32 property_size = sizeof(*format);
   // Get the audio stream data format on the input scope of the input element
   // since it is connected to the current input device.
-  OSStatus result =
-      AudioUnitGetProperty(audio_unit, kAudioUnitProperty_StreamFormat,
-                           kAudioUnitScope_Input, 1, format, &property_size);
+  OSStatus result = AudioUnitGetProperty(
+      audio_unit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input,
+      AUElement::INPUT, format, &property_size);
   DVLOG(1) << "Input device stream format: " << *format;
   return result;
 }
@@ -1216,9 +1216,9 @@ bool AUAudioInputStream::IsRunning() {
     return false;
   UInt32 is_running = 0;
   UInt32 size = sizeof(is_running);
-  OSStatus error =
-      AudioUnitGetProperty(audio_unit_, kAudioOutputUnitProperty_IsRunning,
-                           kAudioUnitScope_Global, 0, &is_running, &size);
+  OSStatus error = AudioUnitGetProperty(
+      audio_unit_, kAudioOutputUnitProperty_IsRunning, kAudioUnitScope_Global,
+      AUElement::OUTPUT, &is_running, &size);
   OSSTATUS_DLOG_IF(ERROR, error != noErr, error)
       << "AudioUnitGetProperty(kAudioOutputUnitProperty_IsRunning) failed";
   DVLOG(1) << " this " << this << " IsRunning: " << is_running;

@@ -1097,7 +1097,7 @@ bool AudioManagerMac::MaybeChangeBufferSize(AudioDeviceID device_id,
   UInt32 property_size = sizeof(buffer_size);
   OSStatus result = AudioUnitGetProperty(
       audio_unit, kAudioDevicePropertyBufferFrameSize, kAudioUnitScope_Global,
-      0, &buffer_size, &property_size);
+      AUElement::OUTPUT, &buffer_size, &property_size);
   if (result != noErr) {
     OSSTATUS_DLOG(ERROR, result)
         << "AudioUnitGetProperty(kAudioDevicePropertyBufferFrameSize) failed.";
