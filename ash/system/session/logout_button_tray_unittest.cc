@@ -74,7 +74,8 @@ TEST_F(LogoutButtonTrayTest, Visibility) {
   EXPECT_FALSE(button->GetVisible());
 }
 
-TEST_F(LogoutButtonTrayTest, ButtonPressed) {
+// TODO(crbug.com/1491544): Test is flaky.
+TEST_F(LogoutButtonTrayTest, DISABLED_ButtonPressed) {
   constexpr char kUserAction[] = "DemoMode.ExitFromShelf";
 
   LogoutButtonTray* const tray = Shell::GetPrimaryRootWindowController()
