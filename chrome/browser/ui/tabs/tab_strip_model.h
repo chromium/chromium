@@ -40,6 +40,7 @@ class Profile;
 class TabGroupModel;
 class TabStripModelDelegate;
 class TabStripModelObserver;
+class TabModel;
 
 namespace content {
 class WebContents;
@@ -583,7 +584,6 @@ class TabStripModel : public TabGroupController {
  private:
   FRIEND_TEST_ALL_PREFIXES(TabStripModelTest, GetIndicesClosedByCommand);
 
-  class Tab;
   struct DetachNotifications;
 
   // Perform tasks associated with changes to the model. Change the Active Index
@@ -805,7 +805,7 @@ class TabStripModel : public TabGroupController {
 
   // The WebContents data currently hosted within this TabStripModel. This must
   // be kept in sync with |selection_model_|.
-  std::vector<std::unique_ptr<Tab>> contents_data_;
+  std::vector<std::unique_ptr<TabModel>> contents_data_;
 
   // The model for tab groups hosted within this TabStripModel.
   std::unique_ptr<TabGroupModel> group_model_;
