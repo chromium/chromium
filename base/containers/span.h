@@ -27,7 +27,9 @@ namespace base {
 // [views.constants]
 constexpr size_t dynamic_extent = std::numeric_limits<size_t>::max();
 
-template <typename T, size_t Extent = dynamic_extent>
+template <typename T,
+          size_t Extent = dynamic_extent,
+          typename InternalPtrType = T*>
 class span;
 
 namespace internal {
@@ -233,7 +235,7 @@ constexpr size_t must_not_be_dynamic_extent() {
 // appropriate make_span() utility functions are provided.
 
 // [span], class template span
-template <typename T, size_t Extent>
+template <typename T, size_t Extent, typename InternalPtrType>
 class GSL_POINTER span : public internal::ExtentStorage<Extent> {
  private:
   using ExtentStorage = internal::ExtentStorage<Extent>;
@@ -452,13 +454,13 @@ class GSL_POINTER span : public internal::ExtentStorage<Extent> {
  private:
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #constexpr-ctor-field-initializer, #global-scope, #union
-  RAW_PTR_EXCLUSION T* data_;
+  InternalPtrType data_;
 };
 
 // span<T, Extent>::extent can not be declared inline prior to C++17, hence this
 // definition is required.
-template <class T, size_t Extent>
-constexpr size_t span<T, Extent>::extent;
+template <class T, size_t Extent, typename InternalPtrType>
+constexpr size_t span<T, Extent, InternalPtrType>::extent;
 
 template <typename It,
           typename T = std::remove_reference_t<iter_reference_t<It>>>
