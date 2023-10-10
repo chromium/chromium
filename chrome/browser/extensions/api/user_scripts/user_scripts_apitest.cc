@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
@@ -39,7 +40,13 @@ UserScriptsAPITest::UserScriptsAPITest() {
       extensions_features::kApiUserScripts);
 }
 
-IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, RegisterUserScripts) {
+// TODO(crbug.com/1491361): Flaky on Linux debug.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_RegisterUserScripts DISABLED_RegisterUserScripts
+#else
+#define MAYBE_RegisterUserScripts RegisterUserScripts
+#endif
+IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, MAYBE_RegisterUserScripts) {
   ASSERT_TRUE(RunExtensionTest("user_scripts/register")) << message_;
 }
 
