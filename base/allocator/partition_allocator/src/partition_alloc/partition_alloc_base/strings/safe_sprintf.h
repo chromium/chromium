@@ -178,6 +178,21 @@ struct Arg {
     integer.width = sizeof(long long);
   }
 
+  // nullptr_t would be ambiguous between char* and const char*; to get
+  // consistent behavior with NULL, which prints with all three of %d, %p, and
+  // %s, treat it as an integer zero internally.
+  //
+  // Warning: don't just do Arg(NULL) here because in some libcs, NULL is an
+  // alias for nullptr!
+  Arg(nullptr_t p) : type(INT) {
+    integer.i = 0;
+    // Internally, SafeSprintf expects to represent nulls as integers whose
+    // width is equal to sizeof(NULL), which is not necessarily equal to
+    // sizeof(nullptr_t) - eg, on Windows, NULL is defined to 0 (with size 4)
+    // while nullptr_t is of size 8.
+    integer.width = sizeof(NULL);
+  }
+
   // A C-style text string.
   Arg(const char* s) : str(s), type(STRING) {}
   Arg(char* s) : str(s), type(STRING) {}

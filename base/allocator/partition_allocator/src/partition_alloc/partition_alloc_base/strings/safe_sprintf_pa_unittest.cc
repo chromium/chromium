@@ -752,6 +752,16 @@ TEST(SafeSPrintfTestPA, EmitNULL) {
 #endif
 }
 
+TEST(SafeSPrintfTestPA, EmitNullptr) {
+  char buf[40];
+  EXPECT_EQ(1, SafeSPrintf(buf, "%d", nullptr));
+  EXPECT_EQ("0", std::string(buf));
+  EXPECT_EQ(3, SafeSPrintf(buf, "%p", nullptr));
+  EXPECT_EQ("0x0", std::string(buf));
+  EXPECT_EQ(6, SafeSPrintf(buf, "%s", nullptr));
+  EXPECT_EQ("<NULL>", std::string(buf));
+}
+
 TEST(SafeSPrintfTestPA, PointerSize) {
   // The internal data representation is a 64bit value, independent of the
   // native word size. We want to perform sign-extension for signed integers,
