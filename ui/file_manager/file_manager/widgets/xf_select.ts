@@ -11,7 +11,7 @@
 import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import {addCSSPrefixSelector, getCrActionMenuTop} from '../common/js/dom_utils.js';
+import {getCrActionMenuTop} from '../common/js/dom_utils.js';
 
 import {css, type CSSResultGroup, customElement, html, property, query, XfBase} from './xf_base.js';
 
@@ -317,79 +317,7 @@ export class XfSelect extends XfBase {
  * CSS used by the xf-select widget.
  */
 function getCSS(): CSSResultGroup {
-  const legacyStyle = css`
-    cr-button {
-      --hover-bg-color: var(--cros-ripple-color);
-      --hover-border-color: var(--cros-button-stroke-color-secondary);
-      --text-color: var(--cros-text-color-secondary);
-      --ink-color: var(--cros-ripple-color);
-    }
-    #dropdown-toggle {
-      --border-color: var(--cros-button-stroke-color-secondary);
-      --cr-button-height: 32px;
-      --ripple-opacity: 100%;
-      border-radius: 20px;
-      margin-inline: 4px;
-      min-width: auto;
-      outline: none;
-      padding: 0px 8px 0 12px;
-      white-space: nowrap;
-    }
-    .xf-select-icon {
-      height: 20px;
-      width: 20px;
-      margin-inline: 0 8px;
-    }
-    #xf-select-icon.select-location {
-      background:
-        url(/foreground/images/files/ui/select_location.svg) no-repeat;
-    }
-    #xf-select-icon.select-time {
-      background:
-        url(/foreground/images/files/ui/select_time.svg) no-repeat;
-    }
-    #xf-select-icon.select-filetype {
-      background:
-        url(/foreground/images/files/ui/select_filetype.svg) no-repeat;
-    }
-    #dropdown-icon {
-      background:
-        url(/foreground/images/files/ui/xf_select_dropdown.svg) no-repeat;
-      height: 20px;
-      width: 20px;
-      margin-inline: 8px 0;
-    }
-    cr-button.dropdown-item {
-      --focus-shadow-color: none;
-      padding: 0 16px;
-    }
-    cr-button.dropdown-item:hover {
-      background-color: var(--cros-ripple-color);
-    }
-    cr-button.dropdown-item-center {
-      justify-content: center;
-    }
-    cr-button.dropdown-item-start {
-      justify-content: start;
-    }
-    cr-button.dropdown-item-end {
-      justify-content: end;
-    }
-    div.dropdown-filler {
-      flex-grow: 1;
-    }
-    div.selected-icon {
-      background: url(/foreground/images/common/ic_selected.svg) no-repeat;
-      min-height: 20px;
-      min-width: 20px;
-      visibility: hidden;
-    }
-    cr-button[selected] div.selected-icon {
-      visibility: visible;
-    }
-  `;
-
-  const refresh23Style = css`
+  return css`
     cr-button {
       --active-bg: none;
       --hover-bg-color: var(--cros-sys-hover_on_subtle);
@@ -506,11 +434,6 @@ function getCSS(): CSSResultGroup {
       border-radius: 8px;
     }
   `;
-
-  return [
-    addCSSPrefixSelector(legacyStyle, '[theme="legacy"]'),
-    addCSSPrefixSelector(refresh23Style, '[theme="refresh23"]'),
-  ];
 }
 
 /**

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addCSSPrefixSelector} from '../common/js/dom_utils.js';
 import {str, strf} from '../common/js/util.js';
 import {FilesTooltip} from '../foreground/elements/files_tooltip.js';
 
@@ -64,19 +63,7 @@ export class XfInlineStatus extends XfBase {
 }
 
 function getCSS() {
-  const legacyStyle = css`
-    xf-pie-progress, xf-icon {
-      display: flex;
-      height: 16px;
-      width: 16px;
-    }
-
-    xf-icon {
-      --xf-icon-color: var(--cros-icon-color-secondary);
-    }
-    `;
-
-  const refresh23Style = css`
+  return css`
     xf-pie-progress, xf-icon {
       display: flex;
       height: 16px;
@@ -87,9 +74,4 @@ function getCSS() {
       --xf-icon-color: currentColor;
     }
   `;
-
-  return [
-    addCSSPrefixSelector(legacyStyle, '[theme="legacy"]'),
-    addCSSPrefixSelector(refresh23Style, '[theme="refresh23"]'),
-  ];
 }

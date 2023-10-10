@@ -15,7 +15,6 @@ import {TREE_ITEM_INDENT, type TreeItemCollapsedEvent, type TreeItemExpandedEven
 
 /** Construct a single tree item. */
 async function setUpSingleTreeItem() {
-  document.body.setAttribute('theme', 'refresh23');
   document.body.innerHTML = getTrustedHTML`
     <xf-tree>
       <xf-tree-item id="item1" label="item1"></xf-tree-item>
