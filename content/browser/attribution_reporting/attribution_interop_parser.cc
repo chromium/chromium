@@ -16,7 +16,6 @@
 #include "base/functional/function_ref.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/raw_ref.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -147,7 +146,6 @@ class AttributionInteropParser {
       return base::unexpected(error_stream_.str());
     }
 
-    base::ranges::sort(events);
     return events;
   }
 
@@ -335,7 +333,10 @@ class AttributionInteropParser {
 
   void ParseRegistration(base::Value::Dict dict,
                          std::vector<AttributionSimulationEvent>& events) {
-    const base::Time time = ParseTime(dict, &events, /*key=*/"timestamp");
+    const base::Time time =
+        ParseTime(dict, /*key=*/"timestamp",
+                  /*previous_time=*/events.empty() ? base::Time::Min()
+                                                   : events.back().time);
 
     absl::optional<SuitableOrigin> context_origin;
     absl::optional<SuitableOrigin> reporting_origin;
@@ -416,7 +417,7 @@ class AttributionInteropParser {
                    std::vector<AttributionInteropOutput::Report>& reports) {
     AttributionInteropOutput::Report report;
 
-    report.time = ParseTime(dict, /*events=*/nullptr, kReportTimeKey);
+    report.time = ParseTime(dict, kReportTimeKey);
     dict.Remove(kReportTimeKey);
 
     if (absl::optional<base::Value> url = dict.Extract(kReportUrlKey);
@@ -448,7 +449,7 @@ class AttributionInteropParser {
           unparsable_registrations) {
     AttributionInteropOutput::UnparsableRegistration reg;
 
-    reg.time = ParseTime(dict, /*events=*/nullptr, kTimeKey);
+    reg.time = ParseTime(dict, kTimeKey);
     dict.Remove(kTimeKey);
 
     {
@@ -503,8 +504,8 @@ class AttributionInteropParser {
   }
 
   base::Time ParseTime(const base::Value::Dict& dict,
-                       const std::vector<AttributionSimulationEvent>* events,
-                       base::StringPiece key) {
+                       base::StringPiece key,
+                       base::Time previous_time = base::Time::Min()) {
     auto context = PushContext(key);
 
     const std::string* v = dict.FindString(key);
@@ -513,12 +514,8 @@ class AttributionInteropParser {
     if (v && base::StringToInt64(*v, &milliseconds)) {
       base::Time time = offset_time_ + base::Milliseconds(milliseconds);
       if (!time.is_null() && !time.is_inf()) {
-        if (events) {
-          auto iter = base::ranges::find(*events, time,
-                                         &AttributionSimulationEvent::time);
-          if (iter != events->end()) {
-            *Error() << "must be distinct from all others: " << milliseconds;
-          }
+        if (time <= previous_time) {
+          *Error() << "must be greater than previous time";
         }
         return time;
       }

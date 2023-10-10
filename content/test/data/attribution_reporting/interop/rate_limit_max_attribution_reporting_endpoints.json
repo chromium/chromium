@@ -23,97 +23,6 @@
           }
         }]
       },
-      {
-        "timestamp": "2000",
-        "registration_request": {
-          "context_origin": "https://example.source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
-          "source_type": "navigation"
-        },
-        "responses": [{
-          "url": "https://reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": [
-                "https://example.destination.test",
-                "https://another-destination.test"
-              ],
-              "source_event_id": "111"
-            }
-          }
-        }]
-      },
-      {
-        "timestamp": "4000",
-        "registration_request": {
-          "context_origin": "https://source.test",
-          "attribution_src_url": "https://example.reporter.test/register-source",
-          "source_type": "navigation"
-        },
-        "responses": [{
-          "url": "https://example.reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination.test",
-              "source_event_id": "999"
-            }
-          }
-        }]
-      },
-      {
-        "timestamp": "6000",
-        "registration_request": {
-          "context_origin": "https://another-source.test",
-          "attribution_src_url": "https://another-reporter.test/register-source",
-          "source_type": "navigation"
-        },
-        "responses": [{
-          "url": "https://another-reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination.test",
-              "source_event_id": "222"
-            }
-          }
-        }]
-      },
-      {
-        "timestamp": "8000",
-        "registration_request": {
-          "context_origin": "https://source.test",
-          "attribution_src_url": "https://another-reporter.test/register-source",
-          "source_type": "navigation"
-        },
-        "responses": [{
-          "url": "https://another-reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://another-destination.test",
-              "source_event_id": "333"
-            }
-          }
-        }]
-      },
-      {
-        "timestamp": "10000",
-        "registration_request": {
-          "context_origin": "https://source.test",
-          "attribution_src_url": "https://another-reporter.test/register-source",
-          "source_type": "event"
-        },
-        "responses": [{
-          "url": "https://another-reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination.test",
-              "source_event_id": "444",
-              "aggregation_keys": {
-                "a": "0x1"
-              }
-            }
-          }
-        }]
-      },
       // Should not result in an event-level report as the filter data doesn't
       // match. This doesn't count for the limit.
       {
@@ -139,6 +48,26 @@
         }]
       },
       {
+        "timestamp": "2000",
+        "registration_request": {
+          "context_origin": "https://example.source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": [
+                "https://example.destination.test",
+                "https://another-destination.test"
+              ],
+              "source_event_id": "111"
+            }
+          }
+        }]
+      },
+      {
         "timestamp": "3000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
@@ -153,6 +82,23 @@
                   "trigger_data": "7"
                 }
               ]
+            }
+          }
+        }]
+      },
+      {
+        "timestamp": "4000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "attribution_src_url": "https://example.reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://example.reporter.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              "source_event_id": "999"
             }
           }
         }]
@@ -180,6 +126,23 @@
           }
         }]
       },
+      {
+        "timestamp": "6000",
+        "registration_request": {
+          "context_origin": "https://another-source.test",
+          "attribution_src_url": "https://another-reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://another-reporter.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              "source_event_id": "222"
+            }
+          }
+        }]
+      },
       // Should result in an event-level report as the source site is different.
       {
         "timestamp": "7000",
@@ -200,6 +163,23 @@
           }
         }]
       },
+      {
+        "timestamp": "8000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "attribution_src_url": "https://another-reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://another-reporter.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://another-destination.test",
+              "source_event_id": "333"
+            }
+          }
+        }]
+      },
       // Should result in an event-level report as the destination site is different.
       {
         "timestamp": "9000",
@@ -216,6 +196,26 @@
                   "trigger_data": "5"
                 }
               ]
+            }
+          }
+        }]
+      },
+      {
+        "timestamp": "10000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "attribution_src_url": "https://another-reporter.test/register-source",
+          "source_type": "event"
+        },
+        "responses": [{
+          "url": "https://another-reporter.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              "source_event_id": "444",
+              "aggregation_keys": {
+                "a": "0x1"
+              }
             }
           }
         }]

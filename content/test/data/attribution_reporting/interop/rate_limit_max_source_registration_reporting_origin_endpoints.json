@@ -143,24 +143,6 @@
           }
         }]
       },
-      // Should be registered as the first source is outside the rate limit window.
-      {
-        "timestamp": "2592000000",
-        "registration_request": {
-          "context_origin": "https://source1.test",
-          "attribution_src_url": "https://reporter3.test/register-source",
-          "source_type": "event"
-        },
-        "responses": [{
-          "url": "https://reporter3.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination1.test",
-              "source_event_id": "555"
-            }
-          }
-        }]
-      },
       // Should result in an event-level report.
       {
         "timestamp": "10000",
@@ -237,6 +219,24 @@
                   "trigger_data": "4"
                 }
               ]
+            }
+          }
+        }]
+      },
+      // Should be registered as the first source is outside the rate limit window.
+      {
+        "timestamp": "2592000000",
+        "registration_request": {
+          "context_origin": "https://source1.test",
+          "attribution_src_url": "https://reporter3.test/register-source",
+          "source_type": "event"
+        },
+        "responses": [{
+          "url": "https://reporter3.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination1.test",
+              "source_event_id": "555"
             }
           }
         }]

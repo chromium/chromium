@@ -61,6 +61,46 @@
           }
         }]
       },
+      // Will result in an event-level report.
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "attribution_src_url": "https://another-reporter.test/register-trigger",
+          "context_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://another-reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "1"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      // Will result in an event-level report.
+      {
+        "timestamp": "1001",
+        "registration_request": {
+          "attribution_src_url": "https://a.reporter.test/register-trigger",
+          "context_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://a.reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "2"
+                }
+              ]
+            }
+          }
+        }]
+      },
        // Will not be registered due to the limit.
        {
         "timestamp": "86399999",
@@ -98,46 +138,6 @@
               "destination": "https://destination.test",
               "source_event_id": "555",
               "debug_reporting": true
-            }
-          }
-        }]
-      },
-      // Will result in an event-level report.
-      {
-        "timestamp": "1000",
-        "registration_request": {
-          "attribution_src_url": "https://another-reporter.test/register-trigger",
-          "context_origin": "https://destination.test"
-        },
-        "responses": [{
-          "url": "https://another-reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "1"
-                }
-              ]
-            }
-          }
-        }]
-      },
-      // Will result in an event-level report.
-      {
-        "timestamp": "1001",
-        "registration_request": {
-          "attribution_src_url": "https://a.reporter.test/register-trigger",
-          "context_origin": "https://destination.test"
-        },
-        "responses": [{
-          "url": "https://a.reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "2"
-                }
-              ]
             }
           }
         }]

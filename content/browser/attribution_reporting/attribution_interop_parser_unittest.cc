@@ -456,10 +456,10 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["registrations"][1]["timestamp"]: must be distinct from all others: 1643235576000)",
+        R"(["registrations"][1]["timestamp"]: must be greater than previous time)",
         R"json({"registrations": [
           {
-            "timestamp": "1643235576000",
+            "timestamp": "1",
             "registration_request": {
               "context_origin": "https://a.d1.test",
               "attribution_src_url": "https://a.r.test"
@@ -472,7 +472,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
             }]
           },
           {
-            "timestamp": "1643235576000",
+            "timestamp": "0",
             "registration_request": {
               "context_origin": "https://a.d1.test",
               "attribution_src_url": "https://a.r.test"

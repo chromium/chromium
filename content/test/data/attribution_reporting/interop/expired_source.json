@@ -21,6 +21,50 @@
           }
         }]
       },
+      // Should result in an event-level report as the expiry time was clamped
+      // to one day.
+      {
+        "timestamp": "86390000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "context_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "0"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      // Should not result in an event-level report as the source expired at
+      // one day.
+      {
+        "timestamp": "86400000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "context_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "7"
+                }
+              ],
+              "debug_reporting": true
+            }
+          }
+        }]
+      },
       {
         "timestamp": "86401000",
         "registration_request": {
@@ -76,50 +120,6 @@
               "destination": "https://destination.test",
               "source_event_id": "789",
               "expiry": "88400"
-            }
-          }
-        }]
-      },
-      // Should result in an event-level report as the expiry time was clamped
-      // to one day.
-      {
-        "timestamp": "86390000",
-        "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
-          "context_origin": "https://destination.test"
-        },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "0"
-                }
-              ]
-            }
-          }
-        }]
-      },
-      // Should not result in an event-level report as the source expired at
-      // one day.
-      {
-        "timestamp": "86400000",
-        "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
-          "context_origin": "https://destination.test"
-        },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "debug_permission": true,
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "7"
-                }
-              ],
-              "debug_reporting": true
             }
           }
         }]

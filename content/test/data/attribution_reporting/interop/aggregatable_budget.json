@@ -25,30 +25,6 @@
           }
         }]
       },
-      // Should deactivate the first source.
-      {
-        "timestamp": "10000",
-        "registration_request": {
-          "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
-          "source_type": "navigation"
-        },
-        "responses": [{
-          "url": "https://reporter.test/register-source",
-          "debug_permission": true,
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination.test",
-              "source_event_id": "456",
-              "aggregation_keys": {
-                "a": "0x159",
-                "b": "0x5"
-              },
-              "debug_key": "54321"
-            }
-          }
-        }]
-      },
       // Should be dropped due to insufficient aggregatable budget.
       {
         "timestamp": "1000",
@@ -153,6 +129,30 @@
               "aggregatable_values": {
                 "b": 1
               }
+            }
+          }
+        }]
+      },
+      // Should deactivate the first source.
+      {
+        "timestamp": "10000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-source",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              "source_event_id": "456",
+              "aggregation_keys": {
+                "a": "0x159",
+                "b": "0x5"
+              },
+              "debug_key": "54321"
             }
           }
         }]

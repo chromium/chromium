@@ -133,34 +133,6 @@
           }
         }]
       },
-      // Should result in an aggregatable report as the aggregatable report
-      // window was not rounded.
-      {
-        // 88,400,999 ms = 88,400 s (source's aggregatable_report_window) + 1 s
-        // (source's timestamp) - 1 ms offset to avoid falling outside the
-        // window
-        "timestamp": "88400999",
-        "registration_request": {
-          "attribution_src_url": "https://reporter2.test/register-trigger",
-          "context_origin": "https://destination.test"
-        },
-        "responses": [{
-          "url": "https://reporter2.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "aggregatable_trigger_data": [
-                {
-                  "source_keys": ["b"],
-                  "key_piece": "0x30"
-                }
-              ],
-              "aggregatable_values": {
-                "b": 321
-              }
-            }
-          }
-        }]
-      },
       // Should not result in an aggregatable report as the source has expired.
       {
         // 86,402,000 ms = 86,400 s (clamped source's
@@ -184,6 +156,34 @@
               ],
               "aggregatable_values": {
                 "c": 789
+              }
+            }
+          }
+        }]
+      },
+      // Should result in an aggregatable report as the aggregatable report
+      // window was not rounded.
+      {
+        // 88,400,999 ms = 88,400 s (source's aggregatable_report_window) + 1 s
+        // (source's timestamp) - 1 ms offset to avoid falling outside the
+        // window
+        "timestamp": "88400999",
+        "registration_request": {
+          "attribution_src_url": "https://reporter2.test/register-trigger",
+          "context_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter2.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "aggregatable_trigger_data": [
+                {
+                  "source_keys": ["b"],
+                  "key_piece": "0x30"
+                }
+              ],
+              "aggregatable_values": {
+                "b": 321
               }
             }
           }

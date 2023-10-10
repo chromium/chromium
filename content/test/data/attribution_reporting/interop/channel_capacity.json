@@ -25,6 +25,26 @@
         }]
       },
       {
+        // Should not match to a source.
+        "timestamp": "1000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "context_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "1"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      {
         // Should not register due to exceeding max info gain bar.
         // Value: 13.37130 bits
         "timestamp": "2000",
@@ -43,6 +63,26 @@
                 "start_time":0,
                 "end_times":[3600,7200,10800,14400,18000]
               }
+            }
+          }
+        }]
+      },
+      {
+        // Should not match to a source.
+        "timestamp": "3000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "context_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "2"
+                }
+              ]
             }
           }
         }]
@@ -67,6 +107,26 @@
                 "start_time":0,
                 "end_times":[3600,7200,10800,14400,18000]
               }
+            }
+          }
+        }]
+      },
+      {
+        // Should result in an event-level report.
+        "timestamp": "5000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "context_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "3"
+                }
+              ]
             }
           }
         }]
@@ -98,6 +158,26 @@
         }]
       },
       {
+        // Should result in an event-level report.
+        "timestamp": "7000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter2.test/register-trigger",
+          "context_origin": "https://destination2.test"
+        },
+        "responses": [{
+          "url": "https://reporter2.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "4"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      {
         // Should not register due to exceeding max info gain bar.
         // Value: 8.84346 bits
         "timestamp": "8000",
@@ -122,6 +202,26 @@
         }]
       },
       {
+        // Should not match to a source.
+        "timestamp": "9000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter3.test/register-trigger",
+          "context_origin": "https://destination3.test"
+        },
+        "responses": [{
+          "url": "https://reporter3.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "1"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      {
         // Should register due to not exceeding max info gain bar.
         // Value: 2.80725 bits
         "timestamp": "10000",
@@ -140,106 +240,6 @@
                 "start_time":0,
                 "end_times":[3600,7200,10800]
               }
-            }
-          }
-        }]
-      },
-      {
-        // Should not match to a source.
-        "timestamp": "1000",
-        "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
-          "context_origin": "https://destination.test"
-        },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "1"
-                }
-              ]
-            }
-          }
-        }]
-      },
-      {
-        // Should not match to a source.
-        "timestamp": "3000",
-        "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
-          "context_origin": "https://destination.test"
-        },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "2"
-                }
-              ]
-            }
-          }
-        }]
-      },
-      {
-        // Should result in an event-level report.
-        "timestamp": "5000",
-        "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
-          "context_origin": "https://destination.test"
-        },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "3"
-                }
-              ]
-            }
-          }
-        }]
-      },
-      {
-        // Should result in an event-level report.
-        "timestamp": "7000",
-        "registration_request": {
-          "attribution_src_url": "https://reporter2.test/register-trigger",
-          "context_origin": "https://destination2.test"
-        },
-        "responses": [{
-          "url": "https://reporter2.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "4"
-                }
-              ]
-            }
-          }
-        }]
-      },
-      {
-        // Should not match to a source.
-        "timestamp": "9000",
-        "registration_request": {
-          "attribution_src_url": "https://reporter3.test/register-trigger",
-          "context_origin": "https://destination3.test"
-        },
-        "responses": [{
-          "url": "https://reporter3.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "1"
-                }
-              ]
             }
           }
         }]

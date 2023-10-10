@@ -22,25 +22,6 @@
         }]
       },
       {
-        // Should register and only result in one report.
-        "timestamp": "2000",
-        "registration_request": {
-          "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter2.test/register-source",
-          "source_type": "navigation"
-        },
-        "responses": [{
-          "url": "https://reporter2.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination2.test",
-              "max_event_level_reports": 1,
-              "source_event_id": "456"
-            }
-          }
-        }]
-      },
-      {
         // Should match but not result in an event-level report.
         "timestamp": "1000",
         "registration_request": {
@@ -58,6 +39,25 @@
                   "trigger_data": "2"
                 }
               ]
+            }
+          }
+        }]
+      },
+      {
+        // Should register and only result in one report.
+        "timestamp": "2000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "attribution_src_url": "https://reporter2.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter2.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination2.test",
+              "max_event_level_reports": 1,
+              "source_event_id": "456"
             }
           }
         }]

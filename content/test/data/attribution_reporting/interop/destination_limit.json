@@ -46,6 +46,26 @@
           }
         }]
       },
+      // Should result in an event-level report.
+      {
+        "timestamp": "2000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter1.test/register-trigger",
+          "context_origin": "https://destination1.test"
+        },
+        "responses": [{
+          "url": "https://reporter1.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "1"
+                }
+              ]
+            }
+          }
+        }]
+      },
       // Should be dropped due to destination limit, even if it has been attributed.
       {
         "timestamp": "3000",
@@ -137,101 +157,6 @@
           }
         }]
       },
-      // Should be registered as the reporting site is different.
-      {
-        "timestamp": "5000",
-        "registration_request": {
-          "context_origin": "https://source1.test",
-          "attribution_src_url": "https://reporter2.test/register-source",
-          "source_type": "navigation"
-        },
-        "responses": [{
-          "url": "https://reporter2.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "debug_reporting": true,
-              "destination": "https://destination2.test",
-              "source_event_id": "333"
-            }
-          }
-        }]
-      },
-      // Should be registered as the source site is different.
-      {
-        "timestamp": "7000",
-        "registration_request": {
-          "context_origin": "https://source2.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
-          "source_type": "navigation"
-        },
-        "responses": [{
-          "url": "https://reporter1.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "debug_reporting": true,
-              "destination": "https://destination2.test",
-              "source_event_id": "444"
-            }
-          }
-        }]
-      },
-      // Should be registered as the destination site is the same as previous one.
-      {
-        "timestamp": "9000",
-        "registration_request": {
-          "context_origin": "https://source2.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
-          "source_type": "navigation"
-        },
-        "responses": [{
-          "url": "https://reporter1.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://example.destination2.test",
-              "source_event_id": "666"
-            }
-          }
-        }]
-      },
-      // Should be registered as the first source has expired.
-      {
-        "timestamp": "86401000",
-        "registration_request": {
-          "context_origin": "https://source1.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
-          "source_type": "navigation"
-        },
-        "responses": [{
-          "url": "https://reporter1.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "debug_reporting": true,
-              "destination": "https://destination3.test",
-              "source_event_id": "555"
-            }
-          }
-        }]
-       },
-      // Should result in an event-level report.
-      {
-        "timestamp": "2000",
-        "registration_request": {
-          "attribution_src_url": "https://reporter1.test/register-trigger",
-          "context_origin": "https://destination1.test"
-        },
-        "responses": [{
-          "url": "https://reporter1.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "1"
-                }
-              ]
-            }
-          }
-        }]
-      },
       // Should be dropped as there is no matching source.
       {
         "timestamp": "4000",
@@ -248,6 +173,25 @@
                   "trigger_data": "2"
                 }
               ]
+            }
+          }
+        }]
+      },
+      // Should be registered as the reporting site is different.
+      {
+        "timestamp": "5000",
+        "registration_request": {
+          "context_origin": "https://source1.test",
+          "attribution_src_url": "https://reporter2.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter2.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "debug_reporting": true,
+              "destination": "https://destination2.test",
+              "source_event_id": "333"
             }
           }
         }]
@@ -272,6 +216,25 @@
           }
         }]
       },
+      // Should be registered as the source site is different.
+      {
+        "timestamp": "7000",
+        "registration_request": {
+          "context_origin": "https://source2.test",
+          "attribution_src_url": "https://reporter1.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter1.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "debug_reporting": true,
+              "destination": "https://destination2.test",
+              "source_event_id": "444"
+            }
+          }
+        }]
+      },
       // Should result in an event-level report.
       {
         "timestamp": "8000",
@@ -288,6 +251,24 @@
                   "trigger_data": "4"
                 }
               ]
+            }
+          }
+        }]
+      },
+      // Should be registered as the destination site is the same as previous one.
+      {
+        "timestamp": "9000",
+        "registration_request": {
+          "context_origin": "https://source2.test",
+          "attribution_src_url": "https://reporter1.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter1.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://example.destination2.test",
+              "source_event_id": "666"
             }
           }
         }]
@@ -312,6 +293,25 @@
           }
         }]
       },
+      // Should be registered as the first source has expired.
+      {
+        "timestamp": "86401000",
+        "registration_request": {
+          "context_origin": "https://source1.test",
+          "attribution_src_url": "https://reporter1.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter1.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "debug_reporting": true,
+              "destination": "https://destination3.test",
+              "source_event_id": "555"
+            }
+          }
+        }]
+       },
       // Should result in an event-level report.
       {
         "timestamp": "86402000",
