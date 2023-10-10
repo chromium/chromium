@@ -1002,17 +1002,10 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest,
 }
 
 // TODO(): Flaky crash on Chrome OS debug.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_BrowserCommandFocusToolbarGeolocation \
-  DISABLED_BrowserCommandFocusToolbarGeolocation
-#else
-#define MAYBE_BrowserCommandFocusToolbarGeolocation \
-  BrowserCommandFocusToolbarGeolocation
-#endif
 // Tests that the focus toolbar command focuses content settings icons before
 // the app menu button when present in web-app windows.
 IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest,
-                       MAYBE_BrowserCommandFocusToolbarGeolocation) {
+                       DISABLED_BrowserCommandFocusToolbarGeolocation) {
   SetUpWebApp();
   ContentSettingImageView* geolocation_icon = GrantGeolocationPermission();
 
@@ -1317,7 +1310,6 @@ class FloatBrowserNonClientFrameViewChromeOSTest
       chromeos::wm::features::kWindowLayoutMenu};
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
                        TabletModeMultitaskMenu) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
@@ -1365,7 +1357,6 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
       ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true));
   EXPECT_FALSE(multitask_menu_event_handler->multitask_menu());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
                        BrowserHeaderVisibilityInTabletModeTest) {
