@@ -155,11 +155,11 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   int64_t GetBucketDiskUsage(const storage::BucketLocator& bucket_locator);
 
-  const scoped_refptr<base::SequencedTaskRunner>& IDBTaskRunner() {
+  const scoped_refptr<base::SequencedTaskRunner>& IDBTaskRunner() const {
     return idb_task_runner_;
   }
 
-  const scoped_refptr<base::TaskRunner>& IOTaskRunner() {
+  const scoped_refptr<base::TaskRunner>& IOTaskRunner() const {
     return io_task_runner_;
   }
 
@@ -288,11 +288,11 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // default buckets in first party contexts. Non-default buckets and default
   // buckets in third party contexts, when partitioning is enabled, are returned
   // by `FindIndexedDBFiles`.
-  const std::map<blink::StorageKey, base::FilePath> FindLegacyIndexedDBFiles();
+  std::map<blink::StorageKey, base::FilePath> FindLegacyIndexedDBFiles() const;
 
   // Reads IDB files from disk, looking in the directories where
   // third-party-context IDB files are stored.
-  const std::map<storage::BucketId, base::FilePath> FindIndexedDBFiles();
+  std::map<storage::BucketId, base::FilePath> FindIndexedDBFiles() const;
 
   void OnBucketInfoReady(
       GetAllBucketsDetailsCallback callback,

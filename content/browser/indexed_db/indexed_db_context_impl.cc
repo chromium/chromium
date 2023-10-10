@@ -975,48 +975,26 @@ void IndexedDBContextImpl::ShutdownOnIDBSequence() {
     return;
   }
 
-  IndexedDBFactory* factory = GetIDBFactory();
-  const auto& storage_key_to_file_path = FindLegacyIndexedDBFiles();
-  const auto& bucket_id_to_file_path = FindIndexedDBFiles();
-  for (const auto& bucket_locator : bucket_set_) {
+  for (const storage::BucketLocator& bucket_locator : bucket_set_) {
     // Delete the storage if its origin matches one of the origins to purge, or
     // if it is third-party and the top-level site is same-site with one of
     // those origins.
-    auto delete_bucket = origins_to_purge_on_shutdown_.find(
-                             bucket_locator.storage_key.origin()) !=
-                         origins_to_purge_on_shutdown_.end();
+    bool delete_bucket = base::Contains(origins_to_purge_on_shutdown_,
+                                        bucket_locator.storage_key.origin());
 
     if (!delete_bucket && bucket_locator.storage_key.IsThirdPartyContext()) {
-      auto& bucket_site = bucket_locator.storage_key.top_level_site();
-      for (const auto& origin_to_purge : origins_to_purge_on_shutdown_) {
-        if (net::SchemefulSite(origin_to_purge) == bucket_site) {
-          delete_bucket = true;
-          break;
-        }
-      }
-    }
-    if (!delete_bucket) {
-      continue;
+      delete_bucket = base::ranges::any_of(
+          origins_to_purge_on_shutdown_, [&](const url::Origin& origin) {
+            return net::SchemefulSite(origin) ==
+                   bucket_locator.storage_key.top_level_site();
+          });
     }
 
-    base::FilePath path;
-    const auto& legacy_it =
-        storage_key_to_file_path.find(bucket_locator.storage_key);
-    const auto& bucket_path_it = bucket_id_to_file_path.find(bucket_locator.id);
-    // If the bucket exists on the file system, it is in one of two possible
-    // locations.
-    if (legacy_it != storage_key_to_file_path.end()) {
-      DCHECK(bucket_path_it == bucket_id_to_file_path.end());
-      DCHECK(bucket_locator.storage_key.IsFirstPartyContext());
-      DCHECK(bucket_locator.is_default);
-      path = legacy_it->second;
-    } else if (bucket_path_it != bucket_id_to_file_path.end()) {
-      DCHECK(legacy_it == storage_key_to_file_path.end());
-      path = bucket_path_it->second;
-    }
-    if (!path.empty()) {
-      factory->ForceClose(bucket_locator.id, false);
-      filesystem_proxy_->DeletePathRecursively(path);
+    if (delete_bucket) {
+      GetIDBFactory()->ForceClose(bucket_locator.id, false);
+      filesystem_proxy_->DeletePathRecursively(GetLevelDBPath(bucket_locator));
+      filesystem_proxy_->DeletePathRecursively(
+          GetBlobStorePath(bucket_locator));
     }
   }
 }
@@ -1097,8 +1075,10 @@ void IndexedDBContextImpl::InitializeFromFilesIfNeeded(
     std::move(callback).Run();
     return;
   }
-  const auto& storage_key_to_file_path = FindLegacyIndexedDBFiles();
-  const auto& bucket_id_to_file_path = FindIndexedDBFiles();
+  std::map<blink::StorageKey, base::FilePath> storage_key_to_file_path =
+      FindLegacyIndexedDBFiles();
+  std::map<storage::BucketId, base::FilePath> bucket_id_to_file_path =
+      FindIndexedDBFiles();
   if (storage_key_to_file_path.empty() && bucket_id_to_file_path.empty()) {
     did_initialize_from_files_ = true;
     std::move(callback).Run();
@@ -1165,8 +1145,8 @@ void IndexedDBContextImpl::ForceInitializeFromFilesForTesting(
   InitializeFromFilesIfNeeded(std::move(callback));
 }
 
-const std::map<blink::StorageKey, base::FilePath>
-IndexedDBContextImpl::FindLegacyIndexedDBFiles() {
+std::map<blink::StorageKey, base::FilePath>
+IndexedDBContextImpl::FindLegacyIndexedDBFiles() const {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
 
   base::FilePath data_path = GetLegacyDataPath();
@@ -1195,8 +1175,8 @@ IndexedDBContextImpl::FindLegacyIndexedDBFiles() {
   return storage_key_to_file_path;
 }
 
-const std::map<storage::BucketId, base::FilePath>
-IndexedDBContextImpl::FindIndexedDBFiles() {
+std::map<storage::BucketId, base::FilePath>
+IndexedDBContextImpl::FindIndexedDBFiles() const {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
 
   std::map<storage::BucketId, base::FilePath> bucket_id_to_file_path;
