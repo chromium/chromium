@@ -39,8 +39,7 @@ using HighlightEdge = NGHighlightOverlay::HighlightEdge;
 using HighlightDecoration = NGHighlightOverlay::HighlightDecoration;
 using HighlightPart = NGHighlightOverlay::HighlightPart;
 
-// ClampOffset modifies |offset| fixed in a range of |text_fragment| start/end
-// offsets.
+// Modifies |offset| fixed in a range of |fragment_range| start/end offsets.
 // |offset| points not each character but each span between character.
 // With that concept, we can clear catch what is inside start / end.
 // Suppose we have "foo_bar"('_' is a space).
@@ -49,11 +48,113 @@ using HighlightPart = NGHighlightOverlay::HighlightPart;
 // 0 1 2 3 4 5 6 7
 // If "bar" is a TextFragment. That start(), end() {4, 7} correspond this
 // offset. If a marker has StartOffset / EndOffset as {2, 6},
-// ClampOffset returns{ 4,6 }, which represents "ba" on "foo_bar".
-unsigned ClampOffset(unsigned offset, const NGFragmentItem& text_fragment) {
-  return std::min(std::max(offset, text_fragment.StartOffset()),
-                  text_fragment.EndOffset());
+// this function returns{ 4,6 }, which represents "ba" on "foo_bar".
+unsigned ClampToFragmentRange(const NGTextOffsetRange& fragment_range,
+                              unsigned offset) {
+  return std::min(std::max(offset, fragment_range.start), fragment_range.end);
 }
+
+base::span<const NGOffsetMappingUnit> GetMappingUnits(
+    const NGFragmentItem& text_fragment) {
+  const NGOffsetMapping* const offset_mapping =
+      NGOffsetMapping::GetFor(text_fragment.GetLayoutObject());
+  DCHECK(offset_mapping);
+  return offset_mapping->GetMappingUnitsForTextContentOffsetRange(
+      text_fragment.StartOffset(), text_fragment.EndOffset());
+}
+
+// Helper for mapping from DOM offset (range) to text content offset.
+//
+// Exploits the fact that DocumentMarkers are sorted in DOM offset order, to
+// maintain a cached starting point within the unit mapping range and thus
+// amortize the cost of unit lookup.
+class MarkerRangeMappingContext {
+  STACK_ALLOCATED();
+
+ private:
+  // The internal class that implements the mapping.
+  class DOMToTextContentOffsetMapper {
+    STACK_ALLOCATED();
+
+   public:
+    explicit DOMToTextContentOffsetMapper(const NGFragmentItem& text_fragment)
+        : units_(GetMappingUnits(text_fragment)), units_begin_(units_.begin()) {
+      DCHECK(units_.size());
+    }
+
+    unsigned GetTextContentOffset(unsigned dom_offset) const {
+      auto unit = FindUnit(units_begin_, dom_offset);
+      // Update the cached search starting point.
+      units_begin_ = unit;
+      // Since the unit range only covers the fragment, map anything that falls
+      // outside of that range to the start/end.
+      if (dom_offset < unit->DOMStart()) {
+        return unit->TextContentStart();
+      }
+      if (dom_offset > unit->DOMEnd()) {
+        return unit->TextContentEnd();
+      }
+      return unit->ConvertDOMOffsetToTextContent(dom_offset);
+    }
+
+    unsigned GetTextContentOffsetNoCache(unsigned dom_offset) const {
+      auto unit = FindUnit(units_begin_, dom_offset);
+      // Since the unit range only covers the fragment, map anything that falls
+      // outside of that range to the start/end.
+      if (dom_offset < unit->DOMStart()) {
+        return unit->TextContentStart();
+      }
+      if (dom_offset > unit->DOMEnd()) {
+        return unit->TextContentEnd();
+      }
+      return unit->ConvertDOMOffsetToTextContent(dom_offset);
+    }
+
+   private:
+    // Find the mapping unit for `dom_offset`, starting from `begin`.
+    base::span<const NGOffsetMappingUnit>::iterator FindUnit(
+        base::span<const NGOffsetMappingUnit>::iterator begin,
+        unsigned dom_offset) const {
+      if (dom_offset <= begin->DOMEnd()) {
+        return begin;
+      }
+      return std::prev(std::upper_bound(
+          begin, units_.end(), dom_offset,
+          [](unsigned offset, const NGOffsetMappingUnit& unit) {
+            return offset < unit.DOMStart();
+          }));
+    }
+
+    base::span<const NGOffsetMappingUnit> units_;
+    mutable base::span<const NGOffsetMappingUnit>::iterator units_begin_;
+  };
+
+ public:
+  explicit MarkerRangeMappingContext(const NGFragmentItem& text_fragment)
+      : mapper_(DOMToTextContentOffsetMapper(text_fragment)),
+        fragment_range_(text_fragment.TextOffset()),
+        text_length_(To<Text>(*text_fragment.GetNode()).length()) {}
+
+  std::pair<unsigned, unsigned> MapToTextContent(
+      const DocumentMarker& marker) const {
+    // TODO(yoichio): Sanitize DocumentMarker around text length.
+    const unsigned start_dom_offset =
+        std::min(marker.StartOffset(), text_length_);
+    const unsigned end_dom_offset = std::min(marker.EndOffset(), text_length_);
+    const unsigned text_content_start =
+        mapper_.GetTextContentOffset(start_dom_offset);
+    const unsigned text_content_end =
+        mapper_.GetTextContentOffsetNoCache(end_dom_offset);
+    return std::make_pair(
+        ClampToFragmentRange(fragment_range_, text_content_start),
+        ClampToFragmentRange(fragment_range_, text_content_end));
+  }
+
+ private:
+  const DOMToTextContentOffsetMapper mapper_;
+  const NGTextOffsetRange fragment_range_;
+  const unsigned text_length_;
+};
 
 PhysicalRect MarkerRectForForeground(const NGFragmentItem& text_fragment,
                                      StringView text,
@@ -513,18 +614,12 @@ void NGHighlightPainter::Paint(Phase phase) {
     return;
 
   DCHECK(fragment_item_.GetNode());
-  const auto& text_node = To<Text>(*fragment_item_.GetNode());
   const StringView text = cursor_.CurrentText();
 
+  const MarkerRangeMappingContext mapping_context(fragment_item_);
   for (const DocumentMarker* marker : markers_) {
-    const unsigned marker_start_offset =
-        GetTextContentOffset(text_node, marker->StartOffset());
-    const unsigned marker_end_offset =
-        GetTextContentOffset(text_node, marker->EndOffset());
-    const unsigned paint_start_offset =
-        ClampOffset(marker_start_offset, fragment_item_);
-    const unsigned paint_end_offset =
-        ClampOffset(marker_end_offset, fragment_item_);
+    const auto [paint_start_offset, paint_end_offset] =
+        mapping_context.MapToTextContent(*marker);
     if (paint_start_offset == paint_end_offset)
       continue;
 
@@ -722,15 +817,10 @@ void NGHighlightPainter::FastPaintSpellingGrammarDecorations(
     const Text& text_node,
     const StringView& text,
     const DocumentMarkerVector& markers) {
+  const MarkerRangeMappingContext mapping_context(fragment_item_);
   for (const DocumentMarker* marker : markers) {
-    const unsigned marker_start_offset =
-        GetTextContentOffset(text_node, marker->StartOffset());
-    const unsigned marker_end_offset =
-        GetTextContentOffset(text_node, marker->EndOffset());
-    const unsigned paint_start_offset =
-        ClampOffset(marker_start_offset, fragment_item_);
-    const unsigned paint_end_offset =
-        ClampOffset(marker_end_offset, fragment_item_);
+    const auto [paint_start_offset, paint_end_offset] =
+        mapping_context.MapToTextContent(*marker);
     if (paint_start_offset == paint_end_offset)
       continue;
     PaintOneSpellingGrammarDecoration(marker->GetType(), text,
@@ -856,12 +946,11 @@ void NGHighlightPainter::PaintHighlightOverlays(
     absl::optional<AffineTransform> rotation) {
   DCHECK_EQ(paint_case_, kOverlay);
 
-  // |node| might not be a Text node (e.g. <br>), or it might be nullptr (e.g.
+  // |node_| might not be a Text node (e.g. <br>), or it might be nullptr (e.g.
   // ::first-letter). In both cases, we should still try to paint kOriginating
   // and kSelection if necessary, but we can’t paint marker-based highlights,
   // because GetTextContentOffset requires a Text node. Markers are defined and
   // stored in terms of Text nodes anyway, so this should never be a problem.
-  const auto* text_node = DynamicTo<Text>(node_);
   const Document& document = layout_object_->GetDocument();
 
   // For each overlay, paint its backgrounds and shadows over every highlighted
@@ -874,6 +963,7 @@ void NGHighlightPainter::PaintHighlightOverlays(
     const DocumentMarkerVector* markers =
         SelectMarkers(layer.id, custom_, grammar_, spelling_, target_);
 
+    const MarkerRangeMappingContext mapping_context(fragment_item_);
     for (const auto& marker : *markers) {
       if (layer.id.type == HighlightLayerType::kCustom) {
         // Filter custom highlight markers to one highlight at a time.
@@ -882,13 +972,9 @@ void NGHighlightPainter::PaintHighlightOverlays(
           continue;
       }
 
-      const unsigned content_start =
-          GetTextContentOffset(*text_node, marker->StartOffset());
-      const unsigned content_end =
-          GetTextContentOffset(*text_node, marker->EndOffset());
-      const unsigned clamped_start = ClampOffset(content_start, fragment_item_);
-      const unsigned clamped_end = ClampOffset(content_end, fragment_item_);
-      const unsigned length = clamped_end - clamped_start;
+      const auto [paint_start_offset, paint_end_offset] =
+          mapping_context.MapToTextContent(*marker);
+      const unsigned length = paint_end_offset - paint_start_offset;
       if (length == 0)
         continue;
 
@@ -899,16 +985,17 @@ void NGHighlightPainter::PaintHighlightOverlays(
 
       // TODO(crbug.com/1434114) paint rects pixel-snapped in physical space,
       // not writing-mode space (SelectionPaintState::PaintSelectionBackground)
-      PaintRect(paint_info_.context, PhysicalOffset(box_origin_),
-                fragment_item_.LocalRect(text, clamped_start, clamped_end),
-                background_color,
-                PaintAutoDarkMode(originating_style_,
-                                  DarkModeFilter::ElementRole::kSelection));
+      PaintRect(
+          paint_info_.context, PhysicalOffset(box_origin_),
+          fragment_item_.LocalRect(text, paint_start_offset, paint_end_offset),
+          background_color,
+          PaintAutoDarkMode(originating_style_,
+                            DarkModeFilter::ElementRole::kSelection));
 
       if (layer.text_style.shadow) {
         text_painter_.Paint(
-            fragment_paint_info_.Slice(clamped_start, clamped_end), length,
-            layer.text_style, node_id, foreground_auto_dark_mode_,
+            fragment_paint_info_.Slice(paint_start_offset, paint_end_offset),
+            length, layer.text_style, node_id, foreground_auto_dark_mode_,
             TextPainterBase::kShadowsOnly);
       }
     }
