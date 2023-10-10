@@ -233,9 +233,10 @@
         .then(() => {
           throw new Error('Expected to fail, but succeeded');
         }, (error) => {
-          // Note: Per spec, error should be 'IllegalStateError'
+          // Per spec, error should be 'InvalidAccessError'
+          // 4.4.1.5 Set the session description 1.4.5.6
           // https://crbug.com/1490510
-          var expectedError = 'IllegalStateError';
+          var expectedError = 'InvalidAccessError';
           // Temporarily allow OperationError (old wrong code)
           if (error.name != 'OperationError') {
             assertEquals(expectedError, error.name);
