@@ -12,7 +12,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_base.h"
-#include "ui/views/view_utils.h"
 
 namespace ui {
 namespace ime {
@@ -21,7 +20,7 @@ namespace {
 // Returns the child of `view` at `index` as a views::Label.
 views::Label* LabelAt(const views::View& view, size_t index) {
   views::View* const child = view.children()[index];
-  EXPECT_TRUE(views::IsViewClass<views::Label>(child));
+  EXPECT_EQ(child->GetClassName(), views::Label::kViewClassName);
   return static_cast<views::Label*>(child);
 }
 

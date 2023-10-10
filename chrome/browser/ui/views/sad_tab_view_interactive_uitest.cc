@@ -22,7 +22,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/views/controls/button/md_text_button.h"
-#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace test {
@@ -86,29 +85,34 @@ class SadTabViewInteractiveUITest : public InProcessBrowserTest {
 
   views::View* GetFocusedView() { return GetFocusManager()->GetFocusedView(); }
 
-  template <typename T>
-  bool IsFocusedViewInsideViewClass() {
+  const char* ActionButtonClassName() {
+    return views::MdTextButton::kViewClassName;
+  }
+
+  bool IsFocusedViewInsideViewClass(const char* view_class) {
     views::View* view = GetFocusedView();
     while (view) {
-      if (views::IsViewClass<T>(view)) {
+      if (view->GetClassName() == view_class)
         return true;
-      }
       view = view->parent();
     }
     return false;
   }
 
   bool IsFocusedViewInsideSadTab() {
-    return IsFocusedViewInsideViewClass<SadTabView>();
+    return IsFocusedViewInsideViewClass(SadTabView::kViewClassName);
   }
 
   bool IsFocusedViewInsideBrowserToolbar() {
-    return IsFocusedViewInsideViewClass<ToolbarView>();
+    return IsFocusedViewInsideViewClass(
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar()
+            ->GetClassName());
   }
 
   bool IsFocusedViewOnActionButtonInSadTab() {
-    return IsFocusedViewInsideViewClass<SadTabView>() &&
-           IsFocusedViewInsideViewClass<views::MdTextButton>();
+    return IsFocusedViewInsideViewClass(SadTabView::kViewClassName) &&
+           IsFocusedViewInsideViewClass(ActionButtonClassName());
   }
 
   void ClickOnActionButtonInSadTab() {
@@ -149,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(SadTabViewInteractiveUITest,
   KillRendererForActiveWebContentsSync();
 
   // Focus should now be on a MdText button inside the sad tab.
-  ASSERT_TRUE(views::IsViewClass<views::MdTextButton>(GetFocusedView()));
+  ASSERT_STREQ(GetFocusedView()->GetClassName(), ActionButtonClassName());
   ASSERT_TRUE(IsFocusedViewInsideSadTab());
   ASSERT_FALSE(IsFocusedViewInsideBrowserToolbar());
 

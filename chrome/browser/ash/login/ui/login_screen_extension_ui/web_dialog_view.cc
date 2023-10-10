@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/ui/login_screen_extension_ui/login_web_view.h"
+#include "chrome/browser/ash/login/ui/login_screen_extension_ui/web_dialog_view.h"
 
 #include "ash/public/cpp/login_screen.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/dialog_delegate.h"
@@ -13,7 +13,7 @@
 namespace ash {
 namespace login_screen_extension_ui {
 
-LoginWebView::LoginWebView(
+WebDialogView::WebDialogView(
     content::BrowserContext* context,
     login_screen_extension_ui::DialogDelegate* delegate,
     std::unique_ptr<ui::WebDialogWebContentsDelegate::WebContentsHandler>
@@ -27,23 +27,23 @@ LoginWebView::LoginWebView(
   }
 }
 
-LoginWebView::~LoginWebView() {
+WebDialogView::~WebDialogView() {
   if (LoginScreenClientImpl::HasInstance()) {
     LoginScreenClientImpl::Get()->RemoveSystemTrayObserver(this);
   }
 }
 
-bool LoginWebView::TakeFocus(content::WebContents* source, bool reverse) {
+bool WebDialogView::TakeFocus(content::WebContents* source, bool reverse) {
   LoginScreen::Get()->FocusLoginShelf(reverse);
   return true;
 }
 
-void LoginWebView::OnFocusLeavingSystemTray(bool reverse) {
+void WebDialogView::OnFocusLeavingSystemTray(bool reverse) {
   web_contents()->FocusThroughTabTraversal(reverse);
   web_contents()->Focus();
 }
 
-BEGIN_METADATA(LoginWebView)
+BEGIN_METADATA(WebDialogView, views::WebDialogView)
 END_METADATA
 
 }  // namespace login_screen_extension_ui

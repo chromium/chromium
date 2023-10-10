@@ -25,7 +25,6 @@
 #include "ui/views/controls/link_fragment.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/test/combobox_test_api.h"
-#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -204,9 +203,9 @@ TEST_P(LoginExpandedPublicAccountViewTest, ShowLearnMoreDialog) {
 
   // Tap on the learn more link.
   const auto& children = test_api.learn_more_label()->children();
-  const auto it = base::ranges::find_if(children, [](auto* child) {
-    return views::IsViewClass<views::LinkFragment>(child);
-  });
+  const auto it =
+      base::ranges::find(children, views::LinkFragment::kViewClassName,
+                         &views::View::GetClassName);
   DCHECK(it != children.cend());
   TapOnView(*it);
   ASSERT_NE(test_api.learn_more_dialog(), nullptr);

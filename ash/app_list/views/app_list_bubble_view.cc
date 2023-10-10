@@ -172,9 +172,8 @@ class ButtonFocusSkipper : public ui::EventHandler {
   void OnEvent(ui::Event* event) override {
     // Don't adjust focus behavior if the user already focused the button.
     for (views::View* button : buttons_) {
-      if (button->HasFocus()) {
+      if (button->HasFocus())
         return;
-      }
     }
 
     bool skip_focus = false;
@@ -391,9 +390,8 @@ void AppListBubbleView::StartShowAnimation(bool is_side_shelf) {
   view_shadow_.reset();
 
   // Ensure layout is up-to-date before animating views.
-  if (needs_layout()) {
+  if (needs_layout())
     Layout();
-  }
   DCHECK(!needs_layout());
 
   ui::AnimationThroughputReporter reporter(
@@ -525,9 +523,8 @@ bool AppListBubbleView::Back() {
 
 void AppListBubbleView::ShowPage(AppListBubblePage page) {
   DVLOG(1) << __PRETTY_FUNCTION__ << " page " << page;
-  if (page == current_page_) {
+  if (page == current_page_)
     return;
-  }
 
   const AppListBubblePage previous_page = current_page_;
   current_page_ = page;
@@ -596,9 +593,8 @@ bool AppListBubbleView::IsShowingEmbeddedAssistantUI() const {
 
 void AppListBubbleView::ShowEmbeddedAssistantUI() {
   DVLOG(1) << __PRETTY_FUNCTION__;
-  if (IsShowingEmbeddedAssistantUI()) {
+  if (IsShowingEmbeddedAssistantUI())
     return;
-  }
   ShowPage(AppListBubblePage::kAssistant);
 }
 
@@ -650,9 +646,8 @@ bool AppListBubbleView::AcceleratorPressed(const ui::Accelerator& accelerator) {
     case ui::VKEY_BROWSER_BACK:
       // If the ContentsView does not handle the back action, then this is the
       // top level, so we close the app list.
-      if (!Back()) {
+      if (!Back())
         view_delegate_->DismissAppList();
-      }
       break;
     default:
       NOTREACHED();
@@ -680,9 +675,8 @@ void AppListBubbleView::Layout() {
     folder_view_->SetBoundsRect(folder_view_->preferred_bounds());
     // The folder view updates the shadow bounds on its own when animating, so
     // only update the shadow bounds here when not animating.
-    if (!folder_view_->IsAnimationRunning()) {
+    if (!folder_view_->IsAnimationRunning())
       folder_view_->UpdateShadowBounds();
-    }
   }
 }
 
@@ -731,9 +725,8 @@ void AppListBubbleView::ShowFolderForItemView(AppListItemView* folder_item_view,
                                               bool focus_name_input,
                                               base::OnceClosure hide_callback) {
   DVLOG(1) << __FUNCTION__;
-  if (folder_view_->IsAnimationRunning()) {
+  if (folder_view_->IsAnimationRunning())
     return;
-  }
 
   // TODO(jamescook): Record metric for folder open. Either use the existing
   // Apps.AppListFolderOpened or introduce a new metric.
@@ -766,9 +759,8 @@ void AppListBubbleView::ShowFolderForItemView(AppListItemView* folder_item_view,
 void AppListBubbleView::ShowApps(AppListItemView* folder_item_view,
                                  bool select_folder) {
   DVLOG(1) << __FUNCTION__;
-  if (folder_view_->IsAnimationRunning()) {
+  if (folder_view_->IsAnimationRunning())
     return;
-  }
 
   HideFolderView(/*animate=*/folder_item_view, /*hide_for_reparent=*/false);
 
@@ -781,9 +773,8 @@ void AppListBubbleView::ShowApps(AppListItemView* folder_item_view,
 void AppListBubbleView::ReparentFolderItemTransit(
     AppListFolderItem* folder_item) {
   DVLOG(1) << __FUNCTION__;
-  if (folder_view_->IsAnimationRunning()) {
+  if (folder_view_->IsAnimationRunning())
     return;
-  }
 
   HideFolderView(/*animate=*/true, /*hide_for_reparent=*/true);
 }
@@ -839,9 +830,8 @@ void AppListBubbleView::OnHideAnimationEnded(const gfx::Rect& layer_bounds) {
   search_box_view_->SetIsIphAllowed(false);
 
   is_hiding_ = false;
-  if (on_hide_animation_ended_) {
+  if (on_hide_animation_ended_)
     std::move(on_hide_animation_ended_).Run();
-  }
 }
 
 void AppListBubbleView::HideFolderView(bool animate, bool hide_for_reparent) {
@@ -870,16 +860,15 @@ void AppListBubbleView::MaybeFocusAndActivateSearchBox() {
   // dismissed when focus moves to another view (e.g. the message center).
   // Attempting to focus the search box could make that other view close.
   // https://crbug.com/1313140
-  if (is_hiding_) {
+  if (is_hiding_)
     return;
-  }
 
   search_box_view_->SetSearchBoxActive(true, /*event_type=*/ui::ET_UNKNOWN);
   // Explicitly request focus in case the search box was active before.
   search_box_view_->search_box()->RequestFocus();
 }
 
-BEGIN_METADATA(AppListBubbleView)
+BEGIN_METADATA(AppListBubbleView, views::View)
 END_METADATA
 
 }  // namespace ash

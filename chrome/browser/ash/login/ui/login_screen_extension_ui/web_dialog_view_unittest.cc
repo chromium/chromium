@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/ui/login_screen_extension_ui/login_web_view.h"
+#include "chrome/browser/ash/login/ui/login_screen_extension_ui/web_dialog_view.h"
 
 #include <memory>
 
@@ -33,16 +33,16 @@ class MockLoginScreen : public TestLoginScreen {
   MOCK_METHOD1(FocusLoginShelf, void(bool reverse));
 };
 
-class LoginScreenExtensionUiLoginWebViewUnittest : public testing::Test {
+class LoginScreenExtensionUiWebDialogViewUnittest : public testing::Test {
  public:
-  LoginScreenExtensionUiLoginWebViewUnittest() = default;
+  LoginScreenExtensionUiWebDialogViewUnittest() = default;
 
-  LoginScreenExtensionUiLoginWebViewUnittest(
-      const LoginScreenExtensionUiLoginWebViewUnittest&) = delete;
-  LoginScreenExtensionUiLoginWebViewUnittest& operator=(
-      const LoginScreenExtensionUiLoginWebViewUnittest&) = delete;
+  LoginScreenExtensionUiWebDialogViewUnittest(
+      const LoginScreenExtensionUiWebDialogViewUnittest&) = delete;
+  LoginScreenExtensionUiWebDialogViewUnittest& operator=(
+      const LoginScreenExtensionUiWebDialogViewUnittest&) = delete;
 
-  ~LoginScreenExtensionUiLoginWebViewUnittest() override = default;
+  ~LoginScreenExtensionUiWebDialogViewUnittest() override = default;
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -50,7 +50,7 @@ class LoginScreenExtensionUiLoginWebViewUnittest : public testing::Test {
   testing::StrictMock<MockLoginScreen> mock_login_screen_;
 
   std::unique_ptr<DialogDelegate> dialog_delegate_;
-  std::unique_ptr<LoginWebView> dialog_view_;
+  std::unique_ptr<WebDialogView> dialog_view_;
 
   void CreateDialogView(bool can_be_closed_by_user = true) {
     CreateOptions create_options("extension_name", GURL(),
@@ -59,29 +59,29 @@ class LoginScreenExtensionUiLoginWebViewUnittest : public testing::Test {
 
     dialog_delegate_ = std::make_unique<DialogDelegate>(&create_options);
 
-    dialog_view_ = std::make_unique<LoginWebView>(
+    dialog_view_ = std::make_unique<WebDialogView>(
         &profile, dialog_delegate_.get(),
         std::make_unique<ChromeWebContentsHandler>());
   }
 };
 
-TEST_F(LoginScreenExtensionUiLoginWebViewUnittest, ShouldShowCloseButton) {
+TEST_F(LoginScreenExtensionUiWebDialogViewUnittest, ShouldShowCloseButton) {
   CreateDialogView(/*can_be_closed_by_user=*/true);
   EXPECT_TRUE(dialog_view_->ShouldShowCloseButton());
 }
 
-TEST_F(LoginScreenExtensionUiLoginWebViewUnittest, ShouldNotShowCloseButton) {
+TEST_F(LoginScreenExtensionUiWebDialogViewUnittest, ShouldNotShowCloseButton) {
   CreateDialogView(/*can_be_closed_by_user=*/false);
   EXPECT_FALSE(dialog_view_->ShouldShowCloseButton());
 }
 
-TEST_F(LoginScreenExtensionUiLoginWebViewUnittest,
+TEST_F(LoginScreenExtensionUiWebDialogViewUnittest,
        ShouldCenterDialogTitleText) {
   CreateDialogView(/*can_be_closed_by_user=*/false);
   EXPECT_TRUE(dialog_view_->ShouldCenterDialogTitleText());
 }
 
-TEST_F(LoginScreenExtensionUiLoginWebViewUnittest, TabOut) {
+TEST_F(LoginScreenExtensionUiWebDialogViewUnittest, TabOut) {
   CreateDialogView();
 
   EXPECT_CALL(mock_login_screen_, FocusLoginShelf(/*reverse=*/true));

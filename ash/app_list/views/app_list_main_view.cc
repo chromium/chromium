@@ -188,7 +188,7 @@ void AppListMainView::CloseButtonPressed() {
   search_box_view_->ClearSearch();
 }
 
-BEGIN_METADATA(AppListMainView)
+BEGIN_METADATA(AppListMainView, views::View)
 END_METADATA
 
 }  // namespace ash
