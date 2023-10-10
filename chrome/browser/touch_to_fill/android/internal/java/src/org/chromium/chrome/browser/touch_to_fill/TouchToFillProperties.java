@@ -113,8 +113,10 @@ class TouchToFillProperties {
     static class MorePasskeysProperties {
         static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CLICK =
                 new PropertyModel.ReadableObjectPropertyKey<>("more_passkeys_on_click");
+        static final PropertyModel.ReadableObjectPropertyKey<String> TITLE =
+                new PropertyModel.ReadableObjectPropertyKey<>("more_passkeys_title");
 
-        static final PropertyKey[] ALL_KEYS = {ON_CLICK};
+        static final PropertyKey[] ALL_KEYS = {ON_CLICK, TITLE};
 
         private MorePasskeysProperties() {}
     }

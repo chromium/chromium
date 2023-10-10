@@ -32,8 +32,7 @@ found in the LICENSE file.
       android:layout_weight="1"
       android:orientation="vertical">
     <TextView
-        android:id="@+id/more_passkeys"
-        android:text="@string/touch_to_fill_more_passkeys"
+        android:id="@+id/more_passkeys_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minHeight="@dimen/touch_to_fill_list_item_text_min_height"

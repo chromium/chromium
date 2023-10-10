@@ -391,7 +391,7 @@ public class TouchToFillIntegrationTest {
     }
 
     private TextView getMorePasskeysItem() {
-        return mActivityTestRule.getActivity().findViewById(R.id.more_passkeys);
+        return mActivityTestRule.getActivity().findViewById(R.id.more_passkeys_label);
     }
 
     public static <T> T waitForEvent(T mock) {

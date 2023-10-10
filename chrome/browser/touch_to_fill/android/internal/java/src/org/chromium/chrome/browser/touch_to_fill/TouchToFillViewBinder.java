@@ -231,6 +231,9 @@ class TouchToFillViewBinder {
         if (propertyKey == MorePasskeysProperties.ON_CLICK) {
             view.setOnClickListener(
                     clickedView -> model.get(MorePasskeysProperties.ON_CLICK).run());
+        } else if (propertyKey == MorePasskeysProperties.TITLE) {
+            TextView labelText = view.findViewById(R.id.more_passkeys_label);
+            labelText.setText(model.get(MorePasskeysProperties.TITLE));
         } else {
             assert false : "Unhandled update to property: " + propertyKey;
         }

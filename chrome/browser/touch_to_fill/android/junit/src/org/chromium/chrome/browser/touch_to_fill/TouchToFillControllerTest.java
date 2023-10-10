@@ -489,14 +489,49 @@ public class TouchToFillControllerTest {
     }
 
     @Test
-    public void testMorePasskeysShown() {
-        mMediator.showCredentials(TEST_URL, true, Collections.emptyList(), Collections.emptyList(),
-                /*showMorePasskeys=*/true, /*submitCredential=*/false,
-                /*managePasskeysHidesPasswords=*/false, /*showHybridPasskeyOption=*/true);
+    public void testSelectPasskeyShownAndRan() {
+        mMediator.showCredentials(
+                TEST_URL,
+                true,
+                Collections.emptyList(),
+                Arrays.asList(ANA),
+                /* showMorePasskeys= */ true,
+                /* submitCredential= */ false,
+                /* managePasskeysHidesPasswords= */ false,
+                /* showHybridPasskeyOption= */ true);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
-        assertThat(itemList.get(1).type, is(ItemType.MORE_PASSKEYS));
-        Runnable onMorePasskeysItemRunnable =
-                itemList.get(1).model.get(MorePasskeysProperties.ON_CLICK);
+        assertThat(itemList.get(2).type, is(ItemType.MORE_PASSKEYS));
+        PropertyModel model = itemList.get(2).model;
+        assertThat(
+                model.get(MorePasskeysProperties.TITLE),
+                is(mContext.getString(R.string.touch_to_fill_select_passkey)));
+        Runnable onMorePasskeysItemRunnable = model.get(MorePasskeysProperties.ON_CLICK);
+        assertThat(onMorePasskeysItemRunnable, is(notNullValue()));
+
+        onMorePasskeysItemRunnable.run();
+        verify(mMockDelegate).onShowMorePasskeysSelected();
+        assertThat(mModel.get(VISIBLE), is(false));
+    }
+
+    @Test
+    public void testMorePasskeysShownAndRan() {
+        mMediator.showCredentials(
+                TEST_URL,
+                true,
+                Arrays.asList(DINO),
+                Arrays.asList(ANA),
+                /* showMorePasskeys= */ true,
+                /* submitCredential= */ false,
+                /* managePasskeysHidesPasswords= */ false,
+                /* showHybridPasskeyOption= */ true);
+        ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
+        assertThat(itemList.get(3).type, is(ItemType.MORE_PASSKEYS));
+        PropertyModel model = itemList.get(3).model;
+        assertThat(
+                model.get(MorePasskeysProperties.TITLE),
+                is(mContext.getString(R.string.touch_to_fill_more_passkeys)));
+
+        Runnable onMorePasskeysItemRunnable = model.get(MorePasskeysProperties.ON_CLICK);
         assertThat(onMorePasskeysItemRunnable, is(notNullValue()));
 
         onMorePasskeysItemRunnable.run();

@@ -217,6 +217,9 @@ found in the LICENSE file.
       <message name="IDS_TOUCH_TO_FILL_MORE_PASSKEYS" desc="Title of the button that opens Android Credential Manager UI. The user can select passkeys from other providers there.">
         More passkeys
       </message>
+      <message name="IDS_TOUCH_TO_FILL_SELECT_PASSKEY" desc="Title of the button that opens Android Credential Manager UI when there are no passkeys in the touch to fill sheet. The user can select passkeys from other providers there.">
+        Select passkey
+      </message>
       <message name="IDS_TOUCH_TO_FILL_SIGNIN" desc="Title of the button that continues filling and submitting the only available credential.">
         Sign in
       </message>

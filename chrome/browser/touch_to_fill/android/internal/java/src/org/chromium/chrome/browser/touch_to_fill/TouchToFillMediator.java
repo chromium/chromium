@@ -144,10 +144,19 @@ class TouchToFillMediator {
         }
 
         if (showMorePasskeys) {
-            sheetItems.add(new ListItem(TouchToFillProperties.ItemType.MORE_PASSKEYS,
-                    new PropertyModel.Builder(MorePasskeysProperties.ALL_KEYS)
-                            .with(MorePasskeysProperties.ON_CLICK, this::onSelectedMorePasskeys)
-                            .build()));
+            String morePasskeyTitle =
+                    webAuthnCredentials.size() == 0
+                            ? mContext.getString(R.string.touch_to_fill_select_passkey)
+                            : mContext.getString(R.string.touch_to_fill_more_passkeys);
+            sheetItems.add(
+                    new ListItem(
+                            TouchToFillProperties.ItemType.MORE_PASSKEYS,
+                            new PropertyModel.Builder(MorePasskeysProperties.ALL_KEYS)
+                                    .with(
+                                            MorePasskeysProperties.ON_CLICK,
+                                            this::onSelectedMorePasskeys)
+                                    .with(MorePasskeysProperties.TITLE, morePasskeyTitle)
+                                    .build()));
         }
 
         sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FOOTER,

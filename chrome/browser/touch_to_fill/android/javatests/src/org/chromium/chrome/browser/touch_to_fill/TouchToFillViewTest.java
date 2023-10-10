@@ -647,7 +647,7 @@ public class TouchToFillViewTest {
                 () -> mSheetTestSupport.setSheetState(SheetState.FULL, false));
 
         TextView morePasskeysItem =
-                mTouchToFillView.getContentView().findViewById(R.id.more_passkeys);
+                mTouchToFillView.getContentView().findViewById(R.id.more_passkeys_label);
         TouchCommon.singleClickView(morePasskeysItem);
 
         pollUiThread(mMorePasskeysClicked::get);
@@ -716,10 +716,13 @@ public class TouchToFillViewTest {
     }
 
     private MVCListAdapter.ListItem buildMorePasskeysItem() {
-        return new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.MORE_PASSKEYS,
+        return new MVCListAdapter.ListItem(
+                TouchToFillProperties.ItemType.MORE_PASSKEYS,
                 new PropertyModel.Builder(TouchToFillProperties.MorePasskeysProperties.ALL_KEYS)
-                        .with(TouchToFillProperties.MorePasskeysProperties.ON_CLICK,
+                        .with(
+                                TouchToFillProperties.MorePasskeysProperties.ON_CLICK,
                                 () -> mMorePasskeysClicked.set(true))
+                        .with(TouchToFillProperties.MorePasskeysProperties.TITLE, "More Passkeys")
                         .build());
     }
 
