@@ -189,7 +189,7 @@ void BrowserNonClientFrameViewChromeOS::Init() {
     frame_header_ = CreateFrameHeader();
   }
 
-  if (AppIsBorderlessPwa()) {
+  if (AppIsPwaWithBorderlessDisplayMode()) {
     UpdateBorderlessModeEnabled();
   }
 
@@ -438,10 +438,10 @@ void BrowserNonClientFrameViewChromeOS::UpdateBorderlessModeEnabled() {
       browser_view()->IsBorderlessModeEnabled());
 }
 
-bool BrowserNonClientFrameViewChromeOS::AppIsBorderlessPwa() const {
+bool BrowserNonClientFrameViewChromeOS::AppIsPwaWithBorderlessDisplayMode()
+    const {
   return browser_view()->GetIsWebAppType() &&
-         browser_view()->AppUsesBorderlessMode() &&
-         browser_view()->IsBorderlessModeEnabled();
+         browser_view()->AppUsesBorderlessMode();
 }
 
 void BrowserNonClientFrameViewChromeOS::Layout() {
@@ -462,7 +462,7 @@ void BrowserNonClientFrameViewChromeOS::Layout() {
     LayoutProfileIndicator();
   }
 
-  if (AppIsBorderlessPwa()) {
+  if (AppIsPwaWithBorderlessDisplayMode()) {
     UpdateBorderlessModeEnabled();
   }
 
@@ -924,7 +924,9 @@ void BrowserNonClientFrameViewChromeOS::UpdateTopViewInset() {
   const bool immersive =
       browser_view()->immersive_mode_controller()->IsEnabled();
   const bool tab_strip_visible = browser_view()->GetTabStripVisible();
-  const int inset = (tab_strip_visible || immersive || AppIsBorderlessPwa())
+  const int inset = (tab_strip_visible || immersive ||
+                     (AppIsPwaWithBorderlessDisplayMode() &&
+                      browser_view()->IsBorderlessModeEnabled()))
                         ? 0
                         : GetTopInset(/*restored=*/false);
   frame()->GetNativeWindow()->SetProperty(aura::client::kTopViewInset, inset);

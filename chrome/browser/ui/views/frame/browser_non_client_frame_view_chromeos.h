@@ -135,7 +135,10 @@ class BrowserNonClientFrameViewChromeOS
   FRIEND_TEST_ALL_PREFIXES(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
                            ImmersiveFullscreen);
 
-  bool AppIsBorderlessPwa() const;
+  // App is a PWA and has borderless in its manifest. This doesn't yet mean
+  // that the `window-management` permission has been granted and borderless
+  // mode would be activated.
+  bool AppIsPwaWithBorderlessDisplayMode() const;
 
   // Returns true if `GetShowCaptionButtonsWhenNotInOverview()` returns true
   // and this browser window is not showing in overview.
