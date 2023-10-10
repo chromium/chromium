@@ -1041,6 +1041,11 @@
       'filepath': 'chrome/browser/download/bubble/|' \
                   'chrome/browser/ui/views/download/bubble/'
     },
+    'download_status_updater_chromeos': {
+      'filepath': 'chrome/browser/ash/crosapi/download_status_updater|' \
+                  'chrome/browser/download/download_status_updater_lacros|' \
+                  'chrome/browser/lacros/download_status_updater'
+    },
     'downloads_ui': {
       'filepath': 'chrome/browser/resources/downloads/|' \
                   'chrome/browser/ui/webui/.*downloads|' \
@@ -2776,6 +2781,7 @@
     'download': ['dtrainor+watch@chromium.org'],
     'download_bubble': ['xinghuilu+watch@chromium.org',
                         'drubery+watch@chromium.org'],
+    'download_status_updater_chromeos': ['cros-system-ui-productivity-eng+reviews@google.com'],
     'downloads_ui': ['dtrainor+watch@chromium.org',
                      'drubery+watch@chromium.org'],
     'drive_resource_metadata': ['hashimoto+watch@chromium.org'],
