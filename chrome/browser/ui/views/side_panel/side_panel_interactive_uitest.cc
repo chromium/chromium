@@ -232,9 +232,8 @@ class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
 
 // Verify that we can open the ReadingMode side panel from the 3dot -> More
 // tools context menu.
-// TODO(dljames): Figure out why this is flaking.
 IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
-                       DISABLED_OpenReadingModeSidePanel) {
+                       OpenReadingModeSidePanel) {
   SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser())
       ->SetNoDelaysForTesting(true);
 
@@ -243,6 +242,7 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
                   SelectMenuItem(AppMenuModel::kMoreToolsMenuItem),
                   SelectMenuItem(ToolsMenuModel::kReadingModeMenuItem),
                   WatchSidePanelSelection(), WaitForShow(kSidePanelElementId),
+                  FlushEvents(),
                   WaitForSidePanelSelection(SidePanelEntryId::kReadAnything),
                   // Click on the close button to dismiss the side panel.
                   PressButton(kSidePanelCloseButtonElementId),
