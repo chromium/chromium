@@ -26,12 +26,15 @@
 #include "content/browser/renderer_host/media/video_capture_device_launch_observer.h"
 #include "content/browser/renderer_host/media/video_capture_provider.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/screenlock_observer.h"
 #include "media/base/video_facing.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "media/capture/video_capture_types.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_capture/public/mojom/video_effects_manager.mojom-forward.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -100,9 +103,9 @@ class CONTENT_EXPORT VideoCaptureManager
             uint32_t crop_version,
             base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
 
-  // Called by VideoCaptureHost to locate a capture device for |capture_params|,
+  // Called by VideoCaptureHost to locate a capture device for `capture_params`,
   // adding the Host as a client of the device's controller if successful. The
-  // value of |session_id| controls which device is selected;
+  // value of `session_id` controls which device is selected;
   // this value should be a session id previously returned by Open().
   //
   // If the device is not already started (i.e., no other client is currently
@@ -111,13 +114,19 @@ class CONTENT_EXPORT VideoCaptureManager
   //
   // On success, the controller is returned via calling |done_cb|, indicating
   // that the client was successfully added. A NULL controller is passed to
-  // the callback on failure. |done_cb| is not allowed to synchronously call
+  // the callback on failure. `done_cb` is not allowed to synchronously call
   // StopCaptureForClient().
+  //
+  // `browser_context` is used to access the `MediaEffectsService` and pass a
+  // `VideoEffectsManager` remote for this device to the
+  // `VideoCaptureDeviceClient`. If the `browser_context` is nullptr then the
+  // device won't get an effects manager.
   void ConnectClient(const media::VideoCaptureSessionId& session_id,
                      const media::VideoCaptureParams& capture_params,
                      VideoCaptureControllerID client_id,
                      VideoCaptureControllerEventHandler* client_handler,
-                     DoneCB done_cb);
+                     DoneCB done_cb,
+                     BrowserContext* browser_context);
 
   // Called by VideoCaptureHost to remove |client_handler|. If this is the last
   // client of the device, the |controller| and its VideoCaptureDevice may be
@@ -292,9 +301,12 @@ class CONTENT_EXPORT VideoCaptureManager
   // posts a
   // request to start the device on the device thread unless there is
   // another request pending start.
-  void QueueStartDevice(const media::VideoCaptureSessionId& session_id,
-                        VideoCaptureController* controller,
-                        const media::VideoCaptureParams& params);
+  void QueueStartDevice(
+      const media::VideoCaptureSessionId& session_id,
+      VideoCaptureController* controller,
+      const media::VideoCaptureParams& params,
+      mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+          video_effects_manager);
   void DoStopDevice(VideoCaptureController* controller);
   void ProcessDeviceStartRequestQueue();
 

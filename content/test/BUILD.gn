@@ -2912,6 +2912,7 @@ test("content_unittests") {
     "//components/services/storage/service_worker:service_worker_proto",
     "//components/system_media_controls:test_support",
     "//components/ukm:test_support",
+    "//components/user_prefs/test:test_support",
     "//components/viz/client",
     "//components/viz/common",
     "//components/viz/host",

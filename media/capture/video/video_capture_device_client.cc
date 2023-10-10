@@ -241,16 +241,27 @@ VideoCaptureDeviceClient::VideoCaptureDeviceClient(
 VideoCaptureDeviceClient::VideoCaptureDeviceClient(
     VideoCaptureBufferType target_buffer_type,
     std::unique_ptr<VideoFrameReceiver> receiver,
-    scoped_refptr<VideoCaptureBufferPool> buffer_pool)
+    scoped_refptr<VideoCaptureBufferPool> buffer_pool,
+    mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+        video_effects_manager)
     : target_buffer_type_(target_buffer_type),
       receiver_(std::move(receiver)),
       buffer_pool_(std::move(buffer_pool)),
-      last_captured_pixel_format_(PIXEL_FORMAT_UNKNOWN) {}
+      last_captured_pixel_format_(PIXEL_FORMAT_UNKNOWN),
+      mojo_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+      effects_manager_(std::move(video_effects_manager), mojo_task_runner_) {}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 VideoCaptureDeviceClient::~VideoCaptureDeviceClient() {
-  for (int buffer_id : buffer_ids_known_by_receiver_)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Make sure that the remote is destroyed from the same sequence that it was
+  // created on.
+  mojo_task_runner_->PostTask(
+      FROM_HERE, base::DoNothingWithBoundArgs(std::move(effects_manager_)));
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+  for (int buffer_id : buffer_ids_known_by_receiver_) {
     receiver_->OnBufferRetired(buffer_id);
+  }
   receiver_->OnStopped();
 }
 
@@ -740,5 +751,4 @@ void VideoCaptureDeviceClient::OnIncomingCapturedY16Data(
   OnIncomingCapturedBuffer(std::move(buffer), output_format, reference_time,
                            timestamp);
 }
-
 }  // namespace media

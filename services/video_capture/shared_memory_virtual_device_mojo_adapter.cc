@@ -171,7 +171,9 @@ void SharedMemoryVirtualDeviceMojoAdapter::Start(
 
 void SharedMemoryVirtualDeviceMojoAdapter::StartInProcess(
     const media::VideoCaptureParams& requested_settings,
-    const base::WeakPtr<media::VideoFrameReceiver>& frame_handler) {
+    const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
+    mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+        video_effects_manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   video_frame_handler_in_process_ = std::move(frame_handler);
   video_frame_handler_in_process_->OnStarted();

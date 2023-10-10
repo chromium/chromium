@@ -3,5 +3,9 @@ include_rules = [
   "+chromeos/dbus",
   "+components/device_event_log",
   "+mojo/public/cpp",
+  # This dependency is safe because it's a leaf in the video_capture_service,
+  # but //media shouldn't depend on anything else from services/video_capture.
+  # TODO(b/303071098) : consider moving VideoEffectsManger to //media/mojo.
+  "+services/video_capture/public/mojom",
   "+third_party/libyuv",
 ]

@@ -69,16 +69,19 @@ class FakeDeviceLauncher final : public content::VideoCaptureDeviceLauncher {
   FakeDeviceLauncher(const FakeDeviceLauncher&) = delete;
   FakeDeviceLauncher& operator=(const FakeDeviceLauncher&) = delete;
 
-  ~FakeDeviceLauncher() override {}
+  ~FakeDeviceLauncher() override = default;
 
   // content::VideoCaptureDeviceLauncher implementation.
-  void LaunchDeviceAsync(const std::string& device_id,
-                         blink::mojom::MediaStreamType stream_type,
-                         const VideoCaptureParams& params,
-                         base::WeakPtr<VideoFrameReceiver> receiver,
-                         base::OnceClosure connection_lost_cb,
-                         Callbacks* callbacks,
-                         base::OnceClosure done_cb) override {
+  void LaunchDeviceAsync(
+      const std::string& device_id,
+      blink::mojom::MediaStreamType stream_type,
+      const VideoCaptureParams& params,
+      base::WeakPtr<VideoFrameReceiver> receiver,
+      base::OnceClosure connection_lost_cb,
+      Callbacks* callbacks,
+      base::OnceClosure done_cb,
+      mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+          video_effects_manager) override {
     if (!params.IsValid()) {
       callbacks->OnDeviceLaunchFailed(
           media::VideoCaptureError::

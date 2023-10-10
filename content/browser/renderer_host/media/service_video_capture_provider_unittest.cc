@@ -254,7 +254,7 @@ TEST_F(ServiceVideoCaptureProviderTest,
   device_launcher_1->LaunchDeviceAsync(
       kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       kArbitraryParams, kNullReceiver, base::DoNothing(), &mock_callbacks,
-      wait_for_launch_1.QuitClosure());
+      wait_for_launch_1.QuitClosure(), {});
   wait_for_connection_to_service_.Run();
   wait_for_launch_1.Run();
 
@@ -300,7 +300,7 @@ TEST_F(ServiceVideoCaptureProviderTest,
   device_launcher_2->LaunchDeviceAsync(
       kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       kArbitraryParams, kNullReceiver, base::DoNothing(), &mock_callbacks,
-      wait_for_launch_2.QuitClosure());
+      wait_for_launch_2.QuitClosure(), {});
   wait_for_launch_2.Run();
   device_launcher_2.reset();
   {

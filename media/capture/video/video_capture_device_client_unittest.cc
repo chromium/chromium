@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/limits.h"
@@ -20,6 +21,7 @@
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "media/capture/video/video_frame_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,6 +47,17 @@ std::unique_ptr<VideoCaptureJpegDecoder> ReturnNullPtrAsJpecDecoder() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+class FakeVideoEffectsManagerImpl
+    : public video_capture::mojom::VideoEffectsManager {
+  void GetConfiguration(GetConfigurationCallback callback) override {}
+  void SetConfiguration(
+      video_capture::mojom::VideoEffectsConfigurationPtr configuration,
+      SetConfigurationCallback callback) override {}
+  void AddObserver(::mojo::PendingRemote<
+                   video_capture::mojom::VideoEffectsConfigurationObserver>
+                       observer) override {}
+};
+
 }  // namespace
 
 // Test fixture for testing a unit consisting of an instance of
@@ -69,7 +82,8 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
 #else
     device_client_ = std::make_unique<VideoCaptureDeviceClient>(
         VideoCaptureBufferType::kSharedMemory, std::move(controller),
-        buffer_pool);
+        buffer_pool,
+        video_effects_manager_receiver_.BindNewPipeAndPassRemote());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
@@ -80,8 +94,12 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
   ~VideoCaptureDeviceClientTest() override = default;
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<unittest_internal::MockGpuMemoryBufferManager>
       gpu_memory_buffer_manager_;
+  FakeVideoEffectsManagerImpl fake_video_effects_manager_;
+  mojo::Receiver<video_capture::mojom::VideoEffectsManager>
+      video_effects_manager_receiver_{&fake_video_effects_manager_};
 
   // Must outlive `receiver_`.
   std::unique_ptr<VideoCaptureDeviceClient> device_client_;
@@ -301,4 +319,16 @@ TEST_F(VideoCaptureDeviceClientTest, CheckRotationsAndCrops) {
   }
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+// Tests that the VideoEffectsManager remote is closed on the correct task
+// runner. Destruction on the wrong task runner will cause a crash.
+TEST_F(VideoCaptureDeviceClientTest, DestructionClosesVideoEffectsManager) {
+  base::RunLoop run_loop;
+  video_effects_manager_receiver_.set_disconnect_handler(
+      run_loop.QuitClosure());
+  receiver_ = nullptr;
+  EXPECT_NO_FATAL_FAILURE(device_client_.reset());
+  run_loop.Run();
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }  // namespace media

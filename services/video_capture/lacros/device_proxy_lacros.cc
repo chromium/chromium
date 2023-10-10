@@ -44,7 +44,8 @@ void DeviceProxyLacros::Start(
 
 void DeviceProxyLacros::StartInProcess(
     const media::VideoCaptureParams& requested_settings,
-    const base::WeakPtr<media::VideoFrameReceiver>& frame_handler) {
+    const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
+    mojo::PendingRemote<mojom::VideoEffectsManager> video_effects_manager) {
   mojo::PendingRemote<crosapi::mojom::VideoFrameHandler> proxy_handler_remote;
   handler_ = std::make_unique<VideoFrameHandlerProxyLacros>(
       proxy_handler_remote.InitWithNewPipeAndPassReceiver(),

@@ -17,6 +17,8 @@
 #include "media/capture/capture_export.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_frame_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_capture/public/mojom/video_effects_manager.mojom.h"
 
 namespace media {
 class VideoCaptureBufferPool;
@@ -50,9 +52,12 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
       scoped_refptr<VideoCaptureBufferPool> buffer_pool,
       VideoCaptureJpegDecoderFactoryCB jpeg_decoder_factory_callback);
 #else
-  VideoCaptureDeviceClient(VideoCaptureBufferType target_buffer_type,
-                           std::unique_ptr<VideoFrameReceiver> receiver,
-                           scoped_refptr<VideoCaptureBufferPool> buffer_pool);
+  VideoCaptureDeviceClient(
+      VideoCaptureBufferType target_buffer_type,
+      std::unique_ptr<VideoFrameReceiver> receiver,
+      scoped_refptr<VideoCaptureBufferPool> buffer_pool,
+      mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+          video_effects_manager);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   VideoCaptureDeviceClient(const VideoCaptureDeviceClient&) = delete;
@@ -143,6 +148,11 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
   const scoped_refptr<VideoCaptureBufferPool> buffer_pool_;
 
   VideoPixelFormat last_captured_pixel_format_;
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  scoped_refptr<base::SequencedTaskRunner> mojo_task_runner_;
+  mojo::Remote<video_capture::mojom::VideoEffectsManager> effects_manager_;
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Thread collision warner to ensure that producer-facing API is not called
   // concurrently. Producers are allowed to call from multiple threads, but not

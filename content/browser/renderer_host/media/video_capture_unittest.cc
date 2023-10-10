@@ -84,6 +84,7 @@ class MockRenderProcessHostDelegate
  public:
   MOCK_METHOD0(NotifyStreamAdded, void());
   MOCK_METHOD0(NotifyStreamRemoved, void());
+  MOCK_METHOD0(GetBrowserContext, content::BrowserContext*());
 };
 
 // This is an integration test of VideoCaptureHost in conjunction with
@@ -232,6 +233,10 @@ class VideoCaptureTest : public testing::Test,
     host_->Start(DeviceId(), opened_session_id_, params,
                  observer_receiver_.BindNewPipeAndPassRemote());
 
+    // Ensure that the browser context has been retrevied and the observer is
+    // connected.
+    observer_receiver_.FlushForTesting();
+
     run_loop.Run();
   }
 
@@ -246,6 +251,10 @@ class VideoCaptureTest : public testing::Test,
         .Times(1);
     host_->Start(DeviceId(), base::UnguessableToken(), params,
                  observer_receiver_.BindNewPipeAndPassRemote());
+
+    // Ensure that the browser context has been retrevied and the observer is
+    // connected.
+    observer_receiver_.FlushForTesting();
   }
 
   void StartAndImmediateStopCapture() {
@@ -265,6 +274,10 @@ class VideoCaptureTest : public testing::Test,
         .Times(AtMost(1));
     host_->Start(DeviceId(), opened_session_id_, params,
                  observer_receiver_.BindNewPipeAndPassRemote());
+
+    // Ensure that the browser context has been retrevied and the observer is
+    // connected.
+    observer_receiver_.FlushForTesting();
 
     EXPECT_CALL(*this,
                 DoOnStateChanged(media::mojom::VideoCaptureState::STOPPED));

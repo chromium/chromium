@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/video_capture/public/cpp/receiver_media_to_mojo_adapter.h"
+#include "services/video_capture/public/mojom/video_effects_manager.mojom.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -85,7 +86,9 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     base::WeakPtr<media::VideoFrameReceiver> receiver,
     base::OnceClosure connection_lost_cb,
     Callbacks* callbacks,
-    base::OnceClosure done_cb) {
+    base::OnceClosure done_cb,
+    mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+        video_effects_manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_ == State::READY_TO_LAUNCH);
 
@@ -124,6 +127,9 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
   mojo::Remote<video_capture::mojom::VideoSource> source;
   service_connection_->source_provider()->GetVideoSource(
       device_id, source.BindNewPipeAndPassReceiver());
+  if (video_effects_manager) {
+    source->RegisterVideoEffectsManager(std::move(video_effects_manager));
+  }
 
   auto receiver_adapter =
       std::make_unique<video_capture::ReceiverMediaToMojoAdapter>(

@@ -201,7 +201,8 @@ class VideoCaptureControllerTest
         media::VideoCaptureBufferType::kSharedMemory,
         std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
             controller_->GetWeakPtrForIOThread(), GetIOThreadTaskRunner({})),
-        buffer_pool_);
+        buffer_pool_,
+        mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>{});
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 

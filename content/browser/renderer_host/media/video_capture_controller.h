@@ -24,6 +24,7 @@
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video_capture_types.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/media/video_capture.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
@@ -130,9 +131,12 @@ class CONTENT_EXPORT VideoCaptureController
 
   void OnDeviceConnectionLost();
 
-  void CreateAndStartDeviceAsync(const media::VideoCaptureParams& params,
-                                 VideoCaptureDeviceLaunchObserver* callbacks,
-                                 base::OnceClosure done_cb);
+  void CreateAndStartDeviceAsync(
+      const media::VideoCaptureParams& params,
+      VideoCaptureDeviceLaunchObserver* callbacks,
+      base::OnceClosure done_cb,
+      mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+          video_effects_manager);
   void ReleaseDeviceAsync(base::OnceClosure done_cb);
   bool IsDeviceAlive() const;
   void GetPhotoState(

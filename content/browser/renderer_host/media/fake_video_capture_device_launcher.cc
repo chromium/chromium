@@ -10,6 +10,7 @@
 #include "base/token.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/fake_video_capture_device_launcher.h"
+#include "content/public/browser/browser_context.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
@@ -82,7 +83,9 @@ void FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     base::WeakPtr<media::VideoFrameReceiver> receiver,
     base::OnceClosure connection_lost_cb,
     Callbacks* callbacks,
-    base::OnceClosure done_cb) {
+    base::OnceClosure done_cb,
+    mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+        video_effects_manager) {
   auto device = system_->CreateDevice(device_id).ReleaseDevice();
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool(
@@ -108,7 +111,8 @@ void FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync(
       params.buffer_type,
       std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
           receiver, base::SingleThreadTaskRunner::GetCurrentDefault()),
-      std::move(buffer_pool));
+      std::move(buffer_pool),
+      mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>{});
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   device->AllocateAndStart(params, std::move(device_client));
   auto launched_device =

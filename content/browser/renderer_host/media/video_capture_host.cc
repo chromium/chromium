@@ -17,9 +17,12 @@
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/content_client.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/video_capture/public/mojom/video_effects_manager.mojom.h"
 
 namespace content {
 
@@ -58,6 +61,15 @@ class VideoCaptureHost::RenderProcessHostDelegateImpl
     RenderProcessHost* host = RenderProcessHost::FromID(render_process_id_);
     if (host)
       host->OnMediaStreamRemoved();
+  }
+
+  content::BrowserContext* GetBrowserContext() override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    RenderProcessHost* host = RenderProcessHost::FromID(render_process_id_);
+    if (host) {
+      return host->GetBrowserContext();
+    }
+    return nullptr;
   }
 
  private:
@@ -265,10 +277,20 @@ void VideoCaptureHost::Start(
   }
 
   controllers_[controller_id] = base::WeakPtr<VideoCaptureController>();
-  media_stream_manager_->video_capture_manager()->ConnectClient(
-      session_id, params, controller_id, this,
-      base::BindOnce(&VideoCaptureHost::OnControllerAdded,
-                     weak_factory_.GetWeakPtr(), device_id));
+  // base::Unretained() usage is safe because `render_process_host_delegate_`
+  // is destroyed on UI thread via `DeleteSoon()` in `~VideoCaptureHost`. Since
+  // this line can't run after the destructor the UI thread
+  // `SequencedTaskRunner` guarantees that `render_process_host_delegate_` will
+  // live long enough for this task to execute.
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&RenderProcessHostDelegate::GetBrowserContext,
+                     base::Unretained(render_process_host_delegate_.get())),
+      base::BindOnce(&VideoCaptureHost::ConnectClient,
+                     weak_factory_.GetWeakPtr(), session_id, params,
+                     controller_id,
+                     base::BindOnce(&VideoCaptureHost::OnControllerAdded,
+                                    weak_factory_.GetWeakPtr(), device_id)));
 }
 
 void VideoCaptureHost::Stop(const base::UnguessableToken& device_id) {
@@ -536,6 +558,16 @@ void VideoCaptureHost::NotifyAllStreamsRemoved() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   while (number_of_active_streams_ > 0)
     NotifyStreamRemoved();
+}
+
+void VideoCaptureHost::ConnectClient(const base::UnguessableToken session_id,
+                                     const media::VideoCaptureParams& params,
+                                     VideoCaptureControllerID controller_id,
+                                     VideoCaptureManager::DoneCB done_cb,
+                                     BrowserContext* browser_context) {
+  media_stream_manager_->video_capture_manager()->ConnectClient(
+      session_id, params, controller_id, this, std::move(done_cb),
+      browser_context);
 }
 
 }  // namespace content

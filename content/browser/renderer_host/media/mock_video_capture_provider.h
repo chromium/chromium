@@ -31,26 +31,33 @@ class MockVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
   MockVideoCaptureDeviceLauncher();
   ~MockVideoCaptureDeviceLauncher() override;
 
-  MOCK_METHOD7(DoLaunchDeviceAsync,
-               void(const std::string& device_id,
-                    blink::mojom::MediaStreamType stream_type,
-                    const media::VideoCaptureParams& params,
-                    base::WeakPtr<media::VideoFrameReceiver>* receiver,
-                    base::OnceClosure* connection_lost_cb,
-                    Callbacks* callbacks,
-                    base::OnceClosure* done_cb));
+  MOCK_METHOD8(
+      DoLaunchDeviceAsync,
+      void(const std::string& device_id,
+           blink::mojom::MediaStreamType stream_type,
+           const media::VideoCaptureParams& params,
+           base::WeakPtr<media::VideoFrameReceiver>* receiver,
+           base::OnceClosure* connection_lost_cb,
+           Callbacks* callbacks,
+           base::OnceClosure* done_cb,
+           mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+               video_effects_manager));
 
   MOCK_METHOD0(AbortLaunch, void());
 
-  void LaunchDeviceAsync(const std::string& device_id,
-                         blink::mojom::MediaStreamType stream_type,
-                         const media::VideoCaptureParams& params,
-                         base::WeakPtr<media::VideoFrameReceiver> receiver,
-                         base::OnceClosure connection_lost_cb,
-                         Callbacks* callbacks,
-                         base::OnceClosure done_cb) override {
+  void LaunchDeviceAsync(
+      const std::string& device_id,
+      blink::mojom::MediaStreamType stream_type,
+      const media::VideoCaptureParams& params,
+      base::WeakPtr<media::VideoFrameReceiver> receiver,
+      base::OnceClosure connection_lost_cb,
+      Callbacks* callbacks,
+      base::OnceClosure done_cb,
+      mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
+          video_effects_manager) override {
     DoLaunchDeviceAsync(device_id, stream_type, params, &receiver,
-                        &connection_lost_cb, callbacks, &done_cb);
+                        &connection_lost_cb, callbacks, &done_cb,
+                        std::move(video_effects_manager));
   }
 };
 
