@@ -113,12 +113,12 @@ void SwapChainProcessor::RunCore() {
       // We have finished processing this frame hence we release the reference
       // on it. If the driver forgets to release the reference to the surface,
       // it will be leaked which results in the surfaces being left around after
-      // swapchain is destroyed. NOTE: Although in this sample we release
-      // reference to the surface here; the driver still owns the
-      // Buffer.MetaData.pSurface surface until
-      // IddCxSwapChainReleaseAndAcquireBuffer returns S_OK and gives us a new
-      // frame, a driver may want to use the surface in future to re-encode the
-      // desktop for better quality if there is no new frame for a while
+      // swapchain is destroyed. NOTE: Although we release reference to the
+      // surface here; the driver still owns the Buffer.MetaData.pSurface
+      // surface until IddCxSwapChainReleaseAndAcquireBuffer returns S_OK and
+      // gives us a new frame, a driver may want to use the surface in future
+      // to re-encode the desktop for better quality if there is no new frame
+      // for a while
       AcquiredBuffer.Reset();
 
       // Indicate to OS that we have finished inital processing of the frame, it

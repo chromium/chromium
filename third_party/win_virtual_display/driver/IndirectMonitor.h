@@ -17,7 +17,7 @@
 
 namespace display::test {
 // Represents a virtual monitor, encapsulates an EDID and modes.
-struct IndirectSampleMonitor {
+struct IndirectMonitor {
   static constexpr size_t kModeListLength = 1;
   // Modified EDID from Dell S2719DGF
   std::array<unsigned char, Edid::kBlockSize> pEdidBlock = {

@@ -12,30 +12,22 @@
 
 #include <algorithm>
 
-#pragma region SampleMonitors
-
-namespace {
-}  // namespace
-
-#pragma endregion
-
 #pragma region EventDeclaration
 
 extern "C" DRIVER_INITIALIZE DriverEntry;
 
-EVT_WDF_DRIVER_DEVICE_ADD IddSampleDeviceAdd;
-EVT_WDF_DEVICE_D0_ENTRY IddSampleDeviceD0Entry;
+EVT_WDF_DRIVER_DEVICE_ADD EvtWdfDriverDeviceAdd;
+EVT_WDF_DEVICE_D0_ENTRY EvtWdfDeviceD0Entry;
 
-EVT_IDD_CX_ADAPTER_INIT_FINISHED IddSampleAdapterInitFinished;
-EVT_IDD_CX_ADAPTER_COMMIT_MODES IddSampleAdapterCommitModes;
+EVT_IDD_CX_ADAPTER_INIT_FINISHED EvtIddCxAdapterInitFinished;
+EVT_IDD_CX_ADAPTER_COMMIT_MODES EvtIddCxAdapterCommitModes;
 
-EVT_IDD_CX_PARSE_MONITOR_DESCRIPTION IddSampleParseMonitorDescription;
-EVT_IDD_CX_MONITOR_GET_DEFAULT_DESCRIPTION_MODES
-IddSampleMonitorGetDefaultModes;
-EVT_IDD_CX_MONITOR_QUERY_TARGET_MODES IddSampleMonitorQueryModes;
+EVT_IDD_CX_PARSE_MONITOR_DESCRIPTION EvtIddCxParseMonitorDescription;
+EVT_IDD_CX_MONITOR_GET_DEFAULT_DESCRIPTION_MODES EvtIddCxMonitorGetDefaultModes;
+EVT_IDD_CX_MONITOR_QUERY_TARGET_MODES EvtIddCxMonitorQueryModes;
 
-EVT_IDD_CX_MONITOR_ASSIGN_SWAPCHAIN IddSampleMonitorAssignSwapChain;
-EVT_IDD_CX_MONITOR_UNASSIGN_SWAPCHAIN IddSampleMonitorUnassignSwapChain;
+EVT_IDD_CX_MONITOR_ASSIGN_SWAPCHAIN EvtIddCxMonitorAssignSwapChain;
+EVT_IDD_CX_MONITOR_UNASSIGN_SWAPCHAIN EvtIddCxMonitorUnassignSwapChain;
 
 struct IndirectDeviceContextWrapper {
   display::test::IndirectDeviceContext* pContext;
@@ -84,7 +76,7 @@ _Use_decl_annotations_ extern "C" NTSTATUS DriverEntry(
   WDF_OBJECT_ATTRIBUTES Attributes;
   WDF_OBJECT_ATTRIBUTES_INIT(&Attributes);
 
-  WDF_DRIVER_CONFIG_INIT(&Config, IddSampleDeviceAdd);
+  WDF_DRIVER_CONFIG_INIT(&Config, EvtWdfDriverDeviceAdd);
 
   Status = WdfDriverCreate(pDriverObject, pRegistryPath, &Attributes, &Config,
                            WDF_NO_HANDLE);
@@ -98,17 +90,17 @@ _Use_decl_annotations_ extern "C" NTSTATUS DriverEntry(
 }
 
 _Use_decl_annotations_ NTSTATUS
-IddSampleDeviceAdd(WDFDRIVER Driver, PWDFDEVICE_INIT pDeviceInit) {
-  TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER, "IddSampleDeviceAdd");
+EvtWdfDriverDeviceAdd(WDFDRIVER Driver, PWDFDEVICE_INIT pDeviceInit) {
+  TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER, "EvtWdfDriverDeviceAdd");
 
   NTSTATUS Status = STATUS_SUCCESS;
   WDF_PNPPOWER_EVENT_CALLBACKS PnpPowerCallbacks;
 
   UNREFERENCED_PARAMETER(Driver);
 
-  // Register for power callbacks - in this sample only power-on is needed
+  // Register for power callbacks - in this driver only power-on is needed
   WDF_PNPPOWER_EVENT_CALLBACKS_INIT(&PnpPowerCallbacks);
-  PnpPowerCallbacks.EvtDeviceD0Entry = IddSampleDeviceD0Entry;
+  PnpPowerCallbacks.EvtDeviceD0Entry = EvtWdfDeviceD0Entry;
   WdfDeviceInitSetPnpPowerEventCallbacks(pDeviceInit, &PnpPowerCallbacks);
 
   IDD_CX_CLIENT_CONFIG IddConfig;
@@ -116,18 +108,17 @@ IddSampleDeviceAdd(WDFDRIVER Driver, PWDFDEVICE_INIT pDeviceInit) {
 
   // If the driver wishes to handle custom IoDeviceControl requests, it's
   // necessary to use this callback since IddCx redirects IoDeviceControl
-  // requests to an internal queue. This sample does not need this.
-  // IddConfig.EvtIddCxDeviceIoControl = IddSampleIoDeviceControl;
+  // requests to an internal queue. This driver does not require this.
+  // IddConfig.EvtIddCxDeviceIoControl = IoDeviceControl;
 
-  IddConfig.EvtIddCxAdapterInitFinished = IddSampleAdapterInitFinished;
-  IddConfig.EvtIddCxParseMonitorDescription = IddSampleParseMonitorDescription;
+  IddConfig.EvtIddCxAdapterInitFinished = EvtIddCxAdapterInitFinished;
+  IddConfig.EvtIddCxParseMonitorDescription = EvtIddCxParseMonitorDescription;
   IddConfig.EvtIddCxMonitorGetDefaultDescriptionModes =
-      IddSampleMonitorGetDefaultModes;
-  IddConfig.EvtIddCxMonitorQueryTargetModes = IddSampleMonitorQueryModes;
-  IddConfig.EvtIddCxAdapterCommitModes = IddSampleAdapterCommitModes;
-  IddConfig.EvtIddCxMonitorAssignSwapChain = IddSampleMonitorAssignSwapChain;
-  IddConfig.EvtIddCxMonitorUnassignSwapChain =
-      IddSampleMonitorUnassignSwapChain;
+      EvtIddCxMonitorGetDefaultModes;
+  IddConfig.EvtIddCxMonitorQueryTargetModes = EvtIddCxMonitorQueryModes;
+  IddConfig.EvtIddCxAdapterCommitModes = EvtIddCxAdapterCommitModes;
+  IddConfig.EvtIddCxMonitorAssignSwapChain = EvtIddCxMonitorAssignSwapChain;
+  IddConfig.EvtIddCxMonitorUnassignSwapChain = EvtIddCxMonitorUnassignSwapChain;
 
   Status = IddCxDeviceInitConfig(pDeviceInit, &IddConfig);
   if (!NT_SUCCESS(Status)) {
@@ -180,29 +171,29 @@ IddSampleDeviceAdd(WDFDRIVER Driver, PWDFDEVICE_INIT pDeviceInit) {
 
   for (int i = 0; i < driver_properties.monitor_count; i++) {
     TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER, "Checking for display #%d", i);
-    display::test::IndirectSampleMonitor indirect_sample_monitor;
+    display::test::IndirectMonitor indirect_monitor;
     auto mode = driver_properties.requested_modes[i];
-    display::test::Edid edid(indirect_sample_monitor.pEdidBlock.data());
+    display::test::Edid edid(indirect_monitor.pEdidBlock.data());
     bool success =
         edid.GetTimingEntry(0)->SetMode(mode.width, mode.height, mode.vSync);
     if (!success) {
       TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER, "SetMode() unsuccessful");
     }
     edid.UpdateChecksum();
-    indirect_sample_monitor.pEdidBlock = edid.getEdidBlock();
+    indirect_monitor.pEdidBlock = edid.getEdidBlock();
     TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER,
                 "Width (Modified EDID,Chosen Mode) (Inside "
-                "IddSampleDeviceAdd): %ld, %hu",
+                "EvtWdfDriverDeviceAdd): %ld, %hu",
                 edid.GetTimingEntry(0)->GetWidth(), mode.width);
-    indirect_sample_monitor.pModeList.push_back(mode);
-    pContext->pContext->sample_monitors.push_back(indirect_sample_monitor);
+    indirect_monitor.pModeList.push_back(mode);
+    pContext->pContext->monitors.push_back(indirect_monitor);
   }
 
   return Status;
 }
 
 _Use_decl_annotations_ NTSTATUS
-IddSampleDeviceD0Entry(WDFDEVICE Device, WDF_POWER_DEVICE_STATE PreviousState) {
+EvtWdfDeviceD0Entry(WDFDEVICE Device, WDF_POWER_DEVICE_STATE PreviousState) {
   UNREFERENCED_PARAMETER(PreviousState);
 
   // This function is called by WDF to start the device in the fully-on power
@@ -249,9 +240,10 @@ void IndirectDeviceContext::InitAdapter() {
       IDDCX_TRANSMISSION_TYPE_WIRED_OTHER;
 
   // Declare your device strings for telemetry (required)
-  AdapterCaps.EndPointDiagnostics.pEndPointFriendlyName = L"IddSample Device";
-  AdapterCaps.EndPointDiagnostics.pEndPointManufacturerName = L"Microsoft";
-  AdapterCaps.EndPointDiagnostics.pEndPointModelName = L"IddSample Model";
+  AdapterCaps.EndPointDiagnostics.pEndPointFriendlyName = L"IDD Virtual Device";
+  AdapterCaps.EndPointDiagnostics.pEndPointManufacturerName =
+      L"IDD Virtual Manufacturer";
+  AdapterCaps.EndPointDiagnostics.pEndPointModelName = L"IDD Virtual Model";
 
   // Declare your hardware and firmware versions (required)
   IDDCX_ENDPOINT_VERSION Version = {};
@@ -300,7 +292,7 @@ void IndirectDeviceContext::FinishInit(UINT ConnectorIndex) {
   WDF_OBJECT_ATTRIBUTES Attr;
   WDF_OBJECT_ATTRIBUTES_INIT_CONTEXT_TYPE(&Attr, IndirectMonitorContextWrapper);
 
-  // In the sample driver, we report a monitor right away but a real driver
+  // In this driver, we report a monitor right away but a real driver
   // would do this when a monitor connection event occurs
   IDDCX_MONITOR_INFO MonitorInfo = {};
   MonitorInfo.Size = sizeof(MonitorInfo);
@@ -309,19 +301,19 @@ void IndirectDeviceContext::FinishInit(UINT ConnectorIndex) {
 
   MonitorInfo.MonitorDescription.Size = sizeof(MonitorInfo.MonitorDescription);
   MonitorInfo.MonitorDescription.Type = IDDCX_MONITOR_DESCRIPTION_TYPE_EDID;
-  if (ConnectorIndex >= sample_monitors.size()) {
+  if (ConnectorIndex >= monitors.size()) {
     MonitorInfo.MonitorDescription.DataSize = 0;
     MonitorInfo.MonitorDescription.pData = nullptr;
   } else {
     MonitorInfo.MonitorDescription.DataSize = Edid::kBlockSize;
     MonitorInfo.MonitorDescription.pData =
-        (sample_monitors[ConnectorIndex].pEdidBlock.data());
+        (monitors[ConnectorIndex].pEdidBlock.data());
   }
 
   TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER, "ConnectorIndex: %d",
               ConnectorIndex);
 
-  display::test::Edid edid1(sample_monitors[ConnectorIndex].pEdidBlock.data());
+  display::test::Edid edid1(monitors[ConnectorIndex].pEdidBlock.data());
   TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER,
               "Width (Modified EDID) (Inside FinishInit): %ld",
               edid1.GetTimingEntry(0)->GetWidth());
@@ -331,7 +323,7 @@ void IndirectDeviceContext::FinishInit(UINT ConnectorIndex) {
   // container ID if the monitor is not permanently attached to the display
   // adapter device object. The container ID is typically made unique for each
   // monitor and can be used to associate the monitor with other devices, like
-  // audio or input devices. In this sample we generate a random container ID
+  // audio or input devices. In this case we generate a random container ID
   // GUID, but it's best practice to choose a stable container ID for a unique
   // monitor or to use "this" device's container ID for a permanent/integrated
   // monitor.
@@ -356,9 +348,9 @@ void IndirectDeviceContext::FinishInit(UINT ConnectorIndex) {
     pMonitorContextWrapper->pContext =
         new IndirectMonitorContext(MonitorCreateOut.MonitorObject);
 
-    if (ConnectorIndex < sample_monitors.size()) {
+    if (ConnectorIndex < monitors.size()) {
       pMonitorContextWrapper->pContext->default_mode_list =
-          sample_monitors[ConnectorIndex].pModeList;
+          monitors[ConnectorIndex].pModeList;
     }
 
     // Tell the OS that the monitor has been plugged in
@@ -402,16 +394,16 @@ void IndirectMonitorContext::UnassignSwapChain() {
 #pragma region DDI Callbacks
 
 _Use_decl_annotations_ NTSTATUS
-IddSampleAdapterInitFinished(IDDCX_ADAPTER AdapterObject,
-                             const IDARG_IN_ADAPTER_INIT_FINISHED* pInArgs) {
+EvtIddCxAdapterInitFinished(IDDCX_ADAPTER AdapterObject,
+                            const IDARG_IN_ADAPTER_INIT_FINISHED* pInArgs) {
   // This is called when the OS has finished setting up the adapter for use by
   // the IddCx driver. It's now possible to report attached monitors.
 
   auto* pDeviceContextWrapper =
       WdfObjectGet_IndirectDeviceContextWrapper(AdapterObject);
   if (NT_SUCCESS(pInArgs->AdapterInitStatus)) {
-    for (DWORD i = 0;
-         i < pDeviceContextWrapper->pContext->sample_monitors.size(); i++) {
+    for (DWORD i = 0; i < pDeviceContextWrapper->pContext->monitors.size();
+         i++) {
       pDeviceContextWrapper->pContext->FinishInit(i);
     }
   }
@@ -420,12 +412,12 @@ IddSampleAdapterInitFinished(IDDCX_ADAPTER AdapterObject,
 }
 
 _Use_decl_annotations_ NTSTATUS
-IddSampleAdapterCommitModes(IDDCX_ADAPTER AdapterObject,
-                            const IDARG_IN_COMMITMODES* pInArgs) {
+EvtIddCxAdapterCommitModes(IDDCX_ADAPTER AdapterObject,
+                           const IDARG_IN_COMMITMODES* pInArgs) {
   UNREFERENCED_PARAMETER(AdapterObject);
   UNREFERENCED_PARAMETER(pInArgs);
 
-  // For the sample, do nothing when modes are picked - the swap-chain is taken
+  // Do nothing when modes are picked - the swap-chain is taken
   // care of by IddCx
 
   // ==============================
@@ -438,9 +430,9 @@ IddSampleAdapterCommitModes(IDDCX_ADAPTER AdapterObject,
   return STATUS_SUCCESS;
 }
 
-_Use_decl_annotations_ NTSTATUS IddSampleParseMonitorDescription(
-    const IDARG_IN_PARSEMONITORDESCRIPTION* pInArgs,
-    IDARG_OUT_PARSEMONITORDESCRIPTION* pOutArgs) {
+_Use_decl_annotations_ NTSTATUS
+EvtIddCxParseMonitorDescription(const IDARG_IN_PARSEMONITORDESCRIPTION* pInArgs,
+                                IDARG_OUT_PARSEMONITORDESCRIPTION* pOutArgs) {
   // ==============================
   // TODO: In a real driver, this function would be called to generate monitor
   // modes for an EDID by parsing it. In this driver, the client's requested
@@ -448,22 +440,18 @@ _Use_decl_annotations_ NTSTATUS IddSampleParseMonitorDescription(
   // EDID.
   // ==============================
   TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER,
-              "Inside IddSampleParseMonitorDescription");
+              "Inside ParseMonitorDescription");
 
   pOutArgs->MonitorModeBufferOutputCount =
-      display::test::IndirectSampleMonitor::kModeListLength;
+      display::test::IndirectMonitor::kModeListLength;
 
   if (pInArgs->MonitorModeBufferInputCount <
-      display::test::IndirectSampleMonitor::kModeListLength) {
+      display::test::IndirectMonitor::kModeListLength) {
     // Return success if there was no buffer, since the caller was only asking
     // for a count of modes
     return (pInArgs->MonitorModeBufferInputCount > 0) ? STATUS_BUFFER_TOO_SMALL
                                                       : STATUS_SUCCESS;
   } else {
-    // In the sample driver, we have reported some static information about
-    // connected monitors Check which of the reported monitors this call is for
-    // by comparing it to the pointer of our known EDID blocks.
-
     if (pInArgs->MonitorDescription.DataSize !=
         display::test::Edid::kBlockSize) {
       return STATUS_INVALID_PARAMETER;
@@ -505,11 +493,10 @@ _Use_decl_annotations_ NTSTATUS IddSampleParseMonitorDescription(
   }
 }
 
-_Use_decl_annotations_ NTSTATUS IddSampleMonitorGetDefaultModes(
+_Use_decl_annotations_ NTSTATUS EvtIddCxMonitorGetDefaultModes(
     IDDCX_MONITOR MonitorObject,
     const IDARG_IN_GETDEFAULTDESCRIPTIONMODES* pInArgs,
     IDARG_OUT_GETDEFAULTDESCRIPTIONMODES* pOutArgs) {
-
   // ==============================
   // TODO: In a real driver, this function would be called to generate monitor
   // modes for a monitor with no EDID. Drivers should report modes that are
@@ -554,9 +541,9 @@ _Use_decl_annotations_ NTSTATUS IddSampleMonitorGetDefaultModes(
 }
 
 _Use_decl_annotations_ NTSTATUS
-IddSampleMonitorQueryModes(IDDCX_MONITOR MonitorObject,
-                           const IDARG_IN_QUERYTARGETMODES* pInArgs,
-                           IDARG_OUT_QUERYTARGETMODES* pOutArgs) {
+EvtIddCxMonitorQueryModes(IDDCX_MONITOR MonitorObject,
+                          const IDARG_IN_QUERYTARGETMODES* pInArgs,
+                          IDARG_OUT_QUERYTARGETMODES* pOutArgs) {
   UNREFERENCED_PARAMETER(MonitorObject);
   std::vector<IDDCX_TARGET_MODE> TargetModes;
 
@@ -566,7 +553,7 @@ IddSampleMonitorQueryModes(IDDCX_MONITOR MonitorObject,
   // available set of modes for a given output as the intersection of monitor
   // modes with target modes.
 
-  TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER, "IddSampleMonitorQueryModes");
+  TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER, "MonitorQueryModes");
 
   TargetModes.push_back(
       display::test::Methods::CreateIddCxTargetMode(3840, 2160, 60));
@@ -599,8 +586,8 @@ IddSampleMonitorQueryModes(IDDCX_MONITOR MonitorObject,
 }
 
 _Use_decl_annotations_ NTSTATUS
-IddSampleMonitorAssignSwapChain(IDDCX_MONITOR MonitorObject,
-                                const IDARG_IN_SETSWAPCHAIN* pInArgs) {
+EvtIddCxMonitorAssignSwapChain(IDDCX_MONITOR MonitorObject,
+                               const IDARG_IN_SETSWAPCHAIN* pInArgs) {
   auto* pMonitorContextWrapper =
       WdfObjectGet_IndirectMonitorContextWrapper(MonitorObject);
   pMonitorContextWrapper->pContext->AssignSwapChain(
@@ -610,7 +597,7 @@ IddSampleMonitorAssignSwapChain(IDDCX_MONITOR MonitorObject,
 }
 
 _Use_decl_annotations_ NTSTATUS
-IddSampleMonitorUnassignSwapChain(IDDCX_MONITOR MonitorObject) {
+EvtIddCxMonitorUnassignSwapChain(IDDCX_MONITOR MonitorObject) {
   auto* pMonitorContextWrapper =
       WdfObjectGet_IndirectMonitorContextWrapper(MonitorObject);
   pMonitorContextWrapper->pContext->UnassignSwapChain();

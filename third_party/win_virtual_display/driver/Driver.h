@@ -16,9 +16,8 @@
 #include "Trace.h"
 
 namespace display::test {
-/// <summary>
-/// Provides a sample implementation of an indirect display driver.
-/// </summary>
+
+// Contains data and handles related to a single device (WDFDEVICE) object.
 class IndirectDeviceContext {
  public:
   IndirectDeviceContext(_In_ WDFDEVICE WdfDevice);
@@ -27,13 +26,14 @@ class IndirectDeviceContext {
   void InitAdapter();
   void FinishInit(UINT ConnectorIndex);
 
-  std::vector<IndirectSampleMonitor> sample_monitors;
+  std::vector<IndirectMonitor> monitors;
 
  protected:
   WDFDEVICE m_WdfDevice;
   IDDCX_ADAPTER m_Adapter;
 };
 
+// Contains data and handles related to a single monitor (IDDCX_MONITOR) object.
 class IndirectMonitorContext {
  public:
   IndirectMonitorContext(_In_ IDDCX_MONITOR Monitor);
