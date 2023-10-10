@@ -9,6 +9,11 @@
     padding-top: 8px;
   }
 
+  :host-context(body.revamp-wayfinding-enabled):host {
+    padding-inline-end: 8px;
+    padding-inline-start: 16px;
+  }
+
   :host * {
     -webkit-tap-highlight-color: transparent;
   }
@@ -74,6 +79,16 @@
   }
 
   #topMenu > os-settings-menu-item {
+    margin-bottom: 8px;
+  }
+
+  :host-context(body:not(.revamp-wayfinding-enabled))
+      #topMenu > os-settings-menu-item {
+    margin-inline-end: 2px;
+  }
+
+  :host-context(body:not(.revamp-wayfinding-enabled))
+      #advancedSubmenu > os-settings-menu-item {
     margin-bottom: 8px;
     margin-inline-end: 2px;
   }

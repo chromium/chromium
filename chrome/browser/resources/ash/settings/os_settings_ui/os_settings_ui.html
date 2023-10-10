@@ -15,6 +15,10 @@
     --cr-toolbar-padding-top: 8px;
   }
 
+  :host-context(body.revamp-wayfinding-enabled):host {
+    --settings-menu-width: 280px;
+  }
+
   os-toolbar {
     /* TODO(hsuregan): update for dark mode when needed. */
     min-height: 56px;
@@ -61,6 +65,17 @@
     overflow: auto;
     overscroll-behavior: contain;
     width: var(--settings-menu-width);
+  }
+
+  :host-context(body.revamp-wayfinding-enabled) #left os-settings-menu {
+    background-color: var(--cros-sys-surface3);
+    border-start-end-radius: 20px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host-context(body.revamp-wayfinding-enabled) #left os-settings-menu {
+      background-color: var(--cros-sys-surface2);
+    }
   }
 
   #main {
