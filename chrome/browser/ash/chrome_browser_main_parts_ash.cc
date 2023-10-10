@@ -88,7 +88,6 @@
 #include "chrome/browser/ash/dbus/virtual_file_request_service_provider.h"
 #include "chrome/browser/ash/dbus/vm/plugin_vm_service_provider.h"
 #include "chrome/browser/ash/dbus/vm/vm_applications_service_provider.h"
-#include "chrome/browser/ash/dbus/vm/vm_disk_management_service_provider.h"
 #include "chrome/browser/ash/dbus/vm/vm_launch_service_provider.h"
 #include "chrome/browser/ash/dbus/vm/vm_permission_service_provider.h"
 #include "chrome/browser/ash/dbus/vm/vm_sk_forwarding_service_provider.h"
@@ -449,13 +448,6 @@ class DBusServices {
         CrosDBusService::CreateServiceProviderList(
             std::make_unique<VmApplicationsServiceProvider>()));
 
-    vm_disk_management_service_ = CrosDBusService::Create(
-        system_bus, vm_tools::disk_management::kVmDiskManagementServiceName,
-        dbus::ObjectPath(
-            vm_tools::disk_management::kVmDiskManagementServicePath),
-        CrosDBusService::CreateServiceProviderList(
-            std::make_unique<VmDiskManagementServiceProvider>()));
-
     vm_launch_service_ = CrosDBusService::Create(
         system_bus, vm_tools::launch::kVmLaunchServiceName,
         dbus::ObjectPath(vm_tools::launch::kVmLaunchServicePath),
@@ -592,7 +584,6 @@ class DBusServices {
     component_updater_service_.reset();
     chrome_features_service_.reset();
     vm_applications_service_.reset();
-    vm_disk_management_service_.reset();
     vm_launch_service_.reset();
     vm_sk_forwarding_service_.reset();
     vm_permission_service_.reset();
@@ -625,7 +616,6 @@ class DBusServices {
   std::unique_ptr<CrosDBusService> component_updater_service_;
   std::unique_ptr<CrosDBusService> chrome_features_service_;
   std::unique_ptr<CrosDBusService> vm_applications_service_;
-  std::unique_ptr<CrosDBusService> vm_disk_management_service_;
   std::unique_ptr<CrosDBusService> vm_launch_service_;
   std::unique_ptr<CrosDBusService> vm_sk_forwarding_service_;
   std::unique_ptr<CrosDBusService> vm_permission_service_;

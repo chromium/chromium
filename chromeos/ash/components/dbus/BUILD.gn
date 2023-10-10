@@ -121,12 +121,6 @@ proto_library("vm_applications_apps_proto") {
   proto_out_dir = "chromeos/ash/components/dbus/vm_applications"
 }
 
-proto_library("vm_disk_management_proto") {
-  sources = [ "//third_party/cros_system_api/dbus/vm_disk_management/disk_management.proto" ]
-
-  proto_out_dir = "chromeos/ash/components/dbus/vm_disk_management"
-}
-
 proto_library("vm_launch_proto") {
   sources = [ "//third_party/cros_system_api/dbus/vm_launch/launch.proto" ]
 
