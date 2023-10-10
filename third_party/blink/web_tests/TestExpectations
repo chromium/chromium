@@ -1556,6 +1556,17 @@ crbug.com/1383480 external/wpt/css/selectors/invalidation/media-pseudo-classes-i
 crbug.com/1383480 external/wpt/css/selectors/invalidation/media-loading-pseudo-classes-in-has.html [ Skip Timeout ]
 crbug.com/1475378 external/wpt/css/css-color/currentcolor-004.html [ Failure ]
 
+crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-002.html [ Failure ]
+crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-003.html [ Failure ]
+crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-004.html [ Failure ]
+crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-007.html [ Failure ]
+crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-008.html [ Failure ]
+crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-009.html [ Failure ]
+crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-010.html [ Failure ]
+crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-011.html [ Failure ]
+crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-012.html [ Failure ]
+crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-015.html [ Failure ]
+
 # ====== Style team owned tests to here ======
 
 # Failing WPT html/semantics/* tests. Not all have been investigated.
@@ -3017,16 +3028,6 @@ crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame
 crbug.com/626703 [ Mac13 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-allow-self.https.html [ Timeout ]
 crbug.com/626703 [ Win ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-allow-self.https.html [ Timeout ]
 # TODO(crbug.com/1476931): Deflake and re-enable.
-crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-002.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-003.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-004.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-007.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-008.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-009.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-010.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-011.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-012.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-015.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Timeout ]
 crbug.com/626703 external/wpt/svg/text/reftests/opacity.svg [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-column-style-change-triggers-layout-block-end.html [ Failure ]
