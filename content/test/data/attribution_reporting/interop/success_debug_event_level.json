@@ -181,6 +181,20 @@
           "source_debug_key": "111",
           "trigger_debug_key": "333"
         },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-event-attribution",
+        "report_time": "1000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "172800",
+          "source_event_id": "123",
+          "source_type": "navigation",
+          "trigger_data": "7",
+          "source_debug_key": "111",
+          "trigger_debug_key": "333"
+        },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
         "report_time": "172800000"
       },
@@ -235,20 +249,6 @@
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
         "report_time": "172800002"
-      },
-      {
-        "payload": {
-          "attribution_destination": "https://destination.test",
-          "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "172800",
-          "source_event_id": "123",
-          "source_type": "navigation",
-          "trigger_data": "7",
-          "source_debug_key": "111",
-          "trigger_debug_key": "333"
-        },
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-event-attribution",
-        "report_time": "1000"
       }
     ]
   }

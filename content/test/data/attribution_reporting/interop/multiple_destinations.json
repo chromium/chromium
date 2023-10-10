@@ -88,6 +88,28 @@
     "reports": [
       {
         "payload": {
+          "attribution_destination": "https://anotherdestination.test",
+          "histograms": [ {
+             "key": "0x11",
+             "value": 111
+          } ]
+       },
+       "report_time": "3601000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "histograms": [ {
+             "key": "0x21",
+             "value": 222
+          } ]
+       },
+       "report_time": "3602000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      },
+      {
+        "payload": {
           "attribution_destination": [
             "https://anotherdestination.test",
             "https://destination.test"
@@ -115,28 +137,6 @@
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
         "report_time": "172800000"
-      },
-      {
-        "payload": {
-          "attribution_destination": "https://anotherdestination.test",
-          "histograms": [ {
-             "key": "0x11",
-             "value": 111
-          } ]
-       },
-       "report_time": "3601000",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
-      },
-      {
-        "payload": {
-          "attribution_destination": "https://destination.test",
-          "histograms": [ {
-             "key": "0x21",
-             "value": 222
-          } ]
-       },
-       "report_time": "3602000",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       }
     ]
   }

@@ -267,6 +267,30 @@
     "unparsable_registrations": [],
     "reports": [
       {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination1.test",
+             "source_event_id": "888",
+             "source_site": "https://source1.test"
+          },
+          "type": "source-success"
+       } ],
+       "report_time": "1999",
+       "report_url": "https://example.reporter1.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination1.test",
+             "source_event_id": "999",
+             "source_site": "https://source1.test"
+          },
+          "type": "source-success"
+       } ],
+       "report_time": "2000",
+       "report_url": "https://reporter2.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
         "payload": {
           "attribution_destination": "https://destination1.test",
           "randomized_trigger_rate": 0.0024263,
@@ -313,30 +337,6 @@
         },
         "report_url": "https://reporter3.test/.well-known/attribution-reporting/report-event-attribution",
         "report_time": "5184000000"
-      },
-      {
-        "payload": [ {
-          "body": {
-             "attribution_destination": "https://destination1.test",
-             "source_event_id": "888",
-             "source_site": "https://source1.test"
-          },
-          "type": "source-success"
-       } ],
-       "report_time": "1999",
-       "report_url": "https://example.reporter1.test/.well-known/attribution-reporting/debug/verbose"
-      },
-      {
-        "payload": [ {
-          "body": {
-             "attribution_destination": "https://destination1.test",
-             "source_event_id": "999",
-             "source_site": "https://source1.test"
-          },
-          "type": "source-success"
-       } ],
-       "report_time": "2000",
-       "report_url": "https://reporter2.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
   }

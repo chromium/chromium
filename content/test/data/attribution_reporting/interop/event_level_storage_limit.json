@@ -161,28 +161,17 @@
     "unparsable_registrations": [],
     "reports": [
       {
-        "payload": {
-          "attribution_destination": "https://destination.test",
-          "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "172800",
-          "source_event_id": "111",
-          "source_type": "navigation",
-          "trigger_data": "1"
-        },
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "172800000"
-      },
-      {
-        "payload": {
-          "attribution_destination": "https://another-destination.test",
-          "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "172802",
-          "source_event_id": "333",
-          "source_type": "navigation",
-          "trigger_data": "3"
-       },
-       "report_time": "172802000",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination.test",
+             "limit": "1",
+             "source_event_id": "222",
+             "source_site": "https://source.test"
+          },
+          "type": "trigger-event-storage-limit"
+       } ],
+       "report_time": "4000",
+       "report_url": "https://another-reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
         "payload": {
@@ -218,17 +207,28 @@
        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       },
       {
-        "payload": [ {
-          "body": {
-             "attribution_destination": "https://destination.test",
-             "limit": "1",
-             "source_event_id": "222",
-             "source_site": "https://source.test"
-          },
-          "type": "trigger-event-storage-limit"
-       } ],
-       "report_time": "4000",
-       "report_url": "https://another-reporter.test/.well-known/attribution-reporting/debug/verbose"
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "172800",
+          "source_event_id": "111",
+          "source_type": "navigation",
+          "trigger_data": "1"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "172800000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://another-destination.test",
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "172802",
+          "source_event_id": "333",
+          "source_type": "navigation",
+          "trigger_data": "3"
+       },
+       "report_time": "172802000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
       }
     ]
   }

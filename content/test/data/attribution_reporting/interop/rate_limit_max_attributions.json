@@ -396,6 +396,67 @@
     "unparsable_registrations": [],
     "reports": [
       {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination.test",
+             "limit": "3",
+             "source_event_id": "222",
+             "source_site": "https://source.test"
+          },
+          "type": "trigger-attributions-per-source-destination-limit"
+       } ],
+       "report_time": "3003",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination.test",
+             "limit": "3",
+             "source_event_id": "222",
+             "source_site": "https://source.test"
+          },
+          "type": "trigger-attributions-per-source-destination-limit"
+        } ],
+        "report_time": "3004",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination.test",
+             "limit": "3",
+             "source_event_id": "666",
+             "source_site": "https://source.test"
+          },
+          "type": "trigger-attributions-per-source-destination-limit"
+       } ],
+       "report_time": "11000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "histograms": [ {
+             "key": "0x11",
+             "value": 123
+          } ]
+       },
+       "report_time": "3601000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "histograms": [ {
+             "key": "0x22",
+             "value": 321
+          } ]
+       },
+       "report_time": "3603002",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      },
+      {
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0001372,
@@ -466,67 +527,6 @@
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
         "report_time": "2592010000"
-      },
-      {
-        "payload": {
-          "attribution_destination": "https://destination.test",
-          "histograms": [ {
-             "key": "0x11",
-             "value": 123
-          } ]
-       },
-       "report_time": "3601000",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
-      },
-      {
-        "payload": {
-          "attribution_destination": "https://destination.test",
-          "histograms": [ {
-             "key": "0x22",
-             "value": 321
-          } ]
-       },
-       "report_time": "3603002",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
-      },
-      {
-        "payload": [ {
-          "body": {
-             "attribution_destination": "https://destination.test",
-             "limit": "3",
-             "source_event_id": "222",
-             "source_site": "https://source.test"
-          },
-          "type": "trigger-attributions-per-source-destination-limit"
-       } ],
-       "report_time": "3003",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
-      },
-      {
-        "payload": [ {
-          "body": {
-             "attribution_destination": "https://destination.test",
-             "limit": "3",
-             "source_event_id": "222",
-             "source_site": "https://source.test"
-          },
-          "type": "trigger-attributions-per-source-destination-limit"
-        } ],
-        "report_time": "3004",
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
-      },
-      {
-        "payload": [ {
-          "body": {
-             "attribution_destination": "https://destination.test",
-             "limit": "3",
-             "source_event_id": "666",
-             "source_site": "https://source.test"
-          },
-          "type": "trigger-attributions-per-source-destination-limit"
-       } ],
-       "report_time": "11000",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
   }

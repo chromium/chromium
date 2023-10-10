@@ -513,6 +513,19 @@
     "unparsable_registrations": [],
     "reports": [
       {
+        "payload": [ {
+          "body": {
+	     "attribution_destination": "https://destination.test",
+             "limit": "20",
+             "source_event_id": "123",
+             "source_site": "https://source.test"
+          },
+          "type": "trigger-aggregate-excessive-reports"
+       } ],
+       "report_time": "1020",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
         "payload": {
           "attribution_destination": "https://destination.test",
           "histograms": [
@@ -771,19 +784,6 @@
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
         "report_time": "3601019"
-      },
-      {
-        "payload": [ {
-          "body": {
-	     "attribution_destination": "https://destination.test",
-             "limit": "20",
-             "source_event_id": "123",
-             "source_site": "https://source.test"
-          },
-          "type": "trigger-aggregate-excessive-reports"
-       } ],
-       "report_time": "1020",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
   }

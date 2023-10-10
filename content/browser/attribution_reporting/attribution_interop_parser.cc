@@ -334,7 +334,8 @@ class AttributionInteropParser {
     const base::Time time =
         ParseTime(dict, /*key=*/"timestamp",
                   /*previous_time=*/events.empty() ? base::Time::Min()
-                                                   : events.back().time);
+                                                   : events.back().time,
+                  /*strictly_greater=*/true);
 
     absl::optional<SuitableOrigin> context_origin;
     absl::optional<SuitableOrigin> reporting_origin;
@@ -415,7 +416,11 @@ class AttributionInteropParser {
                    std::vector<AttributionInteropOutput::Report>& reports) {
     AttributionInteropOutput::Report report;
 
-    report.time = ParseTime(dict, kReportTimeKey);
+    report.time =
+        ParseTime(dict, kReportTimeKey,
+                  /*previous_time=*/reports.empty() ? base::Time::Min()
+                                                    : reports.back().time,
+                  /*strictly_greater=*/false);
     dict.Remove(kReportTimeKey);
 
     if (absl::optional<base::Value> url = dict.Extract(kReportUrlKey);
@@ -447,7 +452,11 @@ class AttributionInteropParser {
           unparsable_registrations) {
     AttributionInteropOutput::UnparsableRegistration reg;
 
-    reg.time = ParseTime(dict, kTimeKey);
+    reg.time = ParseTime(dict, kTimeKey,
+                         /*previous_time=*/unparsable_registrations.empty()
+                             ? base::Time::Min()
+                             : unparsable_registrations.back().time,
+                         /*strictly_greater=*/false);
     dict.Remove(kTimeKey);
 
     {
@@ -503,7 +512,8 @@ class AttributionInteropParser {
 
   base::Time ParseTime(const base::Value::Dict& dict,
                        base::StringPiece key,
-                       base::Time previous_time = base::Time::Min()) {
+                       base::Time previous_time,
+                       bool strictly_greater) {
     auto context = PushContext(key);
 
     const std::string* v = dict.FindString(key);
@@ -512,8 +522,10 @@ class AttributionInteropParser {
     if (v && base::StringToInt64(*v, &milliseconds)) {
       base::Time time = offset_time_ + base::Milliseconds(milliseconds);
       if (!time.is_null() && !time.is_inf()) {
-        if (time <= previous_time) {
+        if (strictly_greater && time <= previous_time) {
           *Error() << "must be greater than previous time";
+        } else if (!strictly_greater && time < previous_time) {
+          *Error() << "must be greater than or equal to previous time";
         }
         return time;
       }

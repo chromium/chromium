@@ -323,6 +323,30 @@
     "unparsable_registrations": [],
     "reports": [
       {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination.test",
+             "source_event_id": "123",
+             "source_site": "https://source.test"
+          },
+          "type": "trigger-no-matching-filter-data"
+       } ],
+       "report_time": "1000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination.test",
+             "source_event_id": "123",
+             "source_site": "https://source.test"
+          },
+          "type": "trigger-no-matching-filter-data"
+       } ],
+       "report_time": "4000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
         "payload": {
           "attribution_destination": "https://destination.test",
           "histograms": [ {
@@ -368,30 +392,6 @@
         },
         "report_time": "2592000001",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
-      },
-      {
-        "payload": [ {
-          "body": {
-             "attribution_destination": "https://destination.test",
-             "source_event_id": "123",
-             "source_site": "https://source.test"
-          },
-          "type": "trigger-no-matching-filter-data"
-       } ],
-       "report_time": "1000",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
-      },
-      {
-        "payload": [ {
-          "body": {
-             "attribution_destination": "https://destination.test",
-             "source_event_id": "123",
-             "source_site": "https://source.test"
-          },
-          "type": "trigger-no-matching-filter-data"
-       } ],
-       "report_time": "4000",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
   }

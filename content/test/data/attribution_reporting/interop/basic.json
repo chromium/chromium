@@ -46,18 +46,6 @@
     "unparsable_registrations": [],
     "reports": [
       {
-        "payload": {
-          "attribution_destination": "https://destination.test",
-          "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "172800",
-          "source_event_id": "123",
-          "source_type": "navigation",
-          "trigger_data": "7"
-        },
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "172800000"
-      },
-      {
         "payload": [ {
           "body": {
              "attribution_destination": "https://destination.test",
@@ -68,6 +56,18 @@
        } ],
        "report_time": "0",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "172800",
+          "source_event_id": "123",
+          "source_type": "navigation",
+          "trigger_data": "7"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "172800000"
       }
     ]
   }

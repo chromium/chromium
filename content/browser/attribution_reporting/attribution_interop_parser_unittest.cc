@@ -815,6 +815,38 @@ TEST(AttributionInteropParserTest, ParseOutput) {
                   R"(["unparsable_registrations"][0]["bar"]: unknown field)"))),
       },
       {
+          "unsorted_reports",
+          R"json({
+            "reports": [
+              {
+                "report_time": "2",
+                "report_url": "https://a.test/x",
+                "payload": "abc"
+              },
+              {
+                "report_time": "1",
+                "report_url": "https://a.test/y",
+                "payload": "def"
+              }
+             ],
+            "unparsable_registrations": []
+          })json",
+          ErrorIs(HasSubstr(
+              R"(["reports"][1]["report_time"]: must be greater than or equal)")),
+      },
+      {
+          "unsorted_unparsable_registrations",
+          R"json({
+            "unparsable_registrations": [
+              {"time": "4", "type": "source"},
+              {"time": "3", "type": "trigger"}
+             ],
+             "reports": []
+          })json",
+          ErrorIs(HasSubstr(
+              R"(["unparsable_registrations"][1]["time"]: must be greater than or equal)")),
+      },
+      {
           "ok",
           R"json({
             "reports": [{

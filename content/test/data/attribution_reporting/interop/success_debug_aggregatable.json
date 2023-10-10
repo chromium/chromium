@@ -208,6 +208,21 @@
           "source_debug_key": "111",
           "trigger_debug_key": "333"
         },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-attribution",
+        "report_time": "1000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "histograms": [
+            {
+              "key": "0x11",
+              "value": 111
+            }
+          ],
+          "source_debug_key": "111",
+          "trigger_debug_key": "333"
+        },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
         "report_time": "3601000"
       },
@@ -266,21 +281,6 @@
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
         "report_time": "3605000"
-      },
-      {
-        "payload": {
-          "attribution_destination": "https://destination.test",
-          "histograms": [
-            {
-              "key": "0x11",
-              "value": 111
-            }
-          ],
-          "source_debug_key": "111",
-          "trigger_debug_key": "333"
-        },
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-attribution",
-        "report_time": "1000"
       }
     ]
   }
