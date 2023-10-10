@@ -1017,7 +1017,9 @@ TEST_F(NotificationViewBaseTest, TestClick) {
   // Now construct a mouse click event 2 pixel inside from the bottom.
   gfx::Point cursor_location(notification_view()->size().width() / 2,
                              notification_view()->size().height() - 2);
-  generator.MoveMouseTo(cursor_location);
+  gfx::Point cursor_in_screen =
+      views::View::ConvertPointToScreen(notification_view(), cursor_location);
+  generator.MoveMouseTo(cursor_in_screen);
   generator.ClickLeftButton();
 
   EXPECT_TRUE(delegate_->clicked());
@@ -1041,7 +1043,9 @@ TEST_F(NotificationViewBaseTest, TestClickExpanded) {
   // Now construct a mouse click event 2 pixel inside from the bottom.
   gfx::Point cursor_location(notification_view()->size().width() / 2,
                              notification_view()->size().height() - 2);
-  generator.MoveMouseTo(cursor_location);
+  gfx::Point cursor_in_screen =
+      views::View::ConvertPointToScreen(notification_view(), cursor_location);
+  generator.MoveMouseTo(cursor_in_screen);
   generator.ClickLeftButton();
 
   EXPECT_TRUE(delegate_->clicked());
