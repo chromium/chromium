@@ -7,6 +7,7 @@ on:
     paths:
       - book/**
       - .github/workflows/site.yml
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -14,16 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v3
-
-      - name: Get mdBook
-        run: |
-          export MDBOOK_VERSION="dtolnay"
-          export MDBOOK_TARBALL="mdbook-${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
-          export MDBOOK_URL="https://github.com/dtolnay/mdBook/releases/download/cxx/${MDBOOK_TARBALL}"
-          curl -Lf "${MDBOOK_URL}" | tar -xzC book
-          book/mdbook --version
+      - uses: dtolnay/install@mdbook
+      - run: mdbook --version
 
       - name: Build
         run: book/build.sh

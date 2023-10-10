@@ -130,6 +130,7 @@ cargo_crate("lib") {
   features = [
     "clone-impls",
     "derive",
+    "full",
     "parsing",
     "printing",
     "proc-macro",

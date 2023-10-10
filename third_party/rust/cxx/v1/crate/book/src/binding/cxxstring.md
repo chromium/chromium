@@ -134,7 +134,7 @@ std::unique_ptr<json> load_config() {
       std::in_place_type<json::object>,
       std::initializer_list<std::pair<const std::string, json>>{
           {"name", "cxx-example"},
-          {"edition", 2018.},
+          {"edition", 2021.},
           {"repository", json::null}});
 }
 ```

@@ -38,7 +38,7 @@ struct Args {
     #[arg(
         long,
         default_value_t = foreign_crate::LogLevel::Info,
-        value_parser = clap::builder::PossibleValuesParser::new(["info", "debug", "info", "warn", "error"])
+        value_parser = clap::builder::PossibleValuesParser::new(["trace", "debug", "info", "warn", "error"])
             .map(|s| s.parse::<foreign_crate::LogLevel>().unwrap()),
     )]
     log_level: foreign_crate::LogLevel,
@@ -54,7 +54,7 @@ where
 {
     let pos = s
         .find('=')
-        .ok_or_else(|| format!("invalid KEY=value: no `=` found in `{}`", s))?;
+        .ok_or_else(|| format!("invalid KEY=value: no `=` found in `{s}`"))?;
     Ok((s[..pos].parse()?, s[pos + 1..].parse()?))
 }
 
@@ -98,5 +98,5 @@ mod foreign_crate {
 
 fn main() {
     let args = Args::parse();
-    println!("{:?}", args);
+    println!("{args:?}");
 }

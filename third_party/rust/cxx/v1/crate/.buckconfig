@@ -1,23 +1,28 @@
+[repositories]
+root = .
+prelude = tools/buck/prelude
+toolchains = tools/buck/toolchains
+none = none
+
+[repository_aliases]
+config = prelude
+buck = none
+fbcode = none
+fbsource = none
+
 [project]
-  # We use some symlinks in the source tree, but they get eliminated by `cargo
-  # publish` and `cargo vendor` so this allow_symlinks setting should not be
-  # required downstream.
-  allow_symlinks = allow
+# Hide BUCK files under target/package/ from `buck build ...`. Otherwise:
+#   $ buck build ...
+#   //target/package/cxx-0.3.0/tests:ffi references non-existing file or directory 'target/package/cxx-0.3.0/tests/ffi/lib.rs'
+#
+# Also hide some Bazel-managed directories that contain symlinks to the repo root.
+ignore = \
+    .git, \
+    bazel-bin, \
+    bazel-cxx, \
+    bazel-out, \
+    bazel-testlogs, \
+    target
 
-  # Hide BUCK files under target/package/ from `buck build ...`. Otherwise:
-  #   $ buck build ...
-  #   //target/package/cxx-0.3.0/tests:ffi references non-existing file or directory 'target/package/cxx-0.3.0/tests/ffi/lib.rs'
-  ignore = target
-
-[cxx]
-  cxxflags = -std=c++11
-
-[rust]
-  default_edition = required
-  rustc_flags = \
-      -Clink-arg=-fuse-ld=lld \
-      -Crelocation-model=dynamic-no-pic \
-      --cap-lints=allow
-
-[defaults.rust_library]
-  type = check
+[parser]
+target_platform_detector_spec = target:root//...->prelude//platforms:default

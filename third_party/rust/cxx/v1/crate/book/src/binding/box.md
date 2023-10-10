@@ -3,12 +3,12 @@
 
 ### Public API:
 
-```cpp,hidelines
+```cpp,hidelines=...
 // rust/cxx.h
-#
-# #include <type_traits>
-#
-# namespace rust {
+...
+...#include <type_traits>
+...
+...namespace rust {
 
 template <typename T>
 class Box final {
@@ -42,8 +42,8 @@ public:
 
   T *into_raw() noexcept;
 };
-#
-# } // namespace rust
+...
+...} // namespace rust
 ```
 
 ### Restrictions:

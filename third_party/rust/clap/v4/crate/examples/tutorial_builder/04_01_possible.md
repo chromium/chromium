@@ -8,8 +8,8 @@ Arguments:
   <MODE>  What mode to run the program in [possible values: fast, slow]
 
 Options:
-  -h, --help     Print help information
-  -V, --version  Print version information
+  -h, --help     Print help
+  -V, --version  Print version
 
 $ 04_01_possible fast
 Hare
@@ -19,9 +19,9 @@ Tortoise
 
 $ 04_01_possible medium
 ? failed
-error: 'medium' isn't a valid value for '<MODE>'
+error: invalid value 'medium' for '<MODE>'
   [possible values: fast, slow]
 
-For more information try '--help'
+For more information, try '--help'.
 
 ```

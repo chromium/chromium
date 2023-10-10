@@ -12,8 +12,8 @@ Options:
       --sleep <SLEEP>          Allow human-readable durations
   -D <DEFINES>                 Hand-written parser for tuples
       --port <PORT>            Support for discrete numbers [default: 22] [possible values: 22, 80]
-      --log-level <LOG_LEVEL>  Support enums from a foreign crate that don't implement `ValueEnum` [default: info] [possible values: info, debug, info, warn, error]
-  -h, --help                   Print help information
+      --log-level <LOG_LEVEL>  Support enums from a foreign crate that don't implement `ValueEnum` [default: info] [possible values: trace, debug, info, warn, error]
+  -h, --help                   Print help
 
 ```
 
@@ -24,9 +24,9 @@ Args { optimization: Some(1), include: None, bind: None, sleep: None, defines: [
 
 $ typed-derive -O plaid
 ? failed
-error: Invalid value 'plaid' for '-O <OPTIMIZATION>': invalid digit found in string
+error: invalid value 'plaid' for '-O <OPTIMIZATION>': invalid digit found in string
 
-For more information try '--help'
+For more information, try '--help'.
 
 ```
 
@@ -44,9 +44,9 @@ Args { optimization: None, include: None, bind: Some(192.0.0.1), sleep: None, de
 
 $ typed-derive --bind localhost
 ? failed
-error: Invalid value 'localhost' for '--bind <BIND>': invalid IP address syntax
+error: invalid value 'localhost' for '--bind <BIND>': invalid IP address syntax
 
-For more information try '--help'
+For more information, try '--help'.
 
 ```
 
@@ -57,9 +57,9 @@ Args { optimization: None, include: None, bind: None, sleep: Some(Duration(10s))
 
 $ typed-derive --sleep forever
 ? failed
-error: Invalid value 'forever' for '--sleep <SLEEP>': expected number at 0
+error: invalid value 'forever' for '--sleep <SLEEP>': expected number at 0
 
-For more information try '--help'
+For more information, try '--help'.
 
 ```
 
@@ -70,15 +70,15 @@ Args { optimization: None, include: None, bind: None, sleep: None, defines: [("F
 
 $ typed-derive -D Foo
 ? failed
-error: Invalid value 'Foo' for '-D <DEFINES>': invalid KEY=value: no `=` found in `Foo`
+error: invalid value 'Foo' for '-D <DEFINES>': invalid KEY=value: no `=` found in `Foo`
 
-For more information try '--help'
+For more information, try '--help'.
 
 $ typed-derive -D Foo=Bar
 ? failed
-error: Invalid value 'Foo=Bar' for '-D <DEFINES>': invalid digit found in string
+error: invalid value 'Foo=Bar' for '-D <DEFINES>': invalid digit found in string
 
-For more information try '--help'
+For more information, try '--help'.
 
 ```
 
@@ -92,17 +92,17 @@ Args { optimization: None, include: None, bind: None, sleep: None, defines: [], 
 
 $ typed-derive --port
 ? failed
-error: The argument '--port <PORT>' requires a value but none was supplied
+error: a value is required for '--port <PORT>' but none was supplied
   [possible values: 22, 80]
 
-For more information try '--help'
+For more information, try '--help'.
 
 $ typed-derive --port 3000
 ? failed
-error: '3000' isn't a valid value for '--port <PORT>'
+error: invalid value '3000' for '--port <PORT>'
   [possible values: 22, 80]
 
-For more information try '--help'
+For more information, try '--help'.
 
 ```
 
@@ -116,16 +116,16 @@ Args { optimization: None, include: None, bind: None, sleep: None, defines: [], 
 
 $ typed-derive --log-level
 ? failed
-error: The argument '--log-level <LOG_LEVEL>' requires a value but none was supplied
-  [possible values: info, debug, info, warn, error]
+error: a value is required for '--log-level <LOG_LEVEL>' but none was supplied
+  [possible values: trace, debug, info, warn, error]
 
-For more information try '--help'
+For more information, try '--help'.
 
 $ typed-derive --log-level critical
 ? failed
-error: 'critical' isn't a valid value for '--log-level <LOG_LEVEL>'
-  [possible values: info, debug, info, warn, error]
+error: invalid value 'critical' for '--log-level <LOG_LEVEL>'
+  [possible values: trace, debug, info, warn, error]
 
-For more information try '--help'
+For more information, try '--help'.
 
 ```

@@ -40,7 +40,7 @@ impl StdError for Error {
             Error::Fs(err) => err.source(),
             Error::Utf8(_, err) => Some(err),
             Error::Syn(err) => err.source(),
-            _ => None,
+            Error::NoBridgeMod => None,
         }
     }
 }

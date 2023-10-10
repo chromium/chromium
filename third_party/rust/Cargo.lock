@@ -10,6 +10,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "anstyle"
+version = "1.0.4"
+
+[[package]]
 name = "anyhow"
 version = "1.0.70"
 
@@ -68,19 +72,23 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.0.26"
+version = "4.4.6"
 dependencies = [
- "bitflags",
+ "clap_builder",
+]
+
+[[package]]
+name = "clap_builder"
+version = "4.4.6"
+dependencies = [
+ "anstyle",
  "clap_lex",
  "strsim",
 ]
 
 [[package]]
 name = "clap_lex"
-version = "0.3.0"
-dependencies = [
- "os_str_bytes",
-]
+version = "0.5.1"
 
 [[package]]
 name = "codespan-reporting"
@@ -92,7 +100,7 @@ dependencies = [
 
 [[package]]
 name = "cxx"
-version = "1.0.82"
+version = "1.0.107"
 dependencies = [
  "cxxbridge-macro",
  "link-cplusplus",
@@ -100,22 +108,22 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-cmd"
-version = "1.0.82"
+version = "1.0.107"
 dependencies = [
  "clap",
  "codespan-reporting",
  "proc-macro2",
  "quote",
- "syn 1.0.99",
+ "syn 2.0.29",
 ]
 
 [[package]]
 name = "cxxbridge-macro"
-version = "1.0.82"
+version = "1.0.107"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 1.0.99",
+ "syn 2.0.29",
 ]
 
 [[package]]
@@ -153,7 +161,7 @@ version = "0.2.144"
 
 [[package]]
 name = "link-cplusplus"
-version = "1.0.5"
+version = "1.0.9"
 
 [[package]]
 name = "log"
@@ -172,10 +180,6 @@ version = "0.6.5"
 dependencies = [
  "autocfg",
 ]
-
-[[package]]
-name = "os_str_bytes"
-version = "6.0.0"
 
 [[package]]
 name = "ppv-lite86"

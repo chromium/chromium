@@ -66,10 +66,10 @@ fn main() {
                 .exit();
             }
         };
-        format!("{}.{}.{}", major, minor, patch)
+        format!("{major}.{minor}.{patch}")
     };
 
-    println!("Version: {}", version);
+    println!("Version: {version}");
 
     // Check for usage of -c
     if let Some(config) = cli.config.as_deref() {
@@ -86,6 +86,6 @@ fn main() {
                 )
                 .exit()
             });
-        println!("Doing work using input {} and config {}", input, config);
+        println!("Doing work using input {input} and config {config}");
     }
 }

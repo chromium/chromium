@@ -7,6 +7,12 @@ You will need to achieve at least these three things:
 - Compile the generated C++ code.
 - Link the resulting objects together with your other C++ and Rust objects.
 
+*Not all build systems are created equal. If you're hoping to use a build system
+from the '90s, especially if you're hoping to overlaying the limitations of 2 or
+more build systems (like automake+cargo) and expect to solve them
+simultaneously, then be mindful that your expectations are set accordingly and
+seek sympathy from those who have imposed the same approach on themselves.*
+
 ### Producing the generated code
 
 CXX's Rust code generation automatically happens when the `#[cxx::bridge]`

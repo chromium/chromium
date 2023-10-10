@@ -55,10 +55,10 @@ The exception that gets thrown by CXX on the C++ side is always of type
 `rust::Error` and has the following C++ public API. The `what()` member function
 gives the error message according to the Rust error's std::fmt::Display impl.
 
-```cpp,hidelines
+```cpp,hidelines=...
 // rust/cxx.h
-#
-# namespace rust {
+...
+...namespace rust {
 
 class Error final : public std::exception {
 public:
@@ -71,8 +71,8 @@ public:
 
   const char *what() const noexcept override;
 };
-#
-# } // namespace rust
+...
+...} // namespace rust
 ```
 
 ## Returning Result from C++ to Rust
@@ -114,7 +114,7 @@ headers `include!`'d by your cxx::bridge.
 
 The template signature is required to be:
 
-```cpp,hidelines
+```cpp
 namespace rust {
 namespace behavior {
 
@@ -130,19 +130,19 @@ following. You must follow the same pattern: invoke `func` with no arguments,
 catch whatever exception(s) you want, and invoke `fail` with the error message
 you'd like for the Rust error to have.
 
-```cpp,hidelines
-# #include <exception>
-#
-# namespace rust {
-# namespace behavior {
-#
+```cpp,hidelines=...
+...#include <exception>
+...
+...namespace rust {
+...namespace behavior {
+...
 template <typename Try, typename Fail>
 static void trycatch(Try &&func, Fail &&fail) noexcept try {
   func();
 } catch (const std::exception &e) {
   fail(e.what());
 }
-#
-# } // namespace behavior
-# } // namespace rust
+...
+...} // namespace behavior
+...} // namespace rust
 ```

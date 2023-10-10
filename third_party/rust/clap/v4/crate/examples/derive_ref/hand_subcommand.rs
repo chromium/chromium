@@ -69,11 +69,11 @@ impl Subcommand for CliSub {
 struct Cli {
     #[arg(short, long)]
     top_level: bool,
-    #[clap(subcommand)]
+    #[command(subcommand)]
     subcommand: CliSub,
 }
 
 fn main() {
     let args = Cli::parse();
-    println!("{:#?}", args);
+    println!("{args:#?}");
 }

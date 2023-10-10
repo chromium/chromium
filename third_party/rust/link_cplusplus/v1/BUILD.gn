@@ -25,7 +25,7 @@ cargo_crate("lib") {
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.0.5"
+  cargo_pkg_version = "1.0.9"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "link-cplusplus"
   cargo_pkg_description = "Link libstdc++ or libc++ automatically or manually"

@@ -6,8 +6,8 @@ Usage: 03_02_option_mult_derive[EXE] [OPTIONS]
 
 Options:
   -n, --name <NAME>  
-  -h, --help         Print help information
-  -V, --version      Print version information
+  -h, --help         Print help
+  -V, --version      Print version
 
 $ 03_02_option_mult_derive
 name: []

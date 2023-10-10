@@ -1,5 +1,3 @@
-#![allow(clippy::let_underscore_drop)]
-
 use cxx::{CxxString, UniquePtr};
 
 #[test]

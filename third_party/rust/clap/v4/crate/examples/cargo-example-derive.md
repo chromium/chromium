@@ -13,7 +13,7 @@ Commands:
   help            Print this message or the help of the given subcommand(s)
 
 Options:
-  -h, --help  Print help information
+  -h, --help  Print help
 
 $ cargo-example-derive example-derive --help
 A simple to use, efficient, and full-featured Command Line Argument Parser
@@ -22,8 +22,8 @@ Usage: cargo example-derive [OPTIONS]
 
 Options:
       --manifest-path <MANIFEST_PATH>  
-  -h, --help                           Print help information
-  -V, --version                        Print version information
+  -h, --help                           Print help
+  -V, --version                        Print version
 
 ```
 

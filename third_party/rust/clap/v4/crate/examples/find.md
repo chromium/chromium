@@ -7,8 +7,8 @@ A simple to use, efficient, and full-featured Command Line Argument Parser
 Usage: find[EXE] [OPTIONS]
 
 Options:
-  -h, --help     Print help information
-  -V, --version  Print version information
+  -h, --help     Print help
+  -V, --version  Print version
 
 TESTS:
       --empty        File is empty and is either a regular file or a directory

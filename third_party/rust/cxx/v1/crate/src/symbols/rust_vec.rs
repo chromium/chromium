@@ -14,53 +14,37 @@ macro_rules! rust_vec_shims {
         const_assert_eq!(mem::align_of::<Vec<$ty>>(), mem::align_of::<RustVec<$ty>>());
 
         const _: () = {
-            attr! {
-                #[export_name = concat!("cxxbridge1$rust_vec$", $segment, "$new")]
-                unsafe extern "C" fn __new(this: *mut RustVec<$ty>) {
-                    unsafe { ptr::write(this, RustVec::new()) }
-                }
+            #[export_name = concat!("cxxbridge1$rust_vec$", $segment, "$new")]
+            unsafe extern "C" fn __new(this: *mut RustVec<$ty>) {
+                unsafe { ptr::write(this, RustVec::new()) }
             }
-            attr! {
-                #[export_name = concat!("cxxbridge1$rust_vec$", $segment, "$drop")]
-                unsafe extern "C" fn __drop(this: *mut RustVec<$ty>) {
-                    unsafe { ptr::drop_in_place(this) }
-                }
+            #[export_name = concat!("cxxbridge1$rust_vec$", $segment, "$drop")]
+            unsafe extern "C" fn __drop(this: *mut RustVec<$ty>) {
+                unsafe { ptr::drop_in_place(this) }
             }
-            attr! {
-                #[export_name = concat!("cxxbridge1$rust_vec$", $segment, "$len")]
-                unsafe extern "C" fn __len(this: *const RustVec<$ty>) -> usize {
-                    unsafe { &*this }.len()
-                }
+            #[export_name = concat!("cxxbridge1$rust_vec$", $segment, "$len")]
+            unsafe extern "C" fn __len(this: *const RustVec<$ty>) -> usize {
+                unsafe { &*this }.len()
             }
-            attr! {
-                #[export_name = concat!("cxxbridge1$rust_vec$", $segment, "$capacity")]
-                unsafe extern "C" fn __capacity(this: *const RustVec<$ty>) -> usize {
-                    unsafe { &*this }.capacity()
-                }
+            #[export_name = concat!("cxxbridge1$rust_vec$", $segment, "$capacity")]
+            unsafe extern "C" fn __capacity(this: *const RustVec<$ty>) -> usize {
+                unsafe { &*this }.capacity()
             }
-            attr! {
-                #[export_name = concat!("cxxbridge1$rust_vec$", $segment, "$data")]
-                unsafe extern "C" fn __data(this: *const RustVec<$ty>) -> *const $ty {
-                    unsafe { &*this }.as_ptr()
-                }
+            #[export_name = concat!("cxxbridge1$rust_vec$", $segment, "$data")]
+            unsafe extern "C" fn __data(this: *const RustVec<$ty>) -> *const $ty {
+                unsafe { &*this }.as_ptr()
             }
-            attr! {
-                #[export_name = concat!("cxxbridge1$rust_vec$", $segment, "$reserve_total")]
-                unsafe extern "C" fn __reserve_total(this: *mut RustVec<$ty>, new_cap: usize) {
-                    unsafe { &mut *this }.reserve_total(new_cap);
-                }
+            #[export_name = concat!("cxxbridge1$rust_vec$", $segment, "$reserve_total")]
+            unsafe extern "C" fn __reserve_total(this: *mut RustVec<$ty>, new_cap: usize) {
+                unsafe { &mut *this }.reserve_total(new_cap);
             }
-            attr! {
-                #[export_name = concat!("cxxbridge1$rust_vec$", $segment, "$set_len")]
-                unsafe extern "C" fn __set_len(this: *mut RustVec<$ty>, len: usize) {
-                    unsafe { (*this).set_len(len) }
-                }
+            #[export_name = concat!("cxxbridge1$rust_vec$", $segment, "$set_len")]
+            unsafe extern "C" fn __set_len(this: *mut RustVec<$ty>, len: usize) {
+                unsafe { (*this).set_len(len) }
             }
-            attr! {
-                #[export_name = concat!("cxxbridge1$rust_vec$", $segment, "$truncate")]
-                unsafe extern "C" fn __truncate(this: *mut RustVec<$ty>, len: usize) {
-                    unsafe { (*this).truncate(len) }
-                }
+            #[export_name = concat!("cxxbridge1$rust_vec$", $segment, "$truncate")]
+            unsafe extern "C" fn __truncate(this: *mut RustVec<$ty>, len: usize) {
+                unsafe { (*this).truncate(len) }
             }
         };
     };

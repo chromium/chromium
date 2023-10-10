@@ -25,6 +25,4 @@
 //!
 //! **Warning:** These may contain breaking changes between minor releases.
 //!
-//! * **unstable-replace**: Enable [`Command::replace`](https://github.com/clap-rs/clap/issues/2836)
-//! * **unstable-grouped**: Enable [`ArgMatches::grouped_values_of`](https://github.com/clap-rs/clap/issues/2924)
 //! * **unstable-v5**: Preview features which will be stable on the v5.0 release

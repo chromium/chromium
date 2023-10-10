@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.60.0"
+rust-version = "1.70.0"
 name = "clap"
-version = "4.0.26"
+version = "4.4.6"
 include = [
     "build.rs",
     "src/**/*",
@@ -37,14 +37,15 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/clap-rs/clap"
 
 [package.metadata.docs.rs]
+cargo-args = [
+    "-Zunstable-options",
+    "-Zrustdoc-scrape-examples",
+]
 features = ["unstable-doc"]
 rustdoc-args = [
     "--cfg",
     "docsrs",
-]
-cargo-args = [
-    "-Zunstable-options",
-    "-Zrustdoc-scrape-examples=examples",
+    "--generate-link-to-definition",
 ]
 
 [package.metadata.playground]
@@ -56,38 +57,48 @@ tag-name = "v{{version}}"
 
 [[package.metadata.release.pre-release-replacements]]
 file = "CHANGELOG.md"
-search = "Unreleased"
+min = 1
 replace = "{{version}}"
-min = 1
+search = "Unreleased"
 
 [[package.metadata.release.pre-release-replacements]]
-file = "CHANGELOG.md"
-search = '\.\.\.HEAD'
-replace = "...{{tag_name}}"
 exactly = 1
+file = "CHANGELOG.md"
+replace = "...{{tag_name}}"
+search = '\.\.\.HEAD'
 
 [[package.metadata.release.pre-release-replacements]]
 file = "CHANGELOG.md"
-search = "ReleaseDate"
-replace = "{{date}}"
 min = 1
+replace = "{{date}}"
+search = "ReleaseDate"
 
 [[package.metadata.release.pre-release-replacements]]
+exactly = 1
 file = "CHANGELOG.md"
-search = "<!-- next-header -->"
 replace = """
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
 """
-exactly = 1
+search = "<!-- next-header -->"
 
 [[package.metadata.release.pre-release-replacements]]
+exactly = 1
 file = "CHANGELOG.md"
-search = "<!-- next-url -->"
 replace = """
 <!-- next-url -->
 [Unreleased]: https://github.com/clap-rs/clap/compare/{{tag_name}}...HEAD"""
-exactly = 1
+search = "<!-- next-url -->"
+
+[[package.metadata.release.pre-release-replacements]]
+file = "CITATION.cff"
+replace = "date-released: {{date}}"
+search = "^date-released: ....-..-.."
+
+[[package.metadata.release.pre-release-replacements]]
+file = "CITATION.cff"
+replace = "version: {{version}}"
+search = '^version: .+\..+\..+'
 
 [profile.bench]
 lto = true
@@ -355,68 +366,34 @@ name = "interop_flatten_hand_args"
 path = "examples/derive_ref/flatten_hand_args.rs"
 required-features = ["derive"]
 
-[dependencies.atty]
-version = "0.2"
-optional = true
-
-[dependencies.backtrace]
-version = "0.3"
-optional = true
-
-[dependencies.bitflags]
-version = "1.2"
+[dependencies.clap_builder]
+version = "=4.4.6"
+default-features = false
 
 [dependencies.clap_derive]
-version = "=4.0.21"
-optional = true
-
-[dependencies.clap_lex]
-version = "0.3.0"
-
-[dependencies.once_cell]
-version = "1.12.0"
-optional = true
-
-[dependencies.strsim]
-version = "0.10"
-optional = true
-
-[dependencies.termcolor]
-version = "1.1.1"
-optional = true
-
-[dependencies.terminal_size]
-version = "0.2.1"
-optional = true
-
-[dependencies.unicase]
-version = "2.6"
-optional = true
-
-[dependencies.unicode-width]
-version = "0.1.9"
+version = "=4.4.2"
 optional = true
 
 [dev-dependencies.humantime]
-version = "2"
+version = "2.1.0"
 
 [dev-dependencies.rustversion]
-version = "1"
+version = "1.0.14"
 
 [dev-dependencies.shlex]
 version = "1.1.0"
 
 [dev-dependencies.snapbox]
-version = "0.4"
+version = "0.4.13"
 
 [dev-dependencies.static_assertions]
 version = "1.1.0"
 
 [dev-dependencies.trybuild]
-version = "1.0.71"
+version = "1.0.83"
 
 [dev-dependencies.trycmd]
-version = "0.14.3"
+version = "0.14.18"
 features = [
     "color-auto",
     "diff",
@@ -428,14 +405,11 @@ default-features = false
 version = "0.9.0"
 
 [features]
-cargo = ["dep:once_cell"]
-color = [
-    "dep:atty",
-    "dep:termcolor",
-]
+cargo = ["clap_builder/cargo"]
+color = ["clap_builder/color"]
 debug = [
+    "clap_builder/debug",
     "clap_derive?/debug",
-    "dep:backtrace",
 ]
 default = [
     "std",
@@ -445,42 +419,27 @@ default = [
     "error-context",
     "suggestions",
 ]
-deprecated = ["clap_derive?/deprecated"]
-derive = [
-    "dep:clap_derive",
-    "dep:once_cell",
+deprecated = [
+    "clap_builder/deprecated",
+    "clap_derive?/deprecated",
 ]
-env = []
-error-context = []
-help = []
-std = []
-string = []
-suggestions = [
-    "dep:strsim",
-    "error-context",
-]
-unicode = [
-    "dep:unicode-width",
-    "dep:unicase",
-]
+derive = ["dep:clap_derive"]
+env = ["clap_builder/env"]
+error-context = ["clap_builder/error-context"]
+help = ["clap_builder/help"]
+std = ["clap_builder/std"]
+string = ["clap_builder/string"]
+suggestions = ["clap_builder/suggestions"]
+unicode = ["clap_builder/unicode"]
 unstable-doc = [
+    "clap_builder/unstable-doc",
     "derive",
-    "cargo",
-    "wrap_help",
-    "env",
-    "unicode",
-    "string",
-    "unstable-replace",
-    "unstable-grouped",
 ]
-unstable-grouped = []
-unstable-replace = []
+unstable-styles = ["clap_builder/unstable-styles"]
 unstable-v5 = [
+    "clap_builder/unstable-v5",
     "clap_derive?/unstable-v5",
     "deprecated",
 ]
-usage = []
-wrap_help = [
-    "help",
-    "dep:terminal_size",
-]
+usage = ["clap_builder/usage"]
+wrap_help = ["clap_builder/wrap_help"]

@@ -56,7 +56,6 @@ mod tests {
     use crate::syntax::namespace::Namespace;
     use crate::syntax::{Api, Doc, ExternType, ForeignName, Lang, Lifetimes, Pair};
     use proc_macro2::{Ident, Span};
-    use std::iter::FromIterator;
     use syn::punctuated::Punctuated;
     use syn::Token;
 

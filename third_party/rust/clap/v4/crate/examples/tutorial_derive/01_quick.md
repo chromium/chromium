@@ -14,8 +14,8 @@ Arguments:
 Options:
   -c, --config <FILE>  Sets a custom config file
   -d, --debug...       Turn debugging information on
-  -h, --help           Print help information
-  -V, --version        Print version information
+  -h, --help           Print help
+  -V, --version        Print version
 
 ```
 

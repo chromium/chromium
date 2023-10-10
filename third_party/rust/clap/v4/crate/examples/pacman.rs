@@ -78,7 +78,7 @@ fn main() {
                     .map(|s| s.as_str())
                     .collect();
                 let values = packages.join(", ");
-                println!("Searching for {}...", values);
+                println!("Searching for {values}...");
                 return;
             }
 
@@ -90,18 +90,18 @@ fn main() {
             let values = packages.join(", ");
 
             if sync_matches.get_flag("info") {
-                println!("Retrieving info for {}...", values);
+                println!("Retrieving info for {values}...");
             } else {
-                println!("Installing {}...", values);
+                println!("Installing {values}...");
             }
         }
         Some(("query", query_matches)) => {
             if let Some(packages) = query_matches.get_many::<String>("info") {
                 let comma_sep = packages.map(|s| s.as_str()).collect::<Vec<_>>().join(", ");
-                println!("Retrieving info for {}...", comma_sep);
+                println!("Retrieving info for {comma_sep}...");
             } else if let Some(queries) = query_matches.get_many::<String>("search") {
                 let comma_sep = queries.map(|s| s.as_str()).collect::<Vec<_>>().join(", ");
-                println!("Searching Locally for {}...", comma_sep);
+                println!("Searching Locally for {comma_sep}...");
             } else {
                 println!("Displaying all locally installed packages...");
             }

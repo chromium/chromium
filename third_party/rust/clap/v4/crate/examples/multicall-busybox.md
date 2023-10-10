@@ -34,6 +34,6 @@ APPLETS:
 
 Options:
       --install <install>  Install hardlinks for all subcommands in path
-  -h, --help               Print help information
+  -h, --help               Print help
 
 ```

@@ -14,7 +14,7 @@ mod ffi {
 }
 ```
 
-```cpp,hidelines
+```cpp
 rust::Future<Ret> doThing(Arg arg) {
   auto v1 = co_await f();
   auto v2 = co_await g(arg);

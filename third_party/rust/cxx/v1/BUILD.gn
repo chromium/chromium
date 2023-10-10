@@ -25,7 +25,6 @@ cargo_crate("lib") {
     "//third_party/rust/cxx/v1/crate/src/lib.rs",
     "//third_party/rust/cxx/v1/crate/src/lossy.rs",
     "//third_party/rust/cxx/v1/crate/src/macros/assert.rs",
-    "//third_party/rust/cxx/v1/crate/src/macros/concat.rs",
     "//third_party/rust/cxx/v1/crate/src/macros/mod.rs",
     "//third_party/rust/cxx/v1/crate/src/memory.rs",
     "//third_party/rust/cxx/v1/crate/src/opaque.rs",
@@ -51,6 +50,7 @@ cargo_crate("lib") {
     "//third_party/rust/cxx/v1/crate/tests/compiletest.rs",
     "//third_party/rust/cxx/v1/crate/tests/cxx_gen.rs",
     "//third_party/rust/cxx/v1/crate/tests/cxx_string.rs",
+    "//third_party/rust/cxx/v1/crate/tests/cxx_vector.rs",
     "//third_party/rust/cxx/v1/crate/tests/test.rs",
     "//third_party/rust/cxx/v1/crate/tests/ui/array_len_expr.rs",
     "//third_party/rust/cxx/v1/crate/tests/ui/array_len_suffix.rs",
@@ -159,8 +159,8 @@ cargo_crate("lib") {
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  edition = "2018"
-  cargo_pkg_version = "1.0.82"
+  edition = "2021"
+  cargo_pkg_version = "1.0.107"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "cxx"
   cargo_pkg_description = "Safe interop between Rust and C++"

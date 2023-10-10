@@ -241,7 +241,7 @@ impl Eq for CxxString {}
 
 impl PartialOrd for CxxString {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.as_bytes().partial_cmp(other.as_bytes())
+        Some(self.cmp(other))
     }
 }
 
@@ -254,6 +254,25 @@ impl Ord for CxxString {
 impl Hash for CxxString {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.as_bytes().hash(state);
+    }
+}
+
+impl fmt::Write for Pin<&mut CxxString> {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        self.as_mut().push_str(s);
+        Ok(())
+    }
+}
+
+#[cfg(feature = "std")]
+impl std::io::Write for Pin<&mut CxxString> {
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        self.as_mut().push_bytes(buf);
+        Ok(buf.len())
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        Ok(())
     }
 }
 

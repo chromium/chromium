@@ -7,6 +7,18 @@ pub struct QualifiedName {
 }
 
 impl QualifiedName {
+    pub fn parse_quoted(lit: &LitStr) -> Result<Self> {
+        if lit.value().is_empty() {
+            let segments = Vec::new();
+            Ok(QualifiedName { segments })
+        } else {
+            lit.parse_with(|input: ParseStream| {
+                let allow_raw = false;
+                parse_unquoted(input, allow_raw)
+            })
+        }
+    }
+
     pub fn parse_unquoted(input: ParseStream) -> Result<Self> {
         let allow_raw = true;
         parse_unquoted(input, allow_raw)
@@ -15,15 +27,7 @@ impl QualifiedName {
     pub fn parse_quoted_or_unquoted(input: ParseStream) -> Result<Self> {
         if input.peek(LitStr) {
             let lit: LitStr = input.parse()?;
-            if lit.value().is_empty() {
-                let segments = Vec::new();
-                Ok(QualifiedName { segments })
-            } else {
-                lit.parse_with(|input: ParseStream| {
-                    let allow_raw = false;
-                    parse_unquoted(input, allow_raw)
-                })
-            }
+            Self::parse_quoted(&lit)
         } else {
             Self::parse_unquoted(input)
         }

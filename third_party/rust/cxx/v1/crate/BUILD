@@ -8,7 +8,7 @@ rust_library(
         "alloc",
         "std",
     ],
-    edition = "2018",
+    edition = "2021",
     proc_macro_deps = [
         ":cxxbridge-macro",
     ],
@@ -16,12 +16,17 @@ rust_library(
     deps = [":core-lib"],
 )
 
-rust_binary(
+alias(
     name = "codegen",
+    actual = ":cxxbridge",
+    visibility = ["//visibility:public"],
+)
+
+rust_binary(
+    name = "cxxbridge",
     srcs = glob(["gen/cmd/src/**/*.rs"]),
     data = ["gen/cmd/src/gen/include/cxx.h"],
-    edition = "2018",
-    visibility = ["//visibility:public"],
+    edition = "2021",
     deps = [
         "//third-party:clap",
         "//third-party:codespan-reporting",
@@ -48,7 +53,7 @@ cc_library(
 rust_proc_macro(
     name = "cxxbridge-macro",
     srcs = glob(["macro/src/**/*.rs"]),
-    edition = "2018",
+    edition = "2021",
     deps = [
         "//third-party:proc-macro2",
         "//third-party:quote",
@@ -57,11 +62,10 @@ rust_proc_macro(
 )
 
 rust_library(
-    name = "build",
+    name = "cxx-build",
     srcs = glob(["gen/build/src/**/*.rs"]),
     data = ["gen/build/src/gen/include/cxx.h"],
-    edition = "2018",
-    visibility = ["//visibility:public"],
+    edition = "2021",
     deps = [
         "//third-party:cc",
         "//third-party:codespan-reporting",
@@ -74,10 +78,10 @@ rust_library(
 )
 
 rust_library(
-    name = "lib",
+    name = "cxx-gen",
     srcs = glob(["gen/lib/src/**/*.rs"]),
     data = ["gen/lib/src/gen/include/cxx.h"],
-    edition = "2018",
+    edition = "2021",
     visibility = ["//visibility:public"],
     deps = [
         "//third-party:cc",

@@ -5,9 +5,13 @@ error[E0277]: `*const cxx::void` cannot be sent between threads safely
    |                   ^^^^^^^^^^^ `*const cxx::void` cannot be sent between threads safely
    |
    = help: within `ffi::Opaque`, the trait `Send` is not implemented for `*const cxx::void`
-   = note: required because it appears within the type `[*const cxx::void; 0]`
-   = note: required because it appears within the type `cxx::private::Opaque`
-note: required because it appears within the type `ffi::Opaque`
+   = note: required because it appears within the type `[*const void; 0]`
+note: required because it appears within the type `Opaque`
+  --> src/opaque.rs
+   |
+   | pub struct Opaque {
+   |            ^^^^^^
+note: required because it appears within the type `Opaque`
   --> tests/ui/opaque_autotraits.rs:4:14
    |
 4  |         type Opaque;
@@ -25,9 +29,13 @@ error[E0277]: `*const cxx::void` cannot be shared between threads safely
    |                   ^^^^^^^^^^^ `*const cxx::void` cannot be shared between threads safely
    |
    = help: within `ffi::Opaque`, the trait `Sync` is not implemented for `*const cxx::void`
-   = note: required because it appears within the type `[*const cxx::void; 0]`
-   = note: required because it appears within the type `cxx::private::Opaque`
-note: required because it appears within the type `ffi::Opaque`
+   = note: required because it appears within the type `[*const void; 0]`
+note: required because it appears within the type `Opaque`
+  --> src/opaque.rs
+   |
+   | pub struct Opaque {
+   |            ^^^^^^
+note: required because it appears within the type `Opaque`
   --> tests/ui/opaque_autotraits.rs:4:14
    |
 4  |         type Opaque;
@@ -44,10 +52,19 @@ error[E0277]: `PhantomPinned` cannot be unpinned
 15 |     assert_unpin::<ffi::Opaque>();
    |                    ^^^^^^^^^^^ within `ffi::Opaque`, the trait `Unpin` is not implemented for `PhantomPinned`
    |
-   = note: consider using `Box::pin`
-   = note: required because it appears within the type `PhantomData<PhantomPinned>`
-   = note: required because it appears within the type `cxx::private::Opaque`
-note: required because it appears within the type `ffi::Opaque`
+   = note: consider using the `pin!` macro
+           consider using `Box::pin` if you need to access the pinned value outside of the current scope
+note: required because it appears within the type `PhantomData<PhantomPinned>`
+  --> $RUST/core/src/marker.rs
+   |
+   | pub struct PhantomData<T: ?Sized>;
+   |            ^^^^^^^^^^^
+note: required because it appears within the type `Opaque`
+  --> src/opaque.rs
+   |
+   | pub struct Opaque {
+   |            ^^^^^^
+note: required because it appears within the type `Opaque`
   --> tests/ui/opaque_autotraits.rs:4:14
    |
 4  |         type Opaque;

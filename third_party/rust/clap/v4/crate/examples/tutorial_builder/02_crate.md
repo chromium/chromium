@@ -7,8 +7,8 @@ Usage: 02_crate[EXE] --two <VALUE> --one <VALUE>
 Options:
       --two <VALUE>  
       --one <VALUE>  
-  -h, --help         Print help information
-  -V, --version      Print version information
+  -h, --help         Print help
+  -V, --version      Print version
 
 $ 02_crate --version
 clap [..]

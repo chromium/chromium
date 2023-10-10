@@ -10,10 +10,10 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2018"
-rust-version = "1.48"
+edition = "2021"
+rust-version = "1.60"
 name = "cxxbridge-macro"
-version = "1.0.82"
+version = "1.0.107"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 exclude = [
     "build.rs",
@@ -28,17 +28,18 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/cxx"
 
 [package.metadata.docs.rs]
+rustdoc-args = ["--generate-link-to-definition"]
 targets = ["x86_64-unknown-linux-gnu"]
 
 [lib]
 proc-macro = true
 
 [dependencies.clang-ast]
-version = "0.1"
+version = "0.1.18"
 optional = true
 
 [dependencies.flate2]
-version = "1.0"
+version = "1.0.26"
 optional = true
 
 [dependencies.memmap]
@@ -46,22 +47,25 @@ version = "0.7"
 optional = true
 
 [dependencies.proc-macro2]
-version = "1.0.39"
+version = "1.0.63"
 
 [dependencies.quote]
-version = "1.0.4"
+version = "1.0.29"
 
 [dependencies.serde]
-version = "1.0"
-features = ["derive"]
+version = "1.0.166"
+optional = true
+
+[dependencies.serde_derive]
+version = "1.0.166"
 optional = true
 
 [dependencies.serde_json]
-version = "1.0"
+version = "1.0.100"
 optional = true
 
 [dependencies.syn]
-version = "1.0.95"
+version = "2.0.23"
 features = ["full"]
 
 [dev-dependencies.cxx]
@@ -74,5 +78,6 @@ experimental-enum-variants-from-header = [
     "flate2",
     "memmap",
     "serde",
+    "serde_derive",
     "serde_json",
 ]

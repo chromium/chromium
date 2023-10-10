@@ -19,7 +19,7 @@ Commands:
   help   Print this message or the help of the given subcommand(s)
 
 Options:
-  -h, --help  Print help information
+  -h, --help  Print help
 
 $ git-derive help
 A fictional versioning CLI
@@ -35,7 +35,7 @@ Commands:
   help   Print this message or the help of the given subcommand(s)
 
 Options:
-  -h, --help  Print help information
+  -h, --help  Print help
 
 $ git-derive help add
 adds things
@@ -46,7 +46,7 @@ Arguments:
   <PATH>...  Stuff to add
 
 Options:
-  -h, --help  Print help information
+  -h, --help  Print help
 
 ```
 
@@ -62,7 +62,7 @@ Arguments:
   <PATH>...  Stuff to add
 
 Options:
-  -h, --help  Print help information
+  -h, --help  Print help
 
 $ git-derive add Cargo.toml Cargo.lock
 Adding ["Cargo.toml", "Cargo.lock"]
@@ -83,14 +83,14 @@ Commands:
 
 Options:
   -m, --message <MESSAGE>  
-  -h, --help               Print help information
+  -h, --help               Print help
 
 $ git-derive stash push -h
 Usage: git-derive[EXE] stash push [OPTIONS]
 
 Options:
   -m, --message <MESSAGE>  
-  -h, --help               Print help information
+  -h, --help               Print help
 
 $ git-derive stash pop -h
 Usage: git-derive[EXE] stash pop [STASH]
@@ -99,16 +99,16 @@ Arguments:
   [STASH]  
 
 Options:
-  -h, --help  Print help information
+  -h, --help  Print help
 
 $ git-derive stash -m "Prototype"
-Pushing StashPush { message: Some("Prototype") }
+Pushing StashPushArgs { message: Some("Prototype") }
 
 $ git-derive stash pop
 Popping None
 
 $ git-derive stash push -m "Prototype"
-Pushing StashPush { message: Some("Prototype") }
+Pushing StashPushArgs { message: Some("Prototype") }
 
 $ git-derive stash pop
 Popping None
@@ -136,7 +136,7 @@ Arguments:
 
 Options:
       --color[=<WHEN>]  [default: auto] [possible values: always, auto, never]
-  -h, --help            Print help information
+  -h, --help            Print help
 
 $ git-derive diff
 Diffing stage..worktree  (color=auto)

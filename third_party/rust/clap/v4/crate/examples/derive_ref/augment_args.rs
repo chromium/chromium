@@ -23,5 +23,5 @@ fn main() {
     let derived_matches = DerivedArgs::from_arg_matches(&matches)
         .map_err(|err| err.exit())
         .unwrap();
-    println!("Value of derived: {:#?}", derived_matches);
+    println!("Value of derived: {derived_matches:#?}");
 }

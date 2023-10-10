@@ -37,7 +37,7 @@ pub fn debug(mut bytes: &[u8], f: &mut fmt::Formatter) -> fmt::Result {
         let mut written = 0;
         for (i, ch) in valid.char_indices() {
             let esc = ch.escape_debug();
-            if esc.len() != 1 {
+            if esc.len() != 1 && ch != '\'' {
                 f.write_str(&valid[written..i])?;
                 for ch in esc {
                     f.write_char(ch)?;

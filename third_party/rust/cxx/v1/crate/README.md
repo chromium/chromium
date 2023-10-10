@@ -4,7 +4,7 @@ CXX &mdash; safe FFI between Rust and C++
 [<img alt="github" src="https://img.shields.io/badge/github-dtolnay/cxx-8da0cb?style=for-the-badge&labelColor=555555&logo=github" height="20">](https://github.com/dtolnay/cxx)
 [<img alt="crates.io" src="https://img.shields.io/crates/v/cxx.svg?style=for-the-badge&color=fc8d62&logo=rust" height="20">](https://crates.io/crates/cxx)
 [<img alt="docs.rs" src="https://img.shields.io/badge/docs.rs-cxx-66c2a5?style=for-the-badge&labelColor=555555&logo=docs.rs" height="20">](https://docs.rs/cxx)
-[<img alt="build status" src="https://img.shields.io/github/workflow/status/dtolnay/cxx/CI/master?style=for-the-badge" height="20">](https://github.com/dtolnay/cxx/actions?query=branch%3Amaster)
+[<img alt="build status" src="https://img.shields.io/github/actions/workflow/status/dtolnay/cxx/ci.yml?branch=master&style=for-the-badge" height="20">](https://github.com/dtolnay/cxx/actions?query=branch%3Amaster)
 
 This library provides a **safe** mechanism for calling C++ code from Rust and
 Rust code from C++, not subject to the many ways that things can go wrong when
@@ -24,7 +24,7 @@ cxx = "1.0"
 cxx-build = "1.0"
 ```
 
-*Compiler support: requires rustc 1.48+ and c++11 or newer*<br>
+*Compiler support: requires rustc 1.60+ and c++11 or newer*<br>
 *[Release notes](https://github.com/dtolnay/cxx/releases)*
 
 <br>

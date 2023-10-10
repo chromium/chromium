@@ -10,8 +10,8 @@ Options:
       --one <ONE>
           
   -h, --help
-          Print help information
+          Print help
   -V, --version
-          Print version information
+          Print version
 
 ```

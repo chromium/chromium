@@ -42,3 +42,8 @@ nav.sidebar li.part-title i.fa-github {
 .sidebar .sidebar-scrollbox {
     padding: 10px 0 10px 10px;
 }
+
+pre > .buttons {
+    visibility: visible;
+    opacity: 0.3;
+}

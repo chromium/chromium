@@ -4,7 +4,6 @@ error[E0726]: implicit elided lifetime not allowed here
 6 |         type T;
   |              ^ expected lifetime parameter
   |
-  = note: assuming a `'static` lifetime...
 help: indicate the anonymous lifetime
   |
 6 |         type T<'_>;

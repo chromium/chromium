@@ -1,7 +1,7 @@
 use proc_macro2::Ident;
 use std::mem;
 use syn::parse::{Error, ParseStream, Result};
-use syn::{parenthesized, token, LitStr, Token};
+use syn::{parenthesized, token, Attribute, LitStr, Token};
 
 #[derive(Clone)]
 pub enum CfgExpr {
@@ -25,12 +25,12 @@ impl CfgExpr {
     }
 }
 
-pub fn parse_attribute(input: ParseStream) -> Result<CfgExpr> {
-    let content;
-    parenthesized!(content in input);
-    let cfg_expr = content.call(parse_single)?;
-    content.parse::<Option<Token![,]>>()?;
-    Ok(cfg_expr)
+pub fn parse_attribute(attr: &Attribute) -> Result<CfgExpr> {
+    attr.parse_args_with(|input: ParseStream| {
+        let cfg_expr = input.call(parse_single)?;
+        input.parse::<Option<Token![,]>>()?;
+        Ok(cfg_expr)
+    })
 }
 
 fn parse_single(input: ParseStream) -> Result<CfgExpr> {

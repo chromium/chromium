@@ -1,4 +1,5 @@
 #include "third_party/rust/cxx/v1/crate/include/cxx.h"
+#include <cstdio>
 #include <cstring>
 #include <iostream>
 #include <memory>
@@ -98,8 +99,8 @@ inline namespace cxxbridge1 {
 template <typename Exception>
 void panic [[noreturn]] (const char *msg) {
 #if defined(RUST_CXX_NO_EXCEPTIONS)
-  std::cerr << "Error: " << msg << ". Aborting." << std::endl;
-  std::terminate();
+  std::fprintf(stderr, "Error: %s. Aborting.\n", msg);
+  std::abort();
 #else
   throw Exception(msg);
 #endif
@@ -319,7 +320,7 @@ CXX_CPP_EXPORT String::String(unsafe_bitcopy_t, const String &bits) noexcept
     : repr(bits.repr) {}
 
 CXX_CPP_EXPORT std::ostream &operator<<(std::ostream &os, const String &s) {
-  os.write(s.data(), s.size());
+  os.write(s.data(), static_cast<std::streamsize>(s.size()));
   return os;
 }
 
@@ -329,8 +330,7 @@ CXX_CPP_EXPORT Str::Str(const String &s) noexcept {
   cxxbridge1$str$ref(this, &s);
 }
 
-CXX_CPP_EXPORT static void initStr(Str *self, const char *ptr,
-                                   std::size_t len) {
+static void initStr(Str *self, const char *ptr, std::size_t len) {
   if (!cxxbridge1$str$from(self, ptr, len)) {
     panic<std::invalid_argument>("data for rust::Str is not utf-8");
   }
@@ -429,7 +429,7 @@ CXX_CPP_EXPORT void Str::swap(Str &rhs) noexcept {
 }
 
 CXX_CPP_EXPORT std::ostream &operator<<(std::ostream &os, const Str &s) {
-  os.write(s.data(), s.size());
+  os.write(s.data(), static_cast<std::streamsize>(s.size()));
   return os;
 }
 
@@ -519,20 +519,20 @@ CXX_RS_EXPORT const char *cxxbridge1$error(const char *ptr,
 }
 } // extern "C"
 
-Error::Error(const Error &other)
+CXX_CPP_EXPORT Error::Error(const Error &other)
     : std::exception(other),
       msg(other.msg ? errorCopy(other.msg, other.len) : nullptr),
       len(other.len) {}
 
-Error::Error(Error &&other) noexcept
+CXX_CPP_EXPORT Error::Error(Error &&other) noexcept
     : std::exception(std::move(other)), msg(other.msg), len(other.len) {
   other.msg = nullptr;
   other.len = 0;
 }
 
-Error::~Error() noexcept { delete[] this->msg; }
+CXX_CPP_EXPORT Error::~Error() noexcept { delete[] this->msg; }
 
-Error &Error::operator=(const Error &other) & {
+CXX_CPP_EXPORT Error &Error::operator=(const Error &other) & {
   if (this != &other) {
     std::exception::operator=(other);
     delete[] this->msg;
@@ -545,8 +545,9 @@ Error &Error::operator=(const Error &other) & {
   return *this;
 }
 
-Error &Error::operator=(Error &&other) &noexcept {
+CXX_CPP_EXPORT Error &Error::operator=(Error &&other) & noexcept {
   std::exception::operator=(std::move(other));
+  delete[] this->msg;
   this->msg = other.msg;
   this->len = other.len;
   other.msg = nullptr;
@@ -554,7 +555,7 @@ Error &Error::operator=(Error &&other) &noexcept {
   return *this;
 }
 
-const char *Error::what() const noexcept { return this->msg; }
+CXX_CPP_EXPORT const char *Error::what() const noexcept { return this->msg; }
 
 namespace {
 template <typename T>
@@ -573,7 +574,8 @@ struct PtrLen final {
 } // namespace repr
 
 extern "C" {
-repr::PtrLen cxxbridge1$exception(const char *, std::size_t len) noexcept;
+CXX_RS_EXPORT repr::PtrLen cxxbridge1$exception(const char *,
+                                                std::size_t len) noexcept;
 }
 
 namespace detail {
@@ -651,6 +653,10 @@ static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
 } // namespace
 
 #define STD_VECTOR_OPS(RUST_TYPE, CXX_TYPE)                                    \
+  CXX_RS_EXPORT std::vector<CXX_TYPE>                                          \
+      *cxxbridge1$std$vector$##RUST_TYPE##$new() noexcept {                    \
+    return new std::vector<CXX_TYPE>();                                        \
+  }                                                                            \
   CXX_RS_EXPORT std::size_t cxxbridge1$std$vector$##RUST_TYPE##$size(          \
       const std::vector<CXX_TYPE> &s) noexcept {                               \
     return s.size();                                                           \

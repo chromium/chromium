@@ -1,4 +1,4 @@
-error[E0271]: type mismatch resolving `<StringPiece as ExternType>::Id == (f, o, l, l, y, (), B, y, t, e, R, a, n, g, e)`
+error[E0271]: type mismatch resolving `<StringPiece as ExternType>::Id == (f, o, l, l, y, (), B, y, t, e, ..., ..., ..., ..., ...)`
   --> tests/ui/wrong_type_id.rs:11:14
    |
 11 |         type ByteRange = crate::here::StringPiece;

@@ -1,5 +1,5 @@
-{{#title Bazel, Buck — Rust ♡ C++}}
-## Bazel, Buck, potentially other similar environments
+{{#title Bazel, Buck2 — Rust ♡ C++}}
+## Bazel, Buck2, potentially other similar environments
 
 Starlark-based build systems with the ability to compile a code generator and
 invoke it as a `genrule` will run CXX's C++ code generator via its `cxxbridge`
@@ -15,10 +15,13 @@ $  cxxbridge src/bridge.rs --header > path/to/bridge.rs.h
 $  cxxbridge src/bridge.rs > path/to/bridge.rs.cc
 ```
 
-The CXX repo maintains working Bazel `BUILD` and Buck `BUCK` targets for the
-complete blobstore tutorial (chapter 3) for your reference, tested in CI. These
-aren't meant to be directly what you use in your codebase, but serve as an
+The CXX repo maintains working [Bazel] `BUILD` and [Buck2] `BUCK` targets for
+the complete blobstore tutorial (chapter 3) for your reference, tested in CI.
+These aren't meant to be directly what you use in your codebase, but serve as an
 illustration of one possible working pattern.
+
+[Bazel]: https://bazel.build
+[Buck2]: https://buck2.build
 
 ```python
 # tools/bazel/rust_cxx_bridge.bzl

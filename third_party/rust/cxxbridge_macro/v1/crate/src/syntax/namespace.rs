@@ -1,10 +1,9 @@
 use crate::syntax::qualified::QualifiedName;
 use quote::IdentFragment;
 use std::fmt::{self, Display};
-use std::iter::FromIterator;
 use std::slice::Iter;
-use syn::parse::{Parse, ParseStream, Result};
-use syn::{Ident, Token};
+use syn::parse::{Error, Parse, ParseStream, Result};
+use syn::{Expr, Ident, Lit, Meta, Token};
 
 mod kw {
     syn::custom_keyword!(namespace);
@@ -24,7 +23,7 @@ impl Namespace {
         self.segments.iter()
     }
 
-    pub fn parse_bridge_attr_namespace(input: ParseStream) -> Result<Namespace> {
+    pub fn parse_bridge_attr_namespace(input: ParseStream) -> Result<Self> {
         if input.is_empty() {
             return Ok(Namespace::ROOT);
         }
@@ -34,6 +33,37 @@ impl Namespace {
         let namespace = input.parse::<Namespace>()?;
         input.parse::<Option<Token![,]>>()?;
         Ok(namespace)
+    }
+
+    pub fn parse_meta(meta: &Meta) -> Result<Self> {
+        if let Meta::NameValue(meta) = meta {
+            match &meta.value {
+                Expr::Lit(expr) => {
+                    if let Lit::Str(lit) = &expr.lit {
+                        let segments = QualifiedName::parse_quoted(lit)?.segments;
+                        return Ok(Namespace { segments });
+                    }
+                }
+                Expr::Path(expr)
+                    if expr.qself.is_none()
+                        && expr
+                            .path
+                            .segments
+                            .iter()
+                            .all(|segment| segment.arguments.is_none()) =>
+                {
+                    let segments = expr
+                        .path
+                        .segments
+                        .iter()
+                        .map(|segment| segment.ident.clone())
+                        .collect();
+                    return Ok(Namespace { segments });
+                }
+                _ => {}
+            }
+        }
+        Err(Error::new_spanned(meta, "unsupported namespace attribute"))
     }
 }
 

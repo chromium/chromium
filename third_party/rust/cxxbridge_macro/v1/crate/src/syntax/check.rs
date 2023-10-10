@@ -88,7 +88,7 @@ fn check_type_ident(cx: &mut Check, name: &NamedType) {
         && !cx.types.rust.contains(ident)
     {
         let msg = format!("unsupported type: {}", ident);
-        cx.error(ident, &msg);
+        cx.error(ident, msg);
     }
 }
 
@@ -123,9 +123,11 @@ fn check_type_rust_vec(cx: &mut Check, ty: &Ty1) {
             }
 
             match Atom::from(&ident.rust) {
-                None | Some(Bool) | Some(Char) | Some(U8) | Some(U16) | Some(U32) | Some(U64)
-                | Some(Usize) | Some(I8) | Some(I16) | Some(I32) | Some(I64) | Some(Isize)
-                | Some(F32) | Some(F64) | Some(RustString) => return,
+                None
+                | Some(
+                    Bool | Char | U8 | U16 | U32 | U64 | Usize | I8 | I16 | I32 | I64 | Isize | F32
+                    | F64 | RustString,
+                ) => return,
                 Some(CxxString) => {}
             }
         }
@@ -162,10 +164,12 @@ fn check_type_shared_ptr(cx: &mut Check, ptr: &Ty1) {
         }
 
         match Atom::from(&ident.rust) {
-            None | Some(Bool) | Some(U8) | Some(U16) | Some(U32) | Some(U64) | Some(Usize)
-            | Some(I8) | Some(I16) | Some(I32) | Some(I64) | Some(Isize) | Some(F32)
-            | Some(F64) | Some(CxxString) => return,
-            Some(Char) | Some(RustString) => {}
+            None
+            | Some(
+                Bool | U8 | U16 | U32 | U64 | Usize | I8 | I16 | I32 | I64 | Isize | F32 | F64
+                | CxxString,
+            ) => return,
+            Some(Char | RustString) => {}
         }
     } else if let Type::CxxVector(_) = &ptr.inner {
         cx.error(ptr, "std::shared_ptr<std::vector> is not supported yet");
@@ -183,10 +187,12 @@ fn check_type_weak_ptr(cx: &mut Check, ptr: &Ty1) {
         }
 
         match Atom::from(&ident.rust) {
-            None | Some(Bool) | Some(U8) | Some(U16) | Some(U32) | Some(U64) | Some(Usize)
-            | Some(I8) | Some(I16) | Some(I32) | Some(I64) | Some(Isize) | Some(F32)
-            | Some(F64) | Some(CxxString) => return,
-            Some(Char) | Some(RustString) => {}
+            None
+            | Some(
+                Bool | U8 | U16 | U32 | U64 | Usize | I8 | I16 | I32 | I64 | Isize | F32 | F64
+                | CxxString,
+            ) => return,
+            Some(Char | RustString) => {}
         }
     } else if let Type::CxxVector(_) = &ptr.inner {
         cx.error(ptr, "std::weak_ptr<std::vector> is not supported yet");
@@ -207,11 +213,12 @@ fn check_type_cxx_vector(cx: &mut Check, ptr: &Ty1) {
         }
 
         match Atom::from(&ident.rust) {
-            None | Some(U8) | Some(U16) | Some(U32) | Some(U64) | Some(Usize) | Some(I8)
-            | Some(I16) | Some(I32) | Some(I64) | Some(Isize) | Some(F32) | Some(F64)
-            | Some(CxxString) => return,
+            None
+            | Some(
+                U8 | U16 | U32 | U64 | Usize | I8 | I16 | I32 | I64 | Isize | F32 | F64 | CxxString,
+            ) => return,
             Some(Char) => { /* todo */ }
-            Some(Bool) | Some(RustString) => {}
+            Some(Bool | RustString) => {}
         }
     }
 
@@ -664,14 +671,14 @@ fn is_opaque_cxx(cx: &mut Check, ty: &Ident) -> bool {
 fn span_for_struct_error(strct: &Struct) -> TokenStream {
     let struct_token = strct.struct_token;
     let mut brace_token = Group::new(Delimiter::Brace, TokenStream::new());
-    brace_token.set_span(strct.brace_token.span);
+    brace_token.set_span(strct.brace_token.span.join());
     quote!(#struct_token #brace_token)
 }
 
 fn span_for_enum_error(enm: &Enum) -> TokenStream {
     let enum_token = enm.enum_token;
     let mut brace_token = Group::new(Delimiter::Brace, TokenStream::new());
-    brace_token.set_span(enm.brace_token.span);
+    brace_token.set_span(enm.brace_token.span.join());
     quote!(#enum_token #brace_token)
 }
 

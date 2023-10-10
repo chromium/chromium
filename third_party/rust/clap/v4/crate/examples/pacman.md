@@ -45,8 +45,8 @@ Commands:
   help                Print this message or the help of the given subcommand(s)
 
 Options:
-  -h, --help     Print help information
-  -V, --version  Print version information
+  -h, --help     Print help
+  -V, --version  Print version
 
 $ pacman -S -h
 Synchronize packages.
@@ -59,7 +59,7 @@ Arguments:
 Options:
   -s, --search <search>...  search remote repositories for matching strings
   -i, --info                view package information
-  -h, --help                Print help information
+  -h, --help                Print help
 
 ```
 
@@ -67,11 +67,11 @@ And errors:
 ```console
 $ pacman -S -s foo -i bar
 ? failed
-error: The argument '--search <search>...' cannot be used with '--info'
+error: the argument '--search <search>...' cannot be used with '--info'
 
 Usage: pacman[EXE] {sync|--sync|-S} --search <search>... <package>...
 
-For more information try '--help'
+For more information, try '--help'.
 
 ```
 

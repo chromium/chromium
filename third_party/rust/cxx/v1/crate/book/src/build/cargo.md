@@ -12,12 +12,12 @@ CXX's integration with Cargo is handled through the [cxx-build] crate.
 
 [cxx-build]: https://docs.rs/cxx-build
 
-```toml,hidelines
-## Cargo.toml
-# [package]
-# name = "..."
-# version = "..."
-# edition = "2018"
+```toml,hidelines=...
+# Cargo.toml
+...[package]
+...name = "..."
+...version = "..."
+...edition = "2021"
 
 [dependencies]
 cxx = "1.0"

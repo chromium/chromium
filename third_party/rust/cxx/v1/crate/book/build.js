@@ -2,9 +2,8 @@
 
 const fs = require('fs');
 const cheerio = require('cheerio');
+const entities = require('html-entities');
 const hljs = require('./build/highlight.js');
-const Entities = require('html-entities').AllHtmlEntities;
-const entities = new Entities();
 
 const githublink = `\
 <li class="part-title">\
@@ -100,5 +99,7 @@ fs.copyFileSync('build/highlight.css', 'build/tomorrow-night.css');
 fs.copyFileSync('build/highlight.css', 'build/ayu-highlight.css');
 
 var bookjs = fs.readFileSync('build/book.js', 'utf8');
-bookjs = bookjs.replace('set_theme(theme, false);', '');
+bookjs = bookjs
+  .replace('set_theme(theme, false);', '')
+  .replace('document.querySelectorAll("code.hljs")', 'document.querySelectorAll("code.hidelines")');
 fs.writeFileSync('build/book.js', bookjs);

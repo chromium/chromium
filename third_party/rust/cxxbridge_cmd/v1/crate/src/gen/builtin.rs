@@ -264,8 +264,8 @@ pub(super) fn write(out: &mut OutFile) {
             out,
             "  Fail(::rust::repr::PtrLen &throw$) noexcept : throw$(throw$) {{}}",
         );
-        writeln!(out, "  void operator()(const char *) noexcept;");
-        writeln!(out, "  void operator()(const std::string &) noexcept;");
+        writeln!(out, "  void operator()(char const *) noexcept;");
+        writeln!(out, "  void operator()(std::string const &) noexcept;");
         writeln!(out, "}};");
     }
 
@@ -352,7 +352,7 @@ pub(super) fn write(out: &mut OutFile) {
         writeln!(out, "public:");
         writeln!(out, "  static Error error(repr::PtrLen repr) noexcept {{");
         writeln!(out, "    Error error;");
-        writeln!(out, "    error.msg = static_cast<const char *>(repr.ptr);");
+        writeln!(out, "    error.msg = static_cast<char const *>(repr.ptr);");
         writeln!(out, "    error.len = repr.len;");
         writeln!(out, "    return error;");
         writeln!(out, "  }}");
@@ -412,7 +412,7 @@ pub(super) fn write(out: &mut OutFile) {
         writeln!(out, "                 missing>::value>::type");
         writeln!(out, "trycatch(Try &&func, Fail &&fail) noexcept try {{");
         writeln!(out, "  func();");
-        writeln!(out, "}} catch (const ::std::exception &e) {{");
+        writeln!(out, "}} catch (::std::exception const &e) {{");
         writeln!(out, "  fail(e.what());");
         writeln!(out, "}}");
         out.end_block(Block::Namespace("behavior"));

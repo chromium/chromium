@@ -38,7 +38,7 @@ impl std::str::FromStr for Mode {
                 return Ok(*variant);
             }
         }
-        Err(format!("Invalid variant: {}", s))
+        Err(format!("invalid variant: {s}"))
     }
 }
 

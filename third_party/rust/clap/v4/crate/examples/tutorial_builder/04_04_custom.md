@@ -14,8 +14,8 @@ Options:
       --patch              auto inc patch
       --spec-in <SPEC_IN>  some special input argument
   -c <CONFIG>              
-  -h, --help               Print help information
-  -V, --version            Print version information
+  -h, --help               Print help
+  -V, --version            Print version
 
 $ 04_04_custom
 ? failed
@@ -23,7 +23,7 @@ error: Can only modify one version field
 
 Usage: 04_04_custom[EXE] [OPTIONS] [INPUT_FILE]
 
-For more information try '--help'
+For more information, try '--help'.
 
 $ 04_04_custom --major
 Version: 2.2.3
@@ -34,7 +34,7 @@ error: Can only modify one version field
 
 Usage: 04_04_custom[EXE] [OPTIONS] [INPUT_FILE]
 
-For more information try '--help'
+For more information, try '--help'.
 
 $ 04_04_custom --major -c config.toml
 ? failed
@@ -43,7 +43,7 @@ error: INPUT_FILE or --spec-in is required when using --config
 
 Usage: 04_04_custom[EXE] [OPTIONS] [INPUT_FILE]
 
-For more information try '--help'
+For more information, try '--help'.
 
 $ 04_04_custom --major -c config.toml --spec-in input.txt
 Version: 2.2.3

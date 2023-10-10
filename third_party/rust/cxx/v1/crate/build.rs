@@ -22,18 +22,12 @@ fn main() {
     // }
 
     if let Some(rustc) = rustc_version() {
-        if rustc.minor < 48 {
-            println!("cargo:warning=The cxx crate requires a rustc version 1.48.0 or newer.");
+        if rustc.minor < 60 {
+            println!("cargo:warning=The cxx crate requires a rustc version 1.60.0 or newer.");
             println!(
                 "cargo:warning=You appear to be building with: {}",
                 rustc.version,
             );
-        }
-
-        if rustc.minor < 52 {
-            // #![deny(unsafe_op_in_unsafe_fn)].
-            // https://github.com/rust-lang/rust/issues/71668
-            println!("cargo:rustc-cfg=no_unsafe_op_in_unsafe_fn_lint");
         }
     }
 }

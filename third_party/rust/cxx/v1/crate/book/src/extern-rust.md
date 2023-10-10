@@ -91,7 +91,7 @@ statement.
 #[cxx::bridge]
 mod ffi {
     extern "Rust" {
-        struct MyType;
+        type MyType;
         fn f() -> Box<MyType>;
     }
 }

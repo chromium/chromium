@@ -58,10 +58,10 @@ fn main() {
             (_, _, true) => patch += 1,
             _ => unreachable!(),
         };
-        format!("{}.{}.{}", major, minor, patch)
+        format!("{major}.{minor}.{patch}")
     };
 
-    println!("Version: {}", version);
+    println!("Version: {version}");
 
     // Check for usage of -c
     if matches.contains_id("config") {

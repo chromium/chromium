@@ -5,7 +5,7 @@ use clap::{arg, command, ArgGroup, ArgMatches, Command};
 fn main() {
     let matches = cli().get_matches();
     let values = Value::from_matches(&matches);
-    println!("{:#?}", values);
+    println!("{values:#?}");
 }
 
 fn cli() -> Command {
@@ -51,7 +51,7 @@ impl Value {
             if Self::extract::<bool>(matches, id, &mut values) {
                 continue;
             }
-            unimplemented!("unknown type for {}: {:?}", id, matches);
+            unimplemented!("unknown type for {id}: {matches:?}");
         }
         values.into_values().collect::<Vec<_>>()
     }

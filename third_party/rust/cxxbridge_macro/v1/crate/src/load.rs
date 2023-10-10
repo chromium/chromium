@@ -165,7 +165,7 @@ fn traverse<'a>(
                     .variants_from_header_attr
                     .as_ref()
                     .unwrap()
-                    .path
+                    .path()
                     .get_ident()
                     .unwrap()
                     .span();
@@ -259,7 +259,7 @@ fn translate_qual_type(cx: &mut Errors, enm: &Enum, qual_type: &str) -> Path {
         .variants_from_header_attr
         .as_ref()
         .unwrap()
-        .path
+        .path()
         .get_ident()
         .unwrap()
         .span();
@@ -277,7 +277,7 @@ enum ParsedDiscriminant {
 fn discriminant_value(mut clang: &[Node]) -> ParsedDiscriminant {
     if clang.is_empty() {
         // No discriminant expression provided; use successor of previous
-        // descriminant.
+        // discriminant.
         return ParsedDiscriminant::Successor;
     }
 
@@ -301,7 +301,7 @@ fn discriminant_value(mut clang: &[Node]) -> ParsedDiscriminant {
 fn span_for_enum_error(enm: &Enum) -> TokenStream {
     let enum_token = enm.enum_token;
     let mut brace_token = Group::new(Delimiter::Brace, TokenStream::new());
-    brace_token.set_span(enm.brace_token.span);
+    brace_token.set_span(enm.brace_token.span.join());
     quote!(#enum_token #brace_token)
 }
 

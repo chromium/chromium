@@ -4,7 +4,8 @@ error[E0277]: `PhantomPinned` cannot be unpinned
 6  |         type Pinned;
    |              ^^^^^^ within `Pinned`, the trait `Unpin` is not implemented for `PhantomPinned`
    |
-   = note: consider using `Box::pin`
+   = note: consider using the `pin!` macro
+           consider using `Box::pin` if you need to access the pinned value outside of the current scope
 note: required because it appears within the type `Pinned`
   --> tests/ui/rust_pinned.rs:10:12
    |

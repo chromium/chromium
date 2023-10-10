@@ -60,6 +60,10 @@ version = "0.1"
 path = "aho_corasick/v0_7/crate"
 package = "aho-corasick"
 
+[patch.crates-io.anstyle_v1]
+path = "anstyle/v1/crate"
+package = "anstyle"
+
 [patch.crates-io.anyhow_v1]
 path = "anyhow/v1/crate"
 package = "anyhow"
@@ -80,8 +84,12 @@ package = "bitflags"
 path = "cfg_if/v1/crate"
 package = "cfg-if"
 
-[patch.crates-io.clap_lex_v0_3]
-path = "clap_lex/v0_3/crate"
+[patch.crates-io.clap_builder_v4]
+path = "clap_builder/v4/crate"
+package = "clap_builder"
+
+[patch.crates-io.clap_lex_v0_5]
+path = "clap_lex/v0_5/crate"
 package = "clap_lex"
 
 [patch.crates-io.clap_v4]
@@ -147,10 +155,6 @@ package = "memchr"
 [patch.crates-io.memoffset_v0_6]
 path = "memoffset/v0_6/crate"
 package = "memoffset"
-
-[patch.crates-io.os_str_bytes_v6]
-path = "os_str_bytes/v6/crate"
-package = "os_str_bytes"
 
 [patch.crates-io.ppv-lite86_v0_2]
 path = "ppv_lite86/v0_2/crate"

@@ -2,7 +2,7 @@ use crate::syntax::file::Module;
 use crate::syntax::namespace::Namespace;
 use syn::parse::discouraged::Speculative;
 use syn::parse::{Error, Parse, ParseStream, Result};
-use syn::{braced, Attribute, Ident, Item, Token, Visibility};
+use syn::{braced, Attribute, Ident, Item, Meta, Token, Visibility};
 
 pub struct File {
     pub modules: Vec<Module>,
@@ -23,7 +23,7 @@ fn parse(input: ParseStream, modules: &mut Vec<Module>) -> Result<()> {
         let mut namespace = Namespace::ROOT;
         let mut attrs = input.call(Attribute::parse_outer)?;
         for attr in &attrs {
-            let path = &attr.path.segments;
+            let path = &attr.path().segments;
             if path.len() == 2 && path[0].ident == "cxx" && path[1].ident == "bridge" {
                 cxx_bridge = true;
                 namespace = parse_args(attr)?;
@@ -64,7 +64,7 @@ fn parse(input: ParseStream, modules: &mut Vec<Module>) -> Result<()> {
 }
 
 fn parse_args(attr: &Attribute) -> Result<Namespace> {
-    if attr.tokens.is_empty() {
+    if let Meta::Path(_) = attr.meta {
         Ok(Namespace::ROOT)
     } else {
         attr.parse_args_with(Namespace::parse_bridge_attr_namespace)

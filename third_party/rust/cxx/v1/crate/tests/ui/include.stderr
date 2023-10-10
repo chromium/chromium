@@ -11,10 +11,10 @@ error: unexpected token
   |                            ^^^^
 
 error: expected `>`
- --> tests/ui/include.rs:6:17
+ --> tests/ui/include.rs:6:26
   |
 6 |         include!(<path/to);
-  |                 ^^^^^^^^^^
+  |                          ^
 
 error: unexpected token in include path
  --> tests/ui/include.rs:7:23

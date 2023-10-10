@@ -6,8 +6,8 @@ Usage: 03_01_flag_count_derive[EXE] [OPTIONS]
 
 Options:
   -v, --verbose...  
-  -h, --help        Print help information
-  -V, --version     Print version information
+  -h, --help        Print help
+  -V, --version     Print version
 
 $ 03_01_flag_count_derive
 verbose: 0

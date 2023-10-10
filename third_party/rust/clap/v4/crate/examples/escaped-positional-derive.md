@@ -15,8 +15,8 @@ Arguments:
 Options:
   -f             
   -p <PEAR>      
-  -h, --help     Print help information
-  -V, --version  Print version information
+  -h, --help     Print help
+  -V, --version  Print version
 
 ```
 
@@ -33,11 +33,11 @@ Notice that we can't pass positional arguments before `--`:
 ```console
 $ escaped-positional-derive foo bar
 ? failed
-error: Found argument 'foo' which wasn't expected, or isn't valid in this context
+error: unexpected argument 'foo' found
 
 Usage: escaped-positional-derive[EXE] [OPTIONS] [-- <SLOP>...]
 
-For more information try '--help'
+For more information, try '--help'.
 
 ```
 

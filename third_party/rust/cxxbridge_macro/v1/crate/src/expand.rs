@@ -139,7 +139,15 @@ fn expand(ffi: Module, doc: Doc, attrs: OtherAttrs, apis: &[Api], types: &Types)
         #attrs
         #[deny(improper_ctypes, improper_ctypes_definitions)]
         #[allow(clippy::unknown_clippy_lints)]
-        #[allow(non_camel_case_types, non_snake_case, clippy::upper_case_acronyms)]
+        #[allow(
+            non_camel_case_types,
+            non_snake_case,
+            clippy::extra_unused_type_parameters,
+            clippy::items_after_statements,
+            clippy::ptr_as_ptr,
+            clippy::upper_case_acronyms,
+            clippy::use_self,
+        )]
         #vis #mod_token #ident #expanded
     }
 }
@@ -321,6 +329,7 @@ fn expand_enum(enm: &Enum) -> TokenStream {
         Some(quote_spanned! {span=>
             #doc
             #attrs
+            #[allow(dead_code)]
             pub const #variant_ident: Self = #ident { repr: #discriminant };
         })
     });
@@ -1256,7 +1265,7 @@ fn expand_rust_box(key: NamedImplKey, types: &Types, explicit_impl: Option<&Impl
     let (impl_generics, ty_generics) = generics::split_for_impl(key, explicit_impl, resolve);
 
     let begin_span = explicit_impl.map_or(key.begin_span, |explicit| explicit.impl_token.span);
-    let end_span = explicit_impl.map_or(key.end_span, |explicit| explicit.brace_token.span);
+    let end_span = explicit_impl.map_or(key.end_span, |explicit| explicit.brace_token.span.join());
     let unsafe_token = format_ident!("unsafe", span = begin_span);
     let prevent_unwind_drop_label = format!("::{} as Drop>::drop", ident);
 
@@ -1314,7 +1323,7 @@ fn expand_rust_vec(key: NamedImplKey, types: &Types, explicit_impl: Option<&Impl
     let (impl_generics, ty_generics) = generics::split_for_impl(key, explicit_impl, resolve);
 
     let begin_span = explicit_impl.map_or(key.begin_span, |explicit| explicit.impl_token.span);
-    let end_span = explicit_impl.map_or(key.end_span, |explicit| explicit.brace_token.span);
+    let end_span = explicit_impl.map_or(key.end_span, |explicit| explicit.brace_token.span.join());
     let unsafe_token = format_ident!("unsafe", span = begin_span);
     let prevent_unwind_drop_label = format!("::{} as Drop>::drop", elem);
 
@@ -1408,7 +1417,7 @@ fn expand_unique_ptr(
     };
 
     let begin_span = explicit_impl.map_or(key.begin_span, |explicit| explicit.impl_token.span);
-    let end_span = explicit_impl.map_or(key.end_span, |explicit| explicit.brace_token.span);
+    let end_span = explicit_impl.map_or(key.end_span, |explicit| explicit.brace_token.span.join());
     let unsafe_token = format_ident!("unsafe", span = begin_span);
 
     quote_spanned! {end_span=>
@@ -1493,7 +1502,7 @@ fn expand_shared_ptr(
     };
 
     let begin_span = explicit_impl.map_or(key.begin_span, |explicit| explicit.impl_token.span);
-    let end_span = explicit_impl.map_or(key.end_span, |explicit| explicit.brace_token.span);
+    let end_span = explicit_impl.map_or(key.end_span, |explicit| explicit.brace_token.span.join());
     let unsafe_token = format_ident!("unsafe", span = begin_span);
 
     quote_spanned! {end_span=>
@@ -1548,7 +1557,7 @@ fn expand_weak_ptr(key: NamedImplKey, types: &Types, explicit_impl: Option<&Impl
     let (impl_generics, ty_generics) = generics::split_for_impl(key, explicit_impl, resolve);
 
     let begin_span = explicit_impl.map_or(key.begin_span, |explicit| explicit.impl_token.span);
-    let end_span = explicit_impl.map_or(key.end_span, |explicit| explicit.brace_token.span);
+    let end_span = explicit_impl.map_or(key.end_span, |explicit| explicit.brace_token.span.join());
     let unsafe_token = format_ident!("unsafe", span = begin_span);
 
     quote_spanned! {end_span=>
@@ -1604,6 +1613,7 @@ fn expand_cxx_vector(
     let name = elem.to_string();
     let resolve = types.resolve(elem);
     let prefix = format!("cxxbridge1$std$vector${}$", resolve.name.to_symbol());
+    let link_new = format!("{}new", prefix);
     let link_size = format!("{}size", prefix);
     let link_get_unchecked = format!("{}get_unchecked", prefix);
     let link_push_back = format!("{}push_back", prefix);
@@ -1621,7 +1631,7 @@ fn expand_cxx_vector(
     let (impl_generics, ty_generics) = generics::split_for_impl(key, explicit_impl, resolve);
 
     let begin_span = explicit_impl.map_or(key.begin_span, |explicit| explicit.impl_token.span);
-    let end_span = explicit_impl.map_or(key.end_span, |explicit| explicit.brace_token.span);
+    let end_span = explicit_impl.map_or(key.end_span, |explicit| explicit.brace_token.span.join());
     let unsafe_token = format_ident!("unsafe", span = begin_span);
 
     let can_pass_element_by_value = types.is_maybe_trivial(elem);
@@ -1662,6 +1672,13 @@ fn expand_cxx_vector(
         #unsafe_token impl #impl_generics ::cxx::private::VectorElement for #elem #ty_generics {
             fn __typename(f: &mut ::cxx::core::fmt::Formatter<'_>) -> ::cxx::core::fmt::Result {
                 f.write_str(#name)
+            }
+            fn __vector_new() -> *mut ::cxx::CxxVector<Self> {
+                extern "C" {
+                    #[link_name = #link_new]
+                    fn __vector_new #impl_generics() -> *mut ::cxx::CxxVector<#elem #ty_generics>;
+                }
+                unsafe { __vector_new() }
             }
             fn __vector_size(v: &::cxx::CxxVector<Self>) -> usize {
                 extern "C" {
@@ -1802,7 +1819,7 @@ fn expand_extern_type(ty: &Type, types: &Types, proper: bool) -> TokenStream {
         }
         Type::SliceRef(ty) => {
             let span = ty.ampersand.span;
-            let rust_slice = Ident::new("RustSlice", ty.bracket.span);
+            let rust_slice = Ident::new("RustSlice", ty.bracket.span.join());
             quote_spanned!(span=> ::cxx::private::#rust_slice)
         }
         _ => quote!(#ty),

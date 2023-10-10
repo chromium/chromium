@@ -4,7 +4,7 @@ use crate::syntax::report::Errors;
 use crate::syntax::Api;
 use quote::quote;
 use std::collections::BTreeSet as Set;
-use syn::Error;
+use syn::{Error, LitStr};
 
 pub(super) struct UnsupportedCfgEvaluator;
 
@@ -61,7 +61,7 @@ fn try_eval(cfg_evaluator: &dyn CfgEvaluator, expr: &CfgExpr) -> Result<bool, Ve
         CfgExpr::Unconditional => Ok(true),
         CfgExpr::Eq(ident, string) => {
             let key = ident.to_string();
-            let value = string.as_ref().map(|string| string.value());
+            let value = string.as_ref().map(LitStr::value);
             match cfg_evaluator.eval(&key, value.as_deref()) {
                 CfgResult::True => Ok(true),
                 CfgResult::False => Ok(false),

@@ -3,10 +3,10 @@
 
 ### Public API:
 
-```cpp,hidelines
+```cpp,hidelines=...
 // rust/cxx.h
-#
-# namespace rust {
+...
+...namespace rust {
 
 template <typename Signature>
 class Fn;
@@ -17,8 +17,8 @@ public:
   Ret operator()(Args... args) const noexcept;
   Fn operator*() const noexcept;
 };
-#
-# } // namespace rust
+...
+...} // namespace rust
 ```
 
 ### Restrictions:

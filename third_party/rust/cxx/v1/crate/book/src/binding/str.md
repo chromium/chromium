@@ -3,13 +3,13 @@
 
 ### Public API:
 
-```cpp,hidelines
+```cpp,hidelines=...
 // rust/cxx.h
-#
-# #include <iosfwd>
-# #include <string>
-#
-# namespace rust {
+...
+...#include <iosfwd>
+...#include <string>
+...
+...namespace rust {
 
 class Str final {
 public:
@@ -50,8 +50,8 @@ public:
 };
 
 std::ostream &operator<<(std::ostream &, const Str &);
-#
-# } // namespace rust
+...
+...} // namespace rust
 ```
 
 ### Notes:

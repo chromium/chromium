@@ -84,7 +84,7 @@ pub(super) fn from_args() -> Opt {
                 }
             } else {
                 Include {
-                    path: include.to_owned(),
+                    path: include.clone(),
                     kind: IncludeKind::Quoted,
                 }
             }
@@ -122,7 +122,7 @@ pub(super) fn from_args() -> Opt {
 fn arg_input() -> Arg {
     Arg::new(INPUT)
         .help("Input Rust source file containing #[cxx::bridge].")
-        .required_unless_present_any(&[HEADER, HELP])
+        .required_unless_present_any([HEADER, HELP])
         .value_parser(ValueParser::path_buf())
 }
 

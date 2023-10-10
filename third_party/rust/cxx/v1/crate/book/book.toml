@@ -4,7 +4,7 @@ authors = ["David Tolnay"]
 description = "CXX — safe interop between Rust and C++"
 
 [rust]
-edition = "2018"
+edition = "2021"
 
 [build]
 build-dir = "build"

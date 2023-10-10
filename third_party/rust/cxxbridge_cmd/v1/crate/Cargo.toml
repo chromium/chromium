@@ -10,10 +10,10 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2018"
+edition = "2021"
 rust-version = "1.56"
 name = "cxxbridge-cmd"
-version = "1.0.82"
+version = "1.0.107"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 exclude = ["build.rs"]
 description = "C++ code generator for integrating `cxx` crate into a non-Cargo build."
@@ -34,7 +34,7 @@ name = "cxxbridge"
 path = "src/main.rs"
 
 [dependencies.clap]
-version = "4"
+version = "4.3.11"
 features = [
     "error-context",
     "help",
@@ -45,24 +45,24 @@ features = [
 default-features = false
 
 [dependencies.codespan-reporting]
-version = "0.11"
+version = "0.11.1"
 
 [dependencies.proc-macro2]
-version = "1.0.39"
+version = "1.0.63"
 features = ["span-locations"]
 default-features = false
 
 [dependencies.quote]
-version = "1.0"
+version = "1.0.29"
 default-features = false
 
 [dependencies.syn]
-version = "1.0.95"
+version = "2.0.23"
 features = [
-    "parsing",
-    "printing",
     "clone-impls",
     "full",
+    "parsing",
+    "printing",
 ]
 default-features = false
 

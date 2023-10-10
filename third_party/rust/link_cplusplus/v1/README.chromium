@@ -1,7 +1,9 @@
 Name: link-cplusplus
 URL: https://crates.io/crates/link-cplusplus
 Description: Link libstdc++ or libc++ automatically or manually
-Version: 1.0.5
+Version: 1.0.9
 Security Critical: no
-Shipped: yes
+Shipped: no
 License: Apache 2.0
+License File: 
+Revision: df99d8e8be8f609be7e953fa1bffc3735b401d37

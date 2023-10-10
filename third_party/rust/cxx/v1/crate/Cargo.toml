@@ -10,10 +10,10 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2018"
-rust-version = "1.48"
+edition = "2021"
+rust-version = "1.60"
 name = "cxx"
-version = "1.0.82"
+version = "1.0.107"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 links = "cxxbridge1"
 exclude = [
@@ -21,6 +21,7 @@ exclude = [
     "/gen",
     "/syntax",
     "/third-party",
+    "/tools/buck/prelude",
 ]
 description = "Safe interop between Rust and C++"
 homepage = "https://cxx.rs"
@@ -38,21 +39,43 @@ categories = [
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/cxx"
 
+[package.metadata.bazel]
+additive_build_file_content = """
+cc_library(
+    name = \"cxx_cc\",
+    srcs = [\"src/cxx.cc\"],
+    hdrs = [\"include/cxx.h\"],
+    include_prefix = \"rust\",
+    includes = [\"include\"],
+    linkstatic = True,
+    strip_include_prefix = \"include\",
+    visibility = [\"//visibility:public\"],
+)
+"""
+gen_build_script = false
+
+[package.metadata.bazel.extra_aliased_targets]
+cxx_cc = "cxx_cc"
+
 [package.metadata.docs.rs]
-targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = [
     "--cfg",
     "doc_cfg",
+    "--generate-link-to-definition",
 ]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lib]
+doc-scrape-examples = false
 
 [dependencies.cxxbridge-macro]
-version = "=1.0.82"
+version = "=1.0.107"
 
 [dependencies.link-cplusplus]
-version = "1.0"
+version = "1.0.9"
 
 [dev-dependencies.cxx-build]
-version = "=1.0.82"
+version = "=1.0.107"
 
 [dev-dependencies.cxx-gen]
 version = "0.7"
@@ -61,29 +84,30 @@ version = "0.7"
 version = "0"
 
 [dev-dependencies.rustversion]
-version = "1.0"
+version = "1.0.13"
 
 [dev-dependencies.trybuild]
-version = "1.0.66"
+version = "1.0.81"
 features = ["diff"]
 
 # Removed for Chromium build.
-# [build-dependencies.cc]
-# version = "1.0.49"
+#[build-dependencies.cc]
+#version = "1.0.79"
 
-# [build-dependencies.cxxbridge-flags]
-# version = "=1.0.82"
-# default-features = false
+# Removed for Chromium build.
+#[build-dependencies.cxxbridge-flags]
+#version = "=1.0.107"
+#default-features = false
 
 [features]
 alloc = []
 # Removed for Chromium build.
-# "c++14" = ["cxxbridge-flags/c++14"]
-# "c++17" = ["cxxbridge-flags/c++17"]
-# "c++20" = ["cxxbridge-flags/c++20"]
+#"c++14" = ["cxxbridge-flags/c++14"]
+#"c++17" = ["cxxbridge-flags/c++17"]
+#"c++20" = ["cxxbridge-flags/c++20"]
 default = [
     "std",
     # Removed for Chromium build.
-    # "cxxbridge-flags/default",
+    #"cxxbridge-flags/default",
 ]
 std = ["alloc"]

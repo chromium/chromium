@@ -8,8 +8,8 @@ Arguments:
   [PORT]  [default: 2020]
 
 Options:
-  -h, --help     Print help information
-  -V, --version  Print version information
+  -h, --help     Print help
+  -V, --version  Print version
 
 $ 03_05_default_values
 port: 2020

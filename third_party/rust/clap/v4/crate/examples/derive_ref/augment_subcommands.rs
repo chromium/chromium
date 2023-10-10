@@ -17,5 +17,5 @@ fn main() {
     let derived_subcommands = Subcommands::from_arg_matches(&matches)
         .map_err(|err| err.exit())
         .unwrap();
-    println!("Derived subcommands: {:#?}", derived_subcommands);
+    println!("Derived subcommands: {derived_subcommands:#?}");
 }

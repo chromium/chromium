@@ -7,8 +7,8 @@ Usage: 02_crate_derive[EXE] --two <TWO> --one <ONE>
 Options:
       --two <TWO>  
       --one <ONE>  
-  -h, --help       Print help information
-  -V, --version    Print version information
+  -h, --help       Print help
+  -V, --version    Print version
 
 $ 02_crate_derive --version
 clap [..]

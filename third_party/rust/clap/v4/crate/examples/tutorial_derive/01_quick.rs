@@ -35,7 +35,7 @@ fn main() {
 
     // You can check the value provided by positional arguments, or option arguments
     if let Some(name) = cli.name.as_deref() {
-        println!("Value for name: {}", name);
+        println!("Value for name: {name}");
     }
 
     if let Some(config_path) = cli.config.as_deref() {

@@ -14,5 +14,5 @@ fn main() {
         _ => unreachable!("clap should ensure we don't get here"),
     };
     let manifest_path = matches.get_one::<std::path::PathBuf>("manifest-path");
-    println!("{:?}", manifest_path);
+    println!("{manifest_path:?}");
 }

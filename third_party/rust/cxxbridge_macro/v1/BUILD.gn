@@ -60,8 +60,8 @@ cargo_crate("lib") {
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  edition = "2018"
-  cargo_pkg_version = "1.0.82"
+  edition = "2021"
+  cargo_pkg_version = "1.0.107"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "cxxbridge-macro"
   cargo_pkg_description = "Implementation detail of the `cxx` crate."
@@ -72,6 +72,6 @@ cargo_crate("lib") {
   deps = [
     "//third_party/rust/proc_macro2/v1:lib",
     "//third_party/rust/quote/v1:lib",
-    "//third_party/rust/syn/v1:lib",
+    "//third_party/rust/syn/v2:lib",
   ]
 }

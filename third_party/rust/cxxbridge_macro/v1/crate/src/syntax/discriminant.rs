@@ -5,7 +5,6 @@ use std::cmp::Ordering;
 use std::collections::BTreeSet;
 use std::fmt::{self, Display};
 use std::str::FromStr;
-use std::u64;
 use syn::{Error, Expr, Lit, Result, Token, UnOp};
 
 pub struct DiscriminantSet {
