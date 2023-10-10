@@ -178,6 +178,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidVisibleUrlTruncation,
     &kAnimatedImageDragShadow,
     &kAppMenuMobileSiteOption,
+    &kAuxiliarySearchDonation,
     &kAvoidSelectedTabFocusOnLayoutDoneShowing,
     &kBackGestureActivityTabProvider,
     &kBackGestureRefactorActivityAndroid,
@@ -505,6 +506,10 @@ BASE_FEATURE(kAnimatedImageDragShadow,
 
 BASE_FEATURE(kAppMenuMobileSiteOption,
              "AppMenuMobileSiteOption",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAuxiliarySearchDonation,
+             "AuxiliarySearchDonation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBackgroundThreadPool,

@@ -2824,6 +2824,29 @@ const FeatureEntry::FeatureVariation
          kPhotoPickerAdoptionStudyChromePickerWithoutBrowse,
          std::size(kPhotoPickerAdoptionStudyChromePickerWithoutBrowse),
          nullptr}};
+
+const FeatureEntry::FeatureParam kAuxiliarySearchDonation_MaxDonation_20[] = {
+    {chrome::android::kAuxiliarySearchMaxBookmarksCountParam.name, "20"},
+    {chrome::android::kAuxiliarySearchMaxTabsCountParam.name, "20"}};
+const FeatureEntry::FeatureParam kAuxiliarySearchDonation_MaxDonation_100[] = {
+    {chrome::android::kAuxiliarySearchMaxBookmarksCountParam.name, "100"},
+    {chrome::android::kAuxiliarySearchMaxTabsCountParam.name, "100"}};
+const FeatureEntry::FeatureParam kAuxiliarySearchDonation_MaxDonation_200[] = {
+    {chrome::android::kAuxiliarySearchMaxBookmarksCountParam.name, "200"},
+    {chrome::android::kAuxiliarySearchMaxTabsCountParam.name, "200"}};
+const FeatureEntry::FeatureParam kAuxiliarySearchDonation_MaxDonation_500[] = {
+    {chrome::android::kAuxiliarySearchMaxBookmarksCountParam.name, "500"},
+    {chrome::android::kAuxiliarySearchMaxTabsCountParam.name, "500"}};
+const FeatureEntry::FeatureVariation kAuxiliarySearchDonationVariations[] = {
+    {"50 counts", kAuxiliarySearchDonation_MaxDonation_20,
+     std::size(kAuxiliarySearchDonation_MaxDonation_20), nullptr},
+    {"100 counts", kAuxiliarySearchDonation_MaxDonation_100,
+     std::size(kAuxiliarySearchDonation_MaxDonation_100), nullptr},
+    {"200 counts", kAuxiliarySearchDonation_MaxDonation_200,
+     std::size(kAuxiliarySearchDonation_MaxDonation_200), nullptr},
+    {"500 counts", kAuxiliarySearchDonation_MaxDonation_500,
+     std::size(kAuxiliarySearchDonation_MaxDonation_500), nullptr},
+};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/991082,1015377): Remove after proper support for back/forward
@@ -6115,6 +6138,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidAppIntegrationSafeSearchName,
      flag_descriptions::kAndroidAppIntegrationSafeSearchDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidAppIntegrationSafeSearch)},
+
+    {"auxiliary-search-donation",
+     flag_descriptions::kAuxiliarySearchDonationName,
+     flag_descriptions::kAuxiliarySearchDonationDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAuxiliarySearchDonation,
+                                    kAuxiliarySearchDonationVariations,
+                                    "AuxiliarySearchDonation")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"omnibox-local-history-zero-suggest-beyond-ntp",

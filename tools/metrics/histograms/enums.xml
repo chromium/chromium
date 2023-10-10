@@ -63437,6 +63437,7 @@ from previous Chrome versions.
   <int value="-835242361" label="OmniboxAdaptiveSuggestionsCount:enabled"/>
   <int value="-834661509" label="ModalPermissionPrompts:disabled"/>
   <int value="-834234595" label="BorealisProvision:enabled"/>
+  <int value="-833024559" label="AuxiliarySearchDonation:enabled"/>
   <int value="-832806243" label="QuickActionSearchWidgetAndroid:disabled"/>
   <int value="-832780530" label="SecurePaymentConfirmationDebug:enabled"/>
   <int value="-832561975" label="enable-picture-in-picture"/>
@@ -66370,6 +66371,7 @@ from previous Chrome versions.
   <int value="623112705"
       label="IPH_KeyboardAccessoryPaymentVirtualCard:disabled"/>
   <int value="623512796" label="EnableWifiQos:enabled"/>
+  <int value="623671543" label="AuxiliarySearchDonation:disabled"/>
   <int value="623728853" label="OsSettingsTestChromeRefresh:enabled"/>
   <int value="623772100" label="EnableIncognitoWindowCounter:disabled"/>
   <int value="624317932" label="print-pdf-as-image"/>

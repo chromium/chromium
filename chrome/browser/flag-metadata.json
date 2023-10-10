@@ -765,6 +765,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "auxiliary-search-donation",
+    "owners": [ "gangwu", "chrome-mobile-search@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "avif-gainmap-hdr-images",
     "owners": [ "maryla@google.com", "avif-eng@google.com" ],
     "expiry_milestone": 130
