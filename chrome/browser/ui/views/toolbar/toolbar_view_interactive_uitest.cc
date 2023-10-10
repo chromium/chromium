@@ -281,8 +281,14 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, BackButtonMenu) {
       NavigateWebContents(kWebContentsId, url3),
       // Show the context menu.
       MoveMouseTo(kToolbarBackButtonElementId), ClickMouse(ui_controls::RIGHT),
+      Log("Logging to probe crbug.com/1489499. Waiting for back button menu."),
       WaitForShow(kToolbarBackButtonMenuElementId),
+      // Don't try to send an event to the menu before it's fully shown.
+      FlushEvents(),
       // Dismiss the context menu by clicking on it.
-      MoveMouseTo(kToolbarBackButtonMenuElementId), ClickMouse(),
-      WaitForHide(kToolbarBackButtonMenuElementId));
+      Log("Moving mouse to menu."),
+      MoveMouseTo(kToolbarBackButtonMenuElementId),
+      Log("Clicking mouse to dismiss."), ClickMouse(),
+      Log("Waiting for menu to dismiss."),
+      WaitForHide(kToolbarBackButtonMenuElementId), Log("Menu dismissed."));
 }
