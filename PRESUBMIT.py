@@ -858,6 +858,9 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         'STL random number engines and generators are banned. Use the ',
         'helpers in base/rand_util.h instead, e.g. base::RandBytes() or ',
         'base::RandomBitGenerator.'
+        '',
+        'Please reach out to cxx@chromium.org if the base APIs are ',
+        'insufficient for your needs.',
       ),
       True,
       [
@@ -899,6 +902,10 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         r'media/cast/test/utility/udp_proxy\.h',
         r'sql/recover_module/module_unittest\.cc',
         r'components/search_engines/template_url_prepopulate_data.cc',
+        # Do not add new entries to this list. If you have a use case which is
+        # not satisfied by the current APIs (i.e. you need an explicitly-seeded
+        # sequence, or stability of some sort is required), please contact
+        # cxx@chromium.org.
       ],
     ),
     BanRule(
