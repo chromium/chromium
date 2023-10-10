@@ -509,9 +509,29 @@ void RenderWidgetHostViewIOS::ShowWithVisibility(
 
 void RenderWidgetHostViewIOS::NotifyHostAndDelegateOnWasShown(
     blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
+  // SetRenderWidgetHostIsHidden may cause a state transition that switches to
+  // a new instance of DelegatedFrameHost and calls WasShown, which causes
+  // HasSavedFrame to always return true. So cache the HasSavedFrame result
+  // before the transition, and do not save this DelegatedFrameHost* locally.
+  bool has_saved_frame =
+      browser_compositor_->GetDelegatedFrameHost()->HasSavedFrame();
+
   browser_compositor_->SetRenderWidgetHostIsHidden(false);
 
-  host()->WasShown(blink::mojom::RecordContentToVisibleTimeRequestPtr());
+  const bool renderer_should_record_presentation_time = !has_saved_frame;
+  host()->WasShown(renderer_should_record_presentation_time
+                       ? visible_time_request.Clone()
+                       : blink::mojom::RecordContentToVisibleTimeRequestPtr());
+
+  // If the frame for the renderer is already available, then the
+  // tab-switching time is the presentation time for the browser-compositor.
+  // SetRenderWidgetHostIsHidden above will show the DelegatedFrameHost
+  // in this state, but doesn't include the presentation time request.
+  if (has_saved_frame && visible_time_request) {
+    browser_compositor_->GetDelegatedFrameHost()
+        ->RequestSuccessfulPresentationTimeForNextFrame(
+            std::move(visible_time_request));
+  }
 }
 
 void RenderWidgetHostViewIOS::Hide() {
@@ -556,6 +576,8 @@ void RenderWidgetHostViewIOS::
 void RenderWidgetHostViewIOS::
     CancelSuccessfulPresentationTimeRequestForHostAndDelegate() {
   host()->CancelSuccessfulPresentationTimeRequest();
+  browser_compositor_->GetDelegatedFrameHost()
+      ->CancelSuccessfulPresentationTimeRequest();
 }
 
 SkColor RenderWidgetHostViewIOS::BrowserCompositorIOSGetGutterColor() {
