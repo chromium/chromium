@@ -493,11 +493,9 @@ TrackEvent* TrackEventThreadLocalEventSink::PrepareTrackEvent(
               .InMicroseconds());
       track_event->add_extra_counter_track_uuids(track_uuid);
     } else {
-      // Thread timestamps for the current thread are never user-provided, and
-      // since we split COMPLETE events into BEGIN+END event pairs, they should
-      // not appear out of order.
-      DCHECK(trace_event->thread_timestamp() >= last_thread_time_);
-
+      // Thread timestamps for the current thread are never user-provided.
+      // While OSes don't guarantee they are monotonic, the discrepancies are
+      // usually quite rare and quite small.
       track_event->add_extra_counter_values(
           (trace_event->thread_timestamp() - last_thread_time_)
               .InMicroseconds());
