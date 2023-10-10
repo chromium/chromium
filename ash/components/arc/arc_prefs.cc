@@ -183,6 +183,10 @@ const char kArcInitialLocationSettingSyncRequired[] =
 // enterprise user.
 const char kArcVmDataMigrationStrategy[] = "arc.vm_data_migration_strategy";
 
+// A preference representing if ARC is allowed on unaffiliated devices
+// of an enterprise account
+const char kUnaffiliatedDeviceArcAllowed[] = "arc.unaffiliated.device.allowed";
+
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Sorted in lexicographical order.
   RegisterDailyMetricsPrefs(registry);
@@ -246,6 +250,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       kArcVmDataMigrationStrategy,
       static_cast<int>(ArcVmDataMigrationStrategy::kDoNotPrompt));
+  registry->RegisterBooleanPref(kUnaffiliatedDeviceArcAllowed, true);
 }
 
 }  // namespace prefs
