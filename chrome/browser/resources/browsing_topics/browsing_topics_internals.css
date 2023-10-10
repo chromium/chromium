@@ -19,7 +19,6 @@ body {
   color: rgb(48, 57, 66);
   display: flex;
   flex-direction: column;
-  font-family: Roboto, sans-serif;
   font-size: 13px;
   height: 100%;
   margin: 15px;
