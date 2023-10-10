@@ -97,25 +97,25 @@ a {
 .dialog .homepage {
   display: none;
 }
-input + label + div.license {
+label.show + div.license {
   display: none;
 }
-input + label::after {
+label.show::after {
   content: 'show license';
   cursor: pointer;
 }
-input#show-all + label::after {
+label.show-all::after {
   content: 'show all licenses';
 }
-input#show-all:checked ~ * input + label + div.license,
-input:checked + label + div {
+label.show-all:has(input:checked) ~ * label.show + div.license,
+label.show:has(input:checked) + div {
   display: block;
 }
-input:checked + label::after {
+label.show:has(input:checked)::after {
   content: 'hide license';
   cursor: pointer;
 }
-input#show-all:checked + label::after {
+label.show-all:has(input:checked)::after {
   content: 'hide all licenses';
 }
 
