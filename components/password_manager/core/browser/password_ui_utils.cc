@@ -157,9 +157,4 @@ std::u16string ToUsernameString(const std::string& username) {
   return ToUsernameString(base::UTF8ToUTF16(username));
 }
 
-GURL RPIDToURL(const std::string& relying_party_id) {
-  return GURL(base::StrCat(
-      {url::kHttpsScheme, url::kStandardSchemeSeparator, relying_party_id}));
-}
-
 }  // namespace password_manager

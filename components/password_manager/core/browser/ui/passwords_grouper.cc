@@ -61,7 +61,8 @@ std::string GetFacetRepresentation(const PasswordForm& form) {
 }
 
 std::string GetFacetRepresentation(const PasskeyCredential& passkey) {
-  std::string as_url = RPIDToURL(passkey.rp_id()).possibly_invalid_spec();
+  std::string as_url = base::StrCat(
+      {url::kHttpsScheme, url::kStandardSchemeSeparator, passkey.rp_id()});
   return FacetURI::FromPotentiallyInvalidSpec(as_url)
       .potentially_invalid_spec();
 }
