@@ -13,7 +13,18 @@ load("./rewrapper_cfg.star", "rewrapper_cfg")
 __filegroups = {
     "build/mac_files/xcode_binaries/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk:headers": {
         "type": "glob",
-        "includes": ["*"],
+        "includes": [
+            "*.h",
+            "*.json",
+            "*.modulemap",
+            "Current",
+            "Frameworks",
+            "Headers",
+            "Modules",
+            "crt*.o",
+            "usr/include/c++/v1/*",
+            "usr/include/c++/v1/*/*",
+        ],
     },
 }
 __filegroups.update(clang_all.filegroups)
