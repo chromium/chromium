@@ -387,9 +387,12 @@ void KeepAliveURLLoader::Start() {
       traffic_annotation_);
   loader_receiver_.set_disconnect_handler(base::BindOnce(
       &KeepAliveURLLoader::OnNetworkConnectionError, base::Unretained(this)));
-  forwarding_client_.set_disconnect_handler(
-      base::BindOnce(&KeepAliveURLLoader::OnForwardingClientDisconnected,
-                     base::Unretained(this)));
+  // For FetchLater requests, `forwarding_client_` is not bound to renderer.
+  if (forwarding_client_) {
+    forwarding_client_.set_disconnect_handler(
+        base::BindOnce(&KeepAliveURLLoader::OnForwardingClientDisconnected,
+                       base::Unretained(this)));
+  }
 
   // These throttles are also run by `blink::ThrottlingURLLoader`. However, they
   // have to be re-run here in case of handling in-browser redirects.
@@ -940,6 +943,26 @@ void KeepAliveURLLoader::OnDisconnectedLoaderTimerFired() {
 bool KeepAliveURLLoader::IsFetchLater() const {
   return base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI) &&
          resource_request_.is_fetch_later_api;
+}
+
+void KeepAliveURLLoader::SendNow() {
+  if (!IsFetchLater()) {
+    mojo::ReportBadMessage("Unexpected call to KeepAliveURLLoader::SendNow()");
+    return;
+  }
+  LogFetchLaterMetric(FetchLaterBrowserMetricType::kStartedByInitiator);
+  if (!IsStarted()) {
+    Start();
+  }
+}
+
+void KeepAliveURLLoader::Cancel() {
+  if (!IsFetchLater()) {
+    mojo::ReportBadMessage("Unexpected call to KeepAliveURLLoader::Cancel()");
+    return;
+  }
+  LogFetchLaterMetric(FetchLaterBrowserMetricType::kAbortedByInitiator);
+  DeleteSelf();
 }
 
 void KeepAliveURLLoader::DeleteSelf() {

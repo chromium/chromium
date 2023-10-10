@@ -25,6 +25,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/mojom/loader/fetch_later.mojom.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -81,7 +82,8 @@ class PolicyContainerHost;
 // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY
 class CONTENT_EXPORT KeepAliveURLLoader
     : public network::mojom::URLLoader,
-      public network::mojom::URLLoaderClient {
+      public network::mojom::URLLoaderClient,
+      public blink::mojom::FetchLaterLoader {
  public:
   // A callback type to delete this loader immediately on triggered.
   using OnDeleteCallback = base::OnceCallback<void(void)>;
@@ -195,6 +197,10 @@ class CONTENT_EXPORT KeepAliveURLLoader
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnComplete(
       const network::URLLoaderCompletionStatus& completion_status) override;
+
+  // `blink::mojom::FetchLaterLoader` overrides:
+  void SendNow() override;
+  void Cancel() override;
 
   // Whether `OnReceiveResponse()` has been called.
   bool HasReceivedResponse() const;

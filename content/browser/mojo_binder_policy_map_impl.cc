@@ -22,6 +22,7 @@
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
+#include "third_party/blink/public/mojom/loader/fetch_later.mojom.h"
 #if BUILDFLAG(IS_MAC)
 #include "third_party/blink/public/mojom/input/text_input_host.mojom.h"
 #endif
@@ -148,6 +149,12 @@ void RegisterChannelAssociatedPoliciesForSameOriginPrerendering(
 
   // Prerendering pages are allowed to create urls for blobs.
   map.SetAssociatedPolicy<blink::mojom::BlobURLStore>(
+      MojoBinderAssociatedPolicy::kGrant);
+
+  // Pages with FetchLater API calls should be allowed to prerender.
+  // TODO(crbug.com/1465781): Update according to feedback from
+  // https://github.com/WICG/pending-beacon/issues/82
+  map.SetAssociatedPolicy<blink::mojom::FetchLaterLoaderFactory>(
       MojoBinderAssociatedPolicy::kGrant);
 }
 

@@ -10,10 +10,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/loader/keep_alive_url_loader.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
+#include "third_party/blink/public/mojom/loader/fetch_later.mojom.h"
 
 namespace content {
 
@@ -72,6 +74,16 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
           subresource_proxying_factory_bundle,
       scoped_refptr<PolicyContainerHost> policy_container_host);
 
+  // Binds the pending FetchLaterLoaderFactory `receiver` with this service,
+  // which uses `factory` to load FetchLater URL requests.
+  // See also `BindFactory()` for other parameters.
+  void BindFetchLaterLoaderFactory(
+      mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoaderFactory>
+          receiver,
+      scoped_refptr<network::SharedURLLoaderFactory>
+          subresource_proxying_factory_bundle,
+      scoped_refptr<PolicyContainerHost> policy_container_host);
+
   // For testing only:
   size_t NumLoadersForTesting() const;
   size_t NumDisconnectedLoadersForTesting() const;
@@ -89,6 +101,7 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
             class ReceiverSetType>
   class KeepAliveURLLoaderFactoriesBase;
   class KeepAliveURLLoaderFactories;
+  class FetchLaterLoaderFactories;
 
   // Handles every disconnection notification for `loader_receivers_`.
   void OnLoaderDisconnected();
@@ -102,6 +115,10 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
 
   // Many-to-one mojo receiver of URLLoaderFactory for Fetch keepalive requests.
   std::unique_ptr<KeepAliveURLLoaderFactories> url_loader_factories_;
+
+  // Many-to-one mojo receiver of FetchLaterLoaderFactory for FetchLater
+  // keepalive requests.
+  std::unique_ptr<FetchLaterLoaderFactories> fetch_later_loader_factories_;
 
   // For testing only:
   // Not owned.

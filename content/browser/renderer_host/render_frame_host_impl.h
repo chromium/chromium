@@ -148,6 +148,7 @@
 #include "third_party/blink/public/mojom/image_downloader/image_downloader.mojom.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom-forward.h"
+#include "third_party/blink/public/mojom/loader/fetch_later.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_cache.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
@@ -3006,6 +3007,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingAssociatedReceiver<blink::mojom::FileBackedBlobFactory>
           receiver);
 
+  // Binds the receiver end of FetchLaterLoaderFactory interface.
+  // The implementation is managed by StoragePartition, but its lifetime is
+  // roughly equals to the length of `receiver` connection.
+  // FetchLaterLoaderFactory is a navigation-associated interface.
+  void BindFetchLaterLoaderFactory(
+      mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoaderFactory>
+          receiver);
+
   // Determine if a focus change coming from the renderer was allowed to happen.
   // This only checks focus calls that crosses a fenced frame boundary. It will
   // badmessage the renderer that made the focus call if it deems the focus
@@ -4914,6 +4923,18 @@ class CONTENT_EXPORT RenderFrameHostImpl
       devtools_navigation_token_ = devtools_navigation_token;
     }
 
+    void set_subresource_proxying_factory_bundle(
+        scoped_refptr<network::SharedURLLoaderFactory>
+            subresource_proxying_factory_bundle) {
+      subresource_proxying_factory_bundle_ =
+          std::move(subresource_proxying_factory_bundle);
+    }
+
+    scoped_refptr<network::SharedURLLoaderFactory>
+    subresource_proxying_factory_bundle() const {
+      return subresource_proxying_factory_bundle_;
+    }
+
     // Produces weak pointers to the hosting RenderFrameHostImpl. This is
     // invalidated whenever DocumentAssociatedData is destroyed, due to
     // RenderFrameHost deletion or cross-document navigation.
@@ -4931,6 +4952,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
     base::WeakPtrFactory<RenderFrameHostImpl> weak_factory_;
     absl::optional<base::UnguessableToken> devtools_navigation_token_ =
         absl::nullopt;
+    // The factory bundle passed to renderer when committing navigation.
+    // Used in `BindFetchLaterLoaderFactory()` which needs to share the same
+    // bundle but happens after committing.
+    scoped_refptr<network::SharedURLLoaderFactory>
+        subresource_proxying_factory_bundle_ = nullptr;
   };
 
   // Reset immediately before a RenderFrameHost is reused for hosting a new

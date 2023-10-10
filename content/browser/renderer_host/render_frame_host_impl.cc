@@ -10478,6 +10478,8 @@ void RenderFrameHostImpl::CommitNavigation(
           keep_alive_loader_factory.InitWithNewPipeAndPassReceiver(),
           subresource_proxying_factory_bundle,
           navigation_request->GetPolicyContainerHost());
+      navigation_request->SetSubresourceProxyingFactoryBundle(
+          subresource_proxying_factory_bundle);
     }
 
     mojom::NavigationClient* navigation_client =
@@ -13079,6 +13081,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 
     document_associated_data_->set_devtools_navigation_token(
         navigation_request->devtools_navigation_token());
+    document_associated_data_->set_subresource_proxying_factory_bundle(
+        navigation_request->TakeSubresourceProxyingFactoryBundle());
 
     const absl::optional<FencedFrameProperties>& fenced_frame_properties =
         navigation_request->ComputeFencedFrameProperties();
@@ -15903,6 +15907,17 @@ void RenderFrameHostImpl::BindFileBackedBlobFactory(
         receiver) {
   FileBackedBlobFactoryImpl::CreateForCurrentDocument(this,
                                                       std::move(receiver));
+}
+
+void RenderFrameHostImpl::BindFetchLaterLoaderFactory(
+    mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoaderFactory>
+        receiver) {
+  GetStoragePartition()
+      ->GetKeepAliveURLLoaderService()
+      ->BindFetchLaterLoaderFactory(
+          std::move(receiver),
+          document_associated_data_->subresource_proxying_factory_bundle(),
+          policy_container_host());
 }
 
 bool RenderFrameHostImpl::ShouldChangeRenderFrameHostOnSameSiteNavigation()

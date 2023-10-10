@@ -47,6 +47,7 @@
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
+#include "third_party/blink/public/mojom/loader/fetch_later.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_observer.mojom.h"
 #include "third_party/blink/public/mojom/page/display_cutout.mojom.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom.h"
@@ -353,6 +354,12 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
           blink::features::kEnableFileBackedBlobFactory)) {
     associated_registry_->AddInterface<blink::mojom::FileBackedBlobFactory>(
         base::BindRepeating(&RenderFrameHostImpl::BindFileBackedBlobFactory,
+                            base::Unretained(this)));
+  }
+
+  if (base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI)) {
+    associated_registry_->AddInterface<blink::mojom::FetchLaterLoaderFactory>(
+        base::BindRepeating(&RenderFrameHostImpl::BindFetchLaterLoaderFactory,
                             base::Unretained(this)));
   }
 

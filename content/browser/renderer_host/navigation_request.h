@@ -821,6 +821,20 @@ class CONTENT_EXPORT NavigationRequest
   // Must only be called after ReadyToCommitNavigation().
   scoped_refptr<PolicyContainerHost> TakePolicyContainerHost();
 
+  // Stores in this navigation a refptr to the proxying URLLoaderFactory used by
+  // multiple different subresource loading.
+  //
+  // Must only be called after ReadyToCommitNavigation().
+  void SetSubresourceProxyingFactoryBundle(
+      scoped_refptr<network::SharedURLLoaderFactory>
+          subresource_proxying_factory_bundle);
+
+  // Moves this navigation's subresource proxying factory out of this instance.
+  //
+  // Must only be called after ReadyToCommitNavigation().
+  scoped_refptr<network::SharedURLLoaderFactory>
+  TakeSubresourceProxyingFactoryBundle();
+
   CrossOriginEmbedderPolicyReporter* coep_reporter() {
     return coep_reporter_.get();
   }
@@ -2047,6 +2061,11 @@ class CONTENT_EXPORT NavigationRequest
 
   // URLLoaderFactory to facilitate loading blob URLs.
   const scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory_;
+
+  // A bundle of URLLoaderFactory to facilitate loading subresources.
+  // It is shared between prefetch, topics, keep-alive, and fetchLater.
+  scoped_refptr<network::SharedURLLoaderFactory>
+      subresource_proxying_factory_bundle_ = nullptr;
 
   NavigationState state_ = NOT_STARTED;
   bool is_navigation_started_ = false;

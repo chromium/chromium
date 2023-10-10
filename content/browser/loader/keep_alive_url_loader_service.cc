@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -303,6 +304,8 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactories final
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     TRACE_EVENT("loading", "KeepAliveURLLoaderFactories::CreateLoaderAndStart",
                 "request_id", request_id);
+    // TODO(crbug.com/4905157): Update to Fetch-only after renderer switches to
+    // FetchLaterLoaderFactory for FetchLater.
     if (!blink::features::IsKeepAliveURLLoaderServiceEnabled()) {
       mojo::ReportBadMessage(
           "Unexpected call to "
@@ -318,7 +321,7 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactories final
       return;
     }
 
-    auto raw_loader = this->CreateKeepAliveURLLoader(
+    auto raw_loader = CreateKeepAliveURLLoader(
         std::move(receiver), loader_factory_receivers_.current_context(),
         request_id, options, resource_request, std::move(client),
         traffic_annotation);
@@ -327,8 +330,9 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactories final
     }
 
     // `raw_loader` must only be started after the above setup.
+    // TODO(crbug.com/1465781): Move the following check to FetchLater-specific
+    // factories after renderer switches to FetchLaterLoaderFactory.
     // For non-FetchLater requests, they should be started immediately.
-    // TODO(crbug.com/1465781): Move the check to FetchLater-specific factories.
     if (!resource_request.is_fetch_later_api) {
       raw_loader->Start();
     }
@@ -357,6 +361,94 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactories final
       loader_factory_receivers_;
 };
 
+// FetchLaterLoaderFactories handles requests from multiple remotes of
+// FetchLaterLoaderFactory from different renderers.
+//
+// See also
+// https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY
+class KeepAliveURLLoaderService::FetchLaterLoaderFactories final
+    : public KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase<
+          blink::mojom::FetchLaterLoader,
+          mojo::PendingAssociatedReceiver,
+          mojo::AssociatedReceiverSet>,
+      public blink::mojom::FetchLaterLoaderFactory {
+ public:
+  explicit FetchLaterLoaderFactories(KeepAliveURLLoaderService* service)
+      : KeepAliveURLLoaderFactoriesBase(service) {}
+
+  // Creates a `FactoryContext` to hold a refptr to `shared_url_loader_factory`,
+  // and then bound with `receiver`.
+  // `policy_container_host` must not be null.
+  void BindFactory(
+      mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoaderFactory>
+          receiver,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      scoped_refptr<PolicyContainerHost> policy_container_host) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK(policy_container_host);
+    TRACE_EVENT("loading", "FetchLaterLoaderFactories::BindFactory");
+
+    // Adds a new factory receiver to the set, binding the pending `receiver`
+    // from to `this` with a new context that has frame-specific data and keeps
+    // reference to `shared_url_loader_factory`.
+    auto context = std::make_unique<FactoryContext>(
+        std::move(shared_url_loader_factory), std::move(policy_container_host));
+    loader_factory_receivers_.Add(this, std::move(receiver),
+                                  std::move(context));
+  }
+
+  // `blink::mojom::FetchLaterLoaderFactory` overrides:
+  void CreateLoader(
+      mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoader> receiver,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& resource_request,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+      override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    TRACE_EVENT("loading", "FetchLaterLoaderFactories::CreateLoader",
+                "request_id", request_id);
+    if (!base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI)) {
+      mojo::ReportBadMessage(
+          "Unexpected call to "
+          "FetchLaterLoaderFactories::CreateLoader()");
+      return;
+    }
+    if (!resource_request.is_fetch_later_api) {
+      mojo::ReportBadMessage(
+          "Unexpected `resource_request.is_fetch_later_api` in "
+          "FetchLaterLoaderFactories::CreateLoader(): must be set");
+      return;
+    }
+
+    CreateKeepAliveURLLoader(std::move(receiver),
+                             loader_factory_receivers_.current_context(),
+                             request_id, options, resource_request,
+                             mojo::NullRemote(), traffic_annotation);
+    // See also `OnLoaderDisconnected()` for when `raw_loader` will be started.
+  }
+
+  void Clone(
+      mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoaderFactory>
+          receiver) override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+    loader_factory_receivers_.Add(
+        this, std::move(receiver),
+        std::make_unique<FactoryContext>(
+            loader_factory_receivers_.current_context()));
+  }
+
+ private:
+  // Receives `blink::mojom::FetchLaterLoaderFactory` requests from renderers.
+  // A receiver is added into this set after calling `BindFactory()`, and will
+  // be removed once it is disconnected from the corresponding remote in a
+  // renderer.
+  mojo::AssociatedReceiverSet<blink::mojom::FetchLaterLoaderFactory,
+                              std::unique_ptr<FactoryContext>>
+      loader_factory_receivers_;
+};
+
 KeepAliveURLLoaderService::KeepAliveURLLoaderService(
     BrowserContext* browser_context)
     : browser_context_(browser_context) {
@@ -364,6 +456,8 @@ KeepAliveURLLoaderService::KeepAliveURLLoaderService(
   CHECK(browser_context_);
 
   url_loader_factories_ = std::make_unique<KeepAliveURLLoaderFactories>(this);
+  fetch_later_loader_factories_ =
+      std::make_unique<FetchLaterLoaderFactories>(this);
 }
 
 KeepAliveURLLoaderService::~KeepAliveURLLoaderService() = default;
@@ -382,12 +476,30 @@ void KeepAliveURLLoaderService::BindFactory(
                                      std::move(policy_container_host));
 }
 
+void KeepAliveURLLoaderService::BindFetchLaterLoaderFactory(
+    mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoaderFactory>
+        receiver,
+    scoped_refptr<network::SharedURLLoaderFactory>
+        subresource_proxying_factory_bundle,
+    scoped_refptr<PolicyContainerHost> policy_container_host) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(subresource_proxying_factory_bundle);
+  CHECK(policy_container_host);
+
+  fetch_later_loader_factories_->BindFactory(
+      std::move(receiver), subresource_proxying_factory_bundle,
+      std::move(policy_container_host));
+}
+
 size_t KeepAliveURLLoaderService::NumLoadersForTesting() const {
-  return url_loader_factories_->NumLoadersForTesting();  // IN-TEST
+  return url_loader_factories_->NumLoadersForTesting() +         // IN-TEST
+         fetch_later_loader_factories_->NumLoadersForTesting();  // IN-TEST
 }
 
 size_t KeepAliveURLLoaderService::NumDisconnectedLoadersForTesting() const {
-  return url_loader_factories_->NumDisconnectedLoadersForTesting();  // IN-TEST
+  return url_loader_factories_->NumDisconnectedLoadersForTesting() +  // IN-TEST
+         fetch_later_loader_factories_
+             ->NumDisconnectedLoadersForTesting();  // IN-TEST
 }
 
 void KeepAliveURLLoaderService::SetLoaderObserverForTesting(
