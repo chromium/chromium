@@ -490,13 +490,156 @@ Here is an [example CL] that does this.
 
 ## Running Locally Built Binaries on the GPU Bots
 
-See the [Swarming documentation] for instructions on how to upload your binaries to the isolate server and trigger execution on Swarming.
+The easiest way to run a locally built test on swarming is the `tools/mb/mb.py`
+wrapper. This handles compilation (if necessary), uploading, and task triggering
+with a single command.
 
-Be sure to use the correct swarming dimensions for your desired GPU e.g. "1002:6613" instead of "AMD Radeon R7 240 (1002:6613)" which is how it appears on swarming task page.  You can query bots in the chromium.tests.gpu pool to find the correct dimensions:
+In order to use this, you will need:
 
-*   `tools\luci-go\swarming bots -S chromium-swarm.appspot.com -d pool=chromium.tests.gpu`
+* An output directory set up with the correct GN args you want to use.
+  `out/Release` will be assumed for examples.
+* The dimensions for the type of machine you want to test on. This can be
+  grabbed from an existing swarming task, assuming you are trying to reproduce
+  an issue that has occurred on the bots. These can be found in the `Dimensions`
+  field just above the `CAS Inputs` field near the top of the swarming task's
+  page.
+* The arguments you want to run the test with. These can usually be taken
+  directly from the swarming task, printed out after `Command:` near the top of
+  the task output.
 
-[Swarming documentation]: https://www.chromium.org/developers/testing/isolated-testing/for-swes#TOC-Run-a-test-built-locally-on-Swarming
+The general format for an `mb.py` command is:
+
+```
+tools/mb/mb.py run -s --no-default-dimensions \
+-d dimension_key1 dimension_value1 -d dimension_key2 dimension_value2 ... \
+out/Release target_name \
+--
+test_arg_1 test_arg_2 ...
+```
+
+**Note:** The test is executed from within the output directory, so any
+relative paths passed in as test arguments need to be specified relative to
+that. This generally means prefixing paths with `../../` to get back to the
+Chromium src directory.
+
+The command will compile all necessary targets, upload the necessary files to
+CAS, and trigger a test task using the specified dimensions and test args. Once
+triggered, a swarming task URL will be printed that you can look at and the
+script will hang until it is complete. At this point, it is safe to kill the
+script, as the task has already been queued.
+
+### Concrete Example
+
+Say we wanted to reproduce an issue happening on a Linux NVIDIA machine in the
+WebGL 1 conformance tests. The dimensions for the failed task are:
+
+```
+gpu: NVIDIA GeForce GTX 1660 (10de:2184-440.100)
+os: Ubuntu-18.04.5|Ubuntu-18.04.6
+cpu: x86-64
+pool: chromium.tests.gpu
+```
+
+and the command from the swarming task is:
+
+```
+Additional test environment:
+    CHROME_HEADLESS=1
+    GTEST_SHARD_INDEX=0
+    GTEST_TOTAL_SHARDS=2
+    LANG=en_US.UTF-8
+Command: /b/s/w/ir/.task_template_vpython_cache/vpython/store/python_venv-rrcc1h3jcjhkvqtqf5p39mhf78/contents/bin/python3 \
+  ../../testing/scripts/run_gpu_integration_test_as_googletest.py \
+  ../../content/test/gpu/run_gpu_integration_test.py \
+  --isolated-script-test-output=/b/s/w/io83bc1749/output.json \
+  --isolated-script-test-perf-output=/b/s/w/io83bc1749/perftest-output.json \
+  webgl1_conformance --show-stdout --browser=release --passthrough -v \
+  --stable-jobs \
+  --extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu \
+  --read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_linux_runtimes.json \
+  --jobs=4
+```
+
+The resulting `mb.py` command to run an equivalent task with a locally built
+binary would be:
+
+```
+tools/mb/mb.py run -s --no-default-dimensions \
+  -d gpu 10de:2184-440.100 \
+  -d os Ubuntu-18.04.5|Ubuntu-18.04.6 \
+  -d cpu x86-64 \
+  -d pool chromium.tests.gpu \
+  out/Release telemetry_gpu_integration_test \
+  -- \
+  --isolated-script-test-output '${ISOLATED_OUTDIR}/output.json' \
+  webgl1_conformance --show-stdout --browser=release --passthrough -v \
+  --stable-jobs \
+  --extra-browser-args="--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu" \
+  --read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_linux_runtimes.json \
+  --jobs=4 \
+  --total-shards=2 --shard-index=0
+```
+
+Here is a breakdown of what each component does and where it comes from:
+
+* `run -s` - Tells `mb.py` to run a test target on swarming (as opposed to
+  locally)
+* `--no-default-dimensions` - `mb.py` by default assumes the dimensions for
+  Linux GCEs that Chromium commonly uses for testing. Passing this in prevents
+  those dimensions from being auto-added.
+* `-d gpu 10de:2184-440.100` - Specifies the GPU model and driver version to
+  target. This is pulled directly from the `gpu` dimension of the task. Note
+  that the actual dimension starts with the PCI-e vendor ID - the human-readable
+  string (`NVIDIA GeForce GTX 1660`) is just provided for ease-of-use within the
+  swarming UI.
+* `-d os Ubuntu-18.04.5|Ubuntu-18.04.6` - Specifies the OS to target. Pulled
+  directly from the `os` dimension of the task. The use of `|` means that either
+  specified OS version is acceptable.
+* `-d cpu x86-64` - Specifies the CPU architecture in case there are other types
+  such as ARM. Pulled directly from the `cpu` dimension of the task.
+* `-d pool chromium.tests.gpu` - Specifies the hardware pool to use. Pulled
+  directly from the `pool` dimension of the task. Most GPU machines are in
+  `chromium.tests.gpu`, but some configurations are in `chromium.tests` due to
+  sharing capacity with the rest of Chromium.
+* `out/Release` - Specifies the output directory to use. Can usually be changed
+  to whatever output directory you want to use, but this can have an effect on
+  which args you need to pass to the test.
+* `telemetry_gpu_integration_test` - Specifies the GN target to build.
+* `--` - Separates arguments meant for `mb.py` from test arguments.
+* `--isolated-script-test-output '${ISOLATED_OUTDIR}/output.json'` - Taken from
+  the same argument from the swarming task, but with `${ISOLATED_OUTDIR}` used
+  instead of a specific directory since it is random for every task. Note that
+  single quotes are necessary on UNIX-style platforms to avoid having it
+  evaluated on your local machine. The similar
+  `--isolated-script-test-perf-output` argument present in the swarming test
+  command can be omitted since its presence is just due to some legacy behavior.
+* `webgl1_conformance` - Specifies the test suite to run. Taken directly from
+  the swarming task.
+* `--show-stdout --passthrough -v --stable-jobs` - Boilerplate arguments taken
+  directly from the swarming task.
+* `--browser=release` - Specifies the browser to use, which is related to the
+  name of the output directory. `release` and `debug` will automatically map to
+  `out/Release` and `out/Debug`, but other values would require the use of
+  `--browser=exact` and `--browser-executable=path/to/browser`. This should end
+  up being either `./chrome` or `.\chrome.exe` for Linux and Windows,
+  respectively, since the path should be relative to the output directory.
+* `--extra-browser-args="..."` - Extra arguments to pass to Chrome when running
+  the tests. Taken directly from the swarming task, but double or single quotes
+  are necessary in order to have the space-separated values grouped together.
+* `--read-abbreviated-json-results-from=...` - Taken directly from the swarming
+  task. Affects test sharding behavior, so only necessary if reproducing a
+  specific shard (covered later), but does not negatively impact anything if
+  unnecessarily passed in.
+* `--jobs=4` - Taken directly from the swarming task. Affects how many tests are
+  run in parallel.
+* `--total-shards=2 --shard-index=0` - Taken from the environment variables of
+  the swarming task. This will cause only the tests that ran on the particular
+  shard to run instead of all tests from the suite. If specifying these, it is
+  important to also specify `--read-abbreviated-json-results-from` if it is
+  present in the original command, as otherwise the tests that are run will
+  differ from the original swarming task. A possible alternative to this would
+  be explicitly specify the tests you want to run using the appropriate argument
+  for the target, in this case `--test-filter`.
 
 ## Moving Test Binaries from Machine to Machine
 
