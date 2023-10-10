@@ -21,7 +21,6 @@ source_set("branding") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/ui/autofill:features",
   ]
 }
 
@@ -50,7 +49,6 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/ui/autofill:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/autofill:features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",

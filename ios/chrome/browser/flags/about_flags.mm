@@ -92,7 +92,6 @@
 #import "ios/chrome/browser/tabs/tab_pickup/features.h"
 #import "ios/chrome/browser/text_selection/model/text_selection_util.h"
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
-#import "ios/chrome/browser/ui/autofill/features.h"
 #import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
 #import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -437,36 +436,6 @@ const FeatureEntry::FeatureVariation
         {"app close background refresh", kFeedAppCloseBackgroundRefresh,
          std::size(kFeedAppCloseBackgroundRefresh), nullptr},
 };
-
-const FeatureEntry::FeatureParam kAutofillBrandingIOSUntilInteracted[] = {
-    {autofill::features::kAutofillBrandingIOSParamFrequencyTypePhone,
-     autofill::features::kAutofillBrandingIOSParamFrequencyTypeUntilInteracted},
-    {autofill::features::kAutofillBrandingIOSParamFrequencyTypeTablet,
-     autofill::features::
-         kAutofillBrandingIOSParamFrequencyTypeUntilInteracted}};
-const FeatureEntry::FeatureParam kAutofillBrandingIOSAlwaysShowAndSlideOut[] = {
-    {autofill::features::kAutofillBrandingIOSParamFrequencyTypePhone,
-     autofill::features::
-         kAutofillBrandingIOSParamFrequencyTypeAlwaysShowAndDismiss},
-    {autofill::features::kAutofillBrandingIOSParamFrequencyTypeTablet,
-     autofill::features::kAutofillBrandingIOSParamFrequencyTypeAlways}};
-const FeatureEntry::FeatureParam kAutofillBrandingIOSSlideOutWhenInteracted[] =
-    {{autofill::features::kAutofillBrandingIOSParamFrequencyTypePhone,
-      autofill::features::
-          kAutofillBrandingIOSParamFrequencyTypeDismissWhenInteracted},
-     {autofill::features::kAutofillBrandingIOSParamFrequencyTypeTablet,
-      autofill::features::kAutofillBrandingIOSParamFrequencyTypeAlways}};
-const FeatureEntry::FeatureVariation kAutofillBrandingIOSVariations[] = {
-    {"(will not show again after user interacts with keyboard accessories)",
-     kAutofillBrandingIOSUntilInteracted,
-     std::size(kAutofillBrandingIOSUntilInteracted), nullptr},
-    {"(shows and slides out from leading edge every time)",
-     kAutofillBrandingIOSAlwaysShowAndSlideOut,
-     std::size(kAutofillBrandingIOSAlwaysShowAndSlideOut), nullptr},
-    {"(slides out from leading edge after user interacts with keyboard "
-     "accessories)",
-     kAutofillBrandingIOSSlideOutWhenInteracted,
-     std::size(kAutofillBrandingIOSSlideOutWhenInteracted), nullptr}};
 
 const FeatureEntry::FeatureParam kEnableExpKitTextClassifierDate[] = {
     {"date", "true"}};
@@ -1177,11 +1146,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"whats-new-ios-m116", flag_descriptions::kWhatsNewIOSM116Name,
      flag_descriptions::kWhatsNewIOSM116Description, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kWhatsNewIOSM116)},
-    {"ios-autofill-branding", flag_descriptions::kAutofillBrandingIOSName,
-     flag_descriptions::kAutofillBrandingIOSDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(autofill::features::kAutofillBrandingIOS,
-                                    kAutofillBrandingIOSVariations,
-                                    "AutofillBrandingIOS")},
     {"app-store-rating", flag_descriptions::kAppStoreRatingName,
      flag_descriptions::kAppStoreRatingDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAppStoreRating)},

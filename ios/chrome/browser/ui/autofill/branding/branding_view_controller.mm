@@ -20,9 +20,6 @@ constexpr CGFloat kLeadingInset = 10;
 constexpr CGFloat kPopAnimationScale = ((CGFloat)4) / 3;
 // Wait time after the keyboard settles into place to perform pop animation.
 constexpr base::TimeDelta kPopAnimationWaitTime = base::Milliseconds(200);
-// Wait time after the keyboard settles into place to perform the
-// slide-away-from-leading-edge animation.
-constexpr base::TimeDelta kSlideAnimationWaitTime = base::Milliseconds(400);
 // Time it takes the "pop" animation to perform.
 constexpr base::TimeDelta kTimeToAnimate = base::Milliseconds(400);
 // Minimum time interval between two animations.
@@ -82,35 +79,6 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
          selector:@selector(keyboardDidHide)
              name:UIKeyboardDidHideNotification
            object:nil];
-}
-
-- (void)notifyFormInputAccessoryTapped {
-  [self.delegate keyboardAccessoryDidTap];
-}
-
-#pragma mark - BrandingConsumer
-
-- (void)slideAwayFromLeadingEdge {
-  __weak BrandingViewController* weakSelf = self;
-  __weak UIButton* weakBranding = _brandingIcon;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(^{
-        [UIView animateWithDuration:kTimeToAnimate.InSecondsF()
-            animations:^{
-              [weakSelf slideAwayAnimation];
-            }
-            completion:^(BOOL finished) {
-              if (weakBranding.superview == nil || !finished) {
-                return;
-              }
-              [NSLayoutConstraint
-                  deactivateConstraints:weakSelf.view.constraints];
-              [weakSelf hideBranding];
-              // Restore original size.
-              weakBranding.transform = CGAffineTransformIdentity;
-            }];
-      }),
-      kSlideAnimationWaitTime);
 }
 
 #pragma mark - Keyboard Event Handlers
@@ -201,23 +169,6 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
 // Method that is invoked when the user taps the branding icon.
 - (void)onBrandingTapped {
   [_delegate brandingIconDidPress];
-}
-
-// Animation to slide the branding away from the leading edge,
-- (void)slideAwayAnimation {
-  if (_brandingIcon.superview == nil) {
-    return;
-  }
-  _leadingConstraint.constant = 0;
-  [self.view layoutIfNeeded];
-  _brandingIcon.transform =
-      CGAffineTransformScale(CGAffineTransformIdentity, 0.1, 0.1);
-  CGFloat newWidth = CGSizeApplyAffineTransform(_brandingIcon.bounds.size,
-                                                _brandingIcon.transform)
-                         .width;
-  _widthConstraintWhenHidingBranding.constant = newWidth;
-  _widthConstraintWhenHidingBranding.active = YES;
-  [self.view.superview layoutIfNeeded];
 }
 
 // Performs the "pop" animation. This includes a quick enlarging of the icon

@@ -17,9 +17,6 @@
 // icon shows up.
 @property(nonatomic, assign) BOOL shouldPerformPopAnimation;
 
-// Make branding icon fade away to the leading edge on dismissal.
-- (void)slideAwayFromLeadingEdge;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_BRANDING_BRANDING_CONSUMER_H_

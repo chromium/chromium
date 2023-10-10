@@ -27,12 +27,6 @@ const char kAutofillAccountProfilesStorageName[] =
 const char kAutofillAccountProfilesStorageDescription[] =
     "When enabled, the profiles would be saved to the Google Account";
 
-const char kAutofillBrandingIOSName[] = "Autofill Branding on iOS";
-const char kAutofillBrandingIOSDescription[] =
-    "Adds the Chrome logo in the form input suggestions bar. If select "
-    "\"Enabled\", the branding logo shows twice, and would not be "
-    "dismissed with any animation.";
-
 const char kAutofillCreditCardUploadName[] =
     "Offers uploading Autofilled credit cards";
 const char kAutofillCreditCardUploadDescription[] =

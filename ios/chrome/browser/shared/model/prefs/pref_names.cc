@@ -449,11 +449,6 @@ const char kAutofillBrandingIconAnimationRemainingCount[] =
 const char kAutofillBrandingIconDisplayCount[] =
     "ios.autofill.branding.display_count";
 
-// A boolean used to track whether the user has tapped on any of the keyboard
-// accessories when the autofill branding is visible.
-const char kAutofillBrandingKeyboardAccessoriesTapped[] =
-    "ios.autofill.branding.keyboard_accessory_tapped";
-
 // A boolean used to determine if the Price Tracking UI has been shown.
 const char kPriceNotificationsHasBeenShown[] =
     "ios.price_notifications.has_been_shown";

@@ -235,17 +235,6 @@ source_set("eg_test_support+eg2") {
   ]
 }
 
-source_set("features") {
-  sources = [
-    "features.cc",
-    "features.h",
-  ]
-  public_deps = [
-    "//base",
-    "//ui/base",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [

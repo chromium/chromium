@@ -24,9 +24,6 @@
 // keyboard.
 @property(nonatomic, assign) BOOL keyboardAccessoryVisible;
 
-// Notifies the branding that the user has tapped a keyboard accessory element.
-- (void)notifyFormInputAccessoryTapped;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_BRANDING_BRANDING_VIEW_CONTROLLER_H_
