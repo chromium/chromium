@@ -49,9 +49,8 @@ BruschettaService::BruschettaService(Profile* profile) : profile_(profile) {
     return;
   }
 
-  ash::ConciergeClient* concierge = ash::ConciergeClient::Get();
-  if (concierge != nullptr) {
-    vm_observer_.Observe(concierge);
+  if (auto* concierge = ash::ConciergeClient::Get(); concierge) {
+    concierge->AddVmObserver(this);
   }
 
   pref_observer_.Init(profile_->GetPrefs());
@@ -85,7 +84,13 @@ BruschettaService::BruschettaService(Profile* profile) : profile_(profile) {
   OnPolicyChanged();
 }
 
-BruschettaService::~BruschettaService() = default;
+BruschettaService::~BruschettaService() {
+  // ConciergeClient may be destroyed prior to BruschettaService in tests.
+  // Therefore we do this instead of ScopedObservation.
+  if (auto* concierge = ash::ConciergeClient::Get(); concierge) {
+    concierge->RemoveVmObserver(this);
+  }
+}
 
 BruschettaService* BruschettaService::GetForProfile(Profile* profile) {
   return BruschettaServiceFactory::GetForProfile(profile);

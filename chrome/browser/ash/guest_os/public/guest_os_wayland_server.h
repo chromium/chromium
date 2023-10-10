@@ -125,9 +125,6 @@ class GuestOsWaylandServer : public ash::ConciergeClient::Observer {
 
   ServersByType servers_;
 
-  base::ScopedObservation<ash::ConciergeClient, ash::ConciergeClient::Observer>
-      concierge_observer_;
-
   base::WeakPtrFactory<GuestOsWaylandServer> weak_factory_{this};
 };
 

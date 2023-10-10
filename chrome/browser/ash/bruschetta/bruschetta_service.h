@@ -117,9 +117,6 @@ class BruschettaService : public KeyedService,
 
   PrefChangeRegistrar pref_observer_;
   base::CallbackListSubscription cros_settings_observer_;
-  base::ScopedObservation<ash::ConciergeClient,
-                          ash::ConciergeClient::VmObserver>
-      vm_observer_{this};
 
   const raw_ptr<Profile, ExperimentalAsh> profile_;
 

@@ -62,16 +62,21 @@ void GuestOsWaylandServer::CloseSocket(
 }
 
 GuestOsWaylandServer::GuestOsWaylandServer(Profile* profile)
-    : profile_(profile), concierge_observer_(this) {
-  auto* concierge_client = ash::ConciergeClient::Get();
+    : profile_(profile) {
   // Cleanup is best-effort, so don't bother if for some reason we
   // can't get a handle to the service (like tests).
-  if (concierge_client) {
-    concierge_observer_.Observe(concierge_client);
+  if (auto* concierge = ash::ConciergeClient::Get(); concierge) {
+    concierge->AddObserver(this);
   }
 }
 
-GuestOsWaylandServer::~GuestOsWaylandServer() = default;
+GuestOsWaylandServer::~GuestOsWaylandServer() {
+  // ConciergeClient may be destroyed prior to GuestOsWaylandServer in tests.
+  // Therefore we do this instead of ScopedObservation.
+  if (auto* concierge = ash::ConciergeClient::Get(); concierge) {
+    concierge->RemoveObserver(this);
+  }
+}
 
 // Returns a weak handle to the security delegate for the VM with the given
 // |name| and |type|, if one exists, and nullptr otherwise.
