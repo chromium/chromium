@@ -1092,6 +1092,7 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
                                             test_case_3, test_case_4};
 
   for (const auto& [origins, expected] : test_cases) {
+    base::HistogramTester histogram_tester;
     test_interest_group_manager()->SetInterestGroupDataKeys(
         base::test::ToVector(origins, [](const auto& origin) {
           return content::InterestGroupManager::InterestGroupDataKey{
@@ -1110,7 +1111,31 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
 
     privacy_sandbox_service()->GetFledgeJoiningEtldPlusOneForDisplay(callback);
     EXPECT_TRUE(callback_called);
+    histogram_tester.ExpectUniqueSample(
+        "PrivacySandbox.ProtectedAudience.JoiningTopFrameDisplayed", true,
+        origins.size());
   }
+}
+
+TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne_InvalidTopFrame) {
+  // Confirm that when an invalid top frame is received, the appropriate metric
+  // is recorded, and the returned list is empty.
+  base::HistogramTester histogram_tester;
+  auto missing_top_frame = content::InterestGroupManager::InterestGroupDataKey{
+      url::Origin::Create(GURL("https://embedded.com")), url::Origin()};
+  test_interest_group_manager()->SetInterestGroupDataKeys({missing_top_frame});
+
+  bool callback_called = false;
+  auto callback = base::BindLambdaForTesting(
+      [&](std::vector<std::string> items_for_display) {
+        ASSERT_EQ(items_for_display.size(), 0u);
+        callback_called = true;
+      });
+
+  privacy_sandbox_service()->GetFledgeJoiningEtldPlusOneForDisplay(callback);
+  EXPECT_TRUE(callback_called);
+  histogram_tester.ExpectUniqueSample(
+      "PrivacySandbox.ProtectedAudience.JoiningTopFrameDisplayed", false, 1);
 }
 
 TEST_F(PrivacySandboxServiceTest, GetFledgeBlockedEtldPlusOne) {
