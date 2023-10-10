@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <utility>
 
 #include "base/gtest_prod_util.h"
@@ -320,7 +321,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // The class logs metrics to:
   // 1. An aggregated histogram for all bubbles.
   // 2. A histogram specific to a bubble subclass when its name is provided.
-  class BubbleUmaLogger {
+  class VIEWS_EXPORT BubbleUmaLogger {
    public:
     BubbleUmaLogger();
     ~BubbleUmaLogger();
@@ -329,6 +330,11 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
       delegate_ = delegate;
     }
     void set_bubble_view(views::View* view) { bubble_view_ = view; }
+
+    void set_allowed_class_names_for_testing(
+        const std::unordered_set<std::string>& value) {
+      allowed_class_names_for_testing_ = value;
+    }
 
     absl::optional<std::string> GetBubbleName() const;
 
@@ -340,12 +346,14 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
     //   subclass, if `bubble_name` is set.
     template <typename Value>
     void LogMetric(void (*uma_func)(const std::string&, Value),
-                   std::string histogram_name,
+                   const std::string& histogram_name,
                    Value value) const;
 
    private:
     absl::optional<raw_ptr<views::View>> bubble_view_;
     absl::optional<raw_ptr<views::BubbleDialogDelegate>> delegate_;
+    absl::optional<std::unordered_set<std::string>>
+        allowed_class_names_for_testing_;
     base::WeakPtrFactory<BubbleUmaLogger> weak_factory_{this};
   };
 
@@ -401,6 +409,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   friend class AnchorViewObserver;
   friend class AnchorWidgetObserver;
   friend class BubbleWidgetObserver;
+  friend class TestBubbleUmaLogger;
   friend class ThemeObserver;
 
   friend class BubbleBorderDelegate;

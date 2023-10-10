@@ -878,7 +878,7 @@ BubbleDialogDelegate::BubbleUmaLogger::GetBubbleName() const {
 template <typename Value>
 void BubbleDialogDelegate::BubbleUmaLogger::LogMetric(
     void (*uma_func)(const std::string&, Value),
-    std::string histogram_name,
+    const std::string& histogram_name,
     Value value) const {
   if (!base::FeatureList::IsEnabled(::features::kBubbleMetricsApi)) {
     return;
@@ -890,15 +890,29 @@ void BubbleDialogDelegate::BubbleUmaLogger::LogMetric(
   if (!bubble_name.has_value()) {
     return;
   }
-  const std::unordered_set<std::string> kValidClassName{
+
+  const std::unordered_set<std::string> kAllowedClassNames{
       "ProfileMenuViewBase", "ExtensionsMenuView", "PageInfoBubbleViewBase",
       "PermissionPromptBaseView", "DownloadBubbleContentsView"};
-  if (!base::Contains(kValidClassName, bubble_name.value())) {
+
+  const auto& allowed_class_names =
+      allowed_class_names_for_testing_.has_value()
+          ? allowed_class_names_for_testing_.value()
+          : kAllowedClassNames;
+
+  if (!base::Contains(allowed_class_names, bubble_name.value())) {
     return;
   }
+
   uma_func(base::StrCat({"Bubble.", bubble_name.value(), ".", histogram_name}),
            value);
 }
+
+// Instantiate template function to be able to use in views_unittests.
+template VIEWS_EXPORT void BubbleDialogDelegate::BubbleUmaLogger::LogMetric<
+    base::TimeDelta>(void (*uma_func)(const std::string&, base::TimeDelta),
+                     const std::string& histogram_name,
+                     base::TimeDelta value) const;
 
 gfx::Rect BubbleDialogDelegate::GetBubbleBounds() {
   // The argument rect has its origin at the bubble's arrow anchor point;
