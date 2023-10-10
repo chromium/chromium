@@ -14,7 +14,7 @@ PASS .foo { :is(.bar, .baz) { color: green; }}
 PASS .foo { &:is(.bar, .baz) { color: green; }}
 PASS .foo { :is(.bar, &.baz) { color: green; }}
 PASS .foo { &:is(.bar, &.baz) { color: green; }}
-FAIL .foo { div& { color: green; }} assert_equals: Inner rule should exist. expected 1 but got 0
+PASS .foo { div& { color: green; }}
 PASS INVALID: .foo { &div { color: green; }}
 PASS .foo { .class& { color: green; }}
 PASS .foo { &.class { color: green; }}

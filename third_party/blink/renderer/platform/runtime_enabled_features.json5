@@ -980,6 +980,7 @@
     {
       // Support nested selectors that start with idents.
       name: "CSSNestingIdent",
+      status: "stable",
     },
     {
       // Support for typed om numeric factory methods for various units that
