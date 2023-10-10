@@ -989,7 +989,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (mCreatedTabOnStartup) numTabsToCopy--;
         boolean needPlaceholdersBeforeActiveTab =
                 numTabsToCopy <= mActiveTabIndexOnStartup && mSelectedOnStartup;
-        if (needPlaceholdersBeforeActiveTab) numTabsToCopy--;
+        if (needPlaceholdersBeforeActiveTab && numTabsToCopy > 0) numTabsToCopy--;
         mCurrentPlaceholderIndex = numTabsToCopy;
 
         // There should not be more restored tabs than the allotted placeholder tabs.
@@ -1003,6 +1003,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             tab.setIsPlaceholder(false);
             tab.setContainerOpacity(TAB_OPACITY_HIDDEN);
         }
+        if (!needPlaceholdersBeforeActiveTab) mActiveTabReplaced = true;
 
         // 2. If a new tab was created on startup (e.g. through intent), copy it over now.
         if (mCreatedTabOnStartup) {
@@ -1061,6 +1062,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         int replaceIndex;
         if (selected || !mActiveTabReplaced) {
             replaceIndex = mActiveTabIndexOnStartup;
+            mActiveTabReplaced = true;
         } else {
             // Should match the index in the model.
             replaceIndex = mCurrentPlaceholderIndex++;
