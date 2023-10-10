@@ -3015,6 +3015,11 @@ void RenderFrameHostImpl::AccessibilityHitTest(
                      opt_event_to_fire, std::move(opt_callback)));
 }
 
+gfx::NativeWindow RenderFrameHostImpl::GetTopLevelNativeWindow() {
+  WebContents* web_contents = WebContents::FromRenderFrameHost(this);
+  return web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
+}
+
 bool RenderFrameHostImpl::AccessibilityIsRootFrame() const {
   // Do not use is_main_frame() or IsOutermostMainFrame().
   // Frame trees may be nested so it can be the case that is_main_frame() is

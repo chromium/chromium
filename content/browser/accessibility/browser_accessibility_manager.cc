@@ -1721,7 +1721,6 @@ BrowserAccessibility* BrowserAccessibilityManager::ApproximateHitTest(
 
 void BrowserAccessibilityManager::DetachFromParentManager() {
   connected_to_parent_tree_node_ = false;
-  delegate_ = nullptr;
 }
 
 void BrowserAccessibilityManager::BuildAXTreeHitTestCache() {

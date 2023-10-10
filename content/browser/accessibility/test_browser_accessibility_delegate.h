@@ -33,6 +33,7 @@ class TestBrowserAccessibilityDelegate
       int opt_request_id,
       base::OnceCallback<void(ui::AXPlatformTreeManager* hit_manager,
                               ui::AXNodeID hit_node_id)> opt_callback) override;
+  gfx::NativeWindow GetTopLevelNativeWindow() override;
   bool AccessibilityIsRootFrame() const override;
   WebContentsAccessibility* AccessibilityGetWebContentsAccessibility() override;
   RenderFrameHostImpl* AccessibilityRenderFrameHost() override;

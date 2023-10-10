@@ -109,6 +109,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManagerDelegate {
       base::OnceCallback<void(AXPlatformTreeManager* hit_manager,
                               AXNodeID hit_node_id)> opt_callback) = 0;
 
+  virtual gfx::NativeWindow GetTopLevelNativeWindow() = 0;
+
  protected:
   AXPlatformTreeManagerDelegate() = default;
 };
