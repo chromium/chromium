@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
@@ -157,7 +158,10 @@ float EyeDropperView::GetDiameter() const {
 std::unique_ptr<content::EyeDropper> ShowEyeDropper(
     content::RenderFrameHost* frame,
     content::EyeDropperListener* listener) {
-  return (features::IsEyeDropperEnabled() && frame->GetView()->HasFocus())
-             ? std::make_unique<EyeDropperView>(frame, listener)
-             : nullptr;
+  if (!features::IsEyeDropperEnabled() || !frame->GetView()->HasFocus()) {
+    return nullptr;
+  }
+  return std::make_unique<EyeDropperView>(
+      content::WebContents::FromRenderFrameHost(frame)->GetNativeView(),
+      listener);
 }

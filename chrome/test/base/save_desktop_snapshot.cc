@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "content/public/browser/desktop_capture.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -37,6 +38,7 @@ class FrameHolder : public webrtc::DesktopCapturer::Callback {
 
   // Returns the frame that was captured or null in case of failure.
   std::unique_ptr<webrtc::DesktopFrame> TakeFrame() {
+    signal_.Wait();
     return std::move(frame_);
   }
 
@@ -46,9 +48,11 @@ class FrameHolder : public webrtc::DesktopCapturer::Callback {
                        std::unique_ptr<webrtc::DesktopFrame> frame) override {
     if (result == webrtc::DesktopCapturer::Result::SUCCESS)
       frame_ = std::move(frame);
+    signal_.SetValue();
   }
 
   std::unique_ptr<webrtc::DesktopFrame> frame_;
+  base::test::TestFuture<void> signal_;
 };
 
 // Captures and returns a snapshot of the screen, or an empty bitmap in case of

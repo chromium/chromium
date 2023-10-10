@@ -27,6 +27,12 @@
 #include "base/win/windows_version.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ui/aura/client/screen_position_client.h"
+#include "ui/display/screen.h"
+#endif
+
 class EyeDropperView::ViewPositionHandler {
  public:
   explicit ViewPositionHandler(EyeDropperView* owner);
@@ -71,6 +77,7 @@ class EyeDropperView::ScreenCapturer
   void OnCaptureResult(webrtc::DesktopCapturer::Result result,
                        std::unique_ptr<webrtc::DesktopFrame> frame) override;
 
+  void CaptureScreen(absl::optional<webrtc::DesktopCapturer::SourceId> screen);
   SkBitmap GetBitmap() const;
   SkColor GetColor(int x, int y) const;
   int original_offset_x() const;
@@ -102,6 +109,16 @@ EyeDropperView::ScreenCapturer::ScreenCapturer() {
     capturer_->Start(this);
     if (allow_wgc_screen_capture) {
       capturer_->SelectSource(webrtc::kFullDesktopScreenId);
+    }
+  }
+  CaptureScreen(absl::nullopt);
+}
+
+void EyeDropperView::ScreenCapturer::CaptureScreen(
+    absl::optional<webrtc::DesktopCapturer::SourceId> screen) {
+  if (capturer_) {
+    if (screen) {
+      capturer_->SelectSource(*screen);
     }
     capturer_->CaptureFrame();
   }
@@ -165,10 +182,9 @@ int EyeDropperView::ScreenCapturer::original_offset_y() const {
   return original_offset_y_;
 }
 
-EyeDropperView::EyeDropperView(content::RenderFrameHost* frame,
+EyeDropperView::EyeDropperView(gfx::NativeView parent,
                                content::EyeDropperListener* listener)
-    : render_frame_host_(frame),
-      listener_(listener),
+    : listener_(listener),
       view_position_handler_(std::make_unique<ViewPositionHandler>(this)),
       screen_capturer_(std::make_unique<ScreenCapturer>()) {
   SetModalType(ui::MODAL_TYPE_WINDOW);
@@ -193,22 +209,30 @@ EyeDropperView::EyeDropperView(content::RenderFrameHost* frame,
   params.force_software_compositing = true;
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
   params.name = "MagnifierHost";
-  params.parent = content::WebContents::FromRenderFrameHost(render_frame_host_)
-                      ->GetNativeView();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Parent on a top-level container to allow moving between displays.
+  params.parent =
+      parent->GetRootWindow()->GetChildById(ash::kShellWindowId_MenuContainer);
+#else
+  params.parent = parent;
+#endif
   params.delegate = this;
   views::Widget* widget = new views::Widget();
   widget->Init(std::move(params));
   widget->SetContentsView(this);
   MoveViewToFront();
   HideCursor();
-  pre_dispatch_handler_ = std::make_unique<PreEventDispatchHandler>(
-      this, content::WebContents::FromRenderFrameHost(render_frame_host_)
-                ->GetNativeView());
+  pre_dispatch_handler_ =
+      std::make_unique<PreEventDispatchHandler>(this, parent);
   widget->Show();
   CaptureInputIfNeeded();
   // The ignore selection time should be long enough to allow the user to see
   // the UI.
   ignore_selection_time_ = base::TimeTicks::Now() + base::Milliseconds(500);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  window_observation_.Observe(GetWidget()->GetNativeWindow());
+#endif
 }
 
 EyeDropperView::~EyeDropperView() {
@@ -247,6 +271,18 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
           .CenterPoint();
   center_position.Offset(-screen_capturer_->original_offset_x(),
                          -screen_capturer_->original_offset_y());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // ChromeOS only captures a single display at a time, and we need to convert
+  // the cursor position to local values for non primary displays.
+  aura::Window* window = GetWidget()->GetNativeWindow()->GetRootWindow();
+  aura::client::ScreenPositionClient* screen_position_client =
+      aura::client::GetScreenPositionClient(window);
+  if (screen_position_client) {
+    screen_position_client->ConvertPointFromScreen(window, &center_position);
+  }
+#endif
+
   view_canvas->DrawImageInt(gfx::ImageSkia::CreateFrom1xBitmap(frame),
                             center_position.x() - pixel_count / 2,
                             center_position.y() - pixel_count / 2, pixel_count,
@@ -316,6 +352,19 @@ void EyeDropperView::OnWidgetMove() {
   // Trigger a repaint since because the widget was moved, the content of the
   // view needs to be updated.
   SchedulePaint();
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void EyeDropperView::OnWindowAddedToRootWindow(aura::Window* window) {
+  display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+  CaptureScreen(display.id());
+}
+#endif
+
+void EyeDropperView::CaptureScreen(
+    absl::optional<webrtc::DesktopCapturer::SourceId> screen) {
+  screen_capturer_->CaptureScreen(screen);
 }
 
 void EyeDropperView::UpdatePosition() {

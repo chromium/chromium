@@ -16,6 +16,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "content/browser/media/capture/aura_window_to_mojo_device_adapter.h"
+#include "content/browser/media/capture/desktop_capturer_ash.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #endif
 
@@ -86,6 +87,8 @@ std::unique_ptr<webrtc::DesktopCapturer> CreateScreenCapturer(
   return std::make_unique<DesktopCapturerLacros>(
       DesktopCapturerLacros::CaptureType::kScreen,
       webrtc::DesktopCaptureOptions());
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  return std::make_unique<DesktopCapturerAsh>();
 #else
   auto options = desktop_capture::CreateDesktopCaptureOptions();
 #if defined(RTC_ENABLE_WIN_WGC)

@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "content/browser/media/capture/desktop_frame_skia.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
@@ -16,30 +17,6 @@
 #include "ui/aura/window_tree_host.h"
 
 namespace content {
-namespace {
-
-// An SkBitmap backed subclass of DesktopFrame. This enables the webrtc system
-// to retain the SkBitmap buffer without having to copy the pixels out until
-// they are needed (e.g., for encoding).
-class DesktopFrameSkia : public webrtc::DesktopFrame {
- public:
-  explicit DesktopFrameSkia(const SkBitmap& bitmap)
-      : webrtc::DesktopFrame(
-            webrtc::DesktopSize(bitmap.width(), bitmap.height()),
-            bitmap.rowBytes(),
-            static_cast<uint8_t*>(bitmap.getPixels()),
-            nullptr),
-        bitmap_(bitmap) {}
-  ~DesktopFrameSkia() override = default;
-
- private:
-  DesktopFrameSkia(const DesktopFrameSkia&) = delete;
-  DesktopFrameSkia& operator=(const DesktopFrameSkia&) = delete;
-
-  SkBitmap bitmap_;
-};
-
-}  // namespace
 
 DesktopCapturerLacros::DesktopCapturerLacros(
     CaptureType capture_type,
@@ -170,8 +147,8 @@ void DesktopCapturerLacros::DidTakeSnapshot(bool success,
     return;
   }
 
-  callback_->OnCaptureResult(Result::SUCCESS,
-                             std::make_unique<DesktopFrameSkia>(snapshot));
+  callback_->OnCaptureResult(
+      Result::SUCCESS, std::make_unique<content::DesktopFrameSkia>(snapshot));
 }
 
 void DesktopCapturerLacros::InitializeWidgetMap() {
