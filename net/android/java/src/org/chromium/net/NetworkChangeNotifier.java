@@ -95,8 +95,8 @@ public class NetworkChangeNotifier {
 
     /**
      * Returns NetID of device's current default connected network used for
-     * communication. Only available on Lollipop and newer releases and when
-     * auto-detection has been enabled, returns NetId.INVALID otherwise.
+     * communication. Only available when auto-detection has been enabled,
+     * returns NetId.INVALID otherwise.
      */
     @CalledByNative
     public long getCurrentDefaultNetId() {
@@ -108,8 +108,7 @@ public class NetworkChangeNotifier {
      * networks and ConnectionTypes. Array elements are a repeated sequence of:
      *   NetID of network
      *   ConnectionType of network
-     * Only available on Lollipop and newer releases and when auto-detection has
-     * been enabled.
+     * Only available when auto-detection has been enabled.
      */
     @CalledByNative
     public long[] getCurrentNetworksAndTypes() {
