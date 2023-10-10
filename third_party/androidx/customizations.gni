@@ -17,9 +17,6 @@ template("_androidx_prebuilt") {
     } else if (target_name == "androidx_benchmark_benchmark_macro_java") {
       # Manually add dep onto DISALLOWED_DEP androidx.profileinstaller.
       deps += [ ":androidx_profileinstaller_profileinstaller_java" ]
-    } else if (target_name == "androidx_biometric_biometric_java") {
-      bytecode_rewriter_target =
-          "//build/android/bytecode:fragment_activity_replacer"
     } else if (target_name ==
                "androidx_coordinatorlayout_coordinatorlayout_java") {
       # Reduce binary size. https:crbug.com/954584
@@ -48,9 +45,6 @@ template("_androidx_prebuilt") {
       deps += [ "//third_party/android_deps/utils:java" ]
 
       proguard_configs = [ "androidx_fragment.flags" ]
-
-      bytecode_rewriter_target =
-          "//build/android/bytecode:fragment_activity_replacer"
     } else if (target_name == "androidx_lifecycle_lifecycle_process_java") {
       # Only useful for very old SDKs.
       ignore_proguard_configs = true
@@ -64,9 +58,6 @@ template("_androidx_prebuilt") {
       # https://crbug.com/1000382
       proguard_configs = [ "androidx_mediarouter.flags" ]
     } else if (target_name == "androidx_preference_preference_java") {
-      bytecode_rewriter_target =
-          "//build/android/bytecode:fragment_activity_replacer"
-
       proguard_configs = [ "androidx_preferences.flags" ]
 
       # Replace broad library -keep rules with a more limited set in
