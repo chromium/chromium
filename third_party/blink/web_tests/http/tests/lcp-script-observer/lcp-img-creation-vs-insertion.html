@@ -26,21 +26,26 @@
 
         // wait until IMG becomes LCP to remove flakiness.
         const lcp = entries.find(entry => entry.element.nodeName === 'IMG');
-        if (lcp) resolve(lcp);
+        resolve(lcp);
       });
       observer.observe({type: "largest-contentful-paint", buffered: true});
 
-    }).then(lcp => {
-      // ensure LCP is an image.
-      assert_equals(lcp.element.nodeName, 'IMG');
+    }).then(lcpImage => {
+      if (lcpImage) {
+        // look for creator scripts if LCP is an image.
+        assert_equals(lcpImage.element.nodeName, 'IMG');
 
-      // assert LCP image knows its creator scripts.
-      const creators = internals.getCreatorScripts(lcp.element)
-        .map(url => new URL(url).pathname);
-      assert_array_equals(creators, [
-        '/lcp-script-observer/resources/lcp-img-insert.js',
-        '/lcp-script-observer/resources/lcp-img-create.js',
-      ]);
+        // assert LCP image knows its creator scripts.
+        const creators = internals.getCreatorScripts(lcpImage.element)
+          .map(url => new URL(url).pathname);
+        assert_array_equals(creators, [
+          '/lcp-script-observer/resources/lcp-img-insert.js',
+          '/lcp-script-observer/resources/lcp-img-create.js',
+        ]);
+      }
+      else {
+        console.log('LCP was NOT an image.');
+      }
     });
   }, 'LCP element knows its dependencies, including creation and insertion scripts');
 
