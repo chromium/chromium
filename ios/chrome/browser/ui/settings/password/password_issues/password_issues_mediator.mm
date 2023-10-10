@@ -406,12 +406,12 @@ NSInteger GetDismissedWarningsCount(
 
 - (void)faviconForPageURL:(CrURL*)URL
                completion:(void (^)(FaviconAttributes*))completion {
-  BOOL isPasswordSyncEnabled =
-      password_manager_util::IsPasswordSyncNormalEncryptionEnabled(
+  BOOL fallbackToGoogleServer =
+      password_manager_util::IsSavingPasswordsToAccountWithNormalEncryption(
           _syncService);
-  _faviconLoader->FaviconForPageUrl(
-      URL.gurl, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
-      /*fallback_to_google_server=*/isPasswordSyncEnabled, completion);
+  _faviconLoader->FaviconForPageUrl(URL.gurl, kDesiredMediumFaviconSizePt,
+                                    kMinFaviconSizePt, fallbackToGoogleServer,
+                                    completion);
 }
 
 @end

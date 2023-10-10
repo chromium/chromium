@@ -1401,15 +1401,16 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
   // Only use the fallback to the Google server when fetching favicons for
-  // normal encryption synced users because they are the only users who
-  // consented to share data to Google. The other types of synced users did not.
-  BOOL isPasswordSyncEnabled =
-      password_manager_util::IsPasswordSyncNormalEncryptionEnabled(syncService);
-  if (isPasswordSyncEnabled) {
+  // normal encryption users saving to the account, because they are the only
+  // users who consented to share data to Google.
+  BOOL fallbackToGoogleServer =
+      password_manager_util::IsSavingPasswordsToAccountWithNormalEncryption(
+          syncService);
+  if (fallbackToGoogleServer) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&UpdateFaviconsStorageForBrowserState,
-                                  browserState->AsWeakPtr(),
-                                  /*sync_enabled=*/isPasswordSyncEnabled));
+        FROM_HERE,
+        base::BindOnce(&UpdateFaviconsStorageForBrowserState,
+                       browserState->AsWeakPtr(), fallbackToGoogleServer));
   }
 }
 #endif

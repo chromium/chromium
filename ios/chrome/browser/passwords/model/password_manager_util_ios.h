@@ -13,9 +13,9 @@ class SyncService;
 
 namespace password_manager_util {
 
-// Returns true if the user is syncing passwords to Google Account with normal
+// Returns true if the user is saving passwords to a Google Account with normal
 // encryption.
-bool IsPasswordSyncNormalEncryptionEnabled(
+bool IsSavingPasswordsToAccountWithNormalEncryption(
     const syncer::SyncService* sync_service);
 
 }  // namespace password_manager_util
