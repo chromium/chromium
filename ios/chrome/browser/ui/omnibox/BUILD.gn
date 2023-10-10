@@ -238,8 +238,14 @@ source_set("eg_test_support+eg2") {
   sources = [
     "omnibox_app_interface.h",
     "omnibox_app_interface_stub.mm",
+    "omnibox_earl_grey.h",
+    "omnibox_earl_grey.mm",
   ]
-  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+  deps = [
+    "//base/test:test_support",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
 }
 
 source_set("eg2_tests") {

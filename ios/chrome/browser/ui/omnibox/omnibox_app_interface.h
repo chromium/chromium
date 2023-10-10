@@ -31,6 +31,12 @@
 // Tear down test fake suggestions service.
 + (void)tearDownFakeSuggestionsService;
 
+// Returns whether the shortcuts backend is initialized.
++ (BOOL)shortcutsBackendInitialized;
+
+// Returns the number of suggestions in the shortcuts database.
++ (NSInteger)numberOfShortcutsInDatabase;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_APP_INTERFACE_H_
