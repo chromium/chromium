@@ -149,9 +149,7 @@ void AudioToolboxAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
-  if (!buffer->end_of_stream() && buffer->decrypt_config() &&
-      buffer->decrypt_config()->encryption_scheme() !=
-          EncryptionScheme::kUnencrypted) {
+  if (!buffer->end_of_stream() && buffer->is_encrypted()) {
     DLOG(ERROR) << "Encrypted buffer not supported";
     std::move(decode_cb_bound)
         .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);

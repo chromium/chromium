@@ -233,6 +233,12 @@ scoped_refptr<DecoderBuffer> CreateFakeVideoBufferForTest(
 // out and do not continue to decode or decrypt if subsamples do not match.
 scoped_refptr<DecoderBuffer> CreateMismatchedBufferForTest();
 
+// Create fake encrypted buffer for testing purposes.
+scoped_refptr<DecoderBuffer> CreateFakeEncryptedBuffer();
+
+// Create fake clear buffer for testing purposes.
+scoped_refptr<DecoderBuffer> CreateClearBuffer();
+
 // Verify if a fake video DecoderBuffer is valid.
 bool VerifyFakeVideoBufferForTest(const DecoderBuffer& buffer,
                                   const VideoDecoderConfig& config);

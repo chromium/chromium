@@ -488,6 +488,27 @@ scoped_refptr<DecoderBuffer> CreateMismatchedBufferForTest() {
   return mismatched_encrypted_buffer;
 }
 
+scoped_refptr<DecoderBuffer> CreateFakeEncryptedBuffer() {
+  const int buffer_size = 16;  // Need a non-empty buffer;
+  scoped_refptr<DecoderBuffer> buffer(
+      base::MakeRefCounted<DecoderBuffer>(buffer_size));
+
+  const uint8_t kFakeKeyId[] = {0x4b, 0x65, 0x79, 0x20, 0x49, 0x44};
+  const uint8_t kFakeIv[DecryptConfig::kDecryptionKeySize] = {0};
+  buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
+      std::string(reinterpret_cast<const char*>(kFakeKeyId),
+                  std::size(kFakeKeyId)),
+      std::string(reinterpret_cast<const char*>(kFakeIv), std::size(kFakeIv)),
+      std::vector<SubsampleEntry>()));
+  return buffer;
+}
+
+scoped_refptr<DecoderBuffer> CreateClearBuffer() {
+  const int buffer_size = 16;  // Need a non-empty buffer;
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(buffer_size);
+  return buffer;
+}
+
 bool VerifyFakeVideoBufferForTest(const DecoderBuffer& buffer,
                                   const VideoDecoderConfig& config) {
   // Check if the input |buffer| matches the |config|.

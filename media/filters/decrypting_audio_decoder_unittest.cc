@@ -39,22 +39,7 @@ const int kSampleRate = 44100;
 // Make sure the kFakeAudioFrameSize is a valid frame size for all audio decoder
 // configs used in this test.
 const int kFakeAudioFrameSize = 48;
-const uint8_t kFakeKeyId[] = {0x4b, 0x65, 0x79, 0x20, 0x49, 0x44};
-const uint8_t kFakeIv[DecryptConfig::kDecryptionKeySize] = {0};
 const int kDecodingDelay = 3;
-
-// Create a fake non-empty encrypted buffer.
-static scoped_refptr<DecoderBuffer> CreateFakeEncryptedBuffer() {
-  const int buffer_size = 16;  // Need a non-empty buffer;
-  scoped_refptr<DecoderBuffer> buffer(
-      base::MakeRefCounted<DecoderBuffer>(buffer_size));
-  buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
-      std::string(reinterpret_cast<const char*>(kFakeKeyId),
-                  std::size(kFakeKeyId)),
-      std::string(reinterpret_cast<const char*>(kFakeIv), std::size(kFakeIv)),
-      std::vector<SubsampleEntry>()));
-  return buffer;
-}
 
 class DecryptingAudioDecoderTest : public testing::Test {
  public:

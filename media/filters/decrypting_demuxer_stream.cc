@@ -272,14 +272,11 @@ void DecryptingDemuxerStream::DecryptPendingBuffer() {
     return;
   }
 
-  if (HasClearLead()) {
-    if (pending_buffer_to_decrypt_->decrypt_config()->encryption_scheme() !=
-            EncryptionScheme::kUnencrypted &&
-        !switched_clear_to_encrypted_) {
-      MEDIA_LOG(INFO, media_log_)
-          << "Stream switched from clear to encrypted buffers.";
-      switched_clear_to_encrypted_ = true;
-    }
+  if (HasClearLead() && !switched_clear_to_encrypted_ &&
+      pending_buffer_to_decrypt_->is_encrypted()) {
+    MEDIA_LOG(INFO, media_log_)
+        << "First switch from clear to encrypted buffers.";
+    switched_clear_to_encrypted_ = true;
   }
 
   decryptor_->Decrypt(GetDecryptorStreamType(), pending_buffer_to_decrypt_,

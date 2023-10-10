@@ -683,9 +683,17 @@ TEST_P(AudioDecoderTest, Decode) {
   EXPECT_TRUE(last_decode_status().is_ok());
 }
 
-TEST_P(AudioDecoderTest, DecodeMismatchedSubsamples) {
+TEST_P(AudioDecoderTest, MismatchedSubsampleBuffer) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
   DecodeBuffer(CreateMismatchedBufferForTest());
+  EXPECT_TRUE(!last_decode_status().is_ok());
+}
+
+// The AudioDecoders do not support encrypted buffers since they were
+// initialized without cdm_context.
+TEST_P(AudioDecoderTest, EncryptedBuffer) {
+  ASSERT_NO_FATAL_FAILURE(Initialize());
+  DecodeBuffer(CreateFakeEncryptedBuffer());
   EXPECT_TRUE(!last_decode_status().is_ok());
 }
 

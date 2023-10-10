@@ -207,9 +207,7 @@ void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     }
   }
 
-  if (buffer->decrypt_config() &&
-      buffer->decrypt_config()->encryption_scheme() !=
-          EncryptionScheme::kUnencrypted) {
+  if (buffer->is_encrypted()) {
     DLOG(ERROR) << "Encrypted buffer not supported";
     std::move(decode_cb_bound)
         .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
