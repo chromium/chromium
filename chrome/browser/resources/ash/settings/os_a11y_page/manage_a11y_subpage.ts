@@ -305,14 +305,6 @@ export class SettingsManageA11ySubpageElement extends
 
       hasTouchpad_: Boolean,
 
-      isAccessibilityChromeVoxPageMigrationEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isAccessibilityChromeVoxPageMigrationEnabled');
-        },
-      },
-
       /**
        * Boolean indicating whether shelf navigation buttons should implicitly
        * be enabled in tablet mode - the navigation buttons are implicitly
@@ -393,7 +385,6 @@ export class SettingsManageA11ySubpageElement extends
   private hasMouse_: boolean;
   private hasPointingStick_: boolean;
   private hasTouchpad_: boolean;
-  private isAccessibilityChromeVoxPageMigrationEnabled_: boolean;
   private isGuest_: boolean;
   private isKioskModeActive_: boolean;
   private manageBrowserProxy_: ManageA11ySubpageBrowserProxy;

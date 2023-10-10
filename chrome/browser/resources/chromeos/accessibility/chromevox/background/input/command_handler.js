@@ -77,13 +77,6 @@ export class CommandHandler extends CommandHandlerInterface {
   /** @private */
   constructor() {
     super();
-
-    /**
-     * To support Command.SHOW_OPTIONS_PAGE, the state of the ChromeVox Page
-     * Migration Flag. (If enabled, should open in Chrome OS Settings App)
-     * @private {boolean|undefined}
-     */
-    this.isChromeVoxSettingsMigrationEnabled_;
   }
 
   /** @override */
@@ -1564,26 +1557,12 @@ export class CommandHandler extends CommandHandlerInterface {
   }
 
   /**
-   * Launch ChromeVox options page. If migration enabled, launch settings app.
-   * TODO(268196299): Add test for showing options page.
+   * Launch ChromeVox options page in settings app.
+   * TODO(b/268196299): Add test for showing options page.
    * @private
    */
   async showOptionsPage_() {
-    if (this.isChromeVoxSettingsMigrationEnabled_ === undefined) {
-      this.isChromeVoxSettingsMigrationEnabled_ = await new Promise(resolve => {
-        chrome.accessibilityPrivate.isFeatureEnabled(
-            chrome.accessibilityPrivate.AccessibilityFeature
-                .CHROMEVOX_SETTINGS_MIGRATION,
-            resolve);
-      });
-    }
-
-    if (!this.isChromeVoxSettingsMigrationEnabled_) {
-      chrome.runtime.openOptionsPage();
-      return;
-    }
-
-    // Launch new ChromeVox settings (inside ChromeOS Settings App).
+    // Launch ChromeVox settings (inside ChromeOS Settings App).
     chrome.accessibilityPrivate.openSettingsSubpage('textToSpeech/chromeVox');
   }
 

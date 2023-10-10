@@ -7887,12 +7887,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          features::kAccessibilitySelectToSpeakHoverTextImprovements)},
 
-    {"enable-accessibility-chromevox-page-migration",
-     flag_descriptions::kAccessibilityChromeVoxPageMigrationName,
-     flag_descriptions::kAccessibilityChromeVoxPageMigrationDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAccessibilityChromeVoxPageMigration)},
-
     {"enable-accessibility-dictation-keyboard-improvements",
      flag_descriptions::kAccessibilityDictationKeyboardImprovementsName,
      flag_descriptions::kAccessibilityDictationKeyboardImprovementsDescription,

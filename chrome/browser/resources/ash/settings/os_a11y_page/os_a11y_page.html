@@ -122,14 +122,11 @@
       </settings-text-to-speech-subpage>
     </os-settings-subpage>
   </template>
-  <template is="dom-if"
-      if="[[isAccessibilityChromeVoxPageMigrationEnabled_]]">
-    <template is="dom-if" route-path="/textToSpeech/chromeVox">
-      <os-settings-subpage page-title="$i18n{chromeVoxLabel}">
-        <settings-chromevox-subpage prefs="{{prefs}}">
-        </settings-chromevox-subpage>
-      </os-settings-subpage>
-    </template>
+  <template is="dom-if" route-path="/textToSpeech/chromeVox">
+    <os-settings-subpage page-title="$i18n{chromeVoxLabel}">
+      <settings-chromevox-subpage prefs="{{prefs}}">
+      </settings-chromevox-subpage>
+    </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/textToSpeech/selectToSpeak">
     <os-settings-subpage page-title="$i18n{selectToSpeakLinkTitle}">

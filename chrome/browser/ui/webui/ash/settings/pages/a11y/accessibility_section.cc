@@ -441,10 +441,6 @@ bool IsLiveCaptionEnabled() {
   return captions::IsLiveCaptionFeatureSupported();
 }
 
-bool IsAccessibilityChromeVoxPageMigrationEnabled() {
-  return ::features::IsAccessibilityChromeVoxPageMigrationEnabled();
-}
-
 bool AreExperimentalAccessibilityColorEnhancementSettingsEnabled() {
   return ::features::
       AreExperimentalAccessibilityColorEnhancementSettingsEnabled();
@@ -1126,9 +1122,6 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddString("tabletModeShelfNavigationButtonsLearnMoreUrl",
                          chrome::kTabletModeGesturesLearnMoreURL);
 
-  html_source->AddBoolean("isAccessibilityChromeVoxPageMigrationEnabled",
-                          IsAccessibilityChromeVoxPageMigrationEnabled());
-
   html_source->AddBoolean(
       "areExperimentalAccessibilityColorEnhancementSettingsEnabled",
       AreExperimentalAccessibilityColorEnhancementSettingsEnabled());
@@ -1231,12 +1224,10 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Subpage::kTextToSpeechPage, mojom::SearchResultIcon::kA11y,
       mojom::SearchResultDefaultRank::kMedium, mojom::kTextToSpeechPagePath);
   // ChromeVox settings page.
-  if (IsAccessibilityChromeVoxPageMigrationEnabled()) {
-    generator->RegisterTopLevelSubpage(
-        IDS_SETTINGS_CHROMEVOX_OPTIONS_LABEL, mojom::Subpage::kChromeVox,
-        mojom::SearchResultIcon::kA11y, mojom::SearchResultDefaultRank::kMedium,
-        mojom::kChromeVoxSubpagePath);
-  }
+  generator->RegisterTopLevelSubpage(
+      IDS_SETTINGS_CHROMEVOX_OPTIONS_LABEL, mojom::Subpage::kChromeVox,
+      mojom::SearchResultIcon::kA11y, mojom::SearchResultDefaultRank::kMedium,
+      mojom::kChromeVoxSubpagePath);
   // Select to speak options page.
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_LINK_TITLE,

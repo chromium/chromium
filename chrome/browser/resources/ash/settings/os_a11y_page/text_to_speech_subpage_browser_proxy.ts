@@ -10,16 +10,6 @@ export interface TextToSpeechSubpageBrowserProxy {
   pdfOcrSectionReady(): void;
 
   /**
-   * Opens the options page for Chrome Vox.
-   */
-  showChromeVoxSettings(): void;
-
-  /**
-   * Opens the options page for select to speak.
-   */
-  showSelectToSpeakSettings(): void;
-
-  /**
    * Opens the ChromeVox tutorial.
    */
   showChromeVoxTutorial(): void;
@@ -39,14 +29,6 @@ export class TextToSpeechSubpageBrowserProxyImpl implements
 
   pdfOcrSectionReady(): void {
     chrome.send('pdfOcrSectionReady');
-  }
-
-  showChromeVoxSettings(): void {
-    chrome.send('showChromeVoxSettings');
-  }
-
-  showSelectToSpeakSettings(): void {
-    chrome.send('showSelectToSpeakSettings');
   }
 
   showChromeVoxTutorial(): void {

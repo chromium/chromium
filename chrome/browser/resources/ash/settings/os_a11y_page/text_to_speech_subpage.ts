@@ -85,14 +85,6 @@ export class SettingsTextToSpeechSubpageElement extends
        */
       hasScreenReader: Boolean,
 
-      isAccessibilityChromeVoxPageMigrationEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isAccessibilityChromeVoxPageMigrationEnabled');
-        },
-      },
-
       /**
        * |pdfOcrProgress_| stores the downloading progress in percentage of
        * the ScreenAI library.
@@ -128,7 +120,6 @@ export class SettingsTextToSpeechSubpageElement extends
   hasScreenReader: boolean;
   private deviceBrowserProxy_: DevicePageBrowserProxy;
   private hasKeyboard_: boolean;
-  private isAccessibilityChromeVoxPageMigrationEnabled_: boolean;
   private pdfOcrProgress_: number;
   private pdfOcrStatus_: ScreenAiInstallStatus;
   private showPdfOcrToggle_: boolean;
@@ -255,10 +246,6 @@ export class SettingsTextToSpeechSubpageElement extends
   }
 
   private onChromeVoxSettingsClick_(): void {
-    this.textToSpeechBrowserProxy_.showChromeVoxSettings();
-  }
-
-  private onChromeVoxNewSettingsClick_(): void {
     Router.getInstance().navigateTo(routes.A11Y_CHROMEVOX);
   }
 
@@ -267,10 +254,6 @@ export class SettingsTextToSpeechSubpageElement extends
   }
 
   private onSelectToSpeakSettingsClick_(): void {
-    this.textToSpeechBrowserProxy_.showSelectToSpeakSettings();
-  }
-
-  private onSelectToSpeakClick_(): void {
     Router.getInstance().navigateTo(routes.A11Y_SELECT_TO_SPEAK);
   }
 

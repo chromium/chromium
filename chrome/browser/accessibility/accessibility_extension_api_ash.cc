@@ -299,10 +299,6 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
           IsExperimentalAccessibilityDictationContextCheckingEnabled();
       break;
     case accessibility_private::AccessibilityFeature::
-        ACCESSIBILITY_FEATURE_CHROMEVOXSETTINGSMIGRATION:
-      enabled = ::features::IsAccessibilityChromeVoxPageMigrationEnabled();
-      break;
-    case accessibility_private::AccessibilityFeature::
         ACCESSIBILITY_FEATURE_GAMEFACEINTEGRATION:
       enabled = ::features::IsAccessibilityGameFaceIntegrationEnabled();
       break;

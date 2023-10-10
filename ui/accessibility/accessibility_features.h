@@ -133,25 +133,12 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
 AX_BASE_EXPORT bool
 AreExperimentalAccessibilityColorEnhancementSettingsEnabled();
 
-// Enables ChromeVox settings page migration from extension options page to
-// Chrome OS settings page.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityChromeVoxPageMigration);
-
-// Returns true if ChromeVox settings page migration is enabled.
-AX_BASE_EXPORT bool IsAccessibilityChromeVoxPageMigrationEnabled();
-
 // Enables Dictation keyboard improvements.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kAccessibilityDictationKeyboardImprovements);
 
 // Returns true if Dictation keyboard improvements are enabled.
 AX_BASE_EXPORT bool IsAccessibilityDictationKeyboardImprovementsEnabled();
-
-// Enables AccessibilitySelectToSpeakPrefsMigration.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySelectToSpeakPrefsMigration);
-
-// Returns true if AccessibilitySelectToSpeakPrefsMigration enabled.
-AX_BASE_EXPORT bool IsAccessibilitySelectToSpeakPrefsMigrationEnabled();
 
 // Enables AccessibilitySelectToSpeakHoverTextImprovements.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(

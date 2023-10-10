@@ -26,22 +26,11 @@
 </settings-toggle-button>
 <iron-collapse opened="[[prefs.settings.accessibility.value]]">
   <div class="sub-item">
-    <template is="dom-if"
-        if="[[isAccessibilityChromeVoxPageMigrationEnabled_]]">
-      <cr-link-row id="chromevoxSubpageTrigger"
-          class="settings-box" on-click="onChromeVoxNewSettingsClick_"
-          label="$i18n{chromeVoxOptionsLabel}"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-    </template>
-    <template is="dom-if"
-        if="[[!isAccessibilityChromeVoxPageMigrationEnabled_]]">
-      <cr-link-row id="chromeVoxSubpageButton"
-          class="settings-box" on-click="onChromeVoxSettingsClick_"
-          label="$i18n{chromeVoxOptionsLabel}"
-          external>
-      </cr-link-row>
-    </template>
+    <cr-link-row id="chromevoxSubpageTrigger"
+        class="settings-box" on-click="onChromeVoxSettingsClick_"
+        label="$i18n{chromeVoxOptionsLabel}"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
   </div>
   <div class="sub-item">
     <cr-link-row id="chromeVoxTutorialButton"
@@ -63,7 +52,7 @@
 <iron-collapse opened="[[prefs.settings.a11y.select_to_speak.value]]">
   <div class="sub-item">
     <cr-link-row id="select-to-speak-subpage-trigger"
-        class="settings-box" on-click="onSelectToSpeakClick_"
+        class="settings-box" on-click="onSelectToSpeakSettingsClick_"
         label="$i18n{selectToSpeakLinkTitle}"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>

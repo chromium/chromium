@@ -80,17 +80,6 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
       },
 
       /**
-       * Whether ChromeVox page migration is enabled.
-       */
-      isAccessibilityChromeVoxPageMigrationEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isAccessibilityChromeVoxPageMigrationEnabled');
-        },
-      },
-
-      /**
        * Whether the user is in kiosk mode.
        */
       isKioskModeActive_: {
@@ -131,7 +120,6 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
   private isKioskModeActive_: boolean;
   private section_: Section;
   private showAccessibilityLabelsSetting_: boolean;
-  private isAccessibilityChromeVoxPageMigrationEnabled_: boolean;
 
   constructor() {
     super();

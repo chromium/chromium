@@ -626,7 +626,6 @@ TEST_F(
  [
    'OsA11yPageChromeVoxSubpage',
    'os_a11y_page/chromevox_subpage_test.js',
-   {enabled: ['features::kAccessibilityChromeVoxPageMigration']},
  ],
  [
    'OsA11yPageCursorAndTouchpadPage',

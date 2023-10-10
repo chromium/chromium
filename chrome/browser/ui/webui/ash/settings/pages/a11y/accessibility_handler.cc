@@ -65,15 +65,6 @@ void AccessibilityHandler::RegisterMessages() {
           &AccessibilityHandler::HandleShowBrowserAppearanceSettings,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "showChromeVoxSettings",
-      base::BindRepeating(&AccessibilityHandler::HandleShowChromeVoxSettings,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "showSelectToSpeakSettings",
-      base::BindRepeating(
-          &AccessibilityHandler::HandleShowSelectToSpeakSettings,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "setStartupSoundEnabled",
       base::BindRepeating(&AccessibilityHandler::HandleSetStartupSoundEnabled,
                           base::Unretained(this)));
@@ -110,16 +101,6 @@ void AccessibilityHandler::HandleShowBrowserAppearanceSettings(
       GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kAppearanceSubPage),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kSwitchToTab);
-}
-
-void AccessibilityHandler::HandleShowChromeVoxSettings(
-    const base::Value::List& args) {
-  OpenExtensionOptionsPage(extension_misc::kChromeVoxExtensionId);
-}
-
-void AccessibilityHandler::HandleShowSelectToSpeakSettings(
-    const base::Value::List& args) {
-  OpenExtensionOptionsPage(extension_misc::kSelectToSpeakExtensionId);
 }
 
 void AccessibilityHandler::HandleSetStartupSoundEnabled(

@@ -2049,11 +2049,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-accessibility-chromevox-page-migration",
-    "owners": [ "josiahk", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-accessibility-dictation-keyboard-improvements",
     "owners": [ "akihiroota", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 125
@@ -2077,11 +2072,6 @@
     "name": "enable-accessibility-performance-filtering",
     "owners": [ "mschillaci", "aldietz", "//ui/accessibility/OWNERS"],
     "expiry_milestone": 140
-  },
-  {
-    "name": "enable-accessibility-select-to-speak-context-menu-option",
-    "owners": ["francisjp","//ui/accessibility/OWNERS"],
-    "expiry_milestone":130
   },
   {
     "name": "enable-accessibility-select-to-speak-hover-text-improvements",

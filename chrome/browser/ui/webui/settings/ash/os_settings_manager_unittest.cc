@@ -30,7 +30,6 @@
 #include "chromeos/ash/components/local_search_service/search_metrics_reporter.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
 
 namespace ash::settings {
@@ -51,8 +50,7 @@ class OsSettingsManagerTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {::features::kAccessibilityChromeVoxPageMigration,
-         ash::features::kInputDeviceSettingsSplit,
+        {ash::features::kInputDeviceSettingsSplit,
          ash::features::kPeripheralCustomization},
         {});
     ASSERT_TRUE(profile_manager_.SetUp());

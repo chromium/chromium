@@ -39,9 +39,7 @@ class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
   void HandleRecordSelectedShowShelfNavigationButtonsValue(
       const base::Value::List& args);
   void HandleShowBrowserAppearanceSettings(const base::Value::List& args);
-  void HandleShowChromeVoxSettings(const base::Value::List& args);
   void HandleShowChromeVoxTutorial(const base::Value::List& args);
-  void HandleShowSelectToSpeakSettings(const base::Value::List& args);
   void HandleSetStartupSoundEnabled(const base::Value::List& args);
   void HandleUpdateBluetoothBrailleDisplayAddress(
       const base::Value::List& args);

@@ -446,13 +446,9 @@ export function createRoutes(): OsSettingsRoutes {
   r.A11Y_AUDIO_AND_CAPTIONS = createSubpage(
       r.OS_ACCESSIBILITY, routesMojom.AUDIO_AND_CAPTIONS_SUBPAGE_PATH,
       Subpage.kAudioAndCaptions);
-  if (loadTimeData.valueExists(
-          'isAccessibilityChromeVoxPageMigrationEnabled') &&
-      loadTimeData.getBoolean('isAccessibilityChromeVoxPageMigrationEnabled')) {
-    r.A11Y_CHROMEVOX = createSubpage(
-        r.A11Y_TEXT_TO_SPEECH, routesMojom.CHROME_VOX_SUBPAGE_PATH,
-        Subpage.kChromeVox);
-  }
+  r.A11Y_CHROMEVOX = createSubpage(
+      r.A11Y_TEXT_TO_SPEECH, routesMojom.CHROME_VOX_SUBPAGE_PATH,
+      Subpage.kChromeVox);
   r.A11Y_SELECT_TO_SPEAK = createSubpage(
       r.A11Y_TEXT_TO_SPEECH, routesMojom.SELECT_TO_SPEAK_SUBPAGE_PATH,
       Subpage.kSelectToSpeak);
