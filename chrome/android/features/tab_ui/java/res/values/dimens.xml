@@ -90,7 +90,7 @@ found in the LICENSE file.
     <dimen name="tab_hover_card_window_horizontal_margin">8dp</dimen>
     <dimen name="tab_hover_card_thumbnail_height">135dp</dimen>
     <dimen name="tab_hover_card_text_content_margin">16dp</dimen>
-    <dimen name="tab_hover_card_url_top_margin">8dp</dimen>
+    <dimen name="tab_hover_card_url_top_margin">4dp</dimen>
     <dimen name="tab_hover_card_bg_color_elev">@dimen/default_elevation_0</dimen>
     <dimen name="tab_hover_card_corner_radius">8dp</dimen>
     <dimen name="tab_hover_card_elevation">6dp</dimen>
