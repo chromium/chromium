@@ -243,9 +243,7 @@ class TracingControllerTest : public ContentBrowserTest {
       scoped_refptr<TracingController::TraceDataEndpoint> trace_data_endpoint =
           TracingController::CreateStringEndpoint(std::move(callback));
 
-      base::Value::Dict metadata;
-      metadata.Set("not-whitelisted", "this_not_found");
-      metadata_ = std::move(metadata);
+      metadata_ = base::Value::Dict().Set("not-whitelisted", "this_not_found");
       tracing::TraceEventMetadataSource::GetInstance()->AddGeneratorFunction(
           base::BindRepeating(&TracingControllerTest::GenerateMetadataDict,
                               base::Unretained(this)));

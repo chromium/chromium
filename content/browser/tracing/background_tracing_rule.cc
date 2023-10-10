@@ -218,10 +218,9 @@ class NamedTriggerRule : public BackgroundTracingRule {
   }
 
   base::Value::Dict ToDict() const override {
-    base::Value::Dict dict = BackgroundTracingRule::ToDict();
-    dict.Set(kConfigRuleKey, kConfigRuleTypeMonitorNamed);
-    dict.Set(kConfigRuleTriggerNameKey, named_event_.c_str());
-    return dict;
+    return BackgroundTracingRule::ToDict()
+        .Set(kConfigRuleKey, kConfigRuleTypeMonitorNamed)
+        .Set(kConfigRuleTriggerNameKey, named_event_.c_str());
   }
 
   perfetto::protos::gen::TriggerRule ToProtoForTesting() const override {
@@ -346,12 +345,11 @@ class HistogramRule : public BackgroundTracingRule,
   }
 
   base::Value::Dict ToDict() const override {
-    base::Value::Dict dict = BackgroundTracingRule::ToDict();
-    dict.Set(kConfigRuleKey, kConfigRuleTypeMonitorHistogram);
-    dict.Set(kConfigRuleHistogramNameKey, histogram_name_.c_str());
-    dict.Set(kConfigRuleHistogramValue1Key, histogram_lower_value_);
-    dict.Set(kConfigRuleHistogramValue2Key, histogram_upper_value_);
-    return dict;
+    return BackgroundTracingRule::ToDict()
+        .Set(kConfigRuleKey, kConfigRuleTypeMonitorHistogram)
+        .Set(kConfigRuleHistogramNameKey, histogram_name_.c_str())
+        .Set(kConfigRuleHistogramValue1Key, histogram_lower_value_)
+        .Set(kConfigRuleHistogramValue2Key, histogram_upper_value_);
   }
 
   perfetto::protos::gen::TriggerRule ToProtoForTesting() const override {

@@ -102,23 +102,18 @@ class BackgroundTracingManagerTest : public testing::Test {
 };
 
 TEST_F(BackgroundTracingManagerTest, HasTraceToUpload) {
-  base::Value::Dict dict;
-  dict.Set("mode", "REACTIVE_TRACING_MODE");
-  dict.Set("category", "BENCHMARK_STARTUP");
-
-  base::Value::List rules_list;
-  {
-    base::Value::Dict rules_dict;
-    rules_dict.Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
-    rules_dict.Set("trigger_name", "reactive_test");
-    rules_list.Append(std::move(rules_dict));
-  }
-  dict.Set("configs", std::move(rules_list));
-  dict.Set("upload_limit_kb", 2);
-  dict.Set("upload_limit_network_kb", 1);
-
   std::unique_ptr<BackgroundTracingConfig> config(
-      BackgroundTracingConfigImpl::FromDict(std::move(dict)));
+      BackgroundTracingConfigImpl::FromDict(
+          base::Value::Dict()
+              .Set("mode", "REACTIVE_TRACING_MODE")
+              .Set("category", "BENCHMARK_STARTUP")
+              .Set("configs",
+                   base::Value::List().Append(
+                       base::Value::Dict()
+                           .Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED")
+                           .Set("trigger_name", "reactive_test")))
+              .Set("upload_limit_kb", 2)
+              .Set("upload_limit_network_kb", 1)));
   EXPECT_TRUE(config);
 
   EXPECT_TRUE(background_tracing_manager_->SetActiveScenario(

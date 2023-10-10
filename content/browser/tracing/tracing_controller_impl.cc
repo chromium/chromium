@@ -263,14 +263,13 @@ void TracingControllerImpl::GenerateMetadataPacket(
 absl::optional<base::Value::Dict>
 TracingControllerImpl::GenerateMetadataDict() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::Value::Dict metadata_dict;
 
-  metadata_dict.Set("network-type", GetNetworkTypeString());
-  metadata_dict.Set("product-version",
-                    GetContentClient()->browser()->GetProduct());
-  metadata_dict.Set("v8-version", V8_VERSION_STRING);
-  metadata_dict.Set("user-agent",
-                    GetContentClient()->browser()->GetUserAgent());
+  auto metadata_dict =
+      base::Value::Dict()
+          .Set("network-type", GetNetworkTypeString())
+          .Set("product-version", GetContentClient()->browser()->GetProduct())
+          .Set("v8-version", V8_VERSION_STRING)
+          .Set("user-agent", GetContentClient()->browser()->GetUserAgent());
 
 #if BUILDFLAG(IS_ANDROID)
   // The library name is used for symbolizing heap profiles. This cannot be
