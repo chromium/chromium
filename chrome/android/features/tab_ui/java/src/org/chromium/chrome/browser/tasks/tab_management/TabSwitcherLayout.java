@@ -652,8 +652,9 @@ public class TabSwitcherLayout extends Layout {
             boolean background, float originX, float originY) {
         super.onTabCreated(time, id, index, sourceId, newIsIncognito, background, originX, originY);
 
-        // Skip the new tab animation on tablets.
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
+        // Skip the new tab animation for background tabs and on tablet.
+        if (background
+                || DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
                 || !ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()) {
             return;
         }
