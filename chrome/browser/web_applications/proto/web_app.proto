@@ -71,6 +71,7 @@ message SourcesProto {
   optional bool command_line = 8;
   optional bool oem = 9;
   optional bool one_drive_integration = 10;
+  optional bool aps_default = 11;
 }
 
 // Properties for integrating with Chrome OS.
@@ -127,6 +128,7 @@ enum WebAppManagementProto {
   COMMAND_LINE = 8;
   OEM = 9;
   ONEDRIVEINTEGRATION = 10;
+  APS_DEFAULT = 11;
 }
 
 // This stores data per-external-WebAppManagement::Type, as each installation

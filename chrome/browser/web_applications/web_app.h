@@ -426,6 +426,8 @@ class WebApp {
   WebAppManagementTypes GetSources() const;
 
   bool IsSynced() const;
+  // Returns true if the app is preinstalled through PreinstalledWebAppManager.
+  // Does not include apps preloaded through the App Preload Service.
   bool IsPreinstalledApp() const;
   bool IsPolicyInstalledApp() const;
   bool IsSystemApp() const;

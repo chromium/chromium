@@ -43,6 +43,7 @@ enum Type {
   // Installed by Kiosk on Chrome OS.
   kKiosk,
   kPolicy,
+  // Installed by APS (App Preload Service) on ChromeOS as an OEM app.
   kOem,
   kSubApp,
   kWebAppStore,
@@ -52,6 +53,10 @@ enum Type {
   // set.
   kSync,
   kCommandLine,
+  // Installed by APS (App Preload Service) on ChromeOS as a default app. These
+  // have the same UX as kDefault apps, but are are not managed by
+  // PreinstalledWebAppManager.
+  kApsDefault,
   // This value is used by both the PreinstalledWebAppManager AND the
   // AndroidSmsAppSetupControllerImpl, which is a potential conflict in the
   // future.

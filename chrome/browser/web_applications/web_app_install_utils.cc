@@ -1070,6 +1070,9 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
     case webapps::WebappInstallSource::EXTERNAL_DEFAULT:
       return WebAppManagement::kDefault;
 
+    case webapps::WebappInstallSource::PRELOADED_DEFAULT:
+      return WebAppManagement::kApsDefault;
+
     case webapps::WebappInstallSource::PRELOADED_OEM:
       return WebAppManagement::kOem;
 
@@ -1289,7 +1292,8 @@ bool CanWebAppUpdateIdentity(const WebApp* web_app) {
   // WebAppChromeOsData::oem_installed will be migrated to
   // WebAppManagement::kOem eventually.
   return web_app->IsPreinstalledApp() || web_app->IsKioskInstalledApp() ||
-         web_app->GetSources().Has(WebAppManagement::kOem);
+         web_app->GetSources().HasAny(
+             {WebAppManagement::kOem, WebAppManagement::kApsDefault});
 }
 
 void ApplyParamsToWebAppInstallInfo(const WebAppInstallParams& install_params,

@@ -99,6 +99,7 @@ bool ShouldInstallOverwriteUserDisplayMode(
     case InstallSource::SUB_APP:
     case InstallSource::KIOSK:
     case InstallSource::PRELOADED_OEM:
+    case InstallSource::PRELOADED_DEFAULT:
     case InstallSource::MICROSOFT_365_SETUP:
       return false;
     case InstallSource::COUNT:
@@ -567,6 +568,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
     case WebAppManagement::kPolicy:
     case WebAppManagement::kDefault:
     case WebAppManagement::kOem:
+    case WebAppManagement::kApsDefault:
       hooks_options.reason = SHORTCUT_CREATION_AUTOMATED;
       break;
     case WebAppManagement::kKiosk:

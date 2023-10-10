@@ -272,6 +272,8 @@ WebAppManagement::Type ProtoToWebAppManagement(WebAppManagementProto type) {
       return WebAppManagement::Type::kOem;
     case WebAppManagementProto::ONEDRIVEINTEGRATION:
       return WebAppManagement::Type::kOneDriveIntegration;
+    case WebAppManagementProto::APS_DEFAULT:
+      return WebAppManagement::Type::kApsDefault;
   }
 }
 
@@ -297,6 +299,8 @@ WebAppManagementProto WebAppManagementToProto(WebAppManagement::Type type) {
       return WebAppManagementProto::OEM;
     case WebAppManagement::Type::kOneDriveIntegration:
       return WebAppManagementProto::ONEDRIVEINTEGRATION;
+    case WebAppManagement::Type::kApsDefault:
+      return WebAppManagementProto::APS_DEFAULT;
   }
 }
 
@@ -487,6 +491,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
       web_app.sources_.Has(WebAppManagement::kOem));
   local_data->mutable_sources()->set_one_drive_integration(
       web_app.sources_.Has(WebAppManagement::kOneDriveIntegration));
+  local_data->mutable_sources()->set_aps_default(
+      web_app.sources_.Has(WebAppManagement::kApsDefault));
 
   local_data->set_is_locally_installed(web_app.is_locally_installed());
 
@@ -961,6 +967,9 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
                       local_data.sources().command_line());
   sources.PutOrRemove(WebAppManagement::kOneDriveIntegration,
                       local_data.sources().one_drive_integration());
+  sources.PutOrRemove(WebAppManagement::kApsDefault,
+                      local_data.sources().aps_default());
+
   if (sources.Empty() && !local_data.is_uninstalling()) {
     DLOG(ERROR) << "WebApp proto parse error: no source in sources field, "
                    "and is_uninstalling isn't true.";

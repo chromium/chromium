@@ -33,6 +33,11 @@ AppType PreloadAppDefinition::GetPlatform() const {
   return AppType::kUnknown;
 }
 
+bool PreloadAppDefinition::IsDefaultApp() const {
+  return app_proto_.install_reason() ==
+         proto::AppPreloadListResponse::INSTALL_REASON_DEFAULT;
+}
+
 bool PreloadAppDefinition::IsOemApp() const {
   return app_proto_.install_reason() ==
          proto::AppPreloadListResponse::INSTALL_REASON_OEM;

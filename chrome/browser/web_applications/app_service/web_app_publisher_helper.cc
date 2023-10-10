@@ -241,6 +241,7 @@ apps::InstallReason GetHighestPriorityInstallReason(const WebApp* web_app) {
     case WebAppManagement::kSync:
       return apps::InstallReason::kSync;
     case WebAppManagement::kDefault:
+    case WebAppManagement::kApsDefault:
       return apps::InstallReason::kDefault;
     case WebAppManagement::kCommandLine:
       return apps::InstallReason::kCommandLine;
@@ -283,6 +284,7 @@ apps::InstallSource GetInstallSource(
     case webapps::WebappInstallSource::EXTERNAL_LOCK_SCREEN:
     case webapps::WebappInstallSource::SYSTEM_DEFAULT:
     case webapps::WebappInstallSource::PRELOADED_OEM:
+    case webapps::WebappInstallSource::PRELOADED_DEFAULT:
       return apps::InstallSource::kSystem;
     case webapps::WebappInstallSource::SYNC:
       return apps::InstallSource::kSync;

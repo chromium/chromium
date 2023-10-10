@@ -18,7 +18,9 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/crosapi/mojom/web_app_types.mojom.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -230,9 +232,13 @@ void WebAppPreloadInstaller::OnManifestRetrieved(
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return;
   } else {
+    webapps::WebappInstallSource install_source =
+        app.IsDefaultApp() ? webapps::WebappInstallSource::PRELOADED_DEFAULT
+                           : webapps::WebappInstallSource::PRELOADED_OEM;
+
     provider->command_manager().ScheduleCommand(
         std::make_unique<web_app::InstallPreloadedVerifiedAppCommand>(
-            webapps::WebappInstallSource::PRELOADED_OEM,
+            install_source,
             /*document_url=*/GURL(app.GetWebAppManifestId()).GetWithEmptyPath(),
             /*manifest_url=*/app.GetWebAppOriginalManifestUrl(),
             std::move(*response), GetAppId(app),

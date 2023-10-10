@@ -27,6 +27,7 @@ class PreloadAppDefinition {
 
   std::string GetName() const;
   AppType GetPlatform() const;
+  bool IsDefaultApp() const;
   bool IsOemApp() const;
   bool IsTestApp() const;
 

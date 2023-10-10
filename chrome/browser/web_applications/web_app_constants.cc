@@ -43,10 +43,12 @@ std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type) {
       return os << "OneDriveIntegration";
     case WebAppManagement::Type::kSync:
       return os << "Sync";
-    case WebAppManagement::Type::kDefault:
-      return os << "Default";
     case WebAppManagement::Type::kCommandLine:
       return os << "CommandLine";
+    case WebAppManagement::Type::kApsDefault:
+      return os << "ApsDefault";
+    case WebAppManagement::Type::kDefault:
+      return os << "Default";
   }
 }
 }  // namespace WebAppManagement

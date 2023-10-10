@@ -193,7 +193,7 @@
    },
    "last_badging_time": "1970-02-06 10:58:36.765 UTC",
    "last_launch_time": "1970-01-28 05:07:28.623 UTC",
-   "latest_install_source": "menu create shortcut",
+   "latest_install_source": "external lock screen",
    "latest_install_time": "1970-02-05 16:23:32.767 UTC",
    "launch_handler": {
       "client_mode": "kNavigateExisting"
@@ -201,6 +201,11 @@
    "launch_query_params": "144210110",
    "lock_screen_start_url": "https://example.com/scope1234/lock_screen_start_url1739605659",
    "management_type_to_external_configuration_map": {
+      "ApsDefault": {
+         "additional_policy_ids": [ "policy_id_1_1234", "policy_id_2_1234" ],
+         "install_urls": [ "https://example.com/installer1_1234/", "https://example.com/installer2_1234/" ],
+         "is_placeholder": true
+      },
       "CommandLine": {
          "additional_policy_ids": [ "policy_id_1_1234", "policy_id_2_1234" ],
          "install_urls": [ "https://example.com/installer1_1234/", "https://example.com/installer2_1234/" ],
@@ -414,7 +419,7 @@
       "name": "shortcut9442928600",
       "url": "https://example.com/scope1234/shortcut9442928600"
    } ],
-   "sources": [ "System", "Kiosk", "Policy", "OEM", "SubApp", "WebAppStore", "OneDriveIntegration", "Sync", "CommandLine", "Default" ],
+   "sources": [ "System", "Kiosk", "Policy", "OEM", "SubApp", "WebAppStore", "OneDriveIntegration", "Sync", "CommandLine", "ApsDefault", "Default" ],
    "start_url": "https://example.com/scope1234/start1234",
    "sync_fallback_data": {
       "manifest_icons": [ {

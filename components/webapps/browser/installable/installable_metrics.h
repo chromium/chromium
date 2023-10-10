@@ -119,18 +119,20 @@ enum class WebappInstallSource {
   // Lock screen app infrastructure installing to the lock screen app profile.
   EXTERNAL_LOCK_SCREEN = 23,
 
-  // OEM apps installed by the App Preload Service.
+  // OEM apps installed by the App Preload Service on ChromeOS.
   PRELOADED_OEM = 24,
 
   // Installed via the Microsoft 365 setup dialog.
   MICROSOFT_365_SETUP = 25,
 
-  // Profile picking in ProfileMenuView (for installable
-  // WebUIs).
+  // Profile picking in ProfileMenuView (for installable WebUIs).
   PROFILE_MENU = 26,
 
   // Installation promotion was triggered via ML model.
   ML_PROMOTION = 27,
+
+  // Default apps installed by the App Preload Service on ChromeOS.
+  PRELOADED_DEFAULT = 28,
 
   // Add any new values above this one.
   COUNT,

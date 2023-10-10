@@ -196,28 +196,35 @@ bool AppPreloadService::ShouldInstallApp(const PreloadAppDefinition& app) {
     return false;
   }
 
-  // We currently only install apps which were requested by the device OEM. If
-  // the testing feature is enabled, also install test apps.
-  bool install_reason_allowed =
-      app.IsOemApp() || (app.IsTestApp() && AreTestAppsEnabled());
+  // We currently install apps which were requested by the device OEM or
+  // installed by default (i.e. by Google). If the testing feature is enabled,
+  // also install test apps.
+  bool install_reason_allowed = app.IsOemApp() || app.IsDefaultApp() ||
+                                (app.IsTestApp() && AreTestAppsEnabled());
   if (!install_reason_allowed) {
     return false;
   }
 
-  // If the app is already OEM-installed, we do not need to reinstall it. This
-  // avoids extra work in the case where we are retrying the flow after an
-  // install error for a different app.
+  // If the app is already installed with the relevant install reason, we do not
+  // need to reinstall it. This avoids extra work in the case where we are
+  // retrying the flow after an install error for a different app.
+  InstallReason expected_reason =
+      app.IsDefaultApp() ? InstallReason::kDefault : InstallReason::kOem;
   AppServiceProxy* proxy = AppServiceProxyFactory::GetForProfile(profile_);
-  bool oem_installed = false;
+  bool installed = false;
 
   proxy->AppRegistryCache().ForOneApp(
       web_app_installer_->GetAppId(app),
-      [&oem_installed](const AppUpdate& app) {
-        oem_installed = apps_util::IsInstalled(app.Readiness()) &&
-                        app.InstallReason() == InstallReason::kOem;
+      [&installed, expected_reason](const AppUpdate& app) {
+        // It's possible that if APS requests the same app to be installed for
+        // multiple reasons, this check could incorrectly return false, as App
+        // Service only reports the highest priority install reason. This is
+        // acceptable since the check is just an optimization.
+        installed = apps_util::IsInstalled(app.Readiness()) &&
+                    app.InstallReason() == expected_reason;
       });
 
-  return !oem_installed;
+  return !installed;
 }
 
 const base::Value::Dict& AppPreloadService::GetStateManager() const {

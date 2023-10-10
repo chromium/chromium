@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, OemWebAppInstall) {
   histograms.ExpectTotalCount(kFirstLoginFlowHistogramFailureName, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, IgnoreDefaultAppInstall) {
+IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, DefaultAppInstall) {
   proto::AppPreloadListResponse response;
   auto* app = response.add_apps_to_install();
   app->set_name("Peanut Types");
@@ -186,9 +186,14 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, IgnoreDefaultAppInstall) {
   app->mutable_web_extras()->set_original_manifest_url(
       "https://peanuttypes.com/app");
 
+  const std::string kManifest = AddIconToManifest(R"({
+    "name": "Example App",
+    "start_url": "/app",
+    "icons": $1
+  })");
+
+  SetManifestResponse(kDefaultManifestUrl, kManifest);
   SetAppProvisioningResponse(response);
-  // No call to SetManifestResponse, so if installation was attempted, it would
-  // fail.
 
   base::test::TestFuture<bool> result;
   auto* service = AppPreloadService::Get(profile());
@@ -197,8 +202,11 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, IgnoreDefaultAppInstall) {
 
   auto app_id = web_app::GenerateAppId(absl::nullopt,
                                        GURL("https://peanuttypes.com/app"));
-  bool found = app_registry_cache().ForOneApp(app_id, [](const AppUpdate&) {});
-  ASSERT_FALSE(found);
+  bool found =
+      app_registry_cache().ForOneApp(app_id, [](const AppUpdate& update) {
+        EXPECT_EQ(update.InstallReason(), InstallReason::kDefault);
+      });
+  ASSERT_TRUE(found);
 }
 
 IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, IgnoreTestAppInstall) {

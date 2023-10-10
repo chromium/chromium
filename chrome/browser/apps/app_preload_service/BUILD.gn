@@ -38,6 +38,7 @@ source_set("app_preload_service") {
     "//components/prefs",
     "//components/services/app_service",
     "//components/user_manager",
+    "//components/webapps/browser",
     "//components/webapps/browser:constants",
     "//components/webapps/common",
     "//google_apis",

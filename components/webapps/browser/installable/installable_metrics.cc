@@ -76,6 +76,8 @@ std::ostream& operator<<(std::ostream& os, WebappInstallSource source) {
       return os << "profile menu";
     case WebappInstallSource::ML_PROMOTION:
       return os << "ml promotion";
+    case WebappInstallSource::PRELOADED_DEFAULT:
+      return os << "preloaded default";
     case WebappInstallSource::COUNT:
       return os << "count";
   }
@@ -115,6 +117,7 @@ bool InstallableMetrics::IsReportableInstallSource(WebappInstallSource source) {
     case WebappInstallSource::PROFILE_MENU:
     case WebappInstallSource::RICH_INSTALL_UI_WEBLAYER:
     case WebappInstallSource::SYSTEM_DEFAULT:
+    case WebappInstallSource::PRELOADED_DEFAULT:
       return true;
     case WebappInstallSource::ISOLATED_APP_DEV_INSTALL:
     case WebappInstallSource::MANAGEMENT_API:
