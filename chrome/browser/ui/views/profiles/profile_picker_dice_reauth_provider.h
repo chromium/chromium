@@ -21,6 +21,19 @@ namespace content {
 class WebContents;
 }
 
+// Enum used to recorded histogram results for the reauth step.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ProfilePickerReauthResult {
+  kSuccess = 0,
+  kSuccessTokenAlreadyValid = 1,
+  kErrorUsedNewEmail = 2,
+  kErrorUsedOtherSignedInEmail = 3,
+  kTimeoutForceSigninVerifierCheck = 4,
+  kTimeoutSigninError = 5,
+  kMaxValue = kTimeoutSigninError
+};
+
 // This object handles the reauth of the main account of a Profile.
 // The flow starts with the call to `SwitchToReauth()` and goes as follow:
 // - Extract the primary account for which the reauth will be attempted.
@@ -90,7 +103,8 @@ class ProfilePickerDiceReauthProvider
 
   // Finish the reauth step on the Gaia side, and return to the caller
   // through the `on_reauth_completed_`.
-  void Finish(bool success);
+  // Also records the result (success/errors) in a histogram.
+  void Finish(bool success, ProfilePickerReauthResult result);
 
   const raw_ref<ProfilePickerWebContentsHost> host_;
   raw_ref<Profile> profile_;

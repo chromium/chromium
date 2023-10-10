@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_reauth_provider.h"
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,6 +24,10 @@
 #include "google_apis/gaia/gaia_urls.h"
 
 namespace {
+
+void RecordReauthResult(ProfilePickerReauthResult result) {
+  base::UmaHistogramEnumeration("ProfilePicker.ReauthResult", result);
+}
 
 GURL GetLoadingScreenURL() {
   GURL url = GURL(chrome::kChromeUISyncConfirmationURL);
@@ -82,7 +87,7 @@ void ProfilePickerDiceReauthProvider::OnForceSigninVerifierTimeOut() {
   // TODO(https://crbug.com/1478217): Improve the error message if this timeout
   // occurs. Currently the error that will be displayed is the one that is shown
   // if the wrong account is being reauth-ed.
-  Finish(false);
+  Finish(false, ProfilePickerReauthResult::kTimeoutForceSigninVerifierCheck);
 }
 
 void ProfilePickerDiceReauthProvider::TryCreateForceSigninVerifier() {
@@ -102,7 +107,7 @@ void ProfilePickerDiceReauthProvider::OnTokenFetchComplete(
   // If the token is valid, we do not need to reauth and proceed to finish
   // with success directly.
   if (token_is_valid) {
-    Finish(true);
+    Finish(true, ProfilePickerReauthResult::kSuccessTokenAlreadyValid);
     return;
   }
 
@@ -156,7 +161,7 @@ void ProfilePickerDiceReauthProvider::OnSigninError(
     Profile* profile,
     content::WebContents* web_contents,
     const SigninUIError& error) {
-  Finish(false);
+  Finish(false, ProfilePickerReauthResult::kTimeoutSigninError);
 }
 
 void ProfilePickerDiceReauthProvider::DidFinishNavigation(
@@ -179,7 +184,7 @@ void ProfilePickerDiceReauthProvider::DidFinishNavigation(
     // happen with the right address. Proceed with a failure (keeping the
     // account signed in).
     if (!signin_event_received_) {
-      Finish(false);
+      Finish(false, ProfilePickerReauthResult::kErrorUsedOtherSignedInEmail);
       return;
     }
 
@@ -215,10 +220,13 @@ void ProfilePickerDiceReauthProvider::OnRefreshTokenUpdatedForAccount(
             kForceSigninReauthWithDifferentAccount);
   }
 
-  Finish(success);
+  Finish(success, success ? ProfilePickerReauthResult::kSuccess
+                          : ProfilePickerReauthResult::kErrorUsedNewEmail);
 }
 
-void ProfilePickerDiceReauthProvider::Finish(bool success) {
+void ProfilePickerDiceReauthProvider::Finish(bool success,
+                                             ProfilePickerReauthResult result) {
+  RecordReauthResult(result);
   scoped_identity_manager_observation_.Reset();
   content::WebContentsObserver::Observe(nullptr);
   // Hide the toolbar in case it was visible after showing the reauth page.

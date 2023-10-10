@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/profiles/profile_picker_dice_reauth_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
 #include <set>
@@ -145,6 +146,10 @@ const char kGaiaId[] = "some_gaia_id";
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 const char16_t kWork[] = u"Work";
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+const char kReauthResultHistogramName[] = "ProfilePicker.ReauthResult";
+#endif
 
 AccountInfo FillAccountInfo(
     const CoreAccountInfo& core_info,
@@ -879,8 +884,11 @@ class ForceSigninProfilePickerCreationFlowBrowserTest
     signin::MakeAccountAvailable(identity_manager, email);
   }
 
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+
  private:
   signin_util::ScopedForceSigninSetterForTesting force_signin_setter_{true};
+  base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_{
       kForceSigninFlowInProfilePicker};
 };
@@ -1014,6 +1022,8 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   EXPECT_TRUE(new_browser);
   EXPECT_EQ(new_browser->profile(), profile);
   EXPECT_FALSE(entry->IsSigninRequired());
+  histogram_tester()->ExpectUniqueSample(
+      kReauthResultHistogramName, ProfilePickerReauthResult::kSuccess, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
@@ -1065,6 +1075,9 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   EXPECT_TRUE(ProfilePicker::IsOpen());
   EXPECT_EQ(BrowserList::GetInstance()->size(), initial_browser_count);
   EXPECT_TRUE(entry->IsSigninRequired());
+  histogram_tester()->ExpectUniqueSample(
+      kReauthResultHistogramName, ProfilePickerReauthResult::kErrorUsedNewEmail,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,

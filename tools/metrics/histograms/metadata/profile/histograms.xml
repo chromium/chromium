@@ -785,6 +785,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ProfilePicker.ReauthResult" enum="ProfilePickerReauthResult"
+    expires_after="2024-03-17">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Recorded when the user is reauth-ing to unlock a Profile using the profile
+    picker flows. Records successful and failed flows.
+  </summary>
+</histogram>
+
 <histogram name="ProfilePicker.Shown" enum="ProfilePickerEntryPoint"
     expires_after="2024-02-11">
   <owner>msalama@chromium.org</owner>

@@ -90878,6 +90878,15 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="6" label="accountSelectionLacros"/>
 </enum>
 
+<enum name="ProfilePickerReauthResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Success without reauthenticating"/>
+  <int value="2" label="Error: Reauthed with a new email"/>
+  <int value="3" label="Error: Reauthed with another signed in email"/>
+  <int value="4" label="Timeout: ForceSigninVerifier check"/>
+  <int value="5" label="Timeout: Sign in error"/>
+</enum>
+
 <enum name="ProfilePickerStartupProfileMode">
   <int value="0" label="kBrowserWindow"/>
   <int value="1" label="kProfilePicker"/>
