@@ -22,9 +22,19 @@
 
 namespace webnn::dml {
 
+using Microsoft::WRL::ComPtr;
+
 class CommandQueue;
 class CommandRecorder;
 class GraphBuilder;
+
+// Record the total byte length of buffers and the D3D12_RANGE for each
+// buffer, all with the required alignment.
+template <typename Key>
+struct AlignedByteLength {
+  size_t total_byte_length = 0;
+  std::map<Key, D3D12_RANGE> key_to_d3d12_range_map;
+};
 
 // GraphImpl inherits WebNNGraphImpl to represent a DML graph implementation. It
 // is mainly responsible for building and compiling a DML graph from
@@ -39,7 +49,7 @@ class GraphImpl final : public WebNNGraphImpl {
   // instance will only be created and bound to the mojom receiver in
   // GraphImpl::OnInitializationComplete method.
   static void CreateAndBuild(scoped_refptr<CommandQueue> command_queue,
-                             Microsoft::WRL::ComPtr<IDMLDevice> dml_device,
+                             ComPtr<IDMLDevice> dml_device,
                              const mojom::GraphInfoPtr& graph_info,
                              mojom::WebNNContext::CreateGraphCallback callback);
 
@@ -75,18 +85,60 @@ class GraphImpl final : public WebNNGraphImpl {
     std::unordered_map<std::string, uint32_t> graph_output_name_to_index_map;
   };
 
+  // Contains the GPU resources for a graph execution, including the descriptor
+  // heap, upload buffer, input buffer, output buffer, read-back buffer and
+  // temporary buffer if the graph needs. These resources should be kept alive
+  // until the GPU has completed the execution. After that, the resources could
+  // be reused for next graph execution or be released.
+  struct ComputeResources {
+    ComputeResources(ComPtr<ID3D12DescriptorHeap> descriptor_heap,
+                     AlignedByteLength<std::string> input_aligned_byte_length,
+                     ComPtr<ID3D12Resource> upload_buffer,
+                     ComPtr<ID3D12Resource> input_buffer,
+                     AlignedByteLength<std::string> output_aligned_byte_length,
+                     ComPtr<ID3D12Resource> output_buffer,
+                     ComPtr<ID3D12Resource> readback_buffer,
+                     uint64_t temporary_buffer_byte_length,
+                     ComPtr<ID3D12Resource> temporary_buffer);
+    ~ComputeResources();
+    ComputeResources(const ComputeResources&) = delete;
+    ComputeResources& operator=(const ComputeResources&) = delete;
+    ComputeResources(ComputeResources&&) = delete;
+    ComputeResources& operator=(ComputeResources&&) = delete;
+
+    ComPtr<ID3D12DescriptorHeap> descriptor_heap;
+
+    AlignedByteLength<std::string> input_aligned_byte_length;
+    ComPtr<ID3D12Resource> upload_buffer;
+    ComPtr<ID3D12Resource> input_buffer;
+
+    AlignedByteLength<std::string> output_aligned_byte_length;
+    ComPtr<ID3D12Resource> output_buffer;
+    ComPtr<ID3D12Resource> readback_buffer;
+
+    ComPtr<ID3D12Resource> temporary_buffer;
+    absl::optional<DML_BUFFER_BINDING> temporary_buffer_binding;
+    absl::optional<DML_BINDING_DESC> temporary_buffer_binding_desc;
+  };
+
+  static std::unique_ptr<ComputeResources> AllocateComputeResources(
+      CommandRecorder* command_recorder,
+      IDMLCompiledOperator* compiled_operator,
+      const ComputeResourceInfo& compute_resource_info);
+
   GraphImpl(std::unique_ptr<CommandRecorder> command_recorder,
-            Microsoft::WRL::ComPtr<ID3D12Resource> persistent_buffer,
-            Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
+            ComPtr<ID3D12Resource> persistent_buffer,
+            ComPtr<IDMLCompiledOperator> compiled_operator,
             ComputeResourceInfo compute_resource_info,
-            GraphBufferBindingInfo graph_buffer_binding_info);
+            GraphBufferBindingInfo graph_buffer_binding_info,
+            std::unique_ptr<ComputeResources> compute_resources);
 
   // The method compiles all DML operators into an IDMLCompiledOperator
   // which can be dispatched to GPU. Since IDMLDevice1::CompileGraph called in
   // this method may take long time to compile shaders (if not cached before),
   // this method should run on a background thread rather than the current GPU
   // main thread to avoid blocking.
-  static Microsoft::WRL::ComPtr<IDMLCompiledOperator> CompileOnBackgroundThread(
+  static ComPtr<IDMLCompiledOperator> CompileOnBackgroundThread(
       GraphBuilder graph_builder);
 
   // After the CompileOnBackgroundThread task is completed on a background
@@ -110,7 +162,7 @@ class GraphImpl final : public WebNNGraphImpl {
       std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map,
       GraphBufferBindingInfo graph_buffer_binding_info,
       ComputeResourceInfo compute_resource_info,
-      Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator);
+      ComPtr<IDMLCompiledOperator> compiled_operator);
 
   // Create the GraphImpl instance and bind it to the mojom::WebNNGraph
   // receiver, then run callback to send the pending remote to the
@@ -119,8 +171,8 @@ class GraphImpl final : public WebNNGraphImpl {
   // required by the graph.
   static void OnInitializationComplete(
       std::unique_ptr<CommandRecorder> command_recorder,
-      Microsoft::WRL::ComPtr<ID3D12Resource> persistent_buffer,
-      Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
+      ComPtr<ID3D12Resource> persistent_buffer,
+      ComPtr<IDMLCompiledOperator> compiled_operator,
       ComputeResourceInfo compute_resource_info,
       GraphBufferBindingInfo graph_buffer_binding_info,
       mojom::WebNNContext::CreateGraphCallback callback,
@@ -134,8 +186,7 @@ class GraphImpl final : public WebNNGraphImpl {
   // which indicate the aligned offset for each output of the graph.
   void OnComputationComplete(
       mojom::WebNNGraph::ComputeCallback callback,
-      Microsoft::WRL::ComPtr<ID3D12Resource> readback_output_buffer,
-      std::map<std::string, D3D12_RANGE> graph_output_name_to_d3d12_range_map,
+      std::unique_ptr<ComputeResources> compute_resources,
       HRESULT hr);
 
   // If GraphImpl::ComputeImpl fails, report an error and release the command
@@ -165,16 +216,27 @@ class GraphImpl final : public WebNNGraphImpl {
   // GPU is completed and will be used for the following graph executions. It
   // could be nullptr which means it isn't required by the graph and won't need
   // to be bound for graph executions.
-  Microsoft::WRL::ComPtr<ID3D12Resource> persistent_buffer_;
+  ComPtr<ID3D12Resource> persistent_buffer_;
   absl::optional<DML_BUFFER_BINDING> persistent_buffer_binding_;
   absl::optional<DML_BINDING_DESC> persistent_buffer_binding_desc_;
   scoped_refptr<CommandQueue> command_queue_;
-  Microsoft::WRL::ComPtr<IDMLDevice> dml_device_;
+  ComPtr<IDMLDevice> dml_device_;
   std::unique_ptr<CommandRecorder> command_recorder_;
   // IDMLCompiledOperator represents a compiled and initialized DML graph to be
   // executed on GPU.
-  Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator_;
+  ComPtr<IDMLCompiledOperator> compiled_operator_;
   GraphBufferBindingInfo graph_buffer_binding_info_;
+
+  // The compute resource is pre-allocated after graph initialization and
+  // recycled after graph execution has completed. It avoids the resource
+  // allocation overhead for the first execution and following executions when
+  // it is available. A graph execution takes its ownership during the execution
+  // and returns the ownership once the GPU has completed the execution. If it
+  // is unavailable, e.g., being taken by previous uncompleted execution, a
+  // graph execution will allocate a new one and release it after the execution
+  // is done.
+  std::unique_ptr<ComputeResources> compute_resources_;
+
   base::WeakPtrFactory<GraphImpl> weak_factory_{this};
 };
 

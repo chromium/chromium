@@ -177,16 +177,9 @@ HRESULT CommandRecorder::InitializeOperator(
   // So create a descriptor heap with at least 1 descriptor.
   const uint32_t num_descriptors_in_heap =
       std::max(1u, initialization_binding_properties.RequiredDescriptorCount);
-  D3D12_DESCRIPTOR_HEAP_DESC descriptor_heap_desc{
-      .Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-      .NumDescriptors = num_descriptors_in_heap,
-      .Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE};
-  {
-    TRACE_EVENT1("gpu", "ID3D12Device::CreateDescriptorHeap", "NumDescriptors",
-                 descriptor_heap_desc.NumDescriptors);
-    RETURN_IF_FAILED(d3d12_device_->CreateDescriptorHeap(
-        &descriptor_heap_desc, IID_PPV_ARGS(&descriptor_heap)));
-  }
+  RETURN_IF_FAILED(CreateDescriptorHeap(
+      num_descriptors_in_heap, L"WebNN_Descriptor_Heap_For_Initialization",
+      descriptor_heap));
 
   ID3D12DescriptorHeap* descriptor_heaps[] = {descriptor_heap.Get()};
   command_list_->SetDescriptorHeaps(/* NumDescriptorHeaps */ 1,
@@ -289,30 +282,17 @@ HRESULT CommandRecorder::InitializeOperator(
 
 HRESULT CommandRecorder::ExecuteOperator(
     ComPtr<IDMLCompiledOperator> compiled_operator,
+    ComPtr<ID3D12DescriptorHeap> descriptor_heap,
     base::span<const DML_BINDING_DESC> input_bindings,
     base::span<const DML_BINDING_DESC> output_bindings,
-    const absl::optional<DML_BINDING_DESC>& persistent_resource_binding) {
+    const absl::optional<DML_BINDING_DESC>& persistent_resource_binding,
+    const absl::optional<DML_BINDING_DESC>& temporary_resource_binding) {
   TRACE_EVENT0("gpu", "dml::CommandRecorder::ExecuteOperator");
   CHECK(is_open_);
   CHECK(compiled_operator);
 
   DML_BINDING_PROPERTIES execution_binding_properties =
       compiled_operator->GetBindingProperties();
-
-  // TODO(crbug.com/1455278): Consider maintaining a descriptors pool for better
-  // resource reuse.
-  ComPtr<ID3D12DescriptorHeap> descriptor_heap;
-  CHECK_GT(execution_binding_properties.RequiredDescriptorCount, 0u);
-  D3D12_DESCRIPTOR_HEAP_DESC descriptor_heap_desc{
-      .Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-      .NumDescriptors = execution_binding_properties.RequiredDescriptorCount,
-      .Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE};
-  {
-    TRACE_EVENT1("gpu", "ID3D12Device::CreateDescriptorHeap", "NumDescriptors",
-                 descriptor_heap_desc.NumDescriptors);
-    RETURN_IF_FAILED(d3d12_device_->CreateDescriptorHeap(
-        &descriptor_heap_desc, IID_PPV_ARGS(&descriptor_heap)));
-  }
 
   ID3D12DescriptorHeap* descriptor_heaps[] = {descriptor_heap.Get()};
   command_list_->SetDescriptorHeaps(/* NumDescriptorHeaps */ 1,
@@ -334,20 +314,18 @@ HRESULT CommandRecorder::ExecuteOperator(
   // Create and bind the temporary resource if the operator execution requires.
   auto temp_resource_size = execution_binding_properties.TemporaryResourceSize;
   if (temp_resource_size > 0) {
-    ComPtr<ID3D12Resource> temp_resource;
-    RETURN_IF_FAILED(CreateDefaultBuffer(
-        temp_resource_size, L"WebNN_Temporary_Buffer_For_Execution",
-        temp_resource));
-    DML_BUFFER_BINDING temp_buffer_binding{.Buffer = temp_resource.Get(),
-                                           .Offset = 0,
-                                           .SizeInBytes = temp_resource_size};
-    DML_BINDING_DESC temp_binding_desc{.Type = DML_BINDING_TYPE_BUFFER,
-                                       .Desc = &temp_buffer_binding};
-    binding_table->BindTemporaryResource(&temp_binding_desc);
+    CHECK_EQ(temporary_resource_binding.has_value(), true);
+    CHECK_EQ(temporary_resource_binding.value().Type, DML_BINDING_TYPE_BUFFER);
+    binding_table->BindTemporaryResource(&temporary_resource_binding.value());
 
     // The temporary resource should be kept alive until the operator has been
     // executed on the GPU.
-    command_resources_.push_back(std::move(temp_resource));
+    ID3D12Resource* temporary_resource =
+        static_cast<const DML_BUFFER_BINDING*>(
+            temporary_resource_binding.value().Desc)
+            ->Buffer;
+    CHECK_NE(temporary_resource, nullptr);
+    command_resources_.push_back(temporary_resource);
   }
 
   // The persistent resource should be bound if the operator execution requires.
@@ -468,6 +446,28 @@ HRESULT CommandRecorder::CreateReadbackBuffer(
 
   CHECK_NE(name_for_debugging, nullptr);
   CHECK_EQ(resource->SetName(name_for_debugging), S_OK);
+  return S_OK;
+}
+
+HRESULT CommandRecorder::CreateDescriptorHeap(
+    uint32_t num_descriptors,
+    const wchar_t* name_for_debugging,
+    ComPtr<ID3D12DescriptorHeap>& descriptor_heap) {
+  TRACE_EVENT2("gpu", "dml::CommandRecorder::CreateDescriptorHeap",
+               "num_descriptors", num_descriptors, "name", name_for_debugging);
+  CHECK_GT(num_descriptors, 0u);
+  D3D12_DESCRIPTOR_HEAP_DESC descriptor_heap_desc{
+      .Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+      .NumDescriptors = num_descriptors,
+      .Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE};
+  RETURN_IF_FAILED(d3d12_device_->CreateDescriptorHeap(
+      &descriptor_heap_desc, IID_PPV_ARGS(&descriptor_heap)));
+  CHECK(descriptor_heap.Get());
+  descriptor_heap_desc = descriptor_heap->GetDesc();
+  CHECK_EQ(descriptor_heap_desc.NumDescriptors, num_descriptors);
+
+  CHECK_NE(name_for_debugging, nullptr);
+  CHECK_EQ(descriptor_heap->SetName(name_for_debugging), S_OK);
   return S_OK;
 }
 

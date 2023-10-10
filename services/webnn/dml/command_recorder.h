@@ -96,6 +96,10 @@ class CommandRecorder final {
   // with different inputs. The caller should wait for the operator execution to
   // complete on the GPU before reading back the results.
   //
+  // The caller should create the descriptor heap large enough for the number of
+  // descriptors that the compiled operator needs and supply it via
+  // `descriptor_heap`.
+  //
   // The input and output resources are supplied by the caller via
   // `input_bindings` and `output_bindings`. The input and output resources will
   // be bound to the operator's binding table. The number of bindings should
@@ -107,16 +111,18 @@ class CommandRecorder final {
   // should be initialized by `InitializeOperator()` and be supplied via
   // `persistent_resource_binding`.
   //
-  // This method will create necessary temporary resources for the operator
-  // execution.
+  // If the compiled operator also requires any temporary resources, they should
+  // be supplied via `temporary_resource_binding`.
   //
   // This method ensures that all the required GPU resources will be kept alive
   // until the operator execution has completed on the GPU.
   HRESULT ExecuteOperator(
       ComPtr<IDMLCompiledOperator> compiled_operator,
+      ComPtr<ID3D12DescriptorHeap> descriptor_heap,
       base::span<const DML_BINDING_DESC> input_bindings,
       base::span<const DML_BINDING_DESC> output_bindings,
-      const absl::optional<DML_BINDING_DESC>& persistent_resource_binding);
+      const absl::optional<DML_BINDING_DESC>& persistent_resource_binding,
+      const absl::optional<DML_BINDING_DESC>& temporary_resource_binding);
 
   // Create a resource with `size` bytes in
   // D3D12_RESOURCE_STATE_UNORDERED_ACCESS state from the default heap of the
@@ -138,6 +144,13 @@ class CommandRecorder final {
   HRESULT CreateReadbackBuffer(uint64_t size,
                                const wchar_t* name_for_debugging,
                                ComPtr<ID3D12Resource>& resource);
+
+  // Create a descriptor heap with D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV type,
+  // D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE flag and large enough for the
+  // number of descriptors.
+  HRESULT CreateDescriptorHeap(uint32_t num_descriptors,
+                               const wchar_t* name_for_debugging,
+                               ComPtr<ID3D12DescriptorHeap>& descriptor_heap);
 
  private:
   CommandRecorder(scoped_refptr<CommandQueue> command_queue,

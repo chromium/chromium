@@ -257,8 +257,10 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteReluOperator) {
       dml_operator.Get(), DML_EXECUTION_FLAG_NONE,
       IID_PPV_ARGS(&compiled_operator)));
 
-  // Relu operator should not require any persistent resources.
+  // Relu operator should not require any persistent or temporary resources.
   ASSERT_EQ(compiled_operator->GetBindingProperties().PersistentResourceSize,
+            0u);
+  ASSERT_EQ(compiled_operator->GetBindingProperties().TemporaryResourceSize,
             0u);
 
   // Initialize the operator.
@@ -276,6 +278,12 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteReluOperator) {
   adapter_->command_queue()->ReleaseCompletedResources();
   EXPECT_HRESULT_SUCCEEDED(adapter_->dml_device()->GetDeviceRemovedReason());
   EXPECT_HRESULT_SUCCEEDED(adapter_->d3d12_device()->GetDeviceRemovedReason());
+
+  // Create the descriptor heap for execution.
+  ComPtr<ID3D12DescriptorHeap> descriptor_heap;
+  ASSERT_HRESULT_SUCCEEDED(command_recorder->CreateDescriptorHeap(
+      compiled_operator->GetBindingProperties().RequiredDescriptorCount,
+      L"Descriptor_Heap_For_Execution", descriptor_heap));
 
   // Create input and output resources that will be bound for operator for
   // execution.
@@ -307,8 +315,8 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteReluOperator) {
 
   // Execute the operator with input and output bindings.
   EXPECT_HRESULT_SUCCEEDED(command_recorder->ExecuteOperator(
-      std::move(compiled_operator), input_bindings, output_bindings,
-      absl::nullopt));
+      std::move(compiled_operator), descriptor_heap, input_bindings,
+      output_bindings, absl::nullopt, absl::nullopt));
 
   // Download the result from output resource.
   std::vector<float> result(buffer_size / sizeof(float));
@@ -340,8 +348,10 @@ TEST_F(WebNNCommandRecorderTest, ExecuteReluOperatorForMultipleBindings) {
       dml_operator.Get(), DML_EXECUTION_FLAG_NONE,
       IID_PPV_ARGS(&compiled_operator)));
 
-  // Relu operator should not require any persistent resources.
+  // Relu operator should not require any persistent or temporary resources.
   ASSERT_EQ(compiled_operator->GetBindingProperties().PersistentResourceSize,
+            0u);
+  ASSERT_EQ(compiled_operator->GetBindingProperties().TemporaryResourceSize,
             0u);
 
   // Initialize the operator.
@@ -359,6 +369,17 @@ TEST_F(WebNNCommandRecorderTest, ExecuteReluOperatorForMultipleBindings) {
   adapter_->command_queue()->ReleaseCompletedResources();
   EXPECT_HRESULT_SUCCEEDED(adapter_->dml_device()->GetDeviceRemovedReason());
   EXPECT_HRESULT_SUCCEEDED(adapter_->d3d12_device()->GetDeviceRemovedReason());
+
+  // Create the descriptor heaps for two operator executions.
+  ComPtr<ID3D12DescriptorHeap> descriptor_heaps[2];
+  uint32_t num_descriptors =
+      compiled_operator->GetBindingProperties().RequiredDescriptorCount;
+  ASSERT_HRESULT_SUCCEEDED(command_recorder->CreateDescriptorHeap(
+      num_descriptors, L"First_Descriptor_Heap_For_Execution",
+      descriptor_heaps[0]));
+  ASSERT_HRESULT_SUCCEEDED(command_recorder->CreateDescriptorHeap(
+      num_descriptors, L"Second_Descriptor_Heap_For_Execution",
+      descriptor_heaps[1]));
 
   // Create input and output resources that will be bound for the two operator
   // executions.
@@ -404,14 +425,16 @@ TEST_F(WebNNCommandRecorderTest, ExecuteReluOperatorForMultipleBindings) {
   Upload(command_recorder.get(), input_data.data(), buffer_size,
          input_buffers[0].Get());
   EXPECT_HRESULT_SUCCEEDED(command_recorder->ExecuteOperator(
-      compiled_operator, input_bindings[0], output_bindings[0], absl::nullopt));
+      compiled_operator, descriptor_heaps[0], input_bindings[0],
+      output_bindings[0], absl::nullopt, absl::nullopt));
 
   // Upload second input data and execute the operator again.
   input_data = {2.0, 1.0, -1.0, -2.0};
   Upload(command_recorder.get(), input_data.data(), buffer_size,
          input_buffers[1].Get());
   EXPECT_HRESULT_SUCCEEDED(command_recorder->ExecuteOperator(
-      compiled_operator, input_bindings[1], output_bindings[1], absl::nullopt));
+      compiled_operator, descriptor_heaps[1], input_bindings[1],
+      output_bindings[1], absl::nullopt, absl::nullopt));
 
   // Download result from output resources.
   ComPtr<ID3D12Resource> readback_buffers[2];
@@ -571,6 +594,9 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteConvolutionOperator) {
   DML_BINDING_DESC persistent_buffer_binding_desc{
       .Type = DML_BINDING_TYPE_BUFFER, .Desc = &persistent_buffer_binding};
 
+  // This Convolution operator doesn't need any temporary resource.
+  ASSERT_EQ(execution_binding_properties.TemporaryResourceSize, 0u);
+
   // Initialize the operator and bind the input and persistent resources to
   // the operator initializer.
   EXPECT_HRESULT_SUCCEEDED(command_recorder->InitializeOperator(
@@ -582,6 +608,12 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteConvolutionOperator) {
   adapter_->command_queue()->ReleaseCompletedResources();
   EXPECT_HRESULT_SUCCEEDED(adapter_->dml_device()->GetDeviceRemovedReason());
   EXPECT_HRESULT_SUCCEEDED(adapter_->d3d12_device()->GetDeviceRemovedReason());
+
+  // Create the descriptor heap for operator execution.
+  ComPtr<ID3D12DescriptorHeap> descriptor_heap;
+  ASSERT_HRESULT_SUCCEEDED(command_recorder->CreateDescriptorHeap(
+      compiled_operator->GetBindingProperties().RequiredDescriptorCount,
+      L"Descriptor_Heap_For_Execution", descriptor_heap));
 
   // Create input and output resources that will be bound for operator for
   // execution.
@@ -623,8 +655,8 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteConvolutionOperator) {
 
   // Execute the operator with persistent, input and output bindings.
   EXPECT_HRESULT_SUCCEEDED(command_recorder->ExecuteOperator(
-      std::move(compiled_operator), input_bindings, output_bindings,
-      persistent_buffer_binding_desc));
+      std::move(compiled_operator), descriptor_heap, input_bindings,
+      output_bindings, persistent_buffer_binding_desc, absl::nullopt));
 
   // Download the result from output resource.
   std::vector<float> result(output_buffer_size / sizeof(float));
