@@ -38,6 +38,7 @@ const char kBaseUrlParam[] = "parcel_service_base_url";
 constexpr base::FeatureParam<std::string> kServiceBaseUrl{
     &commerce::kParcelTracking, kBaseUrlParam, kDefaultServiceBaseUrl};
 const char kGetStatusPath[] = ":status";
+const char kUntrackPath[] = ":untrack";
 
 // lowerCamelCase JSON proto message keys.
 const char kTrackingIdKey[] = "trackingId";
@@ -353,7 +354,7 @@ void ParcelsServerProxy::StopTrackingParcels(
   request_json.Set(kParcelIdsKey, std::move(parcel_list));
 
   SendJsonRequestToServer(
-      std::move(request_json), GURL(kServiceBaseUrl.Get()),
+      std::move(request_json), GURL(kServiceBaseUrl.Get() + kUntrackPath),
       kStopTrackingParcelTrafficAnnotation,
       base::BindOnce(&ParcelsServerProxy::OnStopTrackingResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

@@ -34,6 +34,8 @@ const char kParcelsBaseUrl[] =
     "https://memex-pa.googleapis.com/v1/shopping/parcels";
 const char kParcelsStatusUrl[] =
     "https://memex-pa.googleapis.com/v1/shopping/parcels:status";
+const char kParcelsUntrackUrl[] =
+    "https://memex-pa.googleapis.com/v1/shopping/parcels:untrack";
 
 const std::string kExpectedGetParcelStatusPostData =
     "{\"parcelIds\":[{\"carrier\":2,\"trackingId\":\"xyz\"}]}";
@@ -269,7 +271,7 @@ TEST_F(ParcelsServerProxyTest, TestStopTrackingParcel) {
 TEST_F(ParcelsServerProxyTest, TestStopTrackingParcels) {
   fetcher_->SetFetchResponse(kResponseSucceeded);
   EXPECT_CALL(*server_proxy_,
-              CreateEndpointFetcher(GURL(kParcelsBaseUrl), kPostHttpMethod,
+              CreateEndpointFetcher(GURL(kParcelsUntrackUrl), kPostHttpMethod,
                                     kExpectedStopTrackingPostData, _))
       .Times(1);
   base::RunLoop run_loop;
