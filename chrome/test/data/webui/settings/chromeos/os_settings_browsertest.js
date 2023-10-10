@@ -205,7 +205,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
 });
 
 [['AboutPage', 'os_about_page_tests.js'],
- ['ApnDetailDialog', 'apn_detail_dialog_tests.js'],
+ ['ApnDetailDialog', 'apn_detail_dialog_test.js'],
  // TODO(crbug.com/1455866): Enable the ApnSubpage test.
  // [
  //   'ApnSubpage', 'apn_subpage_tests.js',
