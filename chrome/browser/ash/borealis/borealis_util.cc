@@ -32,7 +32,9 @@ const char kDeviceInformationKey[] = "entry.1613887985";
 const re2::LazyRE2 kSpuriousGameBlocklist[] = {
     {"Proton [0-9.]+"},
     {"Steam Linux Runtime - [a-zA-Z]*"},
-    {"Steam Linux Runtime"}};
+    {"Steam Linux Runtime"},
+    {"Proton Experimental"},
+    {"Proton EasyAntiCheat Runtime"}};
 
 namespace {
 // Windows with these app IDs are not games. Don't prompt for feedback for them.
