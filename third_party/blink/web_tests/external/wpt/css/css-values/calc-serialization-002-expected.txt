@@ -16,6 +16,11 @@ FAIL testing calc(100% + 1em - 100%) assert_equals: expected "calc(0% + 1em)" bu
 FAIL testing calc(1vh - 7px) assert_equals: expected "calc(-7px + 1vh)" but got "calc(1vh - 7px)"
 PASS testing calc(5ex - 9ex)
 PASS testing calc(-80px + 25.4mm)
+PASS testing calc(2 * (10px + 1rem))
+PASS testing calc(2 * (10px - 1rem))
+PASS testing calc((10px + 1rem) / 2)
+PASS testing calc(2 * (min(10px, 20%) + max(1rem, 2%)))
+PASS testing calc((min(10px, 20%) + max(1rem, 2%)) * 2)
 FAIL testing calc(1vmin - 14%) assert_equals: expected "calc(-14% + 1vmin)" but got "calc(1vmin - 14%)"
 PASS testing calc(4 * 3px + 4pc / 8)
 Harness: the test ran to completion.

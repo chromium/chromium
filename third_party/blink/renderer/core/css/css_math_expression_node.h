@@ -324,6 +324,11 @@ class CORE_EXPORT CSSMathExpressionOperation final
   CSSMathOperator OperatorType() const { return operator_; }
 
   bool IsOperation() const final { return true; }
+  bool IsAddOrSubtract() const {
+    return operator_ == CSSMathOperator::kAdd ||
+           operator_ == CSSMathOperator::kSubtract;
+  }
+  bool AllOperandsAreNumeric() const;
   bool IsMinOrMax() const {
     return operator_ == CSSMathOperator::kMin ||
            operator_ == CSSMathOperator::kMax;
