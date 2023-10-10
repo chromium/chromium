@@ -35,6 +35,9 @@ TEST(BorealisTokenHardwareCheckerTest, Volteer) {
   EXPECT_EQ(check("volteer", "lindar",
                   "11th Gen Intel(R) Core(TM) i5-1145G7 @ 2.60GHz", 8, ""),
             AllowStatus::kAllowed);
+  EXPECT_EQ(check("volteer-foo", "lindar",
+                  "11th Gen Intel(R) Core(TM) i5-1145G7 @ 2.60GHz", 8, ""),
+            AllowStatus::kAllowed);
 
   // Insufficient ram/cpu
   EXPECT_EQ(check("volteer", "lindar",
@@ -57,6 +60,9 @@ TEST(BorealisTokenHardwareCheckerTest, GuybrushMajolica) {
   EXPECT_EQ(
       check("majolica", "", "AMD Ryzen 5 5625C with Radeon Graphics", 8, ""),
       AllowStatus::kAllowed);
+  EXPECT_EQ(check("guybrush-dash", "", "AMD Ryzen 5 5625C with Radeon Graphics",
+                  8, ""),
+            AllowStatus::kAllowed);
 
   EXPECT_EQ(
       check("majolica", "", "AMD Ryzen 5 5625C with Radeon Graphics", 1, ""),

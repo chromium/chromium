@@ -87,6 +87,17 @@ std::string GetModelName() {
   return base::ToLowerASCII(hardware_class);
 }
 
+std::string RemoveNonBorealisSuffix(const std::string& board) {
+  if (board.ends_with("-borealis")) {
+    return board;
+  }
+  size_t last_hyphen_pos = board.rfind('-');
+  if (last_hyphen_pos == std::string::npos) {
+    return board;
+  }
+  return board.substr(0, last_hyphen_pos);
+}
+
 }  // namespace
 
 TokenHardwareChecker::Data::Data(std::string token_hash,
@@ -159,11 +170,11 @@ bool TokenHardwareChecker::TokenHashMatches(const std::string& salt,
 }
 
 bool TokenHardwareChecker::IsBoard(const std::string& board) const {
-  return token_hardware_.board == board;
+  return RemoveNonBorealisSuffix(token_hardware_.board) == board;
 }
 
 bool TokenHardwareChecker::BoardIn(base::flat_set<std::string> boards) const {
-  return boards.contains(token_hardware_.board);
+  return boards.contains(RemoveNonBorealisSuffix(token_hardware_.board));
 }
 
 bool TokenHardwareChecker::IsModel(const std::string& model) const {
