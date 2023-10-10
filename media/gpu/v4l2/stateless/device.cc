@@ -24,6 +24,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "media/base/video_types.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/v4l2/stateless/utils.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
 
 // This has not been accepted upstream.
@@ -119,6 +120,7 @@ std::set<VideoCodec> Device::EnumerateInputFormats() {
 bool Device::SetInputFormat(VideoCodec codec,
                             gfx::Size resolution,
                             size_t encoded_buffer_size) {
+  DVLOGF(4);
   const uint32_t pix_fmt = VideoCodecToV4L2PixFmt(codec);
   struct v4l2_format format;
   memset(&format, 0, sizeof(format));
@@ -161,7 +163,9 @@ std::pair<gfx::Size, gfx::Size> Device::GetFrameResolutionRange(
     }
   }
 
-  VPLOGF(1) << "VIDIOC_ENUM_FRAMESIZES failed, using default values";
+  VPLOGF(1) << "VIDIOC_ENUM_FRAMESIZES failed for "
+            << media::FourccToString(frame_size.pixel_format)
+            << ", using default values";
   return std::make_pair(kDefaultMinCodedSize, kDefaultMaxCodedSize);
 }
 
@@ -178,9 +182,7 @@ std::vector<VideoCodecProfile> Device::ProfilesForVideoCodec(VideoCodec codec) {
   const auto profile_cid = kV4L2CodecPixFmtToProfileCID.at(pix_fmt);
 
   v4l2_queryctrl query_ctrl = {.id = base::strict_cast<__u32>(profile_cid)};
-  const int ret = IoctlDevice(VIDIOC_QUERYCTRL, &query_ctrl);
-  if (ret != kIoctlOk) {
-    VPLOGF(1) << "VIDIOC_QUERYCTRL failed.";
+  if (IoctlDevice(VIDIOC_QUERYCTRL, &query_ctrl) != kIoctlOk) {
     return {};
   }
 
@@ -247,10 +249,29 @@ void Device::Close() {
 
 Device::~Device() {}
 
-int Device::IoctlDevice(int request, void* arg) {
-  DCHECK(device_fd_.is_valid());
+int Device::Ioctl(const base::ScopedFD& fd, uint64_t request, void* arg) {
+  constexpr int kLogLevelForExpectedFailures = 4;
+  constexpr int kDefaultLogLevel = 1;
 
-  return HANDLE_EINTR(ioctl(device_fd_.get(), request, arg));
+  DCHECK(fd.is_valid());
+  const int ret = HANDLE_EINTR(ioctl(fd.get(), request, arg));
+  if (ret != kIoctlOk) {
+    const logging::SystemErrorCode err = logging::GetLastSystemErrorCode();
+    int log_level = kDefaultLogLevel;
+    // EAGAIN is _usually_ an expected result from trying to VIDIOC_DQBUF a
+    // buffer that is not done being processed.
+    if (err == EAGAIN) {
+      log_level = kLogLevelForExpectedFailures;
+    }
+
+    DVLOGF(log_level) << IoctlToString(request)
+                      << " failed: " << logging::SystemErrorCodeToString(err);
+  }
+  return ret;
+}
+
+int Device::IoctlDevice(uint64_t request, void* arg) {
+  return Ioctl(device_fd_, request, arg);
 }
 
 }  //  namespace media
