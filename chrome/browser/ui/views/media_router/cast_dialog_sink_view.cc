@@ -73,12 +73,9 @@ CastDialogSinkView::CastDialogSinkView(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  // If the sink is connected, and one of the features that allow new UI is
-  // enabled, then add labels and buttons. Else, default to a
+  // If the sink is connected, then add labels and buttons. Else, default to a
   // CastDialogSinkButton.
-  if (sink.state == UIMediaSinkState::CONNECTED &&
-      (IsAccessCodeCastFreezeUiEnabled(profile_) ||
-       base::FeatureList::IsEnabled(kCastDialogStopButton))) {
+  if (sink.state == UIMediaSinkState::CONNECTED) {
     // When sink is connected, the sink view looks like this:
     //
     // *----------------------------------*

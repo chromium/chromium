@@ -216,13 +216,8 @@ TEST_F(CastDialogSinkViewTest, SetEnabledState) {
   EXPECT_TRUE(sink_view_2.stop_button_for_test()->GetEnabled());
 }
 
-// If only the StopButton feature is enabled, then CastDialogSinkView will show
-// the stop button, but not a freeze button.
+// CastDialogSinkView will show the stop button, but not a freeze button.
 TEST_F(CastDialogSinkViewTest, StopButton) {
-  // Enable the proper features / prefs.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kCastDialogStopButton);
-
   UIMediaSink sink_1 = CreateNonfreezableSink();
   CastDialogSinkView sink_view_1(
       &profile_, sink_1, views::Button::PressedCallback(),

@@ -49,21 +49,14 @@ BASE_DECLARE_FEATURE(kAllowAllSitesToInitiateMirroring);
 // It sends a discovery SSDP message every 120 seconds.
 BASE_DECLARE_FEATURE(kDialMediaRouteProvider);
 
-// If enabled, the Cast Media Route Provider starts a session without
-// terminating any existing session on the same sink.
-BASE_DECLARE_FEATURE(kStartCastSessionWithoutTerminating);
-
 // If enabled, sinks that do not support presentation or remote playback, will
 // fall back to audio tab mirroring when casting from the Global Media Controls.
 BASE_DECLARE_FEATURE(kFallbackToAudioTabMirroring);
 
-// If enabled, a separate 'stop' button is shown for connected sinks in the Cast
-// dialog instead of the entire sink button being a stop button.
-BASE_DECLARE_FEATURE(kCastDialogStopButton);
-
 // If enabled, mirroring sessions use the playout delay specified by
 // `kCastMirroringPlayoutDelayMs`.
 BASE_DECLARE_FEATURE(kCastMirroringPlayoutDelay);
+
 extern const base::FeatureParam<int> kCastMirroringPlayoutDelayMs;
 
 // Registers |kMediaRouterCastAllowAllIPs| with local state pref |registry|.

@@ -169,29 +169,13 @@ void CastActivityManager::LaunchSessionParsed(
                                std::move(callback));
 
   auto activity_it = FindActivityBySink(sink);
-  if (activity_it == activities_.end()) {
-    DoLaunchSession(std::move(params));
-  } else {
-    if (base::FeatureList::IsEnabled(kStartCastSessionWithoutTerminating)) {
-      // Here we assume that when OnSessionRemoved() is next called for
-      // `sink_id`, it will be for removing the pre-existing activity.
-      pending_activity_removal_ = {
-          activity_it->second->sink().id(),
-          activity_it->second->route().media_route_id()};
-      DoLaunchSession(std::move(params));
-    } else {
-      const MediaRoute::Id& existing_route_id =
-          activity_it->second->route().media_route_id();
-      // We cannot launch the new session in the TerminateSession() callback
-      // because if we create a session there, then it may get deleted when
-      // OnSessionRemoved() is called to notify that the previous session
-      // was removed on the receiver.
-      TerminateSession(existing_route_id, base::DoNothing());
-      // The new session will be launched when OnSessionRemoved() is called for
-      // the old session.
-      SetPendingLaunch(std::move(params));
-    }
+  if (activity_it != activities_.end()) {
+    // Here we assume that when OnSessionRemoved() is next called for
+    // `sink_id`, it will be for removing the pre-existing activity.
+    pending_activity_removal_ = {activity_it->second->sink().id(),
+                                 activity_it->second->route().media_route_id()};
   }
+  DoLaunchSession(std::move(params));
 }
 
 void CastActivityManager::DoLaunchSession(DoLaunchSessionParams params) {
@@ -240,15 +224,6 @@ void CastActivityManager::DoLaunchSession(DoLaunchSessionParams params) {
       app_params,
       base::BindOnce(&CastActivityManager::HandleLaunchSessionResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(params)));
-}
-
-void CastActivityManager::SetPendingLaunch(DoLaunchSessionParams params) {
-  if (pending_launch_ && pending_launch_->callback) {
-    std::move(pending_launch_->callback)
-        .Run(absl::nullopt, nullptr, "Pending launch session params destroyed",
-             mojom::RouteRequestResultCode::CANCELLED);
-  }
-  pending_launch_ = std::move(params);
 }
 
 AppActivity* CastActivityManager::FindActivityForSessionJoin(
@@ -624,8 +599,7 @@ void CastActivityManager::OnSessionAddedOrUpdated(const MediaSinkInternal& sink,
 
 void CastActivityManager::OnSessionRemoved(const MediaSinkInternal& sink) {
   auto activity_it = activities_.end();
-  if (base::FeatureList::IsEnabled(kStartCastSessionWithoutTerminating) &&
-      pending_activity_removal_ &&
+  if (pending_activity_removal_ &&
       pending_activity_removal_->first == sink.id()) {
     activity_it = activities_.find(pending_activity_removal_->second);
     pending_activity_removal_.reset();
@@ -640,11 +614,6 @@ void CastActivityManager::OnSessionRemoved(const MediaSinkInternal& sink) {
         MediaRoute::GetPresentationIdFromMediaRouteId(activity_it->first));
     RemoveActivity(activity_it, PresentationConnectionState::TERMINATED,
                    PresentationConnectionCloseReason::CLOSED);
-  }
-  if (!base::FeatureList::IsEnabled(kStartCastSessionWithoutTerminating) &&
-      pending_launch_ && pending_launch_->sink.id() == sink.id()) {
-    DoLaunchSession(std::move(*pending_launch_));
-    pending_launch_.reset();
   }
 }
 

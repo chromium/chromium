@@ -216,7 +216,6 @@ class CastActivityManager : public CastActivityManagerBase,
   };
 
   void DoLaunchSession(DoLaunchSessionParams params);
-  void SetPendingLaunch(DoLaunchSessionParams params);
   void OnActivityStopped(const std::string& route_id);
 
   // Removes an activity, terminating any associated connections, then
@@ -332,13 +331,6 @@ class CastActivityManager : public CastActivityManagerBase,
   // consequences, such as confusing users or causing performance problems on
   // low-end devices.
   base::flat_map<int, MediaRoute::Id> routes_by_frame_;
-
-  // Information for a session that will be launched once |this| is notified
-  // that the existing session on the receiver has been removed. We only store
-  // one pending launch at a time so that we don't accumulate orphaned pending
-  // launches over time. Used only when the feature
-  // `kStartCastSessionWithoutTerminating` is disabled.
-  absl::optional<DoLaunchSessionParams> pending_launch_;
 
   // Used only when the feature `kStartCastSessionWithoutTerminating` is
   // enabled.

@@ -35,6 +35,9 @@
 #include "chrome/browser/profiles/profile_types_ash.h"
 #endif
 
+// NOTE: Consider separating out UI-only features that are not consumed by the
+// Media Router itself into their own file in chrome/browser/ui/media_router.
+
 namespace media_router {
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -48,33 +51,29 @@ BASE_FEATURE(kAllowAllSitesToInitiateMirroring,
 BASE_FEATURE(kDialMediaRouteProvider,
              "DialMediaRouteProvider",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kStartCastSessionWithoutTerminating,
-             "StartCastSessionWithoutTerminating",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// TODO(crbug.com/1486680): Remove once stopping mirroring routes in the global
+// media controls is implemented on ChromeOS.
 BASE_FEATURE(kFallbackToAudioTabMirroring,
              "FallbackToAudioTabMirroring",
-// TODO(crbug.com/1486680): Enable this once stopping mirroring routes in the
-// global media controls is implemented on Chrome OS.
 #if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_DISABLED_BY_DEFAULT);
 #else
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kCastDialogStopButton,
-             "CastDialogStopButton",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCastMirroringPlayoutDelay,
              "CastMirroringPlayoutDelay",
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kCastMirroringPlayoutDelayMs{
     &kCastMirroringPlayoutDelay, "cast_mirroring_playout_delay_ms", -1};
-#if BUILDFLAG(IS_CHROMEOS)
+
+// TODO(b/202294946): Remove when enabled by default on ChromeOS.
 BASE_FEATURE(kGlobalMediaControlsCastStartStop,
              "GlobalMediaControlsCastStartStop",
+#if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_DISABLED_BY_DEFAULT);
 #else
-BASE_FEATURE(kGlobalMediaControlsCastStartStop,
-             "GlobalMediaControlsCastStartStop",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_ANDROID)
