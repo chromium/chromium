@@ -404,8 +404,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   if (!_didReceivePasswords) {
     [self showLoadingSpinnerBackground];
   }
-
-  base::RecordAction(base::UserMetricsAction("MobilePasswordManagerOpen"));
 }
 
 - (void)viewWillAppear:(BOOL)animated {
