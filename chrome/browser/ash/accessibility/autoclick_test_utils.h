@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/gfx/geometry/rect.h"
 
 class PrefChangeRegistrar;
 class Profile;
@@ -18,10 +19,6 @@ class Profile;
 namespace base {
 class RunLoop;
 }  // namespace base
-
-namespace content {
-class WebContents;
-}  // namespace content
 
 namespace ui {
 namespace test {
@@ -31,6 +28,7 @@ class EventGenerator;
 
 namespace ash {
 enum class AutoclickEventType;
+class AutomationTestUtils;
 class ExtensionConsoleErrorObserver;
 
 // A class that can be used to exercise Autoclick in browsertests.
@@ -41,15 +39,20 @@ class AutoclickTestUtils {
   AutoclickTestUtils(const AutoclickTestUtils&) = delete;
   AutoclickTestUtils& operator=(const AutoclickTestUtils&) = delete;
 
-  void LoadAutoclick();
+  void LoadAutoclick(bool install_automation_utils = true);
   void SetAutoclickDelayMs(int ms);
   void SetAutoclickEventTypeWithHover(ui::test::EventGenerator* generator,
                                       AutoclickEventType type);
-  void HoverOverHtmlElement(content::WebContents* web_contents,
-                            ui::test::EventGenerator* generator,
-                            const std::string& element);
+  void WaitForPageLoad(const std::string& url);
+  void WaitForTextSelectionChangedEvent();
+  void HoverOverHtmlElement(ui::test::EventGenerator* generator,
+                            const std::string& name,
+                            const std::string& role);
   void ObserveFocusRings();
   void WaitForFocusRingChanged();
+  // Waits for the given node to exist, then returns its bounds.
+  gfx::Rect GetNodeBoundsInRoot(const std::string& name,
+                                const std::string& role);
 
  private:
   void WaitForAutoclickReady();
@@ -58,6 +61,7 @@ class AutoclickTestUtils {
   base::WeakPtr<AutoclickTestUtils> GetWeakPtr();
 
   raw_ptr<Profile, ExperimentalAsh> profile_;
+  std::unique_ptr<AutomationTestUtils> automation_utils_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   base::OnceClosure pref_change_waiter_;

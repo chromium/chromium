@@ -762,7 +762,8 @@ class DictationWithAutoclickTest : public DictationTestBase {
     // initially shown).
     autoclick_test_utils_ = std::make_unique<AutoclickTestUtils>(GetProfile());
     autoclick_test_utils_->SetAutoclickDelayMs(90 * 1000);
-    autoclick_test_utils_->LoadAutoclick();
+    // Don't install automation test utils JS, Dictation already does this.
+    autoclick_test_utils_->LoadAutoclick(/*install_automation_utils=*/false);
     EXPECT_TRUE(GetManager()->IsAutoclickEnabled());
     // Don't use ExtensionHostTestHelper for Dictation because we already used
     // it for Autoclick.
@@ -797,9 +798,8 @@ IN_PROC_BROWSER_TEST_P(DictationWithAutoclickTest, UseBothFeatures) {
       generator(), AutoclickEventType::kDoubleClick);
   autoclick_test_utils()->SetAutoclickDelayMs(5);
   // Hovering over the editable should result in the text being selected.
-  autoclick_test_utils()->HoverOverHtmlElement(
-      browser()->tab_strip_model()->GetActiveWebContents(), generator(),
-      "input");
+  autoclick_test_utils()->HoverOverHtmlElement(generator(), "Hello world",
+                                               "staticText");
   utils()->automation_test_utils()->WaitForTextSelectionChangedEvent();
 }
 

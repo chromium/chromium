@@ -125,7 +125,9 @@ class DataSource {
                           const std::string& mime_type,
                           const std::vector<uint8_t>& data);
 
-  const raw_ptr<DataSourceDelegate, ExperimentalAsh> delegate_;
+  // This can be a dangling pointer with AutoclickBrowserTest.ClickAndDrag
+  // when run in browser_tests_require_lacros.
+  const raw_ptr<DataSourceDelegate, DanglingUntriaged> delegate_;
   base::ObserverList<DataSourceObserver>::Unchecked observers_;
 
   // Mime types which has been offered.

@@ -104,11 +104,15 @@ class AutomationTestSupport {
         if (node) {
           this.desktop_.removeEventListener(
               chrome.automation.EventType.LOAD_COMPLETE, listener, true);
+          this.desktop_.removeEventListener(
+              chrome.automation.EventType.CHILDREN_CHANGED, listener, true);
           resolve(node);
         }
       };
       this.desktop_.addEventListener(
           chrome.automation.EventType.LOAD_COMPLETE, listener, true);
+      this.desktop_.addEventListener(
+          chrome.automation.EventType.CHILDREN_CHANGED, listener, true);
     });
   }
 

@@ -56,7 +56,6 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 # as browser_tests_require_lacros.
 # TODO(b/290096429): Audit these tests, re-work to run these tests against Lacros
 # browser if necessary.
--AutoclickBrowserTest*
 -SelectToSpeakTest*
 -SwitchAccessTest*
 # These tests do not run with the browser and do not need to run with Lacros.
