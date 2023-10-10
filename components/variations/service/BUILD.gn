@@ -53,9 +53,9 @@ static_library("service") {
     "variations_service_utils.h",
   ]
 
+  public_deps = [ "//base" ]
   deps = [
     ":buildflags",
-    "//base",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
