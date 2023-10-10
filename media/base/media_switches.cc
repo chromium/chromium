@@ -671,6 +671,11 @@ BASE_FEATURE(kDedicatedMediaServiceThread,
 #endif
 );
 
+// Allows document picture-in-picture pages to request capture.
+BASE_FEATURE(kDocumentPictureInPictureCapture,
+             "DocumentPictureInPictureCapture",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Falls back to other decoders after audio/video decode error happens. The
 // implementation may choose different strategies on when to fallback. See
 // DecoderStream for details. When disabled, playback will fail immediately
