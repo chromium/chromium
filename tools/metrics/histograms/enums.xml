@@ -55959,6 +55959,13 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="21" label="More Than Ten"/>
 </enum>
 
+<enum name="IOSErrorPagePresentationFailed">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Web View Released Error"/>
+  <int value="2" label="JavaScript Exception Occurred"/>
+  <int value="3" label="Other WKErrorDomain Error"/>
+</enum>
+
 <enum name="IOSExternalURLRequestStatus">
   <int value="0" label="MainFrameAllowed"/>
   <int value="1" label="SubframeAllowed"/>

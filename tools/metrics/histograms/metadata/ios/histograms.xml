@@ -3446,6 +3446,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Web.ErrorPagePresentationFailed"
+    enum="IOSErrorPagePresentationFailed" expires_after="2024-03-01">
+  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <summary>
+    Logged when the error page fails to load. Sometimes, for example, when the
+    web view no longer exists, this error may be expected. Other times, it will
+    have unknown causes. These unknown cases will cause a blank white page to
+    remain displayed in the web content area after the failed load instead of a
+    descriptive error message. Ref: crbug.com/1489167
+  </summary>
+</histogram>
+
 <histogram name="IOS.Web.URLDidChangeToEmptyURL" enum="BooleanHit"
     expires_after="2023-11-19">
   <owner>gambard@chromium.org</owner>

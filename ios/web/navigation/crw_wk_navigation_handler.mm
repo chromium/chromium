@@ -83,6 +83,36 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
   return web::HttpsUpgradeType::kNone;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ErrorPagePresentationFailed {
+  kUnknown,
+  kWebViewReleased,
+  kJavaScriptExceptionOccurred,
+  kOtherWKErrorDomain,
+  kMaxValue = kOtherWKErrorDomain
+};
+
+void LogPresentingErrorPageFailedWithError(NSError* error) {
+  ErrorPagePresentationFailed failure_type =
+      ErrorPagePresentationFailed::kUnknown;
+
+  if ([WKErrorDomain isEqualToString:error.domain]) {
+    if (error.code == WKErrorWebViewInvalidated ||
+        error.code == WKErrorWebContentProcessTerminated ||
+        error.code == WKErrorJavaScriptResultTypeIsUnsupported) {
+      failure_type = ErrorPagePresentationFailed::kWebViewReleased;
+    } else if (error.code == WKErrorJavaScriptExceptionOccurred) {
+      failure_type = ErrorPagePresentationFailed::kJavaScriptExceptionOccurred;
+    } else {
+      failure_type = ErrorPagePresentationFailed::kOtherWKErrorDomain;
+    }
+  }
+
+  base::UmaHistogramEnumeration("IOS.Web.ErrorPagePresentationFailed",
+                                failure_type);
+}
+
 }  // namespace
 
 @interface CRWWKNavigationHandler () <DownloadNativeTaskBridgeDelegate> {
@@ -2082,6 +2112,7 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
                                          addAutomaticReload:YES]
                completionHandler:^(id result, NSError* nserror) {
                  if (nserror) {
+                   LogPresentingErrorPageFailedWithError(nserror);
                    // WKErrorJavaScriptResultTypeIsUnsupported can be received
                    // if the WKWebView is released during this call.
                    DCHECK(nserror.code == WKErrorWebViewInvalidated ||
