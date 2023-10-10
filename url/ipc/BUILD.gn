@@ -18,6 +18,7 @@ component("url_ipc") {
     "//url",
   ]
   deps = [ "//base" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 # IPC unit tests aren't build on iOS.
