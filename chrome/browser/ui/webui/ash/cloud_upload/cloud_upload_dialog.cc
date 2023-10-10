@@ -875,7 +875,7 @@ void CloudOpenTask::LogGoogleDriveOpenResultUMA(
 void CloudOpenTask::LogOneDriveOpenResultUMA(
     OfficeTaskResult success_task_result,
     OfficeOneDriveOpenErrors open_result) {
-  UMA_HISTOGRAM_ENUMERATION(kOneDriveErrorMetricName, open_result);
+  cloud_open_metrics_->LogOneDriveOpenError(open_result);
   cloud_open_metrics_->LogTaskResult(open_result ==
                                              OfficeOneDriveOpenErrors::kSuccess
                                          ? success_task_result

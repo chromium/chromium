@@ -79,8 +79,7 @@ void LogOneDriveOpenErrorUmaAfterFallback(
     std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics) {
   switch (fallback_reason) {
     case ash::office_fallback::FallbackReason::kOffline:
-      UMA_HISTOGRAM_ENUMERATION(
-          ash::cloud_upload::kOneDriveErrorMetricName,
+      cloud_open_metrics->LogOneDriveOpenError(
           ash::cloud_upload::OfficeOneDriveOpenErrors::kOffline);
       break;
     case ash::office_fallback::FallbackReason::kDriveDisabled:

@@ -28,6 +28,9 @@ class CloudOpenMetrics {
   CloudOpenMetrics(const CloudOpenMetrics&&) = delete;
   CloudOpenMetrics& operator=(CloudOpenMetrics&&) = delete;
 
+  // Log the `value` for the OneDriveOpenError metric.
+  void LogOneDriveOpenError(OfficeOneDriveOpenErrors value);
+
   // Log the `value` for the TaskResult metric.
   void LogTaskResult(OfficeTaskResult value);
 
@@ -81,6 +84,7 @@ class CloudOpenMetrics {
   };
 
   CloudProvider cloud_provider_;
+  Metric<OfficeOneDriveOpenErrors> one_drive_open_error_;
   Metric<OfficeTaskResult> task_result_;
   Metric<OfficeFilesTransferRequired> transfer_required_;
   Metric<OfficeFilesUploadResult> upload_result_;
