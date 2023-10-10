@@ -217,8 +217,12 @@ extern const char kSwitchAccessExtensionId[];
 extern const char kSwitchAccessExtensionPath[];
 // The manifest filename of the Switch Access extension.
 extern const char kSwitchAccessManifestFilename[];
+// The manifest v3 filename of the Switch Access extension.
+extern const char kSwitchAccessManifestV3Filename[];
 // The guest manifest filename of the Switch Access extension.
 extern const char kSwitchAccessGuestManifestFilename[];
+// The guest manifest v3 filename of the Switch Access extension.
+extern const char kSwitchAccessGuestManifestV3Filename[];
 // Name of the manifest file in an extension when a special manifest is used
 // for guest mode.
 extern const char kGuestManifestFilename[];

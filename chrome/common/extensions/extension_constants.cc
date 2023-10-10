@@ -111,8 +111,11 @@ const char kSelectToSpeakGuestManifestFilename[] =
 const char kSwitchAccessExtensionId[] = "pmehocpgjmkenlokgjfkaichfjdhpeol";
 const char kSwitchAccessExtensionPath[] = "chromeos/accessibility";
 const char kSwitchAccessManifestFilename[] = "switch_access_manifest.json";
+const char kSwitchAccessManifestV3Filename[] = "switch_access_manifest_v3.json";
 const char kSwitchAccessGuestManifestFilename[] =
     "switch_access_manifest_guest.json";
+const char kSwitchAccessGuestManifestV3Filename[] =
+    "switch_access_manifest_guest_v3.json";
 const char kGuestManifestFilename[] = "manifest_guest.json";
 const char kFirstRunDialogId[] = "jdgcneonijmofocbhmijhacgchbihela";
 const char kEspeakSpeechSynthesisExtensionPath[] =

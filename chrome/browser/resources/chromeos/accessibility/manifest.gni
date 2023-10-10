@@ -25,6 +25,9 @@ template("manifest") {
     if (defined(invoker.is_guest_manifest) && invoker.is_guest_manifest) {
       args += [ "--is_guest_manifest=1" ]
     }
+    if (defined(invoker.is_manifest_v3) && invoker.is_manifest_v3) {
+      args += [ "--is_manifest_v3=1" ]
+    }
     args += rebase_path(sources, root_build_dir)
   }
 }

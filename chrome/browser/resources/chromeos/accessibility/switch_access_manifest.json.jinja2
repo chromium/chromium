@@ -2,16 +2,24 @@
 {% if key is defined %}
   "key": "{{key}}",
 {% endif %}
+{% if is_manifest_v3 == '1' %}
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "switch_access/switch_access_loader.js",
+    "type": "module"
+  },
+{% else %}
   "manifest_version": 2,
+  "background": {
+    "page": "switch_access/background.html"
+  },
+{% endif %}
   "name": "__MSG_SWITCH_ACCESS_NAME__",
   "version": "{{set_version}}",
   "description": "__MSG_SWITCH_ACCESS_DESCRIPTION__",
 {% if is_guest_manifest == '1' %}
   "incognito": "split",
 {% endif %}
-  "background": {
-    "page": "switch_access/background.html"
-  },
   "permissions": [
     "accessibilityPrivate",
     "clipboard",

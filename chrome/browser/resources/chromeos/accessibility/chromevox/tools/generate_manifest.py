@@ -63,6 +63,12 @@ def main():
       metavar='NUM',
       help='Whether to generate a guest mode capable manifest')
   parser.add_option(
+      '--is_manifest_v3',
+      default='0',
+      action='store',
+      metavar='NUM',
+      help='Whether to generate a manifest using manifest version 3')
+  parser.add_option(
       '--is_js_compressed',
       default='1',
       action='store',

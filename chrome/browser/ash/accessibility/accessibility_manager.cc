@@ -103,6 +103,7 @@
 #include "services/accessibility/buildflags.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
@@ -489,11 +490,21 @@ AccessibilityManager::AccessibilityManager() {
       extension_misc::kSelectToSpeakGuestManifestFilename,
       base::BindRepeating(&AccessibilityManager::PostUnloadSelectToSpeak,
                           weak_ptr_factory_.GetWeakPtr())));
+
+  const bool enable_v3_manifest =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kEnableExperimentalAccessibilityManifestV3);
+  const base::FilePath::CharType* switchAccessManifestFilename =
+      enable_v3_manifest ? extension_misc::kSwitchAccessManifestV3Filename
+                         : extension_misc::kSwitchAccessManifestFilename;
+  const base::FilePath::CharType* switchAccessGuestManifestFilename =
+      enable_v3_manifest ? extension_misc::kSwitchAccessGuestManifestV3Filename
+                         : extension_misc::kSwitchAccessGuestManifestFilename;
+
   switch_access_loader_ = base::WrapUnique(new AccessibilityExtensionLoader(
       extension_misc::kSwitchAccessExtensionId,
       resources_path.Append(extension_misc::kSwitchAccessExtensionPath),
-      extension_misc::kSwitchAccessManifestFilename,
-      extension_misc::kSwitchAccessGuestManifestFilename,
+      switchAccessManifestFilename, switchAccessGuestManifestFilename,
       base::BindRepeating(&AccessibilityManager::PostUnloadSwitchAccess,
                           weak_ptr_factory_.GetWeakPtr())));
 

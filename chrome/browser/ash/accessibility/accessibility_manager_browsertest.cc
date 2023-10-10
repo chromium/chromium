@@ -54,6 +54,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -1956,6 +1957,37 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerWithAccessibilityServiceOOBETest,
   // when a subset of features are enabled. This simple test ensures that there
   // are no crashes when setting up the service and toggling features
   // in the login profile.
+  SetSpokenFeedbackEnabled(true);
+  SetSelectToSpeakEnabled(true);
+  SetSwitchAccessEnabled(true);
+  SetAutoclickEnabled(true);
+  SetDictationEnabled(true);
+  SetMagnifierEnabled(true);
+
+  SetSpokenFeedbackEnabled(false);
+  SetSelectToSpeakEnabled(false);
+  SetSwitchAccessEnabled(false);
+  SetAutoclickEnabled(false);
+  SetDictationEnabled(false);
+  SetMagnifierEnabled(false);
+}
+
+class AccessibilityManagerWithManifestV3Test : public AccessibilityManagerTest {
+ public:
+  AccessibilityManagerWithManifestV3Test() = default;
+  AccessibilityManagerWithManifestV3Test(
+      const AccessibilityManagerWithManifestV3Test&) = delete;
+  AccessibilityManagerWithManifestV3Test& operator=(
+      const AccessibilityManagerWithManifestV3Test&) = delete;
+  ~AccessibilityManagerWithManifestV3Test() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        ::switches::kEnableExperimentalAccessibilityManifestV3);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerWithManifestV3Test, DoesNotCrash) {
   SetSpokenFeedbackEnabled(true);
   SetSelectToSpeakEnabled(true);
   SetSwitchAccessEnabled(true);
