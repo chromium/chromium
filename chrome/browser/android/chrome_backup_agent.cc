@@ -17,7 +17,7 @@
 
 namespace {
 
-static_assert(48 == syncer::GetNumModelTypes(),
+static_assert(47 == syncer::GetNumModelTypes(),
               "If the new type has a corresponding pref, add it here");
 const char* backed_up_preferences_[] = {
     syncer::prefs::internal::kSyncKeepEverythingSynced,

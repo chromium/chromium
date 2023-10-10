@@ -79,7 +79,7 @@ enum ModelType {
   // An object representing a custom search engine.
   SEARCH_ENGINES,
   // An object representing a browser session, e.g. an open tab. This is used
-  // for "Tabs" (depending on PROXY_TABS).
+  // for "Open Tabs".
   SESSIONS,
   // An app object.
   APPS,
@@ -151,16 +151,7 @@ enum ModelType {
   INCOMING_PASSWORD_SHARING_INVITATION,
   OUTGOING_PASSWORD_SHARING_INVITATION,
 
-  // Proxy types are excluded from the sync protocol, but are still considered
-  // real user types. By convention, we prefix them with 'PROXY_' to distinguish
-  // them from normal protocol types.
-  //
-  // Tab sync. This is a placeholder type, which implicitly enables Sessions
-  // for tabs sync.
-  // TODO(crbug.com/1488009): Now that TYPED_URLS is gone, it should be possible
-  // to remove this type, and the whole concept of "proxy types".
-  PROXY_TABS,
-  LAST_USER_MODEL_TYPE = PROXY_TABS,
+  LAST_USER_MODEL_TYPE = OUTGOING_PASSWORD_SHARING_INVITATION,
 
   // ---- Control Types ----
   // An object representing a set of Nigori keys.

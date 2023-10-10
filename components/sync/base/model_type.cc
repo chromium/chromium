@@ -196,8 +196,6 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
      "Outgoing Password Sharing Invitations",
      sync_pb::EntitySpecifics::kOutgoingPasswordSharingInvitationFieldNumber,
      ModelTypeForHistograms::kOutgoingPasswordSharingInvitations},
-    // ---- Proxy types ----
-    {PROXY_TABS, "", "", "Proxy tabs", -1, ModelTypeForHistograms::kProxyTabs},
     // ---- Control Types ----
     {NIGORI, "NIGORI", "nigori", "Encryption Keys",
      sync_pb::EntitySpecifics::kNigoriFieldNumber,
@@ -207,17 +205,16 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
 static_assert(std::size(kModelTypeInfoMap) == GetNumModelTypes(),
               "kModelTypeInfoMap should have GetNumModelTypes() elements");
 
-static_assert(48 == syncer::GetNumModelTypes(),
+static_assert(47 == syncer::GetNumModelTypes(),
               "When adding a new type, update enum SyncModelTypes in enums.xml "
               "and suffix SyncModelType in histograms.xml.");
 
 // kSpecificsFieldNumberToModelTypeMap must exactly match the kModelTypeInfoMap,
-// but PROXY_TABS does not have a ModelType. So we skipped it and thus expect
-// size to be (syncer::GetNumModelTypes()-1).
+// so its size must be syncer::GetNumModelTypes().
 //
 // NOTE: size here acts as a static assert on the constraint above.
 using kSpecificsFieldNumberToModelTypeMap =
-    base::fixed_flat_map<int, ModelType, syncer::GetNumModelTypes() - 1>;
+    base::fixed_flat_map<int, ModelType, syncer::GetNumModelTypes()>;
 
 constexpr kSpecificsFieldNumberToModelTypeMap
     specifics_field_number2model_type = base::MakeFixedFlatMap<int, ModelType>({
@@ -390,10 +387,6 @@ void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics) {
     case SEND_TAB_TO_SELF:
       specifics->mutable_send_tab_to_self();
       break;
-    case PROXY_TABS:
-      NOTREACHED() << "No default field value for "
-                   << ModelTypeToDebugString(type);
-      break;
     case NIGORI:
       specifics->mutable_nigori();
       break;
@@ -467,7 +460,7 @@ void internal::GetModelTypeSetFromSpecificsFieldNumberListHelper(
 }
 
 ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  static_assert(48 == syncer::GetNumModelTypes(),
+  static_assert(47 == syncer::GetNumModelTypes(),
                 "When adding new protocol types, the following type lookup "
                 "logic must be updated.");
   if (specifics.has_bookmark())
@@ -573,7 +566,7 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
 }
 
 ModelTypeSet EncryptableUserTypes() {
-  static_assert(48 == syncer::GetNumModelTypes(),
+  static_assert(47 == syncer::GetNumModelTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   ModelTypeSet encryptable_user_types = UserTypes();

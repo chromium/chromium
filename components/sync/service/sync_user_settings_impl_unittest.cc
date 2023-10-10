@@ -104,9 +104,6 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
       MakeSyncUserSettings(GetUserTypes());
 
   ModelTypeSet expected_types = GetUserTypes();
-  // TODO(crbug.com/1488009): PROXY_TABS is not a real data type, and not
-  // considered preferred. Eventually it should be removed entirely.
-  expected_types.Remove(PROXY_TABS);
   EXPECT_TRUE(sync_user_settings->IsSyncEverythingEnabled());
   EXPECT_EQ(expected_types, GetPreferredUserTypes(*sync_user_settings));
 
@@ -217,9 +214,6 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncAllOsTypes) {
       MakeSyncUserSettings(GetUserTypes());
 
   ModelTypeSet expected_types = GetUserTypes();
-  // TODO(crbug.com/1488009): PROXY_TABS is not a real data type, and not
-  // considered preferred. Eventually it should be removed entirely.
-  expected_types.Remove(PROXY_TABS);
   EXPECT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
   EXPECT_EQ(expected_types, GetPreferredUserTypes(*sync_user_settings));
 
