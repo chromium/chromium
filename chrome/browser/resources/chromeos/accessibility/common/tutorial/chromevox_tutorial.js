@@ -9,7 +9,7 @@
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BridgeConstants} from '../../../chromevox/common/bridge_constants.js';
+import {BackgroundBridge} from '../../../chromevox/common/background_bridge.js';
 import {EarconDescription} from '../../../chromevox/common/earcon_id.js';
 import {QueueMode} from '../../../chromevox/common/tts_types.js';
 
@@ -399,19 +399,6 @@ Polymer({
     });
   },
 
-  /**
-   * @param {string} target Should match the target constant in
-   *     chromevox/common/bridge_constants.js.
-   * @param {string} action Should match the action constant in
-   *     chromevox/common/bridge_constants.js.
-   * @return {!Promise}
-   * @private
-   */
-  async bridgeMessage_(target, action, ...args) {
-    return new Promise(
-        resolve => chrome.runtime.sendMessage({target, action, args}, resolve));
-  },
-
   /** @private */
   onLessonsLoaded_() {
     this.buildEarconLesson();
@@ -592,13 +579,10 @@ Polymer({
    * @param {{doNotInterrupt: boolean}=} properties
    * @private
    * @suppress {undefinedVars|missingProperties} For referencing
-   * BridgeConstants, which is defined on the Panel window.
+   * BackgroundBridge, which is defined on the Panel window.
    */
   requestSpeech(text, queueMode, properties) {
-    this.bridgeMessage_(
-        BridgeConstants.TtsBackground.TARGET,
-        BridgeConstants.TtsBackground.Action.SPEAK, text, queueMode,
-        properties);
+    BackgroundBridge.TtsBackground.speak(text, queueMode, properties);
   },
 
   /** @private */
