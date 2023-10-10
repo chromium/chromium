@@ -23,6 +23,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
 #include "ui/display/display.h"
 #include "ui/display/display_change_notifier.h"
@@ -110,8 +111,18 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
       screen.maximumExtendedDynamicRangeColorComponentValue;
   if (max_potential_edr_value > 1.f) {
     enable_hdr = true;
-    hdr_max_lum_relative =
-        std::max(kMinHDRCapableMaxLuminanceRelative, max_edr_value);
+#if defined(ARCH_CPU_X86_64)
+    // Disable HDR on Intel laptop screens because performance is unacceptably
+    // bad.
+    // https://crbug.com/1402882
+    if (CGDisplayIsBuiltin(display_id) && max_potential_edr_value <= 2.f) {
+      enable_hdr = false;
+    }
+#endif
+    if (enable_hdr) {
+      hdr_max_lum_relative =
+          std::max(kMinHDRCapableMaxLuminanceRelative, max_edr_value);
+    }
   }
 
   // Compute DisplayColorSpaces.
