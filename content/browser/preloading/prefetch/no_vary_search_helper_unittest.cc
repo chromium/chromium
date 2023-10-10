@@ -18,7 +18,29 @@ namespace {
 
 class NoVarySearchHelperTester final {
  public:
-  void AddUrl(const GURL& url, network::mojom::URLResponseHeadPtr head) {
+  PrefetchContainer* AddUrl(const GURL& url,
+                            network::mojom::URLResponseHeadPtr head) {
+    auto prefetch_container =
+        CreatePrefetchContainer(url, std::move(head));
+    prefetches_[url] = prefetch_container;
+
+    return prefetch_container.get();
+  }
+
+  PrefetchContainer* MatchUrl(const GURL& url) {
+    return no_vary_search::MatchUrl(url, prefetches_).get();
+  }
+
+  std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>>
+  GetAllForUrlWithoutRefAndQueryForTesting(const GURL& url) {
+    return no_vary_search::GetAllForUrlWithoutRefAndQueryForTesting(
+        url, prefetches_);
+  }
+
+ private:
+  base::WeakPtr<PrefetchContainer> CreatePrefetchContainer(
+      const GURL& url,
+      network::mojom::URLResponseHeadPtr head) {
     std::unique_ptr<PrefetchContainer> prefetch_container =
         std::make_unique<PrefetchContainer>(
             GlobalRenderFrameHostId(1234, 5678), url,
@@ -31,22 +53,13 @@ class NoVarySearchHelperTester final {
 
     MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
                                           std::move(head), "test body");
-    prefetches_[url] = prefetch_container->GetWeakPtr();
+    auto weak_prefetch_container = prefetch_container->GetWeakPtr();
     no_vary_search::SetNoVarySearchData(prefetch_container->GetWeakPtr());
     owned_prefetches_.push_back(std::move(prefetch_container));
+
+    return weak_prefetch_container;
   }
 
-  base::WeakPtr<PrefetchContainer> MatchUrl(const GURL& url) {
-    return no_vary_search::MatchUrl(url, prefetches_);
-  }
-
-  std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>>
-  GetAllForUrlWithoutRefAndQueryForTesting(const GURL& url) {
-    return no_vary_search::GetAllForUrlWithoutRefAndQueryForTesting(
-        url, prefetches_);
-  }
-
- private:
   std::vector<std::unique_ptr<PrefetchContainer>> owned_prefetches_;
   std::map<GURL, base::WeakPtr<PrefetchContainer>> prefetches_;
 };
@@ -85,7 +98,7 @@ TEST_F(NoVarySearchHelperTest, AddAndMatchUrlNonEmptyVaryParams) {
   std::unique_ptr<NoVarySearchHelperTester> helper =
       std::make_unique<NoVarySearchHelperTester>();
   const GURL test_url("https://a.com/index.html?a=2&b=3");
-  helper->AddUrl(test_url, std::move(head));
+  auto* prefetch_container = helper->AddUrl(test_url, std::move(head));
 
   const auto urls_with_no_vary_search =
       helper->GetAllForUrlWithoutRefAndQueryForTesting(test_url);
@@ -105,8 +118,10 @@ TEST_F(NoVarySearchHelperTest, AddAndMatchUrlNonEmptyVaryParams) {
   EXPECT_TRUE(urls_with_no_vary_search.at(0)
                   .second->GetNoVarySearchData()
                   ->vary_on_key_order());
-  EXPECT_TRUE(helper->MatchUrl(GURL("https://a.com/index.html?b=4&a=2&c=5")));
-  EXPECT_TRUE(helper->MatchUrl(GURL("https://a.com/index.html?a=2")));
+  EXPECT_EQ(helper->MatchUrl(GURL("https://a.com/index.html?b=4&a=2&c=5")),
+            prefetch_container);
+  EXPECT_EQ(helper->MatchUrl(GURL("https://a.com/index.html?a=2")),
+            prefetch_container);
   EXPECT_FALSE(helper->MatchUrl(GURL("https://a.com/index.html")));
   EXPECT_FALSE(helper->MatchUrl(GURL("https://a.com/index.html?b=4")));
 }
@@ -124,7 +139,7 @@ TEST_F(NoVarySearchHelperTest, AddAndMatchUrlNonEmptyNoVaryParams) {
 
   std::unique_ptr<NoVarySearchHelperTester> helper =
       std::make_unique<NoVarySearchHelperTester>();
-  helper->AddUrl(test_url, std::move(head));
+  auto* prefetch_container = helper->AddUrl(test_url, std::move(head));
   const auto urls_with_no_vary_search =
       helper->GetAllForUrlWithoutRefAndQueryForTesting(test_url);
   ASSERT_EQ(urls_with_no_vary_search.size(), 1u);
@@ -143,9 +158,11 @@ TEST_F(NoVarySearchHelperTest, AddAndMatchUrlNonEmptyNoVaryParams) {
   EXPECT_TRUE(urls_with_no_vary_search.at(0)
                   .second->GetNoVarySearchData()
                   ->vary_on_key_order());
-  EXPECT_TRUE(helper->MatchUrl(test_url));
-  EXPECT_TRUE(helper->MatchUrl(GURL("https://a.com/home.html?b=3")));
-  EXPECT_TRUE(helper->MatchUrl(GURL("https://a.com/home.html?b=3&a=4")));
+  EXPECT_EQ(helper->MatchUrl(test_url), prefetch_container);
+  EXPECT_EQ(helper->MatchUrl(GURL("https://a.com/home.html?b=3")),
+            prefetch_container);
+  EXPECT_EQ(helper->MatchUrl(GURL("https://a.com/home.html?b=3&a=4")),
+            prefetch_container);
   EXPECT_FALSE(helper->MatchUrl(GURL("https://a.com/home.html")));
   EXPECT_FALSE(helper->MatchUrl(GURL("https://a.com/home.html?b=4")));
 }
@@ -165,7 +182,7 @@ TEST_F(NoVarySearchHelperTest, AddAndMatchUrlEmptyNoVaryParams) {
 
   std::unique_ptr<NoVarySearchHelperTester> helper =
       std::make_unique<NoVarySearchHelperTester>();
-  helper->AddUrl(test_url, std::move(head));
+  auto* prefetch_container = helper->AddUrl(test_url, std::move(head));
   const auto urls_with_no_vary_search =
       helper->GetAllForUrlWithoutRefAndQueryForTesting(test_url);
   ASSERT_EQ(urls_with_no_vary_search.size(), 1u);
@@ -193,8 +210,9 @@ TEST_F(NoVarySearchHelperTest, AddAndMatchUrlEmptyNoVaryParams) {
       helper->MatchUrl(GURL("https://a.com/away.html?a=2&b=3&c=6&d=5")));
   EXPECT_FALSE(
       helper->MatchUrl(GURL("https://a.com/away.html?a=2&b=3&c=6&a=5")));
-  EXPECT_TRUE(helper->MatchUrl(GURL("https://a.com/away.html?b=3&c=6&a=2")));
-  EXPECT_TRUE(helper->MatchUrl(test_url));
+  EXPECT_EQ(helper->MatchUrl(GURL("https://a.com/away.html?b=3&c=6&a=2")),
+            prefetch_container);
+  EXPECT_EQ(helper->MatchUrl(test_url), prefetch_container);
 }
 
 TEST_F(NoVarySearchHelperTest, AddUrlWithoutNoVarySearchTest) {
@@ -209,13 +227,13 @@ TEST_F(NoVarySearchHelperTest, AddUrlWithoutNoVarySearchTest) {
   std::unique_ptr<NoVarySearchHelperTester> helper =
       std::make_unique<NoVarySearchHelperTester>();
   GURL test_url("https://a.com/index.html?a=2&b=3");
-  helper->AddUrl(test_url, std::move(head));
+  auto* prefetch_container = helper->AddUrl(test_url, std::move(head));
 
   auto urls_with_no_vary_search =
       helper->GetAllForUrlWithoutRefAndQueryForTesting(test_url);
   ASSERT_EQ(urls_with_no_vary_search.size(), 1u);
   EXPECT_EQ(urls_with_no_vary_search.at(0).first, test_url);
-  EXPECT_TRUE(helper->MatchUrl(test_url));
+  EXPECT_EQ(helper->MatchUrl(test_url), prefetch_container);
 }
 
 TEST_F(NoVarySearchHelperTest, DoNotPrefixMatch) {
@@ -249,14 +267,15 @@ TEST_F(NoVarySearchHelperTest, DoNotPrefixMatch) {
 
   // Call `AddUrl` in an order different from the URL sorted order to test that
   // `prefixes_` are sorted.
-  helper->AddUrl(no_match_url_num, head->Clone());
-  helper->AddUrl(matching_url_ref, head->Clone());
-  helper->AddUrl(no_match_url_foo, head->Clone());
-  helper->AddUrl(matching_url_a_1, head->Clone());
-  helper->AddUrl(matching_url_a_0, network::mojom::URLResponseHead::New());
-  helper->AddUrl(matching_url_a_2, head->Clone());
-  helper->AddUrl(no_match_url_top, head->Clone());
-  helper->AddUrl(matching_url_raw, head->Clone());
+  auto* pc_no_match_url_num = helper->AddUrl(no_match_url_num, head->Clone());
+  auto* pc_matching_url_ref = helper->AddUrl(matching_url_ref, head->Clone());
+  auto* pc_no_match_url_foo = helper->AddUrl(no_match_url_foo, head->Clone());
+  auto* pc_matching_url_a_1 = helper->AddUrl(matching_url_a_1, head->Clone());
+  auto* pc_matching_url_a_0 =
+      helper->AddUrl(matching_url_a_0, network::mojom::URLResponseHead::New());
+  auto* pc_matching_url_a_2 = helper->AddUrl(matching_url_a_2, head->Clone());
+  auto* pc_no_match_url_top = helper->AddUrl(no_match_url_top, head->Clone());
+  auto* pc_matching_url_raw = helper->AddUrl(matching_url_raw, head->Clone());
 
   // Even if the matching entries and non-matching entries (non-matching URLs
   // and `matching_url_a_0` without No-Vary-Search headers) are interleaved in
@@ -270,12 +289,26 @@ TEST_F(NoVarySearchHelperTest, DoNotPrefixMatch) {
   EXPECT_EQ(urls_with_no_vary_search.at(2).first, matching_url_a_1);
   EXPECT_EQ(urls_with_no_vary_search.at(3).first, matching_url_a_2);
 
-  EXPECT_TRUE(
-      helper->MatchUrl(GURL("https://example.com/index.html?b=4&a=2&c=5")));
-  EXPECT_TRUE(helper->MatchUrl(GURL("https://example.com/index.html?a=1")));
-  EXPECT_TRUE(helper->MatchUrl(GURL("https://example.com/index.html?a=2")));
-  EXPECT_TRUE(helper->MatchUrl(GURL("https://example.com/index.html111?a=3")));
-  EXPECT_TRUE(helper->MatchUrl(GURL("https://example.com/index.htmlfoo?a=4")));
+  EXPECT_EQ(
+      helper->MatchUrl(GURL("https://example.com/index.html?b=4&a=2&c=5")),
+      pc_matching_url_a_2);
+  EXPECT_EQ(helper->MatchUrl(matching_url_a_0), pc_matching_url_a_0);
+  EXPECT_FALSE(helper->MatchUrl(GURL("https://example.com/index.html?a=0")));
+  EXPECT_EQ(helper->MatchUrl(GURL("https://example.com/index.html?a=1")),
+            pc_matching_url_a_1);
+  EXPECT_EQ(helper->MatchUrl(GURL("https://example.com/index.html?a=2")),
+            pc_matching_url_a_2);
+  EXPECT_EQ(helper->MatchUrl(GURL("https://example.com/index.html111?a=3")),
+            pc_no_match_url_num);
+  EXPECT_EQ(helper->MatchUrl(GURL("https://example.com/index.htmlfoo?a=4")),
+            pc_no_match_url_foo);
+  EXPECT_EQ(helper->MatchUrl(GURL("https://example.com/top.html?a=5")),
+            pc_no_match_url_top);
+  EXPECT_EQ(helper->MatchUrl(GURL("https://example.com/index.html?b=3")),
+            pc_matching_url_raw);
+  EXPECT_EQ(helper->MatchUrl(matching_url_ref), pc_matching_url_ref);
+  EXPECT_EQ(helper->MatchUrl(GURL("https://example.com/index.html?b=3#ref")),
+            pc_matching_url_raw);
 
   // `matching_url_a_0` shouldn't match due to lack of the No-Vary-Search
   // header.
