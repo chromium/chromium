@@ -17,6 +17,25 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
+namespace {
+
+std::unique_ptr<KeyedService> BuildServiceInstance(web::BrowserState* context) {
+  CHECK(IsSafetyCheckMagicStackEnabled());
+
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
+
+  const scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+
+  return std::make_unique<IOSChromeSafetyCheckManager>(
+      browser_state->GetPrefs(), GetApplicationContext()->GetLocalState(),
+      IOSChromePasswordCheckManagerFactory::GetForBrowserState(browser_state),
+      task_runner);
+}
+
+}  // namespace
+
 // static
 IOSChromeSafetyCheckManager*
 IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
@@ -32,6 +51,12 @@ IOSChromeSafetyCheckManagerFactory::GetInstance() {
   return instance.get();
 }
 
+// static
+IOSChromeSafetyCheckManagerFactory::TestingFactory
+IOSChromeSafetyCheckManagerFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildServiceInstance);
+}
+
 IOSChromeSafetyCheckManagerFactory::IOSChromeSafetyCheckManagerFactory()
     : BrowserStateKeyedServiceFactory(
           "SafetyCheckManager",
@@ -45,18 +70,7 @@ IOSChromeSafetyCheckManagerFactory::~IOSChromeSafetyCheckManagerFactory() =
 std::unique_ptr<KeyedService>
 IOSChromeSafetyCheckManagerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  CHECK(IsSafetyCheckMagicStackEnabled());
-
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-
-  const scoped_refptr<base::SequencedTaskRunner> task_runner =
-      base::SequencedTaskRunner::GetCurrentDefault();
-
-  return std::make_unique<IOSChromeSafetyCheckManager>(
-      browser_state->GetPrefs(), GetApplicationContext()->GetLocalState(),
-      IOSChromePasswordCheckManagerFactory::GetForBrowserState(browser_state),
-      task_runner);
+  return BuildServiceInstance(context);
 }
 
 web::BrowserState* IOSChromeSafetyCheckManagerFactory::GetBrowserStateToUse(

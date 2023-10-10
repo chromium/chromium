@@ -22,6 +22,7 @@ class IOSChromeSafetyCheckManagerFactory
   static IOSChromeSafetyCheckManager* GetForBrowserState(
       ChromeBrowserState* browser_state);
   static IOSChromeSafetyCheckManagerFactory* GetInstance();
+  static TestingFactory GetDefaultFactory();
 
   IOSChromeSafetyCheckManagerFactory(
       const IOSChromeSafetyCheckManagerFactory&) = delete;

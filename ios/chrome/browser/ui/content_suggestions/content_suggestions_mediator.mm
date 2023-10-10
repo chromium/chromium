@@ -1218,11 +1218,17 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
         }
         break;
       case ContentSuggestionsModuleType::kTabResumption:
-        if (IsTabResumptionEnabled() &&
-            !tab_resumption_prefs::IsTabResumptionDisabled(_localState) &&
-            _tabResumptionItem) {
-          [magicStackOrder addObject:moduleNumber];
+        if (!IsTabResumptionEnabled() ||
+            tab_resumption_prefs::IsTabResumptionDisabled(_localState) ||
+            !_tabResumptionItem) {
+          break;
         }
+        // If ShouldHideIrrelevantModules() is enabled and it is not ranked as
+        // the first two modules, do not add it to the Magic Stack.
+        if (ShouldHideIrrelevantModules() && [magicStackOrder count] > 1) {
+          break;
+        }
+        [magicStackOrder addObject:moduleNumber];
         break;
       case ContentSuggestionsModuleType::kSafetyCheck:
       case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
