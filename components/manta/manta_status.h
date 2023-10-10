@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_MANTA_MANTA_STATUS_H_
-#define CHROME_BROWSER_MANTA_MANTA_STATUS_H_
+#ifndef COMPONENTS_MANTA_MANTA_STATUS_H_
+#define COMPONENTS_MANTA_MANTA_STATUS_H_
 
 #include <string>
 
@@ -35,4 +35,4 @@ struct MantaStatus {
 
 }  // namespace manta
 
-#endif  // CHROME_BROWSER_MANTA_MANTA_STATUS_H_
+#endif  // COMPONENTS_MANTA_MANTA_STATUS_H_

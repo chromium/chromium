@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/manta/snapper_provider.h"
+#include "components/manta/snapper_provider.h"
 
 #include <memory>
 #include <string>
@@ -11,10 +11,9 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/manta/manta_status.h"
+#include "components/manta/manta_status.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "content/public/test/browser_task_environment.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
@@ -103,7 +102,7 @@ class SnapperProviderTest : public testing::Test {
   }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
  private:
   signin::IdentityTestEnvironment identity_test_env_;

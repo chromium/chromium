@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_TEXT_QUERY_PROVIDER_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_TEXT_QUERY_PROVIDER_H_
 
-#include "chrome/browser/manta/orca_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
+#include "components/manta/orca_provider.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 
 namespace ash::input_method {

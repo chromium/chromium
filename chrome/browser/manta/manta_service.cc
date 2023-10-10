@@ -7,10 +7,10 @@
 #include <memory>
 
 #include "base/check.h"
-#include "chrome/browser/manta/orca_provider.h"
-#include "chrome/browser/manta/snapper_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/manta/orca_provider.h"
+#include "components/manta/snapper_provider.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/storage_partition.h"
 

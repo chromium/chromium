@@ -4,7 +4,7 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
-proto_library("manta_proto") {
+proto_library("proto") {
   proto_in_dir = "//"
   sources = [ "manta.proto" ]
 }

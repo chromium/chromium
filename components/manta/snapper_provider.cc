@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/manta/snapper_provider.h"
+#include "components/manta/snapper_provider.h"
 
 #include <memory>
 #include <string>
@@ -10,13 +10,11 @@
 
 #include "base/functional/bind.h"
 #include "base/time/time.h"
-#include "chrome/browser/manta/manta_service_callbacks.h"
-#include "chrome/browser/manta/proto/manta.pb.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/manta/manta_service_callbacks.h"
+#include "components/manta/proto/manta.pb.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/storage_partition.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace manta {

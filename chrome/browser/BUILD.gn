@@ -2588,8 +2588,8 @@ static_library("browser") {
 
   if (!is_android) {
     deps += [
-      "//chrome/browser/manta/proto:manta_proto",
       "//components/manta",
+      "//components/manta/proto",
       "//components/user_education/common",
     ]
   }
@@ -3943,15 +3943,8 @@ static_library("browser") {
       "lifetime/browser_close_manager.h",
       "manta/manta_service.cc",
       "manta/manta_service.h",
-      "manta/manta_service_callbacks.cc",
-      "manta/manta_service_callbacks.h",
       "manta/manta_service_factory.cc",
       "manta/manta_service_factory.h",
-      "manta/manta_status.h",
-      "manta/orca_provider.cc",
-      "manta/orca_provider.h",
-      "manta/snapper_provider.cc",
-      "manta/snapper_provider.h",
       "media/capture_access_handler_base.cc",
       "media/capture_access_handler_base.h",
       "media/unified_autoplay_config.cc",

@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/manta/manta_service_callbacks.h"
+#include "components/manta/manta_service_callbacks.h"
 
 #include <memory>
+#include <string>
 
+#include "base/functional/callback.h"
+#include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/manta/manta_status.h"
+#include "components/manta/proto/manta.pb.h"
 #include "net/http/http_status_code.h"
 
 namespace manta {

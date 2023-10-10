@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/manta/orca_provider.h"
+#include "components/manta/orca_provider.h"
 
 #include <memory>
 #include <string>
@@ -13,10 +13,9 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/manta/proto/manta.pb.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/storage_partition.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

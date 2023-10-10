@@ -8,9 +8,9 @@
 #include "base/values.h"
 #include "chrome/browser/manta/manta_service.h"
 #include "chrome/browser/manta/manta_service_factory.h"
-#include "chrome/browser/manta/manta_status.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "components/manta/features.h"
+#include "components/manta/manta_status.h"
 
 namespace ash::input_method {
 

@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_MANTA_MANTA_SERVICE_CALLBACKS_H_
-#define CHROME_BROWSER_MANTA_MANTA_SERVICE_CALLBACKS_H_
+#ifndef COMPONENTS_MANTA_MANTA_SERVICE_CALLBACKS_H_
+#define COMPONENTS_MANTA_MANTA_SERVICE_CALLBACKS_H_
 
 #include <memory>
 
-#include "base/functional/bind.h"
-#include "chrome/browser/manta/manta_status.h"
-#include "chrome/browser/manta/proto/manta.pb.h"
-#include "components/endpoint_fetcher/endpoint_fetcher.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
+#include "base/functional/callback_forward.h"
+#include "base/values.h"
+#include "components/manta/manta_status.h"
+#include "components/manta/proto/manta.pb.h"
+
+class EndpointFetcher;
+struct EndpointResponse;
 
 namespace manta {
 
@@ -33,4 +35,4 @@ void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
 
 }  // namespace manta
 
-#endif  // CHROME_BROWSER_MANTA_MANTA_SERVICE_CALLBACKS_H_
+#endif  // COMPONENTS_MANTA_MANTA_SERVICE_CALLBACKS_H_

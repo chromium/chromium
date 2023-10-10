@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_MANTA_SNAPPER_PROVIDER_H_
-#define CHROME_BROWSER_MANTA_SNAPPER_PROVIDER_H_
+#ifndef COMPONENTS_MANTA_SNAPPER_PROVIDER_H_
+#define COMPONENTS_MANTA_SNAPPER_PROVIDER_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/manta/manta_service_callbacks.h"
-#include "chrome/browser/manta/proto/manta.pb.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/manta/manta_service_callbacks.h"
+#include "components/manta/proto/manta.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -39,7 +40,7 @@ namespace manta {
 // `OnIdentityManagerShutdown`.
 // 3. Manually ensure SnapperProvided isn't used past `IdentityManager`'s
 // lifetime.
-class SnapperProvider {
+class COMPONENT_EXPORT(MANTA) SnapperProvider {
  public:
   // Returns a `SnapperProvider` instance tied to the profile of the passed
   // arguments.
@@ -79,4 +80,4 @@ class SnapperProvider {
 
 }  // namespace manta
 
-#endif  // CHROME_BROWSER_MANTA_SNAPPER_PROVIDER_H_
+#endif  // COMPONENTS_MANTA_SNAPPER_PROVIDER_H_
