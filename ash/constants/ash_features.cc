@@ -528,7 +528,7 @@ BASE_FEATURE(kCrostiniVirtualKeyboardSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables support for third party VMs.
-BASE_FEATURE(kBruschetta, "Bruschetta", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBruschetta, "Bruschetta", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables always using device-activity-status data to filter
 // eligible host phones.
