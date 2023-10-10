@@ -461,24 +461,35 @@ class Config:
 
 
 class Authentication:
-  """Manage authentication tokens for Chromoting/xmpp"""
+  """Manage authentication tokens for the host service account"""
 
   def __init__(self):
     # Note: Initial values are never used.
-    self.login = None
+    self.service_account = None
     self.oauth_refresh_token = None
 
   def copy_from(self, config):
     """Loads the config and returns false if the config is invalid."""
-    try:
-      self.login = config["xmpp_login"]
-      self.oauth_refresh_token = config["oauth_refresh_token"]
-    except KeyError:
+    # service_account was added in M120 so hosts which were provisioned using
+    # that build (or later) will have the new config key. Hosts which were first
+    # configured with an older host version will only have xmpp_login so we need
+    # to fallback to it for backward compatibility.
+    self.service_account = config.get("service_account")
+    if self.service_account is None:
+      self.service_account = config.get("xmpp_login")
+    if self.service_account is None:
+      # Neither service_account nor xmpp_login exist so config is malformed.
       return False
+
+    self.oauth_refresh_token = config.get("oauth_refresh_token")
+    if self.oauth_refresh_token is None:
+      return False
+
     return True
 
   def copy_to(self, config):
-    config["xmpp_login"] = self.login
+    config["xmpp_login"] = self.service_account
+    config["service_account"] = self.service_account
     config["oauth_refresh_token"] = self.oauth_refresh_token
 
 

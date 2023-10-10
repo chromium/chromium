@@ -416,7 +416,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   std::string pin_hash_;
   scoped_refptr<RsaKeyPair> key_pair_;
   std::string oauth_refresh_token_;
-  std::string robot_account_username_;
+  std::string service_account_email_;
   base::Value::Dict config_;
   std::string host_owner_;
   bool is_googler_ = false;
@@ -1139,68 +1139,68 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
 
   const std::string* host_id = config.FindString(kHostIdConfigPath);
   if (!host_id) {
-    LOG(ERROR) << "Config does not define " << kHostIdConfigPath << ".";
+    LOG(ERROR) << "Host config is missing a required path: `"
+               << kHostIdConfigPath << "`";
     return false;
   }
   host_id_ = *host_id;
 
   const std::string* key_base64 = config.FindString(kPrivateKeyConfigPath);
   if (!key_base64) {
-    LOG(ERROR) << "Private key couldn't be read from the config file.";
+    LOG(ERROR) << "Host config is missing a required path: `"
+               << kPrivateKeyConfigPath << "`";
     return false;
   }
 
   key_pair_ = RsaKeyPair::FromString(*key_base64);
   if (!key_pair_.get()) {
-    LOG(ERROR) << "Invalid private key in the config file.";
+    LOG(ERROR) << "Host config has an invalid value for path: `"
+               << kPrivateKeyConfigPath << "`";
     return false;
   }
 
   const std::string* host_secret_hash =
       config.FindString(kHostSecretHashConfigPath);
   if (!host_secret_hash) {
-    LOG(ERROR) << "Missing host_secret_hash value in configuration file.";
+    LOG(ERROR) << "Host config is missing a required path: `"
+               << kHostSecretHashConfigPath << "`";
     return false;
   }
 
   if (!ParsePinHashFromConfig(*host_secret_hash, host_id_, &pin_hash_)) {
-    LOG(ERROR) << "Cannot parse host_secret_hash configuration value.";
+    LOG(ERROR) << "Host config has an invalid value for path: `"
+               << kHostSecretHashConfigPath << "`";
     return false;
   }
 
-  // Retrieve robot account to use for signaling and backend communication.
-  const std::string* robot_account_username =
-      config.FindString(kXmppLoginConfigPath);
-  if (!robot_account_username) {
-    LOG(ERROR) << "Robot account username is not defined in the config.";
+  // Retrieve the service account used for signaling and backend requests.
+  const std::string* service_account_email =
+      config.FindString(kServiceAccountConfigPath);
+  if (!service_account_email) {
+    LOG(ERROR) << "Host config is missing a required path: `"
+               << kServiceAccountConfigPath << "`";
     return false;
   }
-  robot_account_username_ = *robot_account_username;
+  service_account_email_ = *service_account_email;
 
   // Retrieve robot account credentials for session signaling.
   const std::string* oauth_refresh_token =
       config.FindString(kOAuthRefreshTokenConfigPath);
   if (!oauth_refresh_token) {
-    LOG(ERROR) << "Robot account credentials are not defined in the config.";
+    LOG(ERROR) << "Host config is missing a required path: `"
+               << kOAuthRefreshTokenConfigPath << "`";
     return false;
   }
   oauth_refresh_token_ = *oauth_refresh_token;
 
-  // Some old host configs have a host_owner field that's set to a JID ending
-  // with @id.talk.google.com, and a host_owner_email field that's set to the
-  // owner's actual email address. Other host configs only have a host_owner
-  // field. We are not generating separate addresses nor using JID any more but
-  // we still read host_owner_email first for compatibility reason.
-  const std::string* host_owner_ptr =
-      config.FindString(kHostOwnerEmailConfigPath);
-  if (!host_owner_ptr) {
-    host_owner_ptr = config.FindString(kHostOwnerConfigPath);
-  }
-  if (!host_owner_ptr) {
-    LOG(ERROR) << "Host config has no host_owner or host_owner_email fields.";
+  // Retrieve the host_owner field value.
+  const std::string* host_owner = config.FindString(kHostOwnerConfigPath);
+  if (!host_owner) {
+    LOG(ERROR) << "Host config is missing a required path: `"
+               << kHostOwnerConfigPath << "`";
     return false;
   }
-  host_owner_ = *host_owner_ptr;
+  host_owner_ = *host_owner;
 
   // Check if the host owner's email is Google-internal.
   is_googler_ = base::EndsWith(host_owner_, kGooglerEmailDomain,
@@ -1677,7 +1677,7 @@ void HostProcess::InitializeSignaling() {
 
   auto oauth_credentials =
       std::make_unique<OAuthTokenGetter::OAuthAuthorizationCredentials>(
-          robot_account_username_, oauth_refresh_token_,
+          service_account_email_, oauth_refresh_token_,
           /* is_service_account */ true);
   // Unretained is sound because we own the OAuthTokenGetterImpl, and the
   // callback will never be invoked once it is destroyed.

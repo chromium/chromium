@@ -266,12 +266,12 @@ void HostStarterImpl::StartHostProcess() {
       remoting::MakeHostPinHash(start_host_params_.id, start_host_params_.pin);
   base::Value::Dict config;
   config.Set(kHostOwnerConfigPath, start_host_params_.owner_email);
-  // Note: `xmpp_login` is a legacy term which was used with Google Talk. Though
-  // we no longer rely on that service, existing hosts still use this key in
-  // their configuration file so we continue to use it.
-  // TODO(joedow): Update this key and modify the config file parsing logic to
-  // look for a new, more accurate key or fallback to the value of `xmpp_login`.
-  config.Set(kXmppLoginConfigPath, service_account_email_);
+  // Write `service_account_email_` twice for backwards compatibility reasons.
+  // If the host config only contains `service_account` and the package is down-
+  // graded, the host will go offline because `xmpp_login` will not be present.
+  // TODO(joedow): Remove the dual-write logic once M120 is rollback-safe.
+  config.Set(kServiceAccountConfigPath, service_account_email_);
+  config.Set(kDeprecatedXmppLoginConfigPath, service_account_email_);
   config.Set(kOAuthRefreshTokenConfigPath, host_refresh_token_);
   config.Set(kHostIdConfigPath, start_host_params_.id);
   config.Set(kHostNameConfigPath, start_host_params_.name);

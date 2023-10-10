@@ -19,15 +19,17 @@ namespace remoting {
 
 // Following constants define names for configuration parameters.
 
-// Base JID of the host owner.
-// TODO(yuweih): This is now always equal to the host owner email. Consider
-// unifying these two fields.
+// The email address of the account which owns this remote access host instance.
+// The value of `kDeprecatedHostOwnerEmailConfigPath` will be used if both keys
+// exist in the config for backward compatibility.
 extern const char kHostOwnerConfigPath[];
-// Email of the owner of this host.
-extern const char kHostOwnerEmailConfigPath[];
-// Login used to authenticate signaling.
-extern const char kXmppLoginConfigPath[];
-// OAuth refresh token used to fetch an access token for calling network APIs.
+// Service account used to make web service requests and communicate over the
+// signaling channel. Prefer reading this value, over
+// `kDeprecatedXmppLoginConfigPath` if both exist.
+extern const char kServiceAccountConfigPath[];
+// OAuth refresh token which is associated with the host service account. This
+// token is exchanged for an access token which is used for web service
+// authentication.
 extern const char kOAuthRefreshTokenConfigPath[];
 // Unique identifier of the host used to register the host in directory.
 // Normally a random UUID.
@@ -40,6 +42,21 @@ extern const char kHostSecretHashConfigPath[];
 extern const char kPrivateKeyConfigPath[];
 // Whether consent is given for usage stats reporting.
 extern const char kUsageStatsConsentConfigPath[];
+
+// Deprecated keys. These keys were used in pre-M120 host versions and are being
+// kept around for backward compatibility. We should consider rewriting the
+// config file at some point so we no longer need to support them.
+
+// host_owner and host_owner_email were both required when we relied on Google
+// Talk for signaling as these fields did not match for some account types.
+// Though we no longer rely on that service, existing hosts may still have a
+// config which uses this key so we read from it as needed.
+extern const char kDeprecatedHostOwnerEmailConfigPath[];
+// xmpp_login is a legacy term which was used with Google Talk. Though we no
+// longer rely on that service, existing hosts may still have this key in their
+// configuration file so we read from it as needed.
+// This key was replaced by `kServiceAccountConfigPath` in M120.
+extern const char kDeprecatedXmppLoginConfigPath[];
 
 // Helpers for serializing/deserializing Host configuration dictionaries.
 absl::optional<base::Value::Dict> HostConfigFromJson(

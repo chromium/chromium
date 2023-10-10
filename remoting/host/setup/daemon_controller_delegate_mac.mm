@@ -238,8 +238,7 @@ DaemonController::State DaemonControllerDelegateMac::GetState() {
 
 absl::optional<base::Value::Dict> DaemonControllerDelegateMac::GetConfig() {
   base::FilePath config_path(kHostConfigFilePath);
-  absl::optional<base::Value::Dict> host_config(
-      HostConfigFromJsonFile(config_path));
+  auto host_config = HostConfigFromJsonFile(config_path);
   if (!host_config.has_value()) {
     return absl::nullopt;
   }
@@ -250,9 +249,11 @@ absl::optional<base::Value::Dict> DaemonControllerDelegateMac::GetConfig() {
     config.Set(kHostIdConfigPath, *value);
   }
 
-  value = host_config->FindString(kXmppLoginConfigPath);
+  value = host_config->FindString(kServiceAccountConfigPath);
   if (value) {
-    config.Set(kXmppLoginConfigPath, *value);
+    // Set both keys for compatibility purposes.
+    config.Set(kServiceAccountConfigPath, *value);
+    config.Set(kDeprecatedXmppLoginConfigPath, *value);
   }
 
   return config;

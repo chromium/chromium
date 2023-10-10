@@ -157,9 +157,11 @@ absl::optional<base::Value::Dict> DaemonControllerDelegateLinux::GetConfig() {
     result.Set(kHostIdConfigPath, *value);
   }
 
-  value = host_config->FindString(kXmppLoginConfigPath);
+  value = host_config->FindString(kServiceAccountConfigPath);
   if (value) {
-    result.Set(kXmppLoginConfigPath, *value);
+    // Set both keys for compatibility purposes.
+    result.Set(kServiceAccountConfigPath, *value);
+    result.Set(kDeprecatedXmppLoginConfigPath, *value);
   }
 
   return result;

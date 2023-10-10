@@ -63,7 +63,7 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
   };
 
   // Callback type for GetConfig(). If the host is configured then a dictionary
-  // is returned containing host_id and xmpp_login, with security-sensitive
+  // is returned containing host_id and service_account, with security-sensitive
   // fields filtered out. An empty dictionary is returned if the host is not
   // configured, and nullptr if the configuration is corrupt or cannot be read.
   typedef base::OnceCallback<void(absl::optional<base::Value::Dict> config)>
@@ -127,9 +127,10 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
 
     // Updates current host configuration with the values specified in
     // |config|. Any value in the existing configuration that isn't specified in
-    // |config| is preserved. |config| must not contain host_id or xmpp_login
-    // values, because implementations of this method cannot change them. |done|
-    // is invoked on the calling thread when the operation is completed.
+    // |config| is preserved. |config| must not contain host_id, xmpp_login, or
+    // service_account values, because implementations of this method cannot
+    // change them. |done| is invoked on the calling thread when the operation
+    // is completed.
     virtual void UpdateConfig(base::Value::Dict config,
                               CompletionCallback done) = 0;
 
@@ -182,8 +183,9 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
   // Updates current host configuration with the values specified in
   // |config|. Changes must take effect before the call completes.
   // Any value in the existing configuration that isn't specified in |config|
-  // is preserved. |config| must not contain host_id or xmpp_login values,
-  // because implementations of this method cannot change them.
+  // is preserved. |config| must not contain host_id, xmpp_login, or
+  // service_account values, because implementations of this method cannot
+  // change them.
   void UpdateConfig(base::Value::Dict config, CompletionCallback done);
 
   // Stop the daemon process. It is permitted to call Stop while the daemon
