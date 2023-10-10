@@ -8,11 +8,11 @@
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/date_time/date_time_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/files_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/languages/languages_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/power/power_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/search/search_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/storage_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/system_preferences/startup_section.h"
-#include "chrome/browser/ui/webui/settings/ash/languages_section.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
 #include "chrome/browser/ui/webui/settings/ash/reset_section.h"
 
