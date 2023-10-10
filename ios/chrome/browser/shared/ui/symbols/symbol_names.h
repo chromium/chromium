@@ -161,6 +161,8 @@ extern NSString* const kOpenInDownloadsiOS14Symbol;
 extern NSString* const kExternalLinkSymbol;
 extern NSString* const kChevronDownSymbol;
 extern NSString* const kChevronForwardSymbol;
+extern NSString* const kChevronUpDown;
+extern NSString* const kChevronDownCircleFill;
 extern NSString* const kGlobeAmericasSymbol;
 extern NSString* const kGlobeSymbol;
 extern NSString* const kPersonCropCircleSymbol;

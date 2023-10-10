@@ -5,6 +5,15 @@
 #import "ios/chrome/browser/ui/unit_conversion/unit_conversion_coordinator.h"
 
 #import "ios/chrome/browser/ui/unit_conversion/unit_conversion_mediator.h"
+#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_view_controller.h"
+
+namespace {
+
+// Popover source rect dimensions.
+const CGFloat kPopOverSourceRectWidth = 1;
+const CGFloat kPopOverSourceRectHeight = 1;
+
+}  // namespace
 
 @interface UnitConversionCoordinator () <
     UIAdaptivePresentationControllerDelegate>
@@ -12,7 +21,8 @@
 @end
 
 @implementation UnitConversionCoordinator {
-  // TODO(crbug.com/1468905): Add the unit conversion view controller.
+  // The view controller managed by this coordinator.
+  UnitConversionViewController* _viewController;
 
   // Mediator to handle the units updates and conversion.
   UnitConversionMediator* _mediator;
@@ -42,7 +52,14 @@
 }
 
 - (void)start {
+  _viewController = [[UnitConversionViewController alloc]
+      initWithSourceUnit:_sourceUnit
+               unitValue:_sourceUnitValue];
+
   _mediator = [[UnitConversionMediator alloc] init];
+
+  _mediator.consumer = _viewController;
+  _viewController.mutator = _mediator;
   [self presentUnitConversionViewController];
 }
 
@@ -54,15 +71,38 @@
 
 // Presents the UnitConversionCoordinator's view controller and adapt the
 // presentation based on the device (popover for ipad, half sheet for iphone)
+
 - (void)presentUnitConversionViewController {
-  // TODO(crbug.com/1468905): Present the unit conversion view controller.
-  return;
+  UINavigationController* navigationController = [[UINavigationController alloc]
+      initWithRootViewController:_viewController];
+  navigationController.modalPresentationStyle = UIModalPresentationPopover;
+  UIPopoverPresentationController* popover =
+      navigationController.popoverPresentationController;
+  popover.delegate = _viewController;
+  popover.sourceView = self.baseViewController.view;
+  popover.sourceRect =
+      CGRectMake(_location.x, _location.y, kPopOverSourceRectWidth,
+                 kPopOverSourceRectHeight);
+  popover.permittedArrowDirections =
+      UIPopoverArrowDirectionUp | UIPopoverArrowDirectionDown;
+  UISheetPresentationController* sheetPresentationController =
+      popover.adaptiveSheetPresentationController;
+  sheetPresentationController.delegate = _viewController;
+  sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
+  sheetPresentationController.detents = @[
+    UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent,
+  ];
+  [self.baseViewController presentViewController:navigationController
+                                        animated:YES
+                                      completion:nil];
 }
 
 // Dismisses the UnitConversionCoordinator's view controller.
 - (void)dismissUnitConversionViewController {
-  // TODO(crbug.com/1468905): Dismiss the unit conversion view controller.
-  return;
+  [_viewController.presentingViewController dismissViewControllerAnimated:YES
+                                                               completion:nil];
+  _viewController = nil;
 }
 
 @end

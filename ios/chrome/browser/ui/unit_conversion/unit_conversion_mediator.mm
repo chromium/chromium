@@ -24,11 +24,14 @@
     if ([sourceUnitMeasurement canBeConvertedToUnit:targetUnit]) {
       NSMeasurement* targetUnitMeasurement =
           [sourceUnitMeasurement measurementByConvertingToUnit:targetUnit];
-      [self.consumer updateSourceUnit:sourceUnit];
-      [self.consumer updateTargetUnit:targetUnit];
-      [self.consumer updateSourceUnitValue:sourceUnitMeasurement.doubleValue];
-      [self.consumer updateTargetUnitValue:targetUnitMeasurement.doubleValue];
-      [self.consumer reloadUnitTableView];
+
+      [self.consumer updateSourceUnit:sourceUnit reload:NO];
+      [self.consumer updateTargetUnit:targetUnit reload:NO];
+      [self.consumer updateSourceUnitValue:sourceUnitMeasurement.doubleValue
+                                    reload:NO];
+      [self.consumer updateTargetUnitValue:targetUnitMeasurement.doubleValue
+                                    reload:NO];
+      [self.consumer updateUnitTypeTitle:unitType];
     }
   }
 }
@@ -42,9 +45,9 @@
     NSMeasurement* targetUnitMeasurement =
         [sourceUnitMeasurement measurementByConvertingToUnit:targetUnit];
 
-    [self.consumer updateSourceUnit:sourceUnit];
-    [self.consumer updateTargetUnitValue:targetUnitMeasurement.doubleValue];
-    [self.consumer reloadUnitTableView];
+    [self.consumer updateSourceUnit:sourceUnit reload:YES];
+    [self.consumer updateTargetUnitValue:targetUnitMeasurement.doubleValue
+                                  reload:YES];
   }
 }
 
@@ -57,9 +60,9 @@
     NSMeasurement* targetUnitMeasurement =
         [sourceUnitMeasurement measurementByConvertingToUnit:targetUnit];
 
-    [self.consumer updateTargetUnit:targetUnit];
-    [self.consumer updateTargetUnitValue:targetUnitMeasurement.doubleValue];
-    [self.consumer reloadUnitTableView];
+    [self.consumer updateTargetUnit:targetUnit reload:YES];
+    [self.consumer updateTargetUnitValue:targetUnitMeasurement.doubleValue
+                                  reload:YES];
   }
 }
 
@@ -76,8 +79,8 @@
   if ([sourceUnitMeasurement canBeConvertedToUnit:targetUnit]) {
     NSMeasurement* targetUnitMeasurement =
         [sourceUnitMeasurement measurementByConvertingToUnit:targetUnit];
-    [self.consumer updateTargetUnitValue:targetUnitMeasurement.doubleValue];
-    [self.consumer reloadUnitTableView];
+    [self.consumer updateTargetUnitValue:targetUnitMeasurement.doubleValue
+                                  reload:YES];
   }
 }
 

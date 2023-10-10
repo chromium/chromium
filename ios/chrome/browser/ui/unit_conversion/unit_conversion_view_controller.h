@@ -1,0 +1,36 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_UI_UNIT_CONVERSION_UNIT_CONVERSION_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_UI_UNIT_CONVERSION_UNIT_CONVERSION_VIEW_CONTROLLER_H_
+
+#import <UIKit/UIKit.h>
+
+#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_consumer.h"
+
+@protocol UnitConversionMutator;
+
+// UnitConversionViewController instantiated by initWithSourceUnit when long
+// pressing and choosing to convert a detected unit or tapping on a detected
+// unit.
+@interface UnitConversionViewController
+    : UITableViewController <UnitConversionConsumer,
+                             UIPopoverPresentationControllerDelegate,
+                             UISheetPresentationControllerDelegate>
+
+@property(nonatomic, weak) id<UnitConversionMutator> mutator;
+
+// UnitConversionViewController designated init function.
+- (instancetype)initWithSourceUnit:(NSUnit*)sourceUnit
+                         unitValue:(double)unitValue NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_UI_UNIT_CONVERSION_UNIT_CONVERSION_VIEW_CONTROLLER_H_

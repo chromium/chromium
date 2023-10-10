@@ -5,32 +5,31 @@
 #ifndef IOS_CHROME_BROWSER_UI_UNIT_CONVERSION_UNIT_CONVERSION_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_UNIT_CONVERSION_UNIT_CONVERSION_CONSUMER_H_
 
+#import "ios/public/provider/chrome/browser/unit_conversion/unit_conversion_api.h"
+
 // UnitConversionConsumer defines methods to set the contents of the
 // UnitConversionViewController.
 @protocol UnitConversionConsumer <NSObject>
 
 // Tells the consumer to update the unit type title (volume, mass, etc) based on
 // the user's new selected unit type.
-- (void)updateUnitTypeTitle:(NSString*)unitTypeTitle;
+- (void)updateUnitTypeTitle:(ios::provider::UnitType)unitTypeTitle;
 
 // Tells the consumer to update the source unit based on the user's new selected
-// source unit type.
-- (void)updateSourceUnit:(NSUnit*)sourceUnit;
+// source unit type, and reload its source unit related fields.
+- (void)updateSourceUnit:(NSUnit*)sourceUnit reload:(BOOL)reload;
 
 // Tells the consumer to update the target unit based on the user's new selected
-// target unit type.
-- (void)updateTargetUnit:(NSUnit*)targetUnit;
+// target unit type and reload its target unit related fields.
+- (void)updateTargetUnit:(NSUnit*)targetUnit reload:(BOOL)reload;
 
-// Tells the consumer to update the source unit value.
-- (void)updateSourceUnitValue:(double)sourceUnitValue;
+// Tells the consumer to update the source unit value and reload its source unit
+// value related fields.
+- (void)updateSourceUnitValue:(double)sourceUnitValue reload:(BOOL)reload;
 
-// Tells the consumer to update the target unit value.
-- (void)updateTargetUnitValue:(double)targetUnitValue;
-
-// Tells the consumer to reload data from its
-// UnitConversionTableViewController's data source. Must be called after using
-// one of the update* methods.
-- (void)reloadUnitTableView;
+// Tells the consumer to update the target unit value and reload its target unit
+// value related fields.
+- (void)updateTargetUnitValue:(double)targetUnitValue reload:(BOOL)reload;
 
 @end
 

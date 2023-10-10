@@ -5656,6 +5656,27 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_WIDGET_PROMO_INSTRUCTIONS_STEP_4" desc="Fourth step of the instructions for the Password Manager widget's installation.">
         Select Password Manager, then tap Add Widget
       </message>
+      <message name="IDS_UNITS_MEASUREMENTS_AREA" desc="Title of the button that allows the user to use and convert area type units" meaning="Button menu entry that allows the user to change the unit category to Area.">
+        Area
+      </message>
+      <message name="IDS_UNITS_MEASUREMENTS_INFORMATION_STORAGE" desc="Title of the button that allows the user to use and convert information storage type units" meaning="Button menu entry that allows the user to change the unit category to information storage.">
+        Information Storage
+      </message>
+      <message name="IDS_UNITS_MEASUREMENTS_LENGTH" desc="Title of the button that allows the user to use and convert length type units" meaning="Button menu entry that allows the user to change the unit category to Length.">
+        Length
+      </message>
+      <message name="IDS_UNITS_MEASUREMENTS_MASS" desc="Title of the button that allows the user to use and convert mass type units" meaning="Button menu entry that allows the user to change the unit category to Mass.">
+        Mass
+      </message>
+      <message name="IDS_UNITS_MEASUREMENTS_SPEED" desc="Title of the button that allows the user to use and convert speed type units" meaning="Button menu entry that allows the user to change the unit category to Speed.">
+        Speed
+      </message>
+      <message name="IDS_UNITS_MEASUREMENTS_TEMPERATURE" desc="Title of the button that allows the user to use and convert temperature type units" meaning="Button menu entry that allows the user to change the unit category to Temperature.">
+        Temperature
+      </message>
+      <message name="IDS_UNITS_MEASUREMENTS_VOLUME" desc="Title of the button that allows the user to use and convert volume type units" meaning="Button menu entry that allows the user to change the unit category to Volume.">
+        Volume
+      </message>
     </messages>
   </release>
 </grit>

@@ -87,11 +87,12 @@ TEST_F(UnitConversionMediatorTest, TestPossibleUnitTypeChange) {
   mediator_.consumer = consumer_mock;
 
   [consumer_mock setExpectationOrderMatters:YES];
-  OCMExpect([consumer_mock updateSourceUnit:[OCMArg any]]);
-  OCMExpect([consumer_mock updateTargetUnit:[OCMArg any]]);
-  OCMExpect([consumer_mock updateSourceUnitValue:kSourceUnitValue]);
-  OCMExpect([consumer_mock updateTargetUnitValue:kExpectedTargetUnitValue]);
-  OCMExpect([consumer_mock reloadUnitTableView]);
+  OCMExpect([consumer_mock updateSourceUnit:[NSUnitMass kilograms] reload:NO]);
+  OCMExpect([consumer_mock updateTargetUnit:[NSUnitMass grams] reload:NO]);
+  OCMExpect([consumer_mock updateSourceUnitValue:kSourceUnitValue reload:NO]);
+  OCMExpect([consumer_mock updateTargetUnitValue:kExpectedTargetUnitValue
+                                          reload:NO]);
+  OCMExpect([consumer_mock updateUnitTypeTitle:ios::provider::kUnitTypeMass]);
 
   [mediator_ unitTypeDidChange:ios::provider::kUnitTypeMass
                      unitValue:kSourceUnitValue];
@@ -134,9 +135,9 @@ TEST_F(UnitConversionMediatorTest, TestPossibleSourceUnitChange) {
   [consumer_mock setExpectationOrderMatters:YES];
   NSUnitMass* sourceUnit = [NSUnitMass kilograms];
   NSUnitMass* targetUnit = [NSUnitMass grams];
-  OCMExpect([consumer_mock updateSourceUnit:sourceUnit]);
-  OCMExpect([consumer_mock updateTargetUnitValue:kExpectedTargetUnitValue]);
-  OCMExpect([consumer_mock reloadUnitTableView]);
+  OCMExpect([consumer_mock updateSourceUnit:sourceUnit reload:YES]);
+  OCMExpect([consumer_mock updateTargetUnitValue:kExpectedTargetUnitValue
+                                          reload:YES]);
   [mediator_ sourceUnitDidChange:sourceUnit
                       targetUnit:targetUnit
                        unitValue:kSourceUnitValue];
@@ -166,9 +167,9 @@ TEST_F(UnitConversionMediatorTest, TestPossibleTargetUnitChange) {
   NSUnitMass* sourceUnit = [NSUnitMass kilograms];
   NSUnitMass* targetUnit = [NSUnitMass grams];
   [consumer_mock setExpectationOrderMatters:YES];
-  OCMExpect([consumer_mock updateTargetUnit:targetUnit]);
-  OCMExpect([consumer_mock updateTargetUnitValue:kExpectedTargetUnitValue]);
-  OCMExpect([consumer_mock reloadUnitTableView]);
+  OCMExpect([consumer_mock updateTargetUnit:targetUnit reload:YES]);
+  OCMExpect([consumer_mock updateTargetUnitValue:kExpectedTargetUnitValue
+                                          reload:YES]);
 
   [mediator_ targetUnitDidChange:targetUnit
                       sourceUnit:sourceUnit
@@ -199,8 +200,8 @@ TEST_F(UnitConversionMediatorTest, TestValidSourceUnitValueFieldChange) {
   NSUnitMass* sourceUnit = [NSUnitMass kilograms];
   NSUnitMass* targetUnit = [NSUnitMass grams];
   [consumer_mock setExpectationOrderMatters:YES];
-  OCMExpect([consumer_mock updateTargetUnitValue:kExpectedTargetUnitValue]);
-  OCMExpect([consumer_mock reloadUnitTableView]);
+  OCMExpect([consumer_mock updateTargetUnitValue:kExpectedTargetUnitValue
+                                          reload:YES]);
 
   [mediator_ sourceUnitValueFieldDidChange:kValidSourceUnitValueField
                                 sourceUnit:sourceUnit
