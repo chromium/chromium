@@ -44,14 +44,6 @@ namespace {
 // default batch size for copy operations.
 const int kMaxBytesPerCopyOperation = 1024 * 1024 * 4;
 
-// When enabled, OneCopyRasterBufferProvider::RasterBufferImpl::Playback() runs
-// at normal thread priority.
-// TODO(crbug.com/1072756): Cleanup the feature when the Stable experiment is
-// complete, on November 25, 2020.
-BASE_FEATURE(kOneCopyRasterBufferPlaybackNormalThreadPriority,
-             "OneCopyRasterBufferPlaybackNormalThreadPriority",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAlwaysUseMappableSIForOneCopyRaster,
              "AlwaysUseMappableSIForOneCopyRaster",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -145,8 +137,7 @@ bool OneCopyRasterBufferProvider::RasterBufferImpl::
   // the GpuChannelHost lock, which is acquired at normal thread priority by
   // other code. Acquiring it at background thread priority can cause a priority
   // inversion. https://crbug.com/1072756
-  return !base::FeatureList::IsEnabled(
-      kOneCopyRasterBufferPlaybackNormalThreadPriority);
+  return false;
 }
 
 OneCopyRasterBufferProvider::OneCopyRasterBufferProvider(
