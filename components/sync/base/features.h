@@ -116,10 +116,10 @@ BASE_DECLARE_FEATURE(kSyncPollImmediatelyOnEveryStartup);
 // there won't be an additional delay.
 BASE_DECLARE_FEATURE(kSyncPollWithoutDelayOnStartup);
 
-#if !BUILDFLAG(IS_ANDROID) || !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Enables syncing the WEBAUTHN_CREDENTIAL data type.
 BASE_DECLARE_FEATURE(kSyncWebauthnCredentials);
-#endif  // !BUILDFLAG(IS_ANDROID) || !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // If enabled, ignore GetUpdates retry delay command from the server.
 BASE_DECLARE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay);
