@@ -257,6 +257,16 @@ export class DestinationStore extends EventTarget {
         (type: PrinterType,
          printers: LocalDestinationInfo[]|ExtensionDestinationInfo[]) =>
             this.onPrintersAdded_(type, printers));
+
+    // <if expr="is_chromeos">
+    if (loadTimeData.getBoolean('isLocalPrinterObservingEnabled')) {
+      addListenerCallback(
+          'local-printers-updated',
+          (type: PrinterType,
+           printers: LocalDestinationInfo[]|ExtensionDestinationInfo[]) =>
+              this.onLocalPrintersUpdated_(type, printers));
+    }
+    // </if>
   }
 
   /**

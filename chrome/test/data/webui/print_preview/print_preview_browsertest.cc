@@ -593,6 +593,11 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
                        ObserveLocalPrintersAfterNoSearch) {
   RunTestCase("ObserveLocalPrintersAfterNoSearch");
 }
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
+                       LocalPrintersUpdatedEvent) {
+  RunTestCase("LocalPrintersUpdatedEvent");
+}
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

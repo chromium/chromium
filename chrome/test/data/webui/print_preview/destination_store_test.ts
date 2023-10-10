@@ -7,6 +7,9 @@ import {Destination, DestinationErrorType, DestinationStore, DestinationStoreEve
 import {RecentDestination} from 'chrome://print/print_preview.js';
 // </if>
 
+// <if expr="is_chromeos">
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+// </if>
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -452,6 +455,39 @@ suite('DestinationStoreTest', function() {
     initialSettings.printerName = '';
     return setInitialSettings(/*expectPrinterFailure=*/ false).then(() => {
       assertEquals(1, nativeLayerCros.getCallCount('observeLocalPrinters'));
+      assertTrue(!!destinationStore.destinations().find(
+          destination => destination.id === printer1.printerName));
+      assertTrue(!!destinationStore.destinations().find(
+          destination => destination.id === printer2.printerName));
+    });
+  });
+
+  // Tests that the destination store adds printers from the
+  // 'local-printers-updated' event.
+  test('LocalPrintersUpdatedEvent', function() {
+    const printer1 = {
+      printerName: 'localPrinter1',
+      deviceName: 'localPrinter1',
+    };
+    const printer2 = {
+      printerName: 'localPrinter2',
+      deviceName: 'localPrinter2',
+    };
+
+    loadTimeData.overrideValues({isLocalPrinterObservingEnabled: true});
+    return setInitialSettings(/*expectPrinterFailure=*/ false).then(() => {
+      // Confirm the printers are not in the destination store before the event
+      // fires.
+      assertFalse(!!destinationStore.destinations().find(
+          destination => destination.id === printer1.printerName));
+      assertFalse(!!destinationStore.destinations().find(
+          destination => destination.id === printer2.printerName));
+
+      // Fire the event and expect the destination store to add the local
+      // printers.
+      webUIListenerCallback(
+          'local-printers-updated', PrinterType.LOCAL_PRINTER,
+          [printer1, printer2]);
       assertTrue(!!destinationStore.destinations().find(
           destination => destination.id === printer1.printerName));
       assertTrue(!!destinationStore.destinations().find(
