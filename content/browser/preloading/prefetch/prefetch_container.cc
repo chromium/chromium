@@ -1173,7 +1173,14 @@ void PrefetchContainer::UpdateReferrer(
 std::ostream& operator<<(std::ostream& ostream,
                          const PrefetchContainer& prefetch_container) {
   return ostream << "PrefetchContainer[" << &prefetch_container
-                 << ", URL=" << prefetch_container.GetURL() << "]";
+                 << ", Key=" << prefetch_container.GetPrefetchContainerKey()
+                 << "]";
+}
+
+std::ostream& operator<<(std::ostream& ostream,
+                         const PrefetchContainer::Key& prefetch_key) {
+  return ostream << "(" << prefetch_key.first << ", " << prefetch_key.second
+                 << ")";
 }
 
 CONTENT_EXPORT std::ostream& operator<<(

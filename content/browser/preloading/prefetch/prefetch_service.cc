@@ -1505,8 +1505,7 @@ void PrefetchService::DumpPrefetchesForDebug() const {
 std::vector<PrefetchContainer*> PrefetchService::FindPrefetchContainerToServe(
     const PrefetchContainer::Key& key) {
   std::vector<PrefetchContainer*> matches;
-  DVLOG(1) << "PrefetchService::FindPrefetchContainerToServe("
-           << "(" << key.first << ", " << key.second << "))";
+  DVLOG(1) << "PrefetchService::FindPrefetchContainerToServe(" << key << ")";
   // Search for an exact match first. If one is found and not deleted, produce
   // it.
   auto it = prefetches_ready_to_serve_.find(key);

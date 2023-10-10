@@ -595,6 +595,10 @@ CONTENT_EXPORT std::ostream& operator<<(
 
 CONTENT_EXPORT std::ostream& operator<<(
     std::ostream& ostream,
+    const PrefetchContainer::Key& prefetch_key);
+
+CONTENT_EXPORT std::ostream& operator<<(
+    std::ostream& ostream,
     PrefetchContainer::ServableState servable_state);
 
 }  // namespace content
