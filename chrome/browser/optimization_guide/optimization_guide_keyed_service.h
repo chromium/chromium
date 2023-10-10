@@ -131,11 +131,6 @@ class OptimizationGuideKeyedService
     return optimization_guide_logger_.get();
   }
 
- protected:
-  // Protected so that tests can stub out the implementation.
-  // TODO(b/303103198): Implement better testing support for model execution
-  // users and make that function private.
-  virtual bool ComponentUpdatesEnabledProvider() const;
 
  private:
   friend class ChromeBrowserMainExtraPartsOptimizationGuide;
@@ -193,6 +188,8 @@ class OptimizationGuideKeyedService
           callback) override;
 
   download::BackgroundDownloadService* BackgroundDownloadServiceProvider();
+
+  bool ComponentUpdatesEnabledProvider() const;
 
   raw_ptr<content::BrowserContext> browser_context_;
 

@@ -9,6 +9,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/optimization_guide/android/native_j_unittests_jni_headers/OptimizationGuideBridgeNativeUnitTest_jni.h"
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,29 +36,6 @@ using ::testing::UnorderedElementsAre;
 
 namespace optimization_guide {
 namespace android {
-
-class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
- public:
-  explicit MockOptimizationGuideKeyedService(
-      content::BrowserContext* browser_context)
-      : OptimizationGuideKeyedService(browser_context) {}
-  ~MockOptimizationGuideKeyedService() override = default;
-
-  MOCK_METHOD1(
-      RegisterOptimizationTypes,
-      void(const std::vector<optimization_guide::proto::OptimizationType>&));
-  MOCK_METHOD3(CanApplyOptimization,
-               void(const GURL& gurl,
-                    optimization_guide::proto::OptimizationType,
-                    optimization_guide::OptimizationGuideDecisionCallback));
-  MOCK_METHOD4(
-      CanApplyOptimizationOnDemand,
-      void(const std::vector<GURL>&,
-           const base::flat_set<optimization_guide::proto::OptimizationType>&,
-           optimization_guide::proto::RequestContext,
-           optimization_guide::
-               OnDemandOptimizationGuideDecisionRepeatingCallback));
-};
 
 class OptimizationGuideBridgeTest : public testing::Test {
  public:

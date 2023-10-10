@@ -19,8 +19,10 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/search/background/ntp_background_data.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
@@ -37,12 +39,14 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/wallpaper_search.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -226,20 +230,6 @@ class MockThemeService : public ThemeService {
   ThemeHelper theme_helper_;
 };
 
-class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
- public:
-  explicit MockOptimizationGuideKeyedService(content::BrowserContext* context)
-      : OptimizationGuideKeyedService(context) {}
-  MOCK_METHOD(
-      void,
-      ExecuteModel,
-      (optimization_guide::proto::ModelExecutionFeature,
-       const google::protobuf::MessageLite&,
-       optimization_guide::OptimizationGuideModelExecutionResultCallback));
-
-  bool ComponentUpdatesEnabledProvider() const override { return false; }
-};
-
 std::unique_ptr<TestingProfile> MakeTestingProfile(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   TestingProfile::Builder profile_builder;
@@ -292,6 +282,8 @@ class CustomizeChromePageHandlerTest : public testing::Test {
                     profile_.get()))) {}
 
   void SetUp() override {
+    TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
+    RegisterLocalState(local_state_.registry());
     EXPECT_CALL(mock_ntp_background_service(), AddObserver)
         .Times(1)
         .WillOnce(SaveArg<0>(&ntp_background_service_observer_));
@@ -316,12 +308,14 @@ class CustomizeChromePageHandlerTest : public testing::Test {
     browser_ = std::unique_ptr<Browser>(Browser::Create(browser_params));
 
     scoped_feature_list_.Reset();
+    task_environment_.RunUntilIdle();
   }
 
   void TearDown() override {
     browser_->tab_strip_model()->CloseAllTabs();
     browser_.reset();
     browser_window_.reset();
+    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
   TestingProfile& profile() { return *profile_; }
@@ -348,6 +342,7 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   // NOTE: The initialization order of these members matters.
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
+  TestingPrefServiceSimple local_state_;
   testing::NiceMock<MockNtpCustomBackgroundService>
       mock_ntp_custom_background_service_;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
