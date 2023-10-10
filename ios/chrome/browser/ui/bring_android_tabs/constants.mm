@@ -7,12 +7,6 @@
 NSString* const kBringAndroidTabsPromptConfirmationAlertAXId =
     @"kBringAndroidTabsPromptConfirmationAlertAccessibilityIdentifier";
 
-NSString* const kBringAndroidTabsPromptBottomMessageCloseButtonAXId =
-    @"kBringAndroidTabsPromptBottomMessageCloseButtonAccessibilityIdentifier";
-
-NSString* const kBringAndroidTabsPromptBottomMessageReviewButtonAXId =
-    @"kBringAndroidTabsPromptBottomMessageReviewButtonAccessibilityIdentifier";
-
 NSString* const kBringAndroidTabsPromptTabListAXId =
     @"kBringAndroidTabsPromptTabListAccessibilityIdentifier";
 

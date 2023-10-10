@@ -11,14 +11,6 @@
 // prompt view controller.
 extern NSString* const kBringAndroidTabsPromptConfirmationAlertAXId;
 
-// Accessibility identifier for the "close" button on the "Bring Android Tabs"
-// bottom message.
-extern NSString* const kBringAndroidTabsPromptBottomMessageCloseButtonAXId;
-
-// Accessibility identifier for the "review" button on the "Bring Android Tabs"
-// bottom message.
-extern NSString* const kBringAndroidTabsPromptBottomMessageReviewButtonAXId;
-
 // Accessibility identifier for the "Bring Android Tabs" tab list
 // view controller.
 extern NSString* const kBringAndroidTabsPromptTabListAXId;

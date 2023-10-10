@@ -7,7 +7,6 @@
 #import "base/i18n/number_formatting.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/testing_pref_service.h"
@@ -30,7 +29,6 @@
 #import "components/sync_sessions/session_sync_service.h"
 #import "components/sync_sessions/session_sync_test_helper.h"
 #import "components/sync_sessions/synced_session.h"
-#import "ios/chrome/browser/bring_android_tabs/model/features.h"
 #import "ios/chrome/browser/bring_android_tabs/model/metrics.h"
 #import "ios/chrome/browser/segmentation_platform/segmentation_platform_config.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -249,10 +247,6 @@ class BringAndroidTabsToIOSServiceTest : public PlatformTest {
   // loads the user's tabs. Also records that the prompt is displayed if at
   // least one tab is loaded.
   void SetUpBringAndroidTabsServiceAndLoadTabs(bool is_android_switcher) {
-    // Enable feature.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(kBringYourOwnTabsIOS);
-
     // Create BringAndroidTabsToIOSService dependencies. These dependencies are
     // only used in `LoadTabs()`, therefore they can be scoped within this
     // method.

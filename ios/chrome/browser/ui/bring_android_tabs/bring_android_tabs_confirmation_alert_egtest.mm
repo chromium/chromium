@@ -24,8 +24,7 @@
 @implementation BringAndroidTabsConfirmationAlertTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
-  return GetConfiguration(/*is_android_switcher=*/YES,
-                          /*show_bottom_message=*/NO);
+  return GetConfiguration(/*is_android_switcher=*/YES);
 }
 
 - (void)setUp {
@@ -53,8 +52,7 @@
   }
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(YES);
-  VerifyThatPromptDoesNotShowOnRestart(
-      /*bottom_message=*/NO, self.testServer->base_url());
+  VerifyThatPromptDoesNotShowOnRestart(self.testServer->base_url());
 }
 
 // Tests that the user can open the list of recent Android tabs by tapping the
@@ -74,8 +72,7 @@
       waitForMainTabCount:GetTabCountOnPrompt() + /*new tab page*/ 1];
   [ChromeEarlGrey closeAllTabs];
   VerifyConfirmationAlertPromptVisibility(NO);
-  VerifyThatPromptDoesNotShowOnRestart(
-      /*bottom_message=*/NO, self.testServer->base_url());
+  VerifyThatPromptDoesNotShowOnRestart(self.testServer->base_url());
 }
 
 // Tests that the user can review the list of Android tabs by tapping the
@@ -94,8 +91,7 @@
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kBringAndroidTabsPromptTabListAXId)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  VerifyThatPromptDoesNotShowOnRestart(
-      /*bottom_message=*/NO, self.testServer->base_url());
+  VerifyThatPromptDoesNotShowOnRestart(self.testServer->base_url());
 }
 
 // Tests that the user can close the confirmation alert modal by tapping the
@@ -117,8 +113,7 @@
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(NO);
-  VerifyThatPromptDoesNotShowOnRestart(
-      /*bottom_message=*/NO, self.testServer->base_url());
+  VerifyThatPromptDoesNotShowOnRestart(self.testServer->base_url());
 }
 
 // Tests that the user can swipe down the confirmation alert modal to dismiss
@@ -140,8 +135,7 @@
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(NO);
-  VerifyThatPromptDoesNotShowOnRestart(
-      /*bottom_message=*/NO, self.testServer->base_url());
+  VerifyThatPromptDoesNotShowOnRestart(self.testServer->base_url());
 }
 
 @end

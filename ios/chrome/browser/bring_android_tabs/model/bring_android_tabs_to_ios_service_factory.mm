@@ -10,7 +10,6 @@
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/public/features.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
-#import "ios/chrome/browser/bring_android_tabs/model/features.h"
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -64,8 +63,7 @@ std::unique_ptr<KeyedService>
 BringAndroidTabsToIOSServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   // SegmentationPlatform is required for BringYourOwnTabsIOS to work.
-  if (!base::FeatureList::IsEnabled(kBringYourOwnTabsIOS) ||
-      !base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(
           segmentation_platform::features::kSegmentationPlatformFeature)) {
     return nullptr;
   }

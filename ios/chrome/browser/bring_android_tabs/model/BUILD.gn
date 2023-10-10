@@ -10,7 +10,6 @@ source_set("model") {
     "bring_android_tabs_to_ios_service_factory.mm",
   ]
   deps = [
-    ":features",
     ":metrics",
     "//base",
     "//components/keyed_service/core",
@@ -31,14 +30,6 @@ source_set("model") {
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
   ]
-}
-
-source_set("features") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  deps = [ "//base" ]
 }
 
 source_set("metrics") {
@@ -68,7 +59,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "bring_android_tabs_to_ios_service_unittest.mm" ]
   deps = [
-    ":features",
     ":metrics",
     ":model",
     "//base",

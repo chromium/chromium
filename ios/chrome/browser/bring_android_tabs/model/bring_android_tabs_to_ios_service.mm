@@ -21,7 +21,6 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync_device_info/device_info.h"
 #import "components/sync_sessions/session_sync_service.h"
-#import "ios/chrome/browser/bring_android_tabs/model/features.h"
 #import "ios/chrome/browser/bring_android_tabs/model/metrics.h"
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -118,13 +117,6 @@ void BringAndroidTabsToIOSService::LoadTabs() {
   // Android switchers.
   if (!UserEligibleForAndroidSwitcherPrompt() ||
       !UserIsAndroidSwitcher(device_switcher_result_dispatcher_)) {
-    return;
-  }
-
-  // Checks feature flag and starts the experiment; early returns if the prompt
-  // should NOT be shown.
-  if (GetBringYourOwnTabsPromptType() ==
-      BringYourOwnTabsPromptType::kDisabled) {
     return;
   }
 

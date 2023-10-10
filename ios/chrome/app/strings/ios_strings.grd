@@ -600,11 +600,6 @@ locale.  The strings in this file are specific to iOS.
           =1 {Open the tab}
           other {Open {count} tabs}}
       </message>
-      <message name="IDS_IOS_BRING_ANDROID_TABS_PROMPT_REVIEW_TABS_BUTTON_BOTTOM_MESSAGE" desc="Button shown on the prompt (bottom message version) for Android switchers to bring up a table of the user's recently active tabs from Android. [iOS only]">
-        {count, plural,
-          =1 {Review the tab}
-          other {Review all tabs}}
-      </message>
       <message name="IDS_IOS_BRING_ANDROID_TABS_PROMPT_REVIEW_TABS_BUTTON_CONFIRMATION_ALERT" desc="Button shown on the prompt (confirmation alert version) for Android switchers to bring up a table of the user's recently active tabs from Android. [iOS only]">
         {count, plural,
           =1 {Review the tab...}

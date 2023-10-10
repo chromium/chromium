@@ -200,14 +200,6 @@ const char kBreakpadNoDelayInitialUploadDescription[] =
     "disabled, initial upload is delayed until deferred initialization. This "
     "does not affect recovery mode.";
 
-const char kBringYourOwnTabsIOSName[] =
-    "Bring Your Active Tabs from Android to iOS";
-const char kBringYourOwnTabsIOSDescription[] =
-    "For new users who switch to Chrome on iOS from Android, show a prompt on "
-    "the tab grid with buttons to list or open those tabs. The prompt would be "
-    "a half-sheet modal by default, or a bottom sticker if specified in the "
-    "dropdown option.";
-
 extern const char kAppleCalendarExperienceKitName[] =
     "Experience Kit Apple Calendar";
 extern const char kAppleCalendarExperienceKitDescription[] =

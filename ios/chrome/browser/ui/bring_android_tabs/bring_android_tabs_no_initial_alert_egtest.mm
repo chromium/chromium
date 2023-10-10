@@ -24,7 +24,12 @@
 
 @implementation BringAndroidTabsNoInitialAlertTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  return GetConfiguration(/*is_android_switcher=*/YES);
+}
+
 - (void)setUp {
+  [[self class] testForStartup];
   [super setUp];
   if (![ChromeEarlGrey isIPadIdiom]) {
     GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
@@ -42,8 +47,7 @@
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
   }
-  AppLaunchConfiguration config = GetConfiguration(/*is_android_switcher=*/NO,
-                                                   /*show_bottom_message=*/NO);
+  AppLaunchConfiguration config = GetConfiguration(/*is_android_switcher=*/NO);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   AddSessionToFakeSyncServerFromTestServer(
       BringAndroidTabsTestSession::kRecentFromAndroidPhone,
@@ -60,9 +64,6 @@
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPhone.");
   }
-  AppLaunchConfiguration config = GetConfiguration(/*is_android_switcher=*/YES,
-                                                   /*show_bottom_message=*/NO);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   AddSessionToFakeSyncServerFromTestServer(
       BringAndroidTabsTestSession::kRecentFromAndroidPhone,
       self.testServer->base_url());
@@ -77,9 +78,6 @@
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
   }
-  AppLaunchConfiguration config = GetConfiguration(/*is_android_switcher=*/YES,
-                                                   /*show_bottom_message=*/NO);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   AddSessionToFakeSyncServerFromTestServer(
       BringAndroidTabsTestSession::kRecentFromAndroidPhone,
       self.testServer->base_url());
@@ -101,9 +99,6 @@
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
   }
-  AppLaunchConfiguration config = GetConfiguration(/*is_android_switcher=*/YES,
-                                                   /*show_bottom_message=*/NO);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   AddSessionToFakeSyncServerFromTestServer(
       BringAndroidTabsTestSession::kExpiredFromAndroidPhone,
       self.testServer->base_url());
@@ -118,9 +113,6 @@
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
   }
-  AppLaunchConfiguration config = GetConfiguration(/*is_android_switcher=*/YES,
-                                                   /*show_bottom_message=*/NO);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   AddSessionToFakeSyncServerFromTestServer(
       BringAndroidTabsTestSession::kRecentFromDesktop,
       self.testServer->base_url());
@@ -136,9 +128,6 @@
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
   }
-  AppLaunchConfiguration config = GetConfiguration(/*is_android_switcher=*/YES,
-                                                   /*show_bottom_message=*/NO);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   // Add all test sessions.
   GURL testServer = self.testServer->base_url();
   AddSessionToFakeSyncServerFromTestServer(

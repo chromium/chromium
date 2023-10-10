@@ -28,7 +28,6 @@ source_set("tab_grid") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bring_android_tabs/model",
-    "//ios/chrome/browser/bring_android_tabs/model:features",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/find_in_page/model",
     "//ios/chrome/browser/find_in_page/model:util",

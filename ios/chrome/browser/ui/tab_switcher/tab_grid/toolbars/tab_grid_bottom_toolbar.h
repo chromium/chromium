@@ -40,9 +40,6 @@
 // selection mode. It will be used to update the buttons to use the correct
 // title (singular or plural).
 @property(nonatomic, assign) int selectedTabsCount;
-// Tab button views created for the bottom toolbar.
-@property(nonatomic, readonly) TabGridNewTabButton* smallNewTabButton;
-@property(nonatomic, readonly) TabGridNewTabButton* largeNewTabButton;
 // Delegate to call when a button is pushed.
 @property(nonatomic, weak) id<TabGridToolbarsButtonsDelegate> buttonsDelegate;
 

@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_test_utils.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/bring_android_tabs/model/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -47,8 +46,7 @@ void TapPromoStyleButton(NSString* buttonIdentifier) {
 
 }  // namespace
 
-AppLaunchConfiguration GetConfiguration(BOOL is_android_switcher,
-                                        BOOL show_bottom_message) {
+AppLaunchConfiguration GetConfiguration(BOOL is_android_switcher) {
   AppLaunchConfiguration config;
   config.additional_args.push_back("-FirstRunForceEnabled");
   config.additional_args.push_back("true");
@@ -56,9 +54,6 @@ AppLaunchConfiguration GetConfiguration(BOOL is_android_switcher,
     config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
     config.additional_args.push_back("AndroidPhone");
   }
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kBringYourOwnTabsIOS.name) + ":" +
-      kBringYourOwnTabsIOSParam + (show_bottom_message ? "/true" : "/false"));
   // Relaunch app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   return config;
@@ -104,20 +99,6 @@ void VerifyConfirmationAlertPromptVisibility(BOOL visibility) {
                                    : grey_notVisible()];
 }
 
-void VerifyBottomMessagePromptVisibility(BOOL visibility) {
-  // SwiftUI is tricky with accessibility... hence this workaround.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kBringAndroidTabsPromptBottomMessageCloseButtonAXId)]
-      assertWithMatcher:visibility ? grey_sufficientlyVisible()
-                                   : grey_notVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kBringAndroidTabsPromptBottomMessageReviewButtonAXId)]
-      assertWithMatcher:visibility ? grey_sufficientlyVisible()
-                                   : grey_notVisible()];
-}
-
 void VerifyTabListPromptVisibility(BOOL visibility) {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kBringAndroidTabsPromptTabListAXId)]
@@ -129,21 +110,14 @@ int GetTabCountOnPrompt() {
   return [BringAndroidTabsAppInterface tabsCountForPrompt];
 }
 
-void VerifyThatPromptDoesNotShowOnRestart(BOOL bottom_message,
-                                          const GURL& test_server) {
-  AppLaunchConfiguration config =
-      GetConfiguration(/*is_android_switcher=*/YES,
-                       /*show_bottom_message=*/bottom_message);
+void VerifyThatPromptDoesNotShowOnRestart(const GURL& test_server) {
+  AppLaunchConfiguration config = GetConfiguration(/*is_android_switcher=*/YES);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   AddSessionToFakeSyncServerFromTestServer(
       BringAndroidTabsTestSession::kRecentFromAndroidPhone, test_server);
   CompleteFREWithSyncEnabled(YES);
   [ChromeEarlGreyUI openTabGrid];
-  if (bottom_message) {
-    VerifyBottomMessagePromptVisibility(NO);
-  } else {
-    VerifyConfirmationAlertPromptVisibility(NO);
-  }
+  VerifyConfirmationAlertPromptVisibility(NO);
 }
 
 void CleanUp() {

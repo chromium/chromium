@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service_factory.h"
-#import "ios/chrome/browser/bring_android_tabs/model/features.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/util.h"
@@ -588,22 +587,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     _bringAndroidTabsPromptCoordinator.commandHandler = self;
   }
   [_bringAndroidTabsPromptCoordinator start];
-  switch (GetBringYourOwnTabsPromptType()) {
-    case BringYourOwnTabsPromptType::kHalfSheet:
-      [self.baseViewController
-          presentViewController:_bringAndroidTabsPromptCoordinator
-                                    .viewController
-                       animated:YES
-                     completion:nil];
-      break;
-    case BringYourOwnTabsPromptType::kBottomMessage:
-      self.baseViewController.regularTabsBottomMessage =
-          _bringAndroidTabsPromptCoordinator.viewController;
-      break;
-    case BringYourOwnTabsPromptType::kDisabled:
-      NOTREACHED();
-      break;
-  }
+  [self.baseViewController
+      presentViewController:_bringAndroidTabsPromptCoordinator.viewController
+                   animated:YES
+                 completion:nil];
 }
 
 // Performs the new Browser to Tab Grid transition.
@@ -945,7 +932,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.incognitoSnackbarCoordinator stop];
   self.incognitoSnackbarCoordinator = nil;
 
-  self.baseViewController.regularTabsBottomMessage = nil;
   [_bringAndroidTabsPromptCoordinator stop];
   _bringAndroidTabsPromptCoordinator = nil;
   [_tabListFromAndroidCoordinator stop];
@@ -1380,20 +1366,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 // Helper method to handle BringAndroidTabsCommands.
 - (void)onUserInteractionWithBringAndroidTabsPrompt:(BOOL)reviewTabs {
   DCHECK(_bringAndroidTabsPromptCoordinator);
-  switch (GetBringYourOwnTabsPromptType()) {
-    case BringYourOwnTabsPromptType::kHalfSheet:
-      [self.baseViewController dismissViewControllerAnimated:YES
-                                                  completion:nil];
-      break;
-    case BringYourOwnTabsPromptType::kBottomMessage:
-      DCHECK_EQ(self.baseViewController.regularTabsBottomMessage,
-                _bringAndroidTabsPromptCoordinator.viewController);
-      self.baseViewController.regularTabsBottomMessage = nil;
-      break;
-    case BringYourOwnTabsPromptType::kDisabled:
-      NOTREACHED();
-      break;
-  }
+  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
   if (reviewTabs) {
     _tabListFromAndroidCoordinator = [[TabListFromAndroidCoordinator alloc]
         initWithBaseViewController:self.baseViewController

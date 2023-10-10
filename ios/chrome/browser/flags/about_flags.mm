@@ -70,7 +70,6 @@
 #import "components/translate/core/common/translate_util.h"
 #import "components/variations/service/google_groups_updater_service.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
-#import "ios/chrome/browser/bring_android_tabs/model/features.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
 #import "ios/chrome/browser/credential_provider_promo/model/features.h"
@@ -602,12 +601,6 @@ const FeatureEntry::FeatureVariation kIOSEditMenuPartialTranslateVariations[] =
       std::size(kIOSEditMenuPartialTranslateNoIncognito), nullptr},
      {"Enable on incognito", kIOSEditMenuPartialTranslateWithIncognito,
       std::size(kIOSEditMenuPartialTranslateWithIncognito), nullptr}};
-
-const FeatureEntry::FeatureParam kBringYourOwnTabsIOSBottomMessage[] = {
-    {kBringYourOwnTabsIOSParam, "true"}};
-const FeatureEntry::FeatureVariation kBringYourOwnTabsIOSVariations[] = {
-    {"with bottom message on tab grid", kBringYourOwnTabsIOSBottomMessage,
-     std::size(kBringYourOwnTabsIOSBottomMessage), nullptr}};
 
 const FeatureEntry::FeatureParam kIOSEditMenuSearchWithTitleSearchWith[] = {
     {kIOSEditMenuSearchWithTitleParamTitle,
@@ -1357,11 +1350,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"new-ntp-omnibox-layout", flag_descriptions::kNewNTPOmniboxLayoutName,
      flag_descriptions::kNewNTPOmniboxLayoutDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kNewNTPOmniboxLayout)},
-    {"bring-your-own-tabs-ios", flag_descriptions::kBringYourOwnTabsIOSName,
-     flag_descriptions::kBringYourOwnTabsIOSDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kBringYourOwnTabsIOS,
-                                    kBringYourOwnTabsIOSVariations,
-                                    "BringYourOwnTabsIOS")},
     {"enable-follow-IPH-exp-params",
      flag_descriptions::kEnableFollowIPHExpParamsName,
      flag_descriptions::kEnableFollowIPHExpParamsDescription, flags_ui::kOsIos,

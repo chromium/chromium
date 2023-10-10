@@ -171,11 +171,6 @@ extern const char kSpotlightDonateNewIntentsDescription[];
 extern const char kBreakpadNoDelayInitialUploadName[];
 extern const char kBreakpadNoDelayInitialUploadDescription[];
 
-// Title and description for the flag to turn on "Bring Your Own Tabs" prompt
-// for new Android switchers.
-extern const char kBringYourOwnTabsIOSName[];
-extern const char kBringYourOwnTabsIOSDescription[];
-
 // Title and description for the flag to enable the content notifications
 // feature.
 extern const char kContentPushNotificationsName[];
