@@ -14,6 +14,7 @@ per-file management_resources.grdp=file://components/management/OWNERS
 per-file offline_pages_resources.grdp=file://components/offline_pages/OWNERS
 per-file policy_resources.grdp=file://components/policy/OWNERS
 per-file printing_resources.grdp=file://printing/OWNERS
+per-file search_engine_choice_scaled_resources.grdp=file://chrome/browser/search_engine_choice/OWNERS
 per-file security_interstitials_dev_ui_resources.grdp=file://components/security_interstitials/OWNERS
 per-file security_interstitials_resources.grdp=file://components/security_interstitials/OWNERS
 per-file sync_driver_resources.grdp=file://components/sync/OWNERS
