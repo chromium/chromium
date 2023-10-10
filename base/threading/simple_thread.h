@@ -42,6 +42,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -223,7 +224,7 @@ class BASE_EXPORT DelegateSimpleThreadPool
  private:
   const std::string name_prefix_;
   size_t num_threads_;
-  std::vector<DelegateSimpleThread*> threads_;
+  std::vector<std::unique_ptr<DelegateSimpleThread>> threads_;
   base::queue<Delegate*> delegates_;
   base::Lock lock_;            // Locks delegates_
   WaitableEvent dry_;    // Not signaled when there is no work to do.
