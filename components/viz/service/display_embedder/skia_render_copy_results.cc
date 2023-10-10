@@ -344,7 +344,8 @@ NV12PlanesReadyContext::NV12PlanesReadyContext(
         mailbox_holders,
     const gfx::ColorSpace& color_space,
     bool is_multiplane)
-    : request_(std::move(request)),
+    : impl_on_gpu_(impl_on_gpu),
+      request_(std::move(request)),
       result_rect_(result_rect),
       mailbox_holders_(mailbox_holders),
       color_space_(color_space),
