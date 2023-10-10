@@ -368,12 +368,9 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
       << " should be the same.";
   WorkerScriptFetcher::CreateAndStart(
       worker_process_host->GetID(), host->token(), host->instance().url(),
-      &creator, &creator, net::SiteForCookies::FromOrigin(worker_origin),
+      &creator, &creator, host->instance().storage_key().ToNetSiteForCookies(),
       host->instance().storage_key().origin(), host->instance().storage_key(),
-      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
-                                 worker_origin, worker_origin,
-                                 net::SiteForCookies::FromOrigin(worker_origin),
-                                 host->instance().storage_key().nonce()),
+      host->instance().storage_key().ToPartialNetIsolationInfo(),
       creator.BuildClientSecurityStateForWorkers(), credentials_mode,
       std::move(outside_fetch_client_settings_object),
       network::mojom::RequestDestination::kSharedWorker,

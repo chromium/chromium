@@ -426,14 +426,7 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
   }
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForWorker(
-          GetProcessHost(), origin,
-          net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
-                                     // TODO(https://crbug.com/1147281): We
-                                     // should pass the top_level_site from
-                                     // `GetStorageKey()` instead.
-                                     origin, origin,
-                                     net::SiteForCookies::FromOrigin(origin),
-                                     GetStorageKey().nonce()),
+          GetProcessHost(), origin, GetStorageKey().ToPartialNetIsolationInfo(),
           std::move(coep_reporter),
           /*url_loader_network_observer=*/mojo::NullRemote(),
           /*devtools_observer=*/mojo::NullRemote(),
