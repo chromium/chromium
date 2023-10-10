@@ -2809,7 +2809,7 @@
 
     <!-- Update Notification Strings -->
   <message name="IDS_UPDATE_NOTIFICATION_HEADER" desc="Notification title shown for a system update.">
-    You’ve been upgraded to <ph name="NAME">$1<ex>Chromebook</ex></ph>.
+    You’ve been upgraded to <ph name="NAME">$1<ex>Chromebook</ex></ph>
   </message>
   <message name="IDS_UPDATE_NOTIFICATION_MESSAGE" desc="Notification shown for a system update.">
      New features include Magic Eraser on Google Photos to remove distractions, improved video call tools, and more
