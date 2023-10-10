@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 
 namespace reporting {
@@ -41,4 +42,14 @@ void FatalCrashEventsObserver::TestEnvironment::
   observer.SetInterruptedAfterEventObservedForTest(
       interrupted_after_event_observed);
 }
+
+// static
+size_t FatalCrashEventsObserver::TestEnvironment::GetLocalIdEntryQueueSize(
+    FatalCrashEventsObserver& observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(observer.sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(
+      observer.reported_local_id_manager_->sequence_checker_);
+  return observer.reported_local_id_manager_->local_id_entries_.size();
+}
+
 }  // namespace reporting

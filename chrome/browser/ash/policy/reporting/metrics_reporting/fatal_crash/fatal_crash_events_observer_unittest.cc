@@ -419,6 +419,9 @@ class FatalCrashEventsObserverReportedLocalIdsTestBase
   // The maximum number of local IDs to save.
   static constexpr size_t kMaxNumOfLocalIds{
       FatalCrashEventsObserver::TestEnvironment::kMaxNumOfLocalIds};
+  // The maximum size of the priority queue before reconstructing it.
+  static constexpr size_t kMaxSizeOfLocalIdEntryQueue{
+      FatalCrashEventsObserver::TestEnvironment::kMaxSizeOfLocalIdEntryQueue};
   static constexpr std::string_view kLocalId = "local ID";
   static constexpr base::Time kCaptureTime = base::Time::FromTimeT(14);
   static constexpr std::string_view kLocalIdEarly = "local ID Early";
@@ -440,10 +443,21 @@ class FatalCrashEventsObserverReportedLocalIdsTestBase
       std::string_view local_id,
       base::Time capture_time,
       FatalCrashEventsObserver& fatal_crash_observer,
-      base::test::TestFuture<MetricData>* test_event = nullptr) {
-    auto crash_event_info = NewCrashEventInfo(/*is_uploaded=*/false);
+      base::test::TestFuture<MetricData>* test_event = nullptr,
+      bool is_uploaded = false) {
+    static uint64_t offset = 0u;
+
+    auto crash_event_info = NewCrashEventInfo(is_uploaded);
     crash_event_info->local_id = local_id;
     crash_event_info->capture_time = capture_time;
+    if (is_uploaded) {
+      // Keep offset increasing so that uploaded crash event would not be
+      // blocked because the offset is smaller than previous. Not allowing fine
+      // tuning offset here because the test focuses on
+      // `ReportedLocalIdManager`, not the role offset plays in uploaded
+      // crashes.
+      crash_event_info->upload_info->offset = offset++;
+    }
 
     const auto fatal_crash_telemetry = WaitForFatalCrashTelemetry(
         std::move(crash_event_info), &fatal_crash_observer, test_event);
@@ -585,6 +599,52 @@ TEST_P(FatalCrashEventsObserverReportedLocalIdsTest,
       FatalCrashEventsObserver::ConvertTimeToMicroseconds(kCaptureTimeLate));
 }
 
+TEST_P(FatalCrashEventsObserverReportedLocalIdsTest,
+       CrashReportedAsUploadedIsRemoved) {
+  base::test::TestFuture<MetricData> result_metric_data;
+  auto fatal_crash_events_observer =
+      CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
+
+  // Same crash, first reported as unuploaded, then reported again as uploaded.
+  CreateFatalCrashEvent(/*local_id=*/kLocalId, /*capture_time=*/kCaptureTime,
+                        *fatal_crash_events_observer, &result_metric_data,
+                        /*is_uploaded=*/false);
+  CreateFatalCrashEvent(/*local_id=*/kLocalId, /*capture_time=*/kCaptureTime,
+                        *fatal_crash_events_observer, &result_metric_data,
+                        /*is_uploaded=*/true);
+
+  if (reload()) {
+    fatal_crash_events_observer =
+        CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
+  }
+
+  // Create kMaxNumOfLocalIds - 1 crashes with an earlier capture time.
+  for (size_t i = 0u; i < kMaxNumOfLocalIds - 1u; ++i) {
+    std::ostringstream ss;
+    ss << kLocalIdEarly << i;
+    CreateFatalCrashEvent(/*local_id=*/ss.str(),
+                          /*capture_time=*/kCaptureTimeEarly,
+                          *fatal_crash_events_observer, &result_metric_data,
+                          /*is_uploaded=*/false);
+  }
+
+  // Because the first crash (which has a later capture time) has been uploaded,
+  // it should no longer be saved. Therefore, the kMaxNumOfLocalIds'th early
+  // crash should be saved.
+  auto crash_event_info = NewCrashEventInfo(/*is_uploaded=*/false);
+  crash_event_info->local_id = kLocalIdEarly;
+  crash_event_info->capture_time = kCaptureTimeEarly;
+  const auto fatal_crash_telemetry = WaitForFatalCrashTelemetry(
+      std::move(crash_event_info), fatal_crash_events_observer.get(),
+      &result_metric_data);
+  ASSERT_TRUE(fatal_crash_telemetry.has_local_id());
+  EXPECT_EQ(fatal_crash_telemetry.local_id(), kLocalIdEarly);
+  ASSERT_TRUE(fatal_crash_telemetry.has_timestamp_us());
+  EXPECT_EQ(
+      fatal_crash_telemetry.timestamp_us(),
+      FatalCrashEventsObserver::ConvertTimeToMicroseconds(kCaptureTimeEarly));
+}
+
 // Tests that if the thread is interrupted somehow when the event is being
 // processed (e.g., ash crashes), a crash with the same local ID should still be
 // reported.
@@ -622,10 +682,103 @@ TEST_F(FatalCrashEventsObserverReportedLocalIdsTest,
             FatalCrashEventsObserver::ConvertTimeToMicroseconds(kCaptureTime));
 }
 
-// TODO(b/266018440): After implementing the logic that controls whether an
-// uploaded crash should be reported (which would include the logic to remove
-// crashes from saved unuploaded crashes), test here that the earliest crash has
-// been removed after a sufficient amount of later crashes are reported.
+TEST_F(FatalCrashEventsObserverReportedLocalIdsTest,
+       CrashReportedAsUploadedIsNotRemovedIfInterrupted) {
+  base::test::TestFuture<MetricData> result_metric_data;
+  auto fatal_crash_events_observer =
+      CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
+
+  // Same crash, first reported as unuploaded, then reported again as uploaded.
+  CreateFatalCrashEvent(/*local_id=*/kLocalId, /*capture_time=*/kCaptureTime,
+                        *fatal_crash_events_observer, &result_metric_data,
+                        /*is_uploaded=*/false);
+
+  // Simulate the thread is interrupted after event observed callback is called.
+  fatal_crash_test_environment_.SetInterruptedAfterEventObserved(
+      *fatal_crash_events_observer, /*interrupted_after_event_observed=*/true);
+  CreateFatalCrashEvent(/*local_id=*/kLocalId, /*capture_time=*/kCaptureTime,
+                        *fatal_crash_events_observer, &result_metric_data,
+                        /*is_uploaded=*/true);
+  // Back to normal.
+  fatal_crash_test_environment_.SetInterruptedAfterEventObserved(
+      *fatal_crash_events_observer, /*interrupted_after_event_observed=*/false);
+
+  // Reload.
+  fatal_crash_events_observer =
+      CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
+
+  // Create kMaxNumOfLocalIds - 1 crashes with an earlier capture time.
+  for (size_t i = 0u; i < kMaxNumOfLocalIds - 1u; ++i) {
+    std::ostringstream ss;
+    ss << kLocalIdEarly << i;
+    CreateFatalCrashEvent(/*local_id=*/ss.str(),
+                          /*capture_time=*/kCaptureTimeEarly,
+                          *fatal_crash_events_observer, &result_metric_data,
+                          /*is_uploaded=*/false);
+  }
+
+  // Because the first crash (which has a later capture time) has been uploaded,
+  // it should no longer be saved. However, because the thread is interrupted,
+  // it remains in the saved local IDs. Therefore, the kMaxNumOfLocalIds'th
+  // early crash would not be saved here.
+  auto local_id_entry = WaitForSkippedFatalCrashEvent(
+      /*local_id=*/kLocalIdEarly,
+      /*capture_time=*/kCaptureTimeEarly, *fatal_crash_events_observer);
+  EXPECT_EQ(local_id_entry.local_id, kLocalIdEarly);
+  EXPECT_EQ(
+      local_id_entry.capture_timestamp_us,
+      FatalCrashEventsObserver::ConvertTimeToMicroseconds(kCaptureTimeEarly));
+  local_id_entry = WaitForSkippedFatalCrashEvent(
+      /*local_id=*/kLocalIdEarly,
+      /*capture_time=*/kCaptureTimeEarly, *fatal_crash_events_observer);
+  EXPECT_EQ(local_id_entry.local_id, kLocalIdEarly);
+  EXPECT_EQ(
+      local_id_entry.capture_timestamp_us,
+      FatalCrashEventsObserver::ConvertTimeToMicroseconds(kCaptureTimeEarly));
+}
+
+TEST_F(FatalCrashEventsObserverReportedLocalIdsTest,
+       ReconstructLocalIdEntryQueueAfterMaxIsReached) {
+  base::test::TestFuture<MetricData> result_metric_data;
+  auto fatal_crash_events_observer =
+      CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
+
+  // Report an unuploaded crash with an early capture time.
+  CreateFatalCrashEvent(/*local_id=*/kLocalIdEarly,
+                        /*capture_time=*/kCaptureTimeEarly,
+                        *fatal_crash_events_observer, &result_metric_data,
+                        /*is_uploaded=*/false);
+
+  // Create kMaxSizeOfLocalIdEntryQueue - 1 crashes with a later capture time.
+  // Report them as unuploaded first and then uploaded. This should be able to
+  // fill the priority queue up with the local IDs of uploaded crashes.
+  for (size_t i = 0u; i < kMaxSizeOfLocalIdEntryQueue - 1u; ++i) {
+    std::ostringstream ss;
+    ss << kLocalIdLate << i;
+    CreateFatalCrashEvent(/*local_id=*/ss.str(),
+                          /*capture_time=*/kCaptureTimeLate,
+                          *fatal_crash_events_observer, &result_metric_data,
+                          /*is_uploaded=*/false);
+    CreateFatalCrashEvent(/*local_id=*/ss.str(),
+                          /*capture_time=*/kCaptureTimeLate,
+                          *fatal_crash_events_observer, &result_metric_data,
+                          /*is_uploaded=*/true);
+  }
+
+  // Sanity check: The priority queue is large.
+  ASSERT_EQ(fatal_crash_test_environment_.GetLocalIdEntryQueueSize(
+                *fatal_crash_events_observer),
+            kMaxSizeOfLocalIdEntryQueue);
+
+  // One more unuploaded crash and the queue should be constructed.
+  CreateFatalCrashEvent(/*local_id=*/kLocalIdLate,
+                        /*capture_time=*/kCaptureTimeLate,
+                        *fatal_crash_events_observer, &result_metric_data,
+                        /*is_uploaded=*/false);
+  EXPECT_EQ(fatal_crash_test_environment_.GetLocalIdEntryQueueSize(
+                *fatal_crash_events_observer),
+            2u);
+}
 
 INSTANTIATE_TEST_SUITE_P(
     FatalCrashEventsObserverReportedLocalIdsTests,

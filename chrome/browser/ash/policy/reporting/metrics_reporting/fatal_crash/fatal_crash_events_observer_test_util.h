@@ -18,6 +18,8 @@ class FatalCrashEventsObserver::TestEnvironment {
  public:
   static constexpr size_t kMaxNumOfLocalIds{
       ReportedLocalIdManager::kMaxNumOfLocalIds};
+  static constexpr size_t kMaxSizeOfLocalIdEntryQueue{
+      ReportedLocalIdManager::kMaxSizeOfLocalIdEntryQueue};
   static constexpr std::string_view kCreationTimestampMsJsonKey{
       UploadedCrashInfoManager::kCreationTimestampMsJsonKey};
   static constexpr std::string_view kOffsetJsonKey{
@@ -41,9 +43,17 @@ class FatalCrashEventsObserver::TestEnvironment {
 
   // Sets whether to continue postprocessing after event observed callback is
   // called.
+  // TODO(b/266018440): Create a scoped class to set and unset.
   static void SetInterruptedAfterEventObserved(
       FatalCrashEventsObserver& observer,
       bool interrupted_after_event_observed);
+
+  // Gets the size of the queue that saves local IDs. In tests, an access to a
+  // private member is not normally recommended since it is generally not
+  // testing the behavior from the perspective of the user. Here, we expose the
+  // queue size to the test for the sole purpose of examining whether the memory
+  // usage is correctly limited.
+  static size_t GetLocalIdEntryQueueSize(FatalCrashEventsObserver& observer);
 
  private:
   base::FilePath temp_dir_{base::CreateUniqueTempDirectoryScopedToTest()};

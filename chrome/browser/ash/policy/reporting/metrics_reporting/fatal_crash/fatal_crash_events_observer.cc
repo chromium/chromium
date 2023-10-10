@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 
+#include <algorithm>
+#include <iterator>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -169,9 +171,6 @@ void FatalCrashEventsObserver::OnEvent(
                                      upload_info->offset);
       return;
     }
-
-    // TODO(b/266018440): If the crash is found to have been uploaded, need to
-    // mark it as stale in reported local IDs.
   }
 
   MetricData metric_data = FillFatalCrashTelemetry(crash_event_info);
@@ -195,6 +194,13 @@ void FatalCrashEventsObserver::OnEvent(
     uploaded_crash_info_manager_->Update(
         crash_event_info->upload_info->creation_time,
         crash_event_info->upload_info->offset);
+    // Once uploaded, the crash's local ID must be removed from saved local IDs.
+    // Reason is that when the number of saved local IDs reach the max, the
+    // crash with the earliest capture time will be removed. However, crashes do
+    // not come in the order of capture time. If we leave uploaded crashes in
+    // the saved local IDs, some late-coming crashes with early capture time may
+    // not get reported because of this.
+    reported_local_id_manager_->Remove(crash_event_info->local_id);
   }
 }
 
@@ -281,9 +287,8 @@ bool FatalCrashEventsObserver::ReportedLocalIdManager::HasBeenReported(
 
 bool FatalCrashEventsObserver::ReportedLocalIdManager::ShouldReport(
     const std::string& local_id,
-    int64_t capture_timestamp_us) const {
+    int64_t capture_timestamp_us) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(local_id_entries_.size(), local_ids_.size());
 
   if (capture_timestamp_us < 0) {
     // Only possible when loading a corrupt save file.
@@ -298,8 +303,8 @@ bool FatalCrashEventsObserver::ReportedLocalIdManager::ShouldReport(
   }
 
   // Max number of crash events reached and the current crash event is too old.
-  if (local_id_entries_.size() >= kMaxNumOfLocalIds &&
-      capture_timestamp_us <= local_id_entries_.top().capture_timestamp_us) {
+  if (local_ids_.size() >= kMaxNumOfLocalIds &&
+      capture_timestamp_us <= GetEarliestLocalIdEntry().capture_timestamp_us) {
     return false;
   }
 
@@ -318,20 +323,40 @@ bool FatalCrashEventsObserver::ReportedLocalIdManager::UpdateLocalId(
   // Keep only the most recent kMaxNumOfLocalIds local IDs. Remove that oldest
   // local IDs if too many are saved.
   if (local_ids_.size() >= kMaxNumOfLocalIds) {
-    local_ids_.erase(local_id_entries_.top().local_id);
-    local_id_entries_.pop();
+    RemoveEarliestLocalIdEntry();
   }
 
-  CHECK(local_ids_.try_emplace(local_id, capture_timestamp_us).second)
-      << "Local ID " << local_id << " already saved while trying to emplace.";
-  local_id_entries_.emplace(local_id, capture_timestamp_us);
-  WriteSaveFile();
+  return Add(local_id, capture_timestamp_us);
+}
 
+bool FatalCrashEventsObserver::ReportedLocalIdManager::Add(
+    const std::string& local_id,
+    int64_t capture_timestamp_us) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Clean up before adding more entries. Otherwise it is possible that the
+  // queue can grow uncontrolled.
+  CleanUpLocalIdEntryQueue();
+  if (!local_ids_.try_emplace(local_id, capture_timestamp_us).second) {
+    return false;
+  }
+  local_id_entries_.emplace(local_id, capture_timestamp_us);
+
+  WriteSaveFile();
   return true;
+}
+
+void FatalCrashEventsObserver::ReportedLocalIdManager::Remove(
+    const std::string& local_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  local_ids_.erase(local_id);
+  WriteSaveFile();
 }
 
 void FatalCrashEventsObserver::ReportedLocalIdManager::LoadSaveFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!base::PathExists(save_file_)) {
     // File has never been written yet, skip loading it.
     return;
@@ -392,6 +417,64 @@ void FatalCrashEventsObserver::ReportedLocalIdManager::WriteSaveFile() const {
                << save_file_ << ": " << err;
     return;
   }
+}
+
+void FatalCrashEventsObserver::ReportedLocalIdManager::
+    CleanUpLocalIdEntryQueue() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (local_id_entries_.size() >= kMaxSizeOfLocalIdEntryQueue) {
+    // In extreme situations, such as when the oldest unuploaded crash remains
+    // unuploaded for an extended amount of time, it's possible to leave a lot
+    // of uploaded crashes' local IDs in local_id_entries_. In this case,
+    // rebuild the queue.
+    ReconstructLocalIdEntries();
+    return;
+  }
+
+  // Clean up uploaded crashes from the top of the priority queue.
+  while (!local_id_entries_.empty()) {
+    if (base::Contains(local_ids_, local_id_entries_.top().local_id)) {
+      break;
+    }
+    local_id_entries_.pop();
+  }
+}
+
+void FatalCrashEventsObserver::ReportedLocalIdManager::
+    ReconstructLocalIdEntries() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // First build the container.
+  std::vector<LocalIdEntry> queue_container;
+  queue_container.reserve(local_ids_.size());
+  std::transform(local_ids_.begin(), local_ids_.end(),
+                 std::back_inserter(queue_container),
+                 [](const std::pair<std::string, int64_t>& input) {
+                   return LocalIdEntry{.local_id = input.first,
+                                       .capture_timestamp_us = input.second};
+                 });
+
+  // Then reconstruct the local ID entries priority queue from the container.
+  local_id_entries_ = decltype(local_id_entries_)(
+      decltype(local_id_entries_)::value_compare(), std::move(queue_container));
+}
+
+const FatalCrashEventsObserver::LocalIdEntry&
+FatalCrashEventsObserver::ReportedLocalIdManager::GetEarliestLocalIdEntry() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CleanUpLocalIdEntryQueue();
+  // After the cleanup, the top of `local_id_entries_` is the earliest.
+  return local_id_entries_.top();
+}
+
+void FatalCrashEventsObserver::ReportedLocalIdManager::
+    RemoveEarliestLocalIdEntry() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CleanUpLocalIdEntryQueue();
+  // After the cleanup, the top of `local_id_entries_` is the earliest.
+  local_ids_.erase(local_id_entries_.top().local_id);
+  local_id_entries_.pop();
 }
 
 bool FatalCrashEventsObserver::ReportedLocalIdManager::LocalIdEntryComparator::
