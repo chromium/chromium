@@ -526,7 +526,7 @@ def GetTestName(test, sep='#'):
     The test name as a string.
   """
   test_name = '%s%s%s' % (test['class'], sep, test['method'])
-  assert ' *-:' not in test_name, (
+  assert not any(char in test_name for char in ' *-:'), (
       'The test name must not contain any of the characters in " *-:". See '
       'https://crbug.com/912199')
   return test_name
@@ -571,7 +571,7 @@ def GetUniqueTestName(test, sep='#'):
     sanitized_flags = [x.replace('-', '_') for x in test['flags']]
     display_name = '%s_with_%s' % (display_name, '_'.join(sanitized_flags))
 
-  assert ' *-:' not in display_name, (
+  assert not any(char in display_name for char in ' *-:'), (
       'The test name must not contain any of the characters in " *-:". See '
       'https://crbug.com/912199')
 
