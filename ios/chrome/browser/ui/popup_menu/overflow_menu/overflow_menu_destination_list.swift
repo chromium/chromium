@@ -234,7 +234,7 @@ struct OverflowMenuDestinationList: View {
     return destination.shown
       ? L10nUtils.stringWithFixup(
         messageId: IDS_IOS_OVERFLOW_MENU_HIDE_ITEM_ACCESSIBILITY_HINT)
-      : ""
+      : L10nUtils.stringWithFixup(messageId: IDS_IOS_OVERFLOW_MENU_SHOW_ITEM_ACCESSIBILITY_HINT)
   }
 
   /// Finds the lower and upper breakpoint above and below `width`.
