@@ -1454,8 +1454,8 @@ class CalendarViewAnimationTest : public AshTestBase {
     event_generator->ClickLeftButton();
   }
 
-  base::Time GetSelectedDate() {
-    return calendar_view_->calendar_view_controller()->selected_date_.value();
+  absl::optional<base::Time> GetSelectedDate() {
+    return calendar_view_->calendar_view_controller()->selected_date_;
   }
 
   void CloseEventList() { calendar_view_->CloseEventList(); }
@@ -1938,7 +1938,7 @@ TEST_F(CalendarViewAnimationTest, ResetToTodayWithAnimation) {
   EXPECT_EQ(1.0f, header()->layer()->opacity());
   // Expect today's date in `selected_date_` after resetting to today.
   EXPECT_EQ(calendar_utils::GetMonthDayYear(base::Time::Now()),
-            calendar_utils::GetMonthDayYear(GetSelectedDate()));
+            calendar_utils::GetMonthDayYear(GetSelectedDate().value()));
 
   // Expect header visible after closing event list and resetting to today.
   CloseEventList();
@@ -2218,6 +2218,69 @@ TEST_F(CalendarViewAnimationTest, DontShowEventListDuringMonthAnimation) {
   ClickDateCell(tomorrow_date_cell);
 
   EXPECT_FALSE(event_list_view());
+}
+
+// Regression test for b/265203105
+// Tests open/close the `CalendarEventListView`. Also tests one corner case:
+// when closing the event list right after opening it, do nothing since the
+// animation is not finished.
+TEST_F(CalendarViewAnimationTest, OpenAndCloseEventList) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  CreateCalendarView();
+  ui::LayerAnimationStoppedWaiter animation_waiter;
+  animation_waiter.Wait(header()->layer());
+
+  // Opens the `CalendarEventListView`.
+  const std::u16string kDateNumber = u"10";
+  const auto* valid_date_cell =
+      GetDateCell(/*month=*/current_month(), /*day=*/kDateNumber);
+  ClickDateCell(valid_date_cell);
+
+  EXPECT_TRUE(IsAnimating());
+  EXPECT_TRUE(event_list_view());
+  EXPECT_TRUE(GetSelectedDate().has_value());
+  EXPECT_EQ(kDateNumber,
+            calendar_utils::GetDayIntOfMonth(GetSelectedDate().value()));
+
+  // Should not close the event list before showing up animation is finished.
+  CloseEventList();
+  EXPECT_TRUE(IsAnimating());
+  EXPECT_TRUE(event_list_view());
+  EXPECT_TRUE(GetSelectedDate().has_value());
+  EXPECT_EQ(kDateNumber,
+            calendar_utils::GetDayIntOfMonth(GetSelectedDate().value()));
+
+  // After the showing up animation is finished, the event list view should be
+  // up.
+  animation_waiter.Wait(event_list_view()->layer());
+  animation_waiter.Wait(calendar_sliding_surface_view()->layer());
+  animation_waiter.Wait(current_label()->layer());
+  EXPECT_FALSE(IsAnimating());
+  EXPECT_TRUE(event_list_view());
+  EXPECT_TRUE(GetSelectedDate().has_value());
+  EXPECT_EQ(kDateNumber,
+            calendar_utils::GetDayIntOfMonth(GetSelectedDate().value()));
+
+  // Should close the event list now.
+  CloseEventList();
+
+  // The event list the view is still showing and `selected_date_` value is
+  // still set during the animation.
+  EXPECT_TRUE(IsAnimating());
+  EXPECT_TRUE(event_list_view());
+  EXPECT_TRUE(GetSelectedDate().has_value());
+  EXPECT_EQ(kDateNumber,
+            calendar_utils::GetDayIntOfMonth(GetSelectedDate().value()));
+
+  // Resets the `selected_date_` after the fading out animation is done.
+  animation_waiter.Wait(event_list_view()->layer());
+  animation_waiter.Wait(calendar_sliding_surface_view()->layer());
+  animation_waiter.Wait(current_label()->layer());
+  EXPECT_FALSE(IsAnimating());
+  EXPECT_FALSE(event_list_view());
+  EXPECT_FALSE(GetSelectedDate().has_value());
 }
 
 // Test class for testing the `CalendarView` together with the message center
