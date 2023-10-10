@@ -122,11 +122,7 @@ const char kUmaSelectDefaultSearchEngine[] =
 
   _updatingBackend = updatingBackend;
 
-  // TODO(b/303006727): Remove this check once we figure out a way to keep a
-  // constant seed for each profile for the random shuffle. In the meantime, it
-  // prevents the order of the items in the list from changing when the user
-  // makes a selection.
-  if (!self.searchEngineChangedInBackground || _shouldShowUpdatedSettings) {
+  if (!self.searchEngineChangedInBackground) {
     return;
   }
 

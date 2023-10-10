@@ -24,10 +24,15 @@ const char kDefaultSearchProviderGUID[] = "default_search_provider.guid";
 const char kSyncedDefaultSearchProviderGUID[] =
     "default_search_provider.synced_guid";
 
-// Windows epoch timestamp in seconds of when the user chose a search engine in
+// Epoch timestamp in seconds of when the user chose a search engine in
 // the choice screen.
 const char kDefaultSearchProviderChoiceScreenCompletionTimestamp[] =
     "default_search_provider.choice_screen_completion_timestamp";
+
+// Random number to use as a profile-constant seed for the random shuffling of
+// the choice screen elements.
+const char kDefaultSearchProviderChoiceScreenRandomShuffleSeed[] =
+    "default_search_provider.choice_screen_random_shuffle_seed";
 
 // Whether a search context menu item is allowed.
 const char kDefaultSearchProviderContextMenuAccessAllowed[] =

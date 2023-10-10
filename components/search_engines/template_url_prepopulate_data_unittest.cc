@@ -191,6 +191,35 @@ TEST_F(TemplateURLPrepopulateDataTest, NumberOfEntriesPerCountryConsistency) {
   }
 }
 
+// Verifies that the order of the randomly shuffled search engines stays
+// constant per-profile.
+TEST_F(TemplateURLPrepopulateDataTest,
+       SearchEnginesOrderDoesNotChangePerProfile) {
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
+  // Pick any EEA country
+  const int kFranceCountryId = country_codes::CountryCharsToCountryID('F', 'R');
+  prefs_.SetInteger(country_codes::kCountryIDAtInstall, kFranceCountryId);
+
+  // Fetch the list of search engines twice and make sure the order stays the
+  // same.
+  std::vector<std::unique_ptr<TemplateURLData>> t_urls_1 =
+      TemplateURLPrepopulateData::GetPrepopulatedEngines(
+          &prefs_,
+          /*default_search_provider_index=*/nullptr);
+  std::vector<std::unique_ptr<TemplateURLData>> t_urls_2 =
+      TemplateURLPrepopulateData::GetPrepopulatedEngines(
+          &prefs_,
+          /*default_search_provider_index=*/nullptr);
+
+  ASSERT_EQ(t_urls_1.size(), t_urls_2.size());
+  for (size_t i = 0; i < t_urls_1.size(); i++) {
+    // Each prepopulated engine has a unique prepopulate_id, so we simply
+    // compare those.
+    ASSERT_EQ(t_urls_1[i]->prepopulate_id, t_urls_2[i]->prepopulate_id);
+  }
+}
+
 // Verifies that default search providers from the preferences file
 // override the built-in ones.
 TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrefs) {
