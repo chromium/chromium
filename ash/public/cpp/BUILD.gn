@@ -488,6 +488,7 @@ component("cpp") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "accelerator_actions_unittest.cc",
     "accelerator_keycode_lookup_cache_unittest.cc",
     "accelerators_util_unittest.cc",
     "ambient/ambient_prefs_unittest.cc",

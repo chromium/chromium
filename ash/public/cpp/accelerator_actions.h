@@ -9,6 +9,11 @@
 
 namespace ash {
 
+// IMPORTANT PLEASE READ.
+// Please ensure that the order of these enums are stable. If adding a new
+// accelerator action, please but at the end and before DEBUG-related
+// accelerator actions.
+//
 // Please keep the ActionName in sync with the ActionName under
 // <histogram name="Ash.Accelerators.Actions.{ActionName}" in this file
 // tools/metrics/histograms/metadata/ash/histograms.xml.
