@@ -94,6 +94,14 @@ module.exports = {
         }
       ],
 
+      // https://google.github.io/styleguide/tsguide.html#array-constructor
+      // Note: The rule below only partially enforces the styleguide, since it
+      // it does not flag invocations of the constructor with a single
+      // parameter.
+      'no-array-constructor': 'off',
+      '@typescript-eslint/no-array-constructor': 'error',
+
+      // https://google.github.io/styleguide/tsguide.html#automatic-semicolon-insertion
       'semi': 'off',
       '@typescript-eslint/semi': ['error'],
 
@@ -193,6 +201,7 @@ module.exports = {
         },
       ],
 
+      // https://google.github.io/styleguide/tsguide.html#member-property-declarations
       '@typescript-eslint/member-delimiter-style': ['error', {
         multiline: {
           delimiter: 'comma',
