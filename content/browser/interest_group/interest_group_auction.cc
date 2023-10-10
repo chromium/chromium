@@ -2126,9 +2126,9 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
   DCHECK(!non_kanon_enforced_auction_leader_.top_bid);
   DCHECK(!kanon_enforced_auction_leader_.top_bid);
   DCHECK_EQ(pending_component_seller_worklet_requests_, 0u);
-  DCHECK(!started_bidding_and_scoring_phase_);
+  DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kBefore);
 
-  started_bidding_and_scoring_phase_ = true;
+  bidding_and_scoring_phase_state_ = PhaseState::kDuring;
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "bidding_and_scoring_phase",
                                     *trace_id_);
@@ -2484,9 +2484,10 @@ void InterestGroupAuction::NotifyConfigPromisesResolved() {
 
   // If we haven't started the bidding and scoring phase, we will just handle
   // this information at its start; setting `config_promises_resolved_` is
-  // enough both for us and the BuyerHelper.
-  if (!started_bidding_and_scoring_phase_) {
-    DCHECK(unscored_bids_.empty());
+  // enough both for us and the BuyerHelper. If we are after the phase, that
+  // means that promises resolved after we failed out of it, so we should ignore
+  // them.
+  if (bidding_and_scoring_phase_state_ != PhaseState::kDuring) {
     return;
   }
 
@@ -2576,10 +2577,11 @@ void InterestGroupAuction::NotifyDirectFromSellerSignalsHeaderAdSlotConfig(
     const absl::optional<std::string>&
         direct_from_seller_signals_header_ad_slot) {
   CHECK(!direct_from_seller_signals_header_ad_slot_pending_);
-  if (!direct_from_seller_signals_header_ad_slot) {
+  if (!direct_from_seller_signals_header_ad_slot ||
+      bidding_and_scoring_phase_state_ == PhaseState::kAfter) {
     return;
   }
-  if (started_bidding_and_scoring_phase_) {
+  if (bidding_and_scoring_phase_state_ == PhaseState::kDuring) {
     ++num_scoring_dependencies_;
   }
   direct_from_seller_signals_header_ad_slot_pending_ = true;
@@ -3486,6 +3488,7 @@ void InterestGroupAuction::OnComponentSellerWorkletReceived() {
 }
 
 void InterestGroupAuction::RequestSellerWorklet() {
+  DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "request_seller_worklet",
                                     *trace_id_);
   auction_worklet_manager_->RequestSellerWorklet(
@@ -3500,6 +3503,7 @@ void InterestGroupAuction::RequestSellerWorklet() {
 
 void InterestGroupAuction::OnSellerWorkletReceived() {
   DCHECK(!seller_worklet_received_);
+  DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "request_seller_worklet",
                                   *trace_id_);
@@ -3528,6 +3532,7 @@ void InterestGroupAuction::OnSellerWorkletReceived() {
 }
 
 void InterestGroupAuction::ScoreQueuedBidsIfReady() {
+  DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   if (!ReadyToScoreBids() || unscored_bids_.empty()) {
     return;
   }
@@ -3563,6 +3568,7 @@ void InterestGroupAuction::ScoreQueuedBidsIfReady() {
 }
 
 void InterestGroupAuction::DecodeAdditionalBidsIfReady() {
+  DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   if (encoded_signed_additional_bids_.empty()) {
     return;
   }
@@ -3587,6 +3593,7 @@ void InterestGroupAuction::DecodeAdditionalBidsIfReady() {
 
 void InterestGroupAuction::HandleDecodedSignedAdditionalBid(
     data_decoder::DataDecoder::ValueOrError result) {
+  DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   if (!result.has_value()) {
     errors_.push_back("Unable to parse signed additional bid as JSON: " +
                       result.error());
@@ -3617,6 +3624,7 @@ void InterestGroupAuction::HandleDecodedAdditionalBid(
     const std::vector<SignedAdditionalBidSignature>& signatures,
     const std::vector<size_t>& valid_signatures,
     data_decoder::DataDecoder::ValueOrError result) {
+  DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   if (!result.has_value()) {
     errors_.push_back("Unable to parse additional bid as JSON: " +
                       result.error());
@@ -3668,6 +3676,7 @@ void InterestGroupAuction::HandleDecodedAdditionalBid(
 void InterestGroupAuction::OnSellerWorkletFatalError(
     AuctionWorkletManager::FatalErrorType fatal_error_type,
     const std::vector<std::string>& errors) {
+  DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   AuctionResult result;
   switch (fatal_error_type) {
     case AuctionWorkletManager::FatalErrorType::kScriptLoadFailed:
@@ -3684,6 +3693,7 @@ void InterestGroupAuction::OnSellerWorkletFatalError(
 void InterestGroupAuction::OnComponentAuctionComplete(
     InterestGroupAuction* component_auction,
     bool success) {
+  DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   if (!component_auction->buyer_helpers_.empty() ||
       !component_auction->bid_states_for_additional_bids_.empty()) {
     auction_metrics_recorder_->RecordComponentAuctionLatency(
@@ -3746,6 +3756,7 @@ InterestGroupAuction::CreateBidFromComponentAuctionWinner(
 }
 
 void InterestGroupAuction::OnScoringDependencyDone() {
+  DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   --num_scoring_dependencies_;
 
   // If we issued the final set of bids to a seller worklet, tell it to send any
@@ -3758,6 +3769,7 @@ void InterestGroupAuction::OnScoringDependencyDone() {
 }
 
 void InterestGroupAuction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
+  DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   DCHECK(bid);
   DCHECK(bid->bid_state->made_bid);
 
@@ -3813,6 +3825,7 @@ bool InterestGroupAuction::ValidateScoreBidCompleteResult(
     absl::optional<double> bid_in_seller_currency,
     const absl::optional<GURL>& debug_loss_report_url,
     const absl::optional<GURL>& debug_win_report_url) {
+  DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   // If `debug_loss_report_url` or `debug_win_report_url` is not a valid HTTPS
   // URL, the auction should fail because the worklet is compromised.
   if (debug_loss_report_url.has_value() &&
@@ -3885,6 +3898,7 @@ void InterestGroupAuction::OnScoreAdComplete(
     auction_worklet::mojom::ScoreAdDependencyLatenciesPtr
         score_ad_dependency_latencies,
     const std::vector<std::string>& errors) {
+  DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   DCHECK_GT(bids_being_scored_, 0);
 
   if (!ValidateScoreBidCompleteResult(
@@ -4023,6 +4037,8 @@ void InterestGroupAuction::UpdateAuctionLeaders(
     absl::optional<double> bid_in_seller_currency,
     absl::optional<uint32_t> scoring_signals_data_version,
     LeaderInfo& leader_info) {
+  DCHECK_EQ(bidding_and_scoring_phase_state_,
+            is_server_auction_ ? PhaseState::kBefore : PhaseState::kDuring);
   bool is_top_bid = false;
   const url::Origin& owner = bid->interest_group->owner;
 
@@ -4084,6 +4100,9 @@ void InterestGroupAuction::OnNewHighestScoringOtherBid(
     absl::optional<double> bid_in_seller_currency,
     const url::Origin* owner,
     LeaderInfo& leader_info) {
+  DCHECK_EQ(bidding_and_scoring_phase_state_,
+            is_server_auction_ ? PhaseState::kBefore : PhaseState::kDuring);
+
   // Current (the most recent) bid becomes highest scoring other bid.
   if (score > leader_info.second_highest_score) {
     leader_info.highest_scoring_other_bid = bid_value;
@@ -4123,6 +4142,7 @@ absl::optional<base::TimeDelta> InterestGroupAuction::SellerTimeout() {
 }
 
 void InterestGroupAuction::MaybeCompleteBiddingAndScoringPhase() {
+  DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   if (!IsBiddingAndScoringPhaseComplete()) {
     return;
   }
@@ -4157,6 +4177,9 @@ void InterestGroupAuction::OnBiddingAndScoringComplete(
     const std::vector<std::string>& errors) {
   DCHECK(bidding_and_scoring_phase_callback_);
   DCHECK(!final_auction_result_);
+  DCHECK_EQ(bidding_and_scoring_phase_state_,
+            is_server_auction_ ? PhaseState::kBefore : PhaseState::kDuring);
+  bidding_and_scoring_phase_state_ = PhaseState::kAfter;
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "bidding_and_scoring_phase",
                                   *trace_id_);
@@ -4408,6 +4431,7 @@ void InterestGroupAuction::OnLoadedWinningGroup(
 void InterestGroupAuction::OnDirectFromSellerSignalHeaderAdSlotResolved(
     std::unique_ptr<HeaderDirectFromSellerSignals> signals,
     std::vector<std::string> errors) {
+  DCHECK_NE(bidding_and_scoring_phase_state_, PhaseState::kAfter);
   CHECK(direct_from_seller_signals_header_ad_slot_pending_);
   CHECK(direct_from_seller_signals_header_ad_slot_);
   direct_from_seller_signals_header_ad_slot_ = std::move(signals);
@@ -4415,7 +4439,7 @@ void InterestGroupAuction::OnDirectFromSellerSignalHeaderAdSlotResolved(
 
   direct_from_seller_signals_header_ad_slot_pending_ = false;
 
-  if (started_bidding_and_scoring_phase_) {
+  if (bidding_and_scoring_phase_state_ == PhaseState::kDuring) {
     for (const auto& buyer_helper : buyer_helpers_) {
       buyer_helper->NotifyConfigDependencyResolved();
     }
