@@ -340,7 +340,8 @@ PasswordsPrivateDelegateImpl::GetDeviceAuthenticator(
   }
 
   device_reauth::DeviceAuthParams params(
-      auth_validity_period, device_reauth::DeviceAuthSource::kPasswordManager);
+      auth_validity_period, device_reauth::DeviceAuthSource::kPasswordManager,
+      "PasswordManager.ReauthToAccessPasswordInSettings");
 
   return ChromeDeviceAuthenticatorFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents->GetBrowserContext()), params);

@@ -83,7 +83,8 @@ DeviceAuthenticatorAndroid::DeviceAuthenticatorAndroid(
     DeviceAuthenticatorProxy* proxy,
     const device_reauth::DeviceAuthParams& params)
     : ChromeDeviceAuthenticatorCommon(proxy,
-                                      params.GetAuthenticationValidityPeriod()),
+                                      params.GetAuthenticationValidityPeriod(),
+                                      params.GetAuthResultHistogram()),
       bridge_(std::move(bridge)),
       source_(params.GetDeviceAuthSource()) {}
 

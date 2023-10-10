@@ -15,7 +15,8 @@ class ChromeDeviceAuthenticatorCommon
     : public device_reauth::DeviceAuthenticator {
  public:
   ChromeDeviceAuthenticatorCommon(DeviceAuthenticatorProxy* proxy,
-                                  base::TimeDelta auth_validity_period);
+                                  base::TimeDelta auth_validity_period,
+                                  const std::string& auth_result_histogram);
 
  protected:
   ~ChromeDeviceAuthenticatorCommon() override;
@@ -26,6 +27,9 @@ class ChromeDeviceAuthenticatorCommon
   // Records the authentication time if the authentication was successful.
   void RecordAuthenticationTimeIfSuccessful(bool success);
 
+  // Records ReauthResult::kSkipped for the `auth_result_histogram_` metric.
+  void RecordAuthResultSkipped();
+
  private:
   // Used to obtain/update the last successful authentication timestamp.
   base::WeakPtr<DeviceAuthenticatorProxy> device_authenticator_proxy_;
@@ -33,6 +37,10 @@ class ChromeDeviceAuthenticatorCommon
   // Used to calculate how much time needs to pass before the user needs to
   // authenticate again.
   base::TimeDelta auth_validity_period_;
+
+  // Used to record histograms compatible with the metrics_util::ReauthResult
+  // enum.
+  std::string auth_result_histogram_;
 };
 
 #endif  // CHROME_BROWSER_DEVICE_REAUTH_CHROME_DEVICE_AUTHENTICATOR_COMMON_H_

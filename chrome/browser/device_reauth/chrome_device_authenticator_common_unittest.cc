@@ -24,9 +24,8 @@ class FakeChromeDeviceAuthenticatorCommon
   using ChromeDeviceAuthenticatorCommon::NeedsToAuthenticate;
   using ChromeDeviceAuthenticatorCommon::RecordAuthenticationTimeIfSuccessful;
 
-  explicit FakeChromeDeviceAuthenticatorCommon(
-      DeviceAuthenticatorProxy* proxy,
-      base::TimeDelta auth_validity_period);
+  FakeChromeDeviceAuthenticatorCommon(DeviceAuthenticatorProxy* proxy,
+                                      base::TimeDelta auth_validity_period);
   ~FakeChromeDeviceAuthenticatorCommon() override;
 
   bool CanAuthenticateWithBiometrics() override;
@@ -44,7 +43,7 @@ class FakeChromeDeviceAuthenticatorCommon
 FakeChromeDeviceAuthenticatorCommon::FakeChromeDeviceAuthenticatorCommon(
     DeviceAuthenticatorProxy* proxy,
     base::TimeDelta auth_validity_period)
-    : ChromeDeviceAuthenticatorCommon(proxy, auth_validity_period) {}
+    : ChromeDeviceAuthenticatorCommon(proxy, auth_validity_period, "") {}
 
 FakeChromeDeviceAuthenticatorCommon::~FakeChromeDeviceAuthenticatorCommon() =
     default;

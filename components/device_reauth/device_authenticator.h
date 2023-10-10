@@ -31,8 +31,11 @@ enum class DeviceAuthSource {
 class DeviceAuthParams {
  public:
   DeviceAuthParams(base::TimeDelta auth_validity_period,
-                   device_reauth::DeviceAuthSource source)
-      : auth_validity_period_(auth_validity_period), source_(source) {}
+                   device_reauth::DeviceAuthSource source,
+                   std::string auth_result_histogram = std::string())
+      : auth_validity_period_(auth_validity_period),
+        source_(source),
+        auth_result_histogram_(auth_result_histogram) {}
 
   base::TimeDelta GetAuthenticationValidityPeriod() const {
     return auth_validity_period_;
@@ -40,10 +43,16 @@ class DeviceAuthParams {
   device_reauth::DeviceAuthSource GetDeviceAuthSource() const {
     return source_;
   }
+  const std::string& GetAuthResultHistogram() const {
+    return auth_result_histogram_;
+  }
 
  private:
   base::TimeDelta auth_validity_period_;
   device_reauth::DeviceAuthSource source_;
+  // This histogram should be compatible with the metrics_util::ReauthResult
+  // enum.
+  std::string auth_result_histogram_;
 };
 
 // This interface encapsulates operations related to biometric authentication.

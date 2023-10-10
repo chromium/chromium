@@ -1706,36 +1706,6 @@ TEST_F(PasswordsPrivateDelegateImplTest, ShareNonExistentPassword) {
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-TEST_F(PasswordsPrivateDelegateImplTest, RecordSuccessAuthHistogram) {
-  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  auto delegate = CreateDelegate();
-
-  ExpectAuthentication(delegate, /*successful=*/true);
-
-  MockRequestCredentialsDetailsCallback callback;
-  EXPECT_CALL(callback, Run(testing::IsEmpty()));
-  delegate->RequestCredentialsDetails({0}, callback.Get(), web_contents.get());
-
-  histogram_tester().ExpectBucketCount(
-      "PasswordManager.ReauthToAccessPasswordInSettings",
-      ReauthResult::kSuccess, 1);
-}
-
-TEST_F(PasswordsPrivateDelegateImplTest, RecordFailAuthHistogram) {
-  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  auto delegate = CreateDelegate();
-
-  ExpectAuthentication(delegate, /*successful=*/false);
-
-  MockRequestCredentialsDetailsCallback callback;
-  EXPECT_CALL(callback, Run(testing::IsEmpty()));
-  delegate->RequestCredentialsDetails({0}, callback.Get(), web_contents.get());
-
-  histogram_tester().ExpectBucketCount(
-      "PasswordManager.ReauthToAccessPasswordInSettings",
-      ReauthResult::kFailure, 1);
-}
-
 class PasswordsPrivateDelegateImplMockTaskEnvironmentTest
     : public testing::Test {
  public:

@@ -40,7 +40,8 @@ DeviceAuthenticatorWin::DeviceAuthenticatorWin(
     DeviceAuthenticatorProxy* proxy,
     const device_reauth::DeviceAuthParams& params)
     : ChromeDeviceAuthenticatorCommon(proxy,
-                                      params.GetAuthenticationValidityPeriod()),
+                                      params.GetAuthenticationValidityPeriod(),
+                                      params.GetAuthResultHistogram()),
       authenticator_(std::move(authenticator)) {}
 
 DeviceAuthenticatorWin::~DeviceAuthenticatorWin() = default;
@@ -62,6 +63,8 @@ void DeviceAuthenticatorWin::AuthenticateWithMessage(
     const std::u16string& message,
     AuthenticateCallback callback) {
   if (!NeedsToAuthenticate()) {
+    RecordAuthResultSkipped();
+
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true));
     return;

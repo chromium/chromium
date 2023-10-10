@@ -25,7 +25,8 @@ DeviceAuthenticatorMac::DeviceAuthenticatorMac(
     DeviceAuthenticatorProxy* proxy,
     const device_reauth::DeviceAuthParams& params)
     : ChromeDeviceAuthenticatorCommon(proxy,
-                                      params.GetAuthenticationValidityPeriod()),
+                                      params.GetAuthenticationValidityPeriod(),
+                                      params.GetAuthResultHistogram()),
       authenticator_(std::move(authenticator)) {}
 
 DeviceAuthenticatorMac::~DeviceAuthenticatorMac() = default;
@@ -74,6 +75,7 @@ void DeviceAuthenticatorMac::AuthenticateWithMessage(
   // Callers must ensure that previous authentication is canceled.
   DCHECK(!callback_);
   if (!NeedsToAuthenticate()) {
+    RecordAuthResultSkipped();
     // No code should be run after the callback as the callback could already be
     // destroying "this".
     std::move(callback).Run(/*success=*/true);

@@ -6,6 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/device_reauth/mac/authenticator_mac.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "device/fido/mac/scoped_touch_id_test_environment.h"
 #include "device/fido/mac/touch_id_context.h"
@@ -22,8 +24,11 @@ namespace {
 
 using MockAuthResultCallback =
     base::MockCallback<DeviceAuthenticatorMac::AuthenticateCallback>;
+using password_manager::metrics_util::ReauthResult;
 
 constexpr base::TimeDelta kAuthValidityPeriod = base::Seconds(60);
+constexpr char kHistogramName[] =
+    "PasswordManager.ReauthToAccessPasswordInSettings";
 
 }  // namespace
 
@@ -46,7 +51,8 @@ class DeviceAuthenticatorMacTest
       : testing_local_state_(TestingBrowserProcess::GetGlobal()),
         device_authenticator_params_(
             kAuthValidityPeriod,
-            device_reauth::DeviceAuthSource::kPasswordManager) {
+            device_reauth::DeviceAuthSource::kPasswordManager,
+            kHistogramName) {
     std::unique_ptr<MockSystemAuthenticator> system_authenticator =
         std::make_unique<MockSystemAuthenticator>();
     system_authenticator_ = system_authenticator.get();
@@ -98,6 +104,8 @@ class DeviceAuthenticatorMacTest
 
   MockAuthResultCallback& result_callback() { return result_callback_; }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   DeviceAuthenticatorProxy proxy_;
   base::test::TaskEnvironment task_environment_{
@@ -111,6 +119,7 @@ class DeviceAuthenticatorMacTest
   device::fido::mac::ScopedTouchIdTestEnvironment touch_id_test_environment_{
       config_};
   MockAuthResultCallback result_callback_;
+  base::HistogramTester histogram_tester_;
 
   // This is owned by the authenticator.
   raw_ptr<MockSystemAuthenticator> system_authenticator_ = nullptr;
@@ -225,6 +234,40 @@ TEST_P(DeviceAuthenticatorMacTest,
   EXPECT_EQ(is_biometric_available(),
             local_state().Get()->GetBoolean(
                 password_manager::prefs::kHadBiometricsAvailable));
+}
+
+TEST_P(DeviceAuthenticatorMacTest, RecordSuccessAuthHistogram) {
+  SimulateReauthSuccess();
+
+  authenticator()->AuthenticateWithMessage(
+      /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
+
+  histogram_tester().ExpectUniqueSample(kHistogramName, ReauthResult::kSuccess,
+                                        1);
+}
+
+TEST_P(DeviceAuthenticatorMacTest, RecordSkippedAuthHistogram) {
+  SimulateReauthSuccess();
+
+  authenticator()->AuthenticateWithMessage(
+      /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
+  authenticator()->AuthenticateWithMessage(
+      /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
+
+  histogram_tester().ExpectBucketCount(kHistogramName, ReauthResult::kSuccess,
+                                       1);
+  histogram_tester().ExpectBucketCount(kHistogramName, ReauthResult::kSkipped,
+                                       1);
+}
+
+TEST_P(DeviceAuthenticatorMacTest, RecordFailAuthHistogram) {
+  SimulateReauthFailure();
+
+  authenticator()->AuthenticateWithMessage(
+      /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
+
+  histogram_tester().ExpectUniqueSample(kHistogramName, ReauthResult::kFailure,
+                                        1);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

@@ -11,14 +11,10 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/base/features.h"
 
 namespace password_manager {
-
-using metrics_util::LogPasswordSettingsReauthResult;
-using metrics_util::ReauthResult;
 
 PasswordAccessAuthTimeoutHandler::PasswordAccessAuthTimeoutHandler() = default;
 
@@ -49,10 +45,6 @@ void PasswordAccessAuthTimeoutHandler::OnUserReauthenticationResult(
     timeout_timer_.Start(FROM_HERE, GetAuthValidityPeriod(),
                          base::BindRepeating(timeout_call_));
   }
-  // TODO(crbug.com/1476842): Replace this metric with one which has only 2
-  // buckets.
-  LogPasswordSettingsReauthResult(authenticated ? ReauthResult::kSuccess
-                                                : ReauthResult::kFailure);
 }
 
 }  // namespace password_manager

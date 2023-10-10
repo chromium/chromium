@@ -7,15 +7,18 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
 using device_reauth::DeviceAuthenticator;
+using password_manager::metrics_util::ReauthResult;
 
 class MockSystemAuthenticator : public AuthenticatorChromeOSInterface {
  public:
@@ -26,6 +29,8 @@ class MockSystemAuthenticator : public AuthenticatorChromeOSInterface {
 };
 
 constexpr base::TimeDelta kAuthValidityPeriod = base::Seconds(60);
+constexpr char kHistogramName[] =
+    "PasswordManager.ReauthToAccessPasswordInSettings";
 
 }  // namespace
 
@@ -34,7 +39,8 @@ class DeviceAuthenticatorChromeOSTest : public testing::Test {
   DeviceAuthenticatorChromeOSTest()
       : device_authenticator_params_(
             kAuthValidityPeriod,
-            device_reauth::DeviceAuthSource::kPasswordManager) {}
+            device_reauth::DeviceAuthSource::kPasswordManager,
+            kHistogramName) {}
   void SetUp() override {
     std::unique_ptr<MockSystemAuthenticator> system_authenticator =
         std::make_unique<MockSystemAuthenticator>();
@@ -51,6 +57,8 @@ class DeviceAuthenticatorChromeOSTest : public testing::Test {
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
   void ExpectAuthenticationAndSetResult(bool result) {
     EXPECT_CALL(system_authenticator(), AuthenticateUser)
         .WillOnce(testing::WithArg<0>([result](auto callback) {
@@ -66,6 +74,7 @@ class DeviceAuthenticatorChromeOSTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<DeviceAuthenticatorChromeOS> authenticator_;
+  base::HistogramTester histogram_tester_;
 
   // This is owned by the authenticator.
   raw_ptr<MockSystemAuthenticator> system_authenticator_ = nullptr;
@@ -131,4 +140,42 @@ TEST_F(DeviceAuthenticatorChromeOSTest, ReauthenticationIfPreviousFailed) {
       result_callback.Get());
 
   task_environment().RunUntilIdle();
+}
+
+TEST_F(DeviceAuthenticatorChromeOSTest, RecordSuccessAuthHistogram) {
+  ExpectAuthenticationAndSetResult(true);
+
+  authenticator()->AuthenticateWithMessage(
+      /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
+  task_environment().RunUntilIdle();
+
+  histogram_tester().ExpectUniqueSample(kHistogramName, ReauthResult::kSuccess,
+                                        1);
+}
+
+TEST_F(DeviceAuthenticatorChromeOSTest, RecordSkippedAuthHistogram) {
+  ExpectAuthenticationAndSetResult(true);
+
+  authenticator()->AuthenticateWithMessage(
+      /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
+  task_environment().RunUntilIdle();
+  authenticator()->AuthenticateWithMessage(
+      /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
+  task_environment().RunUntilIdle();
+
+  histogram_tester().ExpectBucketCount(kHistogramName, ReauthResult::kSuccess,
+                                       1);
+  histogram_tester().ExpectBucketCount(kHistogramName, ReauthResult::kSkipped,
+                                       1);
+}
+
+TEST_F(DeviceAuthenticatorChromeOSTest, RecordFailAuthHistogram) {
+  ExpectAuthenticationAndSetResult(false);
+
+  authenticator()->AuthenticateWithMessage(
+      /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
+  task_environment().RunUntilIdle();
+
+  histogram_tester().ExpectUniqueSample(kHistogramName, ReauthResult::kFailure,
+                                        1);
 }

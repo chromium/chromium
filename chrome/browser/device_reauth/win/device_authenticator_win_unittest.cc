@@ -4,9 +4,6 @@
 
 #include "chrome/browser/device_reauth/win/device_authenticator_win.h"
 
-#include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
-
 #include <memory>
 #include <string>
 #include <utility>
@@ -18,9 +15,11 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,10 +27,13 @@
 namespace {
 
 using device_reauth::DeviceAuthenticator;
+using password_manager::metrics_util::ReauthResult;
 using testing::_;
 using testing::Return;
 
 constexpr base::TimeDelta kAuthValidityPeriod = base::Seconds(60);
+constexpr char kHistogramName[] =
+    "PasswordManager.ReauthToAccessPasswordInSettings";
 
 class MockSystemAuthenticator : public AuthenticatorWinInterface {
  public:
@@ -53,7 +55,8 @@ class DeviceAuthenticatorWinTest : public testing::Test {
       : testing_local_state_(TestingBrowserProcess::GetGlobal()),
         device_authenticator_params_(
             kAuthValidityPeriod,
-            device_reauth::DeviceAuthSource::kPasswordManager) {}
+            device_reauth::DeviceAuthSource::kPasswordManager,
+            kHistogramName) {}
   void SetUp() override {
     std::unique_ptr<MockSystemAuthenticator> system_authenticator =
         std::make_unique<MockSystemAuthenticator>();
@@ -72,6 +75,8 @@ class DeviceAuthenticatorWinTest : public testing::Test {
 
   ScopedTestingLocalState& local_state() { return testing_local_state_; }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
   void ExpectAuthenticationAndSetResult(bool result) {
     EXPECT_CALL(system_authenticator(), AuthenticateUser)
         .WillOnce(testing::WithArg<1>([result](auto callback) {
@@ -88,6 +93,7 @@ class DeviceAuthenticatorWinTest : public testing::Test {
   std::unique_ptr<DeviceAuthenticatorWin> authenticator_;
   ScopedTestingLocalState testing_local_state_;
   device_reauth::DeviceAuthParams device_authenticator_params_;
+  base::HistogramTester histogram_tester_;
 
   // This is owned by the authenticator.
   raw_ptr<MockSystemAuthenticator> system_authenticator_ = nullptr;
@@ -184,6 +190,44 @@ TEST_F(DeviceAuthenticatorWinTest, CanAuthenticateWithBiometricOrScreenLock) {
   EXPECT_FALSE(authenticator()->CanAuthenticateWithBiometricOrScreenLock());
 }
 
+TEST_F(DeviceAuthenticatorWinTest, RecordSuccessAuthHistogram) {
+  ExpectAuthenticationAndSetResult(true);
+
+  authenticator()->AuthenticateWithMessage(
+      /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
+  task_environment().RunUntilIdle();
+
+  histogram_tester().ExpectUniqueSample(kHistogramName, ReauthResult::kSuccess,
+                                        1);
+}
+
+TEST_F(DeviceAuthenticatorWinTest, RecordSkippedAuthHistogram) {
+  ExpectAuthenticationAndSetResult(true);
+
+  authenticator()->AuthenticateWithMessage(
+      /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
+  task_environment().RunUntilIdle();
+  authenticator()->AuthenticateWithMessage(
+      /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
+  task_environment().RunUntilIdle();
+
+  histogram_tester().ExpectBucketCount(kHistogramName, ReauthResult::kSuccess,
+                                       1);
+  histogram_tester().ExpectBucketCount(kHistogramName, ReauthResult::kSkipped,
+                                       1);
+}
+
+TEST_F(DeviceAuthenticatorWinTest, RecordFailAuthHistogram) {
+  ExpectAuthenticationAndSetResult(false);
+
+  authenticator()->AuthenticateWithMessage(
+      /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
+  task_environment().RunUntilIdle();
+
+  histogram_tester().ExpectUniqueSample(kHistogramName, ReauthResult::kFailure,
+                                        1);
+}
+
 // Verifies that the caching mechanism for BiometricsAvailable works.
 struct TestCase {
   const char* description;
@@ -197,7 +241,6 @@ class DeviceAuthenticatorWinTestAvailability
       public testing::WithParamInterface<TestCase> {};
 
 TEST_P(DeviceAuthenticatorWinTestAvailability, AvailabilityCheck) {
-  base::HistogramTester histogram_tester;
   TestCase test_case = GetParam();
   SCOPED_TRACE(test_case.description);
   EXPECT_CALL(system_authenticator(), CheckIfBiometricsAvailable)
@@ -212,7 +255,7 @@ TEST_P(DeviceAuthenticatorWinTestAvailability, AvailabilityCheck) {
   EXPECT_EQ(test_case.expected_result,
             local_state().Get()->GetBoolean(
                 password_manager::prefs::kHadBiometricsAvailable));
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "PasswordManager.BiometricAvailabilityWin", test_case.expected_bucket, 1);
 }
 
