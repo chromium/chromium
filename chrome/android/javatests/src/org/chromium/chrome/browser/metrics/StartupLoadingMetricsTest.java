@@ -176,7 +176,21 @@ public class StartupLoadingMetricsTest {
     }
 
     /**
-     * Tests that the startup loading histograms are recorded only once on startup.
+     * Tests that the startup loading histograms are recorded only once on startup. Tabbed Activity
+     * version.
+     */
+    @Test
+    @LargeTest
+    public void testStartWithURLRecorded() throws Exception {
+        runAndWaitForPageLoadMetricsRecorded(
+                () -> mTabbedActivityTestRule.startMainActivityWithURL(getTestPage()));
+        assertHistogramsRecordedAsExpected(1, TABBED_SUFFIX);
+        loadUrlAndWaitForPageLoadMetricsRecorded(mTabbedActivityTestRule, getTestPage2());
+        assertHistogramsRecordedAsExpected(1, TABBED_SUFFIX);
+    }
+
+    /**
+     * Tests that the startup loading histograms are recorded only once on startup. WebAPK version.
      */
     @Test
     @LargeTest
