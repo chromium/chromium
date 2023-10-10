@@ -34,7 +34,6 @@ bool StatelessDevice::CheckCapabilities(VideoCodec codec) {
   struct v4l2_capability caps;
   const __u32 kCapsRequired = V4L2_CAP_VIDEO_M2M_MPLANE | V4L2_CAP_STREAMING;
   if (IoctlDevice(VIDIOC_QUERYCAP, &caps) != kIoctlOk) {
-    VPLOGF(1) << "VIDIOC_QUERYCAP failed.";
     return false;
   }
 
@@ -51,7 +50,6 @@ bool StatelessDevice::CheckCapabilities(VideoCodec codec) {
   reqbufs.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
   reqbufs.memory = V4L2_MEMORY_MMAP;
   if (IoctlDevice(VIDIOC_REQBUFS, &reqbufs) != kIoctlOk) {
-    VPLOGF(1) << "VIDIOC_REQBUFS failed.";
     return false;
   }
 
@@ -71,7 +69,7 @@ bool StatelessDevice::IsCompressedVP9HeaderSupported() {
   memset(&query_ctrl, 0, sizeof(query_ctrl));
   query_ctrl.id = V4L2_CID_STATELESS_VP9_COMPRESSED_HDR;
 
-  return IoctlDevice(VIDIOC_QUERYCTRL, &query_ctrl) == 0;
+  return (IoctlDevice(VIDIOC_QUERYCTRL, &query_ctrl) == kIoctlOk);
 }
 
 StatelessDevice::~StatelessDevice() {}

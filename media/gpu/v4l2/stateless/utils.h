@@ -11,5 +11,6 @@
 namespace media {
 VideoDecodeAccelerator::SupportedProfiles GetSupportedDecodeProfiles(
     Device* device);
+std::string IoctlToString(uint64_t request);
 }  // namespace media
 #endif  // MEDIA_GPU_V4L2_STATELESS_UTILS_H_
