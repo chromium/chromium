@@ -211,7 +211,6 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
       defined(__mips__)
     case __NR_getsockopt:
     case __NR_connect:
-    case __NR_socket:
 #endif
 
       override_and_allow = true;
