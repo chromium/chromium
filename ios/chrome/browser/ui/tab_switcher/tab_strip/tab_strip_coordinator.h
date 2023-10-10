@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 class Browser;
-@protocol TabStripContaining;
 @class TabStripViewController;
 
 // Coordinator for the tab strip.
@@ -23,9 +22,6 @@ class Browser;
 
 // The TabStrip view controller owned by this coordinator.
 @property(nonatomic, strong, readonly) UIViewController* viewController;
-
-// The TabStrip view owned by the viewcontroller of this coordinator.
-@property(nonatomic, strong, readonly) UIView<TabStripContaining>* view;
 
 // Hides or shows the tab strip.
 - (void)hideTabStrip:(BOOL)hidden;

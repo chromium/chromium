@@ -66,7 +66,6 @@
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_presentation.h"
 #import "ios/chrome/browser/ui/tabs/switch_to_tab_animation_view.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_constants.h"
-#import "ios/chrome/browser/ui/tabs/tab_strip_containing.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator.h"
@@ -272,7 +271,7 @@ enum HeaderBehaviour {
 // Coordinator for the new tablet tab strip.
 @property(nonatomic, strong) TabStripCoordinator* tabStripCoordinator;
 // A weak reference to the view of the tab strip on tablet.
-@property(nonatomic, weak) UIView<TabStripContaining>* tabStripView;
+@property(nonatomic, weak) UIView* tabStripView;
 
 // Returns the header views, all the chrome on top of the page, including the
 // ones that cannot be scrolled off screen by full screen.
@@ -1500,9 +1499,12 @@ enum HeaderBehaviour {
     if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
       if (base::FeatureList::IsEnabled(kModernTabStrip) &&
           self.tabStripCoordinator) {
-        [self addChildViewController:self.tabStripCoordinator.viewController];
-        self.tabStripView = self.tabStripCoordinator.view;
+        UIViewController* tabStripViewController =
+            self.tabStripCoordinator.viewController;
+        [self addChildViewController:tabStripViewController];
+        self.tabStripView = tabStripViewController.view;
         [self.view addSubview:self.tabStripView];
+        [tabStripViewController didMoveToParentViewController:self];
         [self addConstraintsToTabStrip];
       }
       [self.view insertSubview:primaryToolbarView
@@ -2539,7 +2541,7 @@ enum HeaderBehaviour {
   return ([self currentHeaderOffset] == 0.0f);
 }
 
-- (void)showTabStripView:(UIView<TabStripContaining>*)tabStripView {
+- (void)showTabStripView:(UIView*)tabStripView {
   DCHECK([self isViewLoaded]);
   DCHECK(tabStripView);
   self.tabStripView = tabStripView;

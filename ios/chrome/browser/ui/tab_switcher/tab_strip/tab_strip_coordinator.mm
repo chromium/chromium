@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_view_controller.h"
 
-@protocol TabStripContaining;
 
 @interface TabStripCoordinator ()
 
@@ -62,10 +61,6 @@
 
 - (UIViewController*)viewController {
   return self.tabStripViewController;
-}
-
-- (UIView<TabStripContaining>*)view {
-  return static_cast<UIView<TabStripContaining>*>(self.viewController.view);
 }
 
 #pragma mark - Public

@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_constants.h"
 
-@protocol TabStripContaining;
 @protocol TabStripPresentation;
 @class ViewRevealingVerticalPanHandler;
 class Browser;
@@ -22,7 +21,7 @@ class Browser;
 @interface TabStripController : NSObject
 
 @property(nonatomic, assign) BOOL highlightsSelectedTab;
-@property(nonatomic, readonly, strong) UIView<TabStripContaining>* view;
+@property(nonatomic, readonly, strong) UIView* view;
 
 // The duration to wait before starting tab strip animations. Used to
 // synchronize animations.
