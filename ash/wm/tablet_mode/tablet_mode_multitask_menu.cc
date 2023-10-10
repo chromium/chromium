@@ -309,48 +309,19 @@ void TabletModeMultitaskMenu::UpdateDrag(float current_y, bool down) {
     return;
   }
 
-  // TODO(b/290102602): Clean this up when bug is resolved.
-  // Logging current tablet state.
-  display::TabletState tablet_state = chromeos::TabletState::Get()->state();
-  switch (tablet_state) {
-    case display::TabletState::kInTabletMode: {
-      SCOPED_CRASH_KEY_STRING32("Bug290102602", "tablet-state",
-                                "kInTabletMode");
-      break;
-    }
-    case display::TabletState::kInClamshellMode: {
-      SCOPED_CRASH_KEY_STRING32("Bug290102602", "tablet-state",
-                                "kInClamshellMode");
-      break;
-    }
-    case display::TabletState::kEnteringTabletMode: {
-      SCOPED_CRASH_KEY_STRING32("Bug290102602", "tablet-state",
-                                "kEnteringTabletMode");
-      break;
-    }
-    case display::TabletState::kExitingTabletMode: {
-      SCOPED_CRASH_KEY_STRING32("Bug290102602", "tablet-state",
-                                "kExitingTabletMode");
-      break;
-    }
+  ui::Layer* menu_layer = menu_view_->layer();
+  ui::LayerAnimator* animator = menu_layer->GetAnimator();
+  if (animator->IsAnimatingOnePropertyOf(
+          ui::LayerAnimationElement::TRANSFORM)) {
+    // Calling `SetTransform()` with the same target transform can end an
+    // ongoing animation and destroy `this`. Abort the animation (not stop
+    // which will call `AnimationBuilder::OnEnded()`).
+    animator->AbortAllAnimations();
   }
 
-  // Logging whether we are in shutdown.
-  SCOPED_CRASH_KEY_BOOL("Bug290102602", "tablet-mode-controller",
-                        !!Shell::Get()->tablet_mode_controller());
-  SCOPED_CRASH_KEY_BOOL(
-      "Bug290102602", "tablet-window-manager",
-      !!Shell::Get()->tablet_mode_controller()->tablet_mode_window_manager());
-
   const float translation_y = current_y - initial_y_;
-  menu_view_->layer()->SetTransform(
-      gfx::Transform::MakeTranslation(0, translation_y));
-  CHECK(controller_);
-  // Logging pointer references.
-  SCOPED_CRASH_KEY_BOOL("Bug290102602", "cue-controller-ref",
-                        !!controller_->multitask_cue_controller());
-  SCOPED_CRASH_KEY_BOOL("Bug290102602", "cue-layer-ref",
-                        !!controller_->multitask_cue_controller()->cue_layer());
+  menu_layer->SetTransform(gfx::Transform::MakeTranslation(0, translation_y));
+
   if (auto* cue_layer = controller_->multitask_cue_controller()->cue_layer()) {
     cue_layer->SetTransform(gfx::Transform::MakeTranslation(
         0, menu_view_->GetPreferredSize().height() + kVerticalPosition +
