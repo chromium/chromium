@@ -72,7 +72,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
-  [IntentDonationHelper donateIntent:DonatedIntentType::kSetDefaultBrowser];
+  [IntentDonationHelper donateIntent:IntentType::kSetDefaultBrowser];
 }
 
 #pragma mark - ChromeTableViewController

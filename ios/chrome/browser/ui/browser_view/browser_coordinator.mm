@@ -1606,7 +1606,7 @@ enum class ToolbarKind {
 }
 
 - (void)showBookmarksManager {
-  [IntentDonationHelper donateIntent:DonatedIntentType::kOpenBookmarks];
+  [IntentDonationHelper donateIntent:IntentType::kOpenBookmarks];
   [_bookmarksCoordinator presentBookmarks];
 }
 
@@ -1633,7 +1633,7 @@ enum class ToolbarKind {
 }
 
 - (void)showRecentTabs {
-  [IntentDonationHelper donateIntent:DonatedIntentType::kOpenRecentTabs];
+  [IntentDonationHelper donateIntent:IntentType::kOpenRecentTabs];
 
   // TODO(crbug.com/825431): If BVC's clearPresentedState is ever called (such
   // as in tearDown after a failed egtest), then this coordinator is left in a

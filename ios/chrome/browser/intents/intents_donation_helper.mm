@@ -28,9 +28,9 @@
 
 @implementation IntentDonationHelper
 
-+ (void)donateIntent:(DonatedIntentType)intentType {
++ (void)donateIntent:(IntentType)intentType {
   if (!base::FeatureList::IsEnabled(kSpotlightDonateNewIntents) &&
-      intentType != DonatedIntentType::kSearchInChrome) {
+      intentType != IntentType::kSearchInChrome) {
     return;
   }
 
@@ -44,9 +44,9 @@
       }));
 }
 
-+ (INInteraction*)interactionForIntentType:(DonatedIntentType)intentType {
++ (INInteraction*)interactionForIntentType:(IntentType)intentType {
   switch (intentType) {
-    case DonatedIntentType::kSearchInChrome: {
+    case IntentType::kSearchInChrome: {
       SearchInChromeIntent* searchInChromeIntent =
           [[SearchInChromeIntent alloc] init];
 
@@ -62,7 +62,7 @@
                                        response:nil];
       return interaction;
     }
-    case DonatedIntentType::kOpenReadingList: {
+    case IntentType::kOpenReadingList: {
       OpenReadingListIntent* openReadingListIntent =
           [[OpenReadingListIntent alloc] init];
       openReadingListIntent.suggestedInvocationPhrase =
@@ -72,7 +72,7 @@
                                        response:nil];
       return interaction;
     }
-    case DonatedIntentType::kOpenBookmarks: {
+    case IntentType::kOpenBookmarks: {
       OpenBookmarksIntent* openBookmarksIntent =
           [[OpenBookmarksIntent alloc] init];
       openBookmarksIntent.suggestedInvocationPhrase =
@@ -82,7 +82,7 @@
                                        response:nil];
       return interaction;
     }
-    case DonatedIntentType::kOpenRecentTabs: {
+    case IntentType::kOpenRecentTabs: {
       OpenRecentTabsIntent* openRecentTabsIntent =
           [[OpenRecentTabsIntent alloc] init];
       openRecentTabsIntent.suggestedInvocationPhrase =
@@ -92,7 +92,7 @@
                                        response:nil];
       return interaction;
     }
-    case DonatedIntentType::kOpenTabGrid: {
+    case IntentType::kOpenTabGrid: {
       OpenTabGridIntent* openTabGridIntent = [[OpenTabGridIntent alloc] init];
       openTabGridIntent.suggestedInvocationPhrase =
           l10n_util::GetNSString(IDS_IOS_INTENTS_OPEN_TAB_GRID_TITLE);
@@ -100,7 +100,7 @@
           [[INInteraction alloc] initWithIntent:openTabGridIntent response:nil];
       return interaction;
     }
-    case DonatedIntentType::kOpenVoiceSearch: {
+    case IntentType::kOpenVoiceSearch: {
       SearchWithVoiceIntent* searchWithVoiceIntent =
           [[SearchWithVoiceIntent alloc] init];
       searchWithVoiceIntent.suggestedInvocationPhrase =
@@ -110,7 +110,7 @@
                                        response:nil];
       return interaction;
     }
-    case DonatedIntentType::kOpenNewTab: {
+    case IntentType::kOpenNewTab: {
       OpenNewTabIntent* openNewTabIntent = [[OpenNewTabIntent alloc] init];
       openNewTabIntent.suggestedInvocationPhrase =
           l10n_util::GetNSString(IDS_IOS_INTENTS_OPEN_NEW_TAB_TITLE);
@@ -118,7 +118,7 @@
           [[INInteraction alloc] initWithIntent:openNewTabIntent response:nil];
       return interaction;
     }
-    case DonatedIntentType::kPlayDinoGame: {
+    case IntentType::kPlayDinoGame: {
       PlayDinoGameIntent* playDinoGameIntent =
           [[PlayDinoGameIntent alloc] init];
       playDinoGameIntent.suggestedInvocationPhrase =
@@ -128,7 +128,7 @@
                                        response:nil];
       return interaction;
     }
-    case DonatedIntentType::kSetDefaultBrowser: {
+    case IntentType::kSetDefaultBrowser: {
       SetChromeDefaultBrowserIntent* setChromeDefaultBrowserIntent =
           [[SetChromeDefaultBrowserIntent alloc] init];
       setChromeDefaultBrowserIntent.suggestedInvocationPhrase =
@@ -139,7 +139,7 @@
                                        response:nil];
       return interaction;
     }
-    case DonatedIntentType::kViewHistory: {
+    case IntentType::kViewHistory: {
       ViewHistoryIntent* viewHistoryIntent = [[ViewHistoryIntent alloc] init];
       viewHistoryIntent.suggestedInvocationPhrase =
           l10n_util::GetNSString(IDS_IOS_INTENTS_VIEW_CHROME_HISTORY_TITLE);
@@ -147,7 +147,7 @@
           [[INInteraction alloc] initWithIntent:viewHistoryIntent response:nil];
       return interaction;
     }
-    case DonatedIntentType::kOpenLatestTab: {
+    case IntentType::kOpenLatestTab: {
       OpenLatestTabIntent* intent = [[OpenLatestTabIntent alloc] init];
       intent.suggestedInvocationPhrase =
           l10n_util::GetNSString(IDS_IOS_INTENTS_OPEN_LATEST_TAB_TITLE);
@@ -155,7 +155,7 @@
                                                                 response:nil];
       return interaction;
     }
-    case DonatedIntentType::kStartLens: {
+    case IntentType::kStartLens: {
       OpenLensIntent* intent = [[OpenLensIntent alloc] init];
       intent.suggestedInvocationPhrase =
           l10n_util::GetNSString(IDS_IOS_INTENTS_OPEN_LENS_TITLE);
@@ -163,7 +163,7 @@
                                                                 response:nil];
       return interaction;
     }
-    case DonatedIntentType::kClearBrowsingData: {
+    case IntentType::kClearBrowsingData: {
       ClearBrowsingDataIntent* intent = [[ClearBrowsingDataIntent alloc] init];
       intent.suggestedInvocationPhrase =
           l10n_util::GetNSString(IDS_IOS_INTENTS_CLEAR_BROWSING_DATA_TITLE);

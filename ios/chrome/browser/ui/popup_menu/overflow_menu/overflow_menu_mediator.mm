@@ -2074,7 +2074,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     _engagementTracker->NotifyEvent(
         feature_engagement::events::kHistoryOnOverflowMenuUsed);
   }
-  [IntentDonationHelper donateIntent:DonatedIntentType::kViewHistory];
+  [IntentDonationHelper donateIntent:IntentType::kViewHistory];
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
   [self.dispatcher showHistory];
 }

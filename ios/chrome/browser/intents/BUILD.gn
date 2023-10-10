@@ -11,8 +11,13 @@ source_set("intents_donation_helper") {
     "//ios/chrome/common/intents",
     "//ui/base",
   ]
+  public_deps = [ ":intent_type" ]
   frameworks = [
     "Intents.framework",
     "Foundation.framework",
   ]
+}
+
+source_set("intent_type") {
+  sources = [ "intent_type.h" ]
 }

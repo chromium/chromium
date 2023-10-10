@@ -2258,7 +2258,7 @@ enum HeaderBehaviour {
   if (_startVoiceSearchAfterNewTabAnimation) {
     _startVoiceSearchAfterNewTabAnimation = NO;
     [self startVoiceSearch];
-    [IntentDonationHelper donateIntent:DonatedIntentType::kOpenVoiceSearch];
+    [IntentDonationHelper donateIntent:IntentType::kOpenVoiceSearch];
   }
 }
 

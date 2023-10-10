@@ -194,7 +194,7 @@
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
   [self.dataManager restartCounters:BrowsingDataRemoveMask::REMOVE_ALL];
-  [IntentDonationHelper donateIntent:DonatedIntentType::kClearBrowsingData];
+  [IntentDonationHelper donateIntent:IntentType::kClearBrowsingData];
 
   [self updateToolbarButtons];
   // Showing toolbar here because parent class hides toolbar in
