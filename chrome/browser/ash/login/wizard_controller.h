@@ -72,7 +72,6 @@
 #include "chrome/browser/ash/login/screens/terms_of_service_screen.h"
 #include "chrome/browser/ash/login/screens/theme_selection_screen.h"
 #include "chrome/browser/ash/login/screens/touchpad_scroll_screen.h"
-#include "chrome/browser/ash/login/screens/tpm_error_screen.h"
 #include "chrome/browser/ash/login/screens/update_screen.h"
 #include "chrome/browser/ash/login/screens/user_allowlist_check_screen.h"
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
@@ -416,7 +415,6 @@ class WizardController : public OobeUI::Observer {
   void OnFamilyLinkNoticeScreenExit(FamilyLinkNoticeScreen::Result result);
   void OnOnlineAuthenticationScreenExit(OnlineAuthenticationScreen::Result);
   void OnUserAllowlistCheckScreenExit(UserAllowlistCheckScreen::Result);
-  void OnTpmErrorScreenExit(TpmErrorScreen::Result result);
   void OnPasswordChangeLegacyScreenExit(
       GaiaPasswordChangedScreenLegacy::Result result);
   void OnPasswordChangeScreenExit(GaiaPasswordChangedScreen::Result result);

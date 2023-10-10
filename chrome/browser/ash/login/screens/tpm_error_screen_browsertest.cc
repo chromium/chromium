@@ -3,13 +3,16 @@
 // found in the LICENSE file.
 
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/tpm_error_screen_handler.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {
@@ -18,7 +21,6 @@ namespace {
 
 constexpr char kTpmErrorId[] = "tpm-error-message";
 
-const test::UIPath kSkipButtonPath = {kTpmErrorId, "skipButton"};
 const test::UIPath kRestartButtonPath = {kTpmErrorId, "restartButton"};
 
 }  // namespace
@@ -26,16 +28,6 @@ const test::UIPath kRestartButtonPath = {kTpmErrorId, "restartButton"};
 class TpmErrorScreenTest : public OobeBaseTest {
  public:
   TpmErrorScreenTest() {}
-
-  void SetUpOnMainThread() override {
-    TpmErrorScreen* tpm_error_screen =
-        WizardController::default_controller()->GetScreen<TpmErrorScreen>();
-
-    original_callback_ = tpm_error_screen->get_exit_callback_for_testing();
-    tpm_error_screen->set_exit_callback_for_testing(
-        screen_result_waiter_.GetRepeatingCallback());
-    OobeBaseTest::SetUpOnMainThread();
-  }
 
   void ShowTpmErrorScreen() {
     WizardController::default_controller()->AdvanceToScreen(
@@ -50,42 +42,36 @@ class TpmErrorScreenTest : public OobeBaseTest {
   void SetTpmDbusError() {
     LoginDisplayHost::default_host()->GetWizardContext()->tpm_dbus_error = true;
   }
-
-  TpmErrorScreen::Result WaitForScreenExitResult() {
-    TpmErrorScreen::Result result = screen_result_waiter_.Take();
-    original_callback_.Run(result);
-    return result;
-  }
-
- private:
-  base::test::TestFuture<TpmErrorScreen::Result> screen_result_waiter_;
-  TpmErrorScreen::ScreenExitCallback original_callback_;
 };
 
-IN_PROC_BROWSER_TEST_F(TpmErrorScreenTest, NoSkipOptionOnTpmDbusError) {
-  SetTpmDbusError();
+IN_PROC_BROWSER_TEST_F(TpmErrorScreenTest, EmptyOobeScreenPending) {
+  ShowTpmErrorScreen();
+
+  PrefService* prefs = g_browser_process->local_state();
+  std::string pending_screen = prefs->GetString(prefs::kOobeScreenPending);
+  EXPECT_EQ(pending_screen, "");
+}
+
+IN_PROC_BROWSER_TEST_F(TpmErrorScreenTest, OnRestartTpmOwnerError) {
+  SetTpmOwnerError();
   ShowTpmErrorScreen();
 
   test::OobeJS().ExpectVisiblePath(kRestartButtonPath);
-  test::OobeJS().ExpectHiddenPath(kSkipButtonPath);
-
   ash::test::TapOnPathAndWaitForOobeToBeDestroyed(kRestartButtonPath);
 
   EXPECT_EQ(
       chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(TpmErrorScreenTest, SkipButtonOnTpmOwnedError) {
-  SetTpmOwnerError();
+IN_PROC_BROWSER_TEST_F(TpmErrorScreenTest, OnRestartTpmDbusError) {
+  SetTpmDbusError();
   ShowTpmErrorScreen();
 
   test::OobeJS().ExpectVisiblePath(kRestartButtonPath);
-  test::OobeJS().ClickOnPath(kSkipButtonPath);
+  ash::test::TapOnPathAndWaitForOobeToBeDestroyed(kRestartButtonPath);
 
-  TpmErrorScreen::Result result = WaitForScreenExitResult();
-  EXPECT_EQ(result, TpmErrorScreen::Result::kSkip);
-
-  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
 }
 
 }  // namespace ash
