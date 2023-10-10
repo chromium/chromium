@@ -199,6 +199,28 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Tests that WebFormElementToFormData() sets the
+// Form[Field]Data::{name,id_attribute,name_attribute} correctly.
+TEST_F(FormAutofillUtilsTest, WebFormElementToFormDataIdAndNames) {
+  LoadHTML(R"(
+    <form id=form-id name=form-name>
+      <input type=text id=input-id name=input-name>
+    </form>
+  )");
+  FormData form_data;
+  ASSERT_TRUE(WebFormElementToFormData(
+      GetFormElementById(GetMainFrame()->GetDocument(), "form-id"),
+      WebFormControlElement(), /*field_data_manager=*/nullptr, EXTRACT_OPTIONS,
+      &form_data, /*field=*/nullptr));
+  EXPECT_EQ(form_data.name, u"form-name");
+  EXPECT_EQ(form_data.id_attribute, u"form-id");
+  EXPECT_EQ(form_data.name_attribute, u"form-name");
+  ASSERT_EQ(form_data.fields.size(), 1u);
+  EXPECT_EQ(form_data.fields[0].name, u"input-name");
+  EXPECT_EQ(form_data.fields[0].id_attribute, u"input-id");
+  EXPECT_EQ(form_data.fields[0].name_attribute, u"input-name");
+}
+
 // Tests that large option values/contents are truncated while building the
 // FormData.
 TEST_F(FormAutofillUtilsTest, TruncateLargeOptionValuesAndContents) {

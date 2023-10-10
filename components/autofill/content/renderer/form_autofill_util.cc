@@ -2329,6 +2329,8 @@ bool WebFormElementToFormData(
     return false;
 
   form->name = GetFormIdentifier(form_element);
+  form->id_attribute = form_element.GetIdAttribute().Utf16();
+  form->name_attribute = GetAttribute<kName>(form_element).Utf16();
   form->unique_renderer_id = GetFormRendererId(form_element);
   form->action = GetCanonicalActionForForm(form_element);
   form->is_action_empty =
