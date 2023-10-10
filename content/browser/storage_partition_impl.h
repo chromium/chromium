@@ -74,6 +74,10 @@ class BrowsingDataFilterBuilder;
 class KeepAliveURLLoaderService;
 class BucketManager;
 class CacheStorageControlWrapper;
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+class CdmStorageManager;
+class MediaLicenseManager;
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 class CookieDeprecationLabelManagerImpl;
 class CookieStoreManager;
 class DevToolsBackgroundServicesContextImpl;
@@ -85,9 +89,6 @@ class HostZoomLevelContext;
 class IndexedDBControlWrapper;
 class InterestGroupManagerImpl;
 class LockManager;
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-class MediaLicenseManager;
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 class PaymentAppContextImpl;
 class PrivateAggregationDataModel;
 class PrivateAggregationManager;
@@ -277,6 +278,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   FontAccessManager* GetFontAccessManager();
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   MediaLicenseManager* GetMediaLicenseManager();
+  CdmStorageManager* GetCdmStorageManager();
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
   storage::SharedStorageManager* GetSharedStorageManager() override;
@@ -693,6 +695,10 @@ class CONTENT_EXPORT StoragePartitionImpl
       browsing_topics_site_data_manager_;
   std::unique_ptr<AggregationService> aggregation_service_;
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+  std::unique_ptr<CdmStorageManager> cdm_storage_manager_;
+
+  // TODO(crbug.com/1454512): Remove MediaLicenseManager once migration has been
+  // completed.
   std::unique_ptr<MediaLicenseManager> media_license_manager_;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 

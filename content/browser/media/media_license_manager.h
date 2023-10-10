@@ -16,6 +16,7 @@
 #include "base/types/pass_key.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/media/cdm_storage_common.h"
+#include "content/browser/media/cdm_storage_manager.h"
 #include "content/browser/media/media_license_quota_client.h"
 #include "content/common/content_export.h"
 #include "media/cdm/cdm_type.h"
@@ -75,6 +76,12 @@ class CONTENT_EXPORT MediaLicenseManager {
     return in_memory_;
   }
 
+  void set_cdm_storage_manager(CdmStorageManager* cdm_storage_manager) {
+    cdm_storage_manager_ = cdm_storage_manager;
+  }
+
+  CdmStorageManager* cdm_storage_manager() { return cdm_storage_manager_; }
+
  private:
   void DidGetBucket(const blink::StorageKey& storage_key,
                     storage::QuotaErrorOr<storage::BucketInfo> result);
@@ -115,6 +122,12 @@ class CONTENT_EXPORT MediaLicenseManager {
   // possible during the MediaLicenseManager destruction process.
   mojo::Receiver<storage::mojom::QuotaClient> quota_client_receiver_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Owned by 'StoragePartitionImpl' so we don't have to handle deletion.
+  // This pointer is safe because `StoragePartitionImpl` declares the
+  // `cdm_storage_manager` before the `media_license_manager`, and members are
+  // destructed in reverse order of declaration.
+  raw_ptr<CdmStorageManager> cdm_storage_manager_ = nullptr;
 
   base::WeakPtrFactory<MediaLicenseManager> weak_factory_{this};
 };

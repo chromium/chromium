@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "content/browser/media/cdm_storage_common.h"
 #include "content/browser/media/media_license_manager.h"
@@ -18,6 +19,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "media/cdm/cdm_type.h"
@@ -25,7 +27,9 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
@@ -51,11 +55,25 @@ void SimulateNavigation(RenderFrameHost** rfh, const GURL& url) {
 
 }  // namespace
 
-class CdmStorageTest : public RenderViewHostTestHarness {
+class CdmStorageTest
+    : public RenderViewHostTestHarness,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   CdmStorageTest()
       : RenderViewHostTestHarness(
-            content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
+            content::BrowserTaskEnvironment::REAL_IO_THREAD) {
+    // Enable the 'kCdmStorageDatabaseMigration' feature and the
+    // 'kCdmStorageDatabase' feature so that 'cdm_storage_manager()' doesn't
+    // return null.
+    std::vector<base::test::FeatureRef> feature_list = {};
+    if (std::get<0>(GetParam())) {
+      feature_list.emplace_back(features::kCdmStorageDatabase);
+    }
+    if (std::get<1>(GetParam())) {
+      feature_list.emplace_back(features::kCdmStorageDatabaseMigration);
+    }
+    scoped_feature_list_.InitWithFeatures(feature_list, {});
+  }
 
  protected:
   void SetUp() final {
@@ -64,15 +82,25 @@ class CdmStorageTest : public RenderViewHostTestHarness {
     RenderFrameHostTester::For(rfh_)->InitializeRenderFrameIfNeeded();
     SimulateNavigation(&rfh_, GURL(kTestOrigin));
 
-    auto* media_license_manager =
-        static_cast<StoragePartitionImpl*>(rfh_->GetStoragePartition())
-            ->GetMediaLicenseManager();
-    DCHECK(media_license_manager);
-    media_license_manager->OpenCdmStorage(
-        CdmStorageBindingContext(
-            blink::StorageKey::CreateFromStringForTesting(kTestOrigin),
-            kTestCdmType),
-        cdm_storage_.BindNewPipeAndPassReceiver());
+    if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase) &&
+        base::FeatureList::IsEnabled(features::kCdmStorageDatabaseMigration)) {
+      media_license_manager()->set_cdm_storage_manager(cdm_storage_manager());
+    }
+
+    if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase) &&
+        !base::FeatureList::IsEnabled(features::kCdmStorageDatabaseMigration)) {
+      cdm_storage_manager()->OpenCdmStorage(
+          CdmStorageBindingContext(
+              blink::StorageKey::CreateFromStringForTesting(kTestOrigin),
+              kTestCdmType),
+          cdm_storage_.BindNewPipeAndPassReceiver());
+    } else {
+      media_license_manager()->OpenCdmStorage(
+          CdmStorageBindingContext(
+              blink::StorageKey::CreateFromStringForTesting(kTestOrigin),
+              kTestCdmType),
+          cdm_storage_.BindNewPipeAndPassReceiver());
+    }
   }
 
   // Open the file |name|. Returns true if the file returned is valid, false
@@ -130,38 +158,6 @@ class CdmStorageTest : public RenderViewHostTestHarness {
     return status == CdmFile::Status::kSuccess;
   }
 
-  void WriteFiles(const std::vector<CdmFileIdAndContents>& files) {
-    // Write some data using the old backend.
-    for (const auto& file : files) {
-      mojo::AssociatedRemote<CdmFile> remote;
-      EXPECT_TRUE(Open(file.file.name, remote));
-      ASSERT_TRUE(remote.is_bound());
-      EXPECT_TRUE(Write(remote.get(), file.data));
-    }
-  }
-
-  void ReadFiles(const std::vector<CdmFileIdAndContents>& files) {
-    for (const auto& file : files) {
-      mojo::AssociatedRemote<CdmFile> remote;
-      EXPECT_TRUE(Open(file.file.name, remote));
-      ASSERT_TRUE(remote.is_bound());
-      std::vector<uint8_t> data_read;
-      EXPECT_TRUE(Read(remote.get(), data_read));
-      EXPECT_EQ(file.data, data_read);
-    }
-  }
-
-  void ExpectFilesEmpty(const std::vector<CdmFileIdAndContents>& files) {
-    for (const auto& file : files) {
-      mojo::AssociatedRemote<CdmFile> remote;
-      EXPECT_TRUE(Open(file.file.name, remote));
-      ASSERT_TRUE(remote.is_bound());
-      std::vector<uint8_t> data_read;
-      EXPECT_TRUE(Read(remote.get(), data_read));
-      EXPECT_TRUE(data_read.empty());
-    }
-  }
-
   MediaLicenseManager* media_license_manager() const {
     auto* media_license_manager =
         static_cast<StoragePartitionImpl*>(rfh_->GetStoragePartition())
@@ -170,13 +166,22 @@ class CdmStorageTest : public RenderViewHostTestHarness {
     return media_license_manager;
   }
 
+  CdmStorageManager* cdm_storage_manager() const {
+    auto* cdm_storage_manager =
+        static_cast<StoragePartitionImpl*>(rfh_->GetStoragePartition())
+            ->GetCdmStorageManager();
+    DCHECK(cdm_storage_manager);
+    return cdm_storage_manager;
+  }
+
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION RenderFrameHost* rfh_ = nullptr;
   mojo::Remote<CdmStorage> cdm_storage_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(CdmStorageTest, InvalidFileName) {
+TEST_P(CdmStorageTest, InvalidFileName) {
   // Anything other than ASCII letter, digits, and -._ will fail. Add a
   // Unicode character to the name.
   const char kFileName[] = "openfile\u1234";
@@ -185,21 +190,21 @@ TEST_F(CdmStorageTest, InvalidFileName) {
   ASSERT_FALSE(cdm_file.is_bound());
 }
 
-TEST_F(CdmStorageTest, InvalidFileNameEmpty) {
+TEST_P(CdmStorageTest, InvalidFileNameEmpty) {
   const char kFileName[] = "";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_FALSE(Open(kFileName, cdm_file));
   ASSERT_FALSE(cdm_file.is_bound());
 }
 
-TEST_F(CdmStorageTest, InvalidFileNameStartWithUnderscore) {
+TEST_P(CdmStorageTest, InvalidFileNameStartWithUnderscore) {
   const char kFileName[] = "_invalid";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_FALSE(Open(kFileName, cdm_file));
   ASSERT_FALSE(cdm_file.is_bound());
 }
 
-TEST_F(CdmStorageTest, InvalidFileNameTooLong) {
+TEST_P(CdmStorageTest, InvalidFileNameTooLong) {
   // Limit is 256 characters, so try a file name with 257.
   const std::string kFileName(257, 'a');
   mojo::AssociatedRemote<CdmFile> cdm_file;
@@ -207,14 +212,14 @@ TEST_F(CdmStorageTest, InvalidFileNameTooLong) {
   ASSERT_FALSE(cdm_file.is_bound());
 }
 
-TEST_F(CdmStorageTest, OpenFile) {
+TEST_P(CdmStorageTest, OpenFile) {
   const char kFileName[] = "test_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_TRUE(Open(kFileName, cdm_file));
   ASSERT_TRUE(cdm_file.is_bound());
 }
 
-TEST_F(CdmStorageTest, OpenFileLocked) {
+TEST_P(CdmStorageTest, OpenFileLocked) {
   const char kFileName[] = "test_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file1;
   EXPECT_TRUE(Open(kFileName, cdm_file1));
@@ -233,7 +238,7 @@ TEST_F(CdmStorageTest, OpenFileLocked) {
   ASSERT_TRUE(cdm_file3.is_bound());
 }
 
-TEST_F(CdmStorageTest, MultipleFiles) {
+TEST_P(CdmStorageTest, MultipleFiles) {
   const char kFileName1[] = "file1";
   mojo::AssociatedRemote<CdmFile> cdm_file1;
   EXPECT_TRUE(Open(kFileName1, cdm_file1));
@@ -250,7 +255,7 @@ TEST_F(CdmStorageTest, MultipleFiles) {
   ASSERT_TRUE(cdm_file3.is_bound());
 }
 
-TEST_F(CdmStorageTest, WriteThenReadFile) {
+TEST_P(CdmStorageTest, WriteThenReadFile) {
   const char kFileName[] = "test_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_TRUE(Open(kFileName, cdm_file));
@@ -265,7 +270,7 @@ TEST_F(CdmStorageTest, WriteThenReadFile) {
   EXPECT_EQ(kTestData, data_read);
 }
 
-TEST_F(CdmStorageTest, ReadThenWriteEmptyFile) {
+TEST_P(CdmStorageTest, ReadThenWriteEmptyFile) {
   const char kFileName[] = "empty_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_TRUE(Open(kFileName, cdm_file));
@@ -284,7 +289,7 @@ TEST_F(CdmStorageTest, ReadThenWriteEmptyFile) {
   EXPECT_EQ(0u, data_read.size());
 }
 
-TEST_F(CdmStorageTest, ParallelRead) {
+TEST_P(CdmStorageTest, ParallelRead) {
   const char kFileName[] = "duplicate_read_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_TRUE(Open(kFileName, cdm_file));
@@ -315,7 +320,7 @@ TEST_F(CdmStorageTest, ParallelRead) {
       << "status 1: " << status1 << ", status2: " << status2;
 }
 
-TEST_F(CdmStorageTest, ParallelWrite) {
+TEST_P(CdmStorageTest, ParallelWrite) {
   const char kFileName[] = "duplicate_write_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_TRUE(Open(kFileName, cdm_file));
@@ -343,5 +348,60 @@ TEST_F(CdmStorageTest, ParallelWrite) {
                status2 == CdmFile::Status::kFailure))
       << "status 1: " << status1 << ", status2: " << status2;
 }
+
+TEST_P(CdmStorageTest, VerifyMigrationWorks) {
+  const char kFileName[] = "test_file_name";
+  mojo::AssociatedRemote<CdmFile> cdm_file;
+  EXPECT_TRUE(Open(kFileName, cdm_file));
+  ASSERT_TRUE(cdm_file.is_bound());
+
+  // Write several bytes and read them back.
+  std::vector<uint8_t> kTestData = {'r', 'a', 'n', 'd', 'o', 'm'};
+  EXPECT_TRUE(Write(cdm_file.get(), kTestData));
+
+  std::vector<uint8_t> data_read;
+  EXPECT_TRUE(Read(cdm_file.get(), data_read));
+  EXPECT_EQ(data_read, kTestData);
+
+  // If 'kCdmStorageDatabase` is enabled, the Write() should have opulated in
+  // the CdmStorageDatabase. Else, we should check that CdmStorageManager is a
+  // nullptr since it would not have been created.
+  if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase)) {
+    base::test::TestFuture<absl::optional<std::vector<uint8_t>>> read_future;
+    cdm_storage_manager()->ReadFile(
+        blink::StorageKey::CreateFromStringForTesting(kTestOrigin),
+        kTestCdmType, kFileName, read_future.GetCallback());
+    EXPECT_EQ(read_future.Get(), kTestData);
+  } else {
+    EXPECT_THAT(static_cast<StoragePartitionImpl*>(rfh_->GetStoragePartition())
+                    ->GetCdmStorageManager(),
+                testing::IsNull());
+  }
+
+  // Write nothing.
+  EXPECT_TRUE(Write(cdm_file.get(), std::vector<uint8_t>()));
+
+  // Should still be empty.
+  EXPECT_TRUE(Read(cdm_file.get(), data_read));
+  EXPECT_THAT(data_read, testing::IsEmpty());
+
+  if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase)) {
+    base::test::TestFuture<absl::optional<std::vector<uint8_t>>>
+        read_empty_file_future;
+    cdm_storage_manager()->ReadFile(
+        blink::StorageKey::CreateFromStringForTesting(kTestOrigin),
+        kTestCdmType, kFileName, read_empty_file_future.GetCallback());
+    EXPECT_THAT(read_empty_file_future.Get().value(), testing::IsEmpty());
+  } else {
+    EXPECT_THAT(static_cast<StoragePartitionImpl*>(rfh_->GetStoragePartition())
+                    ->GetCdmStorageManager(),
+                testing::IsNull());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CdmStorageTest,
+                         /*are_kCdmStorageDatabaseMigration_features_enabled=*/
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 }  // namespace content

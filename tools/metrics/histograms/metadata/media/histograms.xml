@@ -2538,6 +2538,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.EME.CdmStorageManager.DatabaseOpenError.Incognito.Migration"
+    enum="CdmStorageOpenError" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from opening the CdmStorageDatabase.
+    Recorded on every open from an Incognito profile when
+    'kCdmStorageDatabaseMigration' is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.CdmStorageManager.DatabaseOpenError.NotIncognito"
     enum="CdmStorageOpenError" expires_after="2024-08-11">
   <owner>vpasupathy@chromium.org</owner>
@@ -2545,6 +2557,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     This UMA logs overall error rates from opening the CdmStorageDatabase.
     Recorded on every open from a non-Incognito profile.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.DatabaseOpenError.NotIncognito.Migration"
+    enum="CdmStorageOpenError" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from opening the CdmStorageDatabase.
+    Recorded on every open from a non-Incognito profile when
+    'kCdmStorageDatabaseMigration' is enabled.
   </summary>
 </histogram>
 
@@ -2578,6 +2602,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.EME.CdmStorageManager.DeleteFileError.Incognito.Migration"
+    enum="BooleanError" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the DeleteFile function. Recorded
+    after every call of DeleteFile on Incognito profile when
+    'kCdmStorageDatabaseMigration' is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.CdmStorageManager.DeleteFileError.NotIncognito"
     enum="BooleanError" expires_after="2024-08-11">
   <owner>vpasupathy@chromium.org</owner>
@@ -2585,6 +2621,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     This UMA logs overall error rates from the DeleteFile function. Recorded
     after every call of DeleteFile on non-Incognito profile.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.DeleteFileError.NotIncognito.Migration"
+    enum="BooleanError" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the DeleteFile function. Recorded
+    after every call of DeleteFile on non-Incognito profile when
+    'kCdmStorageDatabaseMigration' is enabled.
   </summary>
 </histogram>
 
@@ -2640,6 +2688,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.EME.CdmStorageManager.WriteFileError.Incognito.Migration"
+    enum="BooleanError" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the WriteFile function. Recorded
+    after every call of WriteFile on Incognito profile when
+    'kCdmStorageDatabaseMigration' is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.CdmStorageManager.WriteFileError.NotIncognito"
     enum="BooleanError" expires_after="2024-08-11">
   <owner>vpasupathy@chromium.org</owner>
@@ -2647,6 +2707,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     This UMA logs overall error rates from the WriteFile function. Recorded
     after every call of WriteFile on non-Incognito profile.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.WriteFileError.NotIncognito.Migration"
+    enum="BooleanError" expires_after="2024-08-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the WriteFile function. Recorded
+    after every call of WriteFile on non-Incognito profile when
+    'kCdmStorageDatabaseMigration' is enabled.
   </summary>
 </histogram>
 

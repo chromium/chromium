@@ -168,6 +168,18 @@ void MediaLicenseStorageHost::WriteFile(const media::CdmType& cdm_type,
                                         WriteFileCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (manager_->cdm_storage_manager()) {
+    // We don't populate the callback because we want the
+    // `MediaLicenseStorageHost` to still maintain control. We just call in to
+    // the `CdmStorageManager` object to be able to update the
+    // `CdmStorageDatabase` to keep it in line with `MediaLicenseDatabase`.
+    // TODO(crbug.com/1454512): Create UMA to track failures from the
+    // MediaLicense* path, as we choose to fail silently to not affect the
+    // current code-path's behavior and affect CDM operations.
+    manager_->cdm_storage_manager()->WriteFile(
+        storage_key(), cdm_type, file_name, data, base::DoNothing());
+  }
+
   db_.AsyncCall(&MediaLicenseDatabase::WriteFile)
       .WithArgs(cdm_type, file_name, data)
       .Then(base::BindOnce(&MediaLicenseStorageHost::DidWriteFile,
@@ -197,6 +209,18 @@ void MediaLicenseStorageHost::DeleteFile(const media::CdmType& cdm_type,
                                          const std::string& file_name,
                                          DeleteFileCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (manager_->cdm_storage_manager()) {
+    // We don't populate the callback because we want the
+    // `MediaLicenseStorageHost` to still maintain control. We just call in to
+    // the `CdmStorageManager` object to be able to update the
+    // `CdmStorageDatabase` to keep it in line with `MediaLicenseDatabase`.
+    // TODO(crbug.com/1454512): Create UMA to track failures from the
+    // MediaLicense* path, as we choose to fail silently to not affect the
+    // current code-path's behavior and affect CDM operations.
+    manager_->cdm_storage_manager()->DeleteFile(storage_key(), cdm_type,
+                                                file_name, base::DoNothing());
+  }
 
   db_.AsyncCall(&MediaLicenseDatabase::DeleteFile)
       .WithArgs(cdm_type, file_name)

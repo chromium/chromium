@@ -9,6 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "base/types/pass_key.h"
 #include "content/browser/media/cdm_storage_common.h"
+#include "content/public/common/content_features.h"
 #include "media/cdm/cdm_type.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
 
@@ -20,6 +21,8 @@ const char kUmaPrefix[] = "Media.EME.CdmStorageManager.";
 
 const char kIncognito[] = "Incognito";
 const char kNonIncognito[] = "NonIncognito";
+
+const char kMigration[] = ".Migration";
 
 const char kDeleteDatabaseError[] = "DeleteDatabaseError.";
 const char kDeleteForStorageKeyError[] = "DeleteForStorageKeyError.";
@@ -248,7 +251,18 @@ void CdmStorageManager::ReportDatabaseOpenError(CdmStorageOpenError error) {
 }
 
 std::string CdmStorageManager::GetHistogramName(const char operation[]) {
-  return std::string{kUmaPrefix} + std::string{operation} +
-         (in_memory() ? std::string{kIncognito} : std::string{kNonIncognito});
+  // If the 'kCdmStorageDatabaseMigration' flag is enabled, we should mark the
+  // UMA with the fact that this error came during the migration.
+
+  auto histogram_name =
+      std::string{kUmaPrefix} + std::string{operation} +
+      (in_memory() ? std::string{kIncognito} : std::string{kNonIncognito});
+
+  if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase) &&
+      base::FeatureList::IsEnabled(features::kCdmStorageDatabaseMigration)) {
+    histogram_name += std::string{kMigration};
+  }
+
+  return histogram_name;
 }
 }  // namespace content
