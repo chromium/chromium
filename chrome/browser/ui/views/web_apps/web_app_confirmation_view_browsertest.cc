@@ -6,8 +6,8 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_features.h"
@@ -47,9 +47,9 @@ class WebAppConfirmViewBrowserTest
             ->RegisterCurrentInstallForWebContents(
                 webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
 
-    chrome::ShowWebAppInstallDialog(web_contents, std::move(app_info),
-                                    std::move(install_tracker),
-                                    base::BindLambdaForTesting(callback));
+    web_app::ShowWebAppInstallDialog(web_contents, std::move(app_info),
+                                     std::move(install_tracker),
+                                     base::BindLambdaForTesting(callback));
   }
 
   void SetUp() override {
@@ -75,8 +75,8 @@ IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, ShowWebAppInstallDialog) {
   app_info->title = u"Test app";
   app_info->start_url = GURL("https://example.com");
 
-  chrome::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
-                                              /*auto_open_in_window=*/true);
+  web_app::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
+                                               /*auto_open_in_window=*/true);
   bool is_accepted = false;
   auto callback = [&is_accepted](bool result,
                                  std::unique_ptr<web_app::WebAppInstallInfo>) {
@@ -90,9 +90,9 @@ IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, ShowWebAppInstallDialog) {
           ->RegisterCurrentInstallForWebContents(
               webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
 
-  chrome::ShowWebAppInstallDialog(web_contents, std::move(app_info),
-                                  std::move(install_tracker),
-                                  base::BindLambdaForTesting(callback));
+  web_app::ShowWebAppInstallDialog(web_contents, std::move(app_info),
+                                   std::move(install_tracker),
+                                   base::BindLambdaForTesting(callback));
   EXPECT_TRUE(is_accepted);
 }
 
@@ -101,8 +101,8 @@ IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, InvokeUi_default) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, NormalizeTitles) {
-  chrome::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
-                                              /*auto_open_in_window=*/true);
+  web_app::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
+                                               /*auto_open_in_window=*/true);
 
   struct TestCases {
     std::u16string input;
@@ -136,9 +136,9 @@ IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, NormalizeTitles) {
             ->RegisterCurrentInstallForWebContents(
                 webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
 
-    chrome::ShowWebAppInstallDialog(web_contents, std::move(app_info),
-                                    std::move(install_tracker),
-                                    base::BindLambdaForTesting(callback));
+    web_app::ShowWebAppInstallDialog(web_contents, std::move(app_info),
+                                     std::move(install_tracker),
+                                     base::BindLambdaForTesting(callback));
     EXPECT_TRUE(is_accepted) << test_case.input;
     EXPECT_EQ(test_case.expected_result, title) << test_case.input;
   }

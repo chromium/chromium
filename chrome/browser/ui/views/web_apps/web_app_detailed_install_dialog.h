@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/models/dialog_model.h"
@@ -39,8 +39,8 @@ class WebAppDetailedInstallDialogDelegate
       content::WebContents* web_contents,
       std::unique_ptr<WebAppInstallInfo> install_info,
       std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
-      chrome::AppInstallationAcceptanceCallback callback,
-      chrome::PwaInProductHelpState iph_state,
+      AppInstallationAcceptanceCallback callback,
+      PwaInProductHelpState iph_state,
       PrefService* prefs,
       feature_engagement::Tracker* tracker);
 
@@ -67,8 +67,8 @@ class WebAppDetailedInstallDialogDelegate
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<WebAppInstallInfo> install_info_;
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker_;
-  chrome::AppInstallationAcceptanceCallback callback_;
-  chrome::PwaInProductHelpState iph_state_;
+  AppInstallationAcceptanceCallback callback_;
+  PwaInProductHelpState iph_state_;
   raw_ptr<PrefService> prefs_;
   raw_ptr<feature_engagement::Tracker> tracker_;
 

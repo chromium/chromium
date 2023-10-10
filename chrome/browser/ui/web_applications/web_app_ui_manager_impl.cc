@@ -27,7 +27,6 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -37,6 +36,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/commands/launch_web_app_command.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 #include "chrome/browser/ui/web_applications/web_app_run_on_os_login_notification.h"
@@ -305,8 +305,8 @@ void WebAppUiManagerImpl::ShowWebAppFileLaunchDialog(
     const std::vector<base::FilePath>& file_paths,
     const webapps::AppId& app_id,
     WebAppLaunchAcceptanceCallback launch_callback) {
-  chrome::ShowWebAppFileLaunchDialog(file_paths, profile_, app_id,
-                                     std::move(launch_callback));
+  ::web_app::ShowWebAppFileLaunchDialog(file_paths, profile_, app_id,
+                                        std::move(launch_callback));
 }
 
 void WebAppUiManagerImpl::ShowWebAppIdentityUpdateDialog(
@@ -319,7 +319,7 @@ void WebAppUiManagerImpl::ShowWebAppIdentityUpdateDialog(
     const SkBitmap& new_icon,
     content::WebContents* web_contents,
     web_app::AppIdentityDialogCallback callback) {
-  chrome::ShowWebAppIdentityUpdateDialog(
+  ::web_app::ShowWebAppIdentityUpdateDialog(
       app_id, title_change, icon_change, old_title, new_title, old_icon,
       new_icon, web_contents, std::move(callback));
 }
@@ -545,7 +545,7 @@ void WebAppUiManagerImpl::OnIconsReadForUninstall(
     return;
   }
 
-  chrome::ShowWebAppUninstallDialog(
+  ShowWebAppUninstallDialog(
       profile_, app_id, uninstall_source, parent_window,
       std::move(icon_bitmaps),
       base::BindOnce(&WebAppUiManagerImpl::ScheduleUninstallIfUserRequested,

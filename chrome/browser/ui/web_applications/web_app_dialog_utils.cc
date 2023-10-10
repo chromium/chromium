@@ -14,8 +14,8 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -51,7 +51,7 @@ namespace cros_events = metrics::structured::events::v2::cr_os_events;
 void OnWebAppInstallShowInstallDialog(
     WebAppInstallFlow flow,
     webapps::WebappInstallSource install_source,
-    chrome::PwaInProductHelpState iph_state,
+    PwaInProductHelpState iph_state,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
@@ -75,7 +75,7 @@ void OnWebAppInstallShowInstallDialog(
       if (webapps::AppBannerManager::FromWebContents(initiator_web_contents)
               ->screenshots()
               .size()) {
-        chrome::ShowWebAppDetailedInstallDialog(
+        ShowWebAppDetailedInstallDialog(
             initiator_web_contents, std::move(web_app_info),
             std::move(install_tracker), std::move(web_app_acceptance_callback),
             webapps::AppBannerManager::FromWebContents(initiator_web_contents)
@@ -83,10 +83,9 @@ void OnWebAppInstallShowInstallDialog(
             iph_state);
         return;
       } else {
-        chrome::ShowPWAInstallBubble(
-            initiator_web_contents, std::move(web_app_info),
-            std::move(install_tracker), std::move(web_app_acceptance_callback),
-            iph_state);
+        ShowPWAInstallBubble(initiator_web_contents, std::move(web_app_info),
+                             std::move(install_tracker),
+                             std::move(web_app_acceptance_callback), iph_state);
         return;
       }
     case WebAppInstallFlow::kCreateShortcut:
@@ -101,9 +100,9 @@ void OnWebAppInstallShowInstallDialog(
       }
 #endif
 
-      chrome::ShowWebAppInstallDialog(
-          initiator_web_contents, std::move(web_app_info),
-          std::move(install_tracker), std::move(web_app_acceptance_callback));
+      ShowWebAppInstallDialog(initiator_web_contents, std::move(web_app_info),
+                              std::move(install_tracker),
+                              std::move(web_app_acceptance_callback));
       return;
     case WebAppInstallFlow::kUnknown:
       NOTREACHED();
@@ -187,7 +186,7 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
       install_source, web_contents->GetWeakPtr(),
       /*bypass_service_worker_check=*/false,
       base::BindOnce(OnWebAppInstallShowInstallDialog, flow, install_source,
-                     chrome::PwaInProductHelpState::kNotShown,
+                     PwaInProductHelpState::kNotShown,
                      std::move(install_tracker)),
       base::BindOnce(OnWebAppInstalled, std::move(callback)),
       /*use_fallback=*/true);
@@ -197,7 +196,7 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
                               bool bypass_service_worker_check,
                               webapps::WebappInstallSource install_source,
                               WebAppInstalledCallback installed_callback,
-                              chrome::PwaInProductHelpState iph_state) {
+                              PwaInProductHelpState iph_state) {
   auto* provider = WebAppProvider::GetForWebContents(web_contents);
   if (!provider)
     return false;

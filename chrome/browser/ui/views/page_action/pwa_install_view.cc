@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
@@ -174,12 +175,12 @@ void PwaInstallView::OnExecuting(PageActionIconView::ExecuteSource source) {
   base::RecordAction(base::UserMetricsAction("PWAInstallIcon"));
 
   // Close PWA install IPH if it is showing.
-  chrome::PwaInProductHelpState iph_state =
-      chrome::PwaInProductHelpState::kNotShown;
+  web_app::PwaInProductHelpState iph_state =
+      web_app::PwaInProductHelpState::kNotShown;
   install_icon_clicked_after_iph_shown_ = browser_->window()->CloseFeaturePromo(
       feature_engagement::kIPHDesktopPwaInstallFeature);
   if (install_icon_clicked_after_iph_shown_) {
-    iph_state = chrome::PwaInProductHelpState::kShown;
+    iph_state = web_app::PwaInProductHelpState::kShown;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)

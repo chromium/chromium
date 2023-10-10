@@ -14,7 +14,6 @@
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -23,6 +22,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -234,7 +234,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
   webapps::AppId ExecutePwaInstallIcon() {
-    chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
+    web_app::SetAutoAcceptPWAInstallConfirmationForTesting(true);
 
     webapps::AppId app_id;
     base::RunLoop run_loop;
@@ -249,7 +249,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
 
     run_loop.Run();
 
-    chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
+    web_app::SetAutoAcceptPWAInstallConfirmationForTesting(false);
 
     return app_id;
   }

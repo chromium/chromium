@@ -5,10 +5,10 @@
 #include "base/i18n/message_formatter.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -57,7 +57,7 @@ std::u16string CancelLabel();
 
 }  // namespace
 
-namespace chrome {
+namespace web_app {
 
 views::Widget* CreateSubAppsInstallDialogWidget(
     const std::string_view parent_app_name,
@@ -88,7 +88,7 @@ views::Widget* CreateSubAppsInstallDialogWidget(
   return widget;
 }
 
-}  // namespace chrome
+}  // namespace web_app
 
 namespace {
 

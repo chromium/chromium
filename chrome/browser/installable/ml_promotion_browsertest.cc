@@ -18,9 +18,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -764,7 +764,7 @@ class MLPromotionInstallDialogBrowserTest
         InstallAppForCurrentWebContents(/*install_locally=*/true);
         break;
       case InstallDialogState::kCreateShortcutDialog:
-        chrome::SetAutoAcceptWebAppDialogForTesting(
+        web_app::SetAutoAcceptWebAppDialogForTesting(
             /*auto_accept=*/true, /*auto_open_in_window=*/false);
         chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT);
         break;

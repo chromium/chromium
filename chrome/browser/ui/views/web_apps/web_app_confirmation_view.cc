@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -82,7 +83,7 @@ WebAppConfirmationView::~WebAppConfirmationView() {}
 WebAppConfirmationView::WebAppConfirmationView(
     std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
-    chrome::AppInstallationAcceptanceCallback callback)
+    web_app::AppInstallationAcceptanceCallback callback)
     : web_app_info_(std::move(web_app_info)),
       install_tracker_(std::move(install_tracker)),
       callback_(std::move(callback)) {
@@ -274,7 +275,7 @@ BEGIN_METADATA(WebAppConfirmationView, views::DialogDelegateView)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, TrimmedTitle)
 END_METADATA
 
-namespace chrome {
+namespace web_app {
 
 void ShowWebAppInstallDialog(
     content::WebContents* web_contents,
@@ -303,4 +304,4 @@ void SetOverrideTitleForTesting(const char* title_to_use) {
   g_title_to_use_for_app = title_to_use;
 }
 
-}  // namespace chrome
+}  // namespace web_app

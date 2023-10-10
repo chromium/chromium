@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "ui/views/widget/widget.h"
 
@@ -48,8 +48,8 @@ void SubAppsInstallDialogController::Init(
 
   callback_ = std::move(callback);
 
-  widget_ = chrome::CreateSubAppsInstallDialogWidget(
-      parent_app_name, parent_app_scope, sub_apps, window);
+  widget_ = CreateSubAppsInstallDialogWidget(parent_app_name, parent_app_scope,
+                                             sub_apps, window);
   widget_->AddObserver(this);
   widget_->Show();
 }

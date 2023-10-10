@@ -10,7 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -36,7 +36,7 @@ class WebAppConfirmationView : public views::DialogDelegateView,
   WebAppConfirmationView(
       std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
       std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
-      chrome::AppInstallationAcceptanceCallback callback);
+      web_app::AppInstallationAcceptanceCallback callback);
   WebAppConfirmationView(const WebAppConfirmationView&) = delete;
   WebAppConfirmationView& operator=(const WebAppConfirmationView&) = delete;
   ~WebAppConfirmationView() override;
@@ -69,7 +69,7 @@ class WebAppConfirmationView : public views::DialogDelegateView,
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker_;
 
   // The callback to be invoked when the dialog is completed.
-  chrome::AppInstallationAcceptanceCallback callback_;
+  web_app::AppInstallationAcceptanceCallback callback_;
 
   // Checkbox to launch as a window.
   raw_ptr<views::Checkbox> open_as_window_checkbox_ = nullptr;

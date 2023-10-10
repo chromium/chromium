@@ -10,8 +10,8 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/web_apps/launch_app_user_choice_dialog_view.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/common/web_app_id.h"
@@ -27,11 +27,10 @@ class FileHandlerLaunchDialogView : public LaunchAppUserChoiceDialogView {
  public:
   METADATA_HEADER(FileHandlerLaunchDialogView);
 
-  FileHandlerLaunchDialogView(
-      const std::vector<base::FilePath>& file_paths,
-      Profile* profile,
-      const webapps::AppId& app_id,
-      chrome::WebAppLaunchAcceptanceCallback close_callback);
+  FileHandlerLaunchDialogView(const std::vector<base::FilePath>& file_paths,
+                              Profile* profile,
+                              const webapps::AppId& app_id,
+                              WebAppLaunchAcceptanceCallback close_callback);
 
   FileHandlerLaunchDialogView(const FileHandlerLaunchDialogView&) = delete;
   FileHandlerLaunchDialogView& operator=(const FileHandlerLaunchDialogView&) =

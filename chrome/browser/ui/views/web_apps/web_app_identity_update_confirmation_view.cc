@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/views/web_apps/web_app_identity_update_confirmation_view.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/web_app_uninstall_dialog_view.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -197,21 +197,20 @@ void WebAppIdentityUpdateConfirmationView::OnWebAppUninstallScheduled(
 BEGIN_METADATA(WebAppIdentityUpdateConfirmationView, views::DialogDelegateView)
 END_METADATA
 
-namespace chrome {
+namespace web_app {
 
-void ShowWebAppIdentityUpdateDialog(
-    const std::string& app_id,
-    bool title_change,
-    bool icon_change,
-    const std::u16string& old_title,
-    const std::u16string& new_title,
-    const SkBitmap& old_icon,
-    const SkBitmap& new_icon,
-    content::WebContents* web_contents,
-    web_app::AppIdentityDialogCallback callback) {
-  if (web_app::GetIdentityUpdateDialogActionForTesting() ==  // IN-TEST
-      web_app::AppIdentityUpdate::kSkipped) {
-    std::move(callback).Run(web_app::AppIdentityUpdate::kSkipped);
+void ShowWebAppIdentityUpdateDialog(const std::string& app_id,
+                                    bool title_change,
+                                    bool icon_change,
+                                    const std::u16string& old_title,
+                                    const std::u16string& new_title,
+                                    const SkBitmap& old_icon,
+                                    const SkBitmap& new_icon,
+                                    content::WebContents* web_contents,
+                                    AppIdentityDialogCallback callback) {
+  if (GetIdentityUpdateDialogActionForTesting() ==  // IN-TEST
+      AppIdentityUpdate::kSkipped) {
+    std::move(callback).Run(AppIdentityUpdate::kSkipped);
     return;
   }
 
@@ -225,10 +224,10 @@ void ShowWebAppIdentityUpdateDialog(
           dialog, web_contents->GetTopLevelNativeWindow());
   dialog_widget->Show();
 
-  if (web_app::GetIdentityUpdateDialogActionForTesting() ==  // IN-TEST
-      web_app::AppIdentityUpdate::kAllowed) {
+  if (GetIdentityUpdateDialogActionForTesting() ==  // IN-TEST
+      AppIdentityUpdate::kAllowed) {
     dialog->AcceptDialog();
   }
 }
 
-}  // namespace chrome
+}  // namespace web_app

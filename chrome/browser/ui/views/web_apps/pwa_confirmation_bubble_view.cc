@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -23,6 +22,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
 #include "chrome/browser/ui/views/web_apps/web_app_views_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -103,8 +103,8 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
     PageActionIconView* highlight_icon_button,
     std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
-    chrome::AppInstallationAcceptanceCallback callback,
-    chrome::PwaInProductHelpState iph_state,
+    web_app::AppInstallationAcceptanceCallback callback,
+    web_app::PwaInProductHelpState iph_state,
     PrefService* prefs,
     feature_engagement::Tracker* tracker)
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
@@ -235,7 +235,7 @@ void PWAConfirmationBubbleView::WindowClosing() {
   if (web_app_info_) {
     base::RecordAction(base::UserMetricsAction("WebAppInstallCancelled"));
 
-    if (iph_state_ == chrome::PwaInProductHelpState::kShown) {
+    if (iph_state_ == web_app::PwaInProductHelpState::kShown) {
       webapps::AppId app_id =
           web_app::GenerateAppIdFromManifestId(web_app_info_->manifest_id);
       web_app::RecordInstallIphIgnored(prefs_, app_id, base::Time::Now());
@@ -280,7 +280,7 @@ bool PWAConfirmationBubbleView::Accept() {
   }
 #endif
 
-  if (iph_state_ == chrome::PwaInProductHelpState::kShown) {
+  if (iph_state_ == web_app::PwaInProductHelpState::kShown) {
     web_app::RecordInstallIphInstalled(prefs_, app_id);
     tracker_->NotifyEvent(feature_engagement::events::kDesktopPwaInstalled);
   }
@@ -310,7 +310,7 @@ void PWAConfirmationBubbleView::OnBeforeBubbleWidgetInit(
   params->name = "PWAConfirmationBubbleView";
 }
 
-namespace chrome {
+namespace web_app {
 
 void ShowPWAInstallBubble(
     content::WebContents* web_contents,
@@ -371,4 +371,4 @@ void SetAutoAcceptPWAInstallConfirmationForTesting(bool auto_accept) {
   g_auto_accept_pwa_for_testing = auto_accept;
 }
 
-}  // namespace chrome
+}  // namespace web_app

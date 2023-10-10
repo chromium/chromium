@@ -21,10 +21,10 @@
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -35,7 +35,6 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -120,7 +119,7 @@ bool MLPromotionBrowserTestBase::InstallAppFromUserInitiation(
       web_contents(),
       /*bypass_service_worker_check=*/true,
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-      install_future.GetCallback(), chrome::PwaInProductHelpState::kNotShown);
+      install_future.GetCallback(), web_app::PwaInProductHelpState::kNotShown);
   views::Widget* widget = waiter.WaitIfNeededAndGet();
   views::test::WidgetDestroyedWaiter destroyed(widget);
   if (accept_install) {

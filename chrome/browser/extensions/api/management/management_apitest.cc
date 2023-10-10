@@ -15,10 +15,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
@@ -248,7 +248,7 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
              });
            });)";
 
-    chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
+    web_app::SetAutoAcceptPWAInstallConfirmationForTesting(true);
     const GURL start_url = https_test_server_.GetURL(web_app_start_url);
     webapps::AppId web_app_id =
         web_app::GenerateAppId(/*manifest_id_path=*/absl::nullopt, start_url);
@@ -270,7 +270,7 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
     EXPECT_EQ(2, static_cast<int>(
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));
 
-    chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
+    web_app::SetAutoAcceptPWAInstallConfirmationForTesting(false);
   }
 
   net::EmbeddedTestServer https_test_server_;

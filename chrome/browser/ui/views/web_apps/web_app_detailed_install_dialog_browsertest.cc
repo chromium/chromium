@@ -8,8 +8,8 @@
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -75,14 +75,14 @@ class WebAppDetailedInstallDialogBrowserTest : public DialogBrowserTest {
             ->RegisterCurrentInstallForWebContents(
                 webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
 
-    chrome::ShowWebAppDetailedInstallDialog(
+    ShowWebAppDetailedInstallDialog(
         browser()->tab_strip_model()->GetWebContentsAt(0),
         std::move(install_info), std::move(install_tracker),
         base::BindLambdaForTesting(
             [&](bool result, std::unique_ptr<WebAppInstallInfo>) {
               dialog_accepted_ = result;
             }),
-        screenshots, chrome::PwaInProductHelpState::kNotShown);
+        screenshots, PwaInProductHelpState::kNotShown);
   }
   absl::optional<bool> dialog_accepted() { return dialog_accepted_; }
 

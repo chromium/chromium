@@ -44,7 +44,6 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -57,6 +56,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
@@ -2045,13 +2045,13 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppInternalsPage) {
   // Install a non-promotable web app.
   NavigateToURLAndWait(
       browser(), https_server()->GetURL("/banners/no_manifest_test_page.html"));
-  chrome::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
-                                              /*auto_open_in_window=*/false);
+  SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
+                                      /*auto_open_in_window=*/false);
   WebAppTestInstallObserver observer(profile());
   observer.BeginListening();
   CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
   observer.Wait();
-  chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
+  SetAutoAcceptWebAppDialogForTesting(false, false);
   // Loads with two apps.
   NavigateToURLAndWait(browser(), GURL("chrome://web-app-internals"));
 }
@@ -2065,13 +2065,13 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BrowserDisplayNotInstallable) {
   EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()), kNotPresent);
 
   // Install using Create Shortcut.
-  chrome::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
-                                              /*auto_open_in_window=*/false);
+  SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
+                                      /*auto_open_in_window=*/false);
   WebAppTestInstallObserver observer(profile());
   observer.BeginListening();
   CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
   observer.Wait();
-  chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
+  SetAutoAcceptWebAppDialogForTesting(false, false);
 
   // Navigate to this site again and install should still be disabled.
   Browser* new_browser = NavigateInNewWindowAndAwaitInstallabilityCheck(url);
@@ -2244,7 +2244,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
   NavigateToURLAndWait(browser(), app_url);
 
   // Wait for OS hooks and installation to complete.
-  chrome::SetAutoAcceptWebAppDialogForTesting(true, true);
+  SetAutoAcceptWebAppDialogForTesting(true, true);
   base::RunLoop run_loop_install;
   WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppInstalledWithOsHooksDelegate(
@@ -2257,7 +2257,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
   run_loop_install.Run();
   content::RunAllTasksUntilIdle();
-  chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
+  SetAutoAcceptWebAppDialogForTesting(false, false);
 
 #if BUILDFLAG(IS_WIN)
   const std::wstring prog_id =
@@ -2343,7 +2343,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
   NavigateToURLAndWait(browser(), app_url);
 
   // Wait for OS hooks and installation to complete.
-  chrome::SetAutoAcceptWebAppDialogForTesting(true, true);
+  SetAutoAcceptWebAppDialogForTesting(true, true);
   base::RunLoop run_loop_install;
   WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppInstalledWithOsHooksDelegate(
@@ -2353,7 +2353,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
   run_loop_install.Run();
   content::RunAllTasksUntilIdle();
-  chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
+  SetAutoAcceptWebAppDialogForTesting(false, false);
 
   // Simulate the user permanently denying file handling permission. Regression
   // test for crbug.com/1269387

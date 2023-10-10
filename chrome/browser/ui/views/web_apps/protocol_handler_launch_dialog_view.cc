@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/strings/grit/components_strings.h"
@@ -22,7 +23,7 @@ ProtocolHandlerLaunchDialogView::ProtocolHandlerLaunchDialogView(
     GURL url,
     Profile* profile,
     const webapps::AppId& app_id,
-    chrome::WebAppLaunchAcceptanceCallback close_callback)
+    WebAppLaunchAcceptanceCallback close_callback)
     : LaunchAppUserChoiceDialogView(profile, app_id, std::move(close_callback)),
       url_(std::move(url)) {
   auto* layout_provider = views::LayoutProvider::Get();
@@ -68,10 +69,6 @@ std::u16string ProtocolHandlerLaunchDialogView::GetRememberChoiceString() {
 BEGIN_METADATA(ProtocolHandlerLaunchDialogView, views::DialogDelegateView)
 END_METADATA
 
-}  // namespace web_app
-
-namespace chrome {
-
 void ShowWebAppProtocolLaunchDialog(
     const GURL& url,
     Profile* profile,
@@ -86,4 +83,4 @@ void ShowWebAppProtocolLaunchDialog(
       ->Show();
 }
 
-}  // namespace chrome
+}  // namespace web_app

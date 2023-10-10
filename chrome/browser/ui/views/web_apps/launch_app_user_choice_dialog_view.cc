@@ -45,7 +45,7 @@ void LaunchAppUserChoiceDialogView::SetDefaultRememberSelectionForTesting(
 LaunchAppUserChoiceDialogView::LaunchAppUserChoiceDialogView(
     Profile* profile,
     const webapps::AppId& app_id,
-    chrome::WebAppLaunchAcceptanceCallback close_callback)
+    WebAppLaunchAcceptanceCallback close_callback)
     : profile_(profile),
       app_id_(app_id),
       close_callback_(std::move(close_callback)) {}

@@ -7,7 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/test_future.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -60,7 +60,7 @@ TEST_F(SubAppsInstallDialogControllerTest, DialogViewSetUpCorrectly) {
   sub_apps.emplace_back(CreateInstallInfoWithIconForSubApp(kSubAppName2));
   sub_apps.emplace_back(CreateInstallInfoWithIconForSubApp(kSubAppName3));
 
-  views::Widget* widget = chrome::CreateSubAppsInstallDialogWidget(
+  views::Widget* widget = CreateSubAppsInstallDialogWidget(
       kParentAppName, kParentAppScope, sub_apps, GetContext());
   views::DialogDelegate* dialog = widget->widget_delegate()->AsDialogDelegate();
 

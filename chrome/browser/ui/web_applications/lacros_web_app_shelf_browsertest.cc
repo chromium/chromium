@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -23,6 +22,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, CreateShortcut) {
     EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, browser()), kEnabled);
     EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()), kNotPresent);
 
-    chrome::SetAutoAcceptWebAppDialogForTesting(
+    SetAutoAcceptWebAppDialogForTesting(
         /*auto_accept=*/true,
         /*auto_open_in_window=*/true);
     ui_test_utils::BrowserChangeObserver browser_change_observer(
@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, CreateShortcut) {
     app1_id = install_observer.Wait();
     app1_browser = browser_change_observer.Wait();
     EXPECT_TRUE(AppBrowserController::IsForWebApp(app1_browser, app1_id));
-    chrome::SetAutoAcceptWebAppDialogForTesting(
+    SetAutoAcceptWebAppDialogForTesting(
         /*auto_accept=*/false,
         /*auto_open_in_window=*/false);
   }
@@ -402,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, CreateShortcut) {
     EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, browser()), kEnabled);
     EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()), kEnabled);
 
-    chrome::SetAutoAcceptPWAInstallConfirmationForTesting(/*auto_accept=*/true);
+    SetAutoAcceptPWAInstallConfirmationForTesting(/*auto_accept=*/true);
     ui_test_utils::BrowserChangeObserver browser_change_observer(
         nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
     WebAppTestInstallObserver observer(profile());
@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, CreateShortcut) {
     app2_id = observer.Wait();
     app2_browser = browser_change_observer.Wait();
     EXPECT_TRUE(AppBrowserController::IsForWebApp(app2_browser, app2_id));
-    chrome::SetAutoAcceptPWAInstallConfirmationForTesting(
+    SetAutoAcceptPWAInstallConfirmationForTesting(
         /*auto_accept=*/false);
   }
 

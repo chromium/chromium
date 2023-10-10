@@ -6326,6 +6326,7 @@ static_library("ui") {
       "web_applications/web_app_browser_controller.h",
       "web_applications/web_app_dialog_utils.cc",
       "web_applications/web_app_dialog_utils.h",
+      "web_applications/web_app_dialogs.h",
       "web_applications/web_app_launch_process.cc",
       "web_applications/web_app_launch_process.h",
       "web_applications/web_app_launch_utils.cc",

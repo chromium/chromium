@@ -9,10 +9,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -204,7 +204,7 @@ void WebAppUninstallDialogDelegateView::ProcessAutoConfirmValue() {
 BEGIN_METADATA(WebAppUninstallDialogDelegateView, views::DialogDelegateView)
 END_METADATA
 
-namespace chrome {
+namespace web_app {
 
 void ShowWebAppUninstallDialog(
     Profile* profile,
@@ -220,4 +220,4 @@ void ShowWebAppUninstallDialog(
   view->ProcessAutoConfirmValue();
 }
 
-}  // namespace chrome
+}  // namespace web_app

@@ -14,7 +14,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
@@ -329,7 +329,7 @@ void WebAppShimManagerDelegate::LaunchApp(
     }
 
     if (!registrar.IsAllowedLaunchProtocol(app_id, protocol_url.scheme())) {
-      chrome::ShowWebAppProtocolLaunchDialog(
+      ShowWebAppProtocolLaunchDialog(
           std::move(protocol_url), profile, app_id,
           base::BindOnce(&UserChoiceDialogCompleted, std::move(params),
                          WebAppFileHandlerManager::LaunchInfos(), profile,
@@ -346,7 +346,7 @@ void WebAppShimManagerDelegate::LaunchApp(
 
     if (web_app->file_handler_approval_state() ==
         ApiApprovalState::kRequiresPrompt) {
-      chrome::ShowWebAppFileLaunchDialog(
+      ShowWebAppFileLaunchDialog(
           launch_files, profile, app_id,
           base::BindOnce(&UserChoiceDialogCompleted, std::move(params),
                          file_launches, profile,

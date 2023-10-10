@@ -6,9 +6,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -53,7 +53,7 @@ class WebAppIdentityUpdateConfirmationViewBrowserTest
     auto* bitmap = image.bitmap();
     std::u16string old_name = u"Old App Title";
     std::u16string new_name = title_change_ ? u"New App Title" : old_name;
-    chrome::ShowWebAppIdentityUpdateDialog(
+    web_app::ShowWebAppIdentityUpdateDialog(
         app_id_, title_change_, icon_change_, old_name, new_name, *bitmap,
         *bitmap, browser()->tab_strip_model()->GetActiveWebContents(),
         base::DoNothing());

@@ -11,7 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/common/web_app_id.h"
@@ -35,10 +35,9 @@ class LaunchAppUserChoiceDialogView : public views::DialogDelegateView {
  public:
   METADATA_HEADER(LaunchAppUserChoiceDialogView);
 
-  LaunchAppUserChoiceDialogView(
-      Profile* profile,
-      const webapps::AppId& app_id,
-      chrome::WebAppLaunchAcceptanceCallback close_callback);
+  LaunchAppUserChoiceDialogView(Profile* profile,
+                                const webapps::AppId& app_id,
+                                WebAppLaunchAcceptanceCallback close_callback);
 
   LaunchAppUserChoiceDialogView(const LaunchAppUserChoiceDialogView&) = delete;
   LaunchAppUserChoiceDialogView& operator=(
@@ -72,7 +71,7 @@ class LaunchAppUserChoiceDialogView : public views::DialogDelegateView {
   const webapps::AppId app_id_;
   raw_ptr<views::Checkbox> remember_selection_checkbox_;
   raw_ptr<views::ImageView> icon_image_view_;
-  chrome::WebAppLaunchAcceptanceCallback close_callback_;
+  WebAppLaunchAcceptanceCallback close_callback_;
   base::WeakPtrFactory<LaunchAppUserChoiceDialogView> weak_ptr_factory_{this};
 };
 

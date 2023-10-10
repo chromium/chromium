@@ -31,12 +31,12 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/startup/infobar_utils.h"
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/startup/startup_types.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -254,8 +254,8 @@ class StartupWebAppCreator
       std::move(launch_callback)
           .Run(/*allowed=*/true, /*remember_user_choice=*/false);
     } else {
-      chrome::ShowWebAppProtocolLaunchDialog(protocol_url_, profile_, app_id_,
-                                             std::move(launch_callback));
+      ShowWebAppProtocolLaunchDialog(protocol_url_, profile_, app_id_,
+                                     std::move(launch_callback));
     }
     return LaunchResult::kHandled;
   }
@@ -284,8 +284,8 @@ class StartupWebAppCreator
 
     switch (web_app->file_handler_approval_state()) {
       case ApiApprovalState::kRequiresPrompt:
-        chrome::ShowWebAppFileLaunchDialog(launch_files, profile_, app_id_,
-                                           std::move(launch_callback));
+        ShowWebAppFileLaunchDialog(launch_files, profile_, app_id_,
+                                   std::move(launch_callback));
         break;
       case ApiApprovalState::kAllowed:
         std::move(launch_callback)
