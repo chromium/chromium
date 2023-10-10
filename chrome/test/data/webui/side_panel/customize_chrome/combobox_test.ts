@@ -43,17 +43,36 @@ suite('ComboboxTest', () => {
     assertFalse(isVisible(combobox.$.dropdown));
   });
 
-  test('HighlightsItemsOnKeydown', async () => {
+  test('OpensAndClosesDropdownOnKeydown', async () => {
+    const option1 = addOption();
+    const option2 = addOption();
+    await flushTasks();
+    assertFalse(isVisible(combobox.$.dropdown));
+
+    function assertDropdownOpensAndHighlightsFirst(
+        key: string, expectedHighlight: HTMLElement) {
+      combobox.dispatchEvent(new KeyboardEvent('keydown', {key}));
+      assertTrue(isVisible(combobox.$.dropdown));
+      assertEquals(expectedHighlight, combobox.querySelector('[highlighted]'));
+      // Close the dropdown.
+      combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
+    }
+
+    assertDropdownOpensAndHighlightsFirst('ArrowDown', option1);
+    assertDropdownOpensAndHighlightsFirst('ArrowUp', option2);
+    assertDropdownOpensAndHighlightsFirst('Home', option1);
+    assertDropdownOpensAndHighlightsFirst('End', option2);
+    assertDropdownOpensAndHighlightsFirst('Enter', option1);
+    assertDropdownOpensAndHighlightsFirst('Space', option1);
+  });
+
+  test('HighlightsItemsOnKeydownWhenOpen', async () => {
     const groupA = addGroup();
     const optionA1 = addOption(groupA);
     const optionA2 = addOption(groupA);
     const groupB = addGroup();
     const optionB1 = addOption(groupB);
     await flushTasks();
-
-    // In collapsed state, should not highlight anything.
-    combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
-    assertEquals(null, combobox.querySelector('[highlighted]'));
 
     // ArrowDown should loop through list.
     combobox.$.input.click();
@@ -80,8 +99,9 @@ suite('ComboboxTest', () => {
     combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'End'}));
     assertEquals(optionB1, combobox.querySelector('[highlighted]'));
 
-    // Resets highlighted item when collapsing.
-    combobox.$.input.dispatchEvent(new FocusEvent('focusout'));
+    // Closes when hitting Escape and resets highlight.
+    combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
+    assertFalse(isVisible(combobox.$.dropdown));
     assertEquals(null, combobox.querySelector('[highlighted]'));
   });
 });

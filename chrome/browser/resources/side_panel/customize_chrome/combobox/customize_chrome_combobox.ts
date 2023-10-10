@@ -96,6 +96,48 @@ export class CustomizeChromeCombobox extends PolymerElement {
   }
 
   private onKeydown_(e: KeyboardEvent) {
+    if (this.expanded_) {
+      this.onKeydownExpandedState_(e);
+    } else {
+      this.onKeydownCollapsedState_(e);
+    }
+  }
+
+  private onKeydownCollapsedState_(e: KeyboardEvent) {
+    if (!['ArrowDown', 'ArrowUp', 'Home', 'End', 'Enter', 'Space'].includes(
+            e.key)) {
+      return;
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.expanded_ = true;
+    if (this.highlightedElement_) {
+      // If an item is already highlighted, nothing to do.
+      return;
+    }
+
+    // Highlight the first item for most keys, unless the key is ArrowUp/End.
+    let elementToHighlight = this.highlightableElements_[0];
+    if (e.key === 'ArrowUp' || e.key === 'End') {
+      elementToHighlight =
+          this.highlightableElements_[this.highlightableElements_.length - 1];
+    }
+
+    if (elementToHighlight) {
+      this.highlightElement_(elementToHighlight);
+    }
+  }
+
+  private onKeydownExpandedState_(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      this.expanded_ = false;
+      return;
+    }
+
     if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) {
       return;
     }
@@ -127,9 +169,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
       index = 0;
     }
 
-    if (this.expanded_) {
-      this.highlightElement_(this.highlightableElements_[index]!);
-    }
+    this.highlightElement_(this.highlightableElements_[index]!);
   }
 }
 
