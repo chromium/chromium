@@ -1016,6 +1016,11 @@ class CORE_EXPORT Node : public EventTarget {
 
   void Trace(Visitor*) const override;
 
+  bool IsModifiedBySoftNavigation() {
+    return GetFlag(kModifiedBySoftNavigation);
+  }
+  void SetIsModifiedBySoftNavigation() { SetFlag(kModifiedBySoftNavigation); }
+
  private:
   enum NodeFlags : uint32_t {
     // getNodeType() is called extensively. As it's called quite a bit its
@@ -1075,9 +1080,13 @@ class CORE_EXPORT Node : public EventTarget {
     // RuntimeEnabledFeatures::CSSPseudoDirEnabled():
     kDirAutoInheritsFromParent = 1u << 30,
 
+    // Indicates that the node was added in a task descendant of a potential
+    // soft navigation.
+    kModifiedBySoftNavigation = 1u << 31,
+
     kDefaultNodeFlags = kIsFinishedParsingChildrenFlag,
 
-    // 1 bit remaining.
+    // 0 bits remaining.
   };
 
   ALWAYS_INLINE bool GetFlag(NodeFlags mask) const {

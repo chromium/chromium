@@ -988,7 +988,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
                                                  parent_task);
     }
   }
-  if (heuristics) {
+  if (heuristics && new_url != old_url) {
     // if `heuristics` exists it means we're in an outermost main frame, and in
     // the main world.
     CHECK(script_state);

@@ -109,33 +109,39 @@ const PaintTiming* PaintTiming::From(const Document& document) {
 }
 
 void PaintTiming::MarkFirstPaint() {
-  // Test that |first_paint_| is non-zero here, as well as in setFirstPaint, so
-  // we avoid invoking monotonicallyIncreasingTime() on every call to
-  // markFirstPaint().
-  if (!first_paint_.is_null())
+  // Test that |first_paint_| is non-zero here, as well as in
+  // setFirstPaint, so we avoid invoking monotonicallyIncreasingTime() on every
+  // call to markFirstPaint().
+  PaintDetails& relevant_paint_details = GetRelevantPaintDetails();
+  if (!relevant_paint_details.first_paint_.is_null()) {
     return;
+  }
   DCHECK_EQ(IgnorePaintTimingScope::IgnoreDepth(), 0);
   SetFirstPaint(clock_->NowTicks());
 }
 
 void PaintTiming::MarkFirstContentfulPaint() {
-  // Test that |first_contentful_paint_| is non-zero here, as well as in
-  // SetFirstContentfulPaint, so we avoid invoking
+  // Test that |first_contentful_paint_| is non-zero here, as
+  // well as in SetFirstContentfulPaint, so we avoid invoking
   // MonotonicallyIncreasingTime() on every call to
   // MarkFirstContentfulPaint().
-  if (!first_contentful_paint_.is_null())
+  PaintDetails& relevant_paint_details = GetRelevantPaintDetails();
+  if (!relevant_paint_details.first_contentful_paint_.is_null()) {
     return;
+  }
   if (IgnorePaintTimingScope::IgnoreDepth() > 0)
     return;
   SetFirstContentfulPaint(clock_->NowTicks());
 }
 
 void PaintTiming::MarkFirstImagePaint() {
-  if (!first_image_paint_.is_null())
+  PaintDetails& relevant_paint_details = GetRelevantPaintDetails();
+  if (!relevant_paint_details.first_image_paint_.is_null()) {
     return;
+  }
   DCHECK_EQ(IgnorePaintTimingScope::IgnoreDepth(), 0);
-  first_image_paint_ = clock_->NowTicks();
-  SetFirstContentfulPaint(first_image_paint_);
+  relevant_paint_details.first_image_paint_ = clock_->NowTicks();
+  SetFirstContentfulPaint(relevant_paint_details.first_image_paint_);
   RegisterNotifyPresentationTime(PaintEvent::kFirstImagePaint);
 }
 
@@ -147,13 +153,16 @@ void PaintTiming::MarkFirstEligibleToPaint() {
   NotifyPaintTimingChanged();
 }
 
-// We deliberately use |first_paint_| here rather than
-// |first_paint_presentation_|, because |first_paint_presentation_| is set
-// asynchronously and we need to be able to rely on a synchronous check that
-// SetFirstPaintPresentation hasn't been scheduled or run.
+// We deliberately use |paint_details_.first_paint_| here rather than
+// |paint_details_.first_paint_presentation_|, because
+// |paint_details_.first_paint_presentation_| is set asynchronously and we need
+// to be able to rely on a synchronous check that SetFirstPaintPresentation
+// hasn't been scheduled or run.
 void PaintTiming::MarkIneligibleToPaint() {
-  if (first_eligible_to_paint_.is_null() || !first_paint_.is_null())
+  if (first_eligible_to_paint_.is_null() ||
+      !paint_details_.first_paint_.is_null()) {
     return;
+  }
 
   first_eligible_to_paint_ = base::TimeTicks();
   NotifyPaintTimingChanged();
@@ -239,37 +248,51 @@ void PaintTiming::NotifyPaintTimingChanged() {
 }
 
 void PaintTiming::SetFirstPaint(base::TimeTicks stamp) {
-  if (!first_paint_.is_null())
+  PaintDetails& relevant_paint_details = GetRelevantPaintDetails();
+  if (!relevant_paint_details.first_paint_.is_null()) {
     return;
+  }
 
   DCHECK_EQ(IgnorePaintTimingScope::IgnoreDepth(), 0);
 
-  first_paint_ = stamp;
+  relevant_paint_details.first_paint_ = stamp;
   RegisterNotifyPresentationTime(PaintEvent::kFirstPaint);
 
-  LocalFrame* frame = GetFrame();
-  if (frame && frame->GetDocument()) {
-    frame->GetDocument()->MarkFirstPaint();
+  if (!first_paints_reset_) {
+    LocalFrame* frame = GetFrame();
+    if (frame && frame->GetDocument()) {
+      frame->GetDocument()->MarkFirstPaint();
+    }
   }
 }
 
 void PaintTiming::SetFirstContentfulPaint(base::TimeTicks stamp) {
-  if (!first_contentful_paint_.is_null())
+  PaintDetails& relevant_paint_details = GetRelevantPaintDetails();
+  if (!relevant_paint_details.first_contentful_paint_.is_null()) {
     return;
+  }
   DCHECK_EQ(IgnorePaintTimingScope::IgnoreDepth(), 0);
+
+  relevant_paint_details.first_contentful_paint_ = stamp;
+
+  // This only happens in hard navigations.
+  if (!first_paints_reset_) {
+    LocalFrame* frame = GetFrame();
+    if (!frame) {
+      return;
+    }
+    frame->View()->OnFirstContentfulPaint();
+
+    if (frame->IsMainFrame() && frame->GetFrameScheduler()) {
+      frame->GetFrameScheduler()->OnFirstContentfulPaintInMainFrame();
+    }
+  }
   SetFirstPaint(stamp);
-  first_contentful_paint_ = stamp;
   RegisterNotifyPresentationTime(PaintEvent::kFirstContentfulPaint);
 
-  LocalFrame* frame = GetFrame();
-  if (!frame)
-    return;
-  frame->View()->OnFirstContentfulPaint();
-
-  if (frame->IsMainFrame() && frame->GetFrameScheduler())
-    frame->GetFrameScheduler()->OnFirstContentfulPaintInMainFrame();
-
-  NotifyPaintTimingChanged();
+  if (!first_paints_reset_ || soft_navigation_detected_) {
+    NotifyPaintTimingChanged();
+  }
 }
 
 void PaintTiming::RegisterNotifyPresentationTime(PaintEvent event) {
@@ -326,28 +349,49 @@ void PaintTiming::ReportFirstPaintAfterBackForwardCacheRestorePresentationTime(
 }
 
 void PaintTiming::SetFirstPaintPresentation(base::TimeTicks stamp) {
-  DCHECK(first_paint_presentation_.is_null());
-  first_paint_presentation_ = stamp;
+  if (first_paints_reset_ && !soft_navigation_detected_) {
+    // We're expecting a soft navigation paint, but soft navigation wasn't yet
+    // detected. Avoid reporting it for now, and it'll be reported once soft
+    // navigation is detected.
+    soft_navigation_pending_first_paint_presentation_ = stamp;
+    return;
+  }
+  PaintDetails& relevant_paint_details = GetRelevantPaintDetails();
+  soft_navigation_pending_first_paint_presentation_ = base::TimeTicks();
+  DCHECK(relevant_paint_details.first_paint_presentation_.is_null());
+  relevant_paint_details.first_paint_presentation_ = stamp;
   if (first_paint_presentation_for_ukm_.is_null()) {
     first_paint_presentation_for_ukm_ = stamp;
   }
-  probe::PaintTiming(GetSupplementable(), "firstPaint",
-                     first_paint_presentation_.since_origin().InSecondsF());
+  probe::PaintTiming(
+      GetSupplementable(), "firstPaint",
+      relevant_paint_details.first_paint_presentation_.since_origin()
+          .InSecondsF());
   WindowPerformance* performance = GetPerformanceInstance(GetFrame());
   if (performance) {
     performance->AddFirstPaintTiming(
-        first_paint_presentation_,
+        relevant_paint_details.first_paint_presentation_,
         /*is_triggered_by_soft_navigation=*/first_paints_reset_);
   }
   NotifyPaintTimingChanged();
 }
 
 void PaintTiming::SetFirstContentfulPaintPresentation(base::TimeTicks stamp) {
-  DCHECK(first_contentful_paint_presentation_.is_null());
+  if (first_paints_reset_ && !soft_navigation_detected_) {
+    // We're expecting a soft navigation paint, but soft navigation wasn't yet
+    // detected. Avoid reporting it for now, and it'll be reported once soft
+    // navigation is detected.
+    soft_navigation_pending_first_contentful_paint_presentation_ = stamp;
+    return;
+  }
+  PaintDetails& relevant_paint_details = GetRelevantPaintDetails();
+  soft_navigation_pending_first_contentful_paint_presentation_ =
+      base::TimeTicks();
+  DCHECK(relevant_paint_details.first_contentful_paint_presentation_.is_null());
   TRACE_EVENT_INSTANT_WITH_TIMESTAMP0("benchmark,loading",
                                       "GlobalFirstContentfulPaint",
                                       TRACE_EVENT_SCOPE_GLOBAL, stamp);
-  first_contentful_paint_presentation_ = stamp;
+  relevant_paint_details.first_contentful_paint_presentation_ = stamp;
   bool is_soft_navigation_fcp = false;
   if (first_contentful_paint_presentation_ignoring_soft_navigations_
           .is_null()) {
@@ -357,11 +401,12 @@ void PaintTiming::SetFirstContentfulPaintPresentation(base::TimeTicks stamp) {
   }
   probe::PaintTiming(
       GetSupplementable(), "firstContentfulPaint",
-      first_contentful_paint_presentation_.since_origin().InSecondsF());
+      relevant_paint_details.first_contentful_paint_presentation_.since_origin()
+          .InSecondsF());
   WindowPerformance* performance = GetPerformanceInstance(GetFrame());
   if (performance) {
     performance->AddFirstContentfulPaintTiming(
-        first_contentful_paint_presentation_,
+        relevant_paint_details.first_contentful_paint_presentation_,
         /*is_triggered_by_soft_navigation=*/first_paints_reset_);
   }
   // For soft navigations, we just want to report a performance entry, but not
@@ -373,12 +418,12 @@ void PaintTiming::SetFirstContentfulPaintPresentation(base::TimeTicks stamp) {
     GetFrame()->Loader().Progress().DidFirstContentfulPaint();
   NotifyPaintTimingChanged();
   fmp_detector_->NotifyFirstContentfulPaint(
-      first_contentful_paint_presentation_);
+      paint_details_.first_contentful_paint_presentation_);
   InteractiveDetector* interactive_detector =
       InteractiveDetector::From(*GetSupplementable());
   if (interactive_detector) {
     interactive_detector->OnFirstContentfulPaint(
-        first_contentful_paint_presentation_);
+        paint_details_.first_contentful_paint_presentation_);
   }
   auto* coordinator = GetSupplementable()->GetResourceCoordinator();
   if (coordinator && GetFrame() && GetFrame()->IsOutermostMainFrame()) {
@@ -391,11 +436,13 @@ void PaintTiming::SetFirstContentfulPaintPresentation(base::TimeTicks stamp) {
 }
 
 void PaintTiming::SetFirstImagePaintPresentation(base::TimeTicks stamp) {
-  DCHECK(first_image_paint_presentation_.is_null());
-  first_image_paint_presentation_ = stamp;
+  PaintDetails& relevant_paint_details = GetRelevantPaintDetails();
+  DCHECK(relevant_paint_details.first_image_paint_presentation_.is_null());
+  relevant_paint_details.first_image_paint_presentation_ = stamp;
   probe::PaintTiming(
       GetSupplementable(), "firstImagePaint",
-      first_image_paint_presentation_.since_origin().InSecondsF());
+      relevant_paint_details.first_image_paint_presentation_.since_origin()
+          .InSecondsF());
   NotifyPaintTimingChanged();
 }
 
@@ -490,6 +537,18 @@ void PaintTiming::SetLCPMouseoverDispatched() {
     }
   }
   lcp_mouse_over_dispatch_time_ = clock_->NowTicks();
+}
+
+void PaintTiming::SoftNavigationDetected() {
+  soft_navigation_detected_ = true;
+  if (!soft_navigation_pending_first_paint_presentation_.is_null()) {
+    SetFirstPaintPresentation(
+        soft_navigation_pending_first_paint_presentation_);
+  }
+  if (!soft_navigation_pending_first_contentful_paint_presentation_.is_null()) {
+    SetFirstContentfulPaintPresentation(
+        soft_navigation_pending_first_contentful_paint_presentation_);
+  }
 }
 
 }  // namespace blink
