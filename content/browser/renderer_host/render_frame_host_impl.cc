@@ -1607,7 +1607,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   InitializePrivateNetworkRequestPolicy();
 
   unload_event_monitor_timeout_ = std::make_unique<TimeoutMonitor>(
-      base::BindRepeating(&RenderFrameHostImpl::OnMainFrameUnloadTimeout,
+      base::BindRepeating(&RenderFrameHostImpl::OnNavigationUnloadTimeout,
                           weak_ptr_factory_.GetWeakPtr()));
   beforeunload_timeout_ = std::make_unique<TimeoutMonitor>(
       base::BindRepeating(&RenderFrameHostImpl::BeforeUnloadTimeout,
@@ -3494,7 +3494,7 @@ void RenderFrameHostImpl::DeleteRenderFrame(
       // tree. See https://crbug.com/950625.
       subframe_unload_timer_.Start(
           FROM_HERE, subframe_unload_timeout_, this,
-          &RenderFrameHostImpl::OnSubframeUnloadTimeout);
+          &RenderFrameHostImpl::OnSubframeDeletionUnloadTimeout);
     }
   }
 
@@ -5473,16 +5473,24 @@ void RenderFrameHostImpl::OnUnloadACK() {
   // |this| is potentially deleted. Do not add code after this.
 }
 
-void RenderFrameHostImpl::MaybeLogMissingUnloadAck(const char* frame_type) {
+void RenderFrameHostImpl::MaybeLogMissingUnloadAck() {
+  // If you are seeing this logging appear in a flaky test, the test may be
+  // dependent on an unload handler or other sudden-termination disabling event
+  // handler. If so, the test should probably
+  // - call DisableUnloadTimerForTesting() to avoid timeouts on slow devices
+  // - wait for the frame to be deleted e.g. via
+  //   RenderFrameHostWrapper::WaitUntilRenderFrameDeleted
+  // See https://crbug.com/1489568 for more information.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kLogMissingUnloadACK)) {
-    LOG(ERROR) << "Missing unload ACK for " << frame_type << ": "
+    LOG(ERROR) << "Missing unload ACK for "
+               << (IsOutermostMainFrame() ? "main frame" : "subframe") << ": "
                << GetLastCommittedURL();
   }
 }
 
-void RenderFrameHostImpl::OnMainFrameUnloadTimeout() {
-  MaybeLogMissingUnloadAck("main frame");
+void RenderFrameHostImpl::OnNavigationUnloadTimeout() {
+  MaybeLogMissingUnloadAck();
   OnUnloaded();
 }
 
@@ -9927,9 +9935,9 @@ void RenderFrameHostImpl::ResetNavigationsUsingSwappedOutRFH() {
   }
 }
 
-void RenderFrameHostImpl::OnSubframeUnloadTimeout() {
+void RenderFrameHostImpl::OnSubframeDeletionUnloadTimeout() {
   DCHECK(IsPendingDeletion());
-  MaybeLogMissingUnloadAck("subframe");
+  MaybeLogMissingUnloadAck();
   parent_->RemoveChild(GetFrameTreeNodeForUnload());
 }
 

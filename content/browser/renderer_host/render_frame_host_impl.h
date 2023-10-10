@@ -1099,7 +1099,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void OnUnloadACK();
 
   // Depending on switches, may log when an unload ack has not been received.
-  void MaybeLogMissingUnloadAck(const char* frame_type);
+  void MaybeLogMissingUnloadAck();
 
   // Remove this frame and its children. This happens asynchronously, an IPC
   // round trip with the renderer process is needed to ensure children's unload
@@ -3825,12 +3825,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // This function should only be called on swapped out RenderFrameHosts.
   void ResetNavigationsUsingSwappedOutRFH();
 
-  // Called on an unloading subframe when its unload timeout is reached. This
-  // immediately deletes the RenderFrameHost.
-  void OnSubframeUnloadTimeout();
-  // Called on an unloading main frame when its unload timeout is reached. This
-  // might log an error.
-  void OnMainFrameUnloadTimeout();
+  // Called when on a subframe that is being deleted when its unload timeout is
+  // reached. This immediately deletes the RenderFrameHost.
+  void OnSubframeDeletionUnloadTimeout();
+  // Called on a frame that is being navigated away from when its unload timeout
+  // is reached.
+  void OnNavigationUnloadTimeout();
 
   // Runs interception set up in testing code, if any.
   // Returns true if we should proceed to the Commit callback, false otherwise.
