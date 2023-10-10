@@ -1221,7 +1221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.CaptureModeInitBlocked" enum="BooleanBlocked"
-    expires_after="2023-10-08">
+    expires_after="2024-10-08">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1576,7 +1576,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.RestrictionConfigured"
-    enum="EnterpriseDlpPolicyRestriction" expires_after="2023-10-08">
+    enum="EnterpriseDlpPolicyRestriction" expires_after="2024-10-08">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
