@@ -164,10 +164,6 @@ wayland_protocol("wayland_drm_protocol") {
   sources = [ "mesa/wayland-drm/wayland-drm.xml" ]
 }
 
-wayland_protocol("weston_test") {
-  sources = [ "unstable/weston-test/weston-test.xml" ]
-}
-
 wayland_protocol("xdg_activation") {
   # XDG activation has been introduced in wayland-protocols version 1.21, which
   # is newer than 1.18 which is in the sysroot for Debian 11.5 (Bullseye).
