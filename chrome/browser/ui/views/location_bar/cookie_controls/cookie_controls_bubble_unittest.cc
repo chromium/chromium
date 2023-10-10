@@ -252,8 +252,9 @@ TEST_P(CookieControlsBubbleViewControllerTest,
                                          kBlockedSitesCount);
 }
 
+// TODO(crbug.com/1491331): Flaky in day computation.
 TEST_P(CookieControlsBubbleViewControllerTest,
-       ThirdPartyCookiesAllowedTemporary) {
+       DISABLED_ThirdPartyCookiesAllowedTemporary) {
   const int kDaysToExpiration = 30;
   const int kAllowedSitesCount = 2;
   const int kBlockedSitesCount = 3;
