@@ -339,7 +339,8 @@ struct InsecureDownloadData {
       // who told us to download them (i.e. have an insecure initiator).
       is_insecure_download_ =
           ((initiator_.has_value() &&
-            !network::IsUrlPotentiallyTrustworthy(initiator_->GetURL())) ||
+            (!initiator_->opaque() &&
+             !network::IsUrlPotentiallyTrustworthy(initiator_->GetURL()))) ||
            !download_delivered_securely) &&
           !net::IsLocalhost(dl_url);
     }
