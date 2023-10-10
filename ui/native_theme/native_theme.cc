@@ -50,9 +50,22 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
     scoped_refptr<ColorProviderKey::ThemeInitializerSupplier> custom_theme,
     bool use_custom_frame) const {
   ui::ColorProviderKey key;
-  key.color_mode = (GetDefaultSystemColorScheme() == ColorScheme::kDark)
-                       ? ColorProviderKey::ColorMode::kDark
-                       : ColorProviderKey::ColorMode::kLight;
+
+  switch (GetDefaultSystemColorScheme()) {
+    case ColorScheme::kDark:
+      key.color_mode = ColorProviderKey::ColorMode::kDark;
+      break;
+    case ColorScheme::kLight:
+      key.color_mode = ColorProviderKey::ColorMode::kLight;
+      break;
+    case ColorScheme::kPlatformHighContrast:
+      key.color_mode = GetPreferredColorScheme() == PreferredColorScheme::kDark
+                           ? ColorProviderKey::ColorMode::kDark
+                           : ColorProviderKey::ColorMode::kLight;
+      break;
+    default:
+      NOTREACHED_NORETURN();
+  }
   key.contrast_mode = UserHasContrastPreference()
                           ? ColorProviderKey::ContrastMode::kHigh
                           : ColorProviderKey::ContrastMode::kNormal;
