@@ -1546,6 +1546,9 @@ public class BookmarkManagerMediatorTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
     public void testClearSearchTextRunnable() {
+        when(mBookmarkModel.searchBookmarks(anyString(), anyInt()))
+                .thenReturn(Collections.singletonList(mFolderId1));
+
         finishLoading();
         mMediator.openFolder(mFolderId1);
         assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
@@ -1563,11 +1566,16 @@ public class BookmarkManagerMediatorTest {
         assertEquals(searchText, propertyModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
         assertTrue(propertyModel.get(
                 BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
+        verify(mBookmarkModel, times(1)).searchBookmarks(anyString(), anyInt());
+        verifyCurrentBookmarkIds(null, mFolderId1);
 
         clearSearchTextRunnable.run();
         assertEquals("", propertyModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
         assertFalse(propertyModel.get(
                 BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
+        // It shouldn't search again.
+        verify(mBookmarkModel, times(1)).searchBookmarks(anyString(), anyInt());
+        assertEquals(1, mModelList.size());
     }
 
     @Test

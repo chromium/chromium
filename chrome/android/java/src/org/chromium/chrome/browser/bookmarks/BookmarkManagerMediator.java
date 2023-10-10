@@ -1426,7 +1426,7 @@ class BookmarkManagerMediator
     }
 
     private void onClearSearchTextRunnable() {
-        setSearchTextAndUpdateButtonVisibility("");
+        onSearchTextChangeCallback("");
     }
 
     private void setSearchTextAndUpdateButtonVisibility(String searchText) {
