@@ -351,7 +351,7 @@ struct NGStitchedAnchorQueries {
     return *result.stored_value->value;
   }
 
-  HeapHashMap<const LayoutObject*, Member<NGStitchedAnchorQuery>>
+  HeapHashMap<Member<const LayoutObject>, Member<NGStitchedAnchorQuery>>
       anchor_queries_;
   // The set of |LayoutObject| to traverse. When adding children, children not
   // in this set are skipped.

@@ -392,7 +392,8 @@ TouchEventManager::DispatchTouchEventFromAccumulatdTouchPoints() {
 
   // A different view on the 'touches' list above, filtered and grouped by
   // event target. Used for the |targetTouches| list in the JS event.
-  using TargetTouchesHeapMap = HeapHashMap<EventTarget*, Member<TouchList>>;
+  using TargetTouchesHeapMap =
+      HeapHashMap<Member<EventTarget>, Member<TouchList>>;
   TargetTouchesHeapMap touches_by_target;
 
   // Array of touches per state, used to assemble the |changedTouches| list.

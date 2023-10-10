@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/wtf/conditional_destructor.h"
 #include "third_party/blink/renderer/platform/wtf/construct_traits.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
+#include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
 #if !defined(DUMP_HASHTABLE_STATS)
 #define DUMP_HASHTABLE_STATS 0
@@ -95,19 +96,6 @@
 #endif
 
 namespace WTF {
-
-// This is for tracing inside collections that have special support for weak
-// pointers.
-//
-// Structure:
-// - |Trace|: Traces the contents and returns true if there are still unmarked
-//   objects left to process
-//
-// Default implementation for non-weak types is to use the regular non-weak
-// TraceTrait. Default implementation for types with weakness is to
-// call |TraceInCollection| on the type's trait.
-template <WeakHandlingFlag weakness, typename T, typename Traits>
-struct TraceInCollectionTrait;
 
 #if DUMP_HASHTABLE_STATS || DUMP_HASHTABLE_STATS_PER_TABLE
 struct WTF_EXPORT HashTableStats {
