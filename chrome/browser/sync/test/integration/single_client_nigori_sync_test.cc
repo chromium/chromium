@@ -61,6 +61,7 @@
 #include "crypto/ec_private_key.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -368,6 +369,20 @@ class SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest
 
  private:
   base::test::ScopedFeatureList override_features_;
+};
+
+// Some tests are flaky on Chromeos when run with IP Protection enabled.
+// TODO(crbug.com/1491411): Fix flakes.
+class SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTestNoIpProt
+    : public SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest {
+ public:
+  SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTestNoIpProt() {
+    feature_list_.InitAndDisableFeature(
+        net::features::kEnableIpProtectionProxy);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
@@ -787,7 +802,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest,
+    SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTestNoIpProt,
     PRE_ShouldSyncCrossUserSharingPublicPrivateKeyPair) {
   const std::vector<std::vector<uint8_t>>& keystore_keys =
       GetFakeServer()->GetKeystoreKeys();
@@ -807,7 +822,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest,
+    SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTestNoIpProt,
     ShouldSyncCrossUserSharingPublicPrivateKeyPair) {
   ASSERT_TRUE(SetupSync());
   sync_pb::NigoriSpecifics specifics;

@@ -8839,6 +8839,50 @@
             ]
         }
     ],
+    "IPProtectionPhase0": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "enabled_proxy_a_ip_protection_phase_0_2023-09-28",
+                    "params": {
+                        "IpPrivacyDirectOnly": "false"
+                    },
+                    "enable_features": [
+                        "EnableIpPrivacyProxy",
+                        "MaskedDomainList"
+                    ]
+                },
+                {
+                    "name": "enabled_direct_ip_protection_phase_0_2023-09-28",
+                    "params": {
+                        "IpPrivacyDirectOnly": "true"
+                    },
+                    "enable_features": [
+                        "EnableIpPrivacyProxy",
+                        "MaskedDomainList"
+                    ]
+                },
+                {
+                    "name": "control_prestable_phase0_2023-09-28",
+                    "params": {
+                        "IpPrivacyDirectOnly": "false"
+                    },
+                    "disable_features": [
+                        "EnableIpPrivacyProxy",
+                        "MaskedDomainList"
+                    ]
+                }
+            ]
+        }
+    ],
     "IdentifiabilityStudy": [
         {
             "platforms": [

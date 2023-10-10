@@ -30,6 +30,7 @@
 #include "components/sync/test/fake_server_nigori_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
+#include "net/base/features.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 
 namespace {
@@ -127,6 +128,20 @@ class SingleClientPasswordsSyncTestWithNotesDisableAfterEnable
 
  private:
   PasswordForm password_form_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Some tests are flaky on Chromeos when run with IP Protection enabled.
+// TODO(crbug.com/1491411): Fix flakes.
+class SingleClientPasswordsSyncTestWithNotesDisableAfterEnableNoIpProt
+    : public SingleClientPasswordsSyncTestWithNotesDisableAfterEnable {
+ public:
+  SingleClientPasswordsSyncTestWithNotesDisableAfterEnableNoIpProt() {
+    feature_list_.InitAndDisableFeature(
+        net::features::kEnableIpProtectionProxy);
+  }
+
+ private:
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -718,8 +733,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithNotes,
 // The follow 3 tests are testing the interaction between clients that support
 // and don't support notes. The test fixture enables the features for even
 // number of PREs.
-IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithNotesDisableAfterEnable,
-                       PRE_PRE_ServerPreservesNotesBackup) {
+IN_PROC_BROWSER_TEST_F(
+    SingleClientPasswordsSyncTestWithNotesDisableAfterEnableNoIpProt,
+    PRE_PRE_ServerPreservesNotesBackup) {
   // Enabled by the test fixture.
   ASSERT_TRUE(base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
@@ -733,8 +749,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithNotesDisableAfterEnable,
   EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 1).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithNotesDisableAfterEnable,
-                       PRE_ServerPreservesNotesBackup) {
+IN_PROC_BROWSER_TEST_F(
+    SingleClientPasswordsSyncTestWithNotesDisableAfterEnableNoIpProt,
+    PRE_ServerPreservesNotesBackup) {
   // Disabled by the test fixture.
   ASSERT_FALSE(base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
   // The server should still contains the entity with the note.
@@ -768,8 +785,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithNotesDisableAfterEnable,
   ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 2).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithNotesDisableAfterEnable,
-                       ServerPreservesNotesBackup) {
+IN_PROC_BROWSER_TEST_F(
+    SingleClientPasswordsSyncTestWithNotesDisableAfterEnableNoIpProt,
+    ServerPreservesNotesBackup) {
   // Enabled by the test fixture.
   ASSERT_TRUE(base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
   // The server now should have two entities.
