@@ -2829,11 +2829,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-first-party-sets",
-    "owners": [ "chrome-first-party-sets@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-follow-IPH-exp-params",
     "owners": [ "sczs", "tinazwang" ],
     "expiry_milestone": 123

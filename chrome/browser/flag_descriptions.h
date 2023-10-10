@@ -514,9 +514,6 @@ extern const char kUseDnsHttpsSvcbAlpnDescription[];
 extern const char kEditContextName[];
 extern const char kEditContextDescription[];
 
-extern const char kEnableFirstPartySetsName[];
-extern const char kEnableFirstPartySetsDescription[];
-
 extern const char kSHA1ServerSignatureName[];
 extern const char kSHA1ServerSignatureDescription[];
 

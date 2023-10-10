@@ -8887,10 +8887,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kChromeWebuiRefresh2023Description, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kChromeWebuiRefresh2023)},
 
-    {"enable-first-party-sets", flag_descriptions::kEnableFirstPartySetsName,
-     flag_descriptions::kEnableFirstPartySetsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFirstPartySets)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-enable-offers-in-clank-keyboard-accessory",
      flag_descriptions::kAutofillEnableOffersInClankKeyboardAccessoryName,
