@@ -1165,51 +1165,6 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "aura_unittests amd64-generic",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "kvm": "1",
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "aura_unittests",
-        "test_id_prefix": "ninja://ui/aura:aura_unittests/",
-        "variant_id": "amd64-generic"
-      },
-      {
-        "args": [
-          "--board=eve",
-          "--flash"
-        ],
-        "ci_only": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "aura_unittests eve",
-        "swarming": {
-          "dimensions": {
-            "device_type": "eve",
-            "os": "ChromeOS"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "aura_unittests",
-        "test_id_prefix": "ninja://ui/aura:aura_unittests/",
-        "trigger_script": {
-          "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
-        },
-        "variant_id": "eve"
-      },
-      {
-        "args": [
-          "--board=amd64-generic",
-          "--use-vm"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "name": "base_unittests amd64-generic",
         "swarming": {
           "dimensions": {

@@ -220,18 +220,6 @@
       'Linux ChromiumOS MSan Tests',
     ]
   },
-  'aura_unittests amd64-generic': {
-    'remove_from': [
-      # TODO(crbug.com/1204231): Re-enable.
-      'lacros-amd64-generic-rel',
-    ]
-  },
-  'aura_unittests eve': {
-    'remove_from': [
-      # TODO(crbug.com/1204231): Re-enable.
-      'lacros-amd64-generic-rel',
-    ]
-  },
   'base_unittests': {
     'modifications': {
       'ToTAndroid': {
@@ -3296,13 +3284,6 @@
       },
     },
   },
-  'lacros_all_tast_tests amd64-generic': {
-    'modifications': {
-      'lacros-amd64-generic-rel': {
-        'ci_only': True,
-      }
-    }
-  },
   'lacros_chrome_browsertests_run_in_series': {
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
@@ -4478,11 +4459,6 @@
         },
       },
     },
-  },
-  'vaapi_unittest eve': {
-    'remove_from': [
-      'lacros-amd64-generic-rel',
-    ]
   },
   'variations_smoke_tests': {
     'modifications': {

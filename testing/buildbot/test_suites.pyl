@@ -4041,7 +4041,6 @@
     },
 
     'lacros_device_or_vm_gtests': {
-      'aura_unittests': {},
       'cc_unittests': {},
       'ozone_unittests': {},
       'vaapi_unittest': {

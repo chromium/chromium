@@ -4728,7 +4728,6 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "lacros_device_or_vm_gtests",
     tests = {
-        "aura_unittests": None,
         "cc_unittests": None,
         "ozone_unittests": None,
         "vaapi_unittest": targets.legacy_test_config(
