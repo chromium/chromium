@@ -23,14 +23,13 @@
         <div class="secondary" id="subLabel" aria-hidden="true">
           [[getSetupLabelText_(online_)]]
         </div>
-        <div class="separator"></div>
-        <cr-button id="setupButton" on-click="handleSetupButtonClick_"
-            disabled$="[[!online_]]" aria-labelledby="label"
-            aria-describedby="subLabel"
-            aria-roledescription="$i18n{parentalControlsSetUpButtonRole}">
-          $i18n{parentalControlsSetUpButtonLabel}
-        </cr-button>
       </div>
+      <cr-button id="setupButton" on-click="handleSetupButtonClick_"
+          disabled$="[[!online_]]" aria-labelledby="label"
+          aria-describedby="subLabel"
+          aria-roledescription="$i18n{parentalControlsSetUpButtonRole}">
+        $i18n{parentalControlsSetUpButtonLabel}
+      </cr-button>
     </template>
   </div>
 </settings-card>
