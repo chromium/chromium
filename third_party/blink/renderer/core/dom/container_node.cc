@@ -52,7 +52,6 @@
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/events/mutation_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/radio_node_list.h"
@@ -66,7 +65,6 @@
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
@@ -354,11 +352,9 @@ void ContainerNode::DidInsertNodeVector(
     const NodeVector& post_insertion_notification_targets) {
   Node* unchanged_previous =
       targets.size() > 0 ? targets[0]->previousSibling() : nullptr;
-  const Document& document = GetDocument();
   for (const auto& target_node : targets) {
     ChildrenChanged(ChildrenChange::ForInsertion(
         *target_node, unchanged_previous, next, ChildrenChangeSource::kAPI));
-    CheckSoftNavigationHeuristicsTracking(document, *target_node);
   }
   for (const auto& descendant : post_insertion_notification_targets) {
     if (descendant->isConnected())
@@ -1728,37 +1724,6 @@ void ContainerNode::ReplaceChildren(const VectorOf<Node>& nodes,
   }
 
   AppendChild(node, exception_state);
-}
-
-void ContainerNode::CheckSoftNavigationHeuristicsTracking(
-    const Document& document,
-    Node& inserted_node) {
-  if (!document.IsTrackingSoftNavigationHeuristics()) {
-    return;
-  }
-  LocalDOMWindow* window = document.domWindow();
-  if (!window) {
-    return;
-  }
-  LocalFrame* frame = window->GetFrame();
-  if (!frame || !frame->IsMainFrame()) {
-    return;
-  }
-  ScriptState* script_state = ToScriptStateForMainWorld(frame);
-  if (!script_state) {
-    return;
-  }
-
-  SoftNavigationHeuristics* heuristics =
-      SoftNavigationHeuristics::From(*window);
-  DCHECK(heuristics);
-  if (heuristics->ModifiedDOM(script_state)) {
-    if (inserted_node.IsHTMLElement()) {
-      inserted_node.SetIsModifiedBySoftNavigation();
-    } else {
-      SetIsModifiedBySoftNavigation();
-    }
-  }
 }
 
 }  // namespace blink

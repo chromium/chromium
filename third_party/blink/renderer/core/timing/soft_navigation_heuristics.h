@@ -24,7 +24,8 @@ class SoftNavigationHeuristics
  public:
   // Supplement boilerplate.
   static const char kSupplementName[];
-  explicit SoftNavigationHeuristics(LocalDOMWindow& window);
+  explicit SoftNavigationHeuristics(LocalDOMWindow& window)
+      : Supplement<LocalDOMWindow>(window) {}
   virtual ~SoftNavigationHeuristics() = default;
   static SoftNavigationHeuristics* From(LocalDOMWindow&);
 
@@ -38,21 +39,16 @@ class SoftNavigationHeuristics
   void ClickEventEnded(ScriptState*);
   void SameDocumentNavigationStarted(ScriptState*);
   void SameDocumentNavigationCommitted(ScriptState*, const String& url);
-  bool ModifiedDOM(ScriptState*);
+  void ModifiedDOM(ScriptState*);
   uint32_t SoftNavigationCount() { return soft_navigation_count_; }
 
   // TaskAttributionTracker::Observer's implementation.
-  void OnCreateTaskScope(scheduler::TaskAttributionInfo&) override;
-  void OnTaskDisposal(const scheduler::TaskAttributionInfo&) override;
+  void OnCreateTaskScope(const scheduler::TaskAttributionId&) override;
   ExecutionContext* GetExecutionContext() override;
-
-  void RecordPaint(LocalFrame*,
-                   uint64_t painted_area,
-                   bool is_modified_by_soft_navigation);
 
  private:
   void ReportSoftNavigationToMetrics(LocalFrame* frame) const;
-  void CheckSoftNavigationConditions();
+  void CheckAndReportSoftNavigation(ScriptState*);
   void SetIsTrackingSoftNavigationHeuristicsOnDocument(bool value) const;
   enum FlagType : uint8_t {
     kURLChange,
@@ -65,18 +61,12 @@ class SoftNavigationHeuristics
                                    FlagType,
                                    bool run_descendent_check);
   void ResetHeuristic();
-  void ResetPaintsIfNeeded(ScriptState*);
-  void CommitPreviousPaints(LocalFrame*);
-  void EmitSoftNavigationEntry(LocalFrame*);
+  void ResetPaintsIfNeeded(LocalFrame*, LocalDOMWindow*);
 
   WTF::HashSet<scheduler::TaskAttributionIdType>
       potential_soft_navigation_task_ids_;
-  size_t disposed_soft_navigation_tasks_ = 0;
-  WTF::HashMap<scheduler::TaskAttributionIdType, bool>
-      soft_navigation_descendant_cache_;
   FlagTypeSet flag_set_;
   bool did_reset_paints_ = false;
-  bool did_commit_previous_paints_ = false;
   String url_;
   // The timestamp just before the event responding to the user's interaction
   // started processing. In case of multiple events for a single interaction
@@ -84,11 +74,6 @@ class SoftNavigationHeuristics
   // timestamp would be the time before processing started on the first event.
   base::TimeTicks user_interaction_timestamp_;
   uint32_t soft_navigation_count_ = 0;
-  uint64_t softnav_painted_area_ = 0;
-  uint64_t initial_painted_area_ = 0;
-  uint64_t viewport_area_ = 0;
-  bool soft_navigation_conditions_met_ = false;
-  bool initial_interaction_encountered_ = false;
 };
 
 // This class defines a scope that would cover click or navigation related

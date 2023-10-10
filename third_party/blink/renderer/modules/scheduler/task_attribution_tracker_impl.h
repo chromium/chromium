@@ -44,8 +44,7 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
   AncestorStatus IsAncestor(ScriptState*, TaskAttributionId parent_id) override;
   AncestorStatus HasAncestorInSet(
       ScriptState*,
-      const WTF::HashSet<scheduler::TaskAttributionIdType>& set,
-      const TaskAttributionInfo& task) override;
+      const WTF::HashSet<scheduler::TaskAttributionIdType>&) override;
 
   std::unique_ptr<TaskScope> CreateTaskScope(ScriptState* script_state,
                                              TaskAttributionInfo* parent_task,
@@ -103,9 +102,7 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
   };
 
   template <typename F>
-  AncestorStatus IsAncestorInternal(ScriptState*,
-                                    F callback,
-                                    const TaskAttributionInfo* task);
+  AncestorStatus IsAncestorInternal(ScriptState*, F callback);
 
   // The TaskScope class maintains information about a task. The task's lifetime
   // match those of TaskScope, and the task is considered terminated when
