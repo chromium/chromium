@@ -118,6 +118,20 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
       },
 
       /**
+       * Tracks if the Chrome code wants the camera switch to be disabled.
+       */
+      cameraSwitchForceDisabled_: {
+        type: Boolean,
+        value: false,
+      },
+
+      shouldDisableCameraToggle_: {
+        type: Boolean,
+        computed: 'computeShouldDisableCameraToggle_(isCameraListEmpty_, ' +
+            'cameraSwitchForceDisabled_)',
+      },
+
+      /**
        * Whether the features related to app permissions should be displayed in
        * privacy hub.
        */
@@ -165,6 +179,8 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   private microphonesConnected_: string[];
   private microphoneHardwareToggleActive_: boolean;
   private shouldDisableMicrophoneToggle_: boolean;
+  private cameraSwitchForceDisabled_: boolean;
+  private shouldDisableCameraToggle_: boolean;
   private showAppPermissions_: boolean;
   private showPrivacyHubLocationControl_: boolean;
   private showSpeakOnMuteDetectionPage_: boolean;
@@ -186,6 +202,14 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
     this.browserProxy_.getInitialMicrophoneHardwareToggleState().then(
         (enabled) => {
           this.setMicrophoneHardwareToggleState_(enabled);
+        });
+    this.addWebUiListener(
+        'force-disable-camera-switch', (disabled: boolean) => {
+          this.cameraSwitchForceDisabled_ = disabled;
+        });
+    this.browserProxy_.getInitialCameraSwitchForceDisabledState().then(
+        (disabled) => {
+          this.cameraSwitchForceDisabled_ = disabled;
         });
 
     this.browserProxy_.getCameraLedFallbackState().then((enabled) => {
@@ -245,6 +269,13 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
    */
   private computeShouldDisableMicrophoneToggle_(): boolean {
     return this.microphoneHardwareToggleActive_ || this.isMicListEmpty_;
+  }
+
+  /**
+   * @return Whether privacy hub camera toggle should be disabled.
+   */
+  private computeShouldDisableCameraToggle_(): boolean {
+    return this.cameraSwitchForceDisabled_ || this.isCameraListEmpty_;
   }
 
   private updateMediaDeviceLists_(): void {

@@ -13,6 +13,7 @@
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 #include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
+#include "base/check_deref.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/ash/camera_presence_notifier.h"
 #include "chrome/browser/ui/ash/app_access_notifier.h"
@@ -27,12 +28,20 @@ void SetFrontend(PrivacyHubDelegate* ptr) {
   PrivacyHubController* const controller = PrivacyHubController::Get();
   if (controller != nullptr) {
     // Controller may not be available when used from a test.
-    controller->set_frontend(ptr);
+    controller->SetFrontend(ptr);
   }
 }
 
 bool MicrophoneSwitchState() {
   return ui::MicrophoneMuteSwitchMonitor::Get()->microphone_mute_switch_on();
+}
+
+bool ShouldForceDisableCameraSwitch() {
+  PrivacyHubController* controller = PrivacyHubController::Get();
+  if (!controller || !controller->camera_controller()) {
+    return false;
+  }
+  return controller->camera_controller()->IsCameraAccessForceDisabled();
 }
 
 void SetUpCameraCountObserver() {

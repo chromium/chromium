@@ -21,7 +21,7 @@
       label="$i18n{cameraToggleTitle}"
       sub-label="$i18n{cameraToggleFallbackSubtext}"
       deep-link-focus-id$="[[Setting.kCameraOnOff]]"
-      disabled="[[isCameraListEmpty_]]"
+      disabled="[[shouldDisableCameraToggle_]]"
       on-change="onCameraToggleChanged_">
   </settings-toggle-button>
   </template>
@@ -32,7 +32,7 @@
       label="$i18n{cameraToggleTitle}"
       sub-label="$i18n{cameraToggleSubtext}"
       deep-link-focus-id$="[[Setting.kCameraOnOff]]"
-      disabled="[[isCameraListEmpty_]]"
+      disabled="[[shouldDisableCameraToggle_]]"
       on-change="onCameraToggleChanged_">
   </settings-toggle-button>
   </template>

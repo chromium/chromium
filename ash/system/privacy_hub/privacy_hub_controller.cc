@@ -100,6 +100,13 @@ void PrivacyHubController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kUserGeolocationAllowed, true);
 }
 
+void PrivacyHubController::SetFrontend(PrivacyHubDelegate* ptr) {
+  frontend_ = ptr;
+  if (camera_controller()) {
+    camera_controller()->SetFrontend(frontend_);
+  }
+}
+
 CameraPrivacySwitchController* PrivacyHubController::camera_controller() {
   return camera_controller_.get();
 }

@@ -95,6 +95,7 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
 class MockFrontendAPI : public PrivacyHubDelegate {
  public:
   MOCK_METHOD(void, MicrophoneHardwareToggleChanged, (bool), (override));
+  MOCK_METHOD(void, SetForceDisableCameraSwitch, (bool), (override));
 };
 
 }  // namespace
@@ -140,7 +141,7 @@ class PrivacyHubMicrophoneControllerTest
 
     // This makes sure a global instance of `SensorDisabledNotificationDelegate`
     // is created before running tests.
-    Shell::Get()->privacy_hub_controller()->set_frontend(&mock_frontend_);
+    Shell::Get()->privacy_hub_controller()->SetFrontend(&mock_frontend_);
 
     // Set up the fake SensorDisabledNotificationDelegate.
     scoped_delegate_ =

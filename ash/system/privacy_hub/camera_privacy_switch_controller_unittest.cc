@@ -112,6 +112,12 @@ class ScopedCameraMuteToggler {
   const bool software_switch_;
 };
 
+class MockFrontendAPI : public PrivacyHubDelegate {
+ public:
+  MOCK_METHOD(void, MicrophoneHardwareToggleChanged, (bool), (override));
+  MOCK_METHOD(void, SetForceDisableCameraSwitch, (bool), (override));
+};
+
 }  // namespace
 
 class PrivacyHubCameraTestBase
@@ -832,6 +838,32 @@ TEST_P(PrivacyHubCameraControllerTest,
     // The previous pref value should be restored.
     EXPECT_EQ(GetUserPref(), previous_value);
   }
+}
+
+TEST_P(PrivacyHubCameraControllerTest,
+       ForceDisableAccessShouldDisableUiSwitch) {
+  ::testing::StrictMock<MockFrontendAPI> mock_frontend;
+  Shell::Get()->privacy_hub_controller()->SetFrontend(&mock_frontend);
+  auto& controller = *CameraPrivacySwitchController::Get();
+
+  EXPECT_CALL(mock_frontend, SetForceDisableCameraSwitch(true));
+
+  controller.SetForceDisableCameraAccess(true);
+
+  Shell::Get()->privacy_hub_controller()->SetFrontend(nullptr);
+}
+
+TEST_P(PrivacyHubCameraControllerTest,
+       StoppingForceDisableAccessShouldReenableUiSwitch) {
+  ::testing::StrictMock<MockFrontendAPI> mock_frontend;
+  Shell::Get()->privacy_hub_controller()->SetFrontend(&mock_frontend);
+  auto& controller = *CameraPrivacySwitchController::Get();
+
+  EXPECT_CALL(mock_frontend, SetForceDisableCameraSwitch(false));
+
+  controller.SetForceDisableCameraAccess(false);
+
+  Shell::Get()->privacy_hub_controller()->SetFrontend(nullptr);
 }
 
 TEST_P(PrivacyHubCameraControllerTest,

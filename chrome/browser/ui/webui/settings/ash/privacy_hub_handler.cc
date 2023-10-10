@@ -31,6 +31,11 @@ void PrivacyHubHandler::RegisterMessages() {
             &PrivacyHubHandler::HandleInitialMicrophoneSwitchState,
             base::Unretained(this)));
     web_ui()->RegisterMessageCallback(
+        "getInitialCameraSwitchForceDisabledState",
+        base::BindRepeating(
+            &PrivacyHubHandler::HandleInitialCameraSwitchForceDisabledState,
+            base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
         "getCameraLedFallbackState",
         base::BindRepeating(
             &PrivacyHubHandler::HandleInitialCameraLedFallbackState,
@@ -65,6 +70,11 @@ void PrivacyHubHandler::MicrophoneHardwareToggleChanged(bool muted) {
   NotifyJS("microphone-hardware-toggle-changed", base::Value(muted));
 }
 
+void PrivacyHubHandler::SetForceDisableCameraSwitch(bool disabled) {
+  DCHECK(ash::features::IsCrosPrivacyHubEnabled());
+  NotifyJS("force-disable-camera-switch", base::Value(disabled));
+}
+
 void PrivacyHubHandler::SetPrivacyPageOpenedTimeStampForTesting(
     base::TimeTicks time_stamp) {
   privacy_page_opened_timestamp_ = time_stamp;
@@ -97,6 +107,14 @@ void PrivacyHubHandler::HandleInitialMicrophoneSwitchState(
   const auto callback_id = ValidateArgs(args);
   const auto value = base::Value(privacy_hub_util::MicrophoneSwitchState());
   ResolveJavascriptCallback(callback_id, value);
+}
+
+void PrivacyHubHandler::HandleInitialCameraSwitchForceDisabledState(
+    const base::Value::List& args) {
+  const auto callback_id = ValidateArgs(args);
+  const auto is_disabled =
+      base::Value(privacy_hub_util::ShouldForceDisableCameraSwitch());
+  ResolveJavascriptCallback(callback_id, is_disabled);
 }
 
 void PrivacyHubHandler::HandleInitialCameraLedFallbackState(

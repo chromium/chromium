@@ -21,6 +21,11 @@ void SetFrontend(PrivacyHubDelegate* ptr);
 // Returns the current switch state of the microphone.
 bool MicrophoneSwitchState();
 
+// Returns whether the camera switch should be disabled.
+// Note that the UI switch will always be disabled if no camera is connected
+// to the device, irrespective of what this function returns.
+bool ShouldForceDisableCameraSwitch();
+
 // Needs to be called for the Privacy Hub to be aware of the camera count.
 void SetUpCameraCountObserver();
 

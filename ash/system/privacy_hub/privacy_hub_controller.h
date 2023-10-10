@@ -50,7 +50,7 @@ class ASH_EXPORT PrivacyHubController {
     kMaxValue = kAllowed,
   };
 
-  PrivacyHubController(base::PassKey<PrivacyHubController>);
+  explicit PrivacyHubController(base::PassKey<PrivacyHubController>);
 
   PrivacyHubController(const PrivacyHubController&) = delete;
   PrivacyHubController& operator=(const PrivacyHubController&) = delete;
@@ -83,7 +83,7 @@ class ASH_EXPORT PrivacyHubController {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Sets the frontend adapter (to be used from webui)
-  void set_frontend(PrivacyHubDelegate* ptr) { frontend_ = ptr; }
+  void SetFrontend(PrivacyHubDelegate* ptr);
 
   // Returns the adapter that can be used to modify the frontend
   PrivacyHubDelegate* frontend() { return frontend_; }

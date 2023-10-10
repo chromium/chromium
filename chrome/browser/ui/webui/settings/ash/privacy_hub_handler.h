@@ -27,6 +27,7 @@ class PrivacyHubHandler : public content::WebUIMessageHandler,
 
   // PrivacyHubDelegate
   void MicrophoneHardwareToggleChanged(bool muted) override;
+  void SetForceDisableCameraSwitch(bool disabled) override;
 
   void SetPrivacyPageOpenedTimeStampForTesting(base::TimeTicks time_stamp);
 
@@ -41,7 +42,8 @@ class PrivacyHubHandler : public content::WebUIMessageHandler,
   void HandlePrivacyPageClosed(const base::Value::List& args);
 
   void HandleInitialMicrophoneSwitchState(const base::Value::List& args);
-
+  void HandleInitialCameraSwitchForceDisabledState(
+      const base::Value::List& args);
   void HandleInitialCameraLedFallbackState(const base::Value::List& args);
 
  private:

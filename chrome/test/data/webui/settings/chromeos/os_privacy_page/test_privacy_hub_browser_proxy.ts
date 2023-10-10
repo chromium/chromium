@@ -8,21 +8,29 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 export class TestPrivacyHubBrowserProxy extends TestBrowserProxy implements
     PrivacyHubBrowserProxy {
   microphoneToggleIsEnabled: boolean;
+  cameraSwitchIsForceDisabled: boolean;
   cameraLEDFallbackState: boolean;
   constructor() {
     super([
       'getInitialMicrophoneHardwareToggleState',
+      'getInitialCameraSwitchForceDisabledState',
       'sendLeftOsPrivacyPage',
       'sendOpenedOsPrivacyPage',
       'getCameraLedFallbackState',
     ]);
     this.microphoneToggleIsEnabled = false;
+    this.cameraSwitchIsForceDisabled = false;
     this.cameraLEDFallbackState = false;
   }
 
   getInitialMicrophoneHardwareToggleState(): Promise<boolean> {
     this.methodCalled('getInitialMicrophoneHardwareToggleState');
     return Promise.resolve(this.microphoneToggleIsEnabled);
+  }
+
+  getInitialCameraSwitchForceDisabledState(): Promise<boolean> {
+    this.methodCalled('getInitialCameraSwitchForceDisabledState');
+    return Promise.resolve(this.cameraSwitchIsForceDisabled);
   }
 
   getCameraLedFallbackState(): Promise<boolean> {

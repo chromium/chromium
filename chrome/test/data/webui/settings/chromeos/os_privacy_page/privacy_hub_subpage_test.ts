@@ -79,6 +79,13 @@ async function parametrizedPrivacyHubSubpageTestsuite(
     Router.getInstance().resetRouteForTesting();
   });
 
+  function recreateSubpage(prefs = {}): void {
+    privacyHubSubpage = document.createElement('settings-privacy-hub-subpage');
+    privacyHubSubpage.prefs = prefs;
+    document.body.appendChild(privacyHubSubpage);
+    flush();
+  }
+
   test('Deep link to camera toggle on privacy hub', async () => {
     const params = new URLSearchParams();
     params.append('settingId', '1116');
@@ -600,6 +607,57 @@ async function parametrizedPrivacyHubSubpageTestsuite(
     assertEquals(
         1, privacyHubBrowserProxy.getCallCount('sendLeftOsPrivacyPage'));
   });
+
+  test('Camera toggle initially force disabled', async () => {
+    const getCameraCrToggle = () =>
+        privacyHubSubpage.shadowRoot!.querySelector('#cameraToggle')!
+            .shadowRoot!.querySelector('cr-toggle');
+
+    privacyHubBrowserProxy.cameraSwitchIsForceDisabled = true;
+    recreateSubpage();
+    await privacyHubBrowserProxy.whenCalled(
+        'getInitialCameraSwitchForceDisabledState');
+    await waitAfterNextRender(privacyHubSubpage);
+
+    // There is no MediaDevice connected initially. Camera toggle should be
+    // disabled as no camera is connected.
+    assertTrue(getCameraCrToggle()!.disabled);
+
+    // Add a camera.
+    mediaDevices.addDevice('videoinput', 'Fake Camera');
+    await waitAfterNextRender(privacyHubSubpage);
+
+    // Camera toggle should remain disabled.
+    assertTrue(getCameraCrToggle()!.disabled);
+
+    mediaDevices.popDevice();
+  });
+
+  test('Change force-disable-camera-switch', async () => {
+    const getCameraCrToggle = () =>
+        privacyHubSubpage.shadowRoot!.querySelector('#cameraToggle')!
+            .shadowRoot!.querySelector('cr-toggle');
+
+    // Add a camera so the camera toggle is enabled.
+    mediaDevices.addDevice('videoinput', 'Fake Camera');
+    await waitAfterNextRender(privacyHubSubpage);
+    assertFalse(getCameraCrToggle()!.disabled);
+
+    // Force disable camera toggle.
+    webUIListenerCallback('force-disable-camera-switch', true);
+    await waitAfterNextRender(privacyHubSubpage);
+    assertTrue(getCameraCrToggle()!.disabled);
+
+    // Stop Force disabling camera toggle.
+    webUIListenerCallback('force-disable-camera-switch', false);
+    await waitAfterNextRender(privacyHubSubpage);
+    assertFalse(getCameraCrToggle()!.disabled);
+
+    // Remove the last camera should again disable the camera toggle.
+    mediaDevices.popDevice();
+    await waitAfterNextRender(privacyHubSubpage);
+    assertTrue(getCameraCrToggle()!.disabled);
+  });
 }
 
 suite(
@@ -798,7 +856,6 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
         metricsConsentBrowserProxy);
 
     settingsPage = document.createElement(pageId);
-
   });
 
   async function setUpPage(prefName: string, isConfigurable: boolean) {

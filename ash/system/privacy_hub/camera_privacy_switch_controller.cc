@@ -166,6 +166,11 @@ void CameraPrivacySwitchSynchronizer::SetUserSwitchPreference(
                      value == CameraSWPrivacySwitchSetting::kEnabled);
 }
 
+void CameraPrivacySwitchSynchronizer::SetFrontend(
+    PrivacyHubDelegate* frontend) {
+  frontend_ = frontend;
+}
+
 void CameraPrivacySwitchSynchronizer::SetForceDisableCameraAccess(
     bool new_value) {
   force_disable_camera_access_ = new_value;
@@ -176,6 +181,10 @@ void CameraPrivacySwitchSynchronizer::SetForceDisableCameraAccess(
     } else {
       RestorePreviousPrefValueMaybe();
     }
+  }
+
+  if (frontend_) {
+    frontend_->SetForceDisableCameraSwitch(new_value);
   }
 }
 

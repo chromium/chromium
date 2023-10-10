@@ -10,8 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "ash/system/privacy_hub/privacy_hub_notification.h"
-#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
@@ -19,6 +18,8 @@
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
 namespace ash {
+
+class PrivacyHubDelegate;
 
 // Enumeration of camera switch states.
 enum class CameraSWPrivacySwitchSetting { kDisabled, kEnabled };
@@ -61,8 +62,13 @@ class ASH_EXPORT CameraPrivacySwitchSynchronizer
   void SetCameraPrivacySwitchAPIForTest(
       std::unique_ptr<CameraPrivacySwitchAPI> switch_api);
 
+  // Sets/unsets the UI frontend delegate.
+  void SetFrontend(PrivacyHubDelegate* frontend);
+
   // Disable camera access, and prevent the user from re-enabling it by graying
   // out the switch in the UI.
+  // Used to prevent a remote Chrome Remote Desktop admin from turning on the
+  // camera to spy on a local user.
   void SetForceDisableCameraAccess(bool value);
   bool IsCameraAccessForceDisabled() const;
 
@@ -80,6 +86,7 @@ class ASH_EXPORT CameraPrivacySwitchSynchronizer
   void RestorePreviousPrefValueMaybe();
   void StorePreviousPrefValue();
 
+  raw_ptr<PrivacyHubDelegate> frontend_ = nullptr;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<CameraPrivacySwitchAPI> switch_api_;
   bool is_camera_observer_added_ = false;
@@ -113,7 +120,6 @@ class ASH_EXPORT CameraPrivacySwitchController
   void ActiveApplicationsChanged(bool application_added);
 
   // Checks if we use the fallback solution for the camera LED.
-  // Returns the boolean value via callback.
   // (go/privacy-hub:camera-led-fallback).
   // TODO(b/289510726): remove when all cameras fully support the software
   // switch.

@@ -94,8 +94,9 @@ class PrivacyHubHandlerTest : public testing::Test {
 
       // Assume that the data is stored in the last valid arg.
       for (const auto& arg : base::Reversed(data->args())) {
-        if (&arg != data->arg1())
+        if (&arg != data->arg1()) {
           return arg.Clone();
+        }
       }
     }
 
@@ -158,6 +159,15 @@ class PrivacyHubHandlerHatsTest : public PrivacyHubHandlerTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class PrivacyHubHandlerCameraSwitchTest
+    : public PrivacyHubHandlerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void ExpectValueMatchesBoolParam(const base::Value& value) const {
+    PrivacyHubHandlerTest::ExpectValueMatchesBoolParam(GetParam(), value);
+  }
+};
+
 TEST_P(PrivacyHubHandlerMicrophoneTest,
        MicrophoneHardwarePrivacySwitchChanged) {
   privacy_hub_handler_.MicrophoneHardwareToggleChanged(GetParam());
@@ -171,18 +181,31 @@ TEST_P(PrivacyHubHandlerMicrophoneTest,
 TEST_P(PrivacyHubHandlerMicrophoneTest, HandleInitialMicrophoneSwitchState) {
   SetParamValueMicrophoneMute();
 
-  base::Value::List args;
-  args.Append(this_test_name_);
-
-  privacy_hub_handler_.HandleInitialMicrophoneSwitchState(args);
+  privacy_hub_handler_.HandleInitialMicrophoneSwitchState(
+      base::Value::List().Append(this_test_name_));
 
   const base::Value data = GetLastWebUIResponse(this_test_name_);
 
   ExpectValueMatchesBoolParam(data);
 }
 
+TEST_P(PrivacyHubHandlerCameraSwitchTest,
+       ForceDisableCameraSwitchSwitchChanged) {
+  privacy_hub_handler_.SetForceDisableCameraSwitch(GetParam());
+
+  const base::Value data =
+      GetLastWebUIListenerData("force-disable-camera-switch");
+
+  ExpectValueMatchesBoolParam(data);
+}
+
 INSTANTIATE_TEST_SUITE_P(HardwareSwitchStates,
                          PrivacyHubHandlerMicrophoneTest,
+                         testing::Values(true, false),
+                         testing::PrintToStringParamName());
+
+INSTANTIATE_TEST_SUITE_P(HardwareSwitchStates,
+                         PrivacyHubHandlerCameraSwitchTest,
                          testing::Values(true, false),
                          testing::PrintToStringParamName());
 
