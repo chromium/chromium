@@ -111,9 +111,8 @@ async def test_remove_intercept_twice(websocket):
                              "string and pattern",
                          ])
 @pytest.mark.asyncio
-async def test_remove_intercept_unblocks(websocket, context_id,
-                                         another_context_id, url_patterns,
-                                         example_url):
+async def test_remove_intercept_unblocks_use_cdp_events(
+        websocket, context_id, another_context_id, url_patterns, example_url):
     await subscribe(websocket, ["cdp.Fetch.requestPaused"])
     await subscribe(websocket, ["network"], [another_context_id])
 
@@ -203,5 +202,142 @@ async def test_remove_intercept_unblocks(websocket, context_id,
             },
             "response": ANY_DICT,
             "timestamp": ANY_TIMESTAMP
+        }
+    }
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("url_patterns", [
+    [
+        {
+            "type": "string",
+            "pattern": "https://www.example.com/",
+        },
+    ],
+    [
+        {
+            "type": "pattern",
+            "protocol": "https",
+            "hostname": "www.example.com",
+            "pathname": "/",
+        },
+    ],
+    [
+        {
+            "type": "string",
+            "pattern": "https://www.example.com/",
+        },
+        {
+            "type": "pattern",
+            "protocol": "https",
+            "hostname": "www.example.com",
+            "pathname": "/",
+        },
+    ],
+],
+                         ids=[
+                             "string",
+                             "pattern",
+                             "string and pattern",
+                         ])
+@pytest.mark.asyncio
+async def test_remove_intercept_unblocks_use_bidi_events(
+        websocket, context_id, another_context_id, url_patterns, example_url):
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+    await subscribe(websocket, ["network"], [another_context_id])
+
+    result = await execute_command(
+        websocket, {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["beforeRequestSent"],
+                "urlPatterns": url_patterns,
+            },
+        })
+
+    assert result == {
+        "intercept": ANY_UUID,
+    }
+    intercept_id = result["intercept"]
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": example_url,
+                "context": context_id,
+            }
+        })
+
+    event_response = await wait_for_event(websocket,
+                                          "network.beforeRequestSent")
+    assert event_response == {
+        "method": "network.beforeRequestSent",
+        "params": {
+            "context": context_id,
+            "initiator": {
+                "type": "other",
+            },
+            "isBlocked": True,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": {
+                "request": ANY_STR,
+                "url": example_url,
+                "method": "GET",
+                "headers": ANY_LIST,
+                "cookies": [],
+                "headersSize": -1,
+                "bodySize": 0,
+                "timings": ANY_DICT
+            },
+            "timestamp": ANY_TIMESTAMP,
+        },
+        "type": "event",
+    }
+
+    result = await execute_command(
+        websocket, {
+            "method": "network.removeIntercept",
+            "params": {
+                "intercept": intercept_id,
+            },
+        })
+    assert result == {}
+
+    # Try again, with the intercept removed, in another context.
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": example_url,
+                "wait": "complete",
+                "context": another_context_id,
+            }
+        })
+
+    # Network events should complete.
+    event_response = await wait_for_event(websocket,
+                                          "network.responseCompleted")
+    assert event_response == {
+        'type': 'event',
+        "method": "network.responseCompleted",
+        "params": {
+            "isBlocked": False,
+            "context": another_context_id,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": {
+                "request": ANY_STR,
+                "url": example_url,
+                "method": "GET",
+                "headers": ANY_LIST,
+                "cookies": [],
+                "headersSize": -1,
+                "bodySize": 0,
+                "timings": ANY_DICT
+            },
+            "response": ANY_DICT,
+            "timestamp": ANY_TIMESTAMP,
         }
     }

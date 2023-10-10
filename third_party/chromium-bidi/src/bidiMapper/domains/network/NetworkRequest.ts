@@ -53,8 +53,12 @@ export class NetworkRequest {
    */
   readonly requestId: Network.Request;
 
-  /** Indicates whether the request is blocked by a network intercept. */
-  #isBlocked = false;
+  // TODO: Handle auth required?
+  /**
+   * Indicates the network intercept phase, if the request is currently blocked.
+   * Undefined necessarily implies that the request is not blocked.
+   */
+  #interceptPhase: Network.InterceptPhase | undefined = undefined;
 
   #servedFromCache = false;
 
@@ -126,7 +130,8 @@ export class NetworkRequest {
       this.#servedFromCache ||
       // Sometimes there is no extra info and the response
       // is the only place we can find out
-      Boolean(this.#response.info && !this.#response.info.hasExtraInfo);
+      Boolean(this.#response.info && !this.#response.info.hasExtraInfo) ||
+      this.#interceptPhase === Network.InterceptPhase.BeforeRequestSent;
 
     if (this.#request.info && requestExtraInfoCompleted) {
       this.#beforeRequestSentDeferred.resolve({
@@ -140,7 +145,8 @@ export class NetworkRequest {
       // Response from cache don't have extra info
       this.#servedFromCache ||
       // Don't expect extra info if the flag is false
-      Boolean(this.#response.info && !this.#response.info.hasExtraInfo);
+      Boolean(this.#response.info && !this.#response.info.hasExtraInfo) ||
+      this.#interceptPhase === Network.InterceptPhase.ResponseStarted;
 
     if (this.#response.info && responseExtraInfoCompleted) {
       this.#responseCompletedDeferred.resolve({
@@ -264,31 +270,32 @@ export class NetworkRequest {
       },
     });
 
-    this.#isBlocked = true;
+    this.#interceptPhase = phase;
+    this.#emitEventsIfReady();
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-failRequest */
   async failRequest(
-    fetchRequestId: Protocol.Fetch.RequestId,
+    networkId: Network.Request,
     errorReason: Protocol.Network.ErrorReason
   ) {
     await this.#cdpTarget.cdpClient.sendCommand('Fetch.failRequest', {
-      requestId: fetchRequestId,
+      requestId: networkId,
       errorReason,
     });
 
-    this.#isBlocked = false;
+    this.#interceptPhase = undefined;
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */
   async continueRequest(
-    fetchRequestId: Protocol.Fetch.RequestId,
+    networkId: Protocol.Fetch.RequestId,
     url?: string,
     method?: string
   ) {
     // TODO: Expand.
     await this.#cdpTarget.cdpClient.sendCommand('Fetch.continueRequest', {
-      requestId: fetchRequestId,
+      requestId: networkId,
       url,
       method,
       // TODO: Set?
@@ -297,7 +304,7 @@ export class NetworkRequest {
       // interceptResponse:,
     });
 
-    this.#isBlocked = false;
+    this.#interceptPhase = undefined;
   }
 
   dispose() {
@@ -313,9 +320,9 @@ export class NetworkRequest {
     return this.#request.info?.frameId ?? null;
   }
 
-  #getBaseEventParams(): Network.BaseParameters {
+  #getBaseEventParams(phase?: Network.InterceptPhase): Network.BaseParameters {
     return {
-      isBlocked: this.#isBlocked,
+      isBlocked: phase !== undefined && phase === this.#interceptPhase,
       context: this.#context,
       navigation: this.#getNavigationId(),
       redirectCount: this.#redirectCount,
@@ -407,7 +414,7 @@ export class NetworkRequest {
     return {
       method: ChromiumBidi.Network.EventNames.BeforeRequestSent,
       params: {
-        ...this.#getBaseEventParams(),
+        ...this.#getBaseEventParams(Network.InterceptPhase.BeforeRequestSent),
         initiator: {
           type: NetworkRequest.#getInitiatorType(
             this.#request.info.initiator.type

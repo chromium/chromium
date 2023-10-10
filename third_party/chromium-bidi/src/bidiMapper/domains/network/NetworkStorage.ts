@@ -82,8 +82,20 @@ export class NetworkStorage {
     urlPatterns: Network.UrlPattern[];
     phases: Network.InterceptPhase[];
   }): Network.Intercept {
-    const interceptId: Network.Intercept = uuidv4();
+    // Check if the given intercept entry already exists.
+    for (const [
+      interceptId,
+      {urlPatterns, phases},
+    ] of this.#interceptMap.entries()) {
+      if (
+        JSON.stringify(value.urlPatterns) === JSON.stringify(urlPatterns) &&
+        JSON.stringify(value.phases) === JSON.stringify(phases)
+      ) {
+        return interceptId;
+      }
+    }
 
+    const interceptId: Network.Intercept = uuidv4();
     this.#interceptMap.set(interceptId, value);
 
     return interceptId;
@@ -101,6 +113,11 @@ export class NetworkStorage {
     }
 
     this.#interceptMap.delete(intercept);
+  }
+
+  /** Returns true iff there's at least one added intercept. */
+  hasIntercepts() {
+    return this.#interceptMap.size > 0;
   }
 
   /** Gets parameters for CDP 'Fetch.enable' command from the intercept map. */
@@ -144,6 +161,11 @@ export class NetworkStorage {
       request.dispose();
       this.#requestMap.delete(id);
     }
+  }
+
+  /** Returns true iff there's at least one blocked network request. */
+  hasBlockedRequests() {
+    return this.#blockedRequestMap.size > 0;
   }
 
   /** Converts a URL pattern from the spec to a CDP URL pattern. */

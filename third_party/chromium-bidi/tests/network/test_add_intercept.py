@@ -13,9 +13,10 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import pytest
-from anys import ANY_DICT, ANY_STR
-from test_helpers import (ANY_UUID, AnyExtending, execute_command,
-                          send_JSON_command, subscribe, wait_for_event)
+from anys import ANY_DICT, ANY_LIST, ANY_STR
+from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
+                          execute_command, send_JSON_command, subscribe,
+                          wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -289,8 +290,8 @@ async def test_add_intercept_type_pattern_port_empty_invalid(websocket):
                              "pattern",
                              "string and pattern",
                          ])
-async def test_add_intercept_blocks(websocket, context_id, url_patterns,
-                                    example_url):
+async def test_add_intercept_blocks_use_cdp_events(websocket, context_id,
+                                                   url_patterns, example_url):
     await subscribe(websocket, ["cdp.Fetch.requestPaused"])
 
     result = await execute_command(
@@ -331,6 +332,94 @@ async def test_add_intercept_blocks(websocket, context_id, url_patterns,
                 "resourceType": "Document",
             },
             "session": ANY_STR,
+        },
+        "type": "event",
+    }
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("url_patterns", [
+    [
+        {
+            "type": "string",
+            "pattern": "https://www.example.com/",
+        },
+    ],
+    [
+        {
+            "type": "pattern",
+            "protocol": "https",
+            "hostname": "www.example.com",
+            "pathname": "/",
+        },
+    ],
+    [
+        {
+            "type": "string",
+            "pattern": "https://www.example.com/",
+        },
+        {
+            "type": "pattern",
+            "protocol": "https",
+            "hostname": "www.example.com",
+            "pathname": "/",
+        },
+    ],
+],
+                         ids=[
+                             "string",
+                             "pattern",
+                             "string and pattern",
+                         ])
+async def test_add_intercept_blocks_use_bidi_events(websocket, context_id,
+                                                    url_patterns, example_url):
+    await subscribe(websocket, ["network.beforeRequestSent"])
+
+    result = await execute_command(
+        websocket, {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["beforeRequestSent"],
+                "urlPatterns": url_patterns,
+            },
+        })
+
+    assert result == {
+        "intercept": ANY_UUID,
+    }
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": example_url,
+                "context": context_id,
+            }
+        })
+
+    event_response = await wait_for_event(websocket,
+                                          "network.beforeRequestSent")
+    assert event_response == {
+        "method": "network.beforeRequestSent",
+        "params": {
+            "isBlocked": True,
+            "initiator": {
+                "type": "other",
+            },
+            "context": context_id,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": {
+                "request": ANY_STR,
+                "url": example_url,
+                "method": "GET",
+                "headers": ANY_LIST,
+                "cookies": [],
+                "headersSize": -1,
+                "bodySize": 0,
+                "timings": ANY_DICT
+            },
+            "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
     }

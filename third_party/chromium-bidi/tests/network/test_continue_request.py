@@ -15,9 +15,9 @@
 from typing import Literal
 
 import pytest
-from anys import ANY_DICT, ANY_STR
-from test_helpers import (ANY_TIMESTAMP, execute_command, send_JSON_command,
-                          subscribe, wait_for_event)
+from anys import ANY_DICT, ANY_LIST, ANY_STR
+from test_helpers import (ANY_TIMESTAMP, ANY_UUID, execute_command,
+                          send_JSON_command, subscribe, wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -38,23 +38,13 @@ async def test_continue_request_non_existent_request(websocket):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "phase, url",
-    [
-        ("responseStarted", "https://www.example.com/"),  # TODO: make offline.
-        pytest.param(
-            "authRequired",
-            "http://httpstat.us/401",
-            marks=pytest.mark.skip(reason='TODO: Use our own test server.')),
-    ],
-    ids=["responseStarted", "authRequired"])
-async def test_continue_request_invalid_phase(websocket, context_id, phase,
-                                              url):
+async def test_continue_request_invalid_phase_response_started(
+        websocket, context_id, example_url):
 
     network_id = await create_dummy_blocked_request(websocket,
                                                     context_id,
-                                                    url=url,
-                                                    phases=[phase])
+                                                    url=example_url,
+                                                    phases=["responseStarted"])
 
     with pytest.raises(
             Exception,
@@ -67,7 +57,31 @@ async def test_continue_request_invalid_phase(websocket, context_id, phase,
                 "method": "network.continueRequest",
                 "params": {
                     "request": network_id,
-                    "url": url,
+                    "url": example_url,
+                },
+            })
+
+
+async def test_continue_request_invalid_phase_auth_required(
+        websocket, context_id, auth_required_url):
+
+    network_id = await create_dummy_blocked_request(websocket,
+                                                    context_id,
+                                                    url=auth_required_url,
+                                                    phases=["authRequired"])
+
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "invalid argument",
+                "message": f"Blocked request for network id '{network_id}' is not in 'BeforeRequestSent' phase"
+            })):
+        await execute_command(
+            websocket, {
+                "method": "network.continueRequest",
+                "params": {
+                    "request": network_id,
+                    "url": auth_required_url,
                 },
             })
 
@@ -97,12 +111,9 @@ async def test_continue_request_invalid_url(websocket, context_id,
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(
-    reason="TODO: replace url with a server whose requests hang forever.")
 async def test_continue_request_non_blocked_request(websocket, context_id,
-                                                    assert_no_events_in_queue):
-    url = "http://127.0.0.1:5000/hang"
-
+                                                    assert_no_events_in_queue,
+                                                    hang_url):
     await subscribe(websocket, [
         "network.beforeRequestSent", "cdp.Network.responseReceived",
         "cdp.Network.loadingFailed"
@@ -113,7 +124,7 @@ async def test_continue_request_non_blocked_request(websocket, context_id,
             "method": "browsingContext.navigate",
             "params": {
                 "context": context_id,
-                "url": url,
+                "url": hang_url,
                 "wait": "complete",
             }
         })
@@ -141,13 +152,14 @@ async def test_continue_request_non_blocked_request(websocket, context_id,
                 "method": "network.continueRequest",
                 "params": {
                     "request": network_id,
-                    "url": url,
+                    "url": hang_url,
                 },
             })
 
 
 @pytest.mark.asyncio
-async def test_continue_request_completes(websocket, context_id, example_url):
+async def test_continue_request_completes_use_cdp_events(
+        websocket, context_id, example_url):
     await subscribe(websocket, ["cdp.Fetch.requestPaused"])
 
     await execute_command(
@@ -201,8 +213,9 @@ async def test_continue_request_completes(websocket, context_id, example_url):
 
 
 @pytest.mark.asyncio
-async def test_continue_request_twice(websocket, context_id, example_url):
-    await subscribe(websocket, ["cdp.Fetch.requestPaused"])
+async def test_continue_request_completes_use_bidi_events(
+        websocket, context_id, example_url):
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
     await execute_command(
         websocket, {
@@ -215,6 +228,7 @@ async def test_continue_request_twice(websocket, context_id, example_url):
                 }, ],
             },
         })
+
     await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
@@ -223,8 +237,115 @@ async def test_continue_request_twice(websocket, context_id, example_url):
                 "context": context_id,
             }
         })
-    event_response = await wait_for_event(websocket, "cdp.Fetch.requestPaused")
-    network_id = event_response["params"]["params"]["networkId"]
+
+    event_response = await wait_for_event(websocket,
+                                          "network.beforeRequestSent")
+    assert event_response == {
+        "method": "network.beforeRequestSent",
+        "params": {
+            "context": context_id,
+            "initiator": {
+                "type": "other",
+            },
+            "isBlocked": True,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": {
+                "request": ANY_STR,
+                "url": example_url,
+                "method": "GET",
+                "headers": ANY_LIST,
+                "cookies": [],
+                "headersSize": -1,
+                "bodySize": 0,
+                "timings": ANY_DICT,
+            },
+            "timestamp": ANY_TIMESTAMP,
+        },
+        "type": "event",
+    }
+    network_id = event_response["params"]["request"]["request"]
+
+    await subscribe(websocket, ["network.responseCompleted"])
+
+    await execute_command(
+        websocket, {
+            "method": "network.continueRequest",
+            "params": {
+                "request": network_id,
+                "url": example_url,
+            },
+        })
+
+    event_response = await wait_for_event(websocket,
+                                          "network.responseCompleted")
+    assert event_response == {
+        "method": "network.responseCompleted",
+        "params": {
+            "context": context_id,
+            "isBlocked": False,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": ANY_DICT,
+            "response": ANY_DICT,
+            "timestamp": ANY_TIMESTAMP,
+        },
+        "type": "event",
+    }
+
+
+@pytest.mark.asyncio
+async def test_continue_request_twice(websocket, context_id, example_url):
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+
+    await execute_command(
+        websocket, {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["beforeRequestSent"],
+                "urlPatterns": [{
+                    "type": "string",
+                    "pattern": example_url,
+                }, ],
+            },
+        })
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": example_url,
+                "context": context_id,
+            }
+        })
+
+    event_response = await wait_for_event(websocket,
+                                          "network.beforeRequestSent")
+    assert event_response == {
+        "method": "network.beforeRequestSent",
+        "params": {
+            "context": context_id,
+            "initiator": {
+                "type": "other",
+            },
+            "isBlocked": True,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": {
+                "request": ANY_STR,
+                "url": example_url,
+                "method": "GET",
+                "headers": ANY_LIST,
+                "cookies": [],
+                "headersSize": -1,
+                "bodySize": 0,
+                "timings": ANY_DICT,
+            },
+            "timestamp": ANY_TIMESTAMP,
+        },
+        "type": "event",
+    }
+    network_id = event_response["params"]["request"]["request"]
 
     await subscribe(websocket, ["network.responseCompleted"])
 
@@ -289,5 +410,100 @@ async def create_dummy_blocked_request(
     return network_id
 
 
-# TODO: AuthRequired + exception test
-# TODO: assertion with isBlocked: true
+@pytest.mark.asyncio
+async def test_continue_request_remove_intercept_inflight_request(
+        websocket, context_id, example_url):
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+
+    result = await execute_command(
+        websocket, {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["beforeRequestSent"],
+                "urlPatterns": [{
+                    "type": "string",
+                    "pattern": example_url,
+                }, ],
+            },
+        })
+
+    assert result == {
+        "intercept": ANY_UUID,
+    }
+    intercept_id = result["intercept"]
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": example_url,
+                "context": context_id,
+            }
+        })
+
+    event_response = await wait_for_event(websocket,
+                                          "network.beforeRequestSent")
+    assert event_response == {
+        "method": "network.beforeRequestSent",
+        "params": {
+            "context": context_id,
+            "initiator": {
+                "type": "other",
+            },
+            "isBlocked": True,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": {
+                "request": ANY_STR,
+                "url": example_url,
+                "method": "GET",
+                "headers": ANY_LIST,
+                "cookies": [],
+                "headersSize": -1,
+                "bodySize": 0,
+                "timings": ANY_DICT,
+            },
+            "timestamp": ANY_TIMESTAMP,
+        },
+        "type": "event",
+    }
+    network_id = event_response["params"]["request"]["request"]
+
+    result = await execute_command(
+        websocket, {
+            "method": "network.removeIntercept",
+            "params": {
+                "intercept": intercept_id,
+            },
+        })
+    assert result == {}
+
+    await subscribe(websocket, ["network.responseCompleted"])
+
+    await execute_command(
+        websocket, {
+            "method": "network.continueRequest",
+            "params": {
+                "request": network_id,
+                "url": example_url,
+            },
+        })
+
+    event_response = await wait_for_event(websocket,
+                                          "network.responseCompleted")
+    assert event_response == {
+        "method": "network.responseCompleted",
+        "params": {
+            "context": context_id,
+            "isBlocked": False,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": ANY_DICT,
+            "response": ANY_DICT,
+            "timestamp": ANY_TIMESTAMP,
+        },
+        "type": "event",
+    }
+
+
+# TODO: Replace cdp.Network.loadingFailed with network.fetchError BiDi event when it is implemented?

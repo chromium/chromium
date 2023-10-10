@@ -117,19 +117,6 @@ export class CdpTarget {
   }
 
   /**
-   * Calls `Fetch.disable` followed by `Fetch.enable`.
-   * The order is important. Do not use `Promise.all`.
-   *
-   * This is necessary because `Fetch.disable` removes all intercepts.
-   * In a situation where there are two or more intercepts and one of them is
-   * removed, the `Fetch.enable` call will restore the remaining intercepts.
-   */
-  async fetchApply() {
-    await this.fetchDisable();
-    await this.fetchEnable();
-  }
-
-  /**
    * Enables all the required CDP domains and unblocks the target.
    */
   async #unblock() {
@@ -143,7 +130,8 @@ export class CdpTarget {
         // XXX: #1080: Do not always enable the network domain globally.
         // TODO: enable Network domain for OOPiF targets.
         this.#cdpClient.sendCommand('Network.enable'),
-        this.fetchApply(),
+        // XXX: #1080: Do not always enable the fetch domain globally.
+        this.fetchEnable(),
         this.#cdpClient.sendCommand('Target.setAutoAttach', {
           autoAttach: true,
           waitForDebuggerOnStart: true,

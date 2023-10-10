@@ -58,8 +58,7 @@ export class NetworkProcessor {
       phases: params.phases,
     });
 
-    // TODO: Add try/catch. Remove the intercept if CDP Fetch commands fail.
-    await this.#applyIntercepts();
+    await this.#fetchApply();
 
     return {
       intercept,
@@ -95,8 +94,6 @@ export class NetworkProcessor {
 
     this.#networkStorage.removeBlockedRequest(networkId);
 
-    // TODO: Emit event?
-
     return {};
   }
 
@@ -127,8 +124,6 @@ export class NetworkProcessor {
 
     this.#networkStorage.removeBlockedRequest(networkId);
 
-    // TODO: Emit event?
-
     return {};
   }
 
@@ -141,19 +136,51 @@ export class NetworkProcessor {
   ): Promise<EmptyResult> {
     this.#networkStorage.removeIntercept(params.intercept);
 
-    // TODO: Add try/catch. Remove the intercept if CDP Fetch commands fail.
-    await this.#applyIntercepts();
+    await this.#fetchApply();
 
     return {};
   }
 
   /** Applies all existing network intercepts to all CDP targets concurrently. */
-  async #applyIntercepts() {
+  async #fetchEnable() {
     await Promise.all(
       this.#browsingContextStorage.getAllContexts().map(async (context) => {
-        await context.cdpTarget.fetchApply();
+        await context.cdpTarget.fetchEnable();
       })
     );
+  }
+
+  /** Removes all existing network intercepts from all CDP targets concurrently. */
+  async #fetchDisable() {
+    await Promise.all(
+      this.#browsingContextStorage.getAllContexts().map(async (context) => {
+        await context.cdpTarget.fetchDisable();
+      })
+    );
+  }
+
+  /**
+   * Either enables or disables the Fetch domain.
+   *
+   * If enabling, applies all existing network intercepts to all CDP targets.
+   * If disabling, removes all existing network intercepts from all CDP targets.
+   *
+   * Disabling is only performed when there are no remaining intercepts or
+   * // blocked requests.
+   */
+  async #fetchApply() {
+    if (
+      this.#networkStorage.hasIntercepts() ||
+      this.#networkStorage.hasBlockedRequests()
+    ) {
+      // TODO: Add try/catch. Remove the intercept if CDP Fetch commands fail.
+      await this.#fetchEnable();
+    } else {
+      // The last intercept has been removed, and there are no pending
+      // blocked requests.
+      // Disable the Fetch domain.
+      await this.#fetchDisable();
+    }
   }
 
   /**

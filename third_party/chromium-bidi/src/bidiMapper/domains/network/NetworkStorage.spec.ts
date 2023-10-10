@@ -117,6 +117,35 @@ describe('NetworkStorage', () => {
         2
       );
     });
+
+    it('is idempotent', () => {
+      const intercept1 = networkStorage.addIntercept({
+        urlPatterns: [
+          {
+            type: 'string',
+            pattern: 'http://example.com',
+          },
+        ],
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+      const intercept2 = networkStorage.addIntercept({
+        urlPatterns: [
+          {
+            type: 'string',
+            pattern: 'http://example.com',
+          },
+        ],
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+
+      expect(intercept1).to.match(UUID_REGEX);
+      expect(intercept2).to.match(UUID_REGEX);
+      expect(intercept1).to.be.equal(intercept2);
+
+      expect(networkStorage.getFetchEnableParams().patterns).to.have.lengthOf(
+        1
+      );
+    });
   });
 
   it('remove intercept', () => {
@@ -135,6 +164,51 @@ describe('NetworkStorage', () => {
       handleAuthRequests: false,
       patterns: [],
     });
+  });
+
+  it('has intercepts', () => {
+    expect(networkStorage.hasIntercepts()).to.be.false;
+
+    const intercept = networkStorage.addIntercept({
+      urlPatterns: [
+        {
+          type: 'string',
+          pattern: 'http://example.com',
+        },
+      ],
+      phases: [Network.InterceptPhase.BeforeRequestSent],
+    });
+
+    expect(networkStorage.hasIntercepts()).to.be.true;
+
+    networkStorage.removeIntercept(intercept);
+    expect(networkStorage.hasIntercepts()).to.be.false;
+  });
+
+  it('has blocked requests', () => {
+    expect(networkStorage.hasBlockedRequests()).to.be.false;
+
+    networkStorage.addBlockedRequest('REQUEST_ID', {
+      request: '1',
+      phase: Network.InterceptPhase.BeforeRequestSent,
+      response: {
+        url: '',
+        protocol: '',
+        status: 0,
+        statusText: '',
+        fromCache: false,
+        headers: [],
+        mimeType: '',
+        bytesReceived: 0,
+        headersSize: 0,
+        bodySize: 0,
+        content: {
+          size: 0,
+        },
+      },
+    });
+
+    expect(networkStorage.hasBlockedRequests()).to.be.true;
   });
 
   describe('getFetchEnableParams', () => {

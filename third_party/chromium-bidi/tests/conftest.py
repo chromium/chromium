@@ -151,7 +151,16 @@ def auth_required_url():
     # All of these URLs work, just pick one.
     # url = "https://authenticationtest.com/HTTPAuth/"
     # url = "http://the-internet.herokuapp.com/basic_auth"
+    pytest.skip(reason='TODO: Use our own test server.')
     return "http://httpstat.us/401"
+
+
+@pytest.fixture
+def hang_url():
+    # TODO: Start a local server alongside tests that use this fixture.
+    """Return a URL that hangs forever."""
+    pytest.skip(reason='TODO: Use our own test server.')
+    return "http://127.0.0.1:5000/hang"
 
 
 @pytest.fixture
