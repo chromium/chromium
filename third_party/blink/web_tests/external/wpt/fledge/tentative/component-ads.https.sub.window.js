@@ -1,7 +1,7 @@
 // META: script=/resources/testdriver.js
 // META: script=/common/utils.js
 // META: script=/common/subset-tests.js
-// META: script=resources/fledge-util.js
+// META: script=resources/fledge-util.sub.js
 // META: timeout=long
 // META: variant=?1-5
 // META: variant=?6-10

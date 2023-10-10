@@ -1,6 +1,6 @@
 // META: script=/resources/testdriver.js
 // META: script=/common/utils.js
-// META: script=resources/fledge-util.js
+// META: script=resources/fledge-util.sub.js
 // META: timeout=long
 
 "use strict;"

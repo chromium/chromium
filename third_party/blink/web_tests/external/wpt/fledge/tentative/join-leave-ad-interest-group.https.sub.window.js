@@ -1,6 +1,6 @@
 // META: script=/resources/testdriver.js
 // META: script=/common/utils.js
-// META: script=resources/fledge-util.js
+// META: script=resources/fledge-util.sub.js
 // META: script=/common/subset-tests.js
 // META: timeout=long
 // META: variant=?1-10
@@ -637,3 +637,14 @@ subsetTest(promise_test, async test => {
   await joinInterestGroup(test, uuid, {}, -600);
   assert_true(await runBasicFledgeAuction(test, uuid) === null);
 }, 'Interest group test with overwritten duration of -600.');
+
+subsetTest(promise_test, async test => {
+  try {
+    await navigator.leaveAdInterestGroup();
+  } catch (e) {
+    assert_true(e instanceof TypeError, 'TypeError thrown');
+    return;
+  }
+
+  throw 'TypeError unexpectedly not thrown.'
+}, 'leaveInterestGroup() with no parameters, outside of a fenced frame.');

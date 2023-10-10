@@ -38,8 +38,6 @@ Need tests for (likely not a complete list):
     (with interest group from another origin).
 * Loading ads in iframes.
 * In fencedframes window.fence.setReportEventDataForAutomaticBeacons()
-* Calling leaveAdInterestGroup() in the frame of a winning ad (and one
-    of its component ads)
 * Network timeouts.
 * Validate specific escaping behavior logic (still under discussion). There
     are a number of different rules for which characters are escaped, and
@@ -50,6 +48,15 @@ Need tests for (likely not a complete list):
     networks to send CORS preflights for requests made over local networks.
     Needs testing with public publisher pages running auctions with
     sellers / buyers / update URLs on local networks.
+* Calling FLEDGE APIs (or at least leaveAdInterestGroup() with no args)
+    in a non-ad FencedFrame.
+* Test network requests in terms of fetch behavior
+  * No cookies.
+  * No referrer.
+  * Redirects not followed.
+  * etc.
+* Test that await is not needed for same-origin interest groups
+  * Verify that's still in the spec/explainer first.
 
 If possible:
 * Aggregate reporting.

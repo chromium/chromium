@@ -16,6 +16,16 @@ const TRUSTED_BIDDING_SIGNALS_URL =
 const TRUSTED_SCORING_SIGNALS_URL =
     `${BASE_URL}resources/trusted-scoring-signals.py`;
 
+// Other origins that should all be distint from the main frame origin
+// that the tests start with.
+const OTHER_ORIGIN1 = 'https://{{hosts[alt][]}}:{{ports[https][0]}}';
+const OTHER_ORIGIN2 = 'https://{{hosts[alt][]}}:{{ports[https][1]}}';
+const OTHER_ORIGIN3 = 'https://{{hosts[][]}}:{{ports[https][1]}}';
+const OTHER_ORIGIN4 = 'https://{{hosts[][www]}}:{{ports[https][0]}}';
+const OTHER_ORIGIN5 = 'https://{{hosts[][www]}}:{{ports[https][1]}}';
+const OTHER_ORIGIN6 = 'https://{{hosts[alt][www]}}:{{ports[https][0]}}';
+const OTHER_ORIGIN7 = 'https://{{hosts[alt][www]}}:{{ports[https][1]}}';
+
 // Creates a URL that will be sent to the URL request tracker script.
 // `uuid` is used to identify the stash shard to use.
 // `dispatch` affects what the tracker script does.
@@ -385,4 +395,103 @@ async function runReportTest(test, uuid, codeToInsert, expectedReportURLs,
       test, uuid,
       { decisionLogicURL: createDecisionScriptURL(uuid, decisionScriptURLParams) });
   await waitForObservedRequests(uuid, expectedReportURLs);
+}
+
+// Runs "script" in "child_window" via an eval call. The "child_window" must
+// have been created by calling "createFrame()" below. "param" is passed to the
+// context "script" is run in, so can be used to pass objects that
+// "script" references that can't be serialized to a string, like
+// fencedFrameConfigs.
+async function runInFrame(test, child_window, script, param) {
+  const messageUuid = generateUuid(test);
+  let receivedResponse = {};
+
+  let promise = new Promise(function(resolve, reject) {
+    function WaitForMessage(event) {
+      if (event.data.messageUuid != messageUuid)
+        return;
+      receivedResponse = event.data;
+      if (event.data.result === 'success') {
+        resolve();
+      } else {
+        reject(event.data.result);
+      }
+    }
+    window.addEventListener('message', WaitForMessage);
+    child_window.postMessage(
+        {messageUuid: messageUuid, script: script, param: param}, '*');
+  });
+  await promise;
+  return receivedResponse.returnValue;
+}
+
+// Creates an frame and navigates it to a URL on "origin", and waits for the URL
+// to finish loading by waiting for the frame to send an event. Then returns
+// the frame's Window object. Depending on the value of "is_iframe", the created
+// frame will either be a new iframe, or a new top-level main frame. In the iframe
+// case, its "allow" field will be set to "permissions".
+//
+// Also adds a cleanup callback to "test", which runs all cleanup functions
+// added within the frame and waits for them to complete, and then destroys the
+// iframe or closes the window.
+async function createFrame(test, origin, is_iframe = true, permissions = null) {
+  const frameUuid = generateUuid(test);
+  const frameUrl =
+      `${origin}${RESOURCE_PATH}subordinate-frame.sub.html?uuid=${frameUuid}`;
+  let promise = new Promise(function(resolve, reject) {
+    function WaitForMessage(event) {
+      if (event.data.messageUuid != frameUuid)
+        return;
+      if (event.data.result === 'load complete') {
+        resolve();
+      } else {
+        reject(event.data.result);
+      }
+    }
+    window.addEventListener('message', WaitForMessage);
+  });
+
+  if (is_iframe) {
+    let iframe = document.createElement('iframe');
+    if (permissions)
+      iframe.allow = permissions;
+    iframe.src = frameUrl;
+    document.body.appendChild(iframe);
+
+    test.add_cleanup(async () => {
+      await runInFrame(test, iframe.contentWindow, "await test_instance.do_cleanup();");
+      document.body.removeChild(iframe);
+    });
+
+    await promise;
+    return iframe.contentWindow;
+  }
+
+  let child_window = window.open(frameUrl);
+  test.add_cleanup(async () => {
+    await runInFrame(test, child_window, "await test_instance.do_cleanup();");
+    child_window.close();
+  });
+
+  await promise;
+  return child_window;
+}
+
+// Wrapper around createFrame() that creates an iframe and optionally sets
+// permissions.
+async function createIframe(test, origin, permissions) {
+  return createFrame(test, origin, /*is_iframe=*/ true, permissions);
+}
+
+// Joins a cross-origin interest group. Currently does this by joining the
+// interest group in an iframe, though it may switch to using a .well-known
+// fetch to allow the cross-origin join, when support for that is added
+// to these tests, so callers should not assume that's the mechanism in use.
+async function joinCrossOriginInterestGroup(test, uuid, origin, interestGroupOverrides = {}) {
+  let interestGroup = JSON.stringify(
+      createInterestGroupForOrigin(uuid, origin, interestGroupOverrides));
+
+  let iframe = await createIframe(test, origin, 'join-ad-interest-group');
+  await runInFrame(test, iframe,
+                   `await joinInterestGroup(test_instance, "${uuid}", ${interestGroup})`);
 }

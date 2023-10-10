@@ -1,7 +1,7 @@
 // META: script=/resources/testdriver.js
 // META: script=/common/utils.js
 // META: script=/common/subset-tests.js
-// META: script=resources/fledge-util.js
+// META: script=resources/fledge-util.sub.js
 // META: timeout=long
 // META: variant=?1-4
 // META: variant=?5-8
@@ -9,100 +9,6 @@
 // META: variant=?13-last
 
 "use strict;"
-
-const OTHER_ORIGIN1 = 'https://{{hosts[alt][]}}:{{ports[https][0]}}';
-const OTHER_ORIGIN2 = 'https://{{hosts[alt][]}}:{{ports[https][1]}}';
-const OTHER_ORIGIN3 = 'https://{{hosts[][]}}:{{ports[https][1]}}';
-const OTHER_ORIGIN4 = 'https://{{hosts[][www]}}:{{ports[https][0]}}';
-const OTHER_ORIGIN5 = 'https://{{hosts[][www]}}:{{ports[https][1]}}';
-const OTHER_ORIGIN6 = 'https://{{hosts[alt][www]}}:{{ports[https][0]}}';
-const OTHER_ORIGIN7 = 'https://{{hosts[alt][www]}}:{{ports[https][1]}}';
-
-// Runs "script" in "child_window" via an eval call. The "child_window" must
-// have been created by calling "createFrame()" below. "param" is passed to the
-// context "script" is run in, so can be used to pass objects that
-// "script" references that can't be serialized to a string, like
-// fencedFrameConfigs.
-async function runInFrame(test, child_window, script, param) {
-  const messageUuid = generateUuid(test);
-  let receivedResponse = {};
-
-  let promise = new Promise(function(resolve, reject) {
-    function WaitForMessage(event) {
-      if (event.data.messageUuid != messageUuid)
-        return;
-      receivedResponse = event.data;
-      if (event.data.result === 'success') {
-        resolve();
-      } else {
-        reject(event.data.result);
-      }
-    }
-    window.addEventListener('message', WaitForMessage);
-    child_window.postMessage(
-        {messageUuid: messageUuid, script: script, param: param}, '*');
-  });
-  await promise;
-  return receivedResponse.returnValue;
-}
-
-// Creates an frame and navigates it to a URL on "origin", and waits for the URL
-// to finish loading by waiting for the frame to send an event. Then returns
-// the frame's Window object. Depending on the value of "is_iframe", the created
-// frame will either be a new iframe, or a new top-level main frame. In the iframe
-// case, its "allow" field will be set to "permissions".
-//
-// Also adds a cleanup callback to "test", which runs all cleanup functions
-// added within the frame and waits for them to complete, and then destroys the
-// iframe or closes the window.
-async function createFrame(test, origin, is_iframe = true, permissions = null) {
-  const frameUuid = generateUuid(test);
-  const frameUrl =
-      `${origin}${RESOURCE_PATH}subordinate-frame.sub.html?uuid=${frameUuid}`;
-  let promise = new Promise(function(resolve, reject) {
-    function WaitForMessage(event) {
-      if (event.data.messageUuid != frameUuid)
-        return;
-      if (event.data.result === 'load complete') {
-        resolve();
-      } else {
-        reject(event.data.result);
-      }
-    }
-    window.addEventListener('message', WaitForMessage);
-  });
-
-  if (is_iframe) {
-    let iframe = document.createElement('iframe');
-    if (permissions)
-      iframe.allow = permissions;
-    iframe.src = frameUrl;
-    document.body.appendChild(iframe);
-
-    test.add_cleanup(async () => {
-      await runInFrame(test, iframe.contentWindow, "await test_instance.do_cleanup();");
-      document.body.removeChild(iframe);
-    });
-
-    await promise;
-    return iframe.contentWindow;
-  }
-
-  let child_window = window.open(frameUrl);
-  test.add_cleanup(async () => {
-    await runInFrame(test, child_window, "await test_instance.do_cleanup();");
-    child_window.close();
-  });
-
-  await promise;
-  return child_window;
-}
-
-// Wrapper around createFrame() that creates an iframe and optionally sets
-// permissions.
-async function createIframe(test, origin, permissions) {
-  return createFrame(test, origin, /*is_iframe=*/ true, permissions);
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Join interest group in iframe tests.
@@ -190,7 +96,14 @@ subsetTest(promise_test, async test => {
   // grant permission. The case where permission is granted is not yet testable.
   let interestGroup = JSON.stringify(createInterestGroupForOrigin(uuid, window.location.origin));
   await runInFrame(test, iframe,
-                    `joinInterestGroup(test_instance, "${uuid}", ${interestGroup})`);
+                   `try {
+                      await joinInterestGroup(test_instance, "${uuid}", ${interestGroup});
+                    } catch (e) {
+                      assert_true(e instanceof DOMException, "DOMException thrown");
+                      assert_equals(e.name, "NotAllowedError", "NotAllowedError DOMException thrown");
+                      return {result: "success"};
+                    }
+                    return "exception unexpectedly not thrown";`);
 
   // Run an auction with this page's origin as a bidder. Since the join
   // should have failed, the auction should have no winner.
