@@ -34,6 +34,12 @@ public class MiniPlayerCoordinator {
         mMediator = mediator;
     }
 
+    public void destroy() {
+        if (mLayout != null) {
+            mLayout.destroy();
+        }
+    }
+
     /**
      * Show the mini player if it isn't already showing.
      * @param animate True if the transition should be animated. If false, the mini player will

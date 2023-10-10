@@ -4,10 +4,7 @@
 
 package org.chromium.chrome.browser.readaloud.player.mini;
 
-import android.view.View;
-
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
-import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -22,10 +19,14 @@ public class MiniPlayerViewBinder {
      */
     public static void bind(PropertyModel model, MiniPlayerLayout view, PropertyKey key) {
         if (key == PlayerProperties.MINI_PLAYER_VISIBILITY) {
-            view.setVisibility(
-                    model.get(PlayerProperties.MINI_PLAYER_VISIBILITY) == VisibilityState.VISIBLE
-                            ? View.VISIBLE
-                            : View.GONE);
+            view.updateVisibility(model.get(PlayerProperties.MINI_PLAYER_VISIBILITY));
+
+        } else if (key == PlayerProperties.MINI_PLAYER_ANIMATE_VISIBILITY_CHANGES) {
+            view.enableAnimations(
+                    model.get(PlayerProperties.MINI_PLAYER_ANIMATE_VISIBILITY_CHANGES));
+
+        } else if (key == PlayerProperties.MINI_PLAYER_MEDIATOR) {
+            view.setMediator(model.get(PlayerProperties.MINI_PLAYER_MEDIATOR));
 
         } else if (key == PlayerProperties.TITLE) {
             view.setTitle(model.get(PlayerProperties.TITLE));

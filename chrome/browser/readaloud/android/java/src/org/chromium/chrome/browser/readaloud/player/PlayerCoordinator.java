@@ -72,6 +72,7 @@ public class PlayerCoordinator implements Player {
     public void destroy() {
         dismissPlayers();
         mMediator.destroy();
+        mMiniPlayer.destroy();
     }
 
     @Override

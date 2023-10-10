@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.readaloud.player;
 
+import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerMediator;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -23,13 +24,16 @@ public class PlayerProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<InteractionHandler> INTERACTION_HANDLER =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<MiniPlayerMediator> MINI_PLAYER_MEDIATOR =
+            new WritableObjectPropertyKey<>();
     public static final PropertyKey[] ALL_KEYS = {
-            MINI_PLAYER_VISIBILITY, //
-            MINI_PLAYER_ANIMATE_VISIBILITY_CHANGES, //
-            TITLE, //
-            PUBLISHER, //
-            PLAYBACK_STATE, //
-            PROGRESS, //
-            INTERACTION_HANDLER //
+        MINI_PLAYER_VISIBILITY, //
+        MINI_PLAYER_ANIMATE_VISIBILITY_CHANGES, //
+        TITLE, //
+        PUBLISHER, //
+        PLAYBACK_STATE, //
+        PROGRESS, //
+        INTERACTION_HANDLER, //
+        MINI_PLAYER_MEDIATOR //
     };
 }

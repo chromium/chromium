@@ -55,6 +55,7 @@ public class MiniPlayerCoordinatorUnitTest {
     public void testViewInflated() {
         // Test the real constructor
         reset(mViewStub);
+        doReturn(mLayout).when(mViewStub).inflate();
         mCoordinator = new MiniPlayerCoordinator(mViewStub, mModel);
         verify(mViewStub).inflate();
     }
@@ -111,5 +112,14 @@ public class MiniPlayerCoordinatorUnitTest {
         mCoordinator.show(/*animate=*/true);
         mModel.set(PlayerProperties.PROGRESS, 0.5f);
         verify(mLayout).setProgress(eq(0.5f));
+    }
+
+    @Test
+    public void testBindVisibility() {
+        mModel.set(PlayerProperties.MINI_PLAYER_VISIBILITY, VisibilityState.SHOWING);
+        verify(mLayout).updateVisibility(eq(VisibilityState.SHOWING));
+
+        mModel.set(PlayerProperties.MINI_PLAYER_ANIMATE_VISIBILITY_CHANGES, true);
+        verify(mLayout).enableAnimations(eq(true));
     }
 }
