@@ -156,12 +156,11 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
   if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned)) {
     mixer[kColorNewTabPageModuleBackground] = SelectBasedOnWhiteInput(
         {kColorNewTabPageBackground}, gfx::kGoogleGrey100,
-        kColorNewTabPageBackground);
-    mixer[kColorNewTabPageModuleItemBackground] = element_background_color;
+        element_background_color);
   } else {
     mixer[kColorNewTabPageModuleBackground] = element_background_color;
-    mixer[kColorNewTabPageModuleItemBackground] = {kColorNewTabPageBackground};
   }
+  mixer[kColorNewTabPageModuleItemBackground] = {kColorNewTabPageBackground};
 
   mixer[kColorNewTabPageHistoryClustersModuleItemBackground] =
       SelectBasedOnWhiteInput(element_background_color, gfx::kGoogleGrey100,
