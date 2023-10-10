@@ -162,17 +162,19 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
   // Emitting an invalidation should not call our observer until the timer
   // expires.
   fake_invalidation_service_->EmitInvalidationForTest(
-      invalidation::Invalidation::InitUnknownVersion(kDefaultCorpusTopic));
+      invalidation::Invalidation::Init(kDefaultCorpusTopic, 1, ""));
   EXPECT_TRUE(drive_notification_observer_->GetNotificationIds().empty());
 
   task_runner_->FastForwardBy(base::Seconds(30));
 
   // Default corpus is has the id "" when sent to observers.
-  std::map<std::string, int64_t> expected_ids = {{"", -1}};
+  // DriveNotificationManager::NotifyObserversToUpdate increases the
+  // invalidation version by 1 before sending it to observers.
+  std::map<std::string, int64_t> expected_ids = {{"", 2}};
   EXPECT_EQ(expected_ids, drive_notification_observer_->GetNotificationIds());
   drive_notification_observer_->ClearNotificationIds();
 
-  // Register a team drive for notifications
+  // Register a team drive for notifications.
   const std::string team_drive_id_1 = "td_id_1";
   const auto team_drive_1_topic =
       CreateTeamDriveInvalidationTopic(team_drive_id_1);
@@ -210,10 +212,6 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
   // Emit with an earlier version. This should be ignored.
   fake_invalidation_service_->EmitInvalidationForTest(
       invalidation::Invalidation::Init(kDefaultCorpusTopic, 0, ""));
-
-  // Emit without a version. This should be ignored too.
-  fake_invalidation_service_->EmitInvalidationForTest(
-      invalidation::Invalidation::InitUnknownVersion(kDefaultCorpusTopic));
 
   EXPECT_TRUE(drive_notification_observer_->GetNotificationIds().empty());
 

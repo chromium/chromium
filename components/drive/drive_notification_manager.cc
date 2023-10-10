@@ -95,15 +95,12 @@ void DriveNotificationManager::OnIncomingInvalidation(
       unpacked_id = ExtractTeamDriveId(topic);
       DCHECK(!unpacked_id.empty()) << "Unexpected topic " << topic;
     }
-    auto invalidations = invalidation_map.ForTopic(topic);
-    int64_t& invalidation_version =
-        invalidated_change_ids_.emplace(unpacked_id, -1).first->second;
-    for (auto& invalidation : invalidations) {
-      if (!invalidation.is_unknown_version() &&
-          invalidation.version() > invalidation_version) {
-        invalidation_version = invalidation.version();
-      }
-    }
+    const auto invalidations = invalidation_map.ForTopic(topic);
+    DCHECK(!invalidations.IsEmpty());
+    // The `invalidations` are sorted by version in ascending order. We want the
+    // latest version.
+    invalidated_change_ids_.emplace(unpacked_id,
+                                    invalidations.rbegin()->version());
   }
 
   // This effectively disables 'local acks'.  It tells the invalidations system
@@ -222,8 +219,7 @@ void DriveNotificationManager::NotifyObserversToUpdate(
 
   if (source == NOTIFICATION_XMPP) {
     auto my_drive_invalidation = invalidations.find("");
-    if (my_drive_invalidation != invalidations.end() &&
-        my_drive_invalidation->second != -1) {
+    if (my_drive_invalidation != invalidations.end()) {
       // The invalidation version for My Drive is smaller than what's expected
       // for fetch requests by 1. Increment it unless it hasn't been set.
       ++my_drive_invalidation->second;
