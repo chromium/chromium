@@ -20106,6 +20106,18 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileKeyboardShortcutUsed">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    The user has used a keyboard shortcut to perform an app action. The list of
+    shortcuts for which this is emitted may not be comprehensive, and the goal
+    of this metric is to estimate high-level usage of keyboard shortcuts for
+    general-purpose actions, for example, opening a new tab, or saving an
+    offline page. Android only.
+  </description>
+</action>
+
 <action name="MobileKeyCommandAddToBookmarks">
   <owner>lpromero@google.com</owner>
   <owner>alionadangla@google.com</owner>

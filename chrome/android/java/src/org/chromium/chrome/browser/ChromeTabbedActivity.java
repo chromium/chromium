@@ -2954,9 +2954,18 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
         boolean isCurrentTabVisible =
                 !isInOverviewMode() && (!isTablet() || getCurrentTabModel().getCount() != 0);
-        return KeyboardShortcuts.onKeyDown(event, isCurrentTabVisible, true, getTabModelSelector(),
-                       /* menuOrKeyboardActionController= */ this, getToolbarManager())
-                || super.onKeyDown(keyCode, event);
+        boolean keyboardShortcutHandled =
+                KeyboardShortcuts.onKeyDown(
+                        event,
+                        isCurrentTabVisible,
+                        true,
+                        getTabModelSelector(),
+                        /* menuOrKeyboardActionController= */ this,
+                        getToolbarManager());
+        if (keyboardShortcutHandled) {
+            RecordUserAction.record("MobileKeyboardShortcutUsed");
+        }
+        return keyboardShortcutHandled || super.onKeyDown(keyCode, event);
     }
 
     private void showFullHistorySheet() {
