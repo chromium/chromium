@@ -50,6 +50,7 @@ if (is_android) {
   import("//chrome/version.gni")
   import("//content/public/app/mac_helpers.gni")
   import("//media/cdm/library_cdm/cdm_paths.gni")
+  import("//services/on_device_model/on_device_model.gni")
   import("//third_party/icu/config.gni")
 }
 
@@ -1033,6 +1034,14 @@ if (is_win) {
     }
   }
 
+  if (enable_ml_internal) {
+    bundle_data("chrome_ml_library") {
+      sources = [ "$root_out_dir/libchrome_ml.dylib" ]
+      outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
+      public_deps = [ "//third_party/ml:chrome_ml_library_copy" ]
+    }
+  }
+
   group("angle_library") {
     if (bundle_egl_libraries) {
       deps = [ ":angle_binaries" ]
@@ -1252,6 +1261,10 @@ if (is_win) {
       ":widevine_cdm_library",
       "//chrome/browser/resources/media/mei_preload:component_bundle",
     ]
+
+    if (enable_ml_internal) {
+      bundle_deps += [ ":chrome_ml_library" ]
+    }
 
     if (is_chrome_branded) {
       bundle_deps += [ ":preinstalled_apps" ]
