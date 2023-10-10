@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_NTP_TILES_IOS_MOST_VISITED_SITES_FACTORY_H_
-#define IOS_CHROME_BROWSER_NTP_TILES_IOS_MOST_VISITED_SITES_FACTORY_H_
+#ifndef IOS_CHROME_BROWSER_NTP_TILES_MODEL_IOS_MOST_VISITED_SITES_FACTORY_H_
+#define IOS_CHROME_BROWSER_NTP_TILES_MODEL_IOS_MOST_VISITED_SITES_FACTORY_H_
 
 #include <memory>
 
@@ -19,4 +19,4 @@ class IOSMostVisitedSitesFactory {
       ChromeBrowserState* browser_state);
 };
 
-#endif  // IOS_CHROME_BROWSER_NTP_TILES_IOS_MOST_VISITED_SITES_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_NTP_TILES_MODEL_IOS_MOST_VISITED_SITES_FACTORY_H_

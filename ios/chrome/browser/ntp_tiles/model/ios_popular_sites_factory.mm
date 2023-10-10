@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ntp_tiles/ios_popular_sites_factory.h"
+#import "ios/chrome/browser/ntp_tiles/model/ios_popular_sites_factory.h"
 
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"

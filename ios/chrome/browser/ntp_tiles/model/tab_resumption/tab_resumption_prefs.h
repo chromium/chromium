@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_NTP_TILES_TAB_RESUMPTION_TAB_RESUMPTION_PREFS_H_
-#define IOS_CHROME_BROWSER_NTP_TILES_TAB_RESUMPTION_TAB_RESUMPTION_PREFS_H_
+#ifndef IOS_CHROME_BROWSER_NTP_TILES_MODEL_TAB_RESUMPTION_TAB_RESUMPTION_PREFS_H_
+#define IOS_CHROME_BROWSER_NTP_TILES_MODEL_TAB_RESUMPTION_TAB_RESUMPTION_PREFS_H_
 
 class PrefRegistrySimple;
 class PrefService;
@@ -24,4 +24,4 @@ void DisableTabResumption(PrefService* prefs);
 
 }  // namespace tab_resumption_prefs
 
-#endif  // IOS_CHROME_BROWSER_NTP_TILES_TAB_RESUMPTION_TAB_RESUMPTION_PREFS_H_
+#endif  // IOS_CHROME_BROWSER_NTP_TILES_MODEL_TAB_RESUMPTION_TAB_RESUMPTION_PREFS_H_

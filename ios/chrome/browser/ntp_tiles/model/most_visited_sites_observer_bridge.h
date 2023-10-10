@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_NTP_TILES_MOST_VISITED_SITES_OBSERVER_BRIDGE_H_
-#define IOS_CHROME_BROWSER_NTP_TILES_MOST_VISITED_SITES_OBSERVER_BRIDGE_H_
+#ifndef IOS_CHROME_BROWSER_NTP_TILES_MODEL_MOST_VISITED_SITES_OBSERVER_BRIDGE_H_
+#define IOS_CHROME_BROWSER_NTP_TILES_MODEL_MOST_VISITED_SITES_OBSERVER_BRIDGE_H_
 
 #import <Foundation/Foundation.h>
 
@@ -50,4 +50,4 @@ class MostVisitedSitesObserverBridge : public MostVisitedSites::Observer {
 
 }  // namespace ntp_tiles
 
-#endif  // IOS_CHROME_BROWSER_NTP_TILES_MOST_VISITED_SITES_OBSERVER_BRIDGE_H_
+#endif  // IOS_CHROME_BROWSER_NTP_TILES_MODEL_MOST_VISITED_SITES_OBSERVER_BRIDGE_H_
