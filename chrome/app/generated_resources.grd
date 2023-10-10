@@ -2462,6 +2462,23 @@ are declared in tools/grit/grit_rule.gni.
         Delete from history
       </message>
 
+      <message name="IDS_DOWNLOAD_DANGEROUS_ICON_ACCESSIBLE_LABEL"
+               desc="On the downloads page, the accessible label for the icon for a blocked dangerous download.">
+        Dangerous download blocked
+      </message>
+      <message name="IDS_DOWNLOAD_SUSPICIOUS_ICON_ACCESSIBLE_LABEL"
+               desc="On the downloads page, the accessible label for the icon for a blocked suspicious download.">
+        Suspicious download blocked
+      </message>
+      <message name="IDS_DOWNLOAD_INSECURE_ICON_ACCESSIBLE_LABEL"
+               desc="On the downloads page, the accessible label for the icon for a blocked insecure download.">
+        Insecure download blocked
+      </message>
+      <message name="IDS_DOWNLOAD_UNVERIFIED_ICON_ACCESSIBLE_LABEL"
+               desc="On the downloads page, the accessible label for the icon for a blocked unverified download.">
+        Unverified download blocked
+      </message>
+
       <!-- Download Alerts for Accessibility -->
       <message name="IDS_DOWNLOAD_STATUS_IN_PROGRESS_ACCESSIBLE_ALERT"
                desc="The title of a download notification: the current download status is in progress. This message is for screen reader users.">

@@ -307,11 +307,9 @@
 <div id="content" on-dragstart="onDragStart_"
     class$="[[computeClass_(isActive_, isDangerous_, showProgress_)]]"
     focus-row-container>
-  <!--
-    TODO(hcarmona): Investigate displaying danger level as text in alt
-    attribute and remove aria-hidden="true" from #file-icon-wrapper
-  -->
-  <div id="file-icon-wrapper" class="icon-wrapper" aria-hidden="true">
+  <div id="file-icon-wrapper" class="icon-wrapper" role="img"
+      aria-label="[[iconAriaLabel_]]"
+      aria-hidden="[[computeIconAriaHidden_(iconAriaLabel_)]]">
     <img class="icon" id="file-icon" alt="" hidden="[[!useFileIcon_]]"
         icon-color$="[[computeIconColor_(isDangerous_, data.dangerType,
         useFileIcon_, updateDeepScanningUx_, improvedDownloadWarningsUx_,

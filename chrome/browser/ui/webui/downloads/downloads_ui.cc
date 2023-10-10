@@ -126,6 +126,15 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"controlKeepSuspicious", IDS_DOWNLOAD_KEEP_SUSPICIOUS_FILE},
       {"controlKeepUnverified", IDS_DOWNLOAD_KEEP_UNVERIFIED_FILE},
       {"controlKeepInsecure", IDS_DOWNLOAD_KEEP_INSECURE_FILE},
+
+      // Accessible labels for file icons.
+      {"accessibleLabelDangerous",
+       IDS_DOWNLOAD_DANGEROUS_ICON_ACCESSIBLE_LABEL},
+      {"accessibleLabelSuspicious",
+       IDS_DOWNLOAD_SUSPICIOUS_ICON_ACCESSIBLE_LABEL},
+      {"accessibleLabelInsecure", IDS_DOWNLOAD_INSECURE_ICON_ACCESSIBLE_LABEL},
+      {"accessibleLabelUnverified",
+       IDS_DOWNLOAD_UNVERIFIED_ICON_ACCESSIBLE_LABEL},
   };
   source->AddLocalizedStrings(kStrings);
 

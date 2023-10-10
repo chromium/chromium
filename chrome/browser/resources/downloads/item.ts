@@ -105,6 +105,12 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         computed: 'computeControlRemoveFromListAriaLabel_(data.fileName)',
       },
 
+      iconAriaLabel_: {
+        type: String,
+        computed: 'computeIconAriaLabel_(' +
+            'displayType_, improvedDownloadWarningsUx_)',
+      },
+
       isActive_: {
         computed: 'computeIsActive_(' +
             'data.state, data.fileExternallyRemoved)',
@@ -208,6 +214,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   data: MojomData;
   private mojoHandler_: PageHandlerInterface|null = null;
   private controlledBy_: string;
+  private iconAriaLabel_: string;
   private isActive_: boolean;
   private isDangerous_: boolean;
   private isReviewable_: boolean;
@@ -482,6 +489,26 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         }
     }
 
+    return '';
+  }
+
+  private computeIconAriaHidden_(): string {
+    return (this.iconAriaLabel_ === '').toString();
+  }
+
+  private computeIconAriaLabel_(): string {
+    if (this.improvedDownloadWarningsUx_) {
+      switch (this.displayType_) {
+        case DisplayType.DANGEROUS:
+          return this.i18n('accessibleLabelDangerous');
+        case DisplayType.INSECURE:
+          return this.i18n('accessibleLabelInsecure');
+        case DisplayType.UNVERIFIED:
+          return this.i18n('accessibleLabelUnverified');
+        case DisplayType.SUSPICIOUS:
+          return this.i18n('accessibleLabelSuspicious');
+      }
+    }
     return '';
   }
 
