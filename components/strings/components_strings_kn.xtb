@@ -327,6 +327,7 @@
 <translation id="1615402009686901181">ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ ಕಂಟೆಂಟ್‌ ವಿಷಯ ಗೋಚರಿಸುತ್ತಿರುವಾಗ ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್ ಮಾಡುವುದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="1617276713587758852">ಕ್ರಾಸ್‌ಓವರ್‌ಗಳು</translation>
 <translation id="1618571384971354160">ಟೋಯಿಂಗ್ ಮತ್ತು ಬೀದಿಬದಿಯ ಸಹಾಯ</translation>
+<translation id="1619007254056372606">ಸಾಧನದಲ್ಲಿರುವ ಸೈಟ್ ಡೇಟಾವನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1620510694547887537">ಕ್ಯಾಮರಾ</translation>
 <translation id="1622571349153632031">ಸಸ್ಯಾಹಾರಿ ಆಹಾರ</translation>
 <translation id="162285686621567578">ಈ ವೆಬ್‌ಸೈಟ್ ಅನ್ನು ನಿಮ್ಮ ಪೋಷಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ.</translation>
@@ -1239,6 +1240,7 @@
 <translation id="3552297013052089404">ಸ್ಯಾನ್ಸ್ ಸೆರಿಫ್ ಫಾಂಟ್</translation>
 <translation id="3558573058928565255">ದಿನದ ಸಮಯ</translation>
 <translation id="355995771319966853">ಆಟೋಫಿಲ್ ಅನ್ನು ರದ್ದುಗೊಳಿಸಿ</translation>
+<translation id="3560408312959371419">ಟ್ರ್ಯಾಕಿಂಗ್ ಸಂರಕ್ಷಣೆಗಳು ಮತ್ತು ಸಾಧನದಲ್ಲಿರುವ ಸೈಟ್ ಡೇಟಾದ ಆಯ್ಕೆಗಳು</translation>
 <translation id="3560824484345057728">ಸಂಬಂಧಿತ ಸೈಟ್‌ಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="3566021033012934673">ನಿಮ್ಮ ಸಂಪರ್ಕವು ಖಾಸಗಿಯಲ್ಲ</translation>
 <translation id="3566336457819493938">215 x 315 ಮಿಮೀ</translation>
@@ -3882,6 +3884,7 @@
 <translation id="893332455753468063">ಹೆಸರು ಸೇರಿಸಿ</translation>
 <translation id="8942355029279167844">ಉತ್ಪನ್ನದ ಅನುಭವವನ್ನು ಸುಧಾರಿಸುವುದಕ್ಕೆ ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್ ಡೇಟಾವನ್ನು ಸಂಗ್ರಹಿಸಲು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP_NAME" /> ಗೆ ಅನುಮತಿಸಿದ್ದಾರೆ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ, <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> ಗೆ ಭೇಟಿ ನೀಡಿ.</translation>
 <translation id="8943282376843390568">ನಿಂಬೆ ಹಳದಿ</translation>
+<translation id="8944485226638699751">ಸೀಮಿತವಾಗಿವೆ</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">ಕಾನೂನು ಮತ್ತು ಸರ್ಕಾರ</translation>
 <translation id="8954252855949068147">ಉಡುಪು</translation>

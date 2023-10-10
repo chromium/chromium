@@ -233,6 +233,7 @@
 <translation id="1175364870820465910">&amp;پرنٹ کریں…</translation>
 <translation id="1175914831232945926">ہندسے</translation>
 <translation id="1176471985365269981">آپ کے آلے پر موجود فائلز یا فولڈرز میں ترمیم کرنے کی اجازت نہیں ہے</translation>
+<translation id="1177440945615690056">آپ ترتیبات میں کسی بھی اہل موبائل نیٹ ورک سے منسلک ہو سکتے ہیں</translation>
 <translation id="1177863135347784049">حسب ضرورت</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
 <translation id="1178601482396475810">آلے کے سنک کا نظم کریں</translation>
@@ -2205,6 +2206,7 @@
 <translation id="2709516037105925701">آٹو فل</translation>
 <translation id="2710101514844343743">استعمال اور ڈائیگناسٹکس کا ڈیٹا</translation>
 <translation id="271033894570825754">نیا</translation>
+<translation id="2710507903599773521">آپ کا <ph name="DEVICE_TYPE" /> اب غیر مقفل ہے</translation>
 <translation id="2711073837061989559">ٹرائلز</translation>
 <translation id="2713106313042589954">کیمرا آف کریں</translation>
 <translation id="2713444072780614174">سفید</translation>
@@ -3488,6 +3490,7 @@
 <translation id="3752253558646317685">فنگر پرنٹ کو بچانے کے لیے اپنے بچے سے کہیں کہ انگلی اٹھاتا رہے</translation>
 <translation id="3753033997400164841">ایک بار اسٹور کریں۔ ہر جگہ استعمال کریں</translation>
 <translation id="3753142252662437130">رنگ کے فلٹرز</translation>
+<translation id="3753412199586870466">سائیڈ پینل کھولیں</translation>
 <translation id="3755411799582650620">آپ کا <ph name="PHONE_NAME" /> اب اس <ph name="DEVICE_TYPE" /> کو بھی غیر مقفل کر سکتا ہے۔</translation>
 <translation id="375636864092143889">سائٹ آپ کا مائیکروفون استعمال کر رہی ہے</translation>
 <translation id="3756485814916578707">اسکرین کاسٹ ہو رہی ہے</translation>
@@ -7132,6 +7135,9 @@
 <translation id="6767566652486411142">کسی دوسری زبان کا انتخاب کریں...</translation>
 <translation id="6767639283522617719">ڈومین میں شامل نہیں کیا جا سکا۔ یقینی بنائیں کہ ترتیبات تنظیمی یونٹ کے لیے درست ہیں۔</translation>
 <translation id="6768034047581882264">غیر محفوظ مواد دکھانے کی اجازت نہیں ہے</translation>
+<translation id="6769902329858794251">‏<ph name="BEGIN_PARAGRAPH1" />بہترین تجربہ فراہم کرنے کے لیے، <ph name="DEVICE_OS" /> آلات کے بارے میں ہارڈویئر ڈیٹا اکٹھا کرتا ہے اور Google کے ساتھ اس کا اشتراک کرتا ہے تاکہ یہ تعین کیا جا سکے کہ کون سی اپ ڈیٹس ڈیلیور کی جائیں۔ اختیاری طور پر، آپ Google کو یہ ڈیٹا اضافی مقاصد کے لیے استعمال کرنے کی اجازت دے سکتے ہیں جیسے کہ سپورٹ اور <ph name="DEVICE_OS" /> کے تجربے اور سروس میں بہتری۔<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />آپ اس آلہ پر لاگ ان کر سکتے ہیں اور chrome://system میں chromeosflex_ کے بطور درج کردہ فیلڈز ملاحظہ کر سکتے ہیں تاکہ اپ ڈیٹ فلٹرنگ کے لیے Google کو بھیجے گئے ڈیٹا کو دیکھیں، ساتھ ہی ایسی کوئی دوسری مثالیں جہاں آپ Google کے ساتھ ڈیٹا کا اشتراک کرنے کا انتخاب کرتے ہیں۔<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />ڈیٹا کے بارے میں مزید تفصیلات کے لیے <ph name="DEVICE_OS" /> Google کے ساتھ اشتراک کر سکتا ہے اور اس کے استعمال کے طریقے کے لیے g.co/flex/HWDataCollection ملاحظہ کریں۔<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770042910635026163">آپ کی ملاحظہ کی جانے والی سائٹس آپ کی دلچسپیوں کا تعین کرتی ہیں</translation>
 <translation id="6770602306803890733">آپ کے لیے اور ویب پر سبھی کے لیے سیکیورٹی کو بہتر بناتی ہے</translation>
 <translation id="6771503742377376720">ایک سرٹیفیکیشن ادارہ ہے</translation>
@@ -8613,6 +8619,7 @@
 <translation id="793531125873261495">ورچوئل مشین ڈاؤن لوڈ کرنے میں خرابی آ گئی ہے۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% مکمل</translation>
 <translation id="7937809006412909895">ڈائیگناسٹک ڈیٹا جمع کیا جا رہا ہے</translation>
+<translation id="7938881824185772026">لیبز</translation>
 <translation id="7939062555109487992">اعلی درجے کے اختیارات</translation>
 <translation id="793923212791838">آپ کا آلہ اس سائٹ کے ساتھ استعمال نہیں کیا جا سکتا</translation>
 <translation id="7939328347457537652">ڈیوائس کے سرٹیفکیٹس کا نظم کریں</translation>

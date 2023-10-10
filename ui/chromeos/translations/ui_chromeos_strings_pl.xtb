@@ -329,6 +329,7 @@
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619593063686672873">Brak nowych filmów</translation>
 <translation id="3634507049637220048">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, zarządzana przez administratora, szczegóły</translation>
+<translation id="36451918667380448">Operator sieci komórkowej jest zablokowany. Skontaktuj się z nim, aby uzyskać pomoc.</translation>
 <translation id="3645233063072417428">Liczba przeniesionych elementów: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="3658269352872031728">Wybrane pliki: <ph name="SELECTED_FILE_COUNT" /></translation>
 <translation id="3685122418104378273">Gdy komórkowa transmisja danych jest włączona, synchronizacja z Dyskiem Google jest domyślnie wyłączona.</translation>

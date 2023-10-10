@@ -2581,6 +2581,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2990583317361835189">Ne dopuštaj web-lokacijama korištenje senzora kretanja</translation>
 <translation id="2992931425024192067">Prikazuje se cijeli sadržaj obavijesti </translation>
 <translation id="2993517869960930405">Informacije o aplikaciji</translation>
+<translation id="2996108796702395498">Serijski broj uređaja je <ph name="SERIAL_NUMBER" />. Pomoću tog broja možete aktivirati uslugu.</translation>
 <translation id="2996286169319737844">Podaci su kriptirani vašom šifrom za sinkronzaciju. To ne uključuje načine plaćanja i adrese s Google Paya.</translation>
 <translation id="2996722619877761919">Prebaci na dulji rub</translation>
 <translation id="2996932914629936323">Briše povijest sa svih sinkroniziranih uređaja</translation>
@@ -2968,6 +2969,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3320630259304269485">Sigurno pregledavanje (zaštita od opasnih web-lokacija) i druge sigurnosne postavke</translation>
 <translation id="3321460131042519426">Omogući prelazak riječi u drugi redak</translation>
 <translation id="3321494112580110651">Ne vidite svoj pisač?</translation>
+<translation id="3321776060736518525">S <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonus! Vrijeme upotrebe ti je produženo</translation>
 <translation id="3325804108816646710">Tražimo dostupne profile...</translation>
 <translation id="3325910708063135066">Kamera i mikrofon isključeni su u Postavkama sustava na Macu</translation>
@@ -6217,6 +6219,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Dovršen je pregled za jednu web-lokaciju}one{Dovršen je pregled za {NUM_SITES} web-lokaciju}few{Dovršen je pregled za {NUM_SITES} web-lokacije}other{Dovršen je pregled za {NUM_SITES} web-lokacija}}</translation>
 <translation id="5997337190805127100">Saznajte više o pristupu web-lokacijama</translation>
 <translation id="5998458948782718639">Pomozite poboljšati automatsko popunjavanje</translation>
+<translation id="5999024481231496910">Omogućili ste testiranje postupnog ukidanja kolačića treće strane. Stranica postavki ne može nadjačati tu postavku. Ako želite ponovo omogućiti kolačiće treće strane, ponovo pokrenite Chrome uz onemogućenu tu značajku.</translation>
 <translation id="5999630716831179808">Glasovi</translation>
 <translation id="6000758707621254961">Rezultata za upit "<ph name="SEARCH_TEXT" />" ima <ph name="RESULT_COUNT" /></translation>
 <translation id="6001839398155993679">Započnimo</translation>
@@ -6700,6 +6703,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6399675241776343019">Odbijeno</translation>
 <translation id="6399774419735315745">Špijunka</translation>
 <translation id="6400360390396538896">Uvijek na <ph name="ORIGIN" /></translation>
+<translation id="6401118106417399952">EID vašeg uređaja je <ph name="EID_NUMBER" />, a serijski broj uređaja je <ph name="SERIAL_NUMBER" />. Pomoću tih brojeva možete aktivirati uslugu.</translation>
 <translation id="6401458660421980302">Da biste poslali ovu karticu na drugi uređaj, prijavite se na Chrome na tom uređaju</translation>
 <translation id="6401597285454423070">Vaše računalo sadrži sigurnosni uređaj Trusted Platform Module (TPM) koji se upotrebljava za primjenu mnogih kritičnih sigurnosnih značajki u Chrome OS-u. Posjetite Chromebookov centar za pomoć da biste saznali više: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404511346730675251">Uredi oznaku</translation>
@@ -8222,6 +8226,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7637272932128132922">Dok je ova kartica bila neaktivna, štednja memorije oslobodila je memoriju za druge zadatke. To uvijek možete promijeniti u odjeljku <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Nema dovoljno prostora na disku</translation>
 <translation id="7639914187072011620">Dohvaćanje SAML preusmjeravanja s poslužitelja nije uspjelo</translation>
+<translation id="7640256527901510478">IMEI uređaja je <ph name="IMEI_NUMBER" />, a serijski broj uređaja <ph name="SERIAL_NUMBER" />. Pomoću tih brojeva možete aktivirati uslugu.</translation>
 <translation id="7640308610547854367">Vratili ste se na prethodnu verziju ChromeOS-a. Da biste dobili ažuriranja, pričekajte dok sljedeća verzija ne bude dostupna.</translation>
 <translation id="7641513591566880111">Novi naziv profila</translation>
 <translation id="764178579712141045">Dodano: <ph name="USER_EMAIL" /></translation>
@@ -9724,6 +9729,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="881799181680267069">Sakrij ostale</translation>
 <translation id="8818152010000655963">Pozadina</translation>
 <translation id="8818958672113348984">Potvrda putem telefona</translation>
+<translation id="8819510664278523111">EID vašeg uređaja je <ph name="EID_NUMBER" />, IMEI je <ph name="IMEI_NUMBER" />, a serijski broj uređaja je <ph name="SERIAL_NUMBER" />. Pomoću tih brojeva možete aktivirati uslugu.</translation>
 <translation id="8820817407110198400">Oznake</translation>
 <translation id="8821045908425223359">Konfiguriraj IP adresu automatski</translation>
 <translation id="8821268776955756404">Aplikacija <ph name="APP_NAME" /> spremna je za upotrebu.</translation>
@@ -10274,6 +10280,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="956500788634395331">Zaštićeni ste od potencijalno štetnih proširenja</translation>
 <translation id="957179356621191750">6 točaka</translation>
 <translation id="957960681186851048">Ta je web-lokacija pokušala automatski preuzeti više datoteka</translation>
+<translation id="958571289841636277">Krećite se unatrag i unaprijed prelaskom prsta</translation>
 <translation id="960987915827980018">Još otprilike 1 sat</translation>
 <translation id="962802172452141067">Stablo mape oznaka</translation>
 <translation id="963000966785016697">Pretraži sliku pomoću usluge <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

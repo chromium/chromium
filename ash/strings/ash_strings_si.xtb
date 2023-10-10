@@ -703,6 +703,7 @@
 <translation id="385300504083504382">ආරම්භය</translation>
 <translation id="3859364108019690">යෙදුම් ප්‍රවාහ කළ නොහැක</translation>
 <translation id="3861651314799684201">සම්පූර්ණ තිරය පටිගත කිරීමට Enter ඔබන්න</translation>
+<translation id="3865912916886104060">උපාංග කිසිවක් සම්බන්ධ කර නැත. හොට්ස්පොට් භාවිතා කිරීම ආරම්භ කිරීමට WiFi ක්‍රියාවිරහිත කරනු ඇත.</translation>
 <translation id="3886872229787704059">අද විවෘත කරන ලදි</translation>
 <translation id="3891340733213178823">වැරිමට Ctrl+Shift+Q දෙසැරයක් ඔබන්න.</translation>
 <translation id="3893630138897523026">ChromeVox (කථා කළ අදහස්)</translation>
@@ -787,6 +788,7 @@
 <translation id="4197790712631116042">අක්‍රියයි</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> නොමැත.</translation>
 <translation id="4201051445878709314">පෙර මාසය පෙන්වන්න</translation>
+<translation id="4202362334312791952">1 උපාංගයක් සම්බන්ධ කර ඇත. හොට්ස්පොට් භාවිතා කිරීම ආරම්භ කිරීමට WiFi ක්‍රියාවිරහිත කරනු ඇත.</translation>
 <translation id="4209973997261364186">Wi-Fi ක්‍රියාත්මක කර ඇත</translation>
 <translation id="4212472694152630271">PIN වෙත මාරු වන්න</translation>
 <translation id="4215497585250573029">VPN සැකසුම්</translation>
@@ -1049,6 +1051,7 @@
 <translation id="5258528442992323769">සුරැකි මේස නැත</translation>
 <translation id="5260676007519551770">4 වෙනි මේසය</translation>
 <translation id="5268819379131021772">Google කාර්ය ලැයිස්තුව:</translation>
+<translation id="5275923704957843041">මේස පෙරදසුන</translation>
 <translation id="5278086053818066789">ChromeVox සක්‍රීය/අක්‍රිය කරන්න (කථන ප්‍රතිපෝෂණය)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ඔබගේ අවධානය ඉල්ලයි.</translation>
 <translation id="5283198616748585639">1 විනාඩියක් එක් කරන්න</translation>
@@ -1165,6 +1168,7 @@
 <translation id="5707775774148071965">ඔබගේ උපාංගය ඔබගේ කේබලයට වඩා ඉහළ දත්ත අනුපාතයකට සහාය දක්වයි. උපාංග කාර්ය සාධනය සීමා විය හැකිය.</translation>
 <translation id="5710450975648804523">බාධා නොකරන්න ක්‍රියාත්මකයි</translation>
 <translation id="571295407079589142">ජංගම දත්ත ක්‍රියාවිරහිතයි</translation>
+<translation id="5716891621595980681">උපාංග <ph name="DEVICECOUNT" />ක් සම්බන්ධ කර ඇත. හොට්ස්පොට් භාවිතා කිරීම ආරම්භ කිරීමට WiFi ක්‍රියාවිරහිත කරනු ඇත.</translation>
 <translation id="5727460725221669831">ඔබට ඔබේ මුරපදය අමතක වූවා නම් හෝ මෑතක දී ඔබේ Google ගිණුමේ මුරපදය වෙනස් කර ඇත්නම්, මෙම පරිශීලකයා ප්‍රතිසාධනය කිරීමට උත්සාහ කරන්න.</translation>
 <translation id="573413375004481890">මෙම උපාංගයට ඔබේ සංදර්ශක සියල්ලට සහය දැක්වීමට නොහැකි විය, එබැවින් එකක් විසන්ධි කර ඇත</translation>
 <translation id="5740328398383587084">ළඟ බෙදා ගැනීම</translation>

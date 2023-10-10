@@ -169,6 +169,7 @@
 <translation id="1847795903283049083">همچنین می‌توانید این موارد را در نشانک‌ها، «فهرست خواندن»، یا مدیر گذرواژه مشاهده و مدیریت کنید.</translation>
 <translation id="1870148520156231997">نشان دادن گذرواژه</translation>
 <translation id="1872096359983322073">چراغ‌قوه</translation>
+<translation id="1876851015978093044">این مورد را نشان می‌دهد</translation>
 <translation id="1882901927376062252">{count,plural, =1{‏نشانک در «حساب Google» شما ({email}) ذخیره شد}one{‏‫{count} نشانک در «حساب Google» شما ({email}) ذخیره شد}other{‏‫{count} نشانک در «حساب Google» شما ({email}) ذخیره شد}}</translation>
 <translation id="1883255238294161206">کوچک کردن فهرست</translation>
 <translation id="1890237935065108104">این تنظیم دردسترس نیست.</translation>
@@ -282,6 +283,7 @@
 <translation id="2482878487686419369">اعلان‌ها</translation>
 <translation id="2484459871750294497">چگونه این ویژگی را فعال کنم؟</translation>
 <translation id="2496626742194544812">رفتن به اولین برگه</translation>
+<translation id="2499505845365628575">از <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> می‌توانید کل سابقه مرورتان را پیدا کنید.</translation>
 <translation id="2500374554657206846">گزینه‌هایی برای ذخیره گذرواژه</translation>
 <translation id="2511117522375201202"><ph name="NUMBER_OF_PASSWORDS" /> گذرواژه لورفته دارید که می‌تواند امنیت شما را به‌خطر بیندازد.</translation>
 <translation id="2523363575747517183">این وب‌سایت به‌طور مکرر تلاش می‌کند برنامه دیگری را باز کند.</translation>
@@ -1112,6 +1114,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6785453220513215166">در حال ارسال گزارش خرابی...</translation>
 <translation id="6790502149545262384">به‌زودی وقتی برگه جدیدی باز می‌کنید، داستان‌هایی از <ph name="CHANNEL_NAME" /> خواهید دید.</translation>
 <translation id="6797885426782475225">جستجوی گفتاری</translation>
+<translation id="6800349425672670802">از «تعویض‌کننده برگه» می‌توانید به همه برگه‌های باز خود دسترسی داشته باشید.</translation>
 <translation id="6807889908376551050">نمایش همه...</translation>
 <translation id="681368974849482173">مورد ایجاد شد</translation>
 <translation id="6822587385560699678">وقتی روشن باشد، گذرواژه‌ها در <ph name="ACCOUNT" /> ذخیره می‌شوند. وقتی خاموش باشد، گذرواژه‌ها فقط در این دستگاه ذخیره می‌شوند.</translation>
@@ -1206,6 +1209,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7367530036083223701">با ابزارک «مدیر گذرواژه»، به‌طور ایمن ازطریق صفحه اصلی به گذرواژه‌هایتان دسترسی پیدا کنید.</translation>
 <translation id="7380220816562673297">‏درحال‌حاضر، می‌توانید گذرواژه‌ها را فقط با اعضای خانواده هم‌رسانی کنید. <ph name="BEGIN_LINK" />گروه خانواده‌ای با حداکثر ۶ عضو ایجاد کنید<ph name="END_LINK" /> و بهره بیشتری از محصولات و اشتراک‌ها در Google ببرید.</translation>
 <translation id="7383797227493018512">فهرست خواندن</translation>
+<translation id="7396331865858820922">گذرواژه هم‌رسانی نشد</translation>
 <translation id="7398893703713203428">ایجاد پیوند</translation>
 <translation id="7399802613464275309">بررسی ایمنی</translation>
 <translation id="7400418766976504921">نشانی وب</translation>
@@ -1226,6 +1230,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7488874549363591659">تحویل داده شد</translation>
 <translation id="7491131399623468277">رفتن به «تنظیمات»…</translation>
 <translation id="7492574581995589075">‏سازمانتان امکان استفاده از داده‌های Chrome و ذخیره کردن آن‌ها در «حساب Google» را خاموش کرده است. نشانک‌ها، گذرواژه‌ها، و سایر اطلاعات جدید فقط در این دستگاه ذخیره خواهد شد.</translation>
+<translation id="749854780843431406">بااستفاده از دکمه <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" /> می‌توانید برگه جدیدی باز کنید.</translation>
 <translation id="750149195207506638">«نشانک‌ها» پنهان شده است</translation>
 <translation id="750228856503700085">به‌روزرسانی دردسترس نیست</translation>
 <translation id="750493650310597496">۰ نشانک انتخاب شده است</translation>
@@ -1286,6 +1291,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="778855399387580014">‏جستجویی در برگه Chrome جدیدی شروع کنید.</translation>
 <translation id="7791543448312431591">افزودن</translation>
 <translation id="7807060072011926525">‏ارائه از Google</translation>
+<translation id="7812377703891978671">با انتخاب <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> می‌توانید به کل سابقه مرورتان دسترسی داشته باشید.</translation>
 <translation id="78146569776629510">بارگیری‌ها</translation>
 <translation id="7839985698273989086">صفحه آفلاین</translation>
 <translation id="7840771868269352570">موارد انتخاب‌شده برداشته خواهد شد.</translation>
@@ -1433,6 +1439,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8560253818350321773">موارد پراستفاده در ابتدا نشان داده می‌شود.</translation>
 <translation id="8588404856427128947">خاموش</translation>
 <translation id="8591976964826315682">مسدود کردن کوکی‌های شخص ثالث در «حالت ناشناس»</translation>
+<translation id="8593565399399144771">در اینجا می‌توانید برگه جدیدی باز کنید.</translation>
 <translation id="8605219856220328675">بستن برگه</translation>
 <translation id="8613883225817609844">پنهان کردن برگه‌های اخیر</translation>
 <translation id="8620640915598389714">ویرایش</translation>

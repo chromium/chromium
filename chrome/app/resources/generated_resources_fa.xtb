@@ -2588,6 +2588,7 @@
 <translation id="2990583317361835189">به سایت‌ها اجازه داده نشود از حسگرهای حرکتی استفاده کنند</translation>
 <translation id="2992931425024192067">نمایش کل محتوای اعلان</translation>
 <translation id="2993517869960930405">اطلاعات برنامه</translation>
+<translation id="2996108796702395498">شماره سریال دستگاه شما <ph name="SERIAL_NUMBER" /> است. می‌توان از این شماره برای کمک به فعال‌سازی سرویس استفاده کرد.</translation>
 <translation id="2996286169319737844">‏داده‌ها با گذرعبارت همگام‌سازی‌تان رمزگذاری می‌شود. این کار شامل روش‌های پرداخت و نشانی‌های موجود در Google Pay نمی‌شود.</translation>
 <translation id="2996722619877761919">ورق زدن از طرف لبه بلندتر</translation>
 <translation id="2996932914629936323">سابقه از همه دستگاه‌های همگام‌سازی‌شده پاک می‌شود</translation>
@@ -2975,6 +2976,7 @@
 <translation id="3320630259304269485">«مرور ایمن» (محافظت دربرابر سایت‌های خطرناک) و دیگر تنظیمات امنیتی</translation>
 <translation id="3321460131042519426">فعال کردن «قرارگیری متن در کادر»</translation>
 <translation id="3321494112580110651">چاپگرتان را نمی‌بینید؟</translation>
+<translation id="3321776060736518525">از <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">پاداش! وقت تماشای صفحه بیشتر شد</translation>
 <translation id="3325804108816646710">درحال جستجوی نمایه‌های دردسترس…</translation>
 <translation id="3325910708063135066">‏در «اولویت‌های سیستم Mac»، دوربین و میکروفون خاموش‌اند</translation>
@@ -6227,6 +6229,7 @@
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{مرور یک سایت تکمیل شد}one{مرور {NUM_SITES} سایت تکمیل شد}other{مرور {NUM_SITES} سایت تکمیل شد}}</translation>
 <translation id="5997337190805127100">درباره دسترسی به سایت بیشتر بدانید</translation>
 <translation id="5998458948782718639">کمک به بهبود «تکمیل خودکار»</translation>
+<translation id="5999024481231496910">‏آزمایش توقف تدریجی کوکی شخص ثالث را فعال کرده‌اید. نمی‌توان این انتخاب را ازطریق صفحه تنظیمات ملغی کرد. اگر می‌خواهید کوکی‌های شخص ثالث را دوباره فعال کنید، Chrome را راه‌اندازی مجدد و طی آن این ویژگی را غیرفعال کنید.</translation>
 <translation id="5999630716831179808">صداها</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> نتیجه برای «<ph name="SEARCH_TEXT" />»</translation>
 <translation id="6001839398155993679">بیایید شروع کنیم</translation>
@@ -6710,6 +6713,7 @@
 <translation id="6399675241776343019">ردشده</translation>
 <translation id="6399774419735315745">جاسوس</translation>
 <translation id="6400360390396538896">همیشه در <ph name="ORIGIN" /></translation>
+<translation id="6401118106417399952">‏شماره EID دستگاه شما <ph name="EID_NUMBER" /> و شماره سریال آن <ph name="SERIAL_NUMBER" /> است. می‌توان از این شماره‌ها برای کمک به فعال‌سازی سرویس استفاده کرد.</translation>
 <translation id="6401458660421980302">‏برای ارسال این برگه به دستگاهی دیگر، در آنجا به سیستم Chrome وارد شوید</translation>
 <translation id="6401597285454423070">‏رایانه شما حاوی دستگاه امنیتی با «ماژول پلاتفرم مورداعتماد» (TPM) است؛ از این دستگاه برای اجرای بسیاری از ویژگی‌های امنیتی مهم در ChromeOS استفاده می‌شود. برای کسب اطلاعات بیشتر از «مرکز راهنمایی Chromebook» دیدن کنید: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404511346730675251">ویرایش نشانک</translation>
@@ -8227,6 +8231,7 @@
 <translation id="7637272932128132922">وقتی این برگه غیرفعال بود، «بهینه‌سازی حافظ» حافظه را برای کارهای دیگر آزاد کرد. هرزمان بخواهید می‌توانید آن را در <ph name="SETTINGS_LINK" /> تغییر دهید.</translation>
 <translation id="7637593984496473097">فضای دیسک کافی نیست</translation>
 <translation id="7639914187072011620">‏نشانی وب هدایتگر SAML از سرور واکشی نشد</translation>
+<translation id="7640256527901510478">‏شماره IMEI دستگاه شما <ph name="IMEI_NUMBER" /> و شماره سریال آن <ph name="SERIAL_NUMBER" /> است. می‌توان از این شماره‌ها برای کمک به فعال‌سازی سرویس استفاده کرد.</translation>
 <translation id="7640308610547854367">‏به نسخه قبلی ChromeOS بازگشتید. برای دریافت به‌روزرسانی، منتظر بمانید تا نسخه بعدی دردسترس قرار گیرد.</translation>
 <translation id="7641513591566880111">نام نمایه جدید</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> اضافه شد</translation>
@@ -9727,6 +9732,7 @@
 <translation id="881799181680267069">عدم نمایش موارد دیگر</translation>
 <translation id="8818152010000655963">کاغذ دیواری</translation>
 <translation id="8818958672113348984">به‌تأیید رساندن ازطریق تلفن</translation>
+<translation id="8819510664278523111">‏شماره EID دستگاه شما <ph name="EID_NUMBER" />، شماره IMEI آن <ph name="IMEI_NUMBER" />، و شماره سریال آن <ph name="SERIAL_NUMBER" /> است. می‌توان از این شماره‌ها برای کمک به فعال‌سازی سرویس استفاده کرد.</translation>
 <translation id="8820817407110198400">نشانک‌ها</translation>
 <translation id="8821045908425223359">‏پیکربندی خودکار نشانی IP</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> آماده استفاده است.</translation>
@@ -10277,6 +10283,7 @@
 <translation id="956500788634395331">دربرابر افزونه‌های بالقوه مضر محافظت می‌شوید</translation>
 <translation id="957179356621191750">۶ نقطه‌ای</translation>
 <translation id="957960681186851048">این سایت تلاش کرده است چند فایل را به‌طور خودکار بارگیری کند</translation>
+<translation id="958571289841636277">پیمایش به عقب و جلو با اشاره تند کشیدن</translation>
 <translation id="960987915827980018">حدود ۱ ساعت باقی مانده است</translation>
 <translation id="962802172452141067">درخت پوشه نشانک</translation>
 <translation id="963000966785016697">جستجوی تصویر با <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

@@ -332,6 +332,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="2856503607207334158">Produciuse un erro ao iniciar sesión</translation>
 <translation id="2860954141821109167">Asegúrate de que haxa unha aplicación de teléfono activada neste dispositivo</translation>
 <translation id="2861923151411510142">Algunhas funcións de Chrome non estarán dispoñibles</translation>
+<translation id="2869430948265924908">Para protexer o teu contido confidencial no coche, debes crear un bloqueo do perfil do coche.  Podes facelo cun PIN, cun código ou cun contrasinal.</translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2871733351037274014">Precargar páxinas</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> quere que aprobes este sitio web:</translation>
@@ -449,6 +450,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="3421726884497337397">Escolle cando queres bloquear as cookies de terceiros</translation>
 <translation id="3428747202529429621">Protéxete en Chrome e pode utilizarse para mellorar a túa seguranza noutras aplicacións de Google cando teñas iniciada a sesión</translation>
 <translation id="3429160811076349561">As funcións de proba están desactivadas</translation>
+<translation id="3430670036890315772">Se desactivas o bloqueo do perfil, quitarase a información gardada</translation>
 <translation id="3435465986463792564">Tes varias ventás? Podes xestionalas desde aquí</translation>
 <translation id="3435738964857648380">Seguranza</translation>
 <translation id="3439276997620616816">Aquí atoparás as pestanas recentes</translation>
@@ -618,6 +620,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="4378154925671717803">Teléfono</translation>
 <translation id="438319986296050901">Compartir só tarxeta</translation>
 <translation id="4384468725000734951">Uso de Sogou para a busca</translation>
+<translation id="4387647248986092471">Crear un bloqueo do perfil do coche</translation>
 <translation id="4402611456429872546"><ph name="LANG" />: descargando…</translation>
 <translation id="4404568932422911380">Non hai marcadores</translation>
 <translation id="4405224443901389797">Mover a…</translation>
@@ -787,6 +790,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5171045022955879922">Buscar ou escribir o URL</translation>
 <translation id="5174700554036517242">A pestana volveu á súa altura inicial</translation>
+<translation id="5180063720319462041">Páxina traducida ao <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">Xestionar os temas e as buscas que che interesan</translation>
 <translation id="5191251636205085390">Obtén información sobre novas tecnoloxías desenvolvidas co obxectivo de substituír as cookies de terceiros e aprende a manexalas</translation>
 <translation id="5193988420012215838">Copiouse no teu portapapeis</translation>
@@ -795,6 +799,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5210286577605176222">Saltar á pestana anterior</translation>
 <translation id="5210365745912300556">Pechar pestana</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>
+<translation id="5226378907213531272">Terás que desbloquear a pantalla cada vez que uses o coche</translation>
 <translation id="5227554086496586518">Toca para ver os resultados da busca</translation>
 <translation id="5233638681132016545">Nova pestana</translation>
 <translation id="5234971936051226002">Reprodutor Escoitar esta páxina minimizado.</translation>
@@ -1278,6 +1283,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7691043218961417207">Descubre contido para seguir</translation>
 <translation id="7697383401610880082">Controlador de arrastre</translation>
 <translation id="7698359219371678927">Crea un correo electrónico en <ph name="APP_NAME" /></translation>
+<translation id="7702388902581909985">Ao borrar os teus datos de navegación, non se pecha a sesión da túa Conta de Google. Para facelo, <ph name="BEGIN_LINK1" />pecha a sesión en Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Utilizaranse datos móbiles</translation>
 <translation id="7709918231054955894">Accede a todas as túas pestanas</translation>
 <translation id="772434085369393266">Cambia ao protocolo HTTPS para a navegación. Mostraráseche un aviso antes de cargar os sitios que non sexan compatibles. Non podes cambiar esta opción de configuración porque tes activada a opción Protección avanzada.</translation>

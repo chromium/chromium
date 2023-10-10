@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Abre la cuadrícula de pestañas de Chromium.</translation>
 <translation id="1617663976202781617">Datos de la sincronización de Chromium</translation>
 <translation id="1647558790457890304">Configuración de Chromium</translation>
+<translation id="164952285225495380">Ya se realizó un seguimiento de este paquete en Chromium.</translation>
 <translation id="1722370509450468186">La contraseña se guardará en tu Cuenta de Google (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Dat. Chromium bor.</translation>
 <translation id="1791845338122684020">Abre la página del historial de Chromium.</translation>
@@ -140,6 +141,7 @@ Aspectos que debes tener en cuenta:
 1. Abre Ajustes.
 2. Presiona App de navegador predeterminada
 3. Selecciona Chromium.</translation>
+<translation id="6197255575340902638">Si ocultas "<ph name="MODULE_NAME" />", Chromium ya no realizará un seguimiento automático de tus paquetes futuros y borrará todos los datos de seguimiento de paquetes anteriores.</translation>
 <translation id="6247557882553405851">Administrador de contraseñas de Google</translation>
 <translation id="6268381023930128611">¿Salir de Chromium?</translation>
 <translation id="6324041800010509197">Visitar la cuadrícula de pestañas en Chromium</translation>

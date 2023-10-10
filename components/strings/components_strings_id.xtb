@@ -13,6 +13,7 @@
 <translation id="1024913885641459127">Ulasan Produk &amp; Perbandingan Harga</translation>
 <translation id="1028781062521375153">Lihat detail</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ingin menyimpan data berukuran besar di perangkat Anda secara permanen</translation>
+<translation id="1030949145805074938">{COUNT,plural, =0{Tidak ada}=1{Dari 1 situs. Anda akan logout dari sebagian besar situs. }other{Dari # situs. Anda akan logout dari sebagian besar situs. }}</translation>
 <translation id="1033329911862281889">Mode Samaran tidak membuat Anda tidak terlihat secara online:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Situs dan layanan yang digunakan situs tersebut dapat melihat kunjungan<ph name="END_LIST_ITEM" />
@@ -485,6 +486,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="1939059826036755332">Picture-in-picture otomatis</translation>
 <translation id="1939175642807587452">Dapat meminta untuk mengirimkan notifikasi</translation>
 <translation id="1940441167050915935">Hapus kode keamanan yang tersimpan</translation>
+<translation id="194174710521904357">Anda mengizinkan situs ini menggunakan cookie pihak ketiga untuk sementara. Dengan demikian, Anda mendapatkan lebih sedikit perlindungan terhadap penjelajahan, tetapi fitur situs cenderung berfungsi seperti yang diharapkan.</translation>
 <translation id="1943994668912612445">Desain</translation>
 <translation id="1945968466830820669">Anda dapat kehilangan akses ke akun organisasi atau mengalami pencurian identitas. Chromium menyarankan Anda untuk mengubah sandi sekarang.</translation>
 <translation id="1946849748901605102">12 x 15 inci (30 x 38 cm)</translation>
@@ -662,6 +664,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2300306941146563769">Tidak diupload</translation>
 <translation id="230286397113210245">Tombol Buka Jendela Samaran, aktifkan untuk membuka jendela Samaran baru dan menjelajah secara pribadi</translation>
 <translation id="2312234273148520048">Bumbu &amp; Saus</translation>
+<translation id="2316087952091171402">Kurang dari <ph name="UPPER_ESTIMATE" />. Beberapa situs mungkin dimuat lebih lambat pada kunjungan Anda berikutnya.</translation>
 <translation id="2316159751672436664">Personalisasi alat aksesibilitas Anda di setelan ChromeOS</translation>
 <translation id="2316887270356262533">Sediakan ruang kurang dari 1 MB. Beberapa situs mungkin dimuat lebih lambat dibuka lagi.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> memerlukan nama pengguna dan sandi.</translation>
@@ -1106,6 +1109,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3271648667212143903"><ph name="ORIGIN" /> ingin terhubung</translation>
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Masukkan kode verifikasi <ph name="NUMBER_OF_DIGITS" /> digit</translation>
+<translation id="3272643614306383237">Kurang dari 1 MB. Beberapa situs mungkin dimuat lebih lambat pada kunjungan Anda berikutnya.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Kebijakan administrator tidak merekomendasikan untuk membuka file ini di <ph name="DESTINATION_NAME" />}other{Kebijakan administrator tidak merekomendasikan untuk membuka file ini di <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organisasi Anda, <ph name="ENROLLMENT_DOMAIN" />, telah mengirim beberapa info ke situs berikut, seperti setelan atau kebijakan.</translation>
 <translation id="3286372614333682499">potret</translation>
@@ -2872,6 +2876,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Mesin telusur default memungkinkan Anda menelusuri web dan mendukung fitur Chrome<ph name="END_BOLD" /> seperti menelusuri dari kolom URL dan dari gambar di halaman web. Fitur mungkin tidak tersedia jika mesin telusur tidak mendukungnya.</translation>
 <translation id="6934672428414710184">Nama ini dari Akun Google Anda</translation>
 <translation id="6935082727755903526">Pekerjaan Akuntansi &amp; Keuangan</translation>
+<translation id="6935179587384421592"><ph name="SIZE" />. Beberapa situs mungkin dimuat lebih lambat pada kunjungan Anda berikutnya.</translation>
 <translation id="6936976777388162184">Ini adalah perangkat yang dipaketkan dan tidak dapat didaftarkan dengan Signage and Kiosk Upgrade.</translation>
 <translation id="6939469646605424232">Drama TV</translation>
 <translation id="6944692733090228304">Anda memasukkan sandi di situs yang tidak dikelola oleh <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Untuk melindungi akun, jangan gunakan sandi yang sama di aplikasi dan situs lain.</translation>
@@ -3135,6 +3140,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7441864845853794192">Makanan Adiboga &amp; Khas</translation>
 <translation id="7442725080345379071">Oranye Muda</translation>
 <translation id="7444046173054089907">Situs ini diblokir</translation>
+<translation id="7444176988908839653">{COUNT,plural, =0{Cookie akan diblokir lagi hari ini}=1{Cookie akan diblokir lagi besok}other{# hari sebelum cookie diblokir lagi}}</translation>
 <translation id="7445762425076701745">Identitas server yang Anda sambungkan tidak dapat divalidasi sepenuhnya. Anda terhubung ke server menggunakan nama yang hanya valid dalam jaringan Anda, yang mana otoritas sertifikat eksternal sama sekali tidak dapat memvalidasi kepemilikannya. Karena sejumlah otoritas sertifikat akan tetap menerbitkan sertifikat untuk nama tersebut, tidak dapat dipastikan apakah Anda akan terhubung ke situs web yang dimaksudkan dan bahwa tidak akan ada penyerang.</translation>
 <translation id="7447234474237738389">Layanan Pakaian</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
@@ -3501,6 +3507,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="81563721597823545">Peralatan Hoki</translation>
 <translation id="8161095570253161196">Lanjutkan menjelajah</translation>
 <translation id="8163866351304776260">Empat lubang di kiri</translation>
+<translation id="8164078261547504572">Dapatkan email saat ada penurunan harga?</translation>
 <translation id="8175796834047840627">Chrome menawarkan untuk menyimpan informasi kartu ke Akun Google Anda karena Anda sedang login. Anda dapat mengubah perilaku ini di setelan.</translation>
 <translation id="8176440868214972690">Administrator perangkat ini telah mengirim beberapa info ke situs berikut, seperti setelan atau kebijakan.</translation>
 <translation id="817820454357658398">Produk Kebersihan Bagian Kewanitaan</translation>
@@ -3939,6 +3946,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="9078912659001679888">Blender &amp; Pembuat Jus</translation>
 <translation id="9078964945751709336">Dibutuhkan informasi lebih lanjut</translation>
 <translation id="9080712759204168376">Ringkasan Pesanan</translation>
+<translation id="9084304544887760521">Dapatkan email yang dikirim ke <ph name="EMAIL" /> jika ada penurunan harga item yang Anda pantau di situs mana pun.</translation>
 <translation id="908796725011587895">Olahraga kampus</translation>
 <translation id="9089260154716455634">Kebijakan Waktu Nonaktif:</translation>
 <translation id="9090243919347147717">Lampiran</translation>
@@ -4023,6 +4031,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="944540589955480312">Gunakan sandi dan kunci sandi yang disimpan di Akun Google Anda</translation>
 <translation id="945855313015696284">Periksa info di bawah dan hapus kartu apa pun yang tidak valid</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuat situs baru di Google Sites dengan cepat</translation>
+<translation id="947974362755924771">{COUNT,plural, =0{Chrome akan membatasi cookie lagi hari ini}=1{Chrome akan membatasi cookie lagi besok}other{# hari sebelum Chrome membatasi cookie lagi}}</translation>
 <translation id="949314938206378263">Kamu meminta untuk membuka situs ini. Orang tuamu bisa membalas di Family Link.</translation>
 <translation id="950736567201356821">Tiga lubang di atas</translation>
 <translation id="961663415146723894">Jilid bawah</translation>

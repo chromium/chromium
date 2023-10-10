@@ -2589,6 +2589,7 @@
 <translation id="2990583317361835189">ছাইটক ম’শ্বন ছেন্সৰ ব্যৱহাৰ কৰাৰ অনুমতি নিদিব</translation>
 <translation id="2992931425024192067">সকলো জাননীৰ সমল দেখুৱাওক</translation>
 <translation id="2993517869960930405">এপ্ সম্পৰ্কীয় তথ্য</translation>
+<translation id="2996108796702395498">আপোনাৰ ডিভাইচৰ ক্ৰমিক নম্বৰটো হৈছে <ph name="SERIAL_NUMBER" />। সেৱা সক্ৰিয় কৰিবলৈ এই সংখ্যাটো ব্যৱহাৰ কৰিব পৰা যায়।</translation>
 <translation id="2996286169319737844">আপোনাৰ ছিংক পাছফ্ৰেজৰ জৰিয়তে ডেটা এনক্ৰিপ্ট কৰা হৈছে। ইয়াত Google Payৰ পৰিশোধ পদ্ধতি আৰু ঠিকনাসমূহ অন্তর্ভুক্ত নহয়।</translation>
 <translation id="2996722619877761919">দীঘল প্রান্তত লুটিয়াওক</translation>
 <translation id="2996932914629936323">আটাইবোৰ ছিংক কৰা ডিভাইচৰ পৰা ইতিহাস মচে</translation>
@@ -2976,6 +2977,7 @@
 <translation id="3320630259304269485">সুৰক্ষিত ব্ৰাউজিং (বিপজ্জনক ছাইটসমূহৰ পৰা সুৰক্ষা) আৰু অন্য সুৰক্ষা সম্পর্কীয় ছেটিংসমূহ</translation>
 <translation id="3321460131042519426">শব্দ একেটা শাৰীতে আৱদ্ধ কৰা সুবিধাটো সক্ষম কৰক</translation>
 <translation id="3321494112580110651">আপোনাৰ প্ৰিণ্টাৰটো দেখা পোৱা নাই নেকি?</translation>
+<translation id="3321776060736518525"><ph name="APP_URL" />ৰ পৰা</translation>
 <translation id="3323521181261657960">ব’নাছ! আপুনি আৰু বেছি স্ক্ৰীন টাইম পাইছে</translation>
 <translation id="3325804108816646710">উপলব্ধ প্ৰ’ফাইল বিচাৰি থকা হৈছে...</translation>
 <translation id="3325910708063135066">Mac ছিষ্টেম অগ্ৰাধিকাৰত কেমেৰা আৰু মাইক্ৰ’ফ’ন অফ কৰা আছে</translation>
@@ -6227,6 +6229,7 @@
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{১ টা ছাইটৰ বাবে পৰ্যালোচনা সম্পূৰ্ণ হৈছে}one{{NUM_SITES} টা ছাইটৰ বাবে পৰ্যালোচনা সম্পূৰ্ণ হৈছে}other{{NUM_SITES} টা ছাইটৰ বাবে পৰ্যালোচনা সম্পূৰ্ণ হৈছে}}</translation>
 <translation id="5997337190805127100">ছাইট এক্সেছৰ বিষয়ে অধিক জানক</translation>
 <translation id="5998458948782718639">স্বয়ংক্ৰিয়ভাৱে পূৰ কৰা সুবিধাটো উন্নত কৰাত সহায় কৰক</translation>
+<translation id="5999024481231496910">আপুনি তৃতীয় পক্ষৰ কুকি পৰ্যায়ক্ৰমে পৰীক্ষা কৰাটো সক্ষম কৰিছে। এইটো ছেটিঙৰ পৃষ্ঠাখনে অ’ভাৰৰাইড কৰিব নোৱাৰে। যদি আপুনি পুনৰ তৃতীয় পক্ষৰ কুকিসমূহ সক্ষম কৰিবলৈ বিচাৰে, এই সুবিধাটো অক্ষম কৰি পুনৰ Chrome লঞ্চ কৰক।</translation>
 <translation id="5999630716831179808">ধ্বনিসমূহ</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />'ৰ বাবে <ph name="RESULT_COUNT" />টা ফলাফল</translation>
 <translation id="6001839398155993679">আৰম্ভ কৰক</translation>
@@ -6710,6 +6713,7 @@
 <translation id="6399675241776343019">অস্বীকাৰ কৰা হৈছে</translation>
 <translation id="6399774419735315745">গুপ্তচৰ</translation>
 <translation id="6400360390396538896">সদায় অন <ph name="ORIGIN" /></translation>
+<translation id="6401118106417399952">আপোনাৰ ডিভাইচৰ EID <ph name="EID_NUMBER" /> আৰু ডিভাইচৰ ক্ৰমিক নম্বৰ <ph name="SERIAL_NUMBER" />। সেৱা সক্ৰিয় কৰিবলৈ এই সংখ্যাকেইটা ব্যৱহাৰ কৰিব পৰা যায়।</translation>
 <translation id="6401458660421980302">অন্য এটা ডিভাইচলৈ এই টেবটো পঠিয়াবলৈ, তাত Chromeত ছাইন ইন কৰক</translation>
 <translation id="6401597285454423070">আপোনাৰ কম্পিউটাৰটোত এটা বিশ্বাসী প্লেটফৰ্ম মডিউল (TPM)ৰ সুৰক্ষা ডিভাইচ আছে যিটোক ChromeOSত বহুতো গুৰুত্বপূৰ্ণ সুৰক্ষা সম্পৰ্কীয় সুবিধা কাৰ্যকৰী কৰিবলৈ ব্যৱহাৰ কৰা হয়। অধিক জানিবলৈ Chromebookৰ সহায় কেন্দ্ৰলৈ যাওক:https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404511346730675251">বুকমার্ক সম্পাদনা কৰক</translation>
@@ -8226,6 +8230,7 @@
 <translation id="7637272932128132922">এই টেবটো নিষ্ক্ৰিয় হৈ থকাৰ সময়ত, মেম’ৰী সঞ্চয়কাৰীয়ে অন্য কাৰ্যৰ বাবে মেম’ৰী খালী কৰিছে। আপুনি এইটো যিকোনো সময়তে <ph name="SETTINGS_LINK" />ত সলনি কৰিব পাৰে।</translation>
 <translation id="7637593984496473097">ডিস্কত পৰ্যাপ্ত ঠাই নাই</translation>
 <translation id="7639914187072011620">ছাৰ্ভাৰটোৰ পৰা SAML ৰিডাইৰেক্টৰ URL আহৰণ কৰিব পৰা নগ'ল</translation>
+<translation id="7640256527901510478">আপোনাৰ ডিভাইচৰ IMEI <ph name="IMEI_NUMBER" /> আৰু ডিভাইচৰ ক্ৰমিক নম্বৰটো হৈছে <ph name="SERIAL_NUMBER" />। সেৱা সক্ৰিয় কৰিবলৈ এই সংখ্যাকেইটা ব্যৱহাৰ কৰিব পৰা যায়।</translation>
 <translation id="7640308610547854367">আপুনি ChromeOSৰ এটা পূৰ্বৱৰ্তী সংস্কৰণলৈ উভতি গৈছে। আপডে’টসমূহ পাবলৈ, পৰৱৰ্তী সংস্কৰণ উপলব্ধ নোহোৱালৈকে অপেক্ষা কৰক।</translation>
 <translation id="7641513591566880111">প্ৰ'ফাইলৰ নতুন নাম</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> যোগ দিয়া হ’ল</translation>
@@ -9725,6 +9730,7 @@
 <translation id="881799181680267069">অন্যবোৰ লুকুৱাওক</translation>
 <translation id="8818152010000655963">ৱালপেপাৰ</translation>
 <translation id="8818958672113348984">আপোনাৰ ফ’নৰ জৰিয়তে সত্যাপন কৰক</translation>
+<translation id="8819510664278523111">আপোনাৰ ডিভাইচৰ EID <ph name="EID_NUMBER" /> , ডিভাইচৰ IMEI <ph name="IMEI_NUMBER" /> আৰু ডিভাইচৰ ক্ৰমিক নম্বৰটো <ph name="SERIAL_NUMBER" />. সেৱা সক্ৰিয় কৰিবলৈ এই সংখ্যাকেইটা ব্যৱহাৰ কৰিব পৰা যায়।</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8821045908425223359">আইপি ঠিকনা স্বয়ংক্ৰিয়ভৱে কনফিগাৰ কৰক</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> ব্যৱহাৰ কৰিবলৈ সাজু।</translation>
@@ -10275,6 +10281,7 @@
 <translation id="956500788634395331">আপুনি সম্ভাব্য ক্ষতিকাৰক এক্সটেনশ্বনসমূহৰ পৰা সুৰক্ষিত</translation>
 <translation id="957179356621191750">৬ টা বিন্দু</translation>
 <translation id="957960681186851048">এই ছাইটটোৱে স্বয়ংক্ৰিয়ভাৱে একাধিক ফাইল ডাউনল’ড কৰাৰ চেষ্টা কৰিছিল</translation>
+<translation id="958571289841636277">ছোৱাইপ নিৰ্দেশৰ জৰিয়তে পিছলৈ আৰু আগলৈ নেভিগে’ট কৰক</translation>
 <translation id="960987915827980018">প্ৰায় ১ ঘণ্টা বাকী আছে</translation>
 <translation id="962802172452141067">বুকমার্ক ফ’ল্ডাৰৰ ট্ৰী</translation>
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" />ৰ জৰিয়তে প্ৰতিচ্ছবি সন্ধান কৰক</translation>

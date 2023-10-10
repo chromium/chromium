@@ -332,6 +332,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2856503607207334158">Oturum açılamadı</translation>
 <translation id="2860954141821109167">Bu cihazda bir telefon uygulamasının etkinleştirildiğinden emin olun</translation>
 <translation id="2861923151411510142">Bazı Chrome özellikleri artık kullanılamayacak</translation>
+<translation id="2869430948265924908">Arabadaki hassas içeriklerinizi korumak için araba profil kilidi oluşturmanız gerekir.  Bu işlemi PIN, kod veya şifre kullanarak yapabilirsiniz.</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Sayfaları önceden yükleme</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> şu web sitesini onaylamanızı istiyor:</translation>
@@ -449,6 +450,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3421726884497337397">Üçüncü taraf çerezleri ne zaman engelleyeceğinizi seçin</translation>
 <translation id="3428747202529429621">Chrome'da güvende kalmanızı sağlar ve oturum açtığınızda diğer Google uygulamalarındaki güvenliğinizi artırmak için kullanılabilir</translation>
 <translation id="3429160811076349561">Deneme özellikleri kapalı</translation>
+<translation id="3430670036890315772">Profil kilidinizi devre dışı bıraktığınızda kayıtlı bilgileriniz kaldırılır</translation>
 <translation id="3435465986463792564">Çok fazla pencere mi açık? Hepsini buradan yönetebilirsiniz</translation>
 <translation id="3435738964857648380">Güvenlik</translation>
 <translation id="3439276997620616816">Son sekmeleriniz burada gösterilir</translation>
@@ -618,6 +620,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="438319986296050901">Yalnızca kart paylaşılıyor</translation>
 <translation id="4384468725000734951">Arama için Sogou kullanılıyor</translation>
+<translation id="4387647248986092471">Araba profil kilidi oluştur</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - İndiriliyor…</translation>
 <translation id="4404568932422911380">Yer işareti yok</translation>
 <translation id="4405224443901389797">Klasöre taşı…</translation>
@@ -787,6 +790,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5170568018924773124">Klasörde göster</translation>
 <translation id="5171045022955879922">Arayın veya URL'yi yazın</translation>
 <translation id="5174700554036517242">Sekme, ilk yüksekliğe döndürüldü</translation>
+<translation id="5180063720319462041">Sayfa <ph name="TARGET_LANGUAGE" /> diline çevrildi</translation>
 <translation id="5186634140793586141">İlgilendiğiniz konuları ve aramaları yönetin</translation>
 <translation id="5191251636205085390">Üçüncü taraf çerezlerin yerini alması amaçlanan yeni teknolojileri öğrenip kontrol edin</translation>
 <translation id="5193988420012215838">Panonuza kopyalandı</translation>
@@ -795,6 +799,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5210286577605176222">Önceki sekmeye gider</translation>
 <translation id="5210365745912300556">Sekmeyi kapat</translation>
 <translation id="5222676887888702881">Çıkış</translation>
+<translation id="5226378907213531272">Arabayı her kullandığınızda ekranınızın kilidini açarsınız</translation>
 <translation id="5227554086496586518">Arama sonuçlarını görmek için dokunun</translation>
 <translation id="5233638681132016545">Yeni sekme</translation>
 <translation id="5234971936051226002">"Bu sayfayı dinle" oynatıcısı küçültüldü.</translation>
@@ -1278,6 +1283,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="7691043218961417207">Takip edilecek içerikleri keşfedin</translation>
 <translation id="7697383401610880082">Sürükleme tutamacı</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> adlı uygulamada e-posta oluşturun</translation>
+<translation id="7702388902581909985">Tarama verilerinizi temizlediğinizde Google Hesabınızın oturumu kapatılmaz. Bunu yapmak için <ph name="BEGIN_LINK1" />Chrome oturumunu kapatın<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Mobil veri kullanın</translation>
 <translation id="7709918231054955894">Tüm sekmelerinize ulaşın</translation>
 <translation id="772434085369393266">Gezinmeleri HTTPS'ye yükseltip bu uzantıyı desteklemeyen siteleri yüklemeden önce sizi uyarır. Gelişmiş Koruma'yı etkinleştirdiğiniz için bu ayarı değiştiremezsiniz.</translation>

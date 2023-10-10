@@ -233,6 +233,7 @@
 <translation id="1175364870820465910">&amp;พิมพ์...</translation>
 <translation id="1175914831232945926">ตัวเลข</translation>
 <translation id="1176471985365269981">ไม่ได้รับอนุญาตให้แก้ไขไฟล์หรือโฟลเดอร์ในอุปกรณ์ของคุณ</translation>
+<translation id="1177440945615690056">คุณเชื่อมต่อเครือข่ายมือถือที่มีสิทธิ์ได้ในการตั้งค่า</translation>
 <translation id="1177863135347784049">ที่กำหนดเอง</translation>
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
 <translation id="1178601482396475810">จัดการการซิงค์อุปกรณ์</translation>
@@ -2203,6 +2204,7 @@
 <translation id="2709516037105925701">ป้อนอัตโนมัติ</translation>
 <translation id="2710101514844343743">ข้อมูลการใช้งานและการวินิจฉัย</translation>
 <translation id="271033894570825754">ใหม่</translation>
+<translation id="2710507903599773521">ปลดล็อก <ph name="DEVICE_TYPE" /> ของคุณแล้ว</translation>
 <translation id="2711073837061989559">การทดลองใช้</translation>
 <translation id="2713106313042589954">ปิดกล้อง</translation>
 <translation id="2713444072780614174">สีขาว</translation>
@@ -3486,6 +3488,7 @@
 <translation id="3752253558646317685">ให้บุตรหลานยกนิ้วขึ้นเพื่อบันทึกลายนิ้วมือ</translation>
 <translation id="3753033997400164841">บันทึกครั้งเดียว แล้วใช้ได้ทุกที่</translation>
 <translation id="3753142252662437130">ฟิลเตอร์สี</translation>
+<translation id="3753412199586870466">เปิดแผงด้านข้าง</translation>
 <translation id="3755411799582650620">ขณะนี้ <ph name="PHONE_NAME" /> สามารถปลดล็อก <ph name="DEVICE_TYPE" /> ได้เช่นกัน</translation>
 <translation id="375636864092143889">เว็บไซต์กำลังใช้ไมโครโฟนของคุณ</translation>
 <translation id="3756485814916578707">กำลังแคสต์หน้าจอ</translation>
@@ -7128,6 +7131,9 @@
 <translation id="6767566652486411142">เลือกภาษาอื่น...</translation>
 <translation id="6767639283522617719">เข้าร่วมโดเมนไม่ได้ ตรวจสอบว่าการตั้งค่าสำหรับหน่วยขององค์กรถูกต้อง</translation>
 <translation id="6768034047581882264">ไม่ได้รับอนุญาตให้แสดงเนื้อหาที่ไม่ปลอดภัย</translation>
+<translation id="6769902329858794251"><ph name="BEGIN_PARAGRAPH1" />เพื่อมอบประสบการณ์ที่ดีที่สุด <ph name="DEVICE_OS" /> จะรวบรวมข้อมูลฮาร์ดแวร์เกี่ยวกับอุปกรณ์และแชร์กับ Google เพื่อพิจารณาอัปเดตที่ควรส่ง นอกจากนี้ คุณสามารถอนุญาตให้ Google ใช้ข้อมูลนี้เพื่อวัตถุประสงค์อื่นๆ เพิ่มเติม เช่น การสนับสนุนและการปรับปรุงด้าน<ph name="DEVICE_OS" />ประสบการณ์และบริการ<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />คุณสามารถเข้าสู่ระบบในอุปกรณ์เครื่องนี้และดูช่องที่ระบุว่า chromeosflex_ ใน chrome://system สำหรับข้อมูลที่ส่งไปยัง Google เพื่อกรองอัปเดต รวมถึงสถานการณ์อื่นๆ ที่คุณเลือกแชร์ข้อมูลกับ Google<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />ดูรายละเอียดเพิ่มเติมเกี่ยวกับข้อมูลที่ <ph name="DEVICE_OS" /> อาจแชร์กับ Google และวิธีนำข้อมูลไปใช้ได้ที่ g.co/flex/HWDataCollection<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770042910635026163">เว็บไซต์ที่คุณเข้าชมเป็นตัวบอกความสนใจของคุณ</translation>
 <translation id="6770602306803890733">ปรับปรุงความปลอดภัยให้คุณและทุกคนที่ใช้อินเทอร์เน็ต</translation>
 <translation id="6771503742377376720">เป็นผู้ออกใบรับรอง</translation>

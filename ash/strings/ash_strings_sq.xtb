@@ -703,6 +703,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="385300504083504382">Fillimi</translation>
 <translation id="3859364108019690">Aplikacionet nuk mund të transmetohen</translation>
 <translation id="3861651314799684201">Shtyp "Enter" për të regjistruar ekranin e plotë</translation>
+<translation id="3865912916886104060">Nuk ka pajisje të lidhura. WiFi do të çaktivizohet për të filluar të përdorësh "Zonën e qasjes për internet".</translation>
 <translation id="3886872229787704059">Hapur sot</translation>
 <translation id="3891340733213178823">Shtyp Ctrl+Shift+Q për të dalë nga llogaria.</translation>
 <translation id="3893630138897523026">ChromeVox (komente të thëna me gojë)</translation>
@@ -787,6 +788,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4197790712631116042">Joaktiv</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> nuk ofrohet.</translation>
 <translation id="4201051445878709314">Trego muajin e kaluar</translation>
+<translation id="4202362334312791952">1 pajisje u lidh. WiFi do të çaktivizohet për të filluar të përdorësh "Zonën e qasjes për internet".</translation>
 <translation id="4209973997261364186">Wi-Fi është i aktivizuar</translation>
 <translation id="4212472694152630271">Kalo te kodi PIN</translation>
 <translation id="4215497585250573029">Cilësimet e VPN-së</translation>
@@ -1049,6 +1051,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5258528442992323769">Nuk ka asnjë tavolinë pune të ruajtur</translation>
 <translation id="5260676007519551770">Tavolina e punës 4</translation>
 <translation id="5268819379131021772">Lista e detyrave të Google</translation>
+<translation id="5275923704957843041">Pamja paraprake e tavolinës së punës</translation>
 <translation id="5278086053818066789">Aktivizo/çaktivizo ChromeVox (komentet me zë)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> kërkon vëmendjen tënde.</translation>
 <translation id="5283198616748585639">Shto 1 minutë</translation>
@@ -1165,6 +1168,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5707775774148071965">Pajisja jote mbështet një shpejtësi më të lartë të të dhënave sesa kablloja. Cilësia e funksionimit të pajisjes mund të jetë e kufizuar.</translation>
 <translation id="5710450975648804523">"Mos shqetëso" është aktiv</translation>
 <translation id="571295407079589142">Të dhënat celulare janë çaktivizuar</translation>
+<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> pajisje të lidhura. WiFi do të çaktivizohet për të filluar të përdorësh "Zonën e qasjes për internet".</translation>
 <translation id="5727460725221669831">Nëse e ke harruar fjalëkalimin tënd ose e ke ndryshuar së fundi fjalëkalimin e "Llogarisë sate të Google", provo ta rikuperosh këtë përdorues.</translation>
 <translation id="573413375004481890">Kjo pajisje nuk mund t'i mbështeste të gjitha ekranet, kështu që një prej tyre është shkëputur</translation>
 <translation id="5740328398383587084">Ndarja në afërsi</translation>

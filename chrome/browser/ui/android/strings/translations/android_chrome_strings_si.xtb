@@ -217,6 +217,7 @@
 <translation id="218608176142494674">බෙදා ගැනීම</translation>
 <translation id="2194856509914051091">සලකා බැලිය යුතු කරුණු</translation>
 <translation id="2200113223741723867">භාවිත දත්ත බෙදා ගැනීම කළමනාකරණය කරන්න</translation>
+<translation id="22091350895006575">පරිශීලක නාමය එක් කරන්න</translation>
 <translation id="221494669172414749">පැතිකඩ අගුලක් නොමැතිව Chrome විවෘත කිරීම ඔබේ සුරකින ලද මුරපද සහ ගෙවීම් ක්‍රම මෝටර් රථයෙන් ඉවත් කරනු ඇත. පැතිකඩ අගුලක් භාවිතා කිරීම මෙම දත්ත සුරක්ෂිතව තබා ගනී.</translation>
 <translation id="2218567645332692482">HTTPS වෙත සංචාලන උත්ශ්‍රේණි කර එයට සහාය නොදක්වන අඩවි පූරණය කිරීමට පෙර ඔබට අනතුරු අඟවන්න</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ලෙස දිගටම කර ගෙන යන්න</translation>
@@ -244,6 +245,7 @@
 <translation id="235789365079050412">Google පෞද්ගලිකත්ව ප්‍රතිපත්තිය</translation>
 <translation id="2359808026110333948">කරගෙන යන්න</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> ලෙස පුරනය වී ඇත. <ph name="USER_EMAIL" />. සැකසීම් විවෘත කරයි.</translation>
+<translation id="2364539095045928896">පිටු ඇතුළාන්ත කේන්‍ද්‍රයේ පෞද්ගලිකත්ව නිවේදනය වැසීමට බොත්තම වසන්න.</translation>
 <translation id="2386938421315164605">මාතෘකා සඟවන්න සහ සැඟවීම ඉවත් කරන්න</translation>
 <translation id="2390510615457643724">ඔබට නැවත <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> බාගැනීමට අවශ්‍යද?</translation>
 <translation id="2394602618534698961">ඔබ බාගන්නා ගොනු මෙහි දිස් වෙති</translation>
@@ -312,6 +314,7 @@
 <translation id="2718846868787000099">ඔබ කැමති භාෂාවලින් අන්තර්ගතය පෙන්වීමට, ඔබ පිවිසෙන අඩවිවලට ඔබේ මනාප දැකිය හැකිය</translation>
 <translation id="2722945394406572875">රහස්‍යතා සෑන්ඩ්බොක්ස් ප්‍රේරකය වසා ඇත</translation>
 <translation id="2723001399770238859">ශ්‍රව්‍ය</translation>
+<translation id="2760805590727089264">මා.මා. / ව.ව.</translation>
 <translation id="2760989362628427051">ඔබේ උපාංගයේ බැටරි සුරැකුම හෝ අඳුරු තේමාව සක්‍රීයව තිබෙන විට අඳුරු තේමාව සක්‍රීය කරන්න</translation>
 <translation id="2762000892062317888">මේ දැන්</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> ලෙස පුරන ලදී.</translation>
@@ -332,6 +335,7 @@
 <translation id="2856503607207334158">පිරීම අසාර්ථක විය</translation>
 <translation id="2860954141821109167">මෙම උපාංගය මත දුරකථන යෙදුමක් සබල කර තිබීම තහවුරු කර ගන්න</translation>
 <translation id="2861923151411510142">සමහර Chrome විශේෂාංග තවදුරටත් ලබා ගත නොහැකිය</translation>
+<translation id="2869430948265924908">මෝටර් රථය තුළ ඔබේ සංවේදී අන්තර්ගතය ආරක්ෂා කිරීම සඳහා, ඔබ මෝටර් රථ පැතිකඩ අගුලක් තැනිය යුතු යි.  ඔබට මෙය pin එකක්, කේතයක්, හෝ මුරපදයක් සමගින් කළ හැක.</translation>
 <translation id="2870560284913253234">අඩවිය</translation>
 <translation id="2871733351037274014">පිටු පූර්ව පූරණය කරන්න</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> හට ඔබ ලවා මෙම වෙබ් අඩවිය අනුමත කිරීමට අවශ්‍යයි:</translation>
@@ -449,6 +453,7 @@
 <translation id="3421726884497337397">තෙවන පාර්ශ්ව කුකි අවහිර කරන්නේ කවර විටදැයි පෙන්වන්න</translation>
 <translation id="3428747202529429621">ඔබ පුරනය වී සිටින විට Chrome මත ඔබව ආරක්‍ෂිතව තබා ගන්නා අතර සහ අනෙකුත් Google යෙදුම් තුළ ඔබේ ආරක්ෂාව වැඩිදියුණු කිරීමට භාවිත කළ හැක</translation>
 <translation id="3429160811076349561">අත්හදා බැලීමේ විශේෂාංග ක්‍රියාවිරහිතයි</translation>
+<translation id="3430670036890315772">ඔබේ පැතිකඩ අගුල ක්‍රියාවිරහිත කිරීම ඔබේ සුරැකි තතු ඉවත් කරනු ඇත</translation>
 <translation id="3435465986463792564">බොහෝ කවුළු ලැබුණිද? ඔබට ඒවා මෙහි සිට කළමනාකරණය කළ හැකිය</translation>
 <translation id="3435738964857648380">ආරක්ෂක</translation>
 <translation id="3439276997620616816">ඔබ ඔබේ මෑත පටිති මෙහි සොයා ගනියි</translation>
@@ -618,6 +623,7 @@
 <translation id="4378154925671717803">දුරකථනය</translation>
 <translation id="438319986296050901">කාඩ්පත පමණක් බෙදා ගන්න</translation>
 <translation id="4384468725000734951">සෙවීම සඳහා Sogou භාවිත කරමින්</translation>
+<translation id="4387647248986092471">මෝටර් රථයේ පැතිකඩ අගුලක් තනන්න</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - බාගනිමින්…</translation>
 <translation id="4404568932422911380">පිටුසන් නැත</translation>
 <translation id="4405224443901389797">වෙත ගෙන යන්න…</translation>
@@ -787,6 +793,7 @@
 <translation id="5170568018924773124">ෆෝල්ඩරයේ පෙන්වන්න</translation>
 <translation id="5171045022955879922">සොයන්න හෝ ලිපිනය යොදන්න</translation>
 <translation id="5174700554036517242">පටිත්ත ආරම්භක උසට ආපසු ගොස් ඇත</translation>
+<translation id="5180063720319462041">පිටුව <ph name="TARGET_LANGUAGE" /> වෙත පරිවර්තනය කර ඇත</translation>
 <translation id="5186634140793586141">ඔබ උනන්දුවක් දක්වන මාතෘකා සහ සෙවීම් කළමනාකරණය කරන්න</translation>
 <translation id="5191251636205085390">තෙවන පාර්ශ්ව කුකි ප්‍රතිස්ථාපනය කිරීම අරමුණු කර ගත් නව තාක්ෂණ ගැනදැන ගන්න සහ පාලනය කරන්න</translation>
 <translation id="5193988420012215838">ඔබේ පසුරු පුවරුවට පිටපත් කළා</translation>
@@ -795,6 +802,7 @@
 <translation id="5210286577605176222">පෙර ටැබය වෙත පනින්න</translation>
 <translation id="5210365745912300556">ටැබය වසන්න</translation>
 <translation id="5222676887888702881">පිටවීම</translation>
+<translation id="5226378907213531272">ඔබ මෝටර් රථය භාවිතා කරන සෑම අවස්ථාවකම ඔබ ඔබේ තිරය අගුළු හරිනු ඇත</translation>
 <translation id="5227554086496586518">සෙවීම් ප්‍රතිඵල බැලීමට තට්ටු කරන්න</translation>
 <translation id="5233638681132016545">නව ටැබය</translation>
 <translation id="5234971936051226002">“මෙම පිටුවට සවන් දෙන්න” වාදකය අවම කෙරිණි.</translation>
@@ -835,6 +843,7 @@
 <translation id="5458366071038729214">ඔබට ඔබ මෙහි අනුගමනය කරන අඩවි හමු වනු ඇත</translation>
 <translation id="5468068603361015296">ඔබට කෙසේ වෙතත් <ph name="FILE_NAME" /> බාගැනීමට අවශ්‍යද?</translation>
 <translation id="548278423535722844">සිතියම් යෙදුම තුළ විවෘත කරන්න</translation>
+<translation id="5486841595534124508">මගේ ක්‍රියාකාරකම් පිටුව වෙත ප්‍රතියොමු කරන පිටු ඇතුළාන්ත කේන්‍ද්‍රය සඳහා වන පෞද්ගලිකත්ව නිවේදනයේ ලාංඡනය.</translation>
 <translation id="5487521232677179737">දත්ත හිස් කරන්නෙ</translation>
 <translation id="5492637351392383067">උපාංගයේ සංකේතනය</translation>
 <translation id="5514904542973294328">මෙම උපාංගයේ පරිපාලක විසින් අබල කර ඇත</translation>
@@ -951,6 +960,7 @@
 <translation id="6112702117600201073">පිටුව නැවුම් කරමින්</translation>
 <translation id="6122831415929794347">ආරක්‍ෂිත බ්‍රවුස් කිරීම අක්‍රිය කරන්නේද?</translation>
 <translation id="6127379762771434464">අයිතමය ඉවත් කරන ලදී</translation>
+<translation id="6130303040046284160">පටිත්ත අවම කරන්න</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> හි භාෂාව</translation>
 <translation id="6138832295072039549">ඔබගේ අඩවි සැකසීම් මෙහි වෙනස් කරන්න</translation>
 <translation id="6140709049082532940">වැඩිදියුණු කළ ආරක්ෂාව:</translation>
@@ -1253,6 +1263,7 @@
 <translation id="7588219262685291874">ඔබේ උපාංගයේ බැටරි සුරැකුම සක්‍රීයව තිබෙන විට අඳුරු තේමාව සක්‍රීය කරන්න</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> හට <ph name="TOP_ORIGIN" /> සඳහා ඒ ඔබ බව සත්‍යාපනය කිරීමට ඉඩ දෙමු</translation>
 <translation id="7596558890252710462">මෙහෙයුම් පද්ධති</translation>
+<translation id="7603168929588204083">අවලංගු දිනය</translation>
 <translation id="7605594153474022051">සමමුහුර්තය වැඩ නොකරයි</translation>
 <translation id="7612619742409846846">Google වෙත පුරනය වූයේ</translation>
 <translation id="7612989789287281429">ඔබව පුරමින්…</translation>
@@ -1278,6 +1289,7 @@
 <translation id="7691043218961417207">අනුගමනය කිරීමට අන්තර්ගතය ගවේෂණය කරන්න</translation>
 <translation id="7697383401610880082">ඇදීම් හැඬලය</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> තුළ ඊ-තැපෑලක් සාදන්න</translation>
+<translation id="7702388902581909985">ඔබේ බ්‍රවුස් කිරීමේ දත්ත හිස් කිරීමෙන් ඔබව ඔබේ Google ගිණුමෙන් වරනය නොවේ. එසේ කිරීමට, <ph name="BEGIN_LINK1" />Chrome වෙතින් වරන්න<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">ජංගම දත්ත භාවිත කරන්න</translation>
 <translation id="7709918231054955894">ඔබගේ සියලු ටැබ ලබා ගන්න</translation>
 <translation id="772434085369393266">HTTPS වෙත සංචාලන උත්ශ්‍රේණි කර එයට සහාය නොදක්වන අඩවි පූරණය කිරීමට පෙර ඔබට අනතුරු අඟවන්න. ඔබ උසස් ආරක්ෂණය සබල කර ඇති නිසා ඔබට මෙම සැකසීම වෙනස් කළ නොහැක.</translation>
@@ -1301,6 +1313,7 @@
 <translation id="7810647596859435254">විවෘත කරන්න...</translation>
 <translation id="7815484226266492798">දිගු තිර රුව</translation>
 <translation id="7822705602465980873">ඔබ පුරනය වී ඇති විට, මෙම දත්ත Google සේවා හරහා ඔබව ආරක්ෂා කිරීමට ඔබේ Google ගිණුම වෙත සම්බන්ධ කරනු ලැබේ, උදාහරණයක් ලෙස ආරක්ෂක සිදුවීමකින් පසුව Gmail තුළ ආරක්ෂාව වැඩි කිරීම.</translation>
+<translation id="782705168687182233">ඔබේ ක්‍රියාකාරකම ඔබේ <ph name="BEGIN_LINK" />Google ගිණුම<ph name="END_LINK" /> තුළ සුරැකේ.</translation>
 <translation id="78270725016672455">වෙබ් අඩවියකට පිරීම සඳහා ඔබගේ පරිගණකයට මෙම උපාංගය ලියාපදිංචි කිරීමට අවශ්‍යය</translation>
 <translation id="7844171778363018843">සමමුහුර්ත කිරීමට දත්ත තෝරා නැත</translation>
 <translation id="7846296061357476882">Google සේවා</translation>
@@ -1393,6 +1406,7 @@
 <translation id="8223642481677794647">සංග්‍රහ කාඩ්පත් මෙනුව</translation>
 <translation id="8236097722223016103">පිටුසන් වෙත එක් කරන්න</translation>
 <translation id="8237871086242677046">පිටු විදසුන් පහළ පත්‍රය</translation>
+<translation id="8243077599929149377">ඔබේ පරිශීලක නාමය එක් කරන්න</translation>
 <translation id="8250920743982581267">ලේඛන</translation>
 <translation id="8255617931166444521">ඔවුන්ගේම අඩවියේ පමණක් ඔබගේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම බැලීමට පමණක් අඩවිවලට ඔබගේ කුකි භාවිත කිරීමට හැකිය</translation>
 <translation id="8259179246279078674">පූර්ව පූරණය කරන ලද පිටු සංකේතනය කර ඇති නිසා, Google පූර්ව පූරණය කර ඇති පිටු අන්තර්ගතය ගැන කිසිවක් දැන නොගනු ඇත. පුද්ගලිකව පූර්ව පූරණය කර ඇති අඩවි මොනවාදැයි Google සේවාදායකවලින් දැන ගනු ඇත. මෙම තොරතුරු පිටු පූර්ව පූරණය කිරීමට පමණක් භාවිත වන අතර, ඔබගේ Google ගිණුමෙන් වෙනත් තොරතුරුවලට සම්බන්ධ නොවේ.</translation>

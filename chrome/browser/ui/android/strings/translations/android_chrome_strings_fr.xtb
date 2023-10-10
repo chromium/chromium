@@ -332,6 +332,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2856503607207334158">Échec de la connexion</translation>
 <translation id="2860954141821109167">Assurez-vous qu'une application Téléphone est activée sur cet appareil</translation>
 <translation id="2861923151411510142">Certaines fonctionnalités de Chrome ne seront plus disponibles</translation>
+<translation id="2869430948265924908">Pour protéger vos contenus sensibles dans la voiture, vous devez créer un verrouillage du profil de voiture.  Pour cela, vous pouvez utiliser un code PIN, un code ou un mot de passe.</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Précharger les pages</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> souhaite que vous approuviez ce site Web :</translation>
@@ -449,6 +450,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3421726884497337397">Choisir quand bloquer les cookies tiers</translation>
 <translation id="3428747202529429621">Ce mode assure votre sécurité dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté</translation>
 <translation id="3429160811076349561">Les fonctionnalités à l'essai sont désactivées</translation>
+<translation id="3430670036890315772">Si vous désactivez le verrouillage du profil, vos informations enregistrées seront supprimées</translation>
 <translation id="3435465986463792564">Vous pouvez gérer toutes vos fenêtres depuis ce menu</translation>
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3439276997620616816">Vos onglets récents s'afficheront ici</translation>
@@ -618,6 +620,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4378154925671717803">Téléphone</translation>
 <translation id="438319986296050901">Partager uniquement la fiche</translation>
 <translation id="4384468725000734951">Utilisation de Sogou pour les recherches</translation>
+<translation id="4387647248986092471">Créer un verrouillage du profil de voiture</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Téléchargement…</translation>
 <translation id="4404568932422911380">Aucun favori</translation>
 <translation id="4405224443901389797">Déplacer vers…</translation>
@@ -787,6 +790,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5170568018924773124">Afficher le dossier</translation>
 <translation id="5171045022955879922">Rechercher ou saisir une URL</translation>
 <translation id="5174700554036517242">L'onglet est revenu à sa hauteur initiale</translation>
+<translation id="5180063720319462041">Page traduite en <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">Gérez les thèmes et les recherches qui vous intéressent</translation>
 <translation id="5191251636205085390">Découvrez et contrôlez les nouvelles technologies qui visent à remplacer les cookies tiers</translation>
 <translation id="5193988420012215838">Copié dans le presse-papiers</translation>
@@ -795,6 +799,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5210286577605176222">Accéder à l'onglet précédent</translation>
 <translation id="5210365745912300556">Fermer l'onglet</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
+<translation id="5226378907213531272">Vous devrez déverrouiller votre écran chaque fois que vous utiliserez la voiture</translation>
 <translation id="5227554086496586518">Appuyer pour afficher les résultats de recherche</translation>
 <translation id="5233638681132016545">Nouvel onglet</translation>
 <translation id="5234971936051226002">Lecteur "Écouter cette page" réduit.</translation>
@@ -1278,6 +1283,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7691043218961417207">Découvrir des contenus à suivre</translation>
 <translation id="7697383401610880082">Poignée de déplacement</translation>
 <translation id="7698359219371678927">Créer un e-mail dans <ph name="APP_NAME" /></translation>
+<translation id="7702388902581909985">Supprimer vos données de navigation ne vous déconnecte pas de votre compte Google. Pour ce faire, <ph name="BEGIN_LINK1" />déconnectez-vous de Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Utilisera les données mobiles</translation>
 <translation id="7709918231054955894">Accédez à tous vos onglets</translation>
 <translation id="772434085369393266">Met à niveau les navigations en HTTPS et vous avertit avant de charger les sites qui n'acceptent pas ce protocole. Il n'est pas encore possible de modifier ce paramètre, car la Protection Avancée est activée.</translation>

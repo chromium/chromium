@@ -329,6 +329,7 @@
 <translation id="3619115746895587757">كابتشينو</translation>
 <translation id="3619593063686672873">ما مِن فيديوهات حديثة.</translation>
 <translation id="3634507049637220048">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، يديرها المشرف، التفاصيل</translation>
+<translation id="36451918667380448">إنّ هاتفك مقفل أمام مزوّد شبكة الجوّال هذا. اتّصِل بمزوّد الخدمة للحصول على الدعم.</translation>
 <translation id="3645233063072417428">تم نقل <ph name="NUMBER_OF_ITEMS" /> عنصر.</translation>
 <translation id="3658269352872031728">تم اختيار <ph name="SELECTED_FILE_COUNT" /> ملف.</translation>
 <translation id="3685122418104378273">‏يتم إيقاف مزامنة Google Drive بشكل تلقائي، عند استخدام بيانات الجوّال.</translation>

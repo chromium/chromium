@@ -119,6 +119,7 @@
 <translation id="1768959921651994223">Аутентификациянын түрү</translation>
 <translation id="1776228893584526149">Тушкагаздын түсү</translation>
 <translation id="1782199038061388045">котормосу</translation>
+<translation id="1788485524395674731">Бул колдонмону администраторуңуз башкарат</translation>
 <translation id="1792647875738159689">Скандоо токтотулууда</translation>
 <translation id="1801418420130173017">Караңгы теманы өчүрүү</translation>
 <translation id="1807246157184219062">Ачык</translation>
@@ -624,6 +625,7 @@
 <translation id="584953448295717128">APN автоматтык түрдө аныкталды.</translation>
 <translation id="5849570051105887917">Баштапкы жабдуучунун коду</translation>
 <translation id="5859603669299126575">Көркөм галерея альбому</translation>
+<translation id="5859969039821714932">Ыкчам баскыч жеткиликсиз. <ph name="KEY" /> баскычын кошпой жаңы ыкчам баскычын басыңыз.</translation>
 <translation id="5860033963881614850">Өчүк</translation>
 <translation id="5860491529813859533">Күйгүзүү</translation>
 <translation id="5876385649737594562">Параметрлерди тандоо үчүн күйгүзүңүз</translation>
@@ -868,6 +870,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
 <translation id="7718231387947923843">баскычтоптун жарыгы</translation>
+<translation id="7730077286107534951">Аккаунт жана тутум жөнүндө айрым маалымат Google'га жөнөтүлүшү мүмкүн. Бул маалыматты <ph name="BEGIN_LINK2" />Купуялык саясаты<ph name="END_LINK2" /> жана <ph name="BEGIN_LINK3" />Тейлөө шарттарына<ph name="END_LINK3" /> ылайык техникалык маселелерди чечүү жана кызматтарыбызды жакшыртуу үчүн колдонобуз. Контентке өзгөртүүлөрдү киргизүүнү сурануу үчүн <ph name="BEGIN_LINK1" />Юридикалык жардам<ph name="END_LINK1" /> барагына өтүңүз.</translation>
 <translation id="773153675489693198">Циклдердин саны</translation>
 <translation id="7747039790905080783">Алдын ала бөлүшүлгөн ачкыч</translation>
 <translation id="7752963721013053477">Таңдан караңгыга - эксклюзивдүү</translation>

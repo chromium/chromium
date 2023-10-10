@@ -332,6 +332,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2856503607207334158">Imeshindwa kuingia katika akaunti</translation>
 <translation id="2860954141821109167">Hakikisha kuwa programu ya simu imewashwa kwenye kifaa hiki</translation>
 <translation id="2861923151411510142">Baadhi ya vipengele vya Chrome havitapatikana tena\u2019</translation>
+<translation id="2869430948265924908">Ili ulinde maudhui yako nyeti kwenye gari, ni lazima uweke kufuli la wasifu la gari.  Unaweza kufanya hivi kwa kutumia pin, msimbo au nenosiri.</translation>
 <translation id="2870560284913253234">Tovuti</translation>
 <translation id="2871733351037274014">Kupakia kurasa mapema</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> anakuomba uidhinishe tovuti hii:</translation>
@@ -449,6 +450,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3421726884497337397">Chagua wakati ambapo ungependa kuzuia vidakuzi vya wengine</translation>
 <translation id="3428747202529429621">Hulinda usalama wako kwenye Chrome na inaweza kutumiwa kuboresha usalama wako kwenye programu nyingine za Google ukiwa umeingia katika akaunti</translation>
 <translation id="3429160811076349561">Vipengele vya jaribio vimezimwa</translation>
+<translation id="3430670036890315772">Hatua ya kuzima kipengele cha kufuli lako la wasifu itaondoa taarifa ulizohifadhi</translation>
 <translation id="3435465986463792564">Je, una madirisha mengi? Unaweza kuyadhibiti hapa</translation>
 <translation id="3435738964857648380">Usalama</translation>
 <translation id="3439276997620616816">Utaona vichupo vyako vya hivi karibuni hapa</translation>
@@ -618,6 +620,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="4378154925671717803">Simu</translation>
 <translation id="438319986296050901">Shiriki kadi pekee</translation>
 <translation id="4384468725000734951">Unatumia Sogou kutafuta</translation>
+<translation id="4387647248986092471">Weka kufuli la wasifu la gari</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Inapakuliwa…</translation>
 <translation id="4404568932422911380">Hakuna alamisho</translation>
 <translation id="4405224443901389797">Hamishia kwenye…</translation>
@@ -787,6 +790,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5170568018924773124">Onyesha katika folda</translation>
 <translation id="5171045022955879922">Tafuta au charaza URL</translation>
 <translation id="5174700554036517242">Kichupo kimekunjwa kiwe katika kimo cha awali</translation>
+<translation id="5180063720319462041">Ukurasa umetafsiriwa kwa <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">Dhibiti mada na utafutaji unaokuvutia</translation>
 <translation id="5191251636205085390">Pata maelezo na udhibiti teknolojia mpya zinazokusudia kuchukua nafasi ya vidakuzi vya wengine</translation>
 <translation id="5193988420012215838">Imenakiliwa kwenye ubao wa kunakili</translation>
@@ -795,6 +799,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5210286577605176222">Rudi kwenye kichupo cha awali</translation>
 <translation id="5210365745912300556">Funga kichupo</translation>
 <translation id="5222676887888702881">Ondoka</translation>
+<translation id="5226378907213531272">Utafungua skrini yako kila unapotumia gari</translation>
 <translation id="5227554086496586518">Gusa ili uone matokeo ya utafutaji</translation>
 <translation id="5233638681132016545">Kichupo kipya</translation>
 <translation id="5234971936051226002">Kichezaji cha "Sikiliza ukurasa huu" kimepunguzwa.</translation>
@@ -1278,6 +1283,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="7691043218961417207">Gundua maudhui ya kufuatilia</translation>
 <translation id="7697383401610880082">Aikoni ya buruta</translation>
 <translation id="7698359219371678927">Tunga barua pepe katika <ph name="APP_NAME" /></translation>
+<translation id="7702388902581909985">Kufuta data yako ya kuvinjari hakukuondoi kwenye Akaunti yako ya Google. Ili uweze kufanya hivyo, <ph name="BEGIN_LINK1" />ondoka kwenye akaunti ya Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Tumia data ya mtandao wa simu</translation>
 <translation id="7709918231054955894">Angalia vichupo vyako</translation>
 <translation id="772434085369393266">Husasisha usogezaji uwe HTTPS na hukuonya kabla ya kupakia tovuti ambazo haziwezi kutumia mfumo huo. Huwezi kubadilisha mipangilio hii kwa sababu umewasha mipangilio ya Ulinzi wa Hali ya Juu.</translation>

@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Opnar flipayfirlit Chromium.</translation>
 <translation id="1617663976202781617">Gögn úr Chromium samstillingu</translation>
 <translation id="1647558790457890304">Chromium-stillingar</translation>
+<translation id="164952285225495380">Þegar er búið að rekja þennan pakka í Chromium.</translation>
 <translation id="1722370509450468186">Aðgangsorðið þitt verður vistað á reikningnum þínum (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Hreinsaði gögn Chromium</translation>
 <translation id="1791845338122684020">Opnar Chromium-ferilssíðuna þína</translation>
@@ -140,6 +141,7 @@ Hafðu í huga:
 1. Opnaðu Stillingar
 2. Ýttu á „Sjálfgefið vafraforrit“
 3. Veldu Chromium.</translation>
+<translation id="6197255575340902638">Ef þú felur „<ph name="MODULE_NAME" />“ mun Chromium framvegis hætta sjálfvirkri pakkarakningu og eyða öllum eldri pakkarakningargögnum.</translation>
 <translation id="6247557882553405851">Aðgangsorðastjórnun Google</translation>
 <translation id="6268381023930128611">Skrá út af Chromium?</translation>
 <translation id="6324041800010509197">Opna flipayfirlit í Chromium</translation>

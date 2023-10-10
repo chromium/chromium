@@ -58,6 +58,7 @@
 <translation id="1264156759663453185">النص المحدَّد كبير جدًا بشكل لا يسمح باستخدام خيار الترجمة الجزئية.</translation>
 <translation id="1265739287306757398">معرفة المزيد</translation>
 <translation id="1272079795634619415">إيقاف</translation>
+<translation id="1273416271143914096">{count,plural, =1{كلمة مرور واحدة ({count})}zero{{count} كلمة مرور}two{كلمتا مرور ({count})}few{{count} كلمات مرور}many{{count} كلمة مرور}other{{count} كلمة مرور}}</translation>
 <translation id="1275718070701477396">تم التحديد</translation>
 <translation id="1279024913354609713">عدم السماح</translation>
 <translation id="1281818060020671000">إدارة البيانات</translation>
@@ -68,6 +69,7 @@
 <translation id="1295289763199166823">تخصيص القائمة</translation>
 <translation id="1305822519689023679">‏عليك إثبات هويتك للتأكُّد من أنّه يمكنك استخدام كلمات المرور في حسابك على Google في أي وقت.</translation>
 <translation id="1312721752506309252">ميزة الحماية المُحسَّنة مفعَّلة.</translation>
+<translation id="1320164290882380380">{COUNT,plural, =1{تتبُّع هذا الطرد}zero{تتبّع كل الطرود}two{تتبّع كلّ الطرود}few{تتبّع كل الطرود}many{تتبّع كل الطرود}other{تتبّع كل الطرود}}</translation>
 <translation id="1321993286294231467">حدث خطأ أثناء حفظ الصورة.</translation>
 <translation id="1322735045095424339">تفرض مؤسستك استخدام "وضع التصفُّح المتخفي".</translation>
 <translation id="1323735185997015385">حذف</translation>
@@ -145,6 +147,7 @@
 <translation id="1687475363370981210">وضع العلامة كمقروءة على الكل</translation>
 <translation id="1689333818294560261">اللقب</translation>
 <translation id="1700629756560807968">تم اختيار <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1713777106376424209">التسليم بحلول</translation>
 <translation id="1715515772563243997">إذا كنت تثق بالموقع الإلكتروني <ph name="SITE" />، يمكنك استخدام كلمة مرور محفوظة لتسجيل الدخول.</translation>
 <translation id="1740468249224277719">انقر مرّتين للتثبيت.</translation>
 <translation id="1750238553597293878">‏مواصلة استخدام كلمات المرور في حسابك على Google</translation>
@@ -194,6 +197,7 @@
 <translation id="1987779152850321833">‏يمكنك إكمال هذه الإجراءات المقترَحة أدناه للاستفادة إلى أقصى حدّ من Chrome.</translation>
 <translation id="1989112275319619282">تصفّح</translation>
 <translation id="1990820278544963435">بحث</translation>
+<translation id="1991153180045413119">تمت مشاركة كلمة المرور</translation>
 <translation id="1992055602764528852">يمكنك تسجيل الدخول للاطّلاع على علامات التبويب من أجهزتك الأخرى.</translation>
 <translation id="199425419756152024">عرض كلمة المرور</translation>
 <translation id="2008357574463816229">‏في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />محو بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
@@ -238,6 +242,7 @@
 <translation id="2268044343513325586">تحسين</translation>
 <translation id="2269277877025820298">عرض المزيد</translation>
 <translation id="2273327106802955778">قائمة "المزيد"</translation>
+<translation id="2274800392139890332">إيقاف تتبُّع هذا الطرد</translation>
 <translation id="2275480389219976105">تم العثور على العنوان</translation>
 <translation id="2286505070150039482">النص المُحدَّد</translation>
 <translation id="2287614783861766820">{count,plural, =1{سيتم حذف هذا العنوان من هذا الجهاز}zero{سيتم حذف هذه العناوين من هذا الجهاز}two{سيتم حذف هذين العنوانَين من هذا الجهاز}few{سيتم حذف هذه العناوين من هذا الجهاز}many{سيتم حذف هذه العناوين من هذا الجهاز}other{سيتم حذف هذه العناوين من هذا الجهاز}}</translation>
@@ -246,8 +251,10 @@
 <translation id="2299218006564889602">‏يتم تشفير كلمات المرور على جهازك قبل حفظها في "مدير كلمات المرور" من Google.</translation>
 <translation id="2299515531293777561">‫"<ph name="CARRIER_NAME" />" • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">تغيير كلمة المرور على الموقع الإلكتروني</translation>
+<translation id="2310154074101836012">تعديل لوحة العرض الدوّارة</translation>
 <translation id="2316709634732130529">استخدام كلمة المرور المقترحة</translation>
 <translation id="2320166752086256636">إخفاء لوحة المفاتيح</translation>
+<translation id="2348630484974447747">الطرد</translation>
 <translation id="2351097562818989364">تم إعادة ضبط إعداداتك للترجمة.</translation>
 <translation id="235789365079050412">‏سياسة خصوصية Google</translation>
 <translation id="2359043044084662842">الترجمة</translation>
@@ -531,6 +538,7 @@
 <translation id="380329542618494757">الاسم</translation>
 <translation id="3803696231112616155">اقتراح ترجمة هذا الموقع الإلكتروني</translation>
 <translation id="3810973564298564668">إدارة</translation>
+<translation id="3818045793209708987">التوقّف عن تتبُّع هذا الطرد</translation>
 <translation id="3818293389945649617">العثور على النتيجة التالية</translation>
 <translation id="3819183753496523827">لا يتوفّر اتصال بالإنترنت. يُرجى التحقّق من الاتصال بالإنترنت ثم إعادة المحاولة.</translation>
 <translation id="3832419617903252251">تم حفظ كلمة المرور على هذا الجهاز فقط.</translation>
@@ -569,6 +577,7 @@
 <translation id="4018310736049373830">إدارة النشاط</translation>
 <translation id="4038354071007134711">لا يمكن فتح هذا الملف بأي تطبيق موجود على هذا الجهاز.</translation>
 <translation id="4042870976416480368">البحث في الصفحة</translation>
+<translation id="4043294777772912240">‏بإمكان "<ph name="USERNAME" />" الآن استخدام اسم المستخدم وكلمة المرور عند استخدام "مدير كلمات المرور في Google" لتسجيل الدخول إلى <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">يمكنك إنشاء ومشاركة رابط مباشر لجزء من صفحة تم تمييزه.</translation>
 <translation id="4045648459118332842">الوصول بنقرة واحدة إلى كلمات المرور المحفوظة في أي تطبيق</translation>
 <translation id="4049507953662678203">تأكد من اتصالك بالشبكة، وأعد المحاولة.</translation>
@@ -612,6 +621,7 @@
 <translation id="4286718549648564014">تم نقل العنوان إلى حسابك <ph name="USER_EMAIL" />.</translation>
 <translation id="4293080268407233932">بحث</translation>
 <translation id="4302248187517737842">بلا اسم مستخدم ••••••••</translation>
+<translation id="4302415908542657649">مشاركة كلمة المرور</translation>
 <translation id="4304713468139749426">مدير كلمات المرور</translation>
 <translation id="430793432425771671">مزامنة جميع البيانات</translation>
 <translation id="4309403553630140242">يُرجى النقر مرّتَين للحصول على المزيد من المعلومات.</translation>
@@ -647,6 +657,7 @@
 <translation id="4508750114462689118">إغلاق عرض ترويجي لتسجيل الدخول</translation>
 <translation id="4514889972748124117">اقتراح كلمة مرور قوية…</translation>
 <translation id="4520798012560649652">مزيد من المعلومات حول وضع التصفّح المتخفي</translation>
+<translation id="452503091941773389">{count,plural, =1{إشارة مرجعية واحدة ({count})}zero{{count} إشارة مرجعية}two{إشارتان مرجعيتان ({count})}few{{count} إشارات مرجعية}many{{count} إشارةً مرجعيةً}other{{count} إشارة مرجعية}}</translation>
 <translation id="452750746583162491">مراجعة البيانات المتزامنة</translation>
 <translation id="4527660062930312477">حسابك مُدار</translation>
 <translation id="4536418791685807335">حاول تسجيل الدخول مرة أخرى.</translation>
@@ -666,6 +677,7 @@
 <translation id="4619615317237390068">علامات التبويب من الأجهزة الأخرى</translation>
 <translation id="4620246317052452550">الصفحات التي قرأتها</translation>
 <translation id="4620888520263267479">عرض معاينات الروابط</translation>
+<translation id="4622477750832577849">تفعيل التتبّع</translation>
 <translation id="4630540211544979320">ترجمة الصفحات</translation>
 <translation id="4631335160486397366">هناك <ph name="COUNT" /> كلمة مرور مستخدَمة لحساب آخر</translation>
 <translation id="4634124774493850572">استخدام كلمة المرور</translation>
@@ -781,6 +793,7 @@
 <translation id="519530786644929958">تعذّر تنزيل الملف ولا يمكن إعادة المحاولة.</translation>
 <translation id="5197255632782567636">الإنترنت</translation>
 <translation id="5211488077761630279">هل تريد السماح لـ "<ph name="SITE_NAME" />" باستخدام <ph name="PERMISSION" />؟</translation>
+<translation id="5215990399368742238">التتبُّع التلقائي لكلّ الطرود التي يتم رصدها</translation>
 <translation id="5219295696240154694">المساعدة على تحسين الأمان على الإنترنت لخدمة الجميع</translation>
 <translation id="5220945116117011963">إنشاء أحداث في التقويم من التواريخ</translation>
 <translation id="5221339005270097309">جارٍ التحقّق من كلمات المرور…</translation>
@@ -791,6 +804,7 @@
 <translation id="5235389474593199952">إخفاء السجل</translation>
 <translation id="5238301240406177137">الحفظ في الحساب</translation>
 <translation id="5245322853195994030">إلغاء المزامنة</translation>
+<translation id="5256908199795498284">‏سيكتشف Chrome أرقام تتبُّع الطرود على المواقع الإلكترونية التي تزورها ويعرض لك إشعارات الطرود في صفحة "علامة تبويب جديدة". ستتم مشاركة بياناتك مع Google لتوفير هذه الميزة وتحسين خدمة Shopping للجميع.</translation>
 <translation id="5271265092610673171">{count,plural, =1{هناك حقل مطلوب فارغ. يُرجى ملء هذا الحقل قبل الحفظ.}zero{بعض الحقول المطلوبة فارغة. يُرجى ملء هذه الحقول قبل الحفظ.}two{هناك حقلان مطلوبان فارغان. يُرجى ملء هذين الحقلين قبل الحفظ.}few{بعض الحقول المطلوبة فارغة. يُرجى ملء هذه الحقول قبل الحفظ.}many{بعض الحقول المطلوبة فارغة. يُرجى ملء هذه الحقول قبل الحفظ.}other{بعض الحقول المطلوبة فارغة. يُرجى ملء هذه الحقول قبل الحفظ.}}</translation>
 <translation id="5271549068863921519">حفظ كلمة المرور</translation>
 <translation id="5283494734135414249">انقر على الاختصار الذي يظهر أسفل شريط العناوين.</translation>
@@ -799,6 +813,7 @@
 <translation id="5317780077021120954">حفظ</translation>
 <translation id="5318298563956633672">يتم تتبُّع هذا المنتج حاليًا.</translation>
 <translation id="5339316356165661760">تفعيل المزامنة</translation>
+<translation id="5345598430982201510">عدم الكشف التلقائي عن الطرود مطلقًا</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{هل تريد تتبُّع هذه الحزمة؟}zero{هل تريد تتبُّع {COUNT} حزمة؟}two{هل تريد تتبُّع حزمتَين ({COUNT})؟}few{هل تريد تتبُّع {COUNT} حِزم؟}many{هل تريد تتبُّع {COUNT} حزمة؟}other{هل تريد تتبُّع {COUNT} حزمة؟}}</translation>
 <translation id="536067926684072644">عرض الإشارات المرجعية</translation>
 <translation id="5360976571138293719">‏لعرض مزيد من الإعدادات المتعلّقة بالخصوصية والأمان وجمع البيانات، يُرجى الاطّلاع على <ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" />.</translation>
@@ -815,6 +830,7 @@
 <translation id="54401264925851789">معلومات أمان الصفحة</translation>
 <translation id="5443952882982198570">بطاقات الائتمان</translation>
 <translation id="5444892875087332195">الإشارات المرجعية</translation>
+<translation id="5454211924362324495">لمنع الآخرين من استخدام كلمة مرورك، <ph name="BEGIN_LINK" />عليك تغييرها من خلال<ph name="WEBSITE" /><ph name="END_LINK" />.</translation>
 <translation id="5457226814769348910">فتح نسخة بلا إنترنت</translation>
 <translation id="5475069061743940393">تتبُّع الطرود</translation>
 <translation id="5478327362747197944">‏يمكنك إنشاء أحداث في "تقويم Google" مباشرةً من خلال النقر على تاريخ في إحدى صفحات الويب.</translation>
@@ -1034,6 +1050,7 @@
 
 حاوِل استخدام كلمة مرور فريدة لكل موقع إلكتروني.</translation>
 <translation id="6497850081273517953">‏إصدار Chrome الحالي قديم، ويجب تحديثه إلى آخر إصدار للحفاظ على الأمان.</translation>
+<translation id="6502142762807385617">{COUNT,plural, =1{إيقاف تتبُّع هذا الطرد}zero{إيقاف تتبُّع كل الطرود}two{إيقاف تتبُّع كلّ الطرود}few{إيقاف تتبُّع كل الطرود}many{إيقاف تتبُّع كل الطرود}other{إيقاف تتبُّع كل الطرود}}</translation>
 <translation id="650279896687777322">مزيد من المعلومات...</translation>
 <translation id="6507973708545996744">سجِّل الدخول لعرض قائمة القراءة على جميع أجهزتك.</translation>
 <translation id="6510072653668207258">تذكيري لاحقًا</translation>
@@ -1115,6 +1132,7 @@
 <translation id="6869389390665537774">يمكنك الاطّلاع على الصفحات التي زرتها أو يمكنك محوها من السجلّ.</translation>
 <translation id="687135068089457384">عرض الإعدادات</translation>
 <translation id="6873263987691478642">وضع تقسيم العرض</translation>
+<translation id="687586529977635009">‏سيرصُد Chrome أرقام التتبُّع على المواقع الإلكترونية التي تزورها ويعرض لك إشعارات الطرود في صفحة "علامة تبويب جديدة". ستتم مشاركة بياناتك مع Google لتوفير هذه الميزة وتحسين خدمة Shopping للجميع. يمكنك تغيير ذلك في <ph name="BEGIN_LINK" />إعدادات تتبُّع الطرود<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">يوفّر لك حماية عادية من الإضافات وعمليات التنزيل والمواقع الإلكترونية الضارة.</translation>
 <translation id="6888009575607455378">هل تريد فعلاً تجاهل التغييرات؟</translation>
 <translation id="6896758677409633944">نسخ</translation>
@@ -1162,6 +1180,7 @@
 <translation id="7154343200458623869">أكمِل مهمتك.</translation>
 <translation id="7161230316646448869">مزامنة الإشارات المرجعية والسجلّ وغير ذلك على جميع الأجهزة</translation>
 <translation id="7162168282402939716">فتح علامات التبويب في وضع التصفّح المتخفي باستخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="7168959436351276050">إخفاء هذه البطاقة يؤدي إلى إزالة جميع بيانات تتبُّع الطرود</translation>
 <translation id="7172852049901402487">يمكنك حماية كلمات المرور والتحقق من مشاكل الأمان.</translation>
 <translation id="7173114856073700355">فتح الإعدادات</translation>
 <translation id="7189598951263744875">مشاركة...</translation>
@@ -1220,6 +1239,7 @@
 <translation id="7508728395076009983">‏لقفل علامات التبويب في وضع التصفّح المتخفي، ما عليك سوى إعداد رمز مرور أو ميزة Touch ID أو Face ID.</translation>
 <translation id="7514365320538308">تنزيل</translation>
 <translation id="7524055474074101597">يمكنك الوصول إلى كلمات المرور وغيرها على مختلف التطبيقات.</translation>
+<translation id="7527917367892640435">يتم حاليًا تتبّع الطرد</translation>
 <translation id="7531345132340165516">الموقع الإلكتروني الحالي</translation>
 <translation id="7537586195939242955">‏عذرًا، لا يمكن أن تكون بطاقتك مثبتة على Passbook في الوقت الحالي.</translation>
 <translation id="754655535278952384">تم التحقّق من كلمات المرور منذ <ph name="TIME" /></translation>
@@ -1425,6 +1445,7 @@
 <translation id="8605219856220328675">إغلاق علامة التبويب.</translation>
 <translation id="8613883225817609844">إخفاء علامات التبويب الأخيرة</translation>
 <translation id="8620640915598389714">تعديل</translation>
+<translation id="8624447588354561276">رقم الطرد</translation>
 <translation id="8626393685701737946">يمكنك تغيير طريقة العرض التلقائية للمواقع الإلكترونية على الكمبيوتر المكتبي في الإعدادات &gt; إعدادات المحتوى.</translation>
 <translation id="8636825310635137004">للحصول على علامات التبويب من أجهزتك الأخرى، فعِّل المزامنة.</translation>
 <translation id="8637431369725868556">يمكنك حماية متصفّحك من المواقع الإلكترونية الخطيرة.</translation>

@@ -332,6 +332,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2856503607207334158">Login mislykkedes</translation>
 <translation id="2860954141821109167">Sørg for, at opkaldsappen er aktiveret på denne enhed</translation>
 <translation id="2861923151411510142">Visse Chrome-funktioner vil ikke længere være tilgængelige</translation>
+<translation id="2869430948265924908">Du skal oprette en lås for din bilprofil for at beskytte dit følsomme indhold i bilen.  Du kan gøre dette med en pinkode, en kode eller en adgangskode.</translation>
 <translation id="2870560284913253234">Website</translation>
 <translation id="2871733351037274014">Forudindlæs sider</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> vil have dig til at godkende dette website:</translation>
@@ -449,6 +450,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3421726884497337397">Vælg, hvornår tredjepartscookies skal blokeres</translation>
 <translation id="3428747202529429621">Beskytter dig i Chrome og kan bruges til at forbedre din sikkerhed i andre Google-apps, når du er logget ind</translation>
 <translation id="3429160811076349561">Labs er slået fra</translation>
+<translation id="3430670036890315772">Hvis du deaktiverer din profillås, fjernes dine gemte oplysninger</translation>
 <translation id="3435465986463792564">Har du mange åbne vinduer? Du kan administrere dem herfra</translation>
 <translation id="3435738964857648380">Sikkerhed</translation>
 <translation id="3439276997620616816">Her finder du dine seneste faner</translation>
@@ -618,6 +620,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="438319986296050901">Del kun kort</translation>
 <translation id="4384468725000734951">Søgning via Sogou</translation>
+<translation id="4387647248986092471">Opret en lås for din bilprofil</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – Downloader…</translation>
 <translation id="4404568932422911380">Der er ingen bogmærker</translation>
 <translation id="4405224443901389797">Flyt til…</translation>
@@ -787,6 +790,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5170568018924773124">Vis i mappe</translation>
 <translation id="5171045022955879922">Søg, eller angiv webadresse</translation>
 <translation id="5174700554036517242">Fanen er tilbage til den oprindelige højde</translation>
+<translation id="5180063720319462041">Siden er oversat til <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">Administrer de emner og søgninger, du er interesseret i</translation>
 <translation id="5191251636205085390">Få indblik i og styr nye teknologier, der har til formål at erstatte tredjepartscookies</translation>
 <translation id="5193988420012215838">Kopieret til din udklipsholder</translation>
@@ -795,6 +799,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5210286577605176222">Gå til den forrige fane</translation>
 <translation id="5210365745912300556">Luk fanen</translation>
 <translation id="5222676887888702881">Log ud</translation>
+<translation id="5226378907213531272">Du skal låse din skærm op, hver gang du bruger bilen</translation>
 <translation id="5227554086496586518">Tryk for at se søgeresultaterne</translation>
 <translation id="5233638681132016545">Ny fane</translation>
 <translation id="5234971936051226002">Afspilleren "Lyt til denne side" er minimeret.</translation>
@@ -1278,6 +1283,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7691043218961417207">Gennemse indhold, du vil følge</translation>
 <translation id="7697383401610880082">Håndtag</translation>
 <translation id="7698359219371678927">Opret mail i <ph name="APP_NAME" /></translation>
+<translation id="7702388902581909985">Du bliver ikke logget ud af din Google-konto, når du rydder dine browserdata. Du skal <ph name="BEGIN_LINK1" />logge ud af Chrome<ph name="END_LINK1" /> for at logge ud af din konto.</translation>
 <translation id="7707922173985738739">Brug mobildata</translation>
 <translation id="7709918231054955894">Se alle dine faner</translation>
 <translation id="772434085369393266">Opgrader navigation til HTTPS, og få en advarsel, før websites, der ikke understøtter dette, indlæses. Du kan ikke ændre denne indstilling, fordi du har aktiveret Avanceret beskyttelse.</translation>

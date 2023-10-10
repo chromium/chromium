@@ -1890,6 +1890,7 @@
 <translation id="4873616204573862158">แว่น</translation>
 <translation id="4876188919622883022">มุมมองอย่างง่าย</translation>
 <translation id="4876305945144899064">ไม่มีชื่อผู้ใช้</translation>
+<translation id="4876327226315760474">การตั้งค่านี้หมายความว่าฟีเจอร์ของเว็บไซต์ควรทำงานตามที่คาดไว้ แต่การปกป้องขณะท่องเว็บอาจลดลง</translation>
 <translation id="4877047577339061095">ที่จัดเก็บและชั้นวางสิ่งของภายในบ้าน</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{ไม่มี}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">การค้นหา <ph name="TEXT" /></translation>
@@ -2518,6 +2519,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="61877208875190028">เสื้อผ้าสตรี</translation>
 <translation id="6194209731893739467">ดูผลิตภัณฑ์ที่ติดตามทั้งหมดที่นี่</translation>
+<translation id="6195163219142236913">จำกัดคุกกี้ของบุคคลที่สาม</translation>
 <translation id="6195371403461054755">ธรณีวิทยา</translation>
 <translation id="6196640612572343990">บล็อกคุกกี้ของบุคคลที่สาม</translation>
 <translation id="6197648101609735209">89 x 89 มม.</translation>

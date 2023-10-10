@@ -703,6 +703,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="385300504083504382">Byrjun</translation>
 <translation id="3859364108019690">Ekki er hægt að streyma forritum</translation>
 <translation id="3861651314799684201">Ýttu á Enter til að taka upp allan skjáinn</translation>
+<translation id="3865912916886104060">Engin tæki eru tengd. Slökkt verður á WiFi til að hægt sé að nota heitan reit.</translation>
 <translation id="3886872229787704059">Opnað í dag</translation>
 <translation id="3891340733213178823">Ýttu tvisvar á Ctrl+Shift+Q til að skrá þig út.</translation>
 <translation id="3893630138897523026">ChromeVox (raddsvörun)</translation>
@@ -787,6 +788,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="4197790712631116042">Slökkt</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> er ekki tiltækt.</translation>
 <translation id="4201051445878709314">Sýna fyrri mánuð</translation>
+<translation id="4202362334312791952">1 tæki er tengt. Slökkt verður á WiFi til að hægt sé að nota heitan reit.</translation>
 <translation id="4209973997261364186">Kveikt er á Wi-Fi</translation>
 <translation id="4212472694152630271">Skipta yfir í PIN-númer</translation>
 <translation id="4215497585250573029">VPN-stillingar</translation>
@@ -1049,6 +1051,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5258528442992323769">Engin vistuð skrifborð</translation>
 <translation id="5260676007519551770">Skrifborð 4</translation>
 <translation id="5268819379131021772">Google-verkefnalisti</translation>
+<translation id="5275923704957843041">Forskoðun skrifborðs</translation>
 <translation id="5278086053818066789">Kveikja/slökkva á ChromeVox (raddsvörun)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> vill ná athygli þinni.</translation>
 <translation id="5283198616748585639">Bæta 1 mín. við</translation>
@@ -1165,6 +1168,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5707775774148071965">Tækið þitt styður meiri gagnahraða en snúran. Afköst tækisins kunna að vera takmörkuð.</translation>
 <translation id="5710450975648804523">Kveikt er á „Ónáðið ekki“</translation>
 <translation id="571295407079589142">Slökkt er á farsímagögnum</translation>
+<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> tæki tengd. Slökkt verður á WiFi til að hægt sé að nota heitan reit.</translation>
 <translation id="5727460725221669831">Ef þú gleymdir aðgangsorðinu þínu eða breyttir aðgangsorðinu að Google-reikningnum þínum nýlega geturðu reynt að endurheimta notandaaðganginn.</translation>
 <translation id="573413375004481890">Þetta tæki gat ekki stutt alla skjáina og því var einn aftengdur</translation>
 <translation id="5740328398383587084">Nærdeiling</translation>

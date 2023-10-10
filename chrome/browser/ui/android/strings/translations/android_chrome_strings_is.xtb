@@ -332,6 +332,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2856503607207334158">Innskráning mistókst</translation>
 <translation id="2860954141821109167">Gakktu úr skugga um að símaforritið sé virkt í þessu tæki</translation>
 <translation id="2861923151411510142">Tilteknir Chrome eiginleikar verða ekki tiltækir lengur</translation>
+<translation id="2869430948265924908">Til að vernda viðkvæmt efni í bílnum þarftu að búa til prófíllás fyrir bílinn.  Það má gera með PIN-númeri, kóða eða aðgangsorði.</translation>
 <translation id="2870560284913253234">Vefsvæði</translation>
 <translation id="2871733351037274014">Forhlaða síðum</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> biður þig um að samþykkja þetta vefsvæði:</translation>
@@ -449,6 +450,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3421726884497337397">Veldu hvenær á að útiloka fótspor þriðju aðila</translation>
 <translation id="3428747202529429621">Tryggir öryggi þitt í Chrome og kann að vera notað til að auka öryggi þitt í öðrum Google forritum þegar þú ert skráð(ur) inn</translation>
 <translation id="3429160811076349561">Slökkt er á prufueiginleikum</translation>
+<translation id="3430670036890315772">Ef slökkt er á prófíllásnum veða vistaðar upplýsingar fjarlægðar</translation>
 <translation id="3435465986463792564">Ertu með of marga glugga opna? Þú getur stjórnað gluggunum héðan</translation>
 <translation id="3435738964857648380">Öryggi</translation>
 <translation id="3439276997620616816">Þú finnur nýlega flipa hér</translation>
@@ -618,6 +620,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="4378154925671717803">Sími</translation>
 <translation id="438319986296050901">Aðeins deila spjaldi</translation>
 <translation id="4384468725000734951">Notar Sogou fyrir leit</translation>
+<translation id="4387647248986092471">Búa til prófíllás fyrir bílinn</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Sækir…</translation>
 <translation id="4404568932422911380">Engin bókamerki</translation>
 <translation id="4405224443901389797">Færa í…</translation>
@@ -787,6 +790,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5170568018924773124">Sýna í möppu</translation>
 <translation id="5171045022955879922">Leitaðu eða sláðu inn vefslóð</translation>
 <translation id="5174700554036517242">Flipi er kominn aftur í upprunalega hæð</translation>
+<translation id="5180063720319462041">Síða þýdd yfir á <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">Stjórnaðu umfjöllunarefnum og leitum sem þú hefur áhuga á</translation>
 <translation id="5191251636205085390">Kynntu þér og hafðu umsjón með nýrri tækni sem er ætlað að koma í stað fótspora þriðja aðila</translation>
 <translation id="5193988420012215838">Afritað á klippiborðið</translation>
@@ -795,6 +799,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5210286577605176222">Stökkva í fyrri flipa</translation>
 <translation id="5210365745912300556">Loka flipa</translation>
 <translation id="5222676887888702881">Skrá út</translation>
+<translation id="5226378907213531272">Þú tekur skjáinn úr lás í hvert skipti sem þú notar bílinn</translation>
 <translation id="5227554086496586518">Ýttu til að sjá leitarniðurstöður</translation>
 <translation id="5233638681132016545">Nýr flipi</translation>
 <translation id="5234971936051226002">Spilari „Hlusta á þessa síðu“ minnkaður.</translation>
@@ -1278,6 +1283,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7691043218961417207">Skoðaðu efni til að fylgja</translation>
 <translation id="7697383401610880082">Dragkló</translation>
 <translation id="7698359219371678927">Skrifa tölvupóst í <ph name="APP_NAME" /></translation>
+<translation id="7702388902581909985">Hreinsun vefskoðunargagna skráir þig ekki út af Google-reikningnum þínum. Til að gera það skaltu <ph name="BEGIN_LINK1" />skrá þig út úr Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Nota farsímagögn</translation>
 <translation id="7709918231054955894">Skoðaðu alla flipana þína</translation>
 <translation id="772434085369393266">Uppfæra flettingar í HTTPS og vara þig við áður en vefsvæðum sem ekki styðja það er hlaðið. Þú getur ekki breytt þessari stillingu vegna þess að þú ert með kveikt á ítarlegri vernd.</translation>

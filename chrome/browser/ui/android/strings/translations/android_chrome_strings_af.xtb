@@ -332,6 +332,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2856503607207334158">Kon nie aanmeld nie</translation>
 <translation id="2860954141821109167">Maak seker dat 'n foonprogram op hierdie toestel geaktiveer is</translation>
 <translation id="2861923151411510142">Sommige Chrome-kenmerke sal nie meer beskikbaar wees nie</translation>
+<translation id="2869430948265924908">Jy moet ’n motorprofielslot skep om jou sensitiewe inhoud in die motor te beskerm.  Jy kan dit met ’n PIN, kode of wagwoord doen.</translation>
 <translation id="2870560284913253234">Werf</translation>
 <translation id="2871733351037274014">Laai bladsye vooraf</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> wil hê jy moet hierdie webwerf goedkeur:</translation>
@@ -449,6 +450,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3421726884497337397">Kies wanneer jy derdeparty-webkoekies wil blokkeer</translation>
 <translation id="3428747202529429621">Hou jou veilig op Chrome en kan gebruik word om jou sekuriteit in ander Google-programme te verbeter wanneer jy aangemeld is</translation>
 <translation id="3429160811076349561">Proeflopiekenmerke is af</translation>
+<translation id="3430670036890315772">Jou gestoorde inligting sal verwyder word as jy jou profielslot afskakel</translation>
 <translation id="3435465986463792564">Het jy baie vensters? Jy kan hulle van hier af bestuur</translation>
 <translation id="3435738964857648380">Sekuriteit</translation>
 <translation id="3439276997620616816">Jy sal jou onlangse oortjies hier kry</translation>
@@ -618,6 +620,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4378154925671717803">Foon</translation>
 <translation id="438319986296050901">Deel net kaart</translation>
 <translation id="4384468725000734951">Gebruik Sogou om te soek</translation>
+<translation id="4387647248986092471">Skep ’n motorprofielslot</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – laai tans af …</translation>
 <translation id="4404568932422911380">Geen boekmerke nie</translation>
 <translation id="4405224443901389797">Skuif na …</translation>
@@ -787,6 +790,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5170568018924773124">Wys in vouer</translation>
 <translation id="5171045022955879922">Soek of tik URL in</translation>
 <translation id="5174700554036517242">Oortjie is terug op aanvanklike hoogte</translation>
+<translation id="5180063720319462041">Bladsy is vertaal na <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">Bestuur die onderwerpe en soektogte waarin jy belangstel</translation>
 <translation id="5191251636205085390">Vind meer uit oor en beheer nuwe tegnologieë wat beoog om derdepartywebkoekies te vervang</translation>
 <translation id="5193988420012215838">Gekopieer na jou knipbord</translation>
@@ -795,6 +799,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5210286577605176222">Spring na die vorige oortjie</translation>
 <translation id="5210365745912300556">Maak oortjie toe</translation>
 <translation id="5222676887888702881">Meld af</translation>
+<translation id="5226378907213531272">Jy sal elke keer as jy die motor gebruik jou skerm ontsluit</translation>
 <translation id="5227554086496586518">Tik om soekresultate te sien</translation>
 <translation id="5233638681132016545">Nuwe oortjie</translation>
 <translation id="5234971936051226002">“Luister na hierdie bladsy”-speler is geminimeer.</translation>
@@ -1278,6 +1283,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7691043218961417207">Verken inhoud om te volg</translation>
 <translation id="7697383401610880082">Sleephandvatsel</translation>
 <translation id="7698359219371678927">Skep e-pos in <ph name="APP_NAME" /></translation>
+<translation id="7702388902581909985">As jy jou blaaierdata uitvee, word jy nie by jou Google-rekening afgemeld nie. <ph name="BEGIN_LINK1" />Meld by Chrome af<ph name="END_LINK1" /> om dit te doen.</translation>
 <translation id="7707922173985738739">Gebruik mobiele data</translation>
 <translation id="7709918231054955894">Kry al jou oortjies</translation>
 <translation id="772434085369393266">Gradeer navigasie op na HTTPS en waarsku jou voordat werwe gelaai word wat dit nie ondersteun nie. Jy kan nie hierdie instelling verander nie omdat Gevorderde Beskerming geaktiveer is.</translation>

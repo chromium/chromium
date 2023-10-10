@@ -235,6 +235,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1175364870820465910">&amp;I-print...</translation>
 <translation id="1175914831232945926">Mga Digit</translation>
 <translation id="1176471985365269981">Hindi pinapayagang mag-edit ng mga file o folder sa iyong device</translation>
+<translation id="1177440945615690056">Puwede kang kumonekta sa anumang kwalipikadong mobile network sa Mga Setting</translation>
 <translation id="1177863135347784049">Custom</translation>
 <translation id="1178581264944972037">I-pause</translation>
 <translation id="1178601482396475810">Pamahalaan ang pag-sync ng device</translation>
@@ -2219,6 +2220,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2709516037105925701">AutoFill</translation>
 <translation id="2710101514844343743">Data ng paggamit at mga diagnostic</translation>
 <translation id="271033894570825754">Bago</translation>
+<translation id="2710507903599773521">Naka-unlock na ngayon ang iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="2711073837061989559">Mga Trial</translation>
 <translation id="2713106313042589954">I-off ang camera</translation>
 <translation id="2713444072780614174">Puti</translation>
@@ -3502,6 +3504,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3752253558646317685">Utusan ang iyong anak na panatilihing nakaangat ang kanyang daliri para ma-save ang fingerprint</translation>
 <translation id="3753033997400164841">I-store nang isang beses. Gamitin kahit saan</translation>
 <translation id="3753142252662437130">Mga filter ng kulay</translation>
+<translation id="3753412199586870466">Buksan ang panel sa gilid</translation>
 <translation id="3755411799582650620">Maaari na rin ngayong i-unlock ng iyong <ph name="PHONE_NAME" /> ang <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="375636864092143889">Ginagamit ng site ang iyong mikropono</translation>
 <translation id="3756485814916578707">Kina-cast ang screen</translation>
@@ -7150,6 +7153,9 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6767566652486411142">Pumili ng Iba Pang Wika...</translation>
 <translation id="6767639283522617719">Hindi maisama sa domain. Tiyaking tama ang mga setting para sa unit ng organisasyon.</translation>
 <translation id="6768034047581882264">Hindi pinapayagang magpakita ng hindi secure na content</translation>
+<translation id="6769902329858794251"><ph name="BEGIN_PARAGRAPH1" />Para maibigay ang pinakamagandang experience, nangongolekta ang <ph name="DEVICE_OS" /> ng data ng hardware tungkol sa mga device at shine-share nito ang mga iyon sa Google para matukoy kung aling mga update ang dapat i-deliver. Bilang opsyon, puwede mong payagan ang Google na gamitin ang data na ito para sa mga karagdagang layunin tulad ng suporta at mga pagpapahusay sa experience sa at serbisyo ng <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Magagawa mong mag-log in sa device na ito at tingnan ang mga field na nakalista bilang chromeosflex_ sa chrome://system para makita ang data na ipinadala sa Google para sa pag-filter ng update, pati na ang anupamang sitwasyon kung saan pinili mong mag-share ng data sa Google.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Para sa higit pang impormasyon tungkol sa data na puwedeng i-share ng <ph name="DEVICE_OS" /> sa Google at kung paano ito ginagamit, bisitahin ang g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770042910635026163">Mga site na binibisita mo na tumutukoy sa iyong mga interes</translation>
 <translation id="6770602306803890733">Pinapahusay ang seguridad para sa iyo at sa lahat ng taong nasa web</translation>
 <translation id="6771503742377376720">Ay isang Certificate Authority</translation>

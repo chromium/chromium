@@ -332,6 +332,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2856503607207334158">Identifikimi dështoi</translation>
 <translation id="2860954141821109167">Sigurohu që një aplikacion i telefonit të jetë i aktivizuar në këtë pajisje</translation>
 <translation id="2861923151411510142">Disa veçori të Chrome nuk do të ofrohen më</translation>
+<translation id="2869430948265924908">Për të mbrojtur përmbajtjet e tua delikate në makinë, duhet të krijosh një kyçje të profilit të makinës.  Këtë mund ta bësh me një kod, fjalëkalim ose kod PIN.</translation>
 <translation id="2870560284913253234">Sajti</translation>
 <translation id="2871733351037274014">Ngarkimi paraprak i faqeve</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> dëshiron që të miratosh këtë uebsajt:</translation>
@@ -449,6 +450,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3421726884497337397">Zgjidh se kur do t'i bllokosh kukit e palëve të treta</translation>
 <translation id="3428747202529429621">Të mban të sigurt në Chrome dhe mund të përdoret për të përmirësuar sigurinë tënde në aplikacionet e tjera të Google kur je i identifikuar</translation>
 <translation id="3429160811076349561">Veçoritë e provës janë joaktive</translation>
+<translation id="3430670036890315772">Çaktivizimi i kyçjes së profilit do të heqë informacionet e tua të ruajtura</translation>
 <translation id="3435465986463792564">Ke shumë dritare? Mund t'i menaxhosh ato nga këtu</translation>
 <translation id="3435738964857648380">Siguria</translation>
 <translation id="3439276997620616816">Këtu do të gjesh skedat e tua të fundit</translation>
@@ -618,6 +620,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4378154925671717803">Telefoni</translation>
 <translation id="438319986296050901">Ndaj vetëm kartën</translation>
 <translation id="4384468725000734951">Po përdor Sogou për kërkimin</translation>
+<translation id="4387647248986092471">Krijo një kyçje të profilit të makinës</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Po shkarkohet…</translation>
 <translation id="4404568932422911380">Nuk ka faqeshënues</translation>
 <translation id="4405224443901389797">Zhvendos te…</translation>
@@ -787,6 +790,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5170568018924773124">Shfaq në dosje</translation>
 <translation id="5171045022955879922">Kërko ose shkruaj URL-në</translation>
 <translation id="5174700554036517242">Skeda është kthyer përsëri në lartësinë fillestare</translation>
+<translation id="5180063720319462041">Faqja është përkthyer në <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">Menaxho temat dhe kërkimet që të interesojnë</translation>
 <translation id="5191251636205085390">Mëso dhe kontrollo teknologjitë e reja që synojnë të zëvendësojnë kukit e palëve të treta</translation>
 <translation id="5193988420012215838">Kopjuar te kujtesa e fragmenteve</translation>
@@ -795,6 +799,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5210286577605176222">Kalo te skeda e mëparshme</translation>
 <translation id="5210365745912300556">Mbyll skedën</translation>
 <translation id="5222676887888702881">Dil</translation>
+<translation id="5226378907213531272">Do ta shkyçësh ekranin sa herë që përdor makinën</translation>
 <translation id="5227554086496586518">Trokit për të parë rezultatet e kërkimit</translation>
 <translation id="5233638681132016545">Skedë e re</translation>
 <translation id="5234971936051226002">Luajtësi "Dëgjoje këtë faqe" u minimizua.</translation>
@@ -1278,6 +1283,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7691043218961417207">Eksploro përmbajtje për t'i ndjekur</translation>
 <translation id="7697383401610880082">Doreza e zvarritjes</translation>
 <translation id="7698359219371678927">Krijo mail në <ph name="APP_NAME" /></translation>
+<translation id="7702388902581909985">Pastrimi i të dhënave të shfletimit nuk bën që të dalësh nga "Llogaria jote e Google". Për ta bërë këtë, <ph name="BEGIN_LINK1" />dil nga llogaria në Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Përdor të dhënat celulare</translation>
 <translation id="7709918231054955894">Merr të gjitha skedat e tua</translation>
 <translation id="772434085369393266">Përmirësoji navigimet në HTTPS dhe paralajmëro përpara ngarkimit të sajteve që nuk e mbështesin atë. Nuk mund ta ndryshosh këtë cilësim sepse ke të aktivizuar "Mbrojtjen e përparuar".</translation>

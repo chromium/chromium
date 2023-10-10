@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Chromium ટૅબ ગ્રિડ ખોલે છે.</translation>
 <translation id="1617663976202781617">Chromium સિંકમાંનો ડેટા</translation>
 <translation id="1647558790457890304">Chromiumના સેટિંગ</translation>
+<translation id="164952285225495380">આ પૅકેજને Chromium પર પહેલેથી જ ટ્રૅક કરવામાં આવ્યું છે.</translation>
 <translation id="1722370509450468186">તમારો પાસવર્ડ તમારા એકાઉન્ટ (<ph name="EMAIL" />)માં સાચવવામાં આવશે.</translation>
 <translation id="1736662517232558588">Chromium ડેટા સાફ કર્યો</translation>
 <translation id="1791845338122684020">તમારા Chromium ઇતિહાસનું પેજ ખોલે છે.</translation>
@@ -140,6 +141,7 @@
 1. સેટિંગ ખોલો
 2. ડિફૉલ્ટ બ્રાઉઝર ઍપ પર ટૅપ કરો
 3. Chromium પસંદ કરો.</translation>
+<translation id="6197255575340902638">જો તમે "<ph name="MODULE_NAME" />" છુપાવી દેશો, તો Chromium હવે પછીથી ભવિષ્યના તમારા પૅકેજને ઑટોમૅટિક રીતે ટ્રૅક કરશે નહીં તેમજ તે પૅકેજ ટ્રૅકિંગના ભૂતકાળના તમારા તમામ ડેટાને ડિલીટ કરશે.</translation>
 <translation id="6247557882553405851">Google પાસવર્ડ મેનેજર</translation>
 <translation id="6268381023930128611">Chromiumમાંથી સાઇન આઉટ કરીએ?</translation>
 <translation id="6324041800010509197">Chromiumમાં ટૅબ ગ્રિડની મુલાકાત લો</translation>

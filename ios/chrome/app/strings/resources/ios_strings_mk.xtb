@@ -58,6 +58,7 @@
 <translation id="1264156759663453185">Избраниот текст е премногу голем за делумен превод.</translation>
 <translation id="1265739287306757398">Дознајте како</translation>
 <translation id="1272079795634619415">Запри</translation>
+<translation id="1273416271143914096">{count,plural, =1{{count} лозинка}one{{count} лозинка}other{{count} лозинки}}</translation>
 <translation id="1275718070701477396">Избран</translation>
 <translation id="1279024913354609713">Не дозволувај</translation>
 <translation id="1281818060020671000">Управувајте со податоците</translation>
@@ -68,6 +69,7 @@
 <translation id="1295289763199166823">Приспособете го менито</translation>
 <translation id="1305822519689023679">За да се уверите дека секогаш ќе може да ги користите лозинките во вашата сметка на Google, потврдете го вашиот идентитет.</translation>
 <translation id="1312721752506309252">Вклучена е „Подобрената заштита“</translation>
+<translation id="1320164290882380380">{COUNT,plural, =1{Следи го пакетов}one{Следи ги сите пакети}other{Следи ги сите пакети}}</translation>
 <translation id="1321993286294231467">Грешка при зачувувањето на сликата.</translation>
 <translation id="1322735045095424339">Вашата организација бара режим „Инкогнито“</translation>
 <translation id="1323735185997015385">Избриши</translation>
@@ -143,6 +145,7 @@
 <translation id="1687475363370981210">Означи ги сите како прочитани</translation>
 <translation id="1689333818294560261">Прекар</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> избрани</translation>
+<translation id="1713777106376424209">Испорачувач:</translation>
 <translation id="1715515772563243997">Ако имате доверба во <ph name="SITE" />, може да користите зачувана лозинка за да се најавите.</translation>
 <translation id="1740468249224277719">Двоен допир за инсталирање.</translation>
 <translation id="1750238553597293878">Продолжете да ги користите лозинките во вашата сметка на Google</translation>
@@ -191,6 +194,7 @@
 <translation id="1987779152850321833">Завршете ги чекориве предложени подолу за да го извлечете максимумот од Chrome.</translation>
 <translation id="1989112275319619282">Прелистувај</translation>
 <translation id="1990820278544963435">Најди</translation>
+<translation id="1991153180045413119">Лозинката е споделена</translation>
 <translation id="1992055602764528852">Најавете се за да ги гледате картичките од другите ваши уреди.</translation>
 <translation id="199425419756152024">Видете ја лозинката</translation>
 <translation id="2008357574463816229">Ако ја заборавите лозинката или сакате да ја промените поставкава, <ph name="BEGIN_LINK" />избришете ги податоците од Chrome во вашата сметка<ph name="END_LINK" />.</translation>
@@ -235,6 +239,7 @@
 <translation id="2268044343513325586">Подобри</translation>
 <translation id="2269277877025820298">Прикажи повеќе</translation>
 <translation id="2273327106802955778">Мени за повеќе опции</translation>
+<translation id="2274800392139890332">Сопирање на следењето на пакетов</translation>
 <translation id="2275480389219976105">Адресата е најдена</translation>
 <translation id="2286505070150039482">Нагласен текст</translation>
 <translation id="2287614783861766820">{count,plural, =1{Адресава ќе се избрише од уредов.}one{Адресиве ќе се избришат од уредов.}other{Адресиве ќе се избришат од уредов.}}</translation>
@@ -243,8 +248,10 @@
 <translation id="2299218006564889602">Лозинките се шифрираат на уредот пред да се зачуваат во „Управникот со лозинки на Google“.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">Променете ја лозинката на веб-сајтот</translation>
+<translation id="2310154074101836012">Изменување на вртелешката</translation>
 <translation id="2316709634732130529">Користи го предлогот</translation>
 <translation id="2320166752086256636">Сoкриј ја тастатурата</translation>
+<translation id="2348630484974447747">Пакет</translation>
 <translation id="2351097562818989364">Вашите поставки за превод се ресетирани.</translation>
 <translation id="235789365079050412">Политика за приватност на Google</translation>
 <translation id="2359043044084662842">Преведи</translation>
@@ -527,6 +534,7 @@
 <translation id="380329542618494757">Име</translation>
 <translation id="3803696231112616155">Понудувај да го преведеш сајтов</translation>
 <translation id="3810973564298564668">Управувај</translation>
+<translation id="3818045793209708987">Следењето на пакетов е сопрено</translation>
 <translation id="3818293389945649617">Најдете следно</translation>
 <translation id="3819183753496523827">Офлајн сте. Проверете ја интернет-врската и обидете се повторно.</translation>
 <translation id="3832419617903252251">Лозинката е зачувана само на овој уред</translation>
@@ -565,6 +573,7 @@
 <translation id="4018310736049373830">Управувајте со активноста</translation>
 <translation id="4038354071007134711">Ниедна апликација на уредот не може да ја отвори датотеката.</translation>
 <translation id="4042870976416480368">Пронајдете на страницата</translation>
+<translation id="4043294777772912240"><ph name="USERNAME" /> може да ги користи вашите корисничко име и лозинка при користење Google Password Manager за да се најави на <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Создајте и споделете директен линк до делот од страницата што сте го нагласиле.</translation>
 <translation id="4045648459118332842">Добивајте ги зачуваните лозинки во која било апликација со еден допир</translation>
 <translation id="4049507953662678203">Проверете дали имате мрежна врска и обидете се повторно.</translation>
@@ -608,6 +617,7 @@
 <translation id="4286718549648564014">Адресата е преместена во вашата сметка <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Пребарување</translation>
 <translation id="4302248187517737842">Нема корисничко име ••••••••</translation>
+<translation id="4302415908542657649">Се споделува лозинка</translation>
 <translation id="4304713468139749426">Управник со лозинки</translation>
 <translation id="430793432425771671">Синхронизирај сѐ</translation>
 <translation id="4309403553630140242">Допрете двапати за повеќе информации</translation>
@@ -643,6 +653,7 @@
 <translation id="4508750114462689118">Затвори ја промоцијата за најавување</translation>
 <translation id="4514889972748124117">Предложи силна лозинка…</translation>
 <translation id="4520798012560649652">Дознајте повеќе за режимот „Инкогнито“</translation>
+<translation id="452503091941773389">{count,plural, =1{{count} обележувач}one{{count} обележувач}other{{count} обележувачи}}</translation>
 <translation id="452750746583162491">Прегледајте ги синхронизираните податоци</translation>
 <translation id="4527660062930312477">Вашата сметка е управувана</translation>
 <translation id="4536418791685807335">Обидете се да се најавите повторно.</translation>
@@ -662,6 +673,7 @@
 <translation id="4619615317237390068">Картички од другите уреди</translation>
 <translation id="4620246317052452550">Прочитани страници</translation>
 <translation id="4620888520263267479">Прикажи прегледи на линк</translation>
+<translation id="4622477750832577849">Овозможете следење</translation>
 <translation id="4630540211544979320">Преведувај страници</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> повторно употребени лозинки</translation>
 <translation id="4634124774493850572">Употреби ја лозинката</translation>
@@ -777,6 +789,7 @@
 <translation id="519530786644929958">Преземањето не успеа и не може да се повтори.</translation>
 <translation id="5197255632782567636">Интернет</translation>
 <translation id="5211488077761630279">Дозволувате „<ph name="SITE_NAME" />“ да користи <ph name="PERMISSION" />?</translation>
+<translation id="5215990399368742238">Автоматски следи ги сите откриени пакети</translation>
 <translation id="5219295696240154694">Помогнете да се подобри безбедноста на интернет за сите</translation>
 <translation id="5220945116117011963">Создајте настани во календар од датуми</translation>
 <translation id="5221339005270097309">Се проверуваат лозинките…</translation>
@@ -787,6 +800,7 @@
 <translation id="5235389474593199952">Скриј „Историја“</translation>
 <translation id="5238301240406177137">Зачувајте на сметката</translation>
 <translation id="5245322853195994030">Откажи ја синхронизацијата</translation>
+<translation id="5256908199795498284">Chrome ќе ги открива броевите за следење пакети на сајтовите што ги отворате и ќе ви прикажува новости за пакетите на страницата во нова картичка. Вашите податоци ќе се споделат со Google за да се обезбеди функцијава и да се подобри Shopping за сите.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Задолжително поле е празно. Пополнете го пред да зачувате.}one{Некои задолжителни полиња се празни. Пополнете ги пред да зачувате.}other{Некои задолжителни полиња се празни. Пополнете ги пред да зачувате.}}</translation>
 <translation id="5271549068863921519">Сними ја лозинката</translation>
 <translation id="5283494734135414249">Допрете ја кратенката што се појавува под лентата за адреси.</translation>
@@ -795,6 +809,7 @@
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5318298563956633672">Веќе го следите производов.</translation>
 <translation id="5339316356165661760">Вклучи синхронизација</translation>
+<translation id="5345598430982201510">Никогаш не откривај пакети автоматски</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Да се следи пакетов?}one{Да се следат {COUNT} пакет?}other{Да се следат {COUNT} пакети?}}</translation>
 <translation id="536067926684072644">Прикажи ги обележувачите</translation>
 <translation id="5360976571138293719">За повеќе поставки што се однесуваат на приватноста, безбедноста и прибирањето податоци, одете на <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
@@ -811,6 +826,7 @@
 <translation id="54401264925851789">Безбедносни информации за страницата</translation>
 <translation id="5443952882982198570">Кредитни картички</translation>
 <translation id="5444892875087332195">Обележувачи</translation>
+<translation id="5454211924362324495">За да сопрете други да ја користат вашата лозинка, <ph name="BEGIN_LINK" />променете ја на <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Отвори офлајн верзија</translation>
 <translation id="5475069061743940393">Следење пакети</translation>
 <translation id="5478327362747197944">Создавајте настани во календарот директно така што ќе кликнете на датум на веб-страница.</translation>
@@ -1030,6 +1046,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 
 Добро би било да користите единствена лозинка за секој сајт.</translation>
 <translation id="6497850081273517953">Chrome е застарен. За да се заштитите, ажурирајте на најновата верзија.</translation>
+<translation id="6502142762807385617">{COUNT,plural, =1{Сопри со следење на пакетов}one{Сопри со следење на сите пакети}other{Сопри со следење на сите пакети}}</translation>
 <translation id="650279896687777322">Дознајте повеќе…</translation>
 <translation id="6507973708545996744">Најавете се за да ја добиете „Список за читање“ на сите ваши уреди.</translation>
 <translation id="6510072653668207258">Потсети ме подоцна</translation>
@@ -1110,6 +1127,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6869389390665537774">Може да ги гледате страниците што сте ги посетиле или да ги избришете од историјата</translation>
 <translation id="687135068089457384">Прикажете ги поставките</translation>
 <translation id="6873263987691478642">Поделен приказ</translation>
+<translation id="687586529977635009">Chrome ќе ги открива броевите за следење на сајтовите што ги отворате и ќе ви прикажува новости за пакетите на страницата во нова картичка. Вашите податоци ќе се споделат со Google за да се обезбеди функцијава и да се подобри Shopping за сите. Ова може да го промените во <ph name="BEGIN_LINK" />Поставките за следење пакети<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Стандардна заштита од веб-сајтови, преземања и екстензии за коишто се знае дека се опасни.</translation>
 <translation id="6888009575607455378">Дали сигурно сакате да ги отфрлите промените?</translation>
 <translation id="6896758677409633944">Копирај</translation>
@@ -1157,6 +1175,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7154343200458623869">Завршете ја вашата задача.</translation>
 <translation id="7161230316646448869">Синхронизација на обележувачите, историјата и друго на сите уреди</translation>
 <translation id="7162168282402939716">Отклучете ги картичките „Инкогнито“ со <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="7168959436351276050">Ако ја скриете картичкава, ќе се отстранат сите ваши податоци за следење пакети</translation>
 <translation id="7172852049901402487">Заштитете ги лозинките од безбедносни проблеми</translation>
 <translation id="7173114856073700355">Отвори „Поставки“</translation>
 <translation id="7189598951263744875">Сподели…</translation>
@@ -1213,6 +1232,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7508728395076009983">За да ги заклучите картичките „Инкогнито“, поставете „ID на допир“, „ID на лик“ или лозинка.</translation>
 <translation id="7514365320538308">Преземи</translation>
 <translation id="7524055474074101597">Пристапувајте до вашите лозинки и друго на апликациите.</translation>
+<translation id="7527917367892640435">Пакетот веќе се следи</translation>
 <translation id="7531345132340165516">Моментален сајт</translation>
 <translation id="7537586195939242955">Pass не може да се инсталира во Passbook во моментов.</translation>
 <translation id="754655535278952384">Последна проверка: <ph name="TIME" /></translation>
@@ -1416,6 +1436,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8605219856220328675">Затвори ја картичката.</translation>
 <translation id="8613883225817609844">Скриј „Неодамнешни картички“</translation>
 <translation id="8620640915598389714">Измени</translation>
+<translation id="8624447588354561276">Број на пакет</translation>
 <translation id="8626393685701737946">Можете да го промените стандардниот приказ на сајт да биде приказ наменет за компјутер во „Поставки &gt; Поставки за содржини“</translation>
 <translation id="8636825310635137004">За да ги добиете картичките од другите уреди, вклучете ја синхронизацијата.</translation>
 <translation id="8637431369725868556">Заштитете се од опасни сајтови.</translation>

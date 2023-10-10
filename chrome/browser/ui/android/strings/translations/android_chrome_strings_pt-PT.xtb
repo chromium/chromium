@@ -217,6 +217,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="218608176142494674">Partilha</translation>
 <translation id="2194856509914051091">Aspetos a considerar</translation>
 <translation id="2200113223741723867">Faça a gestão da partilha dos dados de utilização</translation>
+<translation id="22091350895006575">Adicionar nome de utilizador</translation>
 <translation id="221494669172414749">Abrir o Chrome sem um bloqueio do perfil remove as palavras-passe guardadas e os métodos de pagamento do carro. A utilização de um bloqueio do perfil mantém estes dados seguros.</translation>
 <translation id="2218567645332692482">Atualizar as navegações para HTTPS e avisar antes de carregar sites que não o suportam</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
@@ -244,6 +245,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="235789365079050412">Política de Privacidade da Google</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2362083820973145409">Com sessão iniciada como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abre as definições.</translation>
+<translation id="2364539095045928896">Botão Fechar para fechar o Aviso de Privacidade do Centro de estatísticas da página.</translation>
 <translation id="2386938421315164605">Oculte e mostre tópicos</translation>
 <translation id="2390510615457643724">Quer transferir <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> novamente?</translation>
 <translation id="2394602618534698961">Os ficheiros que transferir aparecem aqui.</translation>
@@ -312,6 +314,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2718846868787000099">Para apresentar conteúdo nos seus idiomas preferidos, os sites que visitar podem ver as suas preferências.</translation>
 <translation id="2722945394406572875">Pedido do Privacy Sandbox fechado</translation>
 <translation id="2723001399770238859">áudio</translation>
+<translation id="2760805590727089264">MM/AA</translation>
 <translation id="2760989362628427051">Ative o tema escuro quando a Poupança de bateria ou o tema escuro do dispositivo estiver ativado(a).</translation>
 <translation id="2762000892062317888">agora mesmo</translation>
 <translation id="276969039800130567">Com sessão iniciado como <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -840,6 +843,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5458366071038729214">Encontrará os sites que segue aqui</translation>
 <translation id="5468068603361015296">Quer transferir <ph name="FILE_NAME" /> mesmo assim?</translation>
 <translation id="548278423535722844">Abrir na aplicação de mapas</translation>
+<translation id="5486841595534124508">Logótipo do Aviso de Privacidade do Centro de estatísticas da página que redireciona para a página A minha atividade.</translation>
 <translation id="5487521232677179737">Limpar dados</translation>
 <translation id="5492637351392383067">Encriptação no dispositivo</translation>
 <translation id="5514904542973294328">Desativada pelo gestor do dispositivo</translation>
@@ -956,6 +960,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="6112702117600201073">A atualizar a página</translation>
 <translation id="6122831415929794347">Desativar a Navegação segura?</translation>
 <translation id="6127379762771434464">Item removido</translation>
+<translation id="6130303040046284160">Minimizar separador</translation>
 <translation id="6137022273846704445">Idioma da app <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">Altere as definições do site aqui.</translation>
 <translation id="6140709049082532940">Proteção melhorada:</translation>
@@ -1258,6 +1263,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7588219262685291874">Ativar o tema escuro quando a Poupança de bateria do dispositivo estiver ativada.</translation>
 <translation id="7594687499944811403">Permita que <ph name="EMBEDDED_ORIGIN" /> valide a sua identidade para <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Sistema operativo</translation>
+<translation id="7603168929588204083">Data inválida</translation>
 <translation id="7605594153474022051">A sincronização não está a funcionar</translation>
 <translation id="7612619742409846846">Iniciou sessão no Google como</translation>
 <translation id="7612989789287281429">A iniciar sessão…</translation>
@@ -1307,6 +1313,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7810647596859435254">Abrir com…</translation>
 <translation id="7815484226266492798">Captura de ecrã longa</translation>
 <translation id="7822705602465980873">Quando tem sessão iniciada, estes dados são associados à sua Conta Google para obter proteção nos serviços Google, por exemplo, para aumentar a proteção no Gmail após um incidente de segurança.</translation>
+<translation id="782705168687182233">A sua atividade é guardada na sua <ph name="BEGIN_LINK" />Conta Google<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">O seu computador quer registar este dispositivo para iniciar sessão num site</translation>
 <translation id="7844171778363018843">Não existem dados selecionados a sincronizar.</translation>
 <translation id="7846296061357476882">Serviços Google</translation>
@@ -1399,6 +1406,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8223642481677794647">Menu do cartão do feed</translation>
 <translation id="8236097722223016103">Adicionar aos marcadores</translation>
 <translation id="8237871086242677046">Secção inferior das estatísticas da página</translation>
+<translation id="8243077599929149377">Adicione o seu nome de utilizador</translation>
 <translation id="8250920743982581267">Docs</translation>
 <translation id="8255617931166444521">Os sites apenas podem utilizar os seus cookies para ver a sua atividade de navegação no respetivo site</translation>
 <translation id="8259179246279078674">Uma vez que as páginas pré-carregadas são encriptadas, a Google não irá aprender nada sobre o conteúdo das páginas pré-carregadas. Os servidores da Google saberão que sites são pré-carregados de forma privada. Esta informação só é utilizada para pré-carregar as páginas e não está associada a outras informações da sua Conta Google.</translation>

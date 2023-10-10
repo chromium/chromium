@@ -1891,6 +1891,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4873616204573862158">Kasuotan sa Mata</translation>
 <translation id="4876188919622883022">Pinasimpleng view</translation>
 <translation id="4876305945144899064">Walang username</translation>
+<translation id="4876327226315760474">Nangangahulugan ito na dapat gumana ang mga feature ng site na gaya ng inaasahan, pero posibleng magkaroon ka ng mas mahinang proteksyon sa pag-browse.</translation>
 <translation id="4877047577339061095">Storage at Shelving sa Bahay</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Wala}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">paghahanap para sa <ph name="TEXT" /></translation>
@@ -2519,6 +2520,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="61877208875190028">Mga pambabaeng damit</translation>
 <translation id="6194209731893739467">Tingnan ang lahat ng iyong sinusubaybayang produkto rito</translation>
+<translation id="6195163219142236913">Limitado ang third-party na cookies</translation>
 <translation id="6195371403461054755">Geology</translation>
 <translation id="6196640612572343990">I-block ang mga third-party na cookie</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>

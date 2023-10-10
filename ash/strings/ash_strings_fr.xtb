@@ -702,6 +702,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="385300504083504382">Début</translation>
 <translation id="3859364108019690">Impossible de diffuser les applis en streaming</translation>
 <translation id="3861651314799684201">Appuyez sur Entrée pour enregistrer tout l'écran</translation>
+<translation id="3865912916886104060">Aucun appareil connecté. Le Wi-Fi sera désactivé pour commencer à utiliser le point d'accès.</translation>
 <translation id="3886872229787704059">Ouvert aujourd'hui</translation>
 <translation id="3891340733213178823">Appuyez deux fois sur Ctrl + Maj + Q pour vous déconnecter.</translation>
 <translation id="3893630138897523026">ChromeVox (commentaires audio)</translation>
@@ -786,6 +787,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4197790712631116042">Désactivé</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> n'est pas disponible.</translation>
 <translation id="4201051445878709314">Afficher le mois précédent</translation>
+<translation id="4202362334312791952">1 appareil connecté. Le Wi-Fi sera désactivé pour commencer à utiliser le point d'accès.</translation>
 <translation id="4209973997261364186">Le Wi-Fi est activé</translation>
 <translation id="4212472694152630271">Authentification par code</translation>
 <translation id="4215497585250573029">Paramètres de VPN</translation>
@@ -1048,6 +1050,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5258528442992323769">Aucun bureau enregistré</translation>
 <translation id="5260676007519551770">Bureau 4</translation>
 <translation id="5268819379131021772">Liste de tâches Google</translation>
+<translation id="5275923704957843041">Aperçu du bureau</translation>
 <translation id="5278086053818066789">Activer/Désactiver ChromeVox (commentaires audio)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> requiert votre attention.</translation>
 <translation id="5283198616748585639">Ajouter une minute</translation>
@@ -1164,6 +1167,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5707775774148071965">Votre appareil accepte un débit de données supérieur à celui de votre câble. Cela peut limiter les performances de l'appareil.</translation>
 <translation id="5710450975648804523">Mode "Ne pas déranger" activé</translation>
 <translation id="571295407079589142">Les données mobiles sont désactivées</translation>
+<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> appareils connectés. Le Wi-Fi sera désactivé pour commencer à utiliser le point d'accès.</translation>
 <translation id="5727460725221669831">Si vous avez oublié votre mot de passe ou si vous avez récemment modifié le mot de passe de votre compte Google, essayez de récupérer ce compte utilisateur.</translation>
 <translation id="573413375004481890">Cet appareil ne peut pas prendre en charge tous vos écrans. L'un d'eux a été déconnecté</translation>
 <translation id="5740328398383587084">Partage à proximité</translation>

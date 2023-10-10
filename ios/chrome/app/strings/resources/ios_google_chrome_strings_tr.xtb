@@ -117,6 +117,7 @@ Dikkate alınması gereken noktalar:
 <translation id="5389212809648216794">Kameranız başka bir uygulama tarafından kullanıldığından Google Chrome, kameranızı kullanamıyor.</translation>
 <translation id="5395376160638294582">Google Hesabınızdaki Chrome verilerini her zaman kullanabildiğinizden emin olun</translation>
 <translation id="5439191312780166229">Standart korumaya ek olarak sitelerden alınmış daha fazla veriyi analiz ederek Google'ın daha önce bilmedikleri de dahil olmak üzere tehlikeli siteler hakkında sizi uyarır. Chrome uyarılarını atlamayı seçebilirsiniz.</translation>
+<translation id="5442013002200339429">"<ph name="MODULE_NAME" />" öğesini gizlerseniz Chrome gelecekteki kargolarınızı otomatik olarak takip etmez ve tüm geçmiş kargo takibi verilerinizi siler.</translation>
 <translation id="5460571915754665838">4. Chrome'u seçin</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome, Yeni Sekme sayfasında bu kargoyu takip etmenize yardımcı olacak.}other{Chrome, Yeni Sekme sayfasında bu kargoları takip etmenize yardımcı olacak.}}</translation>
 <translation id="5492504007368565877">Google Şifre Yöneticisi, şifrelerinizi kontrol edemiyor.</translation>
@@ -188,6 +189,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="7933491483529363150">Chrome'daki en son sekmemi aç.</translation>
 <translation id="8022947259858476807">Bağlantıları açmak, widget'lardan arama yapmak ve diğer uygulamalarda şifreleri otomatik doldurmak için varsayılan olarak Chrome'u kullanın</translation>
 <translation id="804638182476029347">Fiyat düşüşü uyarıları almak için Chrome bildirimlerine izin verin</translation>
+<translation id="8069507567842347179">Bu kargo halihazırda Chrome'da takip ediliyor.</translation>
 <translation id="81358522153858150">Chrome artık yönetilen hesabınız için kullanıcı politikalarını destekliyor</translation>
 <translation id="8160472928944011082">Chrome güncellenemiyor</translation>
 <translation id="8174679664544842874">Chrome'da Yeni Sekme Açar.</translation>

@@ -703,6 +703,7 @@
 <translation id="385300504083504382">На початок</translation>
 <translation id="3859364108019690">Не вдалося виконати потокове передавання додатків</translation>
 <translation id="3861651314799684201">Щоб записати весь екран, натисніть клавішу Enter</translation>
+<translation id="3865912916886104060">Немає підключених пристроїв. Щоб почати використовувати точку доступу, Wi-Fi буде вимкнено.</translation>
 <translation id="3886872229787704059">Відкрито сьогодні</translation>
 <translation id="3891340733213178823">Щоб вийти, двічі натисніть Ctrl+Shift+Q.</translation>
 <translation id="3893630138897523026">ChromeVox (голосові підказки)</translation>
@@ -787,6 +788,7 @@
 <translation id="4197790712631116042">Вимкнено</translation>
 <translation id="4201033867194214117">Функція "<ph name="FEATURE_NAME" />" недоступна.</translation>
 <translation id="4201051445878709314">Показати попередній місяць</translation>
+<translation id="4202362334312791952">Підключено 1 пристрій. Щоб почати використовувати точку доступу, Wi-Fi буде вимкнено.</translation>
 <translation id="4209973997261364186">Wi-Fi увімкнено</translation>
 <translation id="4212472694152630271">Ввести PIN-код</translation>
 <translation id="4215497585250573029">Налаштування VPN</translation>
@@ -1049,6 +1051,7 @@
 <translation id="5258528442992323769">Немає збережених робочих столів</translation>
 <translation id="5260676007519551770">Робочий стіл 4</translation>
 <translation id="5268819379131021772">Список завдань Google</translation>
+<translation id="5275923704957843041">Попередній перегляд робочого столу</translation>
 <translation id="5278086053818066789">Увімкнути або вимкнути ChromeVox (голосові підказки)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" />: потрібно переглянути.</translation>
 <translation id="5283198616748585639">Додати 1 хв</translation>
@@ -1165,6 +1168,7 @@
 <translation id="5707775774148071965">Швидкість передачі даних для пристрою вища, ніж для кабелю. Продуктивність пристрою може бути обмежено.</translation>
 <translation id="5710450975648804523">Режим "Не турбувати" ввімкнено</translation>
 <translation id="571295407079589142">Мобільний Інтернет вимкнено</translation>
+<translation id="5716891621595980681">Підключено пристроїв: <ph name="DEVICECOUNT" />. Щоб почати використовувати точку доступу, Wi-Fi буде вимкнено.</translation>
 <translation id="5727460725221669831">Якщо ви забули або нещодавно змінили пароль облікового запису Google, спробуйте відновити його.</translation>
 <translation id="573413375004481890">Цей пристрій не може підтримувати всі екрани, тому один із них відключено</translation>
 <translation id="5740328398383587084">Обмін поблизу</translation>

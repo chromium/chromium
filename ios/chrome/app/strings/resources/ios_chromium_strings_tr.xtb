@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Chromium Sekme Izgarasını Açar.</translation>
 <translation id="1617663976202781617">Chromium senkronizasyonundan veriler</translation>
 <translation id="1647558790457890304">Chromium Ayarları</translation>
+<translation id="164952285225495380">Bu kargo halihazırda Chromium'da takip ediliyor.</translation>
 <translation id="1722370509450468186">Şifreniz, hesabınıza (<ph name="EMAIL" />) kaydedilir.</translation>
 <translation id="1736662517232558588">Chromium verileri temizlendi</translation>
 <translation id="1791845338122684020">Chromium geçmişi sayfanızı açar.</translation>
@@ -140,6 +141,7 @@ Dikkate alınması gereken noktalar:
 1. Ayarlar'ı açın
 2. Varsayılan Tarayıcı Uygulaması'na dokunun
 3. Chromium'u seçin.</translation>
+<translation id="6197255575340902638">"<ph name="MODULE_NAME" />" öğesini gizlerseniz Chromium gelecekteki kargolarınızı otomatik olarak takip etmez ve tüm geçmiş kargo takibi verilerinizi siler.</translation>
 <translation id="6247557882553405851">Google Şifre Yöneticisi</translation>
 <translation id="6268381023930128611">Chromium oturumunu kapatıyor musunuz?</translation>
 <translation id="6324041800010509197">Chromium'daki Sekme Izgarasına Git</translation>

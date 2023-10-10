@@ -695,7 +695,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2366689192918515749">Mäso a morské plody</translation>
 <translation id="2367567093518048410">Úroveň</translation>
 <translation id="23703388716193220">Vybavenie na golf</translation>
-<translation id="2374629208601905275">Na základe práva vo vašom regióne vás Chrome žiada, aby ste si vybrali predvolený vyhľadávač. Tieto vyhľadávače sú populárne vo vašom regióne a zobrazujú sa v náhodnom poradí.</translation>
+<translation id="2374629208601905275">Na základe právneho predpisu vo vašej oblasti vás Chrome žiada, aby ste si vybrali predvolený vyhľadávač. Tieto vyhľadávače sú vo vašej oblasti populárne. Zobrazujú sa v náhodnom poradí.</translation>
 <translation id="2378084239755710604">Uložená karta bola zavretá.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Prispôsobiť nástroje dostupnosti v nastaveniach Chromu</translation>
@@ -1176,7 +1176,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3427342743765426898">&amp;Znova upraviť</translation>
 <translation id="342781501876943858">Ak ste heslo použili aj na iných weboch, Chromium ho odporúča obnoviť.</translation>
 <translation id="3428151540071562330">Minimálne jeden identifikátor URI šablón servera DnsOverHttpsTemplates je neplatný a nebude použitý.</translation>
-<translation id="3429817405364886479">Potvrďte vyhľadávač</translation>
+<translation id="3429817405364886479">Potvrďte svoj vyhľadávač</translation>
 <translation id="3431216045099978607">Stlačením tlačidla |<ph name="ACCELERATOR" />| ukončíte režim celej obrazovky a zobrazíte stiahnutý obsah.</translation>
 <translation id="3432601291244612633">Zavrieť stránku</translation>
 <translation id="3433111389595862568">Softvér na spoluprácu a konferencie</translation>
@@ -1726,7 +1726,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4526465106919207193">Ľudia a spoločnosť</translation>
 <translation id="4530347922939905757">Textová správa</translation>
 <translation id="4531477351494678589">Číslo virtuálnej karty:</translation>
-<translation id="4535523368173457420">Tieto vyhľadávače sú populárne vo vašom regióne a zobrazujú sa v náhodnom poradí</translation>
+<translation id="4535523368173457420">Tieto vyhľadávače sú vo vašej oblasti populárne a zobrazujú sa v náhodnom poradí</translation>
 <translation id="4540780316273593836">Vyskytol sa problém</translation>
 <translation id="4541810033354695636">rozšírená realita</translation>
 <translation id="4542971377163063093">Priehradka č. 6</translation>
@@ -2868,7 +2868,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6917795328362592458">Heslo, ktoré ste práve použili, bolo nájdené v zozname hesiel odhalených pri porušení ochrany údajov. Ak chcete svoje účty zabezpečiť, Správca hesiel odporúča uložené heslá skontrolovať.</translation>
 <translation id="6925267999184670015">Severoamerický formát B+</translation>
 <translation id="692638818576287323">Komerčné vozidlá</translation>
-<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Pomocou predvoleného vyhľadávača budete môcť vyhľadávať na internete a využívať funkcie Chromu<ph name="END_BOLD" />, ako je vyhľadávanie z panela s adresou alebo z obrázkov na webových stránkach. Ak vyhľadávač určitú funkciu nepodporuje, nemusí byť daná funkcia k dispozícii.</translation>
+<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Predvolený vyhľadávač vám umožňuje vyhľadávať na internete a využívať funkcie Chromu<ph name="END_BOLD" />, ako je vyhľadávanie z panela s adresou alebo z obrázkov na webových stránkach. Funkcie, ktoré vyhľadávač nepodporuje, nebudú k dispozícii.</translation>
 <translation id="6934672428414710184">Meno pochádza z vášho účtu Google</translation>
 <translation id="6935082727755903526">Práca v oblasti účtovníctva a financií</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Pri vašej ďalšej návšteve sa môžu niektoré weby načítať pomalšie.</translation>
@@ -3260,7 +3260,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="765676359832457558">Skryť rozšírené nastavenia...</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7659327900411729175">Obálka Kaku 8</translation>
-<translation id="7659880963341457291">Potvrďte vyhľadávač</translation>
+<translation id="7659880963341457291">Potvrďte svoj vyhľadávač</translation>
 <translation id="766014026101194726">{0,plural, =1{Nahrávanie tohto súboru je blokované pravidlami správcu}few{Nahrávanie # súborov je blokované pravidlami správcu}many{Uploading # files is blocked by administrator policy}other{Nahrávanie # súborov je blokované pravidlami správcu}}</translation>
 <translation id="7662298039739062396">Nastavenie ovládané rozšírením</translation>
 <translation id="7663736086183791259">Certifikát <ph name="CERTIFICATE_VALIDITY" /></translation>
@@ -3333,7 +3333,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7781829728241885113">Včera</translation>
 <translation id="7785790577395078482">tohto tabletu</translation>
 <translation id="7786368602962652765">Povinné pole je prázdne. Pred uložením ho vyplňte.</translation>
-<translation id="7786432318297177736">Tieto vyhľadávače sa zobrazujú v náhodnom poradí. Predvolený vyhľadávač môžete kedykoľvek zmeniť v nastaveniach.</translation>
+<translation id="7786432318297177736">Vyhľadávače sa zobrazujú v náhodnom poradí. Predvolený vyhľadávač môžete kedykoľvek zmeniť v nastaveniach.</translation>
 <translation id="7786912885126430740">Ukladajte si overovacie kódy karty, zrýchlite tým platby</translation>
 <translation id="7790488044432570133">Weby, ktoré navštívite, môžu požiadať Chrome o informácie, ktoré im pomôžu merať výkonnosť ich reklám. Chrome umožňuje webom zhromažďovať obmedzené typy údajov, napríklad čas dňa, kedy sa vám zobrazila reklama.</translation>
 <translation id="7791011319128895129">Nevydané</translation>

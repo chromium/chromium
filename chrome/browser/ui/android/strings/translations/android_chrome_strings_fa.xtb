@@ -217,6 +217,7 @@
 <translation id="218608176142494674">هم‌رسانی</translation>
 <translation id="2194856509914051091">مواردی که باید درنظر داشت</translation>
 <translation id="2200113223741723867">مدیریت هم‌رسانی داده‌های استفاده</translation>
+<translation id="22091350895006575">افزودن نام کاربری</translation>
 <translation id="221494669172414749">‏باز کردن Chrome بدون قفل نمایه باعث می‌شود گذرواژه‌ها و روش‌های پرداخت ذخیره‌شده‌تان از خودرو حذف شود. استفاده از قفل نمایه امنیت این داده‌ها را حفظ می‌کند.</translation>
 <translation id="2218567645332692482">‏پیمایش‌ها به HTTPS ارتقا می‌یابد و پیش‌از بار شدن سایت‌هایی که از HTTPS پشتیبانی نمی‌کنند، هشدار دریافت می‌کنید</translation>
 <translation id="2227444325776770048">ادامه دادن به‌عنوان <ph name="USER_FULL_NAME" /></translation>
@@ -244,6 +245,7 @@
 <translation id="235789365079050412">‏خط‌مشی رازداری Google</translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2362083820973145409">با <ph name="USER_NAME" /> به سیستم وارد شده‌اید. <ph name="USER_EMAIL" />. تنظیمات را باز می‌کند.</translation>
+<translation id="2364539095045928896">دکمه بستن برای بستن اعلان حریم خصوصی مرکز اطلاعات آماری صفحه</translation>
 <translation id="2386938421315164605">پنهان و آشکار کردن موضوعات</translation>
 <translation id="2390510615457643724">می‌خواهید <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> دوباره بارگیری شود؟</translation>
 <translation id="2394602618534698961">فایل‌هایی که بارگیری می‌کنید، اینجا نشان داده می‌شود</translation>
@@ -312,6 +314,7 @@
 <translation id="2718846868787000099">برای نشان دادن محتوا به زبان‌های دلخواهتان، سایت‌هایی که بازدید می‌کنید می‌توانند اولویت‌هایتان را ببینند</translation>
 <translation id="2722945394406572875">درخواست «جعبه شنی حریم خصوصی» بسته شد</translation>
 <translation id="2723001399770238859">صدا</translation>
+<translation id="2760805590727089264">ماه/سال</translation>
 <translation id="2760989362628427051">روشن شدن زمینه تیره وقتی زمینه تیره دستگاه یا «بهینه‌سازی باتری» روشن است</translation>
 <translation id="2762000892062317888">هم‌اکنون</translation>
 <translation id="276969039800130567">با <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم شد.</translation>
@@ -840,6 +843,7 @@
 <translation id="5458366071038729214">سایت‌هایی را که دنبال می‌کنید اینجا پیدا خواهید کرد</translation>
 <translation id="5468068603361015296">می‌خواهید <ph name="FILE_NAME" /> درهرصورت بارگیری شود؟</translation>
 <translation id="548278423535722844">‏باز کردن در برنامه Maps</translation>
+<translation id="5486841595534124508">نشان‌واره اعلان حریم خصوصی برای مرکز اطلاعات آماری صفحه که به صفحه فعالیت‌هایم هدایت می‌کند.</translation>
 <translation id="5487521232677179737">پاک کردن داده‌ها</translation>
 <translation id="5492637351392383067">رمزگذاری درون‌دستگاهی</translation>
 <translation id="5514904542973294328">توسط سرپرست این دستگاه غیرفعال شده است</translation>
@@ -956,6 +960,7 @@
 <translation id="6112702117600201073">درحال بازآوری صفحه</translation>
 <translation id="6122831415929794347">«مرور ایمن» خاموش شود؟</translation>
 <translation id="6127379762771434464">مورد برداشته شد</translation>
+<translation id="6130303040046284160">کوچک کردن برگه</translation>
 <translation id="6137022273846704445">زبان <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">تنظیمات سایتتان را اینجا تغییر دهید</translation>
 <translation id="6140709049082532940">محافظت بهبودیافته:</translation>
@@ -1258,6 +1263,7 @@
 <translation id="7588219262685291874">روشن شدن زمینه تیره وقتی «بهینه‌سازی باتری» دستگاه روشن است</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> مجاز می‌شود هویت شما را برای <ph name="TOP_ORIGIN" /> تأیید کند</translation>
 <translation id="7596558890252710462">سیستم‌عامل</translation>
+<translation id="7603168929588204083">تاریخ نامعتبر</translation>
 <translation id="7605594153474022051">همگام‌سازی کار نمی‌کند</translation>
 <translation id="7612619742409846846">‏ثبت ورودشده در Google به‌عنوان</translation>
 <translation id="7612989789287281429">درحال وارد کردن شما به سیستم…</translation>
@@ -1307,6 +1313,7 @@
 <translation id="7810647596859435254">باز کردن با…</translation>
 <translation id="7815484226266492798">نماگرفت طولانی</translation>
 <translation id="7822705602465980873">‏وقتی به سیستم وارد شده باشید، این داده‌ها به «حساب Google» شما پیوند داده می‌شود تا از شما در سراسر سرویس‌های Google محافظت کند؛ مثلاً افزایش محافظت در Gmail پس‌از یک حادثه امنیتی.</translation>
+<translation id="782705168687182233">‏فعالیتتان در <ph name="BEGIN_LINK" />حساب Google<ph name="END_LINK" /> شما ذخیره می‌شود.</translation>
 <translation id="78270725016672455">رایانه‌تان می‌خواهد این دستگاه را برای ورود به سیستم یک سایت ثبت کند</translation>
 <translation id="7844171778363018843">هیچ داده‌ای برای همگام‌سازی انتخاب نشده است</translation>
 <translation id="7846296061357476882">‏سرویس‌های Google</translation>
@@ -1399,6 +1406,7 @@
 <translation id="8223642481677794647">منوی کارت فید</translation>
 <translation id="8236097722223016103">افزودن به نشانک‌ها</translation>
 <translation id="8237871086242677046">برگ زیرین اطلاعات آماری صفحه</translation>
+<translation id="8243077599929149377">نام کاربری‌تان را اضافه کنید</translation>
 <translation id="8250920743982581267">اسناد</translation>
 <translation id="8255617931166444521">سایت‌ها فقط می‌توانند از کوکی‌هایتان برای دیدن فعالیت مرورتان در سایت خودشان استفاده کنند</translation>
 <translation id="8259179246279078674">‏ازآنجایی‌که صفحات پیش‌بارگیری‌شده رمزگذاری شده‌اند، Google هیچ اطلاعاتی درباره محتوای صفحه پیش‌بارگیری‌شده دریافت نخواهد کرد. سرورهای Google مطلع خواهد شد که کدام سایت‌ها خصوصی پیش‌بارگیری می‌شوند. از این اطلاعات فقط برای پیش‌بارگیری صفحات استفاده می‌شود و با سایر اطلاعات «حساب Google» شما پیوند داده نمی‌شود.</translation>

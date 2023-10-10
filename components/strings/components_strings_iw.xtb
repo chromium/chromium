@@ -52,8 +52,10 @@
 <translation id="1080116354587839789">התאמה לרוחב</translation>
 <translation id="1081061862829655580">מגש 19</translation>
 <translation id="1089439967362294234">שינוי סיסמה</translation>
+<translation id="1090629319939036170">‏תפריט VR</translation>
 <translation id="1094777233105318927">מידע על הדפדפן, מערכת ההפעלה, המכשיר, התוכנות שהותקנו והקבצים</translation>
 <translation id="1096545575934602868">השדה הזה יכול לכלול עד <ph name="MAX_ITEMS_LIMIT" /> רשומות. כל הרשומות הנוספות יימחקו.</translation>
+<translation id="1099928364755383720">הפעלה אוטומטית של 'תמונה בתוך תמונה'</translation>
 <translation id="1100782917270858593">‏הלחצן להמשך התהליך, מקישים על Enter כדי להמשיך בתהליך ולהציג את הפעילות הרלוונטית בהיסטוריה ב-Chrome</translation>
 <translation id="1101672080107056897">פעולת שגיאה</translation>
 <translation id="1103523840287552314">ברצוני לקבל תרגום מ<ph name="LANGUAGE" /> תמיד</translation>
@@ -479,6 +481,7 @@
 <translation id="192095259937375524">‏הלחצן לשיתוף הכרטיסייה הזו, מפעילים אותו כדי לשתף את הכרטיסייה הזו על ידי שיתוף הקישור, יצירת קוד QR, העברה (cast) ועוד</translation>
 <translation id="1924727005275031552">חדשה</translation>
 <translation id="1935995810530254458">אעתיק בכל זאת</translation>
+<translation id="1939059826036755332">הפעלה אוטומטית של 'תמונה בתוך תמונה'</translation>
 <translation id="1939175642807587452">האתר יכול לבקש הרשאה לשלוח התראות</translation>
 <translation id="1940441167050915935">מחיקה של קודי האבטחה שנשמרו</translation>
 <translation id="1943994668912612445">עיצוב</translation>
@@ -1723,6 +1726,7 @@
 <translation id="4526465106919207193">אנשים וחברה</translation>
 <translation id="4530347922939905757">הודעת טקסט</translation>
 <translation id="4531477351494678589">מספר הכרטיס הווירטואלי:</translation>
+<translation id="4535523368173457420">מנועי החיפוש האלה פופולריים באזור שלך ומוצגים בסדר אקראי.</translation>
 <translation id="4540780316273593836">משהו השתבש</translation>
 <translation id="4541810033354695636">מציאות רבודה</translation>
 <translation id="4542971377163063093">מגש 6</translation>
@@ -2834,6 +2838,7 @@ Del</translation>
 <translation id="6852204201400771460">לטעון מחדש את האפליקציה?</translation>
 <translation id="6857776781123259569">לניהול הסיסמאות…</translation>
 <translation id="6858034839887287663">A2x4</translation>
+<translation id="6860888819347870819">קבלת בקשות להפעלת תמונה בתוך תמונה</translation>
 <translation id="6864189428899665393">‏267x389 מ"מ</translation>
 <translation id="686485648936420384">משאבים לצרכנים</translation>
 <translation id="6865412394715372076">אי אפשר לאמת כרגע את הכרטיס</translation>

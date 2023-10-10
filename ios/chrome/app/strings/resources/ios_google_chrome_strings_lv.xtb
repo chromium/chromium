@@ -117,6 +117,7 @@ Svarīga informācija
 <translation id="5389212809648216794">Google Chrome pašlaik nevar izmantot kameru, jo to izmanto cita lietojumprogramma.</translation>
 <translation id="5395376160638294582">Parūpējieties, lai vienmēr varētu izmantot Google kontā saglabātos Chrome datus</translation>
 <translation id="5439191312780166229">Tiek rādīts brīdinājums par bīstamām vietnēm (pat ja Google par tām iepriekš nezināja), analizējot vairāk datu no vietnēm, nekā analizē standarta aizsardzība. Varat izlaist Chrome brīdinājumus.</translation>
+<translation id="5442013002200339429">Ja paslēpsiet moduli “<ph name="MODULE_NAME" />”, Chrome turpmāk vairs automātiski neizsekos sūtījumus un visi iepriekšējie sūtījumu izsekošanas dati tiks dzēsti.</translation>
 <translation id="5460571915754665838">4. Atlasiet Chrome</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome palīdzēs izsekot šo sūtījumu jaunas cilnes lapā.}zero{Chrome palīdzēs izsekot šos sūtījumus jaunas cilnes lapā.}one{Chrome palīdzēs izsekot šos sūtījumus jaunas cilnes lapā.}other{Chrome palīdzēs izsekot šos sūtījumus jaunas cilnes lapā.}}</translation>
 <translation id="5492504007368565877">Google paroļu pārvaldnieks nevar pārbaudīt jūsu paroles.</translation>
@@ -188,6 +189,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="7933491483529363150">Atvērt manu jaunāko cilni pārlūkā Chrome.</translation>
 <translation id="8022947259858476807">Lai atvērtu saites, veiktu meklēšanu logrīkos un automātiski aizpildītu paroles citās lietotnēs, izmantojiet pārlūku Chrome kā noklusējuma pārlūku</translation>
 <translation id="804638182476029347">Atļaujiet Chrome paziņojumus, lai saņemtu brīdinājumus par cenu kritumu</translation>
+<translation id="8069507567842347179">Šis sūtījums jau tiek izsekots pārlūkā Chrome.</translation>
 <translation id="81358522153858150">Pārlūkā Chrome tagad tiek atbalstīta lietotāju politiku izmantošana jūsu pārvaldītajos kontos</translation>
 <translation id="8160472928944011082">Nevar atjaunināt pārlūku Chrome.</translation>
 <translation id="8174679664544842874">Pārlūkā Chrome atver jaunu cilni.</translation>

@@ -217,6 +217,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="218608176142494674">Deljenje z drugimi</translation>
 <translation id="2194856509914051091">Kaj morate upoštevati</translation>
 <translation id="2200113223741723867">Upravljanje deljenja podatkov o uporabi</translation>
+<translation id="22091350895006575">Dodajanje uporabniškega imena</translation>
 <translation id="221494669172414749">Če odprete Chrome brez zaklepanja profila, bodo shranjena gesla in plačilna sredstva odstranjena iz avtomobila. Z zaklepanjem profila poskrbite za varnost teh podatkov.</translation>
 <translation id="2218567645332692482">Nadgraditev krmarjenj do HTTPS-ja in opozorilo pred nalaganjem spletnih mest, ki ga ne podpirajo.</translation>
 <translation id="2227444325776770048">Nadaljujte kot <ph name="USER_FULL_NAME" /></translation>
@@ -244,6 +245,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="235789365079050412">Googlov pravilnik o zasebnosti</translation>
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="2362083820973145409">Prijavljen kot <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Odpre nastavitve.</translation>
+<translation id="2364539095045928896">Gumb za zapiranje obvestila o zasebnosti središča za vpoglede na straneh.</translation>
 <translation id="2386938421315164605">Skrivanje in razkrivanje tem.</translation>
 <translation id="2390510615457643724">Ali želite znova prenesti datoteko <ph name="FILE_NAME" /><ph name="FILE_SIZE" />?</translation>
 <translation id="2394602618534698961">Datoteke, ki jih prenesete, so prikazane tu</translation>
@@ -312,6 +314,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2718846868787000099">Če želite prikazati vsebino v prednostnih jezikih, lahko spletna mesta, ki jih obiščete, vidijo vaše nastavitve.</translation>
 <translation id="2722945394406572875">Poziv za Zasebni peskovnik je zaprt</translation>
 <translation id="2723001399770238859">zvok</translation>
+<translation id="2760805590727089264">MM/LL</translation>
 <translation id="2760989362628427051">Vklop temne teme, ko je v napravi vklopljena temna tema ali je vklopljeno varčevanje z energijo akumulatorja</translation>
 <translation id="2762000892062317888">pravkar</translation>
 <translation id="276969039800130567">Prijavljen kot <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -840,6 +843,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5458366071038729214">Tukaj boste našli spletna mesta, ki jih spremljate.</translation>
 <translation id="5468068603361015296">Ali želite vseeno prenesti <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Odpiranje v aplikaciji z zemljevidi</translation>
+<translation id="5486841595534124508">Logotip obvestila o zasebnosti za središče za vpoglede na straneh, ki preusmerja na mojo stran z dejavnostjo.</translation>
 <translation id="5487521232677179737">Izbriši podatke</translation>
 <translation id="5492637351392383067">Šifriranje v napravi</translation>
 <translation id="5514904542973294328">Onemogoči skrbnik te naprave</translation>
@@ -956,6 +960,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="6112702117600201073">Osveževanje strani</translation>
 <translation id="6122831415929794347">Želite izklopiti varno brskanje?</translation>
 <translation id="6127379762771434464">Element odstranjen</translation>
+<translation id="6130303040046284160">Minimiziranje zavihka</translation>
 <translation id="6137022273846704445">Jezik aplikacije <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">Tukaj spremenite nastavitve svojega spletnega mesta</translation>
 <translation id="6140709049082532940">Izboljšana zaščita:</translation>
@@ -1258,6 +1263,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7588219262685291874">Vklop temne teme, ko je v napravi vklopljeno varčevanje z energijo</translation>
 <translation id="7594687499944811403">Naj <ph name="EMBEDDED_ORIGIN" /> preveri, da ste to vi, za <ph name="TOP_ORIGIN" />.</translation>
 <translation id="7596558890252710462">Operacijski sistem</translation>
+<translation id="7603168929588204083">Neveljaven datum</translation>
 <translation id="7605594153474022051">Sync isn't working</translation>
 <translation id="7612619742409846846">V Google ste prijavljeni kot</translation>
 <translation id="7612989789287281429">Prijavljamo vas …</translation>
@@ -1307,6 +1313,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7810647596859435254">Odpiranje z aplikacijo …</translation>
 <translation id="7815484226266492798">Dolg posnetek zaslona</translation>
 <translation id="7822705602465980873">Ko ste prijavljeni, so ti podatki povezani z vašim računom Google, da vas zaščitijo v Googlovih storitvah, na primer za povečanje zaščite v Gmailu po varnostnem dogodku.</translation>
+<translation id="782705168687182233">Dejavnost se shranjuje v <ph name="BEGIN_LINK" />računu Google<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Računalnik želi registrirati to napravo za prijavljanje na tem spletnem mestu.</translation>
 <translation id="7844171778363018843">Ni izbranih podatkov za sinhronizacijo</translation>
 <translation id="7846296061357476882">Googlove storitve</translation>
@@ -1399,6 +1406,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8223642481677794647">Meni kartice vira</translation>
 <translation id="8236097722223016103">Dodajanje med zaznamke</translation>
 <translation id="8237871086242677046">Razdelek na dnu zaslona s podrobnimi podatki o strani</translation>
+<translation id="8243077599929149377">Dodajte uporabniško ime</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="8255617931166444521">Spletna mesta smejo uporabljati piškotke samo za ogled dejavnosti brskanja samo na danem spletnem mestu.</translation>
 <translation id="8259179246279078674">Ker so vnaprej naložene strani šifrirane, Google ne bo izvedel ničesar o vsebini vnaprej naložene strani. Googlovi strežniki bodo izvedeli, katera spletna mesta so zasebno vnaprej naložena. Ti podatki so uporabljeni samo za vnaprejšnje nalaganje strani in niso povezani z nobenimi podatki v vašem računu Google.</translation>

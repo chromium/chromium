@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Chromium 탭 그리드를 엽니다.</translation>
 <translation id="1617663976202781617">Chromium 동기화 데이터</translation>
 <translation id="1647558790457890304">Chromium 설정</translation>
+<translation id="164952285225495380">이 택배는 이미 Chromium에서 추적되었습니다.</translation>
 <translation id="1722370509450468186">비밀번호가 계정(<ph name="EMAIL" />)에 저장됩니다.</translation>
 <translation id="1736662517232558588">Chromium 데이터 삭제 완료</translation>
 <translation id="1791845338122684020">Chromium 방문 기록 페이지를 엽니다.</translation>
@@ -140,6 +141,7 @@
 1. 설정을 엽니다.
 2. 기본 브라우저 앱을 탭합니다.
 3. Chromium을 선택합니다.</translation>
+<translation id="6197255575340902638">"<ph name="MODULE_NAME" />" 모듈을 숨기면 Chromium에서 더 이상 향후 택배를 자동으로 추적하지 않으며 이전의 모든 배송 추적 데이터가 삭제됩니다.</translation>
 <translation id="6247557882553405851">Google 비밀번호 관리자</translation>
 <translation id="6268381023930128611">Chromium에서 로그아웃</translation>
 <translation id="6324041800010509197">Chromium에서 탭 그리드로 이동</translation>

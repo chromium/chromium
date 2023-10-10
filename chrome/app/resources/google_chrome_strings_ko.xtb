@@ -124,6 +124,7 @@
 <translation id="2928420929544864228">설치가 완료되었습니다.</translation>
 <translation id="2929907241665500097">문제가 발생하여 Chromium을 업데이트할 수 없습니다. <ph name="BEGIN_LINK" />Chrome 업데이트 문제 및 업데이트 실패 문제 해결하기<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 네트워크 로그인 - Chrome</translation>
+<translation id="3018957014024118866">Chrome(<ph name="URL" />)에서도 데이터 삭제</translation>
 <translation id="3019382870990049182">다시 실행하여 ChromeOS Flex 업데이트(&amp;C)</translation>
 <translation id="303514781271618814">Chrome은 사용자의 데이터를 더 적게 사용하면서도 사이트에서 동일한 탐색 환경을 제공할 수 있는 새로운 기능을 알아보고 있습니다.</translation>
 <translation id="3037838751736561277">Chrome이 백그라운드 모드로 실행 중입니다.</translation>

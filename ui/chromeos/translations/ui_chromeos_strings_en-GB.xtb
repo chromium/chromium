@@ -329,6 +329,7 @@
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619593063686672873">No recent videos</translation>
 <translation id="3634507049637220048">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, managed by your administrator, details</translation>
+<translation id="36451918667380448">Mobile network provider is locked. Contact your provider for support.</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> items moved.</translation>
 <translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> files selected</translation>
 <translation id="3685122418104378273">Google Drive sync is disabled by default, when using mobile data.</translation>

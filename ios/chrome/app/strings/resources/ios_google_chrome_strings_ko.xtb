@@ -117,6 +117,7 @@
 <translation id="5389212809648216794">다른 애플리케이션에서 카메라를 사용하고 있으므로 Chrome에서 카메라를 사용할 수 없습니다.</translation>
 <translation id="5395376160638294582">Google 계정의 Chrome 데이터를 언제든지 사용할 수 있도록 설정하세요.</translation>
 <translation id="5439191312780166229">표준 보호 모드보다 더 많은 사이트에서 데이터를 분석하여 위험한 사이트에 관해 경고합니다. Google이 이전에 몰랐던 사이트도 여기에 포함됩니다. Chrome 경고를 건너뛸 수 있습니다.</translation>
+<translation id="5442013002200339429">"<ph name="MODULE_NAME" />" 모듈을 숨기면 Chrome에서 더 이상 자동으로 배송을 추적하지 않으며 이전의 모든 배송 추적 데이터를 삭제합니다.</translation>
 <translation id="5460571915754665838">4. Chrome을 선택합니다.</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome의 새 탭 페이지를 통해 이 택배를 추적할 수 있습니다}other{Chrome의 새 탭 페이지를 통해 이 택배를 추적할 수 있습니다}}</translation>
 <translation id="5492504007368565877">Google 비밀번호 관리자에서 내 비밀번호를 확인할 수 없습니다.</translation>
@@ -188,6 +189,7 @@
 <translation id="7933491483529363150">Chrome에서 내 최신 탭을 엽니다.</translation>
 <translation id="8022947259858476807">링크를 열고, 위젯에서 검색하고, 다른 앱에서 비밀번호를 자동 완성할 기본 브라우저로 Chrome을 사용합니다.</translation>
 <translation id="804638182476029347">Chrome에서 가격 인하 알림을 받도록 허용</translation>
+<translation id="8069507567842347179">이 택배는 이미 Chrome에서 추적되었습니다.</translation>
 <translation id="81358522153858150">이제 Chrome에서 관리 계정에 대한 사용자 정책을 지원합니다</translation>
 <translation id="8160472928944011082">Chrome을 업데이트할 수 없습니다.</translation>
 <translation id="8174679664544842874">Chrome에서 새 탭을 엽니다.</translation>

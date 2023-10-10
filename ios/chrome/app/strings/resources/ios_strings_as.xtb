@@ -169,6 +169,7 @@
 <translation id="1847795903283049083">এই বস্তুবোৰ আপুনি আপোনাৰ বুকমাৰ্ক, পঢ়াৰ সূচী আৰু পাছৱৰ্ড পৰিচালকতো চাব আৰু পৰিচালনা কৰিব পাৰে।</translation>
 <translation id="1870148520156231997">পাছৱর্ড দেখুৱাওক</translation>
 <translation id="1872096359983322073">টৰ্চ</translation>
+<translation id="1876851015978093044">এই বস্তুটো দেখুৱায়</translation>
 <translation id="1882901927376062252">{count,plural, =1{আপোনাৰ Google একাউণ্টত ছেভ কৰি থোৱা বুকমাৰ্ক, {email}}one{{count} আপোনাৰ Google একাউণ্টত ছেভ কৰি থোৱা বুকমাৰ্কসমূহ, {email}}other{{count} আপোনাৰ Google একাউণ্টত ছেভ কৰি থোৱা বুকমাৰ্কসমূহ, {email}}}</translation>
 <translation id="1883255238294161206">সূচী সংকোচন কৰক</translation>
 <translation id="1890237935065108104">এই ছেটিংটো উপলব্ধ নহয়।</translation>
@@ -282,6 +283,7 @@
 <translation id="2482878487686419369">জাননী</translation>
 <translation id="2484459871750294497">মই এই সুবিধাটো কেনেকৈ সক্ষম কৰিম?</translation>
 <translation id="2496626742194544812">প্ৰথম টেবলৈ যাওক</translation>
+<translation id="2499505845365628575">আপুনি <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />ৰ পৰা আপোনাৰ আটাইবোৰ ব্ৰাউজিঙৰ ইতিহাস বিচাৰি পাব পাৰে।</translation>
 <translation id="2500374554657206846">পাছৱৰ্ড ছেভ কৰাৰ বিকল্পসমূহ</translation>
 <translation id="2511117522375201202">আপোনাৰ <ph name="NUMBER_OF_PASSWORDS" /> টা হেক কৰা পাছৱৰ্ড আছে যিয়ে আপোনাৰ সুৰক্ষা বিপদাপন্ন কৰিব পাৰে।</translation>
 <translation id="2523363575747517183">এই ৱেবছাইটটোৱে বাৰে বাৰে অন্য এটা এপ্লিকেশ্বন খুলিবলৈ চেষ্টা কৰি আছে।</translation>
@@ -1112,6 +1114,7 @@
 <translation id="6785453220513215166">ক্ৰেশ্ব প্ৰতিবেদন পঠিয়াই থকা হৈছে…</translation>
 <translation id="6790502149545262384">শীঘ্ৰেই, আপুনি এটা নতুন টেব খুলিলে <ph name="CHANNEL_NAME" />ৰ পৰা কাহিনী দেখা পাব।</translation>
 <translation id="6797885426782475225">কণ্ঠধ্বনিৰদ্বাৰা সন্ধান</translation>
+<translation id="6800349425672670802">আপুনি টেব সলনি কৰোঁতাৰ পৰা আপোনাৰ আটাইবোৰ খোলা টেব এক্সেছ কৰিব পাৰে।</translation>
 <translation id="6807889908376551050">সকলো দেখুৱাওক...</translation>
 <translation id="681368974849482173">বস্তু সৃষ্টি কৰা হ’ল</translation>
 <translation id="6822587385560699678">অন থাকিলে, পাছৱৰ্ডসমূহ <ph name="ACCOUNT" />ত ছেভ কৰা হয়। অফ থাকিলে, পাছৱৰ্ডসমূহ কেৱল এই ডিভাইচটোত ছেভ কৰা হয়।</translation>
@@ -1206,6 +1209,7 @@
 <translation id="7367530036083223701">Password Manager ৱিজেটৰ জৰিয়তে গৃহ স্ক্ৰীনৰ পৰা আপোনাৰ পাছৱৰ্ডসমূহ সুৰক্ষিতভাৱে এক্সেছ কৰক</translation>
 <translation id="7380220816562673297">এতিয়াৰ বাবে, আপুনি পাছৱৰ্ডসমূহ কেৱল পৰিয়ালৰ সদস্যৰ সৈতেহে শ্বেয়াৰ কৰিব পাৰে। ৬ গৰাকী পর্যন্ত সদস্যক অন্তর্ভুক্ত কৰি <ph name="BEGIN_LINK" />এটা পৰিয়ালৰ গোট সৃষ্টি কৰক<ph name="END_LINK" /> আৰু সমগ্ৰ Googleত আপোনাৰ প্ৰ’ডাক্ট আৰু ছাবস্ক্ৰিপশ্বনৰ পৰা অধিক সুবিধা লাভ কৰক।</translation>
 <translation id="7383797227493018512">পঢ়াৰ সূচী</translation>
+<translation id="7396331865858820922">পাছৱৰ্ড শ্বেয়াৰ কৰা হোৱা নাই</translation>
 <translation id="7398893703713203428">লিংক সৃষ্টি কৰক</translation>
 <translation id="7399802613464275309">সুৰক্ষা পৰীক্ষা</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1226,6 +1230,7 @@
 <translation id="7488874549363591659">ডেলিভাৰ কৰা হ’ল</translation>
 <translation id="7491131399623468277">ছেটিঙলৈ যাওক…</translation>
 <translation id="7492574581995589075">আপোনাৰ প্ৰতিষ্ঠানে আপোনাৰ Google একাউণ্টত Chrome ডেটা ব্যৱহাৰ আৰু ছেভ কৰাৰ ক্ষমতা বন্ধ কৰিছে। নতুন বুকমাৰ্ক, পাছৱৰ্ড আৰু অধিক কেৱল এই ডিভাইচত ছেভ কৰা হ'ব।</translation>
+<translation id="749854780843431406">আপুনি <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" /> বুটামটোৰ পৰা এটা নতুন টেব খুলিব পাৰে।</translation>
 <translation id="750149195207506638">বুকমাৰ্ক লুকুৱাই থোৱা আছে</translation>
 <translation id="750228856503700085">আপডে’ট উপলব্ধ নহয়</translation>
 <translation id="750493650310597496">এটাও বাছনি কৰা হোৱা নাই</translation>
@@ -1286,6 +1291,7 @@
 <translation id="778855399387580014">Chromeৰ নতুন টেবত সন্ধান আৰম্ভ কৰক।</translation>
 <translation id="7791543448312431591">যোগ কৰক</translation>
 <translation id="7807060072011926525">Googleএ প্ৰদান কৰিছে</translation>
+<translation id="7812377703891978671">আপুনি <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> বাছনি কৰি আপোনাৰ আটাইবোৰ ব্ৰাউজিঙৰ ইতিহাস এক্সেছ কৰিব পাৰে।</translation>
 <translation id="78146569776629510">ডাউনল’ডসমূহ</translation>
 <translation id="7839985698273989086">অফলাইন পৃষ্ঠা</translation>
 <translation id="7840771868269352570">আপুনি বাছনি কৰা বস্তুটো আঁতৰোৱা হ’ব।</translation>
@@ -1433,6 +1439,7 @@
 <translation id="8560253818350321773">প্ৰথমে সঘনাই ব্যৱহৃত বস্তুবোৰ দেখুৱাওক।</translation>
 <translation id="8588404856427128947">অফ আছে</translation>
 <translation id="8591976964826315682">ইনক’গনিট’ত তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰক</translation>
+<translation id="8593565399399144771">ইয়াত আপুনি এটা নতুন টেব খুলিব পাৰে।</translation>
 <translation id="8605219856220328675">টেব বন্ধ কৰক।</translation>
 <translation id="8613883225817609844">শেহতীয়া টেব লুকুৱাওক</translation>
 <translation id="8620640915598389714">সম্পাদনা কৰক</translation>

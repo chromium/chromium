@@ -119,6 +119,7 @@
 <translation id="1768959921651994223">Vrsta autentifikacije</translation>
 <translation id="1776228893584526149">Ton pozadinske slike</translation>
 <translation id="1782199038061388045">prijevod</translation>
+<translation id="1788485524395674731">Tom aplikacijom upravlja vaš administrator</translation>
 <translation id="1792647875738159689">Otkazivanje skeniranja</translation>
 <translation id="1801418420130173017">Onemogući tamnu temu</translation>
 <translation id="1807246157184219062">Svijetli</translation>
@@ -625,6 +626,7 @@
 <translation id="584953448295717128">APN je automatski otkriven.</translation>
 <translation id="5849570051105887917">Kôd domaćeg mobilnog operatera</translation>
 <translation id="5859603669299126575">Album umjetničke galerije</translation>
+<translation id="5859969039821714932">Prečac nije dostupan. Pritisnite novi prečac bez tipke <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Isklj.</translation>
 <translation id="5860491529813859533">Uključi</translation>
 <translation id="5876385649737594562">Uključite da odaberete opcije</translation>
@@ -869,7 +871,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
 <translation id="7718231387947923843">svjetlo tastature</translation>
-<translation id="7730077286107534951">Neki podaci o računu i sustavu možda će se poslati Googleu. Te podatke upotrebljavamo za rješavanje tehničkih problema i poboljšavanje usluga u skladu s našim <ph name="BEGIN_LINK2" />pravilima o privatnosti<ph name="END_LINK2" /> i <ph name="BEGIN_LINK3" />uvjetima pružanja usluge<ph name="END_LINK3" />. Da biste zatražili izmjene sadržaja, posjetite <ph name="BEGIN_LINK1" />pravnu pomoć<ph name="END_LINK1" />.</translation>
+<translation id="7730077286107534951">Neke informacije o računu i sistemu mogu se slati Googleu. Koristimo te informacije da riješimo tehničke probleme i poboljšamo usluge podložno svojim <ph name="BEGIN_LINK2" />Pravilima privatnosti<ph name="END_LINK2" /> i <ph name="BEGIN_LINK3" />Uslovima korištenja usluge<ph name="END_LINK3" />. Da zatražite promjene sadržaja, posjetite <ph name="BEGIN_LINK1" />Pravnu pomoć<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Broj ciklusa</translation>
 <translation id="7747039790905080783">Unaprijed dijeljeni ključ</translation>
 <translation id="7752963721013053477">Od svitanja do sumraka – ekskluzivna verzija</translation>

@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Maak die Chromium-oortjierooster oop.</translation>
 <translation id="1617663976202781617">Data van Chromium-sinkronisering af</translation>
 <translation id="1647558790457890304">Chromium-instellings</translation>
+<translation id="164952285225495380">Hierdie pakkie is reeds op Chromium nagespoor.</translation>
 <translation id="1722370509450468186">Jou wagwoord sal in jou rekening (<ph name="EMAIL" />) gestoor word.</translation>
 <translation id="1736662517232558588">Chromium-data is uitgevee</translation>
 <translation id="1791845338122684020">Maak jou Chromium-geskiedenisbladsy oop.</translation>
@@ -140,6 +141,7 @@ Dinge om in ag te neem:
 1. Maak Instellings oop
 2. Tik op Verstekblaaierprogram
 3. Kies Chromium.</translation>
+<translation id="6197255575340902638">As jy “<ph name="MODULE_NAME" />” versteek, sal Chromium nie meer jou toekomstige pakkies outomaties naspoor nie en sal dit al jou vorige pakkienasporingdata uitvee.</translation>
 <translation id="6247557882553405851">Google Wagwoordbestuurder</translation>
 <translation id="6268381023930128611">Meld by Chromium af?</translation>
 <translation id="6324041800010509197">Besoek die oortjierooster in Chromium</translation>

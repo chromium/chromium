@@ -1894,6 +1894,7 @@
 <translation id="4873616204573862158">Οπτικά</translation>
 <translation id="4876188919622883022">Απλοποιημένη προβολή</translation>
 <translation id="4876305945144899064">Δεν υπάρχει όνομα χρήστη</translation>
+<translation id="4876327226315760474">Αυτό σημαίνει ότι οι λειτουργίες ιστοτόπου θα πρέπει να λειτουργούν με τον αναμενόμενο τρόπο, αλλά ενδέχεται να έχετε λιγότερη προστασία κατά την περιήγηση.</translation>
 <translation id="4877047577339061095">Ράφια και οικιακοί χώροι αποθήκευσης</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Κανένας}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Αναζήτηση <ph name="TEXT" /></translation>
@@ -2522,6 +2523,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="61877208875190028">Γυναικεία ένδυση</translation>
 <translation id="6194209731893739467">Δείτε όλα τα προϊόντα παρακολούθησης εδώ</translation>
+<translation id="6195163219142236913">Τα cookie τρίτου μέρους περιορίζονται</translation>
 <translation id="6195371403461054755">Γεωλογία</translation>
 <translation id="6196640612572343990">Αποκλεισμός cookie τρίτων</translation>
 <translation id="6197648101609735209">89 x 89 χιλ.</translation>

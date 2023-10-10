@@ -853,7 +853,7 @@
 <translation id="2718207025093645426">管理対象のユーザーまたはデバイスにポリシーが読み込まれていません。</translation>
 <translation id="2721148159707890343">リクエストを正常に送信しました</translation>
 <translation id="2722622039067384533">リビングルーム用家具</translation>
-<translation id="2723669454293168317">Chrome の設定で安全確認を実行します</translation>
+<translation id="2723669454293168317">Chrome の設定で安全チェックを実行します</translation>
 <translation id="2725492561136085792">Enter キーを押すと、この操作を有効にできます。</translation>
 <translation id="2726001110728089263">サイドトレイ</translation>
 <translation id="2728127805433021124">サーバーの証明書は脆弱な署名アルゴリズムを使用して署名されています。</translation>
@@ -1147,7 +1147,7 @@
 <translation id="3369459162151165748">自動車部品、アクセサリ</translation>
 <translation id="3371064404604898522">Chrome を既定のブラウザに設定する</translation>
 <translation id="337363190475750230">プロビジョニングが解除されました</translation>
-<translation id="3375754925484257129">Chrome の安全確認を実行</translation>
+<translation id="3375754925484257129">Chrome の安全チェックを実行</translation>
 <translation id="3377144306166885718">このサーバーは TLS の廃止されたバージョンを使用しています。</translation>
 <translation id="3377188786107721145">ポリシー解析エラーです</translation>
 <translation id="3377736046129930310">画面ロックを使用してカードをすばやく確認する</translation>
@@ -1267,7 +1267,7 @@
 <translation id="3611317423880285981">日用品</translation>
 <translation id="3614103345592970299">サイズ 2</translation>
 <translation id="361438452008624280">リスト項目「<ph name="LANGUAGE_ID" />」: 不明またはサポートされていない言語です。</translation>
-<translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome の設定で安全確認を実行できます</translation>
+<translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome の設定で安全チェックを実行できます</translation>
 <translation id="3615309852743236517">マニキュア、ペディキュア</translation>
 <translation id="3620239073311576716">ユニフォーム、制服</translation>
 <translation id="36224234498066874">閲覧履歴データを削除...</translation>
@@ -1837,7 +1837,7 @@
 <translation id="4758311279753947758">連絡先情報を追加</translation>
 <translation id="4761104368405085019">マイクを使用する</translation>
 <translation id="4761326898079498987">詳細をご確認ください</translation>
-<translation id="4761869838909035636">Chrome の安全確認を実行</translation>
+<translation id="4761869838909035636">Chrome の安全チェックを実行</translation>
 <translation id="4764680219299728632">コンロ、オーブン</translation>
 <translation id="4764776831041365478"><ph name="URL" /> のウェブページは一時的に停止しているか、新しいウェブアドレスに移動した可能性があります。</translation>
 <translation id="4766713847338118463">2 か所のステープル（下）</translation>
@@ -3103,7 +3103,7 @@
 <translation id="7390545607259442187">カードの確認</translation>
 <translation id="7392089738299859607">住所を更新</translation>
 <translation id="739728382607845710">支払いハンドラのアイコン</translation>
-<translation id="7399802613464275309">安全確認</translation>
+<translation id="7399802613464275309">安全チェック</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">リンクの共有、QR コードの作成、キャストなどを行ってこのタブを共有します</translation>
 <translation id="7403591733719184120">ご使用の <ph name="DEVICE_NAME" /> は管理されています</translation>
@@ -3435,7 +3435,7 @@
 <translation id="8025119109950072390">このサイトを利用すると、悪意のあるユーザーによって、ソフトウェアのインストールや個人情報（例: パスワード、電話番号、クレジット カード番号）の入力などの危険な操作を行うよう誘導される可能性があります。</translation>
 <translation id="8026334261755873520">閲覧履歴データの削除</translation>
 <translation id="8027077570865220386">トレイ 15</translation>
-<translation id="8027585818882015174">[Chrome の安全確認を実行] ボタンです。実行すると、Chrome の設定で安全確認を行うことができます</translation>
+<translation id="8027585818882015174">[Chrome の安全チェックを実行] ボタンです。実行すると、Chrome の設定で安全チェックを行うことができます</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google フォームで新しいフォームをすばやく作成します</translation>
 <translation id="8028960012888758725">トリミング（ジョブ後）</translation>
 <translation id="8032546467100845887">透明</translation>

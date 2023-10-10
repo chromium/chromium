@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Chromium පටිති ජාලකය විවෘත කරයි.</translation>
 <translation id="1617663976202781617">Chromium සමමුහූර්තය වෙතින් දත්ත</translation>
 <translation id="1647558790457890304">Chromium සැකසීම්</translation>
+<translation id="164952285225495380">මෙම පැකේජය දැනටමත් Chromium හි නිරීක්ෂණය කර ඇත.</translation>
 <translation id="1722370509450468186">ඔබගේ මුරපදය ඔබගේ ගිණුම තුළ සුරැකිනු ඇත (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Chromium දත්ත හිස් කරන ලදී</translation>
 <translation id="1791845338122684020">ඔබේ Chromium ඉතිහාස පිටුව විවෘත කරයි.</translation>
@@ -140,6 +141,7 @@
 1. සැකසීම් විවෘත කරන්න
 2. පෙරනිමි බ්‍රව්සර යෙදුම තට්ටු කරන්න
 3. Chromium තෝරන්න.</translation>
+<translation id="6197255575340902638">ඔබ "<ph name="MODULE_NAME" />" සඟවන්නේ නම්, Chromium තවදුරටත් ඔබේ අනාගත පැකේජ ස්වයංක්‍රීයව නිරීක්ෂණය නොකරනු ඇති අතර ඔබේ අතීත පැකේජ ලුහුබැඳීමේ දත්ත සියල්ල මකනු ඇත.</translation>
 <translation id="6247557882553405851">Google මුරපද කළමනාකරු</translation>
 <translation id="6268381023930128611">Chromium වෙතින් වරන්නද?</translation>
 <translation id="6324041800010509197">Chromium හි පටිති ජාලකය වෙත පිවිසෙන්න</translation>

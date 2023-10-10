@@ -169,6 +169,7 @@
 <translation id="1847795903283049083">ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಓದುವ ಪಟ್ಟಿ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ ನೀವು ಈ ಐಟಂಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು ಮತ್ತು ನಿರ್ವಹಿಸಬಹುದು.</translation>
 <translation id="1870148520156231997">ಪಾಸ್‌ವರ್ಡ್‌ ತೋರಿಸಿ</translation>
 <translation id="1872096359983322073">ಟಾರ್ಚ್</translation>
+<translation id="1876851015978093044">ಈ ಐಟಂ ಅನ್ನು ತೋರಿಸುತ್ತದೆ</translation>
 <translation id="1882901927376062252">{count,plural, =1{ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ, {email}}one{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ, {email}}other{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ, {email}}}</translation>
 <translation id="1883255238294161206">ಪಟ್ಟಿಯನ್ನು ಸಂಕುಚಿಸಿ</translation>
 <translation id="1890237935065108104">ಈ ಸೆಟ್ಟಿಂಗ್ ಲಭ್ಯವಿಲ್ಲ.</translation>
@@ -282,6 +283,7 @@
 <translation id="2482878487686419369">ಸೂಚನೆಗಳು</translation>
 <translation id="2484459871750294497">ಈ ಫೀಚರ್ ಅನ್ನು ನಾನು ಹೇಗೆ ಸಕ್ರಿಯಗೊಳಿಸಬಹುದು?</translation>
 <translation id="2496626742194544812">ಮೊದಲ ಟ್ಯಾನ್‌ಗೆ ಹೋಗಿ</translation>
+<translation id="2499505845365628575"><ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> ದಿಂದ ನಿಮ್ಮ ಎಲ್ಲಾ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ನೀವು ಕಾಣಬಹುದು.</translation>
 <translation id="2500374554657206846">ಪಾಸ್‌ವರ್ಡ್ ಉಳಿಸಲು ಆಯ್ಕೆಗಳು</translation>
 <translation id="2511117522375201202">ನಿಮ್ಮ ಭದ್ರತೆಯನ್ನು ಅಪಾಯಕ್ಕೀಡು ಮಾಡಬಹುದಾದ <ph name="NUMBER_OF_PASSWORDS" /> ಅಪಾಯಕ್ಕೀಡಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನೀವು ಹೊಂದಿದ್ದೀರಿ.</translation>
 <translation id="2523363575747517183">ಈ ವೆಬ್‌ಸೈಟ್‌ ಪದೇ ಪದೇ ಇನ್ನೊಂದು ಅಪ್ಲಿಕೇಶನ್ ತೆರೆಯಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ.</translation>
@@ -1112,6 +1114,7 @@
 <translation id="6785453220513215166">ಕ್ರ್ಯಾಶ್ ವರದಿಯನ್ನು ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ ...</translation>
 <translation id="6790502149545262384">ಶೀಘ್ರವೇ, ನೀವು ಹೊಸ ಟ್ಯಾಬ್ ಅನ್ನು ತೆರೆದಾಗ, ನಿಮಗೆ <ph name="CHANNEL_NAME" /> ನಲ್ಲಿ ಸ್ಟೋರಿಗಳನ್ನು ಕಾಣುತ್ತವೆ.</translation>
 <translation id="6797885426782475225">ಧ್ವನಿ ಹುಡುಕಾಟ</translation>
+<translation id="6800349425672670802">ಟ್ಯಾಬ್ ಸ್ವಿಚರ್‌ನಿಂದ ನಿಮ್ಮ ಎಲ್ಲಾ ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೀವು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು.</translation>
 <translation id="6807889908376551050">ಎಲ್ಲಾ ತೋರಿಸಿ...</translation>
 <translation id="681368974849482173">ಐಟಂ ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="6822587385560699678">ಆನ್ ಆಗಿರುವಾಗ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು <ph name="ACCOUNT" /> ನಲ್ಲಿ ಉಳಿಸಲಾಗುತ್ತದೆ. ಆಫ್ ಆಗಿರುವಾಗ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಉಳಿಸಲಾಗುತ್ತದೆ.</translation>
@@ -1206,6 +1209,7 @@
 <translation id="7367530036083223701">Password Manager ವಿಜೆಟ್ ಮೂಲಕ ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ನಿಂದ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಿ.</translation>
 <translation id="7380220816562673297">ಸದ್ಯಕ್ಕೆ, ನೀವು ಕುಟುಂಬದ ಸದಸ್ಯರೊಂದಿಗೆ ಮಾತ್ರ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಬಹುದು. ಗರಿಷ್ಠ 6 ಸದಸ್ಯರ <ph name="BEGIN_LINK" />ಕುಟುಂಬ ಗುಂಪನ್ನು ರಚಿಸಿ<ph name="END_LINK" /> ಮತ್ತು Google ನಲ್ಲಿ ನಿಮ್ಮ ಉತ್ಪನ್ನಗಳು ಮತ್ತು ಸಬ್‌ಸ್ಕ್ರಿಪ್ಶನ್‌ಗಳಿಂದ ಇನ್ನಷ್ಟು ಪ್ರಯೋಜನ ಪಡೆಯಿರಿ.</translation>
 <translation id="7383797227493018512">ಓದುವ ಪಟ್ಟಿ</translation>
+<translation id="7396331865858820922">ಪಾಸ್‌ವರ್ಡ್ ಹಂಚಿಕೊಳ್ಳಲಾಗಿಲ್ಲ</translation>
 <translation id="7398893703713203428">ಲಿಂಕ್ ರಚಿಸಿ</translation>
 <translation id="7399802613464275309">ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1226,6 +1230,7 @@
 <translation id="7488874549363591659">ಡೆಲಿವರಿ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7491131399623468277">ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ…</translation>
 <translation id="7492574581995589075">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ Chrome ಡೇಟಾವನ್ನು ಬಳಸುವ ಮತ್ತು ಸೇವ್ ಮಾಡುವ ಸಾಮರ್ಥ್ಯವನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ಆಫ್ ಮಾಡಿದೆ. ಹೊಸ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
+<translation id="749854780843431406">ನೀವು <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" /> ಬಟನ್‌ ಮೂಲಕ ಹೊಸ ಟ್ಯಾಬ್ ಅನ್ನು ತೆರೆಯಬಹುದು.</translation>
 <translation id="750149195207506638">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="750228856503700085">ಅಪ್‌ಡೇಟ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="750493650310597496">0 ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
@@ -1286,6 +1291,7 @@
 <translation id="778855399387580014">ಹೊಸ Chrome ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಹುಡುಕಾಟವನ್ನು ಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="7791543448312431591">ಸೇರಿಸು</translation>
 <translation id="7807060072011926525">Google ಮೂಲಕ ಒದಗಿಸಲಾಗಿದೆ</translation>
+<translation id="7812377703891978671"><ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> ಅನ್ನು ಆಯ್ಕೆ ಮಾಡುವ ಮೂಲಕ ನಿಮ್ಮ ಎಲ್ಲಾ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ನೀವು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು.</translation>
 <translation id="78146569776629510">ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
 <translation id="7839985698273989086">ಆಫ್‌ಲೈನ್ ಪುಟ</translation>
 <translation id="7840771868269352570">ನೀವು ಆಯ್ಕೆ ಮಾಡಿದ ಐಟಂಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
@@ -1433,6 +1439,7 @@
 <translation id="8560253818350321773">ಪದೇ ಪದೇ ಬಳಸುವ ಐಟಂಗಳನ್ನು ಮೊದಲು ತೋರಿಸಿ.</translation>
 <translation id="8588404856427128947">ಆಫ್</translation>
 <translation id="8591976964826315682">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
+<translation id="8593565399399144771">ನೀವು ಇಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್ ಅನ್ನು ತೆರೆಯಬಹುದು.</translation>
 <translation id="8605219856220328675">ಟ್ಯಾಬ್ ಮುಚ್ಚಿ.</translation>
 <translation id="8613883225817609844">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="8620640915598389714">ಎಡಿಟ್</translation>

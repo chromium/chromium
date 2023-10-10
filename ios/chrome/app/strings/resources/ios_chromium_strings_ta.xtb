@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Chromium உலாவிப் பக்கக் கட்டக் காட்சியைத் திறக்கும்.</translation>
 <translation id="1617663976202781617">Chromium ஒத்திசைவிலிருந்து தரவு</translation>
 <translation id="1647558790457890304">Chromium அமைப்புகள்</translation>
+<translation id="164952285225495380">இந்தப் பேக்கேஜ் ஏற்கெனவே Chromiumமில் கண்காணிக்கப்படுகிறது.</translation>
 <translation id="1722370509450468186">கடவுச்சொல் உங்கள் கணக்கில் (<ph name="EMAIL" />) சேமிக்கப்படும்.</translation>
 <translation id="1736662517232558588">Chromium தரவு அழிக்கப்பட்டது</translation>
 <translation id="1791845338122684020">உங்கள் Chromium செயல்பாடுகள் பக்கத்தைத் திறக்கும்.</translation>
@@ -140,6 +141,7 @@
 1. அமைப்புகளைத் திறக்கவும்
 2. இயல்பு உலாவி ஆப்ஸ் என்பதைத் தட்டவும்
 3. Chromiumமைத் தேர்ந்தெடுக்கவும்.</translation>
+<translation id="6197255575340902638">"<ph name="MODULE_NAME" />" ஐ நீங்கள் மறைத்தால் எதிர்காலத்தில் உங்கள் பேக்கேஜ்களை Chromium தானாகக் கண்காணிக்காது என்பதுடன் உங்களின் முந்தைய பேக்கேஜ் கண்காணிப்புத் தரவு அனைத்தையும் நீக்கிவிடும்.</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6268381023930128611">Chromium இலிருந்து வெளியேறவா?</translation>
 <translation id="6324041800010509197">Chromiumமில் உலாவிப் பக்கக் கட்டக் காட்சிக்கு செல்</translation>

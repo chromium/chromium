@@ -328,6 +328,7 @@
 <translation id="1615402009686901181">ადმინისტრატორის წესების მიხედვით, ეკრანის აღბეჭდვა გათიშულია, როცა ხილულია კონფიდენციალური კონტენტი</translation>
 <translation id="1617276713587758852">კროსოვერები</translation>
 <translation id="1618571384971354160">ბუქსირით გადაყვანა და საგზაო დახმარება</translation>
+<translation id="1619007254056372606">საიტის მოწყობილობაზე არსებული მონაცემების მართვა</translation>
 <translation id="1620510694547887537">კამერა</translation>
 <translation id="1622571349153632031">ვეგეტარიანული სამზარეულო</translation>
 <translation id="162285686621567578">ეს ვებსაიტი დაბლოკილია თქვენი მშობლის მიერ.</translation>
@@ -1241,6 +1242,7 @@
 <translation id="3552297013052089404">Sans-serif შრიფტი</translation>
 <translation id="3558573058928565255">დღე</translation>
 <translation id="355995771319966853">ავტომატური შევსების მოქმედების გაუქმება</translation>
+<translation id="3560408312959371419">ვარიანტები თვალყურის დევნებისგან დაცვისა და საიტის მოწყობილობაზე არსებული მონაცემებისთვის</translation>
 <translation id="3560824484345057728">დაკავშირებული საიტების ნახვა</translation>
 <translation id="3566021033012934673">თქვენი კავშირი არ არის პირადი</translation>
 <translation id="3566336457819493938">215 x 315 მმ</translation>
@@ -3883,6 +3885,7 @@
 <translation id="893332455753468063">დაამატეთ სახელი</translation>
 <translation id="8942355029279167844">თქვენმა ადმინისტრატორმა <ph name="APP_NAME" />-ს ნება დართო, შეაგროვოს დიაგნოსტიკური მონაცემები, პროდუქტით სარგებლობის გასაუმჯობესებლად. დამატებითი ინფორმაციისთვის იხილეთ <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">ლაიმისფერი</translation>
+<translation id="8944485226638699751">შეზღუდული</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">სამართალი და მთავრობა</translation>
 <translation id="8954252855949068147">ტანსაცმელი</translation>

@@ -2029,6 +2029,7 @@ Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisate
 
       Lorsque cette règle est définie sur "False", ou si elle n'est pas configurée, les icônes sont visibles.</translation>
 <translation id="2744751866269053547">Inscrire des gestionnaires de protocoles</translation>
+<translation id="2744980433176488921">Les paramètres F11/F12 utilisent le raccourci qui contient la touche de modification Maj</translation>
 <translation id="2745150813292162313">Autoriser l'activation du partitionnement pour le stockage tiers</translation>
 <translation id="2746016768603629042">Cette règle est obsolète. Veuillez plutôt utiliser la règle "DefaultJavaScriptSetting".
 
@@ -3572,6 +3573,7 @@ Jusqu'à Chrome 114, cette règle exigeait que la règle <ph name="SYNC_DISABLE
 
       Si <ph name="PRODUCT_NAME" /> ne se ferme pas correctement, par exemple si le navigateur ou l'OS plante, les données de navigation seront supprimées lors du prochain chargement du profil.</translation>
 <translation id="4056910949759281379">Désactiver le protocole SPDY</translation>
+<translation id="4057442294431066708">Cette règle contrôle l'option de raccourci sélectionnée pour remapper les événements avec F11/F12 dans la sous-page des touches de remappage. Ces paramètres ne s'appliquent qu'aux claviers ChromeOS et sont désactivés par défaut lorsque la règle n'est pas configurée.</translation>
 <translation id="4061107397839125009">Permet de dresser la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à afficher des notifications.
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Sinon, le paramètre défini par l'utilisateur s'applique.
@@ -3680,6 +3682,7 @@ Les extensions installées d'office et auto-hébergées sont ignorées. Toutes l
 
 Si la règle est définie sur <ph name="ALLOW_UNPUBLISHED" /> (0) ou n'est pas configurée, les extensions dont la publication est annulée sur le Chrome Web Store sont autorisées.
 Si la règle est définie sur <ph name="DISABLE_UNPUBLISHED" /> (1), les extensions dont la publication est annulée sur le Chrome Web Store sont désactivées.</translation>
+<translation id="4164866067069311355">Contrôle le raccourci utilisé pour déclencher F11/F12</translation>
 <translation id="4165986682804962316">Paramètres des sites</translation>
 <translation id="4166174702671320480">Si cette règle est activée, les règles associées à un groupe atomique qui ne sont pas issues de la source ayant la plus haute priorité dans le groupe sont ignorées.
 
@@ -3733,6 +3736,25 @@ Remarque : Bloquer des URL internes chrome://* et chrome-untrusted://* peut ent
       Dans les sessions Kiosque, il n'y a pas de délai de grâce ni de notification concernant le redémarrage.
 </translation>
 <translation id="4187576366596772431">Bloquer l'API WebHID sur ces sites</translation>
+<translation id="4189100643304138928">Liste des paramètres des services des connecteurs Chrome Enterprise à appliquer au connecteur Enterprise <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" />, qui se déclenche lorsqu'un fichier est joint à Chrome.
+
+      Les champs "<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />" et "<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />" permettent de déterminer si le connecteur doit envoyer un fichier en vue d'une analyse lorsqu'il est joint à une page spécifique, ainsi que les tags à inclure dans la demande d'analyse de ce fichier. Un tag correspondant à un format "enable" sera inclus dans la demande d'analyse si l'URL de la page suit un format associé à ce tag, à condition qu'aucun format "disable" associé à ce même tag ne corresponde à l'URL de la page. L'analyse a lieu si au moins un tag doit être inclus dans la demande.
+
+      Le champ "<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" />" indique à quel fournisseur de services d'analyse correspondent les paramètres.
+
+      Si la valeur du champ "<ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />" est 1, Chrome attend de recevoir une réponse du service d'analyse avant d'autoriser la page à accéder au fichier. Pour toute autre valeur entière, Chrome autorise la page à accéder immédiatement au fichier.
+
+      Si la valeur du champ "<ph name="ENTERPRISE_CONNECTOR_DEFAULT_ACTION_FIELD" />" est "block", Chrome n'autorise pas la page à accéder au fichier si une erreur survient pendant la communication avec le service d'analyse. Pour toute autre valeur, Chrome autorise la page à accéder au fichier.
+
+      Le champ "<ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" />" permet de définir si Chrome doit bloquer ou autoriser les fichiers protégés par un mot de passe.
+
+      Le champ "<ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" />" permet de spécifier si Chrome doit bloquer ou autoriser les fichiers trop volumineux pour être analysés.
+
+      Le champ "<ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" />" permet d'indiquer les tags pour lesquels le connecteur doit demander à l'utilisateur d'expliquer pourquoi une analyse entraînant l'affichage d'un avertissement est ignorée. Si ce champ n'est pas renseigné, nous partons du principe qu'aucune justification n'est requise.
+
+      Les champs "<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />" et "<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" />" permettent de configurer le message à montrer à l'utilisateur lorsqu'un avertissement s'affiche après une analyse dont le résultat révèle un problème. Le message saisi dans le champ ne doit pas comporter plus de 200 caractères. Le champ "learn_more_url" contient une URL fournie par l'administrateur sur laquelle l'utilisateur peut cliquer pour obtenir des informations indiquées par le client et savoir pourquoi l'action a été bloquée. Le champ "language" est facultatif. Il indique la langue dans laquelle est saisi le message. Si ce champ est vide ou contient la valeur "par défaut", un message est proposé par défaut. Le champ "tag" spécifie pour quel type d'analyses le message est affiché. Le champ "custom_messages" peut être vide ou contenir plusieurs entrées (les champs "message" et "tag" devant être renseignés pour chacune d'elles).
+
+      Cette règle nécessite un réglage supplémentaire pour être appliquée. Pour en savoir plus, consultez la page https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="4189872355465413041">Applis système</translation>
 <translation id="4190316993598857632">Activer la modification des favoris</translation>
 <translation id="4192388905594723944">URL permettant de valider le jeton d'authentification du client d'accès à distance</translation>
@@ -4882,6 +4904,23 @@ Si cette règle n'est pas configurée, la valeur par défaut est de 0 degré, e
           Si cette règle n'est pas configurée, la mise en surbrillance du curseur est initialement désactivée, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="528302483493794684">Une configuration de VM. Indique le type de VM que l'utilisateur peut installer, qui sera associée de manière persistante à l'ID de cette configuration, ainsi que les commandes qui s'appliquent à ce type de VM.</translation>
 <translation id="5283457834853986457">Désactiver l'outil de recherche de plug-ins (obsolète)</translation>
+<translation id="5285812323239047712">Liste des paramètres des services des connecteurs <ph name="PRODUCT_NAME" /> Enterprise à appliquer au connecteur Enterprise <ph name="ON_PRINT_ENTERPRISE_CONNECTOR" />, qui se déclenche lorsqu'une page ou un fichier sont imprimés depuis <ph name="PRODUCT_NAME" />.
+
+      Les champs "<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />" et "<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />" permettent de déterminer si le connecteur doit envoyer des données en vue d'une analyse lorsque l'impression est déclenchée sur une page spécifique, ainsi que les tags à inclure dans la demande d'analyse. L'analyse a lieu si au moins un tag doit être inclus dans la demande.
+
+      Le champ "<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" />" indique à quel fournisseur de services d'analyse correspondent les paramètres.
+
+      Si la valeur du champ "<ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />" est 1, <ph name="PRODUCT_NAME" /> attend de recevoir une réponse du service d'analyse avant d'autoriser l'affichage de la boîte de dialogue d'aperçu de l'impression pour la page imprimée. Pour toute autre valeur entière, <ph name="PRODUCT_NAME" /> affiche immédiatement la boîte de dialogue d'aperçu de l'impression.
+
+      Si la valeur du champ "<ph name="ENTERPRISE_CONNECTOR_DEFAULT_ACTION_FIELD" />" est "block", <ph name="PRODUCT_NAME" /> bloque l'impression de la page si une erreur survient pendant la communication avec le service d'analyse. Pour toute autre valeur, <ph name="PRODUCT_NAME" /> autorise la page à s'imprimer.
+
+      Le champ "<ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" />" permet de spécifier si <ph name="PRODUCT_NAME" /> doit bloquer ou autoriser les pages ou fichiers trop volumineux pour être analysés.
+
+      Le champ "<ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" />" permet d'indiquer les tags pour lesquels le connecteur doit demander à l'utilisateur d'expliquer pourquoi une analyse entraînant l'affichage d'un avertissement est ignorée. Si ce champ n'est pas renseigné, nous partons du principe qu'aucune justification n'est requise.
+
+      Les champs "<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />" et "<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" />" permettent de configurer le message à montrer à l'utilisateur lorsqu'un avertissement s'affiche après une analyse dont le résultat révèle un problème. L'administrateur est capable de configurer des messages comportant jusqu'à 200 caractères.
+
+      Cette règle nécessite un réglage supplémentaire pour être appliquée. Pour en savoir plus, consultez la page https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="5286579716704722323">Autoriser les utilisateurs à passer les pages d'avertissement SSL</translation>
 <translation id="5288713554963040955">Activer l'affichage de l'écran de configuration de la taille d'affichage lors de la connexion</translation>
 <translation id="5288772341821359899">Si cette règle est définie, la portée du port UDP utilisé par WebRTC est restreinte à l'intervalle de port spécifié (points de terminaison inclus).
@@ -5488,6 +5527,25 @@ Si cette règle est désactivée, la protection des extensions de la <ph name="S
 <translation id="5806128552675651249">Autoriser l'impression uniquement sans images de fond</translation>
 <translation id="5809210507920527553">Contrôle les paramètres du conteneur Linux (Crostini).</translation>
 <translation id="5809728392451418079">Définir le nom à afficher pour les comptes locaux des appareils</translation>
+<translation id="5810916450338110943">Liste des paramètres des services des connecteurs Chrome Enterprise à appliquer au connecteur Enterprise <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" />, qui se déclenche lorsqu'un fichier est téléchargé dans Chrome.
+
+      Les champs "<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />" et "<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />" permettent de déterminer si le connecteur doit envoyer un fichier en vue d'une analyse lorsque celui-ci est téléchargé à partir d'une page spécifique, ainsi que les tags à inclure dans la demande d'analyse de ce fichier. Un tag correspondant à un format "enable" sera inclus dans la demande d'analyse si l'URL de la page suit un format associé à ce tag, à condition qu'aucun format "disable" associé à ce même tag ne corresponde à l'URL de la page. L'analyse a lieu si au moins un tag doit être inclus dans la demande.
+
+      Le champ "<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" />" indique à quel fournisseur de services d'analyse correspondent les paramètres.
+
+      Si la valeur du champ "<ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />" est 1, Chrome attend de recevoir une réponse du service d'analyse avant d'autoriser l'utilisateur à accéder au fichier téléchargé. Pour toute autre valeur entière, Chrome autorise l'utilisateur à accéder immédiatement au fichier.
+
+      Si la valeur du champ "<ph name="ENTERPRISE_CONNECTOR_DEFAULT_ACTION_FIELD" />" est "block", Chrome n'autorise pas l'utilisateur à accéder au fichier téléchargé si une erreur survient pendant la communication avec le service d'analyse. Pour toute autre valeur, Chrome autorise l'utilisateur à accéder au fichier téléchargé.
+
+      Le champ "<ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" />" permet de définir si Chrome doit bloquer ou autoriser les fichiers protégés par un mot de passe.
+
+      Le champ "<ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" />" permet de spécifier si Chrome doit bloquer ou autoriser les fichiers trop volumineux pour être analysés.
+
+      Le champ "<ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" />" permet d'indiquer les tags pour lesquels le connecteur doit demander à l'utilisateur d'expliquer pourquoi une analyse entraînant l'affichage d'un avertissement est ignorée. Si ce champ n'est pas renseigné, nous partons du principe qu'aucune justification n'est requise.
+
+      Les champs "<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />" et "<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" />" permettent de configurer le message à montrer à l'utilisateur lorsqu'un avertissement s'affiche après une analyse dont le résultat révèle un problème. Le message saisi dans le champ ne doit pas comporter plus de 200 caractères. Le champ "learn_more_url" contient une URL fournie par l'administrateur sur laquelle l'utilisateur peut cliquer pour obtenir des informations indiquées par le client et savoir pourquoi l'action a été bloquée. Le champ "language" est facultatif. Il indique la langue dans laquelle est saisi le message. Si ce champ est vide ou contient la valeur "par défaut", un message est proposé par défaut. Le champ "tag" spécifie pour quel type d'analyses le message est affiché. Le champ "custom_messages" peut être vide ou contenir plusieurs entrées (les champs "message" et "tag" devant être renseignés pour chacune d'elles).
+
+      Cette règle nécessite un réglage supplémentaire pour être appliquée. Pour en savoir plus, consultez la page https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="5814301096961727113">Définir l'état par défaut des commentaires audio sur l'écran de connexion</translation>
 <translation id="5815129011704381141">Redémarrer automatiquement après une mise à jour</translation>
 <translation id="5815990343032461023">Ancien comportement : les applis Chrome Kiosk sont mises à jour par le système d'extension en utilisant l'URL de mise à jour issue du fichier manifeste d'extension, et en mettant en cache le gestionnaire au moyen de l'URL de mise à jour provenant de la règle</translation>
@@ -6056,6 +6114,7 @@ Pour en savoir plus, consultez https://developer.chrome.com/blog/immutable-docum
 
       Remarque : Cette règle ne doit pas être activée si la règle <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> l'est également, car elles partagent la même fonctionnalité côté client. Dans ce cas, le service de synchronisation hébergé par Google est totalement désactivé.</translation>
 <translation id="6320935916601887506">Le nouveau comportement offsetParent sera utilisé par défaut.</translation>
+<translation id="6324274808543634377">Les paramètres F11/F12 utilisent le raccourci qui contient la touche de modification Alt</translation>
 <translation id="6327643515544933974">Paramètres USB Web</translation>
 <translation id="6330882599388782338">Autoriser les sites à accéder aux capteurs</translation>
 <translation id="6331167725613770725">Cette règle étant obsolète, elle sera supprimée dans la version 85 de <ph name="PRODUCT_OS_NAME" />. (Veuillez utiliser la règle <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.)
@@ -6973,6 +7032,23 @@ Si cette règle n'est pas configurée, l'affichage d'images est autorisé, mais 
 
       Si cette règle n'est pas configurée, le mode standard de recharge de la batterie est appliqué.</translation>
 <translation id="7030407698292813622">Autorise les requêtes DNS pour d'autres types d'enregistrements DNS</translation>
+<translation id="7030632236140191991">Liste des paramètres des services des connecteurs Chrome Enterprise à appliquer au connecteur Enterprise <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" />, qui se déclenche lorsque des données sont collées dans Chrome depuis le presse-papiers ou lorsque du contenu Web est ajouté par glisser-déposer.
+
+      Les champs "<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />" et "<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />" permettent de déterminer si le connecteur doit envoyer des données en vue d'une analyse lorsque celles-ci sont saisies dans une page spécifique, ainsi que les tags à inclure dans la demande d'analyse de ces données. Un tag correspondant à un format "enable" sera inclus dans la demande d'analyse si l'URL de la page suit un format associé à ce tag, à condition qu'aucun format "disable" associé à ce même tag ne corresponde à l'URL de la page. L'analyse a lieu si au moins un tag doit être inclus dans la demande.
+
+      Le champ "<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" />" indique à quel fournisseur de services d'analyse correspondent les paramètres.
+
+      Si la valeur du champ "<ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />" est 1, Chrome attend de recevoir une réponse du service d'analyse avant de laisser la page accéder aux données. Pour toute autre valeur entière, Chrome laisse la page accéder immédiatement aux données.
+
+      Si la valeur du champ "<ph name="ENTERPRISE_CONNECTOR_DEFAULT_ACTION_FIELD" />" est "block", Chrome n'autorise pas la page à accéder aux données si une erreur survient pendant la communication avec le service d'analyse. Pour toute autre valeur, Chrome autorise la page à accéder aux données.
+
+      Le champ "<ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" />" indique la taille minimale (en octets) que les données saisies dans Chrome doivent atteindre ou dépasser pour être analysées. Si ce champ n'est pas renseigné, la valeur par défaut est de 100 octets.
+
+      Le champ "<ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" />" permet d'indiquer les tags pour lesquels le connecteur doit demander à l'utilisateur d'expliquer pourquoi une analyse entraînant l'affichage d'un avertissement est ignorée. Si ce champ n'est pas renseigné, nous partons du principe qu'aucune justification n'est requise.
+
+      Les champs "<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />" et "<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" />" permettent de configurer le message à montrer à l'utilisateur lorsqu'un avertissement s'affiche après une analyse dont le résultat révèle un problème. Le message saisi dans le champ ne doit pas comporter plus de 200 caractères. Le champ "learn_more_url" contient une URL fournie par l'administrateur sur laquelle l'utilisateur peut cliquer pour obtenir des informations indiquées par le client et savoir pourquoi l'action a été bloquée. Le champ "language" est facultatif. Il indique la langue dans laquelle est saisi le message. Si ce champ est vide ou contient la valeur "par défaut", un message est proposé par défaut. Le champ "tag" spécifie pour quel type d'analyses le message est affiché. Le champ "custom_messages" peut être vide ou contenir plusieurs entrées (les champs "message" et "tag" devant être renseignés pour chacune d'elles).
+
+      Cette règle nécessite un réglage supplémentaire pour être appliquée. Pour en savoir plus, consultez la page https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="7032813174556919004">Désactiver DNS-over-HTTPS</translation>
 <translation id="7033778618670823541">Permet d'établir la liste des origines (URL) ou des modèles de nom d'hôte (comme *.example.com) pour lesquels les restrictions de sécurité sur les origines non sécurisées ne s'appliquent pas. Par exemple, les organisations peuvent indiquer des origines pour les anciennes applications qui ne peuvent pas déployer TLS, ou configurer un serveur intermédiaire pour les développements Web internes. Les développeurs peuvent ainsi tester des fonctionnalités nécessitant des contextes sécurisés, sans avoir à déployer TLS sur ce serveur intermédiaire. Cette règle évite également qu'une origine soit accompagnée de la mention "Non sécurisé" dans la barre d'adresse.
 
@@ -7297,6 +7373,7 @@ Si cette règle est désactivée ou n'est pas configurée, les paramètres de co
 <translation id="7295019613773647480">Activer les utilisateurs supervisés</translation>
 <translation id="7297476773981993405">Autorisez l'exécution de l'algorithme GREASE user-agent mis à jour.</translation>
 <translation id="7298197471363105063">Ignorer les ensembles propriétaires.</translation>
+<translation id="7300320787419338290">Les paramètres F11/F12 utilisent le raccourci qui contient les touches de modification Ctrl et Maj</translation>
 <translation id="7302043767260300182">Délai de verrouillage de l'écran (secteur)</translation>
 <translation id="7303902834678570827">Les utilisateurs d'une session Invité gérée ne peuvent pas stocker les paramètres d'affichage au niveau de l'appareil</translation>
 <translation id="7306926210354955892">Cette règle permet de spécifier l'action à effectuer lorsque le répertoire de données ARC de l'utilisateur a été créé avec virtio-fs. À moins que les données virtio-fs ne soient migrées vers virtio-blk, les applications Android peuvent s'exécuter plus lentement sur ARCVM.
@@ -9229,6 +9306,7 @@ Si cette règle n'est pas définie sur un appareil géré, l'appareil n'est pas 
 
       La valeur doit être indiquée en secondes.</translation>
 <translation id="9015578113567730893">Fréquence de collecte par télémétrie audio en millisecondes.</translation>
+<translation id="9015759770696099204">Les paramètres F11/F12 sont désactivés</translation>
 <translation id="9015952763003753868">Rendre la mise en correspondance <ph name="ACAM_HEADER_NAME" /> conforme dans les spécifications de la requête préliminaire <ph name="CORS" /></translation>
 <translation id="9020630127193895800">Rétroéclairage du clavier indigo</translation>
 <translation id="9031831501689819108">Activer Legacy Browser Support</translation>

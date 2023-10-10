@@ -2594,6 +2594,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="2990583317361835189">Spletnim mestom ni dovoljena uporaba tipal gibanja.</translation>
 <translation id="2992931425024192067">Pokaži vso vsebino obvestil</translation>
 <translation id="2993517869960930405">Podatki o aplikaciji</translation>
+<translation id="2996108796702395498">Serijska številka naprave je <ph name="SERIAL_NUMBER" />. To številko je mogoče uporabiti pri aktiviranju storitve.</translation>
 <translation id="2996286169319737844">Podatki so šifrirani z vašim geslom za sinhronizacijo. To ne vključuje plačilnih sredstev in naslovov iz Googla Pay.</translation>
 <translation id="2996722619877761919">Obrni na daljšem robu</translation>
 <translation id="2996932914629936323">Izbriše zgodovino iz vseh sinhroniziranih naprav.</translation>
@@ -2981,6 +2982,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3320630259304269485">Varno brskanje (zaščita pred nevarnimi spletnimi mesti) in druge varnostne nastavitve</translation>
 <translation id="3321460131042519426">Omogočanje združevanja besed</translation>
 <translation id="3321494112580110651">Ali tiskalnika ni na seznamu?</translation>
+<translation id="3321776060736518525">Iz: <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Nagrada! Čas uporabe je podaljšan.</translation>
 <translation id="3325804108816646710">Iskanje razpoložljivih profilov …</translation>
 <translation id="3325910708063135066">Fotoaparat in mikrofon sta izklopljena v nastavitvah sistema macOS</translation>
@@ -6235,6 +6237,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Pregled je končan za 1 spletno mesto.}one{Pregled je končan za {NUM_SITES} spletno mesto.}two{Pregled je končan za {NUM_SITES} spletni mesti.}few{Pregled je končan za {NUM_SITES} spletna mesta.}other{Pregled je končan za {NUM_SITES} spletnih mest.}}</translation>
 <translation id="5997337190805127100">Več o dostopu do spletnih mest</translation>
 <translation id="5998458948782718639">Pomagajte izboljšati samodejno izpolnjevanje</translation>
+<translation id="5999024481231496910">Omogočili ste preizkušanje opuščanja piškotkov tretjih oseb. Tega ni mogoče preglasiti na strani z nastavitvami. Če želite znova omogočiti piškotke tretjih oseb, znova zaženite Chrome, pri čemer mora biti ta funkcija onemogočena.</translation>
 <translation id="5999630716831179808">Glasovi</translation>
 <translation id="6000758707621254961">Rezultati za »<ph name="SEARCH_TEXT" />« (<ph name="RESULT_COUNT" />)</translation>
 <translation id="6001839398155993679">Pa začnimo</translation>
@@ -6718,6 +6721,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6399675241776343019">Zavrnjeno</translation>
 <translation id="6399774419735315745">Vohunka</translation>
 <translation id="6400360390396538896">Vedno vklopljeno <ph name="ORIGIN" /></translation>
+<translation id="6401118106417399952">EID naprave je <ph name="EID_NUMBER" />, serijska številka naprave pa <ph name="SERIAL_NUMBER" />. Ti številki je mogoče uporabiti pri aktiviranju storitve.</translation>
 <translation id="6401458660421980302">Če želite ta zavihek poslati v drugo napravo, se v njej prijavite v Chrome.</translation>
 <translation id="6401597285454423070">V računalnik je vgrajen modul TPM (Trusted Platform Module), ki je varnostna naprava, potrebna za številne nujne varnostne funkcije v sistemu Chrome OS. Več o njem lahko preberete v centru za pomoč za Chromebook: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404511346730675251">Uredi zaznamek</translation>
@@ -8239,6 +8243,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7637272932128132922">Ko je bil ta zavihek neaktiven, je varčevanje s pomnilnikom sprostilo pomnilnik za druga opravila. To lahko kadar koli spremenite tu: <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Premalo prostora na disku.</translation>
 <translation id="7639914187072011620">URL-ja za preusmeritev za prijavo SAML ni bilo mogoče pridobiti iz strežnika.</translation>
+<translation id="7640256527901510478">IMEI naprave je <ph name="IMEI_NUMBER" />, serijska številka naprave pa <ph name="SERIAL_NUMBER" />. Ti številki je mogoče uporabiti pri aktiviranju storitve.</translation>
 <translation id="7640308610547854367">ChromeOS ste povrnili na prejšnjo različico. Če želite prejemati posodobitve, počakajte, da bo na voljo naslednja različica.</translation>
 <translation id="7641513591566880111">Ime novega profila</translation>
 <translation id="764178579712141045">Oseba <ph name="USER_EMAIL" /> je dodana</translation>
@@ -9742,6 +9747,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="881799181680267069">Skrij druge</translation>
 <translation id="8818152010000655963">Ozadje</translation>
 <translation id="8818958672113348984">Preverite prek telefona</translation>
+<translation id="8819510664278523111">EID naprave je <ph name="EID_NUMBER" />, IMEI naprave je <ph name="IMEI_NUMBER" />, serijska številka naprave pa <ph name="SERIAL_NUMBER" />. Te številke je mogoče uporabiti pri aktiviranju storitve.</translation>
 <translation id="8820817407110198400">Zaznamki</translation>
 <translation id="8821045908425223359">Samodejno konfiguriraj naslov IP</translation>
 <translation id="8821268776955756404">Aplikacija <ph name="APP_NAME" /> je pripravljena za uporabo.</translation>
@@ -10292,6 +10298,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="956500788634395331">Zaščiteni ste pred morebiti škodljivimi razširitvami</translation>
 <translation id="957179356621191750">6 pik</translation>
 <translation id="957960681186851048">Spletno mesto je poskušalo samodejno prenesti več datotek</translation>
+<translation id="958571289841636277">Pomikanje nazaj in naprej s potezo vlečenja</translation>
 <translation id="960987915827980018">Še približno ena ura</translation>
 <translation id="962802172452141067">Drevo mape z zaznamki</translation>
 <translation id="963000966785016697">Iskanje slike s tem: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

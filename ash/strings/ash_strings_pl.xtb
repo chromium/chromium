@@ -703,6 +703,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="385300504083504382">Początek</translation>
 <translation id="3859364108019690">Nie można przesyłać strumieniowo aplikacji</translation>
 <translation id="3861651314799684201">Aby nagrać pełny ekran, naciśnij Enter</translation>
+<translation id="3865912916886104060">Brak połączonych urządzeń. Aby można było zacząć korzystać z hotspota, zostanie wyłączone Wi-Fi.</translation>
 <translation id="3886872229787704059">Otwierane dzisiaj</translation>
 <translation id="3891340733213178823">Naciśnij dwukrotnie Ctrl+Shift+Q, by się wylogować.</translation>
 <translation id="3893630138897523026">ChromeVox (komunikaty głosowe)</translation>
@@ -787,6 +788,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4197790712631116042">Wyłączono</translation>
 <translation id="4201033867194214117">Funkcja <ph name="FEATURE_NAME" /> jest niedostępna.</translation>
 <translation id="4201051445878709314">Pokaż poprzedni miesiąc</translation>
+<translation id="4202362334312791952">Połączono 1 urządzenie. Aby można było zacząć korzystać z hotspota, zostanie wyłączone Wi-Fi.</translation>
 <translation id="4209973997261364186">Wi-Fi jest włączone</translation>
 <translation id="4212472694152630271">Zmień na PIN</translation>
 <translation id="4215497585250573029">Ustawienia sieci VPN</translation>
@@ -1049,6 +1051,8 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5258528442992323769">Nie ma zapisanych biurek</translation>
 <translation id="5260676007519551770">Biurko 4</translation>
 <translation id="5268819379131021772">Lista zadań Google</translation>
+<translation id="5275923704957843041">Podgląd biurka</translation>
+<translation id="5277869901083657836">Przełącz narzędzia rysika</translation>
 <translation id="5278086053818066789">Włącz lub wyłącz czytnik ChromeVox (komunikaty głosowe)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> wymaga Twojej reakcji.</translation>
 <translation id="5283198616748585639">Dodaj 1 min</translation>
@@ -1165,6 +1169,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5707775774148071965">Twoje urządzenie obsługuje większą szybkość transmisji danych niż kabel. Wydajność urządzenia może być ograniczona.</translation>
 <translation id="5710450975648804523">Tryb Nie przeszkadzać włączony</translation>
 <translation id="571295407079589142">Mobilna transmisja danych jest wyłączona</translation>
+<translation id="5716891621595980681">Podłączone urządzenia: <ph name="DEVICECOUNT" />. Aby można było zacząć korzystać z hotspota, zostanie wyłączone Wi-Fi.</translation>
 <translation id="5727460725221669831">Jeśli nie pamiętasz hasła lub od niedawna masz nowe hasło do konta Google, spróbuj przywrócić konto tego użytkownika.</translation>
 <translation id="573413375004481890">To urządzenie nie może obsługiwać wszystkich Twoich wyświetlaczy, dlatego jeden z nich został odłączony</translation>
 <translation id="5740328398383587084">Udostępnianie w pobliżu</translation>

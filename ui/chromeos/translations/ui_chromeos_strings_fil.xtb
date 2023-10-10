@@ -329,6 +329,7 @@
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619593063686672873">Walang kamakailang video</translation>
 <translation id="3634507049637220048">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Pinapamahalaan ng iyong Administrator, Mga Detalye</translation>
+<translation id="36451918667380448">Naka-lock ang mobile network provider. Makipag-ugnayan sa iyong provider para sa suporta.</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> (na) item ang inilipat.</translation>
 <translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> (na) file ang napili</translation>
 <translation id="3685122418104378273">Naka-disable ang Google Drive bilang default, kapag gumagamit ng mobile data.</translation>

@@ -169,6 +169,7 @@
 <translation id="1847795903283049083">Te elemente si lahko ogledate in jih upravljate tudi v zaznamkih, na bralnem seznamu ali v upravitelju gesel.</translation>
 <translation id="1870148520156231997">Razkrijte geslo</translation>
 <translation id="1872096359983322073">Svetilka</translation>
+<translation id="1876851015978093044">Pokaže ta element</translation>
 <translation id="1882901927376062252">{count,plural, =1{Zaznamek je shranjen v računu Google, {email}}one{{count} zaznamek je shranjen v računu Google, {email}}two{{count} zaznamka sta shranjena v računu Google, {email}}few{{count} zaznamki so shranjeni v računu Google, {email}}other{{count} zaznamkov je shranjenih v računu Google, {email}}}</translation>
 <translation id="1883255238294161206">Strni seznam</translation>
 <translation id="1890237935065108104">Ta nastavitev ni na voljo.</translation>
@@ -282,6 +283,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2482878487686419369">Obvestila</translation>
 <translation id="2484459871750294497">Kako omogočim to funkcijo?</translation>
 <translation id="2496626742194544812">Na prvi zavihek</translation>
+<translation id="2499505845365628575">Vso zgodovino brskanja si lahko ogledate tukaj: <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2500374554657206846">Možnosti shranjevanja gesel</translation>
 <translation id="2511117522375201202">Imate toliko ogroženih gesel, ki lahko ogrozijo vašo varnost: <ph name="NUMBER_OF_PASSWORDS" />.</translation>
 <translation id="2523363575747517183">To spletno mesto nenehno poskuša odpreti drugo aplikacijo.</translation>
@@ -1112,6 +1114,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="6785453220513215166">Pošiljanje poročila o zrušitvi ...</translation>
 <translation id="6790502149545262384">Kmalu bodo prikazane novice s spletnega mesta <ph name="CHANNEL_NAME" />, ko boste odprli nov zavihek.</translation>
 <translation id="6797885426782475225">Glasovno iskanje</translation>
+<translation id="6800349425672670802">Do vseh odprtih zavihkov lahko dostopate s preklopom med zavihki.</translation>
 <translation id="6807889908376551050">Pokaži vse ...</translation>
 <translation id="681368974849482173">Item created</translation>
 <translation id="6822587385560699678">Če je vklopljeno, se gesla shranjujejo v računu <ph name="ACCOUNT" />. Če je izklopljeno, se gesla shranjujejo samo v tej napravi.</translation>
@@ -1206,6 +1209,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7367530036083223701">S pripomočkom Upravitelj gesel varno dostopajte do gesel na začetnem zaslonu.</translation>
 <translation id="7380220816562673297">Za zdaj lahko gesla delite samo z družinskimi člani. <ph name="BEGIN_LINK" />Ustvarite skupino družinskih članov<ph name="END_LINK" />, v kateri je do 6 članov, ter še bolje izkoristite svoje izdelke in naročnine v Googlu.</translation>
 <translation id="7383797227493018512">Seznam za branje</translation>
+<translation id="7396331865858820922">Geslo ni bilo deljeno</translation>
 <translation id="7398893703713203428">Ustvari povezavo</translation>
 <translation id="7399802613464275309">Varnostno preverjanje</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1226,6 +1230,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7488874549363591659">Dostavljeno</translation>
 <translation id="7491131399623468277">Odpri nastavitve …</translation>
 <translation id="7492574581995589075">Vaša organizacija je izklopila možnost uporabe in shranjevanja podatkov v Chromu v računu Google. Novi zaznamki, gesla in drugo bodo shranjeni samo v tej napravi.</translation>
+<translation id="749854780843431406">Z gumbom <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" /> lahko odprete nov zavihek.</translation>
 <translation id="750149195207506638">Zaznamki so skriti</translation>
 <translation id="750228856503700085">Posodobitve niso na voljo.</translation>
 <translation id="750493650310597496">0 izbranih</translation>
@@ -1286,6 +1291,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="778855399387580014">Začnite iskanje na novem Chromovem zavihku.</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7807060072011926525">Zagotavlja Google</translation>
+<translation id="7812377703891978671">Do celotne zgodovine brskanja lahko dostopate tako, da izberete <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Prenosi</translation>
 <translation id="7839985698273989086">Stran brez povezave</translation>
 <translation id="7840771868269352570">Izbrani elementi bodo odstranjeni.</translation>
@@ -1433,6 +1439,7 @@ Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če žel
 <translation id="8560253818350321773">Najprej prikaz pogosto uporabljenih elementov.</translation>
 <translation id="8588404856427128947">Izklop</translation>
 <translation id="8591976964826315682">Blokiraj piškotke drugih mest v anonimnem načinu</translation>
+<translation id="8593565399399144771">Tukaj lahko odprete nov zavihek.</translation>
 <translation id="8605219856220328675">Close tab.</translation>
 <translation id="8613883225817609844">Skrij nedavne zavihke</translation>
 <translation id="8620640915598389714">Uredi</translation>

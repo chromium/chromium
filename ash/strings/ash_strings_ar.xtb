@@ -705,6 +705,7 @@
 <translation id="385300504083504382">البداية</translation>
 <translation id="3859364108019690">يتعذّر بث محتوى التطبيقات</translation>
 <translation id="3861651314799684201">‏اضغط على المفتاح Enter لتسجيل فيديو للشاشة بأكملها</translation>
+<translation id="3865912916886104060">‏ما مِن أجهزة متصلة. سيتم إيقاف شبكة Wi-Fi لبدء استخدام نقطة الاتصال.</translation>
 <translation id="3886872229787704059">تم فتحه اليوم.</translation>
 <translation id="3891340733213178823">‏للخروج اضغط على Ctrl+Shift+Q مرتين.</translation>
 <translation id="3893630138897523026">‏ChromeVox (التعليق المنطوق)</translation>
@@ -789,6 +790,7 @@
 <translation id="4197790712631116042">غير مُفعَّل</translation>
 <translation id="4201033867194214117">ميزة <ph name="FEATURE_NAME" /> غير متوفّرة.</translation>
 <translation id="4201051445878709314">عرض الشهر السابق</translation>
+<translation id="4202362334312791952">‏تم توصيل جهاز واحد. سيتم إيقاف شبكة Wi-Fi لبدء استخدام نقطة الاتصال.</translation>
 <translation id="4209973997261364186">‏تم تفعيل شبكة Wi-Fi.</translation>
 <translation id="4212472694152630271">التبديل إلى رقم التعريف الشخصي</translation>
 <translation id="4215497585250573029">‏إعدادات الشبكة الافتراضية الخاصة (VPN)</translation>
@@ -1051,6 +1053,8 @@
 <translation id="5258528442992323769">ما مِن أسطح مكتب محفوظة.</translation>
 <translation id="5260676007519551770">مكتب 4</translation>
 <translation id="5268819379131021772">‏قائمة مهام Google</translation>
+<translation id="5275923704957843041">معاينة سطح المكتب</translation>
+<translation id="5277869901083657836">إيقاف/تفعيل أدوات قلم الشاشة</translation>
 <translation id="5278086053818066789">‏تشغيل/إيقاف ChromeVox (الوصف الشفهي للشاشة)</translation>
 <translation id="5283099933536931082">لديك إشعار من <ph name="APP_ITEM_TITLE" />.</translation>
 <translation id="5283198616748585639">إضافة دقيقة واحدة</translation>
@@ -1167,6 +1171,7 @@
 <translation id="5707775774148071965">يتوافق جهازك مع معدّل نقل بيانات أعلى منه في الكابل. وقد يصبح أداء الجهاز محدودًا.</translation>
 <translation id="5710450975648804523">تمّ تفعيل وضع "عدم الإزعاج"</translation>
 <translation id="571295407079589142">تم إيقاف بيانات الجوّال.</translation>
+<translation id="5716891621595980681">‏عدد الأجهزة المتصلة <ph name="DEVICECOUNT" />. سيتم إيقاف شبكة Wi-Fi لبدء استخدام نقطة الاتصال.</translation>
 <translation id="5727460725221669831">‏إذا نسيت كلمة المرور أو غيّرت كلمة مرور حسابك على Google مؤخرًا، جرِّب استرداد حساب هذا المستخدم.</translation>
 <translation id="573413375004481890">لا يمكن لهذا الجهاز توفير جميع شاشات العرض، لذلك تم قطع الاتصال بأحدها</translation>
 <translation id="5740328398383587084">المشاركة عن قرب</translation>

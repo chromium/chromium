@@ -217,6 +217,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="218608176142494674">Deling</translation>
 <translation id="2194856509914051091">Ting å tenke på</translation>
 <translation id="2200113223741723867">Administrer deling av bruksdata</translation>
+<translation id="22091350895006575">Legg til et brukernavn</translation>
 <translation id="221494669172414749">Hvis du åpner Chrome uten profillås, fjernes de lagrede passordene og betalingsmåtene dine fra bilen. Bruk en profillås for å holde disse dataene sikre.</translation>
 <translation id="2218567645332692482">Oppgrader navigeringer til HTTPS og bli varslet før innlasting av nettsteder som ikke støtter dette</translation>
 <translation id="2227444325776770048">Fortsett som <ph name="USER_FULL_NAME" /></translation>
@@ -244,6 +245,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="235789365079050412">Googles personvernregler</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2362083820973145409">Logget på som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Åpner innstillinger.</translation>
+<translation id="2364539095045928896">Lukkeknapp for å lukke merknaden om personvern for sidestatistikksenteret.</translation>
 <translation id="2386938421315164605">Skjul emner og gjør dem synlige</translation>
 <translation id="2390510615457643724">Vil du laste ned <ph name="FILE_NAME" /> <ph name="FILE_SIZE" /> på nytt?</translation>
 <translation id="2394602618534698961">Filer du laster ned, vises her</translation>
@@ -312,6 +314,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2718846868787000099">For å kunne vise innhold på språkene du foretrekker, kan nettstedene du besøker, se preferansene dine</translation>
 <translation id="2722945394406572875">Privacy Sandbox-forespørselen er lukket</translation>
 <translation id="2723001399770238859">lyd</translation>
+<translation id="2760805590727089264">MM/ÅÅ</translation>
 <translation id="2760989362628427051">Slå på mørkt tema når batterisparing eller enhetsinnstillingen for mørkt tema er på</translation>
 <translation id="2762000892062317888">akkurat nå</translation>
 <translation id="276969039800130567">Pålogget som <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -840,6 +843,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5458366071038729214">Her finner du nettsteder du følger</translation>
 <translation id="5468068603361015296">Vil du laste ned <ph name="FILE_NAME" /> likevel?</translation>
 <translation id="548278423535722844">Åpne i en kartapp</translation>
+<translation id="5486841595534124508">Logo for merknaden om personvern for sidestatistikksenteret, som viderekobler til Min aktivitet-siden.</translation>
 <translation id="5487521232677179737">Slett data</translation>
 <translation id="5492637351392383067">Kryptering på enheten</translation>
 <translation id="5514904542973294328">Deaktivert av administratoren for denne enheten</translation>
@@ -956,6 +960,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="6112702117600201073">Oppdaterer siden.</translation>
 <translation id="6122831415929794347">Vil du slå av Safe Browsing?</translation>
 <translation id="6127379762771434464">Elementet er fjernet</translation>
+<translation id="6130303040046284160">Minimer fanen</translation>
 <translation id="6137022273846704445">Språk for <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">Endre nettstedsinnstillingene dine her</translation>
 <translation id="6140709049082532940">Økt beskyttelse:</translation>
@@ -1258,6 +1263,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7588219262685291874">Slå på mørkt tema når batterisparing er på</translation>
 <translation id="7594687499944811403">La <ph name="EMBEDDED_ORIGIN" /> bekrefte at det er deg, for <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Operativsystem</translation>
+<translation id="7603168929588204083">Datoen er ugyldig</translation>
 <translation id="7605594153474022051">Synkronisering fungerer ikke</translation>
 <translation id="7612619742409846846">Logget på Google som</translation>
 <translation id="7612989789287281429">Logger på …</translation>
@@ -1307,6 +1313,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7810647596859435254">Åpne med…</translation>
 <translation id="7815484226266492798">Lang skjermdump</translation>
 <translation id="7822705602465980873">Når du er logget på, blir disse dataene knyttet til Google-kontoen din for å beskytte deg på alle Google-tjenester, for eksempel ved at beskyttelsen i Gmail økes etter sikkerhetshendelser.</translation>
+<translation id="782705168687182233">Aktiviteten lagres i <ph name="BEGIN_LINK" />Google-kontoen<ph name="END_LINK" /> din.</translation>
 <translation id="78270725016672455">Datamaskinen din vil registrere denne enheten for pålogging på et nettsted</translation>
 <translation id="7844171778363018843">Ingen data er valgt for synkronisering</translation>
 <translation id="7846296061357476882">Google-tjenester</translation>
@@ -1399,6 +1406,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8223642481677794647">Feedkortmeny</translation>
 <translation id="8236097722223016103">Legg til i bokmerker</translation>
 <translation id="8237871086242677046">Sidestatistikkfeltet nederst</translation>
+<translation id="8243077599929149377">Legg til brukernavnet ditt</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
 <translation id="8255617931166444521">Nettsteder kan bare bruke informasjonskapslene dine til å se surfeaktiviteten din på sitt eget nettsted</translation>
 <translation id="8259179246279078674">Siden de forhåndslastede sidene er krypterte, får ikke Google vite noe om det forhåndslastede sideinnholdet. Googles tjenere får vite hvilke nettsteder som forhåndslastes privat. Denne informasjonen brukes bare til å forhåndslaste sidene og blir ikke knyttet til annen informasjon i Google-kontoen din.</translation>

@@ -704,6 +704,7 @@
 <translation id="385300504083504382">Эхлэл</translation>
 <translation id="3859364108019690">Аппуудыг дамжуулах боломжгүй</translation>
 <translation id="3861651314799684201">Бүтэн дэлгэцийг бичихийн тулд enter дээр дарна уу</translation>
+<translation id="3865912916886104060">Ямар ч төхөөрөмж холбогдоогүй. Сүлжээний цэгийг ашиглаж эхлэхийн тулд WiFi-г унтраана.</translation>
 <translation id="3886872229787704059">Өнөөдөр нээсэн</translation>
 <translation id="3891340733213178823">Гарахын тулд Ctrl+Shift+Q дээр хоёр удаа дарна уу.</translation>
 <translation id="3893630138897523026">ChromeVox (ярьдаг санал хүсэлт)</translation>
@@ -788,6 +789,7 @@
 <translation id="4197790712631116042">Унтраалттай</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> боломжгүй.</translation>
 <translation id="4201051445878709314">Өмнөх сарыг харуулах</translation>
+<translation id="4202362334312791952">1 төхөөрөмж холбогдсон. Сүлжээний цэгийг ашиглаж эхлэхийн тулд WiFi-г унтраана.</translation>
 <translation id="4209973997261364186">Wi-Fi асаалттай байна</translation>
 <translation id="4212472694152630271">ПИН рүү сэлгэх</translation>
 <translation id="4215497585250573029">VPN тохиргоо</translation>
@@ -1050,6 +1052,7 @@
 <translation id="5258528442992323769">Хадгалсан дэлгэц байхгүй</translation>
 <translation id="5260676007519551770">Дэлгэц 4</translation>
 <translation id="5268819379131021772">Google-н ажлын жагсаалт</translation>
+<translation id="5275923704957843041">Дэлгэцийн урьдчилан үзэлт</translation>
 <translation id="5278086053818066789">ChromeVox-г асаах/унтраах (яриагаар өгөх санал)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> танаас анхаарал тавихыг хүсэж байна.</translation>
 <translation id="5283198616748585639">1 минут нэмэх</translation>
@@ -1166,6 +1169,7 @@
 <translation id="5707775774148071965">Таны төхөөрөмж кабелиас тань өндөр дата хурдыг дэмжинэ. Төхөөрөмжийн гүйцэтгэл хязгаарлагдмал байж магадгүй.</translation>
 <translation id="5710450975648804523">Бүү саад бол горим асаалттай байна</translation>
 <translation id="571295407079589142">Мобайл дата унтраалттай байна</translation>
+<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> төхөөрөмж холбогдсон. Сүлжээний цэгийг ашиглаж эхлэхийн тулд WiFi-г унтраана.</translation>
 <translation id="5727460725221669831">Хэрэв та нууц үгээ мартсан эсвэл Google Бүртгэлийн нууц үгээ саяхан өөрчилсөн бол энэ хэрэглэгчийг сэргээхээр оролдоно уу.</translation>
 <translation id="573413375004481890">Энэ төхөөрөмж нь таны бүх дэлгэцийг дэмжих боломжгүй байсан тул тэдний нэгийг нь салгасан</translation>
 <translation id="5740328398383587084">Ойролцоо хуваалцах</translation>

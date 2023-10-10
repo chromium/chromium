@@ -117,6 +117,7 @@ Huomioitavaa:
 <translation id="5389212809648216794">Google Chrome ei voi käyttää kameraa, koska se on toisen sovelluksen käytössä.</translation>
 <translation id="5395376160638294582">Varmista, että voit aina käyttää Chrome-dataa Google-tilillä</translation>
 <translation id="5439191312780166229">Varoittaa vaarallisista sivustoista, myös niistä, joista Google ei ole tiennyt aiemmin, analysoimalla enemmän dataa sivustoilta kuin Perustason suojaus. Voit ohittaa Chromen varoitukset.</translation>
+<translation id="5442013002200339429">Jos "<ph name="MODULE_NAME" />" piilotetaan, Chrome ei enää seuraa tulevia pakettejasi automaattisesti ja poistaa kaikki aiempien pakettien seurantatiedot.</translation>
 <translation id="5460571915754665838">4. Valitse Chrome</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome auttaa paketin seuraamisessa Uusi välilehti ‑sivulla.}other{Chrome auttaa pakettien seuraamisessa Uusi välilehti ‑sivulla.}}</translation>
 <translation id="5492504007368565877">Google Salasanat ei voi tarkistaa salasanojasi.</translation>
@@ -188,6 +189,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="7933491483529363150">Avaa edellinen välilehti Chromessa.</translation>
 <translation id="8022947259858476807">Käytä Chromea oletuksena ja avaa linkkejä, hae widgeteistä ja täytä salasanoja automaattisesti muissa sovelluksissa</translation>
 <translation id="804638182476029347">Salli Chrome-ilmoitukset, jotta saat ilmoituksia hinnan laskusta</translation>
+<translation id="8069507567842347179">Tätä pakettia seurataan jo Chromessa.</translation>
 <translation id="81358522153858150">Chrome tukee nyt hallinnoidun tilin käyttäjäkäytäntöjä</translation>
 <translation id="8160472928944011082">Chromea ei voi päivittää</translation>
 <translation id="8174679664544842874">Avaa uuden välilehden Chromessa.</translation>

@@ -178,6 +178,7 @@
 <translation id="1137673463384776352">פתיחת הקישור ב-<ph name="APP" /></translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{התראה חדשה}one{# התראות חדשות}two{# התראות חדשות}other{# התראות חדשות}}</translation>
 <translation id="1139923033416533844">שימוש בזיכרון</translation>
+<translation id="1140131440257432230">‏אתרים משתמשים בדרך כלל במכשירי MIDI כדי לתמוך בתכונות ליצירה ולעריכה של מוזיקה.</translation>
 <translation id="1140351953533677694">‏גישה ל-Bluetooth ולהתקנים סיריאליים</translation>
 <translation id="114036956334641753">אודיו וכתוביות</translation>
 <translation id="1141949282671776404">בזמן שהכרטיסייה לא הייתה פעילה, במסגרת מצב החיסכון בזיכרון התפנה זיכרון בנפח <ph name="MEMORY_VALUE" /> בשביל משימות אחרות.</translation>
@@ -482,6 +483,7 @@
 <translation id="1388728792929436380">המכשיר <ph name="DEVICE_TYPE" /> יופעל מחדש אחרי שהעדכונים יושלמו.</translation>
 <translation id="1390113502208199250">‏כדי להשתמש בתכונות של שדרוג ל-Chrome Education, צריך לאפס את המכשיר להגדרות המקוריות.</translation>
 <translation id="139013308650923562">יש הרשאה להשתמש בגופנים שמותקנים במכשיר</translation>
+<translation id="1390306150250850355">בוצעה התקנה מראש של <ph name="APP_TYPE" /> במכשיר <ph name="DEVICE_TYPE" /> שלך</translation>
 <translation id="1390548061267426325">פתיחה ככרטיסייה רגילה</translation>
 <translation id="1390907927270446471">ל<ph name="PROFILE_USERNAME" /> אין הרשאה להדפיס ב-<ph name="PRINTER_NAME" />. צריך לפנות למנהל המערכת.</translation>
 <translation id="1392047138650695757">המילונים של המשתמש</translation>
@@ -1284,6 +1286,7 @@
 <translation id="1988259784461813694">דרישה</translation>
 <translation id="1988733631391393183">‏בתפריטי ChromeVox יוצגו פקודות בכתב ברייל</translation>
 <translation id="1989112275319619282">עיון</translation>
+<translation id="1989288015781834552">צריך להפעיל מחדש כדי לסיים לעדכן. הכרטיסיות ייפתחו מחדש.</translation>
 <translation id="1989601282983766341">ניהול של המצב 'נא לא להפריע' ושל התראות ותגיות של אפליקציות</translation>
 <translation id="1989903373608997757">להשתמש תמיד</translation>
 <translation id="1990046457226896323">הסתיימה ההורדה של קובצי הדיבור</translation>
@@ -2808,6 +2811,7 @@
 <translation id="3188465121994729530">ממוצע נע</translation>
 <translation id="3189187154924005138">סמן גדול</translation>
 <translation id="3190558889382726167">הסיסמה נשמרה</translation>
+<translation id="3191625924275846436">{NUM_SITES,plural, =1{כדי להגן על הנתונים שלך, הוסרו ההרשאות מאתר שלא נכנסת אליו לאחרונה}one{כדי להגן על הנתונים שלך, הוסרו הרשאות מאתרים שלא נכנסת אליהם לאחרונה}two{כדי להגן על הנתונים שלך, הוסרו הרשאות מאתרים שלא נכנסת אליהם לאחרונה}other{כדי להגן על הנתונים שלך, הוסרו הרשאות מאתרים שלא נכנסת אליהם לאחרונה}}</translation>
 <translation id="3192947282887913208">קובצי אודיו</translation>
 <translation id="3193695589337931419">כלי איסוף של אותות במערכת</translation>
 <translation id="3194786596445804250">‏הצגת פרטים על חסימת קובצי cookie של צדדים שלישיים</translation>
@@ -3262,6 +3266,7 @@
 <translation id="3569614820047645079">‏הקבצים בתיקייה 'האחסון שלי' יסונכרנו באופן אוטומטי ב-Chromebook כדי שאפשר יהיה לגשת אליהם בלי חיבור לאינטרנט.</translation>
 <translation id="3569682580018832495">ל-<ph name="ORIGIN" /> יש אפשרות להציג את התיקיות והקבצים הבאים</translation>
 <translation id="3571734092741541777">הגדרה</translation>
+<translation id="3574433798725498842">‏יש הרשאה להשתמש במכשירי ה-MIDI שלך</translation>
 <translation id="3575121482199441727">אישור לאתר הזה</translation>
 <translation id="3577473026931028326">משהו השתבש. יש לנסות שוב.</translation>
 <translation id="3577487026101678864">סנכרון הקבצים פועל</translation>
@@ -3315,6 +3320,7 @@
 <translation id="3617891479562106823">רקעים אינם זמינים. צריך לנסות שוב מאוחר יותר.</translation>
 <translation id="3618286417582819036">מצטערים, אירעה שגיאה</translation>
 <translation id="3619115746895587757">קפוצ'ינו</translation>
+<translation id="3619294456800709762">אתרים יכולים להפעיל את מצב 'תמונה בתוך תמונה' אוטומטית</translation>
 <translation id="3620136223548713675">מיקום גאוגרפי</translation>
 <translation id="3621202678540785336">קלט</translation>
 <translation id="3621807901162200696">‏עזרה בשיפור התכונות והביצועים של ChromeOS</translation>
@@ -3479,6 +3485,7 @@
 <translation id="3742666961763734085">לא ניתן למצוא יחידה ארגונית בשם הזה. יש לנסות שוב.</translation>
 <translation id="3743842571276656710">צריך להזין קוד אימות כדי ליצור התאמה עם <ph name="DEVICE_NAME" /></translation>
 <translation id="3744219658596020825">הסיסמאות שלך לא יובאו</translation>
+<translation id="3744566206584015048">‏אין הרשאה להשתמש במכשירי ה-MIDI שלך</translation>
 <translation id="3747077776423672805">‏כדי להסיר אפליקציות, צריך לעבור אל 'הגדרות' &gt; 'חנות Google Play' &gt; 'ניהול העדפות Android' &gt;'אפליקציות' או 'מנהל אפליקציות'. לאחר מכן צריך להקיש על האפליקציה שרוצים להסיר (ייתכן שיהיה צורך להחליק ימינה או שמאלה כדי למצוא את האפליקציה). לסיום, יש להקיש על 'הסרת התקנה' או 'השבתה'.</translation>
 <translation id="3748424433435232460">כבר שמורה במכשיר הזה סיסמה לחשבון הזה</translation>
 <translation id="3748706263662799310">דיווח על באג</translation>
@@ -3928,6 +3935,7 @@
 <translation id="4085298594534903246">‏JavaScript נחסם בדף זה.</translation>
 <translation id="4085566053793776107">התאמה אישית של העיצובים</translation>
 <translation id="4085620044235559093">בחירת אפליקציה לפתיחת קבצים של <ph name="FILE_TYPE" /></translation>
+<translation id="4086041296339853919">‏אין הרשאה לאתרים להשתמש במכשירי ה-MIDI שלך</translation>
 <translation id="4087089424473531098">ההרחבה נוצרה על ידי:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4344,6 +4352,7 @@
 <translation id="4430422687972614133">הפעלת הכרטיס הווירטואלי</translation>
 <translation id="4432621511648257259">הסיסמה שגויה</translation>
 <translation id="443454694385851356">דור קודם (לא מאובטח)</translation>
+<translation id="4434611816075088065">אין עוד משהו שדורש התייחסות כרגע</translation>
 <translation id="443475966875174318">עדכון או הסרה של אפליקציות לא תואמות</translation>
 <translation id="4438043733494739848">שקוף</translation>
 <translation id="4441124369922430666">להפעיל את האפליקציה באופן אוטומטי בעת הפעלת המחשב?</translation>
@@ -4498,6 +4507,7 @@
 <translation id="4565917129334815774">אחסון יומני מערכת</translation>
 <translation id="4566170377336116390">‏אם רוצים להחליף אחרי הרישום, צריך לבצע איפוס להגדרות המקוריות (Powerwash) במכשיר.</translation>
 <translation id="4566417217121906555">השתקת המיקרופון</translation>
+<translation id="4566762846886188693">כדי להגן על הנתונים שלך, צריך להסיר הרשאות מאתרים שלא נכנסת אליהם לאחרונה. המערכת ממשיכה לשלוח התראות.</translation>
 <translation id="456717285308019641">שפת הדף שיש לתרגם</translation>
 <translation id="4567512141633030272">אפשרות הכניסה שגויה?</translation>
 <translation id="4567533462991917415">תמיד אפשר להוסיף עוד אנשים לאחר ההגדרה. כל משתמש יכול להתאים אישית את החשבון שלו ולהגן על פרטיות הנתונים.</translation>
@@ -4660,6 +4670,7 @@
 <translation id="4693155481716051732">סושי</translation>
 <translation id="4694024090038830733">מנהל המערכת קובע את תצורת המדפסת.</translation>
 <translation id="4694604912444486114">קוף</translation>
+<translation id="4695318956047767909">עיצוב כהה, שומר מסך</translation>
 <translation id="4697071790493980729">לא נמצאו תוצאות</translation>
 <translation id="4697551882387947560">כאשר הפעלת הגלישה מסתיימת</translation>
 <translation id="469838979880025581">אתרים יכולים לבקש הרשאה להשתמש במיקרופון</translation>
@@ -6927,6 +6938,7 @@
 <translation id="6593881952206664229">ייתכן שמדיה שיש לה זכויות יוצרים לא תופעל</translation>
 <translation id="6594011207075825276">מתבצע חיפוש של מכשירים סריאליים...</translation>
 <translation id="6595187330192059106">‏לחסום תמיד – ל-<ph name="HOST" /> לא תהיה יותר שליטה מלאה במכשירי MIDI.</translation>
+<translation id="6595322909015878027">אין הרשאה להפעלה אוטומטית של מצב של תמונה בתוך תמונה</translation>
 <translation id="6595408197871512625">{COUNT,plural, =1{‏הסיסמה שנחשפה הוחלפה בהצלחה.
 
 נותרה עוד סיסמה אחת שנחשפה. לפי מנהל הסיסמאות של Google, מומלץ לשנות את הסיסמה הזו עכשיו.}one{‏הסיסמה שנחשפה הוחלפה בהצלחה.
@@ -7163,6 +7175,7 @@
 <translation id="6794511157503068">‏אם מפתח הגישה אל <ph name="APP_NAME" /> שמור במפתח אבטחה בחיבור USB, צריך להכניס אותו ולגעת בו עכשיו.</translation>
 <translation id="679486139907144816">‏כדי להיכנס לאתר הזה עם מפתח גישה, צריך להפעיל את Windows Hello בהגדרות. אחר כך יש לחזור לאתר הזה ולנסות שוב.</translation>
 <translation id="6795371939514004514">בעזרת סריקות אוטומטיות אפשר לעבור אוטומטית בין פריטים שמופיעים במסך. כשפריט כלשהו מודגש, מקישים על "בחירה" כדי להפעיל אותו.</translation>
+<translation id="6795756089603286506">‏אתרים יכולים לבקש הרשאה להשתמש במכשירי ה-MIDI שלך</translation>
 <translation id="6795884519221689054">פנדה</translation>
 <translation id="6796509790850723820">עיבוד</translation>
 <translation id="6797493596609571643">אופס. משהו השתבש.</translation>
@@ -7281,6 +7294,7 @@
 <translation id="6867086642466184030">אפליקציות אחרות מוגדרות לפתוח את אותם קישורים כמו <ph name="APP_NAME" />. כתוצאה מכך, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> וגם <ph name="NUMBER_OF_OTHER_APPS" /> אפליקציות אחרות לא יפתחו קישורים נתמכים.</translation>
 <translation id="6867400383614725881">כרטיסיית מצב אנונימי חדשה</translation>
 <translation id="686831807558000905">אני לא רוצה להיכנס</translation>
+<translation id="686839242150793617">יש הרשאה להפעלה אוטומטית של מצב תמונה בתוך תמונה</translation>
 <translation id="6868934826811377550">הצגת פרטים</translation>
 <translation id="6871644448911473373">‏מגיב OCSP: <ph name="LOCATION" /></translation>
 <translation id="6872781471649843364">השרת דחה את הסיסמה שהזנת.</translation>
@@ -7339,6 +7353,7 @@
 <translation id="6923132443355966645">גלילה / לחיצה</translation>
 <translation id="6923633482430812883">‏קרתה שגיאה בטעינת התקן הרשת לשיתוף קבצים. יש לוודא ששרת הקבצים שאליו ניסית להתחבר תומך ב-SMBv2 ואילך.</translation>
 <translation id="6925127338315966709">בחרת להוסיף פרופיל מנוהל לדפדפן הזה. למנהל המערכת שלך יש שליטה על הפרופיל וגישה לנתונים שלו. ניתן לסנכרן את הסימניות, ההיסטוריה, הסיסמאות והגדרות אחרות עם חשבון שלך, והן ינוהלו ידי מנהל המערכת.</translation>
+<translation id="6928650056523249512">הסרה אוטומטית של הרשאות מאתרים שלא בשימוש</translation>
 <translation id="6929126689972602640">‏בחשבונות בית ספריים, אין תמיכה באמצעי בקרת הורים. כדי להוסיף חשבון בית ספרי לצורך גישה אל Google Classroom ואתרים אחרים למטלות לימודיות, תחילה יש להיכנס באמצעות החשבון האישי של הילד או הילדה. ניתן להוסיף את החשבון הבית ספרי בשלב מאוחר יותר בהגדרה.</translation>
 <translation id="6929760895658557216">Okay Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{בקשת הארכה נדחתה}one{# בקשות הארכה נדחו}two{# בקשות הארכה נדחו}other{# בקשות הארכה נדחו}}</translation>
@@ -8890,6 +8905,7 @@
 <translation id="8161293209665121583">מצב קורא לדפי אינטרנט</translation>
 <translation id="8161604891089629425">גופן מתאר</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{העברת כרטיסייה לחלון חדש}one{העברת כרטיסיות לחלון חדש}two{העברת כרטיסיות לחלון חדש}other{העברת כרטיסיות לחלון חדש}}</translation>
+<translation id="8163152278172770963">אתרים לא יכולים להפעיל 'תמונה בתוך תמונה' אוטומטית</translation>
 <translation id="8163708146810922598">הישנה ביותר</translation>
 <translation id="8165997195302308593">‏העברה ליציאה אחרת ב-Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{מספר טלפון}one{# מספרי טלפון}two{# מספרי טלפון}other{# מספרי טלפון}}</translation>

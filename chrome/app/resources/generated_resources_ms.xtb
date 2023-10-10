@@ -235,6 +235,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1175364870820465910">&amp;Cetak...</translation>
 <translation id="1175914831232945926">Digit</translation>
 <translation id="1176471985365269981">Tidak dibenarkan untuk mengedit fail atau folder pada peranti anda</translation>
+<translation id="1177440945615690056">Anda boleh membuat sambungan kepada sebarang rangkaian mudah alih yang layak dalam Tetapan</translation>
 <translation id="1177863135347784049">Tersuai</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1178601482396475810">Urus penyegerakan peranti</translation>
@@ -2218,6 +2219,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2709516037105925701">Autoisi</translation>
 <translation id="2710101514844343743">Data penggunaan dan diagnostik</translation>
 <translation id="271033894570825754">Baharu</translation>
+<translation id="2710507903599773521">Kini <ph name="DEVICE_TYPE" /> anda tidak berkunci</translation>
 <translation id="2711073837061989559">Percubaan</translation>
 <translation id="2713106313042589954">Matikan kamera</translation>
 <translation id="2713444072780614174">Putih</translation>
@@ -3503,6 +3505,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3752253558646317685">Minta anak anda mengangkat jarinya beberapa kali untuk menyimpan cap jari</translation>
 <translation id="3753033997400164841">Simpan sekali. Gunakan di mana-mana</translation>
 <translation id="3753142252662437130">Penapis warna</translation>
+<translation id="3753412199586870466">Buka panel sisi</translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> anda kini boleh membuka kunci <ph name="DEVICE_TYPE" /> ini juga.</translation>
 <translation id="375636864092143889">Tapak sedang menggunakan mikrofon anda</translation>
 <translation id="3756485814916578707">Menghantar skrin</translation>
@@ -7151,6 +7154,9 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6767566652486411142">Pilih Bahasa Lain...</translation>
 <translation id="6767639283522617719">Tidak dapat menghubungkan domain. Pastikan tetapan untuk unit organisasi adalah betul.</translation>
 <translation id="6768034047581882264">Tidak dibenarkan untuk memaparkan kandungan tidak selamat</translation>
+<translation id="6769902329858794251"><ph name="BEGIN_PARAGRAPH1" />Untuk memberikan pengalaman terbaik, <ph name="DEVICE_OS" /> mengumpulkan data perkakasan tentang peranti dan berkongsi data tersebut dengan Google untuk menentukan kemaskinian yang harus dihantar. Secara pilihan, anda boleh membenarkan Google menggunakan data ini untuk tujuan tambahan seperti sokongan dan peningkatan pada pengalaman dan perkhidmatan <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Anda boleh log masuk pada peranti ini dan melihat medan yang disenaraikan sebagai chromeosflex_ dalam chrome://system untuk melihat data yang dihantar kepada Google untuk penapisan kemaskinian serta sebarang keadaan lain yang anda pilih untuk berkongsi data dengan Google.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Untuk mendapatkan butiran lanjut tentang data yang boleh dikongsi oleh <ph name="DEVICE_OS" /> dengan Google dan cara data itu digunakan, lawati g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770042910635026163">Laman yang anda lawati yang menentukan minat anda</translation>
 <translation id="6770602306803890733">Meningkatkan keselamatan untuk anda dan semua orang yang melayari web</translation>
 <translation id="6771503742377376720">Adalah Pihak Berkuasa Pensijilan</translation>
@@ -8634,6 +8640,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="793531125873261495">Ralat memuat turun mesin maya. Sila cuba lagi.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% selesai</translation>
 <translation id="7937809006412909895">Mengumpulkan data diagnostik</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Pilihan lanjutan</translation>
 <translation id="793923212791838">Peranti anda tidak boleh digunakan dengan laman ini</translation>
 <translation id="7939328347457537652">Urus sijil peranti</translation>

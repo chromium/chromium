@@ -169,6 +169,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1847795903283049083">Du kan også se og administrere disse elementene i bokmerkene, på leselisten eller i passordlagringen.</translation>
 <translation id="1870148520156231997">Vis passordet</translation>
 <translation id="1872096359983322073">Lommelykt</translation>
+<translation id="1876851015978093044">Viser dette elementet</translation>
 <translation id="1882901927376062252">{count,plural, =1{Bokmerket er lagret i Google-kontoen din, {email}}other{{count} bokmerker er lagret i Google-kontoen din, {email}}}</translation>
 <translation id="1883255238294161206">Skjul liste</translation>
 <translation id="1890237935065108104">Denne innstillingen er ikke tilgjengelig.</translation>
@@ -282,6 +283,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2482878487686419369">Varsler</translation>
 <translation id="2484459871750294497">Hvordan slår jeg på denne funksjonen?</translation>
 <translation id="2496626742194544812">Gå til første fane</translation>
+<translation id="2499505845365628575">Du kan finne hele nettleserloggen din via <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2500374554657206846">Alternativer for passordlagring</translation>
 <translation id="2511117522375201202">Du har <ph name="NUMBER_OF_PASSWORDS" /> passord som er utsatt for sikkerhetsbrudd og kan utgjøre en sikkerhetsrisiko.</translation>
 <translation id="2523363575747517183">Dette nettstedet prøver gjentatte ganger å åpne en annen app.</translation>
@@ -1112,6 +1114,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6785453220513215166">Sender krasjrapport …</translation>
 <translation id="6790502149545262384">Snart ser du artikler fra <ph name="CHANNEL_NAME" /> når du åpner nye faner.</translation>
 <translation id="6797885426782475225">Talesøk</translation>
+<translation id="6800349425672670802">Du får tilgang til alle de åpne fanene dine med fanevelgeren.</translation>
 <translation id="6807889908376551050">Vis alle</translation>
 <translation id="681368974849482173">Elementet er opprettet</translation>
 <translation id="6822587385560699678">Når på, lagres passord i <ph name="ACCOUNT" />. Når av, lagres passord bare på denne enheten.</translation>
@@ -1206,6 +1209,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7367530036083223701">Få sikker tilgang til passordene dine fra startskjermen med Passordlagring-modulen.</translation>
 <translation id="7380220816562673297">Foreløpig kan du bare dele passord med familiemedlemmer. <ph name="BEGIN_LINK" />Opprett en familiegruppe<ph name="END_LINK" /> med opptil seks medlemmer, og få mer ut av Google-produktene og -abonnementene dine.</translation>
 <translation id="7383797227493018512">Leseliste</translation>
+<translation id="7396331865858820922">Passordet ble ikke delt</translation>
 <translation id="7398893703713203428">Opprett link</translation>
 <translation id="7399802613464275309">Sikkerhetssjekk</translation>
 <translation id="7400418766976504921">Nettadresse</translation>
@@ -1226,6 +1230,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7488874549363591659">Levert</translation>
 <translation id="7491131399623468277">Gå til Innstillinger …</translation>
 <translation id="7492574581995589075">Organisasjonen din har slått av muligheten til å bruke og lagre Chrome-data i Google-kontoen din. Nye bokmerker, passord med mer lagres bare på denne enheten.</translation>
+<translation id="749854780843431406">Du kan åpne nye faner med <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />-knappen.</translation>
 <translation id="750149195207506638">Bokmerkene er skjult</translation>
 <translation id="750228856503700085">Oppdateringer er ikke tilgjengelige</translation>
 <translation id="750493650310597496">0 er valgt</translation>
@@ -1286,6 +1291,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="778855399387580014">Start et søk i en ny Chrome-fane.</translation>
 <translation id="7791543448312431591">Legg til</translation>
 <translation id="7807060072011926525">Levert av Google</translation>
+<translation id="7812377703891978671">Du kan se hele nettleserloggen ved å velge <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Nedlastinger</translation>
 <translation id="7839985698273989086">Side utenfor internett</translation>
 <translation id="7840771868269352570">De valgte elementene blir fjernet.</translation>
@@ -1433,6 +1439,7 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="8560253818350321773">Vis elementene som brukes ofte, først.</translation>
 <translation id="8588404856427128947">Av</translation>
 <translation id="8591976964826315682">Blokkér informasjonskapsler fra tredjepart i inkognitomodus</translation>
+<translation id="8593565399399144771">Du kan åpne nye faner her.</translation>
 <translation id="8605219856220328675">Lukk fanen.</translation>
 <translation id="8613883225817609844">Skjul nylige faner</translation>
 <translation id="8620640915598389714">Endre</translation>

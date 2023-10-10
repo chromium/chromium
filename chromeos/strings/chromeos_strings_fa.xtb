@@ -119,6 +119,7 @@
 <translation id="1768959921651994223">نوع اصالت‌سنجی</translation>
 <translation id="1776228893584526149">رنگ‌مایه کاغذدیواری</translation>
 <translation id="1782199038061388045">ترجمه</translation>
+<translation id="1788485524395674731">این برنامه را سرپرست شما مدیریت می‌کند</translation>
 <translation id="1792647875738159689">درحال لغو اسکن کردن</translation>
 <translation id="1801418420130173017">غیرفعال کردن زمینه تیره</translation>
 <translation id="1807246157184219062">روشن</translation>
@@ -624,6 +625,7 @@
 <translation id="584953448295717128">‏APN به‌طور خودکار شناسایی می‌شود.</translation>
 <translation id="5849570051105887917">کد ارائه‌دهنده صفحه اصلی</translation>
 <translation id="5859603669299126575">آلبوم گالری هنری</translation>
+<translation id="5859969039821714932">میان‌بر دردسترس نیست. لطفاً میان‌بر جدیدی بدون استفاده از <ph name="KEY" /> اختصاص دهید.</translation>
 <translation id="5860033963881614850">خاموش</translation>
 <translation id="5860491529813859533">روشن کردن</translation>
 <translation id="5876385649737594562">برای انتخاب گزینه‌ها، این حالت را روشن کنید</translation>
@@ -868,6 +870,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
 <translation id="7718231387947923843">میزان نور صفحه‌کلید</translation>
+<translation id="7730077286107534951">‏ممکن است برخی‌از اطلاعات سیستم و حساب به Google ارسال شود. از این اطلاعات برای کمک به برطرف کردن مشکلات فنی و بهبود سرویس‌هایمان استفاده می‌کنیم، و این استفاده مطابق با <ph name="BEGIN_LINK2" />خط‌مشی رازداری<ph name="END_LINK2" /> و <ph name="BEGIN_LINK3" />شرایط خدمات<ph name="END_LINK3" /> ما خواهد بود. برای درخواست تغییر محتوا، به <ph name="BEGIN_LINK1" />راهنمای حقوقی<ph name="END_LINK1" /> بروید.</translation>
 <translation id="773153675489693198">تعداد چرخه‌ها</translation>
 <translation id="7747039790905080783">کلید ازپیش هم‌رسانی‌شده</translation>
 <translation id="7752963721013053477">بامداد تا شامگاه - انحصاری</translation>

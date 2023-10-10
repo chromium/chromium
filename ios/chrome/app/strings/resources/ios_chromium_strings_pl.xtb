@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Otwiera siatkę kart w Chromium.</translation>
 <translation id="1617663976202781617">Dane z synchronizacji Chromium</translation>
 <translation id="1647558790457890304">Ustawienia Chromium</translation>
+<translation id="164952285225495380">Ta przesyłka jest już śledzona w Chromium.</translation>
 <translation id="1722370509450468186">Hasło zostanie zapisane na Twoim koncie (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Wyczyszczono dane Chromium</translation>
 <translation id="1791845338122684020">Otwiera stronę historii Chromium.</translation>
@@ -140,6 +141,7 @@ Pamiętaj, że:
 1. Otwórz Ustawienia.
 2. Kliknij Domyślna przeglądarka.
 3. Wybierz Chromium.</translation>
+<translation id="6197255575340902638">Jeśli ukryjesz „<ph name="MODULE_NAME" />”, Chromium nie będzie już automatycznie śledzić przesyłek w przyszłości i usunie wszystkie wcześniejsze dane śledzenia.</translation>
 <translation id="6247557882553405851">Menedżer haseł Google</translation>
 <translation id="6268381023930128611">Wylogować z Chromium?</translation>
 <translation id="6324041800010509197">Wyświetl siatkę kart w Chromium</translation>

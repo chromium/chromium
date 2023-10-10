@@ -328,6 +328,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1615402009686901181">På grunn av en administratorregel er skjermdumper deaktivert når konfidensielt innhold er synlig</translation>
 <translation id="1617276713587758852">Crossover-biler</translation>
 <translation id="1618571384971354160">Tauing og veihjelp</translation>
+<translation id="1619007254056372606">Administrer nettstedsdata på enheten</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Vegetarmat</translation>
 <translation id="162285686621567578">Forelderen din har blokkert dette nettstedet.</translation>
@@ -1241,6 +1242,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3552297013052089404">Sans-serif-skrifttype</translation>
 <translation id="3558573058928565255">Dagtid</translation>
 <translation id="355995771319966853">Angre autofyll</translation>
+<translation id="3560408312959371419">Alternativer for sporingsbeskyttelse og nettstedsdata på enheten</translation>
 <translation id="3560824484345057728">Se relaterte nettsteder</translation>
 <translation id="3566021033012934673">Tilkoblingen din er ikke privat</translation>
 <translation id="3566336457819493938">215 x 315 mm</translation>
@@ -3884,6 +3886,7 @@ Mer informasjon:
 <translation id="893332455753468063">Legg til navn</translation>
 <translation id="8942355029279167844">Administratoren din har gitt <ph name="APP_NAME" /> tillatelse til å samle inn diagnostikkdata for å gi deg en bedre produktopplevelse. Se <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> for mer informasjon.</translation>
 <translation id="8943282376843390568">Limegrønn</translation>
+<translation id="8944485226638699751">Begrenset</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Lover og offentlig administrasjon</translation>
 <translation id="8954252855949068147">Klær</translation>

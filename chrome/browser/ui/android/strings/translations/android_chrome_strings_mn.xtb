@@ -332,6 +332,7 @@
 <translation id="2856503607207334158">Нэвтрэлт амжилтгүй</translation>
 <translation id="2860954141821109167">Гар утасны аппыг энэ төхөөрөмж дээр идэвхжүүлсэн эсэхийг шалгана уу</translation>
 <translation id="2861923151411510142">Chrome-ын зарим онцлог \u2019 цаашид боломжгүй болно</translation>
+<translation id="2869430948265924908">Машиндаа эмзэг контентоо хамгаалахын тулд та машины профайлын түгжээ үүсгэх ёстой.  Та үүнийг пин, код эсвэл нууц үгээр хийх боломжтой.</translation>
 <translation id="2870560284913253234">Ажлын талбар</translation>
 <translation id="2871733351037274014">Хуудаснуудыг урьдчилан ачаалах</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> танаас энэ вебсайтыг зөвшөөрөхийг хүсэж байна:</translation>
@@ -449,6 +450,7 @@
 <translation id="3421726884497337397">Гуравдагч талын күүкиг хэзээ блоклохыг сонгох</translation>
 <translation id="3428747202529429621">Таныг нэвтэрсэн үед Chrome дээр таны аюулгүй байдлыг хангадаг бөгөөд Google-н бусад апп дахь таны аюулгүй байдлыг сайжруулахын тулд ашиглагдах боломжтой</translation>
 <translation id="3429160811076349561">Туршилтын онцлог унтраалттай байна</translation>
+<translation id="3430670036890315772">Профайлынхаа түгжээг унтраах нь таны хадгалсан мэдээллийг хасна</translation>
 <translation id="3435465986463792564">Олон цонхтой юу? Та тэдгээрийг эндээс удирдах боломжтой</translation>
 <translation id="3435738964857648380">Нууцлал</translation>
 <translation id="3439276997620616816">Та саяхны табуудаа эндээс олно</translation>
@@ -618,6 +620,7 @@
 <translation id="4378154925671717803">Утас</translation>
 <translation id="438319986296050901">Зөвхөн карт хуваалцана уу</translation>
 <translation id="4384468725000734951">Sogou-р хайж байна</translation>
+<translation id="4387647248986092471">Машины профайлын түгжээ үүсгэх</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Татаж байна…</translation>
 <translation id="4404568932422911380">Хавчуурга алга</translation>
 <translation id="4405224443901389797">руу зөөх…</translation>
@@ -786,6 +789,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5170568018924773124">Хавтсанд харуул</translation>
 <translation id="5171045022955879922">Хайх эсвэл холбоосыг бичиж оруул</translation>
 <translation id="5174700554036517242">Табыг анхны өндөр лүү нь буцаасан</translation>
+<translation id="5180063720319462041">Хуудсыг <ph name="TARGET_LANGUAGE" /> руу орчуулсан</translation>
 <translation id="5186634140793586141">Сонирхдог сэдэв болон хайлтуудаа удирдана уу</translation>
 <translation id="5191251636205085390">Гуравдагч талын күүкиг орлох зорилготой шинэ технологийн талаар мэдэж авч мөн хянаарай</translation>
 <translation id="5193988420012215838">Түр санах ой руу хуулсан</translation>
@@ -794,6 +798,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5210286577605176222">Өмнөх табад очих</translation>
 <translation id="5210365745912300556">Цонхыг хаа</translation>
 <translation id="5222676887888702881">Гарах</translation>
+<translation id="5226378907213531272">Та машиныг ашиглах бүрдээ дэлгэцийнхээ түгжээг тайлна</translation>
 <translation id="5227554086496586518">Хайлтын илэрцүүдийг харахын тулд товшино уу</translation>
 <translation id="5233638681132016545">Шинэ таб</translation>
 <translation id="5234971936051226002">“Энэ хуудсыг сонсох” тоглуулагчийг багасгасан.</translation>
@@ -1277,6 +1282,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7691043218961417207">Дагах контент судлах</translation>
 <translation id="7697383401610880082">Чирэх бариул</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />-д имэйл үүсгэнэ үү</translation>
+<translation id="7702388902581909985">Интернэтээр үзсэн өгөгдлөө арилгах нь таныг Google Бүртгэлээс тань гаргахгүй. Үүнийг хийхийн тулд <ph name="BEGIN_LINK1" />Chrome-с гарна уу<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Мобайл дата ашиглах</translation>
 <translation id="7709918231054955894">Бүх табаа аваарай</translation>
 <translation id="772434085369393266">Навигацыг HTTPS руу сайжруулж, үүнийг дэмждэггүй сайтыг ачаалахаас өмнө танд сануулна. Та Дэвшилтэт хамгаалалтыг идэвхжүүлсэн тул энэ тохиргоог өөрчлөх боломжгүй.</translation>

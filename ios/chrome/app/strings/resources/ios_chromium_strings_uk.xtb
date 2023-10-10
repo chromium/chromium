@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Відкриває сітку вкладок у Chromium.</translation>
 <translation id="1617663976202781617">Дані синхронізації Chromium</translation>
 <translation id="1647558790457890304">Налаштування Chromium</translation>
+<translation id="164952285225495380">Це відправлення вже відстежувалося в Chromium.</translation>
 <translation id="1722370509450468186">Ваш пароль буде збережено в обліковому записі (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Дані Chromium стерто</translation>
 <translation id="1791845338122684020">Відкриває сторінку історії Chromium.</translation>
@@ -140,6 +141,7 @@
 1. Відкрийте налаштування
 2. Натисніть "Веб-переглядач за умовчанням"
 3. Виберіть Chromium.</translation>
+<translation id="6197255575340902638">Якщо ви приховаєте модуль "<ph name="MODULE_NAME" />", Chromium більше не відстежуватиме ваші майбутні відправлення автоматично, а всі попередні дані про відстеження замовлень буде видалено.</translation>
 <translation id="6247557882553405851">Менеджер паролів Google</translation>
 <translation id="6268381023930128611">Вийти з Chromium?</translation>
 <translation id="6324041800010509197">Відкрити сітку вкладок у Chromium</translation>

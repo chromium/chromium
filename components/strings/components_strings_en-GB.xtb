@@ -1893,6 +1893,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4873616204573862158">Eyewear</translation>
 <translation id="4876188919622883022">Simplified view</translation>
 <translation id="4876305945144899064">No username</translation>
+<translation id="4876327226315760474">This means site features should work as expected, but you may have less browsing protection.</translation>
 <translation id="4877047577339061095">Home Storage and Shelving</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{None}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> search</translation>
@@ -2521,6 +2522,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6182972682129119950">A4 x 5</translation>
 <translation id="61877208875190028">Women's clothing</translation>
 <translation id="6194209731893739467">See all your tracked products here</translation>
+<translation id="6195163219142236913">Third-party cookies limited</translation>
 <translation id="6195371403461054755">Geology</translation>
 <translation id="6196640612572343990">Block third-party cookies</translation>
 <translation id="6197648101609735209">89 mm x 89 mm</translation>

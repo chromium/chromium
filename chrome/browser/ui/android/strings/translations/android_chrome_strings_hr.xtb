@@ -217,6 +217,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="218608176142494674">Dijeljenje</translation>
 <translation id="2194856509914051091">Važne napomene</translation>
 <translation id="2200113223741723867">Upravljajte dijeljenjem podataka o upotrebi</translation>
+<translation id="22091350895006575">Dodajte korisničko ime</translation>
 <translation id="221494669172414749">Otvaranjem Chromea bez zaključavanja profila uklonit će se spremljene zaporke i načini plaćanja s automobila. Upotrebom zaključavanja profila štitite te podatke.</translation>
 <translation id="2218567645332692482">Navigacija se nadograđuje na HTTPS i prikazuje se upozorenje prije učitavanja web-lokacija koje ga ne podržavaju</translation>
 <translation id="2227444325776770048">Nastavite kao <ph name="USER_FULL_NAME" /></translation>
@@ -244,6 +245,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="235789365079050412">Googleova pravila o privatnosti</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2362083820973145409">Prijavljeni ste kao <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otvara postavke.</translation>
+<translation id="2364539095045928896">Gumb Zatvori za zatvaranje obavijesti o privatnosti središta za uvide u stranicu.</translation>
 <translation id="2386938421315164605">Sakrivanje i otkrivanje tema</translation>
 <translation id="2390510615457643724">Želite li ponovo preuzeti datoteku <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="2394602618534698961">Datoteke koje preuzmete prikazat će se ovdje</translation>
@@ -312,6 +314,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2718846868787000099">Da bi prikazivale sadržaj na jezicima koje preferirate, web-lokacije koje posjećujete mogu vidjeti vaše preferencije</translation>
 <translation id="2722945394406572875">Zatvoren je upit za Privacy Sandbox</translation>
 <translation id="2723001399770238859">zvuk</translation>
+<translation id="2760805590727089264">MM/GG</translation>
 <translation id="2760989362628427051">Uključite tamnu temu kada je na uređaju uključena tamna tema ili Štednja baterije</translation>
 <translation id="2762000892062317888">upravo sada</translation>
 <translation id="276969039800130567">Prijavljeni ste kao <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -840,6 +843,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5458366071038729214">Ovdje ćete pronaći stranice koje pratite</translation>
 <translation id="5468068603361015296">Želite li ipak preuzeti datoteku <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Otvori u aplikaciji za karte</translation>
+<translation id="5486841595534124508">Logotip obavijesti o privatnosti za središte za uvide u stranicu koje preusmjerava na stranicu Moja aktivnost.</translation>
 <translation id="5487521232677179737">Izbriši podatke</translation>
 <translation id="5492637351392383067">Šifriranje na uređaju</translation>
 <translation id="5514904542973294328">Opciju je omogućio administrator ovog uređaja</translation>
@@ -956,6 +960,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="6112702117600201073">Osvježavanje stranice</translation>
 <translation id="6122831415929794347">Želite li isključiti Sigurno pregledavanje?</translation>
 <translation id="6127379762771434464">Stavka je uklonjena</translation>
+<translation id="6130303040046284160">Minimiziraj karticu</translation>
 <translation id="6137022273846704445">Jezik aplikacije <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">Postavke web-lokacije promijenite ovdje</translation>
 <translation id="6140709049082532940">Poboljšana zaštita:</translation>
@@ -1258,6 +1263,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7588219262685291874">Uključi tamnu temu kada je uključena Štednja baterije na uređaju</translation>
 <translation id="7594687499944811403">Dopustite da <ph name="EMBEDDED_ORIGIN" /> potvrdi da ste to vi za <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Operativni sustav</translation>
+<translation id="7603168929588204083">Nevažeći datum</translation>
 <translation id="7605594153474022051">Sinkronizacija ne radi</translation>
 <translation id="7612619742409846846">Prijavljeni ste na Google kao</translation>
 <translation id="7612989789287281429">Prijavljivanje…</translation>
@@ -1307,6 +1313,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7810647596859435254">Otvori aplikacijom…</translation>
 <translation id="7815484226266492798">Duga snimka zaslona</translation>
 <translation id="7822705602465980873">Kad ste prijavljeni, ti se podaci povezuju s vašim Google računom kako biste dobili zaštitu na svim Googleovim uslugama, na primjer radi poboljšanja zaštite na Gmailu nakon sigurnosnog incidenta.</translation>
+<translation id="782705168687182233">Vaša aktivnost sprema se na vaš <ph name="BEGIN_LINK" />Google račun<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Vaše računalo želi registrirati ovaj uređaj za prijavu na web-lokaciju</translation>
 <translation id="7844171778363018843">Za sinkronizaciju nije odabrana nijedna vrsta podataka</translation>
 <translation id="7846296061357476882">Googleove usluge</translation>
@@ -1399,6 +1406,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="8223642481677794647">Izbornik kartica feeda</translation>
 <translation id="8236097722223016103">Dodaj u oznake</translation>
 <translation id="8237871086242677046">Donja tablica uvida u stranicu</translation>
+<translation id="8243077599929149377">Dodajte svoje korisničko ime</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="8255617931166444521">Pojedina web-lokacija može upotrebljavati vaše kolačiće samo za uvid u vašu aktivnost pregledavanja na toj web-lokaciji</translation>
 <translation id="8259179246279078674">Budući da se predučitane stranice šifriraju, Google neće saznati ništa o sadržaju predučitanih stranica. Googleovi poslužitelji saznat će koje se web-lokacije anonimno predučitavaju. Ti se podaci koriste samo za predučitavanje stranica i ne povezuju se s drugim podacima s vašeg Google računa.</translation>
