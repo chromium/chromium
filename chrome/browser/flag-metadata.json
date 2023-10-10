@@ -2310,12 +2310,12 @@
   {
     "name": "enable-compression-dictionary-transport",
     "owners": [ "horo", "net-dev" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "enable-compression-dictionary-transport-backend",
     "owners": [ "horo", "net-dev" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "enable-cooperative-scheduling",
