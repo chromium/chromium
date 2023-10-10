@@ -150,6 +150,10 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
   // Estimated time remaining to pin and cache all the files.
   base::TimeDelta remaining_time = base::TimeDelta::Max();
 
+  // Should the PinManager actually pin files, or should it stop after checking
+  // the space requirements?
+  bool should_pin = true;
+
   // Has the PinManager ever emptied its set of tracking items?
   bool emptied_queue = false;
 
@@ -276,7 +280,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Sets the flag controlling whether the feature should actually pin files.
   void ShouldPin() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    should_pin_ = true;
+    progress_.should_pin = true;
   }
 
   // Sets the online or offline network status, and starts or pauses the Pin
@@ -469,10 +473,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   // Is the device battery ok for doing sync (e.g. not in battery saver mode).
   bool is_battery_ok_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
-
-  // Should the feature actually pin files, or should it stop after checking the
-  // space requirements?
-  bool should_pin_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
 
   // Is this the first full sync after the size estimation?
   bool is_first_sync_ GUARDED_BY_CONTEXT(sequence_checker_) = false;

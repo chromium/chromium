@@ -77,6 +77,7 @@ export async function testProgressAndItemsArePassedToElement() {
     pinnedBytes: 150,
     filesToPin: 24,
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 24,
   };
@@ -110,6 +111,7 @@ export async function testOutOfBoundsValuesDoNotUpdateProgress() {
     pinnedBytes: 1000,  // Greater than `bytesToPin`.
     filesToPin: -10,    // Negative number of files to pin.
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 24,
   };
@@ -139,6 +141,7 @@ export async function testOtherStoreUpdatesDontCauseThisContainerToUpdate() {
     pinnedBytes: 150,
     filesToPin: 24,
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 24,
   };
@@ -196,6 +199,7 @@ export async function testZeroBytesToPinShouldShowAllFilesSynced() {
     pinnedBytes: 0,
     filesToPin: 0,
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 0,
   };
@@ -258,6 +262,7 @@ testInProgressStateDoesNotUpdateThePanelWhenPrefDisabled() {
     pinnedBytes: 100,
     filesToPin: 10,
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 10,
   };
@@ -300,6 +305,7 @@ testPausedStateAddsTypeAttributeAndSyncingRemovesAttribute() {
     pinnedBytes: 100,
     filesToPin: 10,
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 10,
   };
@@ -365,6 +371,7 @@ testNotEnoughSpaceStateAddsTypeAttributeAndSyncingRemovesAttribute() {
     pinnedBytes: 100,
     filesToPin: 10,
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 10,
   };
@@ -420,6 +427,7 @@ export async function testExistingPropertiesAreRemovedOnSubsequentSyncds() {
     pinnedBytes: 100,
     filesToPin: 10,
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 10,
   };
@@ -465,6 +473,7 @@ export async function testNoBytesToPinButHasFilesAddsPercentage() {
     pinnedBytes: 0,
     filesToPin: 1,
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 1,
   };
@@ -496,6 +505,7 @@ export async function testMeteredNetworkState() {
     pinnedBytes: 0,
     filesToPin: 1,
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 1,
   };

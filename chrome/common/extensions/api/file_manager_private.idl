@@ -1285,6 +1285,10 @@ dictionary BulkPinProgress {
   // Estimated time remaining to pin all the `bytesToPin`.
   double remainingSeconds;
 
+  // Should the bulk-pinning manager actually pin files, or should it stop after
+  // checking the space requirements?
+  boolean shouldPin;
+
   // Has the bulk-pinning manager ever emptied its set of tracked items?
   boolean emptiedQueue;
 };

@@ -667,7 +667,9 @@ void PinManager::Start() {
   }
 
   VLOG(1) << "Starting";
+  const bool should_pin = progress_.should_pin;
   progress_ = {};
+  progress_.should_pin = should_pin;
   listed_items_.clear();
   files_to_pin_.clear();
   files_to_track_.clear();
@@ -704,13 +706,13 @@ void PinManager::Stop() {
 
 bool PinManager::CalculateRequiredSpace() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (IsPausedOrInProgress(progress_.stage) && should_pin_) {
+  if (IsPausedOrInProgress(progress_.stage) && progress_.should_pin) {
     LOG(ERROR) << "Cannot calculate required space: "
                << "Pin manager is in stage " << progress_.stage;
     return false;
   }
 
-  should_pin_ = false;
+  progress_.should_pin = false;
   Start();
   return true;
 }
@@ -1139,7 +1141,7 @@ void PinManager::StartPinning() {
     return Complete(Stage::kNotEnoughSpace);
   }
 
-  if (!should_pin_) {
+  if (!progress_.should_pin) {
     VLOG(1) << "Should not pin files";
     is_first_sync_ = true;
     return Complete(Stage::kSuccess);

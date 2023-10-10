@@ -412,6 +412,7 @@ export async function testFileCountUpdates() {
     pinnedBytes: 0,
     filesToPin: 100,
     remainingSeconds: 0,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 100,
   };
