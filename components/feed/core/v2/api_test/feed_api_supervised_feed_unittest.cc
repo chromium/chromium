@@ -55,6 +55,11 @@ TEST_F(FeedApiSupervisedUserTest, LoadSupervisedFeed) {
   TestSupervisedFeedSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
+  EXPECT_TRUE(network_.query_request_sent);
+  EXPECT_EQ(
+      std::vector<NetworkRequestType>({NetworkRequestType::kSupervisedFeed}),
+      network_.sent_request_types());
+
   StreamType stream_type(StreamKind::kSupervisedUser);
   // Verify the model is filled correctly.
   ASSERT_EQ(stream_->GetModel(stream_type)->DumpStateForTesting(),
@@ -80,6 +85,20 @@ TEST_F(FeedApiSupervisedUserTest, DeleteSupervisedFeedOnDetachedSurface) {
 
   StreamType stream_type(StreamKind::kSupervisedUser);
   EXPECT_FALSE(stream_->GetModel(stream_type));
+}
+
+// Supervised feed should ignore quota.
+TEST_F(FeedApiSupervisedUserTest, SupervisedFeedShouldIgnoreQuota) {
+  LoadStreamStatus status = LoadStreamStatus::kNoStatus;
+  for (int i = 0; i < 50; i++) {
+    status =
+        stream_
+            ->ShouldMakeFeedQueryRequest(
+                StreamType(StreamKind::kSupervisedUser), LoadType::kInitialLoad)
+            .load_stream_status;
+  }
+
+  ASSERT_EQ(LoadStreamStatus::kNoStatus, status);
 }
 
 }  // namespace
