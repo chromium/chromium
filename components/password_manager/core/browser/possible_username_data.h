@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
+#include "components/password_manager/core/browser/votes_uploader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
@@ -104,6 +105,37 @@ struct PossibleUsernameData {
   // Returns whether the field identified by |renderer_id| has
   // any server prediction stored in |form_predictions|.
   bool HasServerPrediction() const;
+};
+
+// This enum lists priorities (from highest to lowest) of the possible username
+// that is outside of the password form.
+enum class UsernameFoundOutsideOfFormType {
+  // Text field outside of the password form that was modified by user.
+  // If username outside of the form has type `kUserModifiedTextField`, it is
+  // not used in the save bubble, but will be used in the voting stage.
+  kUserModifiedTextField = 0,
+  // Field has autocomplete="username" attribute.
+  kUsernameAutocomplete = 1,
+  // Field's value matches username found inside the password form that was
+  // prefilled by the website.
+  // It will not influence username in the save bubble, but it is critical
+  // for voting stage.
+  kMatchingUsername = 2,
+  // Field has `SINGLE_USERNAME` server prediction.
+  kSingleUsernamePrediction = 3,
+  // Server override. Used even if there is a server prediction of username
+  // inside the password form.
+  kSingleUsernameOverride = 4,
+};
+
+// Combines information about the username field outside password form based on
+// what is known about the field.
+struct UsernameFoundOutsideOfForm {
+  UsernameFoundOutsideOfFormType priority =
+      UsernameFoundOutsideOfFormType::kUserModifiedTextField;
+  PasswordFormHadMatchingUsername password_form_had_matching_username =
+      PasswordFormHadMatchingUsername(false);
+  PossibleUsernameData data;
 };
 
 }  // namespace password_manager

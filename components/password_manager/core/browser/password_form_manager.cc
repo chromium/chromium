@@ -133,16 +133,49 @@ bool ShouldShowErrorMessage(
 // Returns true if `form`s username value equals `username_value` (case
 // insensitive).
 PasswordFormHadMatchingUsername FormMatchesUsername(
-    const PasswordForm* form,
+    const PasswordForm& form,
     const std::u16string& username_value) {
   return PasswordFormHadMatchingUsername(
-      form &&
-      base::EqualsCaseInsensitiveASCII(username_value, form->username_value));
+      base::EqualsCaseInsensitiveASCII(username_value, form.username_value));
 }
 
 bool IsPasswordFormWithoutUsername(const PasswordForm* form) {
   return form && form->HasNonEmptyPasswordValue() &&
          form->username_value.empty();
+}
+
+// Given username found outside of the form, check and return priority
+// (`UsernameFoundOutsideOfFormType`) of the field and whether it matches the
+// username value found inside password form.
+std::pair<UsernameFoundOutsideOfFormType, PasswordFormHadMatchingUsername>
+GivePriorityToUsernameFoundOutsideOfForm(
+    const PossibleUsernameData& candidate_username,
+    const PasswordForm& form) {
+  PasswordFormHadMatchingUsername password_form_had_matching_username =
+      FormMatchesUsername(form, candidate_username.value);
+  if (candidate_username.HasSingleUsernameOverride()) {
+    return {UsernameFoundOutsideOfFormType::kSingleUsernameOverride,
+            password_form_had_matching_username};
+  }
+  if (candidate_username.HasSingleUsernameServerPrediction()) {
+    return {UsernameFoundOutsideOfFormType::kSingleUsernamePrediction,
+            password_form_had_matching_username};
+  }
+  if (password_form_had_matching_username) {
+    return {UsernameFoundOutsideOfFormType::kMatchingUsername,
+            PasswordFormHadMatchingUsername(true)};
+  }
+  if (candidate_username.autocomplete_attribute_has_username &&
+      !candidate_username.HasServerPrediction() &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kUsernameFirstFlowHonorAutocomplete)) {
+    return {UsernameFoundOutsideOfFormType::kUsernameAutocomplete,
+            PasswordFormHadMatchingUsername(false)};
+  }
+  // Return the weakest signal otherwise. User typed something and there is a
+  // chance that it was a single username.
+  return {UsernameFoundOutsideOfFormType::kUserModifiedTextField,
+          PasswordFormHadMatchingUsername(false)};
 }
 
 // Finds best username candidate that is outside of the form. Priority is given
@@ -153,18 +186,44 @@ bool IsPasswordFormWithoutUsername(const PasswordForm* form) {
 // `SINGLE_USERNAME` prediction. Add search for candidate that has the same
 // value as username inside the form. Search for candidate with HTML attribute
 // autocomplete="username". Skip OTP fields.
-PossibleUsernameData FindBestPossibleUsernameCandidate(
+UsernameFoundOutsideOfForm FindBestPossibleUsernameCandidate(
     const base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>&
-        possible_usernames) {
-  for (auto [field_identifier, possible_username] : possible_usernames) {
-    if (possible_username.HasSingleUsernameOverride() &&
+        possible_usernames,
+    const PasswordForm& form) {
+  // Check priority of the most recent element modified by user.
+  auto [priority, password_form_had_matching_username] =
+      GivePriorityToUsernameFoundOutsideOfForm(
+          possible_usernames.begin()->second, form);
+  UsernameFoundOutsideOfForm result = {priority,
+                                       password_form_had_matching_username,
+                                       possible_usernames.begin()->second};
+
+  // Search for better candidate among less recently modified fields.
+  // If `kUsernameFirstFlowWithIntermediateValues` feature is off, the last
+  // user-typed is always picked.
+  // If `kUsernameFirstFlowWithIntermediateValues` feature is on, look for
+  // other field in cache that has a higher priority.
+  // TODO(crbug.com/1470586): Reuse
+  // `GivePriorityToUsernameFoundOutsideOfForm()`.
+  for (auto [field_identifier, candidate_username] : possible_usernames) {
+    // The override has higher priority than server prediction. If password form
+    // has server prediction, only override found outside of the password form
+    // can be used instead of it.
+    // Reassign the best candidate if new candidate has higher priority.
+    // Priorities are numbered so that the lowest has priority 0.
+    if (candidate_username.HasSingleUsernameOverride() &&
+        result.priority <
+            UsernameFoundOutsideOfFormType::kSingleUsernameOverride &&
         base::FeatureList::IsEnabled(
             password_manager::features::
                 kUsernameFirstFlowWithIntermediateValues)) {
-      return possible_username;
+      result = {UsernameFoundOutsideOfFormType::kSingleUsernameOverride,
+                FormMatchesUsername(form, candidate_username.value),
+                candidate_username};
+      return result;
     }
   }
-  return possible_usernames.begin()->second;
+  return result;
 }
 
 void SetUsernameValueFromOutsideOfForm(const std::u16string& value,
@@ -842,14 +901,9 @@ bool PasswordFormManager::ProvisionallySave(
 
   if (possible_usernames && !possible_usernames->empty()) {
     // TODO: crbug.com/1470586 - Pick the most probable |possible_username|.
-    PossibleUsernameData possible_username =
-        FindBestPossibleUsernameCandidate(*possible_usernames);
-
-    // TODO: crbug.com/1470586 - Search for matching username through all
-    // candidates in `FindBestPossibleUsernameCandidate`.
-    PasswordFormHadMatchingUsername password_form_had_matching_username =
-        FormMatchesUsername(parsed_submitted_form_.get(),
-                            possible_username.value);
+    UsernameFoundOutsideOfForm possible_username =
+        FindBestPossibleUsernameCandidate(*possible_usernames,
+                                          *parsed_submitted_form_.get());
 
     // `possible_username` is considered for single username vote in three
     // cases:
@@ -860,15 +914,12 @@ bool PasswordFormManager::ProvisionallySave(
     // 3) There is a username field outside of the password form that is a
     // server override.
     if (IsPasswordFormWithoutUsername(
-            parsed_submitted_form_.get()) ||               // Case (1).
-        password_form_had_matching_username ||             // Case (2).
-        (possible_username.HasSingleUsernameOverride() &&  // Case (3).
-         base::FeatureList::IsEnabled(
-             password_manager::features::
-                 kUsernameFirstFlowWithIntermediateValues))) {
+            parsed_submitted_form_.get()) ||                      // Case (1).
+        possible_username.password_form_had_matching_username ||  // Case (2).
+        possible_username.priority ==                             // Case (3).
+            UsernameFoundOutsideOfFormType::kSingleUsernameOverride) {
       // TODO(crbug.com/959776): Reset `possible_username` after it's used.
-      HandleUsernameFirstFlow(possible_username,
-                              password_form_had_matching_username);
+      HandleUsernameFirstFlow(possible_username);
     }
   }
   HandleForgotPasswordFormData();
@@ -1260,26 +1311,29 @@ void PasswordFormManager::UpdateFormManagerWithFormChanges(
 }
 
 void PasswordFormManager::HandleUsernameFirstFlow(
-    const PossibleUsernameData& possible_username,
-    PasswordFormHadMatchingUsername password_form_had_matching_username) {
-  if (IsPossibleSingleUsernameAvailable(possible_username)) {
+    const UsernameFoundOutsideOfForm& possible_username) {
+  if (IsPossibleSingleUsernameAvailable(possible_username.data)) {
     // Suggest the possible username value in a prompt in two cases:
-    // (1) If the server confirmed it is a single username field.
+    // (1) If the server confirmed it is a single username field (either server
+    // prediction or server override).
     // (2) If the field has autocomplete = "username" attribute (used only if
     // there are no server predictions, which lets us override the attribute).
     // Otherwise, |possible_username| is used only for voting.
-    if (possible_username.HasSingleUsernameServerPrediction() ||
-        (!possible_username.HasServerPrediction() &&
-         possible_username.autocomplete_attribute_has_username &&
+    if (possible_username.priority ==
+            UsernameFoundOutsideOfFormType::kSingleUsernameOverride ||
+        possible_username.priority ==
+            UsernameFoundOutsideOfFormType::kSingleUsernamePrediction ||
+        (possible_username.priority ==
+             UsernameFoundOutsideOfFormType::kUsernameAutocomplete &&
          base::FeatureList::IsEnabled(
              password_manager::features::
                  kUsernameFirstFlowHonorAutocomplete))) {
-      if (!password_form_had_matching_username) {
-        SetUsernameValueFromOutsideOfForm(possible_username.value,
+      if (!possible_username.password_form_had_matching_username) {
+        SetUsernameValueFromOutsideOfForm(possible_username.data.value,
                                           *parsed_submitted_form_.get());
       }
       metrics_recorder_->set_possible_username_used(true);
-      if (possible_username.autocomplete_attribute_has_username) {
+      if (possible_username.data.autocomplete_attribute_has_username) {
         LogUsingPossibleUsername(
             client_, /*is_used=*/true,
             "Single username by autocomplete attribute, "
@@ -1297,9 +1351,10 @@ void PasswordFormManager::HandleUsernameFirstFlow(
           "retrieved from PossibleUsernameData, not populated in prompt");
     }
     votes_uploader_.set_single_username_vote_data(SingleUsernameVoteData(
-        possible_username.renderer_id, possible_username.value,
-        possible_username.form_predictions.value_or(FormPredictions()),
-        form_fetcher_->GetBestMatches(), password_form_had_matching_username));
+        possible_username.data.renderer_id, possible_username.data.value,
+        possible_username.data.form_predictions.value_or(FormPredictions()),
+        form_fetcher_->GetBestMatches(),
+        possible_username.password_form_had_matching_username));
   } else {  // !IsPossibleSingleUsernameAvailable(possible_username)
     // If no single username typing preceded single password typing, set
     // empty single username vote data for the fallback classifier.
@@ -1341,7 +1396,7 @@ void PasswordFormManager::HandleForgotPasswordFormData() {
     }
 
     PasswordFormHadMatchingUsername password_form_had_matching_username =
-        FormMatchesUsername(parsed_submitted_form_.get(), field.value);
+        FormMatchesUsername(*parsed_submitted_form_.get(), field.value);
     // Consider possible username field for voting if either:
     // 1) A password form without a username was submitted after the single
     // username form. 2) The submitted password form contains the potential
