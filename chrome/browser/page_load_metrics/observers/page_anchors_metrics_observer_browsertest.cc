@@ -127,8 +127,9 @@ class PageAnchorsMetricsObserverBrowserTest
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
+// Disabled for being flaky. See crbug.com/1471215
 IN_PROC_BROWSER_TEST_F(PageAnchorsMetricsObserverBrowserTest,
-                       NavigateAwayShouldRecordUkmData) {
+                       DISABLED_NavigateAwayShouldRecordUkmData) {
   ResetUKM();
   NavigateTo(GetTestURL("/1.html"));
 
