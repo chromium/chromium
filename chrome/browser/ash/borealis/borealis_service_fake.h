@@ -28,7 +28,6 @@ class BorealisServiceFake : public BorealisService {
   BorealisAppLauncher& AppLauncher() override;
   BorealisAppUninstaller& AppUninstaller() override;
   BorealisContextManager& ContextManager() override;
-  BorealisDiskManagerDispatcher& DiskManagerDispatcher() override;
   BorealisFeatures& Features() override;
   BorealisInstaller& Installer() override;
   BorealisInstallUrlHandler& InstallUrlHandler() override;
@@ -40,8 +39,6 @@ class BorealisServiceFake : public BorealisService {
   void SetAppLauncherForTesting(BorealisAppLauncher* app_launcher);
   void SetAppUninstallerForTesting(BorealisAppUninstaller* app_uninstaller);
   void SetContextManagerForTesting(BorealisContextManager* context_manager);
-  void SetDiskManagerDispatcherForTesting(
-      BorealisDiskManagerDispatcher* borealis_disk_manager_dispatcher);
   void SetFeaturesForTesting(BorealisFeatures* features);
   void SetInstallerForTesting(BorealisInstaller* installer);
   void SetInstallUrlHandlerForTesting(
@@ -55,8 +52,6 @@ class BorealisServiceFake : public BorealisService {
   raw_ptr<BorealisAppLauncher, ExperimentalAsh> app_launcher_ = nullptr;
   raw_ptr<BorealisAppUninstaller, ExperimentalAsh> app_uninstaller_ = nullptr;
   raw_ptr<BorealisContextManager, ExperimentalAsh> context_manager_ = nullptr;
-  raw_ptr<BorealisDiskManagerDispatcher, DanglingUntriaged | ExperimentalAsh>
-      borealis_disk_manager_dispatcher_ = nullptr;
   raw_ptr<BorealisFeatures, DanglingUntriaged | ExperimentalAsh> features_ =
       nullptr;
   raw_ptr<BorealisInstaller, ExperimentalAsh> installer_ = nullptr;

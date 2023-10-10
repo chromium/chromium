@@ -21,7 +21,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
-#include "chrome/browser/ash/borealis/borealis_disk_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_launch_options.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
@@ -360,27 +359,6 @@ void UpdateChromeFlags::OnFlagsUpdated(BorealisContext* context,
   // success.
   if (!error.empty()) {
     LOG(ERROR) << "Failed to update chrome's flags in Borealis: " << error;
-  }
-  Complete(BorealisStartupResult::kSuccess, "");
-}
-
-SyncBorealisDisk::SyncBorealisDisk() : BorealisTask("SyncBorealisDisk") {}
-SyncBorealisDisk::~SyncBorealisDisk() = default;
-
-void SyncBorealisDisk::RunInternal(BorealisContext* context) {
-  context->get_disk_manager().SyncDiskSize(
-      base::BindOnce(&SyncBorealisDisk::OnSyncBorealisDisk,
-                     weak_factory_.GetWeakPtr(), context));
-}
-
-void SyncBorealisDisk::OnSyncBorealisDisk(
-    BorealisContext* context,
-    base::expected<BorealisSyncDiskSizeResult,
-                   Described<BorealisSyncDiskSizeResult>> result) {
-  // This step should not block startup, so just log the error and declare
-  // success.
-  if (!result.has_value()) {
-    LOG(ERROR) << "Failed to sync disk: " << result.error().description();
   }
   Complete(BorealisStartupResult::kSuccess, "");
 }

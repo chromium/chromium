@@ -9,7 +9,6 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
-#include "chrome/browser/ash/borealis/borealis_disk_manager.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "chrome/browser/ash/guest_os/dbus_test_helper.h"
@@ -32,38 +31,6 @@ using ::testing::StrNe;
 namespace borealis {
 
 namespace {
-
-class DiskManagerMock : public BorealisDiskManager {
- public:
-  DiskManagerMock() = default;
-  ~DiskManagerMock() override = default;
-  MOCK_METHOD(void,
-              GetDiskInfo,
-              (base::OnceCallback<
-                  void(base::expected<GetDiskInfoResponse,
-                                      Described<BorealisGetDiskInfoResult>>)>),
-              ());
-  MOCK_METHOD(
-      void,
-      RequestSpace,
-      (uint64_t,
-       base::OnceCallback<void(
-           base::expected<uint64_t, Described<BorealisResizeDiskResult>>)>),
-      ());
-  MOCK_METHOD(
-      void,
-      ReleaseSpace,
-      (uint64_t,
-       base::OnceCallback<void(
-           base::expected<uint64_t, Described<BorealisResizeDiskResult>>)>),
-      ());
-  MOCK_METHOD(void,
-              SyncDiskSize,
-              (base::OnceCallback<
-                  void(base::expected<BorealisSyncDiskSizeResult,
-                                      Described<BorealisSyncDiskSizeResult>>)>),
-              ());
-};
 
 using CallbackFactory =
     NiceCallbackFactory<void(BorealisStartupResult, std::string)>;
@@ -254,50 +221,6 @@ TEST_F(BorealisTasksTest,
   AwaitBorealisStartup task;
   task.Run(context_.get(), callback_factory.BindOnce());
   task_environment_.FastForwardBy(base::Seconds(31));
-}
-
-TEST_F(BorealisTasksTest, SyncBorealisDiskFailureIgnored) {
-  auto disk_mock = std::make_unique<DiskManagerMock>();
-  EXPECT_CALL(*disk_mock, SyncDiskSize(_))
-      .WillOnce(testing::Invoke(
-          [](base::OnceCallback<void(
-                 base::expected<BorealisSyncDiskSizeResult,
-                                Described<BorealisSyncDiskSizeResult>>)>
-                 callback) {
-            std::move(callback).Run(
-                base::unexpected(Described<BorealisSyncDiskSizeResult>(
-                    BorealisSyncDiskSizeResult::kFailedToGetDiskInfo,
-                    "error message")));
-          }));
-
-  CallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(BorealisStartupResult::kSuccess, ""));
-  context_->SetDiskManagerForTesting(std::move(disk_mock));
-  SyncBorealisDisk task;
-  task.Run(context_.get(), callback_factory.BindOnce());
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(BorealisTasksTest, SyncBorealisDiskSucceeds) {
-  auto disk_mock = std::make_unique<DiskManagerMock>();
-  EXPECT_CALL(*disk_mock, SyncDiskSize(_))
-      .WillOnce(testing::Invoke(
-          [](base::OnceCallback<void(
-                 base::expected<BorealisSyncDiskSizeResult,
-                                Described<BorealisSyncDiskSizeResult>>)>
-                 callback) {
-            std::move(callback).Run(
-                base::expected<BorealisSyncDiskSizeResult,
-                               Described<BorealisSyncDiskSizeResult>>(
-                    BorealisSyncDiskSizeResult::kNoActionNeeded));
-          }));
-
-  CallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(BorealisStartupResult::kSuccess, _));
-  context_->SetDiskManagerForTesting(std::move(disk_mock));
-  SyncBorealisDisk task;
-  task.Run(context_.get(), callback_factory.BindOnce());
-  task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisTasksTest, DlcRetries) {

@@ -208,7 +208,6 @@ BorealisContextManagerImpl::GetTasks() {
   task_queue.push(std::make_unique<StartBorealisVm>());
   task_queue.push(std::make_unique<AwaitBorealisStartup>());
   task_queue.push(std::make_unique<UpdateChromeFlags>(profile_));
-  task_queue.push(std::make_unique<SyncBorealisDisk>());
   return task_queue;
 }
 

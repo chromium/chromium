@@ -33,10 +33,6 @@ BorealisContextManager& BorealisServiceImpl::ContextManager() {
   return context_manager_;
 }
 
-BorealisDiskManagerDispatcher& BorealisServiceImpl::DiskManagerDispatcher() {
-  return disk_manager_dispatcher_;
-}
-
 BorealisFeatures& BorealisServiceImpl::Features() {
   return features_;
 }
