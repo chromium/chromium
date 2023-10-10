@@ -5394,16 +5394,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="V8.WasmModuleSizeBytes"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="VideoCaptureFrameDrop" separator=".">
-  <suffix name="DeviceCapture" label=""/>
-  <suffix name="DisplayCapture" label=""/>
-  <suffix name="DisplayCaptureCurrentTab" label=""/>
-  <suffix name="GumDesktopCapture" label=""/>
-  <suffix name="GumTabCapture" label=""/>
-  <affected-histogram name="Media.VideoCapture.FrameDrop"/>
-  <affected-histogram name="Media.VideoCapture.MaxFrameDropExceeded"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="VideoFrameRateRange" separator=".">
   <suffix name="24fps" label="24 fps"/>
   <suffix name="25fps" label="25 fps"/>

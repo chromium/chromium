@@ -5736,24 +5736,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.FrameDrop"
-    enum="VideoCaptureFrameDropReason" expires_after="2024-03-03">
-  <owner>mcasas@chromium.org</owner>
-  <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
-  <owner>jophba@chromium.org</owner>
-  <summary>
-    An event for this histogram is emitted once for each time a video frame is
-    dropped on the way from a capture source, e.g. a webcam, to a corresponding
-    media::VideoCaptureController instance running in the Browser process. If
-    more than
-    |VideoCaptureController::max_consecutive_frame_drop_for_same_reason_count()|
-    frames are dropped consecutively for the same reason, no more events for the
-    same reason will be counted for that session until either a frame is
-    delivered successfully or the reason for the frame dropping changes.
-  </summary>
-</histogram>
-
 <histogram name="Media.VideoCapture.FrameRate" units="fps"
     expires_after="2024-03-03">
   <owner>mcasas@chromium.org</owner>
@@ -5865,21 +5847,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.MaxFrameDropExceeded"
-    enum="VideoCaptureFrameDropReason" expires_after="M77">
-  <owner>chfremer@chromium.org</owner>
-  <summary>
-    An event for this histogram is emitted when a video capture session drops
-    more than
-    |VideoCaptureController::max_consecutive_frame_drop_for_same_reason_count()|
-    consecutive video frames for the same reason. After this event is emitted
-    once, no additional events are emitted for consecutively dropped frames for
-    the same reason until the count is reset by either a frame being delivered
-    successfully or a frame being dropped for a different reason. See also
-    Media.VideoCapture.FrameDrop.
-  </summary>
-</histogram>
-
 <histogram name="Media.VideoCapture.NumberOfClients" units="units"
     expires_after="2021-12-12">
   <owner>fbeaufort@chromium.org</owner>
@@ -5953,6 +5920,30 @@ chromium-metrics-reviews@google.com.
     Total time for a VideoSourceImpl to start a device to serve the first push
     subscription mojo connection. Only recorded if starting is successful.
   </summary>
+</histogram>
+
+<histogram name="Media.VideoCapture.Track.FrameDrop.{StreamType}"
+    enum="VideoCaptureFrameDropReason" expires_after="2024-03-03">
+  <owner>mcasas@chromium.org</owner>
+  <owner>guidou@chromium.org</owner>
+  <owner>armax@chromium.org</owner>
+  <owner>jophba@chromium.org</owner>
+  <summary>
+    An event for this histogram is emitted once for each time a video frame is
+    dropped for a {StreamType} video source, but gets suppressed after
+    `MediaStreamVideoTrack::kMaxConsecutiveFrameDropForSameReasonCount`
+    consecutive drops. Logging resumes again if another frame is delivered or if
+    the frame drop reason changes. The frame drop is recorder on a per-track
+    basis (i.e. cloned tracks also log) and includes out-of-process frame drops
+    (e.g. a DeviceCapture webcam source dropping frames in the capture process).
+  </summary>
+  <token key="StreamType">
+    <variant name="DeviceCapture"/>
+    <variant name="DisplayCapture"/>
+    <variant name="DisplayCaptureCurrentTab"/>
+    <variant name="GumDesktopCapture"/>
+    <variant name="GumTabCapture"/>
+  </token>
 </histogram>
 
 <histogram name="Media.VideoCapture.Width" units="pixels"

@@ -199,11 +199,13 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
 
   bool UsingAlpha();
 
-  // Warning: This value should not be changed, because doing so would change
-  // the meaning of logged UMA events for histograms Media.VideoCapture.Error
-  // and Media.VideoCapture.MaxFrameDropExceeded.
+  // After this many frame drops of the same reason, we skip logging
+  // Media.VideoCapture.Track.FrameDrop UMAs.
   static constexpr int kMaxConsecutiveFrameDropForSameReasonCount = 10;
-  // Number of logs for dropped frames to be emitted before suppressing.
+
+  // After this many frame drops of the same reason, we suppress
+  // EmitLogMessage(), which is wired to MediaStreamVideoSource::OnLog() and
+  // ultimately WebRTC logging in the browser process.
   static constexpr int kMaxEmittedLogsForDroppedFramesBeforeSuppressing = 3;
   // Suppressed logs for dropped frames will still be emitted this often.
   static constexpr int kFrequencyForSuppressedLogs = 100;

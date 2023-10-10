@@ -573,11 +573,6 @@ TEST_F(MediaStreamVideoTrackTest,
       "Media.VideoCapture.Track.FrameDrop.DeviceCapture",
       media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat,
       MediaStreamVideoTrack::kMaxConsecutiveFrameDropForSameReasonCount);
-
-  histogram_tester.ExpectBucketCount(
-      "Media.VideoCapture.Track.MaxFrameDropExceeded.DeviceCapture",
-      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat,
-      1);
 }
 
 TEST_F(MediaStreamVideoTrackTest,
