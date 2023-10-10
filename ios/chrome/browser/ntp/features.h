@@ -247,6 +247,9 @@ bool IsFeedHotStartRefreshDisabled();
 // YES when Follow UI Update is enabled.
 bool IsFollowUIUpdateEnabled();
 
+// YES when the Content Push Notifications are enabled.
+bool IsContentPushNotificationsEnabled();
+
 // Returns true when the IOSLargeFakebox feature is enabled.
 bool IsIOSLargeFakeboxEnabled();
 
