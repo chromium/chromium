@@ -2029,6 +2029,7 @@ Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisate
 
       Lorsque cette règle est définie sur "False", ou si elle n'est pas configurée, les icônes sont visibles.</translation>
 <translation id="2744751866269053547">Inscrire des gestionnaires de protocoles</translation>
+<translation id="2744980433176488921">Les paramètres F11/F12 utilisent le raccourci qui contient la touche de modification Maj</translation>
 <translation id="2745150813292162313">Autoriser l'activation du partitionnement pour le stockage tiers</translation>
 <translation id="2746016768603629042">Cette règle est obsolète. Veuillez plutôt utiliser la règle "DefaultJavaScriptSetting".
 
@@ -3589,6 +3590,7 @@ Jusqu'à Chrome 114, cette règle exigeait que la règle <ph name="SYNC_DISABLE
 
       Si <ph name="PRODUCT_NAME" /> ne se ferme pas correctement, par exemple si le navigateur ou l'OS plante, les données de navigation seront supprimées lors du prochain chargement du profil.</translation>
 <translation id="4056910949759281379">Désactiver le protocole SPDY</translation>
+<translation id="4057442294431066708">Cette règle contrôle l'option de raccourci sélectionnée pour remapper les événements avec F11/F12 dans la sous-page des touches de remappage. Ces paramètres ne s'appliquent qu'aux claviers ChromeOS et sont désactivés par défaut lorsque la règle n'est pas configurée.</translation>
 <translation id="4061107397839125009">Permet de dresser la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à afficher des notifications.
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Sinon, le paramètre défini par l'utilisateur s'applique.
@@ -3697,6 +3699,7 @@ Les extensions installées d'office et auto-hébergées sont ignorées. Toutes l
 
 Si la règle est définie sur <ph name="ALLOW_UNPUBLISHED" /> (0) ou n'est pas configurée, les extensions dont la publication est annulée sur le Chrome Web Store sont autorisées.
 Si la règle est définie sur <ph name="DISABLE_UNPUBLISHED" /> (1), les extensions dont la publication est annulée sur le Chrome Web Store sont désactivées.</translation>
+<translation id="4164866067069311355">Contrôle le raccourci utilisé pour déclencher F11/F12</translation>
 <translation id="4165986682804962316">Paramètres des sites</translation>
 <translation id="4166174702671320480">Si cette règle est activée, les règles associées à un groupe atomique qui ne sont pas issues de la source ayant la plus haute priorité dans le groupe sont ignorées.
 
@@ -6088,6 +6091,7 @@ Pour en savoir plus, consultez https://developer.chrome.com/blog/immutable-docum
 
       Remarque : Cette règle ne doit pas être activée si la règle <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> l'est également, car elles partagent la même fonctionnalité côté client. Dans ce cas, le service de synchronisation hébergé par Google est totalement désactivé.</translation>
 <translation id="6320935916601887506">Le nouveau comportement offsetParent sera utilisé par défaut.</translation>
+<translation id="6324274808543634377">Les paramètres F11/F12 utilisent le raccourci qui contient la touche de modification Alt</translation>
 <translation id="6327643515544933974">Paramètres USB Web</translation>
 <translation id="6330882599388782338">Autoriser les sites à accéder aux capteurs</translation>
 <translation id="6331167725613770725">Cette règle étant obsolète, elle sera supprimée dans la version 85 de <ph name="PRODUCT_OS_NAME" />. (Veuillez utiliser la règle <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.)
@@ -7359,6 +7363,7 @@ quand l'utilisation des racines fournies par la plate-forme ne sera plus prise e
 
 Cette règle a été supprimée dans la version 113 de <ph name="PRODUCT_NAME" /> pour <ph name="MS_WIN_NAME" /> et <ph name="MAC_OS_NAME" />, quand la prise en charge de l'outil de vérification des certificats et des racines fournis par la plate-forme a cessé.</translation>
 <translation id="7298197471363105063">Ignorer les ensembles propriétaires.</translation>
+<translation id="7300320787419338290">Les paramètres F11/F12 utilisent le raccourci qui contient les touches de modification Ctrl et Maj</translation>
 <translation id="7302043767260300182">Délai de verrouillage de l'écran (secteur)</translation>
 <translation id="7303902834678570827">Les utilisateurs d'une session Invité gérée ne peuvent pas stocker les paramètres d'affichage au niveau de l'appareil</translation>
 <translation id="7306926210354955892">Cette règle permet de spécifier l'action à effectuer lorsque le répertoire de données ARC de l'utilisateur a été créé avec virtio-fs. À moins que les données virtio-fs ne soient migrées vers virtio-blk, les applications Android peuvent s'exécuter plus lentement sur ARCVM.
@@ -9308,6 +9313,7 @@ Si cette règle n'est pas définie sur un appareil géré, l'appareil n'est pas 
 
       La valeur doit être indiquée en secondes.</translation>
 <translation id="9015578113567730893">Fréquence de collecte par télémétrie audio en millisecondes.</translation>
+<translation id="9015759770696099204">Les paramètres F11/F12 sont désactivés</translation>
 <translation id="9015952763003753868">Rendre la mise en correspondance <ph name="ACAM_HEADER_NAME" /> conforme dans les spécifications de la requête préliminaire <ph name="CORS" /></translation>
 <translation id="9020630127193895800">Rétroéclairage du clavier indigo</translation>
 <translation id="9031831501689819108">Activer Legacy Browser Support</translation>

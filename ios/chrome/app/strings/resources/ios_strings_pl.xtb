@@ -58,6 +58,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="1264156759663453185">Wybrany tekst jest za duży do częściowego tłumaczenia.</translation>
 <translation id="1265739287306757398">Instrukcje</translation>
 <translation id="1272079795634619415">Zatrzymaj</translation>
+<translation id="1273416271143914096">{count,plural, =1{{count} hasło}few{{count} hasła}many{{count} haseł}other{{count} hasła}}</translation>
 <translation id="1275718070701477396">Zaznaczony</translation>
 <translation id="1279024913354609713">Nie zezwalaj</translation>
 <translation id="1281818060020671000">Zarządzaj danymi</translation>
@@ -191,6 +192,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="1987779152850321833">Wykonaj te sugerowane działania, aby w pełni wykorzystać możliwości Chrome.</translation>
 <translation id="1989112275319619282">Przeglądaj</translation>
 <translation id="1990820278544963435">Znajdź</translation>
+<translation id="1991153180045413119">Hasło udostępnione</translation>
 <translation id="1992055602764528852">Zaloguj się, aby wyświetlić karty z innych urządzeń.</translation>
 <translation id="199425419756152024">Wyświetl hasło</translation>
 <translation id="2008357574463816229">Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
@@ -234,6 +236,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="2268044343513325586">Zawęź</translation>
 <translation id="2269277877025820298">Zobacz więcej</translation>
 <translation id="2273327106802955778">Menu Więcej</translation>
+<translation id="2274800392139890332">Wyłącz śledzenie tej przesyłki</translation>
 <translation id="2275480389219976105">Adres znaleziony</translation>
 <translation id="2286505070150039482">Zaznaczony tekst</translation>
 <translation id="2287614783861766820">{count,plural, =1{Ten adres zostanie usunięty z tego urządzenia.}few{Te adresy zostaną usunięte z tego urządzenia.}many{Te adresy zostaną usunięte z tego urządzenia.}other{Te adresy zostaną usunięte z tego urządzenia.}}</translation>
@@ -242,6 +245,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="2299218006564889602">Przed zapisaniem w menedżerze haseł Google hasła są szyfrowane na urządzeniu.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • Numer <ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">Zmień hasło na stronie</translation>
+<translation id="2310154074101836012">Edytuj karuzelę</translation>
 <translation id="2316709634732130529">Użyj proponowanego hasła</translation>
 <translation id="2320166752086256636">Ukryj klawiaturę</translation>
 <translation id="2351097562818989364">Ustawienia tłumaczenia zostały zresetowane.</translation>
@@ -526,6 +530,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="380329542618494757">Imię i nazwisko</translation>
 <translation id="3803696231112616155">Proponuj tłumaczenie tej strony</translation>
 <translation id="3810973564298564668">Zarządzaj</translation>
+<translation id="3818045793209708987">Przestaliśmy śledzić tę przesyłkę</translation>
 <translation id="3818293389945649617">Znajdź następny</translation>
 <translation id="3819183753496523827">Jesteś offline. Sprawdź połączenie z internetem i spróbuj ponownie.</translation>
 <translation id="3832419617903252251">Hasło zostało zapisane tylko na tym urządzeniu</translation>
@@ -564,6 +569,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4018310736049373830">Zarządzaj aktywnością</translation>
 <translation id="4038354071007134711">Nie masz aplikacji, która może otworzyć ten plik.</translation>
 <translation id="4042870976416480368">Znajdź na stronie</translation>
+<translation id="4043294777772912240"><ph name="USERNAME" /> może teraz korzystać z Twojej nazwy użytkownika i Twojego hasła podczas logowania się na stronie <ph name="WEBSITE" /> za pomocą Menedżera haseł Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Utwórz i udostępnij bezpośredni link do zaznaczonego fragmentu strony.</translation>
 <translation id="4045648459118332842">Uzyskaj dostęp do zapisanych haseł w dowolnej aplikacji jednym kliknięciem</translation>
 <translation id="4049507953662678203">Upewnij się, że masz połączenie z siecią, i spróbuj ponownie.</translation>
@@ -607,6 +613,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4286718549648564014">Adres został przeniesiony na konto <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Szukaj</translation>
 <translation id="4302248187517737842">Brak nazwy użytkownika ••••••••</translation>
+<translation id="4302415908542657649">Udostępniam hasło</translation>
 <translation id="4304713468139749426">Menedżer haseł</translation>
 <translation id="430793432425771671">Synchronizuj wszystko</translation>
 <translation id="4309403553630140242">Kliknij dwukrotnie, by dowiedzieć się więcej</translation>
@@ -642,6 +649,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4508750114462689118">Zamknij okno zachęcające do logowania</translation>
 <translation id="4514889972748124117">Zaproponuj silne hasło...</translation>
 <translation id="4520798012560649652">Więcej informacji o trybie incognito</translation>
+<translation id="452503091941773389">{count,plural, =1{{count} zakładka}few{{count} zakładki}many{{count} zakładek}other{{count} zakładki}}</translation>
 <translation id="452750746583162491">Przejrzyj synchronizowane dane</translation>
 <translation id="4527660062930312477">Konto jest zarządzane</translation>
 <translation id="4536418791685807335">Spróbuj zalogować się jeszcze raz.</translation>
@@ -661,6 +669,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4619615317237390068">Karty z innych urządzeń</translation>
 <translation id="4620246317052452550">Przeczytane strony</translation>
 <translation id="4620888520263267479">Pokaż podglądy linków</translation>
+<translation id="4622477750832577849">Włącz śledzenie</translation>
 <translation id="4630540211544979320">Tłumacz strony</translation>
 <translation id="4631335160486397366">Ponownie użyte hasła: <ph name="COUNT" /></translation>
 <translation id="4634124774493850572">Użyj hasła</translation>
@@ -810,6 +819,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="54401264925851789">Informacje o bezpieczeństwie strony</translation>
 <translation id="5443952882982198570">Karty kredytowe</translation>
 <translation id="5444892875087332195">Zakładki</translation>
+<translation id="5454211924362324495">Aby uniemożliwić innym korzystanie z Twojego hasła, <ph name="BEGIN_LINK" />zmień je na stronie <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Otwórz wersję offline</translation>
 <translation id="5475069061743940393">Śledzenie przesyłki</translation>
 <translation id="5478327362747197944">Wydarzenia w Kalendarzu możesz tworzyć bezpośrednio, klikając datę na stronie internetowej.</translation>
@@ -1156,6 +1166,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7154343200458623869">Wykonaj zadanie.</translation>
 <translation id="7161230316646448869">Synchronizuj zakładki, historię i inne dane na wszystkich swoich urządzeniach</translation>
 <translation id="7162168282402939716">Odblokuj karty incognito za pomocą <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="7168959436351276050">Jeśli ukryjesz tę kartę, zostaną usunięte wszystkie dane śledzenia przesyłek</translation>
 <translation id="7172852049901402487">Chroń swoje hasła przed zagrożeniami</translation>
 <translation id="7173114856073700355">Otwórz Ustawienia</translation>
 <translation id="7189598951263744875">Udostępnij...</translation>

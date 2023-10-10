@@ -704,6 +704,7 @@
 <translation id="385300504083504382">У пачатак</translation>
 <translation id="3859364108019690">Не ўдаецца перадаць праграмы плынню</translation>
 <translation id="3861651314799684201">Каб запісаць увесь экран, націсніце Увод</translation>
+<translation id="3865912916886104060">Няма падключаных прылад. Каб вы маглі выкарыстоўваць хот-спот, Wi-Fi выключыцца.</translation>
 <translation id="3886872229787704059">Адкрывалася сёння</translation>
 <translation id="3891340733213178823">Каб выйсці з уліковага запісу, двойчы націсніце "Ctrl+Shift+Q".</translation>
 <translation id="3893630138897523026">ChromeVox (галасавая зваротная сувязь)</translation>
@@ -788,6 +789,7 @@
 <translation id="4197790712631116042">Выключана</translation>
 <translation id="4201033867194214117">Функцыя "<ph name="FEATURE_NAME" />" недаступная.</translation>
 <translation id="4201051445878709314">Паказаць папярэдні месяц</translation>
+<translation id="4202362334312791952">Падключана 1 прылада. Каб вы маглі выкарыстоўваць хот-спот, Wi-Fi выключыцца.</translation>
 <translation id="4209973997261364186">Wi-Fi уключаны</translation>
 <translation id="4212472694152630271">Пераключыцца на PIN-код</translation>
 <translation id="4215497585250573029">Налады VPN</translation>
@@ -1051,6 +1053,7 @@
 <translation id="5258528442992323769">Няма захаваных працоўных сталоў</translation>
 <translation id="5260676007519551770">Стол 4</translation>
 <translation id="5268819379131021772">Спіс Google Задач</translation>
+<translation id="5275923704957843041">Перадпрагляд працоўнага стала</translation>
 <translation id="5278086053818066789">Уключыць або выключыць ChromeVox (галасавая зваротная сувязь)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> патрабуе вашай увагі.</translation>
 <translation id="5283198616748585639">Дадаць 1 хвіліну</translation>
@@ -1167,6 +1170,7 @@
 <translation id="5707775774148071965">Ваша прылада падтрымлівае больш высокую хуткасць перадачы даных, чым кабель. Прадукцыйнасць прылады можа быць абмежавана.</translation>
 <translation id="5710450975648804523">Рэжым "Не турбаваць" уключаны</translation>
 <translation id="571295407079589142">Мабільная перадача даных выключана</translation>
+<translation id="5716891621595980681">Падключана прылад: <ph name="DEVICECOUNT" />. Каб вы маглі выкарыстоўваць хот-спот, Wi-Fi выключыцца.</translation>
 <translation id="5727460725221669831">Калі вы забылі пароль або нядаўна мянялі пароль Уліковага запісу Google, паспрабуйце аднавіць доступ для гэтага карыстальніка.</translation>
 <translation id="573413375004481890">Гэта прылада не можа падтрымліваць усе вашы дысплэі, таму адзін з іх быў адключаны</translation>
 <translation id="5740328398383587084">Абагульванне паблізу</translation>

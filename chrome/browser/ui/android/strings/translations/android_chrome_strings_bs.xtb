@@ -345,7 +345,7 @@ Privatni tokeni stanja poboljšavaju zaštitu privatnosti na webu i ne mogu se k
 <translation id="2856503607207334158">Prijava nije uspjela</translation>
 <translation id="2860954141821109167">Provjerite je li na ovom uređaju omogućena aplikacija za telefon</translation>
 <translation id="2861923151411510142">Neke funkcije Chromea više neće biti dostupne</translation>
-<translation id="2869430948265924908">Da biste zaštitili osjetljivi sadržaj u automobilu, morate izraditi zaključavanje profila automobila.  To možete učiniti PIN-om, kodom ili zaporkom.</translation>
+<translation id="2869430948265924908">Da zaštitite osjetljiv sadržaj u automobilu, morate kreirati zaključavanje profila za automobil.  To možete učiniti PIN-om, kodom ili lozinkom.</translation>
 <translation id="2870560284913253234">Web lokacija</translation>
 <translation id="2871733351037274014">Predučitavanje stranica</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> želi da odobrite ovu web lokaciju:</translation>
@@ -467,7 +467,7 @@ Privatni tokeni stanja poboljšavaju zaštitu privatnosti na webu i ne mogu se k
 <translation id="3421726884497337397">Odaberite kada blokirati kolačiće treće strane</translation>
 <translation id="3428747202529429621">Štiti vas u Chromeu i može se koristiti da poboljša vašu sigurnost u drugim Google aplikacijama kada ste prijavljeni</translation>
 <translation id="3429160811076349561">Funkcije probnog perioda su isključene</translation>
-<translation id="3430670036890315772">Isključivanjem zaključavanja profila uklonit će se vaši spremljeni podaci</translation>
+<translation id="3430670036890315772">Isključenjem zaključavanja profila će se ukloniti sačuvane informacije</translation>
 <translation id="3435465986463792564">Imate mnogo prozora? Možete upravljati njima odavde</translation>
 <translation id="3435738964857648380">Sigurnost</translation>
 <translation id="3439276997620616816">Ovdje ćete pronaći nedavne kartice</translation>
@@ -647,7 +647,7 @@ Privatni tokeni stanja poboljšavaju zaštitu privatnosti na webu i ne mogu se k
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="438319986296050901">Dijeli samo karticu</translation>
 <translation id="4384468725000734951">Za pretraživanje se koristi Sogou</translation>
-<translation id="4387647248986092471">Postavi zaključavanje profila automobila</translation>
+<translation id="4387647248986092471">Kreirajte zaključavanje profila za automobil</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – Preuzimanje…</translation>
 <translation id="4404568932422911380">Nema oznaka</translation>
 <translation id="4405224443901389797">Premjesti u…</translation>
@@ -819,7 +819,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />poništite sinhronizaciju<p
 <translation id="5170568018924773124">Prikaži u folderu</translation>
 <translation id="5171045022955879922">Pretražite ili upišite URL</translation>
 <translation id="5174700554036517242">Izvorna visina kartice je vraćena</translation>
-<translation id="5180063720319462041">Stranica je prevedena na <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="5180063720319462041">Stranica je prevedena na jezik <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">Upravljajte temama i pretraživanjima koja vas zanimaju</translation>
 <translation id="5191251636205085390">Saznajte više o novim tehnologijama koje za cilj imaju zamjenu kolačića trećih strana i kontrolirajte ih</translation>
 <translation id="5193988420012215838">Kopirano u međumemoriju</translation>
@@ -828,7 +828,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />poništite sinhronizaciju<p
 <translation id="5210286577605176222">Pređi na prethodnu karticu</translation>
 <translation id="5210365745912300556">Zatvorite karticu.</translation>
 <translation id="5222676887888702881">Odjava</translation>
-<translation id="5226378907213531272">Otključat ćete zaslon pri svakoj upotrebi automobila</translation>
+<translation id="5226378907213531272">Ekran ćete otključavati prilikom svake upotrebe automobila</translation>
 <translation id="5227554086496586518">Dodirnite da vidite rezultate pretraživanja</translation>
 <translation id="5233638681132016545">Nova kartica</translation>
 <translation id="5234971936051226002">Plejer "Poslušajte ovu stranicu je minimiziran".</translation>
@@ -1323,7 +1323,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7691043218961417207">Istražite sadržaj za praćenje</translation>
 <translation id="7697383401610880082">Ručica za prevlačenje</translation>
 <translation id="7698359219371678927">Kreirajte e-poruku u aplikaciji <ph name="APP_NAME" /></translation>
-<translation id="7702388902581909985">Brisanjem podataka o pregledavanju nećete se odjaviti s Google računa. Da biste to učinili, <ph name="BEGIN_LINK1" />odjavite se iz Chromea<ph name="END_LINK1" />.</translation>
+<translation id="7702388902581909985">Brisanjem podataka o pregledanju se ne odjavljujete s Google računa. Da to učinite, <ph name="BEGIN_LINK1" />odjavite se iz Chromea<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Koristi prijenos podataka na mobilnoj mreži</translation>
 <translation id="7709094866268987903">Interesovanja koja ste uklonili će se pojaviti ovdje</translation>
 <translation id="7709918231054955894">Preuzmite sve svoje kartice</translation>

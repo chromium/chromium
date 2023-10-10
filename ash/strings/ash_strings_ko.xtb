@@ -704,6 +704,7 @@
 <translation id="385300504083504382">시작</translation>
 <translation id="3859364108019690">앱을 스트리밍할 수 없음</translation>
 <translation id="3861651314799684201">전체 화면을 녹화하려면 Enter를 누르세요</translation>
+<translation id="3865912916886104060">연결된 기기가 없습니다. 핫스팟을 사용하기 위해 Wi-Fi가 사용 중지됩니다.</translation>
 <translation id="3886872229787704059">오늘 열림</translation>
 <translation id="3891340733213178823">로그아웃하려면 Ctrl+Shift+Q를 두 번 누릅니다.</translation>
 <translation id="3893630138897523026">ChromeVox(음성 피드백)</translation>
@@ -788,6 +789,7 @@
 <translation id="4197790712631116042">사용 안함</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" />를 사용할 수 없습니다.</translation>
 <translation id="4201051445878709314">이전 달 표시</translation>
+<translation id="4202362334312791952">기기 1대가 연결되었습니다. 핫스팟을 사용하기 위해 Wi-Fi가 사용 중지됩니다.</translation>
 <translation id="4209973997261364186">Wi-Fi가 사용 설정됨</translation>
 <translation id="4212472694152630271">PIN으로 전환</translation>
 <translation id="4215497585250573029">VPN 설정</translation>
@@ -1051,6 +1053,7 @@
 <translation id="5258528442992323769">저장된 데스크 없음</translation>
 <translation id="5260676007519551770">데스크 4</translation>
 <translation id="5268819379131021772">Google 할 일 목록</translation>
+<translation id="5275923704957843041">데스크 미리보기</translation>
 <translation id="5278086053818066789">ChromeVox(음성 피드백) 사용 설정/사용 중지</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> 알림이 있습니다.</translation>
 <translation id="5283198616748585639">1분 추가</translation>
@@ -1167,6 +1170,7 @@
 <translation id="5707775774148071965">기기에서 지원하는 데이터 속도가 케이블의 지원 속도보다 빠릅니다. 기기 성능이 제한될 수 있습니다.</translation>
 <translation id="5710450975648804523">방해 금지 모드 사용 중</translation>
 <translation id="571295407079589142">모바일 데이터 사용 중지</translation>
+<translation id="5716891621595980681">기기 <ph name="DEVICECOUNT" />대가 연결되었습니다. 핫스팟을 사용하기 위해 Wi-Fi가 사용 중지됩니다.</translation>
 <translation id="5727460725221669831">비밀번호를 잊어버렸거나 최근에 Google 계정 비밀번호를 변경한 경우 이 사용자를 복구해 보세요.</translation>
 <translation id="573413375004481890">사용 중인 일부 디스플레이가 기기에서 지원되지 않아 1개 디스플레이의 연결이 끊김</translation>
 <translation id="5740328398383587084">Nearby Share</translation>

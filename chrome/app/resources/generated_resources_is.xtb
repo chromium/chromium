@@ -109,6 +109,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Ekki var hægt að sækja orðabók villuleitar fyrir <ph name="LANGUAGE" />. Reyndu aftur.</translation>
 <translation id="1078037449555275327">Stillingar ChromeVox</translation>
+<translation id="1079285777677001938">Vera má að eiginleikar á sumum vefsvæðum virki ekki.</translation>
 <translation id="1079766198702302550">Loka alltaf á myndavélaraðgang</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 flipi}one{<ph name="GROUP_TITLE" /> - # flipi}other{<ph name="GROUP_TITLE" /> - # flipar}}</translation>
 <translation id="1082214733466244292">Kerfisstjórinn hefur lokað fyrir tilteknar aðgerðir í þessu tæki</translation>
@@ -304,6 +305,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1227660082540388410">Breyta aðgangslykli</translation>
 <translation id="1227993798763400520">Ekki tókst að senda út. Reyndu aftur.</translation>
 <translation id="1230417814058465809">Kveikt er á hefðbundinni vörn. Þú getur aukið öryggið með því að nota aukna vörn.</translation>
+<translation id="1231426483209637778">Við munum eftir netinu næst þegar þú notar <ph name="DEVICE_TYPE" /></translation>
 <translation id="1232569758102978740">Ónefnt</translation>
 <translation id="1233497634904001272">Snertu öryggislykilinn aftur til að ljúka beiðninni.</translation>
 <translation id="1233721473400465416">Landsstaðall</translation>
@@ -544,6 +546,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1431188203598586230">Síðasta hugbúnaðaruppfærslan</translation>
 <translation id="1432581352905426595">Stjórna leitarvélum</translation>
 <translation id="1433478348197382180">Lesstilling</translation>
+<translation id="1433980411933182122">Ræsing</translation>
 <translation id="1434696352799406980">Þetta endurstillir í senn ræsisíðuna þína, skammvalssíðuna, leitarvélina og festa flipa. Enn fremur slekkur þessi aðgerð á öllum viðbótum og hreinsar burt tímabundin gögn á borð við fótspor. Bókamerkjunum þínum, ferlinum og vistuðum aðgangsorðum verður ekki eytt.</translation>
 <translation id="1434886155212424586">Heimasíðan er síða nýrra flipa</translation>
 <translation id="1435940442311036198">Nota aðgangslykil í öðru tæki</translation>
@@ -675,6 +678,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1536754031901697553">Aftengir ...</translation>
 <translation id="1537254971476575106">Stækkunargler á öllum skjánum</translation>
 <translation id="15373452373711364">Stór músarbendill</translation>
+<translation id="1540265419569299117">Forritaþjónusta ChromeOS</translation>
 <translation id="1540605929960647700">Kveikja á prufustillingu</translation>
 <translation id="1541346352678737112">Ekkert netkerfi fannst</translation>
 <translation id="154198613844929213">{0,plural, =0{Eyðir núna.}=1{Eyðir eftir: 1 sekúndu}one{Eyðir eftir: # sekúndu}other{Eyðir eftir: # sekúndur}}</translation>
@@ -1512,6 +1516,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2157474325782140681">Til að fá viðbótareiginleika skaltu nota Dell-dokku sem er hönnuð fyrir þessa Chromebook tölvu.</translation>
 <translation id="215753907730220065">Hætta að nota allan skjáinn</translation>
 <translation id="2157875535253991059">Þessi síða birtist núna á öllum skjánum.</translation>
+<translation id="2158249272743343757">Eyða sérsniðsgögnum...</translation>
 <translation id="2158475082070321257">Afrita tengil í merktan texta</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">Gildissvið <ph name="SHORTCUT" /> fyrir <ph name="EXTENSION_NAME" /></translation>
@@ -3376,6 +3381,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3660234220361471169">Ótraust</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 fyrirliggjandi aðgangsorð fannst}one{{NUM_PASSWORDS} fyrirliggjandi aðgangsorð fannst}other{{NUM_PASSWORDS} fyrirliggjandi aðgangsorð fundust}}</translation>
 <translation id="3664511988987167893">Tákn viðbótar</translation>
+<translation id="3665100783276035932">Flest vefsvæði ættu að virka sem skyldi</translation>
 <translation id="3665301845536101715">Opna í hliðarglugga</translation>
 <translation id="3665589677786828986">Chrome greindi að annað forrit hefur nýlega spillt einhverjum stillingum hjá þér og endurstillti þær því í sjálfgildi.</translation>
 <translation id="3665919494326051362">Núverandi útgáfa er <ph name="CURRENT_VERSION" /></translation>
@@ -3826,11 +3832,13 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="398477389655464998">Afrita tengil í merktan texta</translation>
 <translation id="3984862166739904574">Skilgreining skjótra svara</translation>
 <translation id="3985022125189960801">Bættu vefsvæði aftur við ef þú vilt að það tilheyri hópi vefsvæða sem geta áætlað hvað höfðar til þín</translation>
+<translation id="3986813315215454677">ChromeOS Bluetooth</translation>
 <translation id="3987544746655539083">Halda áfram að loka fyrir aðgang þessa vefsvæðis að staðsetningunni</translation>
 <translation id="3987938432087324095">Náði þessu ekki.</translation>
 <translation id="3987993985790029246">Afrita tengil</translation>
 <translation id="3988124842897276887">Þessi flipi er tengdur við USB-tæki</translation>
 <translation id="3988996860813292272">Veldu tímabelti</translation>
+<translation id="3991055816270226534">Stjórna fótsporum þriðju aðila og rakningarvörn</translation>
 <translation id="399179161741278232">Innflutt</translation>
 <translation id="3992008114154328194">Sækir <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
 <translation id="3993259701827857030">Afrita gögn</translation>
@@ -4489,6 +4497,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4546692474302123343">Raddinntak Google hjálpara</translation>
 <translation id="4547659257713117923">Engir flipar frá öðrum tækjum</translation>
 <translation id="4547672827276975204">Stilla sjálfkrafa</translation>
+<translation id="4548858987594081919">Bættu við notandanafni þínu fyrir þetta vefsvæði til að hjálpa Google-aðgangsorðastjórnun að vista innskráningarupplýsingarnar þínar</translation>
 <translation id="4549791035683739768">Engin fingraför eru vistuð í öryggislyklinum þínum</translation>
 <translation id="4550926046134589611">Sumir studdir tenglar munu áfram opnast í <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Ýttu á <ph name="MODIFIER_KEY_DESCRIPTION" /> til að afturkalla</translation>
@@ -4907,6 +4916,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4887424188275796356">Opna með skoðara kerfis</translation>
 <translation id="488785315393301722">Sýna upplýsingar</translation>
 <translation id="488862352499217187">Búa til nýja möppu</translation>
+<translation id="4890292359366636311">Opnaðu mynd í mynd sjálfkrafa svo þú getir notað eiginleikann yfir öðrum flipum og gluggum.</translation>
 <translation id="4890773143211625964">Sýna ítarlegar stillingar prentara</translation>
 <translation id="4891089016822695758">Beta-umræðusvæði</translation>
 <translation id="4892229439761351791">Vefsvæði getur notað Bluetooth</translation>
@@ -5080,6 +5090,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5051461727068120271">Sækja óstaðfesta skrá</translation>
 <translation id="5051836348807686060">Villuleit er ekki studd á þeim tungumálum sem þú valdir</translation>
 <translation id="5052499409147950210">Breyta vefsvæði</translation>
+<translation id="5053233576223592551">Bæta notandanafni við</translation>
 <translation id="505347685865235222">Ónefndur hópur – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054374119096692193">Sjáðu alla valkosti spjalda í <ph name="BEGIN_LINK" />Sérsníða Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Tengist geyminum</translation>
@@ -5842,6 +5853,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5684661240348539843">Auðkenni eignar</translation>
 <translation id="5684950556880280580">Aðgangsorðið þitt var uppfært</translation>
 <translation id="5687326903064479980">Tímabelti</translation>
+<translation id="5687340364605915800">Vefsvæði svara þessari beiðni að eigin ákvörðun</translation>
 <translation id="5687606994963670306">Chrome eyðir vefsvæðum sem eru eldri en 30 daga sjálfkrafa. Vefsvæði sem þú heimsækir aftur gæti birst aftur á listanum. Þú getur einnig bannað vefsvæði að birta þér tillögur að auglýsingum. Nánar um <ph name="BEGIN_LINK" />umsjón með persónuvernd auglýsinga í Chrome.<ph name="END_LINK" /></translation>
 <translation id="5687935527303996204">Gakktu úr skugga um að tækið sé tengt við rafmagn og ekki slökkva á því. Uppsetningin getur tekið allt að 20 mínútur. Tækið slekkur sjálfkrafa á sér þegar uppsetningunni er lokið.</translation>
 <translation id="5689233503102158537">alt + bakklykill</translation>
@@ -6075,6 +6087,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5869522115854928033">Vistuð aðgangsorð</translation>
 <translation id="5870086504539785141">Loka aðgengisvalmynd</translation>
 <translation id="5870155679953074650">Sótt úr sýndarminni</translation>
+<translation id="5872318519182427835">Hefur áhrif á vefsvæðin á þessum lista og undirlén þeirra. Ef þú skráir t.d. „google.com“ geta fótspor þriðju aðila t.a.m. einnig verið virk á mail.google.com, vegna þess að það tilheyrir google.com.</translation>
 <translation id="5875534259258494936">Deilingu skjás er lokið</translation>
 <translation id="5876576639916258720">Í gangi...</translation>
 <translation id="5876851302954717356">Nýr flipi hægra megin</translation>
@@ -6457,6 +6470,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6180550893222597997">Hvaða aðgangslykil viltu nota fyrir <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Niðurhal útilokað</translation>
 <translation id="6184099524311454384">Leita í flipum</translation>
+<translation id="6184868291074982484">Chrome takmarkar fótspor þriðju aðila sjálfkrafa</translation>
 <translation id="6185132558746749656">Staðsetning tækis</translation>
 <translation id="6190953336330058278">Forrit símstöðvar</translation>
 <translation id="6192333916571137726">Sækja skrá</translation>
@@ -7310,12 +7324,14 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6876469544038980967">Ekki gagnlegt</translation>
 <translation id="6878422606530379992">Skynjarar eru leyfðir</translation>
 <translation id="6880587130513028875">Myndir á þessari síðu voru útilokaðar.</translation>
+<translation id="6882210908253838664">Ef vefsvæði virkar ekki geturðu prófað að veita því tímabundna heimild til að nota fótspor þriðju aðila. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Úbbs!  Kerfið gat ekki vistað stillingu tækisins.</translation>
 <translation id="6884474387073389421">Viltu örugglega eyða völdum innskráningargögnum?</translation>
 <translation id="6885122019363983153">Bakgrunnur skjáborðs er sá sami milli tækja</translation>
 <translation id="6885771755599377173">Forskoðun kerfisupplýsinga</translation>
 <translation id="6886380424988777998">Ekki tókst að uppfæra Linux</translation>
 <translation id="6886871292305414135">Opna &amp;tengil í nýjum flipa</translation>
+<translation id="6888831646723563669">Tengstu til að njóta allra eiginleika nýja <ph name="DEVICE_TYPE" />-tækisins</translation>
 <translation id="6889957081990109136">Ekki er enn búið að úthluta rofa</translation>
 <translation id="689007770043972343">Prófaðu að draga aðra opna flipa yfir í hópinn</translation>
 <translation id="6892812721183419409">Opna tengil sem <ph name="USER" /></translation>
@@ -7630,6 +7646,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7145413760160421938">Ekki er hægt að halda áfram með fyrri lotu</translation>
 <translation id="7146882055510146554">Microsoft 365 notar OneDrive til að opna og breyta Word-, Excel- og PowerPoint-skrám. Þessar skrár verður að finna í hliðarvalmynd í forritinu Skrár merktar „Microsoft OneDrive.“ Þú þarft að skrá þig inn með Microsoft-reikningnum þínum. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">Óvíst er að vefsvæði virki líkt og búist er við. Veldu þennan valkost ef þú vilt ekki að upplýsingar um vefsvæði sem þú skoðar vistist í tækinu</translation>
+<translation id="7148954254185728510">Flest vefsvæði geta ekki notað fótspor þriðju aðila til að fylgjast með ferðum þínum um vefinn og vefsvæði geta ekki notað fótspor þriðju aðila í huliðsstillingu.</translation>
 <translation id="7149839598364933473">Breyta þessu tæki í <ph name="DEVICE_OS" /> tæki.</translation>
 <translation id="7149893636342594995">Síðastliðinn sólarhring</translation>
 <translation id="7152478047064750137">Þessi viðbót þarf engar sérstakar heimildir</translation>
@@ -8215,6 +8232,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7634566076839829401">Eitthvað fór úrskeiðis. Reyndu aftur.</translation>
 <translation id="7635048370253485243">Fest af stjórnandanum þínum</translation>
 <translation id="7635711411613274199">Hvort auglýsing sem birtist þér þegar þú skoðar vefsvæði er sérsniðin eða ekki veltur á þessari stillingu, <ph name="BEGIN_LINK1" />umfjöllunarefni auglýsinga<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />fótsporastillingum<ph name="LINK_END2" /> og hvort að vefsvæðið sem þú ert að skoða sérsníði auglýsingar</translation>
+<translation id="7636346903338549690">Vefsvæði með heimild til að nota fótspor þriðju aðila</translation>
 <translation id="7636919061354591437">Setja upp í þessu tæki</translation>
 <translation id="7637253234491814483">Ýttu á fingrafaralesarann efst á hægra horni lyklaborðsins, við hliðina á aflrofanum. Fingrafaragögnin þín eru í öruggri geymslu og fara aldrei út fyrir <ph name="DEVICE_TYPE" /> tækið þitt.</translation>
 <translation id="7637272932128132922">Minnissparnaður losaði um minni fyrir önnur verk á meðan þessi flipi var óvirkur. Þú getur breytt þessu hvenær sem er í <ph name="SETTINGS_LINK" />.</translation>
@@ -9546,6 +9564,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8678378565142776698">Endurræsa og fá sjálfvirkar uppfærslur</translation>
 <translation id="8678538439778360739">Gögnin voru dulkóðuð með aðgangsorði samstillingar <ph name="TIME" />. Þetta gildir ekki um greiðslumáta og heimilisföng á Google Pay.</translation>
 <translation id="8678582529642151449">Flipar minnka ekki</translation>
+<translation id="867882552362231068">Chrome takmarkar gerðir upplýsinga sem vefsvæði geta notað til að rekja ferðir þínar á netinu. Þú getur breytt stillingunum til að velja eigið varnarstig.</translation>
 <translation id="8678933587484842200">Hvernig á þetta forrit að opnast?</translation>
 <translation id="8679054765393461130">WiFi mun framkvæma reglulega skönnun ef lista yfir valin netkerfi er hlaðið. Þetta gæti haft áhrif á afköst WiFi-nets.</translation>
 <translation id="8680251145628383637">Skráðu þig inn til að sjá bókamerkin þín, ferilinn, aðgangsorðin og aðrar stillingar í öllum tækjunum þínum. Þú skráist einnig sjálfkrafa inn í þá þjónustu Google sem þú notar.</translation>

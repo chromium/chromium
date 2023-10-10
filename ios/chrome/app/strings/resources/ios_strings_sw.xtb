@@ -58,6 +58,7 @@ Ili kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="1264156759663453185">Maandishi uliyochagua ni marefu mno kutafsiriwa katika kijisehemu cha tafsiri.</translation>
 <translation id="1265739287306757398">Pata Maelezo Zaidi</translation>
 <translation id="1272079795634619415">Simamisha</translation>
+<translation id="1273416271143914096">{count,plural, =1{Nenosiri {count}}other{Manenosiri {count}}}</translation>
 <translation id="1275718070701477396">Umeichagua</translation>
 <translation id="1279024913354609713">Usiruhusu</translation>
 <translation id="1281818060020671000">Dhibiti Data</translation>
@@ -191,6 +192,7 @@ Ili kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="1987779152850321833">Kamilisha vitendo hivi vilivyopendekezwa hapa chini ili unufaike zaidi na Chrome.</translation>
 <translation id="1989112275319619282">Vinjari</translation>
 <translation id="1990820278544963435">Tafuta</translation>
+<translation id="1991153180045413119">Nenosiri Limeshirikiwa</translation>
 <translation id="1992055602764528852">Ingia ili uone vichupo kutoka kwenye vifaa vingine.</translation>
 <translation id="199425419756152024">Angalia Nenosiri</translation>
 <translation id="2008357574463816229">Ukisahau kauli yako ya siri au ukitaka kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kwenye akaunti yako<ph name="END_LINK" />.</translation>
@@ -234,6 +236,7 @@ Ili kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="2268044343513325586">Chuja</translation>
 <translation id="2269277877025820298">Angalia Zaidi</translation>
 <translation id="2273327106802955778">Menyu zaidi</translation>
+<translation id="2274800392139890332">Acha kufuatilia kifurushi hiki</translation>
 <translation id="2275480389219976105">Anwani Imepatikana</translation>
 <translation id="2286505070150039482">Maandishi Yaliyoangaziwa</translation>
 <translation id="2287614783861766820">{count,plural, =1{Anwani hii itafutwa kwenye kifaa hiki.}other{Anwani hizi zitafutwa kwenye kifaa hiki.}}</translation>
@@ -242,6 +245,7 @@ Ili kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="2299218006564889602">Manenosiri yako husimbwa kwa njia fiche kwenye kifaa chako kabla hayajahifadhiwa kwenye Kidhibiti cha Manenosiri cha Google.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">Badilisha Nenosiri kwenye Tovuti</translation>
+<translation id="2310154074101836012">Badilisha Utepe</translation>
 <translation id="2316709634732130529">Tumia Nenosiri Linalopendekezwa</translation>
 <translation id="2320166752086256636">Ficha kibodi</translation>
 <translation id="2351097562818989364">Mipangilio yako ya kutafsiri imewekwa upya.</translation>
@@ -526,6 +530,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="380329542618494757">Jina</translation>
 <translation id="3803696231112616155">Jitolee kutafsiri tovuti hii</translation>
 <translation id="3810973564298564668">Dhibiti</translation>
+<translation id="3818045793209708987">Ufuatiliaji wa kifurushi hiki umesimamishwa</translation>
 <translation id="3818293389945649617">Tafuta Inayofuata</translation>
 <translation id="3819183753496523827">Haupo mtandaoni. Kagua muunganisho wako wa intaneti kisha ujaribu tena.</translation>
 <translation id="3832419617903252251">Nenosiri limehifadhiwa kwenye kifaa hiki pekee</translation>
@@ -564,6 +569,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4018310736049373830">Dhibiti Shughuli</translation>
 <translation id="4038354071007134711">Hakuna programu kwenye kifaa hiki inayoweza kufungua faili.</translation>
 <translation id="4042870976416480368">Pata katika Ukurasa</translation>
+<translation id="4043294777772912240"><ph name="USERNAME" /> sasa anaweza kutumia jina la mtumiaji na nenosiri lako anapotumia Kidhibiti cha Manenosiri cha Google kuingia katika akaunti kwenye <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Unda na ushiriki kiungo cha moja kwa moja kinachoelekeza kwenye sehemu ya ukurasa ulioangazia.</translation>
 <translation id="4045648459118332842">Pata manenosiri uliyohifadhi kwenye programu yoyote kwa kugusa mara moja tu</translation>
 <translation id="4049507953662678203">Hakikisha una muunganisho wa mtandao, kisha ujaribu tena.</translation>
@@ -607,6 +613,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4286718549648564014">Anwani imehamishiwa kwenye akaunti yako ya <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Tafuta</translation>
 <translation id="4302248187517737842">Hakuna jina la Mtumiaji ••••••••</translation>
+<translation id="4302415908542657649">Unashiriki Nenosiri</translation>
 <translation id="4304713468139749426">Kidhibiti cha Manenosiri</translation>
 <translation id="430793432425771671">Sawazisha Kila kitu</translation>
 <translation id="4309403553630140242">Gusa mara mbili ili upate maelezo zaidi</translation>
@@ -642,6 +649,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4508750114462689118">Funga matangazo ya kuingia kwenye akaunti</translation>
 <translation id="4514889972748124117">Pendekeza Nenosiri Thabiti...</translation>
 <translation id="4520798012560649652">Pata maelezo zaidi kuhusu Hali fiche</translation>
+<translation id="452503091941773389">{count,plural, =1{Alamisho {count}}other{Alamisho {count}}}</translation>
 <translation id="452750746583162491">Kagua data yako iliyosawazishwa</translation>
 <translation id="4527660062930312477">Akaunti yako Inadhibitiwa</translation>
 <translation id="4536418791685807335">Jaribu kuingia katika akaunti tena.</translation>
@@ -661,6 +669,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4619615317237390068">Vichupo kutoka kwenye vifaa vingine</translation>
 <translation id="4620246317052452550">Kurasa Ulizosoma</translation>
 <translation id="4620888520263267479">Onyesha Maonyesho ya Kukagua Viungo</translation>
+<translation id="4622477750832577849">Washa kipengele cha Ufuatiliaji</translation>
 <translation id="4630540211544979320">Tafsiri Kurasa</translation>
 <translation id="4631335160486397366">Manenosiri <ph name="COUNT" /> yaliyotumiwa kwingine</translation>
 <translation id="4634124774493850572">Tumia nenosiri</translation>
@@ -810,6 +819,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="54401264925851789">Maelezo ya Usalama wa Ukurasa</translation>
 <translation id="5443952882982198570">Kadi za Mikopo</translation>
 <translation id="5444892875087332195">Alamisho</translation>
+<translation id="5454211924362324495">Ili uwazuie wengine wasitumie nenosiri lako, <ph name="BEGIN_LINK" />libadilishe kwenye <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Fungua Nakala ya Nje ya Mtandao</translation>
 <translation id="5475069061743940393">Ufuatiliaji wa Kifurushi</translation>
 <translation id="5478327362747197944">Unda matukio ya Kalenda moja kwa moja kwa kubofya kwenye tarehe katika ukurasa wa wavuti.</translation>
@@ -1156,6 +1166,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7154343200458623869">Kamilisha jukumu lako.</translation>
 <translation id="7161230316646448869">Sawazisha alamisho, historia na mambo yako mengine kwenye vifaa vyote</translation>
 <translation id="7162168282402939716">Fungua Vichupo Fiche Ukitumia <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="7168959436351276050">Kuficha Kadi hii Kutaondoa Data Yako Yote ya Ufuatiliaji wa Kifurushi</translation>
 <translation id="7172852049901402487">Linda manenosiri yako dhidi ya matatizo ya kiusalama</translation>
 <translation id="7173114856073700355">Fungua Mipangilio</translation>
 <translation id="7189598951263744875">Shiriki...</translation>

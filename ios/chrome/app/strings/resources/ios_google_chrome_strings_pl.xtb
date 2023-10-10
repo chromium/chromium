@@ -118,6 +118,7 @@ Pamiętaj, że:
 <translation id="5389212809648216794">Google Chrome nie może użyć aparatu, bo używa go już inna aplikacja</translation>
 <translation id="5395376160638294582">Upewnij się, że zawsze możesz używać danych Chrome na swoim koncie Google</translation>
 <translation id="5439191312780166229">Ostrzega o niebezpiecznych witrynach, nawet takich, które wcześniej nie były znane Google. Jest to możliwe dzięki analizowaniu większej ilości danych z witryn niż w trybie standardowej ochrony. Możesz wybrać pomijanie ostrzeżeń Chrome.</translation>
+<translation id="5442013002200339429">Jeśli ukryjesz „<ph name="MODULE_NAME" />”, Chrome nie będzie już automatycznie śledzić przesyłek w przyszłości i usunie wszystkie wcześniejsze dane śledzenia.</translation>
 <translation id="5460571915754665838">4. Wybierz Chrome.</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome pomoże Ci śledzić tę przesyłkę na stronie nowej karty.}few{Chrome pomoże Ci śledzić te przesyłki na stronie nowej karty.}many{Chrome pomoże Ci śledzić te przesyłki na stronie nowej karty.}other{Chrome pomoże Ci śledzić te przesyłki na stronie nowej karty.}}</translation>
 <translation id="5492504007368565877">Menedżer haseł Google nie może sprawdzić Twoich haseł.</translation>

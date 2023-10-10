@@ -345,6 +345,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="2856503607207334158">Přihlášení se nezdařilo</translation>
 <translation id="2860954141821109167">Zkontrolujte zda je na tomto zařízení povolená aplikace k telefonování</translation>
 <translation id="2861923151411510142">Některé funkce Chromu už nebudou dostupné</translation>
+<translation id="2869430948265924908">K ochránění vašeho citlivého obsahu v autě je potřeba vytvořit zámek profilu auta.  Můžete to provést pomocí kódu PIN, kódu nebo hesla.</translation>
 <translation id="2870560284913253234">Stránky</translation>
 <translation id="2871733351037274014">Předběžně načítat stránky</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> chce, abyste schválili tento web:</translation>
@@ -466,6 +467,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3421726884497337397">Zvolte, kdy chcete blokovat soubory cookie třetích stran</translation>
 <translation id="3428747202529429621">Zajišťuje vám bezpečí v Chromu a může zvýšit vaši bezpečnost v jiných aplikacích Google, když jste přihlášeni.</translation>
 <translation id="3429160811076349561">Zkušební funkce jsou vypnuté</translation>
+<translation id="3430670036890315772">Vypnutím zámku profilu odstraníte uložené informace</translation>
 <translation id="3435465986463792564">Otevřeli jste si víc oken? Tady je můžete spravovat</translation>
 <translation id="3435738964857648380">Zabezpečení</translation>
 <translation id="3439276997620616816">Zde najdete své nedávno zavřené karty</translation>
@@ -645,6 +647,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="438319986296050901">Sdílet pouze kartu</translation>
 <translation id="4384468725000734951">K vyhledávání se používá služba Sogou</translation>
+<translation id="4387647248986092471">Vytvořit zámek profilu auta</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – Stahování…</translation>
 <translation id="4404568932422911380">Žádné záložky</translation>
 <translation id="4405224443901389797">Přesunout do…</translation>
@@ -816,6 +819,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
 <translation id="5171045022955879922">Vyhledávejte či zadejte URL</translation>
 <translation id="5174700554036517242">Karta má opět původní výšku</translation>
+<translation id="5180063720319462041">Stránka byla přeložena do jazyka <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">Spravujte témata a vyhledávání, která vás zajímají</translation>
 <translation id="5191251636205085390">Další informace o správa nových technologií, které mají za cíl nahradit soubory cookie třetích stran</translation>
 <translation id="5193988420012215838">Zkopírováno do schránky</translation>
@@ -824,6 +828,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5210286577605176222">Přejít na předchozí kartu</translation>
 <translation id="5210365745912300556">Zavřít kartu</translation>
 <translation id="5222676887888702881">Odhlásit se</translation>
+<translation id="5226378907213531272">Při každém použití auta bude potřeba odemknout obrazovku</translation>
 <translation id="5227554086496586518">Klepnutím zobrazíte výsledky vyhledávání</translation>
 <translation id="5233638681132016545">Nová karta</translation>
 <translation id="5234971936051226002">Přehrávač „Poslechnout si tuto stránku“ byl minimalizován.</translation>
@@ -1318,6 +1323,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7691043218961417207">Objevte obsah ke sledování</translation>
 <translation id="7697383401610880082">Úchyt pro přetažení</translation>
 <translation id="7698359219371678927">Vytvořit e-mail v aplikaci <ph name="APP_NAME" /></translation>
+<translation id="7702388902581909985">Vymazáním údajů o prohlížení se neodhlásíte z účtu Google. Pokud to chcete provést, <ph name="BEGIN_LINK1" />odhlaste se z Chromu<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Bude používat mobilní data</translation>
 <translation id="7709094866268987903">Zde se budou zobrazovat odstraněné zájmy</translation>
 <translation id="7709918231054955894">Načtěte všechny své karty</translation>

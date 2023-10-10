@@ -118,6 +118,7 @@ Huomioitavaa:
 <translation id="5389212809648216794">Google Chrome ei voi käyttää kameraa, koska se on toisen sovelluksen käytössä.</translation>
 <translation id="5395376160638294582">Varmista, että voit aina käyttää Chrome-dataa Google-tilillä</translation>
 <translation id="5439191312780166229">Varoittaa vaarallisista sivustoista, myös niistä, joista Google ei ole tiennyt aiemmin, analysoimalla enemmän dataa sivustoilta kuin Perustason suojaus. Voit ohittaa Chromen varoitukset.</translation>
+<translation id="5442013002200339429">Jos "<ph name="MODULE_NAME" />" piilotetaan, Chrome ei enää seuraa tulevia pakettejasi automaattisesti ja poistaa kaikki aiempien pakettien seurantatiedot.</translation>
 <translation id="5460571915754665838">4. Valitse Chrome</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome auttaa paketin seuraamisessa Uusi välilehti ‑sivulla.}other{Chrome auttaa pakettien seuraamisessa Uusi välilehti ‑sivulla.}}</translation>
 <translation id="5492504007368565877">Google Salasanat ei voi tarkistaa salasanojasi.</translation>

@@ -58,6 +58,7 @@
 <translation id="1264156759663453185">Избраният текст е твърде голям за частичен превод.</translation>
 <translation id="1265739287306757398">Научете как</translation>
 <translation id="1272079795634619415">Стоп</translation>
+<translation id="1273416271143914096">{count,plural, =1{{count} парола}other{{count} пароли}}</translation>
 <translation id="1275718070701477396">Избрано</translation>
 <translation id="1279024913354609713">Без разрешаване</translation>
 <translation id="1281818060020671000">Управление на данните</translation>
@@ -191,6 +192,7 @@
 <translation id="1987779152850321833">Изпълнете предложените действия по-долу, за да се възползвате максимално от Chrome.</translation>
 <translation id="1989112275319619282">Сърфиране</translation>
 <translation id="1990820278544963435">Търсене</translation>
+<translation id="1991153180045413119">Паролата е споделена</translation>
 <translation id="1992055602764528852">Влезте в профила си, за да видите разделите си от другите си устройства.</translation>
 <translation id="199425419756152024">Преглед на паролата</translation>
 <translation id="2008357574463816229">Ако забравите пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />изчистете данните от Chrome в профила си<ph name="END_LINK" />.</translation>
@@ -234,6 +236,7 @@
 <translation id="2268044343513325586">Прецизиране</translation>
 <translation id="2269277877025820298">Вижте още</translation>
 <translation id="2273327106802955778">Меню „Още“</translation>
+<translation id="2274800392139890332">Спиране на проследяването на тази пратка</translation>
 <translation id="2275480389219976105">Адресът е намерен</translation>
 <translation id="2286505070150039482">Откроен текст</translation>
 <translation id="2287614783861766820">{count,plural, =1{Този адрес ще бъде изтрит от това устройство.}other{Тези адреси ще бъдат изтрити от това устройство.}}</translation>
@@ -242,6 +245,7 @@
 <translation id="2299218006564889602">Паролите ви се шифроват на устройството ви, преди да бъдат запазени в мениджъра на паролите в Google.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • № <ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">Промяна на паролата на уебсайта</translation>
+<translation id="2310154074101836012">Редактиране на въртележката</translation>
 <translation id="2316709634732130529">Ползване на предложената парола</translation>
 <translation id="2320166752086256636">Скриване на клавиатурата</translation>
 <translation id="2351097562818989364">Настройките ви за превод са нулирани.</translation>
@@ -526,6 +530,7 @@
 <translation id="380329542618494757">Име</translation>
 <translation id="3803696231112616155">Предлагане да се преведе този сайт</translation>
 <translation id="3810973564298564668">Управление</translation>
+<translation id="3818045793209708987">Проследяването на тази пратка е спряно</translation>
 <translation id="3818293389945649617">Търсене на следващото</translation>
 <translation id="3819183753496523827">Офлайн сте. Проверете връзката си с интернет и опитайте отново.</translation>
 <translation id="3832419617903252251">Паролата е запазена само на това устройство</translation>
@@ -564,6 +569,7 @@
 <translation id="4018310736049373830">Управление на активността</translation>
 <translation id="4038354071007134711">Няма приложение, което може да отвори файла.</translation>
 <translation id="4042870976416480368">Търсене в страницата</translation>
+<translation id="4043294777772912240"><ph name="USERNAME" /> вече може да използва потребителското име и паролата ви, когато ползва Google Мениджър на пароли за вход в(ъв) <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Можете да създадете и споделите директна връзка към  откроена от вас част от страница.</translation>
 <translation id="4045648459118332842">Получаване на запазените ви пароли с едно докосване във всяко приложение</translation>
 <translation id="4049507953662678203">Уверете се, че сте свързани с мрежа, и опитайте отново.</translation>
@@ -607,6 +613,7 @@
 <translation id="4286718549648564014">Адресът бе преместен в профила ви <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Търсене</translation>
 <translation id="4302248187517737842">Няма потребителско име ••••••••</translation>
+<translation id="4302415908542657649">Паролата се споделя</translation>
 <translation id="4304713468139749426">Мениджър на паролите</translation>
 <translation id="430793432425771671">Синхронизиране на всичко</translation>
 <translation id="4309403553630140242">Докоснете два пъти за повече информация</translation>
@@ -642,6 +649,7 @@
 <translation id="4508750114462689118">Затваряне на подканата за вход</translation>
 <translation id="4514889972748124117">Предложение за надеждна парола...</translation>
 <translation id="4520798012560649652">Научете повече за режим „инкогнито“</translation>
+<translation id="452503091941773389">{count,plural, =1{{count} отметка}other{{count} отметки}}</translation>
 <translation id="452750746583162491">Преглед на синхронизираните ви данни</translation>
 <translation id="4527660062930312477">Профилът ви се управлява</translation>
 <translation id="4536418791685807335">Опитайте да влезете отново.</translation>
@@ -661,6 +669,7 @@
 <translation id="4619615317237390068">Раздели от други устройства</translation>
 <translation id="4620246317052452550">Страници, които сте прочели</translation>
 <translation id="4620888520263267479">Показване на визуализациите на връзки</translation>
+<translation id="4622477750832577849">Активиране на проследяването</translation>
 <translation id="4630540211544979320">Превод на страници</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> повторно използвани пароли</translation>
 <translation id="4634124774493850572">Използване на паролата</translation>
@@ -810,6 +819,7 @@
 <translation id="54401264925851789">Информация за сигурността на страницата</translation>
 <translation id="5443952882982198570">Кредитни карти</translation>
 <translation id="5444892875087332195">Отметки</translation>
+<translation id="5454211924362324495">За да не използват други хора паролата ви, <ph name="BEGIN_LINK" />променете я на адрес <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Отваряне на офлайн версията</translation>
 <translation id="5475069061743940393">Проследяване на пратки</translation>
 <translation id="5478327362747197944">Създавайте събития от календара директно, като кликнете върху дата в уеб страница.</translation>
@@ -1156,6 +1166,7 @@
 <translation id="7154343200458623869">Завършете задачата си.</translation>
 <translation id="7161230316646448869">Синхронизиране на отметките, историята ви и др. на всички устройства</translation>
 <translation id="7162168282402939716">Отключване на разделите в режим „инкогнито“ с <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="7168959436351276050">Скриването на тази карта ще премахне всички данни за проследяването на пратките ви</translation>
 <translation id="7172852049901402487">Защитете паролите си от проблеми със сигурността</translation>
 <translation id="7173114856073700355">Към настройките</translation>
 <translation id="7189598951263744875">Споделяне...</translation>

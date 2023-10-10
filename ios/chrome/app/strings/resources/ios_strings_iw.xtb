@@ -92,6 +92,7 @@
 <translation id="1407135791313364759">פתיחת כל הכרטיסיות</translation>
 <translation id="1408847409015257906">מקישים על 'פרטיות ואבטחה'.</translation>
 <translation id="1430915738399379752">הדפסה</translation>
+<translation id="143681031165817424">הכתובת נשמרה רק במכשיר הזה</translation>
 <translation id="1443958768615272145">המשך הגלישה</translation>
 <translation id="1449835205994625556">הסתרת סיסמה</translation>
 <translation id="1450170672351507823">מופעלת הגנה רגילה. כדי להוסיף שכבת אבטחה, ניתן להשתמש בהגנה המשופרת.</translation>
@@ -721,6 +722,7 @@
 <translation id="4901778704868714008">שמירה...</translation>
 <translation id="4904877109095351937">סימון כ'נקרא'</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
+<translation id="4913626501929406101">אפשר לשתף באופן מאובטח עותק של הסיסמה עם מישהו בקבוצה המשפחתית שלך. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4916679969857390442">עדשה</translation>
 <translation id="4918086044614829423">אישור</translation>
 <translation id="4922154083994158612">רוצה לשפר את רמת האבטחה?</translation>
@@ -1079,6 +1081,7 @@
 <translation id="672735642903863329">גישה לסימניות, לסיסמאות ולנתונים נוספים בכל המכשירים שלך</translation>
 <translation id="6730682669179532099">אי אפשר לייצא סיסמאות</translation>
 <translation id="6732087373923685049">מצלמה</translation>
+<translation id="6738233953537186295">שיתוף עותק של הסיסמה שלך</translation>
 <translation id="6746338529702829275">בדיקה של נתוני החשבון</translation>
 <translation id="6748108480210050150">מאת</translation>
 <translation id="6753469262000681876">ללא 'ביטול נעילה עם טביעת אצבע'</translation>
@@ -1138,6 +1141,7 @@
 <translation id="7062545763355031412">אישור והחלפת חשבונות</translation>
 <translation id="7063811929043357292">החשבון מנוהל על ידי ההורה שלך.
 <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
+<translation id="7064619810277839954">‏קבלת הצעות לכרטיסייה לפי פעילות הגלישה במכשירים האחרים שלך, באמצעות חשבון Google. המכשירים צריכים להיות מחוברים לאותו חשבון Google ומסונכרנים איתו.</translation>
 <translation id="7069695992271320873">הסרה מהמכשיר הזה</translation>
 <translation id="7080806333218412752">‏כתובות URL נשלחות לבדיקה על ידי 'גלישה בטוחה'. בנוסף, נשלחת דוגמית קטנה הכוללת דפים, הורדות, פעילות של תוספים ופרטי מערכת במטרה לאתר איומים חדשים. כדי להגן עליך בכל האפליקציות של Google, הנתונים האלה מקושרים באופן זמני לחשבון Google שלך. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
 <translation id="7082853213442715471">כשהאפשרות הזו מופעלת, טכנולוגיות מסוימות באינטרנט נחסמות. כתוצאה מכך, יכול להיות שאתרים מסוימים ייטענו לאט יותר או לא יפעלו כמו שצריך.</translation>

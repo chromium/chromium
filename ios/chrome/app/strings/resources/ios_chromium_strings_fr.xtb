@@ -140,6 +140,7 @@ Points à prendre en compte :
 <translation id="6119647025869519954">Pour définir Chromium comme votre navigateur par défaut, procédez comme suit :
 1. Accédez à "Réglages" Appuyez sur "Navigateur par défaut"
 3. Sélectionnez "Chromium".</translation>
+<translation id="6197255575340902638">Si vous masquez "<ph name="MODULE_NAME" />", Chromium ne pourra plus suivre automatiquement vos futurs colis et supprimera toutes vos anciennes données de suivi de colis.</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
 <translation id="6268381023930128611">Se déconnecter de Chromium ?</translation>
 <translation id="6324041800010509197">Accéder à la grille d'onglets dans Chromium</translation>

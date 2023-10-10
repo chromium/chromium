@@ -2069,6 +2069,7 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, pengguna akan dapat mentr
 
       Jika kebijakan ini disetel ke false atau tidak dikonfigurasikan, ikon akan terlihat.</translation>
 <translation id="2744751866269053547">Daftarkan penangan protokol</translation>
+<translation id="2744980433176488921">Setelan F11/F12 menggunakan pintasan yang berisi tombol pengubah shift</translation>
 <translation id="2745150813292162313">Izinkan pengaktifan partisi penyimpanan pihak ketiga.</translation>
 <translation id="2746016768603629042">Kebijakan ini sudah tidak digunakan lagi, sebaiknya gunakan DefaultJavaScriptSetting.
 
@@ -3683,6 +3684,9 @@ Hingga Chrome 114, kebijakan ini mewajibkan kebijakan <ph name="SYNC_DISABLED_PO
 
       Jika <ph name="PRODUCT_NAME" /> tidak ditutup dengan benar (misalnya, browser atau OS mengalami error), data penjelajahan akan dihapus saat berikutnya profil dimuat.</translation>
 <translation id="4056910949759281379">Nonaktifkan protokol SPDY</translation>
+<translation id="4057442294431066708">Kebijakan ini mengontrol opsi pintasan yang dipilih untuk memetakan ulang peristiwa ke
+F11/F12 di subhalaman pemetaan ulang tombol. Setelan ini hanya berlaku untuk
+keyboard ChromeOS dan dinonaktifkan secara default jika kebijakan tidak disetel.</translation>
 <translation id="4061107397839125009">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang tidak dapat menampilkan notifikasi.
 
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
@@ -3804,6 +3808,7 @@ ekstensi yang ditetapkan ke versi tertentu juga akan diabaikan.
 
 Jika kebijakan disetel ke <ph name="ALLOW_UNPUBLISHED" /> (0) atau tidak disetel, ekstensi yang tidak dipublikasikan di Chrome Web Store akan diizinkan.
 Jika kebijakan disetel ke <ph name="DISABLE_UNPUBLISHED" /> (1), ekstensi yang tidak dipublikasikan di Chrome Web Store akan dinonaktifkan.</translation>
+<translation id="4164866067069311355">Mengontrol pintasan yang digunakan untuk memicu F11/F12</translation>
 <translation id="4165986682804962316">Setelan situs</translation>
 <translation id="4166174702671320480">Jika kebijakan disetel ke Aktif, kebijakan yang berasal dari grup atom yang tidak membagikan sumbernya dengan prioritas tertinggi grup akan diabaikan.
 
@@ -6276,6 +6281,7 @@ mengetahui detail tambahan.</translation>
 
       Catatan: Jangan aktifkan kebijakan ini jika <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> disetel ke Aktif, karena fitur tersebut berbagi fungsi sisi klien yang sama. Dalam hal ini, sinkronisasi yang dihosting oleh Google akan nonaktif sepenuhnya.</translation>
 <translation id="6320935916601887506">Perilaku baru offsetParent akan digunakan secara default.</translation>
+<translation id="6324274808543634377">Setelan F11/F12 menggunakan pintasan yang berisi tombol pengubah alt</translation>
 <translation id="6327643515544933974">Setelan Web USB</translation>
 <translation id="6330882599388782338">Izinkan situs mengakses sensor</translation>
 <translation id="6331167725613770725">Perhatikan bahwa kebijakan ini sudah tidak digunakan lagi dan akan dihapus di <ph name="PRODUCT_OS_NAME" /> versi 85. Sebagai gantinya, gunakan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
@@ -7608,6 +7614,7 @@ Kebijakan ini dihapus di <ph name="PRODUCT_NAME" />
 untuk <ph name="MS_WIN_NAME" /> dan <ph name="MAC_OS_NAME" /> versi 113
 dan saat ini terjadi, dukungan untuk penggunaan pemverifikasi sertifikat dan root yang disediakan platform akan dihapus.</translation>
 <translation id="7298197471363105063">Mengganti Set Pihak Pertama.</translation>
+<translation id="7300320787419338290">Setelan F11/F12 menggunakan pintasan yang berisi tombol pengubah ctrl dan shift</translation>
 <translation id="7302043767260300182">Penundaan kunci layar saat menggunakan daya AC</translation>
 <translation id="7303902834678570827">Pengguna Sesi Tamu Terkelola tidak dapat menyimpan setelan tampilan di seluruh perangkat</translation>
 <translation id="7306926210354955892">Menyetel kebijakan akan menentukan tindakan yang akan diambil saat direktori data ARC pengguna dibuat dengan virtio-fs. Aplikasi Android mungkin berjalan lebih lambat di VM ARC, kecuali jika data virtio-fs dimigrasikan ke virtio-blk.
@@ -9593,6 +9600,7 @@ Jika kebijakan ini tidak disetel di perangkat terkelola, perangkat tidak dapat m
 
       Nilai kebijakan harus ditentukan dalam detik.</translation>
 <translation id="9015578113567730893">Interval pengumpulan telemetri audio dalam milidetik.</translation>
+<translation id="9015759770696099204">Setelan F11/F12 dinonaktifkan</translation>
 <translation id="9015952763003753868">Menyesuaikan pencocokan <ph name="ACAM_HEADER_NAME" /> di spesifikasi preflight <ph name="CORS" /></translation>
 <translation id="9020630127193895800">Warna lampu latar keyboard indigo</translation>
 <translation id="9031831501689819108">Aktifkan Dukungan Browser Lama</translation>

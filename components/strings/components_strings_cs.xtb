@@ -13,6 +13,7 @@
 <translation id="1024913885641459127">Recenze výrobků a srovnávání cen</translation>
 <translation id="1028781062521375153">Zobrazit podrobnosti</translation>
 <translation id="1030706264415084469">Stránka <ph name="URL" /> chce v zařízení trvale ukládat velké množství dat</translation>
+<translation id="1030949145805074938">{COUNT,plural, =0{Žádné}=1{Z 1 webu. Budete odhlášeni z většiny webů. }few{Ze # webů. Budete odhlášeni z většiny webů. }many{Z # webu. Budete odhlášeni z většiny webů. }other{Z # webů. Budete odhlášeni z většiny webů. }}</translation>
 <translation id="1033329911862281889">Anonymní režim neznamená, že jste neviditelní:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />weby a jimi používané služby poznají, když je navštívíte,<ph name="END_LIST_ITEM" />
@@ -484,6 +485,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1939059826036755332">Automatický obraz v obraze</translation>
 <translation id="1939175642807587452">Může žádat o odesílání oznámení</translation>
 <translation id="1940441167050915935">Vymazat uložené bezpečnostní kódy</translation>
+<translation id="194174710521904357">Dočasně jste tomuto webu povolili používat soubory cookie třetích stran, což znamená, že při procházení budete méně chráněni, ale funkce webů budou s větší pravděpodobností fungovat správně.</translation>
 <translation id="1943994668912612445">Design</translation>
 <translation id="1945968466830820669">Mohli byste ztratit přístup k účtu organizace nebo by mohlo dojít k odcizení vaší identity. Chromium doporučuje okamžitě změnit heslo.</translation>
 <translation id="1946849748901605102">12 × 15″</translation>
@@ -661,6 +663,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2300306941146563769">Nenahráno</translation>
 <translation id="230286397113210245">Tlačítko Otevřít anonymní okno, aktivací otevřete nové anonymní okno, abyste mohli prohlížet v soukromí</translation>
 <translation id="2312234273148520048">Dochucovadla a dresinky</translation>
+<translation id="2316087952091171402">Méně než <ph name="UPPER_ESTIMATE" />. Je možné, že se některé weby při příští návštěvě budou načítat pomaleji.</translation>
 <translation id="2316159751672436664">Přizpůsobte si v nastavení ChromeOS nástroje pro usnadnění přístupu</translation>
 <translation id="2316887270356262533">Uvolní více než 1 MB. Je možné, že se některé weby při příští návštěvě budou načítat pomaleji.</translation>
 <translation id="2317259163369394535">Doména <ph name="DOMAIN" /> vyžaduje zadání uživatelského jména a hesla.</translation>
@@ -1102,6 +1105,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3271648667212143903">Web <ph name="ORIGIN" /> žádá o připojení</translation>
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Zadejte <ph name="NUMBER_OF_DIGITS" />místný ověřovací kód</translation>
+<translation id="3272643614306383237">Méně než 1 MB. Je možné, že se některé weby při příští návštěvě budou načítat pomaleji.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Zásady administrátora nedoporučují otevřít tento soubor v cíli <ph name="DESTINATION_NAME" />}few{Zásady administrátora nedoporučují otevřít tyto soubory v cíli <ph name="DESTINATION_NAME" />}many{Zásady administrátora nedoporučují otevřít tyto soubory v cíli <ph name="DESTINATION_NAME" />}other{Zásady administrátora nedoporučují otevřít tyto soubory v cíli <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Vaše organizace, <ph name="ENROLLMENT_DOMAIN" />, odeslala určité informace (například nastavení nebo zásady) následujícím webům.</translation>
 <translation id="3286372614333682499">na výšku</translation>
@@ -2864,6 +2868,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Výchozí vyhledávač umožňuje vyhledávat na webu a používá se pro funkce Chromu<ph name="END_BOLD" />, jako je vyhledávání z adresního řádku a z obrázků na webových stránkách. Funkce, které vyhledávač nepodporuje, nebudou dostupné.</translation>
 <translation id="6934672428414710184">Toto jméno pochází z vašeho účtu Google</translation>
 <translation id="6935082727755903526">Zaměstnání v oboru financí a účetnictví</translation>
+<translation id="6935179587384421592"><ph name="SIZE" />. Je možné, že se některé weby při příští návštěvě budou načítat pomaleji.</translation>
 <translation id="6936976777388162184">Toto zařízení je součástí balíčku a nelze ho zaregistrovat do upgradu Kiosk &amp; Signage.</translation>
 <translation id="6939469646605424232">Televizní drama</translation>
 <translation id="6944692733090228304">Zadali jste heslo na webu, který není spravován organizací <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Aby byl váš účet chráněn, nepoužívejte jeho heslo v jiných aplikacích a na jiných webech.</translation>
@@ -3128,6 +3133,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7441864845853794192">Lahůdky a speciality</translation>
 <translation id="7442725080345379071">Světle oranžová</translation>
 <translation id="7444046173054089907">Tento web je blokován</translation>
+<translation id="7444176988908839653">{COUNT,plural, =0{Soubory cookie budou dnes opět zablokovány}=1{Soubory cookie budou zítra opět zablokovány}few{Soubory cookie budou za # dny opět zablokovány}many{Soubory cookie budou za # dne opět zablokovány}other{Soubory cookie budou za # dnů opět zablokovány}}</translation>
 <translation id="7445762425076701745">Totožnost serveru, k němuž jste připojeni, nelze plně ověřit. Jste připojeni k serveru, který používá název platný pouze v rámci vaší sítě. Externí certifikační autorita nemůže vlastnictví názvu nijak ověřit. Některé certifikační autority však vydají certifikát i pro takové názvy, a nelze tedy zaručit, že jste připojeni k požadovanému webu a nikoli k webu útočníka.</translation>
 <translation id="7447234474237738389">Oděvní služby</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> mm)</translation>
@@ -3494,6 +3500,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="81563721597823545">Hokejové vybavení</translation>
 <translation id="8161095570253161196">Vrátit se k procházení</translation>
 <translation id="8163866351304776260">Čtyři díry vlevo</translation>
+<translation id="8164078261547504572">Chcete dostat e‑maily, když ceny klesnou?</translation>
 <translation id="8175796834047840627">Chrome vám nabízí uložení karet do účtu Google, protože jste přihlášeni. Toto chování můžete změnit v Nastavení.</translation>
 <translation id="8176440868214972690">Administrátor tohoto zařízení odeslal určité informace (například nastavení nebo zásady) následujícím webům.</translation>
 <translation id="817820454357658398">Dámské hygienické potřeby</translation>
@@ -3935,6 +3942,7 @@ Další podrobnosti:
 <translation id="9078912659001679888">Mixéry a odšťavňovače</translation>
 <translation id="9078964945751709336">Jsou potřeba další informace</translation>
 <translation id="9080712759204168376">Přehled objednávky</translation>
+<translation id="9084304544887760521">Nechte si zaslat e‑maily na adresu <ph name="EMAIL" />, když cena položek, které sledujete, na jakémkoli webu klesne.</translation>
 <translation id="908796725011587895">Univerzitní sport</translation>
 <translation id="9089260154716455634">Zásada Off-Hours:</translation>
 <translation id="9090243919347147717">Přílohy</translation>
@@ -4019,6 +4027,7 @@ Další podrobnosti:
 <translation id="944540589955480312">Používat hesla a přístupové klíče uložené v účtu Google</translation>
 <translation id="945855313015696284">Zkontrolujte níže uvedené informace a vymažte neplatné karty</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter rychle vytvoříte nový web ve Webech Google</translation>
+<translation id="947974362755924771">{COUNT,plural, =0{Chrome dnes soubory cookie opět omezí}=1{Chrome zítra soubory cookie opět omezí}few{Za # dny Chrome soubory cookie opět omezí}many{Za # dne Chrome soubory cookie opět omezí}other{Za # dní Chrome soubory cookie opět omezí}}</translation>
 <translation id="949314938206378263">Chceš navštívit web, ale je třeba povolení. Rodič může odpovědět v aplikaci Family Link.</translation>
 <translation id="950736567201356821">Tři díry nahoře</translation>
 <translation id="961663415146723894">Vazba dole</translation>

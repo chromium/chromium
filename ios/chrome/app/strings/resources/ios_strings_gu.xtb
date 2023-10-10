@@ -58,6 +58,7 @@
 <translation id="1264156759663453185">પસંદ કરેલી ટેક્સ્ટ આંશિક અનુવાદ માટે ખૂબ મોટી છે.</translation>
 <translation id="1265739287306757398">જાણો કેવી રીતે</translation>
 <translation id="1272079795634619415">રોકો</translation>
+<translation id="1273416271143914096">{count,plural, =1{{count} પાસવર્ડ}one{{count} પાસવર્ડ}other{{count} પાસવર્ડ}}</translation>
 <translation id="1275718070701477396">પસંદ કરેલ</translation>
 <translation id="1279024913354609713">મંજૂરી આપશો નહીં</translation>
 <translation id="1281818060020671000">ડેટા મેનેજ કરો</translation>
@@ -191,6 +192,7 @@
 <translation id="1987779152850321833">Chromeનો સૌથી વધુ લાભ મેળવવા માટે નીચે સૂચવેલી આ ક્રિયાઓ પૂર્ણ કરો.</translation>
 <translation id="1989112275319619282">બ્રાઉઝ કરો</translation>
 <translation id="1990820278544963435">શોધો</translation>
+<translation id="1991153180045413119">પાસવર્ડ શેર કરવામાં આવ્યો</translation>
 <translation id="1992055602764528852">તમારા અન્ય ડિવાઇસમાંથી તમારા ટૅબ જોવા માટે સાઇન ઇન કરો.</translation>
 <translation id="199425419756152024">પાસવર્ડ જુઓ</translation>
 <translation id="2008357574463816229">જો તમે તમારો પાસફ્રેઝ ભૂલી જાઓ છો અથવા આ સેટિંગ બદલવા માંગો છો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાં Chrome ડેટા સાફ કરો<ph name="END_LINK" />.</translation>
@@ -234,6 +236,7 @@
 <translation id="2268044343513325586">સુધારો</translation>
 <translation id="2269277877025820298">વધુ જુઓ</translation>
 <translation id="2273327106802955778">વધુ મેનૂ</translation>
+<translation id="2274800392139890332">આ પૅકેજને ટ્રૅક કરવાનું બંધ કરો</translation>
 <translation id="2275480389219976105">સરનામું મળ્યું</translation>
 <translation id="2286505070150039482">હાઇલાઇટ કરેલી ટેક્સ્ટ</translation>
 <translation id="2287614783861766820">{count,plural, =1{આ ડિવાઇસમાંથી આ સરનામું ડિલીટ કરવામાં આવશે.}one{આ ડિવાઇસમાંથી આ સરનામું ડિલીટ કરવામાં આવશે.}other{આ ડિવાઇસમાંથી આ સરનામા ડિલીટ કરવામાં આવશે.}}</translation>
@@ -242,6 +245,7 @@
 <translation id="2299218006564889602">તમારા પાસવર્ડને Google પાસવર્ડ મેનેજરમાં સાચવવામાં આવે એ પહેલાં તેમને તમારા ડિવાઇસમાં એન્ક્રિપ્ટ કરવામાં આવે છે.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">વેબસાઇટ પર પાસવર્ડ બદલો</translation>
+<translation id="2310154074101836012">કરાઉઝલમાં ફેરફાર કરો</translation>
 <translation id="2316709634732130529">સૂચવેલ પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="2320166752086256636">કીબોર્ડ છુપાવો</translation>
 <translation id="2351097562818989364">તમારા અનુવાદ સેટિંગ રીસેટ કરવામાં આવ્યા છે.</translation>
@@ -526,6 +530,7 @@
 <translation id="380329542618494757">નામ</translation>
 <translation id="3803696231112616155">આ સાઇટનો અનુવાદ કરવાનું કહો</translation>
 <translation id="3810973564298564668">મેનેજ કરો</translation>
+<translation id="3818045793209708987">આ પૅકેજને ટ્રૅક કરવાનું બંધ કર્યું</translation>
 <translation id="3818293389945649617">આગલી શોધો</translation>
 <translation id="3819183753496523827">તમે ઑફલાઇન છો. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="3832419617903252251">આ ડિવાઇસ પર પાસવર્ડ સાચવવામાં આવ્યો</translation>
@@ -564,6 +569,7 @@
 <translation id="4018310736049373830">પ્રવૃત્તિને મેનેજ કરો</translation>
 <translation id="4038354071007134711">આ ઉપકરણ પર કોઈ ઍપ્લિકેશન ફાઇલને ખોલી શકતી નથી.</translation>
 <translation id="4042870976416480368">પેજમાં શોધો</translation>
+<translation id="4043294777772912240"><ph name="USERNAME" /> જ્યારે <ph name="WEBSITE" />માં સાઇન ઇન કરવા માટે Google Password Managerનો ઉપયોગ કરે છે ત્યારે તેઓ હવેથી તમારું વપરાશકર્તાનું નામ અને પાસવર્ડનો ઉપયોગ કરી શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">તમે હાઇલાઇટ કરેલા પેજના ભાગની ડાયરેક્ટ લિંક બનાવો અને શેર કરો.</translation>
 <translation id="4045648459118332842">કોઈપણ ઍપમાં તમારા સાચવેલા પાસવર્ડ માત્ર એક ટૅપમાં મેળવો</translation>
 <translation id="4049507953662678203">તમારી પાસે નેટવર્ક કનેક્શન છે તેની ખાતરી કરો અને ફરીથી પ્રયાસ કરો.</translation>
@@ -607,6 +613,7 @@
 <translation id="4286718549648564014">સરનામું તમારા એકાઉન્ટ <ph name="USER_EMAIL" /> પર ખસેડવામાં આવ્યું</translation>
 <translation id="4293080268407233932">શોધો</translation>
 <translation id="4302248187517737842">કોઈ વપરાશકર્તાનું નામ નથી ••••••••</translation>
+<translation id="4302415908542657649">પાસવર્ડ શેર કરી રહ્યાં છીએ</translation>
 <translation id="4304713468139749426">પાસવર્ડ મેનેજર</translation>
 <translation id="430793432425771671">બધાને સમન્વયિત કરો</translation>
 <translation id="4309403553630140242">વધુ માહિતી માટે બે વાર ટૅપ કરો</translation>
@@ -642,6 +649,7 @@
 <translation id="4508750114462689118">સાઇન-ઇન પ્રોમો બંધ કરો</translation>
 <translation id="4514889972748124117">સશક્ત પાસવર્ડ સૂચવો...</translation>
 <translation id="4520798012560649652">છૂપા મોડ વિશે વધુ જાણો</translation>
+<translation id="452503091941773389">{count,plural, =1{{count} બુકમાર્ક}one{{count} બુકમાર્ક}other{{count} બુકમાર્ક}}</translation>
 <translation id="452750746583162491">તમારા સિંક કરેલા ડેટાનો રિવ્યૂ કરો</translation>
 <translation id="4527660062930312477">તમારું એકાઉન્ટ મેનેજ કરવામાં આવે છે</translation>
 <translation id="4536418791685807335">ફરીથી સાઇન ઇન કરવાનો પ્રયાસ કરો.</translation>
@@ -661,6 +669,7 @@
 <translation id="4619615317237390068">અન્ય ઉપકરણોમાંથી ટૅબ્સ</translation>
 <translation id="4620246317052452550">તમે વાંચેલા પેજ</translation>
 <translation id="4620888520263267479">લિંકના પ્રીવ્યૂ બતાવો</translation>
+<translation id="4622477750832577849">ટ્રૅકિંગ ચાલુ કરો</translation>
 <translation id="4630540211544979320">પેજનો અનુવાદ કરો</translation>
 <translation id="4631335160486397366">ફરીથી ઉપયોગમાં લેવાયેલા <ph name="COUNT" /> પાસવર્ડ</translation>
 <translation id="4634124774493850572">પાસવર્ડનો ઉપયોગ કરો</translation>
@@ -810,6 +819,7 @@
 <translation id="54401264925851789">પેજની સુરક્ષા માહિતી</translation>
 <translation id="5443952882982198570">ક્રેડિટ કાર્ડ</translation>
 <translation id="5444892875087332195">બુકમાર્ક</translation>
+<translation id="5454211924362324495">અન્ય લોકોને તમારા પાસવર્ડનો ઉપયોગ કરતા રોકવા માટે, તેને <ph name="BEGIN_LINK" /><ph name="WEBSITE" />પર બદલો<ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">ઑફલાઇન વર્ઝન ખોલો</translation>
 <translation id="5475069061743940393">પૅકેજ ટ્રૅકિંગ</translation>
 <translation id="5478327362747197944">કોઈ વેબપેજમાં કોઈ તારીખ પર ક્લિક કરીને સીધા Calendar ઇવેન્ટ બનાવો.</translation>
@@ -1156,6 +1166,7 @@
 <translation id="7154343200458623869">તમારું કામ પૂરું કરો.</translation>
 <translation id="7161230316646448869">બધા ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ અને વધુ સિંક કરો</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> વડે છૂપી ટૅબ અનલૉક કરો</translation>
+<translation id="7168959436351276050">આ કાર્ડ છુપાવવાથી પૅકેજ ટ્રૅકિંગનો તમારો તમામ ડેટા કાઢી નાખવામાં આવશે</translation>
 <translation id="7172852049901402487">સુરક્ષા સંબંધિત સમસ્યાઓથી તમારા પાસવર્ડને સલામત રાખો</translation>
 <translation id="7173114856073700355">સેટિંગ ખોલો</translation>
 <translation id="7189598951263744875">શેર કરો...</translation>

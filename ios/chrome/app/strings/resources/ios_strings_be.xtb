@@ -58,6 +58,7 @@
 <translation id="1264156759663453185">Выбраны тэкст занадта вялікі для выканання частковага перакладу.</translation>
 <translation id="1265739287306757398">Даведацца больш</translation>
 <translation id="1272079795634619415">Спыніць</translation>
+<translation id="1273416271143914096">{count,plural, =1{{count} пароль}one{{count} пароль}few{{count} паролі}many{{count} пароляў}other{{count} пароля}}</translation>
 <translation id="1275718070701477396">Выбрана</translation>
 <translation id="1279024913354609713">Не дазваляць</translation>
 <translation id="1281818060020671000">Кіраванне данымі</translation>
@@ -191,6 +192,7 @@
 <translation id="1987779152850321833">Каб карыстацца ўсімі магчымасцямі ад Chrome, выканайце гэтыя дзеянні.</translation>
 <translation id="1989112275319619282">Агляд</translation>
 <translation id="1990820278544963435">Пошук</translation>
+<translation id="1991153180045413119">Пароль абагулены</translation>
 <translation id="1992055602764528852">Каб пабачыць укладкі з іншых прылад, увайдзіце ва ўліковы запіс.</translation>
 <translation id="199425419756152024">Праглядзець пароль</translation>
 <translation id="2008357574463816229">Калі вы забудзеце фразу-пароль або захочаце змяніць гэту наладу, <ph name="BEGIN_LINK" />выдаліце даныя Chrome з уліковага запісу<ph name="END_LINK" />.</translation>
@@ -234,6 +236,7 @@
 <translation id="2268044343513325586">Удакладніць</translation>
 <translation id="2269277877025820298">Яшчэ</translation>
 <translation id="2273327106802955778">Меню "Дадаткова"</translation>
+<translation id="2274800392139890332">Перастаць адсочваць гэту пасылку</translation>
 <translation id="2275480389219976105">Знойдзены адрас</translation>
 <translation id="2286505070150039482">Вылучаны тэкст</translation>
 <translation id="2287614783861766820">{count,plural, =1{Гэты адрас будзе выдалены з прылады.}one{Гэтыя адрасы будуць выдалены з прылады.}few{Гэтыя адрасы будуць выдалены з прылады.}many{Гэтыя адрасы будуць выдалены з прылады.}other{Гэтыя адрасы будуць выдалены з прылады.}}</translation>
@@ -242,6 +245,7 @@
 <translation id="2299218006564889602">Вашы паролі шыфруюцца на прыладзе і толькі потым захоўваюцца ў Менеджары пароляў Google.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • №<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">Змяніць пароль на вэб-сайце</translation>
+<translation id="2310154074101836012">Змяніць карусель</translation>
 <translation id="2316709634732130529">Выкарыстаць прапанаваны пароль</translation>
 <translation id="2320166752086256636">Схаваць клавіятуру</translation>
 <translation id="2351097562818989364">Налады перакладу скінуты.</translation>
@@ -526,6 +530,7 @@
 <translation id="380329542618494757">Імя</translation>
 <translation id="3803696231112616155">Прапаноўваць перакласці гэты сайт</translation>
 <translation id="3810973564298564668">Кіраваць</translation>
+<translation id="3818045793209708987">Гэта пасылка больш не адсочваецца</translation>
 <translation id="3818293389945649617">Знайсці наступнае супадзенне</translation>
 <translation id="3819183753496523827">Вы па-за сеткай. Праверце падключэнне да інтэрнэту і паўтарыце спробу.</translation>
 <translation id="3832419617903252251">Паролі захоўваюцца толькі на гэтай прыладзе</translation>
@@ -564,6 +569,7 @@
 <translation id="4018310736049373830">Кіраваць дзеяннямі</translation>
 <translation id="4038354071007134711">На прыладзе няма праграм, у якіх можна адкрыць гэты файл.</translation>
 <translation id="4042870976416480368">Знайсці на старонцы</translation>
+<translation id="4043294777772912240"><ph name="USERNAME" /> цяпер можа ўваходзіць на сайт <ph name="WEBSITE" /> з вашым імем карыстальніка і паролем, якія захоўваюцца ў Менеджары пароляў Google. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Стварайце прамыя спасылкі на вылучаныя часткі старонак і абагульвайце іх.</translation>
 <translation id="4045648459118332842">Выкарыстоўвайце захаваныя паролі ў любой праграме адным дотыкам</translation>
 <translation id="4049507953662678203">Праверце, ці ёсць у вас падключэнне да сеткі, і паўтарыце спробу.</translation>
@@ -607,6 +613,7 @@
 <translation id="4286718549648564014">Адрас перамешчаны ва ўліковы запіс <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Пошук</translation>
 <translation id="4302248187517737842">Адсутнічае імя карыстальніка ••••••••</translation>
+<translation id="4302415908542657649">Ідзе абагульванне пароля</translation>
 <translation id="4304713468139749426">Менеджар пароляў</translation>
 <translation id="430793432425771671">Сінхранізаваць усе</translation>
 <translation id="4309403553630140242">Двойчы націсніце, каб даведацца больш</translation>
@@ -642,6 +649,7 @@
 <translation id="4508750114462689118">Закрыць рэкламны элемент уваходу</translation>
 <translation id="4514889972748124117">Прапанаваць надзейны пароль…</translation>
 <translation id="4520798012560649652">Даведацца больш пра рэжым інкогніта</translation>
+<translation id="452503091941773389">{count,plural, =1{{count} закладка}one{{count} закладка}few{{count} закладкі}many{{count} закладак}other{{count} закладкі}}</translation>
 <translation id="452750746583162491">Праверыць сінхранізаваныя даныя</translation>
 <translation id="4527660062930312477">Ваш уліковы запіс знаходзіцца пад кіраваннем</translation>
 <translation id="4536418791685807335">Увайдзіце яшчэ раз.</translation>
@@ -661,6 +669,7 @@
 <translation id="4619615317237390068">Укладкі з іншых прылад</translation>
 <translation id="4620246317052452550">Прачытанае</translation>
 <translation id="4620888520263267479">Паказваць перадпрагляд спасылак</translation>
+<translation id="4622477750832577849">Уключыць адсочванне</translation>
 <translation id="4630540211544979320">Перакладаць вэб-старонкі</translation>
 <translation id="4631335160486397366">Ужытых раней пароляў: <ph name="COUNT" /></translation>
 <translation id="4634124774493850572">Выкарыстаць пароль</translation>
@@ -810,6 +819,7 @@
 <translation id="54401264925851789">Інфармацыя пра бяспеку старонкі</translation>
 <translation id="5443952882982198570">Крэдытныя карты</translation>
 <translation id="5444892875087332195">Закладкі</translation>
+<translation id="5454211924362324495">Каб іншыя не змаглі выкарыстаць ваш пароль, <ph name="BEGIN_LINK" />змяніце яго на старонцы <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Адкрыць пазасеткавую версію</translation>
 <translation id="5475069061743940393">Адсочванне</translation>
 <translation id="5478327362747197944">Стварайце падзеі ў календары, націскаючы на даты на вэб-старонках.</translation>
@@ -1156,6 +1166,7 @@
 <translation id="7154343200458623869">Выканайце задачу.</translation>
 <translation id="7161230316646448869">Сінхранізуйце закладкі, гісторыю і іншыя даныя на ўсіх прыладах</translation>
 <translation id="7162168282402939716">Разблакіраваць укладкі ў рэжыме інкогніта, выкарыстаўшы <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="7168959436351276050">Калі схаваць гэту картку, усе даныя аб адсочванні пасылак будуць выдалены</translation>
 <translation id="7172852049901402487">Захоўвайце паролі ў бяспечным месцы, каб прадухіліць іх раскрыццё ў выпадку праблем з бяспекай</translation>
 <translation id="7173114856073700355">Адкрыць Налады</translation>
 <translation id="7189598951263744875">Абагуліць...</translation>

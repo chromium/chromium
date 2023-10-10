@@ -3893,6 +3893,7 @@
 <translation id="8975012916872825179">მოიცავს ისეთ ინფორმაციას, როგორიცაა ტელეფონის ნომრები, ელფოსტის მისამართები და მიწოდების მისამართები</translation>
 <translation id="8975263830901772334">თქვენ მიერ ბეჭდვაზე გაშვებული ფაილების სახელები</translation>
 <translation id="8978053250194585037">Google-ის უსაფრთხო დათვალიერების ფუნქციამ <ph name="SITE" />-ზე ახლახან გამოავლინა <ph name="BEGIN_LINK" />ფიშინგის მცდელობა<ph name="END_LINK" />. ფიშინგ-საიტები თავს ასაღებენ სხვა საიტებად თქვენი მოტყუების მიზნით.</translation>
+<translation id="8982884016487650216">PDF-ის ჩატვირთვა დასრულდა</translation>
 <translation id="8983369100812962543">ახლა შეგიძლიათ ფანჯრის ზომის შეცვლა</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ში თქვენი დათვალიერების ისტორიის სანახავად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="8987663052629670333">ფოტოების ბეჭდვის მომსახურება</translation>
@@ -3919,6 +3920,7 @@
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს ამ ჩანართის გასაზიარებლად ისეთი რამეების მეშვეობით, როგორიცაა ბმულის გაზიარება, QR კოდის შექმნა, ტრანსლირება და სხვა</translation>
 <translation id="9023536760430404133">სატრანსპორტო საშუალებების ბორბლები და საბურავები</translation>
 <translation id="9025348182339809926">(არასწორია)</translation>
+<translation id="902590795160480390">მიმდინარეობს PDF-ის ჩატვირთვა</translation>
 <translation id="9030265603405983977">მონოქრომული</translation>
 <translation id="9035022520814077154">უსაფრთხოების შეცდომა</translation>
 <translation id="9035824888276246493">უსაფრთხოების კოდების შენახვა</translation>

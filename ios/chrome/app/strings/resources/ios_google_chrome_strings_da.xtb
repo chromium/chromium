@@ -118,6 +118,7 @@ Vær opmærksom på følgende:
 <translation id="5389212809648216794">Google Chrome kan ikke bruge dit kamera, da det bruges af en anden app</translation>
 <translation id="5395376160638294582">Sørg for, at du altid kan bruge Chrome-dataene på din Google-konto</translation>
 <translation id="5439191312780166229">Advarer dig om skadelige websites – også websites, som Google ikke tidligere har kendt til – ved at analysere flere data fra websites end Standardbeskyttelse. Du kan vælge at springe Chrome-advarsler over.</translation>
+<translation id="5442013002200339429">Hvis du skjuler "<ph name="MODULE_NAME" />", sporer Chrome ikke længere automatisk dine fremtidige pakker, og alle dine tidligere pakkesporingsdata slettes.</translation>
 <translation id="5460571915754665838">4. Vælg Chrome</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome hjælper med at spore denne pakke på siden Ny fane.}one{Chrome hjælper med at spore denne pakke på siden Ny fane.}other{Chrome hjælper med at spore disse pakker på siden Ny fane.}}</translation>
 <translation id="5492504007368565877">Google Adgangskodeadministrator kan ikke tjekke dine adgangskoder.</translation>

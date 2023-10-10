@@ -141,6 +141,7 @@ Dikkate alınması gereken noktalar:
 1. Ayarlar'ı açın
 2. Varsayılan Tarayıcı Uygulaması'na dokunun
 3. Chromium'u seçin.</translation>
+<translation id="6197255575340902638">"<ph name="MODULE_NAME" />" öğesini gizlerseniz Chromium gelecekteki kargolarınızı otomatik olarak takip etmez ve tüm geçmiş kargo takibi verilerinizi siler.</translation>
 <translation id="6247557882553405851">Google Şifre Yöneticisi</translation>
 <translation id="6268381023930128611">Chromium oturumunu kapatıyor musunuz?</translation>
 <translation id="6324041800010509197">Chromium'daki Sekme Izgarasına Git</translation>

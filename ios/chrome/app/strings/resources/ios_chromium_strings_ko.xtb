@@ -141,6 +141,7 @@
 1. 설정을 엽니다.
 2. 기본 브라우저 앱을 탭합니다.
 3. Chromium을 선택합니다.</translation>
+<translation id="6197255575340902638">"<ph name="MODULE_NAME" />" 모듈을 숨기면 Chromium에서 더 이상 향후 택배를 자동으로 추적하지 않으며 이전의 모든 배송 추적 데이터가 삭제됩니다.</translation>
 <translation id="6247557882553405851">Google 비밀번호 관리자</translation>
 <translation id="6268381023930128611">Chromium에서 로그아웃</translation>
 <translation id="6324041800010509197">Chromium에서 탭 그리드로 이동</translation>

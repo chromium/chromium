@@ -118,6 +118,7 @@ Points à prendre en compte :
 <translation id="5389212809648216794">Google Chrome ne peut pas utiliser l'appareil photo, car celui-ci est utilisé par une autre application</translation>
 <translation id="5395376160638294582">Assurez-vous de toujours pouvoir utiliser les données Chrome de votre compte Google</translation>
 <translation id="5439191312780166229">Vous avertit en cas de sites dangereux, y compris pour ceux dont Google n'avait pas connaissance, en analysant plus de données provenant des sites que la protection standard. Vous pouvez ignorer les avertissements de Chrome.</translation>
+<translation id="5442013002200339429">Si vous masquez "<ph name="MODULE_NAME" />", Chrome ne pourra plus suivre automatiquement vos futurs colis et supprimera toutes vos anciennes données de suivi de colis.</translation>
 <translation id="5460571915754665838">4. Sélectionnez Chrome</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome vous aidera à suivre ce colis sur la page "Nouvel onglet".}one{Chrome vous aidera à suivre ce colis sur la page "Nouvel onglet".}other{Chrome vous aidera à suivre ces colis sur la page "Nouvel onglet".}}</translation>
 <translation id="5492504007368565877">Le Gestionnaire de mots de passe de Google ne peut pas vérifier vos mots de passe.</translation>

@@ -97,7 +97,7 @@
 <translation id="4633328489441962921">Chrome でアップデートを確認できません</translation>
 <translation id="4636900170638246267">このサイトと Chrome にログインしてください。</translation>
 <translation id="4698415050768537821">Chrome ですべてのパスワードを確認できませんでした。明日もう一度お試しいただくか、<ph name="BEGIN_LINK" />Google アカウント内のパスワードをご確認ください<ph name="END_LINK" />。</translation>
-<translation id="4761869838909035636">Chrome の安全確認を実行</translation>
+<translation id="4761869838909035636">Chrome の安全チェックを実行</translation>
 <translation id="4819268619367838612">アプリを改善するため、Chrome では使用状況とクラッシュに関するデータが Google に送信されます。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Chrome データの一部が Google アカウントにまだ保存されていません。
 
@@ -159,14 +159,14 @@
 <translation id="6964931465519938134">メッセージ、ドキュメント、他のアプリでタップしたリンクが常に Chrome で開かれるようになります。</translation>
 <translation id="6975725306479268850">自動入力で Chrome を選択する</translation>
 <translation id="7004159181872656283">Chrome でビジュアルを検索します。</translation>
-<translation id="7056826488869329999">Chrome で安全確認を開いて実行します。</translation>
+<translation id="7056826488869329999">Chrome で安全チェックを開いて実行します。</translation>
 <translation id="7059914902409643750">Chrome を独自にカスタマイズ</translation>
 <translation id="7124339256045485976">Chrome を最新の状態に維持します</translation>
 <translation id="7161390184744336561">Google Chrome は古いバージョンです</translation>
 <translation id="7165736900384873061">Google Chrome の QR スキャナの使用を開始する</translation>
 <translation id="7173660919484573146">Chrome では Face ID の使用により、パスワードへの認証されたアクセスのみが許可されます。</translation>
 <translation id="7187993566681480880">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります。</translation>
-<translation id="7200524487407690471">Chrome では、データ侵害や安全でないウェブサイトなどからユーザーを保護するため、1 日 1 回、安全確認を自動的に実行します。安全確認の詳細は [設定] で確認できます。</translation>
+<translation id="7200524487407690471">Chrome では、データ侵害や安全でないウェブサイトなどからユーザーを保護するため、1 日 1 回、安全チェックを自動的に実行します。安全チェックの詳細は [設定] で確認できます。</translation>
 <translation id="72119412072970160">iPad の他のアプリで Google パスワード マネージャーに保存したパスワードを使用できます。</translation>
 <translation id="7254380941803999489">Chrome を既定のブラウザに設定する</translation>
 <translation id="7261678641327190792">Chrome でパスワードを確認できません</translation>

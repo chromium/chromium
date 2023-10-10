@@ -705,6 +705,7 @@
 <translation id="385300504083504382">Почеток</translation>
 <translation id="3859364108019690">Не може да се стримуваат апликации</translation>
 <translation id="3861651314799684201">Притиснете Enter за да го снимите целиот екран</translation>
+<translation id="3865912916886104060">Нема поврзани уреди. Wi-Fi мрежата ќе се исклучи за да започнете да користите точка на пристап.</translation>
 <translation id="3886872229787704059">Отворено денес</translation>
 <translation id="3891340733213178823">Притиснете Ctrl+Shift+Q двапати за да се одјавите.</translation>
 <translation id="3893630138897523026">ChromeVox (говорни повратни информации)</translation>
@@ -789,6 +790,7 @@
 <translation id="4197790712631116042">Исклучено</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> не е достапна.</translation>
 <translation id="4201051445878709314">Прикажи го претходниот месец</translation>
+<translation id="4202362334312791952">Поврзан е 1 уред. Wi-Fi мрежата ќе се исклучи за да започнете да користите точка на пристап.</translation>
 <translation id="4209973997261364186">Wi-Fi мрежата е вклучена</translation>
 <translation id="4212472694152630271">Префрли на PIN</translation>
 <translation id="4215497585250573029">Поставки за VPN</translation>
@@ -1052,6 +1054,7 @@
 <translation id="5258528442992323769">Нема зачувани работни површини</translation>
 <translation id="5260676007519551770">Биро 4</translation>
 <translation id="5268819379131021772">Список со задачи на Google</translation>
+<translation id="5275923704957843041">Преглед на работна површина</translation>
 <translation id="5278086053818066789">Вклучете/исклучете ChromeVox (говорни повратни информации)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> го бара вашето внимание.</translation>
 <translation id="5283198616748585639">Додај 1 мин.</translation>
@@ -1168,6 +1171,7 @@
 <translation id="5707775774148071965">Вашиот уред поддржува поголем проток на податоци отколку кабелот. Изведбата на уредот може да биде ограничена.</translation>
 <translation id="5710450975648804523">Вклучено е „Не вознемирувај“</translation>
 <translation id="571295407079589142">Мобилниот интернет е исклучен</translation>
+<translation id="5716891621595980681">Поврзани се <ph name="DEVICECOUNT" /> уреди. Wi-Fi мрежата ќе се исклучи за да започнете да користите точка на пристап.</translation>
 <translation id="5727460725221669831">Ако сте ја заборавиле лозинката или неодамна сте ја промениле лозинката за сметката на Google, обидете се да го вратите корисников.</translation>
 <translation id="573413375004481890">Уредов не може да ги поддржува сите ваши екрани, па затоа исклучивме еден</translation>
 <translation id="5740328398383587084">Споделување во близина</translation>

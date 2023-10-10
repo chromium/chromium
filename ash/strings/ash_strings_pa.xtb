@@ -704,6 +704,7 @@
 <translation id="385300504083504382">ਸ਼ੁਰੂਆਤ</translation>
 <translation id="3859364108019690">ਐਪਾਂ ਨੂੰ ਸਟ੍ਰੀਮ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="3861651314799684201">ਪੂਰੀ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
+<translation id="3865912916886104060">ਕੋਈ ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਗਿਆ। ਹੌਟਸਪੌਟ ਦੀ ਵਰਤੋਂ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਵਾਈ-ਫਾਈ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="3886872229787704059">ਅੱਜ ਖੋਲ੍ਹੀ ਗਈ</translation>
 <translation id="3891340733213178823">ਸਾਈਨ-ਆਊਟ ਕਰਨ ਲਈ ਦੋ ਵਾਰ Ctrl+Shift+Q ਦਬਾਓ।</translation>
 <translation id="3893630138897523026">ChromeVox (ਬੋਲੀ ਪ੍ਰਤੀਕਰਮ)</translation>
@@ -788,6 +789,7 @@
 <translation id="4197790712631116042">ਬੰਦ</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="4201051445878709314">ਪਿਛਲਾ ਮਹੀਨਾ ਦਿਖਾਓ</translation>
+<translation id="4202362334312791952">1 ਡੀਵਾਈਸ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ। ਹੌਟਸਪੌਟ ਦੀ ਵਰਤੋਂ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਵਾਈ-ਫਾਈ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="4209973997261364186">ਵਾਈ-ਫਾਈ ਚਾਲੂ ਹੈ</translation>
 <translation id="4212472694152630271">ਪਿੰਨ 'ਤੇ ਬਦਲੀ ਕਰੋ</translation>
 <translation id="4215497585250573029">VPN ਸੈਟਿੰਗਾਂ</translation>
@@ -1052,6 +1054,7 @@
 <translation id="5258528442992323769">ਕੋਈ ਰੱਖਿਅਤ ਕੀਤੀ ਡਿਸਕ ਨਹੀਂ</translation>
 <translation id="5260676007519551770">ਡੈਸਕ 4</translation>
 <translation id="5268819379131021772">Google Tasks ਦੀ ਸੂਚੀ</translation>
+<translation id="5275923704957843041">ਡੈਸਕ ਦੀ ਪੂਰਵ-ਝਲਕ</translation>
 <translation id="5278086053818066789">ChromeVox ਨੂੰ ਚਾਲੂ/ਬੰਦ ਕਰੋ (ਬੋਲੀ ਪ੍ਰਤੀਕਰਮ)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ਨੂੰ ਤੁਹਾਡੇ ਧਿਆਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="5283198616748585639">1 ਮਿੰਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -1168,6 +1171,7 @@
 <translation id="5707775774148071965">ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਤੁਹਾਡੀ ਕੇਬਲ ਨਾਲੋਂ ਵੱਧ ਡਾਟਾ ਦਰ ਦਾ ਸਮਰਥਨ ਕਰਦਾ ਹੈ। ਡੀਵਾਈਸ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਸੀਮਤ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="5710450975648804523">'ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ' ਚਾਲੂ ਹੈ</translation>
 <translation id="571295407079589142">ਮੋਬਾਈਲ ਡਾਟਾ ਬੰਦ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
+<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> ਡੀਵਾਈਸ ਕਨੈਕਟ ਕੀਤੇ ਗਏ। ਹੌਟਸਪੌਟ ਦੀ ਵਰਤੋਂ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਵਾਈ-ਫਾਈ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="5727460725221669831">ਜੇ ਤੁਸੀਂ ਆਪਣਾ ਪਾਸਵਰਡ ਭੁੱਲ ਗਏ ਹੋ ਜਾਂ ਹਾਲ ਹੀ ਵਿੱਚ ਆਪਣਾ Google ਖਾਤਾ ਪਾਸਵਰਡ ਬਦਲਿਆ ਹੈ, ਤਾਂ ਇਸ ਵਰਤੋਂਕਾਰ ਲਈ ਇਸਨੂੰ ਮੁੜ-ਹਾਸਲ ਕਰ ਕੇ ਦੇਖੋ।</translation>
 <translation id="573413375004481890">ਇਹ ਡੀਵਾਈਸ ਤੁਹਾਡੇ ਸਾਰੇ ਡਿਸਪਲੇਆਂ ਨੂੰ ਸਮਰਥਿਤ ਨਹੀਂ ਕਰ ਸਕੀ, ਇਸ ਲਈ ਇੱਕ ਨੂੰ ਡਿਸਕਨੈਕਟ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="5740328398383587084">ਨਜ਼ਦੀਕੀ ਸਾਂਝ</translation>

@@ -705,6 +705,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="385300504083504382">Inicio</translation>
 <translation id="3859364108019690">No se pueden transmitir apps</translation>
 <translation id="3861651314799684201">Presiona intro para grabar la pantalla completa</translation>
+<translation id="3865912916886104060">No hay dispositivos conectados. Se desactivará la conexión Wi-Fi para comenzar a usar el hotspot.</translation>
 <translation id="3886872229787704059">Se abrió hoy</translation>
 <translation id="3891340733213178823">Presiona Ctrl + Mayús + Q dos veces para salir.</translation>
 <translation id="3893630138897523026">ChromeVox (comentarios por voz)</translation>
@@ -789,6 +790,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4197790712631116042">No</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> no está disponible.</translation>
 <translation id="4201051445878709314">Mostrar el mes anterior</translation>
+<translation id="4202362334312791952">Se conectó un dispositivo. Se desactivará la conexión Wi-Fi para comenzar a usar el hotspot.</translation>
 <translation id="4209973997261364186">La conexión Wi-Fi está activada.</translation>
 <translation id="4212472694152630271">Cambiar a PIN</translation>
 <translation id="4215497585250573029">Configuración de la VPN</translation>
@@ -1052,6 +1054,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5258528442992323769">No hay escritorios guardados</translation>
 <translation id="5260676007519551770">Escritorio 4</translation>
 <translation id="5268819379131021772">Lista de Google Tasks</translation>
+<translation id="5275923704957843041">Vista previa del escritorio</translation>
 <translation id="5278086053818066789">Activar o desactivar ChromeVox (comentarios por voz)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> requiere tu atención.</translation>
 <translation id="5283198616748585639">Agregar 1 min</translation>
@@ -1168,6 +1171,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5707775774148071965">El dispositivo admite una mayor velocidad de datos que el cable. El rendimiento del dispositivo puede verse limitado.</translation>
 <translation id="5710450975648804523">"No interrumpir" activado</translation>
 <translation id="571295407079589142">Los datos móviles están desactivados.</translation>
+<translation id="5716891621595980681">Se conectaron <ph name="DEVICECOUNT" /> dispositivos. Se desactivará la conexión Wi-Fi para comenzar a usar el hotspot.</translation>
 <translation id="5727460725221669831">Si olvidaste tu contraseña o cambiaste la de tu Cuenta de Google recientemente, intenta recuperar este usuario.</translation>
 <translation id="573413375004481890">Este dispositivo no admite tantas pantallas, por lo que se desconectó una de ellas</translation>
 <translation id="5740328398383587084">Compartir con Nearby</translation>

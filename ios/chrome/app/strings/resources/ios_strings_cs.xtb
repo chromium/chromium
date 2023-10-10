@@ -58,6 +58,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="1264156759663453185">Vybraný text je na částečný překlad příliš dlouhý.</translation>
 <translation id="1265739287306757398">Postup</translation>
 <translation id="1272079795634619415">Zastavit</translation>
+<translation id="1273416271143914096">{count,plural, =1{{count} heslo}few{{count} hesla}many{{count} hesla}other{{count} hesel}}</translation>
 <translation id="1275718070701477396">Vybráno</translation>
 <translation id="1279024913354609713">Nepovolovat</translation>
 <translation id="1281818060020671000">Správa dat</translation>
@@ -191,6 +192,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="1987779152850321833">Pokud Chrome chcete využít na maximum, proveďte níže uvedené navrhované akce.</translation>
 <translation id="1989112275319619282">Procházet</translation>
 <translation id="1990820278544963435">Najít</translation>
+<translation id="1991153180045413119">Heslo bylo sdíleno</translation>
 <translation id="1992055602764528852">Pokud chcete zobrazit své karty z ostatních zařízení, přihlaste se.</translation>
 <translation id="199425419756152024">Zobrazit heslo</translation>
 <translation id="2008357574463816229">Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
@@ -234,6 +236,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="2268044343513325586">Upřesnit</translation>
 <translation id="2269277877025820298">Zobrazit více</translation>
 <translation id="2273327106802955778">Nabídka Další</translation>
+<translation id="2274800392139890332">Přestat sledovat tuto zásilku</translation>
 <translation id="2275480389219976105">Byla nalezena adresa</translation>
 <translation id="2286505070150039482">Zvýrazněný text</translation>
 <translation id="2287614783861766820">{count,plural, =1{Tato adresa bude z tohoto zařízení smazána.}few{Tyto adresy budou z tohoto zařízení smazány.}many{Tyto adresy budou z tohoto zařízení smazány.}other{Tyto adresy budou z tohoto zařízení smazány.}}</translation>
@@ -242,6 +245,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="2299218006564889602">Hesla jsou před uložením do Správce hesel Google v zařízení zašifrována.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • č. <ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">Změnit heslo na webu</translation>
+<translation id="2310154074101836012">Úprava pásu</translation>
 <translation id="2316709634732130529">Použít navrhované heslo</translation>
 <translation id="2320166752086256636">Skrýt klávesnici</translation>
 <translation id="2351097562818989364">Nastavení překladů bylo resetováno.</translation>
@@ -526,6 +530,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="380329542618494757">Název</translation>
 <translation id="3803696231112616155">Nabízet překlad tohoto webu</translation>
 <translation id="3810973564298564668">Spravovat</translation>
+<translation id="3818045793209708987">Tuto zásilku jste přestali sledovat</translation>
 <translation id="3818293389945649617">Najít další</translation>
 <translation id="3819183753496523827">Jste offline. Zkontrolujte připojení k internetu a zkuste to znovu.</translation>
 <translation id="3832419617903252251">Heslo bylo uloženo pouze v tomto zařízení</translation>
@@ -564,6 +569,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4018310736049373830">Spravovat aktivitu</translation>
 <translation id="4038354071007134711">Soubor nelze otevřít pomocí žádné aplikace v tomto zařízení.</translation>
 <translation id="4042870976416480368">Najít na stránce</translation>
+<translation id="4043294777772912240"><ph name="USERNAME" /> teď při přihlašování k webu <ph name="WEBSITE" /> pomocí Správce hesel Google může používat vaše uživatelské jméno a heslo. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Vytvořte a sdílejte přímý odkaz na část stránky, kterou jste označili.</translation>
 <translation id="4045648459118332842">Používejte uložená hesla jedním klepnutím v libovolné aplikaci</translation>
 <translation id="4049507953662678203">Zkontrolujte, zda jste připojeni k síti a zkuste to znovu.</translation>
@@ -607,6 +613,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4286718549648564014">Adresa byla přesunuta do vašeho účtu <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Hledat</translation>
 <translation id="4302248187517737842">Žádné uživatelské jméno ••••••••</translation>
+<translation id="4302415908542657649">Sdílení hesla</translation>
 <translation id="4304713468139749426">Správce hesel</translation>
 <translation id="430793432425771671">Synchronizovat vše</translation>
 <translation id="4309403553630140242">Další informace zobrazíte dvojitým klepnutím</translation>
@@ -642,6 +649,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4508750114462689118">Zavřít propagační zprávu ohledně přihlášení</translation>
 <translation id="4514889972748124117">Navrhnout silné heslo…</translation>
 <translation id="4520798012560649652">Další informace o anonymním režimu</translation>
+<translation id="452503091941773389">{count,plural, =1{{count} záložka}few{{count} záložky}many{{count} záložky}other{{count} záložek}}</translation>
 <translation id="452750746583162491">Zkontrolovat synchronizovaná data</translation>
 <translation id="4527660062930312477">Váš účet je spravován</translation>
 <translation id="4536418791685807335">Zkuste se přihlásit znovu.</translation>
@@ -661,6 +669,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4619615317237390068">Karty z ostatních zařízení</translation>
 <translation id="4620246317052452550">Stránky, které jste si přečetli</translation>
 <translation id="4620888520263267479">Zobrazovat náhledy odkazů</translation>
+<translation id="4622477750832577849">Povolit sledování</translation>
 <translation id="4630540211544979320">Překládat stránky</translation>
 <translation id="4631335160486397366">Opakovaně použitá hesla: <ph name="COUNT" /></translation>
 <translation id="4634124774493850572">Použít heslo</translation>
@@ -810,6 +819,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="54401264925851789">Informace o zabezpečení stránky</translation>
 <translation id="5443952882982198570">Platební karty</translation>
 <translation id="5444892875087332195">Záložky</translation>
+<translation id="5454211924362324495">Pokud ostatním v používání vašeho hesla budete chtít zabránit, <ph name="BEGIN_LINK" />změňte ho na webu <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Otevřít offline verzi</translation>
 <translation id="5475069061743940393">Sledování zásilek</translation>
 <translation id="5478327362747197944">Vytvářejte události v kalendáři přímo kliknutím na datum na webové stránce.</translation>
@@ -1156,6 +1166,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7154343200458623869">Dokončete úkol.</translation>
 <translation id="7161230316646448869">Vaše hesla, historie a další údaje na všech zařízeních</translation>
 <translation id="7162168282402939716">Odemknout anonymní karty pomocí <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="7168959436351276050">Skrytím této karty odstraníte všechna data sledování zásilek</translation>
 <translation id="7172852049901402487">Chraňte svá hesla před bezpečnostními problémy</translation>
 <translation id="7173114856073700355">Otevřít nastavení</translation>
 <translation id="7189598951263744875">Sdílet...</translation>
