@@ -4,9 +4,16 @@
 
 package org.chromium.chrome.browser.add_username_dialog;
 
-import static org.mockito.Mockito.verify;
+import static com.google.common.truth.Truth.assertThat;
 
-import org.junit.Assert;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import android.content.Context;
+
+import androidx.appcompat.app.AppCompatActivity;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,12 +23,16 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
+
+import java.lang.ref.WeakReference;
 
 /** Tests for {@link AddUsernameDialogBridge} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -53,17 +64,8 @@ public class AddUsernameDialogBridgeTest {
     @Test
     public void testOnDialogDismissed() {
         mBridge.onDialogDismissed();
-        verify(mBridgeJniMock).onDialogDismissed(sTestNativePointer);
-
-        AssertionError exception = null;
-        try {
-            mBridge.onDialogDismissed();
-        } catch (AssertionError e) {
-            exception = e;
-        }
-        Assert.assertNotNull(exception);
-        Assert.assertEquals(
-                "mNativeAddUsernameDialogBridge must not be null", exception.getMessage());
+        mBridge.onDialogDismissed();
+        verify(mBridgeJniMock, times(1)).onDialogDismissed(sTestNativePointer);
     }
 
     @Test
@@ -71,5 +73,25 @@ public class AddUsernameDialogBridgeTest {
         String username = "username";
         mBridge.onDialogAccepted(username);
         verify(mBridgeJniMock).onDialogAccepted(sTestNativePointer, username);
+    }
+
+    @Test
+    public void testDialogIsDismissedFromNative() {
+        when(mWindowAndroid.getModalDialogManager()).thenReturn(mModalDialogManager);
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<Context>(createActivity()));
+
+        mBridge.showAddUsernameDialog("username");
+        assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
+        mBridge.dismiss();
+        assertThat(mModalDialogManager.getShownDialogModel()).isNull();
+    }
+
+    private static AppCompatActivity createActivity() {
+        ActivityController<AppCompatActivity> activityController =
+                Robolectric.buildActivity(AppCompatActivity.class);
+        // Need to setTheme to Activity in Robolectric test or will get exception: You need to use a
+        // Theme.AppCompat theme (or descendant) with this activity.
+        activityController.get().setTheme(R.style.Theme_AppCompat_Light);
+        return activityController.create().start().resume().visible().get();
     }
 }

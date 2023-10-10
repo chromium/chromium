@@ -52,6 +52,7 @@ class MockJniDelegate : public AddUsernameDialogBridge::JniDelegate {
               ShowAddUsernameDialog,
               (const std::u16string&),
               (override));
+  MOCK_METHOD((void), Dismiss, (), (override));
 };
 
 }  // namespace
@@ -188,6 +189,21 @@ TEST_P(GeneratedPasswordSavedMessageDelegateTest,
   }
 
   delegate_->ShowPrompt(web_contents(), std::move(form_manager));
+}
+
+TEST_P(GeneratedPasswordSavedMessageDelegateTest,
+       DialogIsDismissedOnDelegateDestruction) {
+  SetUsernameAndPassword(u"", kPassword);
+  auto form_manager = CreateFormManager(GURL(kDefaultUrl));
+  delegate_->ShowPrompt(web_contents(), std::move(form_manager));
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordGenerationBottomSheet)) {
+    EXPECT_CALL(*username_bridge_jni_raw_ptr_, Dismiss);
+  } else {
+    EXPECT_CALL(message_dispatcher_bridge_, DismissMessage);
+  }
+  delegate_.reset();
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(

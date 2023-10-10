@@ -41,6 +41,11 @@ class JniDelegateImpl : public JniDelegate {
         base::android::ConvertUTF16ToJavaString(env, password));
   }
 
+  void Dismiss() override {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_AddUsernameDialogBridge_dismiss(env, java_bridge_);
+  }
+
  private:
   // The corresponding Java AddUsernameDialogBridge.
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
@@ -53,7 +58,12 @@ AddUsernameDialogBridge::JniDelegate::~JniDelegate() = default;
 
 AddUsernameDialogBridge::AddUsernameDialogBridge()
     : jni_delegate_(std::make_unique<JniDelegateImpl>()) {}
-AddUsernameDialogBridge::~AddUsernameDialogBridge() = default;
+AddUsernameDialogBridge::~AddUsernameDialogBridge() {
+  if (!dialog_dismissed_callback_) {
+    return;
+  }
+  jni_delegate_->Dismiss();
+}
 
 AddUsernameDialogBridge::AddUsernameDialogBridge(
     base::PassKey<class GeneratedPasswordSavedMessageDelegateTest>,

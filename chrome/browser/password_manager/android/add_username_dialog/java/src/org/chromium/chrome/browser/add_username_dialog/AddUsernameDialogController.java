@@ -49,6 +49,7 @@ public class AddUsernameDialogController implements ModalDialogProperties.Contro
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
     private final Delegate mDelegate;
+    private PropertyModel mModalDialogModel;
     private final AddUsernameDialogContentView mContentView;
     private PropertyModel mContentViewModel;
 
@@ -75,8 +76,8 @@ public class AddUsernameDialogController implements ModalDialogProperties.Contro
         PropertyModelChangeProcessor.create(
                 mContentViewModel, mContentView, AddUsernameDialogContentViewBinder::bind);
 
-        mModalDialogManager.showDialog(
-                createModalDialogModel(), ModalDialogManager.ModalDialogType.APP);
+        mModalDialogModel = createModalDialogModel();
+        mModalDialogManager.showDialog(mModalDialogModel, ModalDialogManager.ModalDialogType.APP);
     }
 
     private PropertyModel createContentViewModel(String password) {
@@ -115,6 +116,11 @@ public class AddUsernameDialogController implements ModalDialogProperties.Contro
                                 mContext,
                                 resourceProvider.getPasswordManagerIcon());
         return dialogModeBuilder.build();
+    }
+
+    public void dismissDialog() {
+        mModalDialogManager.dismissDialog(
+                mModalDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
     }
 
     private void onUsernameChanged(String username) {

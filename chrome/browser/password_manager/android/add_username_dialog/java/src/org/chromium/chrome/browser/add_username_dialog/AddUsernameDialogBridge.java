@@ -15,6 +15,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class AddUsernameDialogBridge implements AddUsernameDialogController.Delegate {
     private long mNativeAddUsernameDialogBridge;
     private final WindowAndroid mWindowAndroid;
+    private AddUsernameDialogController mController;
 
     @CalledByNative
     public AddUsernameDialogBridge(
@@ -28,26 +29,30 @@ public class AddUsernameDialogBridge implements AddUsernameDialogController.Dele
         Context context = mWindowAndroid.getContext().get();
         if (context == null) return;
 
-        AddUsernameDialogController controller = new AddUsernameDialogController(
-                context, mWindowAndroid.getModalDialogManager(), this);
-        controller.showAddUsernameDialog(password);
+        mController =
+                new AddUsernameDialogController(
+                        context, mWindowAndroid.getModalDialogManager(), this);
+        mController.showAddUsernameDialog(password);
+    }
+
+    @CalledByNative
+    public void dismiss() {
+        assert mController != null : "Must not call `dismiss` before `showAddUsernameDialog`";
+        mController.dismissDialog();
+        mNativeAddUsernameDialogBridge = 0;
     }
 
     @Override
     public void onDialogAccepted(String username) {
-        assert mNativeAddUsernameDialogBridge
-                != 0 : "mNativeAddUsernameDialogBridge must not be null";
+        if (mNativeAddUsernameDialogBridge == 0) return;
         AddUsernameDialogBridgeJni.get().onDialogAccepted(mNativeAddUsernameDialogBridge, username);
     }
 
     @Override
     public void onDialogDismissed() {
-        assert mNativeAddUsernameDialogBridge
-                != 0 : "mNativeAddUsernameDialogBridge must not be null";
+        if (mNativeAddUsernameDialogBridge == 0) return;
         AddUsernameDialogBridgeJni.get().onDialogDismissed(mNativeAddUsernameDialogBridge);
         mNativeAddUsernameDialogBridge = 0;
-        // TODO(https://crbug.com/1421753): introduce the AddUsernameDialogBridge.dismiss() method
-        // to dismiss the dialog from C++.
     }
 
     @NativeMethods

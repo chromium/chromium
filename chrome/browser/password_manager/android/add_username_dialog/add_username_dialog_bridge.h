@@ -28,6 +28,9 @@ class AddUsernameDialogBridge {
     virtual void Create(const gfx::NativeWindow window_android,
                         AddUsernameDialogBridge* bridge) = 0;
     virtual void ShowAddUsernameDialog(const std::u16string& password) = 0;
+    // Dismisses the displayed dialog. The bridge calls it in the destructor to
+    // ensure that the dialog on the java side is dismissed.
+    virtual void Dismiss() = 0;
   };
 
   AddUsernameDialogBridge();
