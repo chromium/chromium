@@ -192,14 +192,6 @@ public class SectionHeaderView extends LinearLayout {
             mTabListener = new SectionHeaderTabListener();
             mTabLayout.addOnTabSelectedListener(mTabListener);
             if (mIsSurfacePolishEnabled) {
-                ViewGroup.LayoutParams layoutParams = mTabLayout.getLayoutParams();
-                if (!mIsTablet) {
-                    layoutParams.width = LayoutParams.MATCH_PARENT;
-                } else {
-                    layoutParams.width = getResources().getDimensionPixelSize(
-                                                 R.dimen.feed_header_tab_layout_width_max)
-                            * 2;
-                }
                 mTabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
                 mTabLayout.setBackgroundResource(
                         R.drawable.header_title_section_tab_background_polished);
@@ -651,4 +643,24 @@ public class SectionHeaderView extends LinearLayout {
      * Adjust the margin of the sticky header.
      */
     void updateStickyHeaderMargin(int marginValue) {}
+
+    /**
+     * Adjust the width of the TabLayout.
+     *
+     * @param isNarrowWindowOnTablet Whether the window that contains the view is a narrow one on
+     *     tablets.
+     */
+    void updateTabLayoutHeaderWidth(boolean isNarrowWindowOnTablet) {
+        if (mTabLayout == null) return;
+
+        assert mIsSurfacePolishEnabled;
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mTabLayout.getLayoutParams();
+        if (!mIsTablet || isNarrowWindowOnTablet) {
+            layoutParams.width = LayoutParams.MATCH_PARENT;
+        } else {
+            layoutParams.width =
+                    getResources().getDimensionPixelSize(R.dimen.feed_header_tab_layout_width_max)
+                            * 2;
+        }
+    }
 }

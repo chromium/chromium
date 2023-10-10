@@ -517,8 +517,13 @@ public class FeedSurfaceCoordinator
         }
 
         // Mediator should be created before any Stream changes.
+        boolean useUiConfig =
+            ntpHeader != null
+                && ChromeFeatureList.sSurfacePolish.isEnabled()
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         mMediator = new FeedSurfaceMediator(this, mActivity, snapScrollHelper, mSectionHeaderModel,
-                getTabIdFromLaunchOrigin(launchOrigin), actionDelegate, optionsCoordinator);
+            getTabIdFromLaunchOrigin(launchOrigin), actionDelegate, optionsCoordinator,
+            useUiConfig ? mUiConfig : null);
 
         FeedSurfaceTracker.getInstance().trackSurface(this);
 

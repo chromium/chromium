@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.feed;
 
 import static junit.framework.Assert.assertEquals;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -61,6 +63,11 @@ import org.chromium.chrome.browser.xsurface.feed.StreamType;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
+import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
+import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -123,8 +130,10 @@ public class FeedSurfaceMediatorTest {
     private FeedOptionsCoordinator mOptionsCoordinator;
     @Mock
     private FeedReliabilityLogger mReliabilityLogger;
+    @Mock private UiConfig mUiConfig;
     @Captor
     private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserverCaptor;
+    @Captor private ArgumentCaptor<DisplayStyleObserver> mDisplayStyleObserverCaptor;
 
     private Activity mActivity;
     private FeedSurfaceMediator mFeedSurfaceMediator;
@@ -884,6 +893,48 @@ public class FeedSurfaceMediatorTest {
                 forYou.get(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY));
     }
 
+    @Test
+    public void testUpdateHeaderWithUiConfigChanged() {
+        // Sets the current display style to be the default wide window.
+        UiConfig.DisplayStyle displayStyleWide =
+                new DisplayStyle(HorizontalDisplayStyle.WIDE, VerticalDisplayStyle.REGULAR);
+        when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyleWide);
+
+        PropertyModel sectionHeaderModel = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        mFeedSurfaceMediator =
+                createMediator(
+                        FeedSurfaceCoordinator.StreamTabId.FOR_YOU, sectionHeaderModel, mUiConfig);
+        verify(mUiConfig).addObserver(mDisplayStyleObserverCaptor.capture());
+        assertFalse(
+                sectionHeaderModel.get(SectionHeaderListProperties.IS_NARROW_WINDOW_ON_TABLET_KEY));
+
+        UiConfig.DisplayStyle displayStyleRegular =
+                new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR);
+        mDisplayStyleObserverCaptor.getValue().onDisplayStyleChanged(displayStyleRegular);
+        assertTrue(
+                sectionHeaderModel.get(SectionHeaderListProperties.IS_NARROW_WINDOW_ON_TABLET_KEY));
+
+        mFeedSurfaceMediator.destroy();
+        verify(mUiConfig).removeObserver(mDisplayStyleObserverCaptor.capture());
+    }
+
+    @Test
+    public void testInitializeHeaderWithCurrentUiConfig() {
+        // Sets the current display style to be a narrow window.
+        UiConfig.DisplayStyle displayStylRegular =
+                new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR);
+        when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStylRegular);
+
+        PropertyModel sectionHeaderModel = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        mFeedSurfaceMediator =
+                createMediator(
+                        FeedSurfaceCoordinator.StreamTabId.FOR_YOU, sectionHeaderModel, mUiConfig);
+
+        verify(mUiConfig).addObserver(mDisplayStyleObserverCaptor.capture());
+        assertTrue(
+                sectionHeaderModel.get(SectionHeaderListProperties.IS_NARROW_WINDOW_ON_TABLET_KEY));
+    }
+
     private FeedSurfaceMediator createMediator() {
         return createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
                 SectionHeaderListProperties.create(TOOLBAR_HEIGHT));
@@ -891,7 +942,14 @@ public class FeedSurfaceMediatorTest {
 
     private FeedSurfaceMediator createMediator(
             @FeedSurfaceCoordinator.StreamTabId int tabId, PropertyModel sectionHeaderModel) {
+        return createMediator(tabId, sectionHeaderModel, /* uiConfig= */ null);
+    }
+
+    private FeedSurfaceMediator createMediator(
+            @FeedSurfaceCoordinator.StreamTabId int tabId,
+            PropertyModel sectionHeaderModel,
+            UiConfig uiConfig) {
         return new FeedSurfaceMediator(mFeedSurfaceCoordinator, mActivity, null, sectionHeaderModel,
-                tabId, /*actionDelegate=*/null, mOptionsCoordinator);
+                tabId, /*actionDelegate=*/null, mOptionsCoordinator, uiConfig);
     }
 }

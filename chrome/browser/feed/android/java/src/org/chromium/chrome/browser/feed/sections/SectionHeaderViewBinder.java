@@ -57,6 +57,9 @@ public class SectionHeaderViewBinder
         } else if (key == SectionHeaderListProperties.STICKY_HEADER_MUTABLE_MARGIN_KEY) {
             view.updateStickyHeaderMargin(
                     model.get(SectionHeaderListProperties.STICKY_HEADER_MUTABLE_MARGIN_KEY));
+        } else if (key == SectionHeaderListProperties.IS_NARROW_WINDOW_ON_TABLET_KEY) {
+            view.updateTabLayoutHeaderWidth(
+                    model.get(SectionHeaderListProperties.IS_NARROW_WINDOW_ON_TABLET_KEY));
         }
     }
 

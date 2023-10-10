@@ -50,6 +50,9 @@ import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.chrome.browser.xsurface.feed.StreamType;
+import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
+import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
 import org.chromium.components.prefs.PrefService;
@@ -207,6 +210,10 @@ public class FeedSurfaceMediator
     private final FeedActionDelegate mActionDelegate;
     private final FeedOptionsCoordinator mOptionsCoordinator;
 
+    // It is non-null for NTP on tablets when SurfacePolish is enabled.
+    private @Nullable final UiConfig mUiConfig;
+    private final DisplayStyleObserver mDisplayStyleObserver = this::onDisplayStyleChanged;
+
     private @Nullable RecyclerView.OnScrollListener mStreamScrollListener;
     private final ObserverList<ScrollListener> mScrollListeners = new ObserverList<>();
     private HasContentListener mHasContentListener;
@@ -248,11 +255,12 @@ public class FeedSurfaceMediator
      * @param headerModel The {@link PropertyModel} that contains this mediator should work with.
      * @param openingTabId The {@link FeedSurfaceCoordinator.StreamTabId} the feed should open to.
      * @param optionsCoordinator The {@link FeedOptionsCoordinator} for the feed.
+     * @param uiConfig The {@link UiConfig} for screen display.
      */
     FeedSurfaceMediator(FeedSurfaceCoordinator coordinator, Context context,
             @Nullable SnapScrollHelper snapScrollHelper, PropertyModel headerModel,
             @FeedSurfaceCoordinator.StreamTabId int openingTabId, FeedActionDelegate actionDelegate,
-            FeedOptionsCoordinator optionsCoordinator) {
+            FeedOptionsCoordinator optionsCoordinator, @Nullable UiConfig uiConfig) {
         mCoordinator = coordinator;
         mHasContentListener = coordinator;
         mContext = context;
@@ -265,6 +273,7 @@ public class FeedSurfaceMediator
         mOptionsCoordinator.setOptionsListener(this);
         mIsNewTabSearchEngineUrlAndroidEnabled =
                 DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled();
+        mUiConfig = uiConfig;
 
         /**
          * When feature flag isNewTabSearchEngineUrlAndroidEnabled is enabled, the Feeds may be
@@ -304,6 +313,11 @@ public class FeedSurfaceMediator
         mStreamContentChangedListener = contents
                 -> mRecyclerViewAnimationFinishDetector.runWhenAnimationComplete(
                         this::onContentsChanged);
+
+        if (mUiConfig != null) {
+            mUiConfig.addObserver(mDisplayStyleObserver);
+            onDisplayStyleChanged(mUiConfig.getCurrentDisplayStyle());
+        }
 
         initialize();
     }
@@ -371,6 +385,9 @@ public class FeedSurfaceMediator
         destroyPropertiesForStream();
         mPrefChangeRegistrar.destroy();
         mTemplateUrlService.removeObserver(this);
+        if (mUiConfig != null) {
+            mUiConfig.removeObserver(mDisplayStyleObserver);
+        }
     }
 
     public void destroyForTesting() {
@@ -1293,5 +1310,11 @@ public class FeedSurfaceMediator
 
     int getTabToStreamSizeForTesting() {
         return mTabToStreamMap.size();
+    }
+
+    private void onDisplayStyleChanged(UiConfig.DisplayStyle newDisplayStyle) {
+        mSectionHeaderModel.set(
+                SectionHeaderListProperties.IS_NARROW_WINDOW_ON_TABLET_KEY,
+                newDisplayStyle.horizontal < HorizontalDisplayStyle.WIDE);
     }
 }
