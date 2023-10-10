@@ -98,10 +98,8 @@ component("midi") {
   configs += [ ":midi_config" ]
 
   defines = [ "MIDI_IMPLEMENTATION" ]
-  deps = [
-    ":mojo",
-    "//base",
-  ]
+  public_deps = [ "//base" ]
+  deps = [ ":mojo" ]
   libs = []
 
   if (is_android) {
