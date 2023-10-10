@@ -23,6 +23,7 @@ class FilePath;
 namespace apps {
 
 class AppStorageFileHandler;
+class FakeAppStorage;
 
 // AppStorage is responsible for reading and writing the app information on
 // disk.
@@ -38,6 +39,8 @@ class COMPONENT_EXPORT(APP_UPDATE) AppStorage
   ~AppStorage() override;
 
  private:
+  friend class FakeAppStorage;
+
   // apps::AppRegistryCache::Observer overrides:
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(
@@ -45,11 +48,36 @@ class COMPONENT_EXPORT(APP_UPDATE) AppStorage
 
   // Invoked when reading the app info data from the AppStorage file is
   // finished.
-  void OnGetAppInfoData(std::vector<AppPtr> apps);
+  virtual void OnGetAppInfoData(std::vector<AppPtr> apps);
+
+  // Returns true if the app info is changed compared with the app info saved in
+  // the AppStorage file.
+  bool IsAppChanged(const apps::AppUpdate& update);
+
+  // Writes the app info to the AppStorage file if there is no reading or
+  // writing in progress, and there are some app info changes.
+  void MaybeSaveAppInfo();
+
+  // Invoked when writing to the file operation is finished.
+  virtual void OnSaveFinished();
 
   raw_ref<apps::AppRegistryCache> app_registry_cache_;
 
   scoped_refptr<AppStorageFileHandler> file_handler_;
+
+  // True if there are some app info changes haven't been written to the
+  // AppStorage file during the AppStorage file writing time. Once the
+  // file writing is done, start a new writing process to re-write the new app
+  // info to the AppStorage file.
+  bool should_save_app_info_ = false;
+
+  // Records whether there is any reading or writing in progress.
+  bool io_in_progress_;
+
+  // Records OnApps is in progress for the apps saved in the AppStorage file.
+  // The OnAppUpdate callback should skip the update when onapps_in_progress_ is
+  // true, as those updates have been written in the AppStorage file.
+  bool onapps_in_progress_ = false;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>

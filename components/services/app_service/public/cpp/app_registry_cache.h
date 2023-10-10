@@ -190,6 +190,8 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
  private:
   friend class AppRegistryCacheTest;
   friend class PublisherTest;
+  friend class AppStorage;
+  friend class FakeAppStorage;
 
   void DoOnApps(std::vector<AppPtr> deltas);
 

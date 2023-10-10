@@ -175,6 +175,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   absl::optional<uint64_t> DataSizeInBytes() const;
   bool DataSizeInBytesChanged() const;
 
+  const App* State() const { return state_.get(); }
+  const App* Delta() const { return delta_.get(); }
+
  private:
   friend class AppRegistryCacheTest;
 

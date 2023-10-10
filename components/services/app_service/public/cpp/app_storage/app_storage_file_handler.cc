@@ -45,10 +45,6 @@ void AppStorageFileHandler::WriteToFile(std::vector<AppPtr> apps) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  if (apps.empty()) {
-    return;
-  }
-
   if (!base::CreateDirectory(file_path_.DirName())) {
     LOG(ERROR) << "Fail to create the directory for " << file_path_;
     return;
