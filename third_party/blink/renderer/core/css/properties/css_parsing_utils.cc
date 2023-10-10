@@ -4282,6 +4282,9 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
       return ConsumePrefixedBackgroundBox(range, AllowTextValue::kAllow);
     case CSSPropertyID::kWebkitMaskClip:
       return ConsumePrefixedBackgroundBox(range, AllowTextValue::kAllow);
+    case CSSPropertyID::kMaskOrigin:
+      // TODO(crbug.com/1490702) update the allowed mask-origin value.
+      return ConsumePrefixedBackgroundBox(range, AllowTextValue::kForbid);
     case CSSPropertyID::kWebkitMaskOrigin:
       return ConsumePrefixedBackgroundBox(range, AllowTextValue::kForbid);
     default:
@@ -4379,6 +4382,7 @@ bool ParseBackgroundOrMask(bool important,
         }
         if (value) {
           if (property.IDEquals(CSSPropertyID::kBackgroundOrigin) ||
+              property.IDEquals(CSSPropertyID::kMaskOrigin) ||
               property.IDEquals(CSSPropertyID::kWebkitMaskOrigin)) {
             origin_value = value;
           }

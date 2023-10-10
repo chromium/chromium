@@ -828,6 +828,7 @@ enum CSSSampleId {
     kMaskImage = 772,
     kMaskClip = 773,
     kMaskSize = 774,
+    kMaskOrigin = 775,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

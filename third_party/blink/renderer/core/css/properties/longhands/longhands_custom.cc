@@ -9314,6 +9314,28 @@ const CSSValue* MaskImage::CSSValueFromComputedStyleInternal(
       style, allow_visited_style, fill_layer);
 }
 
+const CSSValue* MaskOrigin::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext&,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumePrefixedBackgroundBox, range,
+      css_parsing_utils::AllowTextValue::kForbid);
+}
+
+const CSSValue* MaskOrigin::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  const FillLayer* curr_layer = &style.MaskLayers();
+  for (; curr_layer; curr_layer = curr_layer->Next()) {
+    EFillBox box = curr_layer->Origin();
+    list->Append(*CSSIdentifierValue::Create(box));
+  }
+  return list;
+}
+
 const CSSValue* WebkitMaskOrigin::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext&,

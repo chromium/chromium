@@ -87,6 +87,7 @@ bool FillLayersEqual(const FillLayer& a_layers, const FillLayer& b_layers) {
         }
         break;
       case CSSPropertyID::kBackgroundOrigin:
+      case CSSPropertyID::kMaskOrigin:
       case CSSPropertyID::kWebkitMaskOrigin:
         if (a_layer->Origin() != b_layer->Origin()) {
           return false;
@@ -792,6 +793,9 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kMaskImage:
     case CSSPropertyID::kWebkitMaskImage:
       return base::ValuesEquivalent(a.MaskImage(), b.MaskImage());
+    case CSSPropertyID::kMaskOrigin:
+      return FillLayersEqual<CSSPropertyID::kMaskOrigin>(a.MaskLayers(),
+                                                         b.MaskLayers());
     case CSSPropertyID::kWebkitMaskOrigin:
       return FillLayersEqual<CSSPropertyID::kWebkitMaskOrigin>(a.MaskLayers(),
                                                                b.MaskLayers());
@@ -924,6 +928,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kAliasWebkitAlternativeAnimationWithTimeline:
     case CSSPropertyID::kAliasWebkitAlternativeMaskClip:
     case CSSPropertyID::kAliasWebkitAlternativeMaskImage:
+    case CSSPropertyID::kAliasWebkitAlternativeMaskOrigin:
     case CSSPropertyID::kAliasWebkitAlternativeMaskSize:
     case CSSPropertyID::kAliasWebkitAnimation:
     case CSSPropertyID::kAliasWebkitAnimationDelay:

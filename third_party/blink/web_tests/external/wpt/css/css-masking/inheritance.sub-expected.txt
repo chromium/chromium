@@ -25,8 +25,8 @@ PASS Property mask-image has initial value none
 PASS Property mask-image does not inherit
 FAIL Property mask-mode has initial value match-source assert_true: mask-mode doesn't seem to be supported in the computed style expected true got false
 FAIL Property mask-mode does not inherit assert_true: expected true got false
-FAIL Property mask-origin has initial value border-box assert_true: mask-origin doesn't seem to be supported in the computed style expected true got false
-FAIL Property mask-origin does not inherit assert_true: expected true got false
+PASS Property mask-origin has initial value border-box
+PASS Property mask-origin does not inherit
 FAIL Property mask-position has initial value 0% 0% assert_true: mask-position doesn't seem to be supported in the computed style expected true got false
 FAIL Property mask-position does not inherit assert_true: expected true got false
 FAIL Property mask-repeat has initial value repeat assert_true: mask-repeat doesn't seem to be supported in the computed style expected true got false
