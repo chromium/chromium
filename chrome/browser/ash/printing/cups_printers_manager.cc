@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -700,15 +701,17 @@ class CupsPrintersManagerImpl
     for (const std::string& printer_id :
          auto_usb_printer_configurer_->ConfiguredPrintersIds()) {
       if (!printers_.IsPrinterInClass(PrinterClass::kAutomatic, printer_id)) {
-        printers_.Insert(PrinterClass::kAutomatic,
-                         auto_usb_printer_configurer_->Printer(printer_id));
+        AddPrinterToPrintersMap(
+            PrinterClass::kAutomatic,
+            auto_usb_printer_configurer_->Printer(printer_id));
       }
     }
     for (const std::string& printer_id :
          auto_usb_printer_configurer_->UnconfiguredPrintersIds()) {
       if (!printers_.IsPrinterInClass(PrinterClass::kDiscovered, printer_id)) {
-        printers_.Insert(PrinterClass::kDiscovered,
-                         auto_usb_printer_configurer_->Printer(printer_id));
+        AddPrinterToPrintersMap(
+            PrinterClass::kDiscovered,
+            auto_usb_printer_configurer_->Printer(printer_id));
       }
     }
   }
@@ -729,7 +732,7 @@ class CupsPrintersManagerImpl
       // processing.
       auto printer = detected.printer;
       if (printer.IsIppEverywhere()) {
-        printers_.Insert(PrinterClass::kAutomatic, printer);
+        AddPrinterToPrintersMap(PrinterClass::kAutomatic, printer);
         continue;
       }
 
@@ -755,12 +758,29 @@ class CupsPrintersManagerImpl
         // automatically.
         *printer.mutable_ppd_reference() =
             ppd_resolution_tracker_.GetPpdReference(detected_printer_id);
-        printers_.Insert(PrinterClass::kAutomatic, printer);
+        AddPrinterToPrintersMap(PrinterClass::kAutomatic, printer);
         continue;
       }
 
       // We are not able to set the printer up automatically.
-      printers_.Insert(PrinterClass::kDiscovered, printer);
+      AddPrinterToPrintersMap(PrinterClass::kDiscovered, printer);
+    }
+  }
+
+  void AddPrinterToPrintersMap(PrinterClass printer_class,
+                               const Printer& printer) {
+    printers_.Insert(printer_class, printer);
+
+    if (base::FeatureList::IsEnabled(::features::kLocalPrinterObserving)) {
+      // If we've seen this printer before, don't trigger a new detection event.
+      if (detected_printers_seen_.contains(printer.id())) {
+        return;
+      }
+
+      detected_printers_seen_.insert(printer.id());
+      for (auto& observer : local_printers_observer_list_) {
+        observer.OnLocalPrintersUpdated();
+      }
     }
   }
 
@@ -824,12 +844,14 @@ class CupsPrintersManagerImpl
   void OnUsbPrinterSetupDone(std::string printer_id) {
     if (auto_usb_printer_configurer_->ConfiguredPrintersIds().contains(
             printer_id)) {
-      printers_.Insert(PrinterClass::kAutomatic,
-                       auto_usb_printer_configurer_->Printer(printer_id));
+      AddPrinterToPrintersMap(
+          PrinterClass::kAutomatic,
+          auto_usb_printer_configurer_->Printer(printer_id));
       NotifyObservers({PrinterClass::kAutomatic});
     } else {
-      printers_.Insert(PrinterClass::kDiscovered,
-                       auto_usb_printer_configurer_->Printer(printer_id));
+      AddPrinterToPrintersMap(
+          PrinterClass::kDiscovered,
+          auto_usb_printer_configurer_->Printer(printer_id));
       NotifyObservers({PrinterClass::kDiscovered});
     }
   }
@@ -978,6 +1000,12 @@ class CupsPrintersManagerImpl
   // Timer used to prevent the total nearby printers from immediately recording
   // each time the mDNS reports printers.
   base::DelayTimer nearby_printers_metric_delay_timer_;
+
+  // Tracks the printers seen from mDNS or USB plug ins so the
+  // LocalPrinterObserver knows when to fire for a new printer.
+  // TODO(b/304269962): Remove detected printers from here when disconnected
+  // from the device.
+  base::flat_set<std::string> detected_printers_seen_;
 
   base::WeakPtrFactory<CupsPrintersManagerImpl> weak_ptr_factory_{this};
 };

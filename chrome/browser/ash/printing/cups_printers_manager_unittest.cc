@@ -247,6 +247,10 @@ class FakePrinterDetector : public PrinterDetector {
     on_printers_found_callback_.Run(detections_);
   }
 
+  void RunPrintersFoundCallback() {
+    on_printers_found_callback_.Run(detections_);
+  }
+
  private:
   std::vector<DetectedPrinter> detections_;
   OnPrintersFoundCallback on_printers_found_callback_;
@@ -1208,6 +1212,34 @@ TEST_F(CupsPrintersManagerTest, AddLocalPrintersObserver) {
   manager_->AddLocalPrintersObserver(&observer2);
   EXPECT_EQ(1u, observer2.num_observer_calls());
   EXPECT_EQ(1u, observer1.num_observer_calls());
+}
+
+// Tests that when a new local printer is detected the observer is triggered.
+TEST_F(CupsPrintersManagerTest, LocalPrintersDetected) {
+  feature_list_.InitAndEnableFeature(::features::kLocalPrinterObserving);
+
+  // The observer should fire when first registered.
+  FakeLocalPrintersObserver observer1;
+  manager_->AddLocalPrintersObserver(&observer1);
+  EXPECT_EQ(1u, observer1.num_observer_calls());
+
+  // The observer should fire for a new zeroconf printer detection.
+  const auto detected_printer = MakeDiscoveredPrinter("DiscoveredPrinter");
+  zeroconf_detector_->AddDetections({detected_printer});
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(2u, observer1.num_observer_calls());
+
+  // The observer shouldn't fire when the same printer is sent for detection so
+  // the call count should remain the same.
+  zeroconf_detector_->RunPrintersFoundCallback();
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(2u, observer1.num_observer_calls());
+
+  // The observer should fire again for a new USB printer detection.
+  const auto usb_detected_printer = MakeUsbDiscoveredPrinter("UsbPrinter");
+  usb_detector_->AddDetections({usb_detected_printer});
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(3u, observer1.num_observer_calls());
 }
 
 }  // namespace
