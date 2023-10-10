@@ -4953,6 +4953,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "indexed-db-default-durability-relaxed",
+    "owners": [ "estade", "chrome-owp-storage@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "info-card-acknowledgement-tracking",
     "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
     "expiry_milestone": 120

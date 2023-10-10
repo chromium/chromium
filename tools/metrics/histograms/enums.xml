@@ -64269,6 +64269,7 @@ from previous Chrome versions.
   <int value="-416660617" label="EnforceTLS13Downgrade:disabled"/>
   <int value="-415186532" label="AndroidSiteSettingsUIRefresh:enabled"/>
   <int value="-414900505" label="ScrollCapture:enabled"/>
+  <int value="-414477658" label="DefaultBucketUsesRelaxedDurability:disabled"/>
   <int value="-414398582" label="UpcomingFollowFeatures:disabled"/>
   <int value="-413779344" label="SyncAutofillWalletUsageData:disabled"/>
   <int value="-413562235" label="MessagesForAndroidUpdatePassword:disabled"/>
@@ -65047,6 +65048,7 @@ from previous Chrome versions.
   <int value="-35528548" label="LensImageFormatOptimizations:disabled"/>
   <int value="-35388407" label="AshNewSystemMenu:disabled"/>
   <int value="-35256214" label="InterestFeedNoticeCardAutoDismiss:enabled"/>
+  <int value="-35002051" label="DefaultBucketUsesRelaxedDurability:enabled"/>
   <int value="-33240310" label="AppShimNotificationAttribution:enabled"/>
   <int value="-32712825" label="CrOSEnforceSystemAec:disabled"/>
   <int value="-32385086" label="NtpRecipeTasksModule:disabled"/>

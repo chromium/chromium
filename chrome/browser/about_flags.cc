@@ -149,6 +149,7 @@
 #include "components/segmentation_platform/public/features.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/services/heap_profiling/public/cpp/switches.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/signin/core/browser/dice_account_reconcilor_delegate.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -11010,6 +11011,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIndexedDBCompressValuesWithSnappy,
      flag_descriptions::kIndexedDBCompressValuesWithSnappyDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kIndexedDBCompressValuesWithSnappy)},
+
+    {"indexed-db-default-durability-relaxed",
+     flag_descriptions::kIndexedDBDefaultDurabilityRelaxed,
+     flag_descriptions::kIndexedDBDefaultDurabilityRelaxed, kOsAll,
+     FEATURE_VALUE_TYPE(storage::kDefaultBucketUsesRelaxedDurability)},
 
     {"autofill-enable-server-iban",
      flag_descriptions::kAutofillEnableServerIbanName,

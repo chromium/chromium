@@ -1153,6 +1153,9 @@ extern const char kInstantHotspotRebrandDescription[];
 extern const char kIndexedDBCompressValuesWithSnappy[];
 extern const char kIndexedDBCompressValuesWithSnappyDescription[];
 
+extern const char kIndexedDBDefaultDurabilityRelaxed[];
+extern const char kIndexedDBDefaultDurabilityRelaxedDescription[];
+
 extern const char kJapaneseOSSettingsName[];
 extern const char kJapaneseOSSettingsDescription[];
 

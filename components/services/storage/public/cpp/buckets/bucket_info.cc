@@ -8,6 +8,10 @@
 
 namespace storage {
 
+BASE_FEATURE(kDefaultBucketUsesRelaxedDurability,
+             "DefaultBucketUsesRelaxedDurability",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BucketInfo::BucketInfo(BucketId bucket_id,
                        blink::StorageKey storage_key,
                        blink::mojom::StorageType type,
@@ -23,7 +27,19 @@ BucketInfo::BucketInfo(BucketId bucket_id,
       expiration(std::move(expiration)),
       quota(quota),
       persistent(persistent),
-      durability(durability) {}
+      durability(durability) {
+  // The default bucket's parameters are hard-coded in
+  // `BucketInitParams::ForDefaultBucket`, and then persisted in the
+  // quota database. The easiest way to override that in a reversible manner (in
+  // case of the flag being flipped on and off) is here.
+  // TODO(crbug.com/965883): migrate the quota db, update `BucketInitParams`,
+  // and remove this.
+  if (base::FeatureList::IsEnabled(
+          storage::kDefaultBucketUsesRelaxedDurability) &&
+      is_default()) {
+    this->durability = blink::mojom::BucketDurability::kRelaxed;
+  }
+}
 
 BucketInfo::BucketInfo() = default;
 BucketInfo::~BucketInfo() = default;
