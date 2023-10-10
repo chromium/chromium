@@ -971,6 +971,19 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       toolbar.updateFonts();
     }
   }
+
+  private onKeyDown_(e: KeyboardEvent) {
+    if (e.key === 'k') {
+      e.stopPropagation();
+      const shadowRoot = this.shadowRoot;
+      assert(shadowRoot);
+      const toolbar = shadowRoot.getElementById('toolbar');
+      assert(toolbar);
+      if (toolbar instanceof ReadAnythingToolbar) {
+        toolbar.onPlayPauseClick();
+      }
+    }
+  }
 }
 
 declare global {

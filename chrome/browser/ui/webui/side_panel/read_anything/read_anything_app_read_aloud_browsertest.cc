@@ -120,3 +120,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest, ReadAloud_FontSizeMenu) {
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest, ReadAloud_FontMenu) {
   ASSERT_TRUE(RunTest("font_menu_with_read_aloud.js"));
 }
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest,
+                       ReadAloud_KeyboardForPlayPause) {
+  ASSERT_TRUE(RunTest("k_plays_and_pauses.js"));
+}

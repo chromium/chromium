@@ -111,7 +111,7 @@
         id="play-pause"
         iron-icon="read-anything-20:play"
         tabindex="0"
-        on-click="onPlayPauseClick_">
+        on-click="onPlayPauseClick">
       </cr-icon-button>
       <span id="granularity-container" hidden="[[isPaused_]]">
         <cr-icon-button id="previousGranularity"
@@ -193,7 +193,7 @@
       on-click="onMoreOptionsClick_">
   </cr-icon-button>
 
-  <cr-action-menu id="moreOptionsMenu" on-keydown="onMoreOptionsMenuKeyDown_">
+  <cr-action-menu id="moreOptionsMenu" on-keydown="onToolbarKeyDown_">
     <template is="dom-repeat" items="[[moreOptionsButtons_]]">
       <cr-icon-button
         id="[[item.id]]"

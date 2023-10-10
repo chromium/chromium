@@ -70,6 +70,7 @@ enum ReadAnythingSettingsChange {
 }
 
 const SETTINGS_CHANGE_UMA = 'Accessibility.ReadAnything.SettingsChange';
+const moreOptionsClass = '.more-options-icon';
 
 const ReadAnythingToolbarBase = WebUiListenerMixin(PolymerElement);
 export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
@@ -105,7 +106,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     // fit
     const buttons = Array.from(toolbar.querySelectorAll('.toolbar-button'));
     assert(buttons);
-    const moreOptionsButtons = toolbar.querySelectorAll('.more-options-icon');
+    const moreOptionsButtons = toolbar.querySelectorAll(moreOptionsClass);
     assert(moreOptionsButtons);
     const buttonsOnToolbarToMaybeHide =
         buttons.slice(buttons.length - moreOptionsButtons.length);
@@ -691,7 +692,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     }
   }
 
-  private onPlayPauseClick_() {
+  onPlayPauseClick() {
     if (this.isPaused_) {
       this.updateUiForPlaying();
       if (this.contentPage) {
@@ -734,6 +735,10 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     if (moreOptionsButton.style.display &&
         (moreOptionsButton.style.display !== 'none')) {
       focusableElements.push(moreOptionsButton);
+      Array.from(toolbar.querySelectorAll(moreOptionsClass))
+          .forEach(element => {
+            focusableElements.push(element as HTMLElement);
+          });
     }
 
     if (!this.maybeUpdateTabIndex_(e, focusableElements)) {
@@ -761,16 +766,6 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
         e, Array.from(this.$.fontSizeMenu.children) as HTMLElement[]);
   }
 
-  private onMoreOptionsMenuKeyDown_(e: KeyboardEvent) {
-    const buttons =
-        Array.from(this.$.moreOptionsMenu.children) as HTMLElement[];
-    // Only focus the currently visible buttons in the menu.
-    const focusableElements = buttons.filter(button => {
-      return button.style.display !== 'none';
-    });
-    this.onKeyDown_(e, focusableElements);
-  }
-
   private onKeyDown_(e: KeyboardEvent, focusableElements: HTMLElement[]) {
     if (!['ArrowRight', 'ArrowLeft'].includes(e.key)) {
       return;
@@ -781,9 +776,33 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     const direction = e.key === 'ArrowRight' ? 1 : -1;
     // Move to the next focusable item in the toolbar, wrapping around
     // if we've reached the end or beginning.
-    const newIndex = (currentIndex + direction + focusableElements.length) %
+    let newIndex = (currentIndex + direction + focusableElements.length) %
         focusableElements.length;
-    focusableElements[newIndex]!.focus();
+    // Skip focusing the button itself and go directly to the children. We still
+    // need this button in the list of focusable elements because it can become
+    // focused by tabbing while the menu is open and we want the arrow key
+    // behavior to continue smoothly.
+    if (focusableElements[newIndex].id === 'more') {
+      newIndex += direction;
+    }
+
+    // Open the overflow menu if the next button is in that menu. Close it
+    // otherwise.
+    const elementToFocus = focusableElements[newIndex];
+    assert(elementToFocus);
+    if (elementToFocus.className !== moreOptionsClass.slice(1)) {
+      this.$.moreOptionsMenu.close();
+    } else if (!this.$.moreOptionsMenu.open) {
+      const moreOptionsButton =
+          focusableElements.find(element => element.id === 'more');
+      assert(moreOptionsButton);
+      this.openMenu_(this.$.moreOptionsMenu, moreOptionsButton);
+    }
+
+    // Wait for the next animation frame for the overflow menu to show or hide.
+    requestAnimationFrame(() => {
+      elementToFocus.focus();
+    });
   }
 
   private onFontSelectKeyDown_(e: KeyboardEvent) {
