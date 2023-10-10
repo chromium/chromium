@@ -23,7 +23,7 @@ TEST(VideoColorSpaceTest, InvalidColorSpace) {
 TEST(VideoColorSpaceTest, PartiallyValid) {
   auto video_cs = VideoColorSpace();
   video_cs.primaries = VideoColorSpace::PrimaryID::BT709;
-  EXPECT_TRUE(video_cs.IsSpecified());  // Any field counts.
+  EXPECT_FALSE(video_cs.IsSpecified());
   auto gfx_cs = video_cs.ToGfxColorSpace();
   EXPECT_FALSE(gfx_cs.IsValid());
   EXPECT_EQ(gfx_cs, gfx::ColorSpace());

@@ -94,7 +94,8 @@ class MEDIA_EXPORT VideoColorSpace {
 
   bool operator==(const VideoColorSpace& other) const;
   bool operator!=(const VideoColorSpace& other) const;
-  // Returns true if any of the fields have a value other
+
+  // Returns true if all of the fields have a value other
   // than INVALID or UNSPECIFIED.
   bool IsSpecified() const;
 
