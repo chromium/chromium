@@ -25,6 +25,7 @@
 //components/cronet/native
 //components/grpc_support
 //components/metrics
+//components/miracle_parameter/common
 //components/nacl/common
 //components/prefs
 //components/prefs/android

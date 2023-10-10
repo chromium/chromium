@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/miracle_parameter",
   "+crypto",
   "+net/net_jni_headers",
   "+third_party/apple_apsl",
