@@ -41,7 +41,6 @@ source_set("content_suggestions") {
   ]
   deps = [
     ":constants",
-    ":feature_flags",
     ":metrics",
     ":public",
     ":start_suggest",
@@ -82,6 +81,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ntp:set_up_list",
     "//ios/chrome/browser/ntp:set_up_list_item_type",
     "//ios/chrome/browser/ntp:set_up_list_prefs",
+    "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/ntp_tiles",
     "//ios/chrome/browser/ntp_tiles/tab_resumption:tab_resumption_prefs",
     "//ios/chrome/browser/parcel_tracking:prefs",
@@ -169,7 +169,6 @@ source_set("metrics") {
   deps = [
     ":constants",
     ":content_suggestions_constant",
-    ":feature_flags",
     "//base",
     "//components/favicon_base",
     "//components/ntp_tiles",
@@ -177,6 +176,7 @@ source_set("metrics") {
     "//ios/chrome/browser/metrics:metrics_internal",
     "//ios/chrome/browser/ntp:set_up_list_item_type",
     "//ios/chrome/browser/ntp:set_up_list_metrics",
+    "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
@@ -216,7 +216,6 @@ source_set("content_suggestions_ui") {
   deps = [
     ":constants",
     ":content_suggestions_constant",
-    ":feature_flags",
     ":metrics",
     ":public",
     "resources:magic_stack_edit_button_background_color",
@@ -230,6 +229,7 @@ source_set("content_suggestions_ui") {
     "//ios/chrome/browser/ntp:set_up_list",
     "//ios/chrome/browser/ntp:set_up_list_item_type",
     "//ios/chrome/browser/ntp:set_up_list_prefs",
+    "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/ntp_tiles/tab_resumption:tab_resumption_prefs",
     "//ios/chrome/browser/parcel_tracking:util",
     "//ios/chrome/browser/safety_check/model:constants",
@@ -282,11 +282,11 @@ source_set("content_suggestions_ui_util") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ntp:features",
+    "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
     "//ios/chrome/browser/ui/location_bar:constants",
     "//ios/chrome/browser/ui/ntp",
@@ -315,7 +315,6 @@ source_set("unit_tests") {
     ":content_suggestions",
     ":content_suggestions_ui",
     ":content_suggestions_ui_util",
-    ":feature_flags",
     ":metrics",
     "//base",
     "//base/test:test_support",
@@ -333,6 +332,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/ntp:set_up_list_item_type",
     "//ios/chrome/browser/ntp:set_up_list_prefs",
+    "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/promos_manager:test_support",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/reading_list/model:test_support",
@@ -390,7 +390,6 @@ source_set("eg2_tests") {
     ":constants",
     ":content_suggestions_constant",
     ":eg_test_support+eg2",
-    ":feature_flags",
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
@@ -402,6 +401,7 @@ source_set("eg2_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/ntp:features",
+    "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/search_engines:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
@@ -483,17 +483,5 @@ source_set("eg_app_support+eg2") {
     "//ios/web/common:uikit",
     "//testing/gmock",
     "//testing/gtest:gtest",
-  ]
-}
-
-source_set("feature_flags") {
-  sources = [
-    "content_suggestions_feature.h",
-    "content_suggestions_feature.mm",
-  ]
-  public_deps = [ "//base" ]
-  deps = [
-    "//components/prefs",
-    "//ios/chrome/browser/shared/model/application_context",
   ]
 }

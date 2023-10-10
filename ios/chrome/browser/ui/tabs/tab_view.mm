@@ -9,6 +9,7 @@
 #import "base/i18n/rtl.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/elements/fade_truncating_label.h"

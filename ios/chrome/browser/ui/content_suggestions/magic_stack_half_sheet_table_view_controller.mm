@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/ntp/features.h"
+#import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
@@ -16,7 +17,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"

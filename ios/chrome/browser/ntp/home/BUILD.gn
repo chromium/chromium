@@ -3,7 +3,13 @@
 # found in the LICENSE file.
 
 source_set("features") {
-  sources = [ "features.h" ]
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
   public_deps = [ "//base" ]
-  deps = [ "//ios/chrome/browser/ui/content_suggestions:feature_flags" ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/application_context",
+  ]
 }

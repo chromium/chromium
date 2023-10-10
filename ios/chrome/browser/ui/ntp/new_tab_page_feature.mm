@@ -7,9 +7,9 @@
 #import "base/ios/ios_util.h"
 #import "base/metrics/field_trial_params.h"
 #import "components/variations/service/variations_service.h"
+#import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 
 #pragma mark - Constants
 

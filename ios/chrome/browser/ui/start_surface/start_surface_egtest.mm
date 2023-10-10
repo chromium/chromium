@@ -6,7 +6,7 @@
 
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"

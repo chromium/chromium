@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_gesture_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"

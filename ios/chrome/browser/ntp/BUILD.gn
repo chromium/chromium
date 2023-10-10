@@ -79,9 +79,9 @@ source_set("set_up_list") {
     "//components/sync/base",
     "//components/sync/service",
     "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync/model",
-    "//ios/chrome/browser/ui/content_suggestions:feature_flags",
   ]
 }
 
@@ -134,6 +134,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/favicon:favicon",
     "//ios/chrome/browser/ntp",
+    "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/search_engines:search_engines",
     "//ios/chrome/browser/shared/model/application_context",
@@ -147,7 +148,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin:fake_system_identity_manager",
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/sync/model",
-    "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test:test",
     "//ios/web/public/test/fakes",

@@ -91,7 +91,7 @@ source_set("eg2_tests") {
   deps = [
     ":feature_flags",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/content_suggestions:feature_flags",
+    "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",

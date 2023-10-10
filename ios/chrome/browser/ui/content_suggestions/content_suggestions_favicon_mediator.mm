@@ -6,11 +6,11 @@
 
 #import "base/functional/bind.h"
 #import "components/favicon/core/large_icon_service.h"
+#import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
