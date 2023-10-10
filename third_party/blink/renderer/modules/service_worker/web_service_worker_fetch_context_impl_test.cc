@@ -49,7 +49,8 @@ TEST_F(WebServiceWorkerFetchContextImplTest, SkipThrottling) {
       std::make_unique<FakeURLLoaderThrottleProvider>(),
       /*websocket_handshake_throttle_provider=*/nullptr, mojo::NullReceiver(),
       mojo::NullReceiver(),
-      /*cors_exempt_header_list=*/WebVector<WebString>());
+      /*cors_exempt_header_list=*/WebVector<WebString>(),
+      /*is_third_party_context*/ false);
 
   {
     // Call WillSendRequest() for kScriptURL.

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 66 tests; 55 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 66 tests; 57 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup service workers
 PASS same-origin, window.open with no service worker
 PASS same-origin, window.open with fallback
@@ -38,8 +38,8 @@ PASS same-origin, nested window.open with cross-site middle frame and change-req
 PASS same-origin, nested window.open with cross-site middle frame and navpreload service worker
 PASS same-origin, nested set location with cross-site middle frame and no service worker
 PASS same-origin, nested set location with cross-site middle frame and fallback service worker
-FAIL same-origin, nested set location with cross-site middle frame and passthrough service worker assert_not_equals: SameSite=Strict cookies are not sent with cross-site requests. got disallowed value "COOKIE_VALUE"
-FAIL same-origin, nested set location with cross-site middle frame and change-request service worker assert_not_equals: SameSite=Strict cookies are not sent with cross-site requests. got disallowed value "COOKIE_VALUE"
+PASS same-origin, nested set location with cross-site middle frame and passthrough service worker
+PASS same-origin, nested set location with cross-site middle frame and change-request service worker
 PASS same-origin, nested set location with cross-site middle frame and navpreload service worker
 PASS same-origin, form post with no service worker
 PASS same-origin, form post with fallback

@@ -27,6 +27,7 @@
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom-forward.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom-forward.h"
@@ -117,7 +118,8 @@ class ServiceWorkerContextClient
       const GURL& script_url_to_skip_throttling,
       scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner,
       int32_t service_worker_route_id,
-      const std::vector<std::string>& cors_exempt_header_list);
+      const std::vector<std::string>& cors_exempt_header_list,
+      const blink::StorageKey& storage_key);
 
   ServiceWorkerContextClient(const ServiceWorkerContextClient&) = delete;
   ServiceWorkerContextClient& operator=(const ServiceWorkerContextClient&) =
@@ -303,6 +305,8 @@ class ServiceWorkerContextClient
   std::vector<std::string> cors_exempt_header_list_;
 
   base::TimeTicks top_level_script_loading_start_time_ = base::TimeTicks::Now();
+
+  blink::StorageKey storage_key_;
 };
 
 }  // namespace content

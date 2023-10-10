@@ -58,7 +58,8 @@ class BLINK_EXPORT WebServiceWorkerFetchContextImpl final
           preference_watcher_receiver,
       mojo::PendingReceiver<mojom::blink::SubresourceLoaderUpdater>
           pending_subresource_loader_updater,
-      Vector<String> cors_exempt_header_list);
+      Vector<String> cors_exempt_header_list,
+      bool is_third_party_context);
 
   // WebServiceWorkerFetchContext implementation:
   void SetTerminateSyncLoadEvent(base::WaitableEvent*) override;
@@ -140,6 +141,8 @@ class BLINK_EXPORT WebServiceWorkerFetchContextImpl final
 
   Vector<String> cors_exempt_header_list_;
   bool is_offline_mode_ = false;
+
+  bool is_third_party_context_ = false;
 };
 
 }  // namespace blink
