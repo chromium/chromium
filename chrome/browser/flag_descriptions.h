@@ -2455,6 +2455,9 @@ extern const char kPasswordGenerationBottomSheetDescription[];
 extern const char kPasswordsInCredManName[];
 extern const char kPasswordsInCredManDescription[];
 
+extern const char kPasswordSuggestionBottomSheetV2Name[];
+extern const char kPasswordSuggestionBottomSheetV2Description[];
+
 extern const char kPolicyLogsPageAndroidName[];
 extern const char kPolicyLogsPageAndroidDescription[];
 

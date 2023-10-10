@@ -6640,6 +6640,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "password-suggestion-bottom-sheet-v2",
+    "owners": ["atsvirchkova@google.com", "vasilii", "derinel@google.com"],
+    "expiry_milestone": 122
+  },
+  {
     "name": "passwords-in-android-credential-management",
     "owners": ["derinel@google.com", "fhorschig", "kenrb", "agl"],
     "expiry_milestone": 120

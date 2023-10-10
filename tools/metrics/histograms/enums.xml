@@ -64480,6 +64480,7 @@ from previous Chrome versions.
   <int value="-302078301" label="RequestDesktopSiteDefaults:enabled"/>
   <int value="-301689561" label="PermissionQuietChip:disabled"/>
   <int value="-301228557" label="PageInfoDiscoverability:disabled"/>
+  <int value="-301120116" label="PasswordSuggestionBottomSheetV2:disabled"/>
   <int value="-300018686" label="disable-cloud-import"/>
   <int value="-299841473" label="top-document-isolation:enabled"/>
   <int value="-299116652" label="CCTResizable90MaximumHeight:enabled"/>
@@ -66241,6 +66242,7 @@ from previous Chrome versions.
   <int value="561374433" label="SCTAuditing:disabled"/>
   <int value="561951500" label="GlobalMediaControlsCastStartStop:enabled"/>
   <int value="562111126" label="SidePanelBorder:enabled"/>
+  <int value="562185887" label="PasswordSuggestionBottomSheetV2:enabled"/>
   <int value="562635337" label="EcheSWACheckAndroidNetworkInfo:disabled"/>
   <int value="562979188" label="DesktopIOSPromotion:enabled"/>
   <int value="564355877" label="OopRasterizationDDL:disabled"/>
