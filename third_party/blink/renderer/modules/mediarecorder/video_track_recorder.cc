@@ -250,7 +250,8 @@ GetCreateSoftwareVideoEncoderCallback(CodecId codec_id) {
 #if BUILDFLAG(RTC_USE_H264)
     case CodecId::kH264:
       return ConvertToBaseRepeatingCallback(WTF::CrossThreadBindRepeating(
-          []() -> std::unique_ptr<media::VideoEncoder> {
+          [](media::GpuVideoAcceleratorFactories* /*gpu_factories*/)
+              -> std::unique_ptr<media::VideoEncoder> {
             return std::make_unique<media::OpenH264VideoEncoder>();
           }));
 #endif  // BUILDFLAG(RTC_USE_H264)
@@ -258,14 +259,16 @@ GetCreateSoftwareVideoEncoderCallback(CodecId codec_id) {
     case CodecId::kVp8:
     case CodecId::kVp9:
       return ConvertToBaseRepeatingCallback(WTF::CrossThreadBindRepeating(
-          []() -> std::unique_ptr<media::VideoEncoder> {
+          [](media::GpuVideoAcceleratorFactories* /*gpu_factories*/)
+              -> std::unique_ptr<media::VideoEncoder> {
             return std::make_unique<media::VpxVideoEncoder>();
           }));
 #endif
 #if BUILDFLAG(ENABLE_LIBAOM)
     case CodecId::kAv1:
       return ConvertToBaseRepeatingCallback(WTF::CrossThreadBindRepeating(
-          []() -> std::unique_ptr<media::VideoEncoder> {
+          [](media::GpuVideoAcceleratorFactories* /*gpu_factories*/)
+              -> std::unique_ptr<media::VideoEncoder> {
             return std::make_unique<media::Av1VideoEncoder>();
           }));
 #endif  // BUILDFLAG(ENABLE_LIBAOM)
@@ -826,7 +829,9 @@ VideoTrackRecorderImpl::CreateSoftwareVideoEncoder(
       return std::make_unique<MediaRecorderEncoderWrapper>(
           std::move(encoding_task_runner),
           codec_profile.profile.value_or(media::AV1PROFILE_PROFILE_MAIN),
-          bits_per_second, GetCreateSoftwareVideoEncoderCallback(CodecId::kAv1),
+          bits_per_second,
+          /*gpu_factories=*/nullptr,
+          GetCreateSoftwareVideoEncoderCallback(CodecId::kAv1),
           on_encoded_video_cb, std::move(on_error_cb));
     }
 #endif  // BUILDFLAG(ENABLE_LIBAOM)
