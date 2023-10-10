@@ -2045,7 +2045,7 @@ TEST_F(FormAutofillUtilsTest, GetMaxLength) {
   }
 }
 
-TEST_F(FormAutofillUtilsTest, FindFormForContentEditable) {
+TEST_F(FormAutofillUtilsTest, FindFormForContentEditableSuccess) {
   LoadHTML(
       R"(<body>
          <div id=my-id
@@ -2058,12 +2058,12 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditable) {
   WebElement content_editable =
       GetMainFrame()->GetDocument().GetElementById("my-id");
   ASSERT_FALSE(content_editable.IsNull());
-  FormData form = FindFormForContentEditable(content_editable);
-  ASSERT_EQ(form.fields.size(), 1u);
-  const FormFieldData& field = form.fields[0];
-  EXPECT_TRUE(form.unique_renderer_id);
-  EXPECT_EQ(*form.unique_renderer_id, *field.unique_renderer_id);
-  EXPECT_EQ(form.unique_renderer_id, field.host_form_id);
+  std::optional<FormData> form = FindFormForContentEditable(content_editable);
+  ASSERT_EQ(form->fields.size(), 1u);
+  const FormFieldData& field = form->fields[0];
+  EXPECT_TRUE(form->unique_renderer_id);
+  EXPECT_EQ(*form->unique_renderer_id, *field.unique_renderer_id);
+  EXPECT_EQ(form->unique_renderer_id, field.host_form_id);
   EXPECT_EQ(field.parsed_autocomplete->field_type, HtmlFieldType::kGivenName);
   EXPECT_EQ(field.name, u"my-id");
   EXPECT_EQ(field.id_attribute, u"my-id");
@@ -2071,6 +2071,21 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditable) {
   EXPECT_EQ(field.css_classes, u"my-class");
   // TODO(crbug.com/1490372): Extract the value.
   EXPECT_EQ(field.value, u"");
+}
+
+TEST_F(FormAutofillUtilsTest, FindFormForContentEditableFailures) {
+  LoadHTML(
+      R"(<body>
+         <div id=ce1></div>
+         <div contenteditable><div id=ce2 contenteditable></div></div>
+         <form id=ce3 contenteditable></form>
+         <textarea id=ce4 contenteditable><div contenteditable></textarea>
+         </body>)");
+  WebDocument doc = GetMainFrame()->GetDocument();
+  ASSERT_FALSE(FindFormForContentEditable(doc.GetElementById("ce1")));
+  ASSERT_FALSE(FindFormForContentEditable(doc.GetElementById("ce2")));
+  ASSERT_FALSE(FindFormForContentEditable(doc.GetElementById("ce3")));
+  ASSERT_FALSE(FindFormForContentEditable(doc.GetElementById("ce4")));
 }
 
 }  // namespace

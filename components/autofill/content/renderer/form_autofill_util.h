@@ -350,18 +350,21 @@ bool FindFormAndFieldForFormControlElement(
 //
 // `kAutofillUseDomNodeIdForRendererId` must be enabled.
 //
-// `contenteditable` must not be:
-// - a WebFormElement; otherwise, there could be two FormData objects with
+// Returns `std::nullopt` if `contenteditable`:
+// - is a WebFormElement; otherwise, there could be two FormData objects with
 //   identical renderer ID referring to different conceptual forms: the one for
 //   the contenteditable and an actual <form>.
-// - a WebFormControlElement; otherwise, a <textarea contenteditable> might be a
-//   member of two FormData objects: the one for the contenteditable and the
-//   <textarea>'s associated <form>'s FormData.
+// - is a WebFormControlElement; otherwise, a <textarea contenteditable> might
+//   be a member of two FormData objects: the one for the contenteditable and
+//   the <textarea>'s associated <form>'s FormData.
+// - has a contenteditable parent; this is to disambiguate focus elements on
+//   nested contenteditables because the focus event propagates up.
 //
 // The FormData's renderer ID has the same value as its (single) FormFieldData's
 // renderer ID. This is collision-free with the renderer IDs of any other form
 // in the document because DomNodeIds are unique among all DOM elements.
-FormData FindFormForContentEditable(const blink::WebElement& content_editable);
+std::optional<FormData> FindFormForContentEditable(
+    const blink::WebElement& content_editable);
 
 // Fills or previews the form represented by `form`.
 // `initiating_element` is the element that initiated the autofill process.

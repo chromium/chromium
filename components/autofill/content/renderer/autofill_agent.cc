@@ -1304,18 +1304,15 @@ void AutofillAgent::HandleFocusChangeComplete(
   }
 
   if (focused_node_was_last_clicked &&
-      focused_element.DynamicTo<WebFormElement>().IsNull() &&
-      focused_element.DynamicTo<WebFormControlElement>().IsNull() &&
-      focused_element.IsContentEditable() &&
-      (focused_element.ParentNode().IsNull() ||
-       !focused_element.ParentNode().IsContentEditable()) &&
       base::FeatureList::IsEnabled(features::kAutofillContentEditables)) {
-    FormData form = form_util::FindFormForContentEditable(focused_element);
-    CHECK_EQ(form.fields.size(), 1u);
-    if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->AskForValuesToFill(
-          form, form.fields[0], form.fields[0].bounds,
-          mojom::AutofillSuggestionTriggerSource::kContentEditableClicked);
+    if (std::optional<FormData> form =
+            form_util::FindFormForContentEditable(focused_element)) {
+      CHECK_EQ(form->fields.size(), 1u);
+      if (auto* autofill_driver = unsafe_autofill_driver()) {
+        autofill_driver->AskForValuesToFill(
+            *form, form->fields[0], form->fields[0].bounds,
+            mojom::AutofillSuggestionTriggerSource::kContentEditableClicked);
+      }
     }
   }
 

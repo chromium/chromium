@@ -2471,16 +2471,25 @@ bool FindFormAndFieldForFormControlElement(
       element, field_data_manager, form_util::EXTRACT_NONE, form, field);
 }
 
-FormData FindFormForContentEditable(const blink::WebElement& content_editable) {
-  CHECK(content_editable.IsContentEditable());
-  CHECK(content_editable.DynamicTo<WebFormElement>().IsNull());
-  CHECK(content_editable.DynamicTo<WebFormControlElement>().IsNull());
+std::optional<FormData> FindFormForContentEditable(
+    const blink::WebElement& content_editable) {
   CHECK(base::FeatureList::IsEnabled(
       blink::features::kAutofillUseDomNodeIdForRendererId));
   CHECK(base::FeatureList::IsEnabled(features::kAutofillContentEditables));
+  if (!content_editable.DynamicTo<WebFormElement>().IsNull() ||
+      !content_editable.DynamicTo<WebFormControlElement>().IsNull() ||
+      !content_editable.IsContentEditable() ||
+      (!content_editable.ParentNode().IsNull() &&
+       content_editable.ParentNode().IsContentEditable())) {
+    return std::nullopt;
+  }
 
   FormData form;
   form.unique_renderer_id = GetFormRendererId(content_editable);
+  form.id_attribute = content_editable.GetIdAttribute().Utf16();
+  form.name_attribute = GetAttribute<kName>(content_editable).Utf16();
+  form.name =
+      !form.id_attribute.empty() ? form.id_attribute : form.name_attribute;
   form.is_form_tag = false;
   form.is_action_empty = true;
   form.fields.emplace_back();
