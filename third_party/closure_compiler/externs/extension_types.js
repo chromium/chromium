@@ -114,5 +114,4 @@ chrome.extensionTypes.DocumentLifecycle = {
 chrome.extensionTypes.ExecutionWorld = {
   ISOLATED: 'ISOLATED',
   MAIN: 'MAIN',
-  USER_SCRIPT: 'USER_SCRIPT',
 };
