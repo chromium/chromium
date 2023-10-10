@@ -156,7 +156,7 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
 void OneDriveUploadHandler::OnEndUpload(
     base::expected<storage::FileSystemURL, std::string> url,
     OfficeFilesUploadResult result_metric) {
-  UMA_HISTOGRAM_ENUMERATION(kOneDriveUploadResultMetricName, result_metric);
+  cloud_open_metrics_->LogUploadResult(result_metric);
   if (url.has_value()) {
     // Resolve notifications.
     if (notification_manager_) {

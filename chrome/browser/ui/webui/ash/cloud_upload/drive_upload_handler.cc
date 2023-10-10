@@ -250,7 +250,7 @@ void DriveUploadHandler::OnEndCopy(base::expected<GURL, std::string> hosted_url,
 void DriveUploadHandler::OnEndUpload(
     base::expected<GURL, std::string> hosted_url,
     OfficeFilesUploadResult result_metric) {
-  UMA_HISTOGRAM_ENUMERATION(kGoogleDriveUploadResultMetricName, result_metric);
+  cloud_open_metrics_->LogUploadResult(result_metric);
   // TODO (b/243095484) Define error behavior on invalid hosted URL.
   observed_relative_drive_path_.clear();
   // Stop suppressing Drive events for the observed file.

@@ -34,6 +34,9 @@ class CloudOpenMetrics {
   // Log the `value` for the TransferRequired metric.
   void LogTransferRequired(OfficeFilesTransferRequired value);
 
+  // Log the `value` for the UploadResult metric.
+  void LogUploadResult(OfficeFilesUploadResult value);
+
   base::SafeRef<CloudOpenMetrics> GetSafeRef() const;
 
   // For testing.
@@ -80,6 +83,7 @@ class CloudOpenMetrics {
   CloudProvider cloud_provider_;
   Metric<OfficeTaskResult> task_result_;
   Metric<OfficeFilesTransferRequired> transfer_required_;
+  Metric<OfficeFilesUploadResult> upload_result_;
   base::WeakPtrFactory<CloudOpenMetrics> weak_ptr_factory_{this};
 };
 

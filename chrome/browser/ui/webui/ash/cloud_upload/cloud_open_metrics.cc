@@ -16,7 +16,10 @@ CloudOpenMetrics::CloudOpenMetrics(CloudProvider cloud_provider)
                        : kOneDriveTaskResultMetricName),
       transfer_required_(cloud_provider_ == CloudProvider::kGoogleDrive
                              ? kDriveTransferRequiredMetric
-                             : kOneDriveTransferRequiredMetric) {}
+                             : kOneDriveTransferRequiredMetric),
+      upload_result_(cloud_provider_ == CloudProvider::kGoogleDrive
+                         ? kGoogleDriveUploadResultMetricName
+                         : kOneDriveUploadResultMetricName) {}
 
 CloudOpenMetrics::~CloudOpenMetrics() = default;
 
@@ -26,6 +29,10 @@ void CloudOpenMetrics::LogTaskResult(OfficeTaskResult value) {
 
 void CloudOpenMetrics::LogTransferRequired(OfficeFilesTransferRequired value) {
   transfer_required_.Log(value);
+}
+
+void CloudOpenMetrics::LogUploadResult(OfficeFilesUploadResult value) {
+  upload_result_.Log(value);
 }
 
 base::SafeRef<CloudOpenMetrics> CloudOpenMetrics::GetSafeRef() const {
