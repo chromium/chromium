@@ -405,7 +405,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '46268f4b777d9e3812ae478fd3254f82fea73f3a',
+  'devtools_frontend_revision': 'fa727c5e31709a4447a79a2270157b7ba86414c4',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -845,7 +845,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '5244b6803ca12dce413182a4550a2ee5ae17af51',
+    '0f6629e4f1e676d2af22fa56f3b8c4595c11c9c8',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1301,7 +1301,7 @@ deps = {
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
 
   'src/third_party/devtools-frontend-internal': {
-      'url': Var('chrome_git') + '/devtools/devtools-internal.git' + '@' + 'c7886c3a39a4ca95948ae533dbf33c70c9ea8724',
+      'url': Var('chrome_git') + '/devtools/devtools-internal.git' + '@' + 'e1bdec22a9f4a2dc4610343338aae9873b84d603',
     'condition': 'checkout_src_internal',
   },
 
