@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
@@ -118,6 +119,10 @@ public class UndoRefocusHelper implements DestroyObserver {
             public void willCloseAllTabs(boolean incognito) {
                 if (incognito) return;
                 int selectedTabIdx = mModelSelector.getModel(false).index();
+                // Selected tab will be invalid when there are already no tabs in a window when
+                // this method is invoked.
+                if (selectedTabIdx == TabList.INVALID_TAB_INDEX) return;
+
                 Tab selectedTab = mModelSelector.getModel(false).getTabAt(selectedTabIdx);
                 maybeSetSelectedTabId(selectedTab);
                 // Record metric only once for the set.
