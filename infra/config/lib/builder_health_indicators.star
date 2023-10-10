@@ -547,8 +547,6 @@ _exempted_from_contact_builders = {
         "android-deterministic-rel",
         "android-fieldtrial-rel",
         "android-inverse-fieldtrials-pie-x86-fyi-rel",
-        "android-nougat-x86-rel",
-        "android-nougat-x86-rel-compilator",
         "android-official",
         "android-oreo-arm64-dbg",
         "android-oreo-x86-rel",

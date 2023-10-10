@@ -1439,34 +1439,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "android-nougat-x86-rel",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = ["android", "enable_wpr_tests"],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "android",
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 32,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(
-            config = "x86_builder_mb",
-        ),
-        build_gs_bucket = "chromium-android-archive",
-    ),
-    tree_closing = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "on_cq|x86",
-        short_name = "N",
-    ),
-    contact_team_email = "clank-engprod@google.com",
-    execution_timeout = 4 * time.hour,
-)
-
-ci.builder(
     name = "android-oreo-x86-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(

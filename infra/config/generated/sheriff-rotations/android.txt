@@ -18,7 +18,6 @@ ci/android-12l-x64-dbg-tests
 ci/android-androidx-packager
 ci/android-bfcache-rel
 ci/android-binary-size-generator
-ci/android-nougat-x86-rel
 ci/android-oreo-x86-rel
 ci/android-pie-arm64-dbg
 ci/android-pie-arm64-rel

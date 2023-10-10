@@ -567,9 +567,6 @@
       "android-cronet-x86-rel": {
         "_default": "_default"
       },
-      "android-nougat-x86-rel": {
-        "_default": "_default"
-      },
       "android-official": {
         "_default": "_default"
       },

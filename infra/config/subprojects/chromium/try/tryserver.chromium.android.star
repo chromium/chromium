@@ -468,34 +468,6 @@ This builder is similar to "try/android-x86-rel", but experiment both jacoco and
     use_java_coverage = True,
 )
 
-# TODO(crbug.com/1487812): Remove the builder once all builds finish.
-try_.orchestrator_builder(
-    name = "android-nougat-x86-rel",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    mirrors = [
-        "ci/android-nougat-x86-rel",
-    ],
-    compilator = "android-nougat-x86-rel-compilator",
-    coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "chromium.add_one_test_shard": 10,
-    },
-    main_list_view = "try",
-    # tryjob = try_.job(),
-    # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
-    # are addressed
-    # use_orchestrator_pool = True,
-    use_java_coverage = True,
-)
-
-try_.compilator_builder(
-    name = "android-nougat-x86-rel-compilator",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    cores = 64 if settings.is_main else 32,
-    main_list_view = "try",
-    siso_enabled = True,
-)
-
 try_.builder(
     name = "android-oreo-arm64-dbg",
     branch_selector = branches.selector.ANDROID_BRANCHES,
