@@ -666,6 +666,50 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
       "name-from-content-of-labelledby-elements-one-of-which-is-hidden.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameFromContentWhitespaceBlockChildren) {
+  RunAccNameTest(
+      FILE_PATH_LITERAL("name-from-content-whitespace-block-children.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityAccNameTest,
+    NameFromContentWhitespaceBlockChildrenCollapsesExtraWhitespace) {
+  RunAccNameTest(
+      FILE_PATH_LITERAL("name-from-content-whitespace-block-children-collapses-"
+                        "extra-whitespace.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameFromContentWhitespaceInlineBlockChildren) {
+  RunAccNameTest(FILE_PATH_LITERAL(
+      "name-from-content-whitespace-inline-block-children.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameFromContentWhitespaceInlineChildren) {
+  RunAccNameTest(
+      FILE_PATH_LITERAL("name-from-content-whitespace-inline-children.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameFromContentWhitespaceInlineFlexChildren) {
+  RunAccNameTest(FILE_PATH_LITERAL(
+      "name-from-content-whitespace-inline-flex-children.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameFromContentWhitespaceInlineGridChildren) {
+  RunAccNameTest(FILE_PATH_LITERAL(
+      "name-from-content-whitespace-inline-grid-children.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameFromContentWhitespaceInlineTableChildren) {
+  RunAccNameTest(FILE_PATH_LITERAL(
+      "name-from-content-whitespace-inline-table-children.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameFromListItem) {
   RunAccNameTest(FILE_PATH_LITERAL("name-from-list-item.html"));
 }

@@ -3694,12 +3694,12 @@ bool AXNodeObject::HasContentEditableAttributeSet() const {
 }
 
 // Returns the nearest block-level LayoutBlockFlow ancestor
-static LayoutBlockFlow* NonInlineBlockFlow(LayoutObject* object) {
+static LayoutBlockFlow* GetNearestBlockFlow(LayoutObject* object) {
   LayoutObject* current = object;
   while (current) {
-    auto* block_flow = DynamicTo<LayoutBlockFlow>(current);
-    if (block_flow && !block_flow->IsAtomicInlineLevel())
+    if (auto* block_flow = DynamicTo<LayoutBlockFlow>(current)) {
       return block_flow;
+    }
     current = current->Parent();
   }
 
@@ -3708,14 +3708,14 @@ static LayoutBlockFlow* NonInlineBlockFlow(LayoutObject* object) {
 }
 
 // Returns true if |r1| and |r2| are both non-null, both inline, and are
-// contained within the same non-inline LayoutBlockFlow.
-static bool IsInSameNonInlineBlockFlow(LayoutObject* r1, LayoutObject* r2) {
+// contained within the same LayoutBlockFlow.
+static bool IsInSameBlockFlow(LayoutObject* r1, LayoutObject* r2) {
   if (!r1 || !r2)
     return false;
   if (!r1->IsInline() || !r2->IsInline())
     return false;
-  LayoutBlockFlow* b1 = NonInlineBlockFlow(r1);
-  LayoutBlockFlow* b2 = NonInlineBlockFlow(r2);
+  LayoutBlockFlow* b1 = GetNearestBlockFlow(r1);
+  LayoutBlockFlow* b2 = GetNearestBlockFlow(r2);
   return b1 && b2 && b1 == b2;
 }
 
@@ -3896,15 +3896,32 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
     AXObject* next,
     ax::mojom::blink::NameFrom last_used_name_from,
     ax::mojom::blink::NameFrom name_from) {
-  // If we're going between two layoutObjects that are in separate
+  // If we're going between two LayoutObjects that are in separate
   // LayoutBoxes, add whitespace if it wasn't there already. Intuitively if
   // you have <span>Hello</span><span>World</span>, those are part of the same
   // LayoutBox so we should return "HelloWorld", but given
   // <div>Hello</div><div>World</div> the strings are in separate boxes so we
   // should return "Hello World".
-  if (!IsInSameNonInlineBlockFlow(next->GetLayoutObject(),
-                                  previous->GetLayoutObject()))
+  // https://www.w3.org/TR/css-display-3/#the-display-properties
+  if (!IsInSameBlockFlow(next->GetLayoutObject(),
+                         previous->GetLayoutObject())) {
     return true;
+  }
+
+  // Even if we are in the same block flow, let's make sure to add whitespace
+  // if the layout objects define new formatting contexts for their children,
+  // as is the case with the inline-* family of display properties.
+  // So we want the following:
+  //    <span style="display:inline-block;">Hello</span><span>World</span>
+  //    <span style="display:inline-flex;">Hello</span><span>World</span>
+  //    <span style="display:inline-grid;">Hello</span><span>World</span>
+  //    <span style="display:inline-table;">Hello</span><span>World</span>
+  // to return "Hello World". See "inner display type" in the CSS Display 3.0
+  // spec: https://www.w3.org/TR/css-display-3/#the-display-properties
+  if (next->GetLayoutObject()->IsAtomicInlineLevel() ||
+      previous->GetLayoutObject()->IsAtomicInlineLevel()) {
+    return true;
+  }
 
   // Even if it is in the same inline block flow, if we are using a text
   // alternative such as an ARIA label or HTML title, we should separate

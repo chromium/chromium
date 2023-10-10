@@ -1,0 +1,1 @@
+button name='Adjacent inline-table: one two' nameFrom=contents
