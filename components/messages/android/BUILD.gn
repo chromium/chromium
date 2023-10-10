@@ -89,12 +89,14 @@ static_library("android") {
   ]
   deps = [
     ":jni_headers",
-    "//base",
     "//content/public/browser",
     "//ui/android:android",
   ]
 
-  public_deps = [ "//skia" ]
+  public_deps = [
+    "//base",
+    "//skia",
+  ]
 }
 
 static_library("test_support") {
