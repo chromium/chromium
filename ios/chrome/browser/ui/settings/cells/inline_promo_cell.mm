@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/sdk_forward_declares.h"
@@ -15,7 +16,7 @@
 
 namespace {
 
-// Vertical spacing of the stack view.
+// Spacing of the stack views.
 constexpr CGFloat kStackViewSpacing = 16;
 
 // Content inset of the cell.
@@ -52,11 +53,34 @@ constexpr CGFloat kNewFeatureBadgeSize = 20;
 // Font size of the new feature badge label.
 constexpr CGFloat kNewFeatureFontSize = 10;
 
+// Content inset for the top, leading and bottom anchors of the badged image
+// view. Used for the wide layout only.
+constexpr CGFloat kBadgedImageViewContentInsetWideLayout = 4;
+
+// Horizontal spacing betwen the stack view and the close button. Used for the
+// wide layout only.
+constexpr CGFloat kStackViewCloseButtonContentInsetWideLayout = 8;
+
+// Mimimum height of the promo text label. Used so that the more info button
+// doesn't take too much space in the vertical stack view. Used for the wide
+// layout only.
+constexpr CGFloat kPromoTextLabelMinHeightWideLayout = 60;
+
 }  // namespace
 
 @implementation InlinePromoCell {
   // New feature badge that is overlaying part of the promo image view.
   NewFeatureBadgeView* _badgeView;
+
+  // View containing the image view and the new feature badge.
+  UIView* _badgedImageView;
+
+  // Vertical stack used to lay out elements both in the narrow and wide
+  // layouts.
+  UIStackView* _verticalStackView;
+
+  // Horizontal stack used to lay out elements in the wide layout.
+  UIStackView* _horizontalStackView;
 }
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
@@ -67,22 +91,31 @@ constexpr CGFloat kNewFeatureFontSize = 10;
     _closeButton = [self createCloseButton];
     _promoImageView = [self createPromoImageView];
     _badgeView = [self createNewFeatureBadgeView];
+    _badgedImageView = [self createBadgedImageViewWithImageView:_promoImageView
+                                            newFeatureBadgeView:_badgeView];
     _promoTextLabel = [self createPromoTextLabel];
     _moreInfoButton = [self createMoreInfoButton];
+    _verticalStackView = [self createVerticalStackView];
+    _horizontalStackView = [self createHorizontalStackView];
 
-    UIView* badgedImageView =
-        [self createBadgedImageViewWithImageView:_promoImageView
-                             newFeatureBadgeView:_badgeView];
-    UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-      badgedImageView, _promoTextLabel, _moreInfoButton
-    ]];
-    stackView.translatesAutoresizingMaskIntoConstraints = NO;
-    stackView.axis = UILayoutConstraintAxisVertical;
-    stackView.alignment = UIStackViewAlignmentCenter;
-    stackView.spacing = kStackViewSpacing;
-
-    [self.contentView addSubview:stackView];
     [self.contentView addSubview:_closeButton];
+
+    if (_shouldHaveWideLayout) {
+      [self setUpCellForWideLayoutWith:self.contentView
+                           closeButton:_closeButton
+                       badgedImageView:_badgedImageView
+                        promoTextLabel:_promoTextLabel
+                        moreInfoButton:_moreInfoButton
+                     verticalStackView:_verticalStackView
+                   horizontalStackView:_horizontalStackView];
+
+    } else {
+      [self setUpCellForNarrowLayoutWith:self.contentView
+                         badgedImageView:_badgedImageView
+                          promoTextLabel:_promoTextLabel
+                          moreInfoButton:_moreInfoButton
+                       verticalStackView:_verticalStackView];
+    }
 
     [NSLayoutConstraint activateConstraints:@[
       // `_closeButton` constraints.
@@ -97,40 +130,17 @@ constexpr CGFloat kNewFeatureFontSize = 10;
       [_closeButton.widthAnchor
           constraintEqualToConstant:kCloseButtonTargetAreaSize],
 
-      // `stackView` constraints.
-      [stackView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor
-                                          constant:kCellContentInset],
-      [stackView.bottomAnchor
-          constraintEqualToAnchor:self.contentView.bottomAnchor
-                         constant:-kCellBottomContentInset],
-      [stackView.leadingAnchor
-          constraintEqualToAnchor:self.contentView.leadingAnchor
-                         constant:kCellContentInset],
-      [stackView.trailingAnchor
-          constraintEqualToAnchor:self.contentView.trailingAnchor
-                         constant:-kCellContentInset],
-
-      // `badgedImageView` constraints.
-      [badgedImageView.topAnchor constraintEqualToAnchor:stackView.topAnchor],
-      [badgedImageView.widthAnchor constraintEqualToConstant:kImageSize],
-      [badgedImageView.heightAnchor constraintEqualToConstant:kImageSize],
-
-      // `_promoTextLabel` constraints.
-      [_promoTextLabel.leadingAnchor
-          constraintEqualToAnchor:stackView.leadingAnchor],
-      [_promoTextLabel.trailingAnchor
-          constraintEqualToAnchor:stackView.trailingAnchor],
+      // `_badgedImageView` constraints.
+      [_badgedImageView.widthAnchor constraintEqualToConstant:kImageSize],
+      [_badgedImageView.heightAnchor constraintEqualToConstant:kImageSize],
 
       // `_moreInfoButton` constraints.
-      [_moreInfoButton.bottomAnchor
-          constraintEqualToAnchor:stackView.bottomAnchor],
-      [_moreInfoButton.leadingAnchor
-          constraintEqualToAnchor:stackView.leadingAnchor],
-      [_moreInfoButton.trailingAnchor
-          constraintEqualToAnchor:stackView.trailingAnchor],
       [_moreInfoButton.heightAnchor
           constraintGreaterThanOrEqualToConstant:kMoreInfoButtonHeight],
     ]];
+
+    // Make sure the `_closeButton` is not behind a stack view.
+    [self.contentView bringSubviewToFront:_closeButton];
   }
   return self;
 }
@@ -154,9 +164,24 @@ constexpr CGFloat kNewFeatureFontSize = 10;
   _closeButton.enabled = enabled;
 }
 
+- (void)setShouldHaveWideLayout:(BOOL)shouldHaveWideLayout {
+  if (_shouldHaveWideLayout == shouldHaveWideLayout) {
+    return;
+  }
+
+  _shouldHaveWideLayout = shouldHaveWideLayout;
+  [self configureCellForLayoutChangeWith:shouldHaveWideLayout
+                             closeButton:_closeButton
+                         badgedImageView:_badgedImageView
+                          promoTextLabel:_promoTextLabel
+                          moreInfoButton:_moreInfoButton
+                       verticalStackView:_verticalStackView
+                     horizontalStackView:_horizontalStackView];
+}
+
 #pragma mark - Private
 
-// Creates and returns the promo's close button.
+// Creates and configures the promo's close button.
 - (UIButton*)createCloseButton {
   UIButton* closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
   closeButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -217,6 +242,8 @@ constexpr CGFloat kNewFeatureFontSize = 10;
 - (UIButton*)createMoreInfoButton {
   UIButton* moreInfoButton = [UIButton buttonWithType:UIButtonTypeSystem];
   moreInfoButton.translatesAutoresizingMaskIntoConstraints = NO;
+  moreInfoButton.contentHorizontalAlignment =
+      UIControlContentHorizontalAlignmentCenter;
 
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
@@ -259,6 +286,207 @@ constexpr CGFloat kNewFeatureFontSize = 10;
   ]];
 
   return view;
+}
+
+// Creates and configures the vertical stack view.
+- (UIStackView*)createVerticalStackView {
+  UIStackView* verticalStackView = [[UIStackView alloc] init];
+  verticalStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  verticalStackView.axis = UILayoutConstraintAxisVertical;
+  verticalStackView.alignment = UIStackViewAlignmentCenter;
+  verticalStackView.spacing = kStackViewSpacing;
+
+  return verticalStackView;
+}
+
+// Creates and configures the horizontal stack view.
+- (UIStackView*)createHorizontalStackView {
+  UIStackView* horizontalStackView = [[UIStackView alloc] init];
+  horizontalStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  horizontalStackView.axis = UILayoutConstraintAxisHorizontal;
+  horizontalStackView.alignment = UIStackViewAlignmentCenter;
+  horizontalStackView.spacing = kStackViewSpacing;
+
+  return horizontalStackView;
+}
+
+// Sets up the subviews for the cell's narrow layout.
+- (void)setUpCellForNarrowLayoutWith:(UIView*)contentView
+                     badgedImageView:(UIView*)badgedImageView
+                      promoTextLabel:(UILabel*)promoTextLabel
+                      moreInfoButton:(UIButton*)moreInfoButton
+                   verticalStackView:(UIStackView*)verticalStackView {
+  [verticalStackView addArrangedSubview:badgedImageView];
+  [verticalStackView addArrangedSubview:promoTextLabel];
+  [verticalStackView addArrangedSubview:moreInfoButton];
+
+  [contentView addSubview:verticalStackView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    // `verticalStackView` constraints.
+    [verticalStackView.topAnchor constraintEqualToAnchor:contentView.topAnchor
+                                                constant:kCellContentInset],
+    [verticalStackView.bottomAnchor
+        constraintEqualToAnchor:contentView.bottomAnchor
+                       constant:-kCellContentInset],
+    [verticalStackView.leadingAnchor
+        constraintEqualToAnchor:contentView.leadingAnchor
+                       constant:kCellContentInset],
+    [verticalStackView.trailingAnchor
+        constraintEqualToAnchor:contentView.trailingAnchor
+                       constant:-kCellContentInset],
+
+    // `badgedImageView` constraints.
+    [badgedImageView.topAnchor
+        constraintEqualToAnchor:verticalStackView.topAnchor],
+
+    // `promoTextLabel` constraints.
+    [promoTextLabel.leadingAnchor
+        constraintEqualToAnchor:verticalStackView.leadingAnchor],
+    [promoTextLabel.trailingAnchor
+        constraintEqualToAnchor:verticalStackView.trailingAnchor],
+
+    // `moreInfoButton` constraints.
+    [moreInfoButton.leadingAnchor
+        constraintEqualToAnchor:verticalStackView.leadingAnchor],
+    [moreInfoButton.trailingAnchor
+        constraintEqualToAnchor:verticalStackView.trailingAnchor],
+    [moreInfoButton.bottomAnchor
+        constraintEqualToAnchor:contentView.bottomAnchor
+                       constant:-kCellBottomContentInset],
+  ]];
+}
+
+// Sets up the subviews for the cell's wide layout.
+- (void)setUpCellForWideLayoutWith:(UIView*)contentView
+                       closeButton:(UIButton*)closeButton
+                   badgedImageView:(UIView*)badgedImageView
+                    promoTextLabel:(UILabel*)promoTextLabel
+                    moreInfoButton:(UIButton*)moreInfoButton
+                 verticalStackView:(UIStackView*)verticalStackView
+               horizontalStackView:(UIStackView*)horizontalStackView {
+  [verticalStackView addArrangedSubview:promoTextLabel];
+  [verticalStackView addArrangedSubview:moreInfoButton];
+
+  [horizontalStackView addArrangedSubview:badgedImageView];
+  [horizontalStackView addArrangedSubview:verticalStackView];
+
+  [contentView addSubview:horizontalStackView];
+
+  [NSLayoutConstraint activateConstraints:@[
+
+    // `horizontalStackView` constraints.
+    [horizontalStackView.topAnchor
+        constraintEqualToAnchor:self.contentView.topAnchor
+                       constant:kCellContentInset],
+    [horizontalStackView.bottomAnchor
+        constraintEqualToAnchor:self.contentView.bottomAnchor
+                       constant:-kCellContentInset],
+    [horizontalStackView.leadingAnchor
+        constraintEqualToAnchor:self.contentView.leadingAnchor
+                       constant:kCellContentInset],
+    [horizontalStackView.trailingAnchor
+        constraintEqualToAnchor:closeButton.leadingAnchor
+                       constant:-kStackViewCloseButtonContentInsetWideLayout],
+
+    // `badgedImageView` constraints.
+    [badgedImageView.topAnchor
+        constraintGreaterThanOrEqualToAnchor:horizontalStackView.topAnchor
+                                    constant:
+                                        kBadgedImageViewContentInsetWideLayout],
+    [badgedImageView.bottomAnchor
+        constraintLessThanOrEqualToAnchor:horizontalStackView.bottomAnchor
+                                 constant:
+                                     -kBadgedImageViewContentInsetWideLayout],
+    [badgedImageView.leadingAnchor
+        constraintEqualToAnchor:horizontalStackView.leadingAnchor
+                       constant:kBadgedImageViewContentInsetWideLayout],
+
+    // `promoTextLabel` constraints.
+    [promoTextLabel.leadingAnchor
+        constraintEqualToAnchor:verticalStackView.leadingAnchor],
+    [promoTextLabel.trailingAnchor
+        constraintEqualToAnchor:verticalStackView.trailingAnchor],
+    [promoTextLabel.heightAnchor constraintGreaterThanOrEqualToConstant:
+                                     kPromoTextLabelMinHeightWideLayout],
+
+    // `moreInfoButton` constraints.
+    [moreInfoButton.leadingAnchor
+        constraintEqualToAnchor:verticalStackView.leadingAnchor],
+    [moreInfoButton.trailingAnchor
+        constraintEqualToAnchor:verticalStackView.trailingAnchor],
+    [moreInfoButton.bottomAnchor
+        constraintEqualToAnchor:contentView.bottomAnchor
+                       constant:-kCellBottomContentInset],
+  ]];
+}
+
+// Configure elements with properties that depend on the type of layout.
+- (void)configureElementsForLayoutChangeWith:(UILabel*)promoTextLabel
+                              moreInfoButton:(UIButton*)moreInfoButton
+                           verticalStackView:(UIStackView*)verticalStackView {
+  CGFloat moreInfoButtonLeftEdgeInset = 0;
+
+  if (self.shouldHaveWideLayout) {
+    promoTextLabel.textAlignment = NSTextAlignmentLeft;
+    moreInfoButton.contentHorizontalAlignment =
+        UIControlContentHorizontalAlignmentLeft;
+    verticalStackView.alignment = UIStackViewAlignmentFill;
+    verticalStackView.spacing = 0;
+  } else {
+    promoTextLabel.textAlignment = NSTextAlignmentCenter;
+    moreInfoButton.contentHorizontalAlignment =
+        UIControlContentHorizontalAlignmentCenter;
+    moreInfoButtonLeftEdgeInset = kMoreInfoButtonContentInset;
+    verticalStackView.alignment = UIStackViewAlignmentCenter;
+    verticalStackView.spacing = kStackViewSpacing;
+  }
+
+  UIButtonConfiguration* buttonConfiguration = moreInfoButton.configuration;
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+      kMoreInfoButtonContentInset, moreInfoButtonLeftEdgeInset,
+      kMoreInfoButtonContentInset, kMoreInfoButtonContentInset);
+  moreInfoButton.configuration = buttonConfiguration;
+}
+
+// Configure elements according to the expected layout (narrow or wide).
+- (void)configureCellForLayoutChangeWith:(BOOL)shouldHaveWideLayout
+                             closeButton:(UIButton*)closeButton
+                         badgedImageView:(UIView*)badgedImageView
+                          promoTextLabel:(UILabel*)promoTextLabel
+                          moreInfoButton:(UIButton*)moreInfoButton
+                       verticalStackView:(UIStackView*)verticalStackView
+                     horizontalStackView:(UIStackView*)horizontalStackView {
+  // Remove subviews to reset their interdependent constraints.
+  [badgedImageView removeFromSuperview];
+  [promoTextLabel removeFromSuperview];
+  [moreInfoButton removeFromSuperview];
+  [verticalStackView removeFromSuperview];
+  [horizontalStackView removeFromSuperview];
+
+  [self configureElementsForLayoutChangeWith:promoTextLabel
+                              moreInfoButton:moreInfoButton
+                           verticalStackView:verticalStackView];
+
+  if (shouldHaveWideLayout) {
+    [self setUpCellForWideLayoutWith:self.contentView
+                         closeButton:closeButton
+                     badgedImageView:badgedImageView
+                      promoTextLabel:promoTextLabel
+                      moreInfoButton:moreInfoButton
+                   verticalStackView:verticalStackView
+                 horizontalStackView:horizontalStackView];
+
+  } else {
+    [self setUpCellForNarrowLayoutWith:self.contentView
+                       badgedImageView:badgedImageView
+                        promoTextLabel:promoTextLabel
+                        moreInfoButton:moreInfoButton
+                     verticalStackView:verticalStackView];
+  }
+
+  // Make sure the `closeButton` is not behind a stack view.
+  [self.contentView bringSubviewToFront:closeButton];
 }
 
 @end

@@ -61,6 +61,9 @@ extern NSString* const kWidgetPromoId;
 // button.
 extern NSString* const kWidgetPromoCloseButtonId;
 
+// Accessibility identifier for the Password Manager widget promo's image.
+extern NSString* const kWidgetPromoImageID;
+
 // Name of histogram tracking actions taken on the Password Manager widget
 // promo.
 extern const char kPasswordManagerWidgetPromoActionHistogram[];

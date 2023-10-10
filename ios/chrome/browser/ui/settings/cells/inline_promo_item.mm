@@ -28,6 +28,7 @@
   cell.promoImageView.image = self.promoImage;
   cell.promoTextLabel.text = self.promoText;
   cell.enabled = self.enabled;
+  cell.shouldHaveWideLayout = self.shouldHaveWideLayout;
 
   UIButtonConfiguration* buttonConfiguration =
       cell.moreInfoButton.configuration;

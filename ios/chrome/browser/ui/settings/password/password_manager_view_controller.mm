@@ -99,6 +99,11 @@ namespace {
 // the first item of the next section.
 constexpr CGFloat kManageAccountHeaderSectionFooterHeight = 2;
 
+// The maximum width the view can have for the widget promo cell to be
+// configured with its narrow layout. When the view's width is above that, the
+// cell's layout should be switched to the wide one.
+constexpr CGFloat kWidgetPromoLayoutThreshold = 500;
+
 typedef NS_ENUM(NSInteger, ItemType) {
   // Section: SectionIdentifierManageAccountHeader
   ItemTypeLinkHeader = kItemTypeEnumZero,
@@ -470,6 +475,11 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   return !_affiliatedGroups.empty();
 }
 
+- (void)viewWillLayoutSubviews {
+  [super viewWillLayoutSubviews];
+  [self updateWidgetPromoCellLayoutIfNeeded];
+}
+
 #pragma mark - SettingsRootTableViewController
 
 - (void)loadModel {
@@ -701,6 +711,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_WIDGET_PROMO_TEXT);
   _widgetPromoItem.moreInfoButtonTitle = l10n_util::GetNSString(
       IDS_IOS_PASSWORD_MANAGER_WIDGET_PROMO_BUTTON_TITLE);
+  _widgetPromoItem.shouldHaveWideLayout =
+      [self shouldWidgetPromoCellHaveWideLayout];
   _widgetPromoItem.accessibilityIdentifier = kWidgetPromoId;
   return _widgetPromoItem;
 }
@@ -1981,6 +1993,32 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
                                              .affiliatedGroup];
 }
 
+// Returns whether or not the widget promo cell should be configured with its
+// wide layout. Should return `YES` when the view's width is greater than the
+// established threshold.
+- (BOOL)shouldWidgetPromoCellHaveWideLayout {
+  return self.view.frame.size.width > kWidgetPromoLayoutThreshold;
+}
+
+// Updates the layout of the widget promo cell when needed. Disables the
+// animation while updating to prevent having a weird animation from
+// `beginUpdates` and `endUpdates`. `beginUpdates` and `endUpdates` are needed
+// to ensure that the cell will be correctly resized when switching from one
+// layout to the other.
+- (void)updateWidgetPromoCellLayoutIfNeeded {
+  BOOL shouldHaveWideLayout = [self shouldWidgetPromoCellHaveWideLayout];
+
+  if (_shouldShowPasswordManagerWidgetPromo &&
+      shouldHaveWideLayout != self.widgetPromoItem.shouldHaveWideLayout) {
+    [UIView setAnimationsEnabled:NO];
+    [self.tableView beginUpdates];
+    self.widgetPromoItem.shouldHaveWideLayout = shouldHaveWideLayout;
+    [self reconfigureCellsForItems:@[ self.widgetPromoItem ]];
+    [self.tableView endUpdates];
+    [UIView setAnimationsEnabled:YES];
+  }
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -2155,6 +2193,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
           forControlEvents:UIControlEventTouchUpInside];
       widgetPromoCell.closeButton.accessibilityIdentifier =
           kWidgetPromoCloseButtonId;
+      widgetPromoCell.promoImageView.accessibilityIdentifier =
+          kWidgetPromoImageID;
       break;
     }
     case ItemTypePasswordCheckStatus: {
