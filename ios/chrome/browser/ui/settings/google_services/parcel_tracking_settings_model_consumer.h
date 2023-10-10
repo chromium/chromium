@@ -7,15 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_consumer.h"
-#import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
+enum class IOSParcelTrackingOptInStatus;
 
 // Consumer protocol for managing the parcel tracking settings.
-@protocol ParcelTrackingSettingsModelConsumer <ChromeTableViewConsumer>
+@protocol ParcelTrackingSettingsModelConsumer
 
-// Returns the table view model.
-@property(nonatomic, strong, readonly)
-    TableViewModel<TableViewItem*>* tableViewModel;
+- (void)updateCheckedState:(IOSParcelTrackingOptInStatus)newState;
 
 @end
 

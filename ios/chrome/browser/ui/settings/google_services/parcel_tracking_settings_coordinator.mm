@@ -44,6 +44,7 @@
 
 - (void)stop {
   _viewController = nil;
+  [_mediator disconnect];
   _mediator = nil;
 }
 

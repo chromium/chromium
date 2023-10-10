@@ -5,15 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_PARCEL_TRACKING_SETTINGS_MODEL_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_PARCEL_TRACKING_SETTINGS_MODEL_DELEGATE_H_
 
+enum class IOSParcelTrackingOptInStatus;
+
 // Delegate for ParcelTrackingSettingsTableViewController instance, to manage
 // the model.
 @protocol ParcelTrackingSettingsModelDelegate <NSObject>
 
-// Called when the model should be loaded.
-- (void)loadModel;
-
 // Called when the model should handle a row selection at `indexPath`.
-- (void)tableViewDidSelectItemAtIndexPath:(NSIndexPath*)indexPath;
+- (void)tableViewDidSelectStatus:(IOSParcelTrackingOptInStatus)status;
 
 @end
 

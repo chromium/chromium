@@ -22,6 +22,9 @@ class PrefService;
 // The consumer for this mediator.
 @property(nonatomic, weak) id<ParcelTrackingSettingsModelConsumer> consumer;
 
+// Disconnects the mediator.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_PARCEL_TRACKING_SETTINGS_MEDIATOR_H_
