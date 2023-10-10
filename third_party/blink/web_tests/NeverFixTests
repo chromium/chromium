@@ -812,12 +812,8 @@ external/wpt/css/css-backgrounds/background-attachment-local/attachment-local-cl
 external/wpt/css/css-backgrounds/background-attachment-local/attachment-local-clipping-image-6.html [ Skip ]
 external/wpt/css/css-backgrounds/background-attachment-local/attachment-local-positioning-3.html [ Skip ]
 external/wpt/css/css-backgrounds/background-attachment-local/attachment-local-positioning-4.html [ Skip ]
-external/wpt/css/css-backgrounds/background-image-007.html [ Skip ]
 external/wpt/css/css-backgrounds/background-repeat/background-repeat-round-roundup.xht [ Skip ]
 external/wpt/css/css-backgrounds/background-repeat/background-repeat-round.xht [ Skip ]
-external/wpt/css/css-backgrounds/background-size-025.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size-027.html [ Skip ]
-external/wpt/css/css-backgrounds/background-size-029.html [ Skip ]
 external/wpt/css/css-backgrounds/background-size/background-size-contain.xht [ Skip ]
 external/wpt/css/css-backgrounds/background-size/vector/background-size-vector-003.html [ Skip ]
 external/wpt/css/css-backgrounds/background-size/vector/background-size-vector-004.html [ Skip ]
@@ -928,10 +924,6 @@ external/wpt/css/css-backgrounds/background-size/vector/wide--cover--omitted-wid
 external/wpt/css/css-backgrounds/background-size/vector/wide--cover--percent-width-nonpercent-height-viewbox.html [ Skip ]
 external/wpt/css/css-backgrounds/background-size/vector/wide--cover--percent-width-omitted-height-viewbox.html [ Skip ]
 external/wpt/css/css-backgrounds/background-size/vector/wide--cover--percent-width-percent-height-viewbox.html [ Skip ]
-external/wpt/css/css-backgrounds/css-border-radius-001.html [ Skip ]
-external/wpt/css/css-backgrounds/css-box-shadow-001.html [ Skip ]
-external/wpt/css/css-backgrounds/css3-background-origin-padding-box.html [ Skip ]
-external/wpt/css/css-backgrounds/css3-background-size-001.html [ Skip ]
 external/wpt/css/css-backgrounds/first-letter-space-not-selected.html [ Skip ]
 
 # Failures on the initial import of css-color. Test suite had many other bugs,
