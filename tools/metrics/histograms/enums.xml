@@ -63379,6 +63379,7 @@ from previous Chrome versions.
   <int value="-856016114" label="NTPOfflinePages:disabled"/>
   <int value="-855513281" label="SyncRequiresPoliciesLoaded:disabled"/>
   <int value="-855433657" label="WebRtcAllowInputVolumeAdjustment:disabled"/>
+  <int value="-855412738" label="CrosShortstand:enabled"/>
   <int value="-855277252" label="CookiesWithoutSameSiteMustBeSecure:disabled"/>
   <int value="-855130893" label="enable-touch-calibration-setting"/>
   <int value="-854716639" label="TranslateAndroidManualTrigger:enabled"/>
@@ -69373,6 +69374,7 @@ from previous Chrome versions.
   <int value="2087604931" label="DropdownPanel:enabled"/>
   <int value="2087994185" label="PasspointSettings:disabled"/>
   <int value="2088061188" label="LibinputHandleTouchpad:enabled"/>
+  <int value="2088438916" label="CrosShortstand:disabled"/>
   <int value="2088446947" label="enable-ephemeral-guest-profiles-on-desktop"/>
   <int value="2089897928" label="enable-audio-focus"/>
   <int value="2089901626" label="QuickSettingsPWA:enabled"/>
