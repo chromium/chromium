@@ -364,7 +364,7 @@ class HttpStreamFactory::JobController
 
   // At the point where a Job is irrevocably tied to |request_|, we set this.
   // It will be nulled when the |request_| is finished.
-  raw_ptr<Job, DanglingUntriaged> bound_job_ = nullptr;
+  raw_ptr<Job> bound_job_ = nullptr;
 
   State next_state_ = STATE_RESOLVE_PROXY;
   std::unique_ptr<ProxyResolutionRequest> proxy_resolve_request_;

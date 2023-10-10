@@ -171,10 +171,10 @@ HttpStreamFactory::JobController::JobController(
 }
 
 HttpStreamFactory::JobController::~JobController() {
+  bound_job_ = nullptr;
   main_job_.reset();
   alternative_job_.reset();
   dns_alpn_h3_job_.reset();
-  bound_job_ = nullptr;
   if (proxy_resolve_request_) {
     DCHECK_EQ(STATE_RESOLVE_PROXY_COMPLETE, next_state_);
     proxy_resolve_request_.reset();
