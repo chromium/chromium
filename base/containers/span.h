@@ -462,13 +462,28 @@ constexpr size_t span<T, Extent>::extent;
 
 template <typename It,
           typename T = std::remove_reference_t<iter_reference_t<It>>>
-span(It it, StrictNumeric<size_t> size) -> span<T>;
+span(It, StrictNumeric<size_t>) -> span<T>;
+
+template <typename It,
+          typename End,
+          typename = std::enable_if_t<!std::is_convertible_v<End, size_t>>,
+          typename T = std::remove_reference_t<iter_reference_t<It>>>
+span(It, End) -> span<T>;
+
+template <typename T, size_t N>
+span(T (&)[N]) -> span<T, N>;
+
+template <typename T, size_t N>
+span(std::array<T, N>&) -> span<T, N>;
+
+template <typename T, size_t N>
+span(const std::array<T, N>&) -> span<const T, N>;
 
 template <typename Container,
           typename T = std::remove_pointer_t<
               decltype(std::data(std::declval<Container>()))>,
           size_t X = internal::Extent<Container>::value>
-span(Container&& container) -> span<T, X>;
+span(Container&&) -> span<T, X>;
 
 // [span.objectrep], views of object representation
 template <typename T, size_t X>
