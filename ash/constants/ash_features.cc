@@ -1446,6 +1446,13 @@ const base::FeatureParam<bool> kHoldingSpaceTourDropToPinEnabled{
 const base::FeatureParam<bool> kHoldingSpaceTourEnabledCounterfactually{
     &kHoldingSpaceTour, "is-counterfactual", false};
 
+// Ignores the rate limiting of holding space tour so that it will show every
+// time a user drags a file over the wallpaper. Enabling this flag does nothing
+// unless `kHoldingSpaceTour` is also enabled.
+BASE_FEATURE(kHoldingSpaceTourIgnoreRateLimiting,
+             "HoldingSpaceTourIgnoreRateLimiting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kHomeButtonQuickAppAccess,
              "HomeButtonQuickAppAccess",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3475,6 +3482,11 @@ bool IsHoldingSpaceTourEnabled() {
 bool IsHoldingSpaceTourEnabledCounterfactually() {
   return IsHoldingSpaceTourEnabled() &&
          kHoldingSpaceTourEnabledCounterfactually.Get();
+}
+
+bool IsHoldingSpaceTourRateLimitingEnabled() {
+  return IsHoldingSpaceTourEnabled() &&
+         !base::FeatureList::IsEnabled(kHoldingSpaceTourIgnoreRateLimiting);
 }
 
 bool IsHomeButtonQuickAppAccessEnabled() {
