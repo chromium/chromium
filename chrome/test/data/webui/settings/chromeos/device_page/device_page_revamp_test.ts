@@ -35,7 +35,12 @@ suite('<settings-device-page> Revamp', () => {
     enabled: [],
     translateTarget: 'test',
     prospectiveUILanguage: undefined,
-    inputMethods: {supported: [], enabled: [], currentId: 'fakeID'},
+    inputMethods: {
+      supported: [],
+      enabled: [],
+      currentId: 'fakeID',
+      imeLanguagePackStatus: {},
+    },
     alwaysTranslate: [],
     neverTranslate: [],
     spellCheckOnLanguages: [],
