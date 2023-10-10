@@ -424,8 +424,9 @@ void ExtensionInfoGenerator::CreateExtensionInfo(
   else if ((ext = registry->blocklisted_extensions().GetByID(id)) != nullptr)
     state = developer::EXTENSION_STATE_BLACKLISTED;
 
-  if (ext && ui_util::ShouldDisplayInExtensionSettings(*ext))
+  if (ext && ui_util::ShouldDisplayInExtensionSettings(*ext)) {
     CreateExtensionInfoHelper(*ext, state);
+  }
 
   if (pending_image_loads_ == 0) {
     // Don't call the callback re-entrantly.
@@ -562,7 +563,7 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
         cws_info_service_->GetCWSInfo(extension);
     if (cws_info.has_value()) {
       info->safety_check_text =
-          CreateSafetyCheckDisplayString(*cws_info, state);
+          CreateSafetyCheckDisplayString(*cws_info, state, blocklist_state);
     }
   }
 
@@ -827,38 +828,35 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
 developer::SafetyCheckStrings
 ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
     const CWSInfoService::CWSInfo& cws_info,
-    developer::ExtensionState state) {
+    developer::ExtensionState state,
+    BitMapBlocklistState blocklist_state) {
   developer::SafetyCheckStrings display_strings;
   std::string detail_page_string;
   std::string panel_page_string;
   if (cws_info.is_present) {
-    switch (cws_info.violation_type) {
-      case CWSInfoService::CWSViolationType::kMalware:
-        detail_page_string =
-            l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_MALWARE);
-        panel_page_string = l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_MALWARE);
-        break;
-      case CWSInfoService::CWSViolationType::kPolicy:
-        detail_page_string = l10n_util::GetStringUTF8(
-            IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION);
-        panel_page_string = state == developer::EXTENSION_STATE_ENABLED
-                                ? l10n_util::GetStringUTF8(
-                                      IDS_EXTENSIONS_SC_POLICY_VIOLATION_ON)
-                                : l10n_util::GetStringUTF8(
-                                      IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF);
-        break;
-      case CWSInfoService::CWSViolationType::kNone:
-      case CWSInfoService::CWSViolationType::kMinorPolicy:
-      case CWSInfoService::CWSViolationType::kUnknown:
-        if (cws_info.unpublished_long_ago) {
-          detail_page_string =
-              l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED);
-          panel_page_string =
-              state == developer::EXTENSION_STATE_ENABLED
-                  ? l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_UNPUBLISHED_ON)
-                  : l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_UNPUBLISHED_OFF);
-        }
-        break;
+    if (blocklist_state == BitMapBlocklistState::BLOCKLISTED_MALWARE ||
+        cws_info.violation_type == CWSInfoService::CWSViolationType::kMalware) {
+      detail_page_string =
+          l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_MALWARE);
+      panel_page_string = l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_MALWARE);
+    } else if (blocklist_state ==
+                   BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION ||
+               cws_info.violation_type ==
+                   CWSInfoService::CWSViolationType::kPolicy) {
+      detail_page_string = l10n_util::GetStringUTF8(
+          IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION);
+      panel_page_string =
+          state == developer::EXTENSION_STATE_ENABLED
+              ? l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_POLICY_VIOLATION_ON)
+              : l10n_util::GetStringUTF8(
+                    IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF);
+    } else if (cws_info.unpublished_long_ago) {
+      detail_page_string =
+          l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED);
+      panel_page_string =
+          state == developer::EXTENSION_STATE_ENABLED
+              ? l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_UNPUBLISHED_ON)
+              : l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_UNPUBLISHED_OFF);
     }
   }
   display_strings.detail_string = detail_page_string;

@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "components/supervised_user/core/common/buildflags.h"
+#include "extensions/browser/blocklist_state.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 
@@ -78,7 +79,8 @@ class ExtensionInfoGenerator {
   // extensions page.
   static api::developer_private::SafetyCheckStrings
   CreateSafetyCheckDisplayString(const CWSInfoService::CWSInfo& cws_info,
-                                 api::developer_private::ExtensionState state);
+                                 api::developer_private::ExtensionState state,
+                                 BitMapBlocklistState blocklist_state);
 
  private:
   // Creates an ExtensionInfo for the given |extension| and |state|, and
