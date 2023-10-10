@@ -6,6 +6,9 @@
 
 load("@builtin//struct.star", "module")
 
+def __filegroups(ctx):
+    return {}
+
 def __copy(ctx, cmd):
     input = cmd.inputs[0]
     out = cmd.outputs[0]
@@ -52,6 +55,6 @@ def __step_config(ctx, step_config):
 simple = module(
     "simple",
     step_config = __step_config,
-    filegroups = {},
+    filegroups = __filegroups,
     handlers = __handlers,
 )

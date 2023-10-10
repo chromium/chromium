@@ -11,7 +11,8 @@ load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 load("./platform.star", "platform")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
 
-__filegroups = {}
+def __filegroups(ctx):
+    return {}
 
 def __parse_rewrapper_cmdline(ctx, cmd):
     if not "rewrapper" in cmd.args[0]:

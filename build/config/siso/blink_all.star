@@ -7,8 +7,8 @@
 load("@builtin//struct.star", "module")
 load("./platform.star", "platform")
 
-__filegroups = {
-}
+def __filegroups(ctx):
+    return {}
 
 __handlers = {
 }

@@ -9,8 +9,8 @@ load("@builtin//struct.star", "module")
 load("./config.star", "config")
 load("./nasm_scandeps.star", "nasm_scandeps")
 
-__filegroups = {
-}
+def __filegroups(ctx):
+    return {}
 
 def __nasm(ctx, cmd):
     inputs = nasm_scandeps.scandeps(ctx, cmd)

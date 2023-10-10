@@ -6,45 +6,46 @@
 
 load("@builtin//struct.star", "module")
 
-__filegroups = {
-    "third_party/rust-toolchain:toolchain": {
-        "type": "glob",
-        "includes": [
-            "bin/rustc",
-            "lib/*.so",
-        ],
-    },
-    "build/linux/debian_bullseye_amd64-sysroot:rustlink": {
-        "type": "glob",
-        "includes": [
-            "*.so",
-            "*.so.*",
-            "*.o",
-            "*.a",
-        ],
-    },
-    "third_party/llvm-build/Release+Asserts:rustlink": {
-        "type": "glob",
-        "includes": [
-            "bin/clang",
-            "bin/clang++",
-            "bin/*lld",
-            "libclang*.a",
-        ],
-    },
-    "third_party/fuchsia-sdk/sdk/arch/x64/lib:rustlink": {
-        "type": "glob",
-        "includes": [
-            "*",
-        ],
-    },
-    "third_party/fuchsia-sdk/sdk/arch/x64/sysroot:rustlink": {
-        "type": "glob",
-        "includes": [
-            "lib/*",
-        ],
-    },
-}
+def __filegroups(ctx):
+    return {
+        "third_party/rust-toolchain:toolchain": {
+            "type": "glob",
+            "includes": [
+                "bin/rustc",
+                "lib/*.so",
+            ],
+        },
+        "build/linux/debian_bullseye_amd64-sysroot:rustlink": {
+            "type": "glob",
+            "includes": [
+                "*.so",
+                "*.so.*",
+                "*.o",
+                "*.a",
+            ],
+        },
+        "third_party/llvm-build/Release+Asserts:rustlink": {
+            "type": "glob",
+            "includes": [
+                "bin/clang",
+                "bin/clang++",
+                "bin/*lld",
+                "libclang*.a",
+            ],
+        },
+        "third_party/fuchsia-sdk/sdk/arch/x64/lib:rustlink": {
+            "type": "glob",
+            "includes": [
+                "*",
+            ],
+        },
+        "third_party/fuchsia-sdk/sdk/arch/x64/sysroot:rustlink": {
+            "type": "glob",
+            "includes": [
+                "lib/*",
+            ],
+        },
+    }
 
 def __rust_bin_handler(ctx, cmd):
     inputs = []

@@ -42,16 +42,17 @@ __input_deps = {
 }
 
 # TODO: crbug.com/1478909 - Specify typescript inputs in GN config.
-__filegroups = {
-    "third_party/node/node_modules:node_modules": {
-        "type": "glob",
-        "includes": ["*.js", "*.cjs", "*.mjs", "*.json", "*.js.flow", "*.ts", "rollup", "terser", "tsc"],
-    },
-    "third_party/material_web_components/components-chromium/node_modules:node_modules": {
-        "type": "glob",
-        "includes": ["*.js", "*.json", "*.ts"],
-    },
-}
+def __filegroups(ctx):
+    return {
+        "third_party/node/node_modules:node_modules": {
+            "type": "glob",
+            "includes": ["*.js", "*.cjs", "*.mjs", "*.json", "*.js.flow", "*.ts", "rollup", "terser", "tsc"],
+        },
+        "third_party/material_web_components/components-chromium/node_modules:node_modules": {
+            "type": "glob",
+            "includes": ["*.js", "*.json", "*.ts"],
+        },
+    }
 
 def _ts_library(ctx, cmd):
     in_files = []

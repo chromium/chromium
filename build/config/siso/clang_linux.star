@@ -9,37 +9,39 @@ load("@builtin//struct.star", "module")
 load("./clang_all.star", "clang_all")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 
-__filegroups = {
-    # for precomputed subtrees
-    "build/linux/debian_bullseye_amd64-sysroot/usr/include:include": {
-        "type": "glob",
-        "includes": ["*"],
-        # need bits/stab.def, c++/*
-    },
-    "build/linux/debian_bullseye_amd64-sysroot/usr/lib:headers": {
-        "type": "glob",
-        "includes": ["*.h", "crtbegin.o"],
-    },
-    "build/linux/debian_bullseye_i386-sysroot/usr/include:include": {
-        "type": "glob",
-        "includes": ["*"],
-        # need bits/stab.def, c++/*
-    },
-    "build/linux/debian_bullseye_i386-sysroot/usr/lib:headers": {
-        "type": "glob",
-        "includes": ["*.h", "crtbegin.o"],
-    },
-    "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include": {
-        "type": "glob",
-        "includes": ["*"],
-        # can't use "*.h", because c++ headers have no extension.
-    },
-    "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/local/include:include": {
-        "type": "glob",
-        "includes": ["*"],
-    },
-}
-__filegroups.update(clang_all.filegroups)
+def __filegroups(ctx):
+    fg = {
+        # for precomputed subtrees
+        "build/linux/debian_bullseye_amd64-sysroot/usr/include:include": {
+            "type": "glob",
+            "includes": ["*"],
+            # need bits/stab.def, c++/*
+        },
+        "build/linux/debian_bullseye_amd64-sysroot/usr/lib:headers": {
+            "type": "glob",
+            "includes": ["*.h", "crtbegin.o"],
+        },
+        "build/linux/debian_bullseye_i386-sysroot/usr/include:include": {
+            "type": "glob",
+            "includes": ["*"],
+            # need bits/stab.def, c++/*
+        },
+        "build/linux/debian_bullseye_i386-sysroot/usr/lib:headers": {
+            "type": "glob",
+            "includes": ["*.h", "crtbegin.o"],
+        },
+        "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include": {
+            "type": "glob",
+            "includes": ["*"],
+            # can't use "*.h", because c++ headers have no extension.
+        },
+        "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/local/include:include": {
+            "type": "glob",
+            "includes": ["*"],
+        },
+    }
+    fg.update(clang_all.filegroups(ctx))
+    return fg
 
 def __clang_compile_coverage(ctx, cmd):
     clang_command = clang_code_coverage_wrapper.run(ctx, list(cmd.args))

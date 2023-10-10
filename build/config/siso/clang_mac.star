@@ -10,24 +10,26 @@ load("./clang_all.star", "clang_all")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
 
-__filegroups = {
-    "build/mac_files/xcode_binaries/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk:headers": {
-        "type": "glob",
-        "includes": [
-            "*.h",
-            "*.json",
-            "*.modulemap",
-            "Current",
-            "Frameworks",
-            "Headers",
-            "Modules",
-            "crt*.o",
-            "usr/include/c++/v1/*",
-            "usr/include/c++/v1/*/*",
-        ],
-    },
-}
-__filegroups.update(clang_all.filegroups)
+def __filegroups(ctx):
+    fg = {
+        "build/mac_files/xcode_binaries/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk:headers": {
+            "type": "glob",
+            "includes": [
+                "*.h",
+                "*.json",
+                "*.modulemap",
+                "Current",
+                "Frameworks",
+                "Headers",
+                "Modules",
+                "crt*.o",
+                "usr/include/c++/v1/*",
+                "usr/include/c++/v1/*/*",
+            ],
+        },
+    }
+    fg.update(clang_all.filegroups(ctx))
+    return fg
 
 def __clang_compile_coverage(ctx, cmd):
     clang_command = clang_code_coverage_wrapper.run(ctx, list(cmd.args))

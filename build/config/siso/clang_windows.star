@@ -10,24 +10,25 @@ load("./clang_all.star", "clang_all")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
 
-__filegroups = {
-    # for precomputed subtree
-    "third_party/depot_tools/win_toolchain/vs_files/27370823e7:headers-ci": {
-        "type": "glob",
-        "includes": [
-            "*.h",
-            "*.inl",
-            "*.H",
-            "*.Hxx",
-            "*.hxx",
-            "*.hpp",
-            "VC/Tools/MSVC/*/include/*",
-            "VC/Tools/MSVC/*/include/*/*",
-        ],
-    },
-}
-
-__filegroups.update(clang_all.filegroups)
+def __filegroups(ctx):
+    fg = {
+        # for precomputed subtree
+        "third_party/depot_tools/win_toolchain/vs_files/27370823e7:headers-ci": {
+            "type": "glob",
+            "includes": [
+                "*.h",
+                "*.inl",
+                "*.H",
+                "*.Hxx",
+                "*.hxx",
+                "*.hpp",
+                "VC/Tools/MSVC/*/include/*",
+                "VC/Tools/MSVC/*/include/*/*",
+            ],
+        },
+    }
+    fg.update(clang_all.filegroups(ctx))
+    return fg
 
 def __clang_compile_coverage(ctx, cmd):
     clang_command = clang_code_coverage_wrapper.run(ctx, list(cmd.args))

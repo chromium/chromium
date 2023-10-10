@@ -8,8 +8,11 @@ load("@builtin//struct.star", "module")
 load("./clang_mac.star", "clang")
 load("./config.star", "config")
 
-__filegroups = {}
-__filegroups.update(clang.filegroups)
+def __filegroups(ctx):
+    fg = {}
+    fg.update(clang.filegroups(ctx))
+    return fg
+
 __handlers = {}
 __handlers.update(clang.handlers)
 

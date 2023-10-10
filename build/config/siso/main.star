@@ -72,9 +72,9 @@ def init(ctx):
         rule["remote_command"] = arg0
 
     filegroups = {}
-    filegroups.update(blink_all.filegroups)
-    filegroups.update(host.filegroups)
-    filegroups.update(simple.filegroups)
+    filegroups.update(blink_all.filegroups(ctx))
+    filegroups.update(host.filegroups(ctx))
+    filegroups.update(simple.filegroups(ctx))
 
     handlers = {}
     handlers.update(blink_all.handlers)

@@ -6,45 +6,46 @@
 
 load("@builtin//struct.star", "module")
 
-__filegroups = {
-    "native_client/toolchain/linux_x86/pnacl_newlib/bin/pydir:pydir": {
-        "type": "glob",
-        "includes": ["*.py"],
-    },
-    "native_client/toolchain/linux_x86/pnacl_newlib/lib:libllvm": {
-        "type": "glob",
-        "includes": ["libLLVM*.so"],
-    },
-    "native_client/toolchain/linux_x86/saigo_newlib/bin:clang": {
-        "type": "glob",
-        "includes": ["clang-*"],
-    },
-    "native_client/toolchain/linux_x86/saigo_newlib/lib:libso": {
-        "type": "glob",
-        "includes": ["*.so*"],
-    },
-    "native_client/toolchain/linux_x86/nacl_x86_glibc/lib/gcc/x86_64-nacl:crtbegin": {
-        "type": "glob",
-        "includes": ["crtbegin.o"],
-    },
-    "native_client/toolchain/linux_x86/nacl_x86_glibc/libexec/gcc/x86_64-nacl:ccbackend": {
-        "type": "glob",
-        "includes": ["cc1", "cc1plus", "collect2"],
-    },
-    # for precomputed subtrees
-    "native_client/toolchain/linux_x86/nacl_x86_glibc:header-files": {
-        "type": "glob",
-        "includes": ["*.h", "*/include/c++/*/*", "*/include/c++/*/*/*"],
-    },
-    "native_client/toolchain/linux_x86/pnacl_newlib:header-files": {
-        "type": "glob",
-        "includes": ["*.h", "*/include/c++/*/*", "*/include/c++/*/*/*"],
-    },
-    "native_client/toolchain/linux_x86/saigo_newlib:header-files": {
-        "type": "glob",
-        "includes": ["*.h", "*/include/c++/*/*", "*/include/c++/*/*/*"],
-    },
-}
+def __filegroups(ctx):
+    return {
+        "native_client/toolchain/linux_x86/pnacl_newlib/bin/pydir:pydir": {
+            "type": "glob",
+            "includes": ["*.py"],
+        },
+        "native_client/toolchain/linux_x86/pnacl_newlib/lib:libllvm": {
+            "type": "glob",
+            "includes": ["libLLVM*.so"],
+        },
+        "native_client/toolchain/linux_x86/saigo_newlib/bin:clang": {
+            "type": "glob",
+            "includes": ["clang-*"],
+        },
+        "native_client/toolchain/linux_x86/saigo_newlib/lib:libso": {
+            "type": "glob",
+            "includes": ["*.so*"],
+        },
+        "native_client/toolchain/linux_x86/nacl_x86_glibc/lib/gcc/x86_64-nacl:crtbegin": {
+            "type": "glob",
+            "includes": ["crtbegin.o"],
+        },
+        "native_client/toolchain/linux_x86/nacl_x86_glibc/libexec/gcc/x86_64-nacl:ccbackend": {
+            "type": "glob",
+            "includes": ["cc1", "cc1plus", "collect2"],
+        },
+        # for precomputed subtrees
+        "native_client/toolchain/linux_x86/nacl_x86_glibc:header-files": {
+            "type": "glob",
+            "includes": ["*.h", "*/include/c++/*/*", "*/include/c++/*/*/*"],
+        },
+        "native_client/toolchain/linux_x86/pnacl_newlib:header-files": {
+            "type": "glob",
+            "includes": ["*.h", "*/include/c++/*/*", "*/include/c++/*/*/*"],
+        },
+        "native_client/toolchain/linux_x86/saigo_newlib:header-files": {
+            "type": "glob",
+            "includes": ["*.h", "*/include/c++/*/*", "*/include/c++/*/*/*"],
+        },
+    }
 
 __handlers = {}
 
