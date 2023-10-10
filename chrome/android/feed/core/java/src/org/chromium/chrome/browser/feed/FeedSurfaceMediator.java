@@ -80,7 +80,9 @@ import java.util.Locale;
 public class FeedSurfaceMediator
         implements FeedSurfaceScrollDelegate, TouchEnabledDelegate, TemplateUrlServiceObserver,
                    ListMenu.Delegate, IdentityManager.Observer, OptionChangedListener {
-    private static final int INTEREST_FEED_HEADER_POSITION = 0;
+
+    // Position of the in-feed header for the for-you and supervised-user feed.
+    private static final int PRIMARY_FEED_HEADER_POSITION = 0;
 
     private class FeedSurfaceHeaderSelectedCallback implements OnSectionHeaderSelectedListener {
         @Override
@@ -831,10 +833,11 @@ public class FeedSurfaceMediator
         }
         mSectionHeaderModel.set(SectionHeaderListProperties.IS_TAB_MODE_KEY, isTabMode);
 
-        // If not in tab mode, make sure we are on the for-you feed.
+        // If not in tab mode, make sure we are on the for-you or the supervised-user feed.
         if (!isTabMode) {
-            mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY,
-                    getTabIdForSection(StreamKind.FOR_YOU));
+            mSectionHeaderModel.set(
+                    SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY,
+                    PRIMARY_FEED_HEADER_POSITION);
         }
 
         boolean isGoogleSearchEngine = mTemplateUrlService.isDefaultSearchEngineGoogle();
@@ -883,9 +886,11 @@ public class FeedSurfaceMediator
         }
 
         boolean suggestionsVisible = isSuggestionsVisible();
-        mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
-                .get(INTEREST_FEED_HEADER_POSITION)
-                .set(SectionHeaderProperties.HEADER_TEXT_KEY,
+        mSectionHeaderModel
+                .get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                .get(PRIMARY_FEED_HEADER_POSITION)
+                .set(
+                        SectionHeaderProperties.HEADER_TEXT_KEY,
                         getInterestFeedHeaderText(suggestionsVisible));
 
         setHeaderIndicatorState(suggestionsVisible);
