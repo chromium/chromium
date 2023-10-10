@@ -4513,6 +4513,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "files-new-directory-tree",
+    "owners": [ "wenbojie", "simmonsjosh@google.com" ],
+    "expiry_milestone": 124
+  },
+  {
     "name": "files-search-v2",
     "owners": [ "majewski", "simmonsjosh@google.com" ],
     "expiry_milestone": 120

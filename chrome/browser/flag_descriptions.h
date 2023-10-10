@@ -3647,6 +3647,9 @@ extern const char kFilesInlineSyncStatusDescription[];
 extern const char kFilesInlineSyncStatusProgressEventsName[];
 extern const char kFilesInlineSyncStatusProgressEventsDescription[];
 
+extern const char kFilesNewDirectoryTreeName[];
+extern const char kFilesNewDirectoryTreeDescription[];
+
 extern const char kFilesSearchV2Name[];
 extern const char kFilesSearchV2Description[];
 

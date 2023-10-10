@@ -61701,6 +61701,7 @@ from previous Chrome versions.
   <int value="-1660884825" label="ReadLaterNewBadgePromo:enabled"/>
   <int value="-1659445938" label="RealboxSecondaryZeroSuggest:enabled"/>
   <int value="-1658461830" label="SharedHighlightingRefinedBlocklist:enabled"/>
+  <int value="-1657056532" label="FilesNewDirectoryTree:disabled"/>
   <int value="-1656667928"
       label="UseSyncInvalidationsForWalletAndOffer:disabled"/>
   <int value="-1656179450" label="EnableOmniboxRichEntities:enabled"/>
@@ -62974,6 +62975,7 @@ from previous Chrome versions.
       label="EnableServiceWorkersForChromeUntrusted:enabled"/>
   <int value="-1050006327" label="FirmwareUpdaterApp:disabled"/>
   <int value="-1048901516" label="ChromeMemex:enabled"/>
+  <int value="-1048614257" label="FilesNewDirectoryTree:enabled"/>
   <int value="-1048530703" label="ContextMenuPopupStyle:disabled"/>
   <int value="-1048011353" label="LongPressBackNewDesign:disabled"/>
   <int value="-1046641729" label="TranslateUI:enabled"/>

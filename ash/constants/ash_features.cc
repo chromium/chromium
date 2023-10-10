@@ -1160,6 +1160,11 @@ BASE_FEATURE(kFilesInlineSyncStatusProgressEvents,
              "FilesInlineSyncStatusProgressEvents",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables new directory tree implementation in files.
+BASE_FEATURE(kFilesNewDirectoryTree,
+             "FilesNewDirectoryTree",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables V2 of search functionality in files.
 BASE_FEATURE(kFilesSearchV2, "FilesSearchV2", base::FEATURE_ENABLED_BY_DEFAULT);
 

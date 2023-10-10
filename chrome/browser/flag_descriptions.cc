@@ -6332,6 +6332,11 @@ const char kFilesInlineSyncStatusProgressEventsDescription[] =
     "An improvement for inline sync status that will eventually allow it to "
     "display progress for downsyncing operations.";
 
+const char kFilesNewDirectoryTreeName[] =
+    "New directory tree implementation in Files app";
+const char kFilesNewDirectoryTreeDescription[] =
+    "Enable the new directory tree implementation in Files app.";
+
 const char kFilesSearchV2Name[] = "V2 generation of file search.";
 const char kFilesSearchV2Description[] = "Enable V2 generation of file search.";
 
