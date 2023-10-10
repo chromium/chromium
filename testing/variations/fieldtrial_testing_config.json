@@ -16178,6 +16178,19 @@
                     ]
                 }
             ]
+        },
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20231010",
+                    "enable_features": [
+                        "PermissionStorageAccessAPI"
+                    ]
+                }
+            ]
         }
     ],
     "StructuredMetrics": [
