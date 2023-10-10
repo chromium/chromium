@@ -134,7 +134,8 @@ enum class PrerenderFinalStatus {
   // Different from kBlockedByClient, which tracks the failure caused by main
   // frame navigation, this status indicates that clients block some resource
   // loading.
-  kResourceLoadBlockedByClient = 70,
+  // Eliminated per crrev.com/c/4891929.
+  // kResourceLoadBlockedByClient = 70,
 
   // A trigger page removed a corresponding prerender rule from
   // <script type="speculationrules">.
