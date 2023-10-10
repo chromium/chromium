@@ -536,6 +536,10 @@
 - (void)didSelectSafetyCheckItem:(SafetyCheckItemType)type {
   CHECK(IsSafetyCheckMagicStackEnabled());
 
+  [self.contentSuggestionsMetricsRecorder
+      recordMagicStackModuleEngagementForType:ContentSuggestionsModuleType::
+                                                  kSafetyCheck];
+
   IOSChromeSafetyCheckManager* safetyCheckManager =
       IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
           self.browser->GetBrowserState());

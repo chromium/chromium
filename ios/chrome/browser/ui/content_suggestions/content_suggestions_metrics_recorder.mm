@@ -157,6 +157,8 @@
 
 - (void)recordMostRecentTabOpened {
   base::RecordAction(base::UserMetricsAction(kOpenMostRecentTabAction));
+  [self recordMagicStackModuleEngagementForType:ContentSuggestionsModuleType::
+                                                    kTabResumption];
 }
 
 - (void)recordMostVisitedTilesShown {
