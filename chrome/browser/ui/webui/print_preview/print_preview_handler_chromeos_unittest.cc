@@ -496,7 +496,9 @@ TEST_F(PrintPreviewHandlerChromeOSTest, FireLocalPrintersUpdated) {
 
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   AssertWebUIEventFired(data, "local-printers-updated");
-  EXPECT_EQ(printers.size(), data.arg2()->GetList().size());
+  EXPECT_EQ(static_cast<int>(mojom::PrinterType::kLocal),
+            data.arg2()->GetInt());
+  EXPECT_EQ(printers.size(), data.arg3()->GetList().size());
 }
 
 }  // namespace printing

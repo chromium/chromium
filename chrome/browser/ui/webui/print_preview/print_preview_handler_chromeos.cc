@@ -420,6 +420,7 @@ void PrintPreviewHandlerChromeOS::OnHandleObserveLocalPrinters(
 void PrintPreviewHandlerChromeOS::OnLocalPrintersUpdated(
     std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers) {
   FireWebUIListener("local-printers-updated",
+                    base::Value(static_cast<int>(mojom::PrinterType::kLocal)),
                     ConvertPrintersToValues(printers));
 }
 
