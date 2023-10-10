@@ -7485,18 +7485,6 @@ const FeatureEntry kFeatureEntries[] = {
          kResamplingScrollEventsExperimentalPredictionVariations,
          "ResamplingScrollEventsExperimentalLatency")},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-vaapi-jpeg-image-decode-acceleration",
-     flag_descriptions::kVaapiJpegImageDecodeAccelerationName,
-     flag_descriptions::kVaapiJpegImageDecodeAccelerationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kVaapiJpegImageDecodeAcceleration)},
-
-    {"enable-vaapi-webp-image-decode-acceleration",
-     flag_descriptions::kVaapiWebPImageDecodeAccelerationName,
-     flag_descriptions::kVaapiWebPImageDecodeAccelerationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kVaapiWebPImageDecodeAcceleration)},
-#endif
-
 #if BUILDFLAG(IS_WIN)
     {"calculate-native-win-occlusion",
      flag_descriptions::kCalculateNativeWinOcclusionName,

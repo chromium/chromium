@@ -6990,17 +6990,6 @@ const char kUiDevToolsDescription[] =
 const char kUiSlowAnimationsName[] = "Slow UI animations";
 const char kUiSlowAnimationsDescription[] = "Makes all UI animations slow.";
 
-const char kVaapiJpegImageDecodeAccelerationName[] =
-    "VA-API JPEG decode acceleration for images";
-const char kVaapiJpegImageDecodeAccelerationDescription[] =
-    "Enable or disable decode acceleration of JPEG images (as opposed to camera"
-    " captures) using the VA-API.";
-
-const char kVaapiWebPImageDecodeAccelerationName[] =
-    "VA-API WebP decode acceleration for images";
-const char kVaapiWebPImageDecodeAccelerationDescription[] =
-    "Enable or disable decode acceleration of WebP images using the VA-API.";
-
 const char kVirtualKeyboardName[] = "Virtual Keyboard";
 const char kVirtualKeyboardDescription[] =
     "Always show virtual keyboard regardless of having a physical keyboard "

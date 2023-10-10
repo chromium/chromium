@@ -4019,12 +4019,6 @@ extern const char kUpstreamTrustedReportsFirmwareDescription[];
 extern const char kUseFakeDeviceForMediaStreamName[];
 extern const char kUseFakeDeviceForMediaStreamDescription[];
 
-extern const char kVaapiJpegImageDecodeAccelerationName[];
-extern const char kVaapiJpegImageDecodeAccelerationDescription[];
-
-extern const char kVaapiWebPImageDecodeAccelerationName[];
-extern const char kVaapiWebPImageDecodeAccelerationDescription[];
-
 extern const char kVirtualKeyboardName[];
 extern const char kVirtualKeyboardDescription[];
 
