@@ -175,7 +175,8 @@ void TapMoreButtonIfVisible() {
         syncer::kReplaceSyncPromosWithSignInPromos);
     config.features_enabled.push_back(kConsistencyNewAccountInterface);
   }
-  if ([self isRunningTest:@selector(testMagicStackSetUpListCompleteAllItems)] ||
+  if ([self isRunningTest:@selector
+            (FLAKY_testMagicStackSetUpListCompleteAllItems)] ||
       [self isRunningTest:@selector(testMagicStackEditButton)]) {
     config.features_enabled.push_back(kMagicStack);
   } else {
@@ -597,7 +598,8 @@ void TapMoreButtonIfVisible() {
   [[EarlGrey selectElementWithMatcher:syncView] assertWithMatcher:grey_nil()];
 }
 
-- (void)testMagicStackSetUpListCompleteAllItems {
+// TODO(crbug.com/1491380): Re-enable this test.
+- (void)FLAKY_testMagicStackSetUpListCompleteAllItems {
   [self prepareToTestSetUpListInMagicStack];
 
   // Tap the default browser item.
