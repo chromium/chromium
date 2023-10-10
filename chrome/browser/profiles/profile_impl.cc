@@ -101,6 +101,7 @@
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/startup_data.h"
 #include "chrome/browser/storage/storage_notification_service_factory.h"
+#include "chrome/browser/tpcd/support/tpcd_support_service_factory.h"
 #include "chrome/browser/transition_manager/full_browser_transition_manager.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/webui/prefs_internals_source.h"
@@ -867,7 +868,15 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   }
 
   // Request an OriginTrialsControllerDelegate to ensure it is initialized.
+  // OriginTrialsControllerDelegate needs to be explicitly created here instead
+  // of using the common pattern for initializing with the profile (override
+  // OriginTrialsFactory::ServiceIsCreatedWithBrowserContext() to return true)
+  // as it depends on the default StoragePartition being initialized.
   GetOriginTrialsControllerDelegate();
+
+  // The TpcdSupportService must be created with the profile, but after the
+  // initialization of the OriginTrialsControllerDelegate, as it depends on it.
+  tpcd::support::TpcdSupportServiceFactory::GetForProfile(this);
 }
 
 base::FilePath ProfileImpl::last_selected_directory() {

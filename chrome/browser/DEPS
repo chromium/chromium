@@ -292,6 +292,7 @@ include_rules = [
   "+components/safe_browsing/core/browser",
   "+components/safe_browsing/core/common",
   "+components/tpcd/metadata",
+  "+components/tpcd/support",
   "+components/safe_search_api",
   "+components/saved_tab_groups",
   "+components/schema_org",

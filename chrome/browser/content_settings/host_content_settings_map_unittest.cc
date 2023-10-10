@@ -1836,6 +1836,20 @@ TEST_F(HostContentSettingsMapTest, GetPatternsFromScopingType) {
             ContentSettingsPattern::FromURLNoWildcard(secondary_url));
 
   // Testing cases:
+  //   WebsiteSettingsInfo::REQUESTING_ORIGIN_AND_TOP_SCHEMEFUL_SITE_SCOPE,
+  host_content_settings_map->SetContentSettingDefaultScope(
+      primary_url, secondary_url, ContentSettingsType::TPCD_SUPPORT,
+      CONTENT_SETTING_ALLOW);
+
+  settings = host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::TPCD_SUPPORT);
+
+  EXPECT_EQ(settings[0].primary_pattern,
+            ContentSettingsPattern::FromURLNoWildcard(primary_url));
+  EXPECT_EQ(settings[0].secondary_pattern,
+            content_settings::URLToSchemefulSitePattern(secondary_url));
+
+  // Testing cases:
   //   WebsiteSettingsInfo::TOP_ORIGIN_WITH_RESOURCE_EXCEPTIONS_SCOPE,
   //   WebsiteSettingsInfo::REQUESTING_ORIGIN_ONLY_SCOPE,
   //   WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
