@@ -183,6 +183,50 @@ RouterRunningStatusConditionToBlink(RouterCondition* v8_condition,
   return condition;
 }
 
+absl::optional<ServiceWorkerRouterConditionObject> RouterConditionToBlink(
+    RouterCondition* v8_condition,
+    const KURL& url_pattern_base_url,
+    ExceptionState& exception_state) {
+  ServiceWorkerRouterConditionObject ret;
+  if (v8_condition->hasUrlPattern()) {
+    const absl::optional<ServiceWorkerRouterCondition> condition =
+        RouterUrlPatternConditionToBlink(v8_condition, url_pattern_base_url,
+                                         exception_state);
+    if (!condition.has_value()) {
+      CHECK(exception_state.HadException());
+      return absl::nullopt;
+    }
+    ret.conditions.emplace_back(*condition);
+  }
+  if (v8_condition->hasRequestMethod() || v8_condition->hasRequestMode() ||
+      v8_condition->hasRequestDestination()) {
+    const absl::optional<ServiceWorkerRouterCondition> condition =
+        RouterRequestConditionToBlink(v8_condition, exception_state);
+    if (!condition.has_value()) {
+      CHECK(exception_state.HadException());
+      return absl::nullopt;
+    }
+    ret.conditions.emplace_back(*condition);
+  }
+  if (v8_condition->hasRunningStatus()) {
+    const absl::optional<ServiceWorkerRouterCondition> condition =
+        RouterRunningStatusConditionToBlink(v8_condition, exception_state);
+    if (!condition.has_value()) {
+      CHECK(exception_state.HadException());
+      return absl::nullopt;
+    }
+    ret.conditions.emplace_back(*condition);
+  }
+  if (ret.conditions.empty()) {
+    // At least one condition should exist per rule.
+    exception_state.ThrowTypeError(
+        "At least one condition must be set, but no condition has been set "
+        "to the rule.");
+    return absl::nullopt;
+  }
+  return ret;
+}
+
 ServiceWorkerRouterSource RouterSourceEnumToBlink(
     V8RouterSourceEnum v8_source_enum) {
   switch (v8_source_enum.AsEnum()) {
@@ -263,46 +307,14 @@ absl::optional<ServiceWorkerRouterRule> ConvertV8RouterRuleToBlink(
   }
   ServiceWorkerRouterRule rule;
   // Set up conditions.
-  if (input->condition()->hasUrlPattern()) {
-    absl::optional<ServiceWorkerRouterCondition> condition;
-    condition = RouterUrlPatternConditionToBlink(
-        input->condition(), url_pattern_base_url, exception_state);
-    if (!condition) {
-      CHECK(exception_state.HadException());
-      return absl::nullopt;
-    }
-    rule.conditions.emplace_back(*condition);
-  }
-  if (input->condition()->hasRequestMethod() ||
-      input->condition()->hasRequestMode() ||
-      input->condition()->hasRequestDestination()) {
-    absl::optional<ServiceWorkerRouterCondition> condition;
-    condition =
-        RouterRequestConditionToBlink(input->condition(), exception_state);
-    if (!condition) {
-      CHECK(exception_state.HadException());
-      return absl::nullopt;
-    }
-    rule.conditions.emplace_back(*condition);
-  }
-  if (input->condition()->hasRunningStatus()) {
-    absl::optional<ServiceWorkerRouterCondition> condition;
-    condition = RouterRunningStatusConditionToBlink(input->condition(),
-                                                    exception_state);
-    if (!condition) {
-      CHECK(exception_state.HadException());
-      return absl::nullopt;
-    }
-    rule.conditions.emplace_back(*condition);
-  }
-  if (rule.conditions.empty()) {
-    // At least one condition should exist per rule.
-    exception_state.ThrowTypeError(
-        "At least one condition must be set, but no condition has been set "
-        "to the rule.");
+  const absl::optional<ServiceWorkerRouterConditionObject> condition_object =
+      RouterConditionToBlink(input->condition(), url_pattern_base_url,
+                             exception_state);
+  if (!condition_object.has_value()) {
+    CHECK(exception_state.HadException());
     return absl::nullopt;
   }
-
+  rule.conditions = std::move(condition_object->conditions);
   // Set up sources.
   // TODO(crbug.com/1371756): support multiple sources.
   // i.e. support full form shown in
@@ -312,8 +324,9 @@ absl::optional<ServiceWorkerRouterRule> ConvertV8RouterRuleToBlink(
   // explains the first step. It does not cover cases sequence of sources
   // are set. The current IDL has been implemented for this level, but
   // the mojo IPC has been implemented to support the final form.
-  auto source = RouterSourceInputToBlink(input->source(), exception_state);
-  if (!source) {
+  const absl::optional<ServiceWorkerRouterSource> source =
+      RouterSourceInputToBlink(input->source(), exception_state);
+  if (!source.has_value()) {
     CHECK(exception_state.HadException());
     return absl::nullopt;
   }
