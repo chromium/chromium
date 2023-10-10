@@ -90,7 +90,7 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
     virtual void InspectPopup() = 0;
 
    protected:
-    virtual ~PopupDelegate() {}
+    virtual ~PopupDelegate() = default;
   };
 
   // Creates a menu model for the given extension. If
