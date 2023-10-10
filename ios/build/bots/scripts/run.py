@@ -344,11 +344,15 @@ class Runner():
 
           # in case the above mechanism does not work, the below command
           # will still cleanup any stale runtimes after 3 days.
+          # TODO(crbug.com/1487018): automatically clean up iOS runtime after
+          # we have deprecated iOS15.5.
+          """
           logging.debug(
               'Deleting stale iOS simulator runtime for more than %s days...' %
               constants.MAX_RUNTIME_KEPT_DAYS)
           iossim_util.delete_simulator_runtime_after_days(
               constants.MAX_RUNTIME_KEPT_DAYS)
+          """
 
       if self.should_delete_xcode_cache:
         shutil.rmtree(self.args.xcode_path)
