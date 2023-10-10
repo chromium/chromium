@@ -68,13 +68,16 @@ NoPasskeysBottomSheetBridge::~NoPasskeysBottomSheetBridge() = default;
 void NoPasskeysBottomSheetBridge::Show(
     ui::WindowAndroid* window_android,
     const std::string& origin,
-    base::OnceClosure on_dismissed_callback) {
+    base::OnceClosure on_dismissed_callback,
+    base::OnceClosure on_click_use_another_device_callback) {
   CHECK(window_android) << "The bridge needs a window to attach to!";
   CHECK(on_dismissed_callback) << "The bridge needs a clean up callback!";
   CHECK(!on_dismissed_callback_)
       << "Show was already called. Use each bridge only once.";
 
   on_dismissed_callback_ = std::move(on_dismissed_callback);
+  on_click_use_another_device_callback_ =
+      std::move(on_click_use_another_device_callback);
   jni_delegate_->Create(window_android);
   jni_delegate_->Show(origin);
 }
@@ -88,4 +91,9 @@ void NoPasskeysBottomSheetBridge::Dismiss() {
 void NoPasskeysBottomSheetBridge::OnDismissed(JNIEnv* env) {
   CHECK(on_dismissed_callback_);
   std::move(on_dismissed_callback_).Run();
+}
+
+void NoPasskeysBottomSheetBridge::OnClickUseAnotherDevice(JNIEnv* env) {
+  CHECK(on_click_use_another_device_callback_);
+  std::move(on_click_use_another_device_callback_).Run();
 }

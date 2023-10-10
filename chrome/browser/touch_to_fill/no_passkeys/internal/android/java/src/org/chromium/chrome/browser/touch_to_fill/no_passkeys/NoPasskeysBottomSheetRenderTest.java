@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -78,6 +79,9 @@ public class NoPasskeysBottomSheetRenderTest {
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
+    @Mock
+    NoPasskeysBottomSheetCoordinator.NativeDelegate mNativeDelegate;
+
     private BottomSheetController mBottomSheetController;
     private NoPasskeysBottomSheetCoordinator mCoordinator;
 
@@ -93,11 +97,15 @@ public class NoPasskeysBottomSheetRenderTest {
         MockitoAnnotations.openMocks(this);
         mActivityRule.launchActivity(null);
         ApplicationTestUtils.waitForActivityState(mActivityRule.getActivity(), Stage.RESUMED);
-        runOnUiThreadBlocking(() -> {
-            mBottomSheetController = createBottomSheetController();
-            mCoordinator = new NoPasskeysBottomSheetCoordinator(new WeakReference<>(getActivity()),
-                    new WeakReference<>(mBottomSheetController), () -> {});
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mBottomSheetController = createBottomSheetController();
+                    mCoordinator =
+                            new NoPasskeysBottomSheetCoordinator(
+                                    new WeakReference<>(getActivity()),
+                                    new WeakReference<>(mBottomSheetController),
+                                    mNativeDelegate);
+                });
     }
 
     @After

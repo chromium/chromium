@@ -52,7 +52,8 @@ class NoPasskeysBottomSheetBridge {
   // Shows the bottom sheet and calls `on_dismissed_callback` once it's gone.
   void Show(ui::WindowAndroid* window_android,
             const std::string& origin,
-            base::OnceClosure on_dismissed_callback);
+            base::OnceClosure on_dismissed_callback,
+            base::OnceClosure on_click_use_another_device_callback);
 
   // Hides the sheet. This should result in an OnDismissed() call.
   void Dismiss();
@@ -60,12 +61,19 @@ class NoPasskeysBottomSheetBridge {
   // Called via JNI when the sheet is dismissed.
   void OnDismissed(JNIEnv* env);
 
+  // Called via JNI when the user selected the hybrid login option.
+  void OnClickUseAnotherDevice(JNIEnv* env);
+
  private:
   // Forwards all requests to JNI. Can be replaced in tests.
   std::unique_ptr<JniDelegate> jni_delegate_;
 
   // The owner of this bridge sets this callback to clean the bridge up.
   base::OnceClosure on_dismissed_callback_;
+
+  // The callback to start hybrid login flow. The owner sets when it calls
+  // `Show`.
+  base::OnceClosure on_click_use_another_device_callback_;
 };
 
 #endif  // CHROME_BROWSER_TOUCH_TO_FILL_NO_PASSKEYS_ANDROID_NO_PASSKEYS_BOTTOM_SHEET_BRIDGE_H_

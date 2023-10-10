@@ -18,30 +18,26 @@ class NoPasskeysBottomSheetMediator implements NoPasskeysBottomSheetContent.Dele
     private final WeakReference<BottomSheetController> mBottomSheetController;
 
     private @Nullable BottomSheetContent mBottomSheetContent;
-    private @Nullable Runnable mOnDismissed;
+    private @Nullable NoPasskeysBottomSheetCoordinator.NativeDelegate mNativeDelegate;
 
     /**
      * Creates the mediator.
      *
-     * @param bottomSheetController The controller to use for showing or hiding the
-     *                              content.
-     * @param onDismissed           A runnable to clean up when the bottom sheet is
-     *                              finally dismissed.
+     * @param bottomSheetController The controller to use for showing or hiding the content.
+     * @param nativeDelegate A NoPasskeysBottomSheetBridge to interact with the native side.
      */
     NoPasskeysBottomSheetMediator(
-            WeakReference<BottomSheetController> bottomSheetController, Runnable onDismissed) {
+            WeakReference<BottomSheetController> bottomSheetController,
+            NoPasskeysBottomSheetCoordinator.NativeDelegate nativeDelegate) {
         mBottomSheetController = bottomSheetController;
-        mOnDismissed = onDismissed;
+        mNativeDelegate = nativeDelegate;
     }
 
     /**
-     * Requests to show the bottom sheet content. If the environment prevents
-     * showing, the method
-     * will return early (e.g. because the finishing activity cleans up UI
-     * components.
+     * Requests to show the bottom sheet content. If the environment prevents showing, the method
+     * will return early (e.g. because the finishing activity cleans up UI components).
      *
-     * @param bottomSheetContent The {@link NoPasskeysBottomSheetContent} to be
-     *                           shown.
+     * @param bottomSheetContent The {@link NoPasskeysBottomSheetContent} to be shown.
      * @return True iff the bottomsheet is shown by the controller
      */
     boolean show(@Nullable BottomSheetContent bottomSheetContent) {
@@ -70,7 +66,10 @@ class NoPasskeysBottomSheetMediator implements NoPasskeysBottomSheetContent.Dele
 
     @Override
     public void onClickUseAnotherDevice() {
-        // TODO(crbug/1481495): Implement flow initiation — native or in java.
+        if (mNativeDelegate == null) {
+            return;
+        }
+        mNativeDelegate.onClickUseAnotherDevice();
         dismiss();
     }
 
@@ -80,11 +79,11 @@ class NoPasskeysBottomSheetMediator implements NoPasskeysBottomSheetContent.Dele
     }
 
     private void dismiss() {
-        if (mOnDismissed == null) {
+        if (mNativeDelegate == null) {
             return; // Dismissal already happened.
         }
-        mOnDismissed.run();
-        mOnDismissed = null; // Don't call the callback repeatedly!
+        mNativeDelegate.onDismissed();
+        mNativeDelegate = null; // Don't call the callback repeatedly!
         mBottomSheetController.get().hideContent(mBottomSheetContent, true);
     }
 }

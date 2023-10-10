@@ -16,6 +16,14 @@ import java.lang.ref.WeakReference;
  * <p>This component shows a bottom sheet to inform the user that no passkeys are available.
  */
 public class NoPasskeysBottomSheetCoordinator {
+    interface NativeDelegate {
+        /** Notifies the native side when the user selects "Use another device" option. */
+        void onClickUseAnotherDevice();
+
+        /** Notifies the native side when the bottom sheet is dismissed. */
+        void onDismissed();
+    }
+
     private final NoPasskeysBottomSheetMediator mMediator;
     private final WeakReference<Context> mContext;
 
@@ -24,12 +32,15 @@ public class NoPasskeysBottomSheetCoordinator {
      *
      * @param context The {@link Context} for this component.
      * @param bottomSheetController The {@link BottomSheetController} showing this bottom sheet.
-     * @param onDismissed A {@link Runnable} informing the caller that clean-up may happen now.
+     * @param nativeDelegate A {@link NoPasskeysBottomSheetCoordinator.NativeDelegate} to interact
+     *     with the native side.
      */
-    public NoPasskeysBottomSheetCoordinator(WeakReference<Context> context,
-            WeakReference<BottomSheetController> bottomSheetController, Runnable onDismissed) {
+    public NoPasskeysBottomSheetCoordinator(
+            WeakReference<Context> context,
+            WeakReference<BottomSheetController> bottomSheetController,
+            NoPasskeysBottomSheetCoordinator.NativeDelegate nativeDelegate) {
         mContext = context;
-        mMediator = new NoPasskeysBottomSheetMediator(bottomSheetController, onDismissed);
+        mMediator = new NoPasskeysBottomSheetMediator(bottomSheetController, nativeDelegate);
     }
 
     /**

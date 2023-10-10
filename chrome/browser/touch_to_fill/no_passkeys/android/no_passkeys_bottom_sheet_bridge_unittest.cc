@@ -5,6 +5,7 @@
 
 #include <jni.h>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,7 +62,7 @@ TEST_F(NoPasskeysBottomSheetBridgeTest, CallDismissalDelegateOnHide) {
     EXPECT_CALL(mock_jni_delegate(), Show(kTestOrigin));
   }
   no_passkeys_bridge().Show(scoped_window->get(), kTestOrigin,
-                            on_dismissed_callback.Get());
+                            on_dismissed_callback.Get(), base::DoNothing());
 
   EXPECT_CALL(on_dismissed_callback, Run);
   no_passkeys_bridge().OnDismissed(/*env=*/nullptr);
@@ -77,11 +78,24 @@ TEST_F(NoPasskeysBottomSheetBridgeTest, IgnoreRedundantDismissCalls) {
     EXPECT_CALL(mock_jni_delegate(), Show(kTestOrigin));
   }
   no_passkeys_bridge().Show(scoped_window->get(), kTestOrigin,
-                            base::DoNothing());
+                            base::DoNothing(), base::DoNothing());
 
   EXPECT_CALL(mock_jni_delegate(), Dismiss)
       .WillOnce(InvokeWithoutArgs(
           [this]() { no_passkeys_bridge().OnDismissed(/*env=*/nullptr); }));
   no_passkeys_bridge().Dismiss();
   no_passkeys_bridge().Dismiss();  // This should not trigger a second call!
+}
+
+TEST_F(NoPasskeysBottomSheetBridgeTest, RunCallbackForOnClickUseAnotherDevice) {
+  auto scoped_window = ui::WindowAndroid::CreateForTesting();
+  base::MockCallback<base::OnceClosure> on_click_use_another_device_callback;
+  const std::string kTestOrigin("origin.com");
+
+  no_passkeys_bridge().Show(scoped_window->get(), kTestOrigin,
+                            base::DoNothing(),
+                            on_click_use_another_device_callback.Get());
+
+  EXPECT_CALL(on_click_use_another_device_callback, Run);
+  no_passkeys_bridge().OnClickUseAnotherDevice(/*env=*/nullptr);
 }

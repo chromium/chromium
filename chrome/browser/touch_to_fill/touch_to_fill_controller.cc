@@ -85,7 +85,9 @@ void TouchToFillController::Show(
       }
       no_passkeys_bridge_->Show(
           GetNativeView()->GetWindowAndroid(), url::Origin::Create(url).host(),
-          base::BindOnce(&TouchToFillController::OnDismiss, AsWeakPtr()));
+          base::BindOnce(&TouchToFillController::OnDismiss, AsWeakPtr()),
+          base::BindOnce(&TouchToFillController::OnHybridSignInSelected,
+                         AsWeakPtr()));
       return;
     }
     OnDismiss();
