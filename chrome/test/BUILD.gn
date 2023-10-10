@@ -3222,7 +3222,9 @@ if (!is_android) {
       sources += [
         "../browser/external_protocol/external_protocol_policy_browsertest.cc",
         "../browser/lifetime/application_lifetime_browsertest.cc",
+        "../browser/ui/views/enable_link_capturing_infobar_browsertest.cc",
       ]
+      deps += [ "//chrome/browser/apps/link_capturing" ]
     }
 
     if (is_win || is_chromeos || is_mac) {

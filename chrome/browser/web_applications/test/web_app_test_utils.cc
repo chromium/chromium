@@ -949,6 +949,8 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     app->SetGeneratedIconFix(generated_icon_fix);
   }
 
+  app->SetSupportedLinksOfferIgnoreCount(random.next_uint());
+  app->SetSupportedLinksOfferDismissCount(random.next_uint());
   return app;
 }
 

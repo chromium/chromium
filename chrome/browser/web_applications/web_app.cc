@@ -692,6 +692,14 @@ void WebApp::SetIsUserSelectedAppForSupportedLinks(
       is_user_selected_app_for_capturing_links;
 }
 
+void WebApp::SetSupportedLinksOfferIgnoreCount(int ignore_count) {
+  supported_links_offer_ignore_count_ = ignore_count;
+}
+
+void WebApp::SetSupportedLinksOfferDismissCount(int dismiss_count) {
+  supported_links_offer_dismiss_count_ = dismiss_count;
+}
+
 void WebApp::AddPlaceholderInfoToManagementExternalConfigMap(
     WebAppManagement::Type type,
     bool is_placeholder) {
@@ -983,7 +991,9 @@ bool WebApp::operator==(const WebApp& other) const {
         app.isolation_data_,
         app.is_user_selected_app_for_capturing_links_,
         app.latest_install_time_,
-        app.generated_icon_fix_
+        app.generated_icon_fix_,
+        app.supported_links_offer_ignore_count_,
+        app.supported_links_offer_dismiss_count_
         // clang-format on
     );
   };
@@ -1201,6 +1211,11 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("generated_icon_fix", generated_icon_fix_util::ToDebugValue(
                                      base::OptionalToPtr(generated_icon_fix_)));
+
+  root.Set("supported_links_offer_ignore_count",
+           supported_links_offer_ignore_count_);
+  root.Set("supported_links_offer_dismiss_count",
+           supported_links_offer_dismiss_count_);
 
   return base::Value(std::move(root));
 }

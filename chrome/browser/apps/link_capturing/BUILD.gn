@@ -43,8 +43,17 @@ source_set("link_capturing") {
     ]
   } else {
     sources += [
+      "enable_link_capturing_infobar_delegate.cc",
+      "enable_link_capturing_infobar_delegate.h",
       "web_app_link_capturing_delegate.cc",
       "web_app_link_capturing_delegate.h",
+    ]
+    deps += [
+      "//chrome/app:generated_resources_grit",
+      "//components/infobars/content",
+      "//components/infobars/core",
+      "//components/strings:components_strings_grit",
+      "//components/vector_icons",
     ]
   }
 

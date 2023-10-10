@@ -910,6 +910,11 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
         web_app.generated_icon_fix().value();
   }
 
+  local_data->set_supported_links_offer_ignore_count(
+      web_app.supported_links_offer_ignore_count());
+  local_data->set_supported_links_offer_dismiss_count(
+      web_app.supported_links_offer_dismiss_count());
+
   return local_data;
 }
 
@@ -1669,6 +1674,16 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   if (local_data.has_generated_icon_fix() &&
       generated_icon_fix_util::IsValid(local_data.generated_icon_fix())) {
     web_app->SetGeneratedIconFix(local_data.generated_icon_fix());
+  }
+
+  if (local_data.has_supported_links_offer_ignore_count()) {
+    web_app->SetSupportedLinksOfferIgnoreCount(
+        local_data.supported_links_offer_ignore_count());
+  }
+
+  if (local_data.has_supported_links_offer_dismiss_count()) {
+    web_app->SetSupportedLinksOfferDismissCount(
+        local_data.supported_links_offer_dismiss_count());
   }
 
   return web_app;

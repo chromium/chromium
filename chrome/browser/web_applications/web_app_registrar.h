@@ -418,10 +418,20 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // capture links by the user. If an app is not locally installed or is a
   // shortcut, this returns false.
   bool CapturesLinksInScope(const webapps::AppId& app_id) const;
+
   // Searches for all apps that can control this url, and chooses the best one
   // that also captures links.
   absl::optional<webapps::AppId> FindAppThatCapturesLinksInScope(
       const GURL& url) const;
+
+  // Returns true or false depending on whether the given `app` can be set as a
+  // preferred app to capture the input URL. This returns false if:
+  // 1. The app does not control the url, i.e. app scope has no match with
+  //    `url`.
+  // 2. There is another app in the DB that better controls `url`, i.e. has a
+  //    higher scope score than `app`.
+  // Note: This does NOT mean that `app` has user link capturing enabled.
+  bool IsLinkCapturableByApp(const webapps::AppId& app, const GURL& url) const;
 
   // Returns a set of app ids that match the scope for user link capturing.
   std::vector<webapps::AppId> GetOverlappingAppsMatchingScope(

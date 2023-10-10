@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -346,8 +347,9 @@ void IntentPickerTabHelper::ShowOrHideIconInternal(bool should_show_icon) {
   browser->window()->UpdatePageActionIcon(PageActionIconType::kIntentPicker);
 
   icon_resolved_after_last_navigation_ = true;
-  if (icon_update_closure_)
-    std::move(icon_update_closure_).Run();
+  if (icon_update_closure_for_testing_) {
+    std::move(icon_update_closure_for_testing_).Run();
+  }
 }
 
 void IntentPickerTabHelper::ShowIntentPickerOrLaunchAppImpl(
@@ -436,7 +438,7 @@ void IntentPickerTabHelper::SetIconUpdateCallbackForTesting(
     std::move(callback).Run();
     return;
   }
-  icon_update_closure_ = std::move(callback);
+  icon_update_closure_for_testing_ = std::move(callback);
 }
 
 void IntentPickerTabHelper::DidStartNavigation(

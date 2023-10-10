@@ -146,7 +146,7 @@ class IntentPickerTabHelper
   bool current_app_is_preferred_ = false;
   ui::ImageModel current_app_icon_;
 
-  base::OnceClosure icon_update_closure_;
+  base::OnceClosure icon_update_closure_for_testing_;
 
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>

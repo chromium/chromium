@@ -19,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
@@ -1025,6 +1026,23 @@ absl::optional<webapps::AppId> WebAppRegistrar::FindAppThatCapturesLinksInScope(
     }
   }
   return absl::nullopt;
+}
+
+bool WebAppRegistrar::IsLinkCapturableByApp(const webapps::AppId& app,
+                                            const GURL& url) const {
+  CHECK(url.is_valid());
+  // TODO(dmurph): Switch to GetAppExtendedScopeScore if the
+  // kWebAppEnableScopeExtensions feature is enabled. b/294079334
+  size_t app_score = GetUrlInAppScopeScore(url.spec(), app);
+  if (app_score == 0) {
+    return false;
+  }
+  return base::ranges::none_of(GetAppIds(), [&](const webapps::AppId& app_id) {
+    // TODO(b/294079334): Switch to GetAppExtendedScopeScore if the
+    // kWebAppEnableScopeExtensions feature is enabled.
+    return IsLocallyInstalled(app_id) && !IsShortcutApp(app_id) &&
+           GetUrlInAppScopeScore(url.spec(), app_id) > app_score;
+  });
 }
 
 std::vector<webapps::AppId> WebAppRegistrar::GetOverlappingAppsMatchingScope(

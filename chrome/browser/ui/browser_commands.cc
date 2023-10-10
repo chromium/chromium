@@ -212,6 +212,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/intent_helper/supported_links_infobar_delegate.h"
 #include "chromeos/ui/wm/features.h"
+#else
+#include "chrome/browser/apps/link_capturing/enable_link_capturing_infobar_delegate.h"
 #endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
@@ -1993,6 +1995,8 @@ Browser* OpenInChrome(Browser* hosted_app_browser) {
 #if BUILDFLAG(IS_CHROMEOS)
   apps::SupportedLinksInfoBarDelegate::RemoveSupportedLinksInfoBar(
       web_contents);
+#else
+  apps::EnableLinkCapturingInfoBarDelegate::RemoveInfoBar(web_contents);
 #endif
   target_browser->window()->Show();
   return target_browser;

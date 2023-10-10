@@ -24,6 +24,8 @@ namespace apps {
 
 // An infobar delegate asking if the user wants to enable the Supported Links
 // setting for an app.
+// Note: This is only used for CrOS, see EnableLinkCapturingInfoBarDelegate for
+// the infobar used for other platforms.
 class SupportedLinksInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   explicit SupportedLinksInfoBarDelegate(Profile* profile,

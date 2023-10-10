@@ -14,11 +14,16 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/chromeos_intent_picker_helpers.h"
 #include "chrome/browser/apps/intent_helper/intent_chip_display_prefs.h"
+#include "chrome/browser/apps/link_capturing/enable_link_capturing_infobar_delegate.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/share/share_attempt.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/common/chrome_features.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/infobar.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/favicon_size.h"
@@ -145,6 +150,17 @@ void LaunchAppFromIntentPicker(content::WebContents* web_contents,
   switch (app_type) {
     case apps::PickerEntryType::kWeb:
       web_app::ReparentWebContentsIntoAppBrowser(web_contents, launch_name);
+#if !BUILDFLAG(IS_CHROMEOS)
+      if (base::FeatureList::IsEnabled(features::kDesktopPWAsLinkCapturing)) {
+        std::unique_ptr<EnableLinkCapturingInfoBarDelegate> delegate =
+            EnableLinkCapturingInfoBarDelegate::MaybeCreate(web_contents,
+                                                            launch_name);
+        if (delegate) {
+          infobars::ContentInfoBarManager::FromWebContents(web_contents)
+              ->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
+        }
+      }
+#endif
       break;
     case apps::PickerEntryType::kMacOs:
 #if BUILDFLAG(IS_MAC)

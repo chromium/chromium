@@ -58,6 +58,8 @@
    "shortcuts_menu_item_infos": [  ],
    "sources": [  ],
    "start_url": "",
+   "supported_links_offer_dismiss_count": 0,
+   "supported_links_offer_ignore_count": 0,
    "sync_fallback_data": {
       "manifest_icons": [  ],
       "name": "",
