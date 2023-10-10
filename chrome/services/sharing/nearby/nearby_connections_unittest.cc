@@ -228,8 +228,7 @@ class NearbyConnectionsTest : public testing::Test {
     EXPECT_CALL(*service_controller_router_ptr_, StartDiscovery)
         .WillOnce([&](ClientProxy* client, absl::string_view service_id,
                       const DiscoveryOptions& options,
-                      const DiscoveryListener& listener,
-                      ResultCallback callback) {
+                      DiscoveryListener listener, ResultCallback callback) {
           client_proxy = client;
           EXPECT_EQ(kServiceId, service_id);
           EXPECT_EQ(Strategy::kP2pPointToPoint, options.strategy);
@@ -245,7 +244,7 @@ class NearbyConnectionsTest : public testing::Test {
                       options.fast_advertisement_service_uuid);
           }
           client->StartedDiscovery(std::string{service_id}, options.strategy,
-                                   listener,
+                                   std::move(listener),
                                    /* mediums= */ {});
           EXPECT_TRUE(callback);
           callback({Status::kAlreadyDiscovering});
