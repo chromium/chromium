@@ -14,6 +14,7 @@
 #include "ash/clipboard/scoped_clipboard_history_pause_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
@@ -146,10 +147,9 @@ class ClipboardHistoryTest : public AshTestBase {
       return;
     }
 
-    std::unordered_map<std::u16string, std::u16string> actual_data;
-    ui::ReadCustomDataIntoMap(items.front().data().custom_data_data().c_str(),
-                              items.front().data().custom_data_data().size(),
-                              &actual_data);
+    absl::optional<std::unordered_map<std::u16string, std::u16string>>
+        actual_data = ui::ReadCustomDataIntoMap(base::as_bytes(
+            base::span(items.front().data().custom_data_data())));
 
     EXPECT_EQ(expected_data, actual_data);
   }

@@ -11,6 +11,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -235,8 +236,12 @@ void ClipboardMac::ReadAvailableTypes(
 
   if ([pb.types containsObject:kUTTypeChromiumWebCustomData]) {
     NSData* data = [pb dataForType:kUTTypeChromiumWebCustomData];
-    if ([data length])
-      ReadCustomDataTypes([data bytes], [data length], types);
+    if ([data length]) {
+      ReadCustomDataTypes(
+          base::span(reinterpret_cast<const uint8_t*>([data bytes]),
+                     [data length]),
+          types);
+    }
   }
 }
 
@@ -351,8 +356,15 @@ void ClipboardMac::ReadCustomData(ClipboardBuffer buffer,
   NSPasteboard* pb = GetPasteboard();
   if ([[pb types] containsObject:kUTTypeChromiumWebCustomData]) {
     NSData* data = [pb dataForType:kUTTypeChromiumWebCustomData];
-    if ([data length])
-      ReadCustomDataForType([data bytes], [data length], type, result);
+    if ([data length]) {
+      if (absl::optional<std::u16string> maybe_result = ReadCustomDataForType(
+              base::span(reinterpret_cast<const uint8_t*>([data bytes]),
+                         [data length]),
+              type);
+          maybe_result) {
+        *result = std::move(*maybe_result);
+      }
+    }
   }
 }
 

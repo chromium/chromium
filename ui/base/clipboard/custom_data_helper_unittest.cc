@@ -32,7 +32,7 @@ TEST(CustomDataHelperTest, EmptyReadTypes) {
   PrepareEmptyTestData(&pickle);
 
   std::vector<std::u16string> types;
-  ReadCustomDataTypes(pickle.data(), pickle.size(), &types);
+  ReadCustomDataTypes(pickle, &types);
   EXPECT_EQ(0u, types.size());
 }
 
@@ -40,18 +40,15 @@ TEST(CustomDataHelperTest, EmptyReadSingleType) {
   base::Pickle pickle;
   PrepareEmptyTestData(&pickle);
 
-  std::u16string result;
-  ReadCustomDataForType(pickle.data(), pickle.size(), u"f", &result);
-  EXPECT_EQ(std::u16string(), result);
+  EXPECT_EQ(absl::nullopt, ReadCustomDataForType(pickle, u"f"));
 }
 
 TEST(CustomDataHelperTest, EmptyReadMap) {
   base::Pickle pickle;
   PrepareEmptyTestData(&pickle);
 
-  std::unordered_map<std::u16string, std::u16string> result;
-  ReadCustomDataIntoMap(pickle.data(), pickle.size(), &result);
-  EXPECT_EQ(0u, result.size());
+  EXPECT_EQ((std::unordered_map<std::u16string, std::u16string>()),
+            ReadCustomDataIntoMap(pickle));
 }
 
 TEST(CustomDataHelperTest, ReadTypes) {
@@ -59,7 +56,7 @@ TEST(CustomDataHelperTest, ReadTypes) {
   PrepareTestData(&pickle);
 
   std::vector<std::u16string> types;
-  ReadCustomDataTypes(pickle.data(), pickle.size(), &types);
+  ReadCustomDataTypes(pickle, &types);
 
   std::vector<std::u16string> expected = {u"abc", u"de", u"f"};
   // We need to sort to compare equality, as the underlying custom data is
@@ -73,73 +70,66 @@ TEST(CustomDataHelperTest, ReadSingleType) {
   base::Pickle pickle;
   PrepareTestData(&pickle);
 
-  std::u16string result;
-  ReadCustomDataForType(pickle.data(), pickle.size(), u"abc", &result);
-  EXPECT_EQ(std::u16string(), result);
-
-  ReadCustomDataForType(pickle.data(), pickle.size(), u"de", &result);
-  EXPECT_EQ(u"1", result);
-
-  ReadCustomDataForType(pickle.data(), pickle.size(), u"f", &result);
-  EXPECT_EQ(u"23", result);
+  EXPECT_EQ(u"", ReadCustomDataForType(pickle, u"abc"));
+  EXPECT_EQ(u"1", ReadCustomDataForType(pickle, u"de"));
+  EXPECT_EQ(u"23", ReadCustomDataForType(pickle, u"f"));
 }
 
 TEST(CustomDataHelperTest, ReadMap) {
   base::Pickle pickle;
   PrepareTestData(&pickle);
 
-  std::unordered_map<std::u16string, std::u16string> result;
-  ReadCustomDataIntoMap(pickle.data(), pickle.size(), &result);
-
-  std::unordered_map<std::u16string, std::u16string> expected = {
+  const std::unordered_map<std::u16string, std::u16string> expected = {
       {u"abc", std::u16string()}, {u"de", u"1"}, {u"f", u"23"}};
-  EXPECT_EQ(expected, result);
+  EXPECT_EQ(expected, ReadCustomDataIntoMap(pickle));
 }
 
 TEST(CustomDataHelperTest, BadReadTypes) {
   // ReadCustomDataTypes makes the additional guarantee that the contents of the
   // result vector will not change if the input is malformed.
-  std::vector<std::u16string> expected = {u"abc", u"de", u"f"};
+  const std::vector<std::u16string> expected = {u"abc", u"de", u"f"};
 
-  base::Pickle malformed;
-  malformed.WriteUInt32(1000);
-  malformed.WriteString16(u"hello");
-  malformed.WriteString16(u"world");
-  std::vector<std::u16string> actual(expected);
-  ReadCustomDataTypes(malformed.data(), malformed.size(), &actual);
-  EXPECT_EQ(expected, actual);
+  {
+    base::Pickle malformed;
+    malformed.WriteUInt32(1000);
+    malformed.WriteString16(u"hello");
+    malformed.WriteString16(u"world");
+    std::vector<std::u16string> actual = expected;
+    ReadCustomDataTypes(malformed, &actual);
+    EXPECT_EQ(expected, actual);
+  }
 
-  base::Pickle malformed2;
-  malformed2.WriteUInt32(1);
-  malformed2.WriteString16(u"hello");
-  std::vector<std::u16string> actual2(expected);
-  ReadCustomDataTypes(malformed2.data(), malformed2.size(), &actual2);
-  EXPECT_EQ(expected, actual2);
+  {
+    base::Pickle malformed;
+    malformed.WriteUInt32(1);
+    malformed.WriteString16(u"hello");
+    std::vector<std::u16string> actual = expected;
+    ReadCustomDataTypes(malformed, &actual);
+    EXPECT_EQ(expected, actual);
+  }
 }
 
 TEST(CustomDataHelperTest, BadPickle) {
-  std::u16string result_data;
   std::unordered_map<std::u16string, std::u16string> result_map;
 
-  base::Pickle malformed;
-  malformed.WriteUInt32(1000);
-  malformed.WriteString16(u"hello");
-  malformed.WriteString16(u"world");
+  {
+    base::Pickle malformed;
+    malformed.WriteUInt32(1000);
+    malformed.WriteString16(u"hello");
+    malformed.WriteString16(u"world");
 
-  ReadCustomDataForType(malformed.data(), malformed.size(), u"f", &result_data);
-  ReadCustomDataIntoMap(malformed.data(), malformed.size(), &result_map);
-  EXPECT_EQ(0u, result_data.size());
-  EXPECT_EQ(0u, result_map.size());
+    EXPECT_EQ(absl::nullopt, ReadCustomDataForType(malformed, u"f"));
+    EXPECT_EQ(absl::nullopt, ReadCustomDataIntoMap(malformed));
+  }
 
-  base::Pickle malformed2;
-  malformed2.WriteUInt32(1);
-  malformed2.WriteString16(u"hello");
+  {
+    base::Pickle malformed;
+    malformed.WriteUInt32(1);
+    malformed.WriteString16(u"hello");
 
-  ReadCustomDataForType(malformed2.data(), malformed2.size(), u"f",
-                        &result_data);
-  ReadCustomDataIntoMap(malformed2.data(), malformed2.size(), &result_map);
-  EXPECT_EQ(0u, result_data.size());
-  EXPECT_EQ(0u, result_map.size());
+    EXPECT_EQ(absl::nullopt, ReadCustomDataForType(malformed, u"f"));
+    EXPECT_EQ(absl::nullopt, ReadCustomDataIntoMap(malformed));
+  }
 }
 
 }  // namespace

@@ -7,6 +7,7 @@
 #include <AppKit/AppKit.h>
 #import <Carbon/Carbon.h>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
@@ -466,8 +467,13 @@ DropData PopulateDropDataFromPasteboard(NSPasteboard* pboard) {
   // Get custom MIME data.
   if ([types containsObject:ui::kUTTypeChromiumWebCustomData]) {
     NSData* customData = [pboard dataForType:ui::kUTTypeChromiumWebCustomData];
-    ui::ReadCustomDataIntoMap(customData.bytes, customData.length,
-                              &drop_data.custom_data);
+    if (absl::optional<std::unordered_map<std::u16string, std::u16string>>
+            maybe_custom_data = ui::ReadCustomDataIntoMap(
+                base::span(reinterpret_cast<const uint8_t*>([customData bytes]),
+                           [customData length]));
+        maybe_custom_data) {
+      drop_data.custom_data = std::move(*maybe_custom_data);
+    }
   }
 
   return drop_data;

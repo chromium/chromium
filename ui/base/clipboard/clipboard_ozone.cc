@@ -457,7 +457,7 @@ void ClipboardOzone::ReadAvailableTypes(
                         data_dst)) {
     auto data = async_clipboard_ozone_->ReadClipboardDataSetSourceAndWait(
         buffer, ClipboardFormatType::WebCustomDataType().GetName());
-    ReadCustomDataTypes(data.data(), data.size(), types);
+    ReadCustomDataTypes(data, types);
   }
 }
 
@@ -586,7 +586,11 @@ void ClipboardOzone::ReadCustomData(ClipboardBuffer buffer,
     return;
 
   RecordRead(ClipboardFormatMetric::kCustomData);
-  ReadCustomDataForType(custom_data.data(), custom_data.size(), type, result);
+  if (absl::optional<std::u16string> maybe_data =
+          ReadCustomDataForType(custom_data, type);
+      maybe_data) {
+    *result = std::move(*maybe_data);
+  }
 }
 
 void ClipboardOzone::ReadFilenames(ClipboardBuffer buffer,

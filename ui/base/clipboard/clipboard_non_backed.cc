@@ -15,6 +15,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
@@ -238,8 +239,11 @@ class ClipboardInternal {
     if (!HasFormat(ClipboardInternalFormat::kCustom))
       return;
 
-    ReadCustomDataForType(data->custom_data_data().c_str(),
-                          data->custom_data_data().size(), type, result);
+    absl::optional<std::u16string> maybe_result = ReadCustomDataForType(
+        base::as_bytes(base::span(data->custom_data_data())), type);
+    if (maybe_result) {
+      *result = std::move(*maybe_result);
+    }
   }
 
   // Reads filenames from the ClipboardData.
@@ -620,9 +624,9 @@ void ClipboardNonBacked::ReadAvailableTypes(
 
   if (clipboard_internal.IsFormatAvailable(ClipboardInternalFormat::kCustom) &&
       clipboard_internal.GetData()) {
-    ReadCustomDataTypes(
-        clipboard_internal.GetData()->custom_data_data().c_str(),
-        clipboard_internal.GetData()->custom_data_data().size(), types);
+    ReadCustomDataTypes(base::as_bytes(base::span(
+                            clipboard_internal.GetData()->custom_data_data())),
+                        types);
   }
 }
 

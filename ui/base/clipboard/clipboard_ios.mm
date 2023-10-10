@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #include "base/apple/foundation_util.h"
+#include "base/containers/span.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "skia/ext/skia_utils_base.h"
@@ -133,7 +134,10 @@ void ClipboardIOS::ReadAvailableTypes(
   NSData* data = GetDataWithTypeFromPasteboard(
       GetPasteboard(), (NSString*)kUTTypeChromiumWebCustomData);
   if (data) {
-    ReadCustomDataTypes([data bytes], [data length], types);
+    ReadCustomDataTypes(
+        base::span(reinterpret_cast<const uint8_t*>([data bytes]),
+                   [data length]),
+        types);
   }
 }
 
@@ -266,7 +270,13 @@ void ClipboardIOS::ReadCustomData(ClipboardBuffer buffer,
   NSData* data = GetDataWithTypeFromPasteboard(
       GetPasteboard(), (NSString*)kUTTypeChromiumWebCustomData);
   if (data) {
-    ReadCustomDataForType([data bytes], [data length], type, result);
+    if (absl::optional<std::u16string> maybe_result = ReadCustomDataForType(
+            base::span(reinterpret_cast<const uint8_t*>([data bytes]),
+                       [data length]),
+            type);
+        maybe_result) {
+      *result = std::move(*maybe_result);
+    }
   }
 }
 

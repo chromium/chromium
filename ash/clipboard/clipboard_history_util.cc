@@ -177,12 +177,14 @@ std::u16string GetFileSystemSources(const ui::ClipboardData& data) {
     return std::u16string();
 
   // Attempt to read file system sources in the custom data.
-  std::u16string sources;
-  ui::ReadCustomDataForType(data.custom_data_data().c_str(),
-                            data.custom_data_data().size(),
-                            kFileSystemSourcesType, &sources);
+  if (absl::optional<std::u16string> maybe_sources = ui::ReadCustomDataForType(
+          base::as_bytes(base::span(data.custom_data_data())),
+          kFileSystemSourcesType);
+      maybe_sources) {
+    return std::move(*maybe_sources);
+  }
 
-  return sources;
+  return std::u16string();
 }
 
 const gfx::VectorIcon& GetShortcutKeyIcon() {

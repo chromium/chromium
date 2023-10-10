@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -123,7 +124,7 @@ std::vector<std::u16string> TestClipboard::GetStandardFormats(
 
   auto it = store.data.find(ClipboardFormatType::WebCustomDataType());
   if (it != store.data.end())
-    ReadCustomDataTypes(it->second.c_str(), it->second.size(), &types);
+    ReadCustomDataTypes(base::as_bytes(base::span(it->second)), &types);
 
   return types;
 }

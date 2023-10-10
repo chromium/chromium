@@ -54,9 +54,9 @@ std::vector<base::FilePath> ExtractFilePathsFromFileSystemSources(
     return paths;
   }
 
-  std::u16string sources;
-  ui::ReadCustomDataForType(p.data(), p.size(), u"fs/sources", &sources);
-  if (sources.empty()) {
+  absl::optional<std::u16string> maybe_sources =
+      ui::ReadCustomDataForType(p, u"fs/sources");
+  if (!maybe_sources.has_value()) {
     return paths;
   }
 
@@ -65,8 +65,9 @@ std::vector<base::FilePath> ExtractFilePathsFromFileSystemSources(
     return paths;
   }
 
-  for (const auto& source : base::SplitStringPiece(
-           sources, u"\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+  for (const auto& source :
+       base::SplitStringPiece(*maybe_sources, u"\n", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
     if (auto path = client->CrackFileSystemUrl(GURL(source)); !path.empty()) {
       paths.emplace_back(std::move(path));
     }

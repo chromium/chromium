@@ -336,8 +336,8 @@ void ClipboardWin::ReadAvailableTypes(
   if (!hdata)
     return;
 
-  ReadCustomDataTypes(::GlobalLock(hdata), ::GlobalSize(hdata), types);
-  ::GlobalUnlock(hdata);
+  base::win::ScopedHGlobal<const uint8_t*> locked_data(hdata);
+  ReadCustomDataTypes(locked_data, types);
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -526,8 +526,12 @@ void ClipboardWin::ReadCustomData(ClipboardBuffer buffer,
   if (!hdata)
     return;
 
-  ReadCustomDataForType(::GlobalLock(hdata), ::GlobalSize(hdata), type, result);
-  ::GlobalUnlock(hdata);
+  base::win::ScopedHGlobal<const uint8_t*> locked_data(hdata);
+  if (absl::optional<std::u16string> maybe_result =
+          ReadCustomDataForType(locked_data, type);
+      maybe_result) {
+    *result = std::move(*maybe_result);
+  }
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other

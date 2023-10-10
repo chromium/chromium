@@ -1214,10 +1214,9 @@ std::vector<ui::FileInfo> ParseFileSystemSources(
     return file_info;
   }
 
-  std::u16string file_system_url_list;
-  ui::ReadCustomDataForType(pickle.data(), pickle.size(), kFilesAppMimeSources,
-                            &file_system_url_list);
-  if (file_system_url_list.empty()) {
+  absl::optional<std::u16string> maybe_file_system_url_list =
+      ui::ReadCustomDataForType(pickle, kFilesAppMimeSources);
+  if (!maybe_file_system_url_list || maybe_file_system_url_list->empty()) {
     return file_info;
   }
 
@@ -1225,8 +1224,8 @@ std::vector<ui::FileInfo> ParseFileSystemSources(
       storage::ExternalMountPoints::GetSystemInstance();
 
   for (const base::StringPiece16& line : base::SplitStringPiece(
-           file_system_url_list, kFilesAppSeparator16, base::TRIM_WHITESPACE,
-           base::SPLIT_WANT_NONEMPTY)) {
+           *maybe_file_system_url_list, kFilesAppSeparator16,
+           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     if (line.empty() || line[0] == '#') {
       continue;
     }

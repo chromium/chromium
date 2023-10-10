@@ -774,9 +774,13 @@ void WebContentsViewAura::PrepareDropData(
     drop_data->file_system_files = file_system_files;
 
   if (data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
-                          &pickle))
-    ui::ReadCustomDataIntoMap(pickle.data(), pickle.size(),
-                              &drop_data->custom_data);
+                          &pickle)) {
+    if (absl::optional<std::unordered_map<std::u16string, std::u16string>>
+            maybe_custom_data = ui::ReadCustomDataIntoMap(pickle);
+        maybe_custom_data) {
+      drop_data->custom_data = std::move(*maybe_custom_data);
+    }
+  }
 }
 
 void WebContentsViewAura::EndDrag(

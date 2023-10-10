@@ -810,11 +810,15 @@ bool GetWebCustomData(
   STGMEDIUM store;
   if (GetData(data_object, ClipboardFormatType::WebCustomDataType(), &store)) {
     {
-      base::win::ScopedHGlobal<char*> data(store.hGlobal);
-      ReadCustomDataIntoMap(data.data(), data.size(), custom_data);
+      base::win::ScopedHGlobal<const uint8_t*> data(store.hGlobal);
+      if (absl::optional<std::unordered_map<std::u16string, std::u16string>>
+              maybe_custom_data = ReadCustomDataIntoMap(data);
+          maybe_custom_data) {
+        *custom_data = std::move(*maybe_custom_data);
+        return true;
+      }
     }
     ReleaseStgMedium(&store);
-    return true;
   }
   return false;
 }
