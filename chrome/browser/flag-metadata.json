@@ -8589,7 +8589,7 @@
   {
     "name": "windows11-mica-titlebar",
     "owners": [ "j@jloeffler.com", "pkasting" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 140
   },
   {
     "name": "xsurface-metrics-reporting",
