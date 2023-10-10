@@ -88,16 +88,27 @@ Mp4MovieBoxWriter::Mp4MovieBoxWriter(const Mp4MuxerContext& context,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AddChildBox(std::make_unique<Mp4MovieHeaderBoxWriter>(context, box_.header));
 
-  if (auto video_track = context.GetVideoTrack()) {
+  bool video_is_first_track = false;
+  auto video_track = context.GetVideoTrack();
+  if (video_track) {
     DCHECK_LE(video_track.value().index, box_.tracks.size());
-    AddChildBox(std::make_unique<Mp4MovieTrackBoxWriter>(
-        context, box_.tracks[video_track.value().index]));
+
+    video_is_first_track = video_track.value().index == 0;
+    if (video_is_first_track) {
+      AddChildBox(std::make_unique<Mp4MovieTrackBoxWriter>(
+          context, box_.tracks[video_track.value().index]));
+    }
   }
 
   if (auto audio_track = context.GetAudioTrack()) {
     DCHECK_LE(audio_track.value().index, box_.tracks.size());
     AddChildBox(std::make_unique<Mp4MovieTrackBoxWriter>(
         context, box_.tracks[audio_track.value().index]));
+  }
+
+  if (!video_is_first_track && video_track) {
+    AddChildBox(std::make_unique<Mp4MovieTrackBoxWriter>(
+        context, box_.tracks[video_track.value().index]));
   }
 
   AddChildBox(

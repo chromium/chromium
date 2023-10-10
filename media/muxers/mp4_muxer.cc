@@ -59,7 +59,8 @@ bool Mp4Muxer::OnEncodedVideo(
 
   DCHECK(!is_key_frame || codec_description.has_value());
 
-  base::TimeTicks adjusted_timestamp = AdjustTimestamp(timestamp, false);
+  base::TimeTicks adjusted_timestamp =
+      AdjustTimestamp(timestamp, /*audio=*/false);
 
   mp4_muxer_delegate_->AddVideoFrame(params, encoded_data, codec_description,
                                      adjusted_timestamp, is_key_frame);
@@ -83,7 +84,8 @@ bool Mp4Muxer::OnEncodedAudio(
   DCHECK(latest_audio_timestamp_ != base::TimeTicks::Min() ||
          codec_description.has_value());
 
-  base::TimeTicks adjusted_timestamp = AdjustTimestamp(timestamp, false);
+  base::TimeTicks adjusted_timestamp =
+      AdjustTimestamp(timestamp, /*audio=*/true);
 
   mp4_muxer_delegate_->AddAudioFrame(params, encoded_data, codec_description,
                                      adjusted_timestamp);
