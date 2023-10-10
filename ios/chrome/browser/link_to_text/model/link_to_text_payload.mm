@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/link_to_text/link_to_text_payload.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_payload.h"
 
 @implementation LinkToTextPayload
 

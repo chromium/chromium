@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_LINK_TO_TEXT_LINK_TO_TEXT_TAB_HELPER_H_
-#define IOS_CHROME_BROWSER_LINK_TO_TEXT_LINK_TO_TEXT_TAB_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_LINK_TO_TEXT_MODEL_LINK_TO_TEXT_TAB_HELPER_H_
+#define IOS_CHROME_BROWSER_LINK_TO_TEXT_MODEL_LINK_TO_TEXT_TAB_HELPER_H_
 
 #include "base/gtest_prod_util.h"
 #import "base/memory/weak_ptr.h"
 #import "base/timer/elapsed_timer.h"
-#import "ios/chrome/browser/link_to_text/link_to_text_java_script_feature.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_java_script_feature.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -78,4 +78,4 @@ class LinkToTextTabHelper : public web::WebStateObserver,
   WEB_STATE_USER_DATA_KEY_DECL();
 };
 
-#endif  // IOS_CHROME_BROWSER_LINK_TO_TEXT_LINK_TO_TEXT_TAB_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_LINK_TO_TEXT_MODEL_LINK_TO_TEXT_TAB_HELPER_H_

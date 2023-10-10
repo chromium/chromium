@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/link_to_text/link_to_text_java_script_feature.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_java_script_feature.h"
 
 #import "base/barrier_callback.h"
 #import "base/no_destructor.h"
@@ -10,7 +10,7 @@
 #import "base/timer/elapsed_timer.h"
 #import "components/shared_highlighting/core/common/disabled_sites.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_features.h"
-#import "ios/chrome/browser/link_to_text/link_to_text_constants.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_constants.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"

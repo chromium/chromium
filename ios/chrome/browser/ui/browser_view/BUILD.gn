@@ -72,7 +72,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/itunes_urls",
     "//ios/chrome/browser/language/model",
     "//ios/chrome/browser/lens",
-    "//ios/chrome/browser/link_to_text",
+    "//ios/chrome/browser/link_to_text/model",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/metrics:metrics_browser_agent",
     "//ios/chrome/browser/metrics:metrics_internal",

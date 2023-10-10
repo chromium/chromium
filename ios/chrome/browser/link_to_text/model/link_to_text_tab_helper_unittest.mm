@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/link_to_text/link_to_text_tab_helper.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_tab_helper.h"
 
 #import "base/gtest_prod_util.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"

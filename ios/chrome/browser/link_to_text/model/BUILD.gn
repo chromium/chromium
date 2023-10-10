@@ -5,7 +5,7 @@
 import("//ios/web/public/js_messaging/compile_ts.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
 
-source_set("link_to_text") {
+source_set("model") {
   sources = [
     "link_to_text_java_script_feature.h",
     "link_to_text_java_script_feature.mm",
@@ -53,7 +53,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":internal",
-    ":link_to_text",
+    ":model",
     "//base",
     "//base/test:test_support",
     "//components/shared_highlighting/core/common",
@@ -76,7 +76,7 @@ compile_ts("compile_link_to_text_js") {
 }
 
 optimize_js("link_to_text_js") {
-  visibility = [ ":link_to_text" ]
+  visibility = [ ":model" ]
   _script = filter_include(get_target_outputs(":compile_link_to_text_js"),
                            [ "*link_to_text.js" ])
   primary_script = _script[0]

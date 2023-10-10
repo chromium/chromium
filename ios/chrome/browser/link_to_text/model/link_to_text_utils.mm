@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/link_to_text/link_to_text_utils.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_utils.h"
 
 #import "base/time/time.h"
 #import "components/shared_highlighting/core/common/text_fragment.h"
-#import "ios/chrome/browser/link_to_text/link_to_text_constants.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_constants.h"
 
 using shared_highlighting::LinkGenerationError;
 

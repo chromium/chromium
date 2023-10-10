@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_LINK_TO_TEXT_LINK_TO_TEXT_RESPONSE_H_
-#define IOS_CHROME_BROWSER_LINK_TO_TEXT_LINK_TO_TEXT_RESPONSE_H_
+#ifndef IOS_CHROME_BROWSER_LINK_TO_TEXT_MODEL_LINK_TO_TEXT_RESPONSE_H_
+#define IOS_CHROME_BROWSER_LINK_TO_TEXT_MODEL_LINK_TO_TEXT_RESPONSE_H_
 
 #import <UIKit/UIKit.h>
 
 #include "base/time/time.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
-#import "ios/chrome/browser/link_to_text/link_generation_outcome.h"
+#import "ios/chrome/browser/link_to_text/model/link_generation_outcome.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 #import "url/gurl.h"
 
@@ -53,4 +53,4 @@ class WebState;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_LINK_TO_TEXT_LINK_TO_TEXT_RESPONSE_H_
+#endif  // IOS_CHROME_BROWSER_LINK_TO_TEXT_MODEL_LINK_TO_TEXT_RESPONSE_H_

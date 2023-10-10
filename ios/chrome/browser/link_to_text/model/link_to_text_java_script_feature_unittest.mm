@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/link_to_text/link_to_text_java_script_feature.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_java_script_feature.h"
 
 #import "base/gtest_prod_util.h"
 #import "base/test/scoped_feature_list.h"
@@ -11,7 +11,7 @@
 #import "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/browser/link_to_text/link_generation_outcome.h"
+#import "ios/chrome/browser/link_to_text/model/link_generation_outcome.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"

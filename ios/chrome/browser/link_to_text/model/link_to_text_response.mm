@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/link_to_text/link_to_text_response.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_response.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
@@ -10,8 +10,8 @@
 #import "components/shared_highlighting/core/common/text_fragment.h"
 #import "components/shared_highlighting/ios/parsing_utils.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/browser/link_to_text/link_to_text_payload.h"
-#import "ios/chrome/browser/link_to_text/link_to_text_utils.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_payload.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_utils.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"

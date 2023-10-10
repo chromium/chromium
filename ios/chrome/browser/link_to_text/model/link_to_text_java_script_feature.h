@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_LINK_TO_TEXT_LINK_TO_TEXT_JAVA_SCRIPT_FEATURE_H_
-#define IOS_CHROME_BROWSER_LINK_TO_TEXT_LINK_TO_TEXT_JAVA_SCRIPT_FEATURE_H_
+#ifndef IOS_CHROME_BROWSER_LINK_TO_TEXT_MODEL_LINK_TO_TEXT_JAVA_SCRIPT_FEATURE_H_
+#define IOS_CHROME_BROWSER_LINK_TO_TEXT_MODEL_LINK_TO_TEXT_JAVA_SCRIPT_FEATURE_H_
 
 #include "base/gtest_prod_util.h"
 #import "base/memory/weak_ptr.h"
 #import "base/no_destructor.h"
 #import "base/values.h"
-#import "ios/chrome/browser/link_to_text/link_to_text_response.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_response.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -73,4 +73,4 @@ class LinkToTextJavaScriptFeature : public web::JavaScriptFeature {
   base::WeakPtrFactory<LinkToTextJavaScriptFeature> weak_ptr_factory_;
 };
 
-#endif  // IOS_CHROME_BROWSER_LINK_TO_TEXT_LINK_TO_TEXT_JAVA_SCRIPT_FEATURE_H_
+#endif  // IOS_CHROME_BROWSER_LINK_TO_TEXT_MODEL_LINK_TO_TEXT_JAVA_SCRIPT_FEATURE_H_

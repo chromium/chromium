@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/link_to_text/link_to_text_utils.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_utils.h"
 
-#import "ios/chrome/browser/link_to_text/link_generation_outcome.h"
-#import "ios/chrome/browser/link_to_text/link_to_text_constants.h"
+#import "ios/chrome/browser/link_to_text/model/link_generation_outcome.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_constants.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"

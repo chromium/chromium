@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/link_to_text/link_to_text_tab_helper.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_tab_helper.h"
 
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/values.h"
 #import "components/shared_highlighting/core/common/disabled_sites.h"
-#import "ios/chrome/browser/link_to_text/link_to_text_constants.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_constants.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
