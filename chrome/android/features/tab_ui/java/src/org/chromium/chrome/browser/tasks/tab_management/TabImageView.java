@@ -34,6 +34,11 @@ class TabImageView extends ImageView {
         mOnNextImageViewLayout = runnable;
         if (!isAttachedToWindow() || !isLayoutRequested()) {
             runOnNextLayoutRunnable();
+        } else {
+            // Post this runnable. It should run on the next layout pass. However, if the layout
+            // gets skipped because no dimensions change this will ensure the runnable runs.
+            // See crbug.com/1490554.
+            post(this::runOnNextLayoutRunnable);
         }
     }
 

@@ -96,6 +96,27 @@ public class TabImageViewUnitTest {
 
     @Test
     @SmallTest
+    public void testRunsWithoutALayout() {
+        mRootView.addView(
+                mTabImageView,
+                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        ShadowLooper.runUiThreadTasks();
+        assertTrue(mTabImageView.isAttachedToWindow());
+
+        mTabImageView.requestLayout();
+        assertTrue(mTabImageView.isLayoutRequested());
+        mTabImageView.setOnNextLayoutRunnable(mRunnable);
+        verify(mRunnable, never()).run();
+
+        // Even if a layout never happens because the view hasn't changed, the runnable should still
+        // run.
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mRunnable, times(1)).run();
+    }
+
+    @Test
+    @SmallTest
     public void testEmulateForceAnimationToFinish() {
         mRootView.addView(mTabImageView,
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
