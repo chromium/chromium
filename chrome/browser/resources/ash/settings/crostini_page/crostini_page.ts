@@ -24,6 +24,7 @@ import './crostini_settings_card.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PrefsState} from '../common/types.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 
 import {getTemplate} from './crostini_page.html.js';
@@ -39,6 +40,11 @@ export class SettingsCrostiniPageElement extends PolymerElement {
 
   static get properties() {
     return {
+      /** Preferences state. */
+      prefs: {
+        type: Object,
+        notify: true,
+      },
       section_: {
         type: Number,
         value: Section.kCrostini,
@@ -47,6 +53,7 @@ export class SettingsCrostiniPageElement extends PolymerElement {
     };
   }
 
+  prefs: PrefsState;
   private section_: Section;
 }
 

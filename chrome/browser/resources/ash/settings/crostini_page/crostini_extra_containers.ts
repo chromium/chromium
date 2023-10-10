@@ -35,7 +35,7 @@ type HtmlElementWithData<T extends HTMLElement = HTMLElement> = T&{
   'dataContainerId': GuestId,
 };
 
-interface ExtraContainersElement {
+export interface ExtraContainersElement {
   $: {
     containerMenu: CrLazyRenderElement<CrActionMenuElement>,
   };
@@ -52,7 +52,7 @@ interface CrostiniContainerInfo extends ContainerInfo {
 
 const ExtraContainersElementBase = WebUiListenerMixin(PolymerElement);
 
-class ExtraContainersElement extends ExtraContainersElementBase {
+export class ExtraContainersElement extends ExtraContainersElementBase {
   static get is() {
     return 'settings-crostini-extra-containers';
   }

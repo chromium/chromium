@@ -187,11 +187,11 @@ TEST_F('OSSettingsCrostiniSettingsCardTest', 'AllJsTests', () => {
   mocha.run();
 });
 
-var OSSettingsCrostiniExtraContainerPageTest =
+var OSSettingsCrostiniPageCrostiniExtraContainersSubpageTest =
     class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_extra_containers_subpage_test.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_page/crostini_extra_containers_subpage_test.js';
   }
 
   /** @override */
@@ -200,9 +200,11 @@ var OSSettingsCrostiniExtraContainerPageTest =
   }
 };
 
-TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
-  mocha.run();
-});
+TEST_F(
+    'OSSettingsCrostiniPageCrostiniExtraContainersSubpageTest', 'AllJsTests',
+    () => {
+      mocha.run();
+    });
 
 [['AboutPage', 'os_about_page_tests.js'],
  ['ApnDetailDialog', 'apn_detail_dialog_test.js'],

@@ -23,7 +23,7 @@ import {ContainerInfo} from '../guest_os/guest_os_browser_proxy.js';
 import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
 import {getTemplate} from './crostini_extra_containers_create_dialog.html.js';
 
-interface ExtraContainersCreateDialog {
+export interface ExtraContainersCreateDialog {
   $: {
     dialog: CrDialogElement,
     containerFileInput: CrInputElement,
@@ -34,7 +34,7 @@ interface ExtraContainersCreateDialog {
   };
 }
 
-class ExtraContainersCreateDialog extends PolymerElement {
+export class ExtraContainersCreateDialog extends PolymerElement {
   static get is() {
     return 'settings-crostini-create-container-dialog';
   }

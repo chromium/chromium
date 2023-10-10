@@ -12,8 +12,8 @@ import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
+import {TestCrostiniBrowserProxy} from './crostini_page/test_crostini_browser_proxy.js';
 import {TestGuestOsBrowserProxy} from './guest_os/test_guest_os_browser_proxy.js';
-import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
 
 suite('<crostini-settings-card>', () => {
   /** @type {?CrostiniSettingsCardElement} */

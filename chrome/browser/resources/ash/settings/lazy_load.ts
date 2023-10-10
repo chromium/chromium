@@ -138,7 +138,10 @@ export {AppManagementSupportedLinksOverlappingAppsDialogElement} from 'chrome://
 // Tests should use this export of `sanitizerInnerHtml` to prevent repeated
 // TrustedTypes policies from being created.
 export {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_page/crostini_browser_proxy.js';
+export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol} from './crostini_page/crostini_browser_proxy.js';
+export {ExtraContainersElement} from './crostini_page/crostini_extra_containers.js';
+export {ExtraContainersCreateDialog} from './crostini_page/crostini_extra_containers_create_dialog.js';
+export {SettingsCrostiniPageElement} from './crostini_page/crostini_page.js';
 export {CrostiniSettingsCardElement} from './crostini_page/crostini_settings_card.js';
 export {SettingsDateTimePageElement} from './date_time_page/date_time_page.js';
 export {DateTimeSettingsCardElement} from './date_time_page/date_time_settings_card.js';
@@ -154,7 +157,7 @@ export {SettingsCustomizeTabletButtonsSubpageElement} from './device_page/custom
 export {DragAndDropManager, getDataTransferOriginIndex, setDataTransferOriginIndex} from './device_page/drag_and_drop_manager.js';
 export {KeyCombinationInputDialogElement} from './device_page/key_combination_input_dialog.js';
 export {SettingsPowerElement} from './device_page/power.js';
-export {CROSTINI_TYPE, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, PLUGIN_VM_TYPE} from './guest_os/guest_os_browser_proxy.js';
+export {ContainerInfo, CROSTINI_TYPE, GuestId, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, PLUGIN_VM_TYPE, ShareableDevices} from './guest_os/guest_os_browser_proxy.js';
 export {SettingsGuestOsSharedPathsElement} from './guest_os/guest_os_shared_paths.js';
 export {SettingsGuestOsSharedUsbDevicesElement} from './guest_os/guest_os_shared_usb_devices.js';
 export {CellularNetworksListElement} from './internet_page/cellular_networks_list.js';
