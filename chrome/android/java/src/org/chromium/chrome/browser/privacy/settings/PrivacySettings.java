@@ -118,7 +118,7 @@ public class PrivacySettings
 
         IncognitoReauthSettingSwitchPreference incognitoReauthPreference =
                 (IncognitoReauthSettingSwitchPreference) findPreference(PREF_INCOGNITO_LOCK);
-        mIncognitoLockSettings = new IncognitoLockSettings(incognitoReauthPreference);
+        mIncognitoLockSettings = new IncognitoLockSettings(incognitoReauthPreference, getProfile());
         mIncognitoLockSettings.setUpIncognitoReauthPreference(getActivity());
 
         Preference safeBrowsingPreference = findPreference(PREF_SAFE_BROWSING);
