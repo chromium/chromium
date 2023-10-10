@@ -8377,21 +8377,6 @@
             ]
         }
     ],
-    "IOSFeedPersistentDatastore": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableDiskPersistentStore"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSFeedSignedOutViewDemotion": [
         {
             "platforms": [
