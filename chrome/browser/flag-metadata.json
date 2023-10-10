@@ -1769,7 +1769,7 @@
   },
   {
     "name": "disable-javascript-harmony-shipping",
-    "owners": [ "adamk", "hablich" ],
+    "owners": [ "adamk", "syg" ],
     // This flag is used for field debugging along with
     // enable-javascript-harmony.
     "expiry_milestone": -1
@@ -3046,7 +3046,7 @@
   },
   {
     "name": "enable-javascript-harmony",
-    "owners": [ "adamk", "hablich" ],
+    "owners": [ "adamk", "syg" ],
     // This flag is used by web developers to test upcoming javascript features.
     "expiry_milestone": -1
   },
