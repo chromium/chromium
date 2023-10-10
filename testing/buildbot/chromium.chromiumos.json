@@ -1131,7 +1131,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
-        "cros_img": "volteer-public/R120-15639.0.0",
+        "cros_img": "volteer-public/R120-15642.0.0",
         "cros_model": "voxel",
         "dut_pool": "chromium",
         "name": "lacros_all_tast_tests VOLTEER_PUBLIC_LKGM",
@@ -1475,7 +1475,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-public/R120-15639.0.0",
+        "cros_img": "jacuzzi-public/R120-15642.0.0",
         "name": "chromeos_integration_tests JACUZZI_PUBLIC_LKGM",
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
@@ -1484,7 +1484,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-public/R120-15639.0.0",
+        "cros_img": "jacuzzi-public/R120-15642.0.0",
         "name": "lacros_all_tast_tests JACUZZI_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
@@ -1513,7 +1513,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "trogdor",
-        "cros_img": "trogdor-public/R120-15639.0.0",
+        "cros_img": "trogdor-public/R120-15642.0.0",
         "name": "lacros_all_tast_tests TROGDOR_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,

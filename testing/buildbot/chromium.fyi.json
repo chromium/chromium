@@ -41181,7 +41181,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "eve",
-        "cros_img": "eve-public/R120-15639.0.0",
+        "cros_img": "eve-public/R120-15642.0.0",
         "dut_pool": "chromium",
         "name": "lacros_all_tast_tests EVE_PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
@@ -41201,7 +41201,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "octopus",
-        "cros_img": "octopus-public/R120-15639.0.0",
+        "cros_img": "octopus-public/R120-15642.0.0",
         "name": "lacros_all_tast_tests OCTOPUS_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
@@ -41225,7 +41225,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-public/R120-15639.0.0",
+        "cros_img": "jacuzzi-public/R120-15642.0.0",
         "name": "lacros_all_tast_tests JACUZZI_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
@@ -41242,7 +41242,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "trogdor",
-        "cros_img": "trogdor-public/R120-15639.0.0",
+        "cros_img": "trogdor-public/R120-15642.0.0",
         "name": "lacros_all_tast_tests TROGDOR_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
@@ -41266,7 +41266,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-public/R120-15639.0.0",
+        "cros_img": "jacuzzi-public/R120-15642.0.0",
         "name": "lacros_all_tast_tests JACUZZI_CQ_PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
@@ -41285,7 +41285,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-public/R120-15639.0.0",
+        "cros_img": "jacuzzi-public/R120-15642.0.0",
         "name": "lacros_all_tast_tests JACUZZI_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
@@ -41302,7 +41302,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "trogdor",
-        "cros_img": "trogdor-public/R120-15639.0.0",
+        "cros_img": "trogdor-public/R120-15642.0.0",
         "name": "lacros_all_tast_tests TROGDOR_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
