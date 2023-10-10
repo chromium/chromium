@@ -73,9 +73,7 @@ affiliation_pb::LookupAffiliationMask CreateLookupMask(
   affiliation_pb::LookupAffiliationMask mask;
 
   mask.set_branding_info(request_info.branding_info);
-  // Change password info requires grouping info enabled.
-  mask.set_grouping_info(request_info.change_password_info ||
-                         kRequestGroupingInfo);
+  mask.set_grouping_info(kRequestGroupingInfo);
   mask.set_group_branding_info(kRequestGroupingInfo);
   mask.set_change_password_info(request_info.change_password_info);
   mask.set_psl_extension_list(request_info.psl_extension_list);

@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_api.pb.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_service_impl.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliation_fetcher_delegate.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -129,11 +130,6 @@ void HashAffiliationFetcherTest::VerifyRequestPayload(
   EXPECT_EQ("application/x-protobuf", content_type);
   EXPECT_THAT(actual_hash_prefixes,
               testing::UnorderedElementsAreArray(expected_hash_prefixes));
-
-  if (request_info.change_password_info) {
-    // Change password info requires grouping info enabled.
-    EXPECT_TRUE(request.mask().grouping_info());
-  }
   EXPECT_EQ(request.mask().change_password_info(),
             request_info.change_password_info);
 }
@@ -152,14 +148,12 @@ TEST_F(HashAffiliationFetcherTest, BuildQueryURL) {
 TEST_F(HashAffiliationFetcherTest, GetRequestedFacetURIs) {
   MockAffiliationFetcherDelegate mock_delegate;
   HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
-  HashAffiliationFetcher::RequestInfo request_info{.change_password_info =
-                                                       true};
 
   std::vector<FacetURI> requested_uris;
   requested_uris.push_back(FacetURI::FromCanonicalSpec(k1ExampleURL));
   requested_uris.push_back(FacetURI::FromCanonicalSpec(k2ExampleURL));
 
-  fetcher.StartRequest(requested_uris, request_info);
+  fetcher.StartRequest(requested_uris, kChangePasswordUrlRequestInfo);
   WaitForResponse();
 
   EXPECT_THAT(fetcher.GetRequestedFacetURIs(),
@@ -170,21 +164,20 @@ TEST_F(HashAffiliationFetcherTest,
        VerifyPayloadForMultipleHashesRequestWith16LengthPrefix) {
   MockAffiliationFetcherDelegate mock_delegate;
   HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
-  HashAffiliationFetcher::RequestInfo request_info{.change_password_info =
-                                                       true};
 
   std::vector<FacetURI> requested_uris;
   requested_uris.push_back(FacetURI::FromCanonicalSpec(k1ExampleURL));
   requested_uris.push_back(FacetURI::FromCanonicalSpec(k2ExampleURL));
 
-  fetcher.StartRequest(requested_uris, request_info);
+  fetcher.StartRequest(requested_uris, kChangePasswordUrlRequestInfo);
   WaitForResponse();
 
   std::vector<uint64_t> hash_prefixes;
   hash_prefixes.push_back(k1ExampleHash16LenPrefix);
   hash_prefixes.push_back(k2ExampleHash16LenPrefix);
 
-  ASSERT_NO_FATAL_FAILURE(VerifyRequestPayload(hash_prefixes, request_info));
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyRequestPayload(hash_prefixes, kChangePasswordUrlRequestInfo));
 }
 
 TEST_F(HashAffiliationFetcherTest, BasicRequestAndResponse) {
@@ -289,9 +282,6 @@ TEST_F(HashAffiliationFetcherTest, ChangePasswordInfoIsReturnedIfPresent) {
   web_facet_2->mutable_change_password_info()->set_change_password_url(
       kExampleWebFacet2ChangePasswordURI);
 
-  AffiliationFetcherInterface::RequestInfo request_info{.change_password_info =
-                                                            true};
-
   std::vector<FacetURI> requested_uris = {
       FacetURI::FromCanonicalSpec(kExampleWebFacet1URI)};
 
@@ -301,11 +291,11 @@ TEST_F(HashAffiliationFetcherTest, ChangePasswordInfoIsReturnedIfPresent) {
   std::unique_ptr<AffiliationFetcherDelegate::Result> result;
   EXPECT_CALL(mock_delegate, OnFetchSucceeded(&fetcher, testing::_))
       .WillOnce(MoveArg<1>(&result));
-  fetcher.StartRequest(requested_uris, request_info);
+  fetcher.StartRequest(requested_uris, kChangePasswordUrlRequestInfo);
   WaitForResponse();
 
-  ASSERT_NO_FATAL_FAILURE(
-      VerifyRequestPayload(ComputeHashes(requested_uris), request_info));
+  ASSERT_NO_FATAL_FAILURE(VerifyRequestPayload(ComputeHashes(requested_uris),
+                                               kChangePasswordUrlRequestInfo));
   ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&mock_delegate));
 
   ASSERT_EQ(1u, result->groupings.size());
