@@ -72,7 +72,10 @@ void PersonalDataManagerCleaner::CleanupDataAndNotifyPersonalDataObservers() {
   personal_data_manager_->NotifyPersonalDataObserver();
 }
 
-void PersonalDataManagerCleaner::SyncStarted(syncer::ModelType model_type) {
+void PersonalDataManagerCleaner::SyncStarted(syncer::ModelType model_type) {}
+
+void PersonalDataManagerCleaner::ApplyAddressAndCardFixesAndCleanups(
+    syncer::ModelType model_type) {
   // The profile de-duplication is run once every major chrome version. If the
   // profile de-duplication has not run for the |CHROME_VERSION_MAJOR| yet,
   // |AlternativeStateNameMap| needs to be populated first. Otherwise,
@@ -89,8 +92,9 @@ void PersonalDataManagerCleaner::SyncStarted(syncer::ModelType model_type) {
            ->is_alternative_state_name_map_populated() &&
       is_autofill_profile_cleanup_pending_) {
     alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
-        base::BindOnce(&PersonalDataManagerCleaner::SyncStarted,
-                       weak_ptr_factory_.GetWeakPtr(), model_type));
+        base::BindOnce(
+            &PersonalDataManagerCleaner::ApplyAddressAndCardFixesAndCleanups,
+            weak_ptr_factory_.GetWeakPtr(), model_type));
     return;
   }
 
@@ -103,9 +107,7 @@ void PersonalDataManagerCleaner::SyncStarted(syncer::ModelType model_type) {
 
   // Run deferred credit card startup code.
   if (model_type == syncer::AUTOFILL_WALLET_DATA) {
-    // TODO(crbug.com/1477292): SyncStarted is never called for
-    // AUTOFILL_WALLET_DATA.
-    ApplyCardFixesAndCleanups();
+    // TODO(crbug.com/1477292): Run ApplyCardFixesAndCleanups() once per version
   }
 }
 

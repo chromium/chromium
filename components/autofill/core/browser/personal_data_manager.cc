@@ -651,6 +651,12 @@ void PersonalDataManager::AutofillMultipleChangedBySync(
   //  AutofillAddressConversionCompleted() notification. As a second step, we
   // need to refresh the PDM's view of the data.
   ConvertWalletAddressesAndUpdateWalletCards();
+
+  // Note, it's possible that the cleanups are run on the stale data since
+  // `Refresh` is an async operation. But, since the cleanups happen over the
+  // local data, it should be fine.
+  personal_data_manager_cleaner_->ApplyAddressAndCardFixesAndCleanups(
+      model_type);
 }
 
 void PersonalDataManager::AutofillAddressConversionCompleted() {

@@ -38,9 +38,9 @@ class PersonalDataManagerCleaner {
 
   // Applies address/credit card fixes and cleanups depending on the
   // |model_type|.
-  // TODO(crbug.com/1477292): For syncing users, SyncStarted is called just once
-  // when the sync is enabled. Instead, it should be called every time on
-  // browser startup.
+  void ApplyAddressAndCardFixesAndCleanups(syncer::ModelType model_type);
+
+  // TODO(crbug.com/1477292): Remove.
   void SyncStarted(syncer::ModelType model_type);
 
 #if defined(UNIT_TEST)
