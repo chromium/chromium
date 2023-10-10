@@ -32,9 +32,9 @@ namespace blink {
 // BoxOverflowModel class tracks content that spills out of an object.
 // It is used by LayoutBox.
 //
-// All overflows are in the coordinate space of the object (i.e. physical
-// coordinates with flipped block-flow direction). See documentation of
-// LayoutBoxModelObject and LayoutBox::NoOverflowRect() for more details.
+// All overflows are in the physical coordinate space of the object. See
+// documentation of LayoutBoxModelObject and LayoutBox::NoOverflowRect() for
+// more details.
 //
 // The class models the overflows as rectangles that unite all the sources of
 // overflow. This is the natural choice for layout overflow (scrollbars are
@@ -93,15 +93,15 @@ namespace blink {
 // invariant.
 class BoxLayoutOverflowModel {
  public:
-  BoxLayoutOverflowModel(const LayoutRect& layout_rect)
-      : layout_overflow_(layout_rect) {}
+  explicit BoxLayoutOverflowModel(const PhysicalRect& overflow_rect)
+      : layout_overflow_(overflow_rect) {}
   BoxLayoutOverflowModel(const BoxLayoutOverflowModel&) = delete;
   BoxLayoutOverflowModel& operator=(const BoxLayoutOverflowModel&) = delete;
 
-  const LayoutRect& LayoutOverflowRect() const { return layout_overflow_; }
+  const PhysicalRect& LayoutOverflowRect() const { return layout_overflow_; }
 
  private:
-  LayoutRect layout_overflow_;
+  PhysicalRect layout_overflow_;
 };
 
 class BoxVisualOverflowModel {

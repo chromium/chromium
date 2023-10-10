@@ -424,8 +424,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     DCHECK(!IsLayoutMultiColumnSet());
     return LayoutOverflowIsSet()
-               ? FlipForWritingMode(
-                     overflow_->layout_overflow->LayoutOverflowRect())
+               ? overflow_->layout_overflow->LayoutOverflowRect()
                : NoOverflowRect();
   }
 

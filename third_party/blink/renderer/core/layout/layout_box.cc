@@ -3346,6 +3346,7 @@ void LayoutBox::SetLayoutOverflowFromLayoutResults() {
   const WritingMode writing_mode = StyleRef().GetWritingMode();
   absl::optional<PhysicalRect> layout_overflow;
   LayoutUnit consumed_block_size;
+  LayoutUnit fragment_width_sum;
 
   // Iterate over all the fragments and unite their individual layout-overflow
   // to determine the final layout-overflow.
@@ -3362,6 +3363,11 @@ void LayoutBox::SetLayoutOverflowFromLayoutResults() {
         break;
       case WritingMode::kVerticalRl:
       case WritingMode::kSidewaysRl:
+        // For flipped-blocks writing-modes, we build the total overflow rect
+        // from right-to-left (adding with negative offsets). At the end we
+        // need to make the origin relative to the LHS, so we add the total
+        // fragment width.
+        fragment_width_sum += fragment.Size().width;
         offset_adjust = {-fragment.Size().width - consumed_block_size,
                          LayoutUnit()};
         break;
@@ -3396,10 +3402,8 @@ void LayoutBox::SetLayoutOverflowFromLayoutResults() {
   if (!layout_overflow)
     return;
 
-  // layout-overflow is stored respecting flipped-blocks.
   if (IsFlippedBlocksWritingMode(writing_mode)) {
-    layout_overflow->offset.left =
-        -layout_overflow->offset.left - layout_overflow->size.width;
+    layout_overflow->offset.left += fragment_width_sum;
   }
 
   if (layout_overflow->IsEmpty() ||
@@ -3409,7 +3413,7 @@ void LayoutBox::SetLayoutOverflowFromLayoutResults() {
   DCHECK(!LayoutOverflowIsSet());
   if (!overflow_)
     overflow_ = MakeGarbageCollected<BoxOverflowModel>();
-  overflow_->layout_overflow.emplace(layout_overflow->ToLayoutRect());
+  overflow_->layout_overflow.emplace(*layout_overflow);
 }
 
 RecalcLayoutOverflowResult LayoutBox::RecalcLayoutOverflowNG() {
