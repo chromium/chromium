@@ -26,11 +26,15 @@ benchmarking unit tests with verbose logging enabled. Steps:
 Add to gn args:
 
 ```
+# For building tests.
+target_os = "chromeos"
+
+# For verbose logging.
 use_runtime_vlog = true
 ```
 
-Build and run tests:
+Build and run tests, e.g.:
 
 ```sh
-autoninja -C out/Default chromeos_unittests && out/Default/chromeos_unittests --gtest_filter=*FuzzyTokenizedStringMatchTest.Benchmark* --v=1
+autoninja -C out/Default chromeos_unittests && out/Default/chromeos_unittests --gtest_filter="*FuzzyTokenizedStringMatchTest.Benchmark*" --v=1
 ```
