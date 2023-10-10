@@ -56,15 +56,6 @@
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
-            "dirs": ["pnacl"],
-            "rename_dirs": [
-                {"from_dir": ".", "to_dir": "pnacl"}
-            ],
-            "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "Mac/{%position%}/pncal.zip",
-            "archive_type": "ARCHIVE_TYPE_ZIP"
-        },
-        {
             "files": [
                 "remoting-me2me-host-mac.zip"
             ],

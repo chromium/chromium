@@ -23,7 +23,6 @@
                 "MEIPreload\\manifest.json",
                 "MEIPreload\\preloaded_data.pb",
                 "mojo_core.dll",
-                "nacl_irt_x86_64.nexe",
                 "notification_helper.exe",
                 "resources.pak",
                 "v8_context_snapshot.bin",
@@ -160,15 +159,6 @@
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "Win_x64/{%position%}",
             "archive_type": "ARCHIVE_TYPE_FILES"
-        },
-        {
-            "dirs": ["pnacl"],
-            "rename_dirs": [
-                {"from_dir": ".", "to_dir": "pnacl"}
-            ],
-            "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "Win_x64/{%position%}/pnacl.zip",
-            "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
             "files": [

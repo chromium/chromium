@@ -23,9 +23,6 @@
                 "MEIPreload\\manifest.json",
                 "MEIPreload\\preloaded_data.pb",
                 "mojo_core.dll",
-                "nacl64.exe",
-                "nacl_irt_x86_32.nexe",
-                "nacl_irt_x86_64.nexe",
                 "notification_helper.exe",
                 "resources.pak",
                 "v8_context_snapshot.bin",
@@ -68,7 +65,6 @@
                 "libGLESv2.dll.pdb",
                 "mini_installer.exe.pdb",
                 "mojo_core.dll.pdb",
-                "nacl64.exe.pdb",
                 "notification_helper.exe.pdb",
                 "setup.exe.pdb",
                 "vk_swiftshader.dll.pdb",
@@ -163,15 +159,6 @@
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "Win/{%position%}",
             "archive_type": "ARCHIVE_TYPE_FILES"
-        },
-        {
-            "dirs": ["pnacl"],
-            "rename_dirs": [
-                {"from_dir": ".", "to_dir": "pnacl"}
-            ],
-            "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "Win/{%position%}/pnacl.zip",
-            "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
             "files": [
