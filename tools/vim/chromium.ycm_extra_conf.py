@@ -290,12 +290,18 @@ def GetClangOptionsFromCommandLine(clang_commandline, out_dir,
   clang_flags = [] + additional_flags
 
   # Parse flags that are important for YCM's purposes.
-  clang_tokens = shlex.split(clang_commandline)
+  lexer = shlex.shlex(clang_commandline, posix=True)
+  lexer.whitespace_split = True
+  # Keep double quotes which are important for some -D flags used as include paths.
+  lexer.quotes = '\''
+  clang_tokens = list(lexer)
   for flag_index, flag in enumerate(clang_tokens):
     next_token = clang_tokens[flag_index + 1] \
         if flag_index + 1 < len(clang_tokens) \
         else None
-    clang_flags.append(ProcessIndividualFlag(flag, next_token, out_dir))
+    processed_flag = ProcessIndividualFlag(flag, next_token, out_dir)
+    if processed_flag:
+      clang_flags.append(processed_flag)
   return clang_flags
 
 def FileCompilationCandidates(filename):
@@ -386,7 +392,10 @@ def GetClangOptionsFromDBForFilename(chrome_root, filename):
       # ycm_core returns a StringVector we need to convert it.
       flags = [] + additional_flags
       for flag in compilation_info.compiler_flags_:
-        flags.append(ProcessIndividualFlag(flag, None, compilation_database_folder))
+        processed_flag = ProcessIndividualFlag(flag, None,
+                                               compilation_database_folder)
+        if processed_flag:
+          flags.append(processed_flag)
       return flags
   return None
 
