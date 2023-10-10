@@ -39,6 +39,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/win/registry.h"
+#include "chrome/updater/app/app_install_win_internal.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
@@ -52,6 +53,7 @@
 #include "chrome/updater/win/manifest_util.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/win_constants.h"
+#include "components/update_client/update_client_errors.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-braces"
@@ -322,13 +324,61 @@ void SetUsageStats(UpdaterScope scope,
   }
 }
 
-// TODO(crbug.com/1422075): localize the text for these errors.
-std::string GetTextForUpdateCheckError(int error) {
 #define SWITCH_ENTRY(error_code)     \
   case static_cast<int>(error_code): \
     return #error_code
+
+// TODO(crbug.com/1422075): localize the text for all the `GetTextForXXXError`
+// functions below.
+std::string GetTextForDownloadError(int error) {
   switch (error) {
-    SWITCH_ENTRY(update_client::ProtocolError::NONE);
+    SWITCH_ENTRY(update_client::CrxDownloaderError::NO_URL);
+    SWITCH_ENTRY(update_client::CrxDownloaderError::NO_HASH);
+    SWITCH_ENTRY(update_client::CrxDownloaderError::BAD_HASH);
+    SWITCH_ENTRY(update_client::CrxDownloaderError::BITS_TOO_MANY_JOBS);
+    SWITCH_ENTRY(update_client::CrxDownloaderError::GENERIC_ERROR);
+    default:
+      return "";
+  }
+}
+
+std::string GetTextForUnpackError(int error) {
+  switch (error) {
+    SWITCH_ENTRY(update_client::UnpackerError::kInvalidParams);
+    SWITCH_ENTRY(update_client::UnpackerError::kInvalidFile);
+    SWITCH_ENTRY(update_client::UnpackerError::kUnzipPathError);
+    SWITCH_ENTRY(update_client::UnpackerError::kUnzipFailed);
+    SWITCH_ENTRY(update_client::UnpackerError::kBadManifest);
+    SWITCH_ENTRY(update_client::UnpackerError::kBadExtension);
+    SWITCH_ENTRY(update_client::UnpackerError::kIoError);
+    SWITCH_ENTRY(update_client::UnpackerError::kDeltaVerificationFailure);
+    SWITCH_ENTRY(update_client::UnpackerError::kDeltaBadCommands);
+    SWITCH_ENTRY(update_client::UnpackerError::kDeltaUnsupportedCommand);
+    SWITCH_ENTRY(update_client::UnpackerError::kDeltaOperationFailure);
+    SWITCH_ENTRY(update_client::UnpackerError::kDeltaPatchProcessFailure);
+    SWITCH_ENTRY(update_client::UnpackerError::kDeltaMissingExistingFile);
+    SWITCH_ENTRY(update_client::UnpackerError::kPuffinMissingPreviousCrx);
+    SWITCH_ENTRY(update_client::UnpackerError::kFailedToAddToCache);
+    SWITCH_ENTRY(update_client::UnpackerError::kFailedToCreateCacheDir);
+    SWITCH_ENTRY(update_client::UnpackerError::kCrxCacheNotProvided);
+    default:
+      return "";
+  }
+}
+
+std::string GetTextForServiceError(int error) {
+  switch (error) {
+    SWITCH_ENTRY(update_client::ServiceError::SERVICE_WAIT_FAILED);
+    SWITCH_ENTRY(update_client::ServiceError::UPDATE_DISABLED);
+    SWITCH_ENTRY(update_client::ServiceError::CANCELLED);
+    SWITCH_ENTRY(update_client::ServiceError::CHECK_FOR_UPDATE_ONLY);
+    default:
+      return "";
+  }
+}
+
+std::string GetTextForUpdateCheckError(int error) {
+  switch (error) {
     SWITCH_ENTRY(update_client::ProtocolError::RESPONSE_NOT_TRUSTED);
     SWITCH_ENTRY(update_client::ProtocolError::MISSING_PUBLIC_KEY);
     SWITCH_ENTRY(update_client::ProtocolError::MISSING_URLS);
@@ -341,8 +391,8 @@ std::string GetTextForUpdateCheckError(int error) {
     default:
       return "";
   }
-#undef SWITCH_ENTRY
 }
+#undef SWITCH_ENTRY
 
 // Implements installing a single application by invoking the code in
 // |UpdateService|, listening to |UpdateService| and UI events, and
@@ -427,9 +477,6 @@ class AppInstallControllerImpl : public AppInstallController,
       const std::string& install_data);
   void HandleOsNotSupported();
   void InstallComplete(UpdateService::Result result);
-
-  [[nodiscard]] static ObserverCompletionInfo HandleInstallResult(
-      const UpdateService::UpdateState& update_state);
 
   // Returns the thread id of the thread which owns the progress window.
   DWORD GetUIThreadID() const;
@@ -773,98 +820,6 @@ void AppInstallControllerImpl::StateChange(
   }
 }
 
-ObserverCompletionInfo AppInstallControllerImpl::HandleInstallResult(
-    const UpdateService::UpdateState& update_state) {
-  CompletionCodes completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
-  std::wstring completion_text;
-  switch (update_state.state) {
-    case UpdateService::UpdateState::State::kUpdated:
-      VLOG(1) << "Update success.";
-      completion_code = CompletionCodes::COMPLETION_CODE_SUCCESS;
-      completion_text =
-          GetLocalizedString(IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE);
-      break;
-    case UpdateService::UpdateState::State::kNoUpdate:
-      VLOG(1) << "No updates.";
-      completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
-      completion_text = GetLocalizedString(IDS_NO_UPDATE_RESPONSE_BASE);
-      break;
-    case UpdateService::UpdateState::State::kUpdateError:
-      VLOG(1) << "Updater error: " << update_state.error_code << ".";
-      completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
-      completion_text = GetLocalizedString(IDS_INSTALL_UPDATER_FAILED_BASE);
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
-
-  ObserverCompletionInfo observer_info;
-  observer_info.completion_code = completion_code;
-  observer_info.completion_text = completion_text;
-  observer_info.help_url = base::StringPrintf(
-      "%s?product=%s&error=%d", HELP_CENTER_URL,
-      base::EscapeUrlEncodedData(update_state.app_id, false).c_str(),
-      update_state.error_code);
-
-  AppCompletionInfo app_info;
-  if (update_state.state != UpdateService::UpdateState::State::kNoUpdate) {
-    app_info.app_id = base::ASCIIToUTF16(update_state.app_id);
-    app_info.error_code = update_state.error_code;
-    app_info.completion_message = base::ASCIIToUTF16([&]() {
-      if (!update_state.installer_text.empty()) {
-        return update_state.installer_text;
-      }
-      if (!app_info.error_code) {
-        return std::string();
-      }
-      switch (update_state.error_category) {
-        case UpdateService::ErrorCategory::kInstall:
-          return GetTextForSystemError(app_info.error_code);
-        case UpdateService::ErrorCategory::kUpdateCheck:
-          return GetTextForUpdateCheckError(app_info.error_code);
-        default:
-          LOG(ERROR) << "Unknown error category: "
-                     << update_state.error_category;
-          return std::string();
-      }
-    }());
-    app_info.extra_code1 = update_state.extra_code1;
-    app_info.post_install_launch_command_line =
-        base::SysUTF8ToWide(update_state.installer_cmd_line);
-    VLOG(1) << app_info.app_id << " installation completed: error_code["
-            << app_info.error_code << "], extra_code1[" << app_info.extra_code1
-            << "], completion_message[" << app_info.completion_message
-            << "], post_install_launch_command_line["
-            << app_info.post_install_launch_command_line << "]";
-
-    // If the installer provides a launch command,
-    // `COMPLETION_CODE_EXIT_SILENTLY_ON_LAUNCH_COMMAND` will cause the UI
-    // client to run the launch command and exit in the interactive install
-    // case.
-    // TODO(crbug.com/1352307): Is there more to be done to populate members
-    // like `completion_code` and `post_install_url`? For now, set the
-    // completion for the basic cases and ignore the post install URL.
-    if (app_info.error_code == 0) {
-      app_info.completion_code =
-          app_info.post_install_launch_command_line.empty()
-              ? CompletionCodes::COMPLETION_CODE_SUCCESS
-              : CompletionCodes::
-                    COMPLETION_CODE_EXIT_SILENTLY_ON_LAUNCH_COMMAND;
-    } else if (app_info.error_code == ERROR_SUCCESS_REBOOT_INITIATED ||
-               app_info.error_code == ERROR_SUCCESS_REBOOT_REQUIRED ||
-               app_info.error_code == ERROR_SUCCESS_RESTART_REQUIRED) {
-      app_info.completion_code =
-          CompletionCodes::COMPLETION_CODE_REBOOT_NOTICE_ONLY;
-    } else {
-      app_info.completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
-    }
-  }
-  observer_info.apps_info.push_back(app_info);
-
-  return observer_info;
-}
-
 // Loads the logo in BMP format if it exists at the provided `url`, and sets the
 // resultant image onto the app bitmap for the progress window.
 void AppInstallControllerImpl::LoadLogo(std::wstring url, HWND progress_hwnd) {
@@ -1009,6 +964,104 @@ void AppInstallControllerImpl::DoCancel() {
 }
 
 }  // namespace
+
+[[nodiscard]] ObserverCompletionInfo HandleInstallResult(
+    const UpdateService::UpdateState& update_state) {
+  CompletionCodes completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
+  std::wstring completion_text;
+  switch (update_state.state) {
+    case UpdateService::UpdateState::State::kUpdated:
+      VLOG(1) << "Update success.";
+      completion_code = CompletionCodes::COMPLETION_CODE_SUCCESS;
+      completion_text =
+          GetLocalizedString(IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE);
+      break;
+    case UpdateService::UpdateState::State::kNoUpdate:
+      VLOG(1) << "No updates.";
+      completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
+      completion_text = GetLocalizedString(IDS_NO_UPDATE_RESPONSE_BASE);
+      break;
+    case UpdateService::UpdateState::State::kUpdateError:
+      VLOG(1) << "Updater error: " << update_state.error_code << ".";
+      completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
+      completion_text = GetLocalizedString(IDS_INSTALL_UPDATER_FAILED_BASE);
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  ObserverCompletionInfo observer_info;
+  observer_info.completion_code = completion_code;
+  observer_info.completion_text = completion_text;
+  observer_info.help_url = base::StringPrintf(
+      "%s?product=%s&error=%d", HELP_CENTER_URL,
+      base::EscapeUrlEncodedData(update_state.app_id, false).c_str(),
+      update_state.error_code);
+
+  AppCompletionInfo app_info;
+  if (update_state.state != UpdateService::UpdateState::State::kNoUpdate) {
+    app_info.app_id = base::ASCIIToUTF16(update_state.app_id);
+    app_info.error_code = update_state.error_code;
+    app_info.completion_message = base::ASCIIToUTF16([&]() {
+      if (!update_state.installer_text.empty()) {
+        return update_state.installer_text;
+      }
+      if (!app_info.error_code) {
+        return std::string();
+      }
+      switch (update_state.error_category) {
+        case UpdateService::ErrorCategory::kInstall:
+          return GetTextForSystemError(app_info.error_code);
+        case UpdateService::ErrorCategory::kDownload:
+          return GetTextForDownloadError(app_info.error_code);
+        case UpdateService::ErrorCategory::kUnpack:
+          return GetTextForUnpackError(app_info.error_code);
+        case UpdateService::ErrorCategory::kService:
+          return GetTextForServiceError(app_info.error_code);
+        case UpdateService::ErrorCategory::kUpdateCheck:
+          return GetTextForUpdateCheckError(app_info.error_code);
+        default:
+          LOG(ERROR) << "Unknown error category: "
+                     << update_state.error_category;
+          return std::string();
+      }
+    }());
+    app_info.extra_code1 = update_state.extra_code1;
+    app_info.post_install_launch_command_line =
+        base::SysUTF8ToWide(update_state.installer_cmd_line);
+    VLOG(1) << app_info.app_id << " installation completed: error_code["
+            << app_info.error_code << "], extra_code1[" << app_info.extra_code1
+            << "], completion_message[" << app_info.completion_message
+            << "], post_install_launch_command_line["
+            << app_info.post_install_launch_command_line << "]";
+
+    // If the installer provides a launch command,
+    // `COMPLETION_CODE_EXIT_SILENTLY_ON_LAUNCH_COMMAND` will cause the UI
+    // client to run the launch command and exit in the interactive install
+    // case.
+    // TODO(crbug.com/1352307): Is there more to be done to populate members
+    // like `completion_code` and `post_install_url`? For now, set the
+    // completion for the basic cases and ignore the post install URL.
+    if (app_info.error_code == 0) {
+      app_info.completion_code =
+          app_info.post_install_launch_command_line.empty()
+              ? CompletionCodes::COMPLETION_CODE_SUCCESS
+              : CompletionCodes::
+                    COMPLETION_CODE_EXIT_SILENTLY_ON_LAUNCH_COMMAND;
+    } else if (app_info.error_code == ERROR_SUCCESS_REBOOT_INITIATED ||
+               app_info.error_code == ERROR_SUCCESS_REBOOT_REQUIRED ||
+               app_info.error_code == ERROR_SUCCESS_RESTART_REQUIRED) {
+      app_info.completion_code =
+          CompletionCodes::COMPLETION_CODE_REBOOT_NOTICE_ONLY;
+    } else {
+      app_info.completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
+    }
+  }
+  observer_info.apps_info.push_back(app_info);
+
+  return observer_info;
+}
 
 scoped_refptr<App> MakeAppInstall(bool is_silent_install) {
   return base::MakeRefCounted<AppInstall>(
