@@ -24,12 +24,11 @@ namespace media {
 // frame and state management.
 class MEDIA_GPU_EXPORT AcceleratedVideoDecoder {
  public:
-  AcceleratedVideoDecoder() {}
+  AcceleratedVideoDecoder() = default;
+  virtual ~AcceleratedVideoDecoder() = default;
 
   AcceleratedVideoDecoder(const AcceleratedVideoDecoder&) = delete;
   AcceleratedVideoDecoder& operator=(const AcceleratedVideoDecoder&) = delete;
-
-  virtual ~AcceleratedVideoDecoder() {}
 
   // Set the buffer owned by |decoder_buffer| as the current source of encoded
   // stream data. AcceleratedVideoDecoder doesn't have an ownership of the
@@ -54,18 +53,10 @@ class MEDIA_GPU_EXPORT AcceleratedVideoDecoder {
     // in decoding; in future it could perhaps be possible to fall back
     // to software decoding instead.
     // kStreamError,  // Error in stream.
-    kConfigChange,      // This is returned when some configuration (e.g.
-                        // profile or picture size) is changed. A client may
-                        // need to apply the client side the configuration
-                        // properly (e.g. allocate buffers with the new
-                        // resolution).
-    kColorSpaceChange,  // This is returned if the video color space is changed.
-                        // Color space changes off of key frames are discarded
-                        // only for VP9 decoder. When both ConfigChange and
-                        // ColorSpaceChange occur together, ConfigChange is
-                        // preferred over ColorSpaceChange. When triggered, it
-                        // is used for creating new shared images for the
-                        // D3D11VideoDecoder.
+    kConfigChange,  // Stream configuration has changed. E.g., profile, coded
+                    // size, bit depth, or color space. A client may need to
+                    // reallocate resources to apply the new configuration
+                    // properly. E.g. allocate buffers with the new resolution.
     kRanOutOfStreamData,  // Need more stream data to proceed.
     kRanOutOfSurfaces,    // Waiting for the client to free up output surfaces.
     kNeedContextUpdate,   // Waiting for the client to update decoding context

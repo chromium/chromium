@@ -243,10 +243,6 @@ void V4L2StatelessVideoDecoder::ProcessCompressedBuffer(
                      << " of resolution " << decoder_->GetPicSize().ToString();
           }
           break;
-        case AcceleratedVideoDecoder::kColorSpaceChange:
-          VLOGF(2) << "AcceleratedVideoDecoder::kColorSpaceChange";
-          NOTIMPLEMENTED();
-          break;
         case AcceleratedVideoDecoder::kRanOutOfStreamData:
           VLOGF(2) << "AcceleratedVideoDecoder::kRanOutOfStreamData";
           // Handled on first entry to function.

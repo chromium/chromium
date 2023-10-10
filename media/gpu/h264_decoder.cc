@@ -1118,9 +1118,7 @@ bool H264Decoder::UpdateMaxNumReorderFrames(const H264SPS* sps) {
   return true;
 }
 
-bool H264Decoder::ProcessSPS(int sps_id,
-                             bool* need_new_buffers,
-                             bool* color_space_changed) {
+bool H264Decoder::ProcessSPS(int sps_id, bool* need_new_buffers) {
   DVLOG(4) << "Processing SPS id:" << sps_id;
 
   const H264SPS* sps = parser_.GetSPS(sps_id);
@@ -1217,33 +1215,30 @@ bool H264Decoder::ProcessSPS(int sps_id,
     new_color_space = container_color_space_;
   }
 
+  bool is_color_space_change = false;
+  if (base::FeatureList::IsEnabled(kAVDColorSpaceChanges)) {
+    is_color_space_change = new_color_space.IsSpecified() &&
+                            new_color_space != picture_color_space_;
+  }
+
   if (pic_size_ != new_pic_size || dpb_.max_num_pics() != max_dpb_size ||
-      profile_ != new_profile || bit_depth_ != new_bit_depth) {
-    if (!Flush())
+      profile_ != new_profile || bit_depth_ != new_bit_depth ||
+      is_color_space_change) {
+    if (!Flush()) {
       return false;
+    }
     DVLOG(1) << "Codec profile: " << GetProfileName(new_profile)
              << ", level: " << base::strict_cast<int>(level)
              << ", DPB size: " << max_dpb_size
              << ", Picture size: " << new_pic_size.ToString()
-             << ", bit depth: " << base::strict_cast<int>(new_bit_depth);
+             << ", bit depth: " << base::strict_cast<int>(new_bit_depth)
+             << ", color_space: " << new_color_space.ToString();
     *need_new_buffers = true;
     profile_ = new_profile;
     bit_depth_ = new_bit_depth;
     pic_size_ = new_pic_size;
     picture_color_space_ = new_color_space;
     dpb_.set_max_num_pics(max_dpb_size);
-  }
-
-  // If the new color space is specified and different from picture color space
-  // then trigger color space change.
-  if (new_color_space.IsSpecified() &&
-      new_color_space != picture_color_space_) {
-    if (!Flush()) {
-      return false;
-    }
-    DVLOG(1) << "New color space: " << new_color_space.ToString();
-    picture_color_space_ = new_color_space;
-    *color_space_changed = true;
   }
 
   gfx::Rect new_visible_rect = sps->GetVisibleRect().value_or(gfx::Rect());
@@ -1602,8 +1597,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
           SET_ERROR_AND_RETURN();
 
         bool need_new_buffers = false;
-        bool color_space_changed = false;
-        if (!ProcessSPS(sps_id, &need_new_buffers, &color_space_changed)) {
+        if (!ProcessSPS(sps_id, &need_new_buffers)) {
           SET_ERROR_AND_RETURN();
         }
         accelerator_->ProcessSPS(
@@ -1615,7 +1609,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
         if (state_ == State::kNeedStreamMetadata)
           state_ = State::kAfterReset;
 
-        if (need_new_buffers || color_space_changed) {
+        if (need_new_buffers) {
           curr_pic_ = nullptr;
           curr_nalu_ = nullptr;
           ref_pic_list_p0_.clear();
@@ -1625,9 +1619,6 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
         // Perfer config changes over color space changes.
         if (need_new_buffers) {
           return kConfigChange;
-        }
-        if (color_space_changed) {
-          return kColorSpaceChange;
         }
         break;
       }

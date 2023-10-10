@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "media/base/limits.h"
+#include "media/base/media_switches.h"
 #include "media/gpu/av1_picture.h"
 #include "third_party/libgav1/src/src/decoder_state.h"
 #include "third_party/libgav1/src/src/gav1/status_code.h"
@@ -321,12 +322,24 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
           new_color_space = container_color_space_;
         }
 
+        bool is_color_space_change = false;
+        if (base::FeatureList::IsEnabled(kAVDColorSpaceChanges)) {
+          is_color_space_change = new_color_space.IsSpecified() &&
+                                  new_color_space != picture_color_space_;
+        }
+
         ClearReferenceFrames();
         // Issues kConfigChange only if either the dimensions, profile or bit
         // depth is changed.
         if (frame_size_ != new_frame_size ||
             visible_rect_ != new_visible_rect || profile_ != new_profile ||
-            bit_depth_ != new_bit_depth) {
+            bit_depth_ != new_bit_depth || is_color_space_change) {
+          DVLOG(1) << "New profile: " << GetProfileName(new_profile)
+                   << ", new resolution: " << new_frame_size.ToString()
+                   << ", new visible rect: " << new_visible_rect.ToString()
+                   << ", new bit depth: "
+                   << base::strict_cast<int>(new_bit_depth)
+                   << ", new color space: " << new_color_space.ToString();
           frame_size_ = new_frame_size;
           visible_rect_ = new_visible_rect;
           profile_ = new_profile;
@@ -334,14 +347,6 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
           picture_color_space_ = new_color_space;
           clear_current_frame.ReplaceClosure(base::DoNothing());
           return kConfigChange;
-        }
-
-        // Trigger color space change if the previous picture color space is
-        // different from new color space.
-        if (new_color_space.IsSpecified() &&
-            picture_color_space_ != new_color_space) {
-          picture_color_space_ = new_color_space;
-          return kColorSpaceChange;
         }
       }
     }

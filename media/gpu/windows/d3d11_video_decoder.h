@@ -289,6 +289,10 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // need to recreate the decoder.
   uint8_t bit_depth_ = 8u;
 
+  // The currently configured color space for the decoder. When this changes we
+  // need to recreate the decoder.
+  VideoColorSpace color_space_;
+
   // The currently configured chroma sampling format on the accelerator. When
   // this changes we need to recreate the decoder.
   VideoChromaSampling chroma_sampling_ = VideoChromaSampling::k420;

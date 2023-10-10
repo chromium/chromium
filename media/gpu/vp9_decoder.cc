@@ -291,6 +291,12 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
 
     DCHECK(!new_pic_size.IsEmpty());
 
+    bool is_color_space_change = false;
+    if (base::FeatureList::IsEnabled(kAVDColorSpaceChanges)) {
+      is_color_space_change = new_color_space.IsSpecified() &&
+                              new_color_space != picture_color_space_;
+    }
+
     const bool is_pic_size_different = new_pic_size != pic_size_;
     const bool is_pic_size_larger = new_pic_size.width() > pic_size_.width() ||
                                     new_pic_size.height() > pic_size_.height();
@@ -298,13 +304,15 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
         (ignore_resolution_changes_to_smaller_for_testing_
              ? is_pic_size_larger
              : is_pic_size_different) ||
-        new_profile != profile_ || curr_frame_hdr_->bit_depth != bit_depth_;
+        new_profile != profile_ || curr_frame_hdr_->bit_depth != bit_depth_ ||
+        is_color_space_change;
 
     if (is_new_configuration_different_enough) {
       DVLOG(1) << "New profile: " << GetProfileName(new_profile)
                << ", new resolution: " << new_pic_size.ToString()
                << ", new bit depth: "
-               << base::strict_cast<int>(curr_frame_hdr_->bit_depth);
+               << base::strict_cast<int>(curr_frame_hdr_->bit_depth)
+               << ", new color space: " << new_color_space.ToString();
 
       if (!curr_frame_hdr_->IsKeyframe() &&
           !(curr_frame_hdr_->IsIntra() && pic_size_.IsEmpty())) {
@@ -337,19 +345,6 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
       picture_color_space_ = new_color_space;
       size_change_failure_counter_ = 0;
       return kConfigChange;
-    }
-
-    if (new_color_space.IsSpecified() &&
-        new_color_space != picture_color_space_ &&
-        curr_frame_hdr_->IsKeyframe()) {
-      // TODO(posciak): This requires us to be on a keyframe (see above) and is
-      // required, because VDA clients expect all surfaces to be returned before
-      // they can cycle surface sets after receiving kConfigChange.
-      // This is only an implementation detail of VDAs and can be improved.
-      ref_frames_.Clear();
-
-      picture_color_space_ = new_color_space;
-      return kColorSpaceChange;
     }
 
     scoped_refptr<VP9Picture> pic = accelerator_->CreateVP9Picture();

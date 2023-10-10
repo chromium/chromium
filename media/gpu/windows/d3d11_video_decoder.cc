@@ -643,24 +643,29 @@ void D3D11VideoDecoder::DoDecode() {
       const auto new_coded_size = accelerated_video_decoder_->GetPicSize();
       const auto new_chroma_sampling =
           accelerated_video_decoder_->GetChromaSampling();
+      const auto new_color_space =
+          accelerated_video_decoder_->GetVideoColorSpace();
       if (new_profile == config_.profile() &&
           new_coded_size == config_.coded_size() &&
           new_bit_depth == bit_depth_ && !picture_buffers_.size() &&
-          new_chroma_sampling == chroma_sampling_) {
+          new_chroma_sampling == chroma_sampling_ &&
+          new_color_space == color_space_) {
         continue;
       }
 
       // Update the config.
       MEDIA_LOG(INFO, media_log_)
           << "D3D11VideoDecoder config change: profile: "
-          << static_cast<int>(new_profile) << " chroma_sampling_format: "
+          << GetProfileName(new_profile) << ", chroma_sampling_format: "
           << VideoChromaSamplingToString(new_chroma_sampling)
-          << " coded_size: (" << new_coded_size.width() << ", "
-          << new_coded_size.height() << ")";
+          << ", coded_size: " << new_coded_size.ToString()
+          << ", bit_depth: " << base::strict_cast<int>(new_bit_depth)
+          << ", color_space: " << new_color_space.ToString();
       profile_ = new_profile;
       config_.set_profile(profile_);
       config_.set_coded_size(new_coded_size);
       chroma_sampling_ = new_chroma_sampling;
+      color_space_ = new_color_space;
 
       // Replace the decoder, and clear any picture buffers we have.  It's okay
       // if we don't have any picture buffer yet; this might be before the
@@ -676,14 +681,6 @@ void D3D11VideoDecoder::DoDecode() {
       }
       CHECK(set_accelerator_decoder_wrapper_cb_);
       set_accelerator_decoder_wrapper_cb_.Run(std::move(wrapper));
-      picture_buffers_.clear();
-    } else if (result == media::AcceleratedVideoDecoder::kColorSpaceChange) {
-      MEDIA_LOG(INFO, media_log_)
-          << "D3D11VideoDecoder color space change: color_space: "
-          << accelerated_video_decoder_->GetVideoColorSpace().ToString();
-
-      // Clear the picture buffers and recreate the pictures leading to new
-      // shared images with new color space.
       picture_buffers_.clear();
     } else if (result == media::AcceleratedVideoDecoder::kTryAgain) {
       LOG(ERROR) << "Try again is not supported";

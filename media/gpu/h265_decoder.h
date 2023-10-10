@@ -226,9 +226,7 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   };
 
   // Process H265 stream structures.
-  bool ProcessPPS(int pps_id,
-                  bool* need_new_buffers,
-                  bool* color_space_changed);
+  bool ProcessPPS(int pps_id, bool* need_new_buffers);
 
   // Process current slice header to discover if we need to start a new picture,
   // finishing up the current one.

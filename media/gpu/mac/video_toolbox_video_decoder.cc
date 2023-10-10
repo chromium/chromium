@@ -265,7 +265,6 @@ void VideoToolboxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
         return;
 
       case AcceleratedVideoDecoder::kConfigChange:
-      case AcceleratedVideoDecoder::kColorSpaceChange:
         continue;
 
       case AcceleratedVideoDecoder::kRanOutOfStreamData:
