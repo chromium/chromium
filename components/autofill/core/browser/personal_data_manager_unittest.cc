@@ -52,6 +52,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/version_info/version_info.h"
@@ -315,7 +316,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
   void ConvertWalletAddressesAndUpdateWalletCards() {
     // Simulate new data is coming from sync which triggers a conversion of
     // wallet addresses which in turn triggers a refresh.
-    personal_data_->AutofillMultipleChangedBySync();
+    personal_data_->AutofillMultipleChangedBySync(syncer::AUTOFILL_WALLET_DATA);
     PersonalDataProfileTaskWaiter(*personal_data_).Wait();
   }
 

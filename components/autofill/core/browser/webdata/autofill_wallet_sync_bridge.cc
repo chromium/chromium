@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/sync/base/hash_util.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
@@ -319,7 +320,8 @@ void AutofillWalletSyncBridge::SetSyncData(
   web_data_backend_->CommitChanges();
 
   if (web_data_backend_ && wallet_data_changed)
-    web_data_backend_->NotifyOfMultipleAutofillChanges();
+    web_data_backend_->NotifyOfMultipleAutofillChanges(
+        syncer::AUTOFILL_WALLET_DATA);
 }
 
 bool AutofillWalletSyncBridge::SetWalletCards(

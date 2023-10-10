@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 
@@ -131,7 +132,8 @@ AutofillWalletUsageDataSyncBridge::ApplyIncrementalSyncChanges(
   // Since such false positives are fine, and since AutofillTable's API
   // currently doesn't provide a way to detect such cases, we don't distinguish.
   if (!entity_data.empty()) {
-    web_data_backend_->NotifyOfMultipleAutofillChanges();
+    web_data_backend_->NotifyOfMultipleAutofillChanges(
+        syncer::AUTOFILL_WALLET_USAGE);
   }
 
   return change_processor()->GetError();
@@ -184,7 +186,8 @@ void AutofillWalletUsageDataSyncBridge::ApplyDisableSyncChanges(
         {FROM_HERE, "Failed to delete usage data from table."});
   }
   web_data_backend_->CommitChanges();
-  web_data_backend_->NotifyOfMultipleAutofillChanges();
+  web_data_backend_->NotifyOfMultipleAutofillChanges(
+      syncer::AUTOFILL_WALLET_USAGE);
 }
 
 bool AutofillWalletUsageDataSyncBridge::IsEntityDataValid(

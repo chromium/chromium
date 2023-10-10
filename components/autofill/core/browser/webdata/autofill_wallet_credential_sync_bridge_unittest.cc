@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/data_type_activation_request.h"
@@ -254,7 +255,8 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest,
   EXPECT_CALL(mock_processor(), Delete).Times(0);
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(backend(), CommitChanges());
-  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges());
+  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges(
+                             syncer::AUTOFILL_WALLET_CREDENTIAL));
 
   EXPECT_EQ(
       bridge()->ApplyIncrementalSyncChanges(
@@ -286,7 +288,8 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest,
   EXPECT_CALL(mock_processor(), Delete).Times(0);
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(backend(), CommitChanges());
-  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges());
+  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges(
+                             syncer::AUTOFILL_WALLET_CREDENTIAL));
 
   EXPECT_EQ(
       bridge()->ApplyIncrementalSyncChanges(
@@ -321,7 +324,8 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest,
   EXPECT_CALL(mock_processor(), Delete).Times(0);
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(backend(), CommitChanges());
-  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges());
+  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges(
+                             syncer::AUTOFILL_WALLET_CREDENTIAL));
 
   EXPECT_EQ(
       bridge()->ApplyIncrementalSyncChanges(
@@ -339,7 +343,9 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, ServerCvcChanged_Add) {
   EXPECT_CALL(mock_processor(), Delete).Times(0);
   EXPECT_CALL(mock_processor(), Put).Times(1);
   EXPECT_CALL(backend(), CommitChanges()).Times(0);
-  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges()).Times(0);
+  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges(
+                             syncer::AUTOFILL_WALLET_CREDENTIAL))
+      .Times(0);
 
   const ServerCvc server_cvc =
       ServerCvc(1, u"123", base::Time::UnixEpoch() + base::Milliseconds(25000));
@@ -357,7 +363,9 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, ServerCvcChanged_Update) {
   EXPECT_CALL(mock_processor(), Delete).Times(0);
   EXPECT_CALL(mock_processor(), Put).Times(1);
   EXPECT_CALL(backend(), CommitChanges()).Times(0);
-  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges()).Times(0);
+  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges(
+                             syncer::AUTOFILL_WALLET_CREDENTIAL))
+      .Times(0);
 
   const ServerCvc server_cvc =
       ServerCvc(1, u"123", base::Time::UnixEpoch() + base::Milliseconds(25000));
@@ -375,7 +383,9 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, ServerCvcChanged_Remove) {
   EXPECT_CALL(mock_processor(), Delete).Times(1);
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(backend(), CommitChanges()).Times(0);
-  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges()).Times(0);
+  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges(
+                             syncer::AUTOFILL_WALLET_CREDENTIAL))
+      .Times(0);
 
   const ServerCvc server_cvc =
       ServerCvc(1, u"123", base::Time::UnixEpoch() + base::Milliseconds(25000));
@@ -398,7 +408,8 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, ApplyDisableSyncChanges) {
   EXPECT_CALL(mock_processor(), Delete).Times(0);
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(backend(), CommitChanges());
-  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges());
+  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges(
+                             syncer::AUTOFILL_WALLET_CREDENTIAL));
 
   bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
 
@@ -471,7 +482,9 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest,
   EXPECT_CALL(mock_processor(), Delete).Times(1);
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(backend(), CommitChanges()).Times(0);
-  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges()).Times(0);
+  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges(
+                             syncer::AUTOFILL_WALLET_CREDENTIAL))
+      .Times(0);
 
   bridge()->CreditCardChanged(
       CreditCardChange(CreditCardChange::REMOVE, card1.server_id(), card1));
@@ -498,7 +511,9 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest,
   EXPECT_CALL(mock_processor(), Delete).Times(0);
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(backend(), CommitChanges()).Times(0);
-  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges()).Times(0);
+  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges(
+                             syncer::AUTOFILL_WALLET_CREDENTIAL))
+      .Times(0);
 
   bridge()->CreditCardChanged(
       CreditCardChange(CreditCardChange::UPDATE, card1.server_id(), card1));

@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
@@ -693,7 +694,8 @@ AutofillWalletMetadataSyncBridge::MergeRemoteChanges(
   web_data_backend_->CommitChanges();
 
   if (is_any_local_modified) {
-    web_data_backend_->NotifyOfMultipleAutofillChanges();
+    web_data_backend_->NotifyOfMultipleAutofillChanges(
+        syncer::AUTOFILL_WALLET_METADATA);
   }
 
   return change_processor()->GetError();

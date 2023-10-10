@@ -248,7 +248,7 @@ class AutofillWebDataService : public WebDataServiceBase {
  protected:
   ~AutofillWebDataService() override;
 
-  void NotifyAutofillMultipleChangedOnUISequence();
+  void NotifyAutofillMultipleChangedOnUISequence(syncer::ModelType model_type);
   void NotifyAutofillAddressConversionCompletedOnUISequence();
   void NotifySyncStartedOnUISequence(syncer::ModelType model_type);
   void NotifyOnSyncUpdatesReceivedOnUISequence(syncer::ModelType model_type);

@@ -53,7 +53,8 @@ class AutofillWebDataBackendImpl
       scoped_refptr<WebDatabaseBackend> web_database_backend,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       scoped_refptr<base::SequencedTaskRunner> db_task_runner,
-      const base::RepeatingClosure& on_changed_callback,
+      const base::RepeatingCallback<void(syncer::ModelType)>&
+          on_changed_callback,
       const base::RepeatingClosure& on_address_conversion_completed_callback,
       const base::RepeatingCallback<void(syncer::ModelType)>&
           on_sync_started_callback,
@@ -77,7 +78,7 @@ class AutofillWebDataBackendImpl
   void NotifyOfAutofillProfileChanged(
       const AutofillProfileChange& change) override;
   void NotifyOfCreditCardChanged(const CreditCardChange& change) override;
-  void NotifyOfMultipleAutofillChanges() override;
+  void NotifyOfMultipleAutofillChanges(syncer::ModelType model_type) override;
   void NotifyOfAddressConversionCompleted() override;
   void NotifyThatSyncHasStarted(syncer::ModelType model_type) override;
   void NotifyOnSyncUpdatesReceived(syncer::ModelType model_type) override;
@@ -294,7 +295,7 @@ class AutofillWebDataBackendImpl
   // TODO(caitkp): Make it so nobody but us needs direct DB access anymore.
   scoped_refptr<WebDatabaseBackend> web_database_backend_;
 
-  base::RepeatingClosure on_changed_callback_;
+  base::RepeatingCallback<void(syncer::ModelType)> on_changed_callback_;
   base::RepeatingClosure on_address_conversion_completed_callback_;
   base::RepeatingCallback<void(syncer::ModelType)> on_sync_started_callback_;
   base::RepeatingCallback<void(syncer::ModelType)>

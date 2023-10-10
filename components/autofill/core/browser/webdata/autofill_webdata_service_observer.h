@@ -39,7 +39,7 @@ class AutofillWebDataServiceObserverOnUISequence {
  public:
   // Called on UI sequence when multiple Autofill entries have been modified by
   // Sync.
-  virtual void AutofillMultipleChangedBySync() {}
+  virtual void AutofillMultipleChangedBySync(syncer::ModelType model_type) {}
 
   virtual void AutofillAddressConversionCompleted() {}
 

@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/sync/base/hash_util.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -274,7 +275,8 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, MergeFullSyncData_NewData) {
                                          &offer_specifics);
 
   EXPECT_CALL(*backend(), CommitChanges());
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges());
+  EXPECT_CALL(*backend(),
+              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_OFFER));
   StartSyncing({offer_specifics});
 
   // Only the server offer should be present on the client.
@@ -290,7 +292,8 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, MergeFullSyncData_NoData) {
   table()->SetAutofillOffers({client_data});
 
   EXPECT_CALL(*backend(), CommitChanges());
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges());
+  EXPECT_CALL(*backend(),
+              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_OFFER));
   StartSyncing({});
 
   EXPECT_TRUE(GetAllLocalData().empty());
@@ -307,7 +310,8 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, MergeFullSyncData_LogDataValidity) {
   offer_specifics2.clear_id();
 
   EXPECT_CALL(*backend(), CommitChanges());
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges());
+  EXPECT_CALL(*backend(),
+              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_OFFER));
   base::HistogramTester histogram_tester;
   StartSyncing({offer_specifics1, offer_specifics2});
 
@@ -325,7 +329,8 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, ApplyDisableSyncChanges) {
   table()->SetAutofillOffers({client_data});
 
   EXPECT_CALL(*backend(), CommitChanges());
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges());
+  EXPECT_CALL(*backend(),
+              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_OFFER));
 
   bridge()->ApplyDisableSyncChanges(/*delete_metadata_change_list=*/
                                     std::make_unique<

@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/sync/base/model_type.h"
 #include "components/webdata/common/web_database_backend.h"
 
 using base::Time;
@@ -126,7 +127,7 @@ AutofillWebDataBackendImpl::AutofillWebDataBackendImpl(
     scoped_refptr<WebDatabaseBackend> web_database_backend,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     scoped_refptr<base::SequencedTaskRunner> db_task_runner,
-    const base::RepeatingClosure& on_changed_callback,
+    const base::RepeatingCallback<void(syncer::ModelType)>& on_changed_callback,
     const base::RepeatingClosure& on_address_conversion_completed_callback,
     const base::RepeatingCallback<void(syncer::ModelType)>&
         on_sync_started_callback,
@@ -212,11 +213,13 @@ void AutofillWebDataBackendImpl::NotifyOfCreditCardChanged(
     db_observer.CreditCardChanged(change);
 }
 
-void AutofillWebDataBackendImpl::NotifyOfMultipleAutofillChanges() {
+void AutofillWebDataBackendImpl::NotifyOfMultipleAutofillChanges(
+    syncer::ModelType model_type) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
 
   // UI sequence notification.
-  ui_task_runner_->PostTask(FROM_HERE, on_changed_callback_);
+  ui_task_runner_->PostTask(FROM_HERE,
+                            base::BindOnce(on_changed_callback_, model_type));
 }
 
 void AutofillWebDataBackendImpl::NotifyOfAddressConversionCompleted() {

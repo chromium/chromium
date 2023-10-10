@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
@@ -219,7 +220,8 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplyIncrementalSyncChanges) {
   EXPECT_CALL(mock_processor(), Delete).Times(0);
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(backend(), CommitChanges());
-  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges());
+  EXPECT_CALL(backend(),
+              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_USAGE));
 
   // `ApplyIncrementalSyncChanges()` returns an error if it fails.
   EXPECT_FALSE(bridge()->ApplyIncrementalSyncChanges(
@@ -244,7 +246,8 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplyIncrementalSyncChanges) {
   EXPECT_CALL(mock_processor(), Delete).Times(0);
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(backend(), CommitChanges());
-  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges());
+  EXPECT_CALL(backend(),
+              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_USAGE));
 
   // `ApplyIncrementalSyncChanges()` returns an error if it fails.
   EXPECT_FALSE(bridge()->ApplyIncrementalSyncChanges(
@@ -269,7 +272,8 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplyDisableSyncChanges) {
             absl::nullopt);
 
   EXPECT_CALL(backend(), CommitChanges());
-  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges());
+  EXPECT_CALL(backend(),
+              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_USAGE));
 
   bridge()->ApplyDisableSyncChanges(/*delete_metadata_change_list=*/
                                     bridge()->CreateMetadataChangeList());
