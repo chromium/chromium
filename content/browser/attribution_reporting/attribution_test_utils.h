@@ -26,7 +26,6 @@
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
-#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/send_result.h"
@@ -53,6 +52,7 @@ class TriggerVerification;
 namespace content {
 
 class AttributionManager;
+class AttributionTrigger;
 
 enum class RateLimitResult : int;
 
@@ -338,12 +338,6 @@ bool operator==(const AttributionReport::NullAggregatableData& a,
 bool operator==(const AttributionReport& a, const AttributionReport& b);
 
 bool operator==(const SendResult& a, const SendResult& b);
-
-std::ostream& operator<<(std::ostream& out,
-                         AttributionTrigger::EventLevelResult status);
-
-std::ostream& operator<<(std::ostream& out,
-                         AttributionTrigger::AggregatableResult status);
 
 std::ostream& operator<<(std::ostream& out, RateLimitResult result);
 
