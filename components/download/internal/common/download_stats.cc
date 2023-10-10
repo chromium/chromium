@@ -229,17 +229,6 @@ void RecordDangerousDownloadAccept(DownloadDangerType danger_type,
                                    const base::FilePath& file_path) {
   UMA_HISTOGRAM_ENUMERATION("Download.UserValidatedDangerousDownload",
                             danger_type, DOWNLOAD_DANGER_TYPE_MAX);
-#if (BUILDFLAG(FULL_SAFE_BROWSING) || BUILDFLAG(SAFE_BROWSING_DB_REMOTE)) && \
-    !BUILDFLAG(IS_FUCHSIA)
-  // This can only be recorded for certain platforms, since the enum used for
-  // file types is provided by safe_browsing::FileTypePolicies.
-  if (danger_type == DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE) {
-    base::UmaHistogramSparse(
-        "Download.DangerousFile.DownloadValidatedByType",
-        safe_browsing::FileTypePolicies::GetInstance()->UmaValueForFile(
-            file_path));
-  }
-#endif
 }
 
 namespace {

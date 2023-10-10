@@ -297,16 +297,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.DangerousFile.DownloadValidatedByType"
-    enum="SBClientDownloadExtensions" expires_after="2023-10-08">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    User chose to save a download which was marked DANGEROUS_FILE. Grouped by
-    the type of file.
-  </summary>
-</histogram>
-
 <histogram name="Download.Database.IsAvailable" enum="BooleanAvailable"
     expires_after="never">
 <!-- expires-never: Helpful to track download database issue. -->
