@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/internet_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/internet/internet_section.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/hotspot_config_service.h"
@@ -16,9 +16,9 @@
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/cellular_setup_localized_strings_provider.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/internet/internet_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/extension_control_handler.h"
-#include "chrome/browser/ui/webui/settings/ash/internet_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
@@ -657,8 +657,9 @@ std::string GetDetailsSubpageUrl(const std::string& url_to_modify,
 }
 
 bool AllowAddESim(const network_config::mojom::GlobalPolicyPtr& global_policy) {
-  if (HermesManagerClient::Get()->GetAvailableEuiccs().size() == 0)
+  if (HermesManagerClient::Get()->GetAvailableEuiccs().size() == 0) {
     return false;
+  }
 
   return !global_policy->allow_only_policy_cellular_networks;
 }
@@ -666,8 +667,9 @@ bool AllowAddESim(const network_config::mojom::GlobalPolicyPtr& global_policy) {
 absl::optional<std::string> GetCellularActiveSimIccid(
     const network_config::mojom::DeviceStatePropertiesPtr& device) {
   for (const auto& sim_info : *device->sim_infos) {
-    if (sim_info->is_primary)
+    if (sim_info->is_primary) {
       return sim_info->iccid;
+    }
   }
   return absl::nullopt;
 }
@@ -1314,20 +1316,25 @@ std::string InternetSection::ModifySearchResultUrl(
   std::string modified_url =
       OsSettingsSection::ModifySearchResultUrl(type, id, url_to_modify);
 
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kEthernetDetails))
+  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kEthernetDetails)) {
     return GetDetailsSubpageUrl(modified_url, *connected_ethernet_guid_);
+  }
 
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kWifiDetails))
+  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kWifiDetails)) {
     return GetDetailsSubpageUrl(modified_url, *connected_wifi_guid_);
+  }
 
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kCellularDetails))
+  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kCellularDetails)) {
     return GetDetailsSubpageUrl(modified_url, *active_cellular_guid_);
+  }
 
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kTetherDetails))
+  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kTetherDetails)) {
     return GetDetailsSubpageUrl(modified_url, *connected_tether_guid_);
+  }
 
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kVpnDetails))
+  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kVpnDetails)) {
     return GetDetailsSubpageUrl(modified_url, *connected_vpn_guid_);
+  }
 
   // Use default implementation.
   return modified_url;
@@ -1419,10 +1426,11 @@ void InternetSection::OnDeviceList(
     switch (device->type) {
       case NetworkType::kWiFi:
         updater.AddSearchTags(GetWifiSearchConcepts());
-        if (device->device_state == DeviceStateType::kEnabled)
+        if (device->device_state == DeviceStateType::kEnabled) {
           updater.AddSearchTags(GetWifiOnSearchConcepts());
-        else if (device->device_state == DeviceStateType::kDisabled)
+        } else if (device->device_state == DeviceStateType::kDisabled) {
           updater.AddSearchTags(GetWifiOffSearchConcepts());
+        }
         break;
 
       case NetworkType::kCellular:
@@ -1443,10 +1451,11 @@ void InternetSection::OnDeviceList(
 
       case NetworkType::kTether:
         updater.AddSearchTags(GetInstantTetheringSearchConcepts());
-        if (device->device_state == DeviceStateType::kEnabled)
+        if (device->device_state == DeviceStateType::kEnabled) {
           updater.AddSearchTags(GetInstantTetheringOnSearchConcepts());
-        else if (device->device_state == DeviceStateType::kDisabled)
+        } else if (device->device_state == DeviceStateType::kDisabled) {
           updater.AddSearchTags(GetInstantTetheringOffSearchConcepts());
+        }
         break;
 
       case NetworkType::kEthernet:
@@ -1516,8 +1525,9 @@ void InternetSection::OnNetworkList(
       }
     }
 
-    if (!IsConnected(network->connection_state))
+    if (!IsConnected(network->connection_state)) {
       continue;
+    }
 
     switch (network->type) {
       case NetworkType::kEthernet:
@@ -1528,16 +1538,20 @@ void InternetSection::OnNetworkList(
       case NetworkType::kWiFi:
         connected_wifi_guid_ = network->guid;
         updater.AddSearchTags(GetWifiConnectedSearchConcepts());
-        if (base::FeatureList::IsEnabled(::features::kMeteredShowToggle))
+        if (base::FeatureList::IsEnabled(::features::kMeteredShowToggle)) {
           updater.AddSearchTags(GetWifiMeteredSearchConcepts());
-        if (base::FeatureList::IsEnabled(::features::kShowHiddenNetworkToggle))
+        }
+        if (base::FeatureList::IsEnabled(
+                ::features::kShowHiddenNetworkToggle)) {
           updater.AddSearchTags(GetWifiHiddenSearchConcepts());
+        }
         break;
 
       case NetworkType::kCellular:
         updater.AddSearchTags(GetCellularConnectedSearchConcepts());
-        if (base::FeatureList::IsEnabled(::features::kMeteredShowToggle))
+        if (base::FeatureList::IsEnabled(::features::kMeteredShowToggle)) {
           updater.AddSearchTags(GetCellularMeteredSearchConcepts());
+        }
         break;
 
       case NetworkType::kTether:

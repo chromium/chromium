@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/internet_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/internet/internet_handler.h"
 
 #include <memory>
 #include <vector>
@@ -67,13 +67,15 @@ InternetHandler::InternetHandler(Profile* profile) : profile_(profile) {
   gms_core_notifications_state_tracker_ =
       tether_service ? tether_service->GetGmsCoreNotificationsStateTracker()
                      : nullptr;
-  if (gms_core_notifications_state_tracker_)
+  if (gms_core_notifications_state_tracker_) {
     gms_core_notifications_state_tracker_->AddObserver(this);
+  }
 }
 
 InternetHandler::~InternetHandler() {
-  if (gms_core_notifications_state_tracker_)
+  if (gms_core_notifications_state_tracker_) {
     gms_core_notifications_state_tracker_->RemoveObserver(this);
+  }
 }
 
 void InternetHandler::RegisterMessages() {
@@ -255,12 +257,14 @@ void InternetHandler::SetGmsCoreNotificationsDisabledDeviceNames() {
 }
 
 void InternetHandler::SendGmsCoreNotificationsDisabledDeviceNames() {
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     return;
+  }
 
   base::Value::List device_names_value;
-  for (const auto& device_name : device_names_without_notifications_)
+  for (const auto& device_name : device_names_without_notifications_) {
     device_names_value.Append(device_name.Clone());
+  }
 
   FireWebUIListener(kSendGmsCoreNotificationsDisabledDeviceNames,
                     device_names_value);
@@ -273,8 +277,9 @@ gfx::NativeWindow InternetHandler::GetNativeWindow() {
 void InternetHandler::SetGmsCoreNotificationsStateTrackerForTesting(
     tether::GmsCoreNotificationsStateTracker*
         gms_core_notifications_state_tracker) {
-  if (gms_core_notifications_state_tracker_)
+  if (gms_core_notifications_state_tracker_) {
     gms_core_notifications_state_tracker_->RemoveObserver(this);
+  }
 
   gms_core_notifications_state_tracker_ = gms_core_notifications_state_tracker;
   gms_core_notifications_state_tracker_->AddObserver(this);
