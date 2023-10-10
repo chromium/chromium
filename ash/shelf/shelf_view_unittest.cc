@@ -4055,12 +4055,11 @@ TEST_F(ShelfViewPromiseAppTest, AppStatusReflectsOnProgressIndicator) {
 
   ProgressIndicator* progress_indicator = button->GetProgressIndicatorForTest();
   ASSERT_TRUE(progress_indicator);
-
   // Change app status to installing and send a progress update. Verify that the
   // progress indicator correctly reflects the progress.
   EXPECT_EQ(button->progress(), -1.0f);
   EXPECT_EQ(button->app_status(), AppStatus::kPending);
-  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, absl::nullopt);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.0f);
 
   // Start install progress bar.
   item.app_status = AppStatus::kInstalling;
@@ -4073,28 +4072,28 @@ TEST_F(ShelfViewPromiseAppTest, AppStatusReflectsOnProgressIndicator) {
 
   // Change app status back to pending state. Verify that even if the item had
   // progress previously associated to it, the progress indicator reflects as
-  // indeterminate progress since it is pending.
+  // 0 progress since it is pending.
   item.app_status = AppStatus::kPending;
   model_->Set(index, item);
   EXPECT_EQ(item.progress, 0.3f);
   EXPECT_EQ(button->progress(), 0.3f);
   EXPECT_EQ(button->app_status(), AppStatus::kPending);
-  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, absl::nullopt);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.0f);
 
   // Send another progress update. Since the app status is still pending, the
-  // progress indicator still be indeterminate
+  // progress indicator still be 0.
   item.progress = 0.7f;
   model_->Set(index, item);
   EXPECT_EQ(item.progress, 0.7f);
   EXPECT_EQ(button->progress(), 0.7f);
   EXPECT_EQ(button->app_status(), AppStatus::kPending);
-  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, absl::nullopt);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.0f);
 
   // Set the last status update to kReady as if the app had finished installing.
   item.app_status = AppStatus::kReady;
   model_->Set(index, item);
   EXPECT_EQ(button->app_status(), AppStatus::kReady);
-  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, absl::nullopt);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.0f);
 }
 
 }  // namespace ash

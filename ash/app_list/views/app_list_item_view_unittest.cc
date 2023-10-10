@@ -477,7 +477,7 @@ TEST_P(AppListItemViewTest, AppStatusReflectsOnProgressIndicator) {
   ProgressIndicator* progress_indicator = view->GetProgressIndicatorForTest();
 
   EXPECT_EQ(view->item()->progress(), -1.0f);
-  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, absl::nullopt);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.0f);
 
   // Change app status to installing and send a progress update. Verify that the
   // progress indicator correctly reflects the progress.
@@ -488,16 +488,16 @@ TEST_P(AppListItemViewTest, AppStatusReflectsOnProgressIndicator) {
 
   // Change app status back to pending state. Verify that even if the item had
   // progress previously associated to it, the progress indicator reflects as
-  // indeterminate progress since it is pending.
+  // 0 progress since it is pending.
   item->UpdateAppStatusForTesting(AppStatus::kPending);
   EXPECT_EQ(view->item()->progress(), 0.3f);
-  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, absl::nullopt);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.0f);
 
   // Send another progress update. Since the app status is still pending, the
-  // progress indicator still be indeterminate
+  // progress indicator still be 0
   item->SetProgress(0.8f);
   EXPECT_EQ(view->item()->progress(), 0.8f);
-  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, absl::nullopt);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.0f);
 
   // Set the last status update to kInstallSuccess as if the app had finished
   // installing.

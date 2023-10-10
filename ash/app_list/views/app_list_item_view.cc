@@ -1844,7 +1844,7 @@ void AppListItemView::ItemProgressUpdated() {
         ProgressIndicator::CreateDefaultInstance(base::BindRepeating(
             [](AppListItemView* view) -> absl::optional<float> {
               if (view->item()->app_status() == AppStatus::kPending) {
-                return absl::nullopt;
+                return 0.0f;
               }
               // If download is in-progress, return the progress as a decimal.
               // Otherwise, the progress indicator shouldn't be painted.
