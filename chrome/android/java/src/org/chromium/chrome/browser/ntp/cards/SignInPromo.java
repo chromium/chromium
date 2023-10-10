@@ -111,7 +111,7 @@ public abstract class SignInPromo {
 
     private void updateVisibility() {
         final boolean isAccountsCachePopulated =
-                AccountManagerFacadeProvider.getInstance().getAccounts().isFulfilled();
+                AccountManagerFacadeProvider.getInstance().getCoreAccountInfos().isFulfilled();
         boolean canShowPersonalizedSigninPromo = mSigninManager.isSigninAllowed()
                 && mCanShowPersonalizedSuggestions && isAccountsCachePopulated
                 && mSigninManager.isSigninSupported(/*requireUpdatedPlayServices=*/true);
