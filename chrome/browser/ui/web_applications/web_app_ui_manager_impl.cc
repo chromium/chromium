@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/commands/launch_web_app_command.h"
+#include "chrome/browser/ui/web_applications/isolated_web_apps/isolated_web_app_installer_coordinator.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -465,7 +466,21 @@ void WebAppUiManagerImpl::PresentUserUninstallDialog(
 
 void WebAppUiManagerImpl::LaunchIsolatedWebAppInstaller(
     const base::FilePath& bundle_path) {
-  // TODO(crbug.com/1479140): Launch the UI.
+  auto installer = std::make_unique<IsolatedWebAppInstallerCoordinator>(
+      profile_, bundle_path);
+  IsolatedWebAppInstallerCoordinator* installer_ptr = installer.get();
+  isolated_web_app_installers_.insert(std::move(installer));
+
+  installer_ptr->Show(base::BindOnce(
+      &WebAppUiManagerImpl::OnIsolatedWebAppInstallerClosed,
+      weak_ptr_factory_.GetWeakPtr(), base::Unretained(installer_ptr)));
+}
+
+void WebAppUiManagerImpl::OnIsolatedWebAppInstallerClosed(
+    IsolatedWebAppInstallerCoordinator* installer,
+    absl::optional<webapps::AppId> result) {
+  isolated_web_app_installers_.erase(
+      isolated_web_app_installers_.find(installer));
 }
 
 void WebAppUiManagerImpl::OnBrowserAdded(Browser* browser) {
