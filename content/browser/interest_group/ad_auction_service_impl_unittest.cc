@@ -66,6 +66,7 @@
 #include "content/test/test_content_browser_client.h"
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -829,23 +830,26 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     run_loop.Run();
 
     // Pipe should not have been closed - if it is expected to be closed, use
-    // JoinInterestGroupAndExpectPipeClosed().
+    // JoinInterestGroupAndExpectBadMessage().
     EXPECT_TRUE(interest_service.is_bound());
     EXPECT_TRUE(interest_service.is_connected());
   }
 
-  // Attempt to join an interest group and expect the Mojo pipe to be closed.
-  // This happens when an operation should have been rejected in the renderer,
-  // so should only happen if the renderer has been compromised.
+  // Attempts to join an interest group and expects the pipe to be closed and
+  // the passed in bad message Mojo error to be recorded. This happens when an
+  // operation should have been rejected in the renderer, so should only happen
+  // if the renderer has been compromised.
   //
   // If `rfh` is nullptr, uses the main frame.
-  void JoinInterestGroupAndExpectPipeClosed(
+  void JoinInterestGroupAndExpectBadMessage(
       const blink::InterestGroup& interest_group,
+      base::StringPiece expected_bad_message,
       RenderFrameHost* rfh = nullptr) {
     mojo::Remote<blink::mojom::AdAuctionService> interest_service;
     AdAuctionServiceImpl::CreateMojoService(
         rfh ? rfh : main_rfh(), interest_service.BindNewPipeAndPassReceiver());
 
+    mojo::test::BadMessageObserver observer;
     base::RunLoop run_loop;
     interest_service.set_disconnect_handler(run_loop.QuitClosure());
     interest_service->JoinInterestGroup(
@@ -853,6 +857,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
           ADD_FAILURE() << "This callback should not be invoked.";
         }));
     run_loop.Run();
+    EXPECT_EQ(expected_bad_message, observer.WaitForBadMessage());
   }
 
   // Analogous to JoinInterestGroupAndFlush(), but leaves an interest
@@ -872,20 +877,23 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     run_loop.Run();
 
     // Pipe should not have been closed - if it is expected to be closed, use
-    // LeaveInterestGroupAndExpectPipeClosed().
+    // LeaveInterestGroupAndExpectBadMessage().
     EXPECT_TRUE(interest_service.is_bound());
     EXPECT_TRUE(interest_service.is_connected());
   }
 
-  // Analogous to JoinInterestGroupAndExpectPipeClosed(), but leaves an interest
+  // Analogous to JoinInterestGroupAndExpectBadMessage(), but leaves an interest
   // group instead of joining one.
-  void LeaveInterestGroupAndExpectPipeClosed(const url::Origin& owner,
-                                             const std::string& name,
-                                             RenderFrameHost* rfh = nullptr) {
+  void LeaveInterestGroupAndExpectBadMessage(
+      const url::Origin& owner,
+      const std::string& name,
+      base::StringPiece expected_bad_message,
+      RenderFrameHost* rfh = nullptr) {
     mojo::Remote<blink::mojom::AdAuctionService> interest_service;
     AdAuctionServiceImpl::CreateMojoService(
         rfh ? rfh : main_rfh(), interest_service.BindNewPipeAndPassReceiver());
 
+    mojo::test::BadMessageObserver observer;
     base::RunLoop run_loop;
     interest_service.set_disconnect_handler(run_loop.QuitClosure());
     interest_service->LeaveInterestGroup(
@@ -893,18 +901,21 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
           ADD_FAILURE() << "This callback should not be invoked.";
         }));
     run_loop.Run();
+    EXPECT_EQ(expected_bad_message, observer.WaitForBadMessage());
   }
 
   // Calls ClearOriginJoinedInterestGroups() with the provided parameters, and
-  // expects the pipe to be closed, as happens when the renderer makes an
-  // invalid call.
-  void ClearOriginJoinedInterestGroupsAndExpectPipeClosed(
+  // expects the pipe to be closed and the passed in bad message Mojo error to
+  // be recorded.
+  void ClearOriginJoinedInterestGroupsAndExpectBadMessage(
       const url::Origin& owner,
+      const base::StringPiece expected_bad_message,
       RenderFrameHost* rfh = nullptr) {
     mojo::Remote<blink::mojom::AdAuctionService> interest_service;
     AdAuctionServiceImpl::CreateMojoService(
         rfh ? rfh : main_rfh(), interest_service.BindNewPipeAndPassReceiver());
 
+    mojo::test::BadMessageObserver observer;
     base::RunLoop run_loop;
     interest_service.set_disconnect_handler(run_loop.QuitClosure());
     interest_service->ClearOriginJoinedInterestGroups(
@@ -913,6 +924,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
           ADD_FAILURE() << "This callback should not be invoked.";
         }));
     run_loop.Run();
+    EXPECT_EQ(expected_bad_message, observer.WaitForBadMessage());
   }
 
   // Updates registered interest groups according to their registered update
@@ -1110,12 +1122,18 @@ TEST_F(AdAuctionServiceImplTest, JoinInterestGroupFrameNotHttps) {
 
   // Try to join an HTTPS interest group.
   blink::InterestGroup interest_group = CreateInterestGroup();
-  JoinInterestGroupAndExpectPipeClosed(interest_group);
+  JoinInterestGroupAndExpectBadMessage(
+      interest_group,
+      "Unexpected request: Interest groups may only be joined or left from "
+      "https origins");
   EXPECT_EQ(0, GetJoinCount(interest_group.owner, kInterestGroupName));
 
   // Try to join a same-origin HTTP interest group.
   interest_group.owner = kHttpOriginA;
-  JoinInterestGroupAndExpectPipeClosed(interest_group);
+  JoinInterestGroupAndExpectBadMessage(
+      interest_group,
+      "Validation failed for blink.mojom.AdAuctionService.4  "
+      "[VALIDATION_ERROR_DESERIALIZATION_FAILED]");
   EXPECT_EQ(0, GetJoinCount(kHttpOriginA, kInterestGroupName));
 }
 
@@ -1123,12 +1141,18 @@ TEST_F(AdAuctionServiceImplTest, JoinInterestGroupFrameNotHttps) {
 TEST_F(AdAuctionServiceImplTest, JoinInterestGroupOwnerNotHttps) {
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.owner = url::Origin::Create(GURL("http://a.test/"));
-  JoinInterestGroupAndExpectPipeClosed(interest_group);
+  JoinInterestGroupAndExpectBadMessage(
+      interest_group,
+      "Validation failed for blink.mojom.AdAuctionService.4  "
+      "[VALIDATION_ERROR_DESERIALIZATION_FAILED]");
   EXPECT_EQ(0, GetJoinCount(interest_group.owner, kInterestGroupName));
 
   // Secure, but not HTTPS.
   interest_group.owner = url::Origin::Create(GURL("wss://a.test/"));
-  JoinInterestGroupAndExpectPipeClosed(interest_group);
+  JoinInterestGroupAndExpectBadMessage(
+      interest_group,
+      "Validation failed for blink.mojom.AdAuctionService.4  "
+      "[VALIDATION_ERROR_DESERIALIZATION_FAILED]");
   EXPECT_EQ(0, GetJoinCount(interest_group.owner, kInterestGroupName));
 }
 
@@ -1141,19 +1165,28 @@ TEST_F(AdAuctionServiceImplTest, JoinInterestGroupDisallowedUrls) {
   // Test `bidding_url`.
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.bidding_url = kBadUrl;
-  JoinInterestGroupAndExpectPipeClosed(interest_group);
+  JoinInterestGroupAndExpectBadMessage(
+      interest_group,
+      "Validation failed for blink.mojom.AdAuctionService.4  "
+      "[VALIDATION_ERROR_DESERIALIZATION_FAILED]");
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
 
   // Test `update_url`.
   interest_group = CreateInterestGroup();
   interest_group.update_url = kBadUrl;
-  JoinInterestGroupAndExpectPipeClosed(interest_group);
+  JoinInterestGroupAndExpectBadMessage(
+      interest_group,
+      "Validation failed for blink.mojom.AdAuctionService.4  "
+      "[VALIDATION_ERROR_DESERIALIZATION_FAILED]");
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
 
   // Test `trusted_bidding_signals_url`.
   interest_group = CreateInterestGroup();
   interest_group.trusted_bidding_signals_url = kBadUrl;
-  JoinInterestGroupAndExpectPipeClosed(interest_group);
+  JoinInterestGroupAndExpectBadMessage(
+      interest_group,
+      "Validation failed for blink.mojom.AdAuctionService.4  "
+      "[VALIDATION_ERROR_DESERIALIZATION_FAILED]");
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
 }
 
@@ -1218,7 +1251,10 @@ TEST_F(AdAuctionServiceImplTest, JoinMassiveInterestGroupFails) {
   blink::InterestGroup interest_group = CreateInterestGroup();
   // 1 MiB of '5' characters is over the size limit.
   interest_group.user_bidding_signals = std::string(1024 * 1024, '5');
-  JoinInterestGroupAndExpectPipeClosed(interest_group);
+  JoinInterestGroupAndExpectBadMessage(
+      interest_group,
+      "Validation failed for blink.mojom.AdAuctionService.4  "
+      "[VALIDATION_ERROR_DESERIALIZATION_FAILED]");
 
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
   std::vector<StorageInterestGroup> groups =
@@ -1234,8 +1270,12 @@ TEST_F(AdAuctionServiceImplTest, LeaveClearInterestGroupOriginNotHttps) {
   const url::Origin kHttpOrigin = url::Origin::Create(kHttpUrl);
 
   NavigateAndCommit(kUrlA);
-  LeaveInterestGroupAndExpectPipeClosed(kHttpOrigin, kInterestGroupName);
-  ClearOriginJoinedInterestGroupsAndExpectPipeClosed(kHttpOrigin);
+  LeaveInterestGroupAndExpectBadMessage(
+      kHttpOrigin, kInterestGroupName,
+      "Unexpected request: Interest groups may only be owned by https origins");
+  ClearOriginJoinedInterestGroupsAndExpectBadMessage(
+      kHttpOrigin,
+      "Unexpected request: Interest groups may only be owned by https origins");
 }
 
 // Non-HTTPS interest origins should not be able to leave groups should be
@@ -1251,13 +1291,19 @@ TEST_F(AdAuctionServiceImplTest, LeaveClearInterestGroupFrameNotHttps) {
   // Navigate to an HTTP origin and try to leave a group with an HTTPS owner.
   // The request should be rejected.
   NavigateAndCommit(kHttpUrl);
-  LeaveInterestGroupAndExpectPipeClosed(kOriginA, kInterestGroupName);
+  LeaveInterestGroupAndExpectBadMessage(
+      kOriginA, kInterestGroupName,
+      "Unexpected request: Interest groups may only be joined or left from "
+      "https origins");
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   // Clearing shouldn't leave the IG, even if it's incorrectly executed, since
   // the joining origin is wrong, but still make sure there's no effect, just in
   // case.
-  ClearOriginJoinedInterestGroupsAndExpectPipeClosed(kOriginA);
+  ClearOriginJoinedInterestGroupsAndExpectBadMessage(
+      kOriginA,
+      "Unexpected request: Interest groups may only be joined or left from "
+      "https origins");
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 }
 
@@ -6812,7 +6858,11 @@ TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
   constexpr char kInterestGroupName2[] = "group2";
   interest_group.owner = kOriginC;
   interest_group.name = kInterestGroupName2;
-  JoinInterestGroupAndExpectPipeClosed(std::move(interest_group_2), subframe);
+  JoinInterestGroupAndExpectBadMessage(
+      std::move(interest_group_2),
+      "Unexpected request: Interest groups may only be joined or left when "
+      "feature join-ad-interest-group is enabled by Permissions Policy",
+      subframe);
   EXPECT_EQ(0, GetJoinCount(kOriginC, kInterestGroupName2));
 
   UpdateInterestGroupNoFlushForFrame(subframe);
@@ -6828,10 +6878,18 @@ TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
   EXPECT_EQ(group.bidding_url->spec(),
             base::StringPrintf("%s%s", kOriginStringC, kBiddingUrlPath));
 
-  LeaveInterestGroupAndExpectPipeClosed(kOriginC, kInterestGroupName, subframe);
+  LeaveInterestGroupAndExpectBadMessage(
+      kOriginC, kInterestGroupName,
+      "Unexpected request: Interest groups may only be joined or left when "
+      "feature join-ad-interest-group is enabled by Permissions Policy",
+      subframe);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
 
-  ClearOriginJoinedInterestGroupsAndExpectPipeClosed(kOriginC, subframe);
+  ClearOriginJoinedInterestGroupsAndExpectBadMessage(
+      kOriginC,
+      "Unexpected request: Interest groups may only be joined or left when "
+      "feature join-ad-interest-group is enabled by Permissions Policy",
+      subframe);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
 }
 
