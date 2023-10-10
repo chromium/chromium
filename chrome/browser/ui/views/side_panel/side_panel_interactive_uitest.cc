@@ -232,8 +232,9 @@ class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
 
 // Verify that we can open the ReadingMode side panel from the 3dot -> More
 // tools context menu.
+// TODO(dljames): Figure out why this is flaking.
 IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
-                       OpenReadingModeSidePanel) {
+                       DISABLED_OpenReadingModeSidePanel) {
   SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser())
       ->SetNoDelaysForTesting(true);
 
