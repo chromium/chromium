@@ -29,6 +29,8 @@ class ArcWmMetrics : public aura::EnvObserver, public aura::WindowObserver {
 
   static std::string GetWindowMinimizedTimeHistogramName(ash::AppType app_type);
 
+  static std::string GetArcWindowClosedTimeHistogramName();
+
   // aura::EnvObserver
   void OnWindowInitialized(aura::Window* new_window) override;
 
@@ -39,19 +41,33 @@ class ArcWmMetrics : public aura::EnvObserver, public aura::WindowObserver {
   void OnWindowDestroying(aura::Window* window) override;
 
  private:
+  friend class ArcWmMetricsTest;
+
   class WindowStateChangeObserver;
 
+  class WindowCloseObserver;
+
   void OnOperationCompleted(aura::Window* window);
+
+  void OnWindowCloseRequested(aura::Window* window);
+  void OnWindowCloseCompleted(aura::Window* window);
 
   // The map of windows that being observed by WindowStateChangeObserver and
   // their corresponding observers.
   base::flat_map<aura::Window*, std::unique_ptr<WindowStateChangeObserver>>
       state_change_observing_windows_;
 
+  // The map of windows that being observed by WindowCloseObserver and
+  // their corresponding observers.
+  base::flat_map<aura::Window*, std::unique_ptr<WindowCloseObserver>>
+      close_observing_windows_;
+
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
+
+  base::WeakPtrFactory<ArcWmMetrics> weak_ptr_factory_{this};
 };
 
 }  // namespace arc

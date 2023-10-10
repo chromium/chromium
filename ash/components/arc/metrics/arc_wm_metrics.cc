@@ -13,7 +13,10 @@
 #include "base/strings/strcat.h"
 #include "base/timer/elapsed_timer.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "components/exo/shell_surface_base.h"
+#include "components/exo/shell_surface_util.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/ui_base_types.h"
 
 namespace arc {
@@ -26,6 +29,9 @@ constexpr char kWindowMaximizedTimeHistogramPrefix[] =
 // Histogram of the delay for window minimizing operation.
 constexpr char kWindowMinimizedTimeHistogramPrefix[] =
     "Arc.WM.WindowMinimizedDelayTime.";
+// Histogram of the delay for window closing operation.
+constexpr char kWindowClosedTimeHistogramPrefix[] =
+    "Arc.WM.WindowClosedDelayTime.";
 
 constexpr char kArcHistogramName[] = "ArcApp";
 constexpr char kBrowserHistogramName[] = "Browser";
@@ -117,6 +123,43 @@ class ArcWmMetrics::WindowStateChangeObserver
   base::OnceClosure window_operation_completed_callback_;
 };
 
+// A window observer that records the delay of window closing operation for ARC
+// windows.
+class ArcWmMetrics::WindowCloseObserver : public aura::WindowObserver {
+ public:
+  WindowCloseObserver(aura::Window* window, base::OnceClosure callback)
+      : window_close_completed_callback_(std::move(callback)) {
+    window_observation_.Observe(window);
+  }
+
+  WindowCloseObserver(const WindowCloseObserver&) = delete;
+  WindowCloseObserver& operator=(const WindowCloseObserver) = delete;
+  ~WindowCloseObserver() override = default;
+
+  // aura::WindowObserver:
+  void OnWindowDestroyed(aura::Window* window) override {
+    RecordWindowCloseDelay();
+    std::move(window_close_completed_callback_).Run();
+  }
+
+ private:
+  void RecordWindowCloseDelay() {
+    base::UmaHistogramCustomTimes(
+        ArcWmMetrics::GetArcWindowClosedTimeHistogramName(),
+        window_close_elapsed_timer_.Elapsed(),
+        /*minimum=*/base::Milliseconds(1),
+        /*maximum=*/base::Seconds(2), 100);
+  }
+
+  // Tracks the elapsed time from the window closing operation happens until the
+  // the window is destroyed.
+  base::ElapsedTimer window_close_elapsed_timer_;
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
+
+  base::OnceClosure window_close_completed_callback_;
+};
+
 ArcWmMetrics::ArcWmMetrics() {
   if (aura::Env::HasInstance()) {
     env_observation_.Observe(aura::Env::GetInstance());
@@ -139,9 +182,16 @@ std::string ArcWmMetrics::GetWindowMinimizedTimeHistogramName(
   return base::StrCat({kWindowMinimizedTimeHistogramPrefix, app_type_str});
 }
 
+// static
+std::string ArcWmMetrics::GetArcWindowClosedTimeHistogramName() {
+  const std::string arc_app_type_str = GetAppTypeName(ash::AppType::ARC_APP);
+  return base::StrCat({kWindowClosedTimeHistogramPrefix, arc_app_type_str});
+}
+
 void ArcWmMetrics::OnWindowInitialized(aura::Window* new_window) {
-  if (static_cast<ash::AppType>(new_window->GetProperty(
-          aura::client::kAppType)) == ash::AppType::NON_APP) {
+  ash::AppType app_type = static_cast<ash::AppType>(
+      new_window->GetProperty(aura::client::kAppType));
+  if (app_type == ash::AppType::NON_APP) {
     return;
   }
 
@@ -150,6 +200,17 @@ void ArcWmMetrics::OnWindowInitialized(aura::Window* new_window) {
   }
 
   window_observations_.AddObservation(new_window);
+
+  if (app_type == ash::AppType::ARC_APP) {
+    auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(new_window);
+
+    // |shell_surface_base| can be null in unit tests.
+    if (shell_surface_base) {
+      shell_surface_base->set_pre_close_callback(
+          base::BindRepeating(&ArcWmMetrics::OnWindowCloseRequested,
+                              weak_ptr_factory_.GetWeakPtr(), new_window));
+    }
+  }
 }
 
 void ArcWmMetrics::OnWindowPropertyChanged(aura::Window* window,
@@ -201,6 +262,17 @@ void ArcWmMetrics::OnWindowDestroying(aura::Window* window) {
 
 void ArcWmMetrics::OnOperationCompleted(aura::Window* window) {
   state_change_observing_windows_.erase(window);
+}
+
+void ArcWmMetrics::OnWindowCloseRequested(aura::Window* window) {
+  close_observing_windows_.emplace(
+      window, std::make_unique<WindowCloseObserver>(
+                  window, base::BindOnce(&ArcWmMetrics::OnWindowCloseCompleted,
+                                         base::Unretained(this), window)));
+}
+
+void ArcWmMetrics::OnWindowCloseCompleted(aura::Window* window) {
+  close_observing_windows_.erase(window);
 }
 
 }  // namespace arc

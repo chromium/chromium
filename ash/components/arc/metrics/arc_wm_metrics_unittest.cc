@@ -28,6 +28,10 @@ class ArcWmMetricsTest : public ash::AshTestBase {
     arc_wm_metrics_ = std::make_unique<ArcWmMetrics>();
   }
 
+  void OnWindowCloseRequested(aura::Window* window) {
+    arc_wm_metrics_->OnWindowCloseRequested(window);
+  }
+
  private:
   std::unique_ptr<ArcWmMetrics> arc_wm_metrics_;
 };
@@ -65,6 +69,23 @@ TEST_F(ArcWmMetricsTest, TestWindowMinimizeDelayMetrics) {
 
   auto minimize_event = std::make_unique<ash::WMEvent>(ash::WM_EVENT_MINIMIZE);
   ash::WindowState::Get(window.get())->OnWMEvent(minimize_event.get());
+  histogram_tester.ExpectTotalCount(histogram_name, 1);
+}
+
+TEST_F(ArcWmMetricsTest, TestWindowCloseDelayMetrics) {
+  auto window =
+      CreateAppWindow(gfx::Rect(0, 0, 100, 100), ash::AppType::ARC_APP);
+  window->Show();
+
+  base::HistogramTester histogram_tester;
+  const auto histogram_name =
+      ArcWmMetrics::GetArcWindowClosedTimeHistogramName();
+  histogram_tester.ExpectTotalCount(histogram_name, 0);
+
+  OnWindowCloseRequested(window.get());
+  histogram_tester.ExpectTotalCount(histogram_name, 0);
+
+  window.reset();
   histogram_tester.ExpectTotalCount(histogram_name, 1);
 }
 
