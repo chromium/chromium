@@ -215,6 +215,7 @@ per-file chrome/browser/enterprise/connectors/internal=*
 per-file chrome/browser/google/linkdoctor_internal=*
 per-file chrome/browser/internal=*
 per-file chrome/browser/media/engagement_internal=*
+per-file chrome/browser/nearby_sharing/internal=*
 per-file chrome/browser/resources/chromeos/quickoffice=*
 per-file chrome/browser/resources/settings_internal=*
 per-file chrome/browser/spellchecker/internal=*

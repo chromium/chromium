@@ -611,6 +611,10 @@
 	path = chrome/browser/media/engagement_internal
 	url = https://chrome-internal.googlesource.com/chrome/browser/media/engagement_internal.git
 	gclient-condition = checkout_src_internal
+[submodule "chrome/browser/nearby_sharing/internal"]
+	path = chrome/browser/nearby_sharing/internal
+	url = https://chrome-internal.googlesource.com/chrome/browser/nearby_sharing/internal.git
+	gclient-condition = checkout_src_internal
 [submodule "chrome/browser/resources/chromeos/quickoffice"]
 	path = chrome/browser/resources/chromeos/quickoffice
 	url = https://chrome-internal.googlesource.com/quickoffice/crx.git
