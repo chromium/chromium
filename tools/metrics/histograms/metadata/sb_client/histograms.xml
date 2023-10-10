@@ -502,6 +502,8 @@ chromium-metrics-reviews@google.com.
     accepted/bypassed. - Once when the scan is completed, either through
     cancelation or completion. This is logged for consumer scans of
     {Encryption}.
+
+    Note: Logging of PromptAccepted was lost in M118.
   </summary>
   <token key="Encryption">
     <variant name="" summary="a file"/>
