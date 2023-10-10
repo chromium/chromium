@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -93,7 +94,7 @@ const CGFloat kLeadingMargin = 20;
       [[LocationBarSteadyViewColorScheme alloc] init];
 
   scheme.fontColor = [UIColor colorNamed:kTextPrimaryColor];
-  scheme.placeholderColor = [UIColor colorNamed:kTextfieldPlaceholderColor];
+  scheme.placeholderColor = content_suggestions::SearchHintLabelColor();
   scheme.trailingButtonColor = [UIColor colorNamed:kGrey600Color];
 
   return scheme;

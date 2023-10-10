@@ -69,6 +69,9 @@ UIView* NearestAncestor(UIView* view, Class of_class);
 BOOL ShouldShowWiderMagicStackLayer(UITraitCollection* traitCollection,
                                     UIWindow* window);
 
+// Returns the color of the search hint label in the fakebox.
+UIColor* SearchHintLabelColor();
+
 }  // namespace content_suggestions
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_COLLECTION_UTILS_H_

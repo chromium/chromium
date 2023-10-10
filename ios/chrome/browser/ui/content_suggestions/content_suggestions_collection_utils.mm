@@ -76,16 +76,6 @@ const CGFloat kFakeboxHeightNonDynamic = 45;
 const CGFloat kPinnedFakeboxHeight = 48;
 const CGFloat kPinnedFakeboxHeightNonDynamic = 18;
 
-// Returns the color of the search hint label in the fakebox.
-UIColor* SearchHintLabelColor() {
-  if (IsIOSLargeFakeboxEnabled()) {
-    return [UIColor colorNamed:kGrey700Color];
-  } else if (IsMagicStackEnabled()) {
-    return [UIColor colorNamed:@"fake_omnibox_placeholder_color"];
-  }
-  return [UIColor colorNamed:kTextfieldPlaceholderColor];
-}
-
 // Returns the amount of vertical margin to include in the Fake Toolbar.
 CGFloat FakeToolbarVerticalMargin() {
   UIContentSizeCategory category =
@@ -326,6 +316,15 @@ BOOL ShouldShowWiderMagicStackLayer(UITraitCollection* traitCollection,
   return traitCollection.horizontalSizeClass ==
              UIUserInterfaceSizeClassRegular ||
          IsLandscape(window);
+}
+
+UIColor* SearchHintLabelColor() {
+  if (IsIOSLargeFakeboxEnabled()) {
+    return [UIColor colorNamed:kGrey700Color];
+  } else if (IsMagicStackEnabled()) {
+    return [UIColor colorNamed:@"fake_omnibox_placeholder_color"];
+  }
+  return [UIColor colorNamed:kTextfieldPlaceholderColor];
 }
 
 }  // namespace content_suggestions

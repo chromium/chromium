@@ -63,6 +63,7 @@ source_set("location_bar") {
     "//ios/chrome/browser/ssl",
     "//ios/chrome/browser/ui/badges",
     "//ios/chrome/browser/ui/badges:public",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
     "//ios/chrome/browser/ui/default_promo",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/fullscreen:ui",

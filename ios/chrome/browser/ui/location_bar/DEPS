@@ -1,6 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/ui/omnibox",
   "+ios/chrome/browser/ui/badges",
+  "+ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h",
   "+ios/chrome/browser/ui/fullscreen",
   "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
   "+ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h",
