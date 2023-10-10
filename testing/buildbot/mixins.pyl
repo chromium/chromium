@@ -294,15 +294,6 @@
       },
     },
   },
-  'chromeos-kevin': {
-    'swarming': {
-      'dimensions': {
-        'os': 'ChromeOS',
-        'device_type': 'kevin',
-        'pool': 'chromium.tests',
-      },
-    },
-  },
   'chromeos-octopus': {
     'swarming': {
       'dimensions': {

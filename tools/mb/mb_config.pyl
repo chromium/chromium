@@ -601,8 +601,6 @@
     'chromium.gpu.fyi': {
       # These all use the 'trybot' mixins to ensure that dcheck is on.
       'ChromeOS FYI Release (amd64-generic)': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols_reclient',
-      'ChromeOS FYI Release (kevin)': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols_reclient',
-      'ChromeOS FYI Release Skylab (kevin)': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols_reclient_skylab',
       'GPU FYI Android arm Builder': 'gpu_tests_android_release_trybot_reclient',
       'GPU FYI Android arm64 Builder': 'gpu_tests_android_release_trybot_arm64_reclient',
       'GPU FYI Lacros x64 Builder': 'gpu_tests_ozone_linux_non_x11_release_trybot_reclient',
@@ -1153,7 +1151,7 @@
     'tryserver.chromium.chromiumos': {
       'chromeos-amd64-generic-asan-rel': 'chromeos_amd64-generic_asan_reclient',
       # TODO(crbug.com/913750): Enable DCHECKS on the two amd64-generic bots
-      # and two kevin bots when the PFQ has it enabled.
+      # when the PFQ has it enabled.
       'chromeos-amd64-generic-cfi-thin-lto-rel': 'chromeos_amd64-generic_cfi_thin_lto_reclient',
       'chromeos-amd64-generic-dbg': 'chromeos_amd64-generic_dbg_reclient_use_dummy_lastchange',
       'chromeos-amd64-generic-lacros-dbg': 'chromeos_amd64-generic_lacros_dbg_reclient',
@@ -1165,8 +1163,6 @@
       'chromeos-jacuzzi-rel': 'chromeos_jacuzzi_dchecks_reclient',
       'chromeos-octopus-rel': 'chromeos_octopus_dchecks_reclient',
       'gpu-fyi-try-chromeos-amd64-generic': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols_reclient',
-      'gpu-fyi-try-chromeos-kevin': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols_reclient',
-      'gpu-fyi-try-chromeos-skylab-kevin': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols_reclient_skylab',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_dchecks_skylab_reclient_use_dummy_lastchange',
       'lacros-amd64-generic-rel-non-skylab': 'chromeos_amd64-generic_lacros_rel_dchecks_reclient',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_dchecks_reclient',
@@ -2871,14 +2867,6 @@
 
     'gpu_tests_chromeos_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient_skylab': [
       'gpu_tests', 'chromeos_jacuzzi_reclient', 'release_trybot_dcheck_off_reclient', 'no_symbols', 'is_skylab',
-    ],
-
-    'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols_reclient': [
-      'gpu_tests', 'chromeos_kevin_reclient', 'release_trybot_dcheck_off_reclient', 'no_symbols',
-    ],
-
-    'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols_reclient_skylab': [
-      'gpu_tests', 'chromeos_kevin_reclient', 'release_trybot_dcheck_off_reclient', 'no_symbols', 'is_skylab',
     ],
 
     'gpu_tests_debug_bot': [

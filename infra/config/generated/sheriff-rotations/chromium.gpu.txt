@@ -7,8 +7,6 @@ ci/Android FYI Release (Samsung A13)
 ci/Android FYI Release (Samsung A23)
 ci/Android Release (Nexus 5X)
 ci/ChromeOS FYI Release (amd64-generic)
-ci/ChromeOS FYI Release (kevin)
-ci/ChromeOS FYI Release Skylab (kevin)
 ci/GPU FYI Android arm Builder
 ci/GPU FYI Android arm64 Builder
 ci/GPU FYI Lacros x64 Builder

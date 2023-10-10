@@ -358,17 +358,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "chromeos-kevin",
-    swarming = targets.swarming(
-        dimensions = {
-            "os": "ChromeOS",
-            "device_type": "kevin",
-            "pool": "chromium.tests",
-        },
-    ),
-)
-
-targets.mixin(
     name = "chromeos-octopus",
     swarming = targets.swarming(
         dimensions = {

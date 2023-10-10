@@ -4734,9 +4734,6 @@
       # TODO(crbug.com/1280418): Re-enable once more of the Pixel 6 capacity
       # is deployed.
       'Android FYI Release (Pixel 6)',
-      # Passthrough version run on this configuration, not enough capacity for
-      # both. See https://crbug.com/1238070.
-      'ChromeOS FYI Release (kevin)',
     ],
     'modifications': {
       # This VM configuration is known to be significantly slower than other
@@ -4750,9 +4747,6 @@
         # This configuration is tested with the passthrough decoder as well,
         # which will be shipped in the nearish future, so any failures that
         # show up with the validating decoder are just an FYI.
-        'experiment_percentage': 100,
-      },
-      'ChromeOS FYI Release (kevin)': {
         'experiment_percentage': 100,
       },
     },
