@@ -2290,6 +2290,12 @@ void PdfViewWebPlugin::LoadAvailablePreviewPage() {
 void PdfViewWebPlugin::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
                                       int32_t result) {
   DCHECK_EQ(result, kSuccess);
+
+  // `preview_engine_` holds a `raw_ptr` to `preview_client_`.
+  // We need to explicitly destroy it before clobbering
+  // `preview_client_` to dodge lifetime issues.
+  preview_engine_.reset();
+
   preview_client_ = std::make_unique<PreviewModeClient>(this);
   preview_engine_ = client_->CreateEngine(
       preview_client_.get(), PDFiumFormFiller::ScriptOption::kNoJavaScript);
