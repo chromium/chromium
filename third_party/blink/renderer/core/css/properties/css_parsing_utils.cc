@@ -4283,8 +4283,7 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
     case CSSPropertyID::kWebkitMaskClip:
       return ConsumePrefixedBackgroundBox(range, AllowTextValue::kAllow);
     case CSSPropertyID::kMaskOrigin:
-      // TODO(crbug.com/1490702) update the allowed mask-origin value.
-      return ConsumePrefixedBackgroundBox(range, AllowTextValue::kForbid);
+      return ConsumeGeometryBox(range);
     case CSSPropertyID::kWebkitMaskOrigin:
       return ConsumePrefixedBackgroundBox(range, AllowTextValue::kForbid);
     default:

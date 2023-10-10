@@ -9339,10 +9339,14 @@ const CSSValue* MaskOrigin::CSSValueFromComputedStyleInternal(
 const CSSValue* WebkitMaskOrigin::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext&,
-    const CSSParserLocalContext&) const {
+    const CSSParserLocalContext& local_context) const {
+  if (local_context.UseAliasParsing()) {
+    return css_parsing_utils::ConsumeCommaSeparatedList(
+        css_parsing_utils::ConsumePrefixedBackgroundBox, range,
+        css_parsing_utils::AllowTextValue::kForbid);
+  }
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumePrefixedBackgroundBox, range,
-      css_parsing_utils::AllowTextValue::kForbid);
+      css_parsing_utils::ConsumeGeometryBox, range);
 }
 
 const CSSValue* WebkitMaskOrigin::CSSValueFromComputedStyleInternal(
