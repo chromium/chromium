@@ -311,7 +311,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kQsAddFakeCastDevices[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kQsShowLocaleTile[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRegulatoryLabelDir[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kRemoteRebootCommandTimeoutInSecondsForTesting[];
+extern const char kRemoteRebootCommandDelayInSecondsForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRevenBranding[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRlzPingDelay[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRmaNotAllowed[];

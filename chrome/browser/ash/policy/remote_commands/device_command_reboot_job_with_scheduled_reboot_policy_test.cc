@@ -87,7 +87,7 @@ class DeviceCommandRebootJobWithScheduledRebootPolicyTest
         ash::switches::kScheduledRebootGracePeriodInSecondsForTesting,
         base::NumberToString(0));
     scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-        ash::switches::kRemoteRebootCommandTimeoutInSecondsForTesting,
+        ash::switches::kRemoteRebootCommandDelayInSecondsForTesting,
         base::NumberToString(kUserSessionRebootDelay.InSeconds()));
   }
 
@@ -192,12 +192,12 @@ TEST_F(DeviceCommandRebootJobWithScheduledRebootPolicyTest,
   // boot  |   dialog       |        command reboot
   //     notification      command
 
-  // Use smaller user session timeout for reboot command so it's triggered
+  // Use smaller user session delay for reboot command so it's triggered
   // before the scheduled reboot.
-  constexpr base::TimeDelta kSmallUserSessionTimeout = base::Minutes(4);
+  constexpr base::TimeDelta kSmallUserSessionDelay = base::Minutes(4);
   scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-      ash::switches::kRemoteRebootCommandTimeoutInSecondsForTesting,
-      base::NumberToString(kSmallUserSessionTimeout.InSeconds()));
+      ash::switches::kRemoteRebootCommandDelayInSecondsForTesting,
+      base::NumberToString(kSmallUserSessionDelay.InSeconds()));
 
   // A. Boot time and setup.
   auto fake_task_executor = std::make_unique<FakeScheduledTaskExecutor>(
@@ -241,7 +241,7 @@ TEST_F(DeviceCommandRebootJobWithScheduledRebootPolicyTest,
   EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 2);
 
   // E. Fastforward till the user session timeout expires.
-  task_environment_.FastForwardBy(kSmallUserSessionTimeout);
+  task_environment_.FastForwardBy(kSmallUserSessionDelay);
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(command->status(), RemoteCommandJob::SUCCEEDED);
   EXPECT_EQ(
@@ -347,7 +347,7 @@ TEST_F(DeviceCommandRebootJobWithScheduledRebootPolicyTest,
   EXPECT_EQ(fake_notifications_scheduler_->GetShowDialogCalls(), 1);
   EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 1);
 
-  // Schedule reboot via policy within timeout.
+  // Schedule reboot via policy within delay.
   auto fake_task_executor = std::make_unique<FakeScheduledTaskExecutor>(
       task_environment_.GetMockClock());
   const base::TimeDelta delay_till_policy_reboot =
@@ -403,7 +403,7 @@ TEST_F(DeviceCommandRebootJobWithScheduledRebootPolicyTest,
   EXPECT_EQ(fake_notifications_scheduler_->GetShowDialogCalls(), 1);
   EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 1);
 
-  // Schedule reboot via policy within timeout.
+  // Schedule reboot via policy within delay.
   auto fake_task_executor = std::make_unique<FakeScheduledTaskExecutor>(
       task_environment_.GetMockClock());
   auto* fake_task_executor_ptr = fake_task_executor.get();

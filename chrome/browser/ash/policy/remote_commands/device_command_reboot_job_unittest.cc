@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_reboot_job_test_util.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
@@ -33,7 +32,7 @@ class DeviceCommandRebootJobTest : public DeviceCommandRebootJobTestBase,
  protected:
   DeviceCommandRebootJobTest() {
     scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-        ash::switches::kRemoteRebootCommandTimeoutInSecondsForTesting,
+        ash::switches::kRemoteRebootCommandDelayInSecondsForTesting,
         base::NumberToString(kUserSessionRebootDelay.InSeconds()));
   }
 

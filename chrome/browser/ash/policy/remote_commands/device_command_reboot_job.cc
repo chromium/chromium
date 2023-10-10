@@ -33,29 +33,29 @@ const char kLoginScreenRebootDescription[] =
 const char kUserSessionRebootDescription[] =
     "Reboot remote command (user session)";
 
-constexpr base::TimeDelta kDefaultUserSessionRebootTimeout = base::Minutes(5);
+constexpr base::TimeDelta kDefaultUserSessionRebootDelay = base::Minutes(5);
 
-base::TimeDelta GetUserSessionTimeout() {
+base::TimeDelta GetUserSessionDelay() {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
 
-  std::string timeout_string = command_line->GetSwitchValueASCII(
-      ash::switches::kRemoteRebootCommandTimeoutInSecondsForTesting);
+  std::string delay_string = command_line->GetSwitchValueASCII(
+      ash::switches::kRemoteRebootCommandDelayInSecondsForTesting);
 
-  if (timeout_string.empty()) {
-    return kDefaultUserSessionRebootTimeout;
+  if (delay_string.empty()) {
+    return kDefaultUserSessionRebootDelay;
   }
 
-  int timeout_in_seconds;
-  if (!base::StringToInt(timeout_string, &timeout_in_seconds) ||
-      timeout_in_seconds < 0) {
+  int delay_in_seconds;
+  if (!base::StringToInt(delay_string, &delay_in_seconds) ||
+      delay_in_seconds < 0) {
     LOG(ERROR) << "Ignored "
-               << ash::switches::kRemoteRebootCommandTimeoutInSecondsForTesting
-               << "=" << timeout_string;
-    return kDefaultUserSessionRebootTimeout;
+               << ash::switches::kRemoteRebootCommandDelayInSecondsForTesting
+               << "=" << delay_string;
+    return kDefaultUserSessionRebootDelay;
   }
 
-  return base::Seconds(timeout_in_seconds);
+  return base::Seconds(delay_in_seconds);
 }
 
 base::TimeTicks GetBootTime() {
@@ -88,7 +88,7 @@ DeviceCommandRebootJob::DeviceCommandRebootJob(
       in_session_reboot_timer_(clock, tick_clock),
       clock_(clock),
       get_boot_time_callback_(std::move(get_boot_time_callback)),
-      user_session_timeout_(GetUserSessionTimeout()) {
+      user_session_delay_(GetUserSessionDelay()) {
   DCHECK(get_boot_time_callback_);
 }
 
@@ -150,7 +150,7 @@ void DeviceCommandRebootJob::PowerManagerBecameAvailable(bool available) {
 }
 
 void DeviceCommandRebootJob::RebootUserSession() {
-  const auto reboot_time = clock_->Now() + user_session_timeout_;
+  const auto reboot_time = clock_->Now() + user_session_delay_;
   in_session_notifications_scheduler_->SchedulePendingRebootNotifications(
       base::BindOnce(&DeviceCommandRebootJob::OnRebootButtonClicked,
                      weak_factory_.GetWeakPtr()),

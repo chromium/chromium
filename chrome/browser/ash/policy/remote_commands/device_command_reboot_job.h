@@ -43,7 +43,8 @@ class RebootNotificationsScheduler;
 //   * If there is no logged in user, reports success and reboots immediately.
 //   * If a user is logged in, notifies the user, waits for a timeout, reports
 //     success and reboots.
-//   * If the user signs out during the timeout, reports success and reboots.
+//   * If the user signs out during the waiting period, reports success and
+//     reboots.
 class DeviceCommandRebootJob : public RemoteCommandJob,
                                public chromeos::PowerManagerClient::Observer {
  public:
@@ -134,7 +135,8 @@ class DeviceCommandRebootJob : public RemoteCommandJob,
 
   CallbackWithResult result_callback_;
 
-  const base::TimeDelta user_session_timeout_;
+  // Delay between execution start in user session and the reboot.
+  const base::TimeDelta user_session_delay_;
 
   base::WeakPtrFactory<DeviceCommandRebootJob> weak_factory_{this};
 };
