@@ -49,7 +49,12 @@ class FileBackedBlobFactoryImplTest : public RenderViewHostImplTestHarness {
     mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
         &FileBackedBlobFactoryImplTest::OnBadMessage, base::Unretained(this)));
   }
-  void TearDown() override { RenderViewHostImplTestHarness::TearDown(); }
+  void TearDown() override {
+    // Clean up error handler, to avoid causing other tests run in the same
+    // process from crashing.
+    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+    RenderViewHostImplTestHarness::TearDown();
+  }
 
   void OnBadMessage(const std::string& error) {
     bad_messages_.push_back(error);
