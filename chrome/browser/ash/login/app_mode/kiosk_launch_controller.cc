@@ -411,7 +411,12 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
 
   // This is needed to trigger input method extensions being loaded.
   profile->InitChromeOSPreferences();
-  network_ui_controller_->SetProfile(profile);
+
+  if (cleaned_up_) {
+    LOG(WARNING) << "Profile is loaded after kiosk launch has been aborted.";
+    return;
+  }
+  CHECK_DEREF(network_ui_controller_.get()).SetProfile(profile);
 
   InitializeKeyboard();
   LaunchLacros();

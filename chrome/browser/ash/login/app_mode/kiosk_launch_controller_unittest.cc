@@ -260,7 +260,9 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
               KioskLaunchStateToString(state));
   }
 
-  void CancelAppLaunch() { controller_->HandleAccelerator(kAppLaunchBailout); }
+  void CancelAppLaunch() { controller().HandleAccelerator(kAppLaunchBailout); }
+
+  void CleanUpController() { controller().CleanUp(); }
 
  private:
   void SetDeviceEnterpriseManaged() {
@@ -324,6 +326,19 @@ TEST_F(KioskLaunchControllerTest, ProfileLoadedShouldInitializeLauncher) {
 
   profile_controls().OnProfileLoaded(profile());
   EXPECT_TRUE(launcher().IsInitialized());
+}
+
+// Late profile load should not launch kiosk session.
+// Covers b/304145218.
+TEST_F(KioskLaunchControllerTest, ProfileLoadedAfterCleanUp) {
+  controller().Start(kiosk_app_id(), /*auto_launch=*/false);
+  EXPECT_THAT(controller(), HasState(AppState::kCreatingProfile,
+                                     NetworkUIState::kNotShowing));
+
+  CleanUpController();
+  profile_controls().OnProfileLoaded(profile());
+
+  EXPECT_EQ(num_launchers_created(), 0);
 }
 
 TEST_F(KioskLaunchControllerTest, AppInstallingShouldUpdateSplashScreen) {
