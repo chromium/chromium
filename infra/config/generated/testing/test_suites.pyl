@@ -4233,12 +4233,6 @@
     },
 
     'linux_lacros_chrome_browsertests_non_version_skew': {
-      'lacros_chrome_browsertests': {
-        'test': 'lacros_chrome_browsertests',
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter',
-        ],
-      },
       'lacros_chrome_browsertests_run_in_series': {
         'test': 'lacros_chrome_browsertests_run_in_series',
         'args': [
@@ -4251,11 +4245,6 @@
     },
 
     'linux_lacros_chrome_browsertests_version_skew': {
-      'lacros_chrome_browsertests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter',
-        ],
-      },
       'lacros_chrome_browsertests_run_in_series': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter',

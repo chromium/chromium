@@ -1257,11 +1257,6 @@ targets.generated_script(
 )
 
 targets.windowed_test_launcher(
-    name = "lacros_chrome_browsertests",
-    label = "//chrome/test:lacros_chrome_browsertests",
-)
-
-targets.windowed_test_launcher(
     name = "lacros_chrome_browsertests_run_in_series",
     label = "//chrome/test:lacros_chrome_browsertests_run_in_series",
     args = [
