@@ -134,7 +134,6 @@
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/policy/profile_policy_connector.h"

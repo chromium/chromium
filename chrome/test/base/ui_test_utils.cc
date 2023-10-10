@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/test/base/ui_test_utils.h"
-#include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
 
 #include <stddef.h>
 
@@ -18,9 +16,11 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
@@ -28,7 +28,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -59,6 +58,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"

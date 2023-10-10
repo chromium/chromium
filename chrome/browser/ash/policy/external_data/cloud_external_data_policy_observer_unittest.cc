@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/policy/invalidation/fake_affiliated_invalidation_service_provider.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"

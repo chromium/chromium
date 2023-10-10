@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_sync_data.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/launch_util.h"

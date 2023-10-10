@@ -12,7 +12,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"

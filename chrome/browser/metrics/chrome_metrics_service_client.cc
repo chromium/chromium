@@ -39,7 +39,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/metrics/cached_metrics_profile.h"

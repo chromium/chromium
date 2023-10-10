@@ -24,7 +24,6 @@
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"

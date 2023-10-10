@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "chrome/browser/ash/printing/history/print_job_info_proto_conversions.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/printing/cups_wrapper.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_job_manager.h"

@@ -166,7 +166,6 @@
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/defaults.h"

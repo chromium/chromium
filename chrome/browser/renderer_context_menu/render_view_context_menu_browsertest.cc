@@ -31,7 +31,6 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/pdf/pdf_frame_util.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"

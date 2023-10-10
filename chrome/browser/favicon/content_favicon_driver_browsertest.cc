@@ -19,7 +19,6 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"

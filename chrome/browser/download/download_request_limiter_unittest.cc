@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/download/download_permission_request.h"
 #include "chrome/browser/profiles/profile.h"

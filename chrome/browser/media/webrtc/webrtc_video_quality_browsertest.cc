@@ -19,7 +19,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_perf.h"

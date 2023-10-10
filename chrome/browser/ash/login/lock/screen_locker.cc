@@ -42,7 +42,6 @@
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/certificate_provider/pin_dialog_manager.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"

@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
 #include "chrome/browser/ui/browser.h"

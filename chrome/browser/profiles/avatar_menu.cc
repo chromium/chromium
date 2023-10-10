@@ -10,7 +10,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/avatar_menu_observer.h"
 #include "chrome/browser/profiles/profile_list_desktop.h"
 #include "chrome/browser/profiles/profile_manager.h"

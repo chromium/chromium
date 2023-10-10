@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service.h"
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"

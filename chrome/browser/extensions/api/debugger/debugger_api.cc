@@ -26,7 +26,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/extensions/api/debugger/debugger_api_constants.h"
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"

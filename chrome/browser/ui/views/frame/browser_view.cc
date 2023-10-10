@@ -36,7 +36,6 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"

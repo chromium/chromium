@@ -9,7 +9,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"

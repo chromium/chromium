@@ -8,7 +8,6 @@
 #include "base/functional/bind.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"

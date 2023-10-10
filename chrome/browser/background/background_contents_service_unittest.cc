@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/background/background_contents.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/extensions/extension_test_util.h"

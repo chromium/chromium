@@ -34,7 +34,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_browser_main.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/first_run/first_run.h"

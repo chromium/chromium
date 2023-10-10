@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"

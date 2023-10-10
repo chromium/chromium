@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/system/system_clock_observer.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"

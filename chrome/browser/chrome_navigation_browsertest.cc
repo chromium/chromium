@@ -14,7 +14,6 @@
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/login_detection/login_detection_util.h"

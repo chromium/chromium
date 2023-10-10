@@ -7,7 +7,6 @@
 #include <map>
 #include <string>
 
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"

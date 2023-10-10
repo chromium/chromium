@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"

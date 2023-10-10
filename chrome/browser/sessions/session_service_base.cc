@@ -19,7 +19,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_utils.h"

@@ -12,7 +12,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"

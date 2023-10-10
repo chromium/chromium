@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/prefetch/pref_names.h"
 #include "chrome/browser/preloading/preloading_prefs.h"

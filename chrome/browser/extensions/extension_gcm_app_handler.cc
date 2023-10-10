@@ -10,7 +10,6 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/gcm/gcm_api.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"

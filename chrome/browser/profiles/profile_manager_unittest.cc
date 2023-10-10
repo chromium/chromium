@@ -23,7 +23,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"

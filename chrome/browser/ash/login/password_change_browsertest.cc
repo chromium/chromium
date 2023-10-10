@@ -34,7 +34,6 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile_manager.h"

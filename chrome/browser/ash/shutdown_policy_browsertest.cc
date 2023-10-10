@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"

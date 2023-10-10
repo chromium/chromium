@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enrollment_screen_handler.h"

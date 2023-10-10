@@ -19,7 +19,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service_factory.h"

@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"

@@ -6,7 +6,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_core_service_impl.h"
 #include "chrome/browser/download/download_item_model.h"

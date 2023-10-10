@@ -31,7 +31,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"

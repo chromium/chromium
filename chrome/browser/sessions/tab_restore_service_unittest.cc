@@ -20,7 +20,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_service.h"

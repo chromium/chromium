@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"

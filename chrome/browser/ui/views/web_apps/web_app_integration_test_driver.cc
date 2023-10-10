@@ -43,7 +43,6 @@
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser.h"

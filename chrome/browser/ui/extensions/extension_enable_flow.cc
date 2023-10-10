@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"

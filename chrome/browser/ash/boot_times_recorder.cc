@@ -19,7 +19,6 @@
 #include "base/location.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/pref_names.h"

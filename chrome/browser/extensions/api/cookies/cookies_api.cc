@@ -15,7 +15,6 @@
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/time/time.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/cookies/cookies_api_constants.h"
 #include "chrome/browser/extensions/api/cookies/cookies_helpers.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"

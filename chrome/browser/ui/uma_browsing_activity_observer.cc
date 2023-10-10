@@ -11,7 +11,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -29,6 +28,7 @@
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_process_host.h"
 #include "ui/gfx/range/range.h"
 

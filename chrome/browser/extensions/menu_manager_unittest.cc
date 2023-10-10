@@ -15,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/menu_manager_test_observer.h"
 #include "chrome/browser/extensions/test_extension_prefs.h"

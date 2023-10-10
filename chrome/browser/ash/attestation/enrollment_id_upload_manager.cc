@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/attestation/attestation_key_payload.pb.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"

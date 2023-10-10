@@ -11,7 +11,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/navigation_handle.h"

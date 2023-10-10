@@ -16,7 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/notifications/notification_test_util.h"

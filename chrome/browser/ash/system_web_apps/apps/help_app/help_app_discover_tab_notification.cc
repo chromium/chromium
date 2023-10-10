@@ -9,7 +9,6 @@
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"

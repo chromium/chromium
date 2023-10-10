@@ -33,7 +33,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/browsing_data/navigation_entry_remover.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/crash_upload_list/crash_upload_list.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"

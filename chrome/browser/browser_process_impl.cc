@@ -42,7 +42,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/component_updater/chrome_component_updater_configurator.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/devtools/remote_debugging_server.h"

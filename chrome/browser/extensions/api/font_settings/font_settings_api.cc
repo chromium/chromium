@@ -19,7 +19,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/preference/preference_helpers.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/font_pref_change_notifier.h"

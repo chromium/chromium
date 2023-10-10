@@ -36,7 +36,6 @@
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/certificate_provider/test_certificate_provider_extension.h"
 #include "chrome/browser/certificate_provider/test_certificate_provider_extension_mixin.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"

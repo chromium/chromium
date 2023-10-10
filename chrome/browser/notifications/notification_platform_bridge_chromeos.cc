@@ -9,7 +9,6 @@
 #include "base/callback_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/profile_notification.h"

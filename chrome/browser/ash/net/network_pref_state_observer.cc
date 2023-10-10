@@ -6,7 +6,6 @@
 
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/wifi_configuration_sync_service_factory.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"

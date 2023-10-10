@@ -12,7 +12,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/path_service.h"
 #include "base/values.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/bookmarks/bookmarks_api.h"
 #include "chrome/browser/extensions/api/bookmarks/bookmarks_api_watcher.h"
 #include "chrome/common/chrome_paths.h"

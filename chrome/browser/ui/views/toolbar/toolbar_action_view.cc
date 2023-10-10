@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/layout_constants.h"

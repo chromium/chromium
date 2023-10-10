@@ -17,7 +17,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/browser_about_handler.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"

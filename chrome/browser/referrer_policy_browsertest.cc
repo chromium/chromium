@@ -15,7 +15,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"

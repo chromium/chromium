@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chrome/common/pref_names.h"

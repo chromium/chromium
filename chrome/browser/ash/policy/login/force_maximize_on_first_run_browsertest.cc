@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/policy/login/login_policy_test_base.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"

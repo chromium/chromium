@@ -31,7 +31,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/devtools_file_watcher.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/url_constants.h"

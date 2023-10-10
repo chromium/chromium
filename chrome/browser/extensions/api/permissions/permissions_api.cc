@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/permissions/permissions_api_helpers.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"

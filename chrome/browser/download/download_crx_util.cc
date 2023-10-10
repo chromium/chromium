@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_management.h"

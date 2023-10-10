@@ -16,7 +16,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/printing/print_job_manager.h"
 #include "chrome/browser/printing/print_job_worker.h"
 #include "chrome/browser/printing/printer_query.h"

@@ -13,7 +13,6 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"

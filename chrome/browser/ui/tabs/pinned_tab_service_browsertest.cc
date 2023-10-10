@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/tabs/pinned_tab_service.h"
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"

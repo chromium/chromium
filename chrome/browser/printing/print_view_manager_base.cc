@@ -22,7 +22,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/printing/print_error_dialog.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_job_manager.h"

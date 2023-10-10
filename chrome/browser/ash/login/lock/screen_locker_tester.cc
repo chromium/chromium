@@ -12,7 +12,6 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/fake_extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/key.h"

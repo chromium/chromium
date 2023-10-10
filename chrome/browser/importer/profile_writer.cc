@@ -16,7 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/history/history_service_factory.h"

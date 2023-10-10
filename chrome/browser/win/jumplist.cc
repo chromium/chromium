@@ -27,7 +27,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/metrics/jumplist_metrics_win.h"

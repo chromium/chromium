@@ -9,7 +9,6 @@
 #import <Cocoa/Cocoa.h>
 
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"

@@ -19,7 +19,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/printing/cups_wrapper.h"
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
 #include "chrome/browser/extensions/api/printing/print_job_submitter.h"

@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/process/process_handle.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
