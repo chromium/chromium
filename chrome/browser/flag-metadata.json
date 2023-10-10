@@ -2861,7 +2861,7 @@
   {
     "name": "enable-friendlier-safe-browsing-settings-standard-protection",
     "owners": [ "awado", "jacastro", "chrome-counter-abuse-alerts@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 121
   },
   {
     "name": "enable-future-v8-vm-features",
