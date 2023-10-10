@@ -2060,9 +2060,14 @@ std::u16string GetFormIdentifier(const WebFormElement& form) {
 }
 
 FormRendererId GetFormRendererId(const blink::WebElement& e) {
-  DCHECK(e.IsNull() || !e.DynamicTo<WebFormElement>().IsNull() ||
-         (e.IsContentEditable() &&
-          base::FeatureList::IsEnabled(features::kAutofillContentEditables)));
+  // This function is intended only for WebFormElements and for contenteditables
+  // that aren't WebFormControlElement. However, an element that used to be
+  // contenteditable may dynamically change to a non-contenteditable. Therefore,
+  // instead of checking that `e` is a WebFormControlElement or contenteditable,
+  // we just that `e` is not a WebFormControlElement to protect against
+  // confusions between Get{Form,Field}RendererId().
+  CHECK(e.DynamicTo<WebFormControlElement>().IsNull());
+
   if (e.IsNull()) {
     return FormRendererId();
   }
@@ -2078,10 +2083,14 @@ FormRendererId GetFormRendererId(const blink::WebElement& e) {
 }
 
 FieldRendererId GetFieldRendererId(const blink::WebElement& e) {
-  DCHECK(!e.IsNull());
-  DCHECK(!e.DynamicTo<WebFormControlElement>().IsNull() ||
-         (e.IsContentEditable() &&
-          base::FeatureList::IsEnabled(features::kAutofillContentEditables)));
+  // This function is intended only for WebFormControlElements and for
+  // contenteditables that aren't WebFormElement. However, an element that used
+  // to be contenteditable may dynamically change to a non-contenteditable.
+  // Therefore, instead of checking that `e` is a WebFormControlElement or
+  // contenteditable, we just that `e` is not a WebFormElement to protect
+  // against confusions between Get{Form,Field}RendererId().
+  CHECK(e.DynamicTo<WebFormElement>().IsNull());
+
   if (base::FeatureList::IsEnabled(
           blink::features::kAutofillUseDomNodeIdForRendererId)) {
     return FieldRendererId(e.GetDomNodeId());
