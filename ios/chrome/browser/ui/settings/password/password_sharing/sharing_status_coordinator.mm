@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/recipient_info.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_view_controller.h"
@@ -32,11 +33,21 @@
 
 @end
 
-@implementation SharingStatusCoordinator
+@implementation SharingStatusCoordinator {
+  // Contains information about the recipients that the user selected to share a
+  // password with.
+  NSArray<RecipientInfoForIOSDisplay*>* _recipients;
+}
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser {
+                                   browser:(Browser*)browser
+                                recipients:
+                                    (NSArray<RecipientInfoForIOSDisplay*>*)
+                                        recipients {
   self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _recipients = recipients;
+  }
   return self;
 }
 
@@ -52,7 +63,8 @@
         initWithAuthService:AuthenticationServiceFactory::GetForBrowserState(
                                 browserState)
       accountManagerService:ChromeAccountManagerServiceFactory::
-                                GetForBrowserState(browserState)];
+                                GetForBrowserState(browserState)
+                 recipients:_recipients];
   self.mediator.consumer = self.viewController;
 
   self.navigationController =

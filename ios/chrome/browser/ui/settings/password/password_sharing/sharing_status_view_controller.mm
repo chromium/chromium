@@ -86,6 +86,9 @@ const CGFloat kImagesSlidingInDistance = 51;
 // modified to convey the result status.
 @property(nonatomic, strong) UILabel* titleLabel;
 
+// Subtitle string that will be displayed when the sharing is succesful.
+@property(nonatomic, strong) NSString* subtitleString;
+
 // The button that cancels the sharing process.
 @property(nonatomic, strong) UIButton* cancelButton;
 
@@ -200,6 +203,10 @@ const CGFloat kImagesSlidingInDistance = 51;
 
 - (void)setSenderImage:(UIImage*)senderImage {
   _senderImage = senderImage;
+}
+
+- (void)setSubtitleString:(NSString*)subtitleString {
+  _subtitleString = subtitleString;
 }
 
 #pragma mark - Private
@@ -406,14 +413,10 @@ const CGFloat kImagesSlidingInDistance = 51;
   UITextView* subtitle = [self createTextView];
   subtitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   subtitle.textColor = [UIColor colorNamed:kTextPrimaryColor];
-
-  // TODO(crbug.com/1463882): Add passing name and link values and bolding them.
-  StringWithTags stringWithTags =
-      ParseStringWithLinks(base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
-          IDS_IOS_PASSWORD_SHARING_SUCCESS_SUBTITLE, u"", u"")));
+  // TODO(crbug.com/1463882): Make parts of the string bold.
+  StringWithTags stringWithTags = ParseStringWithLinks(self.subtitleString);
   subtitle.text = stringWithTags.string;
   [self addLinkAttributeToTextView:subtitle range:stringWithTags.ranges[0]];
-
   return subtitle;
 }
 

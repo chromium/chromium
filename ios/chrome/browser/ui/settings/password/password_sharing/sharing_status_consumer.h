@@ -12,6 +12,9 @@
 // Sets circular profile image of the password sender (current user).
 - (void)setSenderImage:(UIImage*)senderImage;
 
+// Sets subtitle string to be displayed in the success status view.
+- (void)setSubtitleString:(NSString*)subtitleString;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_SHARING_STATUS_CONSUMER_H_

@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@class RecipientInfoForIOSDisplay;
 @protocol SharingStatusCoordinatorDelegate;
 
 // This coordinator presents a view with a sharing status animation. Main part
@@ -17,9 +18,14 @@
 // success status is displayed. Otherwise, cancelled status is displayed.
 @interface SharingStatusCoordinator : ChromeCoordinator
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                    recipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients
     NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Delegate handling coordinator dismissal.
 @property(nonatomic, weak) id<SharingStatusCoordinatorDelegate> delegate;

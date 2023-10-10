@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_mediator.h"
 
+#import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/browser/sharing/recipients_fetcher.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -15,23 +17,39 @@
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/fake_system_identity_manager.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/recipient_info.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_consumer.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
 const CGFloat kProfileImageSize = 60.0;
 
+NSArray<RecipientInfoForIOSDisplay*>* CreateRecipients(int amount) {
+  NSMutableArray<RecipientInfoForIOSDisplay*>* recipients =
+      [NSMutableArray array];
+  for (int i = 0; i < amount; i++) {
+    password_manager::RecipientInfo recipient;
+    recipient.user_name = "test" + base::NumberToString(i) + "@gmail.com";
+    [recipients addObject:([[RecipientInfoForIOSDisplay alloc]
+                              initWithRecipientInfo:recipient])];
+  }
+  return recipients;
 }
+
+}  // namespace
 
 // Test class that conforms to SharingStatusConsumer in order to test the
 // consumer methods are called correctly.
 @interface FakeSharingStatusConsumer : NSObject <SharingStatusConsumer>
 
 @property(nonatomic, strong) UIImage* senderImage;
+@property(nonatomic, strong) NSString* subtitleString;
 
 @end
 
@@ -39,6 +57,10 @@ const CGFloat kProfileImageSize = 60.0;
 
 - (void)setSenderImage:(UIImage*)senderImage {
   _senderImage = senderImage;
+}
+
+- (void)setSubtitleString:(NSString*)subtitleString {
+  _subtitleString = subtitleString;
 }
 
 @end
@@ -89,7 +111,8 @@ TEST_F(SharingStatusMediatorTest, NotifiesSignedInConsumerAboutTheirAvatar) {
   auto* consumer = [[FakeSharingStatusConsumer alloc] init];
   auto* mediator = [[SharingStatusMediator alloc]
         initWithAuthService:GetAuthenticationService()
-      accountManagerService:GetAccountManagerService()];
+      accountManagerService:GetAccountManagerService()
+                 recipients:CreateRecipients(1)];
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(UIImagePNGRepresentation(CircularImageFromImage(
@@ -103,10 +126,41 @@ TEST_F(SharingStatusMediatorTest, NotifiesSignedOutConsumerWithDefaultAvatar) {
   auto* consumer = [[FakeSharingStatusConsumer alloc] init];
   auto* mediator = [[SharingStatusMediator alloc]
         initWithAuthService:GetAuthenticationService()
-      accountManagerService:GetAccountManagerService()];
+      accountManagerService:GetAccountManagerService()
+                 recipients:CreateRecipients(1)];
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(UIImagePNGRepresentation(DefaultSymbolTemplateWithPointSize(
                   kPersonCropCircleSymbol, kProfileImageSize)),
               UIImagePNGRepresentation(consumer.senderImage));
+}
+
+TEST_F(SharingStatusMediatorTest,
+       NotifiesConsumerAboutSingleRecipientSubtitle) {
+  auto* consumer = [[FakeSharingStatusConsumer alloc] init];
+  auto* mediator = [[SharingStatusMediator alloc]
+        initWithAuthService:GetAuthenticationService()
+      accountManagerService:GetAccountManagerService()
+                 recipients:CreateRecipients(1)];
+  mediator.consumer = consumer;
+
+  EXPECT_NSEQ(
+      base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
+          IDS_IOS_PASSWORD_SHARING_SUCCESS_SUBTITLE, u"test0@gmail.com", u"")),
+      consumer.subtitleString);
+}
+
+TEST_F(SharingStatusMediatorTest,
+       NotifiesConsumerAboutMultipleRecipientsSubtitle) {
+  auto* consumer = [[FakeSharingStatusConsumer alloc] init];
+  auto* mediator = [[SharingStatusMediator alloc]
+        initWithAuthService:GetAuthenticationService()
+      accountManagerService:GetAccountManagerService()
+                 recipients:CreateRecipients(2)];
+  mediator.consumer = consumer;
+
+  EXPECT_NSEQ(
+      base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
+          IDS_IOS_PASSWORD_SHARING_SUCCESS_SUBTITLE_MULTIPLE_RECIPIENTS, u"")),
+      consumer.subtitleString);
 }

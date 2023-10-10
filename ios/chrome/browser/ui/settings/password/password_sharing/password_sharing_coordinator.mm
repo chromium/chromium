@@ -287,7 +287,8 @@ using password_manager::FetchFamilyMembersRequestStatus;
   [self.sharingStatusCoordinator stop];
   self.sharingStatusCoordinator = [[SharingStatusCoordinator alloc]
       initWithBaseViewController:self.navigationController
-                         browser:self.browser];
+                         browser:self.browser
+                      recipients:self.mediator.selectedRecipients];
   self.sharingStatusCoordinator.delegate = self;
   [self.sharingStatusCoordinator start];
 }

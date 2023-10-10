@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+@class RecipientInfoForIOSDisplay;
 @protocol SharingStatusConsumer;
 
 class AuthenticationService;
@@ -16,9 +17,10 @@ class ChromeAccountManagerService;
 // user to its consumer.
 @interface SharingStatusMediator : NSObject
 
-- (instancetype)initWithAuthService:(AuthenticationService*)authService
-              accountManagerService:
-                  (ChromeAccountManagerService*)accountManagerService
+- (instancetype)
+      initWithAuthService:(AuthenticationService*)authService
+    accountManagerService:(ChromeAccountManagerService*)accountManagerService
+               recipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
