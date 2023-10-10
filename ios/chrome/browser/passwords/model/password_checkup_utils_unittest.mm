@@ -44,7 +44,16 @@ constexpr char kExampleCom9[] = "https://example9.com";
 constexpr char kExampleCom10[] = "https://example10.com";
 
 constexpr char16_t kUsername116[] = u"alice";
-constexpr char16_t kPassword116[] = u"s3cre3t";
+constexpr char16_t kPassword116[] = u"strongPa55w0rd!1";
+constexpr char16_t kPassword216[] = u"strongPa55w0rd!2";
+constexpr char16_t kPassword316[] = u"strongPa55w0rd!3";
+constexpr char16_t kPassword416[] = u"strongPa55w0rd!4";
+constexpr char16_t kPassword516[] = u"strongPa55w0rd!5";
+constexpr char16_t kPassword616[] = u"strongPa55w0rd!6";
+constexpr char16_t kPassword716[] = u"strongPa55w0rd!7";
+constexpr char16_t kPassword816[] = u"strongPa55w0rd!8";
+constexpr char16_t kPassword916[] = u"strongPa55w0rd!9";
+constexpr char16_t kPassword1016[] = u"strongPa55w0rd!10";
 
 using password_manager::CredentialUIEntry;
 using password_manager::FormatElapsedTimeSinceLastCheck;
@@ -53,17 +62,13 @@ using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
 using password_manager::WarningType;
 
-PasswordForm MakeSavedPassword(
-    base::StringPiece signon_realm,
-    base::StringPiece16 username,
-    base::StringPiece16 password = kPassword116,
-    base::StringPiece16 username_element = base::StringPiece16()) {
+PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
+                               base::StringPiece16 password) {
   PasswordForm form;
   form.url = GURL(signon_realm);
   form.signon_realm = std::string(signon_realm);
-  form.username_value = std::u16string(username);
+  form.username_value = std::u16string(kUsername116);
   form.password_value = std::u16string(password);
-  form.username_element = std::u16string(username_element);
   form.in_store = PasswordForm::Store::kProfileStore;
   // TODO(crbug.com/1223022): Once all places that operate changes on forms
   // via UpdateLogin properly set `password_issues`, setting them to an empty
@@ -137,7 +142,7 @@ TEST_F(PasswordCheckupUtilsTest, CheckHighestPriorityWarningType) {
               WarningType::kNoInsecurePasswordsWarning);
 
   // Add a muted password.
-  PasswordForm form1 = MakeSavedPassword(kExampleCom1, kUsername116);
+  PasswordForm form1 = MakeSavedPassword(kExampleCom1, kPassword116);
   AddIssueToForm(&form1, InsecureType::kLeaked, base::Minutes(1),
                  /*is_muted=*/true);
   insecure_credentials.emplace_back(form1);
@@ -147,7 +152,7 @@ TEST_F(PasswordCheckupUtilsTest, CheckHighestPriorityWarningType) {
               WarningType::kDismissedWarningsWarning);
 
   // Add a muted password that is also weak.
-  PasswordForm form2 = MakeSavedPassword(kExampleCom2, kUsername116);
+  PasswordForm form2 = MakeSavedPassword(kExampleCom2, kPassword216);
   AddIssueToForm(&form2, InsecureType::kLeaked, base::Minutes(1),
                  /*is_muted=*/true);
   AddIssueToForm(&form2, InsecureType::kWeak, base::Minutes(1));
@@ -157,7 +162,7 @@ TEST_F(PasswordCheckupUtilsTest, CheckHighestPriorityWarningType) {
               WarningType::kWeakPasswordsWarning);
 
   // Add a weak password.
-  PasswordForm form3 = MakeSavedPassword(kExampleCom3, kUsername116);
+  PasswordForm form3 = MakeSavedPassword(kExampleCom3, kPassword316);
   AddIssueToForm(&form3, InsecureType::kWeak, base::Minutes(1));
   insecure_credentials.emplace_back(form3);
   // The "weak passwords" warning stays the highest priority warning.
@@ -165,9 +170,9 @@ TEST_F(PasswordCheckupUtilsTest, CheckHighestPriorityWarningType) {
               WarningType::kWeakPasswordsWarning);
 
   // Add 2 reused passwords.
-  PasswordForm form4 = MakeSavedPassword(kExampleCom4, kUsername116);
+  PasswordForm form4 = MakeSavedPassword(kExampleCom4, kPassword416);
   AddIssueToForm(&form4, InsecureType::kReused, base::Minutes(1));
-  PasswordForm form5 = MakeSavedPassword(kExampleCom5, kUsername116);
+  PasswordForm form5 = MakeSavedPassword(kExampleCom5, kPassword516);
   AddIssueToForm(&form5, InsecureType::kReused, base::Minutes(1));
   insecure_credentials.emplace_back(form4);
   insecure_credentials.emplace_back(form5);
@@ -176,7 +181,7 @@ TEST_F(PasswordCheckupUtilsTest, CheckHighestPriorityWarningType) {
               WarningType::kReusedPasswordsWarning);
 
   // Add an unmuted compromised password.
-  PasswordForm form6 = MakeSavedPassword(kExampleCom6, kUsername116);
+  PasswordForm form6 = MakeSavedPassword(kExampleCom6, kPassword616);
   AddIssueToForm(&form6, InsecureType::kLeaked, base::Minutes(1));
   insecure_credentials.emplace_back(form6);
   // The "compromised passwords" warning becomes the highest priority warning.
@@ -197,7 +202,7 @@ TEST_F(PasswordCheckupUtilsTest, CheckPasswordCountForWarningType) {
             0);
 
   // Add a muted password.
-  PasswordForm form1 = MakeSavedPassword(kExampleCom1, kUsername116);
+  PasswordForm form1 = MakeSavedPassword(kExampleCom1, kPassword116);
   AddIssueToForm(&form1, InsecureType::kLeaked, base::Minutes(1),
                  /*is_muted=*/true);
   insecure_credentials.emplace_back(form1);
@@ -208,8 +213,8 @@ TEST_F(PasswordCheckupUtilsTest, CheckPasswordCountForWarningType) {
             1);
 
   // Add 2 weak passwords.
-  PasswordForm form2 = MakeSavedPassword(kExampleCom2, kUsername116);
-  PasswordForm form3 = MakeSavedPassword(kExampleCom3, kUsername116);
+  PasswordForm form2 = MakeSavedPassword(kExampleCom2, kPassword216);
+  PasswordForm form3 = MakeSavedPassword(kExampleCom3, kPassword316);
   AddIssueToForm(&form2, InsecureType::kWeak, base::Minutes(1));
   AddIssueToForm(&form3, InsecureType::kWeak, base::Minutes(1));
   insecure_credentials.emplace_back(form2);
@@ -220,9 +225,9 @@ TEST_F(PasswordCheckupUtilsTest, CheckPasswordCountForWarningType) {
             2);
 
   // Add 3 reused passwords.
-  PasswordForm form4 = MakeSavedPassword(kExampleCom4, kUsername116);
-  PasswordForm form5 = MakeSavedPassword(kExampleCom5, kUsername116);
-  PasswordForm form6 = MakeSavedPassword(kExampleCom6, kUsername116);
+  PasswordForm form4 = MakeSavedPassword(kExampleCom4, kPassword416);
+  PasswordForm form5 = MakeSavedPassword(kExampleCom5, kPassword516);
+  PasswordForm form6 = MakeSavedPassword(kExampleCom6, kPassword616);
   AddIssueToForm(&form4, InsecureType::kReused, base::Minutes(1));
   AddIssueToForm(&form5, InsecureType::kReused, base::Minutes(1));
   AddIssueToForm(&form6, InsecureType::kReused, base::Minutes(1));
@@ -235,10 +240,10 @@ TEST_F(PasswordCheckupUtilsTest, CheckPasswordCountForWarningType) {
             3);
 
   // Add 4 unmuted compromised passwords.
-  PasswordForm form7 = MakeSavedPassword(kExampleCom7, kUsername116);
-  PasswordForm form8 = MakeSavedPassword(kExampleCom8, kUsername116);
-  PasswordForm form9 = MakeSavedPassword(kExampleCom9, kUsername116);
-  PasswordForm form10 = MakeSavedPassword(kExampleCom10, kUsername116);
+  PasswordForm form7 = MakeSavedPassword(kExampleCom7, kPassword716);
+  PasswordForm form8 = MakeSavedPassword(kExampleCom8, kPassword816);
+  PasswordForm form9 = MakeSavedPassword(kExampleCom9, kPassword916);
+  PasswordForm form10 = MakeSavedPassword(kExampleCom10, kPassword1016);
   AddIssueToForm(&form7, InsecureType::kLeaked, base::Minutes(1));
   AddIssueToForm(&form8, InsecureType::kLeaked, base::Minutes(1));
   AddIssueToForm(&form9, InsecureType::kLeaked, base::Minutes(1));
@@ -343,31 +348,31 @@ TEST_F(PasswordCheckupUtilsTest, ElapsedTimeSinceLastCheckInTitleCase) {
 // Tests that the correct passwords are returned for each warning type.
 TEST_F(PasswordCheckupUtilsTest, CheckPasswordsForWarningType) {
   // Add a muted password.
-  PasswordForm muted_form = MakeSavedPassword(kExampleCom1, kUsername116);
+  PasswordForm muted_form = MakeSavedPassword(kExampleCom1, kPassword116);
   AddIssueToForm(&muted_form, InsecureType::kLeaked, base::Minutes(1),
                  /*is_muted=*/true);
   store().AddLogin(muted_form);
 
   // Add a weak password.
-  PasswordForm weak_form = MakeSavedPassword(kExampleCom2, kUsername116);
+  PasswordForm weak_form = MakeSavedPassword(kExampleCom2, kPassword216);
   AddIssueToForm(&weak_form, InsecureType::kWeak, base::Minutes(1));
   store().AddLogin(weak_form);
 
   // Add 2 reused passwords.
-  PasswordForm reused_form1 = MakeSavedPassword(kExampleCom3, kUsername116);
+  PasswordForm reused_form1 = MakeSavedPassword(kExampleCom3, kPassword316);
   AddIssueToForm(&reused_form1, InsecureType::kReused, base::Minutes(1));
   store().AddLogin(reused_form1);
 
-  PasswordForm reused_form2 = MakeSavedPassword(kExampleCom4, kUsername116);
+  PasswordForm reused_form2 = MakeSavedPassword(kExampleCom4, kPassword416);
   AddIssueToForm(&reused_form2, InsecureType::kReused, base::Minutes(1));
   store().AddLogin(reused_form2);
 
   // Add two unmuted compromised passwords, a leaked one and a phished one.
-  PasswordForm leaked_form = MakeSavedPassword(kExampleCom5, kUsername116);
+  PasswordForm leaked_form = MakeSavedPassword(kExampleCom5, kPassword516);
   AddIssueToForm(&leaked_form, InsecureType::kLeaked, base::Minutes(1));
   store().AddLogin(leaked_form);
 
-  PasswordForm phished_form = MakeSavedPassword(kExampleCom6, kUsername116);
+  PasswordForm phished_form = MakeSavedPassword(kExampleCom6, kPassword616);
   AddIssueToForm(&phished_form, InsecureType::kPhished, base::Minutes(1));
   store().AddLogin(phished_form);
 
@@ -415,8 +420,8 @@ TEST_F(PasswordCheckupUtilsTest,
       password_manager::features::kIOSPasswordCheckup);
 
   // Add reused passwords.
-  PasswordForm reused_form1 = MakeSavedPassword(kExampleCom1, kUsername116);
-  PasswordForm reused_form2 = MakeSavedPassword(kExampleCom2, kUsername116);
+  PasswordForm reused_form1 = MakeSavedPassword(kExampleCom1, kPassword116);
+  PasswordForm reused_form2 = MakeSavedPassword(kExampleCom2, kPassword116);
   store().AddLogin(reused_form1);
   store().AddLogin(reused_form2);
   RunUntilIdle();
@@ -431,7 +436,6 @@ TEST_F(PasswordCheckupUtilsTest,
 
   std::vector<CredentialUIEntry> insecure_credentials =
       manager().GetInsecureCredentials();
-  EXPECT_EQ(insecure_credentials.size(), 1u);
 
   EXPECT_EQ(
       CountInsecurePasswordsPerInsecureType(insecure_credentials).reused_count,

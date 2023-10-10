@@ -34,7 +34,7 @@ using password_manager::TestPasswordStore;
 PasswordForm CreatePasswordForm() {
   PasswordForm form;
   form.username_value = u"test@egmail.com";
-  form.password_value = u"test";
+  form.password_value = u"strongPa55w0rd";
   form.signon_realm = "http://www.example.com/";
   form.in_store = PasswordForm::Store::kProfileStore;
   return form;
@@ -123,6 +123,9 @@ TEST_F(PasswordCheckupMediatorTest,
 
   [password_check_observer
       passwordCheckStateDidChange:PasswordCheckState::kIdle];
+
+  // Wait for the observer updates to complete.
+  RunUntilIdle();
 
   EXPECT_OCMOCK_VERIFY(consumer());
 }
