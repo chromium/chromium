@@ -222,17 +222,12 @@ void RenderViewContextMenuMacCocoa::Show() {
                                    colorProvider:color_provider
                           useWithPopUpButtonCell:NO];
 
-  gfx::Point params_position(params_.x, params_.y);
-  // TODO(dfried): this is almost certainly wrong; let's fix it.
-  [menu_controller_delegate_ setAnchorRect:gfx::Rect(params_position, {1, 1})];
-
   // Synthesize an event for the click, as there is no certainty that
   // [NSApp currentEvent] will return a valid event.
   NSEvent* currentEvent = [NSApp currentEvent];
   NSWindow* window = [parent_view_ window];
   NSPoint position =
-      NSMakePoint(params_position.x(),
-                  NSHeight([parent_view_ bounds]) - params_position.y());
+      NSMakePoint(params_.x, NSHeight(parent_view_.bounds) - params_.y);
   position = [parent_view_ convertPoint:position toView:nil];
   NSTimeInterval eventTime = [currentEvent timestamp];
   NSEvent* clickEvent = [NSEvent mouseEventWithType:NSEventTypeRightMouseDown

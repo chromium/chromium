@@ -12,7 +12,6 @@
 VIEWS_EXPORT
 @interface MenuControllerCocoaDelegateImpl
     : NSObject <MenuControllerCocoaDelegate>
-- (void)setAnchorRect:(gfx::Rect)rect;
 @end
 
 #endif  // UI_VIEWS_CONTROLS_MENU_MENU_CONTROLLER_COCOA_DELEGATE_IMPL_H_

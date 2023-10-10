@@ -215,7 +215,6 @@ void MenuRunnerImplCocoa::RunMenuAt(
 
   closing_event_time_ = base::TimeTicks();
   running_ = true;
-  [menu_delegate_ setAnchorRect:bounds];
 
   // Ensure the UI can update while the menu is fading out.
   base::ScopedPumpMessagesInPrivateModes pump_private;
