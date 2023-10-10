@@ -93,6 +93,7 @@ crosapi::mojom::DownloadStatusPtr ConvertToMojoDownloadStatus(
   status->received_bytes = download->GetReceivedBytes();
   status->total_bytes = download->GetTotalBytes();
   status->target_file_path = download->GetTargetFilePath();
+  status->full_path = download->GetFullPath();
   status->cancellable = IsCommandEnabled(model, DownloadCommands::CANCEL);
   status->pausable = IsCommandEnabled(model, DownloadCommands::PAUSE);
   status->resumable = IsCommandEnabled(model, DownloadCommands::RESUME);

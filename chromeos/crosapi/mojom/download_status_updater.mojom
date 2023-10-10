@@ -10,8 +10,8 @@ import "mojo/public/mojom/base/file_path.mojom";
 // Representation of a Lacros download's status to be passed into Ash Chrome
 // and rendered in the appropriate System UI surface(s).
 //
-// Next MinVersion: 2
-// Next ID: 8
+// Next MinVersion: 3
+// Next ID: 9
 //
 [Stable, Uuid="d18b6479-e70d-44aa-b657-58ffff57735d"]
 struct DownloadStatus {
@@ -36,6 +36,12 @@ struct DownloadStatus {
   // path will be used once the underlying download completes. Also note that
   // the target path may be empty if it hasn't yet been determined.
   [MinVersion=1] mojo_base.mojom.FilePath? target_file_path@4;
+
+  // Path to the file being written to during an in-progress download. Empty if
+  // the path hasn't been determined or the download was interrupted.
+  // NOTE: Do NOT use this field to access the target path. Use
+  // `target_file_path` instead.
+  [MinVersion=2] mojo_base.mojom.FilePath? full_path@8;
 
   // Whether an in-progress download can be cancelled by the user.
   [MinVersion=1] bool? cancellable@5;

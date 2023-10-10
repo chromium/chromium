@@ -839,6 +839,8 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Update) {
   ON_CALL(item, GetTotalBytes()).WillByDefault(Return(100));
   ON_CALL(item, GetTargetFilePath())
       .WillByDefault(ReturnRefOfCopy(base::FilePath("target_file_path")));
+  ON_CALL(item, GetFullPath())
+      .WillByDefault(ReturnRefOfCopy(base::FilePath("full_path")));
 
   // Fulfill `CanResume()` dynamically based on `item` state and paused status.
   ON_CALL(item, CanResume())
@@ -867,6 +869,7 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Update) {
           Field(&DownloadStatus::total_bytes, Eq(item.GetTotalBytes())),
           Field(&DownloadStatus::target_file_path,
                 Eq(item.GetTargetFilePath())),
+          Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
           Field(&DownloadStatus::cancellable, Eq(true)),
           Field(&DownloadStatus::pausable, Eq(true)),
           Field(&DownloadStatus::resumable, Eq(false))))));
@@ -891,6 +894,7 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Update) {
           Field(&DownloadStatus::total_bytes, Eq(item.GetTotalBytes())),
           Field(&DownloadStatus::target_file_path,
                 Eq(item.GetTargetFilePath())),
+          Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
           Field(&DownloadStatus::cancellable, Eq(true)),
           Field(&DownloadStatus::pausable, Eq(false)),
           Field(&DownloadStatus::resumable, Eq(true))))));
@@ -918,6 +922,7 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Update) {
           Field(&DownloadStatus::total_bytes, Eq(item.GetTotalBytes())),
           Field(&DownloadStatus::target_file_path,
                 Eq(item.GetTargetFilePath())),
+          Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
           Field(&DownloadStatus::cancellable, Eq(false)),
           Field(&DownloadStatus::pausable, Eq(false)),
           Field(&DownloadStatus::resumable, Eq(false))))));
