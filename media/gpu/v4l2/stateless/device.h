@@ -66,8 +66,7 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
 
  protected:
   virtual ~Device();
-  int Ioctl(const base::ScopedFD& fd, uint64_t request, void* arg);
-  int IoctlDevice(uint64_t request, void* arg);
+  int IoctlDevice(int request, void* arg);
   bool OpenDevice();
 };
 
