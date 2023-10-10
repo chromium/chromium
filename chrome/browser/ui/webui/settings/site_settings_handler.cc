@@ -1460,12 +1460,12 @@ base::Value::List SiteSettingsHandler::PopulateCookiesAndUsageData(
           url::Origin::Create(GURL(*origin_info.FindString("origin")));
       bool is_partitioned =
           origin_info.FindBool("isPartitioned").value_or(false);
-      if (!is_partitioned) {
-        // Only unpartitioned storage has a size.
-        const auto& size_info_it = origin_size_map.find(origin);
-        if (size_info_it != origin_size_map.end())
-          origin_info.Set("usage", static_cast<double>(size_info_it->second));
+
+      const auto& size_info_it = origin_size_map.find(origin);
+      if (size_info_it != origin_size_map.end()) {
+        origin_info.Set("usage", static_cast<double>(size_info_it->second));
       }
+
       const auto& host_cookie_num_it = host_cookie_map.find(
           {origin.host(), (is_partitioned ? etld_plus1 : absl::nullopt)});
       if (host_cookie_num_it != host_cookie_map.end()) {
