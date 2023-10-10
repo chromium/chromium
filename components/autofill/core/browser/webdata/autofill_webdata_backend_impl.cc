@@ -899,7 +899,6 @@ WebDatabase::State AutofillWebDataBackendImpl::ClearAllServerData(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   if (AutofillTable::FromWebDatabase(db)->ClearAllServerData()) {
-    NotifyOfMultipleAutofillChanges();
     ReportResult(Result::kClearAllServerData_Success);
     return WebDatabase::COMMIT_NEEDED;
   }
@@ -911,7 +910,6 @@ WebDatabase::State AutofillWebDataBackendImpl::ClearAllLocalData(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   if (AutofillTable::FromWebDatabase(db)->ClearAllLocalData()) {
-    NotifyOfMultipleAutofillChanges();
     ReportResult(Result::kClearAllLocalData_Success);
     return WebDatabase::COMMIT_NEEDED;
   }
