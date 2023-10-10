@@ -375,6 +375,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     this.updateStyles({
       '--audio-controls-background': 'var(--color-sys-tonal-container)',
       '--audio-controls-right-padding': '4px',
+      '--audio-controls-right-margin': '6px',
     });
 
     const toolbar = shadowRoot.getElementById('toolbar-container');
@@ -420,6 +421,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     this.updateStyles({
       '--audio-controls-background': 'transparent',
       '--audio-controls-right-padding': '0px',
+      '--audio-controls-right-margin': '2px',
     });
 
     const toolbar = shadowRoot.getElementById('toolbar-container');
