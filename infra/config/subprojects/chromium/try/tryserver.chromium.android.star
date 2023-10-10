@@ -586,16 +586,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-webview-nougat-arm64-dbg",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    mirrors = [
-        "ci/Android arm64 Builder (dbg)",
-        "ci/Android WebView N (dbg)",
-    ],
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
     name = "android-webview-oreo-arm64-dbg",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
@@ -797,14 +787,6 @@ try_.builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
-)
-
-try_.builder(
-    name = "android_unswarmed_pixel_aosp",
-    mirrors = [
-        "ci/Android arm64 Builder (dbg)",
-        "ci/Android WebView N (dbg)",
-    ],
 )
 
 try_.builder(

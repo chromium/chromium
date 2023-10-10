@@ -573,20 +573,6 @@
           'all',
         ],
       },
-      'Android WebView N (dbg)': {
-        'test_suites': {
-          'gtest_tests': 'webview_bot_all_gtests',
-        },
-        'mixins': [
-          'has_native_resultdb_integration',
-          'nougat',
-          'bullhead',
-        ],
-        'swarming': {
-          'expiration': 10800,
-        },
-        'os_type': 'android',
-      },
       'Android WebView O (dbg)': {
         'mixins': [
           'has_native_resultdb_integration',

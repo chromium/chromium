@@ -1272,23 +1272,6 @@
       "use_remoteexec": true
     }
   },
-  "android-webview-nougat-arm64-dbg": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "debuggable_apks": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "strip_debug_info": true,
-      "symbol_level": 0,
-      "system_webview_package_name": "com.google.android.apps.chrome",
-      "target_cpu": "arm64",
-      "target_os": "android",
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
   "android-webview-oreo-arm64-dbg": {
     "gn_args": {
       "dcheck_always_on": true,
@@ -1546,20 +1529,6 @@
       "use_dummy_lastchange": true,
       "use_remoteexec": true,
       "use_static_angle": true
-    }
-  },
-  "android_unswarmed_pixel_aosp": {
-    "gn_args": {
-      "debuggable_apks": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
-      "target_os": "android",
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
     }
   },
   "gpu-fyi-cq-android-arm64": {
