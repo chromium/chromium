@@ -326,8 +326,8 @@ sk_sp<SkData> SerializeRasterImage(SkImage* img, void*) {
   if (!img) {
     return nullptr;
   }
-  // TODO(crbug.com/1486503)
-  DUMP_WILL_BE_CHECK(!img->isTextureBacked());
+  // TODO(crbug.com/1486503) Convert texture-backed images to raster
+  // *before* they get this far if possible.
   if (img->isTextureBacked()) {
     GrDirectContext* ctx = SkImages::GetContext(img);
     return SkPngEncoder::Encode(ctx, img, SkPngEncoder::Options{});
