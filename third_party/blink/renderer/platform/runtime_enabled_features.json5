@@ -2959,6 +2959,10 @@
       copied_from_base_feature_if: "overridden",
     },
     {
+      name: "PositionOutsideTabSpanCheckSiblingNode",
+      status: "stable",
+    },
+    {
       name: "PreciseMemoryInfo",
       base_feature: "none",
       public: true,
