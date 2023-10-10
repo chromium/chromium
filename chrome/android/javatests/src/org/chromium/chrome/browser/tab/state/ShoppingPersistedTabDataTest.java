@@ -82,6 +82,9 @@ public class ShoppingPersistedTabDataTest {
     @Mock
     protected NavigationHandle mNavigationHandle;
 
+    // For R8 optimizer - see b/303266326.
+    @Mock private TabImpl mDoNotUseTabImpl;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
