@@ -23,19 +23,14 @@
 namespace browsing_data {
 namespace {
 
-bool IsPasswordSyncEnabled(const syncer::SyncService* sync_service) {
-  if (!sync_service)
-    return false;
-  switch (password_manager::sync_util::GetPasswordSyncState(sync_service)) {
-    case password_manager::SyncState::kNotSyncing:
-    case password_manager::SyncState::kAccountPasswordsActiveNormalEncryption:
-    case password_manager::SyncState::
-        kAccountPasswordsActiveWithCustomPassphrase:
-      return false;
-    case password_manager::SyncState::kSyncingNormalEncryption:
-    case password_manager::SyncState::kSyncingWithCustomPassphrase:
-      return true;
-  }
+// This predicate is only about profile (non-account) passwords, so it is only
+// concerned about whether sync-the-feature is on or off. Account passwords are
+// counted separately.
+bool IsProfilePasswordSyncEnabled(const syncer::SyncService* sync_service) {
+  // TODO(crbug.com/1464264): Migrate away from `ConsentLevel::kSync` on desktop
+  // platforms, including APIs that depend on sync-the-feature.
+  return password_manager::sync_util::IsSyncFeatureActiveIncludingPasswords(
+      sync_service);
 }
 
 }  // namespace
@@ -223,7 +218,8 @@ const std::vector<std::string>& PasswordsCounter::account_domain_examples() {
 }
 
 void PasswordsCounter::OnInitialized() {
-  sync_tracker_.OnInitialized(base::BindRepeating(&IsPasswordSyncEnabled));
+  sync_tracker_.OnInitialized(
+      base::BindRepeating(&IsProfilePasswordSyncEnabled));
 }
 
 const char* PasswordsCounter::GetPrefName() const {
