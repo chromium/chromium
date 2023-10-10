@@ -279,7 +279,7 @@ class TestLocationBar : public LocationBar {
   }
 
   raw_ptr<LocationBarModel> location_bar_model_;
-  raw_ptr<OmniboxViewViews, DanglingUntriaged> omnibox_view_ = nullptr;
+  raw_ptr<OmniboxViewViews> omnibox_view_ = nullptr;
 };
 
 // OmniboxViewViewsTest -------------------------------------------------------
@@ -323,15 +323,17 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
   views::Textfield* omnibox_textfield() const { return omnibox_view(); }
   views::View* omnibox_textfield_view() const { return omnibox_view(); }
 
-  views::TextfieldTestApi* textfield_test_api() { return test_api_.get(); }
+  views::TextfieldTestApi GetTextfieldTestApi() {
+    return views::TextfieldTestApi(omnibox_view());
+  }
 
   // Sets |new_text| as the omnibox text, and emphasizes it appropriately.  If
   // |accept_input| is true, pretends that the user has accepted this input
   // (i.e. it's been navigated to).
   void SetAndEmphasizeText(const std::string& new_text, bool accept_input);
 
-  bool IsCursorEnabled() const {
-    return test_api_->GetRenderText()->cursor_enabled();
+  bool IsCursorEnabled() {
+    return GetTextfieldTestApi().GetRenderText()->cursor_enabled();
   }
 
   ui::MouseEvent CreateMouseEvent(ui::EventType type,
@@ -377,9 +379,7 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by |widget_|.
-  raw_ptr<TestingOmniboxView, DanglingUntriaged> omnibox_view_;
-
-  std::unique_ptr<views::TextfieldTestApi> test_api_;
+  raw_ptr<TestingOmniboxView> omnibox_view_ = nullptr;
 };
 
 OmniboxViewViewsTest::OmniboxViewViewsTest(
@@ -433,7 +433,6 @@ void OmniboxViewViewsTest::SetUp() {
   auto omnibox_view = std::make_unique<TestingOmniboxView>(
       std::make_unique<ChromeOmniboxClient>(&location_bar_, browser(),
                                             profile()));
-  test_api_ = std::make_unique<views::TextfieldTestApi>(omnibox_view.get());
   omnibox_view->Init();
 
   omnibox_view_ = widget_->SetContentsView(std::move(omnibox_view));
@@ -444,6 +443,8 @@ void OmniboxViewViewsTest::TearDown() {
   if (omnibox_view_->GetInputMethod())
     omnibox_view_->GetInputMethod()->DetachTextInputClient(omnibox_view_);
 
+  location_bar()->set_omnibox_view(nullptr);
+  omnibox_view_ = nullptr;
   browser_->tab_strip_model()->CloseAllTabs();
   browser_ = nullptr;
   browser_window_ = nullptr;
@@ -495,12 +496,12 @@ TEST_F(OmniboxViewViewsTest, ScheduledTextEditCommand) {
   omnibox_textfield()->SetTextEditCommandForNextKeyEvent(
       ui::TextEditCommand::MOVE_UP);
   EXPECT_EQ(ui::TextEditCommand::MOVE_UP,
-            textfield_test_api()->scheduled_text_edit_command());
+            GetTextfieldTestApi().scheduled_text_edit_command());
 
   ui::KeyEvent up_pressed(ui::ET_KEY_PRESSED, ui::VKEY_UP, 0);
   omnibox_textfield()->OnKeyEvent(&up_pressed);
   EXPECT_EQ(ui::TextEditCommand::INVALID_COMMAND,
-            textfield_test_api()->scheduled_text_edit_command());
+            GetTextfieldTestApi().scheduled_text_edit_command());
 }
 
 // Test that Shift+Up and Shift+Down are not captured and let selection mode
@@ -981,7 +982,7 @@ TEST_P(OmniboxViewViewsClipboardTest, ClipboardCopyOrCutURL) {
 
   clipboard->Clear(clipboard_buffer);
   ui::TextEditCommand clipboard_command = GetParam();
-  textfield_test_api()->ExecuteTextEditCommand(clipboard_command);
+  GetTextfieldTestApi().ExecuteTextEditCommand(clipboard_command);
 
   std::u16string expected_text;
   if (clipboard_command == ui::TextEditCommand::COPY)
@@ -1021,7 +1022,7 @@ TEST_P(OmniboxViewViewsClipboardTest, ClipboardCopyOrCutUserText) {
 
   clipboard->Clear(clipboard_buffer);
   ui::TextEditCommand clipboard_command = GetParam();
-  textfield_test_api()->ExecuteTextEditCommand(clipboard_command);
+  GetTextfieldTestApi().ExecuteTextEditCommand(clipboard_command);
 
   if (clipboard_command == ui::TextEditCommand::CUT)
     EXPECT_EQ(std::u16string(), omnibox_view()->GetText());

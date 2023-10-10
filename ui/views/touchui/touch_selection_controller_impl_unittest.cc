@@ -96,36 +96,38 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
   }
 
   void TearDown() override {
+    textfield_ = nullptr;
     test_cursor_client_.reset();
-    if (textfield_widget_ && !textfield_widget_->IsClosed())
-      textfield_widget_->Close();
-    if (widget_ && !widget_->IsClosed())
-      widget_->Close();
+
+    auto close_widget = [](raw_ptr<Widget>& widget) {
+      if (widget && !widget->IsClosed()) {
+        widget.ExtractAsDangling()->Close();
+      }
+    };
+    close_widget(textfield_widget_);
+    close_widget(widget_);
+
     ViewsTestBase::TearDown();
   }
 
   void CreateTextfield() {
-    textfield_ = new Textfield();
-
-    // Focusable views must have an accessible name in order to pass the
-    // accessibility paint checks. The name can be literal text, placeholder
-    // text or an associated label.
-    textfield_->SetPlaceholderText(u"Foo");
-
     textfield_widget_ = new Widget;
     Widget::InitParams params =
         CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 200, 200);
     textfield_widget_->Init(std::move(params));
-    textfield_widget_->SetContentsView(std::make_unique<View>())
-        ->AddChildView(textfield_.get());
+    // Focusable views must have an accessible name in order to pass the
+    // accessibility paint checks. The name can be literal text, placeholder
+    // text or an associated label.
+    textfield_ = textfield_widget_->SetContentsView(std::make_unique<View>())
+                     ->AddChildView(Builder<Textfield>()
+                                        .SetPlaceholderText(u"Foo")
+                                        .SetID(1)
+                                        .SetBoundsRect(gfx::Rect(0, 0, 200, 21))
+                                        .Build());
 
-    textfield_->SetBoundsRect(gfx::Rect(0, 0, 200, 21));
-    textfield_->SetID(1);
     textfield_widget_->Show();
-
     textfield_->RequestFocus();
-    textfield_test_api_ = std::make_unique<TextfieldTestApi>(textfield_);
   }
 
   void CreateWidget() {
@@ -145,7 +147,9 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
   }
 
   gfx::Rect GetCursorRect(const gfx::SelectionModel& sel) {
-    return textfield_test_api_->GetRenderText()->GetCursorBounds(sel, true);
+    return TextfieldTestApi(textfield_)
+        .GetRenderText()
+        ->GetCursorBounds(sel, true);
   }
 
   gfx::Point GetCursorPosition(const gfx::SelectionModel& sel) {
@@ -154,15 +158,15 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
 
   TouchSelectionControllerImpl* GetSelectionController() {
     return static_cast<TouchSelectionControllerImpl*>(
-        textfield_test_api_->touch_selection_controller());
+        TextfieldTestApi(textfield_).touch_selection_controller());
   }
 
   void StartTouchEditing() {
-    textfield_test_api_->CreateTouchSelectionControllerAndNotifyIt();
+    TextfieldTestApi(textfield_).CreateTouchSelectionControllerAndNotifyIt();
   }
 
   void EndTouchEditing() {
-    textfield_test_api_->ResetTouchSelectionController();
+    TextfieldTestApi(textfield_).ResetTouchSelectionController();
   }
 
   void SimulateSelectionHandleDrag(gfx::Vector2d v, int selection_handle) {
@@ -249,7 +253,7 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
   }
 
   gfx::RenderText* GetRenderText() {
-    return textfield_test_api_->GetRenderText();
+    return TextfieldTestApi(textfield_).GetRenderText();
   }
 
   gfx::Point GetCursorHandleDragPoint() {
@@ -343,11 +347,10 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
         views::Widget::ClosedReason::kUnspecified);
   }
 
-  raw_ptr<Widget, AcrossTasksDanglingUntriaged> textfield_widget_ = nullptr;
-  raw_ptr<Widget, AcrossTasksDanglingUntriaged> widget_ = nullptr;
+  raw_ptr<Widget> textfield_widget_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
 
-  raw_ptr<Textfield, AcrossTasksDanglingUntriaged> textfield_ = nullptr;
-  std::unique_ptr<TextfieldTestApi> textfield_test_api_;
+  raw_ptr<Textfield> textfield_ = nullptr;
   std::unique_ptr<ViewsTouchEditingControllerFactory> views_tsc_factory_;
   std::unique_ptr<aura::test::TestCursorClient> test_cursor_client_;
 };
