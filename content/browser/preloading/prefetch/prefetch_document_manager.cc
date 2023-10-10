@@ -161,7 +161,7 @@ void PrefetchDocumentManager::DidStartNavigation(
     prefetch_container = prefetch_iter->second;
   }
 
-  if (!prefetch_container && no_vary_search_support_enabled_ &&
+  if (!prefetch_container &&
       base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch)) {
     prefetch_container = MatchUrl(navigation_handle->GetURL());
   }
