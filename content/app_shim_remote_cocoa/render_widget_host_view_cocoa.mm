@@ -15,6 +15,7 @@
 #include "base/apple/owned_objc.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
+#import "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
@@ -1262,6 +1263,16 @@ void ExtractUnderlines(NSAttributedString* string,
 
     if (is_a_system_shortcut_event) {
       [[NSApp mainMenu] performKeyEquivalent:theEvent];
+
+      // Behavior changed in macOS Sonoma - now it's important we early-out
+      // rather than allow the code to reach
+      // _hostHelper->ForwardKeyboardEventWithCommands(). Go with the existing
+      // behavior for prior versions because we know it works for them.
+      if (base::mac::MacOSVersion() >= 14'00'00) {
+        _currentKeyDownCode.reset();
+        _host->EndKeyboardEvent();
+        return;
+      }
     } else {
       [self interpretKeyEvents:@[ theEvent ]];
     }
