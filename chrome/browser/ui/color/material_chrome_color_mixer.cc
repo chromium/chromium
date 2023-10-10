@@ -106,6 +106,26 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   // Cast Dialog colors.
   mixer[kColorCastDialogHelpIcon] = {ui::kColorSysPrimary};
 
+  if (base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
+    // Compose colors.
+    mixer[kColorComposeDialogBackground] = {ui::kColorSysSurface};
+    mixer[kColorComposeDialogForegroundSubtle] = {ui::kColorSysOnSurfaceSubtle};
+    mixer[kColorComposeDialogLink] = {ui::kColorSysPrimary};
+    mixer[kColorComposeDialogResultBackground] = {ui::kColorSysBaseContainer};
+    mixer[kColorComposeDialogResultForeground] = {ui::kColorSysOnSurface};
+    mixer[kColorComposeDialogResultIcon] = {ui::kColorSysOnSurfaceSubtle};
+    mixer[kColorComposeDialogTitle] = {ui::kColorSysOnSurface};
+    mixer[kColorComposeDialogTextarea] = {ui::kColorSysOnSurface};
+    mixer[kColorComposeDialogTextareaOutline] = {ui::kColorSysNeutralOutline};
+    mixer[kColorComposeDialogTextareaPlaceholder] = {
+        ui::kColorSysOnSurfaceSecondary};
+    mixer[kColorComposeDialogTextareaReadonlyBackground] = {
+        ui::kColorSysNeutralContainer};
+    mixer[kColorComposeDialogTextareaReadonlyForeground] = {
+        ui::kColorSysOnSurface};
+    mixer[kColorComposeDialogTextareaIcon] = {ui::kColorSysOnSurfaceSubtle};
+  }
+
   if (!ShouldApplyChromeMaterialOverrides(key)) {
     return;
   }
@@ -279,24 +299,4 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbarTextDisabledDefault] = {ui::kColorSysStateDisabled};
 
   mixer[kColorWebAuthnIconColor] = {ui::kColorSysPrimary};
-
-  if (base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
-    // Compose colors.
-    mixer[kColorComposeDialogBackground] = {ui::kColorSysSurface};
-    mixer[kColorComposeDialogForegroundSubtle] = {ui::kColorSysOnSurfaceSubtle};
-    mixer[kColorComposeDialogLink] = {ui::kColorSysPrimary};
-    mixer[kColorComposeDialogResultBackground] = {ui::kColorSysBaseContainer};
-    mixer[kColorComposeDialogResultForeground] = {ui::kColorSysOnSurface};
-    mixer[kColorComposeDialogResultIcon] = {ui::kColorSysOnSurfaceSubtle};
-    mixer[kColorComposeDialogTitle] = {ui::kColorSysOnSurface};
-    mixer[kColorComposeDialogTextarea] = {ui::kColorSysOnSurface};
-    mixer[kColorComposeDialogTextareaOutline] = {ui::kColorSysNeutralOutline};
-    mixer[kColorComposeDialogTextareaPlaceholder] = {
-        ui::kColorSysOnSurfaceSecondary};
-    mixer[kColorComposeDialogTextareaReadonlyBackground] = {
-        ui::kColorSysNeutralContainer};
-    mixer[kColorComposeDialogTextareaReadonlyForeground] = {
-        ui::kColorSysOnSurface};
-    mixer[kColorComposeDialogTextareaIcon] = {ui::kColorSysOnSurfaceSubtle};
-  }
 }
