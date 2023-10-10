@@ -4,6 +4,7 @@
 
 import 'chrome://histograms/histograms_internals.js';
 
+import {generateHistogramsAsText, monitoringStopped} from 'chrome://histograms/histograms_internals.js';
 import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -69,8 +70,7 @@ suite('HistogramsInternals', () => {
         '11  ----O                                                                     (4 = 66.7%) {33.3%}\n' +
         '20  O                                                                         (0 = 0.0%) {100.0%}';
 
-    assertNotEquals(
-        window.generateHistogramsAsText().indexOf(expectedContent), -1);
+    assertNotEquals(generateHistogramsAsText().indexOf(expectedContent), -1);
   });
 
   test('StopMonitoring', async function() {
@@ -79,12 +79,12 @@ suite('HistogramsInternals', () => {
     await histogramsUpdated();
 
     const stopButton = getRequiredElement<HTMLButtonElement>('stop');
-    assertFalse(window.monitoringStopped());
+    assertFalse(monitoringStopped());
     assertEquals(stopButton.textContent, 'Stop');
     assertFalse(stopButton.disabled);
 
     stopButton.click();
-    assertTrue(window.monitoringStopped());
+    assertTrue(monitoringStopped());
     assertEquals(stopButton.textContent, 'Stopped');
     assertTrue(stopButton.disabled);
   });

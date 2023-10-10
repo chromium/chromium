@@ -149,7 +149,7 @@ function stopMonitoring() {
 /**
  * Returns if monitoring mode is stopped.
  */
-function monitoringStopped(): boolean {
+export function monitoringStopped(): boolean {
   return inMonitoringMode && !fetchDiffScheduler;
 }
 
@@ -230,7 +230,7 @@ function addHistograms(histograms: Histogram[]) {
 /**
  * Returns the histograms as a formatted string.
  */
-function generateHistogramsAsText() {
+export function generateHistogramsAsText() {
   // Expanded/collapsed status is reflected in the text.
   return getRequiredElement('histograms').innerText;
 }
@@ -267,13 +267,6 @@ document.addEventListener('DOMContentLoaded', function() {
   Object.assign(window, {generateHistogramsAsText, monitoringStopped});
   requestHistograms();
 });
-
-declare global {
-  interface Window {
-    generateHistogramsAsText(): string;
-    monitoringStopped(): boolean;
-  }
-}
 
 /**
  * Reload histograms when the "#abc" in "chrome://histograms/#abc" changes.
