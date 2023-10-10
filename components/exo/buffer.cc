@@ -272,8 +272,9 @@ Buffer::Texture::Texture(
                                       gpu_memory_buffer_->CloneHandle());
   } else {
     mailbox_ = sii->CreateSharedImage(
-        gpu_memory_buffer_, gpu_memory_buffer_manager, color_space,
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "ExoTexture");
+        gpu_memory_buffer_, gpu_memory_buffer_manager,
+        gfx::BufferPlane::DEFAULT, color_space, kTopLeft_GrSurfaceOrigin,
+        kPremul_SkAlphaType, usage, "ExoTexture");
   }
   DCHECK(!mailbox_.IsZero());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();

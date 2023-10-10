@@ -144,8 +144,9 @@ class FuchsiaVideoDecoder::OutputMailbox {
     } else {
       mailbox_ =
           raster_context_provider_->SharedImageInterface()->CreateSharedImage(
-              gmb.get(), nullptr, color_space, kTopLeft_GrSurfaceOrigin,
-              kPremul_SkAlphaType, usage, "FuchsiaVideoDecoder");
+              gmb.get(), nullptr, gfx::BufferPlane::DEFAULT, color_space,
+              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+              "FuchsiaVideoDecoder");
     }
 
     create_sync_token_ = raster_context_provider_->SharedImageInterface()
