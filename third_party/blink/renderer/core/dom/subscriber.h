@@ -32,7 +32,7 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
   // API methods.
   void next(ScriptValue);
   void complete();
-  void error(ScriptValue);
+  void error(ScriptState*, ScriptValue);
 
   // API attributes.
   AbortSignal* signal() { return signal_; }

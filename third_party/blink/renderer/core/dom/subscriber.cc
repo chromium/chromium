@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer_complete_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -36,10 +37,31 @@ void Subscriber::complete() {
   }
 }
 
-void Subscriber::error(ScriptValue error) {
+void Subscriber::error(ScriptState* script_state, ScriptValue error) {
   if (error_) {
     error_->InvokeAndReportException(nullptr, error);
     CloseSubscription();
+  } else {
+    // The given observer's `error()` handler can be null here for one of two
+    // reasons:
+    //   1. The given observer simply doesn't have an `error()` handler (since
+    //      it is optional)
+    //   2. The subscription is already closed (in which case
+    //      `CloseSubscription()` manually clears `error_`)
+    // In both of these cases, if the observer is still producing errors, we
+    // must surface them to the global via "report the exception":
+    // https://html.spec.whatwg.org/C#report-the-exception.
+    //
+    // Reporting the exception requires a valid `ScriptState`, which we don't
+    // have if we're in a detached context. See observable-constructor.window.js
+    // for tests.
+    if (!script_state->ContextIsValid()) {
+      CHECK(!GetExecutionContext());
+      return;
+    }
+    ScriptState::Scope scope(script_state);
+    V8ScriptRunner::ReportException(script_state->GetIsolate(),
+                                    error.V8Value());
   }
 }
 

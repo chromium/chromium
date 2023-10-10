@@ -4,13 +4,13 @@ PASS Subscriber interface is not constructible
 PASS subscribe() can be called with no arguments
 PASS Observable constructor calls initializer on subscribe
 PASS Observable error path called synchronously
-FAIL Observable should error if initializer throws assert_array_equals: should emit values and the throw error synchronously lengths differ, expected array [1, object "Error: error"] length 2, got [1] length 1
+FAIL Observable should error if initializer throws assert_equals: The global error handler should not be invoked when the subscribe callback throws an error and the subscriber has given an error handler expected null but got object "[object ErrorEvent]"
 PASS Subscription does not emit values after completion
 PASS Subscription does not emit values after error
 PASS Completing or nexting a subscriber after an error does nothing
-FAIL Errors pushed to the subscriber that are not handled by the subscription are reported to the global assert_true: Exception was reported to global expected true got false
+PASS Errors pushed to the subscriber that are not handled by the subscription are reported to the global
 PASS Errors thrown in the initializer that are not handled by the subscription are reported to the global
-FAIL Subscription reports errors that are pushed after subscriber is closed by completion assert_true: Exception was reported to global expected true got false
+PASS Subscription reports errors that are pushed after subscriber is closed by completion
 PASS Errors thrown by initializer function after subscriber is closed by completion are reported
 Harness: the test ran to completion.
 
