@@ -1,6 +1,0 @@
-# This file is used by git-cl to get repository specific information.
-PROJECT: chrome/browser/nearby_sharing/internal
-CC_LIST: chromeos-cross-device-eng@google.com
-GERRIT_HOST: True
-CODE_REVIEW_SERVER: https://chrome-internal-review.googlesource.com
-VIEW_VC: https://chrome-internal.googlesource.com/chrome/browser/nearby_sharing/internal/+/
