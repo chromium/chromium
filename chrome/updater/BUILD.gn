@@ -386,21 +386,19 @@ if (is_win || is_mac || is_linux) {
       "app/app.h",
     ]
 
-    deps = [
-      ":constants_header",
+    deps = [ ":constants_header" ]
+
+    public_deps = [
+      ":public_sources",
       "//base",
     ]
-
-    public_deps = [ ":public_sources" ]
   }
 
   source_set("constants_header") {
     sources = [ "constants.h" ]
 
-    deps = [
-      "//base",
-      "//components/update_client",
-    ]
+    public_deps = [ "//base" ]
+    deps = [ "//components/update_client" ]
   }
 
   source_set("external_constants") {
@@ -523,6 +521,7 @@ if (is_win || is_mac || is_linux) {
     ]
 
     public_deps = [ ":public_sources" ]
+    deps = [ ":constants_header" ]
 
     visibility = [
       "//chrome/browser",
