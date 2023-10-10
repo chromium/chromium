@@ -28,9 +28,10 @@ class FamilyMember {
 
   void TurnOnSync();
 
-  // Url of family member's blocklist settings. Member must be a supervised user
-  // who is a subject to parental controls.
+  // Urls of family member's blocklist and allowlist settings. Member must be a
+  // supervised user who is a subject to parental controls.
   GURL GetBlockListUrlFor(FamilyMember& member) const;
+  GURL GetAllowListUrlFor(FamilyMember& member) const;
 
   // Browsertest apis expect pointer.
   Browser* browser() const { return &browser_.get(); }

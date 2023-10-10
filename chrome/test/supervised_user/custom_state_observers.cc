@@ -4,6 +4,7 @@
 
 #include "chrome/test/supervised_user/custom_state_observers.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "ui/base/interaction/state_observer.h"
@@ -27,7 +28,7 @@ void TabTitleObserver::TabChangedAt(content::WebContents* contents,
   if (index != observed_tab_index_) {
     return;
   }
-  OnStateObserverStateChanged(contents->GetTitle());
+  OnStateObserverStateChanged(base::UTF16ToWide(contents->GetTitle()));
 }
 
 void TabTitleObserver::OnTabStripModelDestroyed(

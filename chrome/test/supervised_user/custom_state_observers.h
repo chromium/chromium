@@ -18,7 +18,7 @@ namespace supervised_user {
 
 // StateObserver wrapper over TabStripModelObserver to fit into kombucha
 // framework. Enables matching tabs by their title.
-class TabTitleObserver : public ui::test::StateObserver<std::u16string>,
+class TabTitleObserver : public ui::test::StateObserver<std::wstring>,
                          public TabStripModelObserver {
  public:
   explicit TabTitleObserver(Browser* browser, int observed_tab_index = 0);

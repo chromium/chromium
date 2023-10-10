@@ -23,6 +23,29 @@
 
 namespace supervised_user {
 
+namespace {
+CoreAccountId GetAccountId(Profile* profile) {
+  supervised_user::SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForProfile(profile);
+  CHECK(supervised_user_service) << "Incognito mode is not supported.";
+  CHECK(supervised_user_service->IsURLFilteringEnabled())
+      << "Blocklist control page is only available to user who have that "
+         "feature enabled. Check if member is a subject to parental controls.";
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+
+  return identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+}
+
+GURL GetControlListUrlFor(FamilyMember& member, std::string_view page) {
+  return GURL(
+      base::StrCat({"https://families.google.com/u/0/manage/family/child/",
+                    GetAccountId(member.browser()->profile()).ToString(),
+                    "/exceptions/", page}));
+}
+}  // namespace
+
 FamilyMember::FamilyMember(
     signin::test::TestAccount account,
     Browser& browser,
@@ -36,21 +59,11 @@ FamilyMember::FamilyMember(
 FamilyMember::~FamilyMember() = default;
 
 GURL FamilyMember::GetBlockListUrlFor(FamilyMember& member) const {
-  supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(member.browser_->profile());
-  CHECK(supervised_user_service->IsURLFilteringEnabled())
-      << "Blocklist control page is only available to user who have that "
-         "feature enabled. Check if member is a subject to parental controls.";
+  return GetControlListUrlFor(member, "blocked");
+}
 
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(member.browser_->profile());
-
-  CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-
-  return GURL(
-      base::StrCat({"https://families.google.com/u/0/manage/family/child/",
-                    account_id.ToString(), "/exceptions/blocked"}));
+GURL FamilyMember::GetAllowListUrlFor(FamilyMember& member) const {
+  return GetControlListUrlFor(member, "allowed");
 }
 
 void FamilyMember::TurnOnSync() {
