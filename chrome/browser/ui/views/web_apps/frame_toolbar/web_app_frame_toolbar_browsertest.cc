@@ -565,19 +565,15 @@ class BorderlessIsolatedWebAppBrowserTest
                                          gfx::Size& expected_inner_size,
                                          gfx::Size& expected_outer_size) {
     auto* web_contents = browser_view->GetActiveWebContents();
+    content::WaitForLoadStop(web_contents);
 
-    while (!(web_contents->CompletedFirstVisuallyNonEmptyPaint() &&
-             !web_contents->IsLoading() &&
-             web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame() &&
-             IsWindowSizeCorrect(browser_view, expected_inner_size,
-                                 expected_outer_size))) {
+    while (!IsWindowSizeCorrect(browser_view, expected_inner_size,
+                                expected_outer_size)) {
       base::RunLoop run_loop;
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
       run_loop.Run();
     }
-
-    ASSERT_TRUE(content::WaitForLoadStop(web_contents));
   }
 
  private:
