@@ -31,6 +31,7 @@ class TabOrganizationButton : public TabStripControlButton {
   gfx::Size CalculatePreferredSize() const override;
 
   void ButtonPressed(const ui::Event& event);
+  void ClosePressed(const ui::Event& event);
 
  protected:
   // TabStripControlButton:
@@ -38,10 +39,13 @@ class TabOrganizationButton : public TabStripControlButton {
   int GetFlatCornerRadius() const override;
 
  private:
+  void SetCloseButton(PressedCallback callback);
+
   // Preferred width multiplier, between 0-1. Used to animate button size.
   float width_factor_ = 0;
   raw_ptr<TabOrganizationSession, DanglingUntriaged> session_ = nullptr;
   PressedCallback pressed_callback_;
+  raw_ptr<views::LabelButton> close_button_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_ORGANIZATION_BUTTON_H_
