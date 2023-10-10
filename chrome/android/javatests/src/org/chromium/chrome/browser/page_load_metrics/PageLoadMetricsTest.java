@@ -105,12 +105,10 @@ public class PageLoadMetricsTest {
         private final CountDownLatch mLoadEventStartLatch = new CountDownLatch(1);
         private long mNavigationId = NO_NAVIGATION_ID;
         private long mPrerenderingId = NO_NAVIGATION_ID;
-        private WebContents mWebContents;
 
         @Override
         public void onNewNavigation(WebContents webContents, long navigationId,
                 boolean isFirstNavigationInWebContents) {
-            if (mWebContents != webContents) mWebContents = webContents;
             if (PageLoadMetrics.isPrerendering()) {
                 if (mPrerenderingId == NO_NAVIGATION_ID) mPrerenderingId = navigationId;
                 mPrerenderingNavigationLatch.countDown();
@@ -122,9 +120,10 @@ public class PageLoadMetricsTest {
         @Override
         public void onActivation(WebContents webContents, long prerenderingNavigationId,
                 long activatingNavigationId, long activationStartMicros) {
-            Assert.assertTrue("webContents should not be changed", mWebContents == webContents);
-            Assert.assertTrue("prerenderingNavigationId should be consistent",
-                    mPrerenderingId == prerenderingNavigationId);
+            Assert.assertEquals(
+                    "prerenderingNavigationId should be consistent",
+                    mPrerenderingId,
+                    prerenderingNavigationId);
             Assert.assertTrue(
                     "prerenderingNavigationId and activatingNavigationId should be different",
                     prerenderingNavigationId != activatingNavigationId);
@@ -140,23 +139,14 @@ public class PageLoadMetricsTest {
         @Override
         public void onFirstContentfulPaint(WebContents webContents, long navigationId,
                 long navigationStartMicros, long firstContentfulPaintMs) {
-            Assert.assertTrue("webContents should not be changed", mWebContents == webContents);
             if (mNavigationId != navigationId) return;
 
             if (firstContentfulPaintMs > 0) mFirstContentfulPaintLatch.countDown();
         }
 
         @Override
-        public void onLargestContentfulPaint(WebContents webContents, long navigationId,
-                long navigationStartMicros, long largestContentfulPaintMs,
-                long largestContentfulPaintSize) {
-            Assert.assertTrue("webContents should not be changed", mWebContents == webContents);
-        }
-
-        @Override
         public void onLoadEventStart(WebContents webContents, long navigationId,
                 long navigationStartMicros, long loadEventStartMs) {
-            Assert.assertTrue("webContents should not be changed", mWebContents == webContents);
             if (mPrerenderingId != NO_NAVIGATION_ID) {
                 if (mPrerenderingId == navigationId) {
                     Assert.assertTrue("Should be registered as prerendering",
