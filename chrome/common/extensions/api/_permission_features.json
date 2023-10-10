@@ -308,7 +308,14 @@
     "location": "external_component",
     "platforms": ["chromeos"],
     "allowlist": [
-      "EC8EA268128FECE14CEC68B90686D87755D87083",  // http://crbug.com/854695
+      "EC8EA268128FECE14CEC68B90686D87755D87083"   // http://crbug.com/854695
+    ]
+  },
+  {
+    "channel": "stable",
+    "platforms": ["chromeos", "lacros"],
+    "extension_types": ["extension"],
+    "allowlist": [
       "A4CC6F00ACF41015AF38F1D5C98E97C2B8B3B320",  // http://crbug.com/1483151
       "4E09F1C1EEC4D27F1F7DF18BA3643307107A7C41"   // http://crbug.com/1483151
     ]
