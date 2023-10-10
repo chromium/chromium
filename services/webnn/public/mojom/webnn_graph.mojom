@@ -135,6 +135,17 @@ struct GemmAttributes {
   bool b_transpose = false;
 };
 
+// Represents the transpose operation that permutes the dimensions of the
+// input tensor following the given permutation.
+struct Transpose {
+  // The id of input operand.
+  uint64 input_operand_id;
+  // The id of output operand.
+  uint64 output_operand_id;
+  // The values used to permute the dimensions of the input tensor.
+  array<uint32> permutation;
+};
+
 // Holds one of operator attributes.
 union OperatorAttributes {
   ClampAttributes clamp;
@@ -177,6 +188,7 @@ struct Operator {
 // Holds one of operator.
 union Operation {
   Pool2d pool2d;
+  Transpose transpose;
 
   // TODO(crbug.com/1273291): The `generic_operator` will be removed.
   Operator generic_operator;

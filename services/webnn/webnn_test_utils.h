@@ -75,6 +75,10 @@ class GraphInfoBuilder final {
         mojom::Operation::NewPool2d(std::move(pool2d)));
   }
 
+  void BuildTranspose(uint64_t input_operand_id,
+                      uint64_t output_operand_id,
+                      std::vector<uint32_t> permutation);
+
   const mojom::GraphInfoPtr& GetGraphInfo() const { return graph_info_; }
 
   // Get a clone of internal graph info. This is used by

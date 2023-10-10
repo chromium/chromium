@@ -1465,6 +1465,95 @@ TEST_P(MLGraphTestMojo, SoftmaxTest) {
   }
 }
 
+struct TransposeTester {
+  OperandInfoBlink input;
+  absl::optional<Vector<uint32_t>> permutation;
+  OperandInfoMojo expected_operand;
+  Vector<uint32_t> expected_permutation;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    MLTransposeOptions* options = MLTransposeOptions::Create();
+    if (permutation.has_value()) {
+      options->setPermutation(permutation.value());
+    }
+    auto* output_operand =
+        builder->transpose(input_operand, options, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    ASSERT_TRUE(operation->is_transpose());
+    auto& transpose = operation->get_transpose();
+
+    // Validate the permutation of transpose operation.
+    EXPECT_EQ(transpose->permutation, expected_permutation);
+
+    // Validate the input operand.
+    EXPECT_EQ(graph_info->input_operands.size(), 1u);
+    auto input_operand_id = graph_info->input_operands[0];
+    EXPECT_EQ(transpose->input_operand_id, input_operand_id);
+    auto input_operand_iter =
+        graph_info->id_to_operand_map.find(input_operand_id);
+    ASSERT_TRUE(input_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(input_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(input_operand_iter->value->dimensions, input.dimensions);
+
+    // Validate the output operand.
+    EXPECT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    EXPECT_EQ(transpose->output_operand_id, output_operand_id);
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_operand.dimensions);
+  }
+};
+
+TEST_P(MLGraphTestMojo, TransposeTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device preference.
+  options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  {
+    // Test transpose operator with default options.
+    TransposeTester{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 2, 3, 4}},
+        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {4, 3, 2, 1}},
+        .expected_permutation = {3, 2, 1, 0}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test transpose operator with a given permutation.
+    TransposeTester{
+        .input = {.type = V8MLOperandType::Enum::kFloat16,
+                  .dimensions = {1, 2, 3, 4}},
+        .permutation = Vector<uint32_t>{3, 0, 2, 1},
+        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {4, 1, 3, 2}},
+        .expected_permutation = {3, 0, 2, 1}}
+        .Test(*this, scope, builder);
+  }
+}
+
 template <typename T>
 struct ConstantTester {
   OperandInfo<T> constant;

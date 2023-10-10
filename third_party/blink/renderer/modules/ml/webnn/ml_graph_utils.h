@@ -77,6 +77,9 @@ MLNamedArrayBufferViews* CreateNamedArrayBufferViews(
 
 webnn::AutoPad BlinkAutoPadToComponent(blink::V8MLAutoPad::Enum type);
 
+// Create a default permutation vector [rank - 1, ..., 0].
+Vector<uint32_t> CreateDefaultPermutation(const wtf_size_t rank);
+
 // Helper to get padding sizes for convolution 2d or pooling 2d Nodes.
 template <typename OptionsType>
 webnn::Padding2d CalculatePadding2D(const OptionsType* options,

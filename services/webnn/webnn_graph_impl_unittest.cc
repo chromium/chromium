@@ -1144,6 +1144,90 @@ TEST_F(WebNNGraphImplTest, SoftmaxTest) {
   }
 }
 
+struct TransposeTester {
+  OperandInfo input;
+  std::vector<uint32_t> permutation;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildTranspose(input_operand_id, output_operand_id,
+                           std::move(permutation));
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, TransposeTest) {
+  {
+    // Test transpose operator with permutation [2, 3, 1, 0].
+    TransposeTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                              .dimensions = {1, 2, 3, 4}},
+                    .permutation = {2, 3, 1, 0},
+                    .output = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {3, 4, 2, 1}},
+                    .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the rank of permutation is larger than the
+    // input rank.
+    TransposeTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                              .dimensions = {1, 2, 3}},
+                    .permutation = {0, 1, 2, 2},
+                    .output = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1, 2, 3, 3}},
+                    .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the permutation contains duplicate values.
+    TransposeTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                              .dimensions = {1, 2, 3, 4}},
+                    .permutation = {0, 1, 2, 2},
+                    .output = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1, 2, 3, 3}},
+                    .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when one value in permutation is greater than
+    // input_rank - 1.
+    TransposeTester{.input = {.type = mojom::Operand::DataType::kFloat16,
+                              .dimensions = {1, 2, 3, 4}},
+                    .permutation = {0, 1, 2, 4},
+                    .output = {.type = mojom::Operand::DataType::kFloat16,
+                               .dimensions = {1, 2, 3, 4}},
+                    .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output shapes are not expected.
+    TransposeTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                              .dimensions = {1, 2, 3, 4}},
+                    .permutation = {0, 1, 2, 3},
+                    .output = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1, 2, 3}},
+                    .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output types don't match.
+    TransposeTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                              .dimensions = {1, 2, 3, 4}},
+                    .permutation = {0, 1, 2, 3},
+                    .output = {.type = mojom::Operand::DataType::kFloat16,
+                               .dimensions = {1, 2, 3, 4}},
+                    .expected = false}
+        .Test();
+  }
+}
+
 TEST_F(WebNNGraphImplTest, ValidateInputsTest) {
   const std::vector<uint32_t> dimensions = {3, 5};
   // Build the graph with mojo type.

@@ -463,6 +463,28 @@ bool ValidateSoftmax(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidateTranspose(const IdToOperandMap& id_to_operand_map,
+                       const mojom::TransposePtr& transpose) {
+  auto* input = GetMojoOperand(id_to_operand_map, transpose->input_operand_id);
+  auto* output =
+      GetMojoOperand(id_to_operand_map, transpose->output_operand_id);
+  if (!input || !output) {
+    // The transpose operator is invalid.
+    return false;
+  }
+
+  auto validated_output = ValidateTransposeAndInferOutput(
+      ConvertToComponentOperand(input), transpose->permutation);
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateGenericOperator(const IdToOperandMap& id_to_operand_map,
                              const mojom::OperatorPtr& operation) {
   switch (operation->kind) {
@@ -515,6 +537,8 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
   switch (operation->which()) {
     case mojom::Operation::Tag::kPool2d:
       return ValidatePool2d(id_to_operand_map, operation->get_pool2d());
+    case mojom::Operation::Tag::kTranspose:
+      return ValidateTranspose(id_to_operand_map, operation->get_transpose());
     case mojom::Operation::Tag::kGenericOperator:
       return ValidateGenericOperator(id_to_operand_map,
                                      operation->get_generic_operator());

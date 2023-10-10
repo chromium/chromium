@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
@@ -476,6 +477,29 @@ OperationPtr CreateSoftmaxOperator(const OperandToIdMap& operand_to_id_map,
       std::move(operator_mojo));
 }
 
+OperationPtr CreateTransposeOperation(const OperandToIdMap& operand_to_id_map,
+                                      const MLOperator* transpose) {
+  const uint64_t input_operand_id =
+      GetOperatorInputId(transpose, operand_to_id_map);
+  const uint64_t output_operand_id =
+      GetOperatorOutputId(transpose, operand_to_id_map);
+
+  auto transpose_mojo = webnn::mojom::blink::Transpose::New();
+  transpose_mojo->input_operand_id = input_operand_id;
+  transpose_mojo->output_operand_id = output_operand_id;
+  const auto* options =
+      static_cast<const MLTransposeOptions*>(transpose->Options());
+  CHECK(options);
+
+  auto input_rank = transpose->Inputs()[0]->Dimensions().size();
+  transpose_mojo->permutation =
+      options->getPermutationOr(CreateDefaultPermutation(input_rank));
+  CHECK_EQ(transpose_mojo->permutation.size(), input_rank);
+
+  return webnn::mojom::blink::Operation::NewTranspose(
+      std::move(transpose_mojo));
+}
+
 }  // namespace
 
 base::expected<OperationPtr, String> ConvertToMojoOperation(
@@ -504,13 +528,14 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
       return CreateReshapeOperator(operand_to_id_map, op);
     case MLOperator::OperatorKind::kSoftmax:
       return CreateSoftmaxOperator(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kTranspose:
+      return CreateTransposeOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kHardSwish:
     case MLOperator::OperatorKind::kReduceMean:
     case MLOperator::OperatorKind::kReduceSum:
     case MLOperator::OperatorKind::kResample2d:
     case MLOperator::OperatorKind::kSigmoid:
     case MLOperator::OperatorKind::kConcat:
-    case MLOperator::OperatorKind::kTranspose:
     case MLOperator::OperatorKind::kLeakyRelu:
     case MLOperator::OperatorKind::kConvTranspose2d:
     case MLOperator::OperatorKind::kPRelu:

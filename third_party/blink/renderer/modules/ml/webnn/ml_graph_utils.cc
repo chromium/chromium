@@ -203,4 +203,12 @@ webnn::AutoPad BlinkAutoPadToComponent(blink::V8MLAutoPad::Enum type) {
   NOTREACHED_NORETURN();
 }
 
+Vector<uint32_t> CreateDefaultPermutation(const wtf_size_t rank) {
+  Vector<uint32_t> default_permutation(rank);
+  for (wtf_size_t i = 0; i < rank; ++i) {
+    default_permutation[i] = rank - 1 - i;
+  }
+  return default_permutation;
+}
+
 }  // namespace blink

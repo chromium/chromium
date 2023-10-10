@@ -5,6 +5,7 @@
 #include "components/ml/webnn/graph_validation_utils.h"
 
 #include <algorithm>
+#include <set>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -502,6 +503,28 @@ base::expected<Operand, std::string> ValidateGemmAndInferOutput(
   return Operand(a.data_type, std::move(output_shape));
 }
 
+base::expected<Operand, std::string> ValidateTransposeAndInferOutput(
+    const Operand& input,
+    base::span<const uint32_t> permutation) {
+  auto input_dimensions = input.dimensions;
+  auto input_rank = input_dimensions.size();
+  if (permutation.size() != input_rank) {
+    return base::unexpected(
+        "The number of values in permutation must be the same as the rank of "
+        "the input tensor.");
+  }
+  auto validation_result = ValidateAxes(permutation, input_rank);
+  if (!validation_result.has_value()) {
+    return base::unexpected(validation_result.error());
+  }
+
+  std::vector<uint32_t> output_shape(input_rank);
+  for (size_t i = 0; i < input_rank; ++i) {
+    output_shape[i] = input_dimensions[permutation[i]];
+  }
+  return Operand(input.data_type, std::move(output_shape));
+}
+
 base::expected<size_t, std::string> ValidateAndCalculateElementsNumber(
     base::span<const uint32_t> dimensions) {
   if (dimensions.empty()) {
@@ -533,6 +556,24 @@ base::expected<size_t, std::string> ValidateAndCalculateByteLength(
     return base::unexpected("The byte length is too large.");
   }
   return checked_byte_length.ValueOrDie();
+}
+
+base::expected<void, std::string> ValidateAxes(base::span<const uint32_t> axes,
+                                               uint32_t rank) {
+  if (base::ranges::any_of(axes, [rank](uint32_t axis) {
+        return base::MakeStrictNum(axis) >= rank;
+      })) {
+    return base::unexpected(base::StringPrintf(
+        "The values in axes must be within the range from 0 to (%u).",
+        rank - 1));
+  }
+
+  if (axes.size() != std::set<uint32_t>(axes.begin(), axes.end()).size()) {
+    return base::unexpected(
+        "Two or more values are same in the axes sequence.");
+  }
+
+  return base::ok();
 }
 
 absl::optional<std::vector<uint32_t>> BroadcastShapes(

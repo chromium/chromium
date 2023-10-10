@@ -184,12 +184,23 @@ base::expected<Operand, std::string> ValidateGemmAndInferOutput(
     const Operand& b,
     const GemmAttributes& attributes);
 
+// Validate transpose operator defined in WebIDL here
+// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-transpose
+base::expected<Operand, std::string> ValidateTransposeAndInferOutput(
+    const Operand& input,
+    base::span<const uint32_t> permutation);
+
 base::expected<size_t, std::string> ValidateAndCalculateElementsNumber(
     base::span<const uint32_t> dimensions);
 
 base::expected<size_t, std::string> ValidateAndCalculateByteLength(
     size_t type_bytes,
     base::span<const uint32_t> dimensions);
+
+// Validate that the axes are within the range of [0, rank - 1] without
+// duplication.
+base::expected<void, std::string> ValidateAxes(base::span<const uint32_t> axes,
+                                               uint32_t rank);
 
 // Broadcast the input shapes and return the output shape.
 // If bidirectional is true, its behavior follows the numpy-broadcasting-rule:

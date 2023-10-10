@@ -32,6 +32,7 @@ using Microsoft::WRL::ComPtr;
 using mojom::ComputeResult;
 using mojom::Operand;
 using mojom::OperandPtr;
+using mojom::Operation;
 using mojom::Operator;
 using mojom::OperatorPtr;
 
@@ -92,6 +93,17 @@ std::string OpKindToString(Operator::Kind kind) {
       return "reshape";
     case Operator::Kind::kSoftmax:
       return "softmax";
+  }
+}
+
+std::string OpTagToString(Operation::Tag tag) {
+  switch (tag) {
+    case Operation::Tag::kPool2d:
+      return "pool2d";
+    case Operation::Tag::kTranspose:
+      return "transpose";
+    case Operation::Tag::kGenericOperator:
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -888,12 +900,7 @@ base::expected<void, mojom::ErrorPtr> CreateGenericOperator(
       break;
     }
     default:
-      DLOG(ERROR) << "This operator kind (" + OpKindToString(operation->kind) +
-                         ") is not supported.";
-      create_operator_result = base::unexpected(mojom::Error::New(
-          mojom::Error::Code::kNotSupportedError,
-          "This operator (" + OpKindToString(operation->kind) +
-              ") is not supported."));
+      NOTREACHED_NORETURN();
   }
   return create_operator_result;
 }
@@ -1347,17 +1354,26 @@ void GraphImpl::CreateAndBuild(
     // message.
     base::expected<void, mojom::ErrorPtr> create_operator_result;
     switch (operation->which()) {
-      case mojom::Operation::Tag::kPool2d: {
+      case Operation::Tag::kPool2d: {
         create_operator_result = CreateOperatorNodeForPool2d(
             id_to_operand_map, operation->get_pool2d(), graph_builder,
             id_to_node_output_map);
         break;
       }
-      case mojom::Operation::Tag::kGenericOperator: {
+      case Operation::Tag::kGenericOperator: {
         create_operator_result = CreateGenericOperator(
             id_to_operand_map, operation->get_generic_operator(), graph_builder,
             id_to_node_output_map);
         break;
+      }
+      default: {
+        DLOG(ERROR) << "This operator kind (" +
+                           OpTagToString(operation->which()) +
+                           ") is not supported.";
+        create_operator_result = base::unexpected(mojom::Error::New(
+            mojom::Error::Code::kNotSupportedError,
+            "This operator (" + OpTagToString(operation->which()) +
+                ") is not supported."));
       }
     }
     if (!create_operator_result.has_value()) {

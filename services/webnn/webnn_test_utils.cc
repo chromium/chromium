@@ -77,6 +77,17 @@ void GraphInfoBuilder::BuildOperator(
       mojom::Operation::NewGenericOperator(std::move(operation)));
 }
 
+void GraphInfoBuilder::BuildTranspose(uint64_t input_operand_id,
+                                      uint64_t output_operand_id,
+                                      std::vector<uint32_t> permutation) {
+  mojom::TransposePtr transpose = mojom::Transpose::New();
+  transpose->input_operand_id = input_operand_id;
+  transpose->output_operand_id = output_operand_id;
+  transpose->permutation = std::move(permutation);
+  graph_info_->operations.push_back(
+      mojom::Operation::NewTranspose(std::move(transpose)));
+}
+
 mojom::GraphInfoPtr GraphInfoBuilder::CloneGraphInfo() const {
   CHECK_IS_TEST();
   mojom::GraphInfoPtr cloned_graph_info = mojom::GraphInfo::New();
