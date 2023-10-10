@@ -17,6 +17,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/json_request.h"
 #include "device/fido/pin.h"
+#include "device/fido/prf_input.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_params.h"
 #include "device/fido/public_key_credential_rp_entity.h"
@@ -81,6 +82,11 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
   // prf indicates that the "prf" extension should be asserted to request that
   // the authenticator associate a PRF with the credential.
   bool prf = false;
+
+  // prf_input contains the hashed salts for doing a PRF evaluation at
+  // credential creation time. This is only possible when the authenticator
+  // supports the "prf" extension, i.e. over hybrid CTAP.
+  absl::optional<PRFInput> prf_input;
 
   // large_blob_support indicates whether support for largeBlobs should be
   // requested using the `largeBlob` extension. This should be mutually

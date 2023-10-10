@@ -134,6 +134,11 @@ class CableAuthenticator {
     public void makeCredential(byte[] serializedParams) {
         PublicKeyCredentialCreationOptions params =
                 PublicKeyCredentialCreationOptions.deserialize(ByteBuffer.wrap(serializedParams));
+        // The Chrome hybrid authenticator never supported creation-time
+        // evaluation of PRFs and, by the time we added support in general, we
+        // were already in the process of rolling out the hybrid authenticator
+        // in Play Services and so it continued not to be supported.
+        params.prfInput = null;
 
         if (DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_CABLE_VIA_CREDMAN)) {
             final Fido2CredentialRequest request = new Fido2CredentialRequest(mUi);

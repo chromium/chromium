@@ -134,6 +134,21 @@ std::vector<uint8_t> AsCTAPStyleCBORBytes(
   if (response.prf_enabled) {
     cbor::Value::MapValue prf;
     prf.emplace(kExtensionPRFEnabled, true);
+    if (response.prf_results) {
+      const std::vector<uint8_t>& results = *response.prf_results;
+      cbor::Value::MapValue prf_results;
+      if (results.size() == 32) {
+        prf_results.emplace(kExtensionPRFFirst, results);
+      } else {
+        CHECK_EQ(results.size(), 64u);
+        prf_results.emplace(kExtensionPRFFirst,
+                            std::vector<uint8_t>(&results[0], &results[32]));
+        prf_results.emplace(
+            kExtensionPRFSecond,
+            std::vector<uint8_t>(results.begin() + 32, results.end()));
+      }
+      prf.emplace(kExtensionPRFResults, std::move(prf_results));
+    }
     unsigned_extension_outputs.emplace(kExtensionPRF, std::move(prf));
   }
   if (response.large_blob_type == LargeBlobSupportType::kExtension) {

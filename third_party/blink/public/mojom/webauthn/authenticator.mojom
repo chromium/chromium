@@ -122,6 +122,7 @@ struct MakeCredentialAuthenticatorResponse {
   // so, |prf| contains the value of the `enabled` member.
   bool echo_prf;
   bool prf;
+  PRFValues? prf_results;
 
   // True if getClientExtensionResults() called on the returned
   // PublicKeyCredential instance should contain a `credBlob` extension output.
@@ -498,10 +499,12 @@ struct PublicKeyCredentialCreationOptions {
   // https://fidoalliance.org/specs/fido-v2.0-rd-20180702/fido-client-to-authenticator-protocol-v2.0-rd-20180702.html#sctn-hmac-secret-extension
   bool hmac_create_secret;
 
-  // Whether the PRF extension was present. (Evaluation of the PRF at creation
-  // time is never supported currently, owing to a lack of hardware support.)
+  // Whether the PRF extension was present.
   // https://w3c.github.io/webauthn/#prf-extension
   bool prf_enable;
+
+  // Optional PRF input. Cannot have the `id` field set.
+  PRFValues? prf_input;
 
   // The value of the `credentialProtectionPolicy` extension, or UNSPECIFIED if
   // none was provided.

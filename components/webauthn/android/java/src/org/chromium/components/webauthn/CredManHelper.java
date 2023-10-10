@@ -187,11 +187,12 @@ public class CredManHelper {
                             CredManCreateRequestEnum.FAILURE);
                     return;
                 }
-                MakeCredentialAuthenticatorResponse response =
-                        MakeCredentialAuthenticatorResponse.deserialize(
-                                ByteBuffer.wrap(responseSerialized));
-                if (response == null) {
-                    Log.e(TAG, "Failed to parse Mojo object");
+                MakeCredentialAuthenticatorResponse response;
+                try {
+                    response = MakeCredentialAuthenticatorResponse.deserialize(
+                            ByteBuffer.wrap(responseSerialized));
+                } catch (org.chromium.mojo.bindings.DeserializationException e) {
+                    logDeserializationException(e);
                     errorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR);
                     mMetricsHelper.recordCredManCreateRequestHistogram(
                             CredManCreateRequestEnum.FAILURE);
@@ -490,11 +491,12 @@ public class CredManHelper {
                     return;
                 }
 
-                GetAssertionAuthenticatorResponse response =
-                        GetAssertionAuthenticatorResponse.deserialize(
-                                ByteBuffer.wrap(responseSerialized));
-                if (response == null) {
-                    Log.e(TAG, "Failed to parse Mojo object");
+                GetAssertionAuthenticatorResponse response;
+                try {
+                    response = GetAssertionAuthenticatorResponse.deserialize(
+                            ByteBuffer.wrap(responseSerialized));
+                } catch (org.chromium.mojo.bindings.DeserializationException e) {
+                    logDeserializationException(e);
                     mMetricsHelper.reportGetCredentialMetrics(
                             CredManGetRequestEnum.FAILURE, mConditionalUiState);
                     mConditionalUiState = options.isConditional
@@ -789,5 +791,11 @@ public class CredManHelper {
         }
         assert false : "Channel must be canary, dev, beta, stable or chrome must be built locally.";
         return null;
+    }
+
+    private static void logDeserializationException(Throwable e) {
+        // clang-format off
+        Log.e(TAG, "Failed to parse Mojo object. If this is happening in a test, and authenticator.mojom was updated, then you'll need to update the fake Mojo structures in Fido2ApiTestHelper. Robolectric doesn't support JNI calls so the JNI calls to translate from JSON -> serialized Mojo are mocked out and the responses are hard-coded. If the Mojo structure is updated then the responses also need to be updated. Flip `kUpdateRobolectricTests` in `value_conversions_unittest.cc`, run `component_unittests --gtest_filter=\"WebAuthnentication*\"` and it'll print out updated Java literals for `Fido2ApiTestHelper.java`.", e);
+       // clang-format on
     }
 }

@@ -402,7 +402,24 @@ std::array<uint8_t, 32> HashPRFValue(base::span<const uint8_t> value) {
   return digest;
 }
 
-absl::optional<std::vector<device::PRFInput>> ParsePRFInputs(
+absl::optional<device::PRFInput> ParsePRFInputForMakeCredential(
+    const blink::mojom::PRFValuesPtr& prf_input_from_renderer) {
+  // The input cannot be credential-specific because we haven't created the
+  // credential yet.
+  if (prf_input_from_renderer->id) {
+    return absl::nullopt;
+  }
+
+  device::PRFInput prf_input;
+  prf_input.salt1 = HashPRFValue(prf_input_from_renderer->first);
+  if (prf_input_from_renderer->second) {
+    prf_input.salt2 = HashPRFValue(*prf_input_from_renderer->second);
+  }
+
+  return prf_input;
+}
+
+absl::optional<std::vector<device::PRFInput>> ParsePRFInputsForGetAssertion(
     base::span<const blink::mojom::PRFValuesPtr> inputs) {
   std::vector<device::PRFInput> ret;
   bool is_first = true;
@@ -440,6 +457,20 @@ absl::optional<std::vector<device::PRFInput>> ParsePRFInputs(
   }
 
   return ret;
+}
+
+blink::mojom::PRFValuesPtr PRFResultsToValues(
+    base::span<const uint8_t> results) {
+  auto prf_values = blink::mojom::PRFValues::New();
+  DCHECK(results.size() == 32 || results.size() == 64);
+  prf_values->first =
+      device::fido_parsing_utils::Materialize(results.subspan(0, 32));
+  if (results.size() == 64) {
+    prf_values->second =
+        device::fido_parsing_utils::Materialize(results.subspan(32, 32));
+  }
+
+  return prf_values;
 }
 
 }  // namespace
@@ -896,6 +927,20 @@ void AuthenticatorCommonImpl::MakeCredential(
   if (options->prf_enable) {
     req_state_->requested_extensions.insert(RequestExtension::kPRF);
     req_state_->ctap_make_credential_request->hmac_secret = true;
+
+    if (options->prf_input &&
+        base::FeatureList::IsEnabled(device::kWebAuthnPRFEvalDuringCreate)) {
+      absl::optional<device::PRFInput> prf_input =
+          ParsePRFInputForMakeCredential(options->prf_input);
+      if (!prf_input) {
+        mojo::ReportBadMessage("invalid PRF inputs");
+        CompleteMakeCredentialRequest(
+            blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+        return;
+      }
+      req_state_->ctap_make_credential_request->prf_input =
+          std::move(*prf_input);
+    }
   }
   if (options->hmac_create_secret) {
     req_state_->requested_extensions.insert(RequestExtension::kHMACSecret);
@@ -1224,7 +1269,7 @@ void AuthenticatorCommonImpl::GetAssertion(
     req_state_->requested_extensions.insert(RequestExtension::kPRF);
 
     absl::optional<std::vector<device::PRFInput>> prf_inputs =
-        ParsePRFInputs(options->extensions->prf_inputs);
+        ParsePRFInputsForGetAssertion(options->extensions->prf_inputs);
 
     // This should never happen for inputs from the renderer, which should sort
     // the values itself. Additionally, `prf_inputs_hashed` is for hybrid
@@ -1966,6 +2011,10 @@ AuthenticatorCommonImpl::CreateMakeCredentialResponse(
       case RequestExtension::kPRF:
         response->echo_prf = true;
         response->prf = did_create_hmac_secret;
+        if (response_data.prf_results) {
+          response->prf_results =
+              PRFResultsToValues(*response_data.prf_results);
+        }
         break;
       case RequestExtension::kHMACSecret:
         response->echo_hmac_create_secret = true;
@@ -2092,18 +2141,9 @@ AuthenticatorCommonImpl::CreateGetAssertionResponse(
         break;
       case RequestExtension::kPRF: {
         response_extensions->echo_prf = true;
-        absl::optional<base::span<const uint8_t>> hmac_secret =
-            response_data.hmac_secret;
-        if (hmac_secret) {
-          auto prf_values = blink::mojom::PRFValues::New();
-          DCHECK(hmac_secret->size() == 32 || hmac_secret->size() == 64);
-          prf_values->first = device::fido_parsing_utils::Materialize(
-              hmac_secret->subspan(0, 32));
-          if (hmac_secret->size() == 64) {
-            prf_values->second = device::fido_parsing_utils::Materialize(
-                hmac_secret->subspan(32, 32));
-          }
-          response_extensions->prf_results = std::move(prf_values);
+        if (response_data.hmac_secret) {
+          response_extensions->prf_results =
+              PRFResultsToValues(*response_data.hmac_secret);
         } else {
           response_extensions->prf_not_evaluated =
               response_data.hmac_secret_not_evaluated;

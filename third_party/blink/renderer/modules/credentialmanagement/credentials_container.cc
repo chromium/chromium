@@ -635,6 +635,18 @@ Vector<Vector<uint32_t>> UvmEntryToArray(
 }
 #endif
 
+AuthenticationExtensionsPRFValues* GetPRFExtensionResults(
+    const mojom::blink::PRFValuesPtr& prf_results) {
+  auto* values = AuthenticationExtensionsPRFValues::Create();
+  values->setFirst(MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+      VectorToDOMArrayBuffer(std::move(prf_results->first))));
+  if (prf_results->second) {
+    values->setSecond(MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+        VectorToDOMArrayBuffer(std::move(prf_results->second.value()))));
+  }
+  return values;
+}
+
 void OnMakePublicKeyCredentialComplete(
     std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
     std::unique_ptr<ScopedAbortState> scoped_abort_state,
@@ -723,6 +735,9 @@ void OnMakePublicKeyCredentialComplete(
   if (credential->echo_prf) {
     auto* prf_outputs = AuthenticationExtensionsPRFOutputs::Create();
     prf_outputs->setEnabled(credential->prf);
+    if (credential->prf_results) {
+      prf_outputs->setResults(GetPRFExtensionResults(credential->prf_results));
+    }
     extension_outputs->setPrf(prf_outputs);
   }
   resolver->Resolve(MakeGarbageCollected<PublicKeyCredential>(
@@ -892,18 +907,8 @@ void OnGetAssertionComplete(
     if (extensions->echo_prf) {
       auto* prf_outputs = AuthenticationExtensionsPRFOutputs::Create();
       if (extensions->prf_results) {
-        auto* values = AuthenticationExtensionsPRFValues::Create();
-        values->setFirst(
-            MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
-                VectorToDOMArrayBuffer(
-                    std::move(extensions->prf_results->first))));
-        if (extensions->prf_results->second) {
-          values->setSecond(
-              MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
-                  VectorToDOMArrayBuffer(
-                      std::move(extensions->prf_results->second.value()))));
-        }
-        prf_outputs->setResults(values);
+        prf_outputs->setResults(
+            GetPRFExtensionResults(extensions->prf_results));
       }
       extension_outputs->setPrf(prf_outputs);
     }
@@ -1052,6 +1057,23 @@ const char* validatePRFInputs(
        DOMArrayPiece(values.second()).ByteLength() > kMaxInputSize)) {
     return "'prf' extension contains excessively large input";
   }
+  return nullptr;
+}
+
+const char* validateCreatePublicKeyCredentialPRFExtension(
+    const AuthenticationExtensionsPRFInputs& prf) {
+  if (prf.hasEval()) {
+    const char* error = validatePRFInputs(*prf.eval());
+    if (error != nullptr) {
+      return error;
+    }
+  }
+
+  if (prf.hasEvalByCredential()) {
+    return "The 'evalByCredential' field cannot be set when creating a "
+           "credential.";
+  }
+
   return nullptr;
 }
 
@@ -1814,12 +1836,11 @@ ScriptPromise CredentialsContainer::create(
       return promise;
     }
     if (options->publicKey()->extensions()->hasPrf()) {
-      const auto& prf = *options->publicKey()->extensions()->prf();
-      if (prf.hasEvalByCredential()) {
+      const char* error = validateCreatePublicKeyCredentialPRFExtension(
+          *options->publicKey()->extensions()->prf());
+      if (error != nullptr) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotSupportedError,
-            "The 'evalByCredential' field cannot be set when creating a "
-            "credential."));
+            DOMExceptionCode::kNotSupportedError, error));
         return promise;
       }
     }

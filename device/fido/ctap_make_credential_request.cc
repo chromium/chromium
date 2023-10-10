@@ -172,6 +172,14 @@ absl::optional<CtapMakeCredentialRequest> CtapMakeCredentialRequest::Parse(
         if (!extension.second.is_map()) {
           return absl::nullopt;
         }
+        const cbor::Value::MapValue& prf = extension.second.GetMap();
+        const auto eval_it = prf.find(cbor::Value(kExtensionPRFEval));
+        if (eval_it != prf.end()) {
+          request.prf_input = PRFInput::FromCBOR(eval_it->second);
+          if (!request.prf_input) {
+            return absl::nullopt;
+          }
+        }
         request.prf = true;
       } else if (extension_name == kExtensionLargeBlobKey) {
         if (!extension.second.is_bool() || !extension.second.GetBool()) {
@@ -319,7 +327,13 @@ AsCTAPRequestValuePair(const CtapMakeCredentialRequest& request) {
   }
 
   if (request.prf) {
-    extensions.emplace(kExtensionPRF, cbor::Value::MapValue());
+    cbor::Value::MapValue prf_ext;
+    if (request.prf_input) {
+      cbor::Value::MapValue eval;
+      prf_ext.emplace(kExtensionPRFEval, request.prf_input->ToCBOR());
+    }
+
+    extensions.emplace(kExtensionPRF, std::move(prf_ext));
   }
 
   if (request.large_blob_support != LargeBlobSupport::kNotRequested) {

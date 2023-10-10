@@ -664,6 +664,10 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
     }
     if (extensions->hasPrf()) {
       mojo_options->prf_enable = true;
+      if (extensions->prf()->hasEval()) {
+        mojo_options->prf_input =
+            ConvertTo<PRFValuesPtr>(*extensions->prf()->eval());
+      }
     }
   }
 

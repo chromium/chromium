@@ -360,8 +360,15 @@ public final class Fido2Api {
             final int b = writeHeader(11, parcel);
             final int c = writeHeader(OBJECT_MAGIC, parcel);
             final int d = writeHeader(1, parcel);
-            // length of PRF inputs. None for makeCredential.
-            parcel.writeInt(0);
+            if (options.prfInput != null) {
+                // Two bytestrings for a single PRF input: the null credential ID and then the
+                // hashed salts, concatenated.
+                parcel.writeInt(2);
+                writePrfInput(options.prfInput, /* prfInputsHashed= */ false, parcel);
+            } else {
+                // No PRF inputs.
+                parcel.writeInt(0);
+            }
             writeLength(d, parcel);
             writeLength(c, parcel);
             writeLength(b, parcel);
@@ -494,16 +501,7 @@ public final class Fido2Api {
             final int d = writeHeader(1, parcel);
             parcel.writeInt(2 * options.extensions.prfInputs.length);
             for (PrfValues input : options.extensions.prfInputs) {
-                parcel.writeByteArray(input.id);
-                if (options.extensions.prfInputsHashed) {
-                    if (input.second == null) {
-                        parcel.writeByteArray(input.first);
-                    } else {
-                        parcel.writeByteArray(concat(input.first, input.second));
-                    }
-                } else {
-                    parcel.writeByteArray(hashPrfInputs(input));
-                }
+                writePrfInput(input, options.extensions.prfInputsHashed, parcel);
             }
             writeLength(d, parcel);
             writeLength(c, parcel);
@@ -521,6 +519,19 @@ public final class Fido2Api {
         }
 
         writeLength(a, parcel);
+    }
+
+    private static void writePrfInput(PrfValues input, boolean prfInputsHashed, Parcel parcel) {
+        parcel.writeByteArray(input.id);
+        if (prfInputsHashed) {
+            if (input.second == null) {
+                parcel.writeByteArray(input.first);
+            } else {
+                parcel.writeByteArray(concat(input.first, input.second));
+            }
+        } else {
+            parcel.writeByteArray(hashPrfInputs(input));
+        }
     }
 
     /**
@@ -887,6 +898,7 @@ public final class Fido2Api {
                 if (extensions.prf != null) {
                     creationResponse.echoPrf = true;
                     creationResponse.prf = extensions.prf.first;
+                    creationResponse.prfResults = extensions.getPrfResults();
                 }
             }
             return creationResponse;
@@ -908,17 +920,7 @@ public final class Fido2Api {
             }
             if (extensions != null && extensions.prf != null) {
                 assertionResponse.extensions.echoPrf = true;
-                assertionResponse.extensions.prfResults = new PrfValues();
-                if (extensions.prf.second.length == 32) {
-                    assertionResponse.extensions.prfResults.first = extensions.prf.second;
-                } else {
-                    assertionResponse.extensions.prfResults.first = new byte[32];
-                    assertionResponse.extensions.prfResults.second = new byte[32];
-                    System.arraycopy(extensions.prf.second, 0,
-                            assertionResponse.extensions.prfResults.first, 0, 32);
-                    System.arraycopy(extensions.prf.second, 32,
-                            assertionResponse.extensions.prfResults.second, 0, 32);
-                }
+                assertionResponse.extensions.prfResults = extensions.getPrfResults();
             }
             if (attachment >= AuthenticatorAttachment.MIN_VALUE) {
                 assertionResponse.authenticatorAttachment = attachment;
@@ -1130,6 +1132,24 @@ public final class Fido2Api {
         // prf contains an "enabled" flag and a bytestring that contains either
         // one or two 32-byte strings.
         public Pair<Boolean, byte[]> prf;
+
+        PrfValues getPrfResults() {
+            if (prf == null || prf.second == null) {
+                return null;
+            }
+
+            PrfValues prfResults = new PrfValues();
+            if (prf.second.length == 32) {
+                prfResults.first = prf.second;
+            } else {
+                prfResults.first = new byte[32];
+                prfResults.second = new byte[32];
+                System.arraycopy(prf.second, 0, prfResults.first, 0, 32);
+                System.arraycopy(prf.second, 32, prfResults.second, 0, 32);
+            }
+
+            return prfResults;
+        }
     }
 
     private static Extensions parseExtensionResponse(Parcel parcel)

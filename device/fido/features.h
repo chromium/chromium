@@ -183,6 +183,10 @@ BASE_DECLARE_FEATURE(kWebAuthnPINProtocolInHMACSecret);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnAndroidIncognitoConfirmation);
 
+// Support evaluating PRFs during create() calls.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnPRFEvalDuringCreate);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

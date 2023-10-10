@@ -46,6 +46,8 @@ component("fido") {
     "opaque_attestation_statement.h",
     "p256_public_key.cc",
     "p256_public_key.h",
+    "prf_input.cc",
+    "prf_input.h",
     "public_key.cc",
     "public_key.h",
     "public_key_credential_descriptor.cc",

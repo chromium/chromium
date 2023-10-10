@@ -99,6 +99,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
   // is in the authenticator data. However, note that the WebAuthn-level prf
   // extension may be using the `hmac-secret` extension at the CTAP layer.
   bool prf_enabled = false;
+
+  // hmac-secret contains the output of the prf extension.
+  absl::optional<std::vector<uint8_t>> prf_results;
 };
 
 // Through cbor::Writer, produces a CTAP style CBOR-encoded byte array

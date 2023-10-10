@@ -52,6 +52,35 @@ absl::optional<Ctap2Version> ConvertStringToCtap2Version(
   return absl::nullopt;
 }
 
+absl::optional<std::vector<uint8_t>> GetPRFOutputs(
+    const cbor::Value& results_value) {
+  if (!results_value.is_map()) {
+    return absl::nullopt;
+  }
+  const cbor::Value::MapValue& results = results_value.GetMap();
+  auto first = results.find(cbor::Value(kExtensionPRFFirst));
+  if (first == results.end() || !first->second.is_bytestring()) {
+    return absl::nullopt;
+  }
+  std::vector<uint8_t> output = first->second.GetBytestring();
+  if (output.size() != kExtensionPRFOutputSize) {
+    return absl::nullopt;
+  }
+
+  auto second = results.find(cbor::Value(kExtensionPRFSecond));
+  if (second != results.end()) {
+    if (!second->second.is_bytestring()) {
+      return absl::nullopt;
+    }
+    const std::vector<uint8_t>& second_bytes = second->second.GetBytestring();
+    if (second_bytes.size() != kExtensionPRFOutputSize) {
+      return absl::nullopt;
+    }
+    output.insert(output.end(), second_bytes.begin(), second_bytes.end());
+  }
+  return output;
+}
+
 }  // namespace
 
 using CBOR = cbor::Value;
@@ -142,6 +171,13 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
             return absl::nullopt;
           }
           response.prf_enabled = enabled_it->second.GetBool();
+        }
+        auto results_it = prf.find(cbor::Value(kExtensionPRFResults));
+        if (results_it != prf.end()) {
+          response.prf_results = GetPRFOutputs(results_it->second);
+          if (!response.prf_results) {
+            return absl::nullopt;
+          }
         }
       } else if (extension_name == kExtensionLargeBlob) {
         if (response.large_blob_type || !map_it.second.is_map()) {
@@ -262,33 +298,10 @@ absl::optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
         const cbor::Value::MapValue& prf = map_it.second.GetMap();
         auto results_it = prf.find(cbor::Value(kExtensionPRFResults));
         if (results_it != prf.end()) {
-          if (!results_it->second.is_map()) {
+          response.hmac_secret = GetPRFOutputs(results_it->second);
+          if (!response.hmac_secret) {
             return absl::nullopt;
           }
-          const cbor::Value::MapValue& results = results_it->second.GetMap();
-          auto first = results.find(cbor::Value(kExtensionPRFFirst));
-          if (first == results.end() || !first->second.is_bytestring()) {
-            return absl::nullopt;
-          }
-          std::vector<uint8_t> output = first->second.GetBytestring();
-          if (output.size() != kExtensionPRFOutputSize) {
-            return absl::nullopt;
-          }
-
-          auto second = results.find(cbor::Value(kExtensionPRFSecond));
-          if (second != results.end()) {
-            if (!second->second.is_bytestring()) {
-              return absl::nullopt;
-            }
-            const std::vector<uint8_t>& second_bytes =
-                second->second.GetBytestring();
-            if (second_bytes.size() != kExtensionPRFOutputSize) {
-              return absl::nullopt;
-            }
-            output.insert(output.end(), second_bytes.begin(),
-                          second_bytes.end());
-          }
-          response.hmac_secret = std::move(output);
         }
       } else if (extension_name == kExtensionLargeBlob) {
         if (response.large_blob_key || !map_it.second.is_map()) {

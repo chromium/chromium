@@ -1075,6 +1075,11 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
       request->user_verification =
           AtLeastUVPreferred(request->user_verification);
     }
+    // Evaluating the PRF at creation time is only supported with the "prf"
+    // extension.
+    if (request->prf_input && !auth_options.supports_prf) {
+      request->prf_input.reset();
+    }
   }
 
   if (request->min_pin_length_requested &&

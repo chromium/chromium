@@ -160,7 +160,8 @@ std::vector<uint8_t> ConstructMakeCredentialResponse(
     bool enterprise_attestation_requested,
     absl::optional<LargeBlobSupportType> large_blob_type,
     const absl::optional<std::vector<uint8_t>>& dpk_signature,
-    bool prf_enabled) {
+    bool prf_enabled,
+    absl::optional<std::vector<uint8_t>> prf_results) {
   std::unique_ptr<OpaqueAttestationStatement> attestation_statement;
   if (!signature.empty()) {
     cbor::Value::MapValue attestation_map;
@@ -190,6 +191,7 @@ std::vector<uint8_t> ConstructMakeCredentialResponse(
   make_credential_response.device_public_key_signature =
       std::move(dpk_signature);
   make_credential_response.prf_enabled = prf_enabled;
+  make_credential_response.prf_results = std::move(prf_results);
   return AsCTAPStyleCBORBytes(make_credential_response);
 }
 
@@ -1467,13 +1469,8 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
     }
   }
 
-  *response = ConstructMakeCredentialResponse(
-      std::move(attestation_cert), sig, std::move(authenticator_data),
-      enterprise_attestation_requested, supports_large_blob, dpk_sig,
-      prf_enabled);
   RegistrationData registration(std::move(private_key), rp_id_hash,
                                 /*counter=*/1);
-
   if (request.resident_key_required) {
     // If there's already a registration for this RP and user ID, delete it.
     for (const auto& reg : mutable_state()->registrations) {
@@ -1503,12 +1500,20 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
   registration.device_key = std::move(device_key);
   registration.cred_blob = std::move(request.cred_blob);
 
+  absl::optional<std::vector<uint8_t>> prf_results;
   if (request.hmac_secret || prf_enabled) {
     registration.hmac_key.emplace();
     RAND_bytes(registration.hmac_key->first.data(),
                registration.hmac_key->first.size());
     RAND_bytes(registration.hmac_key->second.data(),
                registration.hmac_key->second.size());
+    if (request.prf_input) {
+      const std::array<uint8_t, 32>& hmac_key =
+          user_verified ? registration.hmac_key->second
+                        : registration.hmac_key->first;
+      prf_results = EvaluateHMAC(hmac_key, request.prf_input->salt1,
+                                 request.prf_input->salt2);
+    }
   }
 
   if (request.large_blob_key) {
@@ -1518,6 +1523,11 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
   }
 
   StoreNewKey(key_handle, std::move(registration));
+
+  *response = ConstructMakeCredentialResponse(
+      std::move(attestation_cert), sig, std::move(authenticator_data),
+      enterprise_attestation_requested, supports_large_blob, dpk_sig,
+      prf_enabled, std::move(prf_results));
   return CtapDeviceResponseCode::kSuccess;
 }
 

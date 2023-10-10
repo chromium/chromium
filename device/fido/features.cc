@@ -227,4 +227,9 @@ BASE_FEATURE(kWebAuthnAndroidIncognitoConfirmation,
              "WebAuthenticationAndroidIncognitoConfirmation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enabled in M120. Remove in or after M123.
+BASE_FEATURE(kWebAuthnPRFEvalDuringCreate,
+             "WebAuthenticationPRFEvalDuringCreate",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device

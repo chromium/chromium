@@ -36,49 +36,6 @@ bool AreGetAssertionRequestMapKeysCorrect(
             param.first.GetInteger() <= 7u);
   });
 }
-
-cbor::Value::MapValue PRFInputToCBOR(const PRFInput& input) {
-  cbor::Value::MapValue ret;
-  ret.emplace(kExtensionPRFFirst,
-              std::vector<uint8_t>(input.salt1.begin(), input.salt1.end()));
-  if (input.salt2) {
-    ret.emplace(kExtensionPRFSecond,
-                std::vector<uint8_t>(input.salt2->begin(), input.salt2->end()));
-  }
-  return ret;
-}
-
-bool CBORToPRFValue(const cbor::Value& v, std::array<uint8_t, 32>* out) {
-  if (!v.is_bytestring()) {
-    return false;
-  }
-  return fido_parsing_utils::ExtractArray(v.GetBytestring(), 0, out);
-}
-
-absl::optional<PRFInput> CBORToPRFInput(const cbor::Value& v) {
-  if (!v.is_map()) {
-    return absl::nullopt;
-  }
-  const cbor::Value::MapValue& map = v.GetMap();
-  const auto first_it = map.find(cbor::Value(kExtensionPRFFirst));
-  if (first_it == map.end()) {
-    return absl::nullopt;
-  }
-
-  PRFInput ret;
-  if (!CBORToPRFValue(first_it->second, &ret.salt1)) {
-    return absl::nullopt;
-  }
-
-  const auto second_it = map.find(cbor::Value(kExtensionPRFSecond));
-  if (second_it != map.end()) {
-    ret.salt2.emplace();
-    if (!CBORToPRFValue(second_it->second, &ret.salt2.value())) {
-      return absl::nullopt;
-    }
-  }
-  return ret;
-}
 }  // namespace
 
 CtapGetAssertionOptions::CtapGetAssertionOptions() = default;
@@ -87,12 +44,6 @@ CtapGetAssertionOptions::CtapGetAssertionOptions(
 CtapGetAssertionOptions::CtapGetAssertionOptions(CtapGetAssertionOptions&&) =
     default;
 CtapGetAssertionOptions::~CtapGetAssertionOptions() = default;
-
-PRFInput::PRFInput() = default;
-PRFInput::PRFInput(const PRFInput&) = default;
-PRFInput::PRFInput(PRFInput&&) = default;
-PRFInput& PRFInput::operator=(const PRFInput&) = default;
-PRFInput::~PRFInput() = default;
 
 bool operator<(const PRFInput& a, const PRFInput& b) {
   if (!a.credential_id.has_value()) {
@@ -258,7 +209,7 @@ absl::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
         const cbor::Value::MapValue& prf = extension.second.GetMap();
         const auto eval_it = prf.find(cbor::Value(kExtensionPRFEval));
         if (eval_it != prf.end()) {
-          absl::optional<PRFInput> input = CBORToPRFInput(eval_it->second);
+          absl::optional<PRFInput> input = PRFInput::FromCBOR(eval_it->second);
           if (!input) {
             return absl::nullopt;
           }
@@ -272,7 +223,7 @@ absl::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
           }
           const cbor::Value::MapValue& by_cred = by_cred_it->second.GetMap();
           for (const auto& cred : by_cred) {
-            absl::optional<PRFInput> input = CBORToPRFInput(cred.second);
+            absl::optional<PRFInput> input = PRFInput::FromCBOR(cred.second);
             if (!input || !cred.first.is_bytestring()) {
               return absl::nullopt;
             }
@@ -468,9 +419,9 @@ AsCTAPRequestValuePair(const CtapGetAssertionRequest& request) {
     cbor::Value::MapValue by_cred;
     for (const auto& input : request.prf_inputs) {
       if (!input.credential_id.has_value()) {
-        prf.emplace(kExtensionPRFEval, PRFInputToCBOR(input));
+        prf.emplace(kExtensionPRFEval, input.ToCBOR());
       } else {
-        by_cred.emplace(*input.credential_id, PRFInputToCBOR(input));
+        by_cred.emplace(*input.credential_id, input.ToCBOR());
       }
     }
     if (!by_cred.empty()) {

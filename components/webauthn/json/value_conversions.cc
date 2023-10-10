@@ -323,6 +323,15 @@ InvalidGetAssertionField(const char* field_name) {
   return {nullptr, std::string("field missing or invalid: ") + field_name};
 }
 
+base::Value ToValue(const blink::mojom::PRFValuesPtr& prf_input) {
+  base::Value::Dict prf_value;
+  prf_value.Set("first", Base64UrlEncode(prf_input->first));
+  if (prf_input->second) {
+    prf_value.Set("second", Base64UrlEncode(*prf_input->second));
+  }
+  return base::Value(std::move(prf_value));
+}
+
 }  // namespace
 
 base::Value ToValue(
@@ -392,6 +401,9 @@ base::Value ToValue(
 
   if (options->prf_enable) {
     base::Value::Dict prf_value;
+    if (options->prf_input) {
+      prf_value.Set("eval", ToValue(options->prf_input));
+    }
     extensions.Set("prf", std::move(prf_value));
   }
 
@@ -409,15 +421,6 @@ base::Value ToValue(
   }
 
   return base::Value(std::move(value));
-}
-
-base::Value ToValue(const blink::mojom::PRFValuesPtr& prf_input) {
-  base::Value::Dict prf_value;
-  prf_value.Set("first", Base64UrlEncode(prf_input->first));
-  if (prf_input->second) {
-    prf_value.Set("second", Base64UrlEncode(*prf_input->second));
-  }
-  return base::Value(std::move(prf_value));
 }
 
 base::Value ToValue(
@@ -507,6 +510,26 @@ base::Value ToValue(
   }
 
   return base::Value(std::move(value));
+}
+
+absl::optional<blink::mojom::PRFValuesPtr> ParsePRFResults(
+    const base::Value::Dict* results, const JSONUser user) {
+  const absl::optional<std::string> first =
+      Base64UrlDecodeStringKey(*results, "first");
+  if (!first || first->size() != 32) {
+    return absl::nullopt;
+  }
+
+  auto [ok, second] =
+      Base64UrlDecodeOptionalStringKey(*results, "second", user);
+  if (!ok || (second && second->size() != 32)) {
+    return absl::nullopt;
+  }
+
+  return blink::mojom::PRFValues::New(
+      /*id=*/absl::nullopt, ToByteVector(*first),
+      second ? absl::optional<std::vector<uint8_t>>(ToByteVector(*second))
+             : absl::nullopt);
 }
 
 std::pair<blink::mojom::MakeCredentialAuthenticatorResponsePtr, std::string>
@@ -717,10 +740,20 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
   if (prf) {
     response->echo_prf = true;
     const absl::optional<bool> enabled = prf->FindBool("enabled");
-    if (!prf) {
+    if (!enabled) {
       return InvalidMakeCredentialField("prf");
     }
     response->prf = *enabled;
+
+    const base::Value::Dict* results = prf->FindDict("results");
+    if (results) {
+      absl::optional<blink::mojom::PRFValuesPtr> prf_results =
+          ParsePRFResults(results, user);
+      if (!prf_results) {
+        return InvalidMakeCredentialField("prf");
+      }
+      response->prf_results = std::move(*prf_results);
+    }
   }
 
   return {std::move(response), ""};
@@ -839,25 +872,14 @@ GetAssertionResponseFromValue(const base::Value& value, const JSONUser user) {
   if (prf) {
     const base::Value::Dict* results = prf->FindDict("results");
     if (results) {
-      absl::optional<std::string> first =
-          Base64UrlDecodeStringKey(*results, "first");
-      if (!first || first->size() != 32) {
-        return InvalidGetAssertionField("first");
-      }
-      absl::optional<std::string> second =
-          Base64UrlDecodeStringKey(*results, "second");
-      if (second && second->size() != 32) {
-        return InvalidGetAssertionField("second");
-      }
-
-      auto prf_values = blink::mojom::PRFValues::New();
-      prf_values->first.assign(first->begin(), first->end());
-      if (second) {
-        prf_values->second.emplace(second->begin(), second->end());
+      absl::optional<blink::mojom::PRFValuesPtr> prf_results =
+          ParsePRFResults(results, user);
+      if (!prf_results) {
+        return InvalidGetAssertionField("prf");
       }
 
       response->extensions->echo_prf = true;
-      response->extensions->prf_results = std::move(prf_values);
+      response->extensions->prf_results = std::move(*prf_results);
     }
   }
 

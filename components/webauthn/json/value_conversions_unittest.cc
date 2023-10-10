@@ -25,7 +25,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
 namespace webauthn {
@@ -47,6 +46,23 @@ using blink::mojom::PublicKeyCredentialRequestOptions;
 using blink::mojom::PublicKeyCredentialRequestOptionsPtr;
 using blink::mojom::RemoteDesktopClientOverride;
 using blink::mojom::RemoteDesktopClientOverridePtr;
+
+// kUpdateRobolectricTests can be set to cause these tests to print out values
+// that can be used in `Fido2ApiTestHelper.java`. This is needed whenever the
+// Mojo structures for responses in `authenticator.mojom` are updated.
+constexpr bool kUpdateRobolectricTests = false;
+
+void PrintJava(const char* name, base::span<const uint8_t> data) {
+  fprintf(stderr, "private static final byte[] %s = new byte[] {", name);
+  for (size_t i = 0; i < data.size(); i++) {
+    const uint8_t byte = data[i];
+    if (i) {
+      fprintf(stderr, ", ");
+    }
+    fprintf(stderr, "%d", byte < 128 ? byte : byte - 0x80);
+  }
+  fprintf(stderr, "};\n");
+}
 
 std::vector<uint8_t> ToByteVector(base::StringPiece in) {
   const uint8_t* in_ptr = reinterpret_cast<const uint8_t*>(in.data());
@@ -85,6 +101,9 @@ std::vector<device::PublicKeyCredentialDescriptor> GetCredentialList() {
 TEST(WebAuthenticationJSONConversionTest,
      PublicKeyCredentialCreationOptionsToValue) {
   // Exercise all supported fields.
+  auto prf_values = blink::mojom::PRFValues::New(
+      absl::nullopt, std::vector<uint8_t>({1, 2, 3, 4}),
+      std::vector<uint8_t>{5, 6, 7, 8});
   auto options = PublicKeyCredentialCreationOptions::New(
       device::PublicKeyCredentialRpEntity(kRpId, kRpName),
       device::PublicKeyCredentialUserEntity(kUserId, kUserName,
@@ -97,7 +116,9 @@ TEST(WebAuthenticationJSONConversionTest,
           device::UserVerificationRequirement::kRequired),
       device::AttestationConveyancePreference::kDirect,
       /*hmac_create_secret=*/true,
-      /*prf_enable=*/true, blink::mojom::ProtectionPolicy::UV_REQUIRED,
+      /*prf_enable=*/true,
+      /*prf_input=*/std::move(prf_values),
+      blink::mojom::ProtectionPolicy::UV_REQUIRED,
       /*enforce_protection_policy=*/true,
       /*appid_exclude=*/kAppId,
       /*cred_props=*/true, device::LargeBlobSupport::kRequired,
@@ -116,7 +137,7 @@ TEST(WebAuthenticationJSONConversionTest,
   ASSERT_TRUE(serializer.Serialize(value));
   EXPECT_EQ(
       json,
-      R"({"attestation":"direct","authenticatorSelection":{"authenticatorAttachment":"platform","residentKey":"required","userVerification":"required"},"challenge":"dGVzdCBjaGFsbGVuZ2U","excludeCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"extensions":{"appIdExclude":"https://example.test/appid.json","credBlob":"dGVzdCBjcmVkIGJsb2I","credProps":true,"credentialProtectionPolicy":"userVerificationRequired","enforceCredentialProtectionPolicy":true,"hmacCreateSecret":true,"largeBlob":{"support":"required"},"minPinLength":true,"payment":{"isPayment":true},"prf":{},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true}},"pubKeyCredParams":[{"alg":-7,"type":"public-key"},{"alg":-257,"type":"public-key"}],"rp":{"id":"example.test","name":"Example LLC"},"user":{"displayName":"Example User","id":"dGVzdCB1c2VyIGlk","name":"user@example.test"}})");
+      R"({"attestation":"direct","authenticatorSelection":{"authenticatorAttachment":"platform","residentKey":"required","userVerification":"required"},"challenge":"dGVzdCBjaGFsbGVuZ2U","excludeCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"extensions":{"appIdExclude":"https://example.test/appid.json","credBlob":"dGVzdCBjcmVkIGJsb2I","credProps":true,"credentialProtectionPolicy":"userVerificationRequired","enforceCredentialProtectionPolicy":true,"hmacCreateSecret":true,"largeBlob":{"support":"required"},"minPinLength":true,"payment":{"isPayment":true},"prf":{"eval":{"first":"AQIDBA","second":"BQYHCA"}},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true}},"pubKeyCredParams":[{"alg":-7,"type":"public-key"},{"alg":-257,"type":"public-key"}],"rp":{"id":"example.test","name":"Example LLC"},"user":{"displayName":"Example User","id":"dGVzdCB1c2VyIGlk","name":"user@example.test"}})");
 }
 
 TEST(WebAuthenticationJSONConversionTest,
@@ -220,7 +241,13 @@ TEST(WebAuthenticationJSONConversionTest,
     "credProps": { "rk": true },
     "hmacCreateSecret": true,
     "largeBlob": { "supported": true },
-    "prf": { "enabled": true }
+    "prf": {
+      "enabled": true,
+      "results": {
+        "first": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "second": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE"
+      }
+    }
   },
   "id": "dGVzdCBpZA",
   "rawId": "dGVzdCBpZA",
@@ -245,6 +272,22 @@ TEST(WebAuthenticationJSONConversionTest,
       MakeCredentialResponseFromValue(*value, JSONUser::kAndroid);
   ASSERT_TRUE(response) << error;
 
+  if (kUpdateRobolectricTests) {
+    PrintJava("TEST_SERIALIZED_CREDMAN_MAKE_CREDENTIAL_RESPONSE",
+              blink::mojom::MakeCredentialAuthenticatorResponse::Serialize(
+                  &response));
+  }
+
+  auto prf_values = blink::mojom::PRFValues::New(
+      absl::nullopt,
+      std::vector<uint8_t>({
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      }),
+      std::vector<uint8_t>({
+          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+      }));
   auto expected = MakeCredentialAuthenticatorResponse::New(
       CommonCredentialInfo::New(kIdB64Url, kId, kClientDataJson,
                                 kAuthenticatorData),
@@ -252,7 +295,8 @@ TEST(WebAuthenticationJSONConversionTest,
       std::vector<device::FidoTransportProtocol>{
           device::FidoTransportProtocol::kUsbHumanInterfaceDevice},
       /*echo_hmac_create_secret=*/true, /*hmac_create_secret=*/true,
-      /*echo_prf=*/true, /*prf=*/true, /*echo_cred_blob=*/true,
+      /*echo_prf=*/true, /*prf=*/true, /*prf_results=*/std::move(prf_values),
+      /*echo_cred_blob=*/true,
       /*cred_blob=*/true, /*public_key_der=*/kPublicKey,
       /*public_key_algo=*/-7,
       /*echo_cred_props=*/true, /*has_cred_props_rk=*/true,
@@ -270,6 +314,8 @@ TEST(WebAuthenticationJSONConversionTest,
             expected->echo_hmac_create_secret);
   EXPECT_EQ(response->hmac_create_secret, expected->hmac_create_secret);
   EXPECT_EQ(response->echo_prf, expected->prf);
+  EXPECT_EQ(response->prf_results->first, expected->prf_results->first);
+  EXPECT_EQ(response->prf_results->second, expected->prf_results->second);
   EXPECT_EQ(response->echo_cred_blob, expected->echo_cred_blob);
   EXPECT_EQ(response->cred_blob, expected->cred_blob);
   EXPECT_EQ(response->public_key_der, expected->public_key_der);
@@ -507,6 +553,12 @@ TEST(WebAuthenticationJSONConversionTest,
   auto [response, error] =
       GetAssertionResponseFromValue(*value, JSONUser::kAndroid);
   ASSERT_TRUE(response) << error;
+
+  if (kUpdateRobolectricTests) {
+    PrintJava(
+        "TEST_SERIALIZED_CREDMAN_GET_CREDENTIAL_RESPONSE ",
+        blink::mojom::GetAssertionAuthenticatorResponse::Serialize(&response));
+  }
 
   auto expected = GetAssertionAuthenticatorResponse::New(
       CommonCredentialInfo::New(kIdB64Url, kId, kClientDataJson,

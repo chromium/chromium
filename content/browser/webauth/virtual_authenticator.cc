@@ -128,7 +128,11 @@ VirtualAuthenticator::ConstructDevice() {
       config.large_blob_support = has_large_blob_;
       config.cred_protect_support = config.cred_blob_support = has_cred_blob_;
       config.min_pin_length_extension_support = has_min_pin_length_;
-      config.hmac_secret_support = has_prf_;
+      if (has_prf_) {
+        config.prf_support = true;
+        // This is required when `prf_support` is set.
+        config.internal_account_chooser = true;
+      }
 
       if (
           // Writing a large blob requires obtaining a PinUvAuthToken with

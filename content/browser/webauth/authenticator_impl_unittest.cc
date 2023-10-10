@@ -8603,6 +8603,49 @@ TEST_F(ResidentKeyAuthenticatorImplTest, PRFExtension) {
   }
 }
 
+TEST_F(ResidentKeyAuthenticatorImplTest, PRFEvaluationDuringMakeCredential) {
+  // The WebAuthn "prf" extension supports evaluating the PRF when making a
+  // credential. The hmac-secret extension does not support this, but hybrid
+  // devices (and our virtual authenticator) can support it using the
+  // CTAP2-level "prf" extension.
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  device::VirtualCtap2Device::Config config;
+  config.prf_support = true;
+  config.internal_account_chooser = true;
+  config.always_uv = true;
+  config.pin_support = true;
+  config.resident_key_support = true;
+  virtual_device_factory_->SetCtap2Config(config);
+
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  options->prf_enable = true;
+  options->authenticator_selection->resident_key =
+      device::ResidentKeyRequirement::kRequired;
+  options->user.id = {1, 2, 3, 4};
+  options->user.name = "name";
+  options->user.display_name = "displayName";
+  options->prf_input = blink::mojom::PRFValues::New();
+  const std::vector<uint8_t> salt1(32, 1);
+  const std::vector<uint8_t> salt2(32, 2);
+  options->prf_input->first = salt1;
+  options->prf_input->second = salt2;
+
+  MakeCredentialResult result = AuthenticatorMakeCredential(std::move(options));
+  EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+
+  EXPECT_TRUE(result.response->echo_prf);
+  EXPECT_TRUE(result.response->prf);
+  ASSERT_TRUE(result.response->prf_results);
+  EXPECT_EQ(result.response->prf_results->first.size(), 32u);
+  EXPECT_EQ(result.response->prf_results->second->size(), 32u);
+}
+
+TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialPRFExtension) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+}
+
 TEST_F(ResidentKeyAuthenticatorImplTest,
        PRFExtensionOnUnconfiguredAuthenticator) {
   // If a credential is on a UV-capable, but not UV-configured authenticator and
