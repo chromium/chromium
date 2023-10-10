@@ -174,8 +174,6 @@ class PrerenderPageLoadMetricsObserverBrowserTest
 
     std::vector<std::string> ukm_list = {
         "InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration",
-        "InteractiveTiming.AverageUserInteractionLatencyOverBudget."
-        "MaxEventDuration",
         "InteractiveTiming.UserInteractionLatency.HighPercentile2."
         "MaxEventDuration",
         "InteractiveTiming.NumInteractions"};
@@ -200,8 +198,6 @@ class PrerenderPageLoadMetricsObserverBrowserTest
     }
 
     std::vector<std::string> uma_list = {
-        internal::
-            kHistogramPrerenderAverageUserInteractionLatencyOverBudgetMaxEventDuration,
         internal::kHistogramPrerenderNumInteractions,
         internal::
             kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDuration,

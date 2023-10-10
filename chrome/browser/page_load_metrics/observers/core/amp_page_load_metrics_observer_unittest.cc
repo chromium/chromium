@@ -545,18 +545,6 @@ TEST_P(AMPPageLoadMetricsObserverTest,
       std::make_pair("SubFrame.InteractiveTiming.WorstUserInteractionLatency."
                      "MaxEventDuration2",
                      150),
-      std::make_pair(
-          "SubFrame.InteractiveTiming.AverageUserInteractionLatencyOverBudget."
-          "MaxEventDuration2",
-          16),
-      std::make_pair(
-          "SubFrame.InteractiveTiming.SumOfUserInteractionLatencyOverBudget."
-          "MaxEventDuration2",
-          50),
-      std::make_pair(
-          "SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
-          "HighPercentile2.MaxEventDuration2",
-          50),
       std::make_pair("SubFrame.InteractiveTiming.UserInteractionLatency."
                      "HighPercentile2.MaxEventDuration",
                      150),
@@ -568,13 +556,6 @@ TEST_P(AMPPageLoadMetricsObserverTest,
   }
 
   std::vector<std::string> uma_list = {
-      "PageLoad.Clients.AMP.InteractiveTiming."
-      "AverageUserInteractionLatencyOverBudget.MaxEventDuration.Subframe",
-      "PageLoad.Clients.AMP.InteractiveTiming."
-      "SumOfUserInteractionLatencyOverBudget.MaxEventDuration.Subframe",
-      "PageLoad.Clients.AMP.InteractiveTiming."
-      "SlowUserInteractionLatencyOverBudget.HighPercentile2.MaxEventDuration."
-      "Subframe",
       "PageLoad.Clients.AMP.InteractiveTiming."
       "UserInteractionLatency.HighPercentile2.MaxEventDuration.Subframe",
       "PageLoad.Clients.AMP.InteractiveTiming.WorstUserInteractionLatency."
@@ -629,21 +610,9 @@ TEST_P(AMPPageLoadMetricsObserverTest,
       std::make_pair("SubFrame.InteractiveTiming.WorstUserInteractionLatency."
                      "MaxEventDuration2",
                      150),
-      std::make_pair(
-          "SubFrame.InteractiveTiming.AverageUserInteractionLatencyOverBudget."
-          "MaxEventDuration2",
-          16),
-      std::make_pair(
-          "SubFrame.InteractiveTiming.SumOfUserInteractionLatencyOverBudget."
-          "MaxEventDuration2",
-          50),
       std::make_pair("SubFrame.InteractiveTiming.UserInteractionLatency."
                      "HighPercentile2.MaxEventDuration",
                      150),
-      std::make_pair(
-          "SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
-          "HighPercentile2.MaxEventDuration2",
-          50),
   };
 
   for (auto& metric : ukm_list) {
@@ -652,15 +621,6 @@ TEST_P(AMPPageLoadMetricsObserverTest,
   }
 
   std::vector<std::string> uma_list = {
-      "PageLoad.Clients.AMP.InteractiveTiming."
-      "AverageUserInteractionLatencyOverBudget.MaxEventDuration.Subframe."
-      "FullNavigation",
-      "PageLoad.Clients.AMP.InteractiveTiming."
-      "SumOfUserInteractionLatencyOverBudget.MaxEventDuration.Subframe."
-      "FullNavigation",
-      "PageLoad.Clients.AMP.InteractiveTiming."
-      "SlowUserInteractionLatencyOverBudget.HighPercentile2.MaxEventDuration."
-      "Subframe.FullNavigation",
       "PageLoad.Clients.AMP.InteractiveTiming."
       "UserInteractionLatency.HighPercentile2.MaxEventDuration."
       "Subframe.FullNavigation",

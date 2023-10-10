@@ -1061,18 +1061,6 @@ TEST_P(UmaPageLoadMetricsObserverTest, NormalizedResponsivenessMetrics) {
           internal::kHistogramWorstUserInteractionLatencyMaxEventDuration, 146),
       std::make_pair(
           internal::
-              kHistogramSumOfUserInteractionLatencyOverBudgetMaxEventDuration,
-          50),
-      std::make_pair(
-          internal::
-              kHistogramAverageUserInteractionLatencyOverBudgetMaxEventDuration,
-          14),
-      std::make_pair(
-          internal::
-              kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2MaxEventDuration,
-          50),
-      std::make_pair(
-          internal::
               kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration,
           146),
       std::make_pair(internal::kHistogramNumInteractions, 3)};

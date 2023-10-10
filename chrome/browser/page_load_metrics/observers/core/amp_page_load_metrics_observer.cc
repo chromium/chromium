@@ -53,21 +53,9 @@ const char kHistogramAMPSubframeFirstInputDelayFullNavigation[] =
 const char kHistogramAMPSubframeNumInteractions[] =
     "InteractiveTiming.NumInteractions.Subframe";
 const char
-    kHistogramAMPSubframeAverageUserInteractionLatencyOverBudgetMaxEventDuration
-        [] = "InteractiveTiming.AverageUserInteractionLatencyOverBudget."
-             "MaxEventDuration.Subframe";
-const char
-    kHistogramAMPSubframeSlowUserInteractionLatencyOverBudgetHighPercentile2MaxEventDuration
-        [] = "InteractiveTiming.SlowUserInteractionLatencyOverBudget."
-             "HighPercentile2.MaxEventDuration.Subframe";
-const char
     kHistogramAMPSubframeUserInteractionHighPercentile2MaxEventDuration[] =
         "InteractiveTiming.UserInteractionLatency."
         "HighPercentile2.MaxEventDuration.Subframe";
-const char
-    kHistogramAMPSubframeSumOfUserInteractionLatencyOverBudgetMaxEventDuration
-        [] = "InteractiveTiming.SumOfUserInteractionLatencyOverBudget."
-             "MaxEventDuration.Subframe";
 
 const char kHistogramAMPSubframeWorstUserInteractionLatencyMaxEventDuration[] =
     "InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration.Subframe";
@@ -639,25 +627,10 @@ void AMPPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics(
       ResponsivenessMetricsNormalization::ApproximateHighPercentile(
           normalized_responsiveness_metrics.num_user_interactions,
           max_event_durations.worst_ten_latencies);
-  base::TimeDelta high_percentile2_max_event_duration_over_budget =
-      page_load_metrics::ResponsivenessMetricsNormalization::
-          ApproximateHighPercentile(
-              normalized_responsiveness_metrics.num_user_interactions,
-              max_event_durations.worst_ten_latencies_over_budget);
 
-  builder
-      .SetSubFrame_InteractiveTiming_SumOfUserInteractionLatencyOverBudget_MaxEventDuration2(
-          max_event_durations.sum_of_latency_over_budget.InMilliseconds());
-  builder
-      .SetSubFrame_InteractiveTiming_AverageUserInteractionLatencyOverBudget_MaxEventDuration2(
-          max_event_durations.sum_of_latency_over_budget.InMilliseconds() /
-          normalized_responsiveness_metrics.num_user_interactions);
   builder
       .SetSubFrame_InteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
           high_percentile2_max_event_duration.InMilliseconds());
-  builder
-      .SetSubFrame_InteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_MaxEventDuration2(
-          high_percentile2_max_event_duration_over_budget.InMilliseconds());
 
   builder.SetSubFrame_InteractiveTiming_NumInteractions(
       ukm::GetExponentialBucketMinForCounts1000(
@@ -666,31 +639,9 @@ void AMPPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics(
   base::UmaHistogramCustomTimes(
       std::string(kHistogramPrefix)
           .append(
-              kHistogramAMPSubframeAverageUserInteractionLatencyOverBudgetMaxEventDuration)
-          .append(histogram_suffix),
-      max_event_durations.sum_of_latency_over_budget /
-          normalized_responsiveness_metrics.num_user_interactions,
-      base::Milliseconds(1), base::Seconds(60), 50);
-  base::UmaHistogramCustomTimes(
-      std::string(kHistogramPrefix)
-          .append(
-              kHistogramAMPSubframeSlowUserInteractionLatencyOverBudgetHighPercentile2MaxEventDuration)
-          .append(histogram_suffix),
-      high_percentile2_max_event_duration_over_budget, base::Milliseconds(1),
-      base::Seconds(60), 50);
-  base::UmaHistogramCustomTimes(
-      std::string(kHistogramPrefix)
-          .append(
               kHistogramAMPSubframeUserInteractionHighPercentile2MaxEventDuration)
           .append(histogram_suffix),
       high_percentile2_max_event_duration, base::Milliseconds(1),
-      base::Seconds(60), 50);
-  base::UmaHistogramCustomTimes(
-      std::string(kHistogramPrefix)
-          .append(
-              kHistogramAMPSubframeSumOfUserInteractionLatencyOverBudgetMaxEventDuration)
-          .append(histogram_suffix),
-      max_event_durations.sum_of_latency_over_budget, base::Milliseconds(1),
       base::Seconds(60), 50);
   base::UmaHistogramCounts1000(
       std::string(kHistogramPrefix)

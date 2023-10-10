@@ -21,12 +21,6 @@ struct NormalizedInteractionLatencies {
 
   // The maximum value of user interaction latencies.
   base::TimeDelta worst_latency;
-  // For metrics below, we reduce a fixed budget from every user interaction
-  // latency and we call it latency over budget. Then we calculaute the
-  // worst(maximum), the sum, and an approximation of high quantile.
-  base::TimeDelta worst_latency_over_budget;
-  base::TimeDelta sum_of_latency_over_budget;
-  base::TimeDelta high_percentile_latency_over_budget;
 
   // A min priority queue. The top is the smallest base::TimeDelta in the queue.
   // We use the worst 10 latencies to approximate a high percentile.
@@ -34,13 +28,6 @@ struct NormalizedInteractionLatencies {
                       std::vector<base::TimeDelta>,
                       std::greater<>>
       worst_ten_latencies;
-
-  // A min priority queue. The top is the smallest base::TimeDelta in the queue.
-  // We use the worst 10 latencies over budget to approximate a high percentile.
-  std::priority_queue<base::TimeDelta,
-                      std::vector<base::TimeDelta>,
-                      std::greater<>>
-      worst_ten_latencies_over_budget;
 };
 
 // The struct that stores all normalization results for a page load.
@@ -50,9 +37,6 @@ struct NormalizedResponsivenessMetrics {
   uint64_t num_user_interactions = 0;
   // Max event duration
   NormalizedInteractionLatencies normalized_max_event_durations;
-
-  // Total event duration
-  NormalizedInteractionLatencies normalized_total_event_durations;
 };
 
 // ResponsivenessMetricsNormalization implements some experimental normalization

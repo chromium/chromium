@@ -118,16 +118,6 @@ const char kHistogramNumInteractions[] =
 const char kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration[] =
     "PageLoad.InteractiveTiming.UserInteractionLatency.HighPercentile2."
     "MaxEventDuration";
-const char kHistogramAverageUserInteractionLatencyOverBudgetMaxEventDuration[] =
-    "PageLoad.InteractiveTiming.AverageUserInteractionLatencyOverBudget."
-    "MaxEventDuration";
-const char
-    kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2MaxEventDuration
-        [] = "PageLoad.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
-             "HighPercentile2.MaxEventDuration";
-const char kHistogramSumOfUserInteractionLatencyOverBudgetMaxEventDuration[] =
-    "PageLoad.InteractiveTiming.SumOfUserInteractionLatencyOverBudget."
-    "MaxEventDuration";
 const char kHistogramWorstUserInteractionLatencyMaxEventDuration[] =
     "PageLoad.InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration";
 
@@ -959,24 +949,6 @@ void UmaPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
       internal::kHistogramWorstUserInteractionLatencyMaxEventDuration,
       max_event_durations.worst_latency, base::Milliseconds(1),
       base::Seconds(60), 50);
-  UmaHistogramCustomTimes(
-      internal::kHistogramSumOfUserInteractionLatencyOverBudgetMaxEventDuration,
-      max_event_durations.sum_of_latency_over_budget, base::Milliseconds(1),
-      base::Seconds(60), 50);
-  UmaHistogramCustomTimes(
-      internal::
-          kHistogramAverageUserInteractionLatencyOverBudgetMaxEventDuration,
-      max_event_durations.sum_of_latency_over_budget /
-          normalized_responsiveness_metrics.num_user_interactions,
-      base::Milliseconds(1), base::Seconds(60), 50);
-  UmaHistogramCustomTimes(
-      internal::
-          kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2MaxEventDuration,
-      page_load_metrics::ResponsivenessMetricsNormalization::
-          ApproximateHighPercentile(
-              normalized_responsiveness_metrics.num_user_interactions,
-              max_event_durations.worst_ten_latencies_over_budget),
-      base::Milliseconds(1), base::Seconds(60), 50);
   UmaHistogramCustomTimes(
       internal::kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration,
       page_load_metrics::ResponsivenessMetricsNormalization::

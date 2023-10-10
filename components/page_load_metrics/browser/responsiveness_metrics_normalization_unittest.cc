@@ -50,20 +50,16 @@ TEST_F(ResponsivenessMetricsNormalizationTest, SendAllInteractions) {
   AddNewUserInteractions(3, *max_event_durations);
   auto worst_ten_max_event_durations =
       normalized_responsiveness_metrics()
-          .normalized_max_event_durations.worst_ten_latencies_over_budget;
+          .normalized_max_event_durations.worst_ten_latencies;
   EXPECT_EQ(worst_ten_max_event_durations.size(), 3u);
-  EXPECT_EQ(worst_ten_max_event_durations.top(), base::Milliseconds(0));
-  worst_ten_max_event_durations.pop();
-  EXPECT_EQ(worst_ten_max_event_durations.top(), base::Milliseconds(0));
-  worst_ten_max_event_durations.pop();
   EXPECT_EQ(worst_ten_max_event_durations.top(), base::Milliseconds(50));
+  worst_ten_max_event_durations.pop();
+  EXPECT_EQ(worst_ten_max_event_durations.top(), base::Milliseconds(100));
+  worst_ten_max_event_durations.pop();
+  EXPECT_EQ(worst_ten_max_event_durations.top(), base::Milliseconds(150));
 
   auto& normalized_max_event_durations =
       normalized_responsiveness_metrics().normalized_max_event_durations;
   EXPECT_EQ(normalized_max_event_durations.worst_latency,
             base::Milliseconds(150));
-  EXPECT_EQ(normalized_max_event_durations.worst_latency_over_budget,
-            base::Milliseconds(50));
-  EXPECT_EQ(normalized_max_event_durations.sum_of_latency_over_budget,
-            base::Milliseconds(50));
 }

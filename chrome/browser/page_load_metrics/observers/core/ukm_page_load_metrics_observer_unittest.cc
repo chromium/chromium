@@ -1307,21 +1307,6 @@ TEST_F(UkmPageLoadMetricsObserverTest, NormalizedUserInteractionLatencies) {
     tester()->test_ukm_recorder().ExpectEntryMetric(
         kv.second.get(),
         PageLoad::
-            kInteractiveTiming_SumOfUserInteractionLatencyOverBudget_MaxEventDurationName,
-        50);
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(),
-        PageLoad::
-            kInteractiveTiming_AverageUserInteractionLatencyOverBudget_MaxEventDurationName,
-        16);
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(),
-        PageLoad::
-            kInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_MaxEventDurationName,
-        50);
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(),
-        PageLoad::
             kInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDurationName,
         150);
     tester()->test_ukm_recorder().ExpectEntryMetric(

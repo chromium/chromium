@@ -5,30 +5,6 @@
 #include "components/page_load_metrics/browser/responsiveness_metrics_normalization.h"
 
 namespace page_load_metrics {
-// Budget for each type of user interaction, including keyboard, click or tap,
-// drag.
-constexpr base::TimeDelta kBudgetForKeyboard = base::Milliseconds(50);
-constexpr base::TimeDelta kBudgetForClickOrTap = base::Milliseconds(100);
-constexpr base::TimeDelta kBudgetForDrag = base::Milliseconds(100);
-
-namespace {
-
-base::TimeDelta LatencyOverBudget(
-    const mojom::UserInteractionLatencyPtr& user_interaction) {
-  base::TimeDelta latency = user_interaction->interaction_latency;
-  switch (user_interaction->interaction_type) {
-    case mojom::UserInteractionType::kKeyboard:
-      return std::max(latency - kBudgetForKeyboard, base::Milliseconds(0));
-    case mojom::UserInteractionType::kTapOrClick:
-      return std::max(latency - kBudgetForClickOrTap, base::Milliseconds(0));
-    case mojom::UserInteractionType::kDrag:
-      return std::max(latency - kBudgetForDrag, base::Milliseconds(0));
-  }
-  NOTREACHED();
-  return latency;
-}
-
-}  // namespace
 
 NormalizedInteractionLatencies::NormalizedInteractionLatencies() = default;
 NormalizedInteractionLatencies::~NormalizedInteractionLatencies() = default;
@@ -86,27 +62,10 @@ void ResponsivenessMetricsNormalization::NormalizeUserInteractionLatencies(
     normalized_event_durations.worst_latency =
         std::max(normalized_event_durations.worst_latency,
                  user_interaction->interaction_latency);
-    base::TimeDelta latency_over_budget = LatencyOverBudget(user_interaction);
-    normalized_event_durations.worst_latency_over_budget =
-        std::max(normalized_event_durations.worst_latency_over_budget,
-                 latency_over_budget);
-    normalized_event_durations.sum_of_latency_over_budget +=
-        latency_over_budget;
     normalized_event_durations.worst_ten_latencies.push(
         user_interaction->interaction_latency);
     if (normalized_event_durations.worst_ten_latencies.size() == 11) {
       normalized_event_durations.worst_ten_latencies.pop();
-    }
-    normalized_event_durations.worst_ten_latencies_over_budget.push(
-        latency_over_budget);
-    if (normalized_event_durations.worst_ten_latencies_over_budget.size() ==
-        11) {
-      normalized_event_durations.worst_ten_latencies_over_budget.pop();
-    }
-    if (latency_over_budget >=
-        normalized_event_durations.high_percentile_latency_over_budget) {
-      normalized_event_durations.high_percentile_latency_over_budget =
-          latency_over_budget;
     }
   }
 }

@@ -458,17 +458,11 @@ chromium-metrics-reviews@google.com.
     <variant name=".FullNavigation"/>
   </token>
   <token key="NormalizedResponsivenessMetric">
-    <variant name="AverageUserInteractionLatencyOverBudget"/>
-    <variant name="SlowUserInteractionLatencyOverBudget.HighPercentile"/>
-    <variant name="SlowUserInteractionLatencyOverBudget.HighPercentile2"/>
-    <variant name="SumOfUserInteractionLatencyOverBudget"/>
     <variant name="UserInteractionLatency.HighPercentile2"/>
     <variant name="WorstUserInteractionLatency"/>
-    <variant name="WorstUserInteractionLatencyOverBudget"/>
   </token>
   <token key="UserInteractionLatency">
     <variant name="MaxEventDuration"/>
-    <variant name="TotalEventDuration"/>
   </token>
 </histogram>
 
@@ -2323,18 +2317,12 @@ chromium-metrics-reviews@google.com.
     <variant name=".Prerender"/>
   </token>
   <token key="NormalizedResponsivenessMetric">
-    <variant name="AverageUserInteractionLatencyOverBudget"/>
-    <variant name="SlowUserInteractionLatencyOverBudget.HighPercentile"/>
-    <variant name="SlowUserInteractionLatencyOverBudget.HighPercentile2"/>
-    <variant name="SumOfUserInteractionLatencyOverBudget"/>
     <variant name="UserInteractionLatency.HighPercentile2"/>
     <variant name="UserInteractionLatencyAtFirstOnHidden.HighPercentile2"/>
     <variant name="WorstUserInteractionLatency"/>
-    <variant name="WorstUserInteractionLatencyOverBudget"/>
   </token>
   <token key="UserInteractionLatency">
     <variant name="MaxEventDuration"/>
-    <variant name="TotalEventDuration"/>
   </token>
 </histogram>
 

@@ -1603,20 +1603,6 @@ void UkmPageLoadMetricsObserver::RecordResponsivenessMetrics() {
     builder.SetInteractiveTiming_WorstUserInteractionLatency_MaxEventDuration(
         max_event_durations.worst_latency.InMilliseconds());
     builder
-        .SetInteractiveTiming_SumOfUserInteractionLatencyOverBudget_MaxEventDuration(
-            max_event_durations.sum_of_latency_over_budget.InMilliseconds());
-    builder
-        .SetInteractiveTiming_AverageUserInteractionLatencyOverBudget_MaxEventDuration(
-            max_event_durations.sum_of_latency_over_budget.InMilliseconds() /
-            normalized_responsiveness_metrics.num_user_interactions);
-    builder
-        .SetInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_MaxEventDuration(
-            page_load_metrics::ResponsivenessMetricsNormalization::
-                ApproximateHighPercentile(
-                    normalized_responsiveness_metrics.num_user_interactions,
-                    max_event_durations.worst_ten_latencies_over_budget)
-                    .InMilliseconds());
-    builder
         .SetInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
             page_load_metrics::ResponsivenessMetricsNormalization::
                 ApproximateHighPercentile(
