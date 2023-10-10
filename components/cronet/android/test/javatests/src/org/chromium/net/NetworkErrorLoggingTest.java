@@ -8,6 +8,8 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
+import android.os.Build;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
@@ -29,6 +31,13 @@ public class NetworkErrorLoggingTest {
 
     @Before
     public void setUp() throws Exception {
+        // TODO(crbug/1490552): Fallback to MockCertVerifier when custom CAs are not supported.
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
+                CronetTestUtil.setMockCertVerifierForTesting(
+                        builder, QuicTestServer.createMockCertVerifier());
+            });
+        }
         assertThat(Http2TestServer.startHttp2TestServer(mTestRule.getTestFramework().getContext()))
                 .isTrue();
     }
@@ -41,11 +50,6 @@ public class NetworkErrorLoggingTest {
     @Test
     @SmallTest
     public void testManualReportUpload() throws Exception {
-        mTestRule.getTestFramework().applyEngineBuilderPatch(
-                (builder)
-                        -> CronetTestUtil.setMockCertVerifierForTesting(
-                                builder, QuicTestServer.createMockCertVerifier()));
-
         String url = Http2TestServer.getReportingCollectorUrl();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder requestBuilder =
@@ -70,8 +74,6 @@ public class NetworkErrorLoggingTest {
     public void testUploadNELReportsFromHeaders() throws Exception {
         mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
             builder.setExperimentalOptions("{\"NetworkErrorLogging\": {\"enable\": true}}");
-            CronetTestUtil.setMockCertVerifierForTesting(
-                    builder, QuicTestServer.createMockCertVerifier());
         });
         String url = Http2TestServer.getSuccessWithNELHeadersUrl();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -131,8 +133,6 @@ public class NetworkErrorLoggingTest {
                     + "    }"
                     + "  ]"
                     + "}}");
-            CronetTestUtil.setMockCertVerifierForTesting(
-                    builder, QuicTestServer.createMockCertVerifier());
         });
 
         String url = Http2TestServer.getEchoMethodUrl();

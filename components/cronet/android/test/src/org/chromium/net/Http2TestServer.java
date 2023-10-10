@@ -5,6 +5,7 @@
 package org.chromium.net;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.ConditionVariable;
 
 import org.chromium.base.Log;
@@ -48,8 +49,21 @@ public final class Http2TestServer {
 
     private static ReportingCollector sReportingCollector;
 
-    public static final String SERVER_CERT_PEM = "quic-chain.pem";
-    private static final String SERVER_KEY_PKCS8_PEM = "quic-leaf-cert.key.pkcs8.pem";
+    public static final String SERVER_CERT_PEM;
+    private static final String SERVER_KEY_PKCS8_PEM;
+
+    static {
+        // TODO(crbug/1490552): Fallback to MockCertVerifier when custom CAs are not supported.
+        // Currently, MockCertVerifier uses different certificates, so make the server also use
+        // those.
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            SERVER_CERT_PEM = "quic-chain.pem";
+            SERVER_KEY_PKCS8_PEM = "quic-leaf-cert.key.pkcs8.pem";
+        } else {
+            SERVER_CERT_PEM = "cronet-quic-chain.pem";
+            SERVER_KEY_PKCS8_PEM = "cronet-quic-leaf-cert.key.pkcs8.pem";
+        }
+    }
 
     public static boolean shutdownHttp2TestServer() throws Exception {
         if (sServerChannel != null) {

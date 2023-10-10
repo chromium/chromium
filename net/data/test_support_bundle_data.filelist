@@ -75,6 +75,10 @@ data/ssl/certificates/crlset_by_root_spki.raw
 data/ssl/certificates/crlset_by_root_subject.raw
 data/ssl/certificates/crlset_by_root_subject_no_spki.raw
 data/ssl/certificates/crlset_known_interception_by_root.raw
+data/ssl/certificates/cronet-quic-chain.pem
+data/ssl/certificates/cronet-quic-leaf-cert.key
+data/ssl/certificates/cronet-quic-leaf-cert.key.pkcs8.pem
+data/ssl/certificates/cronet-quic-root.pem
 data/ssl/certificates/ct-test-embedded-cert.pem
 data/ssl/certificates/ct-test-embedded-with-intermediate-chain.pem
 data/ssl/certificates/ct-test-embedded-with-intermediate-preca-chain.pem

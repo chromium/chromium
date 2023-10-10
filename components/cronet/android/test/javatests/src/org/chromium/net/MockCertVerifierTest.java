@@ -5,8 +5,11 @@
 package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.TruthJUnit.assume;
 
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
+
+import android.os.Build;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
@@ -46,7 +49,8 @@ public class MockCertVerifierTest {
 
     @Test
     @SmallTest
-    public void testRequest_failsWithoutMockVerifier() {
+    public void testRequest_failsWithoutMockVerifierBeforeNougat() {
+        assume().that(Build.VERSION.SDK_INT).isLessThan(Build.VERSION_CODES.N);
         String url = Http2TestServer.getEchoAllHeadersUrl();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
         assertThat(callback.mError).isNotNull();
@@ -55,12 +59,22 @@ public class MockCertVerifierTest {
 
     @Test
     @SmallTest
-    public void testRequest_passesWithMockVerifier() {
+    public void testRequest_passesWithMockVerifierBeforeNougat() {
+        assume().that(Build.VERSION.SDK_INT).isLessThan(Build.VERSION_CODES.N);
         mTestRule.getTestFramework().applyEngineBuilderPatch(
                 (builder)
                         -> CronetTestUtil.setMockCertVerifierForTesting(
                                 builder, MockCertVerifier.createFreeForAllMockCertVerifier()));
 
+        String url = Http2TestServer.getEchoAllHeadersUrl();
+        TestUrlRequestCallback callback = startAndWaitForComplete(url);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+    }
+
+    @Test
+    @SmallTest
+    public void testRequest_passesWithoutMockVerifierAfterMarshmallow() {
+        assume().that(Build.VERSION.SDK_INT).isGreaterThan(Build.VERSION_CODES.M);
         String url = Http2TestServer.getEchoAllHeadersUrl();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);

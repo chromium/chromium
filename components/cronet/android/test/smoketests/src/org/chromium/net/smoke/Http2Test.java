@@ -8,6 +8,8 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
+import android.os.Build;
+
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
@@ -45,7 +47,11 @@ public class Http2Test {
     @Test
     @SmallTest
     public void testHttp2() throws Exception {
-        mRule.getTestSupport().installMockCertVerifierForTesting(mRule.getCronetEngineBuilder());
+        // TODO(crbug/1490552): Fallback to MockCertVerifier when custom CAs are not supported.
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            mRule.getTestSupport().installMockCertVerifierForTesting(
+                    mRule.getCronetEngineBuilder());
+        }
         mRule.initCronetEngine();
         assertThat(mServer.start()).isTrue();
         SmokeTestRequestCallback callback = new SmokeTestRequestCallback();

@@ -12,6 +12,8 @@ import static org.junit.Assert.assertThrows;
 import static org.chromium.net.CronetTestRule.getTestStorage;
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
+import android.os.Build;
+
 import androidx.annotation.OptIn;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
@@ -62,10 +64,13 @@ public class ExperimentalOptionsTest {
     @Before
     public void setUp() throws Exception {
         mHangingUrlLatch = new CountDownLatch(1);
-        mTestRule.getTestFramework().applyEngineBuilderPatch(
-                (builder)
-                        -> CronetTestUtil.setMockCertVerifierForTesting(
-                                builder, QuicTestServer.createMockCertVerifier()));
+        // TODO(crbug/1490552): Fallback to MockCertVerifier when custom CAs are not supported.
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            mTestRule.getTestFramework().applyEngineBuilderPatch(
+                    (builder)
+                            -> CronetTestUtil.setMockCertVerifierForTesting(
+                                    builder, QuicTestServer.createMockCertVerifier()));
+        }
         assertThat(Http2TestServer.startHttp2TestServer(
                            mTestRule.getTestFramework().getContext(), mHangingUrlLatch))
                 .isTrue();

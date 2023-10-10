@@ -58,11 +58,13 @@ public class BidirectionalStreamTest {
 
     @Before
     public void setUp() throws Exception {
-        mTestRule.getTestFramework().applyEngineBuilderPatch(
-                (builder)
-                        -> CronetTestUtil.setMockCertVerifierForTesting(
-                                builder, QuicTestServer.createMockCertVerifier()));
-
+        // TODO(crbug/1490552): Fallback to MockCertVerifier when custom CAs are not supported.
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            mTestRule.getTestFramework().applyEngineBuilderPatch(
+                    (builder)
+                            -> CronetTestUtil.setMockCertVerifierForTesting(
+                                    builder, QuicTestServer.createMockCertVerifier()));
+        }
         mCronetEngine = mTestRule.getTestFramework().startEngine();
         assertThat(Http2TestServer.startHttp2TestServer(mTestRule.getTestFramework().getContext()))
                 .isTrue();
@@ -872,8 +874,11 @@ public class BidirectionalStreamTest {
         ExperimentalCronetEngine.Builder engineBuilder =
                 new ExperimentalCronetEngine.Builder(mTestRule.getTestFramework().getContext());
         engineBuilder.setUserAgent(userAgentValue);
-        CronetTestUtil.setMockCertVerifierForTesting(
-                engineBuilder, QuicTestServer.createMockCertVerifier());
+        // TODO(crbug/1490552): Fallback to MockCertVerifier when custom CAs are not supported.
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            CronetTestUtil.setMockCertVerifierForTesting(
+                    engineBuilder, QuicTestServer.createMockCertVerifier());
+        }
         ExperimentalCronetEngine engine = engineBuilder.build();
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
         BidirectionalStream.Builder builder = engine.newBidirectionalStreamBuilder(
@@ -1262,8 +1267,11 @@ public class BidirectionalStreamTest {
         // Use a fresh CronetEngine each time so Http2 session is not reused.
         ExperimentalCronetEngine.Builder builder =
                 new ExperimentalCronetEngine.Builder(mTestRule.getTestFramework().getContext());
-        CronetTestUtil.setMockCertVerifierForTesting(
-                builder, QuicTestServer.createMockCertVerifier());
+        // TODO(crbug/1490552): Fallback to MockCertVerifier when custom CAs are not supported.
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            CronetTestUtil.setMockCertVerifierForTesting(
+                    builder, QuicTestServer.createMockCertVerifier());
+        }
         mCronetEngine = builder.build();
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
         callback.setFailure(failureType, failureStep);
