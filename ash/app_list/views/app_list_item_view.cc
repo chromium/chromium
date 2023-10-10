@@ -1861,7 +1861,7 @@ void AppListItemView::ItemProgressUpdated() {
           return view->GetColorProvider()->GetColor(color_id);
         },
         base::Unretained(this))));
-    progress_indicator_->SetColorId(cros_tokens::kCrosSysOnPrimaryContainer);
+    progress_indicator_->SetColorId(cros_tokens::kCrosRefPrimary70);
   }
 
   UpdateProgressRingBounds();
