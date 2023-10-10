@@ -210,6 +210,13 @@ crbug.com/1201009 [ linux ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanv
 crbug.com/1201009 [ fuchsia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
 crbug.com/1201009 [ fuchsia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
 
+# Accelerated canvas capture does not yet work with Graphite.
+crbug.com/1450879 [ mac graphite-enabled ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
+crbug.com/1450879 [ mac graphite-enabled ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
+crbug.com/1450879 [ mac no-asan graphite-enabled ] WebGPUTraceTest_WebGPUCanvasOneCopyCapture [ Failure ]
+crbug.com/1450879 [ mac no-asan graphite-enabled ] WebGPUTraceTest_WebGPUCanvasOneCopyCapture_Hidden [ Failure ]
+crbug.com/1450879 [ mac no-asan graphite-enabled ] WebGPUTraceTest_WebGPUCanvasDisableOneCopyCapture_Accelerated [ Failure ]
+
 # WebGL drawingBufferStorage does not work on Pixel 4, Samsung A23, nexus-5x or
 # Lacros FYI x64 Release (Intel) yet.
 crbug.com/1230619 [ android android-nexus-5x passthrough ] TraceTest_WebGLFloat [ Failure ]
