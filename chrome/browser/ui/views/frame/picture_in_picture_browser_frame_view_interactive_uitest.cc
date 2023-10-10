@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -272,5 +273,29 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
 }
 
 #endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
+
+IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+                       TitleActivatesWithOverlayView) {
+  // Verify that the title bar is on when the overlay view is shown.
+
+  // Pretend that we're in auto-pip so that we get an overlay view.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  // Ensure that there is a helper for `web_contents`.  This will no-op if
+  // something has already created it, but right now it's dependent on having
+  // the feature enabled.
+  AutoPictureInPictureTabHelper::CreateForWebContents(web_contents);
+  auto* auto_pip_tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  auto_pip_tab_helper->set_is_in_auto_picture_in_picture_for_testing(true);
+  ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
+
+  // The title buttons should be visible.
+  WaitForTopBarAnimations(
+      pip_frame_view()->GetRenderActiveAnimationsForTesting());
+  ASSERT_TRUE(
+      IsButtonVisible(pip_frame_view()->GetBackToTabButtonForTesting()));
+  ASSERT_TRUE(IsButtonVisible(pip_frame_view()->GetCloseButtonForTesting()));
+}
 
 }  // namespace

@@ -188,6 +188,9 @@ class PictureInPictureBrowserFrameView
   // Called when mouse entered or exited the pip window.
   void OnMouseEnteredOrExitedWindow(bool entered);
 
+  // Returns true if there's an overlay view that's currently shown.
+  bool IsOverlayViewVisible() const;
+
 #if BUILDFLAG(IS_LINUX)
   // Sets the window frame provider so that it will be used for drawing.
   void SetWindowFrameProvider(ui::WindowFrameProvider* window_frame_provider);

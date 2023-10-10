@@ -73,6 +73,10 @@ class AutoPictureInPictureTabHelper
   // Returns true if the tab is in PiP mode, and PiP was started by auto-pip.
   bool IsInAutoPictureInPicture() const;
 
+  void set_is_in_auto_picture_in_picture_for_testing(bool auto_pip) {
+    is_in_auto_picture_in_picture_ = auto_pip;
+  }
+
   // Returns true if a PiP window would be considered auto-pip if it opened.
   // This is useful during PiP window startup, when we might not be technically
   // in PiP yet.  `IsInAutoPictureInPicture()` requires that we're in PiP mode

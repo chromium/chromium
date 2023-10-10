@@ -978,9 +978,7 @@ void PictureInPictureBrowserFrameView::OnWidgetActivationChanged(
     bool active) {
   // The window may become inactive when a popup modal shows, so we need to
   // check if the mouse is still inside the window.
-  if (!active && mouse_inside_window_)
-    active = true;
-  UpdateTopBarView(active);
+  UpdateTopBarView(active || mouse_inside_window_ || IsOverlayViewVisible());
 }
 
 void PictureInPictureBrowserFrameView::OnWidgetDestroying(
@@ -1281,7 +1279,17 @@ views::Label* PictureInPictureBrowserFrameView::GetWindowTitleForTesting() {
 void PictureInPictureBrowserFrameView::OnMouseEnteredOrExitedWindow(
     bool entered) {
   mouse_inside_window_ = entered;
-  UpdateTopBarView(mouse_inside_window_);
+  // If the overlay view is visible, then we should keep the top bar icons
+  // visible too.  If the overlay is dismissed, we'll leave it in the same state
+  // until a mouse-out event, which is reasonable.  If the UI is dismissed via
+  // the mouse, then it's inside the window anyway.  If it's dismissed via the
+  // keyboard, keeping it that way until the next mouse in/out actually looks
+  // better than having the top bar hide immediately.
+  UpdateTopBarView(mouse_inside_window_ || IsOverlayViewVisible());
+}
+
+bool PictureInPictureBrowserFrameView::IsOverlayViewVisible() const {
+  return auto_pip_setting_overlay_ && auto_pip_setting_overlay_->GetVisible();
 }
 
 BEGIN_METADATA(PictureInPictureBrowserFrameView, BrowserNonClientFrameView)
