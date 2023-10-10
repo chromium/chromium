@@ -3835,6 +3835,7 @@ static_library("ui") {
       "startup/silent_sync_enabler.h",
       "views/chrome_browser_main_extra_parts_views_lacros.cc",
       "views/chrome_browser_main_extra_parts_views_lacros.h",
+      "views/eye_dropper/eye_dropper_lacros.cc",
       "views/frame/browser_frame_lacros.cc",
       "views/frame/browser_frame_lacros.h",
       "views/frame/desktop_browser_frame_lacros.cc",

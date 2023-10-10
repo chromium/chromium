@@ -41,6 +41,7 @@ import "chromeos/crosapi/mojom/editor_panel.mojom";
 import "chromeos/crosapi/mojom/emoji_picker.mojom";
 import "chromeos/crosapi/mojom/extension_info_private.mojom";
 import "chromeos/crosapi/mojom/extension_keeplist.mojom";
+import "chromeos/crosapi/mojom/eye_dropper.mojom";
 import "chromeos/crosapi/mojom/feedback.mojom";
 import "chromeos/crosapi/mojom/field_trial.mojom";
 import "chromeos/crosapi/mojom/file_manager.mojom";
@@ -147,8 +148,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 120
-// Next method id: 122
+// Next version: 121
+// Next method id: 123
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -600,6 +601,10 @@ interface Crosapi {
   // Binds the HidManager interface for support HID devices.
   // Added in M87.
   BindHidManager@4(pending_receiver<device.mojom.HidManager> receiver);
+
+  // Binds the EyeDropper interface for showing EyeDropper UI.
+  // Added in M120.
+  [MinVersion=120] BindEyeDropper@122(pending_receiver<EyeDropper> receiver);
 
   // Binds the Feedback interface for showing feedback UI.
   // Added in M87.
