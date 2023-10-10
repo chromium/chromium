@@ -1242,12 +1242,7 @@ void HTMLSelectListElement::HandleButtonEvent(Event& event) {
     return;
   }
 
-  if (event.type() == event_type_names::kClick && !IsDisabledFormControl()) {
-    if (!open()) {
-      OpenListbox();
-    }
-    // TODO(crbug.com/1408838) Close list box if dialog is open.
-  } else if (event.type() == event_type_names::kBlur) {
+  if (event.type() == event_type_names::kBlur) {
     type_ahead_.ResetSession();
   } else if (event.IsKeyboardEvent()) {
     auto* keyboard_event = DynamicTo<KeyboardEvent>(event);

@@ -235,6 +235,10 @@ HTMLSelectListElement* HTMLButtonElement::OwnerSelectList() const {
     return nullptr;
   }
   for (auto& ancestor : FlatTreeTraversal::AncestorsOf(*this)) {
+    if (IsA<HTMLListboxElement>(ancestor)) {
+      // Buttons inside listboxes are excluded from triggering the listbox.
+      return nullptr;
+    }
     if (auto* selectlist = DynamicTo<HTMLSelectListElement>(ancestor)) {
       return selectlist;
     }

@@ -102,6 +102,7 @@ class CORE_EXPORT HTMLSelectListElement final
   // HTMLSelectElement::GetOptionList().
   const ListItems& GetListItems() const;
 
+  void OpenListbox();
   void ListboxWasClosed();
 
   void ResetTypeAheadSessionForTesting();
@@ -114,7 +115,6 @@ class CORE_EXPORT HTMLSelectListElement final
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
   void DidMoveToNewDocument(Document& old_document) override;
   void DisabledAttributeChanged() override;
-  void OpenListbox();
   void CloseListbox();
   bool TypeAheadFind(const KeyboardEvent& event, int charCode);
 

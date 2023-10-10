@@ -36,7 +36,10 @@
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_listbox_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/forms/validity_state.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -347,6 +350,19 @@ HTMLFormControlElement::popoverTargetElement() {
 
   Element* target_element;
   target_element = GetElementAttribute(html_names::kPopovertargetAttr);
+
+  // The selectlist element's button which opens its listbox forms an implicit
+  // popover trigger for the listbox in order to function properly with light
+  // dismiss.
+  if (!target_element && RuntimeEnabledFeatures::HTMLSelectListElementEnabled(
+                             GetDocument().GetExecutionContext())) {
+    if (auto* button = DynamicTo<HTMLButtonElement>(this)) {
+      if (auto* selectlist = button->OwnerSelectList()) {
+        target_element = selectlist->ListBoxPart();
+      }
+    }
+  }
+
   if (!target_element) {
     return no_element;
   }
@@ -430,7 +446,16 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
               HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
               /*exception_state=*/nullptr);
         } else if (can_show) {
-          popover.popover->InvokePopover(this);
+          auto* button = DynamicTo<HTMLButtonElement>(this);
+          HTMLSelectListElement* selectlist =
+              button && RuntimeEnabledFeatures::HTMLSelectListElementEnabled()
+                  ? button->OwnerSelectList()
+                  : nullptr;
+          if (selectlist) {
+            selectlist->OpenListbox();
+          } else {
+            popover.popover->InvokePopover(this);
+          }
         }
       }
     }
