@@ -16,10 +16,12 @@ them? Here to answer that is special guest is Peter, who works on UI and
 improving crash reports.
 
 Notes:
+
 - https://docs.google.com/document/d/146LoJ1E3N3E6fb4zDh92HPQc6yhRpNI7DSKlJjaYlLw/edit
 
 Links:
-- [What's Up With Pointers](https://www.youtube.com/watch?v=MpwbWSEDfjM)
+
+- [What's Up With Pointers]
 
 ---
 
@@ -39,14 +41,14 @@ start with, what is a DCHECK?
 00:39 PETER: So a CHECK and a DCHECK are both sort of things that make sure
 that what you think is true is true. Right? So this should never be called with
 an empty vector. You might add a CHECK for it, or you might add a DCHECK for
-it. And it's sort of similar to a search, which you may have hit during earlier
+it. And it's sort of similar to asserts, which you may have hit during earlier
 programming outside of Chrome. And what it means is when this line gets hit, we
 check and see if it's true. And if it's not true, we crash. DCHECKs differ from
 CHECKs in that they are traditionally only in debug builds, or local
 development builds, or on our try-bots. So they have zero overhead when Chrome
 hits stable, because the CHECK just won't be there.
 
-01:24 SHARON: OK. So like if the D stands for Debug. That make sense.
+01:24 SHARON: OK. So I guess the D stands for Debug. That make sense.
 
 01:28 PETER: Yeah. I want debug to turn into developer, because now we have
 them by default if you're no longer - if you're doing a release build, and
@@ -126,7 +128,7 @@ expensive, it's probably not expensive.
 a CHECK?
 
 06:24 PETER: Right. So say that you have something in video code that for every
-video frame, for every pixel validates the alpha value as opaque, or something.
+video frame, for every pixel validates the alpha value is opaque, or something.
 That would probably make video conferencing a little bit worse performance.
 Another thing would just be if you have to traverse a graph on every frame, and
 it will sort of jump all over memory to see if some reachability problem in
@@ -141,10 +143,10 @@ it's just hurting us.
 
 07:09 SHARON: OK. So since most places we should use CHECKs, are there any
 places where a DCHECK would be better then? Or any time you would have normally
-previously used a DCHECK, you should just make that a check?
+previously used a DCHECK, you should just make that a CHECK?
 
 07:23 PETER: So we have a new construct that's called `EXPENSIVE_DCHECK`s, or
-if `EXPENSIVE_DCHECK`s are on, I think we should add a corresponding macro for
+if `EXPENSIVE_DCHECKS_ARE_ON`, I think we should add a corresponding macro for
 `EXPENSIVE_DCHECK`. And then you should be able to just say, either it's
 expensive and has to be a DCHECK, so use `EXPENSIVE_DCHECK`; otherwise, use
 CHECK. And my hunch would be like 95% of what we have as DCHECKs would probably
@@ -214,7 +216,7 @@ people who are more concerned about security are not a fan of this.
 12:13 PETER: I mean, if you care about it, especially if it causes privacy or
 security or user-harm sort of things, just CHECK. Just CHECK, right? If it
 makes your code animate a thing slightly weirder, like it will just jump to the
-end position instead of going through your fence load, whatever. Maybe you can
+end position instead of going through your fancy little... whatever. Maybe you can
 make that a DCHECK. Maybe it doesn't matter. Like it's wrong, but it's not that
 bad. But most of the cases, you DCHECK something, where it's like the program
 is going to be in some indeterminate state, and we actually care about if it's
@@ -273,26 +275,26 @@ place? Can they be treated the same?
 16:20 PETER: Yeah. Well, they are uploaded to the same crash-reporting thing.
 They show up under a special branch. And you likely will get bugs filed to you
 if they hit very frequently, just like you would with crashes. There's a sort
-of slight difference, in that they say dump without crashing. And that's just
+of slight difference, in that they say DumpWithoutCrashing. And that's just
 sort of a rollout strategy for us. Because if we made DCHECK builds incredibly
 crashy, because they hit more than CHECKs, then we can never roll this thing
 out. Or it gets a lot scarier for us to put this on 5% of a new platform that
 we haven't tested. But as it is right now, the first DCHECK that gets hit for
 every process gets a crash dump uploaded.
 
-17:07 SHARON: OK. So I've been definitely told to use dump without crashing at
+17:07 SHARON: OK. So I've been definitely told to use DumpWithoutCrashing at
 certain points in CLs, where it's like, OK, we think that this shouldn't
 happen. But if it does, we don't necessarily want to crash the browser because
 of it. With the changes you've mentioned to DCHECKs happening, should those
-just be CHECKs instead now or should those still be dump without crashing?
+just be CHECKs instead now or should those still be DumpWithoutCrashing?
 
-17:29 PETER: So if you want dump without crashing, and you made those a DCHECK,
+17:29 PETER: So if you want DumpWithoutCrashing, and you made those a DCHECK,
 then you would only have coverage in the Canary channels that we are testing.
 Right? So if you want to get dump reports from the platforms that we're not
 currently testing, including all the way up to Stable, you probably still want
-to keep that a dump without crashing. You want to make sure that you're not
+to keep that a DumpWithoutCrashing. You want to make sure that you're not
 using the sort of - you want to make sure that you triage these, because you
-don't want to keep these generating crash dumps n forever. You should still
+don't want to keep these generating crash dumps forever. You should still
 treat them as if they were crashes. And I think the same thing should hold true
 for DCHECKs. You should only add them for an invariant that you care about
 being violated, right? So as it is violated, you should either figure out why
@@ -308,10 +310,10 @@ information that you can use to help yourself debug?
 19:01 PETER: So some of the stuff that we have is we have something called
 crash keys, which are essentially, you can write a piece of string data,
 essentially - there's probably some other data types - and if you write those
-before you're running dump without crashing, or before you hit a CHECK, or
+before you're running DumpWithoutCrashing, or before you hit a CHECK, or
 before you hit a DCHECK, then those will be uploaded along the crash dump. And
 if you talk to someone who knows where to find them, you can basically go in
-under a crash report, and then under field product data, or something like
+under a crash report, and then under Fields, Product data, or something like
 that, you should be able to find your key-value pair. And if you have
 information in there, you'll be able to look at it. The other thing that I like
 to do, which is probably the more obvious thing, is if you have somewhat of a
@@ -344,11 +346,11 @@ be null. So if you assign to it, and you're assigning a null pointer, your
 program is going to crash, and you don't need to think about whether you throw
 a null pointer in or not. If you keep passing a RawRef around, then that's
 essentially you passing around a non-null pointer. And therefore, you don't
-have to check that it's not null pointer in every step of the way. You only
+have to check that it's not `nullptr` in every step of the way. You only
 need to do it when you're - I mean, the type will do it for you, but it only
 needs to happen when you're converting from a pointer to a ref, essentially, or
 a RawRef. And what's so good about that is now you have the - previously, you
-might just CHECK that this isn't called with null pointer or whatever. But then
+might just CHECK that this isn't called with `nullptr` or whatever. But then
 you would do that for four or five arguments. And you'd be like, null pointer
 CHECKs are this part of the function body. And then it just gets super-noisy.
 But if you're using the RawRef types, then the semantics of the type will
@@ -374,9 +376,9 @@ CHECK. So unless it's incredibly -
 
 24:28 SHARON: What do you mean by core types?
 
-24:30 PETER: Say that you make a `scoped_refptr` something, that ref pointer is
+24:30 PETER: Say that you make a `scoped_refptr` or something, that ref pointer is
 used everywhere. So if you CHECKed in the destructor, then you're validating
-all of the clients of your scope ref pointer. So for one CHECK, you get the
+all of the clients of your `scoped_refptr`. So for one CHECK, you get the
 price of a lot of CHECKing. Whereas if in your client code you're validating
 some parameters of an API call that only gets called once, then that's one
 CHECK you add for one case. But if you're re-use, then your CHECK gets a lot
@@ -397,7 +399,7 @@ the long-term goal and plan for CHECKs and DCHECKs.
 libraries that we use, like Abseil and WebRTC, which is a first-party
 third-party library, that they both use Chrome's crashing report system, which
 means that you get more predictable crash stacks because it's using the
-immediate crash macro. But also, you get the fatal logging field that I talked
+IMMEDIATE\_CRASH macro. But also, you get the fatal logging field that I talked
 about. That gets logged as part of crash dumps. So you hopefully have more
 glanceable, actionable crash reports whenever a CHECK is violated inside of
 Abseil, or in WebRTC, as it were. And then upcoming is we want to make sure
@@ -451,3 +453,5 @@ for being here, Peter. It was great to learn about DCHECKs.
 29:26 PETER: Oh. Take four.
 
 29:29 SHARON: [LAUGHS] Take four. And action.
+
+[What's Up With Pointers]: https://www.youtube.com/watch?v=MpwbWSEDfjM
