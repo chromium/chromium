@@ -87,6 +87,15 @@ function conditionHolds(condition, error_message = 'Condition is not true anymor
 
 // TODO: Frames are animated every 1ms for testing. It may be better to have the
 // timeout based on time rather than frame count.
+// @deprecated:
+//    If a scroll is expected then use waitForScrollendEvent.
+//    If asserting that no scroll tales place then:
+//        Add a scroll listener with assert_unreached(message)
+//        If possible, wait on a sentinel event that indicates when handling of
+//        the gesture is complete. Otherwise, wait a few animation frames.
+//        Pointerup is an example of a suitable sentinel event if the test
+//        is driven by pointer events since pointerup is replace by
+//        pointercancel if scrolling occurs.
 function waitForAnimationEnd(getValue, max_frame, max_unchanged_frame) {
   const MAX_FRAME = max_frame;
   const MAX_UNCHANGED_FRAME = max_unchanged_frame;
@@ -111,7 +120,12 @@ function waitForAnimationEnd(getValue, max_frame, max_unchanged_frame) {
   })
 }
 
-// TODO(bokan): Replace uses of the above with this one.
+// Waits until scrolling has stopped for a period of time.
+// @deprecated:
+//   For a scrolling test use waitForScrollend if expecting a scroll
+//   and use a scroll listener with assert_unreached if no scrolling is
+//   expected. See comments on waitForAnimationEnd for a more complete
+//   description of the recommended alternatives.
 function waitForAnimationEndTimeBased(getValue) {
   // Give up if the animation still isn't done after this many milliseconds.
   const TIMEOUT_MS = 1000;
@@ -648,6 +662,7 @@ function touchPull(pull) {
   });
 }
 
+// @deprecated: Use touchDrag, which uses test-driver.
 function touchDragTo(drag) {
   const PREVENT_FLING_PAUSE = 40;
   return new Promise(function(resolve, reject) {
@@ -719,15 +734,42 @@ function clientToViewport(client_point) {
   return viewport_point;
 }
 
+
+
+// Convenience enums for elementPosition function.
+ElementAlignment = {
+  LEFT: 0,
+  TOP: 0,
+  CENTER: 0.5,
+  BOTTOM: 1,
+  RIGHT: 1
+};
+
+// Returns a point within an element's rect in visual viewport
+// coordinates. The relative offsets are between 0 (left or top) and 1
+// (right or bottom). Returned object is a point with |x| and |y| properties.
+function elementPosition(element,
+                         relativeHorizontalOffset,
+                         relativeVerticalOffset,
+                         insets = { x: 0, y: 0 } ) {
+  const rect = element.getBoundingClientRect();
+  rect.x += insets.x;
+  rect.y += insets.y;
+  rect.width -= 2 * insets.x;
+  rect.height -= 2 * insets.y;
+  const center_point = {
+    x: rect.x + relativeHorizontalOffset * rect.width,
+    y: rect.y + relativeVerticalOffset * rect.height
+  };
+  return clientToViewport(center_point);
+}
+
 // Returns the center point of the given element's rect in visual viewport
 // coordinates.  Returned object is a point with |x| and |y| properties.
 function elementCenter(element) {
-  const rect = element.getBoundingClientRect();
-  const center_point = {
-    x: rect.x + rect.width / 2,
-    y: rect.y + rect.height / 2
-  };
-  return clientToViewport(center_point);
+  return elementPosition(element,
+                         ElementAlignment.CENTER,
+                         ElementAlignment.CENTER);
 }
 
 // Returns a position in the given element with an offset of |x| and |y| from
@@ -758,18 +800,18 @@ function raf() {
   });
 }
 
-// Resets the scroll position to (0,0).  If a scroll is required, then the
+// Resets the scroll position to (x,y). If a scroll is required, then the
 // promise is not resolved until the scrollend event is received.
-async function waitForScrollReset(scroller) {
+async function waitForScrollReset(scroller, x = 0, y = 0) {
   return new Promise(resolve => {
-    if (scroller.scrollTop == 0 &&
-        scroller.scrollLeft == 0) {
+    if (scroller.scrollTop == y &&
+        scroller.scrollLeft == x) {
       resolve();
     } else {
       const eventTarget =
         scroller == document.scrollingElement ? document : scroller;
-      scroller.scrollTop = 0;
-      scroller.scrollLeft = 0;
+      scroller.scrollTop = y;
+      scroller.scrollLeft = x;
       waitForScrollendEvent(eventTarget).then(resolve);
     }
   });
@@ -784,16 +826,19 @@ async function triggerScrollAndWaitForScrollEnd(
   return scrollPromise;
 }
 
+function verifyTestDriverLoaded() {
+  if (!window.test_driver) {
+    throw new Error('Test requires import of testdriver. Please add ' +
+                    'testdriver.js, testdriver-actions.js and ' +
+                    'testdriver-vendor.js to your test file');
+  }
+}
+
 // Generates a synthetic click and returns a promise that is resolved once
 // |scrollendEventReceiver| gets the scrollend event.
 async function clickAndWaitForScroll(x, y, scrollendEventReceiver = document) {
+  verifyTestDriverLoaded();
   return triggerScrollAndWaitForScrollEnd(async () => {
-    if (!window.test_driver) {
-      throw new Error('Test requires import of testdriver. Please add ' +
-                      'testdriver.js, testdriver-actions.js and ' +
-                      'testdriver-vendor.js to your test file');
-    }
-
     return new test_driver.Actions()
         .pointerMove(x, y)
         .pointerDown()
@@ -801,6 +846,66 @@ async function clickAndWaitForScroll(x, y, scrollendEventReceiver = document) {
         .pointerUp()
         .send();
   }, scrollendEventReceiver);
+}
+
+// Verify that a point is onscreen.  Origin may be "viewport" or an element.
+// In the case of an element, (x,y) is relative to the center of the element.
+function assert_point_within_viewport(x, y, origin = "viewport") {
+  if (origin !== "viewport") {
+    const bounds = elementCenter(origin);
+    x += bounds.x;
+    y += bounds.y;
+  }
+  assert_true(x >= 0 && x <= window.innerWidth,
+              'x coordinate outside viewport');
+  assert_true(y >= 0 && y <= window.innerHeight,
+              'y coordinate outside viewport');
+}
+
+// Performs a touch drag from a starting point (x,y) which may be relative to
+// the viewport or the center of an element as determined by the origin
+// parameter. Verifies that both ends of the drag are inside the viewport. The
+// returned promise is resolved when a pointerup or pointercancel event is
+// received. Pointercancel replaces pointerup when scrolling takes place. Thus,
+// any scrolling decisions has been made prior to dispatching either of these
+// events.
+function touchDrag(x, y, deltaX, deltaY, origin = "viewport",
+                   prevent_fling_pause_ms = 100) {
+  verifyTestDriverLoaded();
+  assert_point_within_viewport(x, y, origin);
+  assert_point_within_viewport(x + deltaX, y + deltaY, origin);
+  return new Promise((resolve,reject) => {
+    // Expect a pointerup or pointercancel event depending on whether scrolling
+    // actually took place.
+    const pointerListener = (event) => {
+      if (event.type == 'pointerup' || event.type == 'pointercancel') {
+        document.removeEventListener('pointerup', pointerListener);
+        document.removeEventListener('pointercancel', pointerListener);
+        resolve(event.type);
+      }
+    };
+    document.addEventListener('pointerup', pointerListener);
+    document.addEventListener('pointercancel', pointerListener);
+    new test_driver.Actions()
+      .addPointer("pointer1", "touch")
+      .pointerMove(x, y, { origin: origin })
+      .pointerDown()
+      .pointerMove(x + deltaX, y + deltaY, { origin: origin })
+      .pause(prevent_fling_pause_ms)
+      .pointerUp()
+      .send();
+  });
+}
+
+function touchScroll(x, y, deltaX, deltaY, scroller,
+                            origin = "viewport") {
+  const scrollPromise = waitForScrollendEvent(scroller);
+  const dragGesturePromise =
+      touchDrag(x, y, deltaX, deltaY, origin).then(value => {
+         assert_equals(value, 'pointercancel',
+                       'Expect scrolling to trigger poitnercancel');
+      });
+  return Promise.all([dragGesturePromise, scrollPromise]);
 }
 
 function waitForStableScrollOffset(scroller, timeout) {
