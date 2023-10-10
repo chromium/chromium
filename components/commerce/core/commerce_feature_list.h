@@ -97,6 +97,8 @@ extern const char kPriceInsightsChipLabelExpandOnHighPriceParam[];
 extern const base::FeatureParam<bool> kPriceInsightsChipLabelExpandOnHighPrice;
 extern const char kPriceInsightsShowFeedbackParam[];
 extern const base::FeatureParam<bool> kPriceInsightsShowFeedback;
+extern const char kPriceInsightsUseCacheParam[];
+extern const base::FeatureParam<bool> kPriceInsightsUseCache;
 BASE_DECLARE_FEATURE(kPriceTrackingIconColors);
 BASE_DECLARE_FEATURE(kShoppingCollection);
 BASE_DECLARE_FEATURE(kShoppingList);
