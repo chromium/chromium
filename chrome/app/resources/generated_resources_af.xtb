@@ -3953,7 +3953,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4110485659976215879">Laai waarskuwing terug</translation>
 <translation id="4110490973560452005">Aflaai is voltooi: <ph name="FILE_NAME" />. Druk Shift+F6 om na die aflaaibalk te gaan.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (vanlyn)</translation>
-<translation id="411318099524508025">Jy is opgegradeer na <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Lêerwagwoord</translation>
 <translation id="4114524937989710624">Jy sien tans voorgestelde lêers om jou te help om maklik terug te kom by jou mees onlangse aktiwiteit in Google Drive.
         <ph name="BREAK" />
@@ -9073,6 +9072,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8324784016256120271">Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te sien, byvoorbeeld, om advertensies te personaliseer</translation>
 <translation id="8325413836429495820">Mag nie jou knipbord sien nie</translation>
 <translation id="8326478304147373412">PKCS # 7, sertifikaatketting</translation>
+<translation id="832684045355488000">Jy is opgegradeer na <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Wiskundige lettertipe</translation>
 <translation id="8327538105740918488">Jy kan hierdie wagwoord altyd later verander. Dit sal in <ph name="GOOGLE_PASSWORD_MANAGER" /> gestoor word vir <ph name="EMAIL" /></translation>
 <translation id="8327676037044516220">Toestemmings en inhoudinstellings</translation>

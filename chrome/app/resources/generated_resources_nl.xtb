@@ -3938,7 +3938,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="4110485659976215879">Waarschuwing herstellen</translation>
 <translation id="4110490973560452005">Download voltooid: <ph name="FILE_NAME" />. Druk op Shift+F6 om naar het gedeelte met de downloadbalk te gaan.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="411318099524508025">Je bent geüpgraded naar <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Wachtwoord van bestand</translation>
 <translation id="4114524937989710624">Je ziet voorgestelde bestanden om makkelijk terug te gaan naar je meest recente activiteit in Google Drive.
         <ph name="BREAK" /><ph name="BREAK" />
@@ -9048,6 +9047,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8324784016256120271">Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te bekijken, bijvoorbeeld om advertenties te personaliseren</translation>
 <translation id="8325413836429495820">Geen toestemming om je klembord te bekijken</translation>
 <translation id="8326478304147373412">PKCS nr. 7, certificaatketen</translation>
+<translation id="832684045355488000">Je bent geüpgraded naar <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Wiskundig lettertype</translation>
 <translation id="8327538105740918488">Je kunt dit wachtwoord later altijd wijzigen. Het wordt opgeslagen in <ph name="GOOGLE_PASSWORD_MANAGER" /> voor <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Rechten en contentinstellingen</translation>

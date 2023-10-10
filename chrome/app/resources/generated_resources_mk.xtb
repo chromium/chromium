@@ -3954,7 +3954,6 @@
 <translation id="4110485659976215879">Врати ја опомената</translation>
 <translation id="4110490973560452005">Преземањето е завршено: <ph name="FILE_NAME" />. Притиснете Shift+F6 за да одите до областа на лентата за преземања.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлајн)</translation>
-<translation id="411318099524508025">Добивте надградба на <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Лозинка на датотеката</translation>
 <translation id="4114524937989710624">Прикажани се предложени датотеки што ќе ви помогнат полесно да се вратите на последната активност во Google Drive.
         <ph name="BREAK" />
@@ -9078,6 +9077,7 @@
 <translation id="8324784016256120271">Сајтовите може да користат колачиња за да ја следат вашата активност од прелистувањето на различни сајтови, на пример, за персонализирање реклами</translation>
 <translation id="8325413836429495820">Не им е дозволено да ја гледаат привремената меморија</translation>
 <translation id="8326478304147373412">PKCS #7, ланец на сертификат</translation>
+<translation id="832684045355488000">Добивте надградба на <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Математички фонт</translation>
 <translation id="8327538105740918488">Секогаш може да ја промените лозинкава подоцна. Ќе се зачува во <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Дозволи и поставки за содржини</translation>

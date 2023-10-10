@@ -3944,7 +3944,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4110485659976215879">Taasta hoiatus</translation>
 <translation id="4110490973560452005">Allalaadimine on lõpule viidud: <ph name="FILE_NAME" />. Allalaadimiste riba valikute vahel vahetamiseks vajutage klahvikombinatsiooni Tõstuklahv + F6.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (võrguühenduseta)</translation>
-<translation id="411318099524508025">Olete üle läinud uuemale versioonile <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Faili parool</translation>
 <translation id="4114524937989710624">Näete soovitatud faile, mis aitavad teil Google Drive'is hõlpsalt naasta hiljutiste tegevuste juurde.
         <ph name="BREAK" />
@@ -9064,6 +9063,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8324784016256120271">Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, näiteks reklaamide isikupärastamiseks</translation>
 <translation id="8325413836429495820">Pole lubatud näha teie lõikelauda</translation>
 <translation id="8326478304147373412">PKCS 7, sertifikaadiahel</translation>
+<translation id="832684045355488000">Süsteem viidi üle uuele versioonile: <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Matemaatika font</translation>
 <translation id="8327538105740918488">Saate seda parooli hiljem alati muuta. See salvestatakse konto <ph name="EMAIL" /> puhul teenusesse <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="8327676037044516220">Load ja sisu seaded</translation>

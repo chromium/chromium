@@ -3954,7 +3954,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4110485659976215879">Endurheimta viðvörun</translation>
 <translation id="4110490973560452005">Niðurhali lokið: <ph name="FILE_NAME" />. Ýttu á Shift+F6 til að fara á niðurhalsstikuna.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ekki nettengt)</translation>
-<translation id="411318099524508025">Þú fékkst uppfærslu í <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Aðgangsorð skráar</translation>
 <translation id="4114524937989710624">Þú sérð skráatillögur sem auðvelda þér að halda áfram í nýjustu virkni þinni á Google Drive.
         <ph name="BREAK" />
@@ -9075,6 +9074,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8324784016256120271">Vefsvæði geta notað fótspor til að sjá vafranotkun þína á vefsvæðum, til dæmis til að sérsníða auglýsingar</translation>
 <translation id="8325413836429495820">Mega ekki sjá klippiborðið</translation>
 <translation id="8326478304147373412">PKCS #7, vottorðakeðja</translation>
+<translation id="832684045355488000">Þú fékkst uppfærslu í <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Stærðfræðileg leturgerð</translation>
 <translation id="8327538105740918488">Þú getur alltaf breytt þessu aðgangsorði síðar. Það verður vistað í <ph name="GOOGLE_PASSWORD_MANAGER" /> fyrir <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Heimildir og efnisstillingar</translation>

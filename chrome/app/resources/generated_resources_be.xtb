@@ -3937,7 +3937,6 @@
 <translation id="4110485659976215879">Аднавіць адпраўку заўваг</translation>
 <translation id="4110490973560452005">Спампоўванне завершана: "<ph name="FILE_NAME" />". Каб перамяшчацца па панэлі спамповак, націскайце Shift+F6.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (па-за сеткай)</translation>
-<translation id="411318099524508025">Вы перайшлі на <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Пароль файла</translation>
 <translation id="4114524937989710624">Вы бачыце прапанаваныя вам файлы, выкарыстоўваючы якія, можна з лёгкасцю пераходзіць да сваіх апошніх дзеянняў на Google Дыску.
         <ph name="BREAK" />
@@ -9061,6 +9060,7 @@
 <translation id="8324784016256120271">Сайты могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры на розных сайтах, напрыклад, каб персаналізаваць рэкламу</translation>
 <translation id="8325413836429495820">Не дазволена праглядаць буфер абмену</translation>
 <translation id="8326478304147373412">PKCS #7, ланцужок сертыфікатаў</translation>
+<translation id="832684045355488000">Прылада <ph name="NAME" /> абноўлена</translation>
 <translation id="8327386430364625757">Матэматычны шрыфт</translation>
 <translation id="8327538105740918488">Пазней вы можаце змяніць гэты пароль. <ph name="GOOGLE_PASSWORD_MANAGER" /> захавае яго для ўліковага запісу <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Дазволы і налады змесціва</translation>

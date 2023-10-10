@@ -3939,7 +3939,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4110485659976215879">Obnovit upozornění</translation>
 <translation id="4110490973560452005">Stažení bylo dokončeno: <ph name="FILE_NAME" />. Stisknutím kombinace kláves Shift+F6 přejdete na lištu se staženými soubory.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="411318099524508025">Byli jste upgradováni na <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Heslo souboru</translation>
 <translation id="4114524937989710624">Zobrazují se vám navrhované soubory, abyste se mohli snadno vrátit k nedávné aktivitě na Disku Google.
         <ph name="BREAK" />
@@ -9059,6 +9058,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8324784016256120271">Weby mohou pomocí souborů cookie sledovat vaši aktivitu prohlížení na různých webech, například k personalizaci reklam</translation>
 <translation id="8325413836429495820">Zákaz přístupu ke schránce</translation>
 <translation id="8326478304147373412">PKCS #7, řetězec certifikátu</translation>
+<translation id="832684045355488000">Byli jste upgradováni na <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Matematické písmo</translation>
 <translation id="8327538105740918488">Toto heslo můžete kdykoli později změnit. Uloží se do správce hesel <ph name="GOOGLE_PASSWORD_MANAGER" /> pro <ph name="EMAIL" /></translation>
 <translation id="8327676037044516220">Oprávnění a nastavení obsahu</translation>

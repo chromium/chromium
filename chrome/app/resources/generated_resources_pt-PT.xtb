@@ -3939,7 +3939,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4110485659976215879">Restaurar aviso</translation>
 <translation id="4110490973560452005">Transferência concluída: <ph name="FILE_NAME" />. Prima Shift+F6 para aceder à área da barra de transferências.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="411318099524508025">A sua atualização para <ph name="NAME" /> foi realizada com êxito.</translation>
 <translation id="4113743276555482284">Palavra-passe do ficheiro</translation>
 <translation id="4114524937989710624">Está a ver ficheiros sugeridos que ajudam a voltar facilmente para a sua atividade mais recente no Google Drive.
         <ph name="BREAK" />
@@ -9060,6 +9059,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8324784016256120271">Os sites podem usar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios</translation>
 <translation id="8325413836429495820">Sem autorização para ver a sua área de transferência</translation>
 <translation id="8326478304147373412">PKCS #7, cadeia de certificados</translation>
+<translation id="832684045355488000">A atualização para o <ph name="NAME" /> foi realizada com êxito.</translation>
 <translation id="8327386430364625757">Tipo de letra matemático</translation>
 <translation id="8327538105740918488">Pode sempre alterar esta palavra-passe mais tarde. Vai ser guardada no <ph name="GOOGLE_PASSWORD_MANAGER" /> de <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Definições de conteúdo e autorizações</translation>

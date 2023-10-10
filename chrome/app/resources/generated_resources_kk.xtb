@@ -3935,7 +3935,6 @@
 <translation id="4110485659976215879">Ескертуді қалпына келтіру</translation>
 <translation id="4110490973560452005">Жүктеп алу аяқталды: <ph name="FILE_NAME" />. Жүктеп алынғандар жолағы аумағына оралу үшін Shift+F6 пернелерін басыңыз.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
-<translation id="411318099524508025"><ph name="NAME" /> нұсқасына жаңарттыңыз.</translation>
 <translation id="4113743276555482284">Файл құпия сөзі</translation>
 <translation id="4114524937989710624">Google Drive қызметіндегі соңғы іс-әрекеттерге оңай оралуға көмектесетін файлдарды көріп тұрсыз.
         <ph name="BREAK" />
@@ -9049,6 +9048,7 @@
 <translation id="8324784016256120271">Сайттар, мысалы, жарнамаларды жекелендіру үшін түрлі сайттарда браузерді пайдалану мәліметіңізді көру үшін cookie файлдарын пайдалана алады.</translation>
 <translation id="8325413836429495820">Буфердегі контентті көруге рұқсаты жоқтар</translation>
 <translation id="8326478304147373412">PKCS #7, сертификаттар тізбегі</translation>
+<translation id="832684045355488000"><ph name="NAME" /> нұсқасына жаңарттыңыз</translation>
 <translation id="8327386430364625757">Математикалық қаріп</translation>
 <translation id="8327538105740918488">Бұл құпия сөзді кез келген уақытта өзгерте аласыз. <ph name="EMAIL" /> аккаунты үшін ол мына жерде сақталады: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="8327676037044516220">Рұқсаттар және контент параметрлері</translation>

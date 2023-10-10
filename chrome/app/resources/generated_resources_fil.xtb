@@ -3954,7 +3954,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4110485659976215879">I-restore ang babala</translation>
 <translation id="4110490973560452005">Na-download na: <ph name="FILE_NAME" />. Pindutin ang Shift+F6 para mag-cycle sa lugar ng bar ng mga download.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="411318099524508025">Na-upgrade ka na sa <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Password ng file</translation>
 <translation id="4114524937989710624">Nakikita mo ang mga iminumungkahing file na makakatulong para madali mong mabalikan ang iyong pinakakamakailang aktibidad sa Google Drive.
         <ph name="BREAK" />
@@ -9077,6 +9076,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8324784016256120271">Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-browse sa iba't ibang site, halimbawa, para mag-personalize ng mga ad</translation>
 <translation id="8325413836429495820">Hindi pinapayagang tingnan ang iyong clipboard</translation>
 <translation id="8326478304147373412">PKCS #7, certificate chain</translation>
+<translation id="832684045355488000">Na-upgrade ka na sa <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Mathematical na font</translation>
 <translation id="8327538105740918488">Puwede mong baguhin ang password na ito anumang oras. Mase-save ito sa <ph name="GOOGLE_PASSWORD_MANAGER" /> para sa <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Mga pahintulot at setting ng content</translation>

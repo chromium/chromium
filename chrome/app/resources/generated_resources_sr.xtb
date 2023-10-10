@@ -3936,7 +3936,6 @@
 <translation id="4110485659976215879">Врати упозорење</translation>
 <translation id="4110490973560452005">Преузимање је довршено: <ph name="FILE_NAME" />. Притисните Shift + F6 да бисте прешли на област траке са преузимањима.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлајн)</translation>
-<translation id="411318099524508025">Обавили сте надоградњу на <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Лозинка за фајл</translation>
 <translation id="4114524937989710624">Предложени фајлови вам се приказују да бисте лако могли да се вратите најновијим активностима на Google диску.
         <ph name="BREAK" />
@@ -9060,6 +9059,7 @@
 <translation id="8324784016256120271">Сајтови могу да користе колачиће да би видели ваше активности прегледања на различитим сајтовима, на пример, за персонализацију огласа</translation>
 <translation id="8325413836429495820">Није им дозвољено да виде привремену меморију</translation>
 <translation id="8326478304147373412">PKCS #7, ланац сертификата</translation>
+<translation id="832684045355488000">Надограђено је на <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Математички фонт</translation>
 <translation id="8327538105740918488">Увек ћете моћи да промените ову лозинку касније. Биће сачувана у алатки <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Подешавања дозвола и садржаја</translation>

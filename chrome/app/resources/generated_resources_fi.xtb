@@ -3949,7 +3949,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4110485659976215879">Palauta varoitus</translation>
 <translation id="4110490973560452005">Lataus valmis: <ph name="FILE_NAME" />. Paina Shift + F6 siirtyäksesi latauspalkkialueelle.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="411318099524508025">Päivitys valmis: <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Tiedoston salasana</translation>
 <translation id="4114524937989710624">Näet suositeltuja tiedostoja, jotta voit helposti jatkaa viimeaikaista toimintaasi Google Drivessa.
         <ph name="BREAK" />
@@ -9069,6 +9068,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8324784016256120271">Sivustot voivat nähdä evästeiden kautta selaustoimintasi eri sivustoilla esim. personoidakseen mainoksia</translation>
 <translation id="8325413836429495820">Leikepöydän tarkastelu kielletty</translation>
 <translation id="8326478304147373412">PKCS #7, varmenneketju</translation>
+<translation id="832684045355488000">Päivitys valmis: <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Matemaattinen fontti</translation>
 <translation id="8327538105740918488">Voit vaihtaa salasanan myöhemmin. <ph name="EMAIL" />-sähköpostin salasana tallennetaan tänne: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="8327676037044516220">Luvat ja sisältöasetukset</translation>

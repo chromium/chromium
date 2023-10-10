@@ -3953,7 +3953,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4110485659976215879">Pulihkan amaran</translation>
 <translation id="4110490973560452005">Muat turun selesai: <ph name="FILE_NAME" />. Tekan Shift+F6 untuk pergi ke kawasan bar muat turun.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (luar talian)</translation>
-<translation id="411318099524508025">Anda telah ditingkatkan kepada <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Kata laluan fail</translation>
 <translation id="4114524937989710624">Anda melihat fail yang dicadangkan untuk membantu anda kembali ke aktiviti anda baru-baru ini dalam Google Drive dengan mudah.
         <ph name="BREAK" />
@@ -9074,6 +9073,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8324784016256120271">Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda pada beberapa tapak yang berlainan, contohnya, untuk memperibadikan iklan</translation>
 <translation id="8325413836429495820">Tidak dibenarkan untuk melihat papan keratan anda</translation>
 <translation id="8326478304147373412">PKCS #7, rantaian sijil</translation>
+<translation id="832684045355488000">Anda telah ditingkatkan kepada <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Fon matematik</translation>
 <translation id="8327538105740918488">Anda boleh menukar kata laluan ini pada bila-bila masa. Kata laluan ini akan disimpan pada <ph name="GOOGLE_PASSWORD_MANAGER" /> untuk <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Kebenaran dan tetapan kandungan</translation>

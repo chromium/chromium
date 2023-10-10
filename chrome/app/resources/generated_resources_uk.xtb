@@ -3956,7 +3956,6 @@
 <translation id="4110485659976215879">Відновити попередження</translation>
 <translation id="4110490973560452005">Завантажено: <ph name="FILE_NAME" />. Натисніть Shift+F6, щоб перейти на панель завантажень.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
-<translation id="411318099524508025">Ви перейшли на <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Пароль файлу</translation>
 <translation id="4114524937989710624">Ви бачите пропозиції файлів, які допоможуть вам легко повернутися до останніх дій на Google Диску.
         <ph name="BREAK" />
@@ -9079,6 +9078,7 @@
 <translation id="8324784016256120271">Сайти можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі, зокрема, щоб персоналізувати рекламу</translation>
 <translation id="8325413836429495820">Заборонено переглядати буфер обміну</translation>
 <translation id="8326478304147373412">PKCS #7, ланцюжок сертифікатів</translation>
+<translation id="832684045355488000">Ви перейшли на <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Математичний шрифт</translation>
 <translation id="8327538105740918488">Цей пароль завжди можна змінити. Його буде збережено в сервісі <ph name="GOOGLE_PASSWORD_MANAGER" /> для адреси <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Дозволи й налаштування контенту</translation>

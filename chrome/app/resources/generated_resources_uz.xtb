@@ -3940,7 +3940,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4110485659976215879">Ogohlantirishni tiklash</translation>
 <translation id="4110490973560452005">Yuklab olindi: <ph name="FILE_NAME" />. Yuklanmalar paneliga qaytish uchun Shift+F6 tugmalarini bosing.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (oflayn)</translation>
-<translation id="411318099524508025"><ph name="NAME" /> tizimi yangilandi.</translation>
 <translation id="4113743276555482284">Fayl paroli</translation>
 <translation id="4114524937989710624">Google Drive xizmatidagi oxirgi harakatlarga qaytishni osonlashtirish uchun tavsiya etilgan fayllar chiqyapti.
         <ph name="BREAK" />
@@ -9058,6 +9057,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8324784016256120271">Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzatishi mumkin</translation>
 <translation id="8325413836429495820">Vaqtinchalik xotirani koʻrish taqiqlangan</translation>
 <translation id="8326478304147373412">PKCS #7, sertifikat zanjiri</translation>
+<translation id="832684045355488000"><ph name="NAME" /> tizimi yangilandi.</translation>
 <translation id="8327386430364625757">Matematik shrift</translation>
 <translation id="8327538105740918488">Parolni istalgan vaqt oʻzgartirish mumkin. <ph name="EMAIL" /> parollari <ph name="GOOGLE_PASSWORD_MANAGER" /> xotirasida saqlanadi.</translation>
 <translation id="8327676037044516220">Ruxsatlar va kontent sozlamalari</translation>

@@ -3948,7 +3948,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4110485659976215879">Rejesha onyo</translation>
 <translation id="4110490973560452005">Imemaliza kupakua: <ph name="FILE_NAME" />. Bonyeza Shift+F6 ili uende kwenye eneo la upau wa vipakuliwa.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (haipo mtandaoni)</translation>
-<translation id="411318099524508025">Umepata toleo jipya la <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Nenosiri la faili</translation>
 <translation id="4114524937989710624">Unapata faili zilizopendekezwa ili kukusaidia urejee kwa urahisi kwenye shughuli za hivi majuzi katika Hifadhi ya Google.
         <ph name="BREAK" />
@@ -9070,6 +9069,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8324784016256120271">Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti mbalimbali, kwa mfano, ili kukuonyesha matangazo yanayokufaa zaidi</translation>
 <translation id="8325413836429495820">Zisizoruhusiwa kuona ubao wako wa kunakili</translation>
 <translation id="8326478304147373412">PKCS #7, msururu wa vyeti</translation>
+<translation id="832684045355488000">Umepata toleo jipya la <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Fonti ya kihisabati</translation>
 <translation id="8327538105740918488">Unaweza kubadilisha nenosiri hili baadaye. Litahifadhiwa kwenye <ph name="GOOGLE_PASSWORD_MANAGER" /> kwa ajili ya <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Mipangilio ya maudhui na ruhusa</translation>

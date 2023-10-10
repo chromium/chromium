@@ -3953,7 +3953,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4110485659976215879">Restore warning</translation>
 <translation id="4110490973560452005">Download complete: <ph name="FILE_NAME" />. Press Shift+F6 to cycle to the downloads bar area.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="411318099524508025">You've been upgraded to <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">File password</translation>
 <translation id="4114524937989710624">You’re seeing suggested files to help you easily get back to your most recent activity in Google Drive.
         <ph name="BREAK" />
@@ -9074,6 +9073,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8324784016256120271">Sites can use cookies to see your browsing activity across different sites, for example, to personalise ads</translation>
 <translation id="8325413836429495820">Not allowed to see your clipboard</translation>
 <translation id="8326478304147373412">PKCS #7, certificate chain</translation>
+<translation id="832684045355488000">You've been upgraded to <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Mathematical font</translation>
 <translation id="8327538105740918488">You can always change this password later. It will be saved to <ph name="GOOGLE_PASSWORD_MANAGER" /> for <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Permissions and content settings</translation>

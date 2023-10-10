@@ -3956,7 +3956,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4110485659976215879">Atkurti perspėjimą</translation>
 <translation id="4110490973560452005">Atsisiuntimas baigtas: <ph name="FILE_NAME" />. Kad perjungtumėte į atsisiuntimų juostą, paspauskite „Shift“ + F6.</translation>
 <translation id="4112194537011183136">„<ph name="DEVICE_NAME" />“ (neprisijungta)</translation>
-<translation id="411318099524508025">Naujovinote į „<ph name="NAME" />“.</translation>
 <translation id="4113743276555482284">Failo slaptažodis</translation>
 <translation id="4114524937989710624">Rodomi siūlomi failai, skirti padėti jums lengvai grįžti prie pastarosios veiklos „Google“ diske.
         <ph name="BREAK" />
@@ -9084,6 +9083,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8324784016256120271">Svetainės gali naudoti slapukus, siekdamos sužinoti apie naršymo veiklą skirtingose svetainėse, pavyzdžiui, kad galėtų suasmeninti skelbimus</translation>
 <translation id="8325413836429495820">Neleidžiama peržiūrėti iškarpinės</translation>
 <translation id="8326478304147373412">PKCS Nr. 7, sertifikato grandinė</translation>
+<translation id="832684045355488000">Naujovinote į „<ph name="NAME" />“</translation>
 <translation id="8327386430364625757">Matematinis šriftas</translation>
 <translation id="8327538105740918488">Vėliau bet kada galėsite pakeisti šį slaptažodį. Jį išsaugos <ph name="GOOGLE_PASSWORD_MANAGER" /> kaip priskirtą el. pašto adresui <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Leidimai ir turinio nustatymai</translation>

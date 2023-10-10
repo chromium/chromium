@@ -3950,7 +3950,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4110485659976215879">Възстановяване на предупреждението</translation>
 <translation id="4110490973560452005">Изтеглянето завърши: <ph name="FILE_NAME" />. Натиснете Shift + F6, за да преминете към лентата на изтеглянето.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
-<translation id="411318099524508025">Извършена бе надстройка до <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Парола за файла</translation>
 <translation id="4114524937989710624">Показват се предложени файлове, с чиято помощ лесно да се върнете към скорошната си активност в Google Диск.
         <ph name="BREAK" />
@@ -9072,6 +9071,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8324784016256120271">Сайтовете могат да използват „бисквитки“, за да следят активността ви при сърфиране в различни сайтове, например за да персонализират реклами</translation>
 <translation id="8325413836429495820">Сайтове без разрешение за преглед на буферната памет</translation>
 <translation id="8326478304147373412">PKCS 7, верига сертификати</translation>
+<translation id="832684045355488000">Извършена бе надстройка до <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Математически символи</translation>
 <translation id="8327538105740918488">Винаги можете да промените тази парола по-късно. Тя ще бъде запазена в <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Разрешения и настройки за съдържанието</translation>

@@ -3948,7 +3948,6 @@
 <translation id="4110485659976215879">Сануулгыг сэргээх</translation>
 <translation id="4110490973560452005">Татаж дууссан: <ph name="FILE_NAME" />. Татаж авсан файл хадгалах эсвэл нээх хэсэгт гүйлгэхийн тулд Shift+F6-г дарна уу.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
-<translation id="411318099524508025">Таныг <ph name="NAME" /> руу сайжруулсан.</translation>
 <translation id="4113743276555482284">Файлын нууц үг</translation>
 <translation id="4114524937989710624">Та Google Драйвт хамгийн саяхны үйл ажиллагаа руугаа хялбархан буцахад тань туслах санал болгосон файлуудыг харж байна.
         <ph name="BREAK" />
@@ -9065,6 +9064,7 @@
 <translation id="8324784016256120271">Сайтууд нь, жишээлбэл зарыг хувийн болгохын тулд өөр өөр сайт дээрх таны хөтчийн үйл ажиллагааг харахын тулд күүки ашиглах боломжтой</translation>
 <translation id="8325413836429495820">Таны түр санах ойг харахыг зөвшөөрөөгүй</translation>
 <translation id="8326478304147373412">PKCS # 7, сертификат хэлхээ</translation>
+<translation id="832684045355488000">Таныг <ph name="NAME" /> руу сайжрууллаа</translation>
 <translation id="8327386430364625757">Математикийн фонт</translation>
 <translation id="8327538105740918488">Та үүнийг дараа нь хүссэн үедээ өөрчлөх боломжтой. Үүнийг <ph name="EMAIL" />-д зориулж <ph name="GOOGLE_PASSWORD_MANAGER" />-д хадгална.</translation>
 <translation id="8327676037044516220">Зөвшөөрөл болон контентын тохиргоо</translation>

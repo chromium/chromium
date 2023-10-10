@@ -3936,7 +3936,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4110485659976215879">Rikthe paralajmërimin</translation>
 <translation id="4110490973560452005">Shkarkimi përfundoi: <ph name="FILE_NAME" />. Shtyp Shift+F6 për të kaluar në cikël në zonën e shiritit të shkarkimeve.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="411318099524508025">Ke kaluar në <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Fjalëkalimi i skedarit</translation>
 <translation id="4114524937989710624">Po shikon skedarë të sugjeruar për të të ndihmuar të kthehesh me lehtësi te aktiviteti yt i fundit në "Diskun e Google".
         <ph name="BREAK" />
@@ -9053,6 +9052,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8324784016256120271">Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit nëpër sajte të ndryshme, për shembull për t'i personalizuar reklamat</translation>
 <translation id="8325413836429495820">Nuk lejohen të shikojnë kujtesën e fragmenteve</translation>
 <translation id="8326478304147373412">PKCS #7, zinxhiri i certifikatës</translation>
+<translation id="832684045355488000">Ke kaluar në <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Font matematikor</translation>
 <translation id="8327538105740918488">Mund ta ndryshosh gjithmonë këtë fjalëkalim më vonë. Ai do të ruhet te "<ph name="GOOGLE_PASSWORD_MANAGER" />" për <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Cilësimet e lejeve dhe të përmbajtjeve</translation>

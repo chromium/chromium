@@ -3940,7 +3940,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="4110485659976215879">Obnoviť varovanie</translation>
 <translation id="4110490973560452005">Dokončilo sa sťahovanie súboru: <ph name="FILE_NAME" />. Stláčaním klávesov Shift+F6 prejdite do oblasti panela so stiahnutými súbormi.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="411318099524508025">Prebehla inovácia na verziu <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Heslo súboru</translation>
 <translation id="4114524937989710624">Zobrazujú sa navrhované súbory, ktoré vám pomôžu ľahko sa vrátiť k poslednej nedávnej aktivite na Disku Google.
         <ph name="BREAK" />
@@ -9063,6 +9062,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8324784016256120271">Weby si môžu na základe súborov cookie zobraziť vašu históriu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám)</translation>
 <translation id="8325413836429495820">Nemôže zobrazovať vašu schránku</translation>
 <translation id="8326478304147373412">Štandard PKCS #7, certifikačná reťaz</translation>
+<translation id="832684045355488000">Prebehla inovácia na verziu <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Písmo pre matematiku</translation>
 <translation id="8327538105740918488">Toto heslo môžete neskôr kedykoľvek zmeniť. Bude uložené v službe <ph name="GOOGLE_PASSWORD_MANAGER" /> pre účet <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Povolenia a nastavenia obsahu</translation>

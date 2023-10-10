@@ -3941,7 +3941,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4110485659976215879">Vrati upozorenje</translation>
 <translation id="4110490973560452005">Preuzimanje je dovršeno: <ph name="FILE_NAME" />. Pritisnite Shift + F6 da biste došli do područja trake preuzimanja.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (izvan mreže)</translation>
-<translation id="411318099524508025">Nadogradili ste <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Zaporka datoteke</translation>
 <translation id="4114524937989710624">Prikazuju vam se predložene datoteke da biste se lakše vratili na svoju posljednju aktivnost na Google disku.
         <ph name="BREAK" />
@@ -9062,6 +9061,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8324784016256120271">Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledavanja na različitim web-lokacijama, primjerice radi prilagođavanja oglasa</translation>
 <translation id="8325413836429495820">Nije dopušten pregled međuspremnika</translation>
 <translation id="8326478304147373412">PKCS br. 7, lanac certifikata</translation>
+<translation id="832684045355488000">Nadogradili ste na <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Matematički font</translation>
 <translation id="8327538105740918488">Kasnije uvijek možete promijeniti tu zaporku. Spremit će se u <ph name="GOOGLE_PASSWORD_MANAGER" /> za <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Postavke dopuštenja i sadržaja</translation>

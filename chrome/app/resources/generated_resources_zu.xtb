@@ -3953,7 +3953,6 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="4110485659976215879">Buyisela isexwayiso</translation>
 <translation id="4110490973560452005">Ukulanda kuqedile: <ph name="FILE_NAME" />. Cindezela ku-Shift+F6 ukuze wenze umjikelezo indawo yebha yokulandwa.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (akuxhunyiwe ku-inthanethi)</translation>
-<translation id="411318099524508025">Uthuthukiselwe ku-<ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Iphasiwedi yefayela</translation>
 <translation id="4114524937989710624">Ubona amafayela aphakanyisiwe ukuze akusize ubuyele kalula kumsebenzi wakho wakamuva kakhulu ku-Google Drive.
         <ph name="BREAK" />
@@ -9076,6 +9075,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8324784016256120271">Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kuwo wonke amasayithi ahlukahlukene, ngokwesibonelo, ukwenza izikhangiso zibe ngezakho</translation>
 <translation id="8325413836429495820">Ayivumelekile ukubona ibhodi lakho lokunamathisela</translation>
 <translation id="8326478304147373412">I-PKCS #7, iketangu lesitifiketi</translation>
+<translation id="832684045355488000">Uthuthukiselwe ku-<ph name="NAME" /></translation>
 <translation id="8327386430364625757">Ifonti yezibalo</translation>
 <translation id="8327538105740918488">Ungahlala ushintsha lokhu ngemuva kwesikhathi. Izolondolozwa ku-<ph name="GOOGLE_PASSWORD_MANAGER" /> ye-<ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Izimvume nezilungiselelo zokuqukethwe</translation>

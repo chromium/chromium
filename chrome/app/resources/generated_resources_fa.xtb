@@ -3950,7 +3950,6 @@
 <translation id="4110485659976215879">بازیابی هشدار</translation>
 <translation id="4110490973560452005">‏بارگیری کامل شد: <ph name="FILE_NAME" />. برای چرخش در قسمت نوار بارگیری‌ها، Shift+F6 را فشار دهید.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (آفلاین)</translation>
-<translation id="411318099524508025">شما به <ph name="NAME" /> ارتقا یافته‌اید.</translation>
 <translation id="4113743276555482284">گذرواژه فایل</translation>
 <translation id="4114524937989710624">‏درحال دیدن فایل‌های پیشنهادی هستید تا به‌کمک آن‌ها بتوانید خیلی راحت به جدیدترین فعالیتتان در Google Drive برگردید.
         <ph name="BREAK" />
@@ -9072,6 +9071,7 @@
 <translation id="8324784016256120271">سایت‌ها می‌توانند بااستفاده از کوکی‌ها فعالیت مرور شما را (مثلاً برای شخصی‌سازی آگهی‌ها) در سایت‌های مختلف ببینند</translation>
 <translation id="8325413836429495820">اجازه ندارد بریده‌دان را ببیند</translation>
 <translation id="8326478304147373412">‏PKCS #7، زنجیره گواهی</translation>
+<translation id="832684045355488000">به <ph name="NAME" /> ارتقا یافته‌اید</translation>
 <translation id="8327386430364625757">قلم ریاضی</translation>
 <translation id="8327538105740918488">هرزمان بخواهید می‌توانید این گذرواژه را در فرصتی دیگر تغییر دهید. این گذرواژه در <ph name="GOOGLE_PASSWORD_MANAGER" /> برای <ph name="EMAIL" /> ذخیره خواهد شد.</translation>
 <translation id="8327676037044516220">تنظیمات محتوا و اجازه‌ها</translation>

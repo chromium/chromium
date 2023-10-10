@@ -3922,7 +3922,6 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4110485659976215879">Przywróć ostrzeżenie</translation>
 <translation id="4110490973560452005">Pobrano plik: <ph name="FILE_NAME" />. Naciśnij Shift+F6, by przejść do obszaru paska pobranych plików.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="411318099524508025">Twój system został uaktualniony do <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Hasło pliku</translation>
 <translation id="4114524937989710624">Widzisz sugerowane pliki, aby łatwiej Ci było wrócić do swojej ostatniej aktywności na Dysku Google.
         <ph name="BREAK" />
@@ -9042,6 +9041,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8324784016256120271">Strony mogą używać plików cookie do śledzenia Twojej aktywność związanej z przeglądaniem różnych stron, na przykład w celu personalizowania reklam</translation>
 <translation id="8325413836429495820">Nie zezwolono na wyświetlanie schowka</translation>
 <translation id="8326478304147373412">PKCS #7, łańcuch certyfikatów</translation>
+<translation id="832684045355488000">Uaktualniono do: <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Czcionka matematyczna</translation>
 <translation id="8327538105740918488">Później możesz zmienić to hasło. Zostanie ono zapisane w usłudze <ph name="GOOGLE_PASSWORD_MANAGER" /> na koncie <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Uprawnienia i ustawienia treści</translation>

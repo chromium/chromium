@@ -3940,7 +3940,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="4110485659976215879">Restaurar advertencia</translation>
 <translation id="4110490973560452005">Completouse a descarga: <ph name="FILE_NAME" />. Preme Maiús+F6 para acceder á área da barra de descargas.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sen conexión)</translation>
-<translation id="411318099524508025">Pasaches a <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Contrasinal do ficheiro</translation>
 <translation id="4114524937989710624">Estás vendo suxestións de ficheiros que che axudarán a acceder con facilidade á túa actividade máis recente en Google Drive.
         <ph name="BREAK" />
@@ -9055,6 +9054,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8324784016256120271">Os sitios poden utilizar cookies para ver a túa actividade de navegación en distintos sitios (por exemplo, para personalizar os anuncios)</translation>
 <translation id="8325413836429495820">Sitios que non poden consultar o portapapeis</translation>
 <translation id="8326478304147373412">PKCS n.º 7, cadea de certificados</translation>
+<translation id="832684045355488000">Fíxose a actualización a <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Tipo de letra matemático</translation>
 <translation id="8327538105740918488">Podes cambiar este contrasinal máis adiante sempre que queiras. Gardarase no <ph name="GOOGLE_PASSWORD_MANAGER" /> para <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Permisos e configuración de contido</translation>

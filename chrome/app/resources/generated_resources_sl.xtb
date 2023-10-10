@@ -3956,7 +3956,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4110485659976215879">Obnovi opozorilo</translation>
 <translation id="4110490973560452005">Prenos je končan: <ph name="FILE_NAME" />. Pritisnite Shift + F6, če želite krožiti do območja vrstice s prenosi.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (brez povezave)</translation>
-<translation id="411318099524508025">Nadgrajeni ste na <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Geslo za datoteko</translation>
 <translation id="4114524937989710624">Prikazane so predlagane datoteke, s katerimi se boste lažje vrnili k nedavni dejavnosti v Googlu Drive.
         <ph name="BREAK" />
@@ -9085,6 +9084,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8324784016256120271">Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na različnih spletnih mestih, na primer za osebno prilagajanje oglasov</translation>
 <translation id="8325413836429495820">Ni dovoljen ogled odložišča</translation>
 <translation id="8326478304147373412">PKCS #7, veriga potrdil</translation>
+<translation id="832684045355488000">Nadgradnja na <ph name="NAME" /> je zaključena</translation>
 <translation id="8327386430364625757">Matematična pisava</translation>
 <translation id="8327538105740918488">To geslo lahko pozneje kadar koli spremenite. Shranjeno bo v storitvi <ph name="GOOGLE_PASSWORD_MANAGER" /> za <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Nastavitve dovoljenj in vsebine</translation>

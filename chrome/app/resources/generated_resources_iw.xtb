@@ -3953,7 +3953,6 @@
 <translation id="4110485659976215879">שחזור האזהרה</translation>
 <translation id="4110490973560452005">‏ההורדה הושלמה: <ph name="FILE_NAME" />. אפשר להקיש על Shift+F6 כדי לעבור לאזור סרגל ההורדות.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (אופליין)</translation>
-<translation id="411318099524508025">הושלם שדרוג ל-<ph name="NAME" />.</translation>
 <translation id="4113743276555482284">סיסמה לקובץ</translation>
 <translation id="4114524937989710624">‏מוצגות לך הצעות לקבצים כדי לעזור לך לחזור לפעילות האחרונה שלך ב-Google Drive.
         <ph name="BREAK" />
@@ -9079,6 +9078,7 @@
 <translation id="8324784016256120271">‏אתרים יכולים להשתמש בקובצי cookie כדי לראות את פעילות הגלישה שלך באתרים שונים, למשל לצורך התאמה אישית של מודעות</translation>
 <translation id="8325413836429495820">לא מורשים לראות את הלוח</translation>
 <translation id="8326478304147373412">‏PKCS #7, שרשרת אישורים</translation>
+<translation id="832684045355488000">הושלם שדרוג ל-<ph name="NAME" /></translation>
 <translation id="8327386430364625757">גופן מתמטי</translation>
 <translation id="8327538105740918488">תמיד אפשר לשנות את הסיסמה הזו. היא תישמר ב<ph name="GOOGLE_PASSWORD_MANAGER" /> בחשבון <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">הגדרות תוכן והרשאות</translation>

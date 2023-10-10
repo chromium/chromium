@@ -3956,7 +3956,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4110485659976215879">Adfer y rhybudd</translation>
 <translation id="4110490973560452005">Lawrlwytho wedi'i gwblhau: <ph name="FILE_NAME" /> Pwyswch Shift+F6 i fynd drwy'r dudalen i'r bar lawrlwytho.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (all-lein)</translation>
-<translation id="411318099524508025">Rydych wedi'ch uwchraddio i <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Cyfrinair ffeil</translation>
 <translation id="4114524937989710624">Rydych yn gweld ffeiliau a awgrymir i'ch helpu i ddychwelyd yn hawdd i'ch gweithgarwch diweddaraf yn Google Drive.
         <ph name="BREAK" />
@@ -9083,6 +9082,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8324784016256120271">Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol wefannau, er enghraifft, i bersonoleiddio hysbysebion</translation>
 <translation id="8325413836429495820">Ni chaniateir gweld eich clipfwrdd</translation>
 <translation id="8326478304147373412">PKCS #7, cadwyn tystysgrifau</translation>
+<translation id="832684045355488000">Rydych wedi'ch uwchraddio i <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Ffont mathemategol</translation>
 <translation id="8327538105740918488">Gallwch chi bob amser newid y cyfrinair hwn yn nes ymlaen. Bydd yn cael ei gadw i <ph name="GOOGLE_PASSWORD_MANAGER" /> ar gyfer <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Caniatadau a gosodiadau cynnwys</translation>

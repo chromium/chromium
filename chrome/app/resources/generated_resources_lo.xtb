@@ -3952,7 +3952,6 @@
 <translation id="4110485659976215879">ກູ້ຄຳເຕືອນຄືນ</translation>
 <translation id="4110490973560452005">ການດາວໂຫຼດສຳເລັດແລ້ວ: <ph name="FILE_NAME" />. ກົດ Shift+F6 ເພື່ອໝຸນວົນໄປຫາບໍລິເວນແຖບການດາວໂຫຼດ.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ອອບລາຍ)</translation>
-<translation id="411318099524508025">ທ່ານໄດ້ຮັບການອັບເກຣດເປັນ <ph name="NAME" /> ແລ້ວ.</translation>
 <translation id="4113743276555482284">ລະຫັດຜ່ານໄຟລ໌</translation>
 <translation id="4114524937989710624">ທ່ານກຳລັງເບິ່ງໄຟລ໌ທີ່ແນະນຳເພື່ອຊ່ວຍໃຫ້ທ່ານກັບໄປຫາການເຄື່ອນໄຫວຫຼ້າສຸດຂອງທ່ານໃນ Google Drive ໄດ້ຢ່າງງ່າຍດາຍ.
         <ph name="BREAK" />
@@ -9068,6 +9067,7 @@
 <translation id="8324784016256120271">ເວັບໄຊສາມາດໃຊ້ຄຸກກີ້ເພື່ອເບິ່ງການເຄື່ອນໄຫວທ່ອງເວັບຂອງທ່ານໃນທົ່ວເວັບໄຊຕ່າງໆ ເຊັ່ນ: ເພື່ອປັບແຕ່ງໂຄສະນາໃຫ້ເປັນແບບສ່ວນຕົວ</translation>
 <translation id="8325413836429495820">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ເຫັນຄລິບບອດຂອງທ່ານ</translation>
 <translation id="8326478304147373412">PKCS #7, ຕ່ອງ​ໂສ້​ໃບຢັ້ງ​ຢືນ</translation>
+<translation id="832684045355488000">ທ່ານໄດ້ຮັບການອັບເກຣດເປັນ <ph name="NAME" /> ແລ້ວ</translation>
 <translation id="8327386430364625757">ຟອນກ່ຽວກັບຄະນິດສາດ</translation>
 <translation id="8327538105740918488">ທ່ານສາມາດປ່ຽນລະຫັດຜ່ານນີ້ໃນພາຍຫຼັງໄດ້ສະເໝີ. ໂດຍມັນຈະຖືກບັນທຶກໄວ້ໃນ <ph name="GOOGLE_PASSWORD_MANAGER" /> ສຳລັບ <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">ການອະນຸຍາດ ແລະ ການຕັ້ງຄ່າເນື້ອຫາ</translation>

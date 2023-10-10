@@ -3935,7 +3935,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4110485659976215879">Warnung wiederherstellen</translation>
 <translation id="4110490973560452005">Download abgeschlossen: <ph name="FILE_NAME" />. Drücke Umschalttaste + F6, um zum Bereich mit der Downloadleiste zu wechseln.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="411318099524508025">Das Upgrade auf <ph name="NAME" /> ist abgeschlossen.</translation>
 <translation id="4113743276555482284">Dateipasswort</translation>
 <translation id="4114524937989710624">Dir werden Dateivorschläge angezeigt, damit du bei Google Drive einfacher dort weitermachen kannst, wo du zuletzt aufgehört hast.
         <ph name="BREAK" />
@@ -9052,6 +9051,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8324784016256120271">Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Websites aufzuzeichnen und damit zum Beispiel Werbung zu personalisieren</translation>
 <translation id="8325413836429495820">Dürfen nicht auf meine Zwischenablage zugreifen</translation>
 <translation id="8326478304147373412">PKCS #7, Zertifikatkette</translation>
+<translation id="832684045355488000">Das Upgrade auf „<ph name="NAME" />“ ist abgeschlossen</translation>
 <translation id="8327386430364625757">Mathematische Schriftart</translation>
 <translation id="8327538105740918488">Du kannst das Passwort jederzeit ändern. Es wird für <ph name="EMAIL" /> im <ph name="GOOGLE_PASSWORD_MANAGER" /> gespeichert.</translation>
 <translation id="8327676037044516220">Berechtigungen und Inhaltseinstellungen</translation>

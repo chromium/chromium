@@ -3938,7 +3938,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4110485659976215879">Leheneratu abisua</translation>
 <translation id="4110490973560452005">Deskargatu da: <ph name="FILE_NAME" />. Sakatu Maius + F6 deskargen barraren eremura iritsi arte.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (deskonektatuta)</translation>
-<translation id="411318099524508025">Mailaz igo zara, eta orain <ph name="NAME" /> daukazu.</translation>
 <translation id="4113743276555482284">Fitxategiaren pasahitza</translation>
 <translation id="4114524937989710624">Google Drive-n egindako azkenaldiko jardueretara erraz itzul zaitezen ari zara ikusten iradokitako fitxategiak.
         <ph name="BREAK" />
@@ -9052,6 +9051,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8324784016256120271">Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-jarduerak ikusteko, hala nola iragarkiak pertsonalizatzeko.</translation>
 <translation id="8325413836429495820">Ezin dute ikusi arbela</translation>
 <translation id="8326478304147373412">PKCS #7, ziurtagiri-katea</translation>
+<translation id="832684045355488000">Sistema <ph name="NAME" /> bertsiora berritu da</translation>
 <translation id="8327386430364625757">Letra matematikoa</translation>
 <translation id="8327538105740918488">Geroago ere alda dezakezu pasahitza. <ph name="EMAIL" /> kontuari dagokion <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan gordeko da.</translation>
 <translation id="8327676037044516220">Baimenak eta edukiaren ezarpenak</translation>

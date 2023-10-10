@@ -3953,7 +3953,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4110485659976215879">Эскертүүнү калыбына келтирүү</translation>
 <translation id="4110490973560452005">Жүктөп алуу аяктады: <ph name="FILE_NAME" />. Жүктөлүп алынган файлдар тилкесине өтүү үчүн Shift+F6 баскычтарын басыңыз.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (оффлайн)</translation>
-<translation id="411318099524508025"><ph name="NAME" /> кызматына өттүңүз.</translation>
 <translation id="4113743276555482284">Файлдын сырсөзү</translation>
 <translation id="4114524937989710624">Google Drive'дагы акыркы аракеттериңизге кайтууну жеңилдетүү үчүн сунушталган файлдарды көрүп турасыз.
         <ph name="BREAK" />
@@ -9072,6 +9071,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8324784016256120271">Сайттар жарнамаларды жекелештирүү максатында башка сайттардагы серептөө аракеттериңизди көрүү үчүн cookie файлдарын колдоно алышат</translation>
 <translation id="8325413836429495820">Алмашуу буфериңизди көрө албайт</translation>
 <translation id="8326478304147373412">PKCS #7, тастыктама чынжыры</translation>
+<translation id="832684045355488000"><ph name="NAME" /> жаңыртылды</translation>
 <translation id="8327386430364625757">Математикалык арип</translation>
 <translation id="8327538105740918488">Бул сырсөздү кийин каалаган убакта өзгөртүп алсаңыз болот. Ал <ph name="EMAIL" /> аккаунту үчүн <ph name="GOOGLE_PASSWORD_MANAGER" /> кызматына сакталат.</translation>
 <translation id="8327676037044516220">Уруксаттар жана мазмун параметрлери</translation>

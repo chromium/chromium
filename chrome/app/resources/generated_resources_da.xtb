@@ -3954,7 +3954,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4110485659976215879">Gendan advarsel</translation>
 <translation id="4110490973560452005">Download er fuldført: <ph name="FILE_NAME" />. Tryk på Shift+F6 for at skifte til downloadlinjen.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="411318099524508025">Du er blevet opgraderet til <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Adgangskode til fil</translation>
 <translation id="4114524937989710624">Du får vist forslag til filer, som hjælper dig med nemt at vende tilbage til din seneste aktivitet i Google Drev.
         <ph name="BREAK" />
@@ -9076,6 +9075,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8324784016256120271">Websites kan anvende cookies til at se din browseraktivitet på forskellige websites for f.eks. at personligt tilpasse annoncer</translation>
 <translation id="8325413836429495820">Har ikke tilladelse til at se din udklipsholder</translation>
 <translation id="8326478304147373412">PKCS #7, certifikatkæde</translation>
+<translation id="832684045355488000">Du er blevet opgraderet til <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Matematisk skrifttype</translation>
 <translation id="8327538105740918488">Du kan til enhver tid ændre denne adgangskode senere. Den gemmes i <ph name="GOOGLE_PASSWORD_MANAGER" /> for <ph name="EMAIL" /></translation>
 <translation id="8327676037044516220">Tilladelser og indstillinger for indhold</translation>

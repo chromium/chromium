@@ -3953,7 +3953,6 @@
 <translation id="4110485659976215879">ਚਿਤਾਵਨੀ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="4110490973560452005">ਡਾਊਨਲੋਡ ਮੁਕੰਮਲ ਹੋਇਆ: <ph name="FILE_NAME" />. ਡਾਊਨਲੋਡ ਬਾਰ ਖੇਤਰ ਵਿੱਚ ਜਾਣ ਲਈ Shift+F6 ਦਬਾਓ।</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ਆਫ਼ਲਾਈਨ)</translation>
-<translation id="411318099524508025">ਤੁਹਾਡੇ ਸਿਸਟਮ ਨੂੰ <ph name="NAME" /> 'ਤੇ ਅੱਪਗ੍ਰੇਡ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="4113743276555482284">ਫ਼ਾਈਲ ਦਾ ਪਾਸਵਰਡ</translation>
 <translation id="4114524937989710624">ਤੁਸੀਂ ਸੁਝਾਈਆਂ ਫ਼ਾਈਲਾਂ ਦੇਖ ਰਹੇ ਹੋ ਤਾਂ ਜੋ ਤੁਸੀਂ Google Drive ਵਿਚਲੀ ਆਪਣੀ ਸਭ ਤੋਂ ਹਾਲੀਆ ਸਰਗਰਮੀ 'ਤੇ ਆਸਾਨੀ ਨਾਲ ਵਾਪਸ ਜਾ ਸਕੋ।
         <ph name="BREAK" />
@@ -9074,6 +9073,7 @@
 <translation id="8324784016256120271">ਸਾਈਟਾਂ ਵੱਖ-ਵੱਖ ਸਾਈਟਾਂ ਵਿਚਲੀ ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸਰਗਰਮੀ ਦੇਖਣ ਲਈ ਕੁਕੀਜ਼ ਨੂੰ ਵਰਤ ਸਕਦੀਆਂ ਹਨ, ਉਦਾਹਰਨ ਲਈ, ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ</translation>
 <translation id="8325413836429495820">ਤੁਹਾਡੇ ਕਲਿੱਪਬੋਰਡ ਨੂੰ ਦੇਖਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="8326478304147373412">PKCS #7, ਪ੍ਰਮਾਣ-ਪੱਤਰ ਚੇਨ</translation>
+<translation id="832684045355488000">ਤੁਹਾਡੇ ਸਿਸਟਮ ਨੂੰ <ph name="NAME" /> 'ਤੇ ਅੱਪਗ੍ਰੇਡ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="8327386430364625757">ਗਣਿਤਕ ਫ਼ੌਂਟ</translation>
 <translation id="8327538105740918488">ਤੁਸੀਂ ਇਸ ਪਾਸਵਰਡ ਨੂੰ ਬਾਅਦ ਵਿੱਚ ਕਦੇ ਵੀ ਬਦਲ ਸਕਦੇ ਹੋ। ਇਸ ਨੂੰ <ph name="EMAIL" /> ਲਈ <ph name="GOOGLE_PASSWORD_MANAGER" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="8327676037044516220">ਇਜਾਜ਼ਤਾਂ ਅਤੇ ਸਮੱਗਰੀ ਸੈਟਿੰਗਾਂ</translation>

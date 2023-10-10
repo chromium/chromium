@@ -3937,7 +3937,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4110485659976215879">Restaura l'advertiment</translation>
 <translation id="4110490973560452005">S'ha completat la baixada: <ph name="FILE_NAME" />. Prem Maj+F6 per anar a l'àrea de la barra de baixades.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sense connexió)</translation>
-<translation id="411318099524508025">Se t'ha actualitzat a <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Contrasenya del fitxer</translation>
 <translation id="4114524937989710624">Veus suggeriments de fitxers per ajudar-te a trobar fàcilment la teva activitat més recent a Google Drive.
         <ph name="BREAK" />
@@ -9057,6 +9056,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8324784016256120271">Els llocs web poden fer servir galetes per veure la teva activitat de navegació en diferents llocs web, per exemple, per personalitzar els anuncis</translation>
 <translation id="8325413836429495820">Sense permís per veure el porta-retalls</translation>
 <translation id="8326478304147373412">PKCS #7, cadena de certificats</translation>
+<translation id="832684045355488000">Se t'ha actualitzat a <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Font matemàtica</translation>
 <translation id="8327538105740918488">Pots canviar aquesta contrasenya més endavant. Es desarà al <ph name="GOOGLE_PASSWORD_MANAGER" /> per a <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Configuració dels permisos i del contingut</translation>

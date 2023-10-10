@@ -3951,7 +3951,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4110485659976215879">Figyelmeztetés visszaállítása</translation>
 <translation id="4110490973560452005">A letöltés befejeződött: <ph name="FILE_NAME" />. A Shift+F6 billentyűparancs lenyomásával a letöltéssáv területére léphet.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="411318099524508025">Rendszere a következőre frissült: <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Fájl jelszava</translation>
 <translation id="4114524937989710624">Itt javasolt fájlokat láthat, amelyek segítségével könnyen folytathatja legutóbbi tevékenységeit a Google Drive-on.
         <ph name="BREAK" />
@@ -9073,6 +9072,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8324784016256120271">A webhelyek használhatnak cookie-kat az Ön böngészési tevékenységeinek megismeréséhez a különböző webhelyeken, például a hirdetések személyre szabása érdekében.</translation>
 <translation id="8325413836429495820">Nem használhatják a vágólapot</translation>
 <translation id="8326478304147373412">PKCS #7, tanúsítványlánc</translation>
+<translation id="832684045355488000">Rendszere a következőre frissült: <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Matematikai betűtípus</translation>
 <translation id="8327538105740918488">Ezt a jelszót később bármikor módosíthatja. A következő fiókhoz társított <ph name="GOOGLE_PASSWORD_MANAGER" /> alkalmazásba menti a rendszer: <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Engedélyek és tartalombeállítások</translation>
@@ -10169,7 +10169,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="9214695392875603905">Muffin</translation>
 <translation id="9215293857209265904">„<ph name="EXTENSION_NAME" />” hozzáadva</translation>
 <translation id="9215742531438648683">A Google Play Áruház eltávolítása</translation>
-<translation id="9218430445555521422">Beállítás alapértelmezettként</translation>
+<translation id="9218430445555521422">Alapbeállítás</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (nem támogatott alkalmazás)</translation>
 <translation id="9219582468404818260">Segítsen nekünk a jobb internet kialakításában</translation>
 <translation id="9219741625496141320">A böngészési adatok automatikusan törlésre kerültek</translation>

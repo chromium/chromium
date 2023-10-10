@@ -3953,7 +3953,6 @@
 <translation id="4110485659976215879">경고 다시 열기</translation>
 <translation id="4110490973560452005">다운로드 완료: <ph name="FILE_NAME" />. 다운로드바 영역으로 이동하려면 Shift+F6를 누르세요.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />(오프라인)</translation>
-<translation id="411318099524508025"><ph name="NAME" /> 버전으로 업그레이드됨</translation>
 <translation id="4113743276555482284">파일 비밀번호</translation>
 <translation id="4114524937989710624">Google Drive에서 최근 활동으로 쉽게 돌아갈 수 있도록 표시된 추천 파일입니다.
         <ph name="BREAK" />
@@ -9074,6 +9073,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8324784016256120271">사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하기 위해 쿠키를 사용할 수 있습니다.</translation>
 <translation id="8325413836429495820">클립보드 확인이 허용되지 않음</translation>
 <translation id="8326478304147373412">PKCS #7, 인증서 체인</translation>
+<translation id="832684045355488000"><ph name="NAME" /> 버전으로 업그레이드됨</translation>
 <translation id="8327386430364625757">산술 글꼴</translation>
 <translation id="8327538105740918488">이 비밀번호는 나중에 언제든지 변경할 수 있습니다. 비밀번호는 <ph name="EMAIL" />의 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장됩니다.</translation>
 <translation id="8327676037044516220">권한 및 콘텐츠 설정</translation>

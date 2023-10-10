@@ -3950,7 +3950,6 @@
 <translation id="4110485659976215879">সকীয়নি পুনঃস্থাপন কৰক</translation>
 <translation id="4110490973560452005">ডাউনল’ড সম্পূৰ্ণ হ’ল: <ph name="FILE_NAME" />। ডাউনল’ড বাৰৰ ক্ষেত্ৰলৈ যাবলৈ Shift+F6 টিপক।</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (অফলাইন হৈ আছে)</translation>
-<translation id="411318099524508025">আপোনাক <ph name="NAME" />লৈ আপগ্ৰে’ড কৰা হৈছে।</translation>
 <translation id="4113743276555482284">ফাইলৰ পাছৱৰ্ড</translation>
 <translation id="4114524937989710624">আপুনি Google Driveত একেবাৰে শেহতীয়াকৈ কৰা কাৰ্যকলাপ সহজে বিচাৰি পোৱাত আপোনাক সহায় কৰিবলৈ আপুনি পৰামৰ্শ হিচাপে আগবঢ়োৱা ফাইল দেখা পাই আছে।
         <ph name="BREAK" />
@@ -9071,6 +9070,7 @@
 <translation id="8324784016256120271">আপুনি বিভিন্ন ছাইটসমূহত কৰা ব্ৰাউজিঙৰ কার্যকলাপ চাবলৈ ছাইটসমূহে কুকিসমূহ ব্যৱহাৰ কৰিব পাৰে, যেনে, বিজ্ঞাপন ব্যক্তিগতকৃত কৰিবলৈ</translation>
 <translation id="8325413836429495820">আপোনাৰ ক্লিপব’ৰ্ড চোৱাৰ অনুমতি নাই</translation>
 <translation id="8326478304147373412">PKCS #7, প্ৰমাণপত্ৰ চ্চেইন</translation>
+<translation id="832684045355488000">আপোনাক <ph name="NAME" />লৈ আপগ্ৰে’ড কৰা হৈছে</translation>
 <translation id="8327386430364625757">গাণিতিক ফণ্ট</translation>
 <translation id="8327538105740918488">আপুনি পাছত যিকোনো সময়তে এই পাছৱৰ্ডটো সলনি কৰিব পাৰে। <ph name="EMAIL" />ৰ বাবে এইটো <ph name="GOOGLE_PASSWORD_MANAGER" />ত ছেভ কৰা হ’ব।</translation>
 <translation id="8327676037044516220">অনুমতি আৰু সমলৰ ছেটিংসমূহ</translation>

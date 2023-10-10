@@ -3946,7 +3946,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4110485659976215879">Gjenopprett varsel</translation>
 <translation id="4110490973560452005">Nedlastingen er fullført: <ph name="FILE_NAME" />. Trykk på Shift+F6 for å gå til nedlastingsraden.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (uten nett)</translation>
-<translation id="411318099524508025">Nettleseren din er oppgradert til <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Filpassord</translation>
 <translation id="4114524937989710624">Du ser forslag til filer, slik at du enkelt kan komme tilbake til den nyligste aktiviteten din i Google Disk.
         <ph name="BREAK" />
@@ -9065,6 +9064,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8324784016256120271">Nettsteder kan bruke informasjonskapsler for å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser</translation>
 <translation id="8325413836429495820">Nettsteder som ikke har lov til å se utklippstavlen din</translation>
 <translation id="8326478304147373412">PKCS #7, sertifikat-kjede</translation>
+<translation id="832684045355488000">Du har oppgradert til <ph name="NAME" />.</translation>
 <translation id="8327386430364625757">Matematisk skrifttype</translation>
 <translation id="8327538105740918488">Du kan alltid endre dette passordet senere. Det blir lagret i <ph name="GOOGLE_PASSWORD_MANAGER" /> for <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Tillatelser og innholdsinnstillinger</translation>

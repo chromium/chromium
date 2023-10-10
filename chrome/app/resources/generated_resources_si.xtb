@@ -3943,7 +3943,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4110485659976215879">අනතුරු ඇඟවීම ප්‍රතිසාධනය කරන්න</translation>
 <translation id="4110490973560452005">බාගැනීම සම්පූර්ණයි: <ph name="FILE_NAME" />. බාගැනීම් තීරු ප්‍රදේශයට මාරු වීමට Shift+F6 ඔබන්න.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (නොබැඳි)</translation>
-<translation id="411318099524508025">ඔබ <ph name="NAME" /> වෙත උත්ශ්‍රේණි කර ඇත.</translation>
 <translation id="4113743276555482284">ගොනු මුරපදය</translation>
 <translation id="4114524937989710624">ඔබට Google Drive හි ඔබගේ වඩාත්ම මෑත ක්‍රියාකාරකම් වෙත පහසුවෙන් ආපසු යාමට උදවු කිරීමට යෝජිත ගොනු ඔබ දකියි.
         <ph name="BREAK" />
@@ -9061,6 +9060,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8324784016256120271">විවිධ වෙබ් අඩවි අතරින් ඔබේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම් බැලීමට, උදාහරණයක් වශයෙන්, දැන්වීම් පුද්ගලායන කිරීමට වෙබ් අඩවිවලට කුකී භාවිත කළ හැක</translation>
 <translation id="8325413836429495820">ඔබගේ පසුරු පුවරුව බැලීමට ඉඩ නොදේ</translation>
 <translation id="8326478304147373412">PKCS #7, සහතික දාමය</translation>
+<translation id="832684045355488000">ඔබ <ph name="NAME" /> වෙත උත්ශ්‍රේණි කර ඇත</translation>
 <translation id="8327386430364625757">ගණිතමය ෆොන්ට</translation>
 <translation id="8327538105740918488">ඔබට සෑම විට ම මෙම මුරපදය පසුව වෙනස් කළ හැක. එය <ph name="GOOGLE_PASSWORD_MANAGER" /> වෙත <ph name="EMAIL" /> සඳහා සුරකිනු ඇත</translation>
 <translation id="8327676037044516220">අවසර සහ අන්තර්ගත සැකසීම්</translation>

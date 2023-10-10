@@ -3940,7 +3940,6 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4110485659976215879">Atjaunot brīdinājumu</translation>
 <translation id="4110490973560452005">Lejupielāde ir pabeigta: <ph name="FILE_NAME" />. Nospiediet taustiņus Shift+F6, lai pārslēgtos uz lejupielāžu joslas zonu.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (bezsaistē)</translation>
-<translation id="411318099524508025">Jūs veicāt jaunināšanu uz <ph name="NAME" /></translation>
 <translation id="4113743276555482284">Faila parole</translation>
 <translation id="4114524937989710624">Jums tiek rādīti ieteiktie faili, lai palīdzētu ērti atgriezties pie pēdējām darbībām Google diskā.
         <ph name="BREAK" />
@@ -9060,6 +9059,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8324784016256120271">Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības dažādās vietnēs, piemēram, lai personalizētu reklāmas.</translation>
 <translation id="8325413836429495820">Nedrīkst skatīt starpliktuvi</translation>
 <translation id="8326478304147373412">PKCS #7, sertificēšanas ķēde</translation>
+<translation id="832684045355488000">Jūs veicāt jaunināšanu uz <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Matemātiskais fonts</translation>
 <translation id="8327538105740918488">Varat vēlāk nomainīt šo paroli. Tā tiks saglabāta pakalpojumā <ph name="GOOGLE_PASSWORD_MANAGER" /> kontam <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Atļaujas un satura iestatījumi</translation>

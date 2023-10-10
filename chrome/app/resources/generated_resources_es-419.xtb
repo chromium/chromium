@@ -3935,7 +3935,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4110485659976215879">Restablecer advertencia</translation>
 <translation id="4110490973560452005">Se completó la descarga: <ph name="FILE_NAME" />. Presiona mayúscula + F6 para ir al área de la barra de descargas.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sin conexión)</translation>
-<translation id="411318099524508025">El sistema se actualizó a <ph name="NAME" /></translation>
 <translation id="4113743276555482284">Contraseña del archivo</translation>
 <translation id="4114524937989710624">Estás viendo archivos sugeridos para que puedas regresar a la actividad más reciente en Google Drive.
         <ph name="BREAK" />
@@ -9055,6 +9054,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8324784016256120271">Los sitios pueden usar cookies para ver la actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios.</translation>
 <translation id="8325413836429495820">No puede ver el contenido del portapapeles</translation>
 <translation id="8326478304147373412">PKCS N. º 7, cadena de certificados</translation>
+<translation id="832684045355488000">El sistema se actualizó a <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Fuente matemática</translation>
 <translation id="8327538105740918488">Si quieres, puedes cambiar esta contraseña más adelante. Se guardará en el <ph name="GOOGLE_PASSWORD_MANAGER" /> de <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Configuración de contenido y permisos</translation>

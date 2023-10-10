@@ -3953,7 +3953,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4110485659976215879">Pulihkan peringatan</translation>
 <translation id="4110490973560452005">Download selesai: <ph name="FILE_NAME" />. Tekan Shift+F6 untuk masuk ke area kotak download</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="411318099524508025">Anda telah diupgrade ke <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Sandi file</translation>
 <translation id="4114524937989710624">Anda melihat saran file untuk membantu Anda kembali ke aktivitas terbaru Anda di Google Drive dengan mudah.
         <ph name="BREAK" />
@@ -9073,6 +9072,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8324784016256120271">Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berbagai situs, misalnya untuk mempersonalisasi iklan</translation>
 <translation id="8325413836429495820">Tidak diizinkan melihat papan klip Anda</translation>
 <translation id="8326478304147373412">PKCS #7, rantai sertifikat</translation>
+<translation id="832684045355488000">Anda telah diupgrade ke <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Font matematika</translation>
 <translation id="8327538105740918488">Anda dapat mengubah sandi ini kapan saja. Sandi akan disimpan ke <ph name="GOOGLE_PASSWORD_MANAGER" /> untuk <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Izin dan setelan konten</translation>

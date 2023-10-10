@@ -3938,7 +3938,6 @@
 <translation id="4110485659976215879">กู้คืนคำเตือน</translation>
 <translation id="4110490973560452005">ดาวน์โหลดเสร็จสมบูรณ์: <ph name="FILE_NAME" /> กด Shift+F6 เพื่อวนกลับไปยังบริเวณแถบดาวน์โหลด</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ออฟไลน์)</translation>
-<translation id="411318099524508025">คุณอัปเกรดเป็น <ph name="NAME" /> แล้ว</translation>
 <translation id="4113743276555482284">รหัสผ่านไฟล์</translation>
 <translation id="4114524937989710624">สิ่งที่เห็นนี้คือไฟล์แนะนำซึ่งช่วยให้คุณกลับไปยังกิจกรรมล่าสุดใน Google ไดรฟ์ได้อย่างง่ายดาย
         <ph name="BREAK" />
@@ -9054,6 +9053,7 @@
 <translation id="8324784016256120271">เว็บไซต์สามารถใช้คุกกี้เพื่อดูกิจกรรมการท่องเว็บของคุณในเว็บไซต์ต่างๆ สำหรับวัตถุประสงค์อย่างเช่นการปรับโฆษณาตามโปรไฟล์ของคุณ</translation>
 <translation id="8325413836429495820">ไม่ได้รับอนุญาตให้ดูคลิปบอร์ด</translation>
 <translation id="8326478304147373412">PKCS #7, กลุ่มใบรับรอง (Certificate Chain)</translation>
+<translation id="832684045355488000">คุณอัปเกรดเป็น <ph name="NAME" /> แล้ว</translation>
 <translation id="8327386430364625757">แบบอักษรทางคณิตศาสตร์</translation>
 <translation id="8327538105740918488">คุณเปลี่ยนรหัสผ่านนี้ในภายหลังได้เสมอ โดยระบบจะบันทึกรหัสผ่านดังกล่าวไว้ใน<ph name="GOOGLE_PASSWORD_MANAGER" /> สำหรับ <ph name="EMAIL" /></translation>
 <translation id="8327676037044516220">การตั้งค่าสิทธิ์และเนื้อหา</translation>

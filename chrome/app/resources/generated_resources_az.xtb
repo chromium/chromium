@@ -3935,7 +3935,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4110485659976215879">Xəbərdarlığı bərpa edin</translation>
 <translation id="4110490973560452005">Endirmə tamamlandı: <ph name="FILE_NAME" />. Endirmələr panelinə keçmək üçün Shift+F6 düymələrinə basın.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (oflayn)</translation>
-<translation id="411318099524508025"><ph name="NAME" /> seçiminə təkmilləşdirdiniz.</translation>
 <translation id="4113743276555482284">Fayl parolu</translation>
 <translation id="4114524937989710624">Google Diskdəki ən son fəaliyyətinizə asanlıqla qayıtmağınıza kömək etmək üçün təklif olunan faylları görürsünüz.
         <ph name="BREAK" />
@@ -9051,6 +9050,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8324784016256120271">Saytlar müxtəlif saytlarda baxış fəaliyyətinizi (məsələn, reklamları fərdiləşdirmək üçün) görmək üçün kukilərdən istifadə edə bilər</translation>
 <translation id="8325413836429495820">Mübadilə buferinizə baxmaq icazəsi verilməyib</translation>
 <translation id="8326478304147373412">PKCS # 7, sertifikat zənciri</translation>
+<translation id="832684045355488000"><ph name="NAME" /> seçiminə təkmilləşdirdiniz</translation>
 <translation id="8327386430364625757">Riyazi şrift</translation>
 <translation id="8327538105740918488">Bu parolu dəyişə bilərsiniz. <ph name="EMAIL" /> üçün <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməsində saxlanacaq.</translation>
 <translation id="8327676037044516220">İcazələr və məzmun ayarları</translation>

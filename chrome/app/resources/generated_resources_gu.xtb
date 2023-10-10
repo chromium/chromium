@@ -3936,7 +3936,6 @@
 <translation id="4110485659976215879">ચેતવણી રિસ્ટોર કરો</translation>
 <translation id="4110490973560452005">ડાઉનલોડ પૂર્ણ થયું: <ph name="FILE_NAME" />. ડાઉનલોડ બાર ક્ષેત્રમાં પહોંચવા માટે Shift+F6 દબાવો.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ઑફલાઇન)</translation>
-<translation id="411318099524508025">તમારા બ્રાઉઝરને <ph name="NAME" /> પર અપગ્રેડ કરવામાં આવ્યું છે.</translation>
 <translation id="4113743276555482284">ફાઇલનો પાસવર્ડ</translation>
 <translation id="4114524937989710624">Google Driveમાં તમારી સૌથી તાજેતરની પ્રવૃત્તિ પર સરળતાથી પાછા ફરવામાં તમારી સહાય કરવા માટે, તમે સૂચવેલી ફાઇલો જોઈ રહ્યાં છો.
         <ph name="BREAK" />
@@ -9054,6 +9053,7 @@ USB ડિવાઇસ</translation>
 <translation id="8324784016256120271">સાઇટ વિવિધ સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે કુકીનો ઉપયોગ કરી શકે છે. ઉદાહરણ તરીકે, મનગમતી જાહેરાતો બનાવવા માટે</translation>
 <translation id="8325413836429495820">તમારું ક્લિપબોર્ડ જોવાની મંજૂરી નથી</translation>
 <translation id="8326478304147373412">PKCS #7, પ્રમાણપત્ર ચેન</translation>
+<translation id="832684045355488000">તમને <ph name="NAME" /> પર અપગ્રેડ કરવામાં આવ્યા છે</translation>
 <translation id="8327386430364625757">ગણિતિક ફૉન્ટ</translation>
 <translation id="8327538105740918488">પછીથી તમે કોઈપણ સમયે પાસવર્ડ બદલી શકો છો. તેને <ph name="EMAIL" /> માટે <ph name="GOOGLE_PASSWORD_MANAGER" />માં સાચવવામાં આવશે.</translation>
 <translation id="8327676037044516220">પરવાનગીઓ અને કન્ટેન્ટ સેટિંગ</translation>

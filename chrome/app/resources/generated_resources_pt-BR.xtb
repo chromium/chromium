@@ -3954,7 +3954,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4110485659976215879">Restaurar aviso</translation>
 <translation id="4110490973560452005">Download concluído: <ph name="FILE_NAME" />. Pressione Shift+F6 para voltar à área da barra de downloads.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (off-line)</translation>
-<translation id="411318099524508025">O navegador fez upgrade para o <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Senha do arquivo</translation>
 <translation id="4114524937989710624">Você está vendo arquivos sugeridos para voltar de forma simples à sua atividade mais recente no Google Drive.
         <ph name="BREAK" />
@@ -9078,6 +9077,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8324784016256120271">Os sites podem usar cookies para ver sua atividade de navegação em diferentes páginas para, por exemplo, personalizar anúncios</translation>
 <translation id="8325413836429495820">Bloquear o acesso à área de transferência</translation>
 <translation id="8326478304147373412">PKCS #7, cadeia de certificados</translation>
+<translation id="832684045355488000">A atualização para <ph name="NAME" /> foi concluída</translation>
 <translation id="8327386430364625757">Fonte matemática</translation>
 <translation id="8327538105740918488">É possível mudar essa senha a qualquer momento. Ela vai ficar salva no <ph name="GOOGLE_PASSWORD_MANAGER" /> da conta <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Permissões e configurações de conteúdo</translation>

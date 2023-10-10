@@ -3936,7 +3936,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4110485659976215879">Vrati upozorenje</translation>
 <translation id="4110490973560452005">Preuzimanje je dovršeno: <ph name="FILE_NAME" />. Pritisnite Shift + F6 da biste prešli na oblast trake sa preuzimanjima.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (oflajn)</translation>
-<translation id="411318099524508025">Obavili ste nadogradnju na <ph name="NAME" />.</translation>
 <translation id="4113743276555482284">Lozinka za fajl</translation>
 <translation id="4114524937989710624">Predloženi fajlovi vam se prikazuju da biste lako mogli da se vratite najnovijim aktivnostima na Google disku.
         <ph name="BREAK" />
@@ -9060,6 +9059,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8324784016256120271">Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na različitim sajtovima, na primer, za personalizaciju oglasa</translation>
 <translation id="8325413836429495820">Nije im dozvoljeno da vide privremenu memoriju</translation>
 <translation id="8326478304147373412">PKCS #7, lanac sertifikata</translation>
+<translation id="832684045355488000">Nadograđeno je na <ph name="NAME" /></translation>
 <translation id="8327386430364625757">Matematički font</translation>
 <translation id="8327538105740918488">Uvek ćete moći da promenite ovu lozinku kasnije. Biće sačuvana u alatki <ph name="GOOGLE_PASSWORD_MANAGER" /> za <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Podešavanja dozvola i sadržaja</translation>

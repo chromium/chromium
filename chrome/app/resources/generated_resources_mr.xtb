@@ -3950,7 +3950,6 @@
 <translation id="4110485659976215879">चेतावणी रिस्टोअर करा</translation>
 <translation id="4110490973560452005">डाउनलोड पूर्ण: <ph name="FILE_NAME" />. डाउनलोड बार भागाकडे जाण्यासाठी Shift+F6 प्रेस करा.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ऑफलाइन)</translation>
-<translation id="411318099524508025">तुम्हाला <ph name="NAME" /> वर अपग्रेड केले गेले आहे.</translation>
 <translation id="4113743276555482284">फाइलचा पासवर्ड</translation>
 <translation id="4114524937989710624">Google Drive मधील तुमच्या सर्वात अलीकडील अ‍ॅक्टिव्हिटीवर सहजपणे परत जाण्यात मदत करण्यासाठी, तुम्हाला सुचवलेल्या फाइल दिसत आहेत.
         <ph name="BREAK" />
@@ -9070,6 +9069,7 @@
 <translation id="8324784016256120271">वेगवेगळ्या साइटवरील तुमची ब्राउझिंग ॲक्टिव्हिटी पाहण्यासाठी साइट कुकी वापरू शकतात, उदाहरणार्थ, जाहिराती पर्सनलाइझ करण्यासाठी</translation>
 <translation id="8325413836429495820">तुमचा क्लिपबोर्ड पाहण्याची अनुमती नाही</translation>
 <translation id="8326478304147373412">PKCS #7, सर्टिफिकेट श्रृंखला</translation>
+<translation id="832684045355488000">तुम्हाला <ph name="NAME" /> वर अपग्रेड केले गेले आहे</translation>
 <translation id="8327386430364625757">गणिती फाँट</translation>
 <translation id="8327538105740918488">तुम्ही नंतर कधीही हा पासवर्ड बदलू शकता. तो <ph name="EMAIL" /> साठी <ph name="GOOGLE_PASSWORD_MANAGER" /> मध्ये सेव्ह केला जाईल.</translation>
 <translation id="8327676037044516220">परवानग्या आणि आशय सेटिंग्ज</translation>

@@ -3949,7 +3949,6 @@
 <translation id="4110485659976215879">取消忽略警告</translation>
 <translation id="4110490973560452005">下載完成 ：<ph name="FILE_NAME" />。按住 Shift+F6 鍵即可切換至下載內容列的位置。</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (離線)</translation>
-<translation id="411318099524508025">你已升級到 <ph name="NAME" />。</translation>
 <translation id="4113743276555482284">檔案密碼</translation>
 <translation id="4114524937989710624">畫面會顯示建議的檔案，以便您繼續執行最近在「Google 雲端硬碟」中的活動。
         <ph name="BREAK" />
@@ -9067,6 +9066,7 @@
 <translation id="8324784016256120271">網站可使用 Cookie 查看您在各網站的瀏覽活動，例如放送個人化廣告</translation>
 <translation id="8325413836429495820">不允許查看剪貼簿</translation>
 <translation id="8326478304147373412">PKCS #7，憑證鏈結</translation>
+<translation id="832684045355488000">你已升級到 <ph name="NAME" /></translation>
 <translation id="8327386430364625757">數學字型</translation>
 <translation id="8327538105740918488">以後隨時可變更此密碼。密碼將會儲存至 <ph name="EMAIL" /> 的「<ph name="GOOGLE_PASSWORD_MANAGER" />」中。</translation>
 <translation id="8327676037044516220">權限和內容設定</translation>
