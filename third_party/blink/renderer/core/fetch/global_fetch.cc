@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/fetch/global_fetch.h"
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_deferred_request_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_init.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
@@ -57,7 +59,13 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
   explicit GlobalFetchImpl(T& supplementable,
                            ExecutionContext* execution_context)
       : Supplement<T>(supplementable),
-        fetch_manager_(MakeGarbageCollected<FetchManager>(execution_context)) {}
+        fetch_manager_(MakeGarbageCollected<FetchManager>(execution_context)),
+        // TODO(crbug.com/1356128): FetchLater is only supported in Document.
+        fetch_later_manager_(
+            base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI) &&
+                    execution_context->IsWindow()
+                ? MakeGarbageCollected<FetchLaterManager>(execution_context)
+                : nullptr) {}
 
   ScriptPromise Fetch(ScriptState* script_state,
                       const V8RequestInfo* input,
@@ -94,8 +102,9 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
                                const V8RequestInfo* input,
                                const DeferredRequestInit* init,
                                ExceptionState& exception_state) override {
-    ExecutionContext* execution_context = fetch_manager_->GetExecutionContext();
-    if (!script_state->ContextIsValid() || !execution_context) {
+    CHECK(fetch_later_manager_);
+    ExecutionContext* ec = fetch_later_manager_->GetExecutionContext();
+    if (!script_state->ContextIsValid() || !ec) {
       exception_state.ThrowTypeError("The global scope is shutting down.");
       return MakeGarbageCollected<FetchLaterResult>();
     }
@@ -119,18 +128,18 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
       return nullptr;
     }
 
-    probe::WillSendXMLHttpOrFetchNetworkRequest(execution_context, r->url());
+    probe::WillSendXMLHttpOrFetchNetworkRequest(ec, r->url());
     FetchRequestData* request_data = r->PassRequestData(script_state);
-    MeasureFetchProperties(execution_context, request_data);
+    MeasureFetchProperties(ec, request_data);
     // 9. If init is given and init ["activationTimeout"] exists, then set
     // `activation_timeout` to init ["activationTimeout"].
     absl::optional<DOMHighResTimeStamp> activation_timeout =
         (init->hasActivationTimeout()
              ? absl::make_optional(init->activationTimeout())
              : absl::nullopt);
-    auto* result =
-        fetch_manager_->FetchLater(script_state, request_data, r->signal(),
-                                   activation_timeout, exception_state);
+    auto* result = fetch_later_manager_->FetchLater(
+        script_state, request_data, r->signal(), activation_timeout,
+        exception_state);
     if (exception_state.HadException()) {
       return nullptr;
     }
@@ -142,12 +151,14 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(fetch_manager_);
+    visitor->Trace(fetch_later_manager_);
     ScopedFetcher::Trace(visitor);
     Supplement<T>::Trace(visitor);
   }
 
  private:
   Member<FetchManager> fetch_manager_;
+  Member<FetchLaterManager> fetch_later_manager_;
   uint32_t fetch_count_ = 0;
 };
 
