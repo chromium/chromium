@@ -194,6 +194,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   void MenuButtonPressed();
   void FloatButtonPressed();
 
+  bool SizeButtonShouldBeVisible() const;
+  void LayoutButtonsFromAnimation(int x_slide, int alpha);
+
   // FrameSizeButtonDelegate:
   bool IsMinimizeButtonVisible() const override;
   void SetButtonsToNormal(Animate animate) override;
