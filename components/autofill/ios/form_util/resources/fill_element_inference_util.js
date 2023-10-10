@@ -39,21 +39,21 @@ __gCrWeb.fill.isAutofillableElement = function(element) {
  * Trims whitespace from the start of the input string.
  * Simplified version of string_util::TrimWhitespace.
  * @param {string} input String to trim.
- * @return {string} The |input| string without leading whitespace.
+ * @return {string} The `input` string without leading whitespace.
  */
-__gCrWeb.fill.trimWhitespaceLeading = function(input) {
+function trimWhitespaceLeading(input) {
   return input.replace(/^\s+/gm, '');
-};
+}
 
 /**
  * Trims whitespace from the end of the input string.
  * Simplified version of string_util::TrimWhitespace.
  * @param {string} input String to trim.
- * @return {string} The |input| string without trailing whitespace.
+ * @return {string} The `input` string without trailing whitespace.
  */
-__gCrWeb.fill.trimWhitespaceTrailing = function(input) {
+function trimWhitespaceTrailing(input) {
   return input.replace(/\s+$/gm, '');
-};
+}
 
 /**
  * Appends |suffix| to |prefix| so that any intermediary whitespace is collapsed
@@ -84,9 +84,9 @@ __gCrWeb.fill.trimWhitespaceTrailing = function(input) {
  */
 __gCrWeb.fill.combineAndCollapseWhitespace = function(
     prefix, suffix, forceWhitespace) {
-  const prefixTrimmed = __gCrWeb.fill.trimWhitespaceTrailing(prefix);
+  const prefixTrimmed = trimWhitespaceTrailing(prefix);
   const prefixTrailingWhitespace = prefixTrimmed !== prefix;
-  const suffixTrimmed = __gCrWeb.fill.trimWhitespaceLeading(suffix);
+  const suffixTrimmed = trimWhitespaceLeading(suffix);
   const suffixLeadingWhitespace = suffixTrimmed !== suffix;
   if (prefixTrailingWhitespace || suffixLeadingWhitespace || forceWhitespace) {
     return prefixTrimmed + ' ' + suffixTrimmed;
@@ -106,15 +106,14 @@ __gCrWeb.fill.combineAndCollapseWhitespace = function(
  * @param {Array<Node>} divsToSkip List of <div> tags to ignore if encountered.
  * @return {string} The discovered and adapted string.
  */
-__gCrWeb.fill.findChildTextInner = function(node, depth, divsToSkip) {
+function findChildTextInner(node, depth, divsToSkip) {
   if (depth <= 0 || !node) {
     return '';
   }
 
   // Skip over comments.
   if (node.nodeType === Node.COMMENT_NODE) {
-    return __gCrWeb.fill.findChildTextInner(
-        node.nextSibling, depth - 1, divsToSkip);
+    return findChildTextInner(node.nextSibling, depth - 1, divsToSkip);
   }
 
   if (node.nodeType !== Node.ELEMENT_NODE && node.nodeType !== Node.TEXT_NODE) {
@@ -151,14 +150,13 @@ __gCrWeb.fill.findChildTextInner = function(node, depth, divsToSkip) {
     if (node.nodeType === Node.TEXT_NODE && !nodeText) {
       // In the C++ version, this text node would have been stripped completely.
       // Just pass the buck.
-      return __gCrWeb.fill.findChildTextInner(
-          node.nextSibling, depth, divsToSkip);
+      return findChildTextInner(node.nextSibling, depth, divsToSkip);
     }
 
     // Recursively compute the children's text.
     // Preserve inter-element whitespace separation.
-    const childText = __gCrWeb.fill.findChildTextInner(
-        node.firstChild, depth - 1, divsToSkip);
+    const childText =
+        findChildTextInner(node.firstChild, depth - 1, divsToSkip);
     let addSpace = node.nodeType === Node.TEXT_NODE && !nodeText;
     // Emulate apparently incorrect Chromium behavior tracked in
     // https://crbug.com/239819.
@@ -170,7 +168,7 @@ __gCrWeb.fill.findChildTextInner = function(node, depth, divsToSkip) {
   // Recursively compute the siblings' text.
   // Again, preserve inter-element whitespace separation.
   const siblingText =
-      __gCrWeb.fill.findChildTextInner(node.nextSibling, depth - 1, divsToSkip);
+      findChildTextInner(node.nextSibling, depth - 1, divsToSkip);
   let addSpace = node.nodeType === Node.TEXT_NODE && !nodeText;
   // Emulate apparently incorrect Chromium behavior tracked in
   // https://crbug.com/239819.
@@ -179,7 +177,7 @@ __gCrWeb.fill.findChildTextInner = function(node, depth, divsToSkip) {
       nodeText, siblingText, addSpace);
 
   return nodeText;
-};
+}
 
 /**
  * Same as findChildText() below, but with a list of div nodes to skip.
@@ -201,8 +199,7 @@ __gCrWeb.fill.findChildTextWithIgnoreList = function(node, divsToSkip) {
 
   const child = node.firstChild;
   const kChildSearchDepth = 10;
-  let nodeText =
-      __gCrWeb.fill.findChildTextInner(child, kChildSearchDepth, divsToSkip);
+  let nodeText = findChildTextInner(child, kChildSearchDepth, divsToSkip);
   nodeText = nodeText.trim();
   return nodeText;
 };
