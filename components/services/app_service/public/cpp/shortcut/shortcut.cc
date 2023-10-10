@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/strings/strcat.h"
+#include "components/app_constants/constants.h"
 #include "components/crx_file/id_util.h"
 
 namespace apps {
@@ -65,6 +66,13 @@ Shortcuts CloneShortcuts(const Shortcuts& source_shortcuts) {
 
 ShortcutId GenerateShortcutId(const std::string& host_app_id,
                               const std::string& local_id) {
+  // For web app based browser shortcut, we just use the local_id
+  // that is generated in the web app system, so that we can keep
+  // all the launcher and shelf locations without needing to migrate the sync
+  // data.
+  if (host_app_id == app_constants::kChromeAppId) {
+    return ShortcutId(local_id);
+  }
   const std::string input = base::StrCat({host_app_id, "#", local_id});
   return ShortcutId(crx_file::id_util::GenerateId(input));
 }

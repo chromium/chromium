@@ -134,6 +134,13 @@ TEST_F(BrowserShortcutsTest, PublishExistingBrowserShortcut) {
   auto local_shortcut_id = CreateShortcut(kShortcutName);
   apps::ShortcutId expected_shortcut_id =
       apps::GenerateShortcutId(app_constants::kChromeAppId, local_shortcut_id);
+
+  // For web app based browser shortcut, we just use the local_id
+  // that is generated in the web app system, so that we can keep
+  // all the launcher and shelf locations without needing to migrate the sync
+  // data.
+  ASSERT_EQ(local_shortcut_id, expected_shortcut_id.value());
+
   InitializeBrowserShortcutPublisher();
 
   apps::ShortcutRegistryCache* cache =
@@ -180,6 +187,12 @@ TEST_F(BrowserShortcutsTest, PublishNewBrowserShortcut) {
   auto local_shortcut_id = CreateShortcut(kShortcutName);
   apps::ShortcutId expected_shortcut_id =
       apps::GenerateShortcutId(app_constants::kChromeAppId, local_shortcut_id);
+
+  // For web app based browser shortcut, we just use the local_id
+  // that is generated in the web app system, so that we can keep
+  // all the launcher and shelf locations without needing to migrate the sync
+  // data.
+  ASSERT_EQ(local_shortcut_id, expected_shortcut_id.value());
 
   ASSERT_EQ(cache->GetAllShortcuts().size(), 1u);
   ASSERT_TRUE(cache->HasShortcut(expected_shortcut_id));

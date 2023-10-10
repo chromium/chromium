@@ -19,6 +19,7 @@ component("shortcut") {
 
   deps = [
     "//base",
+    "//components/app_constants:app_constants",
     "//components/crx_file",
     "//components/services/app_service/public/cpp:app_types",
     "//components/services/app_service/public/cpp:macros",
