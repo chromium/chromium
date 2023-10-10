@@ -1062,7 +1062,13 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         notifyBackPressStateChangedInternal();
         if (ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()
                 && ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)) {
+            // Ensure we skip animating here as the UI is entirely occluded already.
+            boolean previousAnimateVisibilityChangesValue =
+                    mContainerViewModel.get(ANIMATE_VISIBILITY_CHANGES);
+            mContainerViewModel.set(ANIMATE_VISIBILITY_CHANGES, false);
             setVisibility(false);
+            mContainerViewModel.set(
+                    ANIMATE_VISIBILITY_CHANGES, previousAnimateVisibilityChangesValue);
         }
     }
 
