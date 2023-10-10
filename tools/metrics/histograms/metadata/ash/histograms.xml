@@ -404,6 +404,7 @@ chromium-metrics-reviews@google.com.
     ambient setting (slide show, video, etc) has a different initialization
     process. This is emitted each time ash tries to launch the ambient UI.
   </summary>
+  <token key="Settings" variants="AmbientUiSettings"/>
 </histogram>
 
 <histogram name="Ash.AmbientMode.LottieAnimationSmoothness.{Settings}"
