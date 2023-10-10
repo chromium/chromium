@@ -886,7 +886,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config,
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
-    std::unique_ptr<quic::QuicClientPushPromiseIndex> push_promise_index,
     const base::TickClock* tick_clock,
     base::SequencedTaskRunner* task_runner,
     std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
@@ -894,7 +893,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     NetLog* net_log)
     : quic::QuicSpdyClientSessionBase(connection,
                                       /*visitor=*/nullptr,
-                                      push_promise_index.get(),
+                                      /*push_promise_index=*/nullptr,
                                       config,
                                       connection->supported_versions()),
       session_key_(session_key),
@@ -930,7 +929,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
           std::move(socket_performance_watcher),
           net_log_)),
       http3_logger_(std::make_unique<QuicHttp3Logger>(net_log_)),
-      push_promise_index_(std::move(push_promise_index)),
       path_validation_writer_delegate_(this, task_runner_),
       ech_config_list_(endpoint_result.metadata.ech_config_list) {
   default_network_ = default_network;
@@ -967,15 +965,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
 }
 
 QuicChromiumClientSession::~QuicChromiumClientSession() {
-  // This is referenced by the parent class's destructor, so have to delete it
-  // asynchronously, unfortunately. Don't use DeleteSoon, since that leaks if
-  // the task is not run, which is often the case in tests.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce([](std::unique_ptr<quic::QuicClientPushPromiseIndex>
-                            push_promise_index) {},
-                     std::move(push_promise_index_)));
-
   DCHECK(callback_.is_null());
 
   for (auto& observer : connectivity_observer_list_)

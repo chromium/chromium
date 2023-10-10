@@ -64,7 +64,6 @@
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/proof_verifier.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_client_session_cache.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_random.h"
-#include "net/third_party/quiche/src/quiche/quic/core/http/quic_client_push_promise_index.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_clock.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
@@ -2024,9 +2023,8 @@ bool QuicStreamFactory::CreateSessionHelper(
       params_.max_migrations_to_non_default_network_on_path_degrading,
       yield_after_packets_, yield_after_duration_, cert_verify_flags, config,
       std::move(crypto_config_handle), dns_resolution_start_time,
-      dns_resolution_end_time,
-      std::make_unique<quic::QuicClientPushPromiseIndex>(), tick_clock_,
-      task_runner_, std::move(socket_performance_watcher), endpoint_result,
+      dns_resolution_end_time, tick_clock_, task_runner_,
+      std::move(socket_performance_watcher), endpoint_result,
       net_log.net_log());
 
   all_sessions_[*session] = key;  // owning pointer

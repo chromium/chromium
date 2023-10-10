@@ -39,8 +39,7 @@ namespace {
 
 class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
  public:
-  explicit MockQuicClientSessionBase(quic::QuicConnection* connection,
-                                     quic::QuicClientPushPromiseIndex* index);
+  explicit MockQuicClientSessionBase(quic::QuicConnection* connection);
 
   MockQuicClientSessionBase(const MockQuicClientSessionBase&) = delete;
   MockQuicClientSessionBase& operator=(const MockQuicClientSessionBase&) =
@@ -138,11 +137,10 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
 };
 
 MockQuicClientSessionBase::MockQuicClientSessionBase(
-    quic::QuicConnection* connection,
-    quic::QuicClientPushPromiseIndex* push_promise_index)
+    quic::QuicConnection* connection)
     : quic::QuicSpdyClientSessionBase(connection,
                                       /*visitor=*/nullptr,
-                                      push_promise_index,
+                                      /*push_promise_index=*/nullptr,
                                       quic::test::DefaultQuicConfig(),
                                       connection->supported_versions()) {
   crypto_stream_ = std::make_unique<quic::test::MockQuicCryptoStream>(this);
@@ -162,11 +160,10 @@ class QuicChromiumClientStreamTest
         crypto_config_(
             quic::test::crypto_test_utils::ProofVerifierForTesting()),
         session_(new quic::test::MockQuicConnection(
-                     &helper_,
-                     &alarm_factory_,
-                     quic::Perspective::IS_CLIENT,
-                     quic::test::SupportedVersions(version_)),
-                 &push_promise_index_) {
+            &helper_,
+            &alarm_factory_,
+            quic::Perspective::IS_CLIENT,
+            quic::test::SupportedVersions(version_))) {
     quic::test::QuicConfigPeer::SetReceivedInitialSessionFlowControlWindow(
         session_.config(), quic::kMinimumFlowControlSendWindow);
     quic::test::QuicConfigPeer::
@@ -288,7 +285,6 @@ class QuicChromiumClientStreamTest
   raw_ptr<QuicChromiumClientStream> stream_;
   spdy::Http2HeaderBlock headers_;
   spdy::Http2HeaderBlock trailers_;
-  quic::QuicClientPushPromiseIndex push_promise_index_;
 };
 
 INSTANTIATE_TEST_SUITE_P(Version,

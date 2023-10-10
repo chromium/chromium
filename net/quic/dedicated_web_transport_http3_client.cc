@@ -189,14 +189,13 @@ class DedicatedWebTransportHttp3ClientSession
       quic::QuicConnection* connection,
       const quic::QuicServerId& server_id,
       quic::QuicCryptoClientConfig* crypto_config,
-      quic::QuicClientPushPromiseIndex* push_promise_index,
       DedicatedWebTransportHttp3Client* client)
       : quic::QuicSpdyClientSession(config,
                                     supported_versions,
                                     connection,
                                     server_id,
                                     crypto_config,
-                                    push_promise_index),
+                                    /*push_promise_index=*/nullptr),
         client_(client) {}
 
   bool OnSettingsFrame(const quic::SettingsFrame& frame) override {
@@ -610,7 +609,7 @@ void DedicatedWebTransportHttp3Client::CreateConnection() {
       InitializeQuicConfig(*quic_context_->params()), supported_versions_,
       connection.release(),
       quic::QuicServerId(url_.host(), url_.EffectiveIntPort()), &crypto_config_,
-      &push_promise_index_, this);
+      this);
   if (!original_supported_versions_.empty()) {
     session_->set_client_original_supported_versions(
         original_supported_versions_);

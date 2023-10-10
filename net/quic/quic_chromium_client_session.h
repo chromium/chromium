@@ -45,7 +45,6 @@
 #include "net/socket/socket_performance_watcher.h"
 #include "net/spdy/http2_priority_dependencies.h"
 #include "net/spdy/multiplexed_session.h"
-#include "net/third_party/quiche/src/quiche/quic/core/http/quic_client_push_promise_index.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_client_session_base.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_crypto_client_stream.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packet_writer.h"
@@ -336,7 +335,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     quic::QuicServerId server_id_;
     quic::ParsedQuicVersion quic_version_;
     LoadTimingInfo::ConnectTiming connect_timing_;
-    raw_ptr<quic::QuicClientPushPromiseIndex> push_promise_index_;
 
     bool was_ever_used_ = false;
   };
@@ -583,7 +581,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config,
       base::TimeTicks dns_resolution_start_time,
       base::TimeTicks dns_resolution_end_time,
-      std::unique_ptr<quic::QuicClientPushPromiseIndex> push_promise_index,
       const base::TickClock* tick_clock,
       base::SequencedTaskRunner* task_runner,
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
@@ -1111,8 +1108,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // kInvalid if no key updates have occurred.
   quic::KeyUpdateReason last_key_update_reason_ =
       quic::KeyUpdateReason::kInvalid;
-
-  std::unique_ptr<quic::QuicClientPushPromiseIndex> push_promise_index_;
 
   QuicChromiumPathValidationWriterDelegate path_validation_writer_delegate_;
 
