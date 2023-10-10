@@ -5915,6 +5915,11 @@
     "expiry_milestone": 123
   },
   {
+    "name": "ntp-tab-resumption-module",
+    "owners": [ "mfacey", "romanarora" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "ntp-view-hierarchy-repair",
     "owners": [ "adamta", "sczs" ],
     "expiry_milestone": 115

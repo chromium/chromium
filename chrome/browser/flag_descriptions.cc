@@ -4802,6 +4802,11 @@ const char kNtpDiscountsInHistoryClustersModuleDescription[] =
     "Shows discounts on the visit tiles in the Journeys module when available "
     "on the New Tab Page.";
 
+const char kNtpTabResumptionModuleName[] =
+    "NTP Cross Device Tab Resumption Module";
+const char kNtpTabResumptionModuleDescription[] =
+    "Shows the Cross Device Tab Resumption Module on the New Tab Page.";
+
 const char kNtpMiddleSlotPromoDismissalName[] =
     "NTP Middle Slot Promo Dismissal";
 const char kNtpMiddleSlotPromoDismissalDescription[] =
