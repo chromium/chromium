@@ -20,10 +20,6 @@ BASE_FEATURE(kSingleNtp, "SingleNTP", base::FEATURE_ENABLED_BY_DEFAULT);
 // Feature disabled by default.
 BASE_FEATURE(kMagicStack, "MagicStack", base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kHideContentSuggestionsTiles,
-             "HideContentSuggestionsTiles",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabResumption,
              "TabResumption",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -40,9 +36,6 @@ const char kSetUpListCompactedTimeThresholdDays[] =
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 const char kDiscoverFeedIsNativeUIEnabled[] = "DiscoverFeedIsNativeUIEnabled";
-
-const char kHideContentSuggestionsTilesParamMostVisited[] = "HideMostVisited";
-const char kHideContentSuggestionsTilesParamShortcuts[] = "HideShortcuts";
 
 const char kTabResumptionParameterName[] = "variant";
 const char kTabResumptionMostRecentTabOnlyParam[] =
@@ -81,18 +74,6 @@ double ReducedNTPTopMarginSpaceForMagicStack() {
 bool ShouldHideIrrelevantModules() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kMagicStack, kHideIrrelevantModulesParam, false);
-}
-
-bool ShouldHideMVT() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kHideContentSuggestionsTiles,
-      kHideContentSuggestionsTilesParamMostVisited, false);
-}
-
-bool ShouldHideShortcuts() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kHideContentSuggestionsTiles, kHideContentSuggestionsTilesParamShortcuts,
-      false);
 }
 
 int TimeUntilShowingCompactedSetUpList() {

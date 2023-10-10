@@ -525,10 +525,6 @@ const char kFullscreenSmoothScrollingDescription[] =
     "When enabled, the web view's insets are updated for scoll events. If "
     "disabled, the the web view's frame are updated.";
 
-const char kHideContentSuggestionTilesName[] = "Hide content suggestions tiles";
-const char kHideContentSuggestionTilesDescription[] =
-    "Hides content suggestions tiles from the new tab page.";
-
 const char kIncognitoNtpRevampName[] = "Revamped Incognito New Tab Page";
 const char kIncognitoNtpRevampDescription[] =
     "When enabled, Incognito new tab page will have an updated UI.";

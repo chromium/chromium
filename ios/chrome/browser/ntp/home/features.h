@@ -19,9 +19,6 @@ BASE_DECLARE_FEATURE(kSingleNtp);
 // Feature for the Magic Stack.
 BASE_DECLARE_FEATURE(kMagicStack);
 
-// Feature that hides the Content Suggestions tiles.
-BASE_DECLARE_FEATURE(kHideContentSuggestionsTiles);
-
 // Feature that enables tab resumption.
 BASE_DECLARE_FEATURE(kTabResumption);
 
@@ -45,10 +42,6 @@ extern const char kSetUpListCompactedTimeThresholdDays[];
 // feed.
 // TODO(crbug.com/1385512): Remove this.
 extern const char kDiscoverFeedIsNativeUIEnabled[];
-
-// Parameters to choose which Content Suggestions tiles to hide.
-extern const char kHideContentSuggestionsTilesParamMostVisited[];
-extern const char kHideContentSuggestionsTilesParamShortcuts[];
 
 // Feature parameters for the tab resumption feature. If no parameter is set,
 // the default (most recent tab only) will be used.
@@ -78,12 +71,6 @@ double ReducedNTPTopMarginSpaceForMagicStack();
 // Whether modules should not be added to the Magic Stack if their content is
 // irrelevant.
 bool ShouldHideIrrelevantModules();
-
-// Whether the Most Visited Tiles should be hidden.
-bool ShouldHideMVT();
-
-// Whether the Shortcuts Tiles should be hidden.
-bool ShouldHideShortcuts();
 
 // How many days before showing the Compacted Set Up List module configuration
 // in the Magic Stack.

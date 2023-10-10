@@ -787,10 +787,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)onMostVisitedURLsAvailable:
     (const ntp_tiles::NTPTilesVector&)mostVisited {
-  if (ShouldHideMVT()) {
-    return;
-  }
-
   // This is used by the content widget.
   content_suggestions_tile_saver::SaveMostVisitedToDisk(
       mostVisited, self.faviconMediator.mostVisitedAttributesProvider,
@@ -981,7 +977,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     [self.consumer
         showReturnToRecentTabTileWithConfig:self.returnToRecentTabItem];
   }
-  if ([self.mostVisitedItems count] && !ShouldHideMVT()) {
+  if ([self.mostVisitedItems count]) {
     [self.consumer setMostVisitedTilesWithConfigs:self.mostVisitedItems];
   }
   if ([self shouldShowSetUpList]) {
@@ -1005,8 +1001,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   // 1) Magic Stack is enabled (always show shortcuts in Magic Stack).
   // 2) The Set Up List and Magic Stack are not enabled (Set Up List replaced
   // Shortcuts).
-  if (!ShouldHideShortcuts() &&
-      (IsMagicStackEnabled() || ![self shouldShowSetUpList])) {
+  if ((IsMagicStackEnabled() || ![self shouldShowSetUpList])) {
     [self.consumer setShortcutTilesWithConfigs:self.actionButtonItems];
   }
 
@@ -1043,10 +1038,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 // Replaces the Most Visited items currently displayed by the most recent ones.
 - (void)useFreshMostVisited {
-  if (ShouldHideMVT()) {
-    return;
-  }
-
   if (IsMagicStackEnabled()) {
     const base::Value::List& oldMostVisitedSites =
         _localState->GetList(prefs::kIosLatestMostVisitedSites);
