@@ -18,7 +18,8 @@ private_aggregation_promise_test(async () => {
        privateAggregationConfig: {contextId: "example-context-id"}});
 
   const reports = await pollReports(
-      "/.well-known/private-aggregation/report-shared-storage")
+      "/.well-known/private-aggregation/report-shared-storage",
+      /*wait_for=*/1, /*timeout=*/6000)
   assert_equals(reports.length, 1);
 
   const report = JSON.parse(reports[0]);
@@ -45,7 +46,8 @@ private_aggregation_promise_test(async () => {
        privateAggregationConfig: {contextId: "example-context-id"}});
 
   const reports = await pollReports(
-      "/.well-known/private-aggregation/report-shared-storage")
+      "/.well-known/private-aggregation/report-shared-storage",
+      /*wait_for=*/1, /*timeout=*/6000)
   assert_equals(reports.length, 1);
 
   const report = JSON.parse(reports[0]);
@@ -71,7 +73,8 @@ private_aggregation_promise_test(async () => {
        privateAggregationConfig: {contextId: "example-context-id"}});
 
   const reports = await pollReports(
-      "/.well-known/private-aggregation/report-shared-storage")
+      "/.well-known/private-aggregation/report-shared-storage",
+      /*wait_for=*/1, /*timeout=*/6000)
   assert_equals(reports.length, 1);
 
   const report = JSON.parse(reports[0]);
