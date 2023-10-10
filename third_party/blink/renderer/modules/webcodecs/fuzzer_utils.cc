@@ -477,7 +477,8 @@ VideoFrame* MakeVideoFrame(ScriptState* script_state,
                             IGNORE_EXCEPTION_FOR_TESTING);
 }
 
-AudioData* MakeAudioData(const wc_fuzzer::AudioDataInit& proto) {
+AudioData* MakeAudioData(ScriptState* script_state,
+                         const wc_fuzzer::AudioDataInit& proto) {
   if (!proto.channels().size() ||
       proto.channels().size() > media::limits::kMaxChannels)
     return nullptr;
@@ -516,7 +517,7 @@ AudioData* MakeAudioData(const wc_fuzzer::AudioDataInit& proto) {
   init->setFormat(format);
   init->setData(MakeGarbageCollected<AllowSharedBufferSource>(buffer));
 
-  return AudioData::Create(init, IGNORE_EXCEPTION_FOR_TESTING);
+  return AudioData::Create(script_state, init, IGNORE_EXCEPTION_FOR_TESTING);
 }
 
 AudioDataCopyToOptions* MakeAudioDataCopyToOptions(

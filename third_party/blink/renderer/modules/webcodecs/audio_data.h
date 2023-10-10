@@ -22,13 +22,13 @@ class MODULES_EXPORT AudioData final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static AudioData* Create(AudioDataInit*, ExceptionState&);
+  static AudioData* Create(ScriptState*, AudioDataInit*, ExceptionState&);
 
   // Internal constructor for creating from media::AudioDecoder output.
   explicit AudioData(scoped_refptr<media::AudioBuffer>);
 
   // audio_data.idl implementation.
-  explicit AudioData(AudioDataInit*, ExceptionState&);
+  explicit AudioData(ScriptState*, AudioDataInit*, ExceptionState&);
 
   ~AudioData() final;
 

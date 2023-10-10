@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
@@ -104,12 +105,15 @@ media::SampleFormat BlinkFormatToMediaFormat(V8AudioSampleFormat blink_format) {
 }  // namespace
 
 // static
-AudioData* AudioData::Create(AudioDataInit* init,
+AudioData* AudioData::Create(ScriptState* script_state,
+                             AudioDataInit* init,
                              ExceptionState& exception_state) {
-  return MakeGarbageCollected<AudioData>(init, exception_state);
+  return MakeGarbageCollected<AudioData>(script_state, init, exception_state);
 }
 
-AudioData::AudioData(AudioDataInit* init, ExceptionState& exception_state)
+AudioData::AudioData(ScriptState* script_state,
+                     AudioDataInit* init,
+                     ExceptionState& exception_state)
     : format_(absl::nullopt), timestamp_(init->timestamp()) {
   media::SampleFormat media_format = BlinkFormatToMediaFormat(init->format());
 
@@ -144,15 +148,27 @@ AudioData::AudioData(AudioDataInit* init, ExceptionState& exception_state)
     return;
   }
 
-  auto data_wrapper = AsSpan<const uint8_t>(init->data());
-  if (!data_wrapper.data()) {
+  auto array_span = AsSpan<const uint8_t>(init->data());
+  if (!array_span.data()) {
     exception_state.ThrowTypeError("data is detached.");
     return;
   }
-  if (total_bytes > data_wrapper.size()) {
+  if (total_bytes > array_span.size()) {
     exception_state.ThrowTypeError(
         String::Format("data is too small: needs %u bytes, received %zu.",
-                       total_bytes, data_wrapper.size()));
+                       total_bytes, array_span.size()));
+    return;
+  }
+
+  // Try if we can transfer `init.data` into `buffer_contents`.
+  // We do to make the ctor behave in a spec compliant way regarding transfers,
+  // even though we copy the span contents later anyway.
+  // TODO(crbug.com/1446808) Modify `media::AudioBuffer` to allow moving
+  // `buffer_contents` into it without copying.
+  auto* isolate = script_state->GetIsolate();
+  auto buffer_contents = TransferArrayBufferForSpan(
+      init->transfer(), array_span, exception_state, isolate);
+  if (exception_state.HadException()) {
     return;
   }
 
@@ -171,7 +187,7 @@ AudioData::AudioData(AudioDataInit* init, ExceptionState& exception_state)
   std::vector<const uint8_t*> wrapped_data;
   if (media::IsInterleaved(media_format)) {
     // Interleaved data can directly added.
-    wrapped_data.push_back(data_wrapper.data());
+    wrapped_data.push_back(array_span.data());
   } else {
     // Planar data needs one pointer per channel.
     wrapped_data.resize(init->numberOfChannels());
@@ -181,7 +197,7 @@ AudioData::AudioData(AudioDataInit* init, ExceptionState& exception_state)
         media::SampleFormatToBytesPerChannel(media_format);
 
     const uint8_t* plane_start =
-        reinterpret_cast<const uint8_t*>(data_wrapper.data());
+        reinterpret_cast<const uint8_t*>(array_span.data());
 
     for (unsigned ch = 0; ch < init->numberOfChannels(); ++ch)
       wrapped_data[ch] = plane_start + ch * plane_size_in_bytes;

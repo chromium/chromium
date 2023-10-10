@@ -34,7 +34,7 @@ DEFINE_TEXT_PROTO_FUZZER(const wc_fuzzer::AudioDataCopyToCase& proto) {
       ToScriptStateForMainWorld(&page_holder->GetFrame());
   ScriptState::Scope scope(script_state);
 
-  AudioData* audio_data = MakeAudioData(proto.audio_data());
+  AudioData* audio_data = MakeAudioData(script_state, proto.audio_data());
   if (!audio_data)
     return;
 
