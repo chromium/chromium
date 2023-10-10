@@ -2528,198 +2528,137 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.EME.CdmStorageManager.DatabaseOpenError.Incognito"
+<histogram name="Media.EME.CdmStorageManager.DatabaseOpenError.{ProfileType}"
     enum="CdmStorageOpenError" expires_after="2024-08-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     This UMA logs overall error rates from opening the CdmStorageDatabase.
-    Recorded on every open from an Incognito profile.
+    Recorded on every open from an {ProfileType} profile.
   </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
 </histogram>
 
 <histogram
-    name="Media.EME.CdmStorageManager.DatabaseOpenError.Incognito.Migration"
+    name="Media.EME.CdmStorageManager.DatabaseOpenError.{ProfileType}.Migration"
     enum="CdmStorageOpenError" expires_after="2024-08-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     This UMA logs overall error rates from opening the CdmStorageDatabase.
-    Recorded on every open from an Incognito profile when
+    Recorded on every open from an {ProfileType} profile when
     'kCdmStorageDatabaseMigration' is enabled.
   </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
 </histogram>
 
-<histogram name="Media.EME.CdmStorageManager.DatabaseOpenError.NotIncognito"
-    enum="CdmStorageOpenError" expires_after="2024-08-11">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA logs overall error rates from opening the CdmStorageDatabase.
-    Recorded on every open from a non-Incognito profile.
-  </summary>
-</histogram>
-
-<histogram
-    name="Media.EME.CdmStorageManager.DatabaseOpenError.NotIncognito.Migration"
-    enum="CdmStorageOpenError" expires_after="2024-08-11">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA logs overall error rates from opening the CdmStorageDatabase.
-    Recorded on every open from a non-Incognito profile when
-    'kCdmStorageDatabaseMigration' is enabled.
-  </summary>
-</histogram>
-
-<histogram name="Media.EME.CdmStorageManager.DeleteDatabaseError.Incognito"
+<histogram name="Media.EME.CdmStorageManager.DeleteDatabaseError.{ProfileType}"
     enum="BooleanError" expires_after="2024-08-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     This UMA logs overall error rates from the DeleteDatabase function. Recorded
-    after every call of DeleteDatabase on Incognito profile.
+    after every call of DeleteDatabase on {ProfileType} profile.
   </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
 </histogram>
 
-<histogram name="Media.EME.CdmStorageManager.DeleteDatabaseError.NotIncognito"
-    enum="BooleanError" expires_after="2024-08-11">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA logs overall error rates from the DeleteDatabase function. Recorded
-    after every call of DeleteDatabase on non-Incognito profile.
-  </summary>
-</histogram>
-
-<histogram name="Media.EME.CdmStorageManager.DeleteFileError.Incognito"
+<histogram name="Media.EME.CdmStorageManager.DeleteFileError.{ProfileType}"
     enum="BooleanError" expires_after="2024-08-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     This UMA logs overall error rates from the DeleteFile function. Recorded
-    after every call of DeleteFile on Incognito profile.
+    after every call of DeleteFile on {ProfileType} profile.
   </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
 </histogram>
 
 <histogram
-    name="Media.EME.CdmStorageManager.DeleteFileError.Incognito.Migration"
+    name="Media.EME.CdmStorageManager.DeleteFileError.{ProfileType}.Migration"
     enum="BooleanError" expires_after="2024-08-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     This UMA logs overall error rates from the DeleteFile function. Recorded
-    after every call of DeleteFile on Incognito profile when
+    after every call of DeleteFile on {ProfileType} profile when
     'kCdmStorageDatabaseMigration' is enabled.
   </summary>
-</histogram>
-
-<histogram name="Media.EME.CdmStorageManager.DeleteFileError.NotIncognito"
-    enum="BooleanError" expires_after="2024-08-11">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA logs overall error rates from the DeleteFile function. Recorded
-    after every call of DeleteFile on non-Incognito profile.
-  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
 </histogram>
 
 <histogram
-    name="Media.EME.CdmStorageManager.DeleteFileError.NotIncognito.Migration"
-    enum="BooleanError" expires_after="2024-08-11">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA logs overall error rates from the DeleteFile function. Recorded
-    after every call of DeleteFile on non-Incognito profile when
-    'kCdmStorageDatabaseMigration' is enabled.
-  </summary>
-</histogram>
-
-<histogram
-    name="Media.EME.CdmStorageManager.DeleteForStorageKeyError.Incognito"
+    name="Media.EME.CdmStorageManager.DeleteForStorageKeyError.{ProfileType}"
     enum="BooleanError" expires_after="2024-08-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     This UMA logs overall error rates from the DeleteForStorageKey function.
-    Recorded after every call of DeleteForStorageKey on Incognito profile.
+    Recorded after every call of DeleteForStorageKey on {ProfileType} profile.
   </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
 </histogram>
 
-<histogram
-    name="Media.EME.CdmStorageManager.DeleteForStorageKeyError.NotIncognito"
-    enum="BooleanError" expires_after="2024-08-11">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA logs overall error rates from the DeleteForStorageKey function.
-    Recorded after every call of DeleteForStorageKey on non-Incognito profile.
-  </summary>
-</histogram>
-
-<histogram name="Media.EME.CdmStorageManager.ReadFileError.Incognito"
+<histogram name="Media.EME.CdmStorageManager.ReadFileError.{ProfileType}"
     enum="BooleanError" expires_after="2024-08-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     This UMA logs overall error rates from the ReadFile function. Recorded after
-    every call of ReadFile on Incognito profile.
+    every call of ReadFile on {ProfileType} profile.
   </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
 </histogram>
 
-<histogram name="Media.EME.CdmStorageManager.ReadFileError.NotIncognito"
-    enum="BooleanError" expires_after="2024-08-11">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA logs overall error rates from the ReadFile function. Recorded after
-    every call of ReadFile on non-Incognito profile.
-  </summary>
-</histogram>
-
-<histogram name="Media.EME.CdmStorageManager.WriteFileError.Incognito"
+<histogram name="Media.EME.CdmStorageManager.WriteFileError.{ProfileType}"
     enum="BooleanError" expires_after="2024-08-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     This UMA logs overall error rates from the WriteFile function. Recorded
-    after every call of WriteFile on Incognito profile.
+    after every call of WriteFile on {ProfileType} profile.
   </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
 </histogram>
 
 <histogram
-    name="Media.EME.CdmStorageManager.WriteFileError.Incognito.Migration"
+    name="Media.EME.CdmStorageManager.WriteFileError.{ProfileType}.Migration"
     enum="BooleanError" expires_after="2024-08-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     This UMA logs overall error rates from the WriteFile function. Recorded
-    after every call of WriteFile on Incognito profile when
+    after every call of WriteFile on {ProfileType} profile when
     'kCdmStorageDatabaseMigration' is enabled.
   </summary>
-</histogram>
-
-<histogram name="Media.EME.CdmStorageManager.WriteFileError.NotIncognito"
-    enum="BooleanError" expires_after="2024-08-11">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA logs overall error rates from the WriteFile function. Recorded
-    after every call of WriteFile on non-Incognito profile.
-  </summary>
-</histogram>
-
-<histogram
-    name="Media.EME.CdmStorageManager.WriteFileError.NotIncognito.Migration"
-    enum="BooleanError" expires_after="2024-08-11">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA logs overall error rates from the WriteFile function. Recorded
-    after every call of WriteFile on non-Incognito profile when
-    'kCdmStorageDatabaseMigration' is enabled.
-  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
 </histogram>
 
 <histogram name="Media.EME.CrosCdmType" enum="CrosCdmType"
