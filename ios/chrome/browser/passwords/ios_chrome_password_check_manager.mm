@@ -225,6 +225,10 @@ void IOSChromePasswordCheckManager::OnCredentialDone(
   }
 }
 
+void IOSChromePasswordCheckManager::OnBulkCheckServiceShutDown() {
+  observed_bulk_leak_check_service_.Reset();
+}
+
 void IOSChromePasswordCheckManager::OnWeakOrReuseCheckFinished() {
   last_completed_weak_or_reuse_check_ = base::Time::Now();
   NotifyPasswordCheckStatusChanged();
