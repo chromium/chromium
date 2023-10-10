@@ -1641,8 +1641,6 @@ class CORE_EXPORT Document : public ContainerNode,
   }
 
   void LayoutViewportWasResized();
-  void MarkViewportUnitsDirty();
-
   // dv*
   void DynamicViewportUnitsChanged();
 
