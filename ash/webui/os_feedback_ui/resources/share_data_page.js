@@ -498,19 +498,19 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
   /**
    * When the feedback app is launched from OOBE or the login screen, the
    * categoryTag is set to "Login".
-   * @returns {boolean} True if the categoryTag is Login.
-   * @private
+   * @returns {boolean} True if the categoryTag is not equal to Login.
+   * @protected
    */
-  isUserLoggedOut_() {
-    return this.feedbackContext && this.feedbackContext.categoryTag === 'Login';
+  isUserLoggedIn_() {
+    return this.feedbackContext?.categoryTag !== 'Login';
   }
 
   /** @private */
   setPrivacyNote_() {
-    if (this.isUserLoggedOut_()) {
-      this.setPrivacyNoteForLoggedOutUsers_();
-    } else {
+    if (this.isUserLoggedIn_()) {
       this.setPrivacyNoteForLoggedInUsers_();
+    } else {
+      this.setPrivacyNoteForLoggedOutUsers_();
     }
   }
 

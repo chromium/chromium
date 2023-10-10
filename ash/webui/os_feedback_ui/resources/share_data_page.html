@@ -247,7 +247,8 @@
           </button>
         </div>
         <!-- Attach a file -->
-        <div id="addFileContainer" class="card-frame">
+        <div id="addFileContainer" class="card-frame"
+            hidden$="[[!isUserLoggedIn_(feedbackContext)]]">
           <file-attachment></file-attachment>
         </div>
       </div>
