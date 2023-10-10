@@ -84,7 +84,7 @@ export class GuestOsController {
       return navigationModelItem;
     });
 
-    if (!util.isFilesAppExperimental()) {
+    if (!util.isNewDirectoryTreeEnabled()) {
       this.directoryTree_.dataModel.guestOsPlaceholders =
           newGuestOsPlaceholders;
       // Redraw the tree to ensure any newly added/removed roots are

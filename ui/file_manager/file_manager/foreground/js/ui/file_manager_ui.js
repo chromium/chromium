@@ -618,7 +618,7 @@ export class FileManagerUI {
    * @suppress {checkTypes} closure can't cast Element to XfTree.
    */
   initDirectoryTree(directoryTree) {
-    if (util.isFilesAppExperimental()) {
+    if (util.isNewDirectoryTreeEnabled()) {
       this.directoryTreeContainer =
           /** @type {!DirectoryTreeContainer} */ (directoryTree);
       this.directoryTree =
@@ -701,7 +701,7 @@ export class FileManagerUI {
         ListContainer.ListType.UNINITIALIZED) {
       this.listContainer.currentView.relayout();
     }
-    if (!util.isFilesAppExperimental() && this.directoryTree) {
+    if (!util.isNewDirectoryTreeEnabled() && this.directoryTree) {
       this.directoryTree.relayout();
     }
   }

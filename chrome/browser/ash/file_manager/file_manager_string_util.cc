@@ -1360,6 +1360,9 @@ void AddFileManagerFeatureStrings(const std::string& locale,
 
   dict->Set("CROS_COMPONENTS", chromeos::features::IsCrosComponentsEnabled());
 
+  dict->Set("NEW_DIRECTORY_TREE", base::FeatureList::IsEnabled(
+                                      ash::features::kFilesNewDirectoryTree));
+
   if (base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy) &&
       base::FeatureList::IsEnabled(
           features::kDataLeakPreventionFilesRestriction)) {

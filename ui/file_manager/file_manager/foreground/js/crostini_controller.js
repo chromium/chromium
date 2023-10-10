@@ -69,7 +69,7 @@ export class CrostiniController {
       crostiniNavigationModelItem = null;
       getStore().dispatch(removeUiEntry({key: crostiniPlaceHolderKey}));
     }
-    if (!util.isFilesAppExperimental()) {
+    if (!util.isNewDirectoryTreeEnabled()) {
       this.directoryTree_.dataModel.linuxFilesItem =
           crostiniNavigationModelItem;
       // Redraw the tree to ensure 'Linux files' is added/removed.

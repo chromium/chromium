@@ -182,7 +182,7 @@ export class DirectoryTreeNamingController {
 
       // Put the new name in the .label element before detaching the
       // <input> to prevent showing the old name.
-      if (util.isFilesAppExperimental()) {
+      if (util.isNewDirectoryTreeEnabled()) {
         this.currentDirectoryItem_.label = newName;
       } else {
         this.getLabelElement_().textContent = newName;
@@ -198,7 +198,7 @@ export class DirectoryTreeNamingController {
         return;
       }
 
-      if (!util.isFilesAppExperimental()) {
+      if (!util.isNewDirectoryTreeEnabled()) {
         this.currentDirectoryItem_.entry = newEntry;
         this.currentDirectoryItem_.updateSubDirectories(/* recursive= */ true);
       }

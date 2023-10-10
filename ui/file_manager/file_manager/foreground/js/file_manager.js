@@ -1257,7 +1257,7 @@ export class FileManager extends EventTarget {
     const directoryTree = /** @type {DirectoryTree} */
         (this.dialogDom_.querySelector('#directory-tree'));
 
-    if (util.isFilesAppExperimental()) {
+    if (util.isNewDirectoryTreeEnabled()) {
       const treeContainer = directoryTree.parentElement;
       directoryTree.remove();
       const directoryTreeContainer = new DirectoryTreeContainer(
@@ -1572,7 +1572,7 @@ export class FileManager extends EventTarget {
 
     // If there is no target select MyFiles by default.
     if (!nextCurrentDirEntry) {
-      if (util.isFilesAppExperimental()) {
+      if (util.isNewDirectoryTreeEnabled()) {
         const myFiles = getMyFiles(this.store_.getState());
         nextCurrentDirEntry = myFiles.myFilesEntry;
       } else if (this.ui_.directoryTree.dataModel.myFilesModel_) {
@@ -1759,7 +1759,7 @@ export class FileManager extends EventTarget {
 
     this.updateOfficePrefs_(prefs);
 
-    if (redraw && !util.isFilesAppExperimental()) {
+    if (redraw && !util.isNewDirectoryTreeEnabled()) {
       this.ui_.directoryTree.redraw(false);
     }
   }
@@ -1829,14 +1829,14 @@ export class FileManager extends EventTarget {
             new TrashRootEntry());
       }
       this.store_.dispatch(addUiEntry({entry: this.fakeTrashItem_.entry}));
-      if (!util.isFilesAppExperimental()) {
+      if (!util.isNewDirectoryTreeEnabled()) {
         this.ui_.directoryTree.dataModel.fakeTrashItem = this.fakeTrashItem_;
       }
       return;
     }
 
     this.store_.dispatch(removeUiEntry({key: trashRootKey}));
-    if (!util.isFilesAppExperimental()) {
+    if (!util.isNewDirectoryTreeEnabled()) {
       this.ui_.directoryTree.dataModel.fakeTrashItem = null;
     }
     this.navigateAwayFromDisabledRoot_(this.fakeTrashItem_);
@@ -1859,12 +1859,12 @@ export class FileManager extends EventTarget {
         this.fakeDriveItem_.disabled = this.volumeManager_.isDisabled(
             VolumeManagerCommon.VolumeType.DRIVE);
       }
-      if (!util.isFilesAppExperimental()) {
+      if (!util.isNewDirectoryTreeEnabled()) {
         this.ui_.directoryTree.dataModel.fakeDriveItem = this.fakeDriveItem_;
       }
       return;
     }
-    if (!util.isFilesAppExperimental()) {
+    if (!util.isNewDirectoryTreeEnabled()) {
       this.ui_.directoryTree.dataModel.fakeDriveItem = null;
     }
     this.navigateAwayFromDisabledRoot_(this.fakeDriveItem_);

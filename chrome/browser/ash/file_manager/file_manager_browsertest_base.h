@@ -204,6 +204,9 @@ class FileManagerBrowserTestBase
     // Whether to enable jellybean UI elements.
     bool enable_cros_components = false;
 
+    // Whether to enable new directory tree implementation.
+    bool enable_new_directory_tree = false;
+
     // Feature IDs associated for mapping test cases and features.
     std::vector<std::string> feature_ids;
   };

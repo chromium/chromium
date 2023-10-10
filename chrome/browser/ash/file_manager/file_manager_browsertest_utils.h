@@ -58,6 +58,8 @@ struct TestCase {
 
   TestCase& EnableSinglePartitionFormat();
 
+  TestCase& NewDirectoryTree();
+
   // Show the startup browser. Some tests invoke the file picker dialog during
   // the test. Requesting a file picker from a background page is forbidden by
   // the apps platform, and it's a bug that these tests do so.

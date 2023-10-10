@@ -76,7 +76,7 @@ export class ActionsController {
 
     // Attach listeners to non-user events which will only update the in-memory
     // ActionsModel.
-    if (util.isFilesAppExperimental()) {
+    if (util.isNewDirectoryTreeEnabled()) {
       this.ui_.directoryTree.addEventListener(
           XfTree.events.TREE_SELECTION_CHANGED,
           this.onNavigationListSelectionChanged_.bind(this), true);

@@ -505,32 +505,32 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("checkNewFolderEnabledInsideReadWriteFolder")
-            .FilesExperimental(),
+            .NewDirectoryTree(),
         TestCase("checkNewFolderDisabledInsideReadOnlyFolder")
-            .FilesExperimental(),
-        TestCase("checkPasteEnabledInsideReadWriteFolder").FilesExperimental(),
-        TestCase("checkPasteDisabledInsideReadOnlyFolder").FilesExperimental(),
-        TestCase("checkDownloadsContextMenu").FilesExperimental(),
-        TestCase("checkPlayFilesContextMenu").FilesExperimental(),
-        TestCase("checkLinuxFilesContextMenu").FilesExperimental(),
+            .NewDirectoryTree(),
+        TestCase("checkPasteEnabledInsideReadWriteFolder").NewDirectoryTree(),
+        TestCase("checkPasteDisabledInsideReadOnlyFolder").NewDirectoryTree(),
+        TestCase("checkDownloadsContextMenu").NewDirectoryTree(),
+        TestCase("checkPlayFilesContextMenu").NewDirectoryTree(),
+        TestCase("checkLinuxFilesContextMenu").NewDirectoryTree(),
         TestCase("checkDeleteDisabledInDocProvider")
             .EnableGenericDocumentsProvider()
-            .FilesExperimental(),
+            .NewDirectoryTree(),
         TestCase("checkDeleteEnabledInDocProvider")
             .EnableGenericDocumentsProvider()
-            .FilesExperimental(),
+            .NewDirectoryTree(),
         TestCase("checkRenameDisabledInDocProvider")
             .EnableGenericDocumentsProvider()
-            .FilesExperimental(),
+            .NewDirectoryTree(),
         TestCase("checkRenameEnabledInDocProvider")
             .EnableGenericDocumentsProvider()
-            .FilesExperimental(),
-        TestCase("checkDeleteEnabledInRecents").FilesExperimental(),
-        TestCase("checkGoToFileLocationEnabledInRecents").FilesExperimental(),
+            .NewDirectoryTree(),
+        TestCase("checkDeleteEnabledInRecents").NewDirectoryTree(),
+        TestCase("checkGoToFileLocationEnabledInRecents").NewDirectoryTree(),
         TestCase("checkGoToFileLocationDisabledInMultipleSelection")
-            .FilesExperimental(),
-        TestCase("checkEncryptedCrossVolumeMoveDisabled").FilesExperimental(),
-        TestCase("checkEncryptedMoveEnabled").FilesExperimental(),
+            .NewDirectoryTree(),
+        TestCase("checkEncryptedCrossVolumeMoveDisabled").NewDirectoryTree(),
+        TestCase("checkEncryptedMoveEnabled").NewDirectoryTree(),
         TestCase("checkDeleteEnabledForReadWriteFile"),
         TestCase("checkDeleteDisabledForReadOnlyDocument"),
         TestCase("checkDeleteDisabledForReadOnlyFile"),
@@ -726,21 +726,21 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DirectoryTree, /* directory_tree.js */
     FilesAppBrowserTest,
     ::testing::Values(
-        TestCase("directoryTreeActiveDirectory").FilesExperimental(),
-        TestCase("directoryTreeSelectedDirectory").FilesExperimental(),
-        TestCase("directoryTreeHorizontalScroll").FilesExperimental(),
-        TestCase("directoryTreeExpandHorizontalScroll").FilesExperimental(),
-        TestCase("directoryTreeExpandHorizontalScrollRTL").FilesExperimental(),
-        TestCase("directoryTreeVerticalScroll").FilesExperimental(),
-        TestCase("directoryTreeExpandFolder").FilesExperimental(),
+        TestCase("directoryTreeActiveDirectory").NewDirectoryTree(),
+        TestCase("directoryTreeSelectedDirectory").NewDirectoryTree(),
+        TestCase("directoryTreeHorizontalScroll").NewDirectoryTree(),
+        TestCase("directoryTreeExpandHorizontalScroll").NewDirectoryTree(),
+        TestCase("directoryTreeExpandHorizontalScrollRTL").NewDirectoryTree(),
+        TestCase("directoryTreeVerticalScroll").NewDirectoryTree(),
+        TestCase("directoryTreeExpandFolder").NewDirectoryTree(),
         TestCase("directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOff")
-            .FilesExperimental(),
+            .NewDirectoryTree(),
         TestCase("directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOn")
-            .FilesExperimental(),
+            .NewDirectoryTree(),
         TestCase("directoryTreeExpandFolderOnNonDelayExpansionVolume")
-            .FilesExperimental(),
+            .NewDirectoryTree(),
         TestCase("directoryTreeExpandFolderOnDelayExpansionVolume")
-            .FilesExperimental(),
+            .NewDirectoryTree(),
         TestCase("directoryTreeActiveDirectory"),
         TestCase("directoryTreeSelectedDirectory"),
         TestCase("directoryTreeHorizontalScroll"),
@@ -1238,8 +1238,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     CopyBetweenWindows, /* copy_between_windows.js */
     FilesAppBrowserTest,
     ::testing::Values(
-        TestCase("copyBetweenWindowsLocalToUsb").FilesExperimental(),
-        TestCase("copyBetweenWindowsUsbToLocal").FilesExperimental(),
+        TestCase("copyBetweenWindowsLocalToUsb").NewDirectoryTree(),
+        TestCase("copyBetweenWindowsUsbToLocal").NewDirectoryTree(),
         TestCase("copyBetweenWindowsLocalToDrive"),
         TestCase("copyBetweenWindowsLocalToUsb"),
         // TODO(b/189173190): Enable
@@ -1349,10 +1349,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Crostini, /* crostini.js */
     FilesAppBrowserTest,
     ::testing::Values(
-        TestCase("mountCrostini").FilesExperimental(),
-        TestCase("enableDisableCrostini").FilesExperimental(),
+        TestCase("mountCrostini").NewDirectoryTree(),
+        TestCase("enableDisableCrostini").NewDirectoryTree(),
         TestCase("sharePathWithCrostini")
-            .FilesExperimental()
+            .NewDirectoryTree()
             .FeatureIds({"screenplay-122c00f8-9842-4666-8ca0-b6bf47454551"}),
         TestCase("mountCrostini"),
         TestCase("enableDisableCrostini"),
@@ -1515,20 +1515,20 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Breadcrumbs, /* breadcrumbs.js */
     FilesAppBrowserTest,
     ::testing::Values(
-        TestCase("breadcrumbsNavigate").FilesExperimental(),
-        TestCase("breadcrumbsDownloadsTranslation").FilesExperimental(),
-        TestCase("breadcrumbsRenderShortPath").FilesExperimental(),
-        TestCase("breadcrumbsEliderButtonNotExist").FilesExperimental(),
-        TestCase("breadcrumbsRenderLongPath").FilesExperimental(),
-        TestCase("breadcrumbsMainButtonClick").FilesExperimental(),
-        TestCase("breadcrumbsMainButtonEnterKey").FilesExperimental(),
-        TestCase("breadcrumbsEliderButtonClick").FilesExperimental(),
-        TestCase("breadcrumbsEliderButtonKeyboard").FilesExperimental(),
-        TestCase("breadcrumbsEliderMenuClickOutside").FilesExperimental(),
-        TestCase("breadcrumbsEliderMenuItemClick").FilesExperimental(),
-        TestCase("breadcrumbsEliderMenuItemTabLeft").FilesExperimental(),
-        TestCase("breadcrumbNavigateBackToSharedWithMe").FilesExperimental(),
-        TestCase("breadcrumbsEliderMenuItemTabRight").FilesExperimental(),
+        TestCase("breadcrumbsNavigate").NewDirectoryTree(),
+        TestCase("breadcrumbsDownloadsTranslation").NewDirectoryTree(),
+        TestCase("breadcrumbsRenderShortPath").NewDirectoryTree(),
+        TestCase("breadcrumbsEliderButtonNotExist").NewDirectoryTree(),
+        TestCase("breadcrumbsRenderLongPath").NewDirectoryTree(),
+        TestCase("breadcrumbsMainButtonClick").NewDirectoryTree(),
+        TestCase("breadcrumbsMainButtonEnterKey").NewDirectoryTree(),
+        TestCase("breadcrumbsEliderButtonClick").NewDirectoryTree(),
+        TestCase("breadcrumbsEliderButtonKeyboard").NewDirectoryTree(),
+        TestCase("breadcrumbsEliderMenuClickOutside").NewDirectoryTree(),
+        TestCase("breadcrumbsEliderMenuItemClick").NewDirectoryTree(),
+        TestCase("breadcrumbsEliderMenuItemTabLeft").NewDirectoryTree(),
+        TestCase("breadcrumbNavigateBackToSharedWithMe").NewDirectoryTree(),
+        TestCase("breadcrumbsEliderMenuItemTabRight").NewDirectoryTree(),
         TestCase("breadcrumbsNavigate"),
         TestCase("breadcrumbsDownloadsTranslation"),
         TestCase("breadcrumbsRenderShortPath"),
@@ -1620,11 +1620,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         TestCase("androidPhotosBanner")
             .EnablePhotosDocumentsProvider()
-            .FilesExperimental(),
+            .NewDirectoryTree(),
         TestCase("androidPhotosBanner")
             .EnablePhotosDocumentsProvider()
             .EnableCrosComponents()
-            .FilesExperimental(),
+            .NewDirectoryTree(),
         TestCase("androidPhotosBanner").EnablePhotosDocumentsProvider(),
         TestCase("androidPhotosBanner")
             .EnablePhotosDocumentsProvider()

@@ -93,6 +93,11 @@ TestCase& TestCase::EnableSinglePartitionFormat() {
   return *this;
 }
 
+TestCase& TestCase::NewDirectoryTree() {
+  options.enable_new_directory_tree = true;
+  return *this;
+}
+
 // Show the startup browser. Some tests invoke the file picker dialog during
 // the test. Requesting a file picker from a background page is forbidden by
 // the apps platform, and it's a bug that these tests do so.
@@ -292,6 +297,10 @@ std::string TestCase::GetFullName() const {
 
   if (options.enable_cros_components) {
     full_name += "_CrosComponents";
+  }
+
+  if (options.enable_new_directory_tree) {
+    full_name += "_NewDirectoryTree";
   }
 
   switch (options.device_mode) {

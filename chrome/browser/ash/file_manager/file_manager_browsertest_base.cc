@@ -2393,6 +2393,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     }
   }
 
+  if (options.enable_new_directory_tree) {
+    enabled_features.push_back(ash::features::kFilesNewDirectoryTree);
+  } else {
+    disabled_features.push_back(ash::features::kFilesNewDirectoryTree);
+  }
+
   // This is destroyed in |TearDown()|. We cannot initialize this in the
   // constructor due to this feature values' above dependence on virtual
   // method calls, but by convention subclasses of this fixture may initialize
@@ -3688,6 +3694,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "isFilesExperimentalEnabled") {
     *output = options.files_experimental ? "true" : "false";
+    return;
+  }
+
+  if (name == "isNewDirectoryTreeEnabled") {
+    *output = options.enable_new_directory_tree ? "true" : "false";
     return;
   }
 

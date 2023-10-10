@@ -43,7 +43,7 @@ export class DirectoryTreePageObject {
    */
   static async create(appId, remoteCall) {
     const useNewTree =
-        await sendTestMessage({name: 'isFilesExperimentalEnabled'}) === 'true';
+        await sendTestMessage({name: 'isNewDirectoryTreeEnabled'}) === 'true';
     const directoryTree =
         new DirectoryTreePageObject(appId, remoteCall, useNewTree);
     remoteCall.waitForElement(appId, directoryTree.rootSelector);

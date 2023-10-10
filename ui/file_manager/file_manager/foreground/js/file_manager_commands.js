@@ -133,7 +133,7 @@ CommandUtil.getCommandEntries = (fileManager, element) => {
 
   // The event target could still be a descendant of a DirectoryItem element
   // (e.g. the eject button).
-  if (util.isFilesAppExperimental()) {
+  if (util.isNewDirectoryTreeEnabled()) {
     // Handle eject button in the new directory tree.
     if (element.classList.contains('root-eject')) {
       const treeItem = element.closest('xf-tree-item');
@@ -276,7 +276,7 @@ CommandUtil.forceDefaultHandler = (node, commandId) => {
 CommandUtil.createVolumeSwitchCommand = index =>
     new (class extends FilesCommand {
       execute(event, fileManager) {
-        if (util.isFilesAppExperimental()) {
+        if (util.isNewDirectoryTreeEnabled()) {
           const items = fileManager.ui.directoryTree.items;
           if (items[index - 1]?.entry) {
             getStore().dispatch(
@@ -1023,7 +1023,7 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
 
                 // Select new directory and start rename operation.
                 if (executedFromDirectoryTree) {
-                  if (util.isFilesAppExperimental()) {
+                  if (util.isNewDirectoryTreeEnabled()) {
                     // The above `targetDirectory.getDirectory` call will create
                     // a new directory, the new directory's file watcher handler
                     // will re-read the parent directory and the new tree item
