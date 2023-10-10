@@ -42,6 +42,7 @@ class TrackingProtectionSettings
 
   // From TrackingProtectionOnboarding::Observer
   void OnTrackingProtectionOnboarded() override;
+  void OnTrackingProtectionOffboarded() override;
 
  private:
   void OnEnterpriseControlForPrefsChanged();

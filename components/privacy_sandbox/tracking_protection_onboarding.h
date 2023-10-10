@@ -75,6 +75,9 @@ class TrackingProtectionOnboarding : public KeyedService {
   // defined above.
   OnboardingStatus GetOnboardingStatus() const;
 
+  // Returns whether the profile has been offboarded.
+  bool IsOffboarded() const;
+
   // To be Called by UI code when the user has been shown the notice.
   void NoticeShown();
 

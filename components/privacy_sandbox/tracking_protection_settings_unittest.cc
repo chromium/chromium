@@ -79,7 +79,7 @@ TEST_F(TrackingProtectionSettingsTest, ReturnsTrackingProtection3pcdStatus) {
 }
 
 TEST_F(TrackingProtectionSettingsTest,
-       SetsTrackingProtection3pcdStatusAfterOnboardingAndCallsObservers) {
+       SetsTrackingProtection3pcdStatusUsingOnboardingService) {
   MockTrackingProtectionSettingsObserver observer;
   tracking_protection_settings()->AddObserver(&observer);
 
@@ -91,6 +91,14 @@ TEST_F(TrackingProtectionSettingsTest,
   tracking_protection_settings()->OnTrackingProtectionOnboarded();
   testing::Mock::VerifyAndClearExpectations(&observer);
   EXPECT_TRUE(
+      tracking_protection_settings()->IsTrackingProtection3pcdEnabled());
+
+  EXPECT_CALL(observer, OnBlockAllThirdPartyCookiesChanged());
+  EXPECT_CALL(observer, OnTrackingProtection3pcdChanged());
+
+  tracking_protection_settings()->OnTrackingProtectionOffboarded();
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_FALSE(
       tracking_protection_settings()->IsTrackingProtection3pcdEnabled());
 }
 

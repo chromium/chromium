@@ -14,7 +14,6 @@
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 
 namespace privacy_sandbox {
-
 namespace {
 
 using ::privacy_sandbox::tracking_protection::
@@ -189,6 +188,10 @@ bool TrackingProtectionOnboarding::ShouldShowOnboardingNotice() {
       return !pref_service_->GetBoolean(
           prefs::kTrackingProtectionOnboardingAcked);
   }
+}
+
+bool TrackingProtectionOnboarding::IsOffboarded() const {
+  return GetOnboardingStatus() == OnboardingStatus::kOffboarded;
 }
 
 TrackingProtectionOnboarding::OnboardingStatus
