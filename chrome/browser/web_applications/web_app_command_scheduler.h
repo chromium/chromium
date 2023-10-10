@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/commands/uninstall_all_user_installed_web_apps_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/check_isolated_web_app_bundle_installability_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/jobs/uninstall/uninstall_job.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -52,6 +53,7 @@ namespace web_app {
 struct IsolatedWebAppApplyUpdateCommandError;
 struct IsolatedWebAppUpdatePrepareAndStoreCommandError;
 class IsolatedWebAppUrlInfo;
+class SignedWebBundleMetadata;
 class WebApp;
 struct WebAppInstallInfo;
 class WebAppProvider;
@@ -215,6 +217,15 @@ class WebAppCommandScheduler {
       base::OnceCallback<
           void(base::expected<void, IsolatedWebAppApplyUpdateCommandError>)>
           callback,
+      const base::Location& call_location = FROM_HERE);
+
+  // Given the |bundle_metadata| of a Signed Web Bundle, schedules a command to
+  // check the installability of the bundle.
+  virtual void CheckIsolatedWebAppBundleInstallability(
+      const SignedWebBundleMetadata& bundle_metadata,
+      base::OnceCallback<void(CheckIsolatedWebAppBundleInstallabilityCommand::
+                                  InstallabilityCheckResult,
+                              absl::optional<base::Version>)> callback,
       const base::Location& call_location = FROM_HERE);
 
   // Computes the browsing data size of all installed Isolated Web Apps.

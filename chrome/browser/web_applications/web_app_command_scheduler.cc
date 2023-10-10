@@ -40,6 +40,7 @@
 #include "chrome/browser/web_applications/commands/update_file_handler_command.h"
 #include "chrome/browser/web_applications/commands/update_protocol_handler_approval_command.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/check_isolated_web_app_bundle_installability_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/get_controlled_frame_partition_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/get_isolated_web_app_browsing_data_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
@@ -47,6 +48,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_prepare_and_store_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_url_job.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
@@ -430,6 +432,31 @@ void WebAppCommandScheduler::ApplyPendingIsolatedWebAppUpdate(
               url_info, provider_->web_contents_manager().CreateDataRetriever(),
               IsolatedWebAppInstallCommandHelper::
                   CreateDefaultResponseReaderFactory(*profile_->GetPrefs()))),
+      call_location);
+}
+
+// Given the |bundle_metadata| of a Signed Web Bundle, schedules a command to
+// check the installability of the bundle.
+void WebAppCommandScheduler::CheckIsolatedWebAppBundleInstallability(
+    const SignedWebBundleMetadata& bundle_metadata,
+    base::OnceCallback<void(CheckIsolatedWebAppBundleInstallabilityCommand::
+                                InstallabilityCheckResult,
+                            absl::optional<base::Version>)> callback,
+    const base::Location& call_location) {
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       CheckIsolatedWebAppBundleInstallabilityCommand::
+                           InstallabilityCheckResult::kShutdown,
+                       /*installed_version=*/
+                       absl::nullopt));
+    return;
+  }
+
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<CheckIsolatedWebAppBundleInstallabilityCommand>(
+          &profile_.get(), bundle_metadata, std::move(callback)),
       call_location);
 }
 
