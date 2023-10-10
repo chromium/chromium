@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <array>
 
-namespace Windows {
+namespace display::test {
 
 // Bytes 38-53 of an EDID (v1.4) blob contains timing information as a list of 8
 // 2-byte structures. The following structure represents a single record which
@@ -62,6 +62,6 @@ class Edid {
   std::array<unsigned char, kBlockSize> edidBlock;
 };
 
-}  // namespace Windows
+}  // namespace display::test
 
 #endif  // THIRD_PARTY_WIN_VIRTUAL_DISPLAY_DRIVER_EDID_H_

@@ -2,7 +2,7 @@
 
 #include "Direct3DDevice.h"
 
-namespace Windows {
+namespace display::test {
 Direct3DDevice::Direct3DDevice(LUID AdapterLuid) : AdapterLuid(AdapterLuid) {}
 
 Direct3DDevice::Direct3DDevice() {
@@ -37,4 +37,4 @@ HRESULT Direct3DDevice::Init() {
 
   return S_OK;
 }
-}  // namespace Windows
+}  // namespace display::test

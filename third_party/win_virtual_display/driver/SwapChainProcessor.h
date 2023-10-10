@@ -27,7 +27,7 @@ typedef HandleT<HandleTraits::HANDLENullTraits> Thread;
 }  // namespace WRL
 }  // namespace Microsoft
 
-namespace Windows {
+namespace display::test {
 /// <summary>
 /// Manages a thread that consumes buffers from an indirect display swap-chain
 /// object.
@@ -35,7 +35,7 @@ namespace Windows {
 class SwapChainProcessor {
  public:
   SwapChainProcessor(IDDCX_SWAPCHAIN hSwapChain,
-                     std::unique_ptr<Windows::Direct3DDevice> Device,
+                     std::unique_ptr<display::test::Direct3DDevice> Device,
                      HANDLE NewFrameEvent);
   ~SwapChainProcessor();
 
@@ -46,11 +46,11 @@ class SwapChainProcessor {
   void RunCore();
 
   IDDCX_SWAPCHAIN m_hSwapChain;
-  std::unique_ptr<Windows::Direct3DDevice> m_Device;
+  std::unique_ptr<display::test::Direct3DDevice> m_Device;
   HANDLE m_hAvailableBufferEvent;
   Microsoft::WRL::Wrappers::Thread m_hThread;
   Microsoft::WRL::Wrappers::Event m_hTerminateEvent;
 };
-}  // namespace Windows
+}  // namespace display::test
 
 #endif  // THIRD_PARTY_WIN_VIRTUAL_DISPLAY_DRIVER_SWAPCHAINPROCESSOR_H_

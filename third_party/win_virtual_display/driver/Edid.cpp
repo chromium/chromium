@@ -3,8 +3,7 @@
 #include "Edid.h"
 #include <cassert>
 
-namespace Windows {
-
+namespace display::test {
 bool EdidTimingEntry::SetMode(unsigned short width,
                               unsigned short height,
                               unsigned char freq) {
@@ -73,4 +72,4 @@ void Edid::UpdateChecksum() {
   assert((sum + edidBlock[edidBlock.size() - 1]) % 256 == 0);
 }
 
-}  // namespace Windows
+}  // namespace display::test

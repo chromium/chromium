@@ -2,7 +2,7 @@
 
 #include "SwapChainProcessor.h"
 
-namespace Windows {
+namespace display::test {
 
 SwapChainProcessor::SwapChainProcessor(IDDCX_SWAPCHAIN hSwapChain,
                                        std::unique_ptr<Direct3DDevice> Device,
@@ -143,4 +143,4 @@ void SwapChainProcessor::RunCore() {
     }
   }
 }
-}  // namespace Windows
+}  // namespace display::test

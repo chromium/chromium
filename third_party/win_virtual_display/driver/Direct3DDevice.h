@@ -15,7 +15,7 @@
 #include <iddcx.h>
 #include <wrl.h>
 
-namespace Windows {
+namespace display::test {
 // Manages the creation and lifetime of a Direct3D render device.
 struct Direct3DDevice {
   Direct3DDevice(LUID AdapterLuid);
@@ -28,6 +28,6 @@ struct Direct3DDevice {
   Microsoft::WRL::ComPtr<ID3D11Device> Device;
   Microsoft::WRL::ComPtr<ID3D11DeviceContext> DeviceContext;
 };
-}  // namespace Windows
+}  // namespace display::test
 
 #endif  // THIRD_PARTY_WIN_VIRTUAL_DISPLAY_DRIVER_DIRECT3DDEVICE_H_

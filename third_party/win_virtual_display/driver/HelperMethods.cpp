@@ -2,7 +2,7 @@
 
 #include "HelperMethods.h"
 
-namespace Windows {
+namespace display::test {
 namespace Methods {
 inline void FillSignalInfo(DISPLAYCONFIG_VIDEO_SIGNAL_INFO& Mode,
                            DWORD Width,
@@ -53,4 +53,4 @@ IDDCX_TARGET_MODE CreateIddCxTargetMode(DWORD Width,
   return Mode;
 }
 }  // namespace Methods
-}  // namespace Windows
+}  // namespace display::test

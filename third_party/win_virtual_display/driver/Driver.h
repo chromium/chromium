@@ -15,7 +15,7 @@
 #include "SwapChainProcessor.h"
 #include "Trace.h"
 
-namespace Windows {
+namespace display::test {
 /// <summary>
 /// Provides a sample implementation of an indirect display driver.
 /// </summary>
@@ -52,6 +52,6 @@ class IndirectMonitorContext {
   IDDCX_MONITOR m_Monitor;
   std::unique_ptr<SwapChainProcessor> m_ProcessingThread;
 };
-}  // namespace Windows
+}  // namespace display::test
 
 #endif  // THIRD_PARTY_WIN_VIRTUAL_DISPLAY_DRIVER_DRIVER_H_

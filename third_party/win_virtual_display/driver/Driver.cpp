@@ -38,7 +38,7 @@ EVT_IDD_CX_MONITOR_ASSIGN_SWAPCHAIN IddSampleMonitorAssignSwapChain;
 EVT_IDD_CX_MONITOR_UNASSIGN_SWAPCHAIN IddSampleMonitorUnassignSwapChain;
 
 struct IndirectDeviceContextWrapper {
-  Windows::IndirectDeviceContext* pContext;
+  display::test::IndirectDeviceContext* pContext;
 
   void Cleanup() {
     delete pContext;
@@ -47,7 +47,7 @@ struct IndirectDeviceContextWrapper {
 };
 
 struct IndirectMonitorContextWrapper {
-  Windows::IndirectMonitorContext* pContext;
+  display::test::IndirectMonitorContext* pContext;
 
   void Cleanup() {
     delete pContext;
@@ -155,7 +155,7 @@ IddSampleDeviceAdd(WDFDRIVER Driver, PWDFDEVICE_INIT pDeviceInit) {
 
   // Create a new device context object and attach it to the WDF device object
   auto* pContext = WdfObjectGet_IndirectDeviceContextWrapper(Device);
-  pContext->pContext = new Windows::IndirectDeviceContext(Device);
+  pContext->pContext = new display::test::IndirectDeviceContext(Device);
 
   // Read the properties structure sent from the client code that created
   // the software device.
@@ -180,9 +180,9 @@ IddSampleDeviceAdd(WDFDRIVER Driver, PWDFDEVICE_INIT pDeviceInit) {
 
   for (int i = 0; i < driver_properties.monitor_count; i++) {
     TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER, "Checking for display #%d", i);
-    Windows::IndirectSampleMonitor indirect_sample_monitor;
+    display::test::IndirectSampleMonitor indirect_sample_monitor;
     auto mode = driver_properties.requested_modes[i];
-    Windows::Edid edid(indirect_sample_monitor.pEdidBlock.data());
+    display::test::Edid edid(indirect_sample_monitor.pEdidBlock.data());
     bool success =
         edid.GetTimingEntry(0)->SetMode(mode.width, mode.height, mode.vSync);
     if (!success) {
@@ -218,7 +218,7 @@ IddSampleDeviceD0Entry(WDFDEVICE Device, WDF_POWER_DEVICE_STATE PreviousState) {
 
 #pragma region IndirectContext
 
-namespace Windows {
+namespace display::test {
 IndirectDeviceContext::IndirectDeviceContext(_In_ WDFDEVICE WdfDevice)
     : m_WdfDevice(WdfDevice) {
   m_Adapter = {};
@@ -321,7 +321,7 @@ void IndirectDeviceContext::FinishInit(UINT ConnectorIndex) {
   TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER, "ConnectorIndex: %d",
               ConnectorIndex);
 
-  Windows::Edid edid1(sample_monitors[ConnectorIndex].pEdidBlock.data());
+  display::test::Edid edid1(sample_monitors[ConnectorIndex].pEdidBlock.data());
   TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER,
               "Width (Modified EDID) (Inside FinishInit): %ld",
               edid1.GetTimingEntry(0)->GetWidth());
@@ -395,7 +395,7 @@ void IndirectMonitorContext::UnassignSwapChain() {
   // Stop processing the last swap-chain
   m_ProcessingThread.reset();
 }
-}  // namespace Windows
+}  // namespace display::test
 
 #pragma endregion
 
@@ -451,10 +451,10 @@ _Use_decl_annotations_ NTSTATUS IddSampleParseMonitorDescription(
               "Inside IddSampleParseMonitorDescription");
 
   pOutArgs->MonitorModeBufferOutputCount =
-      Windows::IndirectSampleMonitor::kModeListLength;
+      display::test::IndirectSampleMonitor::kModeListLength;
 
   if (pInArgs->MonitorModeBufferInputCount <
-      Windows::IndirectSampleMonitor::kModeListLength) {
+      display::test::IndirectSampleMonitor::kModeListLength) {
     // Return success if there was no buffer, since the caller was only asking
     // for a count of modes
     return (pInArgs->MonitorModeBufferInputCount > 0) ? STATUS_BUFFER_TOO_SMALL
@@ -464,11 +464,12 @@ _Use_decl_annotations_ NTSTATUS IddSampleParseMonitorDescription(
     // connected monitors Check which of the reported monitors this call is for
     // by comparing it to the pointer of our known EDID blocks.
 
-    if (pInArgs->MonitorDescription.DataSize != Windows::Edid::kBlockSize) {
+    if (pInArgs->MonitorDescription.DataSize !=
+        display::test::Edid::kBlockSize) {
       return STATUS_INVALID_PARAMETER;
     }
 
-    Windows::Edid edid(
+    display::test::Edid edid(
         reinterpret_cast<unsigned char*>(pInArgs->MonitorDescription.pData));
 
     // TODO: Return STATUS_INVALID_PARAMETER for monitors not belonging to this
@@ -495,7 +496,7 @@ _Use_decl_annotations_ NTSTATUS IddSampleParseMonitorDescription(
                 edid.GetTimingEntry(0)->GetHeight(),
                 edid.GetTimingEntry(0)->GetVerticalFrequency());
 
-    pInArgs->pMonitorModes[0] = Windows::Methods::CreateIddCxMonitorMode(
+    pInArgs->pMonitorModes[0] = display::test::Methods::CreateIddCxMonitorMode(
         edid.GetTimingEntry(0)->GetWidth(), edid.GetTimingEntry(0)->GetHeight(),
         edid.GetTimingEntry(0)->GetVerticalFrequency(),
         IDDCX_MONITOR_MODE_ORIGIN_MONITORDESCRIPTOR);
@@ -536,8 +537,8 @@ _Use_decl_annotations_ NTSTATUS IddSampleMonitorGetDefaultModes(
           pMonitorContextWrapper->pContext->default_mode_list[ModeIndex].width,
           pMonitorContextWrapper->pContext->default_mode_list[ModeIndex].height,
           pMonitorContextWrapper->pContext->default_mode_list[ModeIndex].vSync);
-      pInArgs->pDefaultMonitorModes[ModeIndex] = 
-          Windows::Methods::CreateIddCxMonitorMode(
+      pInArgs->pDefaultMonitorModes
+          [ModeIndex] = display::test::Methods::CreateIddCxMonitorMode(
           pMonitorContextWrapper->pContext->default_mode_list[ModeIndex].width,
           pMonitorContextWrapper->pContext->default_mode_list[ModeIndex].height,
           pMonitorContextWrapper->pContext->default_mode_list[ModeIndex].vSync,
@@ -568,22 +569,25 @@ IddSampleMonitorQueryModes(IDDCX_MONITOR MonitorObject,
   TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER, "IddSampleMonitorQueryModes");
 
   TargetModes.push_back(
-      Windows::Methods::CreateIddCxTargetMode(3840, 2160, 60));
+      display::test::Methods::CreateIddCxTargetMode(3840, 2160, 60));
   TargetModes.push_back(
-      Windows::Methods::CreateIddCxTargetMode(2560, 1440, 144));
+      display::test::Methods::CreateIddCxTargetMode(2560, 1440, 144));
   TargetModes.push_back(
-      Windows::Methods::CreateIddCxTargetMode(2560, 1440, 90));
+      display::test::Methods::CreateIddCxTargetMode(2560, 1440, 90));
   TargetModes.push_back(
-      Windows::Methods::CreateIddCxTargetMode(2560, 1440, 60));
+      display::test::Methods::CreateIddCxTargetMode(2560, 1440, 60));
   TargetModes.push_back(
-      Windows::Methods::CreateIddCxTargetMode(1920, 1080, 144));
+      display::test::Methods::CreateIddCxTargetMode(1920, 1080, 144));
   TargetModes.push_back(
-      Windows::Methods::CreateIddCxTargetMode(1920, 1080, 90));
+      display::test::Methods::CreateIddCxTargetMode(1920, 1080, 90));
   TargetModes.push_back(
-      Windows::Methods::CreateIddCxTargetMode(1920, 1080, 60));
-  TargetModes.push_back(Windows::Methods::CreateIddCxTargetMode(1600, 900, 60));
-  TargetModes.push_back(Windows::Methods::CreateIddCxTargetMode(1024, 768, 75));
-  TargetModes.push_back(Windows::Methods::CreateIddCxTargetMode(1024, 768, 60));
+      display::test::Methods::CreateIddCxTargetMode(1920, 1080, 60));
+  TargetModes.push_back(
+      display::test::Methods::CreateIddCxTargetMode(1600, 900, 60));
+  TargetModes.push_back(
+      display::test::Methods::CreateIddCxTargetMode(1024, 768, 75));
+  TargetModes.push_back(
+      display::test::Methods::CreateIddCxTargetMode(1024, 768, 60));
 
   pOutArgs->TargetModeBufferOutputCount = static_cast<UINT>(TargetModes.size());
 
