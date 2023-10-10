@@ -2786,8 +2786,6 @@ WebFormElement FindFormByRendererId(const WebDocument& doc,
     }
     WebNode node = WebNode::FromDomNodeId(form_renderer_id.value());
     WebFormElement form = node.DynamicTo<WebFormElement>();
-    // TODO(crbug.com/1427131): Remove when the feature launches.
-    CHECK_EQ(node.IsNull(), form.IsNull());
     return !form.IsNull() && form.IsConnected() && form.GetDocument().GetFrame()
                ? form
                : WebFormElement();
@@ -2811,8 +2809,6 @@ WebFormControlElement FindFormControlByRendererId(
     WebNode node = WebNode::FromDomNodeId(queried_form_control.value());
     WebFormControlElement form_control =
         node.DynamicTo<WebFormControlElement>();
-    // TODO(crbug.com/1427131): Remove when the feature launches.
-    CHECK_EQ(node.IsNull(), form_control.IsNull());
     return !form_control.IsNull() && form_control.IsConnected() &&
                    form_control.GetDocument().GetFrame()
                ? form_control
