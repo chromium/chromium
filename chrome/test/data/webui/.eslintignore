@@ -1,18 +1,5 @@
 # Ignore because of https://crbug.com/1033337
 async_gen.js
-bookmarks/bookmarks_focus_test.js
-cr_components/cr_components_mojo_interactive_test.js
-cr_elements/cr_elements_focus_test.js
 cr_focus_row_behavior_interactive_test.js
-cr_focus_row_mixin_interactive_test.js
-extensions/cr_extensions_interactive_ui_tests.js
-history/history_focus_test.js
-net_internals/net_internals_test_base.js
-new_tab_page/new_tab_page_interactive_test.js
 polymer_browser_test_base.js
-print_preview/print_preview_interactive_ui_tests.js
-settings/cr_settings_interactive_ui_tests.js
-side_panel/side_panel_interactive_ui_tests.js
-tab_search/tab_search_interactive_ui_tests.js
-tab_strip/tab_strip_interactive_ui_tests.js
 **/*_browsertest.js
