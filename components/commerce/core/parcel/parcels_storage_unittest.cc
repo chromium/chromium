@@ -237,6 +237,32 @@ TEST_F(ParcelsStorageTest, TestDeleteParcelStatus) {
   ASSERT_EQ(0u, all_parcels->size());
 }
 
+TEST_F(ParcelsStorageTest, TestDeleteMultipleParcelsStatus) {
+  EXPECT_CALL(*proto_db_, UpdateEntries(_, _, _)).Times(2);
+
+  std::vector<ParcelIdentifier> identifiers;
+
+  ParcelIdentifier id;
+  id.set_tracking_id(kTrackingId2);
+  id.set_carrier(kCarrier1);
+  identifiers.emplace_back(id);
+
+  // Delete an invalid parcel tracking id.
+  storage_->DeleteParcelsStatus(identifiers, base::BindOnce(&DoNothing));
+  task_environment_.RunUntilIdle();
+  auto all_parcels = storage_->GetAllParcelTrackingContents();
+  ASSERT_EQ(1u, all_parcels->size());
+
+  id.set_tracking_id(kTrackingId1);
+  identifiers.emplace_back(id);
+  // Delete the tracking id in storage.
+  storage_->DeleteParcelsStatus(identifiers, base::BindOnce(&DoNothing));
+  task_environment_.RunUntilIdle();
+
+  all_parcels = storage_->GetAllParcelTrackingContents();
+  ASSERT_EQ(0u, all_parcels->size());
+}
+
 TEST_F(ParcelsStorageTest, TestUpdateParcelStatus) {
   EXPECT_CALL(*proto_db_, UpdateEntries(_, _, _)).Times(1);
 

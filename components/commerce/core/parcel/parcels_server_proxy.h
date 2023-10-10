@@ -52,6 +52,9 @@ class ParcelsServerProxy {
       base::OnceCallback<void(bool /*success*/,
                               std::unique_ptr<std::vector<ParcelStatus>>)>;
   using StopParcelTrackingCallback = base::OnceCallback<void(bool /*success*/)>;
+  using EndpointCallback =
+      base::OnceCallback<void(std::unique_ptr<EndpointFetcher>,
+                              std::unique_ptr<EndpointResponse>)>;
 
   ParcelsServerProxy(
       signin::IdentityManager* identity_manager,
@@ -75,6 +78,11 @@ class ParcelsServerProxy {
   virtual void StopTrackingParcel(const std::string& tracking_id,
                                   StopParcelTrackingCallback callback);
 
+  // Called to stop tracking multiple parcels.
+  virtual void StopTrackingParcels(
+      const std::vector<ParcelIdentifier>& parcel_identifiers,
+      StopParcelTrackingCallback callback);
+
   // Called to stop tracking all parcels.
   virtual void StopTrackingAllParcels(StopParcelTrackingCallback callback);
 
@@ -90,6 +98,7 @@ class ParcelsServerProxy {
   // Parse the server response to get the parcel status.
   void ProcessGetParcelStatusResponse(
       GetParcelStatusCallback callback,
+      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
       std::unique_ptr<EndpointResponse> response);
 
   // Called when json string from server response is parsed.
@@ -103,7 +112,7 @@ class ParcelsServerProxy {
                               std::unique_ptr<EndpointResponse> response);
 
   // Helper method that is called when a server response is received.
-  void OnServerResponse(EndpointFetcherCallback callback,
+  void OnServerResponse(EndpointCallback callback,
                         std::unique_ptr<EndpointFetcher> endpoint_fetcher,
                         std::unique_ptr<EndpointResponse> response);
 
@@ -112,7 +121,7 @@ class ParcelsServerProxy {
       base::Value::Dict request_json,
       const GURL& server_url,
       const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
-      EndpointFetcherCallback callback);
+      EndpointCallback callback);
 
   // Helper method to send stop tracking request to a server.
   void SendStopTrackingRequestToServer(

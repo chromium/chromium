@@ -1627,6 +1627,18 @@ void ShoppingService::StopTrackingParcel(
   }
 }
 
+void ShoppingService::StopTrackingParcels(
+    const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
+        parcel_identifiers,
+    base::OnceCallback<void(bool)> callback) {
+  if (parcels_manager_) {
+    parcels_manager_->StopTrackingParcels(parcel_identifiers,
+                                          std::move(callback));
+  } else {
+    std::move(callback).Run(false);
+  }
+}
+
 // Called to stop tracking all parcels.
 void ShoppingService::StopTrackingAllParcels(
     base::OnceCallback<void(bool)> callback) {

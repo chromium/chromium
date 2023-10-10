@@ -124,6 +124,11 @@ class MockServerProxy : public ParcelsServerProxy {
                ParcelsServerProxy::StopParcelTrackingCallback callback),
               (override));
   MOCK_METHOD(void,
+              StopTrackingParcels,
+              (const std::vector<ParcelIdentifier>& parcel_identifiers,
+               ParcelsServerProxy::StopParcelTrackingCallback callback),
+              (override));
+  MOCK_METHOD(void,
               StopTrackingAllParcels,
               (ParcelsServerProxy::StopParcelTrackingCallback callback),
               (override));
@@ -159,6 +164,12 @@ class MockServerProxy : public ParcelsServerProxy {
                                    StopParcelTrackingCallback callback) {
           std::move(callback).Run(succeeded);
         });
+    ON_CALL(*this, StopTrackingParcels)
+        .WillByDefault(
+            [succeeded](const std::vector<ParcelIdentifier>& parcel_identifiers,
+                        StopParcelTrackingCallback callback) {
+              std::move(callback).Run(succeeded);
+            });
     ON_CALL(*this, StopTrackingAllParcels)
         .WillByDefault([succeeded](StopParcelTrackingCallback callback) {
           std::move(callback).Run(succeeded);
@@ -190,6 +201,11 @@ class MockParcelsStorage : public ParcelsStorage {
   MOCK_METHOD(void,
               DeleteParcelStatus,
               (const std::string& tracking_id, StorageUpdateCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              DeleteParcelsStatus,
+              (const std::vector<ParcelIdentifier>&,
+               StorageUpdateCallback callback),
               (override));
   MOCK_METHOD(void,
               DeleteAllParcelStatus,
@@ -528,5 +544,44 @@ TEST_F(ParcelsManagerTest, TestStopTrackingParcel_ServerError) {
                            &run_loop));
   run_loop.Run();
 }
+
+TEST_F(ParcelsManagerTest, TestStopTrackingParcels) {
+  EXPECT_CALL(*mock_storage_, Init(_)).Times(1);
+  mock_storage_->MockInitCallback(true);
+  mock_server_proxy_->MockStopTrackingResponses(true);
+
+  EXPECT_CALL(*mock_server_proxy_, StopTrackingParcels(_, _)).Times(1);
+  EXPECT_CALL(*mock_storage_, DeleteParcelsStatus(_, _)).Times(1);
+  base::RunLoop run_loop;
+  parcels_manager_->StopTrackingParcels(
+      GetTestIdentifiers(kTestTrackingId),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, bool success) {
+            ASSERT_TRUE(success);
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+}
+
+TEST_F(ParcelsManagerTest, TestStopTrackingParcels_ServerError) {
+  EXPECT_CALL(*mock_storage_, Init(_)).Times(1);
+  mock_storage_->MockInitCallback(true);
+  mock_server_proxy_->MockStopTrackingResponses(false);
+
+  EXPECT_CALL(*mock_server_proxy_, StopTrackingParcels(_, _)).Times(1);
+  EXPECT_CALL(*mock_storage_, DeleteParcelsStatus(_, _)).Times(0);
+  base::RunLoop run_loop;
+  parcels_manager_->StopTrackingParcels(
+      GetTestIdentifiers(kTestTrackingId),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, bool success) {
+            ASSERT_FALSE(success);
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+}
+
 }  // namespace
 }  // namespace commerce

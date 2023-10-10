@@ -60,8 +60,15 @@ class ParcelsManager {
   void GetAllParcelStatuses(GetParcelStatusCallback callback);
 
   // Called to stop tracking a given parcel.
+  // DEPRECATED.
   void StopTrackingParcel(const std::string& tracking_id,
                           StopParcelTrackingCallback callback);
+
+  // Called to stop tracking multiple parcels.
+  void StopTrackingParcels(
+      const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
+          parcel_identifiers,
+      StopParcelTrackingCallback callback);
 
   // Called to stop tracking all parcels.
   void StopTrackingAllParcels(StopParcelTrackingCallback callback);
@@ -93,6 +100,11 @@ class ParcelsManager {
   void GetAllParcelStatusesInternal(GetParcelStatusCallback callback);
   void StopTrackingParcelInternal(const std::string& tracking_id,
                                   StopParcelTrackingCallback callback);
+  void StopTrackingParcelsInternal(
+      const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
+          parcel_identifiers,
+      StopParcelTrackingCallback callback);
+
   void StopTrackingAllParcelsInternal(StopParcelTrackingCallback callback);
 
   // Called when parcel status is retrieved from the network. If
@@ -109,6 +121,12 @@ class ParcelsManager {
   void OnStopTrackingParcelDone(const std::string& tracking_id,
                                 StopParcelTrackingCallback callback,
                                 bool success);
+
+  // Called when stop all parcel tracking is completed.
+  void OnStopTrackingParcelsDone(
+      const std::vector<ParcelIdentifier>& parcel_identifiers,
+      StopParcelTrackingCallback callback,
+      bool success);
 
   // Called when stop all parcel tracking is completed.
   void OnStopTrackingAllParcelsDone(StopParcelTrackingCallback callback,

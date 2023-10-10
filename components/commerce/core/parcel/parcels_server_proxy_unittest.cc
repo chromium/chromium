@@ -44,6 +44,8 @@ const std::string kResponseSucceeded =
 const std::string kExpectedStartTrackingPostData =
     "{\"parcelIds\":[{\"carrier\":2,\"trackingId\":\"xyz\"}],"
     "\"sourcePageDomain\":\"www.abc.com\"}";
+const std::string kExpectedStopTrackingPostData =
+    "{\"parcelIds\":[{\"carrier\":2,\"trackingId\":\"xyz\"}]}";
 const std::string kTestTrackingUrl = "www.foo.com";
 const std::string kTestTrackingId = "xyz";
 const std::string kTestSourcePageDomain = "www.abc.com";
@@ -260,6 +262,24 @@ TEST_F(ParcelsServerProxyTest, TestStopTrackingParcel) {
                              run_loop->Quit();
                            },
                            &run_loop));
+  run_loop.Run();
+}
+
+TEST_F(ParcelsServerProxyTest, TestStopTrackingParcels) {
+  fetcher_->SetFetchResponse(kResponseSucceeded);
+  EXPECT_CALL(*server_proxy_,
+              CreateEndpointFetcher(GURL(kParcelsBaseUrl), kPostHttpMethod,
+                                    kExpectedStopTrackingPostData, _))
+      .Times(1);
+  base::RunLoop run_loop;
+  server_proxy_->StopTrackingParcels(
+      GetTestParcelIdentifiers(),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, bool success) {
+            ASSERT_TRUE(success);
+            run_loop->Quit();
+          },
+          &run_loop));
   run_loop.Run();
 }
 
