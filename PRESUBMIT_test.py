@@ -4914,8 +4914,7 @@ class CheckMockAnnotation(unittest.TestCase):
             MockFile('path/OneTest.java', [
                 'import a.b.c.Bar;',
                 'import a.b.c.Foo;',
-                '@Mock',
-                'public static Foo f = new Foo();',
+                '@Mock public static Foo f = new Foo();',
                 'Mockito.mock(new Bar(a, b, c))'
             ]),
             MockFile('path/TwoTest.java', [
@@ -4964,13 +4963,24 @@ class CheckMockAnnotation(unittest.TestCase):
                 'package a.b.c;',
                 '@Mock',
                 'public static Baz<abc> b;',
-                'Mockito.mock(Baz.class)']),
+                'Mockito.mock(Baz.class)'
+            ]),
             MockFile('path/SixTest.java', [
                 'package a.b.c;',
                 'import android.view.View;',
                 'import java.ArrayList;',
                 'Mockito.spy(new View())',
                 'Mockito.mock(ArrayList.class)'
+            ]),
+            MockFile('path/SevenTest.java', [
+                'package a.b.c;',
+                '@Mock private static Seven s;',
+                'Mockito.mock(Seven.class)'
+            ]),
+            MockFile('path/EightTest.java', [
+                'package a.b.c;',
+                '@Spy Eight e = new Eight2();',
+                'Mockito.py(new Eight())'
             ]),
         ]
         errors = PRESUBMIT.CheckMockAnnotation(mock_input, MockOutputApi())

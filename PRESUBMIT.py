@@ -6991,7 +6991,14 @@ def CheckMockAnnotation(input_api, output_api):
                 continue
 
             if mock_annotation.search(line):
-                next_line_is_annotated = True
+                field_type_search = field_type.search(line)
+                if field_type_search:
+                    fully_qualified_class = _DoClassLookup(
+                        field_type_search.group(1), fully_qualified_class_map,
+                        package)
+                    mocked_by_annotation_classes.add(fully_qualified_class)
+                else:
+                    next_line_is_annotated = True
                 continue
 
             m = mock_function_regex.search(line)
