@@ -677,6 +677,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
         assertEquals('', discount);
       }
       checkInfoDialogContent(moduleElement, 'modulesJourneysInfo');
+      assertEquals(0, metrics.count(`NewTabPage.HistoryClusters.HasDiscount`));
     });
 
     test('Discount initialization', async () => {
@@ -703,6 +704,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
       assertTrue(!!moduleElement);
       await waitAfterNextRender(moduleElement);
       assertEquals(moduleElement.discounts.length, LAYOUT_3_MIN_VISITS);
+      assertEquals(1, metrics.count(`NewTabPage.HistoryClusters.HasDiscount`));
 
       const expectedDiscounts = ['', '15% off', '$10 off', ''];
       const visitTiles: TileModuleElement[] =
@@ -721,6 +723,41 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
           visitTiles[2]!.visit.normalizedUrl.url);
       assertEquals('$10 off', visitTiles[2]!.discount);
       checkInfoDialogContent(moduleElement, 'modulesHistoryWithDiscountInfo');
+    });
+
+    test('Metrics for Discount click', async () => {
+      loadTimeData.overrideValues({
+        historyClustersModuleDiscountsEnabled: true,
+      });
+
+      const cluster = createLayoutSuitableSampleCluster(LayoutType.kLayout3);
+      // Ignore SRP visit when compare length.
+      assertEquals(LAYOUT_3_MIN_VISITS, cluster.visits.length - 1);
+      const discoutMap = new Map<Url, Discount[]>();
+      discoutMap.set(cluster.visits[2]!.normalizedUrl, [{
+                       valueInText: '15% off',
+                       annotatedVisitUrl: {url: 'https://www.annotated.com/1'},
+                     }]);
+
+      const moduleElement = await initializeModule([cluster], null, discoutMap);
+
+      assertEquals(1, handler.getCallCount('getDiscountsForCluster'));
+      assertTrue(!!moduleElement);
+      await waitAfterNextRender(moduleElement);
+      assertEquals(moduleElement.discounts.length, LAYOUT_3_MIN_VISITS);
+      assertEquals(1, metrics.count(`NewTabPage.HistoryClusters.HasDiscount`));
+
+      const visitTiles: TileModuleElement[] =
+          Array.from(moduleElement.shadowRoot!.querySelectorAll(
+              'ntp-history-clusters-tile'));
+
+      visitTiles[0]!.click();
+      assertEquals(
+          0, metrics.count(`NewTabPage.HistoryClusters.DiscountClicked`));
+
+      visitTiles[1]!.click();
+      assertEquals(
+          1, metrics.count(`NewTabPage.HistoryClusters.DiscountClicked`));
     });
   });
 });
