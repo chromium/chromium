@@ -219,7 +219,11 @@ void NGSimplifiedLayoutAlgorithm::AppendNewChildFragment(
 
 const NGLayoutResult*
 NGSimplifiedLayoutAlgorithm::CreateResultAfterManualChildLayout() {
-  return container_builder_.ToBoxFragment();
+  const NGLayoutResult* result = container_builder_.ToBoxFragment();
+  if (result->PhysicalFragment().IsOutOfFlowPositioned()) {
+    result->CopyMutableOutOfFlowData(previous_result_);
+  }
+  return result;
 }
 
 const NGLayoutResult* NGSimplifiedLayoutAlgorithm::Layout() {
