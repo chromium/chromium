@@ -14,7 +14,6 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
-#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -225,7 +224,7 @@ PageNodeImpl* ProcessNodeImpl::GetPageNodeIfExclusive() const {
 
 resource_attribution::ProcessContext ProcessNodeImpl::resource_context() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resource_context_;
+  return resource_attribution::ProcessContext::FromProcessNode(this);
 }
 
 RenderProcessHostId ProcessNodeImpl::GetRenderProcessId() const {

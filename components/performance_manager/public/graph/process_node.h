@@ -12,7 +12,7 @@
 #include "base/task/task_traits.h"
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/render_process_host_id.h"
-#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
+#include "components/performance_manager/public/resource_attribution/process_context.h"
 #include "content/public/common/process_type.h"
 
 namespace base {

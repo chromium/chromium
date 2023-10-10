@@ -21,6 +21,24 @@ TestNodeWrapper<FrameNodeImpl> TestGraphImpl::CreateFrameNodeAutoId(
                                                 ++next_frame_routing_id_);
 }
 
+TestNodeWrapper<ProcessNodeImpl> TestGraphImpl::CreateProcessNodeAutoId(
+    content::ProcessType process_type) {
+  switch (process_type) {
+    case content::PROCESS_TYPE_BROWSER:
+      return TestNodeWrapper<ProcessNodeImpl>::Create(this,
+                                                      BrowserProcessNodeTag{});
+    case content::PROCESS_TYPE_RENDERER:
+      return TestNodeWrapper<ProcessNodeImpl>::Create(
+          this,
+          RenderProcessHostProxy::CreateForTesting(NextRenderProcessHostId()));
+    default:
+      return TestNodeWrapper<ProcessNodeImpl>::Create(
+          this, process_type,
+          BrowserChildProcessHostProxy::CreateForTesting(
+              NextBrowserChildProcessHostId()));
+  }
+}
+
 GraphTestHarness::GraphTestHarness()
     : task_env_(base::test::TaskEnvironment::TimeSource::MOCK_TIME,
                 base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED),

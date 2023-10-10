@@ -11,21 +11,15 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "components/performance_manager/public/browser_child_process_host_id.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "components/performance_manager/public/graph/process_node.h"
-#include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/resource_attribution/page_context_registry.h"
-#include "components/performance_manager/public/resource_attribution/process_context_registry.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
-class BrowserChildProcessHost;
 class RenderFrameHost;
-class RenderProcessHost;
 }  // namespace content
 
 namespace performance_manager::resource_attribution {
@@ -36,7 +30,6 @@ namespace performance_manager::resource_attribution {
 class ResourceContextRegistryStorage final
     : public FrameNode::ObserverDefaultImpl,
       public PageNode::ObserverDefaultImpl,
-      public ProcessNode::ObserverDefaultImpl,
       public GraphOwned {
  public:
   // Storage used from the UI thread.
@@ -63,25 +56,8 @@ class ResourceContextRegistryStorage final
   static std::set<content::RenderFrameHost*> AllMainRenderFrameHostsFromContext(
       const PageContext& context);
 
-  // ProcessContext accessors.
-  static absl::optional<ProcessContext> BrowserProcessContext();
-  static absl::optional<ProcessContext> ProcessContextForId(
-      RenderProcessHostId id);
-  static absl::optional<ProcessContext> ProcessContextForId(
-      BrowserChildProcessHostId id);
-
-  static bool IsBrowserProcessContext(const ProcessContext& context);
-  static bool IsRenderProcessContext(const ProcessContext& context);
-  static bool IsBrowserChildProcessContext(const ProcessContext& context);
-  static content::RenderProcessHost* RenderProcessHostFromContext(
-      const ProcessContext& context);
-  static content::BrowserChildProcessHost* BrowserChildProcessHostFromContext(
-      const ProcessContext& context);
-
   // PM sequence accessors.
   const PageNode* GetPageNodeForContext(const PageContext& context) const;
-  const ProcessNode* GetProcessNodeForContext(
-      const ProcessContext& context) const;
 
   // FrameNodeObserver overrides:
   void OnFrameNodeAdded(const FrameNode* frame_node) final;
@@ -91,10 +67,6 @@ class ResourceContextRegistryStorage final
   // PageNodeObserver overrides:
   void OnPageNodeAdded(const PageNode* page_node) final;
   void OnBeforePageNodeRemoved(const PageNode* page_node) final;
-
-  // ProcessNodeObserver overrides:
-  void OnProcessNodeAdded(const ProcessNode* process_node) final;
-  void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) final;
 
   // GraphOwned overrides:
   void OnPassedToGraph(Graph* graph) final;
@@ -111,8 +83,6 @@ class ResourceContextRegistryStorage final
   // WeakPtr's can be cleaned up from logically const methods.
   mutable std::map<PageContext, base::WeakPtr<PageNode>> page_nodes_by_context_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  mutable std::map<ProcessContext, base::WeakPtr<ProcessNode>>
-      process_nodes_by_context_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<UIThreadStorage> ui_thread_storage_;
 
@@ -123,7 +93,6 @@ class ResourceContextRegistryStorage final
   // Public accessors for the storage. ResourceContextRegistryStorage registers
   // these with the graph in OnPassedToGraph().
   PageContextRegistry page_registry_{*this};
-  ProcessContextRegistry process_registry_{*this};
 };
 
 }  // namespace performance_manager::resource_attribution

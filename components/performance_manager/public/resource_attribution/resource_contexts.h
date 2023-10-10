@@ -7,6 +7,7 @@
 
 #include "base/types/token_type.h"
 #include "components/performance_manager/public/resource_attribution/frame_context.h"
+#include "components/performance_manager/public/resource_attribution/process_context.h"
 #include "components/performance_manager/public/resource_attribution/type_helpers.h"
 #include "components/performance_manager/public/resource_attribution/worker_context.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -48,7 +49,6 @@ namespace performance_manager::resource_attribution {
 // corresponding registry class to look up live objects. Rewrite them as wrapper
 // classes similar to FrameContext.
 using PageContext = base::TokenType<class PageContextTag>;
-using ProcessContext = base::TokenType<class ProcessContextTag>;
 
 // A variant holding any type of resource context.
 using ResourceContext =
