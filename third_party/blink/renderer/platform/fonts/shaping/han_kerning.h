@@ -57,7 +57,9 @@ class PLATFORM_EXPORT HanKerning {
     if (!RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled()) {
       return;
     }
-    // TODO(crbug.com/1463890): Add more conditions to fail fast.
+    if (text.Is8Bit()) {
+      return;
+    }
     Compute(text, start, end, font_data, font_description, options, features);
   }
   ~HanKerning() {
