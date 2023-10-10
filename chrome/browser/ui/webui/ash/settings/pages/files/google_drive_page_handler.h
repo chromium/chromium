@@ -50,7 +50,7 @@ class GoogleDrivePageHandler : public google_drive::mojom::PageHandler,
   void OnClearPinnedFiles(ClearPinnedFilesCallback callback,
                           drive::FileError error);
 
-  drivefs::pinning::PinManager* GetPinManager();
+  drivefs::pinning::PinningManager* GetPinningManager();
   drive::DriveIntegrationService* GetDriveService();
   const raw_ptr<Profile> profile_;
 

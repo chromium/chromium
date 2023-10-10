@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module drivefs.pin_manager_types.mojom;
+module drivefs.pinning_manager_types.mojom;
 
 // The PinManager first undergoes a setup phase, where it audits the current
 // disk space, pins all available files (disk space willing) then moves to

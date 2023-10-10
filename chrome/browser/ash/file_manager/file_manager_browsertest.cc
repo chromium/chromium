@@ -875,7 +875,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveItemsOutOfViewportShouldUpdateTheirSyncStatus")
             .EnableBulkPinning()
             .EnableInlineSyncStatusProgressEvents(),
-        TestCase("driveAllItemsShouldBeQueuedIfTrackedByPinManager")
+        TestCase("driveAllItemsShouldBeQueuedIfTrackedByPinningManager")
             .EnableBulkPinning()
             .EnableInlineSyncStatusProgressEvents(),
         TestCase("driveDirtyItemsShouldBeDisplayedAsQueued")

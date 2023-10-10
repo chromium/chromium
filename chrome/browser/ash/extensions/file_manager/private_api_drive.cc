@@ -51,7 +51,7 @@
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
+#include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "chromeos/ash/components/drivefs/drivefs_util.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -86,7 +86,7 @@ using ash::file_system_provider::util::FileSystemURLParser;
 using content::BrowserThread;
 using drive::DriveIntegrationService;
 using drive::util::GetIntegrationServiceByProfile;
-using drivefs::pinning::PinManager;
+using drivefs::pinning::PinningManager;
 using extensions::api::file_manager_private::EntryProperties;
 using extensions::api::file_manager_private::EntryPropertyName;
 using file_manager::util::EntryDefinition;
@@ -909,7 +909,7 @@ FileManagerPrivateGetBulkPinProgressFunction::Run() {
     return RespondNow(Error("Drive not available"));
   }
 
-  PinManager* const p = service->GetPinManager();
+  PinningManager* const p = service->GetPinningManager();
   if (!p) {
     return RespondNow(Error("Pin Manager not available"));
   }
@@ -937,7 +937,7 @@ FileManagerPrivateCalculateBulkPinRequiredSpaceFunction::Run() {
     return RespondNow(Error("Drive not available"));
   }
 
-  PinManager* const p = service->GetPinManager();
+  PinningManager* const p = service->GetPinningManager();
   if (!p) {
     return RespondNow(Error("Pin Manager not available"));
   }

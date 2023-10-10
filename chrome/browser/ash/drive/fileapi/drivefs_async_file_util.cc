@@ -145,8 +145,8 @@ class CopyOperation : public base::RefCountedThreadSafe<CopyOperation> {
 // Drive cloud Trash.
 class DeleteOperation : public base::RefCountedThreadSafe<DeleteOperation> {
  public:
-  using PinManager = drivefs::pinning::PinManager;
-  using Id = PinManager::Id;
+  using PinningManager = drivefs::pinning::PinningManager;
+  using Id = PinningManager::Id;
 
   DeleteOperation(Profile* const profile,
                   base::FilePath path,
@@ -174,7 +174,7 @@ class DeleteOperation : public base::RefCountedThreadSafe<DeleteOperation> {
       return;
     }
 
-    if (drive_->GetPinManager() &&
+    if (drive_->GetPinningManager() &&
         drive_->GetRelativeDrivePath(path_, &drive_path_)) {
       // TODO(b/266168982): In the case this is a folder, only the folder will
       // get unpinned leaving all the children pinned. When the new method is
@@ -228,10 +228,10 @@ class DeleteOperation : public base::RefCountedThreadSafe<DeleteOperation> {
 
   void OnDeleted() {
     DCHECK(drive_);
-    if (PinManager* const pin_manager = drive_->GetPinManager()) {
+    if (PinningManager* const pinning_manager = drive_->GetPinningManager()) {
       // TODO(b/267225898) Local delete events are currently not sent via
-      // DriveFS, so for now we notify the `PinManager` for local deletes.
-      pin_manager->NotifyDelete(id_, drive_path_);
+      // DriveFS, so for now we notify the `PinningManager` for local deletes.
+      pinning_manager->NotifyDelete(id_, drive_path_);
     }
   }
 

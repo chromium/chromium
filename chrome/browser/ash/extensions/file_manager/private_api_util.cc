@@ -34,7 +34,7 @@
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
+#include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "chromeos/ash/components/drivefs/drivefs_util.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/drivefs/sync_status_tracker.h"
@@ -283,7 +283,7 @@ bool IsBulkPinningEnabledForProfile(Profile* profile) {
       drive::prefs::kDriveFsBulkPinningEnabled);
 }
 
-drivefs::pinning::PinManager* GetPinManager(Profile* profile) {
+drivefs::pinning::PinningManager* GetPinningManager(Profile* profile) {
   if (!profile) {
     return nullptr;
   }
@@ -293,7 +293,7 @@ drivefs::pinning::PinManager* GetPinManager(Profile* profile) {
     return nullptr;
   }
 
-  return integration_service->GetPinManager();
+  return integration_service->GetPinningManager();
 }
 
 bool IsPathUnderMyDrive(const base::FilePath& relative_path) {
@@ -427,19 +427,19 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
 
     if (IsBulkPinningEnabledForProfile(running_profile_) &&
         IsPathUnderMyDrive(relative_path_)) {
-      drivefs::pinning::PinManager* const pin_manager =
-          GetPinManager(running_profile_);
+      drivefs::pinning::PinningManager* const pinning_manager =
+          GetPinningManager(running_profile_);
 
       const auto stable_id =
-          drivefs::pinning::PinManager::Id(metadata->stable_id);
+          drivefs::pinning::PinningManager::Id(metadata->stable_id);
       if (properties_->sync_status ==
               file_manager_private::SYNC_STATUS_NOT_FOUND &&
-          pin_manager->IsTrackedAndUnpinned(stable_id)) {
-        // The `PinManager` maintains a list of 200 items that it pins, if the
-        // item is not within these 200 items it will eventually be pinned, but
-        // does not enter into a queued state just yet. This ensures the queued
-        // state is reflected for items that will be pinned but haven't called
-        // `SetPinned` yet.
+          pinning_manager->IsTrackedAndUnpinned(stable_id)) {
+        // The `PinningManager` maintains a list of 200 items that it pins, if
+        // the item is not within these 200 items it will eventually be pinned,
+        // but does not enter into a queued state just yet. This ensures the
+        // queued state is reflected for items that will be pinned but haven't
+        // called `SetPinned` yet.
         properties_->sync_status = file_manager_private::SYNC_STATUS_QUEUED;
       }
 

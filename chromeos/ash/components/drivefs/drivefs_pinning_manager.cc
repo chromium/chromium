@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
+#include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 
 #include <iomanip>
 #include <locale>
@@ -38,7 +38,7 @@ using mojom::QueryItem;
 using mojom::QueryItemPtr;
 using mojom::ShortcutDetails;
 using std::ostream;
-using Path = PinManager::Path;
+using Path = PinningManager::Path;
 using LookupStatus = ShortcutDetails::LookupStatus;
 
 int Percentage(const int64_t a, const int64_t b) {
@@ -48,12 +48,12 @@ int Percentage(const int64_t a, const int64_t b) {
 }
 
 // Calls the spaced daemon.
-void GetFreeSpace(const Path& path, PinManager::SpaceResult callback) {
+void GetFreeSpace(const Path& path, PinningManager::SpaceResult callback) {
   SpacedClient* const spaced = SpacedClient::Get();
   DCHECK(spaced);
   spaced->GetFreeDiskSpace(path.value(),
                            base::BindOnce(
-                               [](PinManager::SpaceResult callback,
+                               [](PinningManager::SpaceResult callback,
                                   const absl::optional<int64_t> space) {
                                  std::move(callback).Run(space.value_or(-1));
                                },
@@ -157,7 +157,7 @@ ostream& operator<<(ostream& out, Quoter<absl::optional<T>> q) {
 
 ostream& operator<<(ostream& out, Quoter<ShortcutDetails> q) {
   const ShortcutDetails& s = *q.value;
-  out << "{" << PinManager::Id(s.target_stable_id);
+  out << "{" << PinningManager::Id(s.target_stable_id);
 
   if (s.target_lookup_status != LookupStatus::kOk) {
     out << " " << Quote(s.target_lookup_status);
@@ -169,7 +169,7 @@ ostream& operator<<(ostream& out, Quoter<ShortcutDetails> q) {
 ostream& operator<<(ostream& out, Quoter<FileMetadata> q) {
   const FileMetadata& md = *q.value;
 
-  out << "{" << Quote(md.type) << " " << PinManager::Id(md.stable_id);
+  out << "{" << Quote(md.type) << " " << PinningManager::Id(md.stable_id);
 
   if (md.size != 0) {
     out << " of " << HumanReadableSize(md.size);
@@ -204,7 +204,7 @@ ostream& operator<<(ostream& out, Quoter<FileMetadata> q) {
 
 ostream& operator<<(ostream& out, Quoter<mojom::ProgressEvent> q) {
   const mojom::ProgressEvent& e = *q.value;
-  out << "{" << PinManager::Id(e.stable_id) << " "
+  out << "{" << PinningManager::Id(e.stable_id) << " "
       << Quote(e.file_path ? *e.file_path : Path(e.path))
       << ", progress: " << base::StringPrintf("%hhu", e.progress) << "%}";
   return out;
@@ -213,13 +213,13 @@ ostream& operator<<(ostream& out, Quoter<mojom::ProgressEvent> q) {
 ostream& operator<<(ostream& out, Quoter<mojom::FileChange> q) {
   const mojom::FileChange& change = *q.value;
   return out << "{" << Quote(change.type) << " "
-             << PinManager::Id(change.stable_id) << " " << Quote(change.path)
-             << "}";
+             << PinningManager::Id(change.stable_id) << " "
+             << Quote(change.path) << "}";
 }
 
 ostream& operator<<(ostream& out, Quoter<mojom::DriveError> q) {
   const mojom::DriveError& e = *q.value;
-  return out << "{" << Quote(e.type) << " " << PinManager::Id(e.stable_id)
+  return out << "{" << Quote(e.type) << " " << PinningManager::Id(e.stable_id)
              << " " << Quote(e.path) << "}";
 }
 
@@ -249,7 +249,7 @@ std::ostream& NiceNum(std::ostream& out) {
   return out;
 }
 
-ostream& operator<<(ostream& out, const PinManager::Id id) {
+ostream& operator<<(ostream& out, const PinningManager::Id id) {
   return out << "#" << static_cast<int64_t>(id);
 }
 
@@ -284,7 +284,7 @@ ostream& operator<<(ostream& out, HumanReadableSize size) {
   return out << " (" << std::setprecision(4) << d << " " << *unit << ")";
 }
 
-ostream& PinManager::File::PrintTo(ostream& out) const {
+ostream& PinningManager::File::PrintTo(ostream& out) const {
   return out << "{path: " << Quote(path)
              << ", transferred: " << HumanReadableSize(transferred)
              << ", total: " << HumanReadableSize(total)
@@ -402,9 +402,9 @@ std::string ToString(TimeDelta time_delta) {
 
 constexpr TimeDelta kStalledFileInterval = base::Seconds(10);
 
-bool PinManager::CanPin(const FileMetadata& md, const Path& path) {
+bool PinningManager::CanPin(const FileMetadata& md, const Path& path) {
   using Type = FileMetadata::Type;
-  const auto id = PinManager::Id(md.stable_id);
+  const auto id = PinningManager::Id(md.stable_id);
 
   if (md.shortcut_details) {
     VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Shortcut to "
@@ -442,7 +442,7 @@ bool PinManager::CanPin(const FileMetadata& md, const Path& path) {
   return true;
 }
 
-bool PinManager::Add(const FileMetadata& md, const Path& path) {
+bool PinningManager::Add(const FileMetadata& md, const Path& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const Id id = Id(md.stable_id);
@@ -512,9 +512,9 @@ bool PinManager::Add(const FileMetadata& md, const Path& path) {
   return true;
 }
 
-bool PinManager::Remove(const Id id,
-                        const Path& path,
-                        const int64_t transferred) {
+bool PinningManager::Remove(const Id id,
+                            const Path& path,
+                            const int64_t transferred) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const Files::iterator it = files_to_track_.find(id);
@@ -528,9 +528,9 @@ bool PinManager::Remove(const Id id,
   return true;
 }
 
-void PinManager::Remove(const Files::iterator it,
-                        const Path& path,
-                        const int64_t transferred) {
+void PinningManager::Remove(const Files::iterator it,
+                            const Path& path,
+                            const int64_t transferred) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(it != files_to_track_.end());
@@ -559,9 +559,9 @@ void PinManager::Remove(const Files::iterator it,
   VLOG(3) << "Stopped tracking " << id << " " << Quote(path);
 }
 
-bool PinManager::Update(const Id id,
-                        const Path& path,
-                        const int8_t progress_percent) {
+bool PinningManager::Update(const Id id,
+                            const Path& path,
+                            const int8_t progress_percent) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const Files::iterator it = files_to_track_.find(id);
@@ -575,10 +575,10 @@ bool PinManager::Update(const Id id,
   return Update(*it, path, transferred, it->second.total);
 }
 
-bool PinManager::Update(const Id id,
-                        const Path& path,
-                        const int64_t transferred,
-                        const int64_t total) {
+bool PinningManager::Update(const Id id,
+                            const Path& path,
+                            const int64_t transferred,
+                            const int64_t total) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const Files::iterator it = files_to_track_.find(id);
@@ -591,10 +591,10 @@ bool PinManager::Update(const Id id,
   return Update(*it, path, transferred, total);
 }
 
-bool PinManager::Update(Files::value_type& entry,
-                        const Path& path,
-                        const int64_t transferred,
-                        const int64_t total) {
+bool PinningManager::Update(Files::value_type& entry,
+                            const Path& path,
+                            const int64_t transferred,
+                            const int64_t total) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const Id id = entry.first;
@@ -639,10 +639,10 @@ bool PinManager::Update(Files::value_type& entry,
   return modified;
 }
 
-PinManager::PinManager(Path profile_path,
-                       Path mount_path,
-                       mojom::DriveFs* const drivefs,
-                       int64_t queue_size)
+PinningManager::PinningManager(Path profile_path,
+                               Path mount_path,
+                               mojom::DriveFs* const drivefs,
+                               int64_t queue_size)
     : profile_path_(std::move(profile_path)),
       mount_path_(std::move(mount_path)),
       drivefs_(drivefs),
@@ -652,13 +652,13 @@ PinManager::PinManager(Path profile_path,
   chromeos::PowerManagerClient* const p = chromeos::PowerManagerClient::Get();
   power_manager_.Observe(p);
   p->GetBatterySaverModeState(base::BindOnce(
-      &PinManager::OnGotBatterySaverState, weak_ptr_factory_.GetWeakPtr()));
+      &PinningManager::OnGotBatterySaverState, weak_ptr_factory_.GetWeakPtr()));
   user_data_auth_client_.Observe(ash::UserDataAuthClient::Get());
 }
 
-PinManager::~PinManager() = default;
+PinningManager::~PinningManager() = default;
 
-void PinManager::Start() {
+void PinningManager::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (InProgress(progress_.stage)) {
@@ -692,10 +692,10 @@ void PinManager::Start() {
 
   space_getter_.Run(
       profile_path_.AppendASCII("GCache"),
-      base::BindOnce(&PinManager::OnFreeSpaceRetrieved1, GetWeakPtr()));
+      base::BindOnce(&PinningManager::OnFreeSpaceRetrieved1, GetWeakPtr()));
 }
 
-void PinManager::Stop() {
+void PinningManager::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (progress_.stage != Stage::kStopped && !progress_.IsError()) {
@@ -704,7 +704,7 @@ void PinManager::Stop() {
   }
 }
 
-bool PinManager::CalculateRequiredSpace() {
+bool PinningManager::CalculateRequiredSpace() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsPausedOrInProgress(progress_.stage) && progress_.should_pin) {
     LOG(ERROR) << "Cannot calculate required space: "
@@ -717,7 +717,7 @@ bool PinManager::CalculateRequiredSpace() {
   return true;
 }
 
-void PinManager::OnFreeSpaceRetrieved1(const int64_t free_space) {
+void PinningManager::OnFreeSpaceRetrieved1(const int64_t free_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(progress_.stage, Stage::kGettingFreeSpace);
 
@@ -739,26 +739,26 @@ void PinManager::OnFreeSpaceRetrieved1(const int64_t free_space) {
   ListItems(Id::kNone, Path("/root"));
 }
 
-void PinManager::CheckFreeSpace() {
+void PinningManager::CheckFreeSpace() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   VLOG(2) << "Getting free space";
   space_getter_.Run(
       profile_path_.AppendASCII("GCache"),
-      base::BindOnce(&PinManager::OnFreeSpaceRetrieved2, GetWeakPtr()));
+      base::BindOnce(&PinningManager::OnFreeSpaceRetrieved2, GetWeakPtr()));
 }
 
-void PinManager::LowDiskSpace(const user_data_auth::LowDiskSpace& event) {
+void PinningManager::LowDiskSpace(const user_data_auth::LowDiskSpace& event) {
   LOG(ERROR) << "LowDiskSpace: " << HumanReadableSize(event.disk_free_bytes());
   OnFreeSpaceRetrieved2(event.disk_free_bytes());
 }
 
-void PinManager::OnSpaceUpdate(const SpaceEvent& event) {
+void PinningManager::OnSpaceUpdate(const SpaceEvent& event) {
   VLOG(1) << "OnSpaceUpdate: " << HumanReadableSize(event.free_space_bytes());
   OnFreeSpaceRetrieved2(event.free_space_bytes());
 }
 
-void PinManager::OnFreeSpaceRetrieved2(const int64_t free_space) {
+void PinningManager::OnFreeSpaceRetrieved2(const int64_t free_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (free_space < 0) {
@@ -781,14 +781,14 @@ void PinManager::OnFreeSpaceRetrieved2(const int64_t free_space) {
   }
 }
 
-void PinManager::OnGotBatterySaverState(
+void PinningManager::OnGotBatterySaverState(
     absl::optional<power_manager::BatterySaverModeState> state) {
   if (state) {
     BatterySaverModeStateChanged(*state);
   }
 }
 
-void PinManager::BatterySaverModeStateChanged(
+void PinningManager::BatterySaverModeStateChanged(
     const power_manager::BatterySaverModeState& state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_battery_ok_ = !state.enabled();
@@ -805,7 +805,7 @@ void PinManager::BatterySaverModeStateChanged(
   }
 }
 
-bool PinManager::IsTrackedAndUnpinned(Id id) const {
+bool PinningManager::IsTrackedAndUnpinned(Id id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const Files::const_iterator it = files_to_track_.find(id);
   if (it == files_to_track_.end()) {
@@ -814,7 +814,7 @@ bool PinManager::IsTrackedAndUnpinned(Id id) const {
   return !it->second.pinned;
 }
 
-void PinManager::ListItems(const Id dir_id, Path dir_path) {
+void PinningManager::ListItems(const Id dir_id, Path dir_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Visiting " << dir_id << " " << Quote(dir_path);
 
@@ -841,7 +841,7 @@ void PinManager::ListItems(const Id dir_id, Path dir_path) {
   GetNextPage(dir_id, std::move(dir_path), std::move(query));
 }
 
-void PinManager::GetNextPage(const Id dir_id, Path dir_path, Query query) {
+void PinningManager::GetNextPage(const Id dir_id, Path dir_path, Query query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(progress_.stage, Stage::kListingFiles);
   DCHECK(query);
@@ -851,11 +851,11 @@ void PinManager::GetNextPage(const Id dir_id, Path dir_path, Query query) {
           << Quote(dir_path);
   DCHECK(q);
   q->GetNextPage(base::BindOnce(
-      [](const base::WeakPtr<PinManager> pin_manager, Id dir_id, Path dir_path,
-         Query query, const drive::FileError error,
+      [](const base::WeakPtr<PinningManager> pinning_manager, Id dir_id,
+         Path dir_path, Query query, const drive::FileError error,
          const absl::optional<std::vector<QueryItemPtr>> items) {
-        if (pin_manager) {
-          pin_manager->OnSearchResult(
+        if (pinning_manager) {
+          pinning_manager->OnSearchResult(
               dir_id, std::move(dir_path), std::move(query), error,
               items ? *items : base::span<const QueryItemPtr>{});
         } else {
@@ -865,11 +865,12 @@ void PinManager::GetNextPage(const Id dir_id, Path dir_path, Query query) {
       GetWeakPtr(), dir_id, std::move(dir_path), std::move(query)));
 }
 
-void PinManager::OnSearchResult(const Id dir_id,
-                                Path dir_path,
-                                Query query,
-                                const drive::FileError error,
-                                const base::span<const QueryItemPtr> items) {
+void PinningManager::OnSearchResult(
+    const Id dir_id,
+    Path dir_path,
+    Query query,
+    const drive::FileError error,
+    const base::span<const QueryItemPtr> items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(progress_.stage, Stage::kListingFiles);
 
@@ -887,7 +888,7 @@ void PinManager::OnSearchResult(const Id dir_id,
         LOG(ERROR) << "Will retry in " << Quote(delay);
         SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
-            base::BindOnce(&PinManager::GetNextPage, GetWeakPtr(), dir_id,
+            base::BindOnce(&PinningManager::GetNextPage, GetWeakPtr(), dir_id,
                            std::move(dir_path), std::move(query)),
             delay);
         return;
@@ -960,9 +961,9 @@ void PinManager::OnSearchResult(const Id dir_id,
   GetNextPage(dir_id, std::move(dir_path), std::move(query));
 }
 
-void PinManager::HandleQueryItem(Id dir_id,
-                                 const Path& dir_path,
-                                 const QueryItem& item) {
+void PinningManager::HandleQueryItem(Id dir_id,
+                                     const Path& dir_path,
+                                     const QueryItem& item) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(item.metadata);
   using Type = FileMetadata::Type;
@@ -1062,7 +1063,7 @@ void PinManager::HandleQueryItem(Id dir_id,
              << " " << path << ": " << Quote(md);
 }
 
-void PinManager::Complete(const Stage stage) {
+void PinningManager::Complete(const Stage stage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!InProgress(stage));
 
@@ -1129,7 +1130,7 @@ void PinManager::Complete(const Stage stage) {
   }
 }
 
-void PinManager::StartPinning() {
+void PinningManager::StartPinning() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(progress_.stage, Stage::kListingFiles);
 
@@ -1164,7 +1165,8 @@ void PinManager::StartPinning() {
   EnableDocsOffline();
 
   SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&PinManager::CheckStalledFiles, GetWeakPtr()),
+      FROM_HERE,
+      base::BindOnce(&PinningManager::CheckStalledFiles, GetWeakPtr()),
       kStalledFileInterval);
 
   CheckFreeSpace();
@@ -1172,7 +1174,7 @@ void PinManager::StartPinning() {
   PinSomeFiles();
 }
 
-bool PinManager::StartMonitoringSpace() {
+bool PinningManager::StartMonitoringSpace() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (spaced_client_.IsObserving()) {
     VLOG(1) << "SpacedClient::Observer is already registered";
@@ -1191,12 +1193,12 @@ bool PinManager::StartMonitoringSpace() {
   return true;
 }
 
-void PinManager::StopMonitoringSpace() {
+void PinningManager::StopMonitoringSpace() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   spaced_client_.Reset();
 }
 
-void PinManager::EnableDocsOffline() {
+void PinningManager::EnableDocsOffline() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(drivefs_);
   drivefs_->SetDocsOfflineEnabled(
@@ -1209,7 +1211,7 @@ void PinManager::EnableDocsOffline() {
       }));
 }
 
-void PinManager::PinSomeFiles() {
+void PinningManager::PinSomeFiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (progress_.stage != Stage::kSyncing) {
@@ -1232,7 +1234,7 @@ void PinManager::PinSomeFiles() {
     VLOG(2) << "Pinning " << id << " " << Quote(path);
     drivefs_->SetPinnedByStableId(
         static_cast<int64_t>(id), true,
-        base::BindOnce(&PinManager::OnFilePinned, GetWeakPtr(), id, path));
+        base::BindOnce(&PinningManager::OnFilePinned, GetWeakPtr(), id, path));
 
     file.pinned = true;
     progress_.syncing_files++;
@@ -1272,9 +1274,9 @@ void PinManager::PinSomeFiles() {
   }
 }
 
-void PinManager::OnFilePinned(const Id id,
-                              const Path& path,
-                              const drive::FileError error) {
+void PinningManager::OnFilePinned(const Id id,
+                                  const Path& path,
+                                  const drive::FileError error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Records error in a UMA histogram. The `1 - error` expression converts the
@@ -1323,7 +1325,7 @@ void PinManager::OnFilePinned(const Id id,
   DCHECK(!files_to_pin_.contains(id));
 }
 
-void PinManager::OnItemProgress(const mojom::ProgressEvent& event) {
+void PinningManager::OnItemProgress(const mojom::ProgressEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!InProgress(progress_.stage)) {
@@ -1361,7 +1363,7 @@ void PinManager::OnItemProgress(const mojom::ProgressEvent& event) {
   PinSomeFiles();
 }
 
-void PinManager::NotifyDelete(const Id id, const Path& path) {
+void PinningManager::NotifyDelete(const Id id, const Path& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!Remove(id, path, 0)) {
@@ -1375,11 +1377,12 @@ void PinManager::NotifyDelete(const Id id, const Path& path) {
   PinSomeFiles();
 }
 
-void PinManager::OnUnmounted() {
+void PinningManager::OnUnmounted() {
   VLOG(1) << "Unmounted DriveFS";
 }
 
-void PinManager::OnFilesChanged(const std::vector<mojom::FileChange>& changes) {
+void PinningManager::OnFilesChanged(
+    const std::vector<mojom::FileChange>& changes) {
   using Type = mojom::FileChange::Type;
   for (const mojom::FileChange& event : changes) {
     switch (event.type) {
@@ -1400,12 +1403,12 @@ void PinManager::OnFilesChanged(const std::vector<mojom::FileChange>& changes) {
   }
 }
 
-void PinManager::OnFileCreated(const mojom::FileChange& event) {
+void PinningManager::OnFileCreated(const mojom::FileChange& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(event.type, mojom::FileChange::Type::kCreate);
 
   if (!InProgress(progress_.stage)) {
-    VLOG(2) << "Ignored " << Quote(event) << ": PinManager is currently "
+    VLOG(2) << "Ignored " << Quote(event) << ": PinningManager is currently "
             << Quote(progress_.stage);
     return;
   }
@@ -1435,11 +1438,11 @@ void PinManager::OnFileCreated(const mojom::FileChange& event) {
   VLOG(1) << "Got " << Quote(event);
   drivefs_->GetMetadataByStableId(
       static_cast<int64_t>(id),
-      base::BindOnce(&PinManager::OnMetadataForCreatedFile, GetWeakPtr(), id,
-                     path));
+      base::BindOnce(&PinningManager::OnMetadataForCreatedFile, GetWeakPtr(),
+                     id, path));
 }
 
-void PinManager::OnFileDeleted(const mojom::FileChange& event) {
+void PinningManager::OnFileDeleted(const mojom::FileChange& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(event.type, mojom::FileChange::Type::kDelete);
 
@@ -1447,7 +1450,7 @@ void PinManager::OnFileDeleted(const mojom::FileChange& event) {
   NotifyDelete(Id(event.stable_id), event.path);
 }
 
-void PinManager::OnFileModified(const mojom::FileChange& event) {
+void PinningManager::OnFileModified(const mojom::FileChange& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(event.type, mojom::FileChange::Type::kModify);
 
@@ -1468,11 +1471,11 @@ void PinManager::OnFileModified(const mojom::FileChange& event) {
   VLOG(2) << "Checking changed " << id << " " << Quote(path);
   drivefs_->GetMetadataByStableId(
       static_cast<int64_t>(id),
-      base::BindOnce(&PinManager::OnMetadataForModifiedFile, GetWeakPtr(), id,
-                     path));
+      base::BindOnce(&PinningManager::OnMetadataForModifiedFile, GetWeakPtr(),
+                     id, path));
 }
 
-void PinManager::OnError(const mojom::DriveError& error) {
+void PinningManager::OnError(const mojom::DriveError& error) {
   LOG(ERROR) << "Got DriveError " << Quote(error);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error.type == mojom::DriveError::Type::kPinningFailedDiskFull &&
@@ -1481,7 +1484,7 @@ void PinManager::OnError(const mojom::DriveError& error) {
   }
 }
 
-void PinManager::NotifyProgress() {
+void PinningManager::NotifyProgress() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (progress_.pinned_bytes > 0) {
@@ -1496,7 +1499,7 @@ void PinManager::NotifyProgress() {
   }
 }
 
-void PinManager::CheckStalledFiles() {
+void PinningManager::CheckStalledFiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (auto& [id, file] : files_to_track_) {
@@ -1514,19 +1517,20 @@ void PinManager::CheckStalledFiles() {
     VLOG(1) << "Checking stalled " << id << " " << Quote(path);
     drivefs_->GetMetadataByStableId(
         static_cast<int64_t>(id),
-        base::BindOnce(&PinManager::OnMetadataForModifiedFile, GetWeakPtr(), id,
-                       path));
+        base::BindOnce(&PinningManager::OnMetadataForModifiedFile, GetWeakPtr(),
+                       id, path));
   }
 
   SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&PinManager::CheckStalledFiles, GetWeakPtr()),
+      FROM_HERE,
+      base::BindOnce(&PinningManager::CheckStalledFiles, GetWeakPtr()),
       kStalledFileInterval);
 }
 
-void PinManager::OnMetadataForCreatedFile(const Id id,
-                                          const Path& path,
-                                          const drive::FileError error,
-                                          const FileMetadataPtr metadata) {
+void PinningManager::OnMetadataForCreatedFile(const Id id,
+                                              const Path& path,
+                                              const drive::FileError error,
+                                              const FileMetadataPtr metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error != drive::FILE_ERROR_OK) {
@@ -1546,10 +1550,10 @@ void PinManager::OnMetadataForCreatedFile(const Id id,
   }
 }
 
-void PinManager::OnMetadataForModifiedFile(const Id id,
-                                           const Path& path,
-                                           const drive::FileError error,
-                                           const FileMetadataPtr metadata) {
+void PinningManager::OnMetadataForModifiedFile(const Id id,
+                                               const Path& path,
+                                               const drive::FileError error,
+                                               const FileMetadataPtr metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error != drive::FILE_ERROR_OK) {
@@ -1602,7 +1606,7 @@ void PinManager::OnMetadataForModifiedFile(const Id id,
   }
 }
 
-void PinManager::SetOnline(const bool online) {
+void PinningManager::SetOnline(const bool online) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(2) << "Online: " << online << ", battery: " << is_battery_ok_;
   is_online_ = online;
@@ -1618,7 +1622,7 @@ void PinManager::SetOnline(const bool online) {
   }
 }
 
-PinManager::Observer::~Observer() {
+PinningManager::Observer::~Observer() {
   CHECK(!IsInObserverList());
 }
 

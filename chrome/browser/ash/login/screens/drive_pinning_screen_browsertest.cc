@@ -75,7 +75,7 @@ class DrivePinningBaseScreenTest : public OobeBaseTest {
         &DrivePinningBaseScreenTest::HandleScreenExit, base::Unretained(this)));
   }
 
-  void SetPinManagerProgress(Progress progress) {
+  void SetPinningManagerProgress(Progress progress) {
     WizardController::default_controller()
         ->GetScreen<DrivePinningScreen>()
         ->OnProgressForTest(progress);
@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(DrivePinningScreenTest, Accept) {
   current_progress.free_space = 100LL * 1024LL * 1024LL * 1024LL;
   current_progress.required_space = 512 * 1024 * 1024;
 
-  SetPinManagerProgress(current_progress);
+  SetPinningManagerProgress(current_progress);
   ShowDrivePinningScreen();
 
   test::OobeJS().ExpectVisiblePath(kDrivePinningDialoguePath);
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(DrivePinningScreenTest, Decline) {
   current_progress.free_space = 100LL * 1024LL * 1024LL * 1024LL;
   current_progress.required_space = 512 * 1024 * 1024;
 
-  SetPinManagerProgress(current_progress);
+  SetPinningManagerProgress(current_progress);
   ShowDrivePinningScreen();
 
   test::OobeJS().ExpectVisiblePath(kDrivePinningDialoguePath);
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_P(DrivePinningScreenTest, ScreenSkippedOnError) {
   Progress current_progress = Progress();
   current_progress.stage = GetParam();
 
-  SetPinManagerProgress(current_progress);
+  SetPinningManagerProgress(current_progress);
   ShowDrivePinningScreen();
 
   WaitForScreenExit();
@@ -232,8 +232,9 @@ class DrivePinningIntegrationServiceTest : public DrivePinningBaseScreenTest {
 
   void WaitForSuccessStateChange() {
     auto* drive_service = GetDriveServiceForActiveProfile();
-    auto* const pin_manager = drive_service->GetPinManager();
-    if (pin_manager && pin_manager->GetProgress().stage == Stage::kSuccess) {
+    auto* const pinning_manager = drive_service->GetPinningManager();
+    if (pinning_manager &&
+        pinning_manager->GetProgress().stage == Stage::kSuccess) {
       return;
     }
 

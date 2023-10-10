@@ -4,7 +4,7 @@
 
 module ash.settings.google_drive.mojom;
 
-import "chromeos/ash/components/drivefs/mojom/pin_manager_types.mojom";
+import "chromeos/ash/components/drivefs/mojom/pinning_manager_types.mojom";
 
 // Contains the current status of the underlying pin manager as it progress
 // through the various stages.
@@ -18,7 +18,7 @@ struct Status {
   string free_space;
 
   // The current stage the pin manager is going through.
-  drivefs.pin_manager_types.mojom.Stage stage;
+  drivefs.pinning_manager_types.mojom.Stage stage;
 
   // The number of listed files during the `kListingFiles` stage.
   uint64 listed_files;

@@ -49,7 +49,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/drivefs/drivefs_bootstrap.h"
-#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
+#include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -87,7 +87,7 @@ using base::SequencedTaskRunner;
 using base::TimeDelta;
 using content::BrowserThread;
 using drivefs::mojom::DriveFs;
-using drivefs::pinning::PinManager;
+using drivefs::pinning::PinningManager;
 using prefs::kDriveFsBulkPinningEnabled;
 using util::ConnectionStatus;
 
@@ -952,9 +952,9 @@ void DriveIntegrationService::RemoveDriveMountPoint() {
   }
   GetDriveFsHost()->Unmount();
 
-  if (pin_manager_) {
-    pin_manager_->Stop();
-    pin_manager_.reset();
+  if (pinning_manager_) {
+    pinning_manager_->Stop();
+    pinning_manager_.reset();
   }
 }
 
@@ -1041,23 +1041,23 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
   if (util::IsDriveFsBulkPinningAvailable(profile_)) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-    // Instantiate a PinManager.
-    DCHECK(!pin_manager_);
+    // Instantiate a PinningManager.
+    DCHECK(!pinning_manager_);
     const int queue_size = ash::features::GetDriveFsBulkPinningQueueSize();
     VLOG(1) << "Bulk-pinning queue size: " << queue_size;
-    pin_manager_ = std::make_unique<PinManager>(
+    pinning_manager_ = std::make_unique<PinningManager>(
         profile_->GetPath(), mount_path, GetDriveFsInterface(), queue_size);
 
-    // Listen to progress events from this PinManager.
-    pin_manager_->AddObserver(this);
+    // Listen to progress events from this PinningManager.
+    pinning_manager_->AddObserver(this);
     if (!observers_.empty()) {
-      OnProgress(pin_manager_->GetProgress());
+      OnProgress(pinning_manager_->GetProgress());
     }
 
-    pin_manager_->SetDriveFsHost(GetDriveFsHost());
+    pinning_manager_->SetDriveFsHost(GetDriveFsHost());
 
-    // Ensure the new PinManager has the right view of the network state.
-    pin_manager_->SetOnline(is_online_);
+    // Ensure the new PinningManager has the right view of the network state.
+    pinning_manager_->SetOnline(is_online_);
 
     ToggleBulkPinning();
 
@@ -1210,16 +1210,16 @@ void DriveIntegrationService::PinFiles(
 void DriveIntegrationService::ToggleBulkPinning() {
   VLOG(1) << "ToggleBulkPinning";
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!pin_manager_) {
+  if (!pinning_manager_) {
     VLOG(1) << "No bulk-pinning manager";
     return;
   }
 
   if (GetPrefs()->GetBoolean(kDriveFsBulkPinningEnabled)) {
-    pin_manager_->ShouldPin();
-    pin_manager_->Start();
+    pinning_manager_->ShouldPin();
+    pinning_manager_->Start();
   } else {
-    pin_manager_->Stop();
+    pinning_manager_->Stop();
   }
 }
 
@@ -1630,9 +1630,9 @@ void DriveIntegrationService::GetReadOnlyAuthenticationToken(
   auth_service_->StartAuthentication(std::move(callback));
 }
 
-PinManager* DriveIntegrationService::GetPinManager() const {
+PinningManager* DriveIntegrationService::GetPinningManager() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return pin_manager_.get();
+  return pinning_manager_.get();
 }
 
 void DriveIntegrationService::RegisterDriveFsNativeMessageHostBridge(
@@ -1675,8 +1675,8 @@ void DriveIntegrationService::OnNetworkChanged() {
     AddDriveMountPoint();
   }
 
-  if (pin_manager_) {
-    pin_manager_->SetOnline(is_online_);
+  if (pinning_manager_) {
+    pinning_manager_->SetOnline(is_online_);
   }
 }
 

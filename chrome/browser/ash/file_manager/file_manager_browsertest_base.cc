@@ -124,7 +124,7 @@
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/disks/mount_point.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
-#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
+#include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/smbfs/smbfs_host.h"
@@ -3368,12 +3368,12 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
-  if (name == "forcePinManagerSpaceCheck") {
+  if (name == "forcePinningManagerSpaceCheck") {
     auto* integration_service =
         drive::DriveIntegrationServiceFactory::FindForProfile(profile());
     ASSERT_NE(integration_service, nullptr);
-    ASSERT_NE(integration_service->GetPinManager(), nullptr);
-    integration_service->GetPinManager()->CheckFreeSpace();
+    ASSERT_NE(integration_service->GetPinningManager(), nullptr);
+    integration_service->GetPinningManager()->CheckFreeSpace();
     return;
   }
 
@@ -3391,8 +3391,8 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     auto* integration_service =
         drive::DriveIntegrationServiceFactory::FindForProfile(profile());
     ASSERT_NE(integration_service, nullptr);
-    ASSERT_NE(integration_service->GetPinManager(), nullptr);
-    integration_service->GetPinManager()->SetOnline(enabled.value());
+    ASSERT_NE(integration_service->GetPinningManager(), nullptr);
+    integration_service->GetPinningManager()->SetOnline(enabled.value());
     return;
   }
 
@@ -3400,8 +3400,9 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     auto* integration_service =
         drive::DriveIntegrationServiceFactory::FindForProfile(profile());
     ASSERT_NE(integration_service, nullptr);
-    ASSERT_NE(integration_service->GetPinManager(), nullptr);
-    ASSERT_TRUE(integration_service->GetPinManager()->CalculateRequiredSpace());
+    ASSERT_NE(integration_service->GetPinningManager(), nullptr);
+    ASSERT_TRUE(
+        integration_service->GetPinningManager()->CalculateRequiredSpace());
     return;
   }
 
@@ -3409,8 +3410,8 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     auto* integration_service =
         drive::DriveIntegrationServiceFactory::FindForProfile(profile());
     ASSERT_NE(integration_service, nullptr);
-    ASSERT_NE(integration_service->GetPinManager(), nullptr);
-    auto progress = integration_service->GetPinManager()->GetProgress();
+    ASSERT_NE(integration_service->GetPinningManager(), nullptr);
+    auto progress = integration_service->GetPinningManager()->GetProgress();
     *output = drivefs::pinning::ToString(progress.stage);
     return;
   }
@@ -3419,8 +3420,8 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     auto* integration_service =
         drive::DriveIntegrationServiceFactory::FindForProfile(profile());
     ASSERT_NE(integration_service, nullptr);
-    ASSERT_NE(integration_service->GetPinManager(), nullptr);
-    auto progress = integration_service->GetPinManager()->GetProgress();
+    ASSERT_NE(integration_service->GetPinningManager(), nullptr);
+    auto progress = integration_service->GetPinningManager()->GetProgress();
     *output = base::NumberToString(progress.required_space);
     return;
   }
@@ -3432,8 +3433,8 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     auto* integration_service =
         drive::DriveIntegrationServiceFactory::FindForProfile(profile());
     ASSERT_NE(integration_service, nullptr);
-    ASSERT_NE(integration_service->GetPinManager(), nullptr);
-    integration_service->GetPinManager()->SetShouldPinFilesForTesting(
+    ASSERT_NE(integration_service->GetPinningManager(), nullptr);
+    integration_service->GetPinningManager()->SetShouldPinFilesForTesting(
         enabled.value());
     return;
   }

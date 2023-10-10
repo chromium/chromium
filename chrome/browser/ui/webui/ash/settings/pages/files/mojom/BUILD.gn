@@ -17,7 +17,7 @@ mojom("mojom") {
   use_typescript_sources = true
 
   public_deps = [
-    "//chromeos/ash/components/drivefs/mojom:pin_manager_types",
+    "//chromeos/ash/components/drivefs/mojom:pinning_manager_types",
     "//mojo/public/mojom/base",
   ]
 }

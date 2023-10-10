@@ -503,7 +503,7 @@ testcase.toolbarCloudIconShouldNotShowWhenCannotGetFreeSpace = async () => {
 
   // Force the bulk pinning manager to check for free space again (this
   // currently is done on a 60s poll).
-  await sendTestMessage({name: 'forcePinManagerSpaceCheck'});
+  await sendTestMessage({name: 'forcePinningManagerSpaceCheck'});
   await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
 };
 

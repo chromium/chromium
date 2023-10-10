@@ -1724,10 +1724,10 @@ testcase.driveItemsOutOfViewportShouldUpdateTheirSyncStatus = async () => {
 
 /**
  * Tests that when bulk pinning is enabled the queued state is shown for all
- * files that the PinManager is tracking but has not yet pinned.
+ * files that the PinningManager is tracking but has not yet pinned.
  */
-testcase.driveAllItemsShouldBeQueuedIfTrackedByPinManager = async () => {
-  // Stop the PinManager from pinning files.
+testcase.driveAllItemsShouldBeQueuedIfTrackedByPinningManager = async () => {
+  // Stop the PinningManager from pinning files.
   await sendTestMessage({name: 'setBulkPinningShouldPinFiles', enabled: false});
 
   // Add a single empty file and load Files app up at the Drive root.

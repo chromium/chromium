@@ -1026,7 +1026,7 @@ export class RemoteCallFilesApp extends RemoteCall {
   /**
    * Wait for the underlying bulk pinning manager to enter the specified stage.
    * @param {string} want The stage the bulk pinning is expected to be in. This
-   *     is a string relating to the stage defined in the `PinManager`.
+   *     is a string relating to the stage defined in the `PinningManager`.
    */
   async waitForBulkPinningStage(want) {
     const caller = getCaller();

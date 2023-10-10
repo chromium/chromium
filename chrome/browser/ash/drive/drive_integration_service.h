@@ -22,7 +22,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
-#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
+#include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -89,7 +89,7 @@ struct QuickAccessItem {
 // created per-profile.
 class DriveIntegrationService : public KeyedService,
                                 public drivefs::DriveFsHost::MountObserver,
-                                drivefs::pinning::PinManager::Observer,
+                                drivefs::pinning::PinningManager::Observer,
                                 ash::NetworkStateHandler::Observer {
  public:
   using DriveFsMojoListenerFactory = base::RepeatingCallback<
@@ -207,7 +207,7 @@ class DriveIntegrationService : public KeyedService,
   void OnMountFailed(MountFailure failure,
                      absl::optional<base::TimeDelta> remount_delay) override;
 
-  // PinManager::Observer implementation
+  // PinningManager::Observer implementation
   using Progress = drivefs::pinning::Progress;
   void OnProgress(const Progress& progress) override;
 
@@ -221,9 +221,10 @@ class DriveIntegrationService : public KeyedService,
   // Returns the DriveFsHost if it is enabled.
   drivefs::DriveFsHost* GetDriveFsHost() const;
 
-  // Returns the PinManager if DriveFS is mounted and bulk-pinning is enabled.
-  using PinManager = drivefs::pinning::PinManager;
-  PinManager* GetPinManager() const;
+  // Returns the PinningManager if DriveFS is mounted and bulk-pinning is
+  // enabled.
+  using PinningManager = drivefs::pinning::PinningManager;
+  PinningManager* GetPinningManager() const;
 
   // Returns the mojo interface to the DriveFs daemon if it is enabled and
   // connected.
@@ -518,7 +519,7 @@ class DriveIntegrationService : public KeyedService,
 
   std::unique_ptr<DriveFsHolder> drivefs_holder_;
 
-  std::unique_ptr<PinManager> pin_manager_;
+  std::unique_ptr<PinningManager> pinning_manager_;
 
   int drivefs_total_failures_count_ = 0;
   int drivefs_consecutive_failures_count_ = 0;

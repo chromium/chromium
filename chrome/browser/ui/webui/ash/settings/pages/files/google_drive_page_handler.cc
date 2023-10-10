@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/google_drive_handler.mojom.h"
-#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
+#include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -19,7 +19,7 @@ namespace ash::settings {
 namespace {
 
 using drive::DriveIntegrationService;
-using drivefs::pinning::PinManager;
+using drivefs::pinning::PinningManager;
 using drivefs::pinning::Progress;
 
 google_drive::mojom::StatusPtr CreateStatusPtr(const Progress& progress) {
@@ -55,14 +55,14 @@ GoogleDrivePageHandler::GoogleDrivePageHandler(
 GoogleDrivePageHandler::~GoogleDrivePageHandler() = default;
 
 void GoogleDrivePageHandler::CalculateRequiredSpace() {
-  PinManager* const pin_manager = GetPinManager();
-  if (!pin_manager) {
+  PinningManager* const pinning_manager = GetPinningManager();
+  if (!pinning_manager) {
     page_->OnServiceUnavailable();
     return;
   }
 
-  NotifyProgress(pin_manager->GetProgress());
-  if (!pin_manager->CalculateRequiredSpace()) {
+  NotifyProgress(pinning_manager->GetProgress());
+  if (!pinning_manager->CalculateRequiredSpace()) {
     page_->OnServiceUnavailable();
     return;
   }
@@ -78,13 +78,13 @@ DriveIntegrationService* GoogleDrivePageHandler::GetDriveService() {
   return service && service->IsMounted() ? service : nullptr;
 }
 
-PinManager* GoogleDrivePageHandler::GetPinManager() {
+PinningManager* GoogleDrivePageHandler::GetPinningManager() {
   DriveIntegrationService* const service = GetDriveService();
-  return service ? service->GetPinManager() : nullptr;
+  return service ? service->GetPinningManager() : nullptr;
 }
 
 void GoogleDrivePageHandler::OnBulkPinProgress(const Progress& progress) {
-  if (!GetPinManager()) {
+  if (!GetPinningManager()) {
     page_->OnServiceUnavailable();
     return;
   }

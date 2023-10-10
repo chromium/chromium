@@ -41,7 +41,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/services/file_util/public/cpp/zip_file_creator.h"
-#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
+#include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/public/common/download_item.h"
 #include "components/drive/drive_notification_manager.h"
@@ -67,7 +67,7 @@ using base::Value;
 using content::BrowserThread;
 using drive::DriveIntegrationService;
 using drive::prefs::kDriveFsBulkPinningEnabled;
-using drivefs::pinning::PinManager;
+using drivefs::pinning::PinningManager;
 
 constexpr char kKey[] = "key";
 constexpr char kValue[] = "value";
@@ -598,7 +598,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
         "updateBulkPinning",
         Value(GetPrefs()->GetBoolean(kDriveFsBulkPinningEnabled)));
 
-    if (PinManager* const manager = service->GetPinManager()) {
+    if (PinningManager* const manager = service->GetPinningManager()) {
       OnBulkPinProgress(manager->GetProgress());
     }
   }

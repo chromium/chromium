@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_PIN_MANAGER_H_
-#define CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_PIN_MANAGER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_PINNING_MANAGER_H_
+#define CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_PINNING_MANAGER_H_
 
 #include <algorithm>
 #include <ostream>
@@ -29,7 +29,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
-#include "chromeos/ash/components/drivefs/mojom/pin_manager_types.mojom.h"
+#include "chromeos/ash/components/drivefs/mojom/pinning_manager_types.mojom.h"
 #include "chromeos/ash/components/file_manager/speedometer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/drive/file_errors.h"
@@ -64,7 +64,7 @@ enum HumanReadableSize : int64_t;
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
 std::ostream& operator<<(std::ostream& out, HumanReadableSize size);
 
-using pin_manager_types::mojom::Stage;
+using pinning_manager_types::mojom::Stage;
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
 std::string ToString(Stage stage);
@@ -150,11 +150,11 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
   // Estimated time remaining to pin and cache all the files.
   base::TimeDelta remaining_time = base::TimeDelta::Max();
 
-  // Should the PinManager actually pin files, or should it stop after checking
-  // the space requirements?
+  // Should the PinningManager actually pin files, or should it stop after
+  // checking the space requirements?
   bool should_pin = true;
 
-  // Has the PinManager ever emptied its set of tracking items?
+  // Has the PinningManager ever emptied its set of tracking items?
   bool emptied_queue = false;
 
   Progress();
@@ -174,7 +174,7 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
 //  - Maintain pinning of files that are newly created.
 //  - Rebuild the progress of bulk pinned items (if turned off mid way through a
 //    bulk pinning event).
-class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinningManager
     : DriveFsHost::Observer,
       ash::UserDataAuthClient::Observer,
       ash::SpacedClient::Observer,
@@ -182,15 +182,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
  public:
   using Path = base::FilePath;
 
-  PinManager(Path profile_path,
-             Path mount_path,
-             mojom::DriveFs* drivefs,
-             int64_t queue_size);
+  PinningManager(Path profile_path,
+                 Path mount_path,
+                 mojom::DriveFs* drivefs,
+                 int64_t queue_size);
 
-  PinManager(const PinManager&) = delete;
-  PinManager& operator=(const PinManager&) = delete;
+  PinningManager(const PinningManager&) = delete;
+  PinningManager& operator=(const PinningManager&) = delete;
 
-  ~PinManager() override;
+  ~PinningManager() override;
 
   void SetDriveFsHost(DriveFsHost* const host) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -255,7 +255,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   void OnError(const mojom::DriveError& error) override;
   void OnItemProgress(const mojom::ProgressEvent& event) override;
 
-  base::WeakPtr<PinManager> GetWeakPtr() {
+  base::WeakPtr<PinningManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -290,8 +290,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Starts checking for free space.
   void CheckFreeSpace();
 
-  // Whether the supplied `id` is currently being tracked by the PinManager and
-  // that it is unpinned.
+  // Whether the supplied `id` is currently being tracked by the PinningManager
+  // and that it is unpinned.
   bool IsTrackedAndUnpinned(Id id) const;
 
   // For tests don't pin files after enumerating.
@@ -528,45 +528,46 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<PinManager> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PinningManager> weak_ptr_factory_{this};
 
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Add);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Update);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Remove);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnSyncingEvent);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnSyncingStatusUpdate);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnItemProgress);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, CanPin);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnFileCreated);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnFileModified);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnFileDeleted);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnFilePinned);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnFilesChanged);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnMetadataForCreatedFile);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnMetadataForModifiedFile);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, CheckFreeSpace);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, CannotGetFreeSpace2);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, NotEnoughSpace2);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, NotEnoughSpace3);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnSpaceUpdate);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, StartMonitoringSpace);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, SetOnlineAndBatteryOk);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnTransientError);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnError);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, StartWhenInProgress);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, StartPinning);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, PinSomeFiles);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, CheckStalledFiles);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, NotifyProgress);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnSearchResult);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, HandleQueryItem);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, DropQuery);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, CalculateRequiredSpace);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, Add);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, Update);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, Remove);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, OnSyncingEvent);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, OnSyncingStatusUpdate);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, OnItemProgress);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, CanPin);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, OnFileCreated);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, OnFileModified);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, OnFileDeleted);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, OnFilePinned);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, OnFilesChanged);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, OnMetadataForCreatedFile);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest,
+                           OnMetadataForModifiedFile);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, CheckFreeSpace);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, CannotGetFreeSpace2);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, NotEnoughSpace2);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, NotEnoughSpace3);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, OnSpaceUpdate);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, StartMonitoringSpace);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, SetOnlineAndBatteryOk);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, OnTransientError);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, OnError);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, StartWhenInProgress);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, StartPinning);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, PinSomeFiles);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, CheckStalledFiles);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, NotifyProgress);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, OnSearchResult);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, HandleQueryItem);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, DropQuery);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, CalculateRequiredSpace);
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
-std::ostream& operator<<(std::ostream& out, PinManager::Id id);
+std::ostream& operator<<(std::ostream& out, PinningManager::Id id);
 
 }  // namespace drivefs::pinning
 
-#endif  // CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_PIN_MANAGER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_PINNING_MANAGER_H_
