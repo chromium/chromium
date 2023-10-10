@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/metrics/ios_feed_activity_metrics_provider.h"
+
 #import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
+#import "ios/chrome/browser/metrics/constants.h"
 
 IOSFeedActivityMetricsProvider::IOSFeedActivityMetricsProvider() {}
 
@@ -14,7 +16,7 @@ void IOSFeedActivityMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   // Retrieve activity bucket from storage.
   int activityBucket = (int)[[NSUserDefaults standardUserDefaults]
-      integerForKey:kActivityBucketKey];
+      integerForKey:@(kActivityBucketKey)];
   base::UmaHistogramExactLinear(kAllFeedsActivityBucketsByProviderHistogram,
                                 activityBucket, 4);
 }

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/metrics/ios_feed_activity_metrics_provider.h"
 
 #import "base/test/metrics/histogram_tester.h"
+#import "ios/chrome/browser/metrics/constants.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -26,7 +27,7 @@ class IOSFeedActivityMetricsProviderTest : public PlatformTest {
 TEST_F(IOSFeedActivityMetricsProviderTest, ProvideCurrentSessionData) {
   IOSFeedActivityMetricsProvider provider;
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  [defaults setInteger:1 forKey:kActivityBucketKey];
+  [defaults setInteger:1 forKey:@(kActivityBucketKey)];
   provider.ProvideCurrentSessionData(nullptr /* uma_proto */);
   histogram_tester_->ExpectBucketCount(
       kAllFeedsActivityBucketsByProviderHistogram, 1, 1);

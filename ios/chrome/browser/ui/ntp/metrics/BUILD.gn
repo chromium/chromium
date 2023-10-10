@@ -26,6 +26,7 @@ source_set("metrics") {
     "//components/prefs",
     "//ios/chrome/browser/discover_feed:constants",
     "//ios/chrome/browser/discover_feed:discover_feed_refresher",
+    "//ios/chrome/browser/metrics:constants",
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/ui/content_suggestions:constants",

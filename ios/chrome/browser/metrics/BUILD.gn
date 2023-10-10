@@ -31,6 +31,13 @@ source_set("accessor") {
   ]
 }
 
+source_set("constants") {
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
+}
+
 source_set("google_groups_updater") {
   sources = [
     "google_groups_updater_service_factory.h",
@@ -84,6 +91,7 @@ source_set("metrics") {
   deps = [
     ":accessor",
     ":chrome_browser_state_client",
+    ":constants",
     "//base",
     "//components/browser_sync",
     "//components/crash/core/common",
@@ -157,6 +165,7 @@ source_set("unit_tests") {
   deps = [
     ":accessor",
     ":chrome_browser_state_client",
+    ":constants",
     ":metrics",
     "//base",
     "//base/test:test_support",

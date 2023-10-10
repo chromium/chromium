@@ -7,10 +7,6 @@
 
 #include "components/metrics/metrics_provider.h"
 
-NSString* const kActivityBucketKey = @"FeedActivityBucket";
-const char kAllFeedsActivityBucketsByProviderHistogram[] =
-    "ContentSuggestions.Feed.AllFeeds.Activity.ByProvider";
-
 class IOSFeedActivityMetricsProvider : public metrics::MetricsProvider {
  public:
   explicit IOSFeedActivityMetricsProvider();

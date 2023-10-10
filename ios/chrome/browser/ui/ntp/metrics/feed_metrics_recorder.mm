@@ -12,6 +12,7 @@
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_refresher.h"
+#import "ios/chrome/browser/metrics/constants.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
@@ -955,7 +956,7 @@ using feed::FeedUserActionType;
 
   // Retrieve activity bucket from storage.
   FeedActivityBucket activityBucket =
-      (FeedActivityBucket)[defaults integerForKey:kActivityBucketKey];
+      (FeedActivityBucket)[defaults integerForKey:@(kActivityBucketKey)];
 
   // Calculate activity buckets.
   // Check if the array is initialized.
@@ -1006,7 +1007,7 @@ using feed::FeedUserActionType;
       CHECK(NO);
       break;
   }
-  [defaults setInteger:(int)activityBucket forKey:kActivityBucketKey];
+  [defaults setInteger:(int)activityBucket forKey:@(kActivityBucketKey)];
 
   // Activity Buckets Daily Run.
   [self recordActivityBuckets:activityBucket];

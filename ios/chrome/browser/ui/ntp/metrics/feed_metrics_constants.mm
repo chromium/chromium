@@ -30,7 +30,6 @@ const char kActivityBucketLastReportedDateKey[] =
     "ActivityBucketLastReportedDate";
 NSString* const kActivityBucketLastReportedDateArrayKey =
     @"ActivityBucketLastReportedDateArray";
-NSString* const kActivityBucketKey = @"FeedActivityBucket";
 
 #pragma mark - Histograms
 
