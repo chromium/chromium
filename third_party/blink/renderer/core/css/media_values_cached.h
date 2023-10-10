@@ -26,7 +26,9 @@ namespace blink {
 class CORE_EXPORT MediaValuesCached final : public MediaValues {
  public:
   struct CORE_EXPORT MediaValuesCachedData final {
-    DISALLOW_NEW();
+    USING_FAST_MALLOC(MediaValuesCachedData);
+
+   public:
     // Members variables must be thread safe, since they're copied to the parser
     // thread
     double viewport_width = 0;
@@ -87,46 +89,6 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
 
     MediaValuesCachedData();
     explicit MediaValuesCachedData(Document&);
-
-    MediaValuesCachedData DeepCopy() const {
-      MediaValuesCachedData data;
-      data.viewport_width = viewport_width;
-      data.viewport_height = viewport_height;
-      data.device_width = device_width;
-      data.device_height = device_height;
-      data.device_pixel_ratio = device_pixel_ratio;
-      data.device_supports_hdr = device_supports_hdr;
-      data.color_bits_per_component = color_bits_per_component;
-      data.monochrome_bits_per_component = monochrome_bits_per_component;
-      data.primary_pointer_type = primary_pointer_type;
-      data.available_pointer_types = available_pointer_types;
-      data.primary_hover_type = primary_hover_type;
-      data.output_device_update_ability_type =
-          output_device_update_ability_type;
-      data.available_hover_types = available_hover_types;
-      data.em_size = em_size;
-      data.ex_size = ex_size;
-      data.ch_size = ch_size;
-      data.ch_size = ic_size;
-      data.three_d_enabled = three_d_enabled;
-      data.strict_mode = strict_mode;
-      data.media_type = media_type;
-      data.display_mode = display_mode;
-      data.color_gamut = color_gamut;
-      data.preferred_color_scheme = preferred_color_scheme;
-      data.preferred_contrast = preferred_contrast;
-      data.prefers_reduced_motion = prefers_reduced_motion;
-      data.prefers_reduced_data = prefers_reduced_data;
-      data.prefers_reduced_transparency = prefers_reduced_transparency;
-      data.forced_colors = forced_colors;
-      data.navigation_controls = navigation_controls;
-      data.horizontal_viewport_segments = horizontal_viewport_segments;
-      data.vertical_viewport_segments = vertical_viewport_segments;
-      data.device_posture = device_posture;
-      data.inverted_colors = inverted_colors;
-      data.scripting = scripting;
-      return data;
-    }
   };
 
   MediaValuesCached();
@@ -203,15 +165,5 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
 };
 
 }  // namespace blink
-
-namespace WTF {
-
-template <>
-struct CrossThreadCopier<blink::MediaValuesCached::MediaValuesCachedData> {
-  typedef blink::MediaValuesCached::MediaValuesCachedData Type;
-  static Type Copy(const Type& data) { return data.DeepCopy(); }
-};
-
-}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_VALUES_CACHED_H_

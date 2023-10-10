@@ -778,7 +778,8 @@ class TokenPreloadScanner::StartTagScanner {
 TokenPreloadScanner::TokenPreloadScanner(
     const KURL& document_url,
     std::unique_ptr<CachedDocumentParameters> document_parameters,
-    const MediaValuesCached::MediaValuesCachedData& media_values_cached_data,
+    std::unique_ptr<MediaValuesCached::MediaValuesCachedData>
+        media_values_cached_data,
     const ScannerType scanner_type,
     Vector<ElementLocator> locators)
     : document_url_(document_url),
@@ -790,12 +791,11 @@ TokenPreloadScanner::TokenPreloadScanner(
       seen_img_(false),
       template_count_(0),
       document_parameters_(std::move(document_parameters)),
-      media_values_(
-          MakeGarbageCollected<MediaValuesCached>(media_values_cached_data)),
+      media_values_cached_data_(std::move(media_values_cached_data)),
       scanner_type_(scanner_type),
       lcp_element_matcher_(std::move(locators)) {
-  DCHECK(document_parameters_.get());
-  DCHECK(media_values_.Get());
+  CHECK(document_parameters_.get());
+  CHECK(media_values_cached_data_.get());
   DCHECK(document_url.IsValid());
   css_scanner_.SetReferrerPolicy(document_parameters_->referrer_policy);
 }
@@ -855,7 +855,7 @@ void TokenPreloadScanner::HandleMetaNameAttribute(
   String content_attribute_value(content_attribute->Value());
   if (EqualIgnoringASCIICase(name_attribute_value, "viewport")) {
     HandleMetaViewport(content_attribute_value, document_parameters_.get(),
-                       media_values_.Get(), viewport);
+                       EnsureMediaValues(), viewport);
     return;
   }
 
@@ -1023,15 +1023,18 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
         picture_data_.picked = false;
       }
 
+      MediaValuesCached* media_values = EnsureMediaValues();
       StartTagScanner scanner(
-          tag_impl, media_values_, document_parameters_->integrity_features,
+          tag_impl, media_values, document_parameters_->integrity_features,
           scanner_type_, &document_parameters_->disabled_image_types);
       scanner.ProcessAttributes(token.Attributes());
 
-      if (in_picture_ && media_values_->Width())
+      if (in_picture_ && media_values->Width()) {
         scanner.HandlePictureSourceURL(picture_data_);
-      if (in_style_)
+      }
+      if (in_style_) {
         css_scanner_.SetMediaMatches(scanner.GetMatched());
+      }
       std::unique_ptr<PreloadRequest> request = scanner.CreatePreloadRequest(
           predicted_base_element_url_, picture_data_, *document_parameters_,
           exclusion_info_.get(), seen_img_ || seen_body_);
@@ -1067,17 +1070,18 @@ std::unique_ptr<HTMLPreloadScanner> HTMLPreloadScanner::Create(
     HTMLParserOptions options,
     TokenPreloadScanner::ScannerType scanner_type) {
   Vector<ElementLocator> locators;
-    if (LocalFrame* frame = document.GetFrame()) {
-      if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
-        locators = lcpp->lcp_element_locators();
-      }
+  if (LocalFrame* frame = document.GetFrame()) {
+    if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
+      locators = lcpp->lcp_element_locators();
     }
+  }
 
   return std::make_unique<HTMLPreloadScanner>(
       std::make_unique<HTMLTokenizer>(options), document.Url(),
       std::make_unique<CachedDocumentParameters>(&document),
-      MediaValuesCached::MediaValuesCachedData(document), scanner_type,
-      /* script_token_scanner=*/nullptr, TakePreloadFn(), locators);
+      std::make_unique<MediaValuesCached::MediaValuesCachedData>(document),
+      scanner_type, /* script_token_scanner=*/nullptr, TakePreloadFn(),
+      locators);
 }
 
 // static
@@ -1089,17 +1093,17 @@ HTMLPreloadScanner::BackgroundPtr HTMLPreloadScanner::CreateBackground(
   auto* document = parser->GetDocument();
 
   Vector<ElementLocator> locators;
-    if (LocalFrame* frame = document->GetFrame()) {
-      if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
-        locators = lcpp->lcp_element_locators();
-      }
+  if (LocalFrame* frame = document->GetFrame()) {
+    if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
+      locators = lcpp->lcp_element_locators();
     }
+  }
 
   return BackgroundPtr(
       new HTMLPreloadScanner(
           std::make_unique<HTMLTokenizer>(options), document->Url(),
           std::make_unique<CachedDocumentParameters>(document),
-          MediaValuesCached::MediaValuesCachedData(*document),
+          std::make_unique<MediaValuesCached::MediaValuesCachedData>(*document),
           TokenPreloadScanner::ScannerType::kMainDocument,
           BackgroundHTMLScanner::ScriptTokenScanner::Create(parser),
           std::move(take_preload), locators),
@@ -1110,7 +1114,8 @@ HTMLPreloadScanner::HTMLPreloadScanner(
     std::unique_ptr<HTMLTokenizer> tokenizer,
     const KURL& document_url,
     std::unique_ptr<CachedDocumentParameters> document_parameters,
-    const MediaValuesCached::MediaValuesCachedData& media_values_cached_data,
+    std::unique_ptr<MediaValuesCached::MediaValuesCachedData>
+        media_values_cached_data,
     const TokenPreloadScanner::ScannerType scanner_type,
     std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
         script_token_scanner,
@@ -1118,7 +1123,7 @@ HTMLPreloadScanner::HTMLPreloadScanner(
     Vector<ElementLocator> locators)
     : scanner_(document_url,
                std::move(document_parameters),
-               media_values_cached_data,
+               std::move(media_values_cached_data),
                scanner_type,
                std::move(locators)),
       tokenizer_(std::move(tokenizer)),

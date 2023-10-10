@@ -104,7 +104,7 @@ class TokenPreloadScanner {
 
   TokenPreloadScanner(const KURL& document_url,
                       std::unique_ptr<CachedDocumentParameters>,
-                      const MediaValuesCached::MediaValuesCachedData&,
+                      std::unique_ptr<MediaValuesCached::MediaValuesCachedData>,
                       const ScannerType,
                       Vector<ElementLocator>);
   TokenPreloadScanner(const TokenPreloadScanner&) = delete;
@@ -138,6 +138,14 @@ class TokenPreloadScanner {
 
   void UpdatePredictedBaseURL(const HTMLToken&);
 
+  MediaValuesCached* EnsureMediaValues() {
+    if (!media_values_) {
+      media_values_ =
+          MakeGarbageCollected<MediaValuesCached>(*media_values_cached_data_);
+    }
+    return media_values_.Get();
+  }
+
   struct PictureData {
     PictureData() : source_size(0.0), source_size_set(false), picked(false) {}
     String source_url;
@@ -159,7 +167,9 @@ class TokenPreloadScanner {
   PictureData picture_data_;
   size_t template_count_;
   std::unique_ptr<CachedDocumentParameters> document_parameters_;
-  CrossThreadPersistent<MediaValuesCached> media_values_;
+  std::unique_ptr<MediaValuesCached::MediaValuesCachedData>
+      media_values_cached_data_;
+  Persistent<MediaValuesCached> media_values_;
   ScannerType scanner_type_;
   element_locator::TokenStreamMatcher lcp_element_matcher_;
 };
@@ -196,7 +206,7 @@ class CORE_EXPORT HTMLPreloadScanner
   HTMLPreloadScanner(std::unique_ptr<HTMLTokenizer>,
                      const KURL& document_url,
                      std::unique_ptr<CachedDocumentParameters>,
-                     const MediaValuesCached::MediaValuesCachedData&,
+                     std::unique_ptr<MediaValuesCached::MediaValuesCachedData>,
                      const TokenPreloadScanner::ScannerType,
                      std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
                          script_token_scanner,
