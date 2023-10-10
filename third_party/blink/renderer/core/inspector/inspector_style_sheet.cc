@@ -357,6 +357,12 @@ void StyleSheetHandler::ObserveProperty(unsigned start_offset,
                                         unsigned end_offset,
                                         bool is_important,
                                         bool is_parsed) {
+  // Pop off data for a previous invalid rule.
+  if (current_rule_data_) {
+    current_rule_data_ = nullptr;
+    current_rule_data_stack_.pop_back();
+  }
+
   if (current_rule_data_stack_.empty() ||
       !current_rule_data_stack_.back()->HasProperties())
     return;
@@ -394,6 +400,11 @@ void StyleSheetHandler::ObserveProperty(unsigned start_offset,
 
 void StyleSheetHandler::ObserveComment(unsigned start_offset,
                                        unsigned end_offset) {
+  // Pop off data for a previous invalid rule.
+  if (current_rule_data_) {
+    current_rule_data_ = nullptr;
+    current_rule_data_stack_.pop_back();
+  }
   DCHECK_LE(end_offset, parsed_text_.length());
 
   if (current_rule_data_stack_.empty() ||

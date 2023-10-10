@@ -1,0 +1,16 @@
+The test verifies functionality of protocol methods working correctly with CSS declarations that appear after invalid nested rules
+*div* {    user-agent    readonly
+    display: block; @[undefined-undefined]
+}
+*#target* {    regular
+    width: 42px; @[1:2-1:14]
+    color: green; @[3:2-3:15]
+    width: 42px; @[undefined-undefined]
+    color: green; @[undefined-undefined]
+}
+*#target* {    regular
+    z-index: 42; @[7:2-7:14]
+    background-color: green; @[9:2-9:32]
+    z-index: 42; @[undefined-undefined]
+}
+

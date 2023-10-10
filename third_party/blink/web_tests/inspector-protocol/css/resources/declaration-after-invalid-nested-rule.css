@@ -1,0 +1,11 @@
+#target {
+  width: 42px;
+  &!{} height: 100px;
+  color: green;
+}
+
+#target {
+  z-index: 42;
+  &!{} height: 100px;
+  /* background-color: green; */
+}
