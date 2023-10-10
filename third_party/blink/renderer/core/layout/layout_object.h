@@ -3344,19 +3344,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return context && !context->ShouldPaintChildren();
   }
 
-  // This flag caches StyleRef().HasBorderDecoration() &&
-  // !Table()->ShouldCollapseBorders().
-  bool HasNonCollapsedBorderDecoration() const {
-    NOT_DESTROYED();
-    DCHECK_GE(GetDocument().Lifecycle().GetState(),
-              DocumentLifecycle::kInPerformLayout);
-    return bitfields_.HasNonCollapsedBorderDecoration();
-  }
-  void SetHasNonCollapsedBorderDecoration(bool b) {
-    NOT_DESTROYED();
-    bitfields_.SetHasNonCollapsedBorderDecoration(b);
-  }
-
   bool BeingDestroyed() const {
     NOT_DESTROYED();
     return bitfields_.BeingDestroyed();
@@ -3907,7 +3894,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           is_global_root_scroller_(false),
           registered_as_first_line_image_observer_(false),
           is_html_legend_element_(false),
-          has_non_collapsed_border_decoration_(false),
           being_destroyed_(false),
           is_table_column_constraints_dirty_(false),
           is_grid_placement_dirty_(true),
@@ -4170,11 +4156,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // Whether this object's |Node| is a HTMLLegendElement. Used to increase
     // performance of |IsRenderedLegend| which is performance sensitive.
     ADD_BOOLEAN_BITFIELD(is_html_legend_element_, IsHTMLLegendElement);
-
-    // Caches StyleRef().HasBorderDecoration() &&
-    // !Table()->ShouldCollapseBorders().
-    ADD_BOOLEAN_BITFIELD(has_non_collapsed_border_decoration_,
-                         HasNonCollapsedBorderDecoration);
 
     // True at start of |Destroy()| before calling |WillBeDestroyed()|.
     ADD_BOOLEAN_BITFIELD(being_destroyed_, BeingDestroyed);

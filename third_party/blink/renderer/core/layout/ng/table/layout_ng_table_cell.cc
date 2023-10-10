@@ -55,7 +55,7 @@ LayoutUnit LayoutNGTableCell::BorderTop() const {
   // and column, which are not available here.
   // PhysicalFragmentCount() > 0 check should not be necessary,
   // but it is because of TextAutosizer/ScrollAnchoring.
-  if (Table()->ShouldCollapseBorders() && PhysicalFragmentCount() > 0) {
+  if (Table()->HasCollapsedBorders() && PhysicalFragmentCount() > 0) {
     return GetPhysicalFragment(0)->Borders().top;
   }
   return LayoutNGBlockFlow::BorderTop();
@@ -64,7 +64,7 @@ LayoutUnit LayoutNGTableCell::BorderTop() const {
 LayoutUnit LayoutNGTableCell::BorderBottom() const {
   NOT_DESTROYED();
   // TODO(1061423) Should return cell border, not fragment border.
-  if (Table()->ShouldCollapseBorders() && PhysicalFragmentCount() > 0) {
+  if (Table()->HasCollapsedBorders() && PhysicalFragmentCount() > 0) {
     return GetPhysicalFragment(0)->Borders().bottom;
   }
   return LayoutNGBlockFlow::BorderBottom();
@@ -73,7 +73,7 @@ LayoutUnit LayoutNGTableCell::BorderBottom() const {
 LayoutUnit LayoutNGTableCell::BorderLeft() const {
   NOT_DESTROYED();
   // TODO(1061423) Should return cell border, not fragment border.
-  if (Table()->ShouldCollapseBorders() && PhysicalFragmentCount() > 0) {
+  if (Table()->HasCollapsedBorders() && PhysicalFragmentCount() > 0) {
     return GetPhysicalFragment(0)->Borders().left;
   }
   return LayoutNGBlockFlow::BorderLeft();
@@ -82,7 +82,7 @@ LayoutUnit LayoutNGTableCell::BorderLeft() const {
 LayoutUnit LayoutNGTableCell::BorderRight() const {
   NOT_DESTROYED();
   // TODO(1061423) Should return cell border, not fragment border.
-  if (Table()->ShouldCollapseBorders() && PhysicalFragmentCount() > 0) {
+  if (Table()->HasCollapsedBorders() && PhysicalFragmentCount() > 0) {
     return GetPhysicalFragment(0)->Borders().right;
   }
   return LayoutNGBlockFlow::BorderRight();
@@ -171,8 +171,9 @@ bool LayoutNGTableCell::BackgroundIsKnownToBeOpaqueInRect(
   // If this object has layer, the area of collapsed borders should be
   // transparent to expose the collapsed borders painted on the underlying
   // layer.
-  if (HasLayer() && Table()->ShouldCollapseBorders())
+  if (HasLayer() && Table()->HasCollapsedBorders()) {
     return false;
+  }
   return LayoutNGBlockFlow::BackgroundIsKnownToBeOpaqueInRect(local_rect);
 }
 

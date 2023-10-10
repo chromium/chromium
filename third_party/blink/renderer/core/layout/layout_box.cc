@@ -926,7 +926,6 @@ void LayoutBox::UpdateFromStyle() {
       IsSVGChild() ? style_to_use.HasTransformRelatedPropertyForSVG()
                    : style_to_use.HasTransformRelatedProperty());
   SetHasReflection(style_to_use.BoxReflect());
-  SetHasNonCollapsedBorderDecoration(style_to_use.HasBorderDecoration());
 
   bool should_clip_overflow = (!StyleRef().IsOverflowVisibleAlongBothAxes() ||
                                ShouldApplyPaintContainment()) &&

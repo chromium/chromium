@@ -166,11 +166,6 @@ wtf_size_t LayoutNGTable::ColumnCount() const {
   return cached_layout_result->TableColumnCount();
 }
 
-bool LayoutNGTable::HasCollapsedBorders() const {
-  NOT_DESTROYED();
-  return cached_table_borders_ && cached_table_borders_->IsCollapsed();
-}
-
 void LayoutNGTable::SetCachedTableBorders(const NGTableBorders* table_borders) {
   NOT_DESTROYED();
   cached_table_borders_ = table_borders;
@@ -365,7 +360,7 @@ LayoutUnit LayoutNGTable::BorderLeft() const {
   NOT_DESTROYED();
   // DCHECK(cached_table_borders_.get())
   // ScrollAnchoring fails this DCHECK.
-  if (ShouldCollapseBorders() && cached_table_borders_) {
+  if (HasCollapsedBorders() && cached_table_borders_) {
     return cached_table_borders_->TableBorder()
         .ConvertToPhysical(Style()->GetWritingDirection())
         .left;
@@ -377,7 +372,7 @@ LayoutUnit LayoutNGTable::BorderRight() const {
   NOT_DESTROYED();
   // DCHECK(cached_table_borders_.get())
   // ScrollAnchoring fails this DCHECK.
-  if (ShouldCollapseBorders() && cached_table_borders_) {
+  if (HasCollapsedBorders() && cached_table_borders_) {
     return cached_table_borders_->TableBorder()
         .ConvertToPhysical(Style()->GetWritingDirection())
         .right;
@@ -389,7 +384,7 @@ LayoutUnit LayoutNGTable::BorderTop() const {
   NOT_DESTROYED();
   // DCHECK(cached_table_borders_.get())
   // ScrollAnchoring fails this DCHECK.
-  if (ShouldCollapseBorders() && cached_table_borders_) {
+  if (HasCollapsedBorders() && cached_table_borders_) {
     return cached_table_borders_->TableBorder()
         .ConvertToPhysical(Style()->GetWritingDirection())
         .top;
@@ -401,7 +396,7 @@ LayoutUnit LayoutNGTable::BorderBottom() const {
   NOT_DESTROYED();
   // DCHECK(cached_table_borders_.get())
   // ScrollAnchoring fails this DCHECK.
-  if (ShouldCollapseBorders() && cached_table_borders_) {
+  if (HasCollapsedBorders() && cached_table_borders_) {
     return cached_table_borders_->TableBorder()
         .ConvertToPhysical(Style()->GetWritingDirection())
         .bottom;
@@ -411,30 +406,22 @@ LayoutUnit LayoutNGTable::BorderBottom() const {
 
 LayoutUnit LayoutNGTable::PaddingTop() const {
   NOT_DESTROYED();
-  if (ShouldCollapseBorders())
-    return LayoutUnit();
-  return LayoutBlock::PaddingTop();
+  return HasCollapsedBorders() ? LayoutUnit() : LayoutBlock::PaddingTop();
 }
 
 LayoutUnit LayoutNGTable::PaddingBottom() const {
   NOT_DESTROYED();
-  if (ShouldCollapseBorders())
-    return LayoutUnit();
-  return LayoutBlock::PaddingBottom();
+  return HasCollapsedBorders() ? LayoutUnit() : LayoutBlock::PaddingBottom();
 }
 
 LayoutUnit LayoutNGTable::PaddingLeft() const {
   NOT_DESTROYED();
-  if (ShouldCollapseBorders())
-    return LayoutUnit();
-  return LayoutBlock::PaddingLeft();
+  return HasCollapsedBorders() ? LayoutUnit() : LayoutBlock::PaddingLeft();
 }
 
 LayoutUnit LayoutNGTable::PaddingRight() const {
   NOT_DESTROYED();
-  if (ShouldCollapseBorders())
-    return LayoutUnit();
-  return LayoutBlock::PaddingRight();
+  return HasCollapsedBorders() ? LayoutUnit() : LayoutBlock::PaddingRight();
 }
 
 // Effective column index is index of columns with mergeable

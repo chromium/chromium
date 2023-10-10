@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/layout/background_bleed_avoidance.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -21,11 +22,12 @@ class BoxDecorationData {
   STACK_ALLOCATED();
 
  public:
-  BoxDecorationData(const PaintInfo& paint_info, const LayoutBox& layout_box)
+  BoxDecorationData(const PaintInfo& paint_info,
+                    const LayoutReplaced& layout_replaced)
       : BoxDecorationData(paint_info,
-                          layout_box,
-                          layout_box.StyleRef(),
-                          layout_box.HasNonCollapsedBorderDecoration()) {}
+                          layout_replaced,
+                          layout_replaced.StyleRef(),
+                          layout_replaced.StyleRef().HasBorderDecoration()) {}
 
   BoxDecorationData(const PaintInfo& paint_info,
                     const NGPhysicalFragment& fragment,

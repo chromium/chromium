@@ -193,13 +193,10 @@ class CORE_EXPORT LayoutNGTable : public LayoutBlock {
 
   // LayoutBlock methods end.
 
-  bool ShouldCollapseBorders() const {
+  bool HasCollapsedBorders() const {
     NOT_DESTROYED();
     return StyleRef().BorderCollapse() == EBorderCollapse::kCollapse;
   }
-
-  // TODO(1229581): Do we need both this and ShouldCollapseBorders()?
-  bool HasCollapsedBorders() const;
 
   unsigned AbsoluteColumnToEffectiveColumn(
       unsigned absolute_column_index) const;

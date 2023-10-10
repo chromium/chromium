@@ -1633,19 +1633,6 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(PhysicalRect(90, 30, 385, 284), rtl_vrl->PhysicalContentBoxRect());
 }
 
-TEST_F(LayoutBoxTest, HasNonCollapsedBorderDecoration) {
-  SetBodyInnerHTML("<div id='div'></div>");
-  auto* div = GetLayoutBoxByElementId("div");
-  EXPECT_FALSE(div->HasNonCollapsedBorderDecoration());
-
-  To<Element>(div->GetNode())
-      ->setAttribute(html_names::kStyleAttr,
-                     AtomicString("border: 1px solid black"));
-  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason ::kTest);
-  EXPECT_TRUE(div->HasNonCollapsedBorderDecoration());
-}
-
 TEST_F(LayoutBoxTest,
        ThickScrollbarSubpixelSizeMarginNoDirtyLayoutAfterLayout) {
   // |target| creates horizontal scrollbar during layout because the contents
