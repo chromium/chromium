@@ -10474,12 +10474,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kSystemLiveCaption)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"stylus-rich-gestures", flag_descriptions::kStylusRichGesturesName,
-     flag_descriptions::kStylusRichGesturesDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(blink::features::kStylusRichGestures)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"use-multi-plane-format-for-hardware-video",
      flag_descriptions::kUseMultiPlaneFormatForHardwareVideoName,
      flag_descriptions::kUseMultiPlaneFormatForHardwareVideoDescription, kOsAll,

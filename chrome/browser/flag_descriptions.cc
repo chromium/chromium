@@ -4413,11 +4413,6 @@ const char kStrictSiteIsolationDescription[] =
     "#site-isolation-trial-opt-out for how to disable site isolation for "
     "testing.";
 
-const char kStylusRichGesturesName[] = "Stylus rich gestures";
-const char kStylusRichGesturesDescription[] =
-    "Enable rich gestures for stylus which can be used to modify text in "
-    "editable web content.";
-
 const char kSurfaceControlMagnifierName[] = "Surface control magnifier";
 const char kSurfaceControlMagnifierDescription[] =
     "Use magnifier built using SurfaceControl. Depends on SurfaceControl, "

@@ -2599,9 +2599,6 @@ extern const char kStartSurfaceWithAccessibilityDescription[];
 extern const char kStrictSiteIsolationName[];
 extern const char kStrictSiteIsolationDescription[];
 
-extern const char kStylusRichGesturesName[];
-extern const char kStylusRichGesturesDescription[];
-
 extern const char kSurfaceControlMagnifierName[];
 extern const char kSurfaceControlMagnifierDescription[];
 
