@@ -120,11 +120,11 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestIosModuleRankerModel) {
 
   auto input_context =
       base::MakeRefCounted<segmentation_platform::InputContext>();
-  int mvt_freshness_impression_count = 0;
-  int shortcuts_freshness_impression_count = 0;
-  int safety_check_freshness_impression_count = 0;
-  int tab_resumption_freshness_impression_count = 0;
-  int parcel_tracking_freshness_impression_count = 0;
+  int mvt_freshness_impression_count = -1;
+  int shortcuts_freshness_impression_count = -1;
+  int safety_check_freshness_impression_count = -1;
+  int tab_resumption_freshness_impression_count = -1;
+  int parcel_tracking_freshness_impression_count = -1;
   input_context->metadata_args.emplace(
       segmentation_platform::kMostVisitedTilesFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(

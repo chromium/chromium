@@ -222,6 +222,16 @@ constexpr std::array<MetadataWriter::UMAFeature, 30> kUMAFeatures = {
         kEnumValueForParcelTracking.size()),
 };
 
+float TransformFreshness(float freshness_score, float freshness_threshold) {
+  float new_freshness_score = 0.0;
+  if (freshness_score >= 0.0 and freshness_score <= freshness_threshold) {
+    new_freshness_score = 1.0;
+  } else if (freshness_score == -1.0) {
+    new_freshness_score = 0.0;
+  }
+  return new_freshness_score;
+}
+
 }  // namespace
 
 // static
@@ -287,15 +297,60 @@ void IosModuleRanker::ExecuteModelWithInput(
     return;
   }
 
-  // TODO(ritikagup) : Add logic.
+  // Most Visited Tiles score calculation.
+  float mvt_weights[3] = {3.0, -0.3, 1.5};
+  float mvt_engagement = inputs[6];
+  float mvt_impression = inputs[7];
+  float mvt_freshness = TransformFreshness(inputs[30], 1.0);
+  float mvt_score = mvt_weights[0] * mvt_engagement +
+                    mvt_weights[1] * mvt_impression +
+                    mvt_weights[2] * mvt_freshness;
+
+  // Shortcuts score calculation.
+  float shortcuts_weights[3] = {1.5, -1.0, 2.0};
+  float shortcuts_engagement = inputs[8];
+  float shortcuts_impression = inputs[9];
+  float shortcuts_freshness = TransformFreshness(inputs[31], 1.0);
+  float shortcuts_score = shortcuts_weights[0] * shortcuts_engagement +
+                          shortcuts_weights[1] * shortcuts_impression +
+                          shortcuts_weights[2] * shortcuts_freshness;
+
+  // Safety Check score calculation.
+  float safety_check_weights[3] = {4.0, -12.0, 6.0};
+  float safety_check_engagement = inputs[10];
+  float safety_check_impression = inputs[11];
+  float safety_check_freshness = TransformFreshness(inputs[32], 3.0);
+  float safety_check_score = safety_check_weights[0] * safety_check_engagement +
+                             safety_check_weights[1] * safety_check_impression +
+                             safety_check_weights[2] * safety_check_freshness;
+
+  // Tab Resumption score calculation.
+  float tab_resumption_weights[3] = {1.5, -0.5, 0.0};
+  float tab_resumption_engagement = inputs[24];
+  float tab_resumption_impression = inputs[25];
+  float tab_resumption_freshness = TransformFreshness(inputs[33], 1.0);
+  float tab_resumption_score =
+      tab_resumption_weights[0] * tab_resumption_engagement +
+      tab_resumption_weights[1] * tab_resumption_impression +
+      tab_resumption_weights[2] * tab_resumption_freshness;
+
+  // Parcel Tracking score calculation.
+  float parcel_tracking_weights[3] = {6.0, -6.0, 6.0};
+  float parcel_tracking_engagement = inputs[28];
+  float parcel_tracking_impression = inputs[29];
+  float parcel_tracking_freshness = TransformFreshness(inputs[34], 3.0);
+  float parcel_tracking_score =
+      parcel_tracking_weights[0] * parcel_tracking_engagement +
+      parcel_tracking_weights[1] * parcel_tracking_impression +
+      parcel_tracking_weights[2] * parcel_tracking_freshness;
 
   ModelProvider::Response response(kIosModuleLabels.size(), 0);
   // Default ranking
-  response[0] = 5;  // Most Visited Tiles
-  response[1] = 4;  // Shortcuts
-  response[2] = 3;  // Safety Check
-  response[3] = 2;  // Tab resumption
-  response[4] = 1;  // Parcel Tracking
+  response[0] = mvt_score;              // Most Visited Tiles
+  response[1] = shortcuts_score;        // Shortcuts
+  response[2] = safety_check_score;     // Safety Check
+  response[3] = tab_resumption_score;   // Tab resumption
+  response[4] = parcel_tracking_score;  // Parcel Tracking
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), response));
