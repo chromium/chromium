@@ -741,7 +741,7 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
         ->GrantIfRequested(extension);
   }
 
-  {
+  if (!item->extension_id().empty()) {
     // Dispatch to menu item's .onclick handler (this is the legacy API, from
     // before chrome.contextMenus.onClicked existed).
     auto event = std::make_unique<Event>(
@@ -750,10 +750,8 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
         webview_guest ? kOnWebviewContextMenus : kOnContextMenus, args.Clone(),
         context);
     event->user_gesture = EventRouter::USER_GESTURE_ENABLED;
-    if (!item->extension_id().empty()) {
-      event_router->DispatchEventToExtension(item->extension_id(),
-                                             std::move(event));
-    }
+    event_router->DispatchEventToExtension(item->extension_id(),
+                                           std::move(event));
   }
   {
     // Dispatch to .contextMenus.onClicked handler.
