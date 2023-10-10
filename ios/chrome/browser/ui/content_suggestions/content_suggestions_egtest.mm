@@ -600,33 +600,6 @@ void TapMoreButtonIfVisible() {
 - (void)testMagicStackSetUpListCompleteAllItems {
   [self prepareToTestSetUpListInMagicStack];
 
-  // Tap the signin item.
-  TapView(set_up_list::kSignInItemID);
-  [ChromeEarlGreyUI waitForAppToIdle];
-  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-    // The fake signin UI appears. Dismiss it.
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kFakeAuthCancelButtonIdentifier)]
-        performAction:grey_tap()];
-  } else {
-    // The full-screen signin promo appears. Dismiss it.
-    TapPromoStyleSecondaryActionButton();
-  }
-
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(
-                                     grey_accessibilityID(
-                                         set_up_list::kDefaultBrowserItemID),
-                                     grey_sufficientlyVisible(), nil)]
-        assertWithMatcher:grey_notNil()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(
-      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(1), condition),
-      @"Timeout waiting for Default Browser Set Up List Item expired.");
   // Tap the default browser item.
   TapView(set_up_list::kDefaultBrowserItemID);
   // Ensure the Default Browser Promo is displayed.
@@ -637,7 +610,7 @@ void TapMoreButtonIfVisible() {
   // Dismiss Default Browser Promo.
   TapPromoStyleSecondaryActionButton();
 
-  condition = ^{
+  ConditionBlock condition = ^{
     NSError* error = nil;
     [[EarlGrey
         selectElementWithMatcher:grey_allOf(grey_accessibilityID(
@@ -659,6 +632,34 @@ void TapMoreButtonIfVisible() {
       assertWithMatcher:grey_notNil()];
   // Dismiss the CPE promo.
   TapSecondaryActionButton();
+
+  condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                                set_up_list::kSignInItemID),
+                                            grey_sufficientlyVisible(), nil)]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(1), condition),
+      @"Timeout waiting for Sign in Set Up List Item expired.");
+
+  // Tap the signin item.
+  TapView(set_up_list::kSignInItemID);
+  [ChromeEarlGreyUI waitForAppToIdle];
+  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
+    // The fake signin UI appears. Dismiss it.
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kFakeAuthCancelButtonIdentifier)]
+        performAction:grey_tap()];
+  } else {
+    // The full-screen signin promo appears. Dismiss it.
+    TapPromoStyleSecondaryActionButton();
+  }
+
   // Verify the All Set item is shown.
   condition = ^{
     NSError* error = nil;

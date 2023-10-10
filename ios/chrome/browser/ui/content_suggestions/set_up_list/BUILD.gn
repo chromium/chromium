@@ -77,6 +77,7 @@ source_set("utils") {
     "//base",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/ntp:set_up_list_prefs",
+    "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/first_run:utils",
   ]
 }

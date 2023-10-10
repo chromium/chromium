@@ -37,6 +37,10 @@ extern const char kReducedSpaceParam[];
 // Stack if their content is irrelevant.
 extern const char kHideIrrelevantModulesParam[];
 
+// A parameter representing how many days before showing the compacted Set Up
+// List module in the Magic Stack.
+extern const char kSetUpListCompactedTimeThresholdDays[];
+
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 // TODO(crbug.com/1385512): Remove this.
@@ -80,5 +84,9 @@ bool ShouldHideMVT();
 
 // Whether the Shortcuts Tiles should be hidden.
 bool ShouldHideShortcuts();
+
+// How many days before showing the Compacted Set Up List module configuration
+// in the Magic Stack.
+int TimeUntilShowingCompactedSetUpList();
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_FEATURE_H_
