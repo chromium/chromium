@@ -2825,6 +2825,10 @@
       base_feature: "none",
     },
     {
+      name: "PastingBlocksSVGUseNonLocalHrefs",
+      status: "stable",
+    },
+    {
       name: "PaymentApp",
       depends_on: ["PaymentRequest"],
       public: true,

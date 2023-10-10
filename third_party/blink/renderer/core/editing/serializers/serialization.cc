@@ -916,18 +916,22 @@ static bool ContainsStyleElements(const DocumentFragment& fragment) {
 }
 
 // Returns true if any svg <use> element is removed.
-static bool StripSVGUseDataURLs(Node& node) {
+static bool StripSVGUseNonLocalHrefs(Node& node) {
   if (auto* use = DynamicTo<SVGUseElement>(node)) {
     SVGURLReferenceResolver resolver(use->HrefString(), use->GetDocument());
-    if (resolver.AbsoluteUrl().ProtocolIsData())
+    if ((RuntimeEnabledFeatures::PastingBlocksSVGUseNonLocalHrefsEnabled() &&
+         !resolver.IsLocal()) ||
+        resolver.AbsoluteUrl().ProtocolIsData()) {
       node.remove();
+    }
     return true;
   }
   bool stripped = false;
   for (Node* child = node.firstChild(); child;) {
     Node* next = child->nextSibling();
-    if (StripSVGUseDataURLs(*child))
+    if (StripSVGUseNonLocalHrefs(*child)) {
       stripped = true;
+    }
     child = next;
   }
   return stripped;
@@ -974,8 +978,9 @@ String CreateSanitizedMarkupWithContext(Document& document,
     bool needs_sanitization = false;
     if (ContainsStyleElements(*fragment))
       needs_sanitization = true;
-    if (StripSVGUseDataURLs(*fragment))
+    if (StripSVGUseNonLocalHrefs(*fragment)) {
       needs_sanitization = true;
+    }
 
     if (!needs_sanitization) {
       markup = CreateMarkup(fragment);
