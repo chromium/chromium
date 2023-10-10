@@ -17,8 +17,7 @@ bool IsFedCmAuthzEnabled() {
 }
 
 bool IsFedCmIdpSignoutEnabled() {
-  return GetFieldTrialParamByFeatureAsBool(
-      features::kFedCm, features::kFedCmIdpSignoutFieldTrialParamName, false);
+  return base::FeatureList::IsEnabled(features::kFedCmLogoutRps);
 }
 
 bool IsFedCmMultipleIdentityProvidersEnabled() {

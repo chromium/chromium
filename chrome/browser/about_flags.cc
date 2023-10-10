@@ -2947,13 +2947,6 @@ const FeatureEntry::FeatureVariation kDrawPredictedPointVariations[] = {
      kDrawPredictedPointExperiment2Points3Ms,
      std::size(kDrawPredictedPointExperiment2Points3Ms), nullptr}};
 
-const FeatureEntry::FeatureParam kFedCmVariationIdpSignout[] = {
-    {features::kFedCmIdpSignoutFieldTrialParamName, "true"}};
-const FeatureEntry::FeatureVariation kFedCmFeatureVariations[] = {
-    {"- with FedCM IDP sign-out", kFedCmVariationIdpSignout,
-     std::size(kFedCmVariationIdpSignout), nullptr},
-};
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::Choice kForceControlFaceAeChoices[] = {
     {"Default", "", ""},
@@ -9079,12 +9072,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(optimization_guide::features::kPushNotifications)},
 #endif
 
-    {"fedcm", flag_descriptions::kFedCmName,
-     flag_descriptions::kFedCmDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kFedCm,
-                                    kFedCmFeatureVariations,
-                                    "FedCmFeatureVariations")},
-
     {"fedcm-authz", flag_descriptions::kFedCmAuthzName,
      flag_descriptions::kFedCmAuthzDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmAuthz)},
@@ -9106,6 +9093,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmIdPRegistrationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmIdPRegistration)},
 
+    {"fedcm-idp-signin-status-api",
+     flag_descriptions::kFedCmIdpSigninStatusName,
+     flag_descriptions::kFedCmIdpSigninStatusDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmIdpSigninStatusEnabled)},
+
+    {"fedcm-logout-rps", flag_descriptions::kFedCmLogoutRpsName,
+     flag_descriptions::kFedCmLogoutRpsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmLogoutRps)},
+
     {"fedcm-metrics-endpoint", flag_descriptions::kFedCmMetricsEndpointName,
      flag_descriptions::kFedCmMetricsEndpointDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmMetricsEndpoint)},
@@ -9118,11 +9114,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmSelectiveDisclosureName,
      flag_descriptions::kFedCmSelectiveDisclosureDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmSelectiveDisclosure)},
-
-    {"fedcm-idp-signin-status-api",
-     flag_descriptions::kFedCmIdpSigninStatusName,
-     flag_descriptions::kFedCmIdpSigninStatusDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmIdpSigninStatusEnabled)},
 
     {"fedcm-without-third-party-cookies",
      flag_descriptions::kFedCmWithoutThirdPartyCookiesName,

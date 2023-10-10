@@ -233,6 +233,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      kDefault},
     {wf::EnableFedCmIdpSigninStatus,
      raw_ref(features::kFedCmIdpSigninStatusEnabled), kSetOnlyIfOverridden},
+    {wf::EnableFedCmIdpSignout, raw_ref(features::kFedCmLogoutRps),
+     kSetOnlyIfOverridden},
     {wf::EnableGamepadMultitouch, raw_ref(features::kEnableGamepadMultitouch)},
     {wf::EnableSharedStorageAPI,
      raw_ref(features::kPrivacySandboxAdsAPIsOverride), kSetOnlyIfOverridden},
@@ -595,15 +597,6 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
         WebRuntimeFeatures::EnablePrivateStateTokens(true);
         WebRuntimeFeatures::EnablePrivateStateTokensAlwaysAllowIssuance(false);
         break;
-    }
-  }
-
-  // Enables the Blink feature only when the base feature variation is enabled.
-  if (base::FeatureList::IsEnabled(features::kFedCm)) {
-    if (base::GetFieldTrialParamByFeatureAsBool(
-            features::kFedCm, features::kFedCmIdpSignoutFieldTrialParamName,
-            false)) {
-      WebRuntimeFeatures::EnableFedCmIdpSignout(true);
     }
   }
 

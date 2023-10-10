@@ -4273,84 +4273,64 @@
     "expiry_milestone": 110
   },
   {
-    "name": "fedcm",
-    "owners": [ "goto", "web-identity-eng@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "fedcm-account-auto-selected-flag",
     "owners": [ "yigu", "web-identity-eng@google.com"],
-    "expiry_milestone": 122
+    "expiry_milestone": 125
   },
   {
     "name": "fedcm-authz",
     "owners": [ "goto", "web-identity-eng@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "fedcm-error",
     "owners": [ "tanzachary", "web-identity-eng@google.com"],
-    "expiry_milestone": 122
+    "expiry_milestone": 125
   },
   {
     "name": "fedcm-hosted-domain",
     "owners": [ "npm", "web-identity-eng@google.com"],
-    "expiry_milestone": 122
+    "expiry_milestone": 125
   },
   {
     "name": "fedcm-idp-registration",
     "owners": [ "goto", "web-identity-eng@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "fedcm-idp-signin-status-api",
     "owners": [ "cbiesinger", "web-identity-eng@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
-    "name": "fedcm-iframe-support",
-    "owners": [ "npm", "web-identity-eng@google.com"],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "fedcm-login-hint",
-    "owners": ["npm", "web-identity-eng@google.com"],
-    "expiry_milestone": 120
+    "name": "fedcm-logout-rps",
+    "owners": ["web-identity-eng@google.com"],
+    "expiry_milestone": 125
   },
   {
     "name": "fedcm-metrics-endpoint",
     "owners": ["yigu", "web-identity-eng@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "fedcm-multi-idp",
     "owners": ["npm", "web-identity-eng@google.com"],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "fedcm-rp-context",
-    "owners": ["goto", "web-identity-eng@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "fedcm-selective-disclosure",
     "owners": ["goto", "web-identity-eng@google.com"],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "fedcm-user-info",
-    "owners": ["yigu", "web-identity-eng@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "fedcm-without-third-party-cookies",
     "owners": ["tanzachary", "web-identity-eng@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "fedcm-without-well-known-enforcement",
     "owners": ["yigu", "web-identity-eng@google.com"],
-    "expiry_milestone": 124
+    "expiry_milestone": 125
   },
   {
     "name": "feed-ablation",

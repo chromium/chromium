@@ -126,9 +126,7 @@ class FederatedAuthRequestImplLogoutTest
   ~FederatedAuthRequestImplLogoutTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kFedCm,
-        {{features::kFedCmIdpSignoutFieldTrialParamName, "true"}});
+    feature_list_.InitAndEnableFeature(features::kFedCmLogoutRps);
 
     RenderViewHostImplTestHarness::SetUp();
     test_api_permission_delegate_ =

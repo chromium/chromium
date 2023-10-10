@@ -913,9 +913,6 @@ extern const char kExtensionsOnChromeUrlsDescription[];
 extern const char kFractionalScrollOffsetsName[];
 extern const char kFractionalScrollOffsetsDescription[];
 
-extern const char kFedCmName[];
-extern const char kFedCmDescription[];
-
 extern const char kFedCmAccountAutoSelectedFlagName[];
 extern const char kFedCmAccountAutoSelectedFlagDescription[];
 
@@ -933,6 +930,9 @@ extern const char kFedCmIdPRegistrationDescription[];
 
 extern const char kFedCmMetricsEndpointName[];
 extern const char kFedCmMetricsEndpointDescription[];
+
+extern const char kFedCmLogoutRpsName[];
+extern const char kFedCmLogoutRpsDescription[];
 
 extern const char kFedCmMultiIdpName[];
 extern const char kFedCmMultiIdpDescription[];
