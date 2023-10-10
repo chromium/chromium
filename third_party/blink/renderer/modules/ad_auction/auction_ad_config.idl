@@ -68,7 +68,7 @@ dictionary AuctionAdConfig {
   Promise<undefined> additionalBids;
 
   [RuntimeEnabled=FledgeNegativeTargeting]
-  USVString auctionNonce;
+  DOMString auctionNonce;
 
   USVString aggregationCoordinatorOrigin;
 
