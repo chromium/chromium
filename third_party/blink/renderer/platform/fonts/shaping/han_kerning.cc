@@ -106,6 +106,12 @@ HanKerning::CharType HanKerning::GetCharType(UChar ch,
   return CharType::kOther;
 }
 
+bool HanKerning::IsOpen(UChar ch) {
+  // Any `FontData` will do, because it only changes between `kClose` and
+  // `kMiddle`. See `FontData::FontData`.
+  return GetCharType(ch, FontData()) == CharType::kOpen;
+}
+
 inline bool HanKerning::ShouldKern(CharType type, CharType last_type) {
   return type == CharType::kOpen &&
          (last_type == CharType::kOpen || last_type == CharType::kMiddle ||
@@ -125,7 +131,7 @@ void HanKerning::Compute(const String& text,
                          wtf_size_t end,
                          const SimpleFontData& font,
                          const FontDescription& font_description,
-                         bool is_horizontal,
+                         Options options,
                          FontFeatures* features) {
   DCHECK(!features_);
   if (UNLIKELY(font_description.GetTextSpacingTrim() !=
@@ -133,7 +139,8 @@ void HanKerning::Compute(const String& text,
     return;
   }
   const LayoutLocale& locale = font_description.LocaleOrDefault();
-  const FontData& font_data = font.HanKerningData(locale, is_horizontal);
+  const FontData& font_data =
+      font.HanKerningData(locale, options.is_horizontal);
   if (!font_data.has_alternate_spacing) {
     return;
   }
@@ -141,7 +148,10 @@ void HanKerning::Compute(const String& text,
   // Compute for the first character.
   Vector<wtf_size_t, 32> indices;
   CharType last_type;
-  if (start) {
+  if (options.apply_start) {
+    indices.push_back(start);
+    last_type = GetCharType(text[start], font_data);
+  } else if (start) {
     last_type = GetCharType(text[start - 1], font_data);
     const CharType type = GetCharType(text[start], font_data);
     if (ShouldKern(type, last_type)) {
@@ -192,8 +202,8 @@ void HanKerning::Compute(const String& text,
     return;
   }
   DCHECK(std::is_sorted(indices.begin(), indices.end(), std::less_equal<>()));
-  const hb_tag_t tag =
-      is_horizontal ? HB_TAG('h', 'a', 'l', 't') : HB_TAG('v', 'h', 'a', 'l');
+  const hb_tag_t tag = options.is_horizontal ? HB_TAG('h', 'a', 'l', 't')
+                                             : HB_TAG('v', 'h', 'a', 'l');
   features_ = features;
   num_features_before_ = features->size();
   features->Reserve(features->size() + indices.size());

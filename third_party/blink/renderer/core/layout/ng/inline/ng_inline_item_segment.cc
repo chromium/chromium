@@ -253,14 +253,15 @@ scoped_refptr<ShapeResult> NGInlineItemSegments::ShapeText(
     TextDirection direction,
     unsigned start_offset,
     unsigned end_offset,
-    unsigned item_index) const {
+    unsigned item_index,
+    ShapeOptions options) const {
   Vector<RunSegmenter::RunSegmenterRange> ranges;
   for (const RunSegmenter::RunSegmenterRange& range :
        Ranges(start_offset, end_offset, item_index)) {
     ranges.push_back(range);
   }
   scoped_refptr<ShapeResult> shape_result =
-      shaper->Shape(font, direction, start_offset, end_offset, ranges);
+      shaper->Shape(font, direction, start_offset, end_offset, ranges, options);
   DCHECK(shape_result);
   DCHECK_EQ(shape_result->StartIndex(), start_offset);
   DCHECK_EQ(shape_result->EndIndex(), end_offset);

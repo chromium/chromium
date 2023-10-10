@@ -732,6 +732,7 @@ component("platform") {
     "fonts/shaping/run_segmenter.cc",
     "fonts/shaping/run_segmenter.h",
     "fonts/shaping/shape_cache.h",
+    "fonts/shaping/shape_options.h",
     "fonts/shaping/shape_result.cc",
     "fonts/shaping/shape_result.h",
     "fonts/shaping/shape_result_bloberizer.cc",

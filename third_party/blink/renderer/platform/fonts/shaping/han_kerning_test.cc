@@ -98,7 +98,8 @@ TEST_F(HanKerningTest, ResetFeatures) {
   const String text(u"国）（国");
   {
     HanKerning han_kerning(text, 0, text.length(), *noto_cjk_data,
-                           noto_cjk.GetFontDescription(), true, &features);
+                           noto_cjk.GetFontDescription(), HanKerning::Options(),
+                           &features);
     EXPECT_EQ(features.size(), 2u);
   }
   EXPECT_EQ(features.size(), 1u);

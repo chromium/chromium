@@ -7,6 +7,8 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_options.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/text_spacing_trim.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -75,6 +77,7 @@ class PLATFORM_EXPORT ShapingLineBreaker {
   // suppress if ShapeResult is not needed when this line overflows.
   bool NoResultIfOverflow() const { return no_result_if_overflow_; }
   void SetNoResultIfOverflow() { no_result_if_overflow_ = true; }
+  void SetTextSpacingTrim(TextSpacingTrim value) { text_spacing_trim_ = value; }
 
   scoped_refptr<const ShapeResultView> ShapeLine(unsigned start_offset,
                                                  LayoutUnit available_space,
@@ -86,15 +89,23 @@ class PLATFORM_EXPORT ShapingLineBreaker {
  protected:
   const ShapeResult& GetShapeResult() const { return *result_; }
 
-  virtual scoped_refptr<ShapeResult> Shape(unsigned start, unsigned end) = 0;
+  virtual scoped_refptr<ShapeResult> Shape(unsigned start,
+                                           unsigned end,
+                                           ShapeOptions = ShapeOptions()) = 0;
 
  private:
+  struct EdgeOffset {
+    unsigned offset = 0;
+    bool han_kerning = false;
+  };
+
   const String& GetText() const;
 
   // True if the `offset` is start of a line, except the first line.
-  bool IsStartOfWrappedLine(unsigned offset) {
+  bool IsStartOfWrappedLine(unsigned offset) const {
     return offset && offset == line_start_;
   }
+  EdgeOffset FirstSafeOffset(unsigned start) const;
 
   // Represents a break opportunity offset and its properties.
   struct BreakOpportunity {
@@ -128,7 +139,7 @@ class PLATFORM_EXPORT ShapingLineBreaker {
                      bool backwards) const;
 
   scoped_refptr<const ShapeResultView> ShapeToEnd(unsigned start,
-                                                  unsigned first_safe,
+                                                  const EdgeOffset& first_safe,
                                                   unsigned range_start,
                                                   unsigned range_end);
   scoped_refptr<const ShapeResultView> ConcatShapeResults(
@@ -148,6 +159,7 @@ class PLATFORM_EXPORT ShapingLineBreaker {
   unsigned line_start_ = 0;
   bool dont_reshape_end_if_at_space_ = false;
   bool no_result_if_overflow_ = false;
+  TextSpacingTrim text_spacing_trim_ = TextSpacingTrim::kSpaceFirst;
 
   friend class ShapingLineBreakerTest;
 };

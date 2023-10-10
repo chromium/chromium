@@ -34,6 +34,7 @@
 #include "base/functional/callback.h"
 
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_options.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -84,14 +85,16 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
       TextDirection,
       unsigned start,
       unsigned end,
-      const Vector<RunSegmenter::RunSegmenterRange>&) const;
+      const Vector<RunSegmenter::RunSegmenterRange>&,
+      ShapeOptions = ShapeOptions()) const;
 
   // Shape a single range. Start and end positions defined by the range.
   scoped_refptr<ShapeResult> Shape(const Font*,
                                    TextDirection,
                                    unsigned start,
                                    unsigned end,
-                                   const RunSegmenter::RunSegmenterRange) const;
+                                   const RunSegmenter::RunSegmenterRange,
+                                   ShapeOptions = ShapeOptions()) const;
 
   // Shape the entire string with a single font and direction.
   // Equivalent to calling the range version with a start offset of zero and an

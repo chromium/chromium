@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_style_variant.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_options.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -152,7 +153,8 @@ class CORE_EXPORT NGInlineItemSegments {
                                        TextDirection direction,
                                        unsigned start_offset,
                                        unsigned end_offset,
-                                       unsigned item_index) const;
+                                       unsigned item_index,
+                                       ShapeOptions = ShapeOptions()) const;
 
  private:
   unsigned PopulateItemsFromFontOrientation(

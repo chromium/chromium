@@ -35,7 +35,9 @@ class HarfBuzzShapingLineBreaker : public ShapingLineBreaker {
         font_(font) {}
 
  protected:
-  scoped_refptr<ShapeResult> Shape(unsigned start, unsigned end) final {
+  scoped_refptr<ShapeResult> Shape(unsigned start,
+                                   unsigned end,
+                                   ShapeOptions options) final {
     return shaper_->Shape(font_, GetShapeResult().Direction(), start, end);
   }
 

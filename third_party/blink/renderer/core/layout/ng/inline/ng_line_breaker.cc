@@ -1372,8 +1372,10 @@ NGLineBreaker::BreakResult NGLineBreaker::BreakText(
           item_(item) {}
 
    protected:
-    scoped_refptr<ShapeResult> Shape(unsigned start, unsigned end) final {
-      return line_breaker_->ShapeText(*item_, start, end);
+    scoped_refptr<ShapeResult> Shape(unsigned start,
+                                     unsigned end,
+                                     ShapeOptions options) final {
+      return line_breaker_->ShapeText(*item_, start, end, options);
     }
 
    private:
@@ -1382,6 +1384,8 @@ NGLineBreaker::BreakResult NGLineBreaker::BreakText(
 
   } breaker(this, &item, &item_shape_result);
 
+  const ComputedStyle& style = *item.Style();
+  breaker.SetTextSpacingTrim(style.GetFontDescription().GetTextSpacingTrim());
   breaker.SetLineStart(line_info->StartOffset());
 
   // Reshaping between the last character and trailing spaces is needed only
@@ -1723,17 +1727,19 @@ void NGLineBreaker::HandleEmptyText(const NGInlineItem& item,
 // Re-shape the specified range of |NGInlineItem|.
 scoped_refptr<ShapeResult> NGLineBreaker::ShapeText(const NGInlineItem& item,
                                                     unsigned start,
-                                                    unsigned end) {
+                                                    unsigned end,
+                                                    ShapeOptions options) {
   scoped_refptr<ShapeResult> shape_result;
   if (!items_data_.segments) {
     RunSegmenter::RunSegmenterRange segment_range =
         NGInlineItemSegment::UnpackSegmentData(start, end, item.SegmentData());
     shape_result = shaper_.Shape(&item.Style()->GetFont(), item.Direction(),
-                                 start, end, segment_range);
+                                 start, end, segment_range, options);
   } else {
     shape_result = items_data_.segments->ShapeText(
         &shaper_, &item.Style()->GetFont(), item.Direction(), start, end,
-        base::checked_cast<unsigned>(&item - items_data_.items.begin()));
+        base::checked_cast<unsigned>(&item - items_data_.items.begin()),
+        options);
   }
   if (UNLIKELY(spacing_.HasSpacing()))
     shape_result->ApplySpacing(spacing_);

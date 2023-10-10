@@ -208,12 +208,14 @@ struct RangeContext {
   RangeContext(const Font* font,
                TextDirection direction,
                unsigned start,
-               unsigned end)
+               unsigned end,
+               ShapeOptions options = ShapeOptions())
       : font(font),
         text_direction(direction),
         start(start),
         end(end),
-        buffer(hb_buffer_create()) {
+        buffer(hb_buffer_create()),
+        options(options) {
     DCHECK_GE(end, start);
     font_features.Initialize(font->GetFontDescription());
   }
@@ -225,6 +227,7 @@ struct RangeContext {
   const hb::unique_ptr<hb_buffer_t> buffer;
   FontFeatures font_features;
   Deque<ReshapeQueueItem> reshape_queue;
+  const ShapeOptions options;
 
   hb_direction_t HarfBuzzDirection(CanvasRotationInVertical canvas_rotation) {
     FontOrientation orientation = font->GetFontDescription().Orientation();
@@ -861,7 +864,10 @@ void HarfBuzzShaper::ShapeSegment(
     hb_direction_t direction = range_data->HarfBuzzDirection(canvas_rotation);
     HanKerning han_kerning(
         text_, shape_start, shape_end, *adjusted_font, font_description,
-        HB_DIRECTION_IS_HORIZONTAL(direction), &range_data->font_features);
+        {.is_horizontal = HB_DIRECTION_IS_HORIZONTAL(direction),
+         .apply_start = range_data->options.han_kerning_start &&
+                        range_data->start == shape_start},
+        &range_data->font_features);
 
     if (!ShapeRange(range_data->buffer, range_data->font_features,
                     adjusted_font, current_font_data_for_range_set->Ranges(),
@@ -941,7 +947,8 @@ scoped_refptr<ShapeResult> HarfBuzzShaper::Shape(
     TextDirection direction,
     unsigned start,
     unsigned end,
-    const Vector<RunSegmenter::RunSegmenterRange>& ranges) const {
+    const Vector<RunSegmenter::RunSegmenterRange>& ranges,
+    ShapeOptions options) const {
   DCHECK_GE(end, start);
   DCHECK_LE(end, text_.length());
   DCHECK_GT(ranges.size(), 0u);
@@ -951,7 +958,7 @@ scoped_refptr<ShapeResult> HarfBuzzShaper::Shape(
   const unsigned length = end - start;
   scoped_refptr<ShapeResult> result =
       ShapeResult::Create(font, start, length, direction);
-  RangeContext range_data(font, direction, start, end);
+  RangeContext range_data(font, direction, start, end, options);
   for (const RunSegmenter::RunSegmenterRange& segmented_range : ranges) {
     DCHECK_GE(segmented_range.end, segmented_range.start);
     DCHECK_GE(segmented_range.start, start);
@@ -970,7 +977,8 @@ scoped_refptr<ShapeResult> HarfBuzzShaper::Shape(
     TextDirection direction,
     unsigned start,
     unsigned end,
-    const RunSegmenter::RunSegmenterRange pre_segmented) const {
+    const RunSegmenter::RunSegmenterRange pre_segmented,
+    ShapeOptions options) const {
   DCHECK_GE(end, start);
   DCHECK_LE(end, text_.length());
   DCHECK_GE(start, pre_segmented.start);
@@ -979,7 +987,7 @@ scoped_refptr<ShapeResult> HarfBuzzShaper::Shape(
   const unsigned length = end - start;
   scoped_refptr<ShapeResult> result =
       ShapeResult::Create(font, start, length, direction);
-  RangeContext range_data(font, direction, start, end);
+  RangeContext range_data(font, direction, start, end, options);
   ShapeSegment(&range_data, pre_segmented, result.get());
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
