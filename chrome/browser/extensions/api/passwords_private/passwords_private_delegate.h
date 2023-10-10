@@ -32,8 +32,7 @@ namespace extensions {
 // saved passwords and password exceptions (reading, adding, changing, removing,
 // import/export) and to notify listeners when these values have changed.
 class PasswordsPrivateDelegate
-    : public base::SupportsWeakPtr<PasswordsPrivateDelegate>,
-      public base::RefCounted<PasswordsPrivateDelegate> {
+    : public base::RefCounted<PasswordsPrivateDelegate> {
  public:
   using ImportResultsCallback =
       base::OnceCallback<void(const api::passwords_private::ImportResults&)>;
@@ -255,6 +254,8 @@ class PasswordsPrivateDelegate
   // Shows the file with the exported passwords in OS shell.
   virtual void ShowExportedFileInShell(content::WebContents* web_contents,
                                        std::string file_path) = 0;
+
+  virtual base::WeakPtr<PasswordsPrivateDelegate> AsWeakPtr() = 0;
 
  protected:
   virtual ~PasswordsPrivateDelegate() = default;

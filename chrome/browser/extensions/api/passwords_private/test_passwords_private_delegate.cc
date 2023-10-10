@@ -435,4 +435,9 @@ void TestPasswordsPrivateDelegate::ShowExportedFileInShell(
   exported_file_shown_in_shell_ = true;
 }
 
+base::WeakPtr<PasswordsPrivateDelegate>
+TestPasswordsPrivateDelegate::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace extensions

@@ -889,6 +889,11 @@ void PasswordsPrivateDelegateImpl::ShowExportedFileInShell(
   platform_util::ShowItemInFolder(browser->profile(), path);
 }
 
+base::WeakPtr<PasswordsPrivateDelegate>
+PasswordsPrivateDelegateImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 password_manager::InsecureCredentialsManager*
 PasswordsPrivateDelegateImpl::GetInsecureCredentialsManager() {
   return password_check_delegate_.GetInsecureCredentialsManager();

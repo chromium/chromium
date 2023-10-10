@@ -18,7 +18,7 @@ class BrowserContext;
 namespace extensions {
 class PasswordsPrivateDelegate;
 
-// Wrapper class around PasswordsPrivateDelegate to control it's lifespan. If
+// Wrapper class around PasswordsPrivateDelegate to control its lifespan. If
 // the new PasswordManagerUI is enabled callers have to hold scoped_refptr of
 // PasswordsPrivateDelegate so the object can be released when no longer needed.
 // If the feature is disabled this class always holds a

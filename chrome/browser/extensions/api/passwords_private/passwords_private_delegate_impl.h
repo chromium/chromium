@@ -132,6 +132,8 @@ class PasswordsPrivateDelegateImpl
   void ShowExportedFileInShell(content::WebContents* web_contents,
                                std::string file_path) override;
 
+  base::WeakPtr<PasswordsPrivateDelegate> AsWeakPtr() override;
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
       content::WebContents* web_contents,

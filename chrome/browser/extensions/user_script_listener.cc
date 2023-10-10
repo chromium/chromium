@@ -25,9 +25,7 @@ using content::NavigationThrottle;
 
 namespace extensions {
 
-class UserScriptListener::Throttle
-    : public NavigationThrottle,
-      public base::SupportsWeakPtr<UserScriptListener::Throttle> {
+class UserScriptListener::Throttle : public NavigationThrottle {
  public:
   explicit Throttle(content::NavigationHandle* navigation_handle)
       : NavigationThrottle(navigation_handle) {}
@@ -58,9 +56,12 @@ class UserScriptListener::Throttle
     return "UserScriptListener::Throttle";
   }
 
+  base::WeakPtr<Throttle> AsWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
+
  private:
   bool should_defer_ = true;
   bool did_defer_ = false;
+  base::WeakPtrFactory<Throttle> weak_ptr_factory_{this};
 };
 
 struct UserScriptListener::ProfileData {

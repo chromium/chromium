@@ -152,9 +152,7 @@ class DelayLoadStartAndExecuteJavascript : public TabStripModelObserver,
   }
 
  private:
-  class WillStartRequestObserverThrottle
-      : public content::NavigationThrottle,
-        public base::SupportsWeakPtr<WillStartRequestObserverThrottle> {
+  class WillStartRequestObserverThrottle : public content::NavigationThrottle {
    public:
     explicit WillStartRequestObserverThrottle(content::NavigationHandle* handle)
         : NavigationThrottle(handle) {}
@@ -169,6 +167,10 @@ class DelayLoadStartAndExecuteJavascript : public TabStripModelObserver,
       Resume();
     }
 
+    base::WeakPtr<WillStartRequestObserverThrottle> AsWeakPtr() {
+      return weak_ptr_factory_.GetWeakPtr();
+    }
+
    private:
     NavigationThrottle::ThrottleCheckResult WillStartRequest() override {
       throttled_ = true;
@@ -176,6 +178,9 @@ class DelayLoadStartAndExecuteJavascript : public TabStripModelObserver,
     }
 
     bool throttled_ = false;
+
+    base::WeakPtrFactory<WillStartRequestObserverThrottle> weak_ptr_factory_{
+        this};
   };
 
   base::WeakPtr<WillStartRequestObserverThrottle> throttle_;
