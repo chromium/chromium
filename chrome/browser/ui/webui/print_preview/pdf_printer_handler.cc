@@ -519,7 +519,7 @@ void PdfPrinterHandler::OnDirectorySelected(const base::FilePath& filename,
   // Prompts the user to select the file.
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   file_type_info.extensions.resize(1);
-  file_type_info.extensions[0].push_back(FILE_PATH_LITERAL("pdf"));
+  file_type_info.extensions[0].push_back(kPdfExtension);
   file_type_info.include_all_files = true;
   // Print Preview requires native paths to write PDF files.
   // Note that Chrome OS save-as dialog has Google Drive as a saving location
@@ -533,7 +533,7 @@ void PdfPrinterHandler::OnDirectorySelected(const base::FilePath& filename,
       ui::SelectFileDialog::Create(this, nullptr /*policy already checked*/);
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(), path,
-      &file_type_info, 0, base::FilePath::StringType(),
+      &file_type_info, 0, kPdfExtension,
       platform_util::GetTopLevel(preview_web_contents_->GetNativeView()),
       nullptr);
 }
