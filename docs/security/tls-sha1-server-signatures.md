@@ -20,7 +20,7 @@ This use of SHA-1 is _not_ the same as:
 
 ## Is my website affected?
 
-You can test your website by toggling the "Allow SHA-1 server signatures in TLS" flag. Go to `chrome://flags/#use-sha1-server-handshakes`. If setting it to "Enabled" causes the site to work, but setting it to "Disabled" causes it to break, the website is affected.
+You can test your website by toggling the "Allow SHA-1 server signatures in TLS" flag. Go to `chrome://flags/#use-sha1-server-handshakes`. If setting it to "Enabled" causes the site to work, but setting it to "Disabled" causes it to break, the website is affected. This flag is temporary and will be removed in the future. It may be used for now to help diagnose issues, but, long-term, the server should be fixed.
 
 Depending on the exact cause, this issue can appear differently, such as an `ERR_SSL_PROTOCOL_ERROR` or `ERR_CONNECTION_RESET`, though this is not the only possible cause of those errors.
 
