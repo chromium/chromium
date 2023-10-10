@@ -404,17 +404,38 @@ void UnifiedSystemTray::ShowVolumeSliderBubble() {
 
 void UnifiedSystemTray::ShowAudioDetailedViewBubble() {
   ShowBubble();
-  bubble_->ShowAudioDetailedView();
+
+  // There is a case that `bubble_` is still a nullptr after `ShowBubble()` is
+  // called (e.g. in kiosk mode, `ShowBubbleInternal()` will early return, and
+  // `bubble_` is still uninitialized). Only show detailed view if `bubble_` is
+  // not null.
+  if (bubble_) {
+    bubble_->ShowAudioDetailedView();
+  }
 }
 
 void UnifiedSystemTray::ShowDisplayDetailedViewBubble() {
   ShowBubble();
-  bubble_->ShowDisplayDetailedView();
+
+  // There is a case that `bubble_` is still a nullptr after `ShowBubble()` is
+  // called (e.g. in kiosk mode, `ShowBubbleInternal()` will early return, and
+  // `bubble_` is still uninitialized). Only show detailed view if `bubble_` is
+  // not null.
+  if (bubble_) {
+    bubble_->ShowDisplayDetailedView();
+  }
 }
 
 void UnifiedSystemTray::ShowNetworkDetailedViewBubble() {
   ShowBubble();
-  bubble_->ShowNetworkDetailedView(true /* force */);
+
+  // There is a case that `bubble_` is still a nullptr after `ShowBubble()` is
+  // called (e.g. in kiosk mode, `ShowBubbleInternal()` will early return, and
+  // `bubble_` is still uninitialized). Only show detailed view if `bubble_` is
+  // not null.
+  if (bubble_) {
+    bubble_->ShowNetworkDetailedView(/*force=*/true);
+  }
 }
 
 void UnifiedSystemTray::NotifySecondaryBubbleHeight(int height) {
