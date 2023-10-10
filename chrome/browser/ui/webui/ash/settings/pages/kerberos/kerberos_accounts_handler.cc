@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/kerberos_accounts_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/kerberos/kerberos_accounts_handler.h"
 
 #include <string>
 #include <utility>
@@ -194,8 +194,9 @@ std::unique_ptr<KerberosAccountsHandler>
 KerberosAccountsHandler::CreateIfKerberosEnabled(Profile* profile) {
   KerberosCredentialsManager* kerberos_credentials_manager =
       KerberosCredentialsManagerFactory::GetExisting(profile);
-  if (!IsKerberosEnabled(kerberos_credentials_manager))
+  if (!IsKerberosEnabled(kerberos_credentials_manager)) {
     return nullptr;
+  }
   return base::WrapUnique(
       new KerberosAccountsHandler(kerberos_credentials_manager));
 }

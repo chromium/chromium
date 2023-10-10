@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/kerberos_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/kerberos/kerberos_section.h"
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/kerberos/kerberos_accounts_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
-#include "chrome/browser/ui/webui/settings/ash/kerberos_accounts_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -86,8 +86,9 @@ KerberosSection::KerberosSection(
 }
 
 KerberosSection::~KerberosSection() {
-  if (kerberos_credentials_manager_)
+  if (kerberos_credentials_manager_) {
     kerberos_credentials_manager_->RemoveObserver(this);
+  }
 }
 
 void KerberosSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
