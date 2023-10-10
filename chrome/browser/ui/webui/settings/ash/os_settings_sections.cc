@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/files/files_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/people/people_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/printing_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/search/search_section.h"
 #include "chrome/browser/ui/webui/settings/ash/internet_section.h"
 #include "chrome/browser/ui/webui/settings/ash/kerberos_section.h"
 #include "chrome/browser/ui/webui/settings/ash/languages_section.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/ui/webui/settings/ash/personalization_section.h"
 #include "chrome/browser/ui/webui/settings/ash/privacy_section.h"
 #include "chrome/browser/ui/webui/settings/ash/reset_section.h"
-#include "chrome/browser/ui/webui/settings/ash/search_section.h"
 #include "chrome/browser/ui/webui/settings/ash/system_preferences_section.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 

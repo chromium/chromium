@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/search_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/search/search_section.h"
 
 #include <memory>
 #include <vector>
@@ -15,8 +15,8 @@
 #include "chrome/browser/ash/assistant/assistant_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/assistant_optin/assistant_optin_utils.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/search/google_assistant_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
-#include "chrome/browser/ui/webui/settings/ash/google_assistant_handler.h"
 #include "chrome/browser/ui/webui/settings/search_engines_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -85,8 +85,7 @@ const std::vector<SearchConcept>& GetQuickAnswersSearchConcepts() {
        {.setting = mojom::Setting::kQuickAnswersOnOff},
        {IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_ALT1,
         IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_ALT2,
-        IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_ALT3,
-        SearchConcept::kAltTagEnd}},
+        IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_ALT3, SearchConcept::kAltTagEnd}},
   });
   return *tags;
 }
@@ -289,8 +288,9 @@ SearchSection::SearchSection(Profile* profile,
 
 SearchSection::~SearchSection() {
   AssistantState* assistant_state = AssistantState::Get();
-  if (IsAssistantAllowed() && assistant_state)
+  if (IsAssistantAllowed() && assistant_state) {
     assistant_state->RemoveObserver(this);
+  }
 }
 
 void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
@@ -366,8 +366,9 @@ bool SearchSection::LogMetric(mojom::Setting setting,
 void SearchSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // Register Preferred search engine as top level settings if Quick answers is
   // not available.
-  if (!ShouldShowQuickAnswersSettings())
+  if (!ShouldShowQuickAnswersSettings()) {
     generator->RegisterTopLevelSetting(mojom::Setting::kPreferredSearchEngine);
+  }
 
   // Search.
   generator->RegisterTopLevelSubpage(
@@ -485,8 +486,9 @@ void SearchSection::UpdateQuickAnswersSearchTags() {
   updater.RemoveSearchTags(GetQuickAnswersSearchConcepts());
   updater.RemoveSearchTags(GetQuickAnswersOnSearchConcepts());
 
-  if (!ShouldShowQuickAnswersSettings())
+  if (!ShouldShowQuickAnswersSettings()) {
     return;
+  }
 
   updater.AddSearchTags(GetQuickAnswersSearchConcepts());
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/google_assistant_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/search/google_assistant_handler.h"
 
 #include <utility>
 
@@ -85,8 +85,9 @@ void GoogleAssistantHandler::HandleSyncVoiceModelStatus(
   CHECK_EQ(0U, args.size());
 
   auto* settings = assistant::AssistantSettings::Get();
-  if (settings)
+  if (settings) {
     settings->SyncSpeakerIdEnrollmentStatus();
+  }
 }
 
 void GoogleAssistantHandler::HandleInitialized(const base::Value::List& args) {
