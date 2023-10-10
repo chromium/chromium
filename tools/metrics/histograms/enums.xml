@@ -85044,6 +85044,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Regular"/>
 </enum>
 
+<enum name="PaymentsSuggestionBottomSheetExitReason">
+  <int value="0" label="Bottom Sheet dismissed"/>
+  <int value="1" label="Used payment suggestion"/>
+  <int value="2" label="Accessed Payment Methods through the long press menu"/>
+  <int value="3" label="Accessed Payment Details through the long press menu"/>
+</enum>
+
 <enum name="PciePeripheralConnectivityResult">
 <!-- Obsolete - replaced by PeripheralConnectivityResult  -->
 

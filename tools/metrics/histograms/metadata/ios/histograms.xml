@@ -2126,6 +2126,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PaymentsBottomSheet.ExitReason"
+    enum="PaymentsSuggestionBottomSheetExitReason" expires_after="2024-10-05">
+  <owner>sugoi@chromium.org</owner>
+  <owner>veronguyen@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <summary>
+    Tracks the bottom sheet dismissal or use of a payments suggestion.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Permission.Modal.Events" enum="IOSPermissionEvent"
     expires_after="2024-01-10">
   <owner>ewannpv@chromium.org</owner>

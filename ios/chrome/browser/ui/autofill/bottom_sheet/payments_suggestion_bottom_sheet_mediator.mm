@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager_observer.h"
@@ -249,6 +250,11 @@
   return _hasCreditCards;
 }
 
+- (void)logExitReason:(PaymentsSuggestionBottomSheetExitReason)exitReason {
+  base::UmaHistogramEnumeration("IOS.PaymentsBottomSheet.ExitReason",
+                                exitReason);
+}
+
 #pragma mark - Accessors
 
 - (void)setConsumer:(id<PaymentsSuggestionBottomSheetConsumer>)consumer {
@@ -288,6 +294,10 @@
 #pragma mark - PaymentsSuggestionBottomSheetDelegate
 
 - (void)didSelectCreditCard:(NSString*)backendIdentifier {
+  if (!_webStateList) {
+    return;
+  }
+
   web::WebState* activeWebState = _webStateList->GetActiveWebState();
   if (!activeWebState) {
     return;
