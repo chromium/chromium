@@ -14,6 +14,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
@@ -1488,11 +1489,11 @@ void HandleExpandedPaths(
               std::vector<std::string> string_paths;
               string_paths.reserve(paths.size());
               for (size_t i = 0; i < paths.size(); ++i) {
-                if (blocked.count(i) == 0) {
+                if (base::Contains(blocked, i)) {
+                  result.paths_results[i] = false;
+                } else {
                   string_paths.push_back(paths[i].AsUTF8Unsafe());
                   DCHECK(result.paths_results[i]);
-                } else {
-                  result.paths_results[i] = false;
                 }
               }
               clipboard_paste_data =
@@ -1947,8 +1948,9 @@ void ChromeContentBrowserClient::RenderProcessWillLaunch(
   if (RendererUpdater* service = RendererUpdaterFactory::GetForProfile(profile))
     service->InitializeRenderer(host);
 
-  for (size_t i = 0; i < extra_parts_.size(); ++i)
-    extra_parts_[i]->RenderProcessWillLaunch(host);
+  for (auto& part : extra_parts_) {
+    part->RenderProcessWillLaunch(host);
+  }
 }
 
 GURL ChromeContentBrowserClient::GetEffectiveURL(
@@ -2415,8 +2417,9 @@ void ChromeContentBrowserClient::SiteInstanceGotProcess(
   }
 #endif
 
-  for (size_t i = 0; i < extra_parts_.size(); ++i)
-    extra_parts_[i]->SiteInstanceGotProcess(site_instance);
+  for (auto& part : extra_parts_) {
+    part->SiteInstanceGotProcess(site_instance);
+  }
 }
 
 bool ChromeContentBrowserClient::ShouldSwapBrowsingInstancesForNavigation(
@@ -2703,8 +2706,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
   // On Chrome OS need to pass primary user homedir (in multi-profiles session).
   base::FilePath homedir;
   base::PathService::Get(base::DIR_HOME, &homedir);
-  command_line->AppendSwitchASCII(ash::switches::kHomedir,
-                                  homedir.value().c_str());
+  command_line->AppendSwitchASCII(ash::switches::kHomedir, homedir.value());
 #endif
 
   if (process_type == switches::kRendererProcess) {
@@ -2713,17 +2715,18 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
     Profile* profile =
         process ? Profile::FromBrowserContext(process->GetBrowserContext())
                 : nullptr;
-    for (size_t i = 0; i < extra_parts_.size(); ++i) {
-      extra_parts_[i]->AppendExtraRendererCommandLineSwitches(command_line,
-                                                              process, profile);
+    for (auto& part : extra_parts_) {
+      part->AppendExtraRendererCommandLineSwitches(command_line, process,
+                                                   profile);
     }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     const std::string& login_profile =
         browser_command_line.GetSwitchValueASCII(ash::switches::kLoginProfile);
-    if (!login_profile.empty())
+    if (!login_profile.empty()) {
       command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
                                       login_profile);
+    }
 #endif
 
     MaybeCopyDisableWebRtcEncryptionSwitch(command_line, browser_command_line,
@@ -4442,8 +4445,9 @@ void ChromeContentBrowserClient::BrowserURLHandlerCreated(
   handler->AddHandlerPair(&HandleNewTabPageLocationOverride,
                           BrowserURLHandler::null_handler());
 
-  for (size_t i = 0; i < extra_parts_.size(); ++i)
-    extra_parts_[i]->BrowserURLHandlerCreated(handler);
+  for (auto& part : extra_parts_) {
+    part->BrowserURLHandlerCreated(handler);
+  }
 
   // Handler to rewrite chrome://about and chrome://sync URLs.
   handler->AddHandlerPair(&HandleChromeAboutAndChromeSyncRewrite,
@@ -4600,8 +4604,9 @@ void ChromeContentBrowserClient::GetSchemesBypassingSecureContextCheckAllowlist(
 
 void ChromeContentBrowserClient::GetURLRequestAutoMountHandlers(
     std::vector<storage::URLRequestAutoMountHandler>* handlers) {
-  for (size_t i = 0; i < extra_parts_.size(); ++i)
-    extra_parts_[i]->GetURLRequestAutoMountHandlers(handlers);
+  for (auto& part : extra_parts_) {
+    part->GetURLRequestAutoMountHandlers(handlers);
+  }
 }
 
 void ChromeContentBrowserClient::GetAdditionalFileSystemBackends(
@@ -4630,8 +4635,8 @@ void ChromeContentBrowserClient::GetAdditionalFileSystemBackends(
   additional_backends->push_back(std::move(backend));
 #endif
 
-  for (size_t i = 0; i < extra_parts_.size(); ++i) {
-    extra_parts_[i]->GetAdditionalFileSystemBackends(
+  for (auto& part : extra_parts_) {
+    part->GetAdditionalFileSystemBackends(
         browser_context, storage_partition_path,
         GetQuarantineConnectionCallback(), additional_backends);
   }
