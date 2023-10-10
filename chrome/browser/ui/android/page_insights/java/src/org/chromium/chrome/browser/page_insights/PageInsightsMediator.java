@@ -13,7 +13,6 @@ import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.ByteString;
 
@@ -41,8 +40,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
@@ -97,11 +96,11 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     private final Handler mHandler;
     private final Runnable mAutoTriggerRunnable = this::autoTriggerPageInsightsFromTimer;
     private final HashMap<String, Object> mSurfaceRendererContextValues;
+    private final ObservableSupplier<Tab> mTabObservable;
 
     private PageInsightsDataLoader mPageInsightsDataLoader;
     @Nullable
     private PageInsightsSurfaceRenderer mSurfaceRenderer;
-    private GURL mCurrentUrl;
     private PageInsightsMetadata mDisplayedMetadata;
     private boolean mAutoTriggerReady;
 
@@ -152,6 +151,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             BrowserControlsSizer browserControlsSizer, BooleanSupplier isPageInsightsHubEnabled,
             long firstLoadTimeMs) {
         mContext = context;
+        mTabObservable = tabObservable;
         mSheetContent =
                 new PageInsightsSheetContent(mContext, view -> loadMyActivityUrl(tabObservable));
         mSheetController = bottomSheetController;
@@ -249,19 +249,6 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mHandler.removeCallbacks(mAutoTriggerRunnable);
     }
 
-    // TODO: Race condition: Often PIH is opened before the URL is set
-    @Override
-    public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
-        if (params.getUrl() == null) return;
-        mCurrentUrl = GURL.deserialize(params.getUrl());
-    }
-
-    @Override
-    public void onUpdateUrl(Tab tab, GURL url) {
-        if (url == null) return;
-        mCurrentUrl = url;
-    }
-
     @Override
     public void onPageLoadStarted(Tab tab, GURL url) {
         resetAutoTriggerTimer();
@@ -295,7 +282,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         }
 
         mPageInsightsDataLoader.loadInsightsData(
-                mCurrentUrl,
+                mTabObservable.get().getUrl(),
                 metadata -> {
                     mDisplayedMetadata = metadata;
                     boolean hasEnoughConfidence =
@@ -319,7 +306,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mSheetContent.showLoadingIndicator();
         mSheetController.requestShowContent(mSheetContent, true);
         mPageInsightsDataLoader.loadInsightsData(
-                mCurrentUrl,
+                mTabObservable.get().getUrl(),
                 metadata -> {
                     mDisplayedMetadata = metadata;
                     mSheetContent.setFeedPage(
@@ -336,9 +323,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                 elementsOutput.toByteArray(), mSurfaceRendererContextValues);
     }
 
-    @VisibleForTesting
-    // TODO(kamalchoudhury): Make this function private when xUIKit code is written
-    void changeToChildPage(int id) {
+    private void changeToChildPage(int id) {
         if (mDisplayedMetadata == null) {
             return;
         }
