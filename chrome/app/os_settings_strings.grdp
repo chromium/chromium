@@ -1145,10 +1145,10 @@
     Loading...
   </message>
   <message name="IDS_SETTINGS_ONE_DRIVE_CONNECT" desc="Action to connect OneDrive in Settings: Files: OneDrive.">
-    Add
+    Connect
   </message>
   <message name="IDS_SETTINGS_ONE_DRIVE_DISCONNECT" desc="Action to disconnect from OneDrive in Settings: Files: OneDrive.">
-    Remove
+    Remove access
   </message>
   <message name="IDS_SETTINGS_OPEN_ONE_DRIVE_FOLDER" desc="Label for the Settings link in the OneDrive subpage to open the OneDrive folder">
     Open OneDrive folder
