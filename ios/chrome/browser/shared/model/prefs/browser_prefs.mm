@@ -70,7 +70,7 @@
 #import "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/app/variations_app_state_agent.h"
 #import "ios/chrome/browser/first_run/first_run.h"
-#import "ios/chrome/browser/memory/memory_debugger_manager.h"
+#import "ios/chrome/browser/memory/model/memory_debugger_manager.h"
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_client.h"
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"

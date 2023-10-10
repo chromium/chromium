@@ -1,6 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/first_run/first_run.h",
-  "+ios/chrome/browser/memory/memory_debugger_manager.h",
+  "+ios/chrome/browser/memory/model/memory_debugger_manager.h",
   "+ios/chrome/browser/metrics/ios_chrome_metrics_service_client.h",
   "+ios/chrome/browser/ntp/set_up_list_prefs.h",
   "+ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h",

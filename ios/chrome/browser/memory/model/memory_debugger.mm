@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/memory/memory_debugger.h"
+#import "ios/chrome/browser/memory/model/memory_debugger.h"
 
 #import <stdint.h>
 
 #import <memory>
 
 #import "build/branding_buildflags.h"
-#import "ios/chrome/browser/memory/memory_metrics.h"
+#import "ios/chrome/browser/memory/model/memory_metrics.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
 

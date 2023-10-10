@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/memory/memory_debugger_manager.h"
+#import "ios/chrome/browser/memory/model/memory_debugger_manager.h"
 
 #import "base/functional/bind.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/memory/memory_debugger.h"
+#import "ios/chrome/browser/memory/model/memory_debugger.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 @implementation MemoryDebuggerManager {

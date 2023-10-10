@@ -75,7 +75,7 @@
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service_factory.h"
-#import "ios/chrome/browser/memory/memory_debugger_manager.h"
+#import "ios/chrome/browser/memory/model/memory_debugger_manager.h"
 #import "ios/chrome/browser/metrics/first_user_action_recorder.h"
 #import "ios/chrome/browser/metrics/incognito_usage_app_state_agent.h"
 #import "ios/chrome/browser/metrics/window_configuration_recorder.h"

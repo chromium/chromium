@@ -486,7 +486,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/mailto_handler",
     "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
     "//ios/chrome/browser/main",
-    "//ios/chrome/browser/memory",
+    "//ios/chrome/browser/memory/model",
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/metrics:metrics_internal",
     "//ios/chrome/browser/ntp:features",

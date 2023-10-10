@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_MEMORY_MEMORY_METRICS_H_
-#define IOS_CHROME_BROWSER_MEMORY_MEMORY_METRICS_H_
+#ifndef IOS_CHROME_BROWSER_MEMORY_MODEL_MEMORY_METRICS_H_
+#define IOS_CHROME_BROWSER_MEMORY_MODEL_MEMORY_METRICS_H_
 
 #include <stdint.h>
 
@@ -26,4 +26,4 @@ uint64_t GetInternalVMBytes();
 uint64_t GetDirtyVMBytes();
 }  // namespace memory_util
 
-#endif  // IOS_CHROME_BROWSER_MEMORY_MEMORY_METRICS_H_
+#endif  // IOS_CHROME_BROWSER_MEMORY_MODEL_MEMORY_METRICS_H_

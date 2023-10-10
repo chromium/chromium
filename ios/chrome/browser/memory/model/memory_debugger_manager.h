@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_MEMORY_MEMORY_DEBUGGER_MANAGER_H_
-#define IOS_CHROME_BROWSER_MEMORY_MEMORY_DEBUGGER_MANAGER_H_
+#ifndef IOS_CHROME_BROWSER_MEMORY_MODEL_MEMORY_DEBUGGER_MANAGER_H_
+#define IOS_CHROME_BROWSER_MEMORY_MODEL_MEMORY_DEBUGGER_MANAGER_H_
 
 #import <Foundation/Foundation.h>
 
@@ -23,4 +23,4 @@ class PrefService;
 + (void)registerLocalState:(PrefRegistrySimple*)registry;
 @end
 
-#endif  // IOS_CHROME_BROWSER_MEMORY_MEMORY_DEBUGGER_MANAGER_H_
+#endif  // IOS_CHROME_BROWSER_MEMORY_MODEL_MEMORY_DEBUGGER_MANAGER_H_
