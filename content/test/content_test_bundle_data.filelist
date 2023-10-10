@@ -10,6 +10,7 @@ data/accept-header-iframe.html.mock-http-headers
 data/accept-header.html
 data/accessibility/accdescription/description-ignores-slot-expected-blink.txt
 data/accessibility/accdescription/description-ignores-slot.html
+data/accessibility/accname/desc-combobox-focusable-expected-android-assist-data.txt
 data/accessibility/accname/desc-combobox-focusable-expected-android-external.txt
 data/accessibility/accname/desc-combobox-focusable-expected-android.txt
 data/accessibility/accname/desc-combobox-focusable-expected-auralinux.txt
@@ -17,6 +18,7 @@ data/accessibility/accname/desc-combobox-focusable-expected-blink.txt
 data/accessibility/accname/desc-combobox-focusable-expected-mac.txt
 data/accessibility/accname/desc-combobox-focusable-expected-win.txt
 data/accessibility/accname/desc-combobox-focusable.html
+data/accessibility/accname/desc-from-content-of-describedby-element-expected-android-assist-data.txt
 data/accessibility/accname/desc-from-content-of-describedby-element-expected-android-external.txt
 data/accessibility/accname/desc-from-content-of-describedby-element-expected-android.txt
 data/accessibility/accname/desc-from-content-of-describedby-element-expected-auralinux.txt
@@ -106,6 +108,7 @@ data/accessibility/accname/name-checkbox-title-expected-blink.txt
 data/accessibility/accname/name-checkbox-title.html
 data/accessibility/accname/name-combobox-focusable-alternative-expected-blink.txt
 data/accessibility/accname/name-combobox-focusable-alternative.html
+data/accessibility/accname/name-combobox-focusable-expected-android-assist-data.txt
 data/accessibility/accname/name-combobox-focusable-expected-android-external.txt
 data/accessibility/accname/name-combobox-focusable-expected-android.txt
 data/accessibility/accname/name-combobox-focusable-expected-auralinux.txt
@@ -113,6 +116,7 @@ data/accessibility/accname/name-combobox-focusable-expected-blink.txt
 data/accessibility/accname/name-combobox-focusable-expected-mac.txt
 data/accessibility/accname/name-combobox-focusable-expected-win.txt
 data/accessibility/accname/name-combobox-focusable.html
+data/accessibility/accname/name-div-content-only-expected-android-assist-data.txt
 data/accessibility/accname/name-div-content-only-expected-android-external.txt
 data/accessibility/accname/name-div-content-only-expected-android.txt
 data/accessibility/accname/name-div-content-only-expected-auralinux.txt

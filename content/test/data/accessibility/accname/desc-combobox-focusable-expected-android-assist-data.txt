@@ -1,0 +1,3 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++Spinner text:"English" textSize:16.00 style:0 bundle:[display="block", htmlTag="div", id="test", role="combobox", tabindex="0", title="Choose your language."]
+++++TextView text:"English" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

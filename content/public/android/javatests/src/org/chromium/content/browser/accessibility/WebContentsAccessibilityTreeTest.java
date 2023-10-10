@@ -10,6 +10,7 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 
 import android.annotation.SuppressLint;
 import android.os.Build.VERSION_CODES;
+import android.os.Environment;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.test.filters.SmallTest;
@@ -19,11 +20,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+
+import java.io.File;
 
 /**
  * Tests for WebContentsAccessibilityImpl integration with accessibility services.
@@ -38,6 +42,7 @@ public class WebContentsAccessibilityTreeTest {
     private static final String BASE_CSS_FILE_PATH = "content/test/data/accessibility/css/";
     private static final String BASE_HTML_FILE_PATH = "content/test/data/accessibility/html/";
     private static final String DEFAULT_FILE_SUFFIX = "-expected-android-external.txt";
+    private static final String ASSIST_DATA_FILE_SUFFIX = "-expected-android-assist-data.txt";
 
     @Rule
     public AccessibilityContentShellActivityTestRule mActivityTestRule =
@@ -48,6 +53,8 @@ public class WebContentsAccessibilityTreeTest {
      *      1. Open the given HTML file
      *      2. Generate the full AccessibilityNodeInfo tree
      *      3. Read expectations file and compare with results
+     *      4. Generate an AssistData structure for the page
+     *      5. Read AssistData expectations file and compare with results
      *
      * @param inputFile HTML test input file
      * @param expectationFile TXT expectations file
@@ -62,8 +69,33 @@ public class WebContentsAccessibilityTreeTest {
                 expectationFilePath, inputFile, expectationFilePath, expectationFile);
 
         // Generate full AccessibilityNodeInfo tree and verify results.
-        assertResults(expectationFilePath + expectationFile, generateAccessibilityNodeInfoTree(),
+        assertResults(
+                expectationFilePath + expectationFile,
+                generateAccessibilityNodeInfoTree(),
                 errorStringPrefix);
+
+        // TODO(mschillaci): remove this and add to verifyInputFile when upgrade is complete.
+        String assistDataFileName =
+                inputFile.substring(0, inputFile.length() - 5) + ASSIST_DATA_FILE_SUFFIX;
+        String directory =
+                Environment.getExternalStorageDirectory().getPath()
+                        + "/chromium_tests_root/"
+                        + expectationFilePath;
+        File expectedFile = new File(directory, "/" + assistDataFileName);
+        if (expectedFile.exists()) {
+            errorStringPrefix =
+                    String.format(
+                            "\n\nTesting: %s%s\nExpected output: %s%s",
+                            expectationFilePath,
+                            inputFile,
+                            expectationFilePath,
+                            assistDataFileName);
+            // Generate full AssistData tree and verify results.
+            assertResults(
+                    expectationFilePath + "/" + assistDataFileName,
+                    generateViewStructureTree(),
+                    errorStringPrefix);
+        }
     }
 
     // Helper methods to pass-through to the performTest method so each individual test does
@@ -142,6 +174,14 @@ public class WebContentsAccessibilityTreeTest {
         }
 
         return builder.toString();
+    }
+
+    private String generateViewStructureTree() {
+        TestViewStructure testViewStructure = new TestViewStructure();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.mWcax.onProvideVirtualStructure(testViewStructure, false));
+        CriteriaHelper.pollUiThread(testViewStructure::isDone, "Failed to get AssistData.");
+        return testViewStructure.toString();
     }
 
     /**

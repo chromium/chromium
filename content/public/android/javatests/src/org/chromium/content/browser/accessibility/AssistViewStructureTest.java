@@ -30,11 +30,9 @@ import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for the implementation of onProvideVirtualStructure in
- * WebContentsAccessibility.
- */
+/** Tests for the implementation of onProvideVirtualStructure in WebContentsAccessibility. */
 @RunWith(BaseJUnit4ClassRunner.class)
+// TODO(mschillaci): Migrate all these tests to the WebContentsAccessibilityTreeTest suite.
 public class AssistViewStructureTest {
     @Rule
     public ContentShellActivityTestRule mActivityTestRule = new ContentShellActivityTestRule();
@@ -91,11 +89,12 @@ public class AssistViewStructureTest {
     @MediumTest
     public void testSimpleParagraph() throws Throwable {
         TestViewStructure testViewStructure = getViewStructureFromHtml("<p>Hello World</p>");
-        Assert.assertEquals(testViewStructure.toString(),
-                "\n"
-                        + "  android.webkit.WebView\n"
-                        + "    android.view.View\n"
-                        + "      android.widget.TextView text='Hello World'\n");
+        Assert.assertEquals(
+                "WebView textSize:16.00 style:0 bundle:[display=\"\", htmlTag=\"#document\"]\n"
+                    + "++View textSize:16.00 style:0 bundle:[display=\"block\", htmlTag=\"p\"]\n"
+                    + "++++TextView text:\"Hello World\" textSize:16.00 style:0"
+                    + " bundle:[display=\"\", htmlTag=\"\"]",
+                testViewStructure.toString());
     }
 
     /**
@@ -109,19 +108,29 @@ public class AssistViewStructureTest {
                 + "  <li>Picard</li>"
                 + "  <li>Janeway</li>"
                 + "</ol>");
-        Assert.assertEquals(testViewStructure.toString(),
-                "\n"
-                        + "  android.webkit.WebView\n"
-                        + "    android.widget.ListView\n"
-                        + "      android.view.View\n"
-                        + "        android.view.View text='1. '\n"
-                        + "        android.widget.TextView text='Kirk'\n"
-                        + "      android.view.View\n"
-                        + "        android.view.View text='2. '\n"
-                        + "        android.widget.TextView text='Picard'\n"
-                        + "      android.view.View\n"
-                        + "        android.view.View text='3. '\n"
-                        + "        android.widget.TextView text='Janeway'\n");
+        Assert.assertEquals(
+                "WebView textSize:16.00 style:0 bundle:[display=\"\", htmlTag=\"#document\"]\n"
+                    + "++ListView textSize:16.00 style:0 bundle:[display=\"block\","
+                    + " htmlTag=\"ol\"]\n"
+                    + "++++View textSize:16.00 style:0 bundle:[display=\"list-item\","
+                    + " htmlTag=\"li\"]\n"
+                    + "++++++View text:\"1. \" textSize:16.00 style:0"
+                    + " bundle:[display=\"inline-block\", htmlTag=\"::marker\"]\n"
+                    + "++++++TextView text:\"Kirk\" textSize:16.00 style:0 bundle:[display=\"\","
+                    + " htmlTag=\"\"]\n"
+                    + "++++View textSize:16.00 style:0 bundle:[display=\"list-item\","
+                    + " htmlTag=\"li\"]\n"
+                    + "++++++View text:\"2. \" textSize:16.00 style:0"
+                    + " bundle:[display=\"inline-block\", htmlTag=\"::marker\"]\n"
+                    + "++++++TextView text:\"Picard\" textSize:16.00 style:0 bundle:[display=\"\","
+                    + " htmlTag=\"\"]\n"
+                    + "++++View textSize:16.00 style:0 bundle:[display=\"list-item\","
+                    + " htmlTag=\"li\"]\n"
+                    + "++++++View text:\"3. \" textSize:16.00 style:0"
+                    + " bundle:[display=\"inline-block\", htmlTag=\"::marker\"]\n"
+                    + "++++++TextView text:\"Janeway\" textSize:16.00 style:0 bundle:[display=\"\","
+                    + " htmlTag=\"\"]",
+                testViewStructure.toString());
     }
 
     /**
@@ -161,18 +170,28 @@ public class AssistViewStructureTest {
                 + "<a href='#' aria-label='AriaLabel'>Link</a>"
                 + "<button>Button</button>"
                 + "<button aria-label='AriaLabel'>Button</button>");
-        Assert.assertEquals(testViewStructure.toString(),
-                "\n"
-                        + "  android.webkit.WebView\n"
-                        + "    android.view.View\n"
-                        + "      android.view.View\n"
-                        + "        android.widget.TextView text='Link'\n"
-                        + "      android.view.View text='AriaLabel'\n"
-                        + "        android.widget.TextView text='Link'\n"
-                        + "      android.widget.Button\n"
-                        + "        android.widget.TextView text='Button'\n"
-                        + "      android.widget.Button text='AriaLabel'\n"
-                        + "        android.widget.TextView text='Button'\n");
+        Assert.assertEquals(
+                "WebView textSize:16.00 style:0 bundle:[display=\"\", htmlTag=\"#document\"]\n"
+                    + "++View textSize:16.00 style:0 bundle:[display=\"block\", htmlTag=\"body\"]\n"
+                    + "++++View textSize:16.00 style:4 fgColor:-16776978"
+                    + " bundle:[display=\"inline\", href=\"#\", htmlTag=\"a\"]\n"
+                    + "++++++TextView text:\"Link\" textSize:16.00 style:4 fgColor:-16776978"
+                    + " bundle:[display=\"\", htmlTag=\"\"]\n"
+                    + "++++View text:\"AriaLabel\" textSize:16.00 style:4 fgColor:-16776978"
+                    + " bundle:[aria-label=\"AriaLabel\", display=\"inline\", href=\"#\","
+                    + " htmlTag=\"a\"]\n"
+                    + "++++++TextView text:\"Link\" textSize:16.00 style:4 fgColor:-16776978"
+                    + " bundle:[display=\"\", htmlTag=\"\"]\n"
+                    + "++++Button textSize:13.33 style:0 bgColor:-1052689"
+                    + " bundle:[display=\"inline-block\", htmlTag=\"button\"]\n"
+                    + "++++++TextView text:\"Button\" textSize:13.33 style:0 bgColor:-1052689"
+                    + " bundle:[display=\"\", htmlTag=\"\"]\n"
+                    + "++++Button text:\"AriaLabel\" textSize:13.33 style:0 bgColor:-1052689"
+                    + " bundle:[aria-label=\"AriaLabel\", display=\"inline-block\","
+                    + " htmlTag=\"button\"]\n"
+                    + "++++++TextView text:\"Button\" textSize:13.33 style:0 bgColor:-1052689"
+                    + " bundle:[display=\"\", htmlTag=\"\"]",
+                testViewStructure.toString());
     }
 
     /**
@@ -184,17 +203,20 @@ public class AssistViewStructureTest {
         TestViewStructure testViewStructure = getViewStructureFromHtml("<h1>Heading</h1>"
                 + "  <p>Paragraph</p>"
                 + "  <div><input></div>");
-        testViewStructure.dumpHtmlTags();
-        Assert.assertEquals(testViewStructure.toString(),
-                "\n"
-                        + "  android.webkit.WebView htmlTag='#document'\n"
-                        + "    android.view.View htmlTag='h1'\n"
-                        + "      android.widget.TextView text='Heading'\n"
-                        + "    android.view.View htmlTag='p'\n"
-                        + "      android.widget.TextView text='Paragraph'\n"
-                        + "    android.view.View htmlTag='div'\n"
-                        + "      android.widget.EditText htmlTag='input'\n"
-                        + "        android.view.View htmlTag='div'\n");
+        Assert.assertEquals(
+                "WebView textSize:16.00 style:0 bundle:[display=\"\", htmlTag=\"#document\"]\n"
+                    + "++View textSize:32.00 style:1 bundle:[display=\"block\", htmlTag=\"h1\"]\n"
+                    + "++++TextView text:\"Heading\" textSize:32.00 style:1 bundle:[display=\"\","
+                    + " htmlTag=\"\"]\n"
+                    + "++View textSize:16.00 style:0 bundle:[display=\"block\", htmlTag=\"p\"]\n"
+                    + "++++TextView text:\"Paragraph\" textSize:16.00 style:0 bundle:[display=\"\","
+                    + " htmlTag=\"\"]\n"
+                    + "++View textSize:16.00 style:0 bundle:[display=\"block\", htmlTag=\"div\"]\n"
+                    + "++++EditText textSize:13.33 style:0 bundle:[display=\"inline-block\","
+                    + " htmlTag=\"input\"]\n"
+                    + "++++++View textSize:13.33 style:0 bundle:[display=\"flow-root\","
+                    + " htmlTag=\"div\"]",
+                testViewStructure.toString());
     }
 
     /**

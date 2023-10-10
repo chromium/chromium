@@ -4,15 +4,25 @@
 
 package org.chromium.content.browser.accessibility;
 
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_HEIGHT;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_LEFT;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_TOP;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_WIDTH;
+
+import static java.lang.String.CASE_INSENSITIVE_ORDER;
+
 import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.LocaleList;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.view.ViewStructure;
 import android.view.autofill.AutofillId;
 import android.view.autofill.AutofillValue;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Implementation of ViewStructure that allows us to print it out as a
@@ -22,10 +32,10 @@ public class TestViewStructure extends ViewStructure {
     private CharSequence mText;
     private String mClassName;
     private Bundle mBundle;
+    private HtmlInfo mHtmlInfo;
     private int mChildCount;
     private ArrayList<TestViewStructure> mChildren = new ArrayList<TestViewStructure>();
     private boolean mDone = true;
-    private boolean mDumpHtmlTags;
     private float mTextSize;
     private int mFgColor;
     private int mBgColor;
@@ -48,8 +58,8 @@ public class TestViewStructure extends ViewStructure {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        recursiveDumpToString(builder, 0, mDumpHtmlTags);
-        return builder.toString();
+        recursiveDumpToString(builder, 0);
+        return builder.toString().trim();
     }
 
     public String getClassName() {
@@ -72,34 +82,95 @@ public class TestViewStructure extends ViewStructure {
         return mStyle;
     }
 
-    private void recursiveDumpToString(StringBuilder builder, int indent, boolean dumpHtmlTags) {
-        for (int i = 0; i < indent; i++) {
-            builder.append("  ");
-        }
+    private static String bundleToString(Bundle extras) {
+        // Sort keys to ensure consistent output of tests.
+        List<String> sortedKeySet = new ArrayList<String>(extras.keySet());
+        Collections.sort(sortedKeySet, CASE_INSENSITIVE_ORDER);
 
-        if (!TextUtils.isEmpty(mClassName)) {
-            builder.append(mClassName);
-        }
-
-        if (!TextUtils.isEmpty(mText)) {
-            builder.append(" text='");
-            builder.append(mText);
-            builder.append("'");
-        }
-
-        if (mBundle != null) {
-            String htmlTag = mBundle.getCharSequence("htmlTag").toString();
-            if (dumpHtmlTags && !TextUtils.isEmpty(htmlTag)) {
-                builder.append(" htmlTag='");
-                builder.append(htmlTag);
-                builder.append("'");
+        List<String> bundleStrings = new ArrayList<>();
+        StringBuilder builder = new StringBuilder();
+        builder.append("[");
+        for (String key : sortedKeySet) {
+            // Bundle extras related to bounding boxes should be ignored so the tests can safely
+            // run on varying devices and not be screen-dependent.
+            if (key.equals(EXTRAS_KEY_UNCLIPPED_LEFT)
+                    || key.equals(EXTRAS_KEY_UNCLIPPED_TOP)
+                    || key.equals(EXTRAS_KEY_UNCLIPPED_WIDTH)
+                    || key.equals(EXTRAS_KEY_UNCLIPPED_HEIGHT)
+                    || key.equals("url")) {
+                continue;
             }
+
+            // Simplify the key String before printing to make test outputs easier to read.
+            bundleStrings.add(
+                    key.replace("AccessibilityNodeInfo.", "")
+                            + "=\""
+                            + extras.get(key).toString()
+                            + "\"");
+        }
+        builder.append(TextUtils.join(", ", bundleStrings)).append("]");
+
+        return builder.toString();
+    }
+
+    private void recursiveDumpToString(StringBuilder builder, int indent) {
+        // We do not want to print the root node, start at the WebView.
+        if (mClassName == null) {
+            assert indent == 0;
+            assert mChildCount == 1;
+            mChildren.get(0).recursiveDumpToString(builder, indent);
+            return;
+        }
+
+        for (int i = 0; i < indent; i++) {
+            builder.append("++");
+        }
+
+        // Print classname first, but only print content after the last period to remove redundancy.
+        assert mClassName != null : "Classname should never be null";
+        assert !mClassName.contains("\\.") : "Classname should contain periods";
+        String[] classNameParts = mClassName.split("\\.");
+        builder.append(classNameParts[classNameParts.length - 1]);
+
+        // Print text unless it is empty (null is allowed).
+        if (mText == null) {
+            builder.append(" text:\"null\"");
+        } else if (!mText.toString().isEmpty()) {
+            builder.append(" text:\"").append(mText.toString().replace("\n", "\\n")).append("\"");
+        }
+
+        // Print text selection values if present.
+        if (mSelectionStart != 0 || getTextSelectionEnd() != 0) {
+            builder.append(" textSelectionStart:").append(mSelectionStart);
+            builder.append(" textSelectionEnd:").append(mSelectionEnd);
+        }
+
+        // Print font styling values.
+        builder.append(" textSize:").append(String.format("%.2f", mTextSize));
+        builder.append(" style:").append(mStyle);
+        if (mFgColor != 0xFF000000) {
+            builder.append(" fgColor:").append(mFgColor);
+        }
+        if (mBgColor != 0 && mBgColor != -1) {
+            builder.append(" bgColor:").append(mBgColor);
+        }
+
+        // Print Bundle extras and htmlInfo attributes.
+        if (mBundle != null) {
+            builder.append(" bundle:").append(bundleToString(mBundle));
+        }
+        if (mHtmlInfo != null) {
+            builder.append(" htmlInfo:[");
+            for (Pair<String, String> pair : mHtmlInfo.getAttributes()) {
+                builder.append(" {").append(pair.first).append(",").append(pair.second).append("}");
+            }
+            builder.append(" ]");
         }
 
         builder.append("\n");
 
         for (TestViewStructure child : mChildren) {
-            child.recursiveDumpToString(builder, indent + 1, dumpHtmlTags);
+            child.recursiveDumpToString(builder, indent + 1);
         }
     }
 
@@ -172,10 +243,6 @@ public class TestViewStructure extends ViewStructure {
     @Override
     public int getChildCount() {
         return mChildren.size();
-    }
-
-    public void dumpHtmlTags() {
-        mDumpHtmlTags = true;
     }
 
     @Override
@@ -274,7 +341,9 @@ public class TestViewStructure extends ViewStructure {
     public void setHint(CharSequence hint) {}
 
     @Override
-    public void setHtmlInfo(HtmlInfo arg0) {}
+    public void setHtmlInfo(HtmlInfo htmlInfo) {
+        mHtmlInfo = htmlInfo;
+    }
 
     @Override
     public void setInputType(int arg0) {}
