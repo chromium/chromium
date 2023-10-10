@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 

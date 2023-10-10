@@ -349,14 +349,6 @@ static CSSPropertyID UnresolvedCSSPropertyID(
 }
 
 CSSPropertyID UnresolvedCSSPropertyID(const ExecutionContext* execution_context,
-                                      const String& string) {
-  return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
-    return UnresolvedCSSPropertyID(execution_context, chars, length,
-                                   kHTMLStandardMode);
-  });
-}
-
-CSSPropertyID UnresolvedCSSPropertyID(const ExecutionContext* execution_context,
                                       StringView string,
                                       CSSParserMode mode) {
   return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
