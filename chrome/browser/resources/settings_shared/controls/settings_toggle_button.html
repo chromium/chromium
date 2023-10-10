@@ -78,10 +78,13 @@
       </span>
       <template is="dom-if" if="[[learnMoreUrl]]">
         <a id="learn-more" href="[[learnMoreUrl]]" target="_blank"
-            aria-labelledby="sub-label-text learn-more"
+            aria-labelledby$="[[getLearnMoreAriaLabelledBy_(learnMoreAriaLabel)]]"
             on-click="onLearnMoreClick_">
           $i18n{learnMore}
         </a>
+        <span id="learn-more-aria-label" aria-hidden="true" hidden>
+          [[learnMoreAriaLabel]]
+        </span>
       </template>
       <template is="dom-if" if="[[subLabelWithLink]]">
         <div id="sub-label-text-with-link"

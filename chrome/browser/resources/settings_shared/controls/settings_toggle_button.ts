@@ -82,6 +82,11 @@ export class SettingsToggleButtonElement extends
         reflectToAttribute: true,
       },
 
+      learnMoreAriaLabel: {
+        type: String,
+        value: '',
+      },
+
       icon: String,
 
       subLabelIcon: String,
@@ -99,6 +104,7 @@ export class SettingsToggleButtonElement extends
   ariaShowSublabel: boolean;
   elideLabel: boolean;
   icon: string;
+  learnMoreAriaLabel: string;
   learnMoreUrl: string;
   subLabelWithLink: string;
   subLabelIcon: string;
@@ -131,6 +137,11 @@ export class SettingsToggleButtonElement extends
 
   private getAriaLabel_(): string {
     return this.ariaLabel || this.label;
+  }
+
+  private getLearnMoreAriaLabelledBy_(): string {
+    return this.learnMoreAriaLabel ? 'learn-more-aria-label' :
+                                     'sub-label-text learn-more';
   }
 
   private onDisableOrPrefChange_() {

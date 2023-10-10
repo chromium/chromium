@@ -2607,6 +2607,8 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
      IDS_SETTINGS_TRACKING_PROTECTION_THIRD_PARTY_COOKIES_TOGGLE_LABEL},
     {"trackingProtectionThirdPartyCookiesToggleSubLabel",
      IDS_SETTINGS_TRACKING_PROTECTION_THIRD_PARTY_COOKIES_TOGGLE_SUB_LABEL},
+    {"trackingProtectionThirdPartyCookiesLearnMoreAriaLabel",
+     IDS_SETTINGS_TRACKING_PROTECTION_THIRD_PARTY_COOKIES_LEARN_MORE_ARIA_LABEL},
     {"trackingProtectionDoNotTrackToggleSubLabel",
      IDS_SETTINGS_TRACKING_PROTECTION_DO_NOT_TRACK_TOGGLE_SUB_LABEL},
     {"trackingProtectionSitesAllowedCookiesTitle",
@@ -3280,7 +3282,9 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       "trackingProtectionBulletTwoDescription",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_TRACKING_PROTECTION_BULLET_TWO_DESCRIPTION,
-          base::ASCIIToUTF16(chrome::kUserBypassHelpCenterURL)));
+          base::ASCIIToUTF16(chrome::kUserBypassHelpCenterURL),
+          l10n_util::GetStringUTF16(
+              IDS_SETTINGS_TRACKING_PROTECTION_BULLET_TWO_LEARN_MORE_ARIA_LABEL)));
   html_source->AddString("trackingProtectionThirdPartyCookiesLearnMoreUrl",
                          chrome::kManage3pcHelpCenterURL);
 
