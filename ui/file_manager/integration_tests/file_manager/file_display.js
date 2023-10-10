@@ -133,7 +133,10 @@ testcase.fileDisplayDriveOffline = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], driveFiles);
 
   // Retrieve all file list entries that could be rendered 'offline'.
-  const offlineEntry = '#file-list .table-row.file.dim-offline';
+  // Use "first-child" here because opacity for offline only applies on the
+  // children elements.
+  const offlineEntry =
+      '#file-list .table-row.file.dim-offline > div:first-child';
   let elements = await remoteCall.callRemoteTestUtil(
       'queryAllElements', appId, [offlineEntry, ['opacity']]);
 
@@ -145,7 +148,10 @@ testcase.fileDisplayDriveOffline = async () => {
   chrome.test.assertEq('0.38', elements[0].styles.opacity);
 
   // Retrieve file entries that are 'available offline' (not dimmed).
-  const availableEntry = '#file-list .table-row:not(.dim-offline)';
+  // Use "first-child" here because opacity for offline only applies on the
+  // children elements.
+  const availableEntry =
+      '#file-list .table-row:not(.dim-offline) > div:first-child';
   elements = await remoteCall.callRemoteTestUtil(
       'queryAllElements', appId, [availableEntry, ['opacity']]);
 

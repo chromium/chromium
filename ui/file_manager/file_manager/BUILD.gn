@@ -20,16 +20,11 @@ generate_grd("build_static_grdp") {
 
     # CSS:
     "foreground/css/combobutton.css",
-    "foreground/css/combobutton_gm3.css",
     "foreground/css/common.css",
-    "foreground/css/common_gm3.css",
     "foreground/css/file_manager.css",
-    "foreground/css/file_manager_gm3.css",
     "foreground/css/file_types.css",
-    "foreground/css/file_types_gm3.css",
     "foreground/css/list.css",
     "foreground/css/menu.css",
-    "foreground/css/menu_gm3.css",
     "foreground/css/table.css",
     "foreground/css/tree.css",
 

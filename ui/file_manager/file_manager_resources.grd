@@ -13,7 +13,6 @@
     <includes>
       <!-- Polymer elements -->
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_QUICK_PREVIEW_CSS" file="file_manager/foreground/elements/files_quick_view.css" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_QUICK_PREVIEW_GM3_CSS" file="file_manager/foreground/elements/files_quick_view_gm3.css" type="BINDATA" />
 
       <!-- Images referenced from the manifest or the code -->
       <include name="IDR_FILE_MANAGER_ICON_16" file="file_manager/common/images/icon16.png" type="BINDATA" />
