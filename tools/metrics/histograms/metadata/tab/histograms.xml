@@ -284,50 +284,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.Preview.TimeToFirstUsableFrameAfterStartCapture"
-    units="ms" expires_after="2023-11-06">
-  <owner>dfried@chromium.org</owner>
-  <owner>collinbaker@chromium.org</owner>
-  <summary>
-    When generating a preview for a background tab, this measures the time
-    between requesting a video capture and receiving the first usable frame.
-  </summary>
-</histogram>
-
-<histogram name="Tab.Preview.TimeToNotifyObserversAfterCaptureReceived"
-    units="microseconds" expires_after="2022-11-27">
-  <obsolete>
-    Removed 12/2022. Not actively used because reported values are 0 most of the
-    time. It would be more useful to report number of discards per day.
-  </obsolete>
-  <owner>dfried@chromium.org</owner>
-  <owner>collinbaker@chromium.org</owner>
-  <summary>
-    When generating a preview, a tab's contents are captured as an uncompressed
-    image, compressed in the background, then sent to subscribers on the main
-    thread. This roughly measures the time between the capture completing and
-    the compressed image being available on the main thread.
-
-    This histogram only records metrics on machines with high-resolution clocks.
-  </summary>
-</histogram>
-
-<histogram name="Tab.Preview.TimeToStoreAfterFrameReceived"
-    units="microseconds" expires_after="2022-11-27">
-  <obsolete>
-    Removed 12/2022. Not actively used because reported values are 0 most of the
-    time. It would be more useful to report number of discards per day.
-  </obsolete>
-  <owner>dfried@chromium.org</owner>
-  <owner>collinbaker@chromium.org</owner>
-  <summary>
-    When generating a preview for a background tab, this measures the time
-    between receiving a frame and storing it as the current thumbnail.
-
-    This histogram only records metrics on machines with high-resolution clocks.
-  </summary>
-</histogram>
-
 <histogram name="Tab.Preview.TimeToStoreAfterTabSwitch" units="ms"
     expires_after="2024-03-31">
   <owner>dfried@chromium.org</owner>
