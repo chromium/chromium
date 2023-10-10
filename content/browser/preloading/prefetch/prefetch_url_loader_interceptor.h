@@ -27,11 +27,11 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor
  public:
   static std::unique_ptr<PrefetchURLLoaderInterceptor> MaybeCreateInterceptor(
       int frame_tree_node_id,
-      const GlobalRenderFrameHostId& referring_render_frame_host_id);
+      absl::optional<blink::DocumentToken> initiator_document_token);
 
   PrefetchURLLoaderInterceptor(
       int frame_tree_node_id,
-      const GlobalRenderFrameHostId& referring_render_frame_host_id);
+      const blink::DocumentToken& initiator_document_token);
   ~PrefetchURLLoaderInterceptor() override;
 
   PrefetchURLLoaderInterceptor(const PrefetchURLLoaderInterceptor&) = delete;
@@ -74,10 +74,9 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor
 
   // Corresponds to the ID of "navigable's active document" used for "finding a
   // matching prefetch record" in the spec. This is used as a part of
-  // `PrefetchContainer::Key` to make prefetches per-RenderFrameHost.
+  // `PrefetchContainer::Key` to make prefetches per-Document.
   // https://wicg.github.io/nav-speculation/prefetch.html
-  // TODO(https://crbug.com/1431804): This is not strictly per-Document.
-  const GlobalRenderFrameHostId referring_render_frame_host_id_;
+  const blink::DocumentToken initiator_document_token_;
 
   // Called once |this| has decided whether to intercept or not intercept the
   // navigation.

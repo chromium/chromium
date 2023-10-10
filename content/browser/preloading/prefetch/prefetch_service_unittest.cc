@@ -27,6 +27,7 @@
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_config.h"
 #include "content/browser/preloading/preloading_data_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/frame_accept_header.h"
@@ -662,12 +663,16 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         *mock_navigation_handle_);
   }
 
+  blink::DocumentToken MainDocumentToken() {
+    return static_cast<RenderFrameHostImpl*>(main_rfh())->GetDocumentToken();
+  }
+
   void GetPrefetchToServe(
       base::test::TestFuture<PrefetchContainer::Reader>& future,
       const GURL& url,
-      GlobalRenderFrameHostId previous_render_frame_host_id) {
-    if (!previous_render_frame_host_id) {
-      previous_render_frame_host_id = main_rfh()->GetGlobalId();
+      absl::optional<blink::DocumentToken> initiator_document_token) {
+    if (!initiator_document_token) {
+      initiator_document_token = MainDocumentToken();
     }
     PrefetchMatchResolver* prefetch_match_resolver =
         GetPrefetchMatchResolverForMostRecentNavigation();
@@ -692,21 +697,21 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         base::Unretained(&future),
         base::Unretained(&request_handler_keep_alive_)));
     prefetch_service_->GetPrefetchToServe(
-        PrefetchContainer::Key(previous_render_frame_host_id, url),
+        PrefetchContainer::Key(*initiator_document_token, url),
         *prefetch_match_resolver);
   }
 
-  // A valid `previous_render_frame_host_id` is given as an argument when
+  // A valid `initiator_document_token` is given as an argument when
   // to test that prefetched results are not used for unexpected initiator
-  // Documents. In other cases, use the ID of the expected initiator
-  // Document (RenderFrameHost where the `PrefetchDocumentManager` is
+  // Documents. Otherwise (`absl::nullopt`), use the ID of the expected
+  // initiator Document (the Document where the `PrefetchDocumentManager` is
   // associated).
   PrefetchContainer::Reader GetPrefetchToServe(
       const GURL& url,
-      GlobalRenderFrameHostId previous_render_frame_host_id =
-          GlobalRenderFrameHostId()) {
+      absl::optional<blink::DocumentToken> initiator_document_token =
+          absl::nullopt) {
     base::test::TestFuture<PrefetchContainer::Reader> future;
-    GetPrefetchToServe(future, url, previous_render_frame_host_id);
+    GetPrefetchToServe(future, url, std::move(initiator_document_token));
     return future.Take();
   }
 
@@ -972,12 +977,9 @@ TEST_F(PrefetchServiceTest, SuccessCase) {
             base::Milliseconds(kHeaderLatency));
 
   // No servable PrefetchContainer is returned for different RenderFrameHost.
-  GlobalRenderFrameHostId different_render_frame_host_id =
-      main_rfh()->GetGlobalId();
-  different_render_frame_host_id.child_id += 1;
+  blink::DocumentToken different_document_token;
   PrefetchContainer::Reader serveable_reader_for_different_initiator =
-      GetPrefetchToServe(GURL("https://example.com"),
-                         different_render_frame_host_id);
+      GetPrefetchToServe(GURL("https://example.com"), different_document_token);
   ASSERT_FALSE(serveable_reader_for_different_initiator);
 
   PrefetchContainer::Reader serveable_reader =
@@ -4952,8 +4954,7 @@ TEST_F(PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest,
   // Request the prefetch from the PrefetchService. The given callback shouldn't
   // be called until after the head is received.
   base::test::TestFuture<PrefetchContainer::Reader> future;
-  GetPrefetchToServe(future, GURL("https://example.com"),
-                     main_rfh()->GetGlobalId());
+  GetPrefetchToServe(future, GURL("https://example.com"), MainDocumentToken());
   EXPECT_FALSE(future.IsReady());
 
   net::RedirectInfo redirect_info;
@@ -5250,8 +5251,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, MAYBE_BlockUntilHeadReceived) {
   // Request the prefetch from the PrefetchService. The given callback shouldn't
   // be called until after the head is received.
   base::test::TestFuture<PrefetchContainer::Reader> future;
-  GetPrefetchToServe(future, GURL("https://example.com"),
-                     main_rfh()->GetGlobalId());
+  GetPrefetchToServe(future, GURL("https://example.com"), MainDocumentToken());
   EXPECT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(base::Milliseconds(500));
@@ -5369,7 +5369,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   // be called until after the head is received.
   base::test::TestFuture<PrefetchContainer::Reader> future;
   GetPrefetchToServe(future, GURL("https://example.com/index.html"),
-                     main_rfh()->GetGlobalId());
+                     MainDocumentToken());
   EXPECT_FALSE(future.IsReady());
   task_environment()->FastForwardBy(base::Milliseconds(600));
 
@@ -5489,7 +5489,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   // be called until after the head is received.
   base::test::TestFuture<PrefetchContainer::Reader> future;
   GetPrefetchToServe(future, GURL("https://example.com/index.html"),
-                     main_rfh()->GetGlobalId());
+                     MainDocumentToken());
   EXPECT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(base::Milliseconds(700));
@@ -5601,7 +5601,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   // be called until after the head is received.
   base::test::TestFuture<PrefetchContainer::Reader> future;
   GetPrefetchToServe(future, GURL("https://example.com/index.html"),
-                     main_rfh()->GetGlobalId());
+                     MainDocumentToken());
   EXPECT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(base::Milliseconds(kHeaderLatency));
@@ -5701,8 +5701,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   // Request the prefetch from the PrefetchService. The given callback shouldn't
   // be called until after the head is received.
   base::test::TestFuture<PrefetchContainer::Reader> future;
-  GetPrefetchToServe(future, GURL("https://example.com"),
-                     main_rfh()->GetGlobalId());
+  GetPrefetchToServe(future, GURL("https://example.com"), MainDocumentToken());
   EXPECT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(base::Milliseconds(800));
@@ -5799,8 +5798,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   // Request the prefetch from the PrefetchService. The given callback shouldn't
   // be called until after the head is received.
   base::test::TestFuture<PrefetchContainer::Reader> future;
-  GetPrefetchToServe(future, GURL("https://example.com"),
-                     main_rfh()->GetGlobalId());
+  GetPrefetchToServe(future, GURL("https://example.com"), MainDocumentToken());
   EXPECT_FALSE(future.IsReady());
 
   // If the prefetch times out while PrefetchService is blocking until head,
@@ -5904,8 +5902,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
             get_prefetch_run_loop.Quit();
           }));
   prefetch_service_->GetPrefetchToServe(
-      PrefetchContainer::Key(main_rfh()->GetGlobalId(),
-                             GURL("https://example.com")),
+      PrefetchContainer::Key(MainDocumentToken(), GURL("https://example.com")),
       *prefetch_match_resolver);
   EXPECT_FALSE(serveable_reader);
 
@@ -5929,8 +5926,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
             get_prefetch_run_loop.Quit();
           }));
   prefetch_service_->GetPrefetchToServe(
-      PrefetchContainer::Key(main_rfh()->GetGlobalId(),
-                             GURL("https://example.com")),
+      PrefetchContainer::Key(MainDocumentToken(), GURL("https://example.com")),
       *prefetch_match_resolver);
 
   get_prefetch_run_loop.Run();
@@ -6016,8 +6012,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   // Request the prefetch from the PrefetchService. The given callback shouldn't
   // be called until after the head is received.
   base::test::TestFuture<PrefetchContainer::Reader> future;
-  GetPrefetchToServe(future, GURL("https://example.com"),
-                     main_rfh()->GetGlobalId());
+  GetPrefetchToServe(future, GURL("https://example.com"), MainDocumentToken());
   EXPECT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(base::Milliseconds(300));
@@ -6134,8 +6129,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
   // Request the prefetch from the PrefetchService. The given callback should be
   // triggered once the timeout is exceeded.
   base::test::TestFuture<PrefetchContainer::Reader> future;
-  GetPrefetchToServe(future, GURL("https://example.com"),
-                     main_rfh()->GetGlobalId());
+  GetPrefetchToServe(future, GURL("https://example.com"), MainDocumentToken());
   EXPECT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(base::Milliseconds(1000));
@@ -6226,8 +6220,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
   // Request the prefetch from the PrefetchService. The given callback should be
   // triggered once the timeout is exceeded.
   base::test::TestFuture<PrefetchContainer::Reader> future;
-  GetPrefetchToServe(future, GURL("https://example.com"),
-                     main_rfh()->GetGlobalId());
+  GetPrefetchToServe(future, GURL("https://example.com"), MainDocumentToken());
   EXPECT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(base::Milliseconds(1000));
@@ -6322,7 +6315,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
     prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(base::BindOnce(
         [](PrefetchContainer::Reader prefetch_to_serve) { NOTREACHED(); }));
     prefetch_service_->GetPrefetchToServe(
-        PrefetchContainer::Key(main_rfh()->GetGlobalId(),
+        PrefetchContainer::Key(MainDocumentToken(),
                                GURL("https://example.com")),
         *prefetch_match_resolver);
   }
@@ -6332,7 +6325,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
     // callback should be triggered once the timeout is exceeded.
     base::test::TestFuture<PrefetchContainer::Reader> future;
     GetPrefetchToServe(future, GURL("https://example.com"),
-                       main_rfh()->GetGlobalId());
+                       MainDocumentToken());
     EXPECT_FALSE(future.IsReady());
     task_environment()->FastForwardBy(base::Milliseconds(1000));
     PrefetchContainer::Reader serveable_reader = future.Take();
@@ -7188,7 +7181,7 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
             get_prefetch_run_loop.Quit();
           }));
   prefetch_service_->GetPrefetchToServe(
-      PrefetchContainer::Key(main_rfh()->GetGlobalId(), GURL(kTestUrl)),
+      PrefetchContainer::Key(MainDocumentToken(), GURL(kTestUrl)),
       *prefetch_match_resolver);
   EXPECT_FALSE(is_nav_unblocked);
 
@@ -7422,7 +7415,7 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
             get_prefetch_run_loop.Quit();
           }));
   prefetch_service_->GetPrefetchToServe(
-      PrefetchContainer::Key(main_rfh()->GetGlobalId(), GURL(kTestUrl)),
+      PrefetchContainer::Key(MainDocumentToken(), GURL(kTestUrl)),
       *prefetch_match_resolver);
   EXPECT_FALSE(is_fallback_navigation);
   task_environment()->RunUntilIdle();
@@ -7553,7 +7546,7 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
             get_prefetch_run_loop.Quit();
           }));
   prefetch_service_->GetPrefetchToServe(
-      PrefetchContainer::Key(main_rfh()->GetGlobalId(), GURL(kTestUrl)),
+      PrefetchContainer::Key(MainDocumentToken(), GURL(kTestUrl)),
       *prefetch_match_resolver);
   EXPECT_FALSE(is_nav_unblocked);
   task_environment()->RunUntilIdle();

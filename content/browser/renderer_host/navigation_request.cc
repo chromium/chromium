@@ -1692,7 +1692,7 @@ NavigationRequest::NavigationRequest(
     RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
         GetInitiatorProcessId(), GetInitiatorFrameToken().value());
     if (initiator_rfh)
-      initiator_document_ = initiator_rfh->GetWeakDocumentPtr();
+      initiator_document_token_ = initiator_rfh->GetDocumentToken();
   }
 
   // Spec: https://github.com/whatwg/html/issues/8846
@@ -5018,9 +5018,10 @@ void NavigationRequest::OnStartChecksComplete(
           frame_tree_node_->current_frame_host()->devtools_frame_token(),
           std::move(cors_exempt_headers),
           BuildClientSecurityStateForNavigationFetch(),
-          devtools_accepted_stream_types, is_pdf_, initiator_document_,
-          GetPreviousRenderFrameHostId(), allow_cookies_from_browser_,
-          navigation_id_, shared_storage_writable_),
+          devtools_accepted_stream_types, is_pdf_, GetInitiatorProcessId(),
+          initiator_document_token_, GetPreviousRenderFrameHostId(),
+          allow_cookies_from_browser_, navigation_id_,
+          shared_storage_writable_),
       std::move(navigation_ui_data), service_worker_handle_.get(),
       std::move(prefetched_signed_exchange_cache_), this, loader_type,
       CreateCookieAccessObserver(), CreateTrustTokenAccessObserver(),
@@ -7618,8 +7619,7 @@ NavigationRequest::GetOriginForURLLoaderFactoryAfterResponseWithDebugInfo() {
       "Bug1454273", "embedder_origin",
       embedder ? embedder->GetLastCommittedOrigin().GetDebugString() : "");
 
-  RenderFrameHost* initiator_rfh =
-      initiator_document_.AsRenderFrameHostIfValid();
+  RenderFrameHost* initiator_rfh = GetInitiatorDocumentRenderFrameHost();
   SCOPED_CRASH_KEY_STRING256(
       "Bug1454273", "initiator_origin",
       initiator_rfh ? initiator_rfh->GetLastCommittedOrigin().GetDebugString()
@@ -8938,8 +8938,10 @@ NavigationRequest::TakeSharedDictionaryAccessObservers() {
 }
 
 RenderFrameHostImpl* NavigationRequest::GetInitiatorDocumentRenderFrameHost() {
-  return static_cast<RenderFrameHostImpl*>(
-      initiator_document_.AsRenderFrameHostIfValid());
+  return initiator_document_token_
+             ? RenderFrameHostImpl::FromDocumentToken(
+                   initiator_process_id_, *initiator_document_token_)
+             : nullptr;
 }
 
 void NavigationRequest::RecordAddressSpaceFeature() {

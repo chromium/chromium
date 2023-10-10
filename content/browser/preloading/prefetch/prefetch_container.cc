@@ -361,6 +361,7 @@ class PrefetchContainer::SinglePrefetch {
 
 PrefetchContainer::PrefetchContainer(
     const GlobalRenderFrameHostId& referring_render_frame_host_id,
+    const blink::DocumentToken& referring_document_token,
     const GURL& url,
     const PrefetchType& prefetch_type,
     const blink::mojom::Referrer& referrer,
@@ -368,6 +369,7 @@ PrefetchContainer::PrefetchContainer(
     blink::mojom::SpeculationInjectionWorld world,
     base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager)
     : referring_render_frame_host_id_(referring_render_frame_host_id),
+      referring_document_token_(referring_document_token),
       prefetch_url_(url),
       prefetch_type_(prefetch_type),
       referrer_(referrer),

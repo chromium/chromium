@@ -145,6 +145,8 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // Helper function to get the |PrefetchService| associated with |this|.
   PrefetchService* GetPrefetchService() const;
 
+  blink::DocumentToken document_token_;
+
   // This map holds references to all |PrefetchContainer| associated with
   // |this|, regardless of ownership.
   std::map<GURL, base::WeakPtr<PrefetchContainer>> all_prefetches_;

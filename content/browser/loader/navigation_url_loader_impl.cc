@@ -554,19 +554,9 @@ void NavigationURLLoaderImpl::CreateInterceptors(
   }
 
   // Set up an interceptor for prefetch.
-
-  // TODO(crbug.com/1431387): Do not depend on the initiator liveness, e.g. by
-  // plumbing `GlobalRenderFrameHostId` or switching to `LocalFrameToken`. See
-  // https://chromium-review.googlesource.com/c/chromium/src/+/4372403/comment/ff141ba3_0ffd99ff/
-  // for more details.
-  GlobalRenderFrameHostId initiator_render_frame_host_id;
-  if (RenderFrameHost* initiator_render_frame_host =
-          initiator_document_.AsRenderFrameHostIfValid()) {
-    initiator_render_frame_host_id = initiator_render_frame_host->GetGlobalId();
-  }
   std::unique_ptr<PrefetchURLLoaderInterceptor> prefetch_interceptor =
       content::PrefetchURLLoaderInterceptor::MaybeCreateInterceptor(
-          frame_tree_node_id_, initiator_render_frame_host_id);
+          frame_tree_node_id_, request_info_->initiator_document_token);
   if (prefetch_interceptor) {
     interceptors_.push_back(std::move(prefetch_interceptor));
   }
@@ -772,7 +762,12 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest() {
           request_info_->sandbox_flags,
           static_cast<ui::PageTransition>(resource_request_->transition_type),
           resource_request_->has_user_gesture, initiating_origin,
-          initiator_document_.AsRenderFrameHostIfValid(), &loader_factory);
+          request_info_->initiator_document_token
+              ? RenderFrameHostImpl::FromDocumentToken(
+                    request_info_->initiator_process_id,
+                    *request_info_->initiator_document_token)
+              : nullptr,
+          &loader_factory);
 
       if (loader_factory) {
         factory = base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
@@ -1346,7 +1341,6 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
       url_(request_info_->common_params->url),
       frame_tree_node_id_(request_info_->frame_tree_node_id),
       global_request_id_(GlobalRequestID::MakeBrowserInitiated()),
-      initiator_document_(request_info_->initiator_document),
       web_contents_getter_(
           base::BindRepeating(&WebContents::FromFrameTreeNodeId,
                               frame_tree_node_id_)),

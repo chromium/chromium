@@ -278,7 +278,8 @@ class NavigationURLLoaderImplTest : public testing::Test {
             nullptr /* client_security_state */,
             absl::nullopt /* devtools_accepted_stream_types */,
             false /* is_pdf */,
-            content::WeakDocumentPtr() /* initiator_document */,
+            ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
+            absl::nullopt /* initiator_document_token */,
             GlobalRenderFrameHostId() /* previous_render_frame_host_id */,
             false /* allow_cookies_from_browser */, 0 /* navigation_id */,
             false /* shared_storage_writable */));

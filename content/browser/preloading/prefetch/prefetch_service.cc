@@ -1534,10 +1534,9 @@ std::vector<PrefetchContainer*> PrefetchService::FindPrefetchContainerToServe(
 
   // Search for an inexact match using the No-Vary-Search hint.
   // It must either be servable now or potentially servable soon.
-  const auto frame_host_id = key.first;
   const GURL& nav_url = key.second;
   for (const auto& active_prefetch : active_prefetches_) {
-    if (active_prefetch.first != frame_host_id) {
+    if (active_prefetch.first != key.first) {
       continue;
     }
     PrefetchContainer* prefetch = all_prefetches_[active_prefetch].get();

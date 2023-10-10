@@ -200,9 +200,9 @@ class TestPrefetchURLLoaderInterceptor : public PrefetchURLLoaderInterceptor {
  public:
   TestPrefetchURLLoaderInterceptor(
       int frame_tree_node_id,
-      const GlobalRenderFrameHostId& previous_render_frame_host_id)
+      const blink::DocumentToken& initiator_document_token)
       : PrefetchURLLoaderInterceptor(frame_tree_node_id,
-                                     previous_render_frame_host_id) {}
+                                     initiator_document_token) {}
   ~TestPrefetchURLLoaderInterceptor() override = default;
 
   void AddPrefetch(base::WeakPtr<PrefetchContainer> prefetch_container) {
@@ -259,7 +259,7 @@ class PrefetchURLLoaderInterceptorTest : public RenderViewHostTestHarness {
 
     interceptor_ = std::make_unique<TestPrefetchURLLoaderInterceptor>(
         web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
-        main_rfh()->GetGlobalId());
+        MainDocumentToken());
 
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     attempt_entry_builder_ =
@@ -410,6 +410,10 @@ class PrefetchURLLoaderInterceptorTest : public RenderViewHostTestHarness {
     // `PreloadingDecider`.
   }
 
+  blink::DocumentToken MainDocumentToken() {
+    return static_cast<RenderFrameHostImpl*>(main_rfh())->GetDocumentToken();
+  }
+
  private:
   std::unique_ptr<TestPrefetchURLLoaderInterceptor> interceptor_;
 
@@ -453,7 +457,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), kTestUrl,
+          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
           PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
@@ -530,7 +534,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), kTestUrl,
+          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
           PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
@@ -616,7 +620,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   referrer.url = GURL("https://example.com/referrer");
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), kTestUrl,
+          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
           PrefetchType(/*use_prefetch_proxy=*/false,
                        blink::mojom::SpeculationEagerness::kEager),
           referrer,
@@ -712,7 +716,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   // Without a prefetched response, the navigation shouldn't be intercepted.
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), kTestUrl,
+          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
           PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
@@ -764,7 +768,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), kTestUrl,
+          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
           PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
@@ -821,7 +825,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), kTestUrl,
+          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
           PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
@@ -895,7 +899,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), kTestUrl,
+          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
           PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
@@ -950,7 +954,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeFailure)) {
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), kTestUrl,
+          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
           PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
@@ -1017,7 +1021,7 @@ TEST_P(PrefetchURLLoaderInterceptorBecomeNotServableTest, DISABLE_ASAN(Basic)) {
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), kTestUrl,
+          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
           PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
@@ -1153,7 +1157,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), kTestUrl,
+          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
           PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
@@ -1268,7 +1272,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), kTestUrl,
+          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
           PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           referrer,

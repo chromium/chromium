@@ -2528,9 +2528,9 @@ class CONTENT_EXPORT NavigationRequest
   // NavigationRequest.
   std::vector<ConsoleMessage> console_messages_;
 
-  // The initiator RenderFrameHost, if the same document is present as when this
+  // The initiator Document's token, if it is present when this
   // NavigationRequest was created.
-  WeakDocumentPtr initiator_document_;
+  absl::optional<blink::DocumentToken> initiator_document_token_;
 
   // Indicates that this navigation is for PDF content in a renderer.
   bool is_pdf_ = false;

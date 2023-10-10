@@ -43,7 +43,7 @@ class NoVarySearchHelperTester final {
       network::mojom::URLResponseHeadPtr head) {
     std::unique_ptr<PrefetchContainer> prefetch_container =
         std::make_unique<PrefetchContainer>(
-            GlobalRenderFrameHostId(1234, 5678), url,
+            GlobalRenderFrameHostId(1234, 5678), blink::DocumentToken(), url,
             PrefetchType(/*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kEager),
             blink::mojom::Referrer(),

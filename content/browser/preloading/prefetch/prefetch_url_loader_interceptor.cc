@@ -44,23 +44,21 @@ void RecordWasFullRedirectChainServedHistogram(
 std::unique_ptr<PrefetchURLLoaderInterceptor>
 PrefetchURLLoaderInterceptor::MaybeCreateInterceptor(
     int frame_tree_node_id,
-    const GlobalRenderFrameHostId& referring_render_frame_host_id) {
-  if (!referring_render_frame_host_id) {
+    absl::optional<blink::DocumentToken> initiator_document_token) {
+  if (!initiator_document_token) {
     // This is expected to occur only in unit tests.
     return nullptr;
   }
 
   return std::make_unique<PrefetchURLLoaderInterceptor>(
-      frame_tree_node_id, referring_render_frame_host_id);
+      frame_tree_node_id, *initiator_document_token);
 }
 
 PrefetchURLLoaderInterceptor::PrefetchURLLoaderInterceptor(
     int frame_tree_node_id,
-    const GlobalRenderFrameHostId& referring_render_frame_host_id)
+    const blink::DocumentToken& initiator_document_token)
     : frame_tree_node_id_(frame_tree_node_id),
-      referring_render_frame_host_id_(referring_render_frame_host_id) {
-  CHECK(referring_render_frame_host_id_);
-}
+      initiator_document_token_(initiator_document_token) {}
 
 PrefetchURLLoaderInterceptor::~PrefetchURLLoaderInterceptor() = default;
 
@@ -127,7 +125,7 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
       std::move(get_prefetch_callback)));
 
   prefetch_service->GetPrefetchToServe(
-      PrefetchContainer::Key(referring_render_frame_host_id_,
+      PrefetchContainer::Key(initiator_document_token_,
                              tentative_resource_request.url),
       prefetch_match_resolver);
 }

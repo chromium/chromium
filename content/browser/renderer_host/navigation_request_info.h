@@ -16,6 +16,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -47,7 +48,8 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       const absl::optional<std::vector<net::SourceStream::SourceType>>&
           devtools_accepted_stream_types,
       bool is_pdf,
-      WeakDocumentPtr initiator_document,
+      int initiator_process_id,
+      absl::optional<blink::DocumentToken> initiator_document_token,
       const GlobalRenderFrameHostId& previous_render_frame_host_id,
       bool allow_cookies_from_browser,
       int64_t navigation_id,
@@ -132,8 +134,9 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // Indicates that this navigation is for PDF content in a renderer.
   const bool is_pdf;
 
-  // The initiator document, if still available.
-  const WeakDocumentPtr initiator_document;
+  // The initiator document's token and its process ID.
+  const int initiator_process_id;
+  const absl::optional<blink::DocumentToken> initiator_document_token;
 
   // The previous document's RenderFrameHostId, used for speculation rules
   // prefetch.

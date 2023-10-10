@@ -110,8 +110,10 @@ void AddRedirectHop(PrefetchContainer& container, const GURL& url) {
 }  // namespace
 
 TEST_F(PrefetchContainerTest, CreatePrefetchContainer) {
+  blink::DocumentToken document_token;
   PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
+      GlobalRenderFrameHostId(1234, 5678), document_token,
+      GURL("https://test.com"),
       PrefetchType(/*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
@@ -129,14 +131,14 @@ TEST_F(PrefetchContainerTest, CreatePrefetchContainer) {
       prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
   EXPECT_EQ(prefetch_container.GetPrefetchContainerKey(),
-            std::make_pair(GlobalRenderFrameHostId(1234, 5678),
-                           GURL("https://test.com")));
+            std::make_pair(document_token, GURL("https://test.com")));
   EXPECT_FALSE(prefetch_container.GetHead());
 }
 
 TEST_F(PrefetchContainerTest, PrefetchStatus) {
   PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
+      GlobalRenderFrameHostId(1234, 5678), blink::DocumentToken(),
+      GURL("https://test.com"),
       PrefetchType(/*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
@@ -155,7 +157,8 @@ TEST_F(PrefetchContainerTest, PrefetchStatus) {
 
 TEST_F(PrefetchContainerTest, IsDecoy) {
   PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
+      GlobalRenderFrameHostId(1234, 5678), blink::DocumentToken(),
+      GURL("https://test.com"),
       PrefetchType(/*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
@@ -171,7 +174,8 @@ TEST_F(PrefetchContainerTest, IsDecoy) {
 
 TEST_F(PrefetchContainerTest, Servable) {
   PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
+      GlobalRenderFrameHostId(1234, 5678), blink::DocumentToken(),
+      GURL("https://test.com"),
       PrefetchType(/*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
@@ -197,7 +201,7 @@ TEST_F(PrefetchContainerTest, CookieListener) {
   const GURL kTestUrl3 = GURL("https://test3.com");
 
   PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(1234, 5678), kTestUrl1,
+      GlobalRenderFrameHostId(1234, 5678), blink::DocumentToken(), kTestUrl1,
       PrefetchType(/*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
@@ -273,7 +277,7 @@ TEST_F(PrefetchContainerTest, CookieCopy) {
   const GURL kTestUrl = GURL("https://test.com");
   base::HistogramTester histogram_tester;
   PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(1234, 5678), kTestUrl,
+      GlobalRenderFrameHostId(1234, 5678), blink::DocumentToken(), kTestUrl,
       PrefetchType(/*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
@@ -335,7 +339,7 @@ TEST_F(PrefetchContainerTest, CookieCopyWithRedirects) {
   const GURL kRedirectUrl2 = GURL("https://redirect2.com");
   base::HistogramTester histogram_tester;
   PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(1234, 5678), kTestUrl,
+      GlobalRenderFrameHostId(1234, 5678), blink::DocumentToken(), kTestUrl,
       PrefetchType(/*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
@@ -465,7 +469,8 @@ TEST_F(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
+          GlobalRenderFrameHostId(1234, 5678), blink::DocumentToken(),
+          GURL("https://test.com"),
           PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
@@ -586,7 +591,8 @@ TEST_F(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm_NothingSet) {
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
+          GlobalRenderFrameHostId(1234, 5678), blink::DocumentToken(),
+          GURL("https://test.com"),
           PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
@@ -659,7 +665,7 @@ TEST_F(PrefetchContainerTest, EligibilityCheck) {
           &web_contents()->GetPrimaryPage().GetMainDocument());
 
   PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(1234, 5678), kTestUrl1,
+      GlobalRenderFrameHostId(1234, 5678), blink::DocumentToken(), kTestUrl1,
       PrefetchType(/*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
@@ -697,7 +703,7 @@ TEST_F(PrefetchContainerTest, IneligibleRedirect) {
           &web_contents()->GetPrimaryPage().GetMainDocument());
 
   PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(1234, 5678), kTestUrl1,
+      GlobalRenderFrameHostId(1234, 5678), blink::DocumentToken(), kTestUrl1,
       PrefetchType(/*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
@@ -746,7 +752,8 @@ TEST_F(PrefetchContainerTest, BlockUntilHeadHistograms) {
   base::HistogramTester histogram_tester;
   for (const auto& test_case : test_cases) {
     PrefetchContainer prefetch_container(
-        GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
+        GlobalRenderFrameHostId(1234, 5678), blink::DocumentToken(),
+        GURL("https://test.com"),
         PrefetchType(/*use_prefetch_proxy=*/true, test_case.eagerness),
         blink::mojom::Referrer(),
         /*no_vary_search_expected=*/absl::nullopt,
@@ -802,7 +809,8 @@ TEST_F(PrefetchContainerTest, RecordRedirectChainSize) {
   base::HistogramTester histogram_tester;
 
   PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
+      GlobalRenderFrameHostId(1234, 5678), blink::DocumentToken(),
+      GURL("https://test.com"),
       PrefetchType(/*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
@@ -825,7 +833,8 @@ TEST_F(PrefetchContainerTest, IsIsolatedNetworkRequired) {
   blink::mojom::Referrer referrer;
   referrer.url = GURL("https://test.com/referrer");
   PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com/prefetch"),
+      GlobalRenderFrameHostId(1234, 5678), blink::DocumentToken(),
+      GURL("https://test.com/prefetch"),
       PrefetchType(/*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       referrer, /*no_vary_search_expected=*/absl::nullopt,
@@ -872,7 +881,7 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
   base::HistogramTester histogram_tester;
 
   auto prefetch_container = std::make_unique<PrefetchContainer>(
-      GlobalRenderFrameHostId(1234, 5678), kTestUrl1,
+      GlobalRenderFrameHostId(1234, 5678), blink::DocumentToken(), kTestUrl1,
       PrefetchType(/*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
@@ -967,7 +976,7 @@ TEST_F(PrefetchContainerTest, CancelAndClearStreamingLoader) {
   base::HistogramTester histogram_tester;
 
   PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(1234, 5678), kTestUrl1,
+      GlobalRenderFrameHostId(1234, 5678), blink::DocumentToken(), kTestUrl1,
       PrefetchType(/*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
@@ -1070,7 +1079,8 @@ class PrefetchContainerLifetimeTest
 
 TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
   auto prefetch_container = std::make_unique<PrefetchContainer>(
-      GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
+      GlobalRenderFrameHostId(1234, 5678), blink::DocumentToken(),
+      GURL("https://test.com"),
       PrefetchType(/*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),

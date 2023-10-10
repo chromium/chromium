@@ -20,6 +20,7 @@
 #include "net/http/http_no_vary_search_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -89,6 +90,7 @@ class CONTENT_EXPORT PrefetchContainer {
  public:
   PrefetchContainer(
       const GlobalRenderFrameHostId& referring_render_frame_host_id,
+      const blink::DocumentToken& referring_document_token,
       const GURL& url,
       const PrefetchType& prefetch_type,
       const blink::mojom::Referrer& referrer,
@@ -101,9 +103,9 @@ class CONTENT_EXPORT PrefetchContainer {
   PrefetchContainer& operator=(const PrefetchContainer&) = delete;
 
   // Defines the key to uniquely identify a prefetch.
-  using Key = std::pair<GlobalRenderFrameHostId, GURL>;
+  using Key = std::pair<blink::DocumentToken, GURL>;
   Key GetPrefetchContainerKey() const {
-    return std::make_pair(referring_render_frame_host_id_, prefetch_url_);
+    return std::make_pair(referring_document_token_, prefetch_url_);
   }
 
   // The ID of the RenderFrameHost that triggered the prefetch.
@@ -463,8 +465,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // has redirect(s).
   const SinglePrefetch& GetPreviousSinglePrefetchToPrefetch() const;
 
-  // The ID of the RenderFrameHost that triggered the prefetch.
-  GlobalRenderFrameHostId referring_render_frame_host_id_;
+  // The ID of the RenderFrameHost/Document that triggered the prefetch.
+  const GlobalRenderFrameHostId referring_render_frame_host_id_;
+  const blink::DocumentToken referring_document_token_;
 
   // The URL that was requested to be prefetch.
   const GURL prefetch_url_;
