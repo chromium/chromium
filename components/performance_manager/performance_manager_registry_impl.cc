@@ -40,6 +40,8 @@ PerformanceManagerRegistryImpl::PerformanceManagerRegistryImpl() {
 
   // The registry should be created after the PerformanceManager.
   DCHECK(PerformanceManager::IsAvailable());
+
+  browser_child_process_watcher_.Initialize();
 }
 
 PerformanceManagerRegistryImpl::~PerformanceManagerRegistryImpl() {
@@ -278,6 +280,9 @@ void PerformanceManagerRegistryImpl::TearDown() {
     render_process_host->RemoveUserData(RenderProcessUserData::UserDataKey());
   }
   render_process_hosts_.clear();
+
+  // Release the browser and utility process nodes.
+  browser_child_process_watcher_.TearDown();
 
   // Tear down PM owned objects. This lets them clear up object registrations,
   // observers, mechanisms, etc.

@@ -28,7 +28,6 @@ class FeatureObserverClient;
 }
 
 namespace performance_manager {
-class BrowserChildProcessWatcher;
 class Graph;
 class PageLiveStateDecoratorHelper;
 class PageLoadMetricsObserver;
@@ -96,9 +95,6 @@ class ChromeBrowserMainExtraPartsPerformanceManager
   const std::unique_ptr<
       performance_manager::PerformanceManagerFeatureObserverClient>
       feature_observer_client_;
-
-  std::unique_ptr<performance_manager::BrowserChildProcessWatcher>
-      browser_child_process_watcher_;
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       profile_observations_{this};

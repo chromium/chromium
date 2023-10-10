@@ -8,17 +8,18 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl_operations.h"
 #include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/render_process_user_data.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
+#include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/process_type.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/render_frame_host_test_support.h"
 #include "content/public/test/web_contents_tester.h"
@@ -63,23 +64,19 @@ class PerformanceManagerTabHelperTest : public PerformanceManagerTestHarness {
          !it.IsAtEnd(); it.Advance()) {
       ++num_hosts;
     }
+    return num_hosts;
+  }
 
+  static size_t CountAllRenderProcessNodes(GraphImpl* graph) {
+    size_t num_hosts = 0;
+    for (ProcessNodeImpl* process_node : graph->GetAllProcessNodeImpls()) {
+      if (process_node->process_type() == content::PROCESS_TYPE_RENDERER) {
+        ++num_hosts;
+      }
+    }
     return num_hosts;
   }
 };
-
-void CallOnGraphSync(PerformanceManagerImpl::GraphImplCallback callback) {
-  base::RunLoop run_loop;
-
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindLambdaForTesting([&run_loop, &callback](GraphImpl* graph) {
-        std::move(callback).Run(graph);
-        run_loop.Quit();
-      }));
-
-  run_loop.Run();
-}
 
 void PerformanceManagerTabHelperTest::CheckGraphTopology(
     const std::set<content::RenderProcessHost*>& hosts,
@@ -101,49 +98,49 @@ void PerformanceManagerTabHelperTest::CheckGraphTopology(
   EXPECT_EQ(process_nodes.size(), hosts.size());
 
   // Check out the graph itself.
-  CallOnGraphSync(base::BindLambdaForTesting(
-      [&process_nodes, num_hosts, grandchild_url](GraphImpl* graph) {
-        EXPECT_GE(num_hosts, graph->GetAllProcessNodeImpls().size());
-        EXPECT_EQ(4u, graph->GetAllFrameNodeImpls().size());
+  RunInGraph([&process_nodes, num_hosts, grandchild_url](GraphImpl* graph) {
+    EXPECT_GE(num_hosts, CountAllRenderProcessNodes(graph));
+    EXPECT_EQ(4u, graph->GetAllFrameNodeImpls().size());
 
-        // Expect all frame nodes to be current. This fails if our
-        // implementation of RenderFrameHostChanged is borked.
-        for (auto* frame : graph->GetAllFrameNodeImpls())
-          EXPECT_TRUE(frame->is_current());
+    // Expect all frame nodes to be current. This fails if our
+    // implementation of RenderFrameHostChanged is borked.
+    for (auto* frame : graph->GetAllFrameNodeImpls()) {
+      EXPECT_TRUE(frame->is_current());
+    }
 
-        ASSERT_EQ(1u, graph->GetAllPageNodeImpls().size());
-        auto* page = graph->GetAllPageNodeImpls()[0];
+    ASSERT_EQ(1u, graph->GetAllPageNodeImpls().size());
+    auto* page = graph->GetAllPageNodeImpls()[0];
 
-        // Extra RPHs can and most definitely do exist.
-        auto associated_process_nodes =
-            GraphImplOperations::GetAssociatedProcessNodes(page);
-        EXPECT_GE(graph->GetAllProcessNodeImpls().size(),
-                  associated_process_nodes.size());
-        EXPECT_GE(num_hosts, associated_process_nodes.size());
+    // Extra RPHs can and most definitely do exist.
+    auto associated_process_nodes =
+        GraphImplOperations::GetAssociatedProcessNodes(page);
+    EXPECT_GE(CountAllRenderProcessNodes(graph),
+              associated_process_nodes.size());
+    EXPECT_GE(num_hosts, associated_process_nodes.size());
 
-        for (auto* process_node : associated_process_nodes)
-          EXPECT_TRUE(base::Contains(process_nodes, process_node));
+    for (auto* process_node : associated_process_nodes) {
+      EXPECT_TRUE(base::Contains(process_nodes, process_node));
+    }
 
-        EXPECT_EQ(4u, GraphImplOperations::GetFrameNodes(page).size());
-        ASSERT_EQ(1u, page->main_frame_nodes().size());
+    EXPECT_EQ(4u, GraphImplOperations::GetFrameNodes(page).size());
+    ASSERT_EQ(1u, page->main_frame_nodes().size());
 
-        auto* main_frame = page->GetMainFrameNodeImpl();
-        EXPECT_EQ(kParentUrl, main_frame->url().spec());
-        EXPECT_EQ(2u, main_frame->child_frame_nodes().size());
+    auto* main_frame = page->GetMainFrameNodeImpl();
+    EXPECT_EQ(kParentUrl, main_frame->url().spec());
+    EXPECT_EQ(2u, main_frame->child_frame_nodes().size());
 
-        for (auto* child_frame : main_frame->child_frame_nodes()) {
-          if (child_frame->url().spec() == kChild1Url) {
-            ASSERT_EQ(1u, child_frame->child_frame_nodes().size());
-            auto* grandchild_frame =
-                *(child_frame->child_frame_nodes().begin());
-            EXPECT_EQ(grandchild_url, grandchild_frame->url().spec());
-          } else if (child_frame->url().spec() == kChild2Url) {
-            EXPECT_TRUE(child_frame->child_frame_nodes().empty());
-          } else {
-            FAIL() << "Unexpected child frame: " << child_frame->url().spec();
-          }
-        }
-      }));
+    for (auto* child_frame : main_frame->child_frame_nodes()) {
+      if (child_frame->url().spec() == kChild1Url) {
+        ASSERT_EQ(1u, child_frame->child_frame_nodes().size());
+        auto* grandchild_frame = *(child_frame->child_frame_nodes().begin());
+        EXPECT_EQ(grandchild_url, grandchild_frame->url().spec());
+      } else if (child_frame->url().spec() == kChild2Url) {
+        EXPECT_TRUE(child_frame->child_frame_nodes().empty());
+      } else {
+        FAIL() << "Unexpected child frame: " << child_frame->url().spec();
+      }
+    }
+  });
 }
 
 }  // namespace
@@ -199,24 +196,21 @@ TEST_F(PerformanceManagerTabHelperTest, FrameHierarchyReflectsToGraph) {
 
   size_t num_hosts = CountAllRenderProcessHosts();
 
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindLambdaForTesting([num_hosts](GraphImpl* graph) {
-        EXPECT_GE(num_hosts, graph->GetAllProcessNodeImpls().size());
-        EXPECT_EQ(0u, graph->GetAllFrameNodeImpls().size());
-        ASSERT_EQ(0u, graph->GetAllPageNodeImpls().size());
-      }));
-
-  task_environment()->RunUntilIdle();
+  RunInGraph([num_hosts](GraphImpl* graph) {
+    EXPECT_GE(num_hosts, CountAllRenderProcessNodes(graph));
+    EXPECT_EQ(0u, graph->GetAllFrameNodeImpls().size());
+    ASSERT_EQ(0u, graph->GetAllPageNodeImpls().size());
+  });
 }
 
 namespace {
 
 void ExpectPageIsAudible(bool is_audible) {
-  CallOnGraphSync(base::BindLambdaForTesting([&](GraphImpl* graph) {
+  RunInGraph([&](GraphImpl* graph) {
     ASSERT_EQ(1u, graph->GetAllPageNodeImpls().size());
     auto* page = graph->GetAllPageNodeImpls()[0];
     EXPECT_EQ(is_audible, page->is_audible());
-  }));
+  });
 }
 
 }  // namespace
@@ -288,16 +282,7 @@ TEST_F(PerformanceManagerTabHelperTest,
 
   // Mock observer, this can only be used from the PM sequence.
   MockPageNodeObserver observer;
-  {
-    base::RunLoop run_loop;
-    auto quit_closure = run_loop.QuitClosure();
-    PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindLambdaForTesting([&](Graph* graph) {
-          graph->AddPageNodeObserver(&observer);
-          std::move(quit_closure).Run();
-        }));
-    run_loop.Run();
-  }
+  RunInGraph([&](Graph* graph) { graph->AddPageNodeObserver(&observer); });
 
   auto* tab_helper =
       PerformanceManagerTabHelper::FromWebContents(web_contents());
@@ -308,19 +293,12 @@ TEST_F(PerformanceManagerTabHelperTest,
   tab_helper->DidUpdateFaviconURL(first_nav_main_rfh, {});
   tab_helper->DidUpdateFaviconURL(first_nav_main_rfh, {});
 
-  {
-    base::RunLoop run_loop;
-    auto quit_closure = run_loop.QuitClosure();
-    PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindLambdaForTesting([&]() {
-          // The observer shouldn't have been called at this point.
-          testing::Mock::VerifyAndClear(&observer);
-          std::move(quit_closure).Run();
-          // Set the expectation for the next check.
-          EXPECT_CALL(observer, OnFaviconUpdated(::testing::_));
-        }));
-    run_loop.Run();
-  }
+  RunInGraph([&] {
+    // The observer shouldn't have been called at this point.
+    testing::Mock::VerifyAndClear(&observer);
+    // Set the expectation for the next check.
+    EXPECT_CALL(observer, OnFaviconUpdated(::testing::_));
+  });
 
   // Sanity check to ensure that notification sent to the active main frame are
   // forwarded. DidUpdateFaviconURL needs to be called twice as the first
@@ -328,17 +306,10 @@ TEST_F(PerformanceManagerTabHelperTest,
   tab_helper->DidUpdateFaviconURL(web_contents()->GetPrimaryMainFrame(), {});
   tab_helper->DidUpdateFaviconURL(web_contents()->GetPrimaryMainFrame(), {});
 
-  {
-    base::RunLoop run_loop;
-    auto quit_closure = run_loop.QuitClosure();
-    PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindLambdaForTesting([&](Graph* graph) {
-          testing::Mock::VerifyAndClear(&observer);
-          graph->RemovePageNodeObserver(&observer);
-          std::move(quit_closure).Run();
-        }));
-    run_loop.Run();
-  }
+  RunInGraph([&](Graph* graph) {
+    testing::Mock::VerifyAndClear(&observer);
+    graph->RemovePageNodeObserver(&observer);
+  });
 }
 
 }  // namespace performance_manager

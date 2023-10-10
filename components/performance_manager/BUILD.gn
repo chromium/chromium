@@ -12,6 +12,8 @@ static_library("performance_manager") {
   sources = [
     "binders.cc",
     "browser_child_process_host_proxy.cc",
+    "browser_child_process_watcher.cc",
+    "browser_child_process_watcher.h",
     "decorators/frame_visibility_decorator.cc",
     "decorators/frame_visibility_decorator.h",
     "decorators/freezing_vote_decorator.cc",

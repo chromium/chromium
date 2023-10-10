@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "components/performance_manager/browser_child_process_watcher.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/performance_manager/owned_objects.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
@@ -149,6 +150,9 @@ class PerformanceManagerRegistryImpl
   // Maps each browser context to its worker watcher.
   base::flat_map<content::BrowserContext*, std::unique_ptr<WorkerWatcher>>
       worker_watchers_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  BrowserChildProcessWatcher browser_child_process_watcher_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used by WorkerWatchers to access existing process nodes and frame
   // nodes.

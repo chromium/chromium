@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
@@ -72,15 +73,10 @@ class ProcessContextRegistryTest : public RegistryBrowserTestHarness {
       : Super(enable_registries) {}
 
   void CreateNodes() override {
-    // Create PM nodes for the browser process and a non-browser child
-    // process. In production non-renderer process nodes are created by
-    // chrome/browser/performance_manager, which isn't hooked up in content/
-    // browsertests.
-    std::unique_ptr<ProcessNodeImpl> browser_process_node =
-        PerformanceManagerImpl::CreateProcessNode(BrowserProcessNodeTag{});
-    weak_browser_process_node_ = browser_process_node->GetWeakPtrOnUIThread();
-    tracked_nodes_.push_back(std::move(browser_process_node));
-
+    // Create a PM node for a non-browser child process. In production
+    // non-renderer process nodes are created from an observer triggered by
+    // BrowserChildProcessHost::Launch(), which has dependencies that aren't
+    // hooked up in content/browsertests.
     utility_process_ = std::make_unique<TestBrowserChildProcess>(
         content::ProcessType::PROCESS_TYPE_UTILITY);
     std::unique_ptr<ProcessNodeImpl> utility_process_node =
@@ -118,7 +114,6 @@ class ProcessContextRegistryTest : public RegistryBrowserTestHarness {
   RenderProcessHostId render_process_id_a_;
   RenderProcessHostId render_process_id_b_;
   std::unique_ptr<TestBrowserChildProcess> utility_process_;
-  base::WeakPtr<ProcessNode> weak_browser_process_node_;
   base::WeakPtr<ProcessNode> weak_utility_process_node_;
 
   // PM nodes created in CreateNodes() that must be deleted manually.
@@ -131,7 +126,19 @@ class ProcessContextRegistryDisabledTest : public ProcessContextRegistryTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ProcessContextRegistryTest, BrowserProcessContext) {
-  CreateNodes();
+  // Find the process node for the browser process.
+  base::WeakPtr<ProcessNode> weak_browser_process_node;
+  bool found_browser_process_node = false;
+  RunInGraph([&](GraphImpl* graph_impl) {
+    for (ProcessNodeImpl* node : graph_impl->GetAllProcessNodeImpls()) {
+      if (node->process_type() == content::ProcessType::PROCESS_TYPE_BROWSER) {
+        weak_browser_process_node = node->GetWeakPtr();
+        found_browser_process_node = true;
+        return;
+      }
+    }
+  });
+  ASSERT_TRUE(found_browser_process_node);
 
   ASSERT_TRUE(ProcessContextRegistry::BrowserProcessContext().has_value());
   const ProcessContext browser_context =
@@ -152,17 +159,18 @@ IN_PROC_BROWSER_TEST_F(ProcessContextRegistryTest, BrowserProcessContext) {
 
   RunInGraphWithRegistry<ProcessContextRegistry>(
       [&](const ProcessContextRegistry* registry) {
-        ASSERT_TRUE(weak_browser_process_node_);
+        ASSERT_TRUE(weak_browser_process_node);
         EXPECT_EQ(browser_context,
-                  weak_browser_process_node_->GetResourceContext());
-        EXPECT_EQ(weak_browser_process_node_.get(),
+                  weak_browser_process_node->GetResourceContext());
+        EXPECT_EQ(weak_browser_process_node.get(),
                   registry->GetProcessNodeForContext(browser_context));
-        EXPECT_EQ(weak_browser_process_node_.get(),
+        EXPECT_EQ(weak_browser_process_node.get(),
                   registry->GetProcessNodeForContext(resource_context));
       });
 
-  DeleteNodes();
-
+#if 0
+  // TODO(joenotcharles): Re-enable this when there's a test helper to delete
+  // the browser process node.
   EXPECT_EQ(absl::nullopt, ProcessContextRegistry::BrowserProcessContext());
   EXPECT_FALSE(
       ProcessContextRegistry::IsBrowserProcessContext(browser_context));
@@ -175,6 +183,7 @@ IN_PROC_BROWSER_TEST_F(ProcessContextRegistryTest, BrowserProcessContext) {
         EXPECT_EQ(nullptr,
                   registry->GetProcessNodeForContext(resource_context));
       });
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(ProcessContextRegistryTest, RenderProcessContext) {
@@ -331,8 +340,11 @@ IN_PROC_BROWSER_TEST_F(ProcessContextRegistryTest, InvalidProcessContexts) {
       BrowserChildProcessHostId(content::ChildProcessHost::kInvalidUniqueID);
   constexpr auto kInvalidId4 = BrowserChildProcessHostId(0);
 
-  // CreateNodes() isn't called so there's no browser ProcessNode.
+#if 0
+  // TODO(joenotcharles): Re-enable this when there's a test helper to delete
+  // the browser process node.
   EXPECT_EQ(absl::nullopt, ProcessContextRegistry::BrowserProcessContext());
+#endif
   EXPECT_EQ(absl::nullopt,
             ProcessContextRegistry::ContextForRenderProcessHost(nullptr));
   EXPECT_EQ(absl::nullopt,
@@ -397,9 +409,13 @@ IN_PROC_BROWSER_TEST_F(ProcessContextRegistryTest, OnBeforeProcessNodeRemoved) {
               process_node);
   };
 
+#if 0
+  // TODO(joenotcharles): Re-enable this when there's a test helper to delete
+  // the browser process node.
   RemoveProcessNodeWaiter browser_process_waiter(
       weak_browser_process_node_,
       base::BindOnce(expect_process_context, browser_process_context.value()));
+#endif
   RemoveProcessNodeWaiter render_process_waiter(
       PerformanceManager::GetProcessNodeForRenderProcessHost(rph),
       base::BindOnce(expect_process_context, render_process_context.value()));
@@ -409,7 +425,9 @@ IN_PROC_BROWSER_TEST_F(ProcessContextRegistryTest, OnBeforeProcessNodeRemoved) {
                      browser_child_process_context.value()));
 
   DeleteNodes();
+#if 0
   browser_process_waiter.Wait();
+#endif
   render_process_waiter.Wait();
   browser_child_process_waiter.Wait();
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/browser_child_process_watcher.h"
+#include "components/performance_manager/browser_child_process_watcher.h"
 
 #include <memory>
 #include <utility>
@@ -46,8 +46,9 @@ void BrowserChildProcessWatcher::TearDown() {
 
   nodes.push_back(std::move(browser_process_node_));
 
-  for (auto& node : tracked_process_nodes_)
+  for (auto& node : tracked_process_nodes_) {
     nodes.push_back(std::move(node.second));
+  }
   tracked_process_nodes_.clear();
 
   PerformanceManagerImpl::BatchDeleteNodes(std::move(nodes));

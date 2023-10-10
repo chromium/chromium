@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/performance_manager/browser_child_process_watcher.h"
 #include "chrome/browser/performance_manager/decorators/frozen_frame_aggregator.h"
 #include "chrome/browser/performance_manager/decorators/helpers/page_live_state_decorator_helper.h"
 #include "chrome/browser/performance_manager/decorators/page_aggregator.h"
@@ -226,9 +225,6 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
           performance_manager::GraphFeatures::WithDefault(),
           base::BindOnce(&ChromeBrowserMainExtraPartsPerformanceManager::
                              CreatePoliciesAndDecorators));
-  browser_child_process_watcher_ =
-      std::make_unique<performance_manager::BrowserChildProcessWatcher>();
-  browser_child_process_watcher_->Initialize();
 
   // There are no existing loaded profiles.
   DCHECK(g_browser_process->profile_manager()->GetLoadedProfiles().empty());
@@ -314,11 +310,6 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PreMainMessageLoopRun() {
 }
 
 void ChromeBrowserMainExtraPartsPerformanceManager::PostMainMessageLoopRun() {
-  // Release all graph nodes before destroying the performance manager.
-  // First release the browser and GPU process nodes.
-  browser_child_process_watcher_->TearDown();
-  browser_child_process_watcher_.reset();
-
   g_browser_process->profile_manager()->RemoveObserver(this);
   profile_observations_.RemoveAllObservations();
 
