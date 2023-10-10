@@ -1124,9 +1124,6 @@ void DisplayOverlayController::AddInputMappingWidget() {
       /*accept_events=*/false, /*is_floating=*/false);
   input_mapping_widget_->SetContentsView(
       std::make_unique<InputMappingView>(this));
-  auto* window = input_mapping_widget_->GetNativeWindow();
-  window->parent()->StackChildAtBottom(window);
-
   UpdateInputMappingWidgetBounds();
 }
 
