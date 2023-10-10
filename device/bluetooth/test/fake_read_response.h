@@ -4,6 +4,7 @@
 #ifndef DEVICE_BLUETOOTH_TEST_FAKE_READ_RESPONSE_H_
 #define DEVICE_BLUETOOTH_TEST_FAKE_READ_RESPONSE_H_
 
+#include <cstdint>
 #include <vector>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
