@@ -1,4 +1,4 @@
-/* Copyright 2013 The Chromium Authors
+/* Copyright 2023 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -31,14 +31,14 @@ cr-menu > [hidden] {
 }
 
 cr-menu > [shortcutText]::after {
-  color: var(--cros-menu-shortcut-color);
+  color: var(--cros-sys-secondary);
   content: attr(shortcutText);
   float: right;
   padding-inline-start: 30px;
 }
 
 cr-menu > [shortcutText][disabled]::after {
-  color: var(--cros-text-color-disabled);
+  color: var(--cros-sys-disabled);
 }
 
 html[dir='rtl'] cr-menu > [shortcutText]::after {
@@ -49,10 +49,12 @@ cr-menu > [sub-menu]::after {
   -webkit-mask-image: url(../images/files/ui/arrow_right.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  background-color: var(--cros-icon-color-primary);
+  background-color: currentColor;
   content: '';
   float: right;
-  height: 32px;
+  height: 20px;
+  /* Trailing icon has a different padding than its container padding (16px). */
+  margin-inline-end: calc(12px - 16px);
   width: 20px;
 }
 
@@ -62,10 +64,10 @@ html[dir='rtl'] cr-menu > [sub-menu]::after {
 }
 
 cr-menu > [sub-menu][disabled]::after {
-  background-color: var(--cros-text-color-disabled);
+  background-color: var(--cros-sys-disabled);
 }
 
-/* Keeps menu visibile while animating. Fade out animation is performed by
+/* Keeps menu visible while animating. Fade out animation is performed by
    Javascript. */
 cr-menu[hidden].files-menu.animating {
   opacity: 1;
@@ -84,18 +86,17 @@ cr-menu.files-menu > cr-menu-item {
 cr-menu.files-menu cr-menu-item .icon {
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: 16px 16px;
+  -webkit-mask-size: 20px 20px;
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 16px 16px;
-  height: 32px;
-  vertical-align: middle;
-  width: 16px;
+  background-size: 20px 20px;
+  height: 36px;
+  width: 20px;
 }
 
 cr-menu.files-menu cr-menu-item .icon.start {
   align-self: flex-start;
-  margin-inline-end: 8px;
+  margin-inline-end: 16px;
 }
 
 cr-menu.files-menu:not(.has-icon-start) cr-menu-item .icon.start {
@@ -104,12 +105,14 @@ cr-menu.files-menu:not(.has-icon-start) cr-menu-item .icon.start {
 
 cr-menu.files-menu cr-menu-item .icon.managed {
   background-image: url(chrome://resources/images/business.svg);
-  margin-inline-start: 8px;
+  margin-inline-start: 16px;
 }
 
 cr-menu.files-menu cr-menu-item .icon.end {
   align-self: flex-end;
-  margin-inline-start: 8px;
+  /* Trailing icon has a different padding than its container padding (16px). */
+  margin-inline-end: calc(12px - 16px);
+  margin-inline-start: 16px;
 }
 
 cr-menu.files-menu > cr-menu-item > .icon {
@@ -126,20 +129,38 @@ cr-menu.files-menu > cr-menu-item > paper-ripple {
   z-index: 0;
 }
 
-html.files-ng cr-menu.files-menu > cr-menu-item {
+cr-menu.files-menu > cr-menu-item {
   padding: 0 16px;
 }
 
-html.files-ng.pointer-active cr-menu-item > paper-ripple {
+html.pointer-active cr-menu-item > paper-ripple {
   --paper-ripple-opacity: 100%;
-  color: var(--cros-ripple-color);
+  color: var(--cros-sys-ripple_neutral_on_subtle);
 }
 
-html.files-ng cr-menu.files-menu > cr-menu-item:not([disabled])[selected],
-html.files-ng cr-menu.files-menu > cr-menu-item:not([disabled]):active {
-  background-color: var(--cros-menu-item-background-hover);
+cr-menu.files-menu > cr-menu-item:not([disabled])[selected],
+cr-menu.files-menu > cr-menu-item:not([disabled]):active {
+  background-color: var(--cros-sys-hover_on_subtle);
 }
 
-html.files-ng:not(.pointer-active) cr-menu.files-menu > cr-menu-item:not([disabled]):active[selected] {
-  background-color: var(--cros-menu-item-background-hover);
+html:not(.pointer-active)
+    cr-menu.files-menu > cr-menu-item:not([disabled]):active[selected] {
+  background-color: var(--cros-sys-hover_on_subtle);
+}
+
+html.focus-outline-visible
+    cr-menu.files-menu > cr-menu-item:not([disabled])[selected] {
+  background-color: unset;
+}
+
+html.focus-outline-visible
+    cr-menu.files-menu > cr-menu-item:not([disabled])[selected]::before {
+  border: 2px solid var(--cros-sys-focus_ring);
+  border-radius: 8px;
+  content: '';
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: -2px; /* border-width offset */
+  width: calc(100% - 4px); /* 2 x border width */
 }

@@ -16,7 +16,10 @@ def ChecksPatchFormatted(input_api, output_api):
 def ChecksUnitTests(input_api, output_api):
     # Run all unit tests under ui/file_manager/base folder.
     return input_api.canned_checks.RunUnitTestsInDirectory(
-        input_api, output_api, 'base', files_to_check=TEST_PATTERNS)
+        input_api,
+        output_api,
+        'base',
+        files_to_check=TEST_PATTERNS)
 
 
 def ChecksCommon(input_api, output_api):
@@ -38,6 +41,8 @@ def ChecksCommon(input_api, output_api):
 
         sys.path += [input_api.os_path.join(cwd)]
         import base.presubmit_support
+        results += base.presubmit_support._CheckGM3Counterpart(
+            input_api, output_api)
         results += base.presubmit_support._CheckNoDirectLitImport(
             input_api, output_api)
     finally:

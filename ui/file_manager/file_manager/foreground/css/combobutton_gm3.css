@@ -1,4 +1,4 @@
-/* Copyright 2012 The Chromium Authors
+/* Copyright 2023 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -34,26 +34,22 @@ html[dir='rtl'] .dialog-header .combobutton > .button > .action {
 }
 
 .dialog-header .combobutton > .button > .trigger {
-  margin-inline-end: -8px;
-  margin-inline-start: 2px;
-  margin-top: -1px;
-  width: 22px;
-}
-
-.dialog-header.files-ng .combobutton > .button > .trigger {
-  left: 2px;
-  position: relative;
-  right: 2px;
+  align-items: center;
+  display: inline-flex;
+  height: 20px;
+  justify-content: center;
+  margin-inline-start: 8px;
+  width: 20px;
 }
 
 /* This pseudo element expands clickable area of the .trigger */
 .dialog-header .combobutton > .button > .trigger::before {
   content: '';
   display: block;
-  height: 40px;
+  height: 48px;
   position: absolute;
-  top: -2px;
-  width: 30px;
+  right: 12px; /* Same value as padding-inline-end of the button. */
+  width: 20px;
 }
 
 .dialog-header .combobutton:not([multiple]) > .button > .trigger {
