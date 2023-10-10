@@ -4,5 +4,5 @@
 
 source_set("text_classifier_api") {
   sources = [ "text_classifier_api.h" ]
-  deps = [ "//base" ]
+  public_deps = [ "//base" ]
 }

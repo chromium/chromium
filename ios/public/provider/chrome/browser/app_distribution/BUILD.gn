@@ -4,5 +4,5 @@
 
 source_set("app_distribution_api") {
   sources = [ "app_distribution_api.h" ]
-  deps = [ "//base" ]
+  public_deps = [ "//base" ]
 }
