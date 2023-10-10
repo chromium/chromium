@@ -84,7 +84,6 @@ class SyncServiceFactoryTest : public PlatformTest {
     datatypes.Put(syncer::SUPERVISED_USER_SETTINGS);
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
-    datatypes.Put(syncer::PROXY_TABS);
     datatypes.Put(syncer::USER_EVENTS);
     datatypes.Put(syncer::USER_CONSENTS);
     datatypes.Put(syncer::SEND_TAB_TO_SELF);

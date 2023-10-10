@@ -11,8 +11,6 @@ static_library("sync_sessions") {
     "open_tabs_ui_delegate.h",
     "open_tabs_ui_delegate_impl.cc",
     "open_tabs_ui_delegate_impl.h",
-    "proxy_tabs_data_type_controller.cc",
-    "proxy_tabs_data_type_controller.h",
     "session_model_type_controller.cc",
     "session_model_type_controller.h",
     "session_store.cc",

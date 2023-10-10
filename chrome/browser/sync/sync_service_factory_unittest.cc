@@ -164,7 +164,6 @@ class SyncServiceFactoryTest : public testing::Test {
     datatypes.Put(syncer::PREFERENCES);
     datatypes.Put(syncer::PRIORITY_PREFERENCES);
     datatypes.Put(syncer::SESSIONS);
-    datatypes.Put(syncer::PROXY_TABS);
     datatypes.Put(syncer::USER_EVENTS);
     datatypes.Put(syncer::USER_CONSENTS);
     datatypes.Put(syncer::SEND_TAB_TO_SELF);

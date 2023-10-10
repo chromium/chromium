@@ -58,7 +58,6 @@
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
-#include "components/sync_sessions/proxy_tabs_data_type_controller.h"
 #include "components/sync_sessions/session_model_type_controller.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_user_events/user_event_model_type_controller.h"
@@ -364,11 +363,6 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
             sync_client_->GetHistoryService(), sync_client_->GetPrefService()));
   }
 
-  if (!disabled_types.Has(syncer::PROXY_TABS)) {
-    controllers.push_back(
-        std::make_unique<sync_sessions::ProxyTabsDataTypeController>(
-            sync_service, sync_client_->GetPrefService()));
-  }
   if (!disabled_types.Has(syncer::SESSIONS)) {
     syncer::ModelTypeControllerDelegate* delegate =
         sync_client_->GetSessionSyncService()->GetControllerDelegate().get();
