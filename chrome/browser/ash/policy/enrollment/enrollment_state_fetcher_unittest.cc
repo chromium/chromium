@@ -81,15 +81,17 @@ std::unique_ptr<EnrollmentStateFetcher::RlweClient> CreateRlweClientForTesting(
     const psm::testing::RlweTestCase& test_case,
     private_membership::rlwe::RlweUseCase use_case,
     const private_membership::rlwe::RlwePlaintextId& plaintext_id) {
-  // Below we use test_case.plaintext_id() instead of the computed plaintext_id
-  // to ensure that Query/OPRF requests and responses match the ones in the
-  // test_case. Hence we check that computed plaintext_id is correct here.
+  // Below we use params from test_case to create the client instead of the
+  // values passed to this function to ensure that Query/OPRF requests and
+  // responses in EXPECT_CALL invocations match the ones in the test_case.
+  // Hence, to test that passed values are correct, we verify them here.
+  EXPECT_EQ(use_case, private_membership::rlwe::CROS_DEVICE_STATE_UNIFIED);
   EXPECT_EQ(plaintext_id.sensitive_id(), kTestPsmId);
   EXPECT_EQ(plaintext_id.non_sensitive_id(), kTestPsmId);
   auto client =
       private_membership::rlwe::PrivateMembershipRlweClient::CreateForTesting(
-          use_case, {test_case.plaintext_id()}, test_case.ec_cipher_key(),
-          test_case.seed());
+          test_case.use_case(), {test_case.plaintext_id()},
+          test_case.ec_cipher_key(), test_case.seed());
   return std::move(client.value());
 }
 

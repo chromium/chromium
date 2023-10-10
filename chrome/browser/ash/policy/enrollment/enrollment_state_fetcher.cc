@@ -919,7 +919,7 @@ class EnrollmentStateFetcherImpl::Sequence {
     LOG_IF(WARNING, !state_key) << "Failed to obtain state keys";
     context_.state_key = state_key;
     context_.psm_rlwe_client = context_.rlwe_client_factory.Run(
-        private_membership::rlwe::CROS_DEVICE_STATE,
+        private_membership::rlwe::CROS_DEVICE_STATE_UNIFIED,
         ConstructPlainttextId(context_.rlz_brand_code, context_.serial_number));
     oprf_.Request(context_, base::BindOnce(&Sequence::OnOprfRequestDone,
                                            weak_factory_.GetWeakPtr()));
