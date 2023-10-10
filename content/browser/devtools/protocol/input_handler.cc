@@ -259,19 +259,23 @@ bool GenerateTouchPoints(
 
 std::string ValidatePointerEventProperties(double force,
                                            double tangential_pressure,
-                                           int tilt_x,
-                                           int tilt_y,
+                                           double tilt_x,
+                                           double tilt_y,
                                            int twist) {
-  if (force < 0 || force > 1)
-    return "'force' should be in the range of  [0,1]";
-  if (tangential_pressure < -1 || tangential_pressure > 1)
-    return "'tangential_pressure' should be in the range of  [-1,1]";
-  if (tilt_x < -90 || tilt_x > 90)
-    return "'tilt_x' should be in the range of  [-90,90]";
-  if (tilt_y < -90 || tilt_y > 90)
-    return "'tilt_y' should be in the range of  [-90,90]";
+  if (force < 0.0f || force > 1.0f) {
+    return "'force' should be in the range of [0,1]";
+  }
+  if (tangential_pressure < -1.0f || tangential_pressure > 1.0f) {
+    return "'tangential_pressure' should be in the range of [-1,1]";
+  }
+  if (tilt_x < -90.0f || tilt_x > 90.0f) {
+    return "'tilt_x' should be in the range of [-90,90]";
+  }
+  if (tilt_y < -90.0f || tilt_y > 90.0f) {
+    return "'tilt_y' should be in the range of [-90,90]";
+  }
   if (twist < 0 || twist > 359)
-    return "'twist' should be in the range of  [0,359]";
+    return "'twist' should be in the range of [0,359]";
   return "";
 }
 
@@ -381,8 +385,8 @@ CreateWebMouseEvent(const std::string& event_type,
                     Maybe<int> click_count,
                     Maybe<double> force,
                     Maybe<double> tangential_pressure,
-                    Maybe<int> tilt_x,
-                    Maybe<int> tilt_y,
+                    Maybe<double> tilt_x,
+                    Maybe<double> tilt_y,
                     Maybe<int> twist,
                     Maybe<double> delta_x,
                     Maybe<double> delta_y,
@@ -499,16 +503,16 @@ CreateWebTouchEvents(
       with_id++;
     }
     std::string message = ValidatePointerEventProperties(
-        point->GetForce(1.0), point->GetTangentialPressure(0),
-        point->GetTiltX(0), point->GetTiltY(0), point->GetTwist(0));
+        point->GetForce(1.0f), point->GetTangentialPressure(0.0f),
+        point->GetTiltX(0.0f), point->GetTiltY(0.0f), point->GetTwist(0));
     if (!message.empty()) {
       return base::unexpected(Response::InvalidParams(message));
     }
     points[id].id = id;
-    points[id].radius_x = point->GetRadiusX(1.0);
-    points[id].radius_y = point->GetRadiusY(1.0);
-    points[id].rotation_angle = point->GetRotationAngle(0.0);
-    points[id].force = point->GetForce(1.0);
+    points[id].radius_x = point->GetRadiusX(1.0f);
+    points[id].radius_y = point->GetRadiusY(1.0f);
+    points[id].rotation_angle = point->GetRotationAngle(0.0f);
+    points[id].force = point->GetForce(1.0f);
     points[id].pointer_type = blink::WebPointerProperties::PointerType::kTouch;
     points[id].SetPositionInWidget(
         CssPixelsToPointF(point->GetX(), point->GetY(), scale_factor));
@@ -1283,8 +1287,8 @@ void InputHandler::DispatchMouseEvent(
     Maybe<int> click_count,
     Maybe<double> force,
     Maybe<double> tangential_pressure,
-    Maybe<int> tilt_x,
-    Maybe<int> tilt_y,
+    Maybe<double> tilt_x,
+    Maybe<double> tilt_y,
     Maybe<int> twist,
     Maybe<double> delta_x,
     Maybe<double> delta_y,
@@ -1757,8 +1761,8 @@ void InputHandler::DispatchSyntheticPointerActionTouch(
     SyntheticPointerActionParams action_params =
         PrepareSyntheticPointerActionParams(
             action_type, id, point->GetX(), point->GetY(), event_modifiers,
-            point->GetRadiusX(1.0), point->GetRadiusY(1.0),
-            point->GetRotationAngle(0.0), point->GetForce(1.0));
+            point->GetRadiusX(1.0f), point->GetRadiusY(1.0f),
+            point->GetRotationAngle(0.0f), point->GetForce(1.0f));
     param_list.push_back(action_params);
     original = gfx::PointF(point->GetX(), point->GetY());
     current_pointer_ids.insert(id);
