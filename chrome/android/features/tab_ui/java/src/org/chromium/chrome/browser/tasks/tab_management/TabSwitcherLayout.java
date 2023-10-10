@@ -726,15 +726,18 @@ public class TabSwitcherLayout extends Layout {
         }
         mTabJavaView.runOnNextLayoutRunnable();
         if (mNewTabAnimation != null) {
-            if (mNewTabAnimation.isRunning()) {
+            if (mNewTabAnimation.isStarted()) {
                 mNewTabAnimation.end();
             }
+            mNewTabAnimation = null;
         }
         if (mTabToSwitcherAnimation != null) {
-            if (mTabToSwitcherAnimation.isRunning()) {
+            if (mTabToSwitcherAnimation.isStarted()) {
                 mTabToSwitcherAnimation.end();
             }
+            mTabToSwitcherAnimation = null;
         }
+        mTabJavaView.setVisibility(View.GONE);
     }
 
     /**
@@ -924,11 +927,14 @@ public class TabSwitcherLayout extends Layout {
         // animation starts otherwise it might jank.
         mAnimationTransitionType = TransitionType.SHRINK;
         mTabJavaView.invalidate();
-        mTabJavaView.setOnNextLayoutRunnable(() -> {
-            mTabJavaView.setVisibility(View.VISIBLE);
-            mAnimationTracker.onStart();
-            mTabToSwitcherAnimation.start();
-        });
+        mTabJavaView.setOnNextLayoutRunnable(
+                () -> {
+                    mTabJavaView.setVisibility(View.VISIBLE);
+                    mAnimationTracker.onStart();
+                    if (mTabToSwitcherAnimation != null) {
+                        mTabToSwitcherAnimation.start();
+                    }
+                });
     }
 
     /**
@@ -992,7 +998,9 @@ public class TabSwitcherLayout extends Layout {
                             mTabJavaView.setOnNextLayoutRunnable(
                                     () -> {
                                         mAnimationTracker.onStart();
-                                        mTabToSwitcherAnimation.start();
+                                        if (mTabToSwitcherAnimation != null) {
+                                            mTabToSwitcherAnimation.start();
+                                        }
                                     });
                         });
         // Quick and layout completed don't matter for expand, but set them so the animation will
