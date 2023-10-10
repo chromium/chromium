@@ -125,14 +125,6 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
 AX_BASE_EXPORT bool
 IsExperimentalAccessibilityGoogleTtsHighQualityVoicesEnabled();
 
-// Enables the experimental color enhancements settings.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(
-    kExperimentalAccessibilityColorEnhancementSettings);
-
-// Returns true if the experimental color enhancements settings are enabled.
-AX_BASE_EXPORT bool
-AreExperimentalAccessibilityColorEnhancementSettingsEnabled();
-
 // Enables Dictation keyboard improvements.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kAccessibilityDictationKeyboardImprovements);

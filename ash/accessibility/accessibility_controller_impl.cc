@@ -845,12 +845,6 @@ void AccessibilityControllerImpl::Feature::UpdateFromPref() {
   PrefService* prefs = owner_->active_user_prefs_;
   DCHECK(prefs);
 
-  if (pref_name_ == prefs::kAccessibilityColorCorrectionEnabled &&
-      !::features::
-          AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
-    return;
-  }
-
   bool enabled = prefs->GetBoolean(pref_name_);
 
   if (conflicting_feature_ != FeatureType::kNoConflictingFeature &&
@@ -1084,11 +1078,8 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(prefs::kAccessibilityColorCorrectionEnabled,
                                 false);
-  if (::features::
-          AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
     registry->RegisterBooleanPref(
         prefs::kAccessibilityColorCorrectionHasBeenSetup, false);
-  }
 
   // TODO(b/266816160): Make ChromeVox prefs are syncable, to so that ChromeOS
   // backs up users' ChromeVox settings and reflects across their devices.
@@ -1270,9 +1261,6 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
       prefs::kAccessibilitySelectToSpeakVoiceName,
       kDefaultAccessibilitySelectToSpeakVoiceName,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-
-  if (::features::
-          AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
     registry->RegisterIntegerPref(
         prefs::kAccessibilityColorVisionCorrectionAmount, 100,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
@@ -1280,7 +1268,6 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
         prefs::kAccessibilityColorVisionCorrectionType,
         ColorVisionCorrectionType::kDeuteranomaly,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  }
 }
 
 void AccessibilityControllerImpl::Shutdown() {
@@ -1536,10 +1523,6 @@ bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForHighContrast() {
 }
 
 bool AccessibilityControllerImpl::IsColorCorrectionSettingVisibleInTray() {
-  if (!::features::
-          AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
-    return false;
-  }
   if (!color_correction().enabled() &&
       Shell::Get()->session_controller()->login_status() ==
           ash::LoginStatus::NOT_LOGGED_IN) {
@@ -2113,9 +2096,6 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(prefs);
 
-  const bool color_enhancement_feature_enabled =
-      ::features::AreExperimentalAccessibilityColorEnhancementSettingsEnabled();
-
   // It is safe to use base::Unreatined since we own pref_change_registrar.
   for (const std::unique_ptr<Feature>& feature : features_) {
     DCHECK(feature);
@@ -2220,7 +2200,6 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
       base::BindRepeating(
           &AccessibilityControllerImpl::UpdateCursorColorFromPrefs,
           base::Unretained(this)));
-  if (color_enhancement_feature_enabled) {
     pref_change_registrar_->Add(
         prefs::kAccessibilityColorVisionCorrectionAmount,
         base::BindRepeating(
@@ -2231,7 +2210,6 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
         base::BindRepeating(
             &AccessibilityControllerImpl::UpdateColorCorrectionFromPrefs,
             base::Unretained(this)));
-  }
 
   // Load current state.
   for (const std::unique_ptr<Feature>& feature : features_) {
@@ -2249,9 +2227,7 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
   UpdateCursorColorFromPrefs();
   UpdateShortcutsEnabledFromPref();
   UpdateTabletModeShelfNavigationButtonsFromPref();
-  if (color_enhancement_feature_enabled) {
     UpdateColorCorrectionFromPrefs();
-  }
 }
 
 void AccessibilityControllerImpl::UpdateAutoclickDelayFromPref() {

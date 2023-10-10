@@ -449,9 +449,7 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kOnDeviceSpeechRecognition,
-         ::features::kExperimentalAccessibilityColorEnhancementSettings},
-        {});
+        {features::kOnDeviceSpeechRecognition}, {});
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
 

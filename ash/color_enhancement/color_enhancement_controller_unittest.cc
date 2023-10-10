@@ -29,14 +29,6 @@ class ColorEnhancementControllerTest : public AshTestBase {
 
   ~ColorEnhancementControllerTest() override = default;
 
-  // AshTestBase:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        ::features::kExperimentalAccessibilityColorEnhancementSettings, true);
-
-    AshTestBase::SetUp();
-  }
-
   bool IsCursorCompositingEnabled() const {
     return Shell::Get()
         ->window_tree_host_manager()

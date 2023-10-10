@@ -7,7 +7,6 @@
 
 #include "ash/shell.h"
 #include "cc/paint/filter_operation.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/matrix3_f.h"
 
@@ -241,11 +240,6 @@ void ColorEnhancementController::UpdateAllDisplays() {
 void ColorEnhancementController::UpdateDisplay(aura::Window* root_window) {
   ui::Layer* layer = root_window->layer();
   layer->SetLayerInverted(high_contrast_enabled_);
-
-  if (!::features::
-          AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
-    return;
-  }
 
   if (!color_filtering_enabled_) {
     // Reset layer state to defaults.

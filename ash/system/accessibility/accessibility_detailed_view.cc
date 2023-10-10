@@ -190,10 +190,6 @@ void AccessibilityDetailedView::OnAccessibilityStatusChanged() {
   }
 
   if (controller->IsColorCorrectionSettingVisibleInTray()) {
-    if (!::features::
-            AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
-      return;
-    }
     bool checked = controller->color_correction().enabled();
     UpdateFeatureState(checked, color_correction_view_,
                        color_correction_top_view_);

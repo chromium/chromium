@@ -101,14 +101,6 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
         },
       },
 
-      experimentalColorEnhancementSettingsEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'areExperimentalAccessibilityColorEnhancementSettingsEnabled');
-        },
-      },
-
       /**
        * Whether the user is in kiosk mode.
        */
@@ -138,7 +130,6 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
   }
 
   private isKioskModeActive_: boolean;
-  private experimentalColorEnhancementSettingsEnabled_: boolean;
   private screenMagnifierMouseFollowingModePrefValues_: {[key: string]: number};
   private screenMagnifierZoomOptions_: Array<{value: number, name: string}>;
 

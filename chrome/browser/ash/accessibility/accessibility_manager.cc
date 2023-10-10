@@ -553,11 +553,7 @@ bool AccessibilityManager::ShouldShowAccessibilityMenu() {
         prefs->GetBoolean(prefs::kAccessibilityCursorHighlightEnabled) ||
         prefs->GetBoolean(prefs::kAccessibilityFocusHighlightEnabled) ||
         prefs->GetBoolean(prefs::kAccessibilityDictationEnabled) ||
-        prefs->GetBoolean(prefs::kDockedMagnifierEnabled)) {
-      return true;
-    }
-    if (::features::
-            AreExperimentalAccessibilityColorEnhancementSettingsEnabled() &&
+        prefs->GetBoolean(prefs::kDockedMagnifierEnabled) ||
         prefs->GetBoolean(prefs::kAccessibilityColorCorrectionEnabled)) {
       return true;
     }
@@ -1708,8 +1704,6 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
         "Accessibility.CrosCursorColor",
         prefs->GetBoolean(prefs::kAccessibilityCursorColorEnabled));
 
-    if (::features::
-            AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
       bool color_correction_enabled = IsColorCorrectionEnabled();
       base::UmaHistogramBoolean("Accessibility.CrosColorCorrection",
                                 color_correction_enabled);
@@ -1722,7 +1716,6 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
             "Accessibility.CrosColorCorrection.FilterAmount",
             prefs->GetInteger(
                 prefs::kAccessibilityColorVisionCorrectionAmount));
-      }
     }
   }
   base::UmaHistogramBoolean("Accessibility.CrosCaretHighlight",

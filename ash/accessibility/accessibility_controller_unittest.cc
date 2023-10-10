@@ -64,8 +64,7 @@ class AccessibilityControllerTest : public AshTestBase {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
-         ash::features::kOnDeviceSpeechRecognition,
-         ::features::kExperimentalAccessibilityColorEnhancementSettings},
+         ash::features::kOnDeviceSpeechRecognition},
         {});
     AshTestBase::SetUp();
   }
@@ -179,8 +178,6 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs->FindPreference(prefs::kAccessibilityVirtualKeyboardEnabled));
   EXPECT_TRUE(prefs->FindPreference(
       prefs::kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed));
-  if (::features::
-          AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
     EXPECT_TRUE(
         prefs->FindPreference(prefs::kAccessibilityColorCorrectionEnabled));
     EXPECT_TRUE(prefs->FindPreference(
@@ -189,7 +186,6 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
         prefs->FindPreference(prefs::kAccessibilityColorVisionCorrectionType));
     EXPECT_TRUE(prefs->FindPreference(
         prefs::kAccessibilityColorVisionCorrectionAmount));
-  }
 }
 
 TEST_F(AccessibilityControllerTest, SetAutoclickEnabled) {

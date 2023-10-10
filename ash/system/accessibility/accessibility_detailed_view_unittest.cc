@@ -150,8 +150,7 @@ class AccessibilityDetailedViewTest : public AshTestBase,
   AccessibilityDetailedViewTest() {
     scoped_feature_list_.InitWithFeatures(
         {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
-         ash::features::kOnDeviceSpeechRecognition,
-         ::features::kExperimentalAccessibilityColorEnhancementSettings},
+         ash::features::kOnDeviceSpeechRecognition},
         {});
   }
   AccessibilityDetailedViewTest(const AccessibilityDetailedViewTest&) = delete;
@@ -2320,31 +2319,6 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, Autoclick) {
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   // Color correction cannot be enabled from the login screen.
   EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
-  CloseDetailMenu();
-}
-
-class AccessibilityDetailedViewWithoutColorCorrectionTest
-    : public AccessibilityDetailedViewTest {
- public:
-  AccessibilityDetailedViewWithoutColorCorrectionTest() {
-    feature_list_.InitAndDisableFeature(
-        ::features::kExperimentalAccessibilityColorEnhancementSettings);
-  }
-  AccessibilityDetailedViewWithoutColorCorrectionTest(
-      const AccessibilityDetailedViewWithoutColorCorrectionTest&) = delete;
-  AccessibilityDetailedViewWithoutColorCorrectionTest& operator=(
-      const AccessibilityDetailedViewWithoutColorCorrectionTest&) = delete;
-  ~AccessibilityDetailedViewWithoutColorCorrectionTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(AccessibilityDetailedViewWithoutColorCorrectionTest,
-       NoColorCorrectionIfFlagNotSet) {
-  CreateDetailedMenu();
-  EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
-  EXPECT_FALSE(color_correction_top_view());
   CloseDetailMenu();
 }
 

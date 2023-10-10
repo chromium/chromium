@@ -441,11 +441,6 @@ bool IsLiveCaptionEnabled() {
   return captions::IsLiveCaptionFeatureSupported();
 }
 
-bool AreExperimentalAccessibilityColorEnhancementSettingsEnabled() {
-  return ::features::
-      AreExperimentalAccessibilityColorEnhancementSettingsEnabled();
-}
-
 bool IsSwitchAccessTextAllowed() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableExperimentalAccessibilitySwitchAccessText);
@@ -457,10 +452,7 @@ bool AreTabletNavigationButtonsAllowed() {
 }
 
 int GetDisplayAndMangificationLinkDescriptionResourceId() {
-  if (AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
     return IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_NEW_DESCRIPTION;
-  }
-  return IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_DESCRIPTION;
 }
 
 bool IsAccessibilityGameFaceIntegrationEnabled() {
@@ -1122,10 +1114,6 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddString("tabletModeShelfNavigationButtonsLearnMoreUrl",
                          chrome::kTabletModeGesturesLearnMoreURL);
 
-  html_source->AddBoolean(
-      "areExperimentalAccessibilityColorEnhancementSettingsEnabled",
-      AreExperimentalAccessibilityColorEnhancementSettingsEnabled());
-
   html_source->AddBoolean("pdfOcrEnabled",
                           base::FeatureList::IsEnabled(::features::kPdfOcr));
 
@@ -1394,10 +1382,7 @@ void AccessibilitySection::UpdateSearchTags() {
         GetA11yFullscreenMagnifierFocusFollowingSearchConcepts());
   }
 
-  if (::features::
-          AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
-    updater.AddSearchTags(GetA11yColorCorrectionSearchConcepts());
-  }
+  updater.AddSearchTags(GetA11yColorCorrectionSearchConcepts());
 
   if (!pref_service_->GetBoolean(prefs::kAccessibilitySwitchAccessEnabled)) {
     return;

@@ -163,15 +163,6 @@ bool IsExperimentalAccessibilityGoogleTtsHighQualityVoicesEnabled() {
       ::features::kExperimentalAccessibilityGoogleTtsHighQualityVoices);
 }
 
-BASE_FEATURE(kExperimentalAccessibilityColorEnhancementSettings,
-             "ExperimentalAccessibilityColorEnhancementSettings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool AreExperimentalAccessibilityColorEnhancementSettingsEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kExperimentalAccessibilityColorEnhancementSettings);
-}
-
 BASE_FEATURE(kAccessibilityDictationKeyboardImprovements,
              "AccessibilityDictationKeyboardImprovements",
              base::FEATURE_DISABLED_BY_DEFAULT);

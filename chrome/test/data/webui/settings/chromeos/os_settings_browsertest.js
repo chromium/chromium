@@ -638,7 +638,6 @@ TEST_F(
  [
    'OsA11yPageDisplayAndMagnificationSubpage',
    'os_a11y_page/display_and_magnification_subpage_test.js',
-   {enabled: ['features::kExperimentalAccessibilityColorEnhancementSettings']},
  ],
  [
    'OsA11yPageKeyboardAndTextInputPage',

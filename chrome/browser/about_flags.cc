@@ -5716,13 +5716,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      SINGLE_VALUE_TYPE(
          ::switches::kEnableExperimentalAccessibilitySwitchAccessText)},
-    {"enable-experimental-accessibility-color-enhancement-settings",
-     flag_descriptions::kExperimentalAccessibilityColorEnhancementSettingsName,
-     flag_descriptions::
-         kExperimentalAccessibilityColorEnhancementSettingsDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         features::kExperimentalAccessibilityColorEnhancementSettings)},
     {"expose-out-of-process-video-decoding-to-lacros",
      flag_descriptions::kExposeOutOfProcessVideoDecodingToLacrosName,
      flag_descriptions::kExposeOutOfProcessVideoDecodingToLacrosDescription,

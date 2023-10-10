@@ -87,8 +87,6 @@ suite('<settings-display-and-magnification-subpage>', () => {
 
   test('Turns on color enhancement filters', async () => {
     // Enabled in os_settings_v3_browsertest.js.
-    assertTrue(loadTimeData.getBoolean(
-        'areExperimentalAccessibilityColorEnhancementSettingsEnabled'));
     await initPage();
 
     assertFalse(page.prefs.settings.a11y.color_filtering.enabled.value);

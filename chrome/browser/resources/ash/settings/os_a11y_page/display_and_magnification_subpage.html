@@ -107,81 +107,79 @@
         180deg, var(--cros-color-preview-grey), transparent);
   }
 </style>
-<template is="dom-if" if="[[experimentalColorEnhancementSettingsEnabled_]]">
-  <settings-toggle-button
-    id="enableColorFiltering"
-    icon="os-settings:color-correction"
-    pref="{{prefs.settings.a11y.color_filtering.enabled}}"
-    label="$i18n{colorFilteringLabel}"
-    sub-label="$i18n{colorFilteringDescription}"
-    deep-link-focus-id$="[[Setting.kColorCorrectionEnabled]]">
-  </settings-toggle-button>
-  <template is="dom-if"
-      if="[[prefs.settings.a11y.color_filtering.enabled.value]]">
-    <div class="sub-item color-item">
-      <div class="settings-box">
-        <div class="start settings-box-text">
-          <div class="label" aria-hidden="true">
-            $i18n{colorVisionDeficiencyTypeLabel}
-          </div>
+<settings-toggle-button
+  id="enableColorFiltering"
+  icon="os-settings:color-correction"
+  pref="{{prefs.settings.a11y.color_filtering.enabled}}"
+  label="$i18n{colorFilteringLabel}"
+  sub-label="$i18n{colorFilteringDescription}"
+  deep-link-focus-id$="[[Setting.kColorCorrectionEnabled]]">
+</settings-toggle-button>
+<template is="dom-if"
+    if="[[prefs.settings.a11y.color_filtering.enabled.value]]">
+  <div class="sub-item color-item">
+    <div class="settings-box">
+      <div class="start settings-box-text">
+        <div class="label" aria-hidden="true">
+          $i18n{colorVisionDeficiencyTypeLabel}
         </div>
-        <settings-dropdown-menu
-            id="colorFilteringDeficiencyTypeDropdown"
-            label="$i18n{colorVisionDeficiencyTypeLabel}"
-            pref="{{prefs.settings.a11y.color_filtering.color_vision_deficiency_type}}"
-            menu-options="[[colorVisionDeficiencyTypeOptions_]]"
-            deep-link-focus-id$="[[Setting.kColorCorrectionFilterType]]">
-        </settings-dropdown-menu>
       </div>
-      <div class="settings-box">
-        <div class="start settings-box-text" aria-hidden="true">
-          $i18n{colorVisionFilterIntensityLabel}
-        </div>
-        <settings-slider
-          id="colorFilteringIntensitySlider"
-          pref="{{prefs.settings.a11y.color_filtering.color_vision_correction_amount}}"
-          min="0" max="100"
-          label-aria="$i18n{colorVisionFilterIntensityLabel}"
-          label-min="$i18n{colorFilterMinLabel}"
-          label-max="$i18n{colorFilterMaxLabel}"
-          deep-link-focus-id$="[[Setting.kColorCorrectionFilterAmount]]">
-        </settings-slider>
-      </div>
-      <div class="color-preview-holder">
-        <div>$i18n{colorFilteringPreviewInstructions}</div>
-        <table>
-          <tr>
-            <th>$i18n{colorFilteringPreviewColorRed}</th>
-            <th>$i18n{colorFilteringPreviewColorOrange}</th>
-            <th>$i18n{colorFilteringPreviewColorYellow}</th>
-            <th>$i18n{colorFilteringPreviewColorGreen}</th>
-            <th>$i18n{colorFilteringPreviewColorCyan}</th>
-            <th>$i18n{colorFilteringPreviewColorBlue}</th>
-            <th>$i18n{colorFilteringPreviewColorPurple}</th>
-            <th>$i18n{colorFilteringPreviewColorGray}</th>
-          </tr>
-          <tr>
-            <td><div class="color-preview red"></div></td>
-            <td><div class="color-preview orange"></div></td>
-            <td><div class="color-preview yellow"></div></td>
-            <td><div class="color-preview green"></div></td>
-            <td><div class="color-preview cyan"></div></td>
-            <td><div class="color-preview blue"></div></td>
-            <td><div class="color-preview purple"></div></td>
-            <td><div class="color-preview gray"></div></td>
-          </tr>
-        </table>
-      </div>
+      <settings-dropdown-menu
+          id="colorFilteringDeficiencyTypeDropdown"
+          label="$i18n{colorVisionDeficiencyTypeLabel}"
+          pref="{{prefs.settings.a11y.color_filtering.color_vision_deficiency_type}}"
+          menu-options="[[colorVisionDeficiencyTypeOptions_]]"
+          deep-link-focus-id$="[[Setting.kColorCorrectionFilterType]]">
+      </settings-dropdown-menu>
     </div>
-  </template>
-  <div class="hr"></div>
+    <div class="settings-box">
+      <div class="start settings-box-text" aria-hidden="true">
+        $i18n{colorVisionFilterIntensityLabel}
+      </div>
+      <settings-slider
+        id="colorFilteringIntensitySlider"
+        pref="{{prefs.settings.a11y.color_filtering.color_vision_correction_amount}}"
+        min="0" max="100"
+        label-aria="$i18n{colorVisionFilterIntensityLabel}"
+        label-min="$i18n{colorFilterMinLabel}"
+        label-max="$i18n{colorFilterMaxLabel}"
+        deep-link-focus-id$="[[Setting.kColorCorrectionFilterAmount]]">
+      </settings-slider>
+    </div>
+    <div class="color-preview-holder">
+      <div>$i18n{colorFilteringPreviewInstructions}</div>
+      <table>
+        <tr>
+          <th>$i18n{colorFilteringPreviewColorRed}</th>
+          <th>$i18n{colorFilteringPreviewColorOrange}</th>
+          <th>$i18n{colorFilteringPreviewColorYellow}</th>
+          <th>$i18n{colorFilteringPreviewColorGreen}</th>
+          <th>$i18n{colorFilteringPreviewColorCyan}</th>
+          <th>$i18n{colorFilteringPreviewColorBlue}</th>
+          <th>$i18n{colorFilteringPreviewColorPurple}</th>
+          <th>$i18n{colorFilteringPreviewColorGray}</th>
+        </tr>
+        <tr>
+          <td><div class="color-preview red"></div></td>
+          <td><div class="color-preview orange"></div></td>
+          <td><div class="color-preview yellow"></div></td>
+          <td><div class="color-preview green"></div></td>
+          <td><div class="color-preview cyan"></div></td>
+          <td><div class="color-preview blue"></div></td>
+          <td><div class="color-preview purple"></div></td>
+          <td><div class="color-preview gray"></div></td>
+        </tr>
+      </table>
+    </div>
+  </div>
 </template>
 <settings-toggle-button
     icon="os-settings:contrast"
     pref="{{prefs.settings.a11y.high_contrast_enabled}}"
     label="$i18n{highContrastLabel}"
     sub-label="$i18n{highContrastDescription}"
-    deep-link-focus-id$="[[Setting.kHighContrastMode]]">
+    deep-link-focus-id$="[[Setting.kHighContrastMode]]"
+    class="hr">
 </settings-toggle-button>
 <settings-toggle-button
     class="hr"
