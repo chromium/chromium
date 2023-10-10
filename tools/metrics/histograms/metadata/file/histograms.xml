@@ -1151,6 +1151,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="FileBrowser.OfficeFiles.ODFS.Version" units="version"
+    expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: version of the ODFS extension on service worker
+    startup. The version string is encoded in 9 bits to fit max histogram
+    buckets (1002), major: 1 bit (MSB), minor: 3 bits, patch: 5 bits.
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.Open.FileType.{CloudProvider}"
     enum="OfficeOpenExtensions" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
