@@ -1894,13 +1894,13 @@
   <message desc="Backslash (\) character description." name="IDS_CHROMEVOX_BACKSLASH">
     {COUNT, plural, =1 {backslash}other {# backslashes}}
   </message>
-  <message desc="BULLET (•) character description." name="IDS_CHROMEVOX_BULLET">
+  <message desc="BULLET (•) character description announced by ChromeVox screen reader." name="IDS_CHROMEVOX_BULLET">
     {COUNT, plural, =1 {bullet}other {# bullets}}
   </message>
-  <message desc="Second level bullet (◦) character description." name="IDS_CHROMEVOX_WHITE_BULLET">
+  <message desc="Second level bullet (◦) character description announced by ChromeVox screen reader." name="IDS_CHROMEVOX_WHITE_BULLET">
     {COUNT, plural, =1 {white bullet}other {# white bullets}}
   </message>
-  <message desc="Third level bullet (■) character description." name="IDS_CHROMEVOX_SQUARE_BULLET">
+  <message desc="Third level bullet (■) character description announced by ChromeVox screen reader." name="IDS_CHROMEVOX_SQUARE_BULLET">
     {COUNT, plural, =1 {square bullet}other {# square bullets}}
   </message>
   <message desc="Describes the braille click command. Displayed in the options page." name="IDS_CHROMEVOX_BRAILLE_ROUTING">
@@ -3386,5 +3386,8 @@
   </message>
   <message desc="Spoken message notifying users that using TalkBack on Chromebook is no longer supported and keyboard shortcut are no longer customized for Chromebooks." name="IDS_CHROMEVOX_ANNOUNCE_TALKBACK_DEPRECATION" is_accessibility_with_no_ui="true">
     TalkBack no longer provides customization for Chromebooks. You can still use it, but use TalkBack default keyboard shortcuts. Press Search+A, then K to see available shortcuts. If you still want to use TalkBack, press the command again.
+  </message>
+  <message desc="Short message spoken by ChromeVox screen reader when a user adds, deletes, or moves a cursor caret across a character in a password field." name="IDS_CHROMEVOX_PASSWORD_CHAR" is_accessibility_with_no_ui="true">
+    bullet
   </message>
 </grit-part>

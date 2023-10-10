@@ -230,11 +230,7 @@ export class ChromeVoxEditableTextBase {
     //   - one to speak
 
     if (this.isPassword) {
-      this.speak(
-          (new goog.i18n.MessageFormat(Msgs.getMsg('bullet')).format({
-            'COUNT': 1,
-          })),
-          evt.triggeredByUser);
+      this.speak(Msgs.getMsg('password_char'), evt.triggeredByUser);
       return;
     }
     if (evt.start === evt.end) {
@@ -335,10 +331,7 @@ export class ChromeVoxEditableTextBase {
     }
     if (this.isPassword) {
       this.speak(
-          (new goog.i18n.MessageFormat(Msgs.getMsg('bullet')).format({
-            'COUNT': 1,
-          })),
-          evt.triggeredByUser, personality);
+          Msgs.getMsg('password_char'), evt.triggeredByUser, personality);
       return;
     }
 
