@@ -3787,6 +3787,23 @@
       "features": [
         "avoid_consecutive_keyframes_for_vp9"
       ]
+    },
+    {
+      "id": 420,
+      "cr_bugs": [1475546],
+      "description": "GPU process crash when decoding HEVC on Intel with specific drivers.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "driver_version": {
+        "op": "between",
+        "value": "20.19.15.4284",
+        "value2": "20.19.15.5172"
+      },
+      "features": [
+        "disable_accelerated_hevc_decode"
+      ]
     }
   ]
 }
