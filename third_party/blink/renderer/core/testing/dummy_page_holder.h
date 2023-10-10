@@ -93,13 +93,7 @@ class DummyPageHolder {
   // engine.
   ScopedMockOverlayScrollbars enable_mock_scrollbars_;
 
-  // The LocalFrame is accessed from worker threads by unit tests
-  // (ThreadableLoaderTest), hence we need to allow cross-thread
-  // usage of |m_frame|.
-  //
-  // TODO: rework the tests to not require cross-thread access.
-  CrossThreadPersistent<LocalFrame> frame_;
-
+  Persistent<LocalFrame> frame_;
   Persistent<LocalFrameClient> local_frame_client_;
   Persistent<AgentGroupScheduler> agent_group_scheduler_;
 };

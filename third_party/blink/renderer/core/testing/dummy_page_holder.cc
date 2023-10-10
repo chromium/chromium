@@ -119,19 +119,23 @@ DummyPageHolder::~DummyPageHolder() {
 }
 
 Page& DummyPageHolder::GetPage() const {
+  CHECK(IsMainThread());
   return *page_;
 }
 
 LocalFrame& DummyPageHolder::GetFrame() const {
+  CHECK(IsMainThread());
   DCHECK(frame_);
   return *frame_;
 }
 
 LocalFrameView& DummyPageHolder::GetFrameView() const {
+  CHECK(IsMainThread());
   return *frame_->View();
 }
 
 Document& DummyPageHolder::GetDocument() const {
+  CHECK(IsMainThread());
   return *frame_->DomWindow()->document();
 }
 
