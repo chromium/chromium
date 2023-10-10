@@ -18,9 +18,10 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "chromeos/ash/components/chaps_util/chaps_slot_session.h"
+#include "chromeos/ash/components/chaps_util/key_helper.h"
 #include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
+#include "chromeos/ash/components/chaps_util/pkcs12_validator.h"
 #include "crypto/chaps_support.h"
 #include "crypto/scoped_nss_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -38,8 +39,6 @@ constexpr CK_ATTRIBUTE_TYPE kForceSoftwareAttribute = CKA_VENDOR_DEFINED + 4;
 constexpr CK_ATTRIBUTE_TYPE kKeyInSoftware = CKA_VENDOR_DEFINED + 5;
 constexpr char kPkcs12ImportFailed[] = "Chaps util PKCS12 import failed with ";
 constexpr char kPkcs12KeyImportFailed[] = "Chaps util key import failed with ";
-constexpr char kPkcs12CertImportFailed[] =
-    "Chaps util cert import failed with ";
 // Wraps public key and private key PKCS#11 object handles.
 struct KeyPairHandles {
   CK_OBJECT_HANDLE public_key;
@@ -161,16 +160,6 @@ absl::optional<bool> IsKeySoftwareBacked(ChapsSlotSession* chaps_session,
   return key_in_software;
 }
 
-crypto::ScopedSECItem MakeIdFromPubKeyNss(std::vector<CK_BYTE>& rsa_modulus) {
-  SECItem secitem_modulus;
-  secitem_modulus.data = rsa_modulus.data();
-  secitem_modulus.len = rsa_modulus.size();
-  return crypto::ScopedSECItem(PK11_MakeIDFromPubKey(&secitem_modulus));
-}
-
-std::vector<uint8_t> SECItemToBytes(const crypto::ScopedSECItem& id) {
-  return std::vector<uint8_t>(id->data, id->data + id->len);
-}
 // Create the CKA_ID value that NSS would use for |key_pair| and return it.
 crypto::ScopedSECItem CreateNssCkaId(ChapsSlotSession* chaps_session,
                                      const KeyPairHandles& key_pair) {
@@ -211,34 +200,26 @@ std::string MakePkcs12KeyImportErrorMessage(Pkcs12ReaderStatusCode error_code) {
          base::NumberToString(static_cast<int>(error_code));
 }
 
-std::string MakePkcs12CertImportErrorMessage(
-    Pkcs12ReaderStatusCode error_code) {
-  return kPkcs12CertImportFailed +
-         base::NumberToString(static_cast<int>(error_code));
-}
-
 std::string MakePkcs12ImportErrorMessage(Pkcs12ReaderStatusCode error_code) {
   return kPkcs12ImportFailed +
          base::NumberToString(static_cast<int>(error_code));
 }
 Pkcs12ReaderStatusCode ImportRsaKey(ChapsSlotSession* chaps_session,
-                                    bssl::UniquePtr<EVP_PKEY> key,
+                                    const KeyData& key_data,
                                     bool is_software_backed,
                                     const Pkcs12Reader* pkcs12_reader,
-                                    std::vector<uint8_t>& out_id,
                                     CK_OBJECT_HANDLE& out_key_handle) {
-  if (!key) {
+  if (!key_data.key) {
     LOG(ERROR) << MakePkcs12KeyImportErrorMessage(
         Pkcs12ReaderStatusCode::kKeyDataMissed);
     return Pkcs12ReaderStatusCode::kKeyDataMissed;
   }
 
-  // All the data variables must stay alive until `key_template` is sent to
-  // Chaps.
-  const RSA* rsa_key = EVP_PKEY_get0_RSA(key.get());
-  std::vector<uint8_t> public_modulus_bytes =
-      pkcs12_reader->BignumToBytes(RSA_get0_n(rsa_key));
-  out_id = SECItemToBytes(MakeIdFromPubKeyNss(public_modulus_bytes));
+  // All the data variables must stay alive until `attrs` is sent to Chaps.
+  const RSA* rsa_key = EVP_PKEY_get0_RSA(key_data.key.get());
+  const std::vector<uint8_t>& public_modulus_bytes =
+      key_data.rsa_key_modulus_bytes;
+  const std::vector<uint8_t>& cka_id = key_data.cka_id_value;
   std::vector<uint8_t> public_exponent_bytes =
       pkcs12_reader->BignumToBytes(RSA_get0_e(rsa_key));
   std::vector<uint8_t> private_exponent_bytes =
@@ -254,7 +235,7 @@ Pkcs12ReaderStatusCode ImportRsaKey(ChapsSlotSession* chaps_session,
   std::vector<uint8_t> coefficient =
       pkcs12_reader->BignumToBytes(RSA_get0_iqmp(rsa_key));
 
-  if (public_modulus_bytes.empty() || out_id.empty() ||
+  if (public_modulus_bytes.empty() || cka_id.empty() ||
       public_exponent_bytes.empty() || private_exponent_bytes.empty() ||
       prime_factor_1.empty() || prime_factor_2.empty() || exponent_1.empty() ||
       exponent_2.empty() || coefficient.empty()) {
@@ -278,8 +259,9 @@ Pkcs12ReaderStatusCode ImportRsaKey(ChapsSlotSession* chaps_session,
       {CKA_DECRYPT, &true_value, sizeof(CK_BBOOL)},
       {CKA_SIGN, &true_value, sizeof(CK_BBOOL)},
       {CKA_SIGN_RECOVER, &true_value, sizeof(CK_BBOOL)},
-      {CKA_MODULUS, public_modulus_bytes.data(), public_modulus_bytes.size()},
-      {CKA_ID, out_id.data(), out_id.size()},
+      {CKA_MODULUS, const_cast<uint8_t*>(public_modulus_bytes.data()),
+       public_modulus_bytes.size()},
+      {CKA_ID, const_cast<uint8_t*>(cka_id.data()), cka_id.size()},
       {CKA_PUBLIC_EXPONENT, public_exponent_bytes.data(),
        public_exponent_bytes.size()},
       {CKA_PRIVATE_EXPONENT, private_exponent_bytes.data(),
@@ -303,16 +285,16 @@ Pkcs12ReaderStatusCode ImportRsaKey(ChapsSlotSession* chaps_session,
 }
 
 Pkcs12ReaderStatusCode ImportOneCert(ChapsSlotSession* chaps_session,
-                                     X509* cert,
+                                     const CertData& cert_data,
                                      const std::vector<uint8_t>& id,
-                                     CK_OBJECT_HANDLE key_handle,
                                      const Pkcs12Reader* pkcs12_helper,
                                      bool is_software_backed) {
-  if (!cert) {
+  if (!cert_data.x509) {
     LOG(ERROR) << MakePkcs12CertImportErrorMessage(
         Pkcs12ReaderStatusCode::kCertificateDataMissed);
     return Pkcs12ReaderStatusCode::kCertificateDataMissed;
   }
+  X509* cert = cert_data.x509.get();
 
   CK_OBJECT_CLASS cert_class = CKO_CERTIFICATE;
   CK_CERTIFICATE_TYPE cert_type = CKC_X_509;
@@ -354,13 +336,7 @@ Pkcs12ReaderStatusCode ImportOneCert(ChapsSlotSession* chaps_session,
     return get_serial_der_result;
   }
 
-  std::string label;
-  Pkcs12ReaderStatusCode get_label_result =
-      pkcs12_helper->GetLabel(cert, label);
-  if (get_label_result != Pkcs12ReaderStatusCode::kSuccess) {
-    LOG(ERROR) << MakePkcs12CertImportErrorMessage(get_label_result);
-    return get_label_result;
-  }
+  std::string label = cert_data.nickname;
 
   CK_BBOOL force_software_attribute = is_software_backed ? CK_TRUE : CK_FALSE;
 
@@ -395,12 +371,11 @@ Pkcs12ReaderStatusCode ImportOneCert(ChapsSlotSession* chaps_session,
 }
 
 Pkcs12ReaderStatusCode ImportAllCerts(ChapsSlotSession* chaps_session,
-                                      bssl::UniquePtr<STACK_OF(X509)> certs,
+                                      std::vector<CertData>& certs_data,
                                       const std::vector<uint8_t>& id,
-                                      CK_OBJECT_HANDLE key_handle,
                                       const Pkcs12Reader* pkcs12_helper,
                                       bool is_software_backed) {
-  if (!certs) {
+  if (certs_data.empty()) {
     LOG(ERROR) << MakePkcs12CertImportErrorMessage(
         Pkcs12ReaderStatusCode::kCertificateDataMissed);
     return Pkcs12ReaderStatusCode::kCertificateDataMissed;
@@ -408,9 +383,8 @@ Pkcs12ReaderStatusCode ImportAllCerts(ChapsSlotSession* chaps_session,
 
   Pkcs12ReaderStatusCode is_every_cert_imported =
       Pkcs12ReaderStatusCode::kSuccess;
-  for (size_t i = 0; i < sk_X509_num(certs.get()); ++i) {
-    if (ImportOneCert(chaps_session, sk_X509_value(certs.get(), i), id,
-                      key_handle, pkcs12_helper,
+  for (CertData cert_data : certs_data) {
+    if (ImportOneCert(chaps_session, cert_data, id, pkcs12_helper,
                       is_software_backed) != Pkcs12ReaderStatusCode::kSuccess) {
       is_every_cert_imported = Pkcs12ReaderStatusCode::kFailureDuringCertImport;
     }
@@ -488,7 +462,7 @@ bool ChapsUtilImpl::ImportPkcs12CertificateImpl(
     const std::vector<uint8_t>& pkcs12_data,
     const std::string& password,
     const bool is_software_backed,
-    const Pkcs12Reader& pkcs12_helper_inc) {
+    const Pkcs12Reader& pkcs12_reader) {
   std::unique_ptr<ChapsSlotSession> chaps_session =
       GetChapsSlotSessionForSlot(slot);
   if (!chaps_session) {
@@ -497,32 +471,58 @@ bool ChapsUtilImpl::ImportPkcs12CertificateImpl(
     return false;
   }
 
-  bssl::UniquePtr<EVP_PKEY> key;
+  KeyData key_data;
   bssl::UniquePtr<STACK_OF(X509)> certs;
   Pkcs12ReaderStatusCode get_key_and_cert_status =
-      pkcs12_helper_inc.GetPkcs12KeyAndCerts(pkcs12_data, password, key, certs);
+      pkcs12_reader.GetPkcs12KeyAndCerts(pkcs12_data, password, key_data.key,
+                                         certs);
   if (get_key_and_cert_status != Pkcs12ReaderStatusCode::kSuccess) {
     LOG(ERROR) << MakePkcs12ImportErrorMessage(get_key_and_cert_status);
     return false;
   }
 
   CK_OBJECT_HANDLE key_handle;
-  // Same id will be used for the key and certs.
-  std::vector<uint8_t> cka_id_value;
 
-  Pkcs12ReaderStatusCode import_key_status =
-      ImportRsaKey(chaps_session.get(), std::move(key), is_software_backed,
-                   &pkcs12_helper_inc, cka_id_value, key_handle);
-  if (import_key_status != Pkcs12ReaderStatusCode::kSuccess) {
-    LOG(ERROR) << MakePkcs12ImportErrorMessage(import_key_status);
+  Pkcs12ReaderStatusCode enrich_key_data_result =
+      pkcs12_reader.EnrichKeyData(key_data);
+  if (enrich_key_data_result != Pkcs12ReaderStatusCode::kSuccess) {
+    LOG(ERROR) << MakePkcs12ImportErrorMessage(enrich_key_data_result);
     return false;
   }
 
-  Pkcs12ReaderStatusCode import_cert_status =
-      ImportAllCerts(chaps_session.get(), std::move(certs), cka_id_value,
-                     key_handle, &pkcs12_helper_inc, is_software_backed);
-  if (import_cert_status != Pkcs12ReaderStatusCode::kSuccess) {
-    LOG(ERROR) << MakePkcs12ImportErrorMessage(import_cert_status);
+  // This will keep raw_pointers from `certs`, it cannot outlive `certs`.
+  std::vector<CertData> certs_data;
+  Pkcs12ReaderStatusCode prepare_certs_status = ValidateAndPrepareCertData(
+      slot, pkcs12_reader, certs, key_data, certs_data);
+  if (prepare_certs_status != Pkcs12ReaderStatusCode::kSuccess) {
+    LOG(ERROR) << MakePkcs12ImportErrorMessage(prepare_certs_status);
+    return false;
+  }
+
+  bool is_key_installed = false;
+  Pkcs12ReaderStatusCode key_installed_result = CanFindInstalledKey(
+      slot, certs_data.front(), pkcs12_reader, is_key_installed);
+  if (key_installed_result != Pkcs12ReaderStatusCode::kSuccess) {
+    LOG(ERROR) << "Failed to find installed key in slot due to: "
+               << MakePkcs12CertImportErrorMessage(key_installed_result);
+    return false;
+  }
+
+  if (!is_key_installed) {
+    Pkcs12ReaderStatusCode import_key_status =
+        ImportRsaKey(chaps_session.get(), key_data, is_software_backed,
+                     &pkcs12_reader, key_handle);
+    if (import_key_status != Pkcs12ReaderStatusCode::kSuccess) {
+      LOG(ERROR) << MakePkcs12ImportErrorMessage(import_key_status);
+      return false;
+    }
+  }
+  // Same id will be used for the key and certs.
+  Pkcs12ReaderStatusCode import_certs_status =
+      ImportAllCerts(chaps_session.get(), certs_data, key_data.cka_id_value,
+                     &pkcs12_reader, is_software_backed);
+  if (import_certs_status != Pkcs12ReaderStatusCode::kSuccess) {
+    LOG(ERROR) << MakePkcs12ImportErrorMessage(import_certs_status);
     return false;
   }
 

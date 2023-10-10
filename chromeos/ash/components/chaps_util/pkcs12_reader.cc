@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 #include <vector>
 
+#include <nss/pk11pub.h>
+#include "chromeos/ash/components/chaps_util/key_helper.h"
 #include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
+#include "net/cert/x509_util_nss.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/pkcs8.h"
@@ -78,6 +81,23 @@ Pkcs12ReaderStatusCode Pkcs12Reader::GetIssuerNameDer(
   return Pkcs12ReaderStatusCode::kSuccess;
 }
 
+Pkcs12ReaderStatusCode Pkcs12Reader::FindRawCertsWithSubject(
+    PK11SlotInfo* slot,
+    base::span<const uint8_t> required_subject_name,
+    CERTCertificateList** found_certs) const {
+  SECItem subject_item;
+  subject_item.len = required_subject_name.size();
+  subject_item.data = const_cast<uint8_t*>(required_subject_name.data());
+
+  // This is a call to NSS, replace it later with a call to Chaps.
+  SECStatus fetch_cert_with_same_subject_status =
+      PK11_FindRawCertsWithSubject(slot, &subject_item, found_certs);
+  if (fetch_cert_with_same_subject_status != SECSuccess) {
+    return Pkcs12ReaderStatusCode::kPkcs12FindCertsWithSubjectFailed;
+  }
+  return Pkcs12ReaderStatusCode::kSuccess;
+}
+
 Pkcs12ReaderStatusCode Pkcs12Reader::GetSubjectNameDer(
     X509* cert,
     base::span<const uint8_t>& subject_name_data) const {
@@ -124,22 +144,137 @@ Pkcs12ReaderStatusCode Pkcs12Reader::GetLabel(X509* cert,
     return Pkcs12ReaderStatusCode::kPkcs12CertIssuerNameMissed;
   }
 
-  // This is basic implementation which is using common name from the
-  // Subject name for the label.
-  // TODO(b/284144984): Replace with proper implementation and update tests.
+  int alias_len = 0;
+  const unsigned char* parsed_alias = X509_alias_get0(cert, &alias_len);
+  if (parsed_alias) {
+    label = std::string(reinterpret_cast<const char*>(parsed_alias),
+                        static_cast<size_t>(alias_len));
+
+    return Pkcs12ReaderStatusCode::kSuccess;
+  }
+
   X509_NAME* subject_name = X509_get_subject_name(cert);
   if (!subject_name) {
     return Pkcs12ReaderStatusCode::kPkcs12CertIssuerNameMissed;
   }
 
-  char temp_label[512] = "";
-  int get_label_result = X509_NAME_get_text_by_NID(
+  char temp_label[512];
+  int get_common_name = X509_NAME_get_text_by_NID(
       subject_name, NID_commonName, temp_label, sizeof(temp_label));
-  if (!get_label_result) {
-    return Pkcs12ReaderStatusCode::kPkcs12LabelCreationFailed;
+  if (get_common_name < 0) {
+    return Pkcs12ReaderStatusCode::kPkcs12CNExtractionFailed;
+  }
+  label = temp_label;
+  return Pkcs12ReaderStatusCode::kSuccess;
+}
+
+Pkcs12ReaderStatusCode Pkcs12Reader::IsCertWithNicknameInSlots(
+    const std::string& nickname,
+    bool& is_nickname_present) const {
+  if (nickname.empty()) {
+    return Pkcs12ReaderStatusCode::kPkcs12MissedNickname;
+  }
+  CERTCertList* results =
+      PK11_FindCertsFromNickname(nickname.c_str(), /*wincx=*/nullptr);
+  is_nickname_present = results && results->list.next != NULL;
+  return Pkcs12ReaderStatusCode::kSuccess;
+}
+
+Pkcs12ReaderStatusCode Pkcs12Reader::DoesKeyForCertExist(
+    PK11SlotInfo* slot,
+    const scoped_refptr<net::X509Certificate>& cert) const {
+  if (!cert) {
+    return Pkcs12ReaderStatusCode::kPkcs12CertIssuerNameMissed;
+  }
+  if (!slot) {
+    return Pkcs12ReaderStatusCode::kMissedSlotInfo;
+  }
+  net::ScopedCERTCertificate nss_cert =
+      net::x509_util::CreateCERTCertificateFromX509Certificate(cert.get());
+
+  SECKEYPrivateKey* private_key =
+      PK11_FindPrivateKeyFromCert(slot, nss_cert.get(), nullptr);
+
+  if (private_key) {
+    return Pkcs12ReaderStatusCode::kSuccess;
+  }
+  return Pkcs12ReaderStatusCode::kKeyDataMissed;
+}
+
+Pkcs12ReaderStatusCode Pkcs12Reader::DoesKeyForDerCertExist(
+    PK11SlotInfo* slot,
+    const scoped_refptr<net::X509Certificate>& cert) const {
+  if (!cert) {
+    return Pkcs12ReaderStatusCode::kPkcs12CertIssuerNameMissed;
+  }
+  if (!slot) {
+    return Pkcs12ReaderStatusCode::kMissedSlotInfo;
+  }
+  net::ScopedCERTCertificate nss_cert =
+      net::x509_util::CreateCERTCertificateFromX509Certificate(cert.get());
+
+  SECKEYPrivateKey* private_key =
+      PK11_FindKeyByDERCert(slot, nss_cert.get(), nullptr);
+
+  if (private_key) {
+    return Pkcs12ReaderStatusCode::kSuccess;
+  }
+  return Pkcs12ReaderStatusCode::kKeyDataMissed;
+}
+
+Pkcs12ReaderStatusCode Pkcs12Reader::EnrichKeyData(KeyData& key_data) const {
+  if (!key_data.key) {
+    return Pkcs12ReaderStatusCode::kKeyDataMissed;
+  }
+  if (EVP_PKEY_base_id(key_data.key.get()) == EVP_PKEY_RSA) {
+    const RSA* rsa_key = EVP_PKEY_get0_RSA(key_data.key.get());
+    key_data.rsa_key_modulus_bytes = BignumToBytes(RSA_get0_n(rsa_key));
+    key_data.cka_id_value =
+        SECItemToBytes(MakeIdFromPubKeyNss(key_data.rsa_key_modulus_bytes));
+    return Pkcs12ReaderStatusCode::kSuccess;
   }
 
-  label = temp_label;
+  return Pkcs12ReaderStatusCode::kPkcs12NotSupportedKeyType;
+}
+
+Pkcs12ReaderStatusCode Pkcs12Reader::CheckRelation(const KeyData& key_data,
+                                                   X509* cert,
+                                                   bool& is_related) const {
+  if (!key_data.key) {
+    return Pkcs12ReaderStatusCode::kKeyDataMissed;
+  }
+
+  if (!cert) {
+    return Pkcs12ReaderStatusCode::kCertificateDataMissed;
+  }
+
+  // Check for RSA key.
+  if (!key_data.rsa_key_modulus_bytes.empty()) {
+    EVP_PKEY* pub_key_ptr = X509_get_pubkey(cert);
+    bssl::UniquePtr<EVP_PKEY> pubkey(pub_key_ptr);
+    const RSA* rsa_pub_key = EVP_PKEY_get0_RSA(pubkey.get());
+    std::vector<uint8_t> public_modulus_bytes =
+        BignumToBytes(RSA_get0_n(rsa_pub_key));
+
+    if (key_data.rsa_key_modulus_bytes != public_modulus_bytes) {
+      return Pkcs12ReaderStatusCode::kPkcs12NoValidCertificatesFound;
+    }
+    is_related = true;
+    return Pkcs12ReaderStatusCode::kSuccess;
+  }
+
+  return Pkcs12ReaderStatusCode::kPkcs12NotSupportedKeyType;
+}
+
+Pkcs12ReaderStatusCode Pkcs12Reader::GetCertFromDerData(
+    const unsigned char* der_cert_data,
+    int der_cert_len,
+    bssl::UniquePtr<X509>& x509) const {
+  if (!der_cert_data || !der_cert_len) {
+    return Pkcs12ReaderStatusCode::kPkcs12NoValidCertificatesFound;
+  };
+  X509* cert = d2i_X509(NULL, &der_cert_data, der_cert_len);
+  x509 = bssl::UniquePtr<X509>(cert);
   return Pkcs12ReaderStatusCode::kSuccess;
 }
 

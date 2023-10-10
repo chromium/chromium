@@ -14,17 +14,19 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/chaps_util/chaps_slot_session.h"
 #include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
 #include "crypto/nss_key_util.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"
+#include "net/cert/x509_util_nss.h"
+#include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
+#include "third_party/boringssl/src/include/openssl/x509.h"
 
 namespace chromeos {
 namespace {
@@ -39,6 +41,11 @@ constexpr CK_ATTRIBUTE_TYPE kKeyInSoftware = CKA_VENDOR_DEFINED + 5;
 
 enum AttrValueType { kNotDefined, kCkBool, kCkUlong, kCkBytes };
 const char kPkcs12FilePassword[] = "12345";
+const absl::optional<std::vector<CK_BYTE>> default_encoded_cert_label =
+    base::Base64Decode("dGVzdHVzZXJjZXJ0");
+// python print(base64.b64encode("default nickname".encode('utf-8'))).
+const absl::optional<std::vector<CK_BYTE>> default_encoded_label =
+    base::Base64Decode("VW5rbm93biBvcmc=");
 
 // Class helper to keep relations between all possible attribute's types,
 // attribute's names and attribute's value types.
@@ -477,8 +484,14 @@ class FakePkcs12Reader : public Pkcs12Reader {
       const std::string& password,
       bssl::UniquePtr<EVP_PKEY>& key,
       bssl::UniquePtr<STACK_OF(X509)>& certs) const override {
-    if (get_pkcs12_key_and_cert_status != Pkcs12ReaderStatusCode::kSuccess) {
-      return get_pkcs12_key_and_cert_status;
+    get_pkcs12_key_and_cert_called_++;
+    if (fake_certs_.get()) {
+      certs = std::move(fake_certs_);
+      return Pkcs12ReaderStatusCode::kSuccess;
+    }
+
+    if (get_pkcs12_key_and_cert_status_ != Pkcs12ReaderStatusCode::kSuccess) {
+      return get_pkcs12_key_and_cert_status_;
     }
     return Pkcs12Reader::GetPkcs12KeyAndCerts(pkcs12_data, password, key,
                                               certs);
@@ -487,8 +500,9 @@ class FakePkcs12Reader : public Pkcs12Reader {
   Pkcs12ReaderStatusCode GetDerEncodedCert(X509* cert,
                                            bssl::UniquePtr<uint8_t>& cert_der,
                                            int& cert_der_size) const override {
-    if (get_cert_der_status != Pkcs12ReaderStatusCode::kSuccess) {
-      return get_cert_der_status;
+    get_der_encode_cert_called_++;
+    if (get_der_encoded_cert_status_ != Pkcs12ReaderStatusCode::kSuccess) {
+      return get_der_encoded_cert_status_;
     }
     return Pkcs12Reader::GetDerEncodedCert(cert, cert_der, cert_der_size);
   }
@@ -496,8 +510,8 @@ class FakePkcs12Reader : public Pkcs12Reader {
   Pkcs12ReaderStatusCode GetIssuerNameDer(
       X509* cert,
       base::span<const uint8_t>& issuer_name_data) const override {
-    if (get_issuer_name_der_status != Pkcs12ReaderStatusCode::kSuccess) {
-      return get_issuer_name_der_status;
+    if (get_issuer_name_der_status_ != Pkcs12ReaderStatusCode::kSuccess) {
+      return get_issuer_name_der_status_;
     }
     return Pkcs12Reader::GetIssuerNameDer(cert, issuer_name_data);
   }
@@ -505,39 +519,191 @@ class FakePkcs12Reader : public Pkcs12Reader {
   Pkcs12ReaderStatusCode GetSubjectNameDer(
       X509* cert,
       base::span<const uint8_t>& subject_name_data) const override {
-    if (get_subject_name_der_status != Pkcs12ReaderStatusCode::kSuccess) {
-      return get_subject_name_der_status;
+    get_subject_name_der_called_++;
+    if (get_subject_name_der_status_ != Pkcs12ReaderStatusCode::kSuccess) {
+      return get_subject_name_der_status_;
     }
     return Pkcs12Reader::GetSubjectNameDer(cert, subject_name_data);
   }
+
   Pkcs12ReaderStatusCode GetSerialNumberDer(
       X509* cert,
       bssl::UniquePtr<uint8_t>& serial_number_der,
       int& serial_number_der_size) const override {
-    if (get_serial_number_der_status != Pkcs12ReaderStatusCode::kSuccess) {
-      return get_serial_number_der_status;
+    if (get_serial_number_der_status_ != Pkcs12ReaderStatusCode::kSuccess) {
+      return get_serial_number_der_status_;
     }
     return Pkcs12Reader::GetSerialNumberDer(cert, serial_number_der,
                                             serial_number_der_size);
   }
 
+  Pkcs12ReaderStatusCode EnrichKeyData(KeyData& key_data) const override {
+    get_key_data_called_++;
+    if (get_key_data_status_ != Pkcs12ReaderStatusCode::kSuccess) {
+      return get_key_data_status_;
+    }
+    return Pkcs12Reader::EnrichKeyData(key_data);
+  }
+
+  Pkcs12ReaderStatusCode CheckRelation(const KeyData& key_data,
+                                       X509* cert,
+                                       bool& is_related) const override {
+    check_relation_data_called_++;
+    if (check_relation_status_ != Pkcs12ReaderStatusCode::kSuccess) {
+      return check_relation_status_;
+    }
+    return Pkcs12Reader::CheckRelation(key_data, cert, is_related);
+  }
+
+  Pkcs12ReaderStatusCode FindRawCertsWithSubject(
+      PK11SlotInfo* slot,
+      base::span<const uint8_t> required_subject_name,
+      CERTCertificateList** found_certs) const override {
+    find_raw_certs_with_subject_called_++;
+
+    if (fake_some_certs_in_slot_) {
+      // Some multi steps action here to mock returned CERTCertificateList with
+      // one cert. This all should go away when PK11_FindRawCertsWithSubject is
+      // replaced with a new function.
+      scoped_refptr<net::X509Certificate> x509_cert =
+          net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+      net::ScopedCERTCertificate nss_cert =
+          net::x509_util::CreateCERTCertificateFromX509Certificate(
+              x509_cert.get());
+      *found_certs = CERT_CertListFromCert(nss_cert.get());
+
+      return Pkcs12ReaderStatusCode::kSuccess;
+    }
+
+    if (find_raw_certs_with_subject_ != Pkcs12ReaderStatusCode::kSuccess) {
+      return find_raw_certs_with_subject_;
+    }
+    return Pkcs12Reader::FindRawCertsWithSubject(slot, required_subject_name,
+                                                 found_certs);
+  }
+
+  Pkcs12ReaderStatusCode GetLabel(X509* cert,
+                                  std::string& label) const override {
+    get_label_called_++;
+    if (get_label_override_) {
+      label = std::string();
+      return Pkcs12ReaderStatusCode::kSuccess;
+    }
+    if (get_label_status_ != Pkcs12ReaderStatusCode::kSuccess) {
+      return get_label_status_;
+    }
+    return Pkcs12Reader::GetLabel(cert, label);
+  }
+
+  Pkcs12ReaderStatusCode IsCertWithNicknameInSlots(
+      const std::string& nickname_in,
+      bool& is_nickname_present) const override {
+    is_certs_with_nickname_in_slots_called_++;
+
+    // Override allows to return first N request to isCertsWithNicknamesInSlot
+    // with True and then return False, so can verify behaviour when nicknames
+    // are found in slot.
+    if (is_certs_with_nickname_in_slots_override_ > 0 &&
+        is_certs_with_nickname_in_slots_override_ <
+            is_certs_with_nickname_in_slots_called_) {
+      is_nickname_present = false;
+      return Pkcs12ReaderStatusCode::kSuccess;
+    }
+
+    // By default nothing is returned from PK11_FindCertsFromNickname() and
+    // is_nickname_present will be false, this will override
+    // is_nickname_present to true for tests.
+    if (is_certs_nickname_used_) {
+      is_nickname_present = is_certs_nickname_used_;
+      return Pkcs12ReaderStatusCode::kSuccess;
+    }
+
+    if (is_certs_with_nickname_in_slot_status_ !=
+        Pkcs12ReaderStatusCode::kSuccess) {
+      return is_certs_with_nickname_in_slot_status_;
+    }
+    return Pkcs12Reader::IsCertWithNicknameInSlots(nickname_in,
+                                                   is_nickname_present);
+  }
+
+  Pkcs12ReaderStatusCode DoesKeyForCertExist(
+      PK11SlotInfo* slot,
+      const scoped_refptr<net::X509Certificate>& cert) const override {
+    find_key_by_cert_called_++;
+    if (find_key_by_cert_status_ != Pkcs12ReaderStatusCode::kKeyDataMissed) {
+      return find_key_by_cert_status_;
+    }
+    return Pkcs12Reader::DoesKeyForCertExist(slot, cert);
+  }
+
+  Pkcs12ReaderStatusCode DoesKeyForDerCertExist(
+      PK11SlotInfo* slot,
+      const scoped_refptr<net::X509Certificate>& cert) const override {
+    find_key_by_der_cert_called_++;
+    if (find_key_by_der_cert_status_ !=
+        Pkcs12ReaderStatusCode::kKeyDataMissed) {
+      return find_key_by_der_cert_status_;
+    }
+    return Pkcs12Reader::DoesKeyForDerCertExist(slot, cert);
+  }
+
+  Pkcs12ReaderStatusCode GetCertFromDerData(
+      const unsigned char* der_cert_data,
+      int der_cert_len,
+      bssl::UniquePtr<X509>& x509) const override {
+    return Pkcs12Reader::GetCertFromDerData(der_cert_data, der_cert_len, x509);
+  }
+
   std::vector<uint8_t> BignumToBytes(const BIGNUM* bignum) const override {
-    if (bignum_to_bytes_value) {
-      return bignum_to_bytes_value.value();
+    if (bignum_to_bytes_value_) {
+      return bignum_to_bytes_value_.value();
     }
     return Pkcs12Reader::BignumToBytes(bignum);
   }
 
-  Pkcs12ReaderStatusCode get_pkcs12_key_and_cert_status =
+  mutable int get_pkcs12_key_and_cert_called_ = 0;
+  mutable bssl::UniquePtr<STACK_OF(X509)> fake_certs_;
+  Pkcs12ReaderStatusCode get_pkcs12_key_and_cert_status_ =
       Pkcs12ReaderStatusCode::kSuccess;
-  Pkcs12ReaderStatusCode get_cert_der_status = Pkcs12ReaderStatusCode::kSuccess;
-  Pkcs12ReaderStatusCode get_issuer_name_der_status =
+  mutable int get_der_encode_cert_called_ = 0;
+  Pkcs12ReaderStatusCode get_der_encoded_cert_status_ =
       Pkcs12ReaderStatusCode::kSuccess;
-  Pkcs12ReaderStatusCode get_subject_name_der_status =
+  mutable int get_issuer_name_der_called_ = 0;
+  Pkcs12ReaderStatusCode get_issuer_name_der_status_ =
       Pkcs12ReaderStatusCode::kSuccess;
-  Pkcs12ReaderStatusCode get_serial_number_der_status =
+  mutable int get_subject_name_der_called_ = 0;
+  Pkcs12ReaderStatusCode get_subject_name_der_status_ =
       Pkcs12ReaderStatusCode::kSuccess;
-  absl::optional<std::vector<uint8_t>> bignum_to_bytes_value = absl::nullopt;
+  mutable int get_serial_number_der_called_ = 0;
+  Pkcs12ReaderStatusCode get_serial_number_der_status_ =
+      Pkcs12ReaderStatusCode::kSuccess;
+  mutable int find_raw_certs_with_subject_called_ = 0;
+  Pkcs12ReaderStatusCode find_raw_certs_with_subject_ =
+      Pkcs12ReaderStatusCode::kSuccess;
+  mutable bssl::UniquePtr<STACK_OF(X509)> certs_with_same_DN_override_;
+  mutable bool fake_some_certs_in_slot_ = false;
+  mutable int get_label_called_ = 0;
+  mutable int get_label_override_ = false;
+  Pkcs12ReaderStatusCode get_label_status_ = Pkcs12ReaderStatusCode::kSuccess;
+  mutable int is_certs_with_nickname_in_slots_override_ = 0;
+  mutable int is_certs_with_nickname_in_slots_called_ = 0;
+  Pkcs12ReaderStatusCode is_certs_with_nickname_in_slot_status_ =
+      Pkcs12ReaderStatusCode::kSuccess;
+  bool is_certs_nickname_used_ = false;
+  mutable int get_key_data_called_ = 0;
+  Pkcs12ReaderStatusCode get_key_data_status_ =
+      Pkcs12ReaderStatusCode::kSuccess;
+  mutable int check_relation_data_called_ = 0;
+  Pkcs12ReaderStatusCode check_relation_status_ =
+      Pkcs12ReaderStatusCode::kSuccess;
+  mutable int find_key_by_cert_called_ = 0;
+  Pkcs12ReaderStatusCode find_key_by_cert_status_ =
+      Pkcs12ReaderStatusCode::kKeyDataMissed;
+  mutable int find_key_by_der_cert_called_ = 0;
+  Pkcs12ReaderStatusCode find_key_by_der_cert_status_ =
+      Pkcs12ReaderStatusCode::kKeyDataMissed;
+
+  absl::optional<std::vector<uint8_t>> bignum_to_bytes_value_ = absl::nullopt;
 };
 
 class ChapsUtilImplTest : public ::testing::Test {
@@ -572,6 +738,25 @@ class ChapsUtilImplTest : public ::testing::Test {
       pkcs12_data_ = ReadTestFile("client.p12");
     }
     return pkcs12_data_;
+  }
+
+  bool KeyImportNeverDone() const {
+    ObjectAttributes data = passed_data_.pkcs12_key_attributes;
+    return data.Size() == 0;
+  }
+
+  bool CertImportNeverDone() const {
+    return passed_data_.pkcs12_cert_attributes.empty();
+  }
+
+  bool KeyImportDone() const {
+    ObjectAttributes data = passed_data_.pkcs12_key_attributes;
+    return data.Size() == 19;  // valid only for ReadTestFile("client.p12").
+  }
+
+  bool CertImportDone() const {
+    ObjectAttributes data = passed_data_.pkcs12_cert_attributes[0];
+    return data.Size() == 10;  // valid only for ReadTestFile("client.p12").
   }
 
   crypto::ScopedTestNSSDB nss_test_db_;
@@ -684,7 +869,7 @@ TEST_F(ChapsUtilImplTest, ImportPkcs12EnforceSoftwareBackedSuccess) {
   expected_cert_data[CKA_CERTIFICATE_TYPE] = base::Base64Decode("AAAAAAAAAAA=");
   expected_cert_data[CKA_ID] =
       base::Base64Decode("U65QueEa+ljfdKySfD6QbFrXEcM=");
-  expected_cert_data[CKA_LABEL] = base::Base64Decode("dGVzdHVzZXJjZXJ0");
+  expected_cert_data[CKA_LABEL] = default_encoded_cert_label;
   expected_cert_data[CKA_VALUE] = base::Base64Decode(
       "MIICpTCCAg6gAwIBAgIBATANBgkqhkiG9w0BAQUFADBWMQswCQYDVQQGEwJBVTETMBEGA1UE"
       "CBMKU29tZS1TdGF0ZTEhMB8GA1UEChMYSW50ZXJuZXQgV2lkZ2l0cyBQdHkgTHRkMQ8wDQYD"
@@ -913,7 +1098,7 @@ TEST_F(ChapsUtilPKCS12ImportTest, NoChapsSessionPKCS12ImportFailed) {
 
 // Failed import PKCS12 due to empty keys.
 TEST_F(ChapsUtilPKCS12ImportTest, EmptyKeyPtrPKCS12ImportFailed) {
-  fake_pkcs12_reader_.get_pkcs12_key_and_cert_status =
+  fake_pkcs12_reader_.get_pkcs12_key_and_cert_status_ =
       Pkcs12ReaderStatusCode::kKeyExtractionFailed;
   bool import_result = RunImportPkcs12Certificate();
   EXPECT_EQ(import_result, false);
@@ -921,9 +1106,8 @@ TEST_F(ChapsUtilPKCS12ImportTest, EmptyKeyPtrPKCS12ImportFailed) {
 
 // Failed import PKCS12 due to missed key attribute.
 TEST_F(ChapsUtilPKCS12ImportTest, MissedKeyAttributePKCS12ImportFailed) {
-  std::vector<uint8_t> empty_vector({});
   // This will set all attributes to empty.
-  fake_pkcs12_reader_.bignum_to_bytes_value = absl::make_optional(empty_vector);
+  fake_pkcs12_reader_.bignum_to_bytes_value_ = std::vector<uint8_t>();
   bool import_result = RunImportPkcs12Certificate();
   EXPECT_EQ(import_result, false);
 }
@@ -937,7 +1121,7 @@ TEST_F(ChapsUtilPKCS12ImportTest, ImportOfKeyFailedPKCS12ImportFailed) {
 }
 
 TEST_F(ChapsUtilPKCS12ImportTest, FailedGetCertDerPKCS12ImportFailed) {
-  fake_pkcs12_reader_.get_cert_der_status =
+  fake_pkcs12_reader_.get_der_encoded_cert_status_ =
       Pkcs12ReaderStatusCode::kKeyExtractionFailed;
 
   bool import_result = RunImportPkcs12Certificate();
@@ -945,7 +1129,7 @@ TEST_F(ChapsUtilPKCS12ImportTest, FailedGetCertDerPKCS12ImportFailed) {
 }
 
 TEST_F(ChapsUtilPKCS12ImportTest, FailedGetIssuerNameDerPKCS12ImportFailed) {
-  fake_pkcs12_reader_.get_issuer_name_der_status =
+  fake_pkcs12_reader_.get_issuer_name_der_status_ =
       Pkcs12ReaderStatusCode::kPkcs12CertIssuerDerNameFailed;
 
   bool import_result = RunImportPkcs12Certificate();
@@ -953,7 +1137,7 @@ TEST_F(ChapsUtilPKCS12ImportTest, FailedGetIssuerNameDerPKCS12ImportFailed) {
 }
 
 TEST_F(ChapsUtilPKCS12ImportTest, FailedGetSubjectNameDerPKCS12ImportFailed) {
-  fake_pkcs12_reader_.get_subject_name_der_status =
+  fake_pkcs12_reader_.get_subject_name_der_status_ =
       Pkcs12ReaderStatusCode::kPkcs12CertSubjectNameDerFailed;
 
   bool import_result = RunImportPkcs12Certificate();
@@ -961,7 +1145,7 @@ TEST_F(ChapsUtilPKCS12ImportTest, FailedGetSubjectNameDerPKCS12ImportFailed) {
 }
 
 TEST_F(ChapsUtilPKCS12ImportTest, FailedGetSerialNumberDerPKCS12ImportFailed) {
-  fake_pkcs12_reader_.get_serial_number_der_status =
+  fake_pkcs12_reader_.get_serial_number_der_status_ =
       Pkcs12ReaderStatusCode::kPkcs12CertSerialNumberDerFailed;
 
   bool import_result = RunImportPkcs12Certificate();
@@ -975,7 +1159,303 @@ TEST_F(ChapsUtilPKCS12ImportTest, CertObjectCreationFailedPKCS12ImportFailed) {
   passed_data_.operation_results[1] = CKR_GENERAL_ERROR;
 
   bool import_result = RunImportPkcs12Certificate();
-  EXPECT_EQ(import_result, false);
+
+  EXPECT_FALSE(import_result);
+}
+
+// Empty list returned for certificates from GetPkcs12KeyAndCerts, key is ok.
+// Import failed.
+TEST_F(ChapsUtilPKCS12ImportTest, NoCertsForValidationPKCS12ImportFailed) {
+  fake_pkcs12_reader_.fake_certs_ =
+      bssl::UniquePtr<STACK_OF(X509)>(sk_X509_new_null());
+
+  bool import_result = chaps_util_impl_->ImportPkcs12CertificateImpl(
+      nss_test_db_.slot(), GetPkcs12Data(), kPkcs12FilePassword,
+      /*is_software_backed=*/true, fake_pkcs12_reader_);
+
+  EXPECT_EQ(fake_pkcs12_reader_.get_pkcs12_key_and_cert_called_, 1);
+  EXPECT_EQ(fake_pkcs12_reader_.get_key_data_called_, 1);
+  EXPECT_EQ(fake_pkcs12_reader_.check_relation_data_called_, 0);
+  EXPECT_FALSE(import_result);
+  EXPECT_TRUE(KeyImportNeverDone());
+}
+
+// GetKeyData failed to extract data for the key, validation failed.
+// Import failed.
+TEST_F(ChapsUtilPKCS12ImportTest, GetKeyDataFailedPKCS12ImportFailed) {
+  fake_pkcs12_reader_.get_key_data_status_ =
+      Pkcs12ReaderStatusCode::kKeyDataMissed;
+
+  bool import_result = RunImportPkcs12Certificate();
+
+  EXPECT_EQ(fake_pkcs12_reader_.get_key_data_called_, 1);
+  EXPECT_EQ(fake_pkcs12_reader_.check_relation_data_called_, 0);
+
+  EXPECT_FALSE(import_result);
+  EXPECT_TRUE(KeyImportNeverDone());
+}
+
+// CheckRelation between cert and key failed, validation failed.
+// Import failed.
+TEST_F(ChapsUtilPKCS12ImportTest, CheckRelationFailedPKCS12ImportFailed) {
+  fake_pkcs12_reader_.check_relation_status_ =
+      Pkcs12ReaderStatusCode::kKeyDataMissed;
+
+  bool import_result = RunImportPkcs12Certificate();
+
+  EXPECT_EQ(fake_pkcs12_reader_.check_relation_data_called_, 1);
+  EXPECT_EQ(fake_pkcs12_reader_.get_subject_name_der_called_, 0);
+
+  EXPECT_FALSE(import_result);
+  EXPECT_TRUE(KeyImportNeverDone());
+}
+
+// Cert is not related to key, validation failed.
+// Import failed.
+TEST_F(ChapsUtilPKCS12ImportTest, CertNotRelatedToKeyPKCS12ImportFailed) {
+  fake_pkcs12_reader_.check_relation_status_ =
+      Pkcs12ReaderStatusCode::kPkcs12NoValidCertificatesFound;
+
+  bool import_result = RunImportPkcs12Certificate();
+
+  EXPECT_EQ(fake_pkcs12_reader_.check_relation_data_called_, 1);
+  EXPECT_EQ(fake_pkcs12_reader_.get_subject_name_der_called_, 0);
+
+  EXPECT_FALSE(import_result);
+  EXPECT_TRUE(KeyImportNeverDone());
+}
+
+// Cert has no DER subject name, GetNickname failed, validation failed.
+// Import failed.
+TEST_F(ChapsUtilPKCS12ImportTest, CertHasNoDERSubjectNamePKCS12ImportFailed) {
+  fake_pkcs12_reader_.get_subject_name_der_status_ =
+      Pkcs12ReaderStatusCode::kPkcs12CertSubjectNameMissed;
+
+  bool import_result = RunImportPkcs12Certificate();
+
+  EXPECT_EQ(fake_pkcs12_reader_.get_subject_name_der_called_, 1);
+  EXPECT_EQ(fake_pkcs12_reader_.find_raw_certs_with_subject_called_, 0);
+  EXPECT_FALSE(import_result);
+  EXPECT_TRUE(KeyImportNeverDone());
+}
+
+// FindRawCertsWithSubject failed during searching for cert with required
+// subject in slot. GetNickname failed, validation failed.
+// Import failed.
+TEST_F(ChapsUtilPKCS12ImportTest,
+       FindRawCertsWithSubjectFailedPKCS12ImportFailed) {
+  fake_pkcs12_reader_.find_raw_certs_with_subject_ =
+      Pkcs12ReaderStatusCode::kPkcs12FindCertsWithSubjectFailed;
+
+  bool import_result = RunImportPkcs12Certificate();
+
+  EXPECT_EQ(fake_pkcs12_reader_.get_subject_name_der_called_, 1);
+  EXPECT_EQ(fake_pkcs12_reader_.find_raw_certs_with_subject_called_, 1);
+  EXPECT_EQ(fake_pkcs12_reader_.get_label_called_, 0);
+  EXPECT_FALSE(import_result);
+  EXPECT_TRUE(KeyImportNeverDone());
+}
+
+// There is one certificate with the same subject in slot, but GetLabel for it
+// failed.
+// Import successful with the currents cert's nickname.
+TEST_F(ChapsUtilPKCS12ImportTest,
+       GetLabelForFoundCertFailedPKCS12ImportSucess) {
+  fake_pkcs12_reader_.fake_some_certs_in_slot_ = true;
+  fake_pkcs12_reader_.get_label_status_ =
+      Pkcs12ReaderStatusCode::kPkcs12CertIssuerNameMissed;
+
+  bool import_result = RunImportPkcs12Certificate();
+
+  EXPECT_EQ(fake_pkcs12_reader_.get_label_called_, 2);
+  EXPECT_EQ(fake_pkcs12_reader_.is_certs_with_nickname_in_slots_called_, 1);
+  EXPECT_TRUE(KeyImportDone());
+  EXPECT_TRUE(import_result);
+}
+
+// There is one certificate with the same subject in slot.
+// Import successful with already stored test cert's nickname.
+TEST_F(ChapsUtilPKCS12ImportTest,
+       CertWithSameSubjectInSlotPKCS12ImportSuccess) {
+  fake_pkcs12_reader_.fake_some_certs_in_slot_ = true;
+  // python print(base64.b64encode("127.0.0.1".encode('utf-8'))).
+  auto expected_encoded_label = base::Base64Decode("MTI3LjAuMC4x");
+
+  bool import_result = RunImportPkcs12Certificate();
+
+  ObjectAttributes cert_data = passed_data_.pkcs12_cert_attributes[0];
+  EXPECT_EQ(cert_data.GetCkByte(CKA_LABEL), expected_encoded_label);
+  EXPECT_EQ(fake_pkcs12_reader_.get_label_called_, 1);
+  EXPECT_EQ(fake_pkcs12_reader_.is_certs_with_nickname_in_slots_called_, 0);
+  EXPECT_TRUE(KeyImportDone());
+  EXPECT_TRUE(import_result);
+}
+
+// There is one certificate with the same subject, but GetLabel for it returns
+// empty string. Import successful with the cert's nickname.
+TEST_F(ChapsUtilPKCS12ImportTest, GetLabelReturnsEmptyPKCS12ImportSuccess) {
+  fake_pkcs12_reader_.fake_some_certs_in_slot_ = true;
+  fake_pkcs12_reader_.get_label_override_ = true;
+
+  bool import_result = RunImportPkcs12Certificate();
+
+  EXPECT_EQ(fake_pkcs12_reader_.get_label_called_, 2);
+  EXPECT_EQ(fake_pkcs12_reader_.is_certs_with_nickname_in_slots_called_, 1);
+  EXPECT_TRUE(KeyImportDone());
+  EXPECT_TRUE(import_result);
+}
+
+// No certificate with the same subject exists, GetLabel for current cert
+// failed, import is successful with default label.
+TEST_F(ChapsUtilPKCS12ImportTest, GetLabelFailedPKCS12ImportSuccess) {
+  fake_pkcs12_reader_.get_label_status_ =
+      Pkcs12ReaderStatusCode::kPkcs12LabelCreationFailed;
+
+  bool import_result = RunImportPkcs12Certificate();
+
+  ObjectAttributes cert_data = passed_data_.pkcs12_cert_attributes[0];
+  EXPECT_EQ(cert_data.GetCkByte(CKA_LABEL), default_encoded_label);
+  EXPECT_EQ(fake_pkcs12_reader_.get_label_called_, 1);
+  EXPECT_EQ(fake_pkcs12_reader_.is_certs_with_nickname_in_slots_called_, 1);
+  EXPECT_TRUE(KeyImportDone());
+  EXPECT_TRUE(import_result);
+}
+
+// No certificate with the same subject in slot, GetLabel for the current cert
+// returned empty string, import is successful with default label.
+TEST_F(ChapsUtilPKCS12ImportTest, GetLabelReturnEmptyPKCS12ImportSuccess) {
+  fake_pkcs12_reader_.get_label_override_ = true;
+
+  bool import_result = RunImportPkcs12Certificate();
+
+  ObjectAttributes cert_data = passed_data_.pkcs12_cert_attributes[0];
+  EXPECT_EQ(cert_data.GetCkByte(CKA_LABEL), default_encoded_label);
+
+  EXPECT_EQ(fake_pkcs12_reader_.get_label_called_, 1);
+  EXPECT_EQ(fake_pkcs12_reader_.is_certs_with_nickname_in_slots_called_, 1);
+  EXPECT_TRUE(KeyImportDone());
+  EXPECT_TRUE(import_result);
+}
+
+// No certificate with same subject exists, MakeNicknameUnique failed, import
+// failed.
+TEST_F(ChapsUtilPKCS12ImportTest, MakeNicknameUniqueFailedPKCS12ImportFailed) {
+  // Setting is_certs_nickname_used = true will lead to fail of making label
+  // unique, it will increase counter to 100 and at the end return
+  // Pkcs12ReaderStatusCode::kReachedMaxAttemptForUniqueness.
+  fake_pkcs12_reader_.is_certs_nickname_used_ = true;
+
+  bool import_result = RunImportPkcs12Certificate();
+
+  EXPECT_EQ(fake_pkcs12_reader_.is_certs_with_nickname_in_slots_called_, 100);
+
+  EXPECT_FALSE(import_result);
+  EXPECT_TRUE(KeyImportNeverDone());
+}
+
+// No certificate with same subject exists, MakeNicknameUnique is called, but
+// isCertsWithNicknamesInSlot has failed.
+// Import failed.
+TEST_F(ChapsUtilPKCS12ImportTest, CertsSearchInSlotFailedPKCS12ImportFailed) {
+  fake_pkcs12_reader_.is_certs_with_nickname_in_slot_status_ =
+      Pkcs12ReaderStatusCode::kPkcs12MissedNickname;
+
+  bool import_result = RunImportPkcs12Certificate();
+
+  EXPECT_EQ(fake_pkcs12_reader_.is_certs_with_nickname_in_slots_called_, 1);
+  EXPECT_FALSE(import_result);
+  EXPECT_TRUE(KeyImportNeverDone());
+}
+
+// 20 certificates with same subject already exists in slot, import successful.
+// cert nicknames in slot will be 'testusercert', 'testusercert 1', ...,
+// 'testusercert 19'.
+TEST_F(ChapsUtilPKCS12ImportTest, CertsSearchInSlot20TimesPKCS12ImportFailed) {
+  fake_pkcs12_reader_.is_certs_with_nickname_in_slots_override_ = 20;
+  fake_pkcs12_reader_.is_certs_nickname_used_ = true;
+  // python print(base64.b64encode("testusercert 20".encode('utf-8')))
+  auto expected_encoded_label = base::Base64Decode("dGVzdHVzZXJjZXJ0IDIw");
+
+  bool import_result = RunImportPkcs12Certificate();
+  ObjectAttributes cert_data = passed_data_.pkcs12_cert_attributes[0];
+
+  EXPECT_EQ(cert_data.GetCkByte(CKA_LABEL), expected_encoded_label);
+  EXPECT_EQ(fake_pkcs12_reader_.is_certs_with_nickname_in_slots_called_, 21);
+  EXPECT_TRUE(import_result);
+  EXPECT_TRUE(KeyImportDone());
+}
+
+// GetScopedCert is failed inside CanFindInstalledKey.
+// Import failed.
+TEST_F(ChapsUtilPKCS12ImportTest, GetScopedCertFailedPKCS12ImportFailed) {
+  fake_pkcs12_reader_.get_der_encoded_cert_status_ =
+      Pkcs12ReaderStatusCode::kPkcs12CertDerMissed;
+
+  bool import_result = RunImportPkcs12Certificate();
+
+  EXPECT_EQ(fake_pkcs12_reader_.get_der_encode_cert_called_, 1);
+  EXPECT_EQ(fake_pkcs12_reader_.is_certs_with_nickname_in_slots_called_, 1);
+  EXPECT_FALSE(import_result);
+  EXPECT_TRUE(KeyImportNeverDone());
+}
+
+// FindPrivateKeyFromCert is failed inside CanFindInstalledKey.
+// Import failed.
+TEST_F(ChapsUtilPKCS12ImportTest,
+       FindPrivateKeyFromCertFailedPKCS12ImportFailed) {
+  fake_pkcs12_reader_.find_key_by_cert_status_ =
+      Pkcs12ReaderStatusCode::kPkcs12CertIssuerNameMissed;
+
+  bool import_result = RunImportPkcs12Certificate();
+
+  EXPECT_EQ(fake_pkcs12_reader_.find_key_by_cert_called_, 1);
+  EXPECT_EQ(fake_pkcs12_reader_.find_key_by_der_cert_called_, 0);
+  EXPECT_FALSE(import_result);
+  EXPECT_TRUE(KeyImportNeverDone());
+}
+
+// Private key found by cert inside CanFindInstalledKey.
+// Key import is never happened, but cert is imported.
+TEST_F(ChapsUtilPKCS12ImportTest, FindPrivateKeyFromCertSuccPKCS12ImportSucc) {
+  fake_pkcs12_reader_.find_key_by_cert_status_ =
+      Pkcs12ReaderStatusCode::kSuccess;
+
+  bool import_result = RunImportPkcs12Certificate();
+
+  EXPECT_EQ(fake_pkcs12_reader_.find_key_by_cert_called_, 1);
+  EXPECT_EQ(fake_pkcs12_reader_.find_key_by_der_cert_called_, 0);
+  EXPECT_TRUE(import_result);
+  EXPECT_TRUE(KeyImportNeverDone());
+  EXPECT_TRUE(CertImportDone());
+}
+
+// FindKeyByDERCert is failed inside CanFindInstalledKey.
+// Import failed.
+TEST_F(ChapsUtilPKCS12ImportTest, FindKeyByDERCertFailedPKCS12ImportFailed) {
+  fake_pkcs12_reader_.find_key_by_der_cert_status_ =
+      Pkcs12ReaderStatusCode::kPkcs12CertIssuerNameMissed;
+
+  bool import_result = RunImportPkcs12Certificate();
+
+  EXPECT_EQ(fake_pkcs12_reader_.find_key_by_cert_called_, 1);
+  EXPECT_EQ(fake_pkcs12_reader_.find_key_by_der_cert_called_, 1);
+  EXPECT_FALSE(import_result);
+  EXPECT_TRUE(KeyImportNeverDone());
+}
+
+// Private key found in slot by DER cert inside CanFindInstalledKey.
+// Key import is never happened, but cert is imported.
+TEST_F(ChapsUtilPKCS12ImportTest, FindKeyByDERCertSuccPKCS12ImportSucc) {
+  fake_pkcs12_reader_.find_key_by_der_cert_status_ =
+      Pkcs12ReaderStatusCode::kSuccess;
+
+  bool import_result = RunImportPkcs12Certificate();
+
+  EXPECT_EQ(fake_pkcs12_reader_.find_key_by_cert_called_, 1);
+  EXPECT_EQ(fake_pkcs12_reader_.find_key_by_der_cert_called_, 1);
+  EXPECT_TRUE(import_result);
+  EXPECT_TRUE(KeyImportNeverDone());
+  EXPECT_TRUE(CertImportDone());
 }
 
 }  // namespace

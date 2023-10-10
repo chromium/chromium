@@ -16,13 +16,18 @@ component("chaps_util") {
     "chaps_util.h",
     "chaps_util_impl.cc",
     "chaps_util_impl.h",
+    "key_helper.cc",
+    "key_helper.h",
     "pkcs12_reader.cc",
     "pkcs12_reader.h",
+    "pkcs12_validator.cc",
+    "pkcs12_validator.h",
   ]
 
   deps = [
     "//base",
     "//crypto",
+    "//net",
     "//third_party/abseil-cpp:absl",
     "//third_party/boringssl",
   ]
