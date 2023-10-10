@@ -9,7 +9,7 @@
 #import "base/threading/thread_restrictions.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
-#import "components/password_manager/core/browser/bulk_leak_check_service_interface.h"
+#import "components/password_manager/core/browser/leak_detection/bulk_leak_check_service_interface.h"
 #import "components/password_manager/core/browser/password_store_interface.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/web_view/internal/app/application_context.h"

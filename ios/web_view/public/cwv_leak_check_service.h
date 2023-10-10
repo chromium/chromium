@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol CWVLeakCheckServiceObserver;
 
 // The states the LeakCheckService can be in. This mirrors:
-// components/password_manager/core/browser/bulk_leak_check_service_interface.h
+// components/password_manager/core/browser/leak_detection/bulk_leak_check_service_interface.h
 typedef NS_ENUM(NSInteger, CWVLeakCheckServiceState) {
   // The service is idle and there was no previous error.
   CWVLeakCheckServiceStateIdle = 0,

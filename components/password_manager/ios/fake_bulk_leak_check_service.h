@@ -6,7 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_IOS_FAKE_BULK_LEAK_CHECK_SERVICE_H_
 
 #import "base/observer_list.h"
-#import "components/password_manager/core/browser/bulk_leak_check_service_interface.h"
+#import "components/password_manager/core/browser/leak_detection/bulk_leak_check_service_interface.h"
 
 namespace password_manager {
 

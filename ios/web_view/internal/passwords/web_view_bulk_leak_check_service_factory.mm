@@ -11,7 +11,7 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "components/password_manager/core/browser/bulk_leak_check_service.h"
-#import "components/password_manager/core/browser/bulk_leak_check_service_interface.h"
+#import "components/password_manager/core/browser/leak_detection/bulk_leak_check_service_interface.h"
 #import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"

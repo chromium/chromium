@@ -175,6 +175,6 @@ source_set("fake_bulk_leak_check_service") {
   ]
   deps = [
     "//base",
-    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/leak_detection:leak_detection_interface_headers",
   ]
 }

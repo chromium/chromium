@@ -161,5 +161,5 @@ java_cpp_enum("safety_check_enums") {
 }
 
 java_cpp_enum("bulk_leak_check_service_enums") {
-  sources = [ "//components/password_manager/core/browser/bulk_leak_check_service_interface.h" ]
+  sources = [ "//components/password_manager/core/browser/leak_detection/bulk_leak_check_service_interface.h" ]
 }

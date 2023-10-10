@@ -10,7 +10,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/password_manager/core/browser/bulk_leak_check_service_interface.h"
+#include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace password_manager {

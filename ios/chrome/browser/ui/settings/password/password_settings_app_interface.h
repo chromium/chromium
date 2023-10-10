@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "components/password_manager/core/browser/bulk_leak_check_service_interface.h"
+#import "components/password_manager/core/browser/leak_detection/bulk_leak_check_service_interface.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 
 // EarlGreyScopedBlockSwizzlerAppInterface contains the app-side
