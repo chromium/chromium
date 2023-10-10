@@ -66341,6 +66341,7 @@ from previous Chrome versions.
   <int value="606723570" label="SharingUseDeviceInfo:disabled"/>
   <int value="606834606" label="force-color-profile"/>
   <int value="606969417" label="DiscoverApp:enabled"/>
+  <int value="608405849" label="WebAuthenticationFilterGooglePasskeys:enabled"/>
   <int value="608761130" label="PrintSaveToDrive:enabled"/>
   <int value="609112512" label="touch-selection-strategy"/>
   <int value="609568740" label="ImprovedSemanticsActivityIndicators:disabled"/>
@@ -68710,6 +68711,8 @@ from previous Chrome versions.
   <int value="1770189877" label="ConfirmNtpSuggestionRemovals:enabled"/>
   <int value="1771548551" label="DisableKeepaliveFetch:enabled"/>
   <int value="1772454319" label="enable-storage-manager"/>
+  <int value="1772618273"
+      label="WebAuthenticationFilterGooglePasskeys:disabled"/>
   <int value="1774991770" label="SafetyCheckPermissions:enabled"/>
   <int value="1775397180" label="kFastPairHID:disabled"/>
   <int value="1775475563" label="malware-interstitial-v3"/>

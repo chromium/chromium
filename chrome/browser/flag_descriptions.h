@@ -2036,6 +2036,9 @@ extern const char kWallpaperPerDeskDescription[];
 extern const char kWallpaperRefreshRevampName[];
 extern const char kWallpaperRefreshRevampDescription[];
 
+extern const char kWebAuthnFilterGooglePasskeysName[];
+extern const char kWebAuthnFilterGooglePasskeysDescription[];
+
 extern const char kWebBluetoothName[];
 extern const char kWebBluetoothDescription[];
 

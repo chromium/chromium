@@ -3505,6 +3505,13 @@ const char kWallpaperRefreshRevampDescription[] =
     "Allows users to switch to checkpoint based wallpaper daily refresh "
     "feature.";
 
+const char kWebAuthnFilterGooglePasskeysName[] =
+    "Filter passkeys for google.com";
+const char kWebAuthnFilterGooglePasskeysDescription[] =
+    "When servicing a webauthn request for google.com, filter webauthn "
+    "credentials that do not match a user.id prefix identifying them as "
+    "passkeys, e.g. because they are used for autofill auth.";
+
 const char kWebBluetoothName[] = "Web Bluetooth";
 const char kWebBluetoothDescription[] =
     "Enables the Web Bluetooth API on platforms without official support";
