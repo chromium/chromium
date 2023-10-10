@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -379,7 +380,7 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
       SetLimit(data_body, result.limits().rate_limits_max_attributions);
       break;
     case DebugDataType::kTriggerAggregateInsufficientBudget:
-      SetLimit(data_body, result.limits().aggregatable_budget_per_source);
+      SetLimit<int>(data_body, attribution_reporting::kMaxAggregatableValue);
       break;
     case DebugDataType::kTriggerAggregateExcessiveReports:
       SetLimit(data_body, result.limits().max_aggregatable_reports_per_source);

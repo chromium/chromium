@@ -98,11 +98,6 @@ double AttributionStorageDelegate::GetMaxChannelCapacity(
   }
 }
 
-int64_t AttributionStorageDelegate::GetAggregatableBudgetPerSource() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return config_.aggregate_limit.aggregatable_budget_per_source;
-}
-
 int AttributionStorageDelegate::GetMaxAggregatableReportsPerSource() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return config_.aggregate_limit.max_aggregatable_reports_per_source;

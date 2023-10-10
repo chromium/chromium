@@ -245,8 +245,6 @@ class AttributionInteropParser {
                 config.event_level_limit.randomized_response_epsilon, required);
     ParseInt(dict, "max_aggregatable_reports_per_destination",
              config.aggregate_limit.max_reports_per_destination, required);
-    ParseInt64(dict, "aggregatable_budget_per_source",
-               config.aggregate_limit.aggregatable_budget_per_source, required);
 
     int aggregatable_report_min_delay;
     if (ParseInt(dict, "aggregatable_report_min_delay",

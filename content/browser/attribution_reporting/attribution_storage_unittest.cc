@@ -105,11 +105,6 @@ MATCHER_P(CreateReportMaxAttributionsLimitIs, matcher, "") {
                             result_listener);
 }
 
-MATCHER_P(CreateReportAggreggatableBudgetPerSourceIs, matcher, "") {
-  return ExplainMatchResult(
-      matcher, arg.limits().aggregatable_budget_per_source, result_listener);
-}
-
 MATCHER_P(CreateReportMaxAttributionReportingOriginsLimitIs, matcher, "") {
   return ExplainMatchResult(
       matcher, arg.limits().rate_limits_max_attribution_reporting_origins,
@@ -3012,62 +3007,54 @@ TEST_F(AttributionStorageTest, SourceBudgetValueRetrieved) {
 }
 
 TEST_F(AttributionStorageTest, MaxAggregatableBudgetPerSource) {
-  delegate()->set_aggregatable_budget_per_source(16);
-
   auto provider = TestAggregatableSourceProvider(/*size=*/2);
   storage()->StoreSource(provider.GetBuilder().Build());
 
-  // A single contribution exceeds the budget.
-  EXPECT_THAT(
-      storage()->MaybeCreateAndStoreReport(DefaultAggregatableTriggerBuilder(
-                                               /*histogram_values=*/{17})
-                                               .Build()),
-      AllOf(CreateReportAggregatableStatusIs(
-                AttributionTrigger::AggregatableResult::kInsufficientBudget),
-            CreateReportAggreggatableBudgetPerSourceIs(16)));
+  // Note: A single contribution can't exceed the budget because
+  // `AggregatableValues::Create()`, which is used by
+  // `DefaultAggregatableTriggerBuilder()`, prevents such an instance from being
+  // constructed.
 
   EXPECT_THAT(
       storage()->MaybeCreateAndStoreReport(DefaultAggregatableTriggerBuilder(
                                                /*histogram_values=*/{2, 5})
                                                .Build()),
-      AllOf(CreateReportAggregatableStatusIs(
-                AttributionTrigger::AggregatableResult::kSuccess),
-            CreateReportAggreggatableBudgetPerSourceIs(absl::nullopt)));
+      CreateReportAggregatableStatusIs(
+          AttributionTrigger::AggregatableResult::kSuccess));
 
-  EXPECT_THAT(
-      storage()->MaybeCreateAndStoreReport(DefaultAggregatableTriggerBuilder(
-                                               /*histogram_values=*/{10})
-                                               .Build()),
-      AllOf(CreateReportAggregatableStatusIs(
-                AttributionTrigger::AggregatableResult::kInsufficientBudget),
-            CreateReportAggreggatableBudgetPerSourceIs(16)));
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
+                  DefaultAggregatableTriggerBuilder(
+                      /*histogram_values=*/{
+                          attribution_reporting::kMaxAggregatableValue - 6})
+                      .Build()),
+              CreateReportAggregatableStatusIs(
+                  AttributionTrigger::AggregatableResult::kInsufficientBudget));
 
-  EXPECT_THAT(
-      storage()->MaybeCreateAndStoreReport(DefaultAggregatableTriggerBuilder(
-                                               /*histogram_values=*/{9})
-                                               .Build()),
-      AllOf(CreateReportAggregatableStatusIs(
-                AttributionTrigger::AggregatableResult::kSuccess),
-            CreateReportAggreggatableBudgetPerSourceIs(absl::nullopt)));
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
+                  DefaultAggregatableTriggerBuilder(
+                      /*histogram_values=*/{
+                          attribution_reporting::kMaxAggregatableValue - 7})
+                      .Build()),
+              CreateReportAggregatableStatusIs(
+                  AttributionTrigger::AggregatableResult::kSuccess));
 
   EXPECT_THAT(
       storage()->MaybeCreateAndStoreReport(DefaultAggregatableTriggerBuilder(
                                                /*histogram_values=*/{1})
                                                .Build()),
-      AllOf(CreateReportAggregatableStatusIs(
-                AttributionTrigger::AggregatableResult::kInsufficientBudget),
-            CreateReportAggreggatableBudgetPerSourceIs(16)));
+      CreateReportAggregatableStatusIs(
+          AttributionTrigger::AggregatableResult::kInsufficientBudget));
 
   // The second source has higher priority and should have capacity.
   storage()->StoreSource(provider.GetBuilder().SetPriority(10).Build());
 
-  EXPECT_THAT(
-      storage()->MaybeCreateAndStoreReport(DefaultAggregatableTriggerBuilder(
-                                               /*histogram_values=*/{9})
-                                               .Build()),
-      AllOf(CreateReportAggregatableStatusIs(
-                AttributionTrigger::AggregatableResult::kSuccess),
-            CreateReportAggreggatableBudgetPerSourceIs(absl::nullopt)));
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
+                  DefaultAggregatableTriggerBuilder(
+                      /*histogram_values=*/{
+                          attribution_reporting::kMaxAggregatableValue})
+                      .Build()),
+              CreateReportAggregatableStatusIs(
+                  AttributionTrigger::AggregatableResult::kSuccess));
 }
 
 TEST_F(AttributionStorageTest, BudgetConsumedAfterTriggerIsRetrieved) {

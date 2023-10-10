@@ -82,9 +82,6 @@ CreateReportResult::CreateReportResult(
       event_level_status_ == EventLevelResult::kExcessiveAttributions ||
           aggregatable_status_ == AggregatableResult::kExcessiveAttributions);
 
-  DCHECK_EQ(limits.aggregatable_budget_per_source.has_value(),
-            aggregatable_status_ == AggregatableResult::kInsufficientBudget);
-
   DCHECK_EQ(limits.max_aggregatable_reports_per_source.has_value(),
             aggregatable_status_ == AggregatableResult::kExcessiveReports);
 

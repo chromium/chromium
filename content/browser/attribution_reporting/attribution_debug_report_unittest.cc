@@ -408,8 +408,7 @@ TEST(AttributionDebugReportTest, TriggerDebugging) {
        ])json"},
       {EventLevelResult::kNoMatchingConfigurations,
        AggregatableResult::kInsufficientBudget,
-       /*source=*/SourceBuilder().BuildStored(),
-       CreateReportResult::Limits{.aggregatable_budget_per_source = 100},
+       /*source=*/SourceBuilder().BuildStored(), CreateReportResult::Limits(),
        R"json([
          {
            "body": {
@@ -422,7 +421,7 @@ TEST(AttributionDebugReportTest, TriggerDebugging) {
          {
            "body": {
              "attribution_destination": "https://conversion.test",
-             "limit": "100",
+             "limit": "65536",
              "source_event_id": "123",
              "source_site": "https://impression.test"
            },
@@ -839,14 +838,13 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
          "type": "trigger-aggregate-no-contributions"
        }])json"},
       {AggregatableResult::kInsufficientBudget,
-       /*new_aggregatable_report=*/absl::nullopt,
-       CreateReportResult::Limits{.aggregatable_budget_per_source = 10},
+       /*new_aggregatable_report=*/absl::nullopt, CreateReportResult::Limits(),
        /*source_debug_key=*/absl::nullopt,
        /*trigger_debug_key=*/absl::nullopt,
        R"json([{
          "body": {
            "attribution_destination": "https://conversion.test",
-           "limit": "10",
+           "limit": "65536",
            "source_event_id": "123",
            "source_site": "https://impression.test"
          },

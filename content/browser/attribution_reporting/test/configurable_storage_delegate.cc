@@ -53,8 +53,6 @@ ConfigurableStorageDelegate::ConfigurableStorageDelegate()
 
         c.aggregate_limit.max_reports_per_destination =
             std::numeric_limits<int>::max();
-        c.aggregate_limit.aggregatable_budget_per_source =
-            std::numeric_limits<int64_t>::max();
         c.aggregate_limit.min_delay = base::TimeDelta();
         c.aggregate_limit.delay_span = base::TimeDelta();
 
@@ -177,12 +175,6 @@ void ConfigurableStorageDelegate::
     set_max_destinations_per_source_site_reporting_site(int max) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   config_.max_destinations_per_source_site_reporting_site = max;
-}
-
-void ConfigurableStorageDelegate::set_aggregatable_budget_per_source(
-    int64_t max) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  config_.aggregate_limit.aggregatable_budget_per_source = max;
 }
 
 void ConfigurableStorageDelegate::set_rate_limits(

@@ -1838,7 +1838,6 @@ TEST_P(AttributionStorageSqlTest,
   const struct {
     const char* desc;
     absl::variant<AttributionAggregatableMetadataRecord, std::string> record;
-    absl::optional<int64_t> max_budget;
     bool valid;
   } kTestCases[] = {
       {
@@ -1887,7 +1886,8 @@ TEST_P(AttributionStorageSqlTest,
                           AttributionAggregatableMetadataRecord::Contribution{
                               .high_bits = 1,
                               .low_bits = 2,
-                              .value = 3,
+                              .value =
+                                  attribution_reporting::kMaxAggregatableValue,
                           },
                       },
               },
@@ -1917,11 +1917,12 @@ TEST_P(AttributionStorageSqlTest,
                           AttributionAggregatableMetadataRecord::Contribution{
                               .high_bits = 1,
                               .low_bits = 2,
-                              .value = 11,
+                              .value =
+                                  attribution_reporting::kMaxAggregatableValue +
+                                  1,
                           },
                       },
               },
-          .max_budget = 10,
           .valid = false,
       },
       {
@@ -1992,9 +1993,6 @@ TEST_P(AttributionStorageSqlTest,
 
     base::HistogramTester histograms;
     OpenDatabase();
-    if (test_case.max_budget) {
-      delegate()->set_aggregatable_budget_per_source(*test_case.max_budget);
-    }
     EXPECT_THAT(
         storage()->GetAttributionReports(/*max_report_time=*/base::Time::Max()),
         SizeIs(test_case.valid))

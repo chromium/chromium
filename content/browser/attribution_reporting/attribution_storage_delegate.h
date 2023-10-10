@@ -190,10 +190,6 @@ class CONTENT_EXPORT AttributionStorageDelegate {
       int max_event_level_reports,
       base::Time source_time) const = 0;
 
-  // Returns the maximum sum of the contributions (values) across all buckets
-  // per source.
-  int64_t GetAggregatableBudgetPerSource() const;
-
   int GetMaxAggregatableReportsPerSource() const;
 
   AttributionConfig::DestinationRateLimit GetDestinationRateLimit() const;

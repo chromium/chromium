@@ -39,6 +39,7 @@
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
@@ -387,7 +388,6 @@ std::string SerializeReportMetadata(
 
 [[nodiscard]] bool DeserializeReportMetadata(
     const std::string& str,
-    int64_t max_value,
     AttributionReport::AggregatableAttributionData& data) {
   proto::AttributionAggregatableMetadata msg;
   if (!msg.ParseFromString(str) || msg.contributions().empty() ||
@@ -400,7 +400,8 @@ std::string SerializeReportMetadata(
   for (const auto& contribution_msg : msg.contributions()) {
     if (!contribution_msg.has_key() || !contribution_msg.has_value() ||
         !IsValid(contribution_msg.key()) || contribution_msg.value() == 0 ||
-        contribution_msg.value() > max_value) {
+        contribution_msg.value() >
+            attribution_reporting::kMaxAggregatableValue) {
       return false;
     }
     data.contributions.emplace_back(
@@ -1350,7 +1351,6 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
         *new_aggregatable_report,
         source_to_attribute->source.aggregatable_budget_consumed(),
         source_to_attribute->num_aggregatable_reports, aggregatable_dedup_key,
-        limits.aggregatable_budget_per_source,
         limits.max_aggregatable_reports_per_source);
   }
 
@@ -1739,7 +1739,7 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
           AttributionReport::CommonAggregatableData(),
           /*contributions=*/{}, std::move(source_data->source));
       if (!DeserializeReportMetadata(
-              metadata, delegate_->GetAggregatableBudgetPerSource(),
+              metadata,
               absl::get<AttributionReport::AggregatableAttributionData>(
                   *data))) {
         return absl::nullopt;
@@ -2920,11 +2920,10 @@ AttributionStorageSql::AggregatableAttributionAllowedForBudgetLimit(
     const AttributionReport::AggregatableAttributionData&
         aggregatable_attribution,
     int64_t aggregatable_budget_consumed) {
-  const int64_t budget = delegate_->GetAggregatableBudgetPerSource();
-  DCHECK_GT(budget, 0);
-
-  const int64_t capacity = budget > aggregatable_budget_consumed
-                               ? budget - aggregatable_budget_consumed
+  const int64_t capacity = attribution_reporting::kMaxAggregatableValue >
+                                   aggregatable_budget_consumed
+                               ? attribution_reporting::kMaxAggregatableValue -
+                                     aggregatable_budget_consumed
                                : 0;
 
   if (capacity == 0) {
@@ -3093,7 +3092,6 @@ AttributionStorageSql::MaybeStoreAggregatableAttributionReportData(
     int64_t aggregatable_budget_consumed,
     int num_aggregatable_reports,
     absl::optional<uint64_t> dedup_key,
-    absl::optional<int64_t>& aggregatable_budget_per_source,
     absl::optional<int>& max_aggregatable_reports_per_source) {
   const auto* aggregatable_attribution =
       absl::get_if<AttributionReport::AggregatableAttributionData>(
@@ -3112,8 +3110,6 @@ AttributionStorageSql::MaybeStoreAggregatableAttributionReportData(
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
-      aggregatable_budget_per_source =
-          delegate_->GetAggregatableBudgetPerSource();
       return AggregatableResult::kInsufficientBudget;
     case RateLimitResult::kError:
       return AggregatableResult::kInternalError;

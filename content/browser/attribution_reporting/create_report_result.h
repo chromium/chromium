@@ -23,9 +23,6 @@ class CONTENT_EXPORT CreateReportResult {
     // `kExcessiveAttributions`.
     absl::optional<int64_t> rate_limits_max_attributions;
 
-    // `absl::nullopt` unless `aggregatable_status_` is `kInsufficientBudget`.
-    absl::optional<int64_t> aggregatable_budget_per_source;
-
     // `absl::nullopt` unless `event_level_status_` or `aggregatable_status_` is
     // `kExcessiveReportingOrigins`.
     absl::optional<int64_t> rate_limits_max_attribution_reporting_origins;

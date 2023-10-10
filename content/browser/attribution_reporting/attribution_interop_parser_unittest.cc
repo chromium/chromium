@@ -56,9 +56,7 @@ bool operator==(const AttributionConfig::AggregateLimit& a,
                 const AttributionConfig::AggregateLimit& b) {
   const auto tie = [](const AttributionConfig::AggregateLimit& config) {
     return std::make_tuple(
-        config.max_reports_per_destination,
-        config.aggregatable_budget_per_source, config.min_delay,
-        config.delay_span,
+        config.max_reports_per_destination, config.min_delay, config.delay_span,
         config.null_reports_rate_include_source_registration_time,
         config.null_reports_rate_exclude_source_registration_time,
         config.max_aggregatable_reports_per_source);
@@ -573,10 +571,6 @@ TEST(AttributionInteropParserTest, ValidConfig) {
        [](AttributionConfig& c) {
          c.aggregate_limit.max_reports_per_destination = 10;
        }},
-      {R"json({"aggregatable_budget_per_source":"100"})json", false,
-       [](AttributionConfig& c) {
-         c.aggregate_limit.aggregatable_budget_per_source = 100;
-       }},
       {R"json({"aggregatable_report_min_delay":"0"})json", false,
        [](AttributionConfig& c) {
          c.aggregate_limit.min_delay = base::TimeDelta();
@@ -604,7 +598,6 @@ TEST(AttributionInteropParserTest, ValidConfig) {
         "max_navigation_info_gain":"5.5",
         "max_event_info_gain":"0.5",
         "max_aggregatable_reports_per_destination":"10",
-        "aggregatable_budget_per_source":"1000",
         "aggregatable_report_min_delay":"10",
         "aggregatable_report_delay_span":"20"
       })json",
@@ -627,7 +620,6 @@ TEST(AttributionInteropParserTest, ValidConfig) {
          c.event_level_limit.max_event_info_gain = 0.5;
 
          c.aggregate_limit.max_reports_per_destination = 10;
-         c.aggregate_limit.aggregatable_budget_per_source = 1000;
          c.aggregate_limit.min_delay = base::Minutes(10);
          c.aggregate_limit.delay_span = base::Minutes(20);
 
@@ -669,7 +661,6 @@ TEST(AttributionInteropParserTest, InvalidConfigPositiveIntegers) {
       "event_source_trigger_data_cardinality",
       "max_event_level_reports_per_destination",
       "max_aggregatable_reports_per_destination",
-      "aggregatable_budget_per_source",
   };
 
   {

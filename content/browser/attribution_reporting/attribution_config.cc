@@ -135,10 +135,6 @@ bool AttributionConfig::AggregateLimit::Validate() const {
     return false;
   }
 
-  if (aggregatable_budget_per_source <= 0) {
-    return false;
-  }
-
   if (min_delay < base::TimeDelta()) {
     return false;
   }
