@@ -349,6 +349,8 @@ const char kChromeUICryptohomeURL[] = "chrome://cryptohome";
 const char kChromeUIDeviceEmulatorHost[] = "device-emulator";
 const char kChromeUIDeviceEmulatorURL[] = "chrome://device-emulator";
 const char kChromeUIDiagnosticsAppURL[] = "chrome://diagnostics";
+const char kChromeUIEmojiPickerURL[] = "chrome://emoji-picker/";
+const char kChromeUIEmojiPickerHost[] = "emoji-picker";
 const char kChromeUIEnterpriseReportingHost[] = "enterprise-reporting";
 const char kChromeUIEnterpriseReportingURL[] = "chrome://enterprise-reporting";
 const char kChromeUIFirmwareUpdaterAppURL[] = "chrome://accessory-update";
@@ -417,8 +419,9 @@ const char kChromeUIVcTrayTesterHost[] = "vc-tray-tester";
 const char kChromeUIVcTrayTesterURL[] = "chrome://vc-tray-tester";
 const char kChromeUIVmHost[] = "vm";
 const char kChromeUIVmUrl[] = "chrome://vm";
-const char kChromeUIEmojiPickerURL[] = "chrome://emoji-picker/";
-const char kChromeUIEmojiPickerHost[] = "emoji-picker";
+const char kChromeUIWebAppInstallDialogHost[] = "web-app-install-dialog";
+const char kChromeUIWebAppInstallDialogURL[] =
+    "chrome://web-app-install-dialog/";
 
 const char kChromeUIUrgentPasswordExpiryNotificationHost[] =
     "urgent-password-expiry-notification";
@@ -443,6 +446,7 @@ bool IsSystemWebUIHost(base::StringPiece host) {
     kChromeUICrostiniInstallerHost,
     kChromeUICryptohomeHost,
     kChromeUIDeviceEmulatorHost,
+    kChromeUIEmojiPickerHost,
     kChromeUIInternetConfigDialogHost,
     kChromeUIInternetDetailDialogHost,
     kChromeUILockScreenNetworkHost,
@@ -460,7 +464,7 @@ bool IsSystemWebUIHost(base::StringPiece host) {
     kChromeUISmbCredentialsHost,
     kChromeUISmbShareHost,
     kChromeUIVcTrayTesterHost,
-    kChromeUIEmojiPickerHost,
+    kChromeUIWebAppInstallDialogHost,
 #if BUILDFLAG(PLATFORM_CFM)
     kCfmNetworkSettingsHost,
 #endif  // BUILDFLAG(PLATFORM_CFM)

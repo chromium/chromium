@@ -101,9 +101,11 @@
 #include "chrome/browser/ui/webui/ash/sys_internals/sys_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/vc_tray_tester/vc_tray_tester_ui.h"
 #include "chrome/browser/ui/webui/ash/vm/vm_ui.h"
+#include "chrome/browser/ui/webui/ash/web_app_install/web_app_install_ui.h"
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_ui.h"
+#include "chromeos/constants/chromeos_features.h"
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 #if !defined(USE_REAL_DBUS_CLIENTS)
@@ -319,6 +321,11 @@ void RegisterAshChromeWebUIConfigs() {
       std::make_unique<UrgentPasswordExpiryNotificationUIConfig>());
   map.AddWebUIConfig(std::make_unique<VcTrayTesterUIConfig>());
   map.AddWebUIConfig(std::make_unique<VmUIConfig>());
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kCrosWebAppInstallDialog)) {
+    map.AddWebUIConfig(
+        std::make_unique<web_app_install::WebAppInstallDialogUIConfig>());
+  }
 #if !defined(OFFICIAL_BUILD)
   map.AddWebUIConfig(std::make_unique<SampleSystemWebAppUIConfig>());
   map.AddWebUIConfig(std::make_unique<StatusAreaInternalsUIConfig>());

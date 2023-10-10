@@ -231,6 +231,10 @@
     "META": {"sizes": {"includes": [5]}},
     "includes": [2880],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/web_app_install/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [2890],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/commander/resources.grd": {
     "META": {"sizes": {"includes": [15]}},
     "includes": [2900],
