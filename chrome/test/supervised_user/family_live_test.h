@@ -6,6 +6,7 @@
 #define CHROME_TEST_SUPERVISED_USER_FAMILY_LIVE_TEST_H_
 
 #include <memory>
+#include <string>
 #include <string_view>
 
 #include "base/test/scoped_feature_list.h"
@@ -37,6 +38,10 @@ class FamilyLiveTest : public signin::test::LiveTest {
   void SetUp() override;
   void SetUpOnMainThread() override;
   void SetUpInProcessBrowserTestFixture() override;
+
+  // Creates the GURL from the `url_spec` and ensures that the host part was
+  // explicitly added to `extra_enabled_hosts`.
+  GURL GetRoutedUrl(std::string_view url_spec) const;
 
   FamilyMember& head_of_household() { return *head_of_household_; }
   FamilyMember& child() { return *child_; }

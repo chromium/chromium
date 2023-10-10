@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentBlocksPage) {
       // Supervised user navigates to any page.
       InstrumentTab(kChildElementId, tab_index, child().browser()),
       ObserveState(kTabTitleState, child().browser(), tab_index),
-      NavigateWebContents(kChildElementId, GURL("https://example.com")),
+      NavigateWebContents(kChildElementId, GetRoutedUrl("https://example.com")),
       WaitForState(kTabTitleState, ::testing::Eq(u"Example Domain")),
 
       // Supervisor blocks that page and supervised user sees interstitial
