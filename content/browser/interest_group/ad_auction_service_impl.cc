@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -748,23 +749,10 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   // 1. The render frame host has changed.
   // 2. The page owned by the render frame host has changed.
   // 3. The fenced frame mapping of the page has changed.
-  //
-  // Each possible scenario is checked below. They are put in separate if branch
-  // in order to identify from the dump.
-  bool mismatch_with_auction_start = false;
-  if (render_frame_host_id != GetFrame()->GetGlobalId()) {
-    base::debug::DumpWithoutCrashing();
-    mismatch_with_auction_start = true;
-  } else if (page_impl.get() != &(GetFrame()->GetPage())) {
-    base::debug::DumpWithoutCrashing();
-    mismatch_with_auction_start = true;
-  } else if (fenced_frame_urls_map_id !=
-             current_fenced_frame_urls_map.unique_id()) {
-    base::debug::DumpWithoutCrashing();
-    mismatch_with_auction_start = true;
-  }
-
-  if (mismatch_with_auction_start) {
+  if (IsAuctionExpectedToFail(fenced_frame_urls_map_id, render_frame_host_id,
+                              page_impl)) {
+    // At least one of the RenderFrameHostImpl, PageImpl and the
+    // FencedFrameUrlMapping has changed during the auction.
     if (auction_result_metrics) {
       auction_result_metrics->ReportAuctionResult(
           AdAuctionResultMetrics::AuctionResult::kFailed);
@@ -950,6 +938,56 @@ url::Origin AdAuctionServiceImpl::GetTopWindowOrigin() const {
     return origin();
   }
   return render_frame_host().GetMainFrame()->GetLastCommittedOrigin();
+}
+
+bool AdAuctionServiceImpl::IsAuctionExpectedToFail(
+    FencedFrameURLMapping::Id fenced_frame_urls_map_id,
+    GlobalRenderFrameHostId render_frame_host_id,
+    const base::WeakPtr<PageImpl> page_impl) {
+  bool render_frame_host_impl_mismatch =
+      render_frame_host_id != GetFrame()->GetGlobalId();
+  bool page_impl_mismatch = page_impl.get() != &(GetFrame()->GetPage());
+  bool fenced_frame_url_mapping_mismatch =
+      fenced_frame_urls_map_id !=
+      GetFrame()->GetPage().fenced_frame_urls_map().unique_id();
+
+  if (!render_frame_host_impl_mismatch && !page_impl_mismatch &&
+      !fenced_frame_url_mapping_mismatch) {
+    // None of the RenderFrameHostImpl, PageImpl and FencedFrameUrlMapping are
+    // different from the ones at the start of the auction. The auction is not
+    // expected to fail.
+    return false;
+  }
+
+  // Record the `LifecycleState` of the main frame. If the auction is from a
+  // child frame, also record the `LifecycleState` of the child frame.
+  std::string main_frame_cycle;
+  std::string child_frame_cycle;
+
+  if (GetFrame()->IsOutermostMainFrame()) {
+    main_frame_cycle = RenderFrameHostImpl::LifecycleStateImplToString(
+        GetFrame()->lifecycle_state());
+    child_frame_cycle = "AuctionIsFromMainFrame";
+  } else {
+    main_frame_cycle = RenderFrameHostImpl::LifecycleStateImplToString(
+        GetFrame()->GetOutermostMainFrame()->lifecycle_state());
+    child_frame_cycle = RenderFrameHostImpl::LifecycleStateImplToString(
+        GetFrame()->lifecycle_state());
+  }
+
+  // Set the crash key with the string describing the state.
+  SCOPED_CRASH_KEY_STRING1024(
+      "fledge", "on-auction-complete-state",
+      base::StrCat({"RenderFrameHostImplMismatch_",
+                    render_frame_host_impl_mismatch ? "true" : "false",
+                    "_PageImplMismatch_", page_impl_mismatch ? "true" : "false",
+                    "_FencedFrameUrlMappingMismatch_",
+                    fenced_frame_url_mapping_mismatch ? "true" : "false",
+                    "_MainFrame_", main_frame_cycle, "_ChildFrame_",
+                    child_frame_cycle}));
+  base::debug::DumpWithoutCrashing();
+
+  return true;
 }
 
 }  // namespace content

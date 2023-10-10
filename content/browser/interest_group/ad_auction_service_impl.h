@@ -183,6 +183,22 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
 
   url::Origin GetTopWindowOrigin() const;
 
+  // Return whether the auction is expected to fail because any of
+  // RenderFrameHostImpl, PageImpl and FencedFrameUrlMapping has changed during
+  // the auction. If it is going to fail, set the crash key and dump without
+  // crashing. The crash key is a string that describes:
+  // 1. Whether RenderFrameHostImpl is different between the start of the
+  // auction and the end of the auction.
+  // 2. Same as above for PageImpl.
+  // 3. Same as above for FencedFrameUrlMapping.
+  // 4. The lifecycle state of the main frame. See
+  // `RenderFrameHostImpl::GetLifecycleState()`.
+  // 5. If there is a child frame, the lifecycle state of the child frame.
+  bool IsAuctionExpectedToFail(
+      FencedFrameURLMapping::Id fenced_frame_urls_map_id,
+      GlobalRenderFrameHostId render_frame_host_id,
+      const base::WeakPtr<PageImpl> page_impl);
+
   // To avoid race conditions associated with top frame navigations (mentioned
   // in document_service.h), we need to save the values of the main frame
   // URL and origin in the constructor.
