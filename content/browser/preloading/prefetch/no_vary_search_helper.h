@@ -44,21 +44,31 @@ CONTENT_EXPORT void SetNoVarySearchData(
 // `callback` is called.
 enum class IterateCandidateResult { kContinue, kFinish };
 
-// Call `callback` on every `PrefetchContainer`s that can match with `url` via
-// No-Vary-Search:
-// - Has a URL with the same non-ref/query part as `url`,
-// - Has `NoVarySearchData`, AND
-// - `AreEquivalent()` is true or `check_are_equivalent` is false.
-// Note that if `PrefetchContainer` doesn't have a valid `NoVarySearchData`, it
-// is ignored even if its URL is exactly the same as `url`.
+// Call `callback` on every `PrefetchContainer`s that can match with `url`, in
+// the order of
+// 1. Exact match.
+// 2. No-Vary-Search matches if enabled.
+//   - Has a URL with the same non-ref/query part as `url`,
+//   - Has `NoVarySearchData`, AND
+//   - `AreEquivalent()` is true or `check_are_equivalent` is false.
 inline void IterateCandidates(
     const GURL& url,
     const std::map<GURL, base::WeakPtr<PrefetchContainer>>& prefetches,
     base::RepeatingCallback<
         IterateCandidateResult(base::WeakPtr<PrefetchContainer>)> callback,
     bool check_are_equivalent = true) {
-  DCHECK(
-      base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch));
+  auto it_exact_match = prefetches.find(url);
+  if (it_exact_match != prefetches.end() && it_exact_match->second) {
+    if (callback.Run(it_exact_match->second) ==
+        IterateCandidateResult::kFinish) {
+      return;
+    }
+  }
+
+  // Fall back to No-Vary-Search equivalence if enabled.
+  if (!base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch)) {
+    return;
+  }
 
   GURL::Replacements replacements;
   replacements.ClearRef();
@@ -77,6 +87,11 @@ inline void IterateCandidates(
        it != prefetches.end() && it->first.possibly_invalid_spec().starts_with(
                                      url_with_no_query.possibly_invalid_spec());
        ++it) {
+    // `it_exact_match` is already visited above and thus skipped.
+    if (it == it_exact_match) {
+      continue;
+    }
+
     if (!it->second) {
       continue;
     }
@@ -102,8 +117,10 @@ inline void IterateCandidates(
   }
 }
 
-// Get a PrefetchContainer from `prefetches` that can serve `url` according to
-// No-Vary-Search information.
+// Get a PrefetchContainer from `prefetches` that can serve `url`, either:
+// - Via exact match, or
+// - Via No-Vary-Search information if exact match is not found, the feature is
+// enabled and `SetNoVarySearchData()` is called for such `PrefetchContainer`s.
 inline base::WeakPtr<PrefetchContainer> MatchUrl(
     const GURL& url,
     const std::map<GURL, base::WeakPtr<PrefetchContainer>>& prefetches) {

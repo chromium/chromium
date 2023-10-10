@@ -151,20 +151,8 @@ void PrefetchDocumentManager::DidStartNavigation(
   // navigations where the prefetch is used in a different tab.
   serving_page_metrics_container->SetSameTabAsPrefetchingTab(true);
 
-  base::WeakPtr<PrefetchContainer> prefetch_container = nullptr;
-
-  // Get the prefetch for the URL being navigated to. If there is no prefetch
-  // for that URL, then check if there is an equivalent prefetch using
-  // No-Vary-Search equivalence. If there is not then stop.
-  auto prefetch_iter = all_prefetches_.find(navigation_handle->GetURL());
-  if (prefetch_iter != all_prefetches_.end()) {
-    prefetch_container = prefetch_iter->second;
-  }
-
-  if (!prefetch_container &&
-      base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch)) {
-    prefetch_container = MatchUrl(navigation_handle->GetURL());
-  }
+  base::WeakPtr<PrefetchContainer> prefetch_container =
+      MatchUrl(navigation_handle->GetURL());
 
   if (!prefetch_container) {
     DVLOG(1) << "PrefetchDocumentManager::DidStartNavigation() for "

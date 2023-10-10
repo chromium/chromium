@@ -213,8 +213,9 @@ TEST_F(NoVarySearchHelperTest, AddUrlWithoutNoVarySearchTest) {
 
   auto urls_with_no_vary_search =
       helper->GetAllForUrlWithoutRefAndQueryForTesting(test_url);
-  ASSERT_TRUE(urls_with_no_vary_search.empty());
-  EXPECT_FALSE(helper->MatchUrl(test_url));
+  ASSERT_EQ(urls_with_no_vary_search.size(), 1u);
+  EXPECT_EQ(urls_with_no_vary_search.at(0).first, test_url);
+  EXPECT_TRUE(helper->MatchUrl(test_url));
 }
 
 TEST_F(NoVarySearchHelperTest, DoNotPrefixMatch) {

@@ -329,7 +329,8 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
     const auto urls_with_no_vary_search =
         prefetch_document_manager->GetAllForUrlWithoutRefAndQueryForTesting(
             test_url);
-    ASSERT_TRUE(urls_with_no_vary_search.empty());
+    ASSERT_EQ(urls_with_no_vary_search.size(), 1u);
+    ASSERT_EQ(urls_with_no_vary_search.at(0).first, test_url);
   }
 
   NavigateMainframeRendererTo(GetCrossOriginUrl("/candidate2.html?a=2&b=3"));
