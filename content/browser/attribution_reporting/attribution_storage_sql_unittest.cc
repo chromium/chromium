@@ -1686,7 +1686,7 @@ TEST_P(AttributionStorageSqlTest,
     // `randomized_response_rate` field will not be set in the serialized proto.
     statement.BindBlob(
         0, SerializeReadOnlySourceData(
-               *attribution_reporting::EventReportWindows::CreateWindows(
+               *attribution_reporting::EventReportWindows::Create(
                    base::Seconds(0), {base::Days(1)}),
                /*max_event_level_reports=*/3, /*randomized_response_rate=*/-1));
     ASSERT_TRUE(statement.Run());

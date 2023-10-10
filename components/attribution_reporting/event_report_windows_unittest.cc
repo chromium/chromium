@@ -192,8 +192,8 @@ TEST(EventReportWindowsTest, CreateWindows) {
   };
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.name);
-    auto actual = EventReportWindows::CreateWindows(test_case.start_time,
-                                                    test_case.end_times);
+    auto actual =
+        EventReportWindows::Create(test_case.start_time, test_case.end_times);
     EXPECT_THAT(actual, test_case.matches);
   }
 }
@@ -486,9 +486,8 @@ TEST(EventReportWindowsTest, Parse) {
 }
 
 TEST(EventReportWindowsTest, ComputeReportTime) {
-  const EventReportWindows kDefaultReportWindows =
-      *EventReportWindows::CreateWindows(
-          base::Hours(0), {base::Hours(2), base::Days(1), base::Days(7)});
+  const EventReportWindows kDefaultReportWindows = *EventReportWindows::Create(
+      base::Hours(0), {base::Hours(2), base::Days(1), base::Days(7)});
   const base::Time kSourceTime = base::Time();
 
   const struct {
@@ -528,9 +527,8 @@ TEST(EventReportWindowsTest, ComputeReportTime) {
 }
 
 TEST(EventReportWindowsTest, ReportTimeAtWindow) {
-  const EventReportWindows kDefaultReportWindows =
-      *EventReportWindows::CreateWindows(
-          base::Hours(0), {base::Hours(1), base::Days(3), base::Days(7)});
+  const EventReportWindows kDefaultReportWindows = *EventReportWindows::Create(
+      base::Hours(0), {base::Hours(1), base::Days(3), base::Days(7)});
   base::Time kSourceTime = base::Time();
 
   const struct {
@@ -560,9 +558,9 @@ TEST(EventReportWindowsTest, ReportTimeAtWindow) {
 
 TEST(EventReportWindowsTest, FallsWithin) {
   const EventReportWindows kDefaultReportWindows =
-      *EventReportWindows::CreateWindows(base::Hours(1), {base::Hours(2)});
+      *EventReportWindows::Create(base::Hours(1), {base::Hours(2)});
   const EventReportWindows kDefaultReportWindowsNoStartTime =
-      *EventReportWindows::CreateWindows(base::Hours(0), {base::Hours(2)});
+      *EventReportWindows::Create(base::Hours(0), {base::Hours(2)});
 
   const struct {
     EventReportWindows report_windows;
@@ -615,16 +613,16 @@ TEST(EventReportWindowsTest, Serialize) {
     const char* expected;
   } kTestCases[] = {
       {
-          *EventReportWindows::CreateWindows(base::Seconds(0),
-                                             {base::Days(1), base::Days(5)}),
+          *EventReportWindows::Create(base::Seconds(0),
+                                      {base::Days(1), base::Days(5)}),
           R"json({"event_report_windows": {
             "start_time":0,
             "end_times":[86400,432000]
           }})json",
       },
       {
-          *EventReportWindows::CreateWindows(base::Hours(1),
-                                             {base::Days(1), base::Days(5)}),
+          *EventReportWindows::Create(base::Hours(1),
+                                      {base::Days(1), base::Days(5)}),
           R"json({"event_report_windows": {
             "start_time":3600,
             "end_times":[86400,432000]

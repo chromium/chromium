@@ -566,7 +566,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
   }
 
   absl::optional<EventReportWindows> event_report_windows =
-      EventReportWindows::CreateWindows(
+      EventReportWindows::Create(
           base::Microseconds(read_only_source_data_msg
                                  ->event_level_report_window_start_time()),
           std::move(end_times));

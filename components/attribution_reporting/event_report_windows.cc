@@ -75,7 +75,7 @@ absl::optional<EventReportWindows> EventReportWindows::FromDefaults(
 }
 
 // static
-absl::optional<EventReportWindows> EventReportWindows::CreateWindows(
+absl::optional<EventReportWindows> EventReportWindows::Create(
     base::TimeDelta start_time,
     std::vector<base::TimeDelta> end_times) {
   if (!IsStrictlyIncreasing(end_times)) {

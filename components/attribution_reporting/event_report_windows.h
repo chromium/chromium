@@ -29,8 +29,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
     kMaxValue = kNotStarted,
   };
 
-  // TODO: Rename to `Create`.
-  static absl::optional<EventReportWindows> CreateWindows(
+  static absl::optional<EventReportWindows> Create(
       base::TimeDelta start_time,
       std::vector<base::TimeDelta> end_times);
 

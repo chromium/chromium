@@ -224,22 +224,21 @@ TEST_F(AttributionStorageTest, UniqueReportWindowsStored_ValuesIdentical) {
       SourceBuilder()
           .SetExpiry(base::Days(30))
           .SetEventReportWindows(
-              *attribution_reporting::EventReportWindows::CreateWindows(
+              *attribution_reporting::EventReportWindows::Create(
                   /*start_time=*/base::Days(3),
                   /*end_times=*/{base::Days(15)}))
           .SetAggregatableReportWindow(base::Days(5))
           .Build());
-  EXPECT_THAT(
-      storage()->GetActiveSources(),
-      ElementsAre(CommonSourceInfoIs(
-          SourceBuilder()
-              .SetExpiry(base::Days(30))
-              .SetEventReportWindows(
-                  *attribution_reporting::EventReportWindows::CreateWindows(
-                      /*start_time=*/base::Days(3),
-                      /*end_times=*/{base::Days(15)}))
-              .SetAggregatableReportWindow(base::Days(5))
-              .BuildCommonInfo())));
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(CommonSourceInfoIs(
+                  SourceBuilder()
+                      .SetExpiry(base::Days(30))
+                      .SetEventReportWindows(
+                          *attribution_reporting::EventReportWindows::Create(
+                              /*start_time=*/base::Days(3),
+                              /*end_times=*/{base::Days(15)}))
+                      .SetAggregatableReportWindow(base::Days(5))
+                      .BuildCommonInfo())));
 }
 
 TEST_F(AttributionStorageTest,
@@ -392,7 +391,7 @@ TEST_F(AttributionStorageTest,
   storage()->StoreSource(
       SourceBuilder()
           .SetEventReportWindows(
-              *attribution_reporting::EventReportWindows::CreateWindows(
+              *attribution_reporting::EventReportWindows::Create(
                   base::Milliseconds(1), {base::Days(30)}))
           .Build());
 
@@ -405,7 +404,7 @@ TEST_F(AttributionStorageTest,
   storage()->StoreSource(
       SourceBuilder()
           .SetEventReportWindows(
-              *attribution_reporting::EventReportWindows::CreateWindows(
+              *attribution_reporting::EventReportWindows::Create(
                   base::Milliseconds(0), {base::Hours(1)}))
           .Build());
 

@@ -120,12 +120,11 @@ TEST(AttributionStorageDelegateImplTest, GetEventLevelReportTime) {
   constexpr base::Time kTriggerTime = kSourceTime + base::Seconds(1);
   constexpr base::TimeDelta kEnd = base::Days(3);
 
-  EXPECT_EQ(
-      kSourceTime + kEnd,
-      AttributionStorageDelegateImpl().GetEventLevelReportTime(
-          *EventReportWindows::CreateWindows(/*start_time=*/base::Seconds(0),
-                                             /*end_times=*/{kEnd}),
-          kSourceTime, kTriggerTime));
+  EXPECT_EQ(kSourceTime + kEnd,
+            AttributionStorageDelegateImpl().GetEventLevelReportTime(
+                *EventReportWindows::Create(/*start_time=*/base::Seconds(0),
+                                            /*end_times=*/{kEnd}),
+                kSourceTime, kTriggerTime));
 }
 
 TEST(AttributionStorageDelegateImplTest, GetAggregatableReportTime) {

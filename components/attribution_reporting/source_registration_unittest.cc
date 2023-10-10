@@ -196,8 +196,8 @@ TEST(SourceRegistrationTest, Parse) {
             "destination":"https://d.example"
           })json",
           ValueIs(Field(&SourceRegistration::event_report_windows,
-                        *EventReportWindows::CreateWindows(
-                            base::Seconds(0), {base::Seconds(86401)}))),
+                        *EventReportWindows::Create(base::Seconds(0),
+                                                    {base::Seconds(86401)}))),
 
       },
       {
