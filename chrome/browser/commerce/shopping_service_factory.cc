@@ -16,6 +16,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/commerce/content/browser/commerce_tab_helper.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/country_code_checker.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
 #include "components/commerce/core/shopping_service.h"

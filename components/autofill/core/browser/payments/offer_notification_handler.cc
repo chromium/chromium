@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/search/ntp_features.h"
 #include "url/gurl.h"

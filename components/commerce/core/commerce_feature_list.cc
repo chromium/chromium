@@ -18,8 +18,6 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 #include "components/commerce/core/commerce_heuristics_data_metrics_helper.h"
 #include "components/commerce/core/pref_names.h"
-#include "components/country_codes/country_codes.h"
-#include "components/variations/service/variations_service.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace commerce {
@@ -196,6 +194,9 @@ BASE_FEATURE(kPriceTrackingIconColors,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Discount on navigation
+BASE_FEATURE(kShowDiscountOnNavigation,
+             "ShowDiscountOnNavigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kShowDiscountOnNavigationRegionLaunched,
              "ShowDiscountOnNavigationRegionLaunched",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -449,21 +450,6 @@ bool IsShoppingListAllowedForEnterprise(PrefService* prefs) {
 
   // Default to true if there is no value set.
   return !pref || pref->GetBool();
-}
-
-std::string GetCurrentCountryCode(variations::VariationsService* variations) {
-  std::string country;
-
-  if (variations)
-    country = variations->GetStoredPermanentCountry();
-
-  // Since variations doesn't provide a permanent country by default on things
-  // like local builds, we try to fall back to the country_codes component which
-  // should always have one.
-  if (country.empty())
-    country = country_codes::GetCurrentCountryCode();
-
-  return country;
 }
 
 bool IsEnabledForCountryAndLocale(const base::Feature& feature,

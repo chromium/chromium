@@ -22,7 +22,6 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/bookmark_update_manager.h"
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/discounts_storage.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/metrics/scheduled_metrics_manager.h"

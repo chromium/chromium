@@ -13,6 +13,7 @@ static_library("push_notification") {
   deps = [
     "//base",
     "//components/bookmarks/browser:browser",
+    "//components/commerce/core:country_code_checker",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:proto",
     "//components/commerce/core:shopping_service",

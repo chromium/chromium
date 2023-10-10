@@ -13,7 +13,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/autofill/core/common/autofill_clock.h"
-#include "components/commerce/core/commerce_utils.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

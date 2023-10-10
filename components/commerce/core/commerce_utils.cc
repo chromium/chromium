@@ -10,11 +10,6 @@
 #include "url/gurl.h"
 
 namespace commerce {
-// Discount on navigation
-BASE_FEATURE(kShowDiscountOnNavigation,
-             "ShowDiscountOnNavigation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool UrlContainsDiscountUtmTag(const GURL& url) {
   std::string utm_source;
   std::string utm_medium;

@@ -10,12 +10,6 @@
 class GURL;
 
 namespace commerce {
-
-// Feature flag for Discounts on navigation. This is supposed to be included in
-// the commerce_feature_list file, but because of crbug.com/1155712 we have to
-// move this feature flag here instead.
-BASE_DECLARE_FEATURE(kShowDiscountOnNavigation);
-
 // Returns whether the `url` contains the discount utm tags.
 bool UrlContainsDiscountUtmTag(const GURL& url);
 

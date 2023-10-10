@@ -11,7 +11,6 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_discounts_storage.h"
 #include "components/commerce/core/pref_names.h"

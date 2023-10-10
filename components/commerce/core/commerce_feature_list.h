@@ -17,10 +17,6 @@
 
 class PrefService;
 
-namespace variations {
-class VariationsService;
-}  // namespace variations
-
 namespace commerce {
 
 namespace switches {
@@ -111,6 +107,7 @@ BASE_DECLARE_FEATURE(kShoppingPDPMetrics);
 BASE_DECLARE_FEATURE(kShoppingPDPMetricsRegionLaunched);
 
 // Feature flag for Discounts on navigation.
+BASE_DECLARE_FEATURE(kShowDiscountOnNavigation);
 BASE_DECLARE_FEATURE(kShowDiscountOnNavigationRegionLaunched);
 
 BASE_DECLARE_FEATURE(kRetailCoupons);
@@ -402,10 +399,6 @@ bool IsFakeDataEnabled();
 bool isContextualConsentEnabled();
 // Check if the shopping list feature is allowed for enterprise.
 bool IsShoppingListAllowedForEnterprise(PrefService* prefs);
-
-// Get the user's current country code. If access through variations fails,
-// the country_codes component is used.
-std::string GetCurrentCountryCode(variations::VariationsService* variations);
 
 // Check if commerce features are allowed to run for the specified country
 // and locale.

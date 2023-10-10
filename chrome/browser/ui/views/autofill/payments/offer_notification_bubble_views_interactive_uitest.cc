@@ -27,7 +27,7 @@
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/commerce/core/commerce_utils.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
