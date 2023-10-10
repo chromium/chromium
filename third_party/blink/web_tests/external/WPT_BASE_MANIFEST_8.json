@@ -3446,6 +3446,13 @@
        {}
       ]
      ],
+     "first-line-input-image-crash.html": [
+      "66bd0330f0808bd129417733772fedcf643140d7",
+      [
+       null,
+       {}
+      ]
+     ],
      "highlight-painting-005-crash.html": [
       "3f93fc3cbe4c7459cad625b0d363c5cdc6d130c5",
       [
@@ -138273,7 +138280,7 @@
          ]
         ],
         "masonry-grid-item-self-baseline-002a.html": [
-         "f89217c68e04fc2e20b680bec4705f8c8a961fba",
+         "6708e58332808b1bba0f20db46cfa062270956b8",
          [
           null,
           [
@@ -138286,7 +138293,7 @@
          ]
         ],
         "masonry-grid-item-self-baseline-002b.html": [
-         "eae435707d2298c7ca9d5baa507c020f5288c9ab",
+         "34911b7c9fa632da919b769e015148e2b8c4c488",
          [
           null,
           [
@@ -138333,45 +138340,6 @@
           [
            [
             "/css/css-grid/masonry/tentative/fragmentation/masonry-fragmentation-003-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "masonry-fragmentation-004.html": [
-         "ddfc1bb331f788833e5a4e7c003fc0d4b130a984",
-         [
-          null,
-          [
-           [
-            "/css/css-grid/masonry/tentative/fragmentation/masonry-fragmentation-004-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "masonry-fragmentation-005.html": [
-         "8315b8f2b557cc56459acffc682099cc5d10a447",
-         [
-          null,
-          [
-           [
-            "/css/css-grid/masonry/tentative/fragmentation/masonry-fragmentation-005-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "masonry-fragmentation-006.html": [
-         "9dab0ddc9b6b3c73a7c5727b56a8890a4c9a41e5",
-         [
-          null,
-          [
-           [
-            "/css/css-grid/masonry/tentative/fragmentation/masonry-fragmentation-006-ref.html",
             "=="
            ]
           ],
@@ -283925,11 +283893,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "36a926e4237f35a766b14c6b1b7668f33921bb9a",
+     "dc64de0663e11263ff89b6e444caf85517a3bb6e",
      []
     ],
     "mtime.json": [
-     "fc13852debccbe9d0d3e853f532b8116465bc676",
+     "39b26a72ff517f09b8210a3bdd9ad133f202f67f",
      []
     ]
    },
@@ -319771,14 +319739,6 @@
        []
       ]
      },
-     "grid-layout-properties-expected.txt": [
-      "3b841764fdce05ffd036c91e3a4cd4ce6dd4cdd5",
-      []
-     ],
-     "grid-layout-properties.html.ini": [
-      "5dded5230b73daed770ca451b4aea095e1943998",
-      []
-     ],
      "grid-model": {
       "grid-areas-overflowing-grid-container-009.html.ini": [
        "2e56f1ddf2bc36b521394d056890a5c9f0e1ab18",
@@ -319960,30 +319920,6 @@
         ],
         "masonry-fragmentation-003.html.ini": [
          "4254cef5011e5f96dc69bc5054804dfb7cbf1b84",
-         []
-        ],
-        "masonry-fragmentation-004-ref.html": [
-         "10246dac42101bf200e15af99e8b172cf41bfc61",
-         []
-        ],
-        "masonry-fragmentation-004.html.ini": [
-         "c929bcf6b77ba71ec7bd692569c0a99bb02021ff",
-         []
-        ],
-        "masonry-fragmentation-005-ref.html": [
-         "e059f414dc7f40844f01cb892c86ba5de9d51d82",
-         []
-        ],
-        "masonry-fragmentation-005.html.ini": [
-         "c4d1a3255ee1108c8829ede85a1c3bc2570da0c8",
-         []
-        ],
-        "masonry-fragmentation-006-ref.html": [
-         "5df37376190870fc162e3205bb32045a37b5f467",
-         []
-        ],
-        "masonry-fragmentation-006.html.ini": [
-         "fbc642ed6a8096b42234030dbbea18fe6d366525",
          []
         ]
        },
@@ -330259,16 +330195,8 @@
       "b2b2d7f2841c6fdf0593c57cb556f6bd58666667",
       []
      ],
-     "scrollbar-width-paint-004.html.ini": [
-      "9d88f2e6483b9a59dfa4c448da11e32a4080c3f5",
-      []
-     ],
      "scrollbar-width-paint-005-ref.html": [
       "e5c325b85423dda8d07b4a07ae0cd6f8199c9023",
-      []
-     ],
-     "scrollbar-width-paint-005.html.ini": [
-      "ff2930018bd6e0664b1bf99b62a86a9363560f1a",
       []
      ],
      "scrollbar-width-paint-006-ref.html": [
@@ -354013,7 +353941,7 @@
     "observable": {
      "tentative": {
       "observable-constructor.any-expected.txt": [
-       "ec5785a4c37af834e9bc7741875bc9f079f8ad5b",
+       "5b7474249a83b549349611538e7d78d3ce5289e9",
        []
       ],
       "observable-constructor.any.js.ini": [
@@ -354021,7 +353949,7 @@
        []
       ],
       "observable-constructor.any.worker-expected.txt": [
-       "3397bf7b95982de0620c41d7c9858c02f01fec8a",
+       "5b7474249a83b549349611538e7d78d3ce5289e9",
        []
       ]
      }
@@ -422680,7 +422608,7 @@
       []
      ],
      "shared-worker-partitioned-cookies-3p-frame.html": [
-      "dc700d31f97a2b2c85040531dfe52924f0058d56",
+      "c1857977389a598711630f2d1a636b27b63cd8be",
       []
      ],
      "shared-worker-partitioned-cookies-3p-window.html": [
@@ -462824,7 +462752,7 @@
       ]
      ],
      "all-prop-revert-layer.html": [
-      "420a3a61cacdcf3743e612302dfa82fdbb775145",
+      "cd76a647baa72ac8d080855c3bb3477026a95474",
       [
        null,
        {}
@@ -471692,7 +471620,7 @@
       ]
      },
      "grid-layout-properties.html": [
-      "4ffa89bce528e9a7b4988b41c41c7703b785712c",
+      "8452334b6a1a4d85e0419b66657223c9d15ca927",
       [
        null,
        {}
@@ -500368,7 +500296,7 @@
     "observable": {
      "tentative": {
       "observable-constructor.any.js": [
-       "37c242661d6041db1df39802768d440e53b515c8",
+       "6ee1221cfae61ea9f87e4ae1ef1b2e5b1607c2ab",
        [
         "dom/observable/tentative/observable-constructor.any.html",
         {}
@@ -686782,9 +686710,9 @@
         ]
        ],
        "close-connecting-async.any.js": [
-        "c7ace1fca2734085705e191cd2a5e089f2306664",
+        "88005520b000b173954f4ba3042639c41206f688",
         [
-         "websockets/interfaces/WebSocket/close/close-connecting-async.any.html",
+         "websockets/interfaces/WebSocket/close/close-connecting-async.any.html?default",
          {
           "script_metadata": [
            [
@@ -686793,7 +686721,7 @@
            ],
            [
             "variant",
-            ""
+            "?default"
            ],
            [
             "variant",
@@ -686816,7 +686744,7 @@
            ],
            [
             "variant",
-            ""
+            "?default"
            ],
            [
             "variant",
@@ -686839,7 +686767,7 @@
            ],
            [
             "variant",
-            ""
+            "?default"
            ],
            [
             "variant",
@@ -686853,7 +686781,7 @@
          }
         ],
         [
-         "websockets/interfaces/WebSocket/close/close-connecting-async.any.worker.html",
+         "websockets/interfaces/WebSocket/close/close-connecting-async.any.worker.html?default",
          {
           "script_metadata": [
            [
@@ -686862,7 +686790,7 @@
            ],
            [
             "variant",
-            ""
+            "?default"
            ],
            [
             "variant",
@@ -686885,7 +686813,7 @@
            ],
            [
             "variant",
-            ""
+            "?default"
            ],
            [
             "variant",
@@ -686908,7 +686836,7 @@
            ],
            [
             "variant",
-            ""
+            "?default"
            ],
            [
             "variant",
