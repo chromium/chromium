@@ -452,7 +452,9 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
                   ? button->OwnerSelectList()
                   : nullptr;
           if (selectlist) {
-            selectlist->OpenListbox();
+            if (!selectlist->IsDisabledFormControl()) {
+              selectlist->OpenListbox();
+            }
           } else {
             popover.popover->InvokePopover(this);
           }

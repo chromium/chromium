@@ -143,8 +143,11 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
     }
   }
 
-  if (HandleKeyboardActivation(event))
+  // type=selectlist should not open the listbox when enter is pressed, which
+  // HandleKeyboardActivation would do via simulated click.
+  if (type_ != kSelectlist && HandleKeyboardActivation(event)) {
     return;
+  }
 
   HTMLFormControlElement::DefaultEventHandler(event);
 }

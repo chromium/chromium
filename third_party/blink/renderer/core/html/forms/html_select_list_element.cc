@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_listbox_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
@@ -580,6 +581,9 @@ void HTMLSelectListElement::OpenListbox() {
 
 void HTMLSelectListElement::CloseListbox() {
   if (listbox_part_ && open()) {
+    // TODO(http://crbug.com/1121840): listbox_part_ should always have a
+    // popover attribute. This should probably be a CHECK, and may have been a
+    // remnant of the behavior attribute.
     if (listbox_part_->HasPopoverAttribute()) {
       // We will handle focus directly.
       listbox_part_->HidePopoverInternal(
@@ -587,6 +591,7 @@ void HTMLSelectListElement::CloseListbox() {
           HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
           /*exception_state=*/nullptr);
     }
+    type_ahead_.ResetSession();
   }
 }
 
@@ -1130,13 +1135,17 @@ void HTMLSelectListElement::OptionElementValueChanged(
 }
 
 void HTMLSelectListElement::SelectNextOption() {
-  for (Node* node = SelectListPartTraversal::Next(*selectedOption(), this);
-       node; node = SelectListPartTraversal::Next(*node, this)) {
+  auto* starting_option = selectedOption();
+  auto* focused_element = GetDocument().FocusedElement();
+  if (IsValidOptionPart(focused_element, /*show_warning=*/false)) {
+    starting_option = To<HTMLOptionElement>(focused_element);
+  }
+  for (Node* node = SelectListPartTraversal::Next(*starting_option, this); node;
+       node = SelectListPartTraversal::Next(*node, this)) {
     if (IsValidOptionPart(node, /*show_warning=*/false)) {
       auto* element = DynamicTo<HTMLOptionElement>(node);
       if (element->IsDisabledFormControl())
         continue;
-      SetSelectedOption(element);
       element->Focus(FocusParams(FocusTrigger::kUserGesture));
       DispatchInputAndChangeEventsIfNeeded();
       return;
@@ -1145,13 +1154,17 @@ void HTMLSelectListElement::SelectNextOption() {
 }
 
 void HTMLSelectListElement::SelectPreviousOption() {
-  for (Node* node = SelectListPartTraversal::Previous(*selectedOption(), this);
+  auto* starting_option = selectedOption();
+  auto* focused_element = GetDocument().FocusedElement();
+  if (IsValidOptionPart(focused_element, /*show_warning=*/false)) {
+    starting_option = To<HTMLOptionElement>(focused_element);
+  }
+  for (Node* node = SelectListPartTraversal::Previous(*starting_option, this);
        node; node = SelectListPartTraversal::Previous(*node, this)) {
     if (IsValidOptionPart(node, /*show_warning=*/false)) {
       auto* element = DynamicTo<HTMLOptionElement>(node);
       if (element->IsDisabledFormControl())
         continue;
-      SetSelectedOption(element);
       element->Focus(FocusParams(FocusTrigger::kUserGesture));
       DispatchInputAndChangeEventsIfNeeded();
       return;
@@ -1303,8 +1316,16 @@ bool HTMLSelectListElement::HandleButtonKeyboardEvent(KeyboardEvent& event) {
   }
   if (event.keyCode() == VKEY_RETURN &&
       event.type() == event_type_names::kKeydown) {
-    // Handle <RETURN> because not all HTML elements synthesize a click when
-    // <RETURN> is pressed.
+    // Attempt to submit the form if there is one, otherwise do nothing.
+    if (Form()) {
+      Form()->PrepareForSubmission(&event, this);
+      return true;
+    }
+    return false;
+  }
+  if (event.type() == event_type_names::kKeydown &&
+      (event.keyCode() == VKEY_UP || event.keyCode() == VKEY_DOWN ||
+       event.keyCode() == VKEY_RIGHT || event.keyCode() == VKEY_LEFT)) {
     OpenListbox();
     return true;
   }
