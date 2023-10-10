@@ -41,8 +41,7 @@
 - (instancetype)initWithBrowser:(Browser*)browser
                     syncService:(syncer::SyncService*)syncService
                        delegate:(id<BookmarkPromoControllerDelegate>)delegate
-                      presenter:(id<SigninPresenter>)presenter
-             baseViewController:(UIViewController*)baseViewController {
+                      presenter:(id<SigninPresenter>)presenter {
   DCHECK(browser);
   self = [super init];
   if (self) {
@@ -62,8 +61,7 @@
                           syncService:syncService
                           accessPoint:signin_metrics::AccessPoint::
                                           ACCESS_POINT_BOOKMARK_MANAGER
-                            presenter:presenter
-                   baseViewController:baseViewController];
+                            presenter:presenter];
     _signinPromoViewMediator.consumer = self;
     if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
       _signinPromoViewMediator.dataTypeToWaitForInitialSync =

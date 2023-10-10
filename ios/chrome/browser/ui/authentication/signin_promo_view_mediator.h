@@ -126,7 +126,6 @@ enum class SigninPromoAction {
                       syncService:(syncer::SyncService*)syncService
                       accessPoint:(signin_metrics::AccessPoint)accessPoint
                         presenter:(id<SigninPresenter>)presenter
-               baseViewController:(UIViewController*)baseViewController
     NS_DESIGNATED_INITIALIZER;
 
 - (SigninPromoViewConfigurator*)createConfigurator;

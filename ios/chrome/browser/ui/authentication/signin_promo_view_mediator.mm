@@ -539,8 +539,6 @@ id<SystemIdentity> GetDisplayedIdentity(
 @implementation SigninPromoViewMediator {
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
-  // View used to present sign-in UI.
-  UIViewController* _baseViewController;
   // Sync service.
   syncer::SyncService* _syncService;
   // Observer for changes to the sync state.
@@ -631,8 +629,7 @@ id<SystemIdentity> GetDisplayedIdentity(
                       prefService:(PrefService*)prefService
                       syncService:(syncer::SyncService*)syncService
                       accessPoint:(signin_metrics::AccessPoint)accessPoint
-                        presenter:(id<SigninPresenter>)presenter
-               baseViewController:(UIViewController*)baseViewController {
+                        presenter:(id<SigninPresenter>)presenter {
   self = [super init];
   if (self) {
     DCHECK(accountManagerService);
@@ -644,7 +641,6 @@ id<SystemIdentity> GetDisplayedIdentity(
     _accessPoint = accessPoint;
     _dataTypeToWaitForInitialSync = syncer::ModelType::UNSPECIFIED;
     _presenter = presenter;
-    _baseViewController = baseViewController;
     _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);

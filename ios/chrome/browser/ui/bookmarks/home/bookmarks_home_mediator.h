@@ -87,14 +87,11 @@ class BookmarkModel;
     bookmarks::BookmarkModel* displayedBookmarkModel;
 
 // Designated initializer.
-// `baseViewController` view controller used to present sign-in UI.
 // `localOrSyncableBookmarkModel` must not be `nullptr`. It should also be
 // loaded.
-// TODO(crbug.com/1402758): `browser` and `baseViewController` need to be
-// removed from `BookmarksHomeMediator`. A mediator should not be aware of
-// those classes.
+// TODO(crbug.com/1402758): `browser`  need to be removed from
+// `BookmarksHomeMediator`. A mediator should not be aware of this class.
 - (instancetype)initWithBrowser:(Browser*)browser
-              baseViewController:(UIViewController*)baseViewController
     localOrSyncableBookmarkModel:
         (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel
             accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel

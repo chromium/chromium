@@ -84,8 +84,7 @@
                           syncService:syncService
                           accessPoint:signin_metrics::AccessPoint::
                                           ACCESS_POINT_NTP_FEED_TOP_PROMO
-                            presenter:self
-                   baseViewController:self.feedTopSectionViewController];
+                            presenter:self];
 
     if (base::FeatureList::IsEnabled(
             syncer::kReplaceSyncPromosWithSignInPromos)) {

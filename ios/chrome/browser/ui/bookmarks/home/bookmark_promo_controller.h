@@ -53,7 +53,6 @@ class SyncService;
                     syncService:(syncer::SyncService*)syncService
                        delegate:(id<BookmarkPromoControllerDelegate>)delegate
                       presenter:(id<SigninPresenter>)presenter
-             baseViewController:(UIViewController*)baseViewController
     NS_DESIGNATED_INITIALIZER;
 
 // Called before the instance is deallocated.

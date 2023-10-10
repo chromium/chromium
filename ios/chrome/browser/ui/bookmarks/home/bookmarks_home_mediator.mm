@@ -82,7 +82,6 @@ bool IsABookmarkNodeSectionForIdentifier(
   // The browser for this mediator.
   base::WeakPtr<Browser> _browser;
   // Base view controller to present sign-in UI.
-  UIViewController* _baseViewController;
 }
 
 // The controller managing the display of the promo cell and the promo view
@@ -108,7 +107,6 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
-              baseViewController:(UIViewController*)baseViewController
     localOrSyncableBookmarkModel:
         (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel
             accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
@@ -124,7 +122,6 @@ bool IsABookmarkNodeSectionForIdentifier(
       _accountBookmarkModel = accountBookmarkModel->AsWeakPtr();
     }
     _displayedNode = displayedNode;
-    _baseViewController = baseViewController;
   }
   return self;
 }
@@ -148,8 +145,7 @@ bool IsABookmarkNodeSectionForIdentifier(
       [[BookmarkPromoController alloc] initWithBrowser:_browser.get()
                                            syncService:_syncService
                                               delegate:self
-                                             presenter:self
-                                    baseViewController:_baseViewController];
+                                             presenter:self];
 
   _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
   _prefChangeRegistrar->Init(browserState->GetPrefs());

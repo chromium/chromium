@@ -514,7 +514,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   // Create the mediator and hook up the table view.
   self.mediator = [[BookmarksHomeMediator alloc]
                    initWithBrowser:_browser.get()
-                baseViewController:self.navigationController
       localOrSyncableBookmarkModel:_localOrSyncableBookmarkModel.get()
               accountBookmarkModel:_accountBookmarkModel.get()
                      displayedNode:self.displayedFolderNode];

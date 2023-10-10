@@ -113,8 +113,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
                           prefService:chrome_browser_state_.get()->GetPrefs()
                           syncService:GetSyncService()
                           accessPoint:access_point
-                            presenter:signin_presenter_
-                   baseViewController:nil];
+                            presenter:signin_presenter_];
     mediator_.consumer = consumer_;
 
     signin_promo_view_ = OCMStrictClassMock([SigninPromoView class]);
