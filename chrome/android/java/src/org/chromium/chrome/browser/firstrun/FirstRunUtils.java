@@ -103,10 +103,9 @@ public class FirstRunUtils {
 
     @VisibleForTesting
     static boolean hasGoogleAccounts() {
-        return !AccountUtils
-                        .getAccountsIfFulfilledOrEmpty(
-                                AccountManagerFacadeProvider.getInstance().getAccounts())
-                        .isEmpty();
+        return !AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
+                        AccountManagerFacadeProvider.getInstance().getCoreAccountInfos())
+                .isEmpty();
     }
 
     @SuppressLint("InlinedApi")

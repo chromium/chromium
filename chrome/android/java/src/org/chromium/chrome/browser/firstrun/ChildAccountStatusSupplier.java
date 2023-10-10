@@ -44,10 +44,15 @@ public class ChildAccountStatusSupplier implements OneshotSupplier<Boolean> {
 
         appRestrictionInfo.getHasAppRestriction(this::onAppRestrictionDetected);
 
-        accountManagerFacade.getAccounts().then(accounts -> {
-            AccountUtils.checkChildAccountStatusLegacy(accountManagerFacade, accounts,
-                    (isChild, account) -> onChildAccountStatusReady(isChild));
-        });
+        accountManagerFacade
+                .getCoreAccountInfos()
+                .then(
+                        coreAccountInfos -> {
+                            AccountUtils.checkChildAccountStatus(
+                                    accountManagerFacade,
+                                    coreAccountInfos,
+                                    (isChild, account) -> onChildAccountStatusReady(isChild));
+                        });
     }
 
     @Override

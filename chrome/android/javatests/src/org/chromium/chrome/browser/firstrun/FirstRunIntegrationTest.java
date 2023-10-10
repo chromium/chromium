@@ -15,7 +15,6 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
@@ -89,6 +88,7 @@ import org.chromium.components.policy.AbstractAppRestrictionsProvider;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -132,7 +132,7 @@ public class FirstRunIntegrationTest {
     @Mock
     private AccountManagerFacade mAccountManagerFacade;
 
-    private Promise<List<Account>> mAccountsPromise;
+    private Promise<List<CoreAccountInfo>> mAccountsPromise;
 
     private final Set<Class> mSupportedActivities = CollectionUtil.newHashSet(
             ChromeLauncherActivity.class, FirstRunActivity.class, TabbedModeFirstRunActivity.class,
@@ -331,12 +331,12 @@ public class FirstRunIntegrationTest {
             //  seeding.
             Mockito.when(mAccountManagerFacade.getCoreAccountInfos()).thenReturn(new Promise<>());
         });
-        Mockito.when(mAccountManagerFacade.getAccounts()).thenReturn(mAccountsPromise);
+        Mockito.when(mAccountManagerFacade.getCoreAccountInfos()).thenReturn(mAccountsPromise);
         AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
     }
 
     private void unblockOnFlowIsKnown() {
-        Mockito.verify(mAccountManagerFacade, atLeastOnce()).getAccounts();
+        Mockito.verify(mAccountManagerFacade, atLeastOnce()).getCoreAccountInfos();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mAccountsPromise.fulfill(Collections.emptyList()));
     }
@@ -1261,8 +1261,7 @@ public class FirstRunIntegrationTest {
         }
 
         @Override
-        public boolean shouldShowSyncConsentPage(
-                Activity activity, List<Account> accounts, boolean isChild) {
+        public boolean shouldShowSyncConsentPage(boolean isChild) {
             return mTestCase.showSigninPromo();
         }
 

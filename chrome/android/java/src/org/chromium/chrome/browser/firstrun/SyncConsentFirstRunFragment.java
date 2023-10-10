@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.firstrun;
 
-import android.accounts.Account;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
@@ -42,15 +41,19 @@ public class SyncConsentFirstRunFragment
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        final List<Account> accounts = AccountUtils.getAccountsIfFulfilledOrEmpty(
-                AccountManagerFacadeProvider.getInstance().getAccounts());
+        final @Nullable CoreAccountInfo defaultAccount =
+                AccountUtils.getDefaultCoreAccountInfoIfFulfilled(
+                        AccountManagerFacadeProvider.getInstance().getCoreAccountInfos());
+        final @Nullable String accountEmail =
+                defaultAccount == null ? null : defaultAccount.getEmail();
         boolean isChild = getPageDelegate().getProperties().getBoolean(IS_CHILD_ACCOUNT, false);
-        String accountName = accounts.isEmpty() ? null : accounts.get(0).name;
         final Bundle arguments;
+        // TODO(crbug.com/1491387): Avoid sending `accountEmail` to create arguments. This class
+        // uses the primary account from IdentityManager.
         if (!isChild && ChromeFeatureList.isEnabled(ChromeFeatureList.TANGIBLE_SYNC)) {
-            arguments = createArgumentsForTangibleSync(SigninAccessPoint.START_PAGE, accountName);
+            arguments = createArgumentsForTangibleSync(SigninAccessPoint.START_PAGE, accountEmail);
         } else {
-            arguments = createArguments(SigninAccessPoint.START_PAGE, accountName, isChild);
+            arguments = createArguments(SigninAccessPoint.START_PAGE, accountEmail, isChild);
         }
         setArguments(arguments);
     }

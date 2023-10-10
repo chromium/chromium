@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.firstrun;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -36,8 +35,6 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
-import java.util.List;
-
 /**
  * A helper to determine what should be the sequence of First Run Experience screens, and whether
  * it should be run.
@@ -63,8 +60,7 @@ public abstract class FirstRunFlowSequencer  {
         }
 
         /** Returns true if the sync consent promo page should be shown. */
-        boolean shouldShowSyncConsentPage(
-                Activity activity, List<Account> accounts, boolean isChild) {
+        boolean shouldShowSyncConsentPage(boolean isChild) {
             if (isChild) {
                 // Always show the sync consent page for child account.
                 return true;
@@ -117,8 +113,8 @@ public abstract class FirstRunFlowSequencer  {
     private static DelegateFactoryForTesting sDelegateFactoryForTesting;
 
     private boolean mIsFlowKnown;
+    private boolean mAccountsAvailable;
     private Boolean mIsChild;
-    private List<Account> mGoogleAccounts;
 
     /**
      * Callback that is called once the flow is determined.
@@ -147,12 +143,18 @@ public abstract class FirstRunFlowSequencer  {
      *                                  method.
      */
     void start() {
-        AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
-            RecordHistogram.recordCount1MHistogram(
-                    "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE",
-                    Math.min(accounts.size(), 2));
-            setAccountList(accounts);
-        });
+        AccountManagerFacadeProvider.getInstance()
+                .getCoreAccountInfos()
+                .then(
+                        coreAccountInfos -> {
+                            RecordHistogram.recordCount1MHistogram(
+                                    "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE",
+                                    Math.min(coreAccountInfos.size(), 2));
+
+                            assert !mAccountsAvailable;
+                            mAccountsAvailable = true;
+                            maybeProcessFreEnvironmentPreNative();
+                        });
     }
 
     @VisibleForTesting
@@ -161,7 +163,7 @@ public abstract class FirstRunFlowSequencer  {
     }
 
     private boolean shouldShowSyncConsentPage() {
-        return mDelegate.shouldShowSyncConsentPage(mActivity, mGoogleAccounts, mIsChild);
+        return mDelegate.shouldShowSyncConsentPage(mIsChild);
     }
 
     private void setChildAccountStatus(boolean isChild) {
@@ -170,15 +172,9 @@ public abstract class FirstRunFlowSequencer  {
         maybeProcessFreEnvironmentPreNative();
     }
 
-    private void setAccountList(List<Account> accounts) {
-        assert mGoogleAccounts == null && accounts != null;
-        mGoogleAccounts = accounts;
-        maybeProcessFreEnvironmentPreNative();
-    }
-
     private void maybeProcessFreEnvironmentPreNative() {
         // Wait till both child account status and the list of accounts are available.
-        if (mIsChild == null || mGoogleAccounts == null) return;
+        if (mIsChild == null || !mAccountsAvailable) return;
 
         if (mIsFlowKnown) return;
         mIsFlowKnown = true;
