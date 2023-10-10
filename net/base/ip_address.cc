@@ -316,6 +316,11 @@ bool IPAddress::IsLinkLocal() const {
   return false;
 }
 
+bool IPAddress::IsUniqueLocalIPv6() const {
+  // [fc00::]/7
+  return IsIPv6() && ((ip_address_[0] & 0xFE) == 0xFC);
+}
+
 bool IPAddress::AssignFromIPLiteral(base::StringPiece ip_literal) {
   bool success = ParseIPLiteralToBytes(ip_literal, &ip_address_);
   if (!success)

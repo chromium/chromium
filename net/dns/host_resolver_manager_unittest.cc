@@ -53,6 +53,8 @@
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_change_notifier.h"
+#include "net/base/network_interfaces.h"
 #include "net/base/schemeful_site.h"
 #include "net/dns/dns_client.h"
 #include "net/dns/dns_config.h"
@@ -543,6 +545,12 @@ const DohProviderEntry& GetDohProviderEntryForTesting(
       base::ranges::find(provider_list, provider, &DohProviderEntry::provider);
   CHECK(it != provider_list.end());
   return **it;
+}
+
+NetworkInterface NetworkInterfaceFromIpLiteral(base::StringPiece ip_literal) {
+  NetworkInterface interface;
+  interface.address = *IPAddress::FromIPLiteral(ip_literal);
+  return interface;
 }
 
 }  // namespace
@@ -14300,6 +14308,171 @@ TEST_F(HostResolverManagerTest,
 TEST_F(HostResolverManagerTest,
        IPv4AddressLiteralInIPv6OnlyNetworkBadAddressSync) {
   IPv4AddressLiteralInIPv6OnlyNetworkBadAddressTest(false);
+}
+
+class HostResolverManagerIPv6ReachabilityOverrideTest
+    : public HostResolverManagerDnsTest,
+      public testing::WithParamInterface<features::IPv6ReachabilityOverride> {
+ public:
+  static constexpr const char kTargetHost[] = "host.test";
+
+  HostResolverManagerIPv6ReachabilityOverrideTest() {
+    std::map<std::string, std::string> field_trial_params;
+    switch (GetParam()) {
+      case features::IPv6ReachabilityOverride::kReachable:
+        field_trial_params["IPv6ReachabilityOverride"] = "reachable";
+        break;
+      case features::IPv6ReachabilityOverride::kUniqueLocalAddressReachable:
+        field_trial_params["IPv6ReachabilityOverride"] = "unique_local_address";
+        break;
+      case features::IPv6ReachabilityOverride::kPubliclyRoutable:
+        field_trial_params["IPv6ReachabilityOverride"] = "publicly_routable";
+        break;
+    }
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kEnableIPv6ReachabilityOverride,
+        std::move(field_trial_params));
+  }
+
+ protected:
+  void SetUp() override {
+    HostResolverManagerDnsTest::SetUp();
+
+    // Make the global reachiability probe failed.
+    CreateResolverWithLimitsAndParams(kMaxJobs, DefaultParams(proc_),
+                                      /*ipv6_reachable=*/false,
+                                      /*check_ipv6_on_wifi=*/true);
+    ChangeDnsConfig(CreateValidDnsConfig());
+
+    // At this point we have two tasks for the IPv6ReachabilityOverride check
+    // in the thread pool. One is created by HostResolverManagerDnsTest::Setup()
+    // and the other is created by ChangeDnsConfig(). Wait for these tasks to
+    // make sure that these tasks don't override the result after
+    // SetNetworkInterfaces() calls in test cases.
+    RunUntilIdle();
+
+    // This rule is used when only A record is queried.
+    proc_->AddRule(kTargetHost, ADDRESS_FAMILY_IPV4, "192.0.2.1",
+                   HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6);
+    // This rule is used when A and AAAA records are queried.
+    proc_->AddRule(kTargetHost, ADDRESS_FAMILY_UNSPECIFIED,
+                   "192.0.2.1,2001:db8::1");
+  }
+
+  void SetNetworkInterfaces(NetworkInterfaceList interfaces) {
+    HostResolverManager::SetNetworkListForTesting(std::move(interfaces));
+    NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
+    RunUntilIdle();
+  }
+
+  ResolveHostResponseHelper CreateRequest() {
+    proc_->SignalMultiple(1u);
+    return ResolveHostResponseHelper(resolver_->CreateRequest(
+        url::SchemeHostPort(url::kHttpScheme, kTargetHost, 80),
+        NetworkAnonymizationKey(), NetLogWithSource(), absl::nullopt,
+        resolve_context_.get(), resolve_context_->host_cache()));
+  }
+
+  void ExpectResponseHasIPv4AddressOnly(ResolveHostResponseHelper& response) {
+    EXPECT_THAT(response.result_error(), IsOk());
+    EXPECT_THAT(response.request()->GetAddressResults()->endpoints(),
+                testing::UnorderedElementsAre(CreateExpected("192.0.2.1", 80)));
+  }
+
+  void ExpectResponseHasIPv4AndIPv6Addresses(
+      ResolveHostResponseHelper& response) {
+    EXPECT_THAT(response.result_error(), IsOk());
+    EXPECT_THAT(
+        response.request()->GetAddressResults()->endpoints(),
+        testing::UnorderedElementsAre(CreateExpected("192.0.2.1", 80),
+                                      CreateExpected("2001:db8::1", 80)));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HostResolverManagerIPv6ReachabilityOverrideTest,
+    ::testing::Values(
+        features::IPv6ReachabilityOverride::kReachable,
+        features::IPv6ReachabilityOverride::kUniqueLocalAddressReachable,
+        features::IPv6ReachabilityOverride::kPubliclyRoutable));
+
+TEST_P(HostResolverManagerIPv6ReachabilityOverrideTest, Loopback) {
+  SetNetworkInterfaces({NetworkInterfaceFromIpLiteral("192.168.1.42"),
+                        NetworkInterfaceFromIpLiteral("::1")});
+
+  ResolveHostResponseHelper response = CreateRequest();
+
+  ExpectResponseHasIPv4AddressOnly(response);
+}
+
+TEST_P(HostResolverManagerIPv6ReachabilityOverrideTest, IPv4MappedIPv6) {
+  SetNetworkInterfaces({NetworkInterfaceFromIpLiteral("192.168.1.42"),
+                        NetworkInterfaceFromIpLiteral("::ffff:192.0.2.2")});
+
+  ResolveHostResponseHelper response = CreateRequest();
+
+  ExpectResponseHasIPv4AddressOnly(response);
+}
+
+TEST_P(HostResolverManagerIPv6ReachabilityOverrideTest, LinkLocal) {
+  SetNetworkInterfaces({NetworkInterfaceFromIpLiteral("192.168.1.42"),
+                        NetworkInterfaceFromIpLiteral("fe80::5")});
+
+  ResolveHostResponseHelper response = CreateRequest();
+
+  switch (GetParam()) {
+    case features::IPv6ReachabilityOverride::kReachable:
+      ExpectResponseHasIPv4AndIPv6Addresses(response);
+      break;
+    case features::IPv6ReachabilityOverride::kUniqueLocalAddressReachable:
+      ExpectResponseHasIPv4AddressOnly(response);
+      break;
+    case features::IPv6ReachabilityOverride::kPubliclyRoutable:
+      ExpectResponseHasIPv4AddressOnly(response);
+      break;
+  }
+}
+
+TEST_P(HostResolverManagerIPv6ReachabilityOverrideTest, UniqueLocal) {
+  SetNetworkInterfaces({NetworkInterfaceFromIpLiteral("192.168.1.42"),
+                        NetworkInterfaceFromIpLiteral("fc00::5")});
+
+  ResolveHostResponseHelper response = CreateRequest();
+
+  switch (GetParam()) {
+    case features::IPv6ReachabilityOverride::kReachable:
+      ExpectResponseHasIPv4AndIPv6Addresses(response);
+      break;
+    case features::IPv6ReachabilityOverride::kUniqueLocalAddressReachable:
+      ExpectResponseHasIPv4AndIPv6Addresses(response);
+      break;
+    case features::IPv6ReachabilityOverride::kPubliclyRoutable:
+      ExpectResponseHasIPv4AddressOnly(response);
+      break;
+  }
+}
+
+TEST_P(HostResolverManagerIPv6ReachabilityOverrideTest, PubliclyRoutable) {
+  SetNetworkInterfaces({NetworkInterfaceFromIpLiteral("192.168.1.42"),
+                        NetworkInterfaceFromIpLiteral("2000::5")});
+
+  ResolveHostResponseHelper response = CreateRequest();
+
+  switch (GetParam()) {
+    case features::IPv6ReachabilityOverride::kReachable:
+      ExpectResponseHasIPv4AndIPv6Addresses(response);
+      break;
+    case features::IPv6ReachabilityOverride::kUniqueLocalAddressReachable:
+      ExpectResponseHasIPv4AddressOnly(response);
+      break;
+    case features::IPv6ReachabilityOverride::kPubliclyRoutable:
+      ExpectResponseHasIPv4AndIPv6Addresses(response);
+      break;
+  }
 }
 
 }  // namespace net

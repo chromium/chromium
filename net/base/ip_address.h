@@ -185,6 +185,9 @@ class NET_EXPORT IPAddress {
   // ::ffff:169.254.0.0/112 (IPv4 mapped IPv6 link-local).
   bool IsLinkLocal() const;
 
+  // Returns true if `ip_address_` is a unique local IPv6 address (fc00::/7).
+  bool IsUniqueLocalIPv6() const;
+
   // The size in bytes of |ip_address_|.
   size_t size() const { return ip_address_.size(); }
 

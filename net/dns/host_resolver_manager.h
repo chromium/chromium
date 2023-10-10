@@ -267,6 +267,8 @@ class NET_EXPORT HostResolverManager
                       handles::NetworkHandle target_network,
                       NetLog* net_log);
 
+  static void SetNetworkListForTesting(NetworkInterfaceList interfaces);
+
  protected:
   // Callback from HaveOnlyLoopbackAddresses probe.
   void SetHaveOnlyLoopbackAddresses(bool result);
@@ -464,6 +466,9 @@ class NET_EXPORT HostResolverManager
   // Asynchronously checks if only loopback IPs are available.
   virtual void RunLoopbackProbeJob();
 
+  void MaybeCheckIPv6ReachabilityOverride();
+  void SetIPv6ReachabilityOverride(bool reachable);
+
   // Records the result in cache if cache is present.
   void CacheResult(HostCache* cache,
                    const HostCache::Key& key,
@@ -560,6 +565,9 @@ class NET_EXPORT HostResolverManager
   base::TimeTicks last_ipv6_probe_time_;
   bool last_ipv6_probe_result_ = true;
   bool probing_ipv6_ = false;
+
+  // When true, query AAAA even when the globally reachable check failed.
+  bool ipv6_reachability_override_ = false;
 
   // Any resolver flags that should be added to a request by default.
   HostResolverFlags additional_resolver_flags_ = 0;

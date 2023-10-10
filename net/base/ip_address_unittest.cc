@@ -681,6 +681,32 @@ TEST(IPAddressTest, IsLinkLocal) {
   }
 }
 
+TEST(IPAddressTest, IsUniqueLocalIPv6) {
+  const char* kPositive[] = {
+      "fc00::1",
+      "fc80::1",
+      "fd00::1",
+  };
+
+  for (const char* literal : kPositive) {
+    IPAddress ip_address;
+    ASSERT_TRUE(ip_address.AssignFromIPLiteral(literal));
+    EXPECT_TRUE(ip_address.IsUniqueLocalIPv6()) << literal;
+  }
+
+  const char* kNegative[] = {
+      "fe00::1",
+      "ff00::1",
+      "252.0.0.1",
+  };
+
+  for (const char* literal : kNegative) {
+    IPAddress ip_address;
+    ASSERT_TRUE(ip_address.AssignFromIPLiteral(literal));
+    EXPECT_FALSE(ip_address.IsUniqueLocalIPv6()) << literal;
+  }
+}
+
 // Tests extraction of the NAT64 translation prefix.
 TEST(IPAddressTest, ExtractPref64FromIpv4onlyArpaAAAA) {
   // Well Known Prefix 64:ff9b::/96.

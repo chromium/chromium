@@ -30,6 +30,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/identity.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -499,6 +500,51 @@ int GetPortForGloballyReachableCheck() {
     return 443;
   }
   return features::kAlternativePortForGloballyReachableCheck.Get();
+}
+
+bool IsIPv6AddressReachable(const IPAddress& address) {
+  if (!address.IsIPv6()) {
+    return false;
+  }
+  if (address.IsLoopback()) {
+    return false;
+  }
+  if (address.IsIPv4MappedIPv6()) {
+    return false;
+  }
+
+  switch (features::kIPv6ReachabilityOverrideParam.Get()) {
+    case features::IPv6ReachabilityOverride::kReachable:
+      return true;
+    case features::IPv6ReachabilityOverride::kUniqueLocalAddressReachable:
+      return address.IsUniqueLocalIPv6();
+    case features::IPv6ReachabilityOverride::kPubliclyRoutable:
+      return address.IsPubliclyRoutable();
+  }
+}
+
+bool NetworkInterfaceListHasReachableIPv6Address(
+    const NetworkInterfaceList& interfaces) {
+  for (const auto& interface : interfaces) {
+    if (IsIPv6AddressReachable(interface.address)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool SystemHasReachableIPv6Address() {
+  CHECK(
+      base::FeatureList::IsEnabled(features::kEnableIPv6ReachabilityOverride));
+
+  NetworkInterfaceList interfaces;
+  GetNetworkList(&interfaces, EXCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES);
+  return NetworkInterfaceListHasReachableIPv6Address(interfaces);
+}
+
+absl::optional<NetworkInterfaceList>& NetworkInterfaceListForTesting() {
+  static base::NoDestructor<absl::optional<NetworkInterfaceList>> interfaces;
+  return *interfaces;
 }
 
 }  // namespace
@@ -2979,6 +3025,7 @@ HostResolverManager::HostResolverManager(
   if (system_dns_config_notifier_)
     system_dns_config_notifier_->AddObserver(this);
   EnsureSystemHostResolverCallReady();
+  MaybeCheckIPv6ReachabilityOverride();
 
   auto connection_type =
       IsBoundToNetwork()
@@ -3182,6 +3229,12 @@ void HostResolverManager::SetMaxQueuedJobsForTesting(size_t value) {
   DCHECK_EQ(0u, dispatcher_->num_queued_jobs());
   DCHECK_GE(value, 0u);
   max_queued_jobs_ = value;
+}
+
+// static
+void HostResolverManager::SetNetworkListForTesting(
+    NetworkInterfaceList interfaces) {
+  NetworkInterfaceListForTesting() = std::move(interfaces);  // IN-TEST
 }
 
 void HostResolverManager::SetHaveOnlyLoopbackAddresses(bool result) {
@@ -3842,7 +3895,8 @@ void HostResolverManager::GetEffectiveParametersForRequest(
   // resolution based on a probe. Prior logic ensures that this is an automatic
   // query, so the code requesting the resolution should be amenable to
   // receiving an IPv6 resolution.
-  if (!use_local_ipv6 && !is_ip && !last_ipv6_probe_result_) {
+  if (!use_local_ipv6 && !is_ip && !last_ipv6_probe_result_ &&
+      !ipv6_reachability_override_) {
     *out_effective_flags |= HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6;
     effective_types.Remove(DnsQueryType::AAAA);
   }
@@ -4004,6 +4058,39 @@ void HostResolverManager::RunLoopbackProbeJob() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void HostResolverManager::MaybeCheckIPv6ReachabilityOverride() {
+  if (!base::FeatureList::IsEnabled(
+          features::kEnableIPv6ReachabilityOverride)) {
+    return;
+  }
+
+  // NetworkInterfaceListForTesting() can only be called from the main thread.
+  if (NetworkInterfaceListForTesting().has_value()) {
+    NetworkInterfaceList interfaces =
+        *NetworkInterfaceListForTesting();  // IN-TEST
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&NetworkInterfaceListHasReachableIPv6Address,
+                       interfaces),
+        base::BindOnce(&HostResolverManager::SetIPv6ReachabilityOverride,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&SystemHasReachableIPv6Address),
+      base::BindOnce(&HostResolverManager::SetIPv6ReachabilityOverride,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void HostResolverManager::SetIPv6ReachabilityOverride(bool reachable) {
+  CHECK(
+      base::FeatureList::IsEnabled(features::kEnableIPv6ReachabilityOverride));
+  ipv6_reachability_override_ = reachable;
+}
+
 void HostResolverManager::RemoveAllJobs(const ResolveContext* context) {
   for (auto it = jobs_.begin(); it != jobs_.end();) {
     const JobKey& key = it->first;
@@ -4099,6 +4186,7 @@ void HostResolverManager::OnIPAddressChanged() {
     BUILDFLAG(IS_FUCHSIA)
   RunLoopbackProbeJob();
 #endif
+  MaybeCheckIPv6ReachabilityOverride();
   AbortJobsWithoutTargetNetwork(true /* in_progress_only */);
   // `this` may be deleted inside AbortJobsWithoutTargetNetwork().
 }
