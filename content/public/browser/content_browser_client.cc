@@ -1249,8 +1249,18 @@ bool ContentBrowserClient::ShouldSandboxNetworkService() {
 }
 
 bool ContentBrowserClient::ShouldRunOutOfProcessSystemDnsResolution() {
-  return base::FeatureList::IsEnabled(
-      network::features::kOutOfProcessSystemDnsResolution);
+// This is only useful on Linux desktop and Android where system DNS
+// resolution cannot always run in a sandboxed network process. The Mac and
+// Windows sandboxing systems allow us to specify system DNS resolution as an
+// allowed action, and ChromeOS uses a simple, known system DNS configuration
+// that can be adequately sandboxed.
+// Currently Android's network service will not run out of process or sandboxed,
+// so OutOfProcessSystemDnsResolution is not currently enabled on Android.
+#if BUILDFLAG(IS_LINUX)
+  return true;
+#else
+  return false;
+#endif
 }
 
 std::string ContentBrowserClient::GetProduct() {

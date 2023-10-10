@@ -366,24 +366,6 @@ BASE_FEATURE(kPrivateNetworkAccessPermissionPrompt,
              "PrivateNetworkAccessPermissionPrompt",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables out-of-process system DNS resolution so getaddrinfo() never runs in
-// the network service sandbox. System DNS resolution will instead be brokered
-// out over Mojo, likely to run in the browser process.
-//
-// This is only necessary on Linux desktop and Android where system DNS
-// resolution cannot always run in a sandboxed network process. The Mac and
-// Windows sandboxing systems allow us to specify system DNS resolution as an
-// allowed action, and ChromeOS uses a simple, known system DNS configuration
-// that can be adequately sandboxed.
-BASE_FEATURE(kOutOfProcessSystemDnsResolution,
-             "OutOfProcessSystemDnsResolution",
-#if BUILDFLAG(IS_LINUX)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 BASE_FEATURE(kAccessControlAllowMethodsInCORSPreflightSpecConformant,
              "AccessControlAllowMethodsInCORSPreflightSpecConformant",
              base::FEATURE_ENABLED_BY_DEFAULT);

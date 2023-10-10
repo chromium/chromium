@@ -7125,6 +7125,8 @@ bool ChromeContentBrowserClient::ShouldSandboxNetworkService() {
 }
 
 bool ChromeContentBrowserClient::ShouldRunOutOfProcessSystemDnsResolution() {
+// This enterprise policy is supported on Android, but the feature will not be
+// launched there.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
   // This is possibly called before `g_browser_process` is initialized.
   PrefService* local_state;
@@ -7138,11 +7140,9 @@ bool ChromeContentBrowserClient::ShouldRunOutOfProcessSystemDnsResolution() {
     return local_state->GetBoolean(
         prefs::kOutOfProcessSystemDnsResolutionEnabled);
   }
-#endif
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 
-  // If no policy is specified, then delegate to global configuration.
-  return base::FeatureList::IsEnabled(
-      network::features::kOutOfProcessSystemDnsResolution);
+  return ContentBrowserClient::ShouldRunOutOfProcessSystemDnsResolution();
 }
 
 void ChromeContentBrowserClient::LogWebFeatureForCurrentPage(
