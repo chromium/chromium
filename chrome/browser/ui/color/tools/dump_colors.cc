@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_mixers.h"
+#include "components/color/color_mixers.h"
 #include "ui/color/color_mixers.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_utils.h"
@@ -52,6 +53,7 @@ int main(int argc, const char* argv[]) {
     key.color_mode = color_mode;
     key.contrast_mode = contrast_mode;
     ui::AddColorMixers(provider, key);
+    color::AddComponentsColorMixers(provider, key);
     AddChromeColorMixers(provider, key);
     provider->GenerateColorMap();
   };

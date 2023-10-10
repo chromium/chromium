@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/eye_dropper/eye_dropper_view.h"
+#include "components/eye_dropper/eye_dropper_view.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/eye_dropper/eye_dropper.h"
+#include "components/color/color_id.h"
+#include "components/eye_dropper/features.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -28,10 +27,11 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/display/screen.h"
 #endif
+
+namespace eye_dropper {
 
 class EyeDropperView::ViewPositionHandler {
  public:
@@ -127,8 +127,9 @@ void EyeDropperView::ScreenCapturer::CaptureScreen(
 void EyeDropperView::ScreenCapturer::OnCaptureResult(
     webrtc::DesktopCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) {
-  if (result != webrtc::DesktopCapturer::Result::SUCCESS)
+  if (result != webrtc::DesktopCapturer::Result::SUCCESS) {
     return;
+  }
 
   frame_.allocN32Pixels(frame->size().width(), frame->size().height(), true);
   memcpy(frame_.getAddr32(0, 0), frame->data(),
@@ -183,6 +184,7 @@ int EyeDropperView::ScreenCapturer::original_offset_y() const {
 }
 
 EyeDropperView::EyeDropperView(gfx::NativeView parent,
+                               gfx::NativeView event_handler,
                                content::EyeDropperListener* listener)
     : listener_(listener),
       view_position_handler_(std::make_unique<ViewPositionHandler>(this)),
@@ -209,13 +211,7 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
   params.force_software_compositing = true;
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
   params.name = "MagnifierHost";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Parent on a top-level container to allow moving between displays.
-  params.parent =
-      parent->GetRootWindow()->GetChildById(ash::kShellWindowId_MenuContainer);
-#else
   params.parent = parent;
-#endif
   params.delegate = this;
   views::Widget* widget = new views::Widget();
   widget->Init(std::move(params));
@@ -223,7 +219,7 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
   MoveViewToFront();
   HideCursor();
   pre_dispatch_handler_ =
-      std::make_unique<PreEventDispatchHandler>(this, parent);
+      std::make_unique<PreEventDispatchHandler>(this, event_handler);
   widget->Show();
   CaptureInputIfNeeded();
   // The ignore selection time should be long enough to allow the user to see
@@ -236,13 +232,15 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
 }
 
 EyeDropperView::~EyeDropperView() {
-  if (GetWidget())
+  if (GetWidget()) {
     GetWidget()->CloseNow();
+  }
 }
 
 void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
-  if (screen_capturer_->GetBitmap().drawsNothing())
+  if (screen_capturer_->GetBitmap().drawsNothing()) {
     return;
+  }
 
   const float diameter = GetDiameter();
   constexpr float kPixelSize = 10;
@@ -299,7 +297,7 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
   cc::PaintFlags flags;
   flags.setStrokeWidth(1);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
-  flags.setColor(color_provider->GetColor(kColorEyedropperGrid));
+  flags.setColor(color_provider->GetColor(color::kColorEyedropperGrid));
   for (int i = 0; i < pixel_count; ++i) {
     view_canvas->DrawLine(
         gfx::PointF(padding.width() + i * kPixelSize, padding.height()),
@@ -318,19 +316,19 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
                    (size().height() - kPixelSize) / 2, kPixelSize, kPixelSize);
   flags.setAntiAlias(true);
   flags.setColor(
-      color_provider->GetColor(kColorEyedropperCentralPixelOuterRing));
+      color_provider->GetColor(color::kColorEyedropperCentralPixelOuterRing));
   flags.setStrokeWidth(2);
   pixel.Inset(-0.5f);
   view_canvas->DrawRect(pixel, flags);
   flags.setColor(
-      color_provider->GetColor(kColorEyedropperCentralPixelInnerRing));
+      color_provider->GetColor(color::kColorEyedropperCentralPixelInnerRing));
   flags.setStrokeWidth(1);
   pixel.Inset(0.5f);
   view_canvas->DrawRect(pixel, flags);
 
   // Paint outline.
   flags.setStrokeWidth(2);
-  flags.setColor(color_provider->GetColor(kColorEyedropperBoundary));
+  flags.setColor(color_provider->GetColor(color::kColorEyedropperBoundary));
   flags.setAntiAlias(true);
   if (GetWidget()->IsTranslucentWindowOpacitySupported()) {
     view_canvas->DrawCircle(
@@ -368,13 +366,15 @@ void EyeDropperView::CaptureScreen(
 }
 
 void EyeDropperView::UpdatePosition() {
-  if (screen_capturer_->GetBitmap().drawsNothing() || !GetWidget())
+  if (screen_capturer_->GetBitmap().drawsNothing() || !GetWidget()) {
     return;
+  }
 
   gfx::Point cursor_position =
       display::Screen::GetScreen()->GetCursorScreenPoint();
-  if (cursor_position == GetWidget()->GetWindowBoundsInScreen().CenterPoint())
+  if (cursor_position == GetWidget()->GetWindowBoundsInScreen().CenterPoint()) {
     return;
+  }
 
   GetWidget()->SetBounds(
       gfx::Rect(gfx::Point(cursor_position.x() - size().width() / 2,
@@ -389,8 +389,9 @@ void EyeDropperView::OnColorSelected() {
   }
 
   // Prevent the user from selecting a color for a period of time.
-  if (base::TimeTicks::Now() <= ignore_selection_time_)
+  if (base::TimeTicks::Now() <= ignore_selection_time_) {
     return;
+  }
 
   // Use the last selected color and notify listener.
   listener_->ColorSelected(selected_color_.value());
@@ -404,3 +405,5 @@ BEGIN_METADATA(EyeDropperView, views::WidgetDelegateView)
 ADD_READONLY_PROPERTY_METADATA(gfx::Size, Size)
 ADD_READONLY_PROPERTY_METADATA(float, Diameter)
 END_METADATA
+
+}  // namespace eye_dropper

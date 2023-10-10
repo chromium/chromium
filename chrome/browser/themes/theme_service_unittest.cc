@@ -35,6 +35,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/color/color_mixers.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/test_utils.h"
@@ -231,7 +232,9 @@ class ColorProviderTest
       ui::LinuxUi::SetInstance(linux_ui);
 #endif  // BUILDFLAG(IS_LINUX)
 
-      // Add the Chrome ColorMixers after native ColorMixers.
+      // Add the components and Chrome ColorMixers after native ColorMixers.
+      ui::ColorProviderManager::Get().AppendColorProviderInitializer(
+          base::BindRepeating(color::AddComponentsColorMixers));
       ui::ColorProviderManager::Get().AppendColorProviderInitializer(
           base::BindRepeating(AddChromeColorMixers));
 

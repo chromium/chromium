@@ -1,3 +1,5 @@
 include_rules = [
   "+components/eye_dropper",
+  "+third_party/skia/include",
+  "+ui/color",
 ]

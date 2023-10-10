@@ -1,0 +1,40 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+static_library("eye_dropper") {
+  sources = [
+    "eye_dropper_view.cc",
+    "eye_dropper_view.h",
+    "eye_dropper_view_aura.cc",
+    "features.cc",
+    "features.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/color:color_headers",
+    "//content/public/browser",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/webrtc_overrides:webrtc_component",
+    "//ui/base",
+    "//ui/color",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+source_set("color_mixer") {
+  sources = [
+    "color_mixer.cc",
+    "color_mixer.h",
+  ]
+
+  deps = [
+    "//components/color:color_headers",
+    "//ui/color",
+  ]
+}

@@ -20,7 +20,7 @@
 
 // TODO(crbug.com/1448244): enable this test on all supported platforms.
 #if BUILDFLAG(IS_WIN)
-#include "chrome/browser/ui/views/eye_dropper/eye_dropper_view.h"
+#include "components/eye_dropper/eye_dropper_view.h"
 #endif
 
 class EyeDropperBrowserTest : public UiBrowserTest,
@@ -51,7 +51,8 @@ class EyeDropperBrowserTest : public UiBrowserTest,
       return false;
 
     views::Widget* widget =
-        static_cast<EyeDropperView*>(eye_dropper_.get())->GetWidget();
+        static_cast<eye_dropper::EyeDropperView*>(eye_dropper_.get())
+            ->GetWidget();
     auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
     const std::string screenshot_name =
         base::StrCat({test_info->test_case_name(), "_", test_info->name()});

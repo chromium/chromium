@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_EYE_DROPPER_EYE_DROPPER_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_EYE_DROPPER_EYE_DROPPER_VIEW_H_
+#ifndef COMPONENTS_EYE_DROPPER_EYE_DROPPER_VIEW_H_
+#define COMPONENTS_EYE_DROPPER_EYE_DROPPER_VIEW_H_
 
 #include <memory>
 
@@ -23,6 +23,8 @@
 #include "ui/aura/window_observer.h"
 #endif
 
+namespace eye_dropper {
+
 // EyeDropperView is used on Aura platforms.
 class EyeDropperView : public content::EyeDropper,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -31,7 +33,9 @@ class EyeDropperView : public content::EyeDropper,
                        public views::WidgetDelegateView {
  public:
   METADATA_HEADER(EyeDropperView);
-  EyeDropperView(gfx::NativeView parent, content::EyeDropperListener* listener);
+  EyeDropperView(gfx::NativeView parent,
+                 gfx::NativeView event_handler,
+                 content::EyeDropperListener* listener);
   EyeDropperView(const EyeDropperView&) = delete;
   EyeDropperView& operator=(const EyeDropperView&) = delete;
   ~EyeDropperView() override;
@@ -53,7 +57,8 @@ class EyeDropperView : public content::EyeDropper,
 
   class PreEventDispatchHandler : public ui::EventHandler {
    public:
-    PreEventDispatchHandler(EyeDropperView* view, gfx::NativeView parent);
+    PreEventDispatchHandler(EyeDropperView* view,
+                            gfx::NativeView event_handler);
     PreEventDispatchHandler(const PreEventDispatchHandler&) = delete;
     PreEventDispatchHandler& operator=(const PreEventDispatchHandler&) = delete;
     ~PreEventDispatchHandler() override;
@@ -106,4 +111,6 @@ class EyeDropperView : public content::EyeDropper,
 #endif
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_EYE_DROPPER_EYE_DROPPER_VIEW_H_
+}  // namespace eye_dropper
+
+#endif  // COMPONENTS_EYE_DROPPER_EYE_DROPPER_VIEW_H_

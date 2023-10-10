@@ -1580,8 +1580,6 @@ static_library("ui") {
       "user_notes/user_notes_controller.h",
       "views/eye_dropper/eye_dropper.cc",
       "views/eye_dropper/eye_dropper.h",
-      "views/eye_dropper/eye_dropper_view.cc",
-      "views/eye_dropper/eye_dropper_view.h",
       "webui/access_code_cast/access_code_cast_dialog.cc",
       "webui/access_code_cast/access_code_cast_dialog.h",
       "webui/access_code_cast/access_code_cast_handler.cc",
@@ -6190,7 +6188,7 @@ static_library("ui") {
       "views/apps/shaped_app_window_targeter.cc",
       "views/apps/shaped_app_window_targeter.h",
       "views/dropdown_bar_host_aura.cc",
-      "views/eye_dropper/eye_dropper_view_aura.cc",
+      "views/eye_dropper/eye_dropper_aura.cc",
       "views/renderer_context_menu/render_view_context_menu_views.cc",
       "views/renderer_context_menu/render_view_context_menu_views.h",
       "views/tab_contents/chrome_web_contents_view_delegate_views.cc",
@@ -6200,6 +6198,7 @@ static_library("ui") {
       "window_sizer/window_sizer_aura.cc",
     ]
     deps += [
+      "//components/eye_dropper",
       "//ui/aura",
       "//ui/wm",
     ]

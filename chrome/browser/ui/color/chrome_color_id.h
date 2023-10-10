@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_COLOR_CHROME_COLOR_ID_H_
 
 #include "chrome/browser/themes/theme_properties.h"
+#include "components/color/color_id.h"
 #include "ui/color/color_id.h"
 
 // TODO(pkasting): Add the rest of the colors.
@@ -106,11 +107,6 @@
   E_CPONLY(kColorExtensionMenuPinButtonIconDisabled) \
   E_CPONLY(kColorExtensionsMenuHighlightedBackground) \
   E_CPONLY(kColorExtensionsToolbarControlsBackground) \
-  /* Eyedropper colors. */ \
-  E_CPONLY(kColorEyedropperBoundary) \
-  E_CPONLY(kColorEyedropperCentralPixelInnerRing) \
-  E_CPONLY(kColorEyedropperCentralPixelOuterRing) \
-  E_CPONLY(kColorEyedropperGrid) \
   /* Feature Promo bubble colors. */ \
   E_CPONLY(kColorFeaturePromoBubbleBackground) \
   E_CPONLY(kColorFeaturePromoBubbleButtonBorder) \
@@ -754,7 +750,7 @@
 #include "ui/color/color_id_macros.inc"
 
 enum ChromeColorIds : ui::ColorId {
-  kChromeColorsStart = ui::kUiColorsEnd,
+  kChromeColorsStart = color::kComponentsColorsEnd,
 
   CHROME_COLOR_IDS
 

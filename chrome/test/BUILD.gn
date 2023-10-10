@@ -883,6 +883,7 @@ static_library("test_support") {
     ]
     deps += [
       "//chrome/browser/ui/color:mixers",
+      "//components/color",
       "//components/user_education/views",
     ]
   }
@@ -3822,6 +3823,8 @@ if (!is_android) {
         "../browser/ui/test/test_app_window_icon_observer.cc",
         "../browser/ui/test/test_app_window_icon_observer.h",
       ]
+
+      deps += [ "//components/eye_dropper" ]
 
       if (use_nss_certs) {
         sources += [ "../browser/ui/views/crypto_module_password_dialog_view_browsertest.cc" ]
@@ -7997,6 +8000,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/side_panel/user_notes:mojo_bindings",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//components/app_constants",
+      "//components/color",
       "//components/commerce/core:cart_db_content_proto",
       "//components/commerce/core:coupon_db_content_proto",
       "//components/commerce/core:shopping_service_test_support",
