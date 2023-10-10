@@ -11,7 +11,7 @@ load("./config.star", "config")
 
 def __enabled(ctx):
     if "args.gn" in ctx.metadata:
-        gn_args = gn.parse_args(ctx.metadata["args.gn"])
+        gn_args = gn.args(ctx)
         if gn_args.get("target_os") == '"android"':
             return True
     return False

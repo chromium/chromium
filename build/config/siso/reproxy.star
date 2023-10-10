@@ -163,7 +163,7 @@ __handlers = {
 
 def __use_remoteexec(ctx):
     if "args.gn" in ctx.metadata:
-        gn_args = gn.parse_args(ctx.metadata["args.gn"])
+        gn_args = gn.args(ctx)
         if gn_args.get("use_remoteexec") == "true":
             return True
     return False
