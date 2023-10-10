@@ -15,6 +15,11 @@ namespace switches {
 BASE_FEATURE(kIdentityStatusConsistency,
              "IdentityStatusConsistency",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Feature to refactor how and when accounts are seeded on Android.
+BASE_FEATURE(kSeedAccountsRevamp,
+             "SeedAccountsRevamp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Clears the token service before using it. This allows simulating the

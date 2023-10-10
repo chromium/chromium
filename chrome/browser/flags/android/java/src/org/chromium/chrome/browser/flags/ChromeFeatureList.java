@@ -424,6 +424,7 @@ public abstract class ChromeFeatureList {
     public static final String SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT =
             "SearchReadyOmniboxAllowQueryEdit";
     public static final String SEARCH_RESUMPTION_MODULE_ANDROID = "SearchResumptionModuleAndroid";
+    public static final String SEED_ACCOUNTS_REVAMP = "SeedAccountsRevamp";
     public static final String SHOULD_IGNORE_INTENT_SKIP_INTERNAL_CHECK =
             "ShouldIgnoreIntentSkipInternalCheck";
     public static final String SHARE_SHEET_CUSTOM_ACTIONS_POLISH = "ShareSheetCustomActionsPolish";
