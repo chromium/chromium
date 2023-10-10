@@ -452,6 +452,68 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_NoDiscountsFound) {
   histogram_tester.ExpectBucketCount(kDiscountsFetchResultHistogramName, 3, 1);
 }
 
+TEST_F(DiscountsStorageTest,
+       TestHandleServerDiscounts_URLWithDiscountUTM_WithMatching) {
+  proto_db_->MockLoadAllResponse(true, false, false);
+  std::string url_with_utm(kDiscountsUrlInDb);
+  url_with_utm = url_with_utm +
+                 "?utm_source=chrome&utm_medium=app&utm_campaign=chrome-"
+                 "history-cluster-with-discount";
+
+  EXPECT_CALL(*proto_db_, InsertContent).Times(0);
+  EXPECT_CALL(*proto_db_, LoadAllEntries);
+
+  base::RunLoop run_loop;
+  storage_->HandleServerDiscounts(
+      std::vector<std::string>{url_with_utm}, {},
+      base::BindOnce(
+          [](base::RunLoop* run_loop, std::string url_with_utm,
+             const DiscountsMap& map) {
+            ASSERT_EQ(1, (int)map.size());
+            auto discounts = map.find(GURL(url_with_utm))->second;
+            ASSERT_EQ(2, (int)discounts.size());
+            ASSERT_EQ(kDiscountIdInDb1, discounts[0].id);
+            ASSERT_EQ(kDiscountIdInDb2, discounts[1].id);
+            run_loop->Quit();
+          },
+          &run_loop, url_with_utm));
+  run_loop.Run();
+}
+
+TEST_F(DiscountsStorageTest,
+       TestHandleServerDiscounts_URLWithDiscountUTM_WithoutMatching) {
+  proto_db_->MockLoadAllResponse(true, false, false);
+  std::string url_with_wrong_utm(kDiscountsUrlInDb);
+  url_with_wrong_utm =
+      url_with_wrong_utm +
+      "?utm_source=test&utm_medium=app&utm_campaign=ramdom-campaign";
+  std::string wrong_url_with_utm(
+      "http://example.com/"
+      "discounts_wrong?utm_source=test&utm_medium=app&utm_campaign=ramdom-"
+      "campaign");
+
+  base::RunLoop run_loop[2];
+  storage_->HandleServerDiscounts(
+      std::vector<std::string>{url_with_wrong_utm}, {},
+      base::BindOnce(
+          [](base::RunLoop* run_loop, const DiscountsMap& map) {
+            ASSERT_EQ(0, (int)map.size());
+            run_loop->Quit();
+          },
+          &run_loop[0]));
+  run_loop[0].Run();
+
+  storage_->HandleServerDiscounts(
+      std::vector<std::string>{wrong_url_with_utm}, {},
+      base::BindOnce(
+          [](base::RunLoop* run_loop, const DiscountsMap& map) {
+            ASSERT_EQ(0, (int)map.size());
+            run_loop->Quit();
+          },
+          &run_loop[1]));
+  run_loop[1].Run();
+}
+
 TEST_F(DiscountsStorageTest, TestOnURLsDeleted_DeleteAll) {
   EXPECT_CALL(*proto_db_, DeleteAllContent).Times(1);
   EXPECT_CALL(*proto_db_, DeleteOneEntry).Times(0);

@@ -55,6 +55,9 @@ extern const char kUTMMediumValue[];
 
 // UTM campaign value for discounts in history clusters.
 extern const char kUTMCampaignValueForDiscounts[];
+
+// Prefix of UTM labels, including the underscore.
+extern const char kUTMPrefix[];
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_COMMERCE_CONSTANTS_H_

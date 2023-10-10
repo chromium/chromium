@@ -40,4 +40,7 @@ const char kUTMMediumValue[] = "app";
 
 const char kUTMCampaignValueForDiscounts[] =
     "chrome-history-cluster-with-discount";
+
+const char kUTMPrefix[] = "utm_";
+
 }  // namespace commerce
