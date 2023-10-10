@@ -125,10 +125,16 @@ void ChromeContentGpuClient::PostCompositorThreadCreated(
   // We pass in CreateCoreUnwindersFactory here since it lives in the chrome/
   // layer while TracingSamplerProfiler is outside of chrome/.
   task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&tracing::TracingSamplerProfiler::
-                         CreateOnChildThreadWithCustomUnwinders,
-                     base::BindRepeating(&CreateCoreUnwindersFactory)));
+      FROM_HERE, base::BindOnce(&tracing::TracingSamplerProfiler::
+                                    CreateOnChildThreadWithCustomUnwinders,
+#if BUILDFLAG(IS_ANDROID)
+                                base::BindRepeating(
+                                    &CreateCoreUnwindersFactory,
+                                    /*is_java_name_hashing_enabled=*/false)));
+#else
+                                base::BindRepeating(
+                                    &CreateCoreUnwindersFactory)));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
