@@ -41,6 +41,8 @@
 #include "extensions/common/extension.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
@@ -222,6 +224,71 @@ void CustomizeChromePageHandler::RemoveBackgroundImage() {
   }
 }
 
+void CustomizeChromePageHandler::OnDescriptorsRetrieved(
+    std::unique_ptr<std::string> response_body) {
+  if (!response_body) {
+    // Network errors (i.e. the server did not provide a response).
+    DVLOG(1) << "Request failed with error: " << simple_url_loader_->NetError();
+    std::move(get_descriptors_callback_).Run(nullptr);
+    return;
+  }
+
+  std::string response;
+  response.swap(*response_body);
+  // The response may start with . Ignore this.
+  const char kXSSIResponsePreamble[] = ")]}'";
+  if (base::StartsWith(response, kXSSIResponsePreamble,
+                       base::CompareCase::SENSITIVE)) {
+    response = response.substr(strlen(kXSSIResponsePreamble));
+  }
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      response,
+      base::BindOnce(&CustomizeChromePageHandler::OnDescriptorsJsonParsed,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CustomizeChromePageHandler::OnDescriptorsJsonParsed(
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (!result.has_value() || !result->is_dict()) {
+    DVLOG(1) << "Parsing JSON failed: " << result.error();
+    std::move(get_descriptors_callback_).Run(nullptr);
+    return;
+  }
+
+  const base::Value::List* descriptor_a =
+      result->GetDict().FindList("descriptor_a");
+  if (!descriptor_a) {
+    DVLOG(1) << "Parsing JSON failed: " << result.error();
+    std::move(get_descriptors_callback_).Run(nullptr);
+    return;
+  }
+
+  auto mojo_descriptors = side_panel::mojom::Descriptors::New();
+  std::vector<side_panel::mojom::DescriptorAPtr> mojo_descriptor_a_list;
+  for (const auto& descriptor : *descriptor_a) {
+    const base::Value::Dict& descriptor_dict = descriptor.GetDict();
+    auto* category = descriptor_dict.FindString("category");
+    auto* label_values = descriptor_dict.FindList("labels");
+    if (!category || !label_values) {
+      continue;
+    }
+    auto mojo_descriptor_a = side_panel::mojom::DescriptorA::New();
+    mojo_descriptor_a->category = *category;
+    std::vector<std::string> labels;
+    for (const auto& label_value : *label_values) {
+      labels.push_back(label_value.GetString());
+    }
+    mojo_descriptor_a->labels = std::move(labels);
+    mojo_descriptor_a_list.push_back(std::move(mojo_descriptor_a));
+  }
+  if (mojo_descriptor_a_list.empty()) {
+    std::move(get_descriptors_callback_).Run(nullptr);
+    return;
+  }
+  mojo_descriptors->descriptor_a = std::move(mojo_descriptor_a_list);
+  std::move(get_descriptors_callback_).Run(std::move(mojo_descriptors));
+}
+
 void CustomizeChromePageHandler::WallpaperSearchCallback(
     SearchWallpaperCallback callback,
     optimization_guide::OptimizationGuideModelExecutionResult result) {
@@ -239,6 +306,67 @@ void CustomizeChromePageHandler::WallpaperSearchCallback(
         response->images(0));
   }
   std::move(callback).Run(true);
+}
+
+void CustomizeChromePageHandler::GetDescriptors(
+    GetDescriptorsCallback callback) {
+  callback =
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), nullptr);
+  if (get_descriptors_callback_) {
+    return;
+  }
+  get_descriptors_callback_ = std::move(callback);
+
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("customize_chrome_page_handler", R"(
+        semantics {
+          sender: "Customize Chrome"
+          description:
+            "This service downloads different configurations "
+            "for Customize Chrome."
+          trigger:
+            "Opening Customize Chrome on the Desktop NTP, "
+            "if Google is the default search provider "
+            "and the user is signed in."
+          data: "None."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "chrome-desktop-ntp@google.com"
+            }
+          }
+          user_data {
+            type: NONE
+          }
+          last_reviewed: "2023-10-10"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Users can control this feature by signing out or "
+            "selecting a non-Google default search engine in Chrome "
+            "settings under 'Search Engine'."
+          chrome_policy {
+            DefaultSearchProviderEnabled {
+              policy_options {mode: MANDATORY}
+              DefaultSearchProviderEnabled: false
+            }
+          }
+        })");
+
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = GURL(
+      "https://static.corp.google.com/chrome-wallpaper-search/"
+      "descriptors_en-US.json");
+  resource_request->request_initiator =
+      url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
+  simple_url_loader_ = network::SimpleURLLoader::Create(
+      std::move(resource_request), traffic_annotation);
+  simple_url_loader_->DownloadToString(
+      profile_->GetURLLoaderFactory().get(),
+      base::BindOnce(&CustomizeChromePageHandler::OnDescriptorsRetrieved,
+                     weak_ptr_factory_.GetWeakPtr()),
+      1024 * 1024);
 }
 
 void CustomizeChromePageHandler::SearchWallpaper(

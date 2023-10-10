@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -54,6 +55,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -316,6 +318,7 @@ class CustomizeChromePageHandlerTest : public testing::Test {
     browser_.reset();
     browser_window_.reset();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
+    test_url_loader_factory_.ClearResponses();
   }
 
   TestingProfile& profile() { return *profile_; }
@@ -829,9 +832,132 @@ class CustomizeChromePageHandlerWithWallpaperSearchTest
     CustomizeChromePageHandlerTest::SetUp();
   }
 
+  const std::string kDescriptorsLoadURL =
+      "https://static.corp.google.com/chrome-wallpaper-search/"
+      "descriptors_en-US.json";
+  void SetUpDescriptorsResponseWithData(const std::string& response) {
+    test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
+        [&](const network::ResourceRequest& request) {}));
+    test_url_loader_factory_.AddResponse(kDescriptorsLoadURL, response);
+  }
+  void SetUpDescriptorsResponseWithNetworkError() {
+    test_url_loader_factory_.AddResponse(kDescriptorsLoadURL, std::string(),
+                                         net::HTTP_NOT_FOUND);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
+
+TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
+       GetDescriptors_Success) {
+  side_panel::mojom::DescriptorsPtr descriptors;
+  base::MockCallback<CustomizeChromePageHandler::GetDescriptorsCallback>
+      callback;
+  EXPECT_CALL(callback, Run(_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&descriptors](
+              side_panel::mojom::DescriptorsPtr descriptors_ptr_arg) {
+            descriptors = std::move(descriptors_ptr_arg);
+          }));
+  SetUpDescriptorsResponseWithData(
+      R"()]}'
+        {"descriptor_a":[
+          {"category":"foo","labels":["bar","baz"]},
+          {"category":"qux","labels":["foobar"]}
+      ]})");
+
+  ASSERT_FALSE(descriptors);
+  handler().GetDescriptors(callback.Get());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(descriptors);
+  const auto& descriptor_a = descriptors->descriptor_a;
+  EXPECT_EQ(2u, descriptor_a.size());
+  const auto& foo_descriptor = descriptor_a[0];
+  EXPECT_EQ(foo_descriptor->category, "foo");
+  EXPECT_EQ(2u, foo_descriptor->labels.size());
+  EXPECT_EQ("bar", foo_descriptor->labels[0]);
+  EXPECT_EQ("baz", foo_descriptor->labels[1]);
+  const auto& qux_descriptor = descriptor_a[1];
+  EXPECT_EQ(qux_descriptor->category, "qux");
+  EXPECT_EQ(1u, qux_descriptor->labels.size());
+  EXPECT_EQ("foobar", qux_descriptor->labels[0]);
+}
+
+TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
+       GetDescriptors_Fails_NoValidDescriptors) {
+  side_panel::mojom::DescriptorsPtr descriptors;
+  base::MockCallback<CustomizeChromePageHandler::GetDescriptorsCallback>
+      callback;
+  EXPECT_CALL(callback, Run(_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&descriptors](
+              side_panel::mojom::DescriptorsPtr descriptors_ptr_arg) {
+            descriptors = std::move(descriptors_ptr_arg);
+          }));
+  SetUpDescriptorsResponseWithData(
+      R"()]}'
+        {"not_a_valid_descriptor":[
+          {"category":"foo","labels":["bar","baz"]},
+          {"category":"qux","labels":["foobar"]}
+      ]})");
+  ASSERT_FALSE(descriptors);
+
+  handler().GetDescriptors(callback.Get());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(descriptors);
+}
+
+TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
+       GetDescriptors_Fails_NoCategoriesWithLabels) {
+  side_panel::mojom::DescriptorsPtr descriptors;
+  base::MockCallback<CustomizeChromePageHandler::GetDescriptorsCallback>
+      callback;
+  EXPECT_CALL(callback, Run(_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&descriptors](
+              side_panel::mojom::DescriptorsPtr descriptors_ptr_arg) {
+            descriptors = std::move(descriptors_ptr_arg);
+          }));
+  SetUpDescriptorsResponseWithData(
+      R"()]}'
+        {"descriptor_a":[
+          {"category":"foo"}
+      ]})");
+  ASSERT_FALSE(descriptors);
+
+  handler().GetDescriptors(callback.Get());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(descriptors);
+}
+
+TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
+       GetDescriptors_Fails_DataIsUnreachable) {
+  side_panel::mojom::DescriptorsPtr descriptors;
+  base::MockCallback<CustomizeChromePageHandler::GetDescriptorsCallback>
+      callback;
+  EXPECT_CALL(callback, Run(_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&descriptors](
+              side_panel::mojom::DescriptorsPtr descriptors_ptr_arg) {
+            descriptors = std::move(descriptors_ptr_arg);
+          }));
+  SetUpDescriptorsResponseWithNetworkError();
+  ASSERT_FALSE(descriptors);
+
+  handler().GetDescriptors(callback.Get());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(descriptors);
+}
 
 TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
        SearchWallpaper_Success) {

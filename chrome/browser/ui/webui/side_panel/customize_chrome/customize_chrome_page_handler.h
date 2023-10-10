@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -94,12 +95,15 @@ class CustomizeChromePageHandler
   void SetModuleDisabled(const std::string& module_id, bool disabled) override;
   void UpdateModulesSettings() override;
   void UpdateScrollToSection() override;
+  void GetDescriptors(GetDescriptorsCallback callback) override;
   void SearchWallpaper(const std::string& query,
                        SearchWallpaperCallback callback) override;
 
  private:
   void LogEvent(NTPLoggingEventType event);
 
+  void OnDescriptorsRetrieved(std::unique_ptr<std::string> response_body);
+  void OnDescriptorsJsonParsed(data_decoder::DataDecoder::ValueOrError result);
   void WallpaperSearchCallback(
       SearchWallpaperCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult result);
@@ -130,6 +134,7 @@ class CustomizeChromePageHandler
   void FileSelectionCanceled(void* params) override;
 
   ChooseLocalCustomBackgroundCallback choose_local_custom_background_callback_;
+  GetDescriptorsCallback get_descriptors_callback_;
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
   raw_ptr<Profile> profile_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
@@ -142,6 +147,7 @@ class CustomizeChromePageHandler
   base::TimeTicks background_images_request_start_time_;
   raw_ptr<ThemeService> theme_service_;
   const std::vector<std::pair<const std::string, int>> module_id_names_;
+  std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   // Caches a request to scroll to a section in case the front-end queries the
   // last requested section, e.g. during load.
   CustomizeChromeSection last_requested_section_ =
