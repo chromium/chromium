@@ -1349,6 +1349,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Crostini, /* crostini.js */
     FilesAppBrowserTest,
     ::testing::Values(
+        TestCase("mountCrostini").FilesExperimental(),
+        TestCase("enableDisableCrostini").FilesExperimental(),
+        TestCase("sharePathWithCrostini")
+            .FilesExperimental()
+            .FeatureIds({"screenplay-122c00f8-9842-4666-8ca0-b6bf47454551"}),
         TestCase("mountCrostini"),
         TestCase("enableDisableCrostini"),
         TestCase("sharePathWithCrostini")

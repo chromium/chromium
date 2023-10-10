@@ -516,9 +516,11 @@ export function volumeNestingEntries(
       // Also remove it from the children field.
       myFilesFileData.children = myFilesFileData.children.filter(
           childKey => childKey !== uiEntryPlaceholder.toURL());
-      // And remove it from the uiEntries if existed.
-      state.uiEntries = state.uiEntries.filter(
-          uiEntryKey => uiEntryKey !== uiEntryPlaceholder.toURL());
+      // Do not remove the placeholder ui entry from the store. Removing it from
+      // the MyFiles is sufficient to prevent it from showing in the directory
+      // tree. We keep it in the store (`state["uiEntries"]`) because when
+      // the corresponding volume unmounts, we need to use its existence to
+      // decide if we need to re-add the placeholder back to MyFiles.
     }
     appendChildIfNotExisted(myFilesEntry, newVolumeEntry);
     // Push the new entry to the children of FileData and sort them.

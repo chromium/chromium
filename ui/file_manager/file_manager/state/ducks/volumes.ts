@@ -4,14 +4,16 @@
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
+import {isVolumeEntry, sortEntries} from '../../common/js/entry_utils.js';
 import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 import {PropStatus, State, Volume, VolumeId} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {Slice} from '../../lib/base_store.js';
 import {cacheEntries, getMyFiles, updateFileData, volumeNestingEntries} from '../ducks/all_entries.js';
-import {getEntry} from '../store.js';
+import {getEntry, getFileData} from '../store.js';
 
 import {updateDeviceConnectionState} from './device.js';
 
@@ -203,14 +205,56 @@ export const removeVolume = slice.addReducer('remove', removeVolumeReducer);
 function removeVolumeReducer(currentState: State, payload: {
   volumeId: VolumeId,
 }): State {
+  const volumeToRemove: Volume = currentState.volumes[payload.volumeId];
+  const volumeEntry = getEntry(currentState, volumeToRemove.rootKey!)!;
   delete currentState.volumes[payload.volumeId];
-  const volumes = {
+  currentState.volumes = {
     ...currentState.volumes,
   };
 
+  // We also need to check if the removed volume is a child of My files.
+  const volumeTypesNestedInMyFiles = getVolumeTypesNestedInMyFiles();
+  if (volumeTypesNestedInMyFiles.has(volumeToRemove.volumeType)) {
+    const {myFilesEntry} = getMyFiles(currentState);
+    const children = myFilesEntry.getUIChildren();
+    const volumeEntryExistsInMyFiles = !!children.find(
+        childEntry => isVolumeEntry(childEntry) &&
+            util.isSameEntry(childEntry, volumeEntry));
+    if (volumeEntryExistsInMyFiles) {
+      // Remove it from the MyFiles UI children.
+      myFilesEntry.removeChildEntry(volumeEntry);
+      // Re-add the corresponding placeholder ui entry to the UI children.
+      const uiEntryKey = currentState.uiEntries.find(entryKey => {
+        const uiEntry = getEntry(currentState, entryKey)! as FakeEntry;
+        return uiEntry.name === volumeEntry.name;
+      });
+      if (uiEntryKey) {
+        const uiEntry = getEntry(currentState, uiEntryKey)!;
+        myFilesEntry.addEntry(uiEntry);
+      }
+      // Remove it from the MyFiles file data.
+      const fileData = getFileData(currentState, myFilesEntry.toURL());
+      if (fileData) {
+        let newChildren =
+            fileData.children.filter(child => child !== volumeEntry.toURL());
+        // Re-add the corresponding placeholder ui entry to the file data.
+        if (uiEntryKey) {
+          newChildren = newChildren.concat(uiEntryKey);
+          const childEntries =
+              newChildren.map(childKey => getEntry(currentState, childKey)!);
+          newChildren = sortEntries(myFilesEntry, childEntries)
+                            .map(entry => entry.toURL());
+        }
+        currentState.allEntries[myFilesEntry.toURL()] = {
+          ...fileData,
+          children: newChildren,
+        };
+      }
+    }
+  }
+
   return {
     ...currentState,
-    volumes,
   };
 }
 

@@ -270,8 +270,7 @@ export async function testRemoveNonExistedUiEntry(done: () => void) {
 }
 
 /**
- * Tests removing UI entry from MyFiles will reset the children field of
- * MyFiles entry.
+ * Tests removing UI entry from MyFiles will also update MyFiles entry.
  */
 export async function testRemoveUiEntryFromMyFiles(done: () => void) {
   const initialState = getEmptyState();
@@ -291,7 +290,7 @@ export async function testRemoveUiEntryFromMyFiles(done: () => void) {
 
   const store = setupStore(initialState);
 
-  // Dispatch an action to
+  // Dispatch an action to remove ui entry.
   store.dispatch(removeUiEntry({key: uiEntry.toURL()}));
 
   // Expect the entry has been removed from MyFiles.
