@@ -576,7 +576,12 @@ BASE_FEATURE(kMojoVideoCapture,
 // queue.
 BASE_FEATURE(kNavigationNetworkResponseQueue,
              "NavigationNetworkResponseQueue",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // When enabled, RenderFrameHostManager::CommitPending will also update the
 // visibility of all child views, not just that of the main frame.
