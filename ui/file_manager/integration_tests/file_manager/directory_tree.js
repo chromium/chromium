@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addEntries, ENTRIES, EntryType, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {addEntries, ENTRIES, EntryType, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -160,7 +160,7 @@ testcase.directoryTreeHorizontalScroll = async () => {
       appId, directoryTree.rootSelector, ['scrollLeft']);
   chrome.test.assertTrue(original.scrollLeft === 0);
 
-  // Shrink the tree to 50px. TODO(files-ng): consider using 150px?
+  // Shrink the tree to 50px.
   await remoteCall.callRemoteTestUtil(
       'setElementStyles', appId,
       [directoryTree.containerSelector, {width: '50px'}]);
@@ -170,10 +170,14 @@ testcase.directoryTreeHorizontalScroll = async () => {
       'setScrollLeft', appId, [directoryTree.rootSelector, 100]);
 
   // Check: the directory tree should not be horizontally scrolled.
-  const scrolled = await remoteCall.waitForElementStyles(
-      appId, directoryTree.rootSelector, ['scrollLeft']);
-  const noScrollLeft = scrolled.scrollLeft === 0;
-  chrome.test.assertTrue(noScrollLeft, 'Tree should not scroll left');
+  const caller = getCaller();
+  await repeatUntil(async () => {
+    const scrolled = await remoteCall.waitForElementStyles(
+        appId, directoryTree.rootSelector, ['scrollLeft']);
+    if (scrolled.scrollLeft !== 0) {
+      return pending(caller, 'Tree should not scroll left');
+    }
+  });
 };
 
 /**

@@ -207,7 +207,6 @@ TestCase& TestCase::SetTestAccountType(TestAccountType test_account_type) {
 
 TestCase& TestCase::EnableCrosComponents() {
   options.enable_cros_components = true;
-  options.enable_jellybean = true;
   return *this;
 }
 
