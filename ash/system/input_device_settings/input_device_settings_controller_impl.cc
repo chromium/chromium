@@ -1690,6 +1690,7 @@ void InputDeviceSettingsControllerImpl::StartObservingButtons(DeviceId id) {
                    ash::mojom::CustomizationRestriction::kAllowCustomizations) {
     const auto* duplicate_ids =
         duplicate_id_finder_->GetDuplicateDeviceIds(mouse->id);
+    CHECK(duplicate_ids);
     for (const auto& duplicate_id : *duplicate_ids) {
       rewriter->StartObservingMouse(duplicate_id,
                                     /*can_rewrite_key_event=*/true);
@@ -1701,6 +1702,7 @@ void InputDeviceSettingsControllerImpl::StartObservingButtons(DeviceId id) {
   if (graphics_tablet) {
     const auto* duplicate_ids =
         duplicate_id_finder_->GetDuplicateDeviceIds(graphics_tablet->id);
+    CHECK(duplicate_ids);
     for (const auto& duplicate_id : *duplicate_ids) {
       rewriter->StartObservingGraphicsTablet(duplicate_id);
     }
