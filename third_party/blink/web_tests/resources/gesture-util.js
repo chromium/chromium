@@ -809,11 +809,39 @@ async function waitForScrollReset(scroller, x = 0, y = 0) {
       resolve();
     } else {
       const eventTarget =
-        scroller == document.scrollingElement ? document : scroller;
+          scroller == document.scrollingElement ? document : scroller;
       scroller.scrollTop = y;
       scroller.scrollLeft = x;
       waitForScrollendEvent(eventTarget).then(resolve);
     }
+  });
+}
+
+// Verifies that triggered scroll animations smoothly. Requires at least 2
+// scroll updates to be considered smooth.
+function animatedScrollPromise(scrollTarget) {
+  return new Promise((resolve, reject) => {
+    let scrollCount = 0;
+    const scrollListener = () => {
+      scrollCount++;
+    }
+    const scrollendListener = () => {
+      cleanup();
+      if (scrollCount > 1) {
+        resolve();
+      } else {
+        reject('expected smooth scroll');
+      }
+    }
+    const scrollendTarget =
+        scrollTarget == document.scrollingElement ? document : scrollTarget;
+
+    scrollTarget.addEventListener('scroll', scrollListener);
+    scrollendTarget.addEventListener('scrollend', scrollendListener);
+    const cleanup = () => {
+      scrollTarget.removeEventListener('scroll', scrollListener);
+      scrollendTarget.removeEventListener('scrollend', scrollendListener);
+    };
   });
 }
 
@@ -906,6 +934,18 @@ function touchScroll(x, y, deltaX, deltaY, scroller,
                        'Expect scrolling to trigger poitnercancel');
       });
   return Promise.all([dragGesturePromise, scrollPromise]);
+}
+
+function wheelScroll(x, y, deltaX, deltaY, origin =-"viewport",
+                            duration_ms = 250) {
+  verifyTestDriverLoaded();
+  const wheelPromise = new Promise(async resolve => {
+    document.addEventListener('wheel', resolve, { once: true });
+  });
+  const gesturePromise = new test_driver.Actions()
+        .scroll(x, y, deltaX, deltaY, origin, duration_ms)
+        .send();
+  return Promise.all([gesturePromise, wheelPromise]);
 }
 
 function waitForStableScrollOffset(scroller, timeout) {
