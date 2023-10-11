@@ -11,7 +11,9 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 class PerformancePageHandler;
 
@@ -30,6 +32,10 @@ class PerformanceSidePanelUI
       mojo::PendingReceiver<side_panel::mojom::PerformancePageHandlerFactory>
           receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          pending_receiver);
+
  private:
   // side_panel::mojom::PerformancePageHandlerFactory:
   void CreatePerformancePageHandler(
@@ -40,6 +46,7 @@ class PerformanceSidePanelUI
   std::unique_ptr<PerformancePageHandler> performance_page_handler_;
   mojo::Receiver<side_panel::mojom::PerformancePageHandlerFactory>
       performance_page_factory_receiver_{this};
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

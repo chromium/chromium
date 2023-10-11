@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//performance-side-panel.top-chrome/shared/sp_shared_style.css.js';
+
+import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
@@ -26,6 +29,11 @@ export class PerformanceAppElement extends PolymerElement {
 
   private performanceApi_: PerformanceApiProxy =
       PerformanceApiProxyImpl.getInstance();
+
+  constructor() {
+    super();
+    ColorChangeUpdater.forDocument().start();
+  }
 }
 declare global {
   interface HTMLElementTagNameMap {

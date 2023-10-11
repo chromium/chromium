@@ -32,6 +32,8 @@ PerformanceSidePanelUI::PerformanceSidePanelUI(content::WebUI* web_ui)
     webui::AddLocalizedString(source, str.name, str.id);
   }
 
+  webui::SetupChromeRefresh2023(source);
+
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kSidePanelPerformanceResources,
@@ -50,6 +52,13 @@ void PerformanceSidePanelUI::BindInterface(
         receiver) {
   performance_page_factory_receiver_.reset();
   performance_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void PerformanceSidePanelUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+        pending_receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(pending_receiver));
 }
 
 void PerformanceSidePanelUI::CreatePerformancePageHandler(
