@@ -257,6 +257,8 @@ public class MessagesMetrics {
                 return "DownloadIncognitoWarning";
             case MessageIdentifier.CVC_SAVE:
                 return "CvcSave";
+            case MessageIdentifier.TRACKING_PROTECTION_NOTICE:
+                return "TrackingProtectionNotice";
             default:
                 return "Unknown";
         }

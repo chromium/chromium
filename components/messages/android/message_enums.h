@@ -117,6 +117,7 @@ enum class MessageIdentifier {
   // Removed: RESTORE_CUSTOM_TAB = 37,
   // Removed: UNDO_CUSTOM_TAB_RESTORATION = 38,
   CVC_SAVE = 39,
+  TRACKING_PROTECTION_NOTICE = 40,
   // Insert new values before this line.
   COUNT
 };
