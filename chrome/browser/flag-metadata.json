@@ -1270,7 +1270,7 @@
   {
     "name": "cloud-ap-auth-attach-as-header",
     "owners": [ "igorruvinov", "zmin" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "confirmation-chip",
