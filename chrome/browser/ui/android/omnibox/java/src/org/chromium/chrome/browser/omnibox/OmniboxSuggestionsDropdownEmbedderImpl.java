@@ -18,6 +18,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
@@ -184,13 +185,18 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
             if (OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext)) {
                 // Case 1: tablets with revamp enabled. Width equal to alignment view and left
                 // equivalent to left of alignment view.
-                width = mHorizontalAlignmentView.getMeasuredWidth();
+                int sideSpacing = OmniboxResourceProvider.getSideSpacing(mContext);
+                width = mHorizontalAlignmentView.getMeasuredWidth() + 2 * sideSpacing;
 
                 if (mAnchorView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
                     // The view will be shifted to the left, so the adjustment needs to be negative.
-                    left = -(mAnchorView.getMeasuredWidth() - width - mPositionArray[0]);
+                    left =
+                            -(mAnchorView.getMeasuredWidth()
+                                    - width
+                                    - mPositionArray[0]
+                                    + sideSpacing);
                 } else {
-                    left = mPositionArray[0];
+                    left = mPositionArray[0] - sideSpacing;
                 }
                 paddingLeft = 0;
                 paddingRight = 0;

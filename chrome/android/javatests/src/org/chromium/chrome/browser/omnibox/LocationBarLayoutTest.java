@@ -34,12 +34,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
@@ -47,6 +49,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
@@ -301,5 +305,79 @@ public class LocationBarLayoutTest {
             Assert.assertEquals(locationBar.findViewById(R.id.url_action_container).getVisibility(),
                 View.INVISIBLE);
         });
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
+    public void testTabletUrlBarTranslation_revampEnabled() {
+        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(true);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LocationBarLayout locationBar = getLocationBar();
+                    View urlBar = getUrlBar();
+
+                    urlBar.requestFocus();
+                    int marginStart =
+                            ((MarginLayoutParams) urlBar.getLayoutParams()).getMarginStart();
+                    locationBar.updateLayoutParams(
+                            MeasureSpec.makeMeasureSpec(
+                                    locationBar.getMeasuredWidth(), MeasureSpec.EXACTLY));
+                    locationBar.setUrlFocusChangePercent(MathUtils.EPSILON);
+
+                    Assert.assertEquals(
+                            marginStart + locationBar.getFocusedStatusViewSpacingDelta(),
+                            ((MarginLayoutParams) urlBar.getLayoutParams()).getMarginStart());
+                    Assert.assertEquals(
+                            locationBar.getFocusedStatusViewSpacingDelta()
+                                    * (-1 + MathUtils.EPSILON),
+                            urlBar.getTranslationX(),
+                            MathUtils.EPSILON);
+
+                    locationBar.setUrlFocusChangePercent(0.5f);
+                    Assert.assertEquals(
+                            locationBar.getFocusedStatusViewSpacingDelta() * -0.5,
+                            urlBar.getTranslationX(),
+                            MathUtils.EPSILON);
+
+                    locationBar.setUrlFocusChangePercent(1.0f);
+                    Assert.assertEquals(0f, urlBar.getTranslationX(), MathUtils.EPSILON);
+                });
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
+    public void testTabletUrlBarTranslation_revampDisabled() {
+        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(false);
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(false);
+
+        Assert.assertEquals(0, getLocationBar().getEndPaddingPixelSizeOnFocusDelta());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LocationBarLayout locationBar = getLocationBar();
+                    View urlBar = getUrlBar();
+
+                    urlBar.requestFocus();
+                    int marginStart =
+                            ((MarginLayoutParams) urlBar.getLayoutParams()).getMarginStart();
+                    locationBar.setUrlFocusChangePercent(0.5f);
+                    Assert.assertEquals(
+                            marginStart,
+                            ((MarginLayoutParams) urlBar.getLayoutParams()).getMarginStart());
+                    Assert.assertEquals(0f, urlBar.getTranslationX(), MathUtils.EPSILON);
+
+                    locationBar.updateLayoutParams(
+                            MeasureSpec.makeMeasureSpec(
+                                    locationBar.getMeasuredWidth(), MeasureSpec.EXACTLY));
+                    Assert.assertEquals(
+                            marginStart,
+                            ((MarginLayoutParams) urlBar.getLayoutParams()).getMarginStart());
+                });
     }
 }

@@ -216,7 +216,6 @@ public class LocationBarLayout extends FrameLayout {
     /**
      * Updates the layout params for the location bar start aligned views.
      */
-    @VisibleForTesting
     void updateLayoutParams(int parentWidthMeasureSpec) {
         int startMargin = 0;
         for (int i = 0; i < getChildCount(); i++) {
@@ -225,7 +224,6 @@ public class LocationBarLayout extends FrameLayout {
                 LayoutParams childLayoutParams = (LayoutParams) childView.getLayoutParams();
                 if (childView == mUrlBar) {
                     if (OmniboxFeatures.shouldAvoidRelayoutDuringFocusAnimation()
-                            && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
                             && (mUrlFocusPercentage > 0.0f || mUrlBar.hasFocus())) {
                         // Set a margin that places the url bar in its final, focused position.
                         // During animation this will be compensated against using translation of
@@ -348,6 +346,10 @@ public class LocationBarLayout extends FrameLayout {
     public int getEndPaddingPixelSizeOnFocusDelta() {
         boolean modernizeVisualUpdate =
                 OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext());
+        if (!modernizeVisualUpdate
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
+            return 0;
+        }
         int focusedPaddingDimen =
                 modernizeVisualUpdate && OmniboxFeatures.shouldShowSmallBottomMargin()
                 ? R.dimen.location_bar_icon_end_padding_focused_smaller
@@ -405,11 +407,6 @@ public class LocationBarLayout extends FrameLayout {
      * @param percent The animation progress percent.
      */
     protected void setStatusViewRightSpacePercent(float percent) {
-        // Status view's right space does not need to expand for tablets.
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
-            return;
-        }
-
         if (OmniboxFeatures.shouldAvoidRelayoutDuringFocusAnimation()) {
             // If the url bar is laid out at its smaller, focused width, translate back towards
             // start to compensate for the increased start margin set in #updateLayoutParams. The
@@ -417,9 +414,11 @@ public class LocationBarLayout extends FrameLayout {
             float translationX;
             if (mUrlBarLaidOutAtFocusedWidth) {
                 translationX = getFocusedStatusViewSpacingDelta() * (-1.0f + percent);
-                boolean scrollingOnNtp = !mUrlBar.hasFocus()
-                        && mStatusCoordinator.isSearchEngineStatusIconVisible()
-                        && UrlUtilities.isNTPUrl(mLocationBarDataProvider.getCurrentGurl());
+                boolean scrollingOnNtp =
+                        !mUrlBar.hasFocus()
+                                && mStatusCoordinator.isSearchEngineStatusIconVisible()
+                                && UrlUtilities.isNTPUrl(mLocationBarDataProvider.getCurrentGurl())
+                                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext());
                 if (scrollingOnNtp) {
                     translationX -= (1.0f - percent)
                             * (mStatusCoordinator.getStatusIconWidth()
@@ -442,17 +441,14 @@ public class LocationBarLayout extends FrameLayout {
     }
 
     /**
-     * The delta between the total status view spacing (left + right) when unfocused vs focused.
-     * The status view has additional spacing applied when focused to visually align it and the
-     * UrlBar with omnibox suggestions. See below diagram; the additional spacing is denoted with _
-     * Unfocused:
-     * [ (i)  www.example.com]
-     * Focused:
-     * [ _(G)_  Search or type web address]
-     * [  🔍    Foobar                  ↖ ]
-     * [  🔍    Barbaz                  ↖ ]
+     * The delta between the total status view spacing (left + right) when unfocused vs focused. The
+     * status view has additional spacing applied when focused to visually align it and the UrlBar
+     * with omnibox suggestions. See below diagram; the additional spacing is denoted with _
+     * Unfocused: [ (i) www.example.com] Focused: [ _(G)_ Search or type web address] [ 🔍 Foobar ↖
+     * ] [ 🔍 Barbaz ↖ ]
      */
-    private int getFocusedStatusViewSpacingDelta() {
+    @VisibleForTesting
+    int getFocusedStatusViewSpacingDelta() {
         return getEndPaddingPixelSizeOnFocusDelta()
                 + OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(getContext());
     }

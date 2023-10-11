@@ -79,15 +79,6 @@ class LocationBarTablet extends LocationBarLayout {
             }
         });
 
-        boolean isRtl = mUrlActionContainer.getLayoutDirection() == LAYOUT_DIRECTION_RTL;
-        int urlActionContainerPadding =
-                getResources().getDimensionPixelSize(R.dimen.location_bar_url_action_padding_small);
-        mUrlActionContainer.setPadding(
-                isRtl ? urlActionContainerPadding : mUrlActionContainer.getPaddingLeft(),
-                mUrlActionContainer.getPaddingTop(),
-                isRtl ? mUrlActionContainer.getRight() : urlActionContainerPadding,
-                mUrlActionContainer.getPaddingBottom());
-
         mTargets = new View[] {mUrlBar, mDeleteButton};
     }
 
@@ -128,6 +119,7 @@ class LocationBarTablet extends LocationBarLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int measuredWidth = getMeasuredWidth();
+        setUrlActionContainerPadding();
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
@@ -135,6 +127,23 @@ class LocationBarTablet extends LocationBarLayout {
             setUnfocusedWidth(getMeasuredWidth());
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
+    }
+
+    private void setUrlActionContainerPadding() {
+        boolean modernizeVisualUpdate =
+                OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext());
+        int urlActionContainerPadding =
+                modernizeVisualUpdate && mUrlBar.hasFocus()
+                        ? 0
+                        : getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.location_bar_url_action_padding_small);
+        boolean isRtl = mUrlActionContainer.getLayoutDirection() == LAYOUT_DIRECTION_RTL;
+        mUrlActionContainer.setPadding(
+                isRtl ? urlActionContainerPadding : mUrlActionContainer.getPaddingLeft(),
+                mUrlActionContainer.getPaddingTop(),
+                isRtl ? mUrlActionContainer.getRight() : urlActionContainerPadding,
+                mUrlActionContainer.getPaddingBottom());
     }
 
     @Override

@@ -17,6 +17,7 @@ import android.text.TextUtils;
 import android.util.FloatProperty;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.View.OnKeyListener;
 import android.widget.TextView;
 
@@ -340,6 +341,7 @@ class LocationBarMediator
         if (mIsTablet) {
             mLocationBarDataProvider.getNewTabPageDelegate().setUrlFocusChangeAnimationPercent(
                     fraction);
+            mLocationBarLayout.setUrlFocusChangePercent(fraction);
         } else {
             // Determine when the focus state changes as a result of ntp scrolling.
             boolean isLocationBarFocusedFromNtpScroll =
@@ -651,6 +653,12 @@ class LocationBarMediator
         updateShouldAnimateIconChanges();
         if (!mIsTablet && !showExpandedState) {
             mLocationBarLayout.setUrlActionContainerVisibility(View.GONE);
+        }
+        if (mIsTablet) {
+            mLocationBarLayout.setUrlFocusChangePercent(showExpandedState ? 1.0f : 0.0f);
+            mLocationBarLayout.updateLayoutParams(
+                    MeasureSpec.makeMeasureSpec(
+                            mLocationBarLayout.getMeasuredWidth(), MeasureSpec.EXACTLY));
         }
         // Reset to the default value.
         mShouldClearOmniboxOnFocus = true;
