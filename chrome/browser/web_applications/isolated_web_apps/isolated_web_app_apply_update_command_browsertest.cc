@@ -103,10 +103,11 @@ class IsolatedWebAppApplyUpdateCommandBrowserTest
   }
 
   PrepareAndStoreUpdateResult PrepareAndStoreUpdateInfo(
-      const PendingUpdateInfo& pending_update_info) {
+      const IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo&
+          update_info) {
     base::test::TestFuture<PrepareAndStoreUpdateResult> future;
     provider()->scheduler().PrepareAndStoreIsolatedWebAppUpdate(
-        pending_update_info, url_info_,
+        update_info, url_info_,
         /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
     return future.Take();
@@ -155,7 +156,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppApplyUpdateCommandBrowserTest, Succeeds) {
   ASSERT_NO_FATAL_FAILURE(Install());
 
   PrepareAndStoreUpdateResult prepare_update_result = PrepareAndStoreUpdateInfo(
-      PendingUpdateInfo(update_location_, update_version_));
+      IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(update_location_,
+                                                             update_version_));
   EXPECT_THAT(prepare_update_result, HasValue());
 
   ApplyUpdateResult apply_update_result = ApplyUpdate();

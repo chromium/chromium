@@ -379,7 +379,7 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
 }
 
 void WebAppCommandScheduler::PrepareAndStoreIsolatedWebAppUpdate(
-    const WebApp::IsolationData::PendingUpdateInfo& update_info,
+    const IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo& update_info,
     const IsolatedWebAppUrlInfo& url_info,
     std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,

@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/check_isolated_web_app_bundle_installability_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_prepare_and_store_update_command.h"
 #include "chrome/browser/web_applications/jobs/uninstall/uninstall_job.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -52,7 +53,6 @@ class ScopedProfileKeepAlive;
 namespace web_app {
 
 struct IsolatedWebAppApplyUpdateCommandError;
-struct IsolatedWebAppUpdatePrepareAndStoreCommandError;
 class IsolatedWebAppUrlInfo;
 class SignedWebBundleMetadata;
 class WebApp;
@@ -196,7 +196,7 @@ class WebAppCommandScheduler {
   // the update succeeds, then the `update_info` is persisted in the
   // `IsolationData::pending_update_info()` of the IWA in the Web App database.
   virtual void PrepareAndStoreIsolatedWebAppUpdate(
-      const WebApp::IsolationData::PendingUpdateInfo& update_info,
+      const IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo& update_info,
       const IsolatedWebAppUrlInfo& url_info,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,

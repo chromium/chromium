@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -61,13 +62,34 @@ struct IsolatedWebAppUpdatePrepareAndStoreCommandError {
 class IsolatedWebAppUpdatePrepareAndStoreCommand
     : public WebAppCommandTemplate<AppLock> {
  public:
+  class UpdateInfo {
+   public:
+    UpdateInfo(IsolatedWebAppLocation location,
+               absl::optional<base::Version> expected_version);
+    ~UpdateInfo();
+
+    UpdateInfo(const UpdateInfo&);
+    UpdateInfo& operator=(const UpdateInfo&);
+
+    base::Value AsDebugValue() const;
+
+    const IsolatedWebAppLocation& location() const { return location_; }
+    const absl::optional<base::Version>& expected_version() const {
+      return expected_version_;
+    }
+
+   private:
+    IsolatedWebAppLocation location_;
+    absl::optional<base::Version> expected_version_;
+  };
+
   // `update_info` specifies the location of the update for the IWA referred to
   // in `url_info`. This command is safe to run even if the IWA is not installed
   // or already updated, in which case it will gracefully fail. If a dry-run
   // of the update succeeds, then the `update_info` is persisted in the
   // `IsolationData::pending_update_info()` of the IWA in the Web App database.
   IsolatedWebAppUpdatePrepareAndStoreCommand(
-      WebApp::IsolationData::PendingUpdateInfo update_info,
+      UpdateInfo update_info,
       IsolatedWebAppUrlInfo url_info,
       std::unique_ptr<content::WebContents> web_contents,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
@@ -155,8 +177,9 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
   std::unique_ptr<AppLock> lock_;
   base::Value::Dict debug_log_;
 
-  WebApp::IsolationData::PendingUpdateInfo update_info_;
+  UpdateInfo update_info_;
   IsolatedWebAppUrlInfo url_info_;
+  base::Version installed_version_;
 
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<WebAppUrlLoader> url_loader_;

@@ -54,7 +54,7 @@ namespace web_app {
 
 IsolatedWebAppUpdatePrepareAndStoreCommand::
     IsolatedWebAppUpdatePrepareAndStoreCommand(
-        WebApp::IsolationData::PendingUpdateInfo update_info,
+        UpdateInfo update_info,
         IsolatedWebAppUrlInfo url_info,
         std::unique_ptr<content::WebContents> web_contents,
         std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
@@ -148,20 +148,23 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckIfUpdateIsStillApplicable(
     ReportFailure("Installed app is not an Isolated Web App.");
     return;
   }
-  if (installed_app->isolation_data()->version >= update_info_.version) {
-    ReportFailure(base::StrCat(
-        {"Installed app is already on version ",
-         installed_app->isolation_data()->version.GetString(),
-         ". Cannot update to version ", update_info_.version.GetString()}));
+  installed_version_ = installed_app->isolation_data()->version;
+  debug_log_.Set("installed_version", installed_version_.GetString());
+  if (update_info_.expected_version().has_value() &&
+      *update_info_.expected_version() <= installed_version_) {
+    ReportFailure(base::StrCat({"Installed app is already on version ",
+                                installed_version_.GetString(),
+                                ". Cannot update to version ",
+                                update_info_.expected_version()->GetString()}));
     return;
   }
   if (installed_app->isolation_data()->location.index() !=
-      update_info_.location.index()) {
+      update_info_.location().index()) {
     ReportFailure(
         base::StringPrintf("Unable to update between different "
                            "IsolatedWebAppLocation types (%zu to %zu).",
                            installed_app->isolation_data()->location.index(),
-                           update_info_.location.index()));
+                           update_info_.location().index()));
     return;
   }
 
@@ -173,7 +176,7 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckTrustAndSignatures(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   command_helper_->CheckTrustAndSignatures(
-      update_info_.location, &profile(),
+      update_info_.location(), &profile(),
       base::BindOnce(
           &IsolatedWebAppUpdatePrepareAndStoreCommand::RunNextStepOnSuccess<
               void>,
@@ -194,7 +197,7 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::LoadInstallUrl(
     base::OnceClosure next_step_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   command_helper_->LoadInstallUrl(
-      update_info_.location, *web_contents_.get(), *url_loader_.get(),
+      update_info_.location(), *web_contents_.get(), *url_loader_.get(),
       base::BindOnce(
           &IsolatedWebAppUpdatePrepareAndStoreCommand::RunNextStepOnSuccess<
               void>,
@@ -222,7 +225,7 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::expected<WebAppInstallInfo, std::string> install_info =
       command_helper_->ValidateManifestAndCreateInstallInfo(
-          update_info_.version, manifest_and_url);
+          update_info_.expected_version(), manifest_and_url);
   RunNextStepOnSuccess(std::move(next_step_callback), std::move(install_info));
 }
 
@@ -231,6 +234,20 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::
         base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
         WebAppInstallInfo install_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CHECK(install_info.isolated_web_app_version.IsValid());
+  if (update_info_.expected_version().has_value()) {
+    CHECK_EQ(*update_info_.expected_version(),
+             install_info.isolated_web_app_version);
+  }
+
+  if (install_info.isolated_web_app_version <= installed_version_) {
+    ReportFailure(base::StrCat(
+        {"Installed app is already on version ", installed_version_.GetString(),
+         ". Cannot update to version ",
+         install_info.isolated_web_app_version.GetString()}));
+    return;
+  }
 
   debug_log_.Set("app_title", install_info.title);
 
@@ -254,7 +271,9 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::Finalize(
 
   WebApp::IsolationData updated_isolation_data =
       *app_to_update->isolation_data();
-  updated_isolation_data.SetPendingUpdateInfo(update_info_);
+  updated_isolation_data.SetPendingUpdateInfo(
+      WebApp::IsolationData::PendingUpdateInfo(update_info_.location(),
+                                               info.isolated_web_app_version));
   app_to_update->SetIsolationData(std::move(updated_isolation_data));
 }
 
@@ -302,6 +321,31 @@ Profile& IsolatedWebAppUpdatePrepareAndStoreCommand::profile() {
   CHECK(web_contents_);
   CHECK(web_contents_->GetBrowserContext());
   return *Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+}
+
+IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo::UpdateInfo(
+    IsolatedWebAppLocation location,
+    absl::optional<base::Version> expected_version)
+    : location_(std::move(location)),
+      expected_version_(std::move(expected_version)) {}
+
+IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo::~UpdateInfo() = default;
+
+IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo::UpdateInfo(
+    const UpdateInfo&) = default;
+
+IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo&
+IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo::operator=(
+    const UpdateInfo&) = default;
+
+base::Value
+IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo::AsDebugValue() const {
+  return base::Value(
+      base::Value::Dict()
+          .Set("location", IsolatedWebAppLocationAsDebugValue(location_))
+          .Set("expected_version", expected_version_.has_value()
+                                       ? expected_version_->GetString()
+                                       : "<any>"));
 }
 
 }  // namespace web_app

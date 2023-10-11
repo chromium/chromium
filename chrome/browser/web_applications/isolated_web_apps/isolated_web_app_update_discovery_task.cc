@@ -301,7 +301,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded(
   }
 
   command_scheduler_->PrepareAndStoreIsolatedWebAppUpdate(
-      WebApp::IsolationData::PendingUpdateInfo(
+      IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
           InstalledBundle({.path = download_path}), expected_version),
       url_info_,
       /*optional_keep_alive=*/nullptr,
