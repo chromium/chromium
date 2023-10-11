@@ -484,9 +484,9 @@ void FilesPolicyNotificationManager::HandleDlpWarningNotificationClick(
       break;
 
     case NotificationButton::OK:
-      CHECK(warning_info->dialog_info.files().size() >= 1);
+      CHECK(warning_info->dialog_info.GetFiles().size() >= 1);
 
-      if (warning_info->dialog_info.files().size() == 1) {
+      if (warning_info->dialog_info.GetFiles().size() == 1) {
         // Action anyway.
         std::move(warning_info->warning_callback)
             .Run(/*user_justification=*/absl::nullopt, /*should_proceed=*/true);
@@ -636,7 +636,7 @@ bool FilesPolicyNotificationManager::FileTaskInfo::HasWarningInfo() const {
 void FilesPolicyNotificationManager::FileTaskInfo::SetBlockedFiles(
     FilesPolicyDialog::BlockReason reason,
     FilesPolicyDialog::Info dialog_info) {
-  if (dialog_info.files().empty()) {
+  if (dialog_info.GetFiles().empty()) {
     return;
   }
   auto it = block_info_map_.find(reason);
@@ -651,7 +651,7 @@ size_t FilesPolicyNotificationManager::FileTaskInfo::GetBlockedFilesSize()
     const {
   size_t size = 0;
   for (const auto& [_, dialog_info] : block_info_map_) {
-    size += dialog_info.files().size();
+    size += dialog_info.GetFiles().size();
   }
   return size;
 }
@@ -710,14 +710,15 @@ void FilesPolicyNotificationManager::ShowFilesPolicyNotification(
   absl::optional<FilesPolicyDialog::BlockReason> reason;
   FileTaskInfo& task_info = io_tasks_.at(task_id);
   if (HasWarning(task_id)) {
-    CHECK(!task_info.GetWarningInfo()->dialog_info.files().empty());
-    file_count = task_info.GetWarningInfo()->dialog_info.files().size();
-    file_name = task_info.GetWarningInfo()->dialog_info.files().begin()->title;
+    CHECK(!task_info.GetWarningInfo()->dialog_info.GetFiles().empty());
+    file_count = task_info.GetWarningInfo()->dialog_info.GetFiles().size();
+    file_name =
+        task_info.GetWarningInfo()->dialog_info.GetFiles().begin()->title;
   } else {
     CHECK(HasBlockedFiles(task_id));
     file_count = task_info.GetBlockedFilesSize();
     file_name =
-        task_info.block_info_map().begin()->second.files().front().title;
+        task_info.block_info_map().begin()->second.GetFiles().front().title;
     reason = task_info.block_info_map().begin()->first;
   }
   auto notification = file_manager::CreateSystemNotification(
@@ -758,8 +759,10 @@ void FilesPolicyNotificationManager::HandleFilesPolicyWarningNotificationClick(
       Cancel(task_id);
       break;
     case NotificationButton::OK:
-      if (io_tasks_.at(task_id).GetWarningInfo()->dialog_info.files().size() ==
-          1) {
+      if (io_tasks_.at(task_id)
+              .GetWarningInfo()
+              ->dialog_info.GetFiles()
+              .size() == 1) {
         // Single file - proceed.
         Resume(task_id);
       } else {
@@ -1242,10 +1245,10 @@ void FilesPolicyNotificationManager::PauseIOTask(
   file_manager::io_task::PauseParams pause_params;
   pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
       warning_reason,
-      io_tasks_.at(task_id).GetWarningInfo()->dialog_info.files().size(),
+      io_tasks_.at(task_id).GetWarningInfo()->dialog_info.GetFiles().size(),
       io_tasks_.at(task_id)
           .GetWarningInfo()
-          ->dialog_info.files()
+          ->dialog_info.GetFiles()
           .begin()
           ->file_path.BaseName()
           .value());

@@ -86,11 +86,11 @@ class FilesPolicyDialog : public PolicyDialogBase {
     bool operator==(const Info& other) const;
     bool operator!=(const Info& other) const;
 
-    const std::vector<DlpConfidentialFile>& files() const;
+    const std::vector<DlpConfidentialFile>& GetFiles() const;
 
     // For warning scenarios only, returns whether bypassing the warning
     // requires a user justification.
-    bool bypass_requires_justification() const;
+    bool DoesBypassRequireJustification() const;
 
     // Sets whether bypassing a warning requires a user justification.
     void SetBypassRequiresJustification(bool value);

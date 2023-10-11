@@ -35,7 +35,7 @@ FilesPolicyErrorDialog::FilesPolicyErrorDialog(
 
   file_count_ = 0;
   for (const auto& [reason, info] : files) {
-    file_count_ += info.files().size();
+    file_count_ += info.GetFiles().size();
   }
 
   AddGeneralInformation();
@@ -57,7 +57,7 @@ void FilesPolicyErrorDialog::MaybeAddConfidentialRows() {
       // Only add the reason if it's a mixed errors dialog.
       AddPolicyRow(reason);
     }
-    for (const auto& file : info.files()) {
+    for (const auto& file : info.GetFiles()) {
       AddConfidentialRow(file.icon, file.title);
     }
   }

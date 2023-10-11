@@ -83,7 +83,7 @@ FilesPolicyWarnDialog::FilesPolicyWarnDialog(
     gfx::NativeWindow modal_parent,
     absl::optional<DlpFileDestination> destination,
     Info dialog_info)
-    : FilesPolicyDialog(dialog_info.files().size(), action, modal_parent),
+    : FilesPolicyDialog(dialog_info.GetFiles().size(), action, modal_parent),
       destination_(destination),
       dialog_info_(dialog_info) {
   auto split = base::SplitOnceCallback(std::move(callback));
@@ -109,12 +109,13 @@ FilesPolicyWarnDialog::FilesPolicyWarnDialog(
 FilesPolicyWarnDialog::~FilesPolicyWarnDialog() = default;
 
 void FilesPolicyWarnDialog::MaybeAddConfidentialRows() {
-  if (action_ == dlp::FileAction::kDownload || dialog_info_.files().empty()) {
+  if (action_ == dlp::FileAction::kDownload ||
+      dialog_info_.GetFiles().empty()) {
     return;
   }
 
   SetupScrollView();
-  for (const auto& file : dialog_info_.files()) {
+  for (const auto& file : dialog_info_.GetFiles()) {
     AddConfidentialRow(file.icon, file.title);
   }
 }

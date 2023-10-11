@@ -93,11 +93,12 @@ bool FilesPolicyDialog::Info::operator!=(const Info& other) const {
   return !(*this == other);
 }
 
-const std::vector<DlpConfidentialFile>& FilesPolicyDialog::Info::files() const {
+const std::vector<DlpConfidentialFile>& FilesPolicyDialog::Info::GetFiles()
+    const {
   return files_;
 }
 
-bool FilesPolicyDialog::Info::bypass_requires_justification() const {
+bool FilesPolicyDialog::Info::DoesBypassRequireJustification() const {
   return bypass_requires_justification_;
 }
 
