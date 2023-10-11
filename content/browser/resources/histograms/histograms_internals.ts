@@ -260,11 +260,6 @@ document.addEventListener('DOMContentLoaded', function() {
   getRequiredElement('stop').onclick = stopMonitoring;
   getRequiredElement('subprocess_checkbox').onclick = requestHistograms;
 
-  // Enable calling generateHistogramsAsText() from
-  // histograms_internals_ui_browsertest.js for testing purposes.
-  // Enable accessing monitoring mode status from
-  // histograms_internals_ui_browsertest.js for testing purposes.
-  Object.assign(window, {generateHistogramsAsText, monitoringStopped});
   requestHistograms();
 });
 
