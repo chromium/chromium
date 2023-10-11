@@ -19,6 +19,8 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/wire/feed_query.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
@@ -645,6 +647,8 @@ void FeedNetworkImpl::Send(const GURL& url,
                            net::HttpRequestHeaders headers,
                            bool is_feed_query,
                            base::OnceCallback<void(RawResponse)> callback) {
+  TRACE_EVENT_BEGIN("android.ui.jank", "FeedNetwork",
+                    perfetto::Track::FromPointer(this), "url", url);
   auto fetch = std::make_unique<NetworkFetch>(
       url, request_method, std::move(request_body), delegate_,
       identity_manager_, loader_factory_.get(), api_key_, account_info,
@@ -734,6 +738,8 @@ void FeedNetworkImpl::SendComplete(
     base::OnceCallback<void(RawResponse)> callback,
     RawResponse raw_response) {
   DCHECK_EQ(1UL, pending_requests_.count(fetch));
+  TRACE_EVENT_END("android.ui.jank", perfetto::Track::FromPointer(this),
+                  "bytes", raw_response.response_info.response_body_bytes);
   pending_requests_.erase(fetch);
 
   std::move(callback).Run(std::move(raw_response));
