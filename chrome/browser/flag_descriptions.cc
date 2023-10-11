@@ -2823,6 +2823,11 @@ const char kBookmarksRefreshName[] = "Bookmarks refresh";
 const char kBookmarksRefreshDescription[] =
     "Enable various changes to bookmarks.";
 
+const char kSpeculationRulesPrerenderingTargetHintName[] =
+    "Speculation Rules API target hint";
+const char kSpeculationRulesPrerenderingTargetHintDescription[] =
+    "Enable target_hint param on Speculation Rules API for prerendering.";
+
 const char kSupportSearchSuggestionForPrerender2Name[] =
     "Prerender search suggestions";
 const char kSupportSearchSuggestionForPrerender2Description[] =
