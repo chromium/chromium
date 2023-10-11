@@ -10,7 +10,7 @@
 #include "components/allocation_recorder/crash_handler/memory_operation_report.pb.h"
 
 namespace base::debug::tracer {
-struct AllocationTraceRecorder;
+class AllocationTraceRecorder;
 }  // namespace base::debug::tracer
 
 namespace allocation_recorder::crash_handler {

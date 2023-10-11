@@ -50,7 +50,13 @@ using StackTraceContainer = std::array<const void*, kStackTraceSize>;
 // any of the Initialize*-functions while another thread A is currently
 // initializing, B's invocations shall immediately return |false| without
 // interfering with thread A.
-struct BASE_EXPORT OperationRecord {
+class BASE_EXPORT OperationRecord {
+ public:
+  constexpr OperationRecord() = default;
+
+  OperationRecord(const OperationRecord&) = delete;
+  OperationRecord& operator=(const OperationRecord&) = delete;
+
   // Is the record currently being taken?
   bool IsRecording() const;
 
@@ -198,7 +204,13 @@ struct BASE_EXPORT AllocationTraceRecorderStatistics {
 //
 // TODO(https://crbug.com/1419908): Evaluate the impact of the shared cache
 // lines between entries.
-struct BASE_EXPORT AllocationTraceRecorder {
+class BASE_EXPORT AllocationTraceRecorder {
+ public:
+  constexpr AllocationTraceRecorder() = default;
+
+  AllocationTraceRecorder(const AllocationTraceRecorder&) = delete;
+  AllocationTraceRecorder& operator=(const AllocationTraceRecorder&) = delete;
+
   // The allocation event observer interface. See the dispatcher for further
   // details. The functions are marked NO_INLINE. All other functions called but
   // the one taking the call stack are marked ALWAYS_INLINE. This way we ensure

@@ -6,7 +6,7 @@
 #define COMPONENTS_ALLOCATION_RECORDER_CRASH_CLIENT_CLIENT_H_
 
 namespace base::debug::tracer {
-struct AllocationTraceRecorder;
+class AllocationTraceRecorder;
 }
 
 namespace allocation_recorder::crash_client {

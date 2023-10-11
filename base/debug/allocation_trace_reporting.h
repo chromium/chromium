@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 
 namespace base::debug::tracer {
-struct AllocationTraceRecorder;
+class AllocationTraceRecorder;
 class SequenceSpecificData;
 
 // The reporting for AllocationTraceRecorder starts a reporting task which

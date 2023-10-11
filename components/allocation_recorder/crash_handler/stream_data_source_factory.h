@@ -12,7 +12,7 @@
 #include "base/strings/string_piece.h"
 
 namespace base::debug::tracer {
-struct AllocationTraceRecorder;
+class AllocationTraceRecorder;
 }
 
 namespace crashpad {
