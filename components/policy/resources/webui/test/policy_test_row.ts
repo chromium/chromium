@@ -262,7 +262,7 @@ export class PolicyTestRowElement extends CustomElement {
     if (this.inputType_ === String) {
       initialValues.value = this.trimSurroundingQuotes_(initialValues.value);
     }
-    policyValueInput.value = String(initialValues.value);
+    policyValueInput.value = JSON.stringify(initialValues.value);
   }
 
   // Event listener function for setting the select element background back to
