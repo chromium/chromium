@@ -76,31 +76,31 @@ DocumentScannerServiceClient::~DocumentScannerServiceClient() = default;
 
 void DocumentScannerServiceClient::CheckDocumentModeReadiness(
     OnReadyCallback callback) {
-  {
-    base::AutoLock auto_lock(load_status_lock_);
-    if (document_scanner_loaded_ == LoadStatus::LOADED ||
-        document_scanner_loaded_ == LoadStatus::LOAD_FAILED) {
-      std::move(callback).Run(document_scanner_loaded_ == LoadStatus::LOADED);
-      return;
-    }
-    on_ready_callbacks_.push_back(std::move(callback));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (document_scanner_loaded_ == LoadStatus::LOADED ||
+      document_scanner_loaded_ == LoadStatus::LOAD_FAILED) {
+    std::move(callback).Run(document_scanner_loaded_ == LoadStatus::LOADED);
+    return;
   }
+  on_ready_callbacks_.push_back(std::move(callback));
   LoadDocumentScanner();
 }
 
 bool DocumentScannerServiceClient::IsLoaded() {
-  base::AutoLock auto_lock(load_status_lock_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return document_scanner_loaded_ == LoadStatus::LOADED;
 }
 
 void DocumentScannerServiceClient::DetectCornersFromNV12Image(
     base::ReadOnlySharedMemoryRegion nv12_image,
     DetectCornersCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!IsLoaded()) {
     std::move(callback).Run(false, {});
     return;
   }
-
   document_scanner_->DetectCornersFromNV12Image(
       std::move(nv12_image),
       base::BindOnce(
@@ -115,11 +115,12 @@ void DocumentScannerServiceClient::DetectCornersFromNV12Image(
 void DocumentScannerServiceClient::DetectCornersFromJPEGImage(
     base::ReadOnlySharedMemoryRegion jpeg_image,
     DetectCornersCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!IsLoaded()) {
     std::move(callback).Run(false, {});
     return;
   }
-
   document_scanner_->DetectCornersFromJPEGImage(
       std::move(jpeg_image),
       base::BindOnce(
@@ -136,11 +137,12 @@ void DocumentScannerServiceClient::DoPostProcessing(
     const std::vector<gfx::PointF>& corners,
     Rotation rotation,
     DoPostProcessingCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!IsLoaded()) {
     std::move(callback).Run(false, {});
     return;
   }
-
   document_scanner_->DoPostProcessing(
       std::move(jpeg_image), corners, rotation,
       base::BindOnce(
@@ -158,26 +160,26 @@ DocumentScannerServiceClient::DocumentScannerServiceClient() {
 }
 
 void DocumentScannerServiceClient::OnMojoDisconnected() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   ml_service_.reset();
   document_scanner_.reset();
-  {
-    base::AutoLock auto_lock(load_status_lock_);
-    if (document_scanner_loaded_ == LoadStatus::LOAD_FAILED) {
-      return;
-    }
-    document_scanner_loaded_ = LoadStatus::NOT_LOADED;
+
+  if (document_scanner_loaded_ == LoadStatus::LOAD_FAILED) {
+    return;
   }
+  document_scanner_loaded_ = LoadStatus::NOT_LOADED;
   LoadDocumentScanner();
 }
 
 void DocumentScannerServiceClient::LoadDocumentScanner() {
-  {
-    base::AutoLock auto_lock(load_status_lock_);
-    if (document_scanner_loaded_ != LoadStatus::NOT_LOADED) {
-      return;
-    }
-    document_scanner_loaded_ = LoadStatus::LOADING;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (document_scanner_loaded_ != LoadStatus::NOT_LOADED) {
+    return;
   }
+  document_scanner_loaded_ = LoadStatus::LOADING;
+
   if (IsEnabledOnRootfs()) {
     LoadDocumentScannerInternal(kLibDocumentScannerDefaultDir);
   } else if (IsEnabledOnDlc()) {
@@ -193,6 +195,8 @@ void DocumentScannerServiceClient::LoadDocumentScanner() {
 
 void DocumentScannerServiceClient::LoadDocumentScannerInternal(
     const std::string& lib_path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (lib_path.empty()) {
     OnLoadedDocumentScanner(chromeos::machine_learning::mojom::LoadModelResult::
                                 FEATURE_NOT_SUPPORTED_ERROR);
@@ -215,7 +219,8 @@ void DocumentScannerServiceClient::LoadDocumentScannerInternal(
 
 void DocumentScannerServiceClient::OnLoadedDocumentScanner(
     chromeos::machine_learning::mojom::LoadModelResult result) {
-  base::AutoLock auto_lock(load_status_lock_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   document_scanner_loaded_ = result == LoadModelResult::OK
                                  ? LoadStatus::LOADED
                                  : LoadStatus::LOAD_FAILED;

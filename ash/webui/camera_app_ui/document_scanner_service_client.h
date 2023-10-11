@@ -78,21 +78,17 @@ class DocumentScannerServiceClient {
 
   void OnMojoDisconnected();
 
-  // Guards |document_scanner_loaded_| and |on_ready_callbacks_| which are
-  // related to the load status.
-  base::Lock load_status_lock_;
+  LoadStatus document_scanner_loaded_ = LoadStatus::NOT_LOADED;
 
-  LoadStatus document_scanner_loaded_ GUARDED_BY(load_status_lock_) =
-      LoadStatus::NOT_LOADED;
-
-  std::vector<OnReadyCallback> on_ready_callbacks_
-      GUARDED_BY(load_status_lock_);
+  std::vector<OnReadyCallback> on_ready_callbacks_;
 
   mojo::Remote<chromeos::machine_learning::mojom::MachineLearningService>
       ml_service_;
 
   mojo::Remote<chromeos::machine_learning::mojom::DocumentScanner>
       document_scanner_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<DocumentScannerServiceClient> weak_ptr_factory_{this};
 };
