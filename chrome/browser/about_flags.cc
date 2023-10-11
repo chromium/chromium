@@ -1457,10 +1457,6 @@ const FeatureEntry::FeatureVariation
          std::size(kOmniboxRichAutocompletionAggressive4), nullptr},
 };
 
-const FeatureEntry::FeatureParam kOmniboxMlUrlScoringCounterfactual[] = {
-    {"MlUrlScoringCounterfactual", "true"},
-    {"enable_scoring_signals_annotators_for_ml_scoring", "true"},
-};
 const FeatureEntry::FeatureParam kOmniboxMlUrlScoringRerankFinalMatchesOnly[] =
     {
         {"MlUrlScoringRerankFinalMatchesOnly", "true"},
@@ -1484,41 +1480,18 @@ const FeatureEntry::FeatureParam kOmniboxMlUrlScoringMaxMatchesByProvider10[] =
         {"enable_scoring_signals_annotators_for_ml_scoring", "true"},
 };
 
-const FeatureEntry::FeatureParam kOmniboxMlSyncUrlScoring[] = {
-    {"MlSyncBatchUrlScoring", "true"},
-    {"enable_scoring_signals_annotators_for_ml_scoring", "true"},
-};
-const FeatureEntry::FeatureParam
-    kOmniboxMlSyncUrlScoringRerankFinalMatchesOnly[] = {
-        {"MlUrlScoringRerankFinalMatchesOnly", "true"},
-        {"MlSyncBatchUrlScoring", "true"},
-        {"enable_scoring_signals_annotators_for_ml_scoring", "true"},
-};
-
 const FeatureEntry::FeatureVariation kOmniboxMlUrlScoringVariations[] = {
-    {"Run the model but do not rescore or rerank the matches (counterfactual)",
-     kOmniboxMlUrlScoringCounterfactual,
-     std::size(kOmniboxMlUrlScoringCounterfactual), nullptr},
-    {"Run the model on final set of matches only, do not preserve the legacy "
-     "default match",
-     kOmniboxMlUrlScoringRerankFinalMatchesOnly,
+    {"final matches only", kOmniboxMlUrlScoringRerankFinalMatchesOnly,
      std::size(kOmniboxMlUrlScoringRerankFinalMatchesOnly), nullptr},
-    {"Run the model on final set of matches only, preserve the legacy default "
-     "match",
+    {"final matches only, preserve legacy default match",
      kOmniboxMlUrlScoringPreserveDefault,
      std::size(kOmniboxMlUrlScoringPreserveDefault), nullptr},
-    {"Run the model with unlimited suggestion candidates",
+    {"unlimited suggestion candidates",
      kOmniboxMlUrlScoringUnlimitedNumCandidates,
      std::size(kOmniboxMlUrlScoringUnlimitedNumCandidates), nullptr},
     {"Increase provider max limit to 10",
      kOmniboxMlUrlScoringMaxMatchesByProvider10,
      std::size(kOmniboxMlUrlScoringMaxMatchesByProvider10), nullptr},
-    {"Run the model on both sync and async suggestion candidates",
-     kOmniboxMlSyncUrlScoring, std::size(kOmniboxMlSyncUrlScoring), nullptr},
-    {"Run the model on the culled set of both sync and async suggestion "
-     "candidates",
-     kOmniboxMlSyncUrlScoringRerankFinalMatchesOnly,
-     std::size(kOmniboxMlSyncUrlScoringRerankFinalMatchesOnly), nullptr},
 };
 const FeatureEntry::FeatureParam kRealboxTwoPreviousSearchRelatedSuggestions[] =
     {

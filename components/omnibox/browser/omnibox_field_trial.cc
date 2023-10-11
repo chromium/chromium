@@ -1061,7 +1061,7 @@ const base::FeatureParam<std::string> kMlUrlScoringMaxMatchesByProvider(
 // If true, synchronously runs the ML model for a batch of urls.
 const base::FeatureParam<bool> kMlSyncBatchUrlScoring(&omnibox::kMlUrlScoring,
                                                       "MlSyncBatchUrlScoring",
-                                                      false);
+                                                      true);
 
 MLConfig::MLConfig() {
   log_url_scoring_signals =
