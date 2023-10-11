@@ -45,6 +45,9 @@ void WaylandBufferManagerConnector::OnGpuServiceLaunched(
   // all bug fix ids are ready before initializing WaylandBufferManagerGpu. If
   // bug fix ids are already ready, it immediately calls OnAllBugFixesSent
   // synchronously.
+  // TODO(crbug.com/1487446): This always runs synchronously now due to the
+  // temporal solution for avoiding the race condition. It may return empty bug
+  // fix ids while there are ids sent from Ash.
   buffer_manager_host_->WaitForAllBugFixIds(
       base::BindOnce(&WaylandBufferManagerConnector::OnAllBugFixesSent,
                      weak_factory_.GetWeakPtr()));

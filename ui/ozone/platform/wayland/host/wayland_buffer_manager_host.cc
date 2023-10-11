@@ -14,6 +14,7 @@
 
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -127,6 +128,10 @@ void WaylandBufferManagerHost::OnCommitOverlayError(
 
 void WaylandBufferManagerHost::OnAllBugFixesSent(
     std::vector<uint32_t> bug_fix_ids) {
+  // TODO(crbug.com/1487446): Currently, we immediately call the callback when
+  // it's passed regardless of bug fix ids readiness, so it always falls into
+  // `all_bug_fixes_sent_callback_.is_null()` condition.
+
   // If `all_bug_fixes_sent_callback_` is not registered yet, `bug_fix_ids`
   // should be obtained by WaitBugFixIds call later.
   if (all_bug_fixes_sent_callback_.is_null()) {
@@ -155,9 +160,15 @@ void WaylandBufferManagerHost::WaitForAllBugFixIds(
     return;
   }
 
-  // If bug_fix_ids is not yet ready, wait until OnAllBugFixesSent is notified.
-  CHECK(all_bug_fixes_sent_callback_.is_null());
-  all_bug_fixes_sent_callback_ = std::move(callback);
+  // If bug fix ids are not yet ready, immediately call `callback` with empty
+  // list of bug fix ids to avoid delaying WaylandBufferManagerGpu
+  // initialization long enough to cause race condition on GPU setup. We should
+  // wait bug fix ids when the race condition will be fixed.
+  // TODO(crbug.com/1487446): Store `callback` to `all_bug_fixes_sent_callback_`
+  // and wait calling it until the bug fix ids are ready.
+  LOG(WARNING) << "Bug fix ids are not yet ready for WaylandBufferManagerGpu "
+               << "initialization. See crbug.com/1487446 for more details.";
+  std::move(callback).Run(std::vector<uint32_t>());
 }
 
 wl::BufferFormatsWithModifiersMap

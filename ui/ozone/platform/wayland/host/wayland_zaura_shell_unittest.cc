@@ -55,7 +55,9 @@ TEST_F(WaylandZAuraShellTest, CompositorVersion) {
   ASSERT_FALSE(connection_->zaura_shell()->compositor_version().IsValid());
 }
 
-TEST_F(WaylandZAuraShellTest, AllBugFixesSent) {
+// TODO(crbug.com/1487446): Disabled now since the bug fix ids feature is
+// partially disabled now until the race condition got resolved.
+TEST_F(WaylandZAuraShellTest, DISABLED_AllBugFixesSent) {
   connection_->zaura_shell()->ResetBugFixesStatusForTesting();
 
   ASSERT_FALSE(connection_->zaura_shell()->HasBugFix(1));
