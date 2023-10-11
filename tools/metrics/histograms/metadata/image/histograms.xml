@@ -43,6 +43,9 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="ImageFetcherClients">
+  <variant name=".AlmanacIcons"
+      summary="Downloads app icons for clients of the Almanac Server to
+               display."/>
   <variant name=".AnswerSuggestions"
       summary="Showing cache patterns only for AnswerSuggestions (valid until
                M117)."/>

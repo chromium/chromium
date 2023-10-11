@@ -5248,6 +5248,7 @@ static_library("browser") {
       "//ash/webui/system_extensions_internals_ui/mojom",
       "//build:chromeos_buildflags",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
+      "//chrome/browser/apps/almanac_api_client",
       "//chrome/browser/apps/app_deduplication_service",
       "//chrome/browser/apps/app_discovery_service",
       "//chrome/browser/apps/app_preload_service",
@@ -5417,6 +5418,9 @@ static_library("browser") {
       # TODO(crbug.com/1253318): Refactor window_management into ash/ and expose
       # the InstanceRegistry via an InstanceRegistryWrapper, then remove this.
       "//chrome/browser/ash/system_extensions/api/window_management",
+
+      # Dependent on ProfileKey and ImageFetcherServiceFactory.
+      "//chrome/browser/apps/almanac_api_client",
     ]
 
     if (target_cpu == "x64") {
