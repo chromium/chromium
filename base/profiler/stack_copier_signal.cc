@@ -15,13 +15,10 @@
 #include <cstring>
 
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/profiler/register_context.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/suspendable_thread_delegate.h"
-#include "base/time/default_tick_clock.h"
-#include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
@@ -98,17 +95,11 @@ class AsyncSafeWaitableEvent {
 // destructor.
 class ScopedEventSignaller {
  public:
-  ScopedEventSignaller(AsyncSafeWaitableEvent* event,
-                       absl::optional<TimeTicks>* signal_time)
-      : event_(event), signal_time_(signal_time) {}
-  ~ScopedEventSignaller() {
-    *signal_time_ = subtle::MaybeTimeTicksNowIgnoringOverride();
-    event_->Signal();
-  }
+  ScopedEventSignaller(AsyncSafeWaitableEvent* event) : event_(event) {}
+  ~ScopedEventSignaller() { event_->Signal(); }
 
  private:
   raw_ptr<AsyncSafeWaitableEvent> event_;
-  raw_ptr<absl::optional<TimeTicks>> signal_time_;
 };
 
 // Struct to store the arguments to the signal handler.
@@ -133,9 +124,6 @@ struct HandlerParams {
   // The timestamp when the stack was copied.
   raw_ptr<absl::optional<TimeTicks>> maybe_timestamp;
 
-  // The timestamp when |event| was signaled.
-  raw_ptr<absl::optional<TimeTicks>> maybe_timestamp_signaled;
-
   // The delegate provided to the StackCopier.
   raw_ptr<StackCopier::Delegate> stack_copier_delegate;
 };
@@ -158,7 +146,7 @@ void CopyStackSignalHandler(int n, siginfo_t* siginfo, void* sigcontext) {
   // to always succeed and is thus not signal-safe.
   *params->maybe_timestamp = subtle::MaybeTimeTicksNowIgnoringOverride();
 
-  ScopedEventSignaller e(params->event, params->maybe_timestamp_signaled);
+  ScopedEventSignaller e(params->event);
   *params->success = false;
 
   const ucontext_t* ucontext = static_cast<ucontext_t*>(sigcontext);
@@ -226,8 +214,7 @@ class ScopedSigaction {
 
 StackCopierSignal::StackCopierSignal(
     std::unique_ptr<ThreadDelegate> thread_delegate)
-    : thread_delegate_(std::move(thread_delegate)),
-      clock_(DefaultTickClock::GetInstance()) {}
+    : thread_delegate_(std::move(thread_delegate)) {}
 
 StackCopierSignal::~StackCopierSignal() = default;
 
@@ -241,21 +228,9 @@ bool StackCopierSignal::CopyStack(StackBuffer* stack_buffer,
   const uint8_t* stack_copy_bottom = nullptr;
   const uintptr_t stack_base_address = thread_delegate_->GetStackBaseAddress();
   absl::optional<TimeTicks> maybe_timestamp;
-  absl::optional<TimeTicks> maybe_timestamp_signaled;
-  HandlerParams params = {stack_base_address,
-                          &wait_event,
-                          &copied,
-                          thread_context,
-                          stack_buffer,
-                          &stack_copy_bottom,
-                          &maybe_timestamp,
-                          &maybe_timestamp_signaled,
-                          delegate};
-  TimeTicks signal_time;
-  TimeTicks wait_start_time;
-  TimeTicks wait_end_time;
-
-  RecordEvent(CopyStackEvent::kStarted);
+  HandlerParams params = {stack_base_address, &wait_event,  &copied,
+                          thread_context,     stack_buffer, &stack_copy_bottom,
+                          &maybe_timestamp,   delegate};
   {
     ScopedSetSignalHandlerParams scoped_handler_params(&params);
 
@@ -271,30 +246,21 @@ bool StackCopierSignal::CopyStack(StackBuffer* stack_buffer,
     // SIGURG is chosen here because we observe no crashes with this signal and
     // neither Chrome or the AOSP sets up a special handler for this signal.
     ScopedSigaction scoped_sigaction(SIGURG, &action, &original_action);
-    if (!scoped_sigaction.succeeded()) {
-      RecordEvent(CopyStackEvent::kSigactionFailed);
+    if (!scoped_sigaction.succeeded())
       return false;
-    }
-
-    signal_time = clock_->NowTicks();
 
     if (syscall(SYS_tgkill, getpid(), thread_delegate_->GetThreadId(),
                 SIGURG) != 0) {
-      RecordEvent(CopyStackEvent::kTgkillFailed);
       NOTREACHED();
       return false;
     }
-
-    wait_start_time = clock_->NowTicks();
     bool finished_waiting = wait_event.Wait();
     TRACE_EVENT_END0(TRACE_DISABLED_BY_DEFAULT("cpu_profiler.debug"),
                      "StackCopierSignal copy stack");
     if (!finished_waiting) {
-      RecordEvent(CopyStackEvent::kWaitFailed);
       NOTREACHED();
       return false;
     }
-    wait_end_time = clock_->NowTicks();
     // Ideally, an accurate timestamp is captured while the sampled thread is
     // paused. In rare cases, this may fail, in which case we resort to
     // capturing an delayed timestamp here instead.
@@ -303,43 +269,8 @@ bool StackCopierSignal::CopyStack(StackBuffer* stack_buffer,
     else {
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cpu_profiler.debug"),
                    "Fallback on TimeTicks::Now()");
-      *timestamp = clock_->NowTicks();
+      *timestamp = TimeTicks::Now();
     }
-  }
-
-  RecordEvent(CopyStackEvent::kSucceeded);
-  // Record UMA stats about how long everything took. Since the profiler can't
-  // profile the profiler, this is our only way to make sure the profiler isn't
-  // taking excessively long.
-  //
-  // All times are recorded in microseconds since TimeTicks::IsHighResolution()
-  // is always true on Posix systems, and we expect these to be very short
-  // times.
-  constexpr TimeDelta kMin = Microseconds(1);
-  constexpr TimeDelta kMax = Microseconds(200 * 1000);
-  constexpr int kBuckets = 100;
-
-  UmaHistogramCustomMicrosecondsTimes(
-      "UMA.StackProfiler.CopyStack.TotalCrossThreadTime",
-      wait_end_time - signal_time, kMin, kMax, kBuckets);
-  UmaHistogramCustomMicrosecondsTimes(
-      "UMA.StackProfiler.CopyStack.ProfileThreadTotalWaitTime",
-      wait_end_time - wait_start_time, kMin, kMax, kBuckets);
-  if (maybe_timestamp) {
-    UmaHistogramCustomMicrosecondsTimes(
-        "UMA.StackProfiler.CopyStack.SignalToHandlerTime",
-        *maybe_timestamp - signal_time, kMin, kMax, kBuckets);
-
-    if (maybe_timestamp_signaled) {
-      UmaHistogramCustomMicrosecondsTimes(
-          "UMA.StackProfiler.CopyStack.HandlerRunTime",
-          *maybe_timestamp_signaled - *maybe_timestamp, kMin, kMax, kBuckets);
-    }
-  }
-  if (maybe_timestamp_signaled) {
-    UmaHistogramCustomMicrosecondsTimes(
-        "UMA.StackProfiler.CopyStack.EventSignalToWaitEndTime",
-        wait_end_time - *maybe_timestamp_signaled, kMin, kMax, kBuckets);
   }
 
   const uintptr_t bottom = RegisterContextStackPointer(params.context);
@@ -355,11 +286,6 @@ bool StackCopierSignal::CopyStack(StackBuffer* stack_buffer,
                (stack_base_address - bottom);
 
   return copied;
-}
-
-// static
-void StackCopierSignal::RecordEvent(CopyStackEvent event) {
-  UmaHistogramEnumeration("UMA.StackProfiler.CopyStack.Event", event);
 }
 
 }  // namespace base
