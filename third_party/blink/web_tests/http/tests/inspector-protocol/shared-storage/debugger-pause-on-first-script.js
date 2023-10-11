@@ -30,8 +30,10 @@
 
   const paused = (await wp.Debugger.oncePaused()).params;
 
-  const location = paused.callFrames[0].functionLocation;
-  testRunner.log(`Paused at ${scripts.get(location.scriptId) ?? '<unknown>'}:${location.lineNumber}:${location.columnNumber}`);
+  const function_location = paused.callFrames[0].functionLocation;
+  const location = paused.callFrames[0].location;
+  testRunner.log(`Paused at ${scripts.get(function_location.scriptId) ?? '<unknown>'}:${function_location.lineNumber}:${function_location.columnNumber} (function location)`);
+  testRunner.log(`Paused at ${scripts.get(location.scriptId) ?? '<unknown>'}:${location.lineNumber}:${location.columnNumber} (location)`);
   worklet_session.evaluate(`testToken = 42;`);
   wp.Debugger.resume();
 

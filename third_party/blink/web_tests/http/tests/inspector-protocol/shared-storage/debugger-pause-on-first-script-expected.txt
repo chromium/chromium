@@ -12,6 +12,7 @@ Tests debugger pause in shared storage worklet.
     }
     waitingForDebugger : true
 }
-Paused at http://127.0.0.1:8000/inspector-protocol/shared-storage/resources/module.js:0:0
+Paused at http://127.0.0.1:8000/inspector-protocol/shared-storage/resources/module.js:0:0 (function location)
+Paused at http://127.0.0.1:8000/inspector-protocol/shared-storage/resources/module.js:4:16 (location)
 [WORKLET]: loaded module, test token: 42
 
