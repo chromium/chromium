@@ -64,10 +64,6 @@ config("compiler") {
   ]
 
   cflags_objcc = [
-    # Without this, the constructors and destructors of a C++ object inside
-    # an Objective C struct won't be called, which is very bad.
-    "-fobjc-call-cxx-cdtors",
-
     # When using -std=c++20 or higher, clang automatically returns true for
     # `__has_feature(modules)` as it enables cxx modules. This is problematic
     # because Objective-C code uses this to detect whether `@import` can be

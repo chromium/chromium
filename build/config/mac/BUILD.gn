@@ -43,10 +43,6 @@ config("compiler") {
   asmflags = common_mac_flags
   cflags = common_mac_flags
 
-  # Without this, the constructors and destructors of a C++ object inside
-  # an Objective C struct won't be called, which is very bad.
-  cflags_objcc = [ "-fobjc-call-cxx-cdtors" ]
-
   ldflags = common_mac_flags
 
   if (save_unstripped_output) {
