@@ -518,6 +518,9 @@ export class DirectoryModel extends EventTarget {
    * @private
    */
   onStateVolumeChanged_(state) {
+    if (!state.currentDirectory) {
+      return;
+    }
     for (const volume of Object.values(state.volumes)) {
       // Navigate out of ODFS if it got disabled and the current directory is
       // under ODFS.
