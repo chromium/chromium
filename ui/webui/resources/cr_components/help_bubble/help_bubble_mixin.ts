@@ -131,6 +131,7 @@ export const HelpBubbleMixin = dedupingMixin(
           assert(this.helpBubbleFixedAnchorObserver_);
           this.helpBubbleFixedAnchorObserver_.disconnect();
           this.helpBubbleFixedAnchorObserver_ = null;
+          this.helpBubbleDismissedEventTracker_.removeAll();
           this.helpBubbleControllerById_.clear();
           if (this.debouncedAnchorMayHaveChangedCallback_) {
             document.removeEventListener(
