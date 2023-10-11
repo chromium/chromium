@@ -72,10 +72,9 @@ base::ScopedFD GetPlaneFdForBo(gbm_bo* bo, size_t plane) {
   // anyways
   if (ret) {
     ret = drmPrimeHandleToFD(dev_fd, plane_handle, DRM_CLOEXEC, &fd);
-    return base::ScopedFD();
   }
 
-  return base::ScopedFD(fd);
+  return ret ? base::ScopedFD() : base::ScopedFD(fd);
 #endif
 }
 
