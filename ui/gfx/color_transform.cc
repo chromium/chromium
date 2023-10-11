@@ -62,11 +62,12 @@ bool IsHlgPqSdrRelative() {
 struct SkShaderUniforms {
   float offset = 0.f;
   float multiplier = 0.f;
-  float dst_sdr_max_luminance_nits = ColorSpace::kDefaultSDRWhiteLevel;
   float pq_tonemap_a = 1.f;
   float pq_tonemap_b = 1.f;
   float hlg_ootf_gamma_minus_one = 0.f;
   float hlg_dst_max_luminance_relative = 1.0f;
+  float nits_to_sdr_relative_factor = 0.f;
+  float sdr_relative_to_nits_factor = 0.f;
 };
 
 void InitStringStream(std::stringstream* ss) {
@@ -1035,74 +1036,79 @@ class ColorTransformToneMapInRec2020Linear : public ColorTransformStep {
 };
 
 // Converts from nits-relative (where 1.0 is `unity_nits` nits) to SDR-relative
-// (where 1.0 is SDR white). If `use_default_sdr_white` is true then use 203
-// nits for SDR white, otherwise use
-// `RuntimeOptions::dst_sdr_max_luminance_nits` for SDR white.
-// TODO(https://crbug.com/1421266, https://crbug.com/1483235): Use source HDR
-// metadata for this conversion.
-class ColorTransformNitsToSdrRelative : public ColorTransformStep {
+// (where 1.0 is SDR white). If `use_src_sdr_white` is true then use 203 nits
+// for SDR white, otherwise use `RuntimeOptions::dst_sdr_max_luminance_nits`
+// for SDR white.
+class ColorTransformSrcNitsToSdrRelative : public ColorTransformStep {
  public:
-  ColorTransformNitsToSdrRelative(float unity_nits, bool use_default_sdr_white)
-      : unity_nits_(unity_nits),
-        use_default_sdr_white_(use_default_sdr_white) {}
+  ColorTransformSrcNitsToSdrRelative(float unity_nits, bool use_src_sdr_white)
+      : unity_nits_(unity_nits), use_src_sdr_white_(use_src_sdr_white) {}
 
   // ColorTransformStep implementation:
   void Transform(ColorTransform::TriStim* color,
                  size_t num,
                  const ColorTransform::RuntimeOptions& options) const override {
-    const float sdr_white_nits = use_default_sdr_white_
-                                     ? ColorSpace::kDefaultSDRWhiteLevel
-                                     : options.dst_sdr_max_luminance_nits;
-    const float factor = unity_nits_ / sdr_white_nits;
+    const float factor = ComputeNitsToSdrRelativeFactor(options);
     for (size_t i = 0; i < num; i++) {
       color[i].Scale(factor);
     }
   }
   void AppendSkShaderSource(std::stringstream* src) const override {
-    *src << "  color.rgb *= " << unity_nits_ << " / ";
-    if (use_default_sdr_white_) {
-      *src << ColorSpace::kDefaultSDRWhiteLevel << ";";
-    } else {
-      *src << "dst_sdr_max_luminance_nits;\n";
-    }
+    *src << "  color.rgb *= nits_to_sdr_relative_factor;\n";
   }
   void SetShaderUniforms(const ColorTransform::RuntimeOptions& options,
                          SkShaderUniforms* uniforms) const override {
-    uniforms->dst_sdr_max_luminance_nits = options.dst_sdr_max_luminance_nits;
+    uniforms->nits_to_sdr_relative_factor =
+        ComputeNitsToSdrRelativeFactor(options);
   }
 
  private:
+  float ComputeNitsToSdrRelativeFactor(
+      const ColorTransform::RuntimeOptions& options) const {
+    // TODO(https://crbug.com/1421266, https://crbug.com/1483235): Use source
+    // HDR metadata for this conversion.
+    const float sdr_white_nits = use_src_sdr_white_
+                                     ? ColorSpace::kDefaultSDRWhiteLevel
+                                     : options.dst_sdr_max_luminance_nits;
+    return unity_nits_ / sdr_white_nits;
+  }
+
   const float unity_nits_;
-  const bool use_default_sdr_white_;
+  const bool use_src_sdr_white_;
 };
 
 // Converts from SDR-relative (where 1.0 is SDR white) to nits-relative (where
 // 1.0 is `unity_nits` nits). Use `RuntimeOptions::dst_sdr_max_luminance_nits`
 // for the number of nits of SDR white.
-class ColorTransformSdrToNitsRelative : public ColorTransformStep {
+class ColorTransformSdrToDstNitsRelative : public ColorTransformStep {
  public:
-  explicit ColorTransformSdrToNitsRelative(float unity_nits)
+  explicit ColorTransformSdrToDstNitsRelative(float unity_nits)
       : unity_nits_(unity_nits) {}
 
   // ColorTransformStep implementation:
   void Transform(ColorTransform::TriStim* color,
                  size_t num,
                  const ColorTransform::RuntimeOptions& options) const override {
-    const float factor = options.dst_sdr_max_luminance_nits / unity_nits_;
+    const float factor = ComputeSdrRelativeToNitsFactor(options);
     for (size_t i = 0; i < num; i++) {
       color[i].Scale(factor);
     }
   }
   void AppendSkShaderSource(std::stringstream* src) const override {
-    *src << "  color.rgb *= (dst_sdr_max_luminance_nits / " << unity_nits_
-         << ");\n";
+    *src << "  color.rgb *= sdr_relative_to_nits_factor;\n";
   }
   void SetShaderUniforms(const ColorTransform::RuntimeOptions& options,
                          SkShaderUniforms* uniforms) const override {
-    uniforms->dst_sdr_max_luminance_nits = options.dst_sdr_max_luminance_nits;
+    uniforms->sdr_relative_to_nits_factor =
+        ComputeSdrRelativeToNitsFactor(options);
   }
 
  private:
+  float ComputeSdrRelativeToNitsFactor(
+      const ColorTransform::RuntimeOptions& options) const {
+    return options.dst_sdr_max_luminance_nits / unity_nits_;
+  }
+
   const float unity_nits_;
 };
 
@@ -1146,8 +1152,8 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
       steps_.push_back(std::make_unique<ColorTransformPQToLinear>());
       break;
     case ColorSpace::TransferID::SCRGB_LINEAR_80_NITS:
-      steps_.push_back(std::make_unique<ColorTransformNitsToSdrRelative>(
-          80.f, /*use_default_sdr_white=*/false));
+      steps_.push_back(std::make_unique<ColorTransformSrcNitsToSdrRelative>(
+          80.f, /*use_src_sdr_white=*/false));
       break;
     case ColorSpace::TransferID::PIECEWISE_HDR: {
       skcms_TransferFunction fn;
@@ -1193,7 +1199,7 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
 
         // Convert from linear nits-relative space (where 1.0 is 1,000 nits) to
         // SDR-relative space (where 1.0 is SDR white).
-        steps_.push_back(std::make_unique<ColorTransformNitsToSdrRelative>(
+        steps_.push_back(std::make_unique<ColorTransformSrcNitsToSdrRelative>(
             kHLGRefMaxLumNits, IsHlgPqSdrRelative()));
 
         // If tone mapping is requested, tone map down to the available
@@ -1212,9 +1218,9 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
           steps_.push_back(std::make_unique<ColorTransformHLG_OOTF>());
         } else {
           // Scale such that the maximum value is 12 times 203 nits.
-          steps_.push_back(std::make_unique<ColorTransformNitsToSdrRelative>(
+          steps_.push_back(std::make_unique<ColorTransformSrcNitsToSdrRelative>(
               12.f * ColorSpace::kDefaultSDRWhiteLevel,
-              /*use_default_sdr_white=*/false));
+              /*use_src_sdr_white=*/false));
         }
       }
       break;
@@ -1222,7 +1228,7 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
     case ColorSpace::TransferID::PQ: {
       // Convert from linear nits-relative space (where 1.0 is 10,000 nits) to
       // SDR-relative space (where 1.0 is SDR white).
-      steps_.push_back(std::make_unique<ColorTransformNitsToSdrRelative>(
+      steps_.push_back(std::make_unique<ColorTransformSrcNitsToSdrRelative>(
           kPQRefMaxLumNits, IsHlgPqSdrRelative()));
 
       if (options.tone_map_pq_and_hlg_to_dst) {
@@ -1254,17 +1260,18 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
 
   switch (dst.GetTransferID()) {
     case ColorSpace::TransferID::HLG:
-      steps_.push_back(std::make_unique<ColorTransformSdrToNitsRelative>(
+      steps_.push_back(std::make_unique<ColorTransformSdrToDstNitsRelative>(
           gfx::ColorSpace::kDefaultSDRWhiteLevel));
       steps_.push_back(std::make_unique<ColorTransformHLG_OETF>());
       break;
     case ColorSpace::TransferID::PQ:
-      steps_.push_back(
-          std::make_unique<ColorTransformSdrToNitsRelative>(kPQRefMaxLumNits));
+      steps_.push_back(std::make_unique<ColorTransformSdrToDstNitsRelative>(
+          kPQRefMaxLumNits));
       steps_.push_back(std::make_unique<ColorTransformPQFromLinear>());
       break;
     case ColorSpace::TransferID::SCRGB_LINEAR_80_NITS:
-      steps_.push_back(std::make_unique<ColorTransformSdrToNitsRelative>(80.f));
+      steps_.push_back(
+          std::make_unique<ColorTransformSdrToDstNitsRelative>(80.f));
       break;
     case ColorSpace::TransferID::PIECEWISE_HDR: {
       skcms_TransferFunction fn;
@@ -1329,11 +1336,12 @@ sk_sp<SkRuntimeEffect> ColorTransformInternal::GetSkRuntimeEffect() const {
 
   src << "uniform half offset;\n"
       << "uniform half multiplier;\n"
-      << "uniform half dst_sdr_max_luminance_nits;\n"
       << "uniform half pq_tonemap_a;\n"
       << "uniform half pq_tonemap_b;\n"
       << "uniform half hlg_ootf_gamma_minus_one;\n"
       << "uniform half hlg_dst_max_luminance_relative;\n"
+      << "uniform half nits_to_sdr_relative_factor;\n"
+      << "uniform half sdr_relative_to_nits_factor;\n"
       << "\n"
       << "half4 main(half4 color) {\n"
       << "  // Un-premultiply alpha\n"
