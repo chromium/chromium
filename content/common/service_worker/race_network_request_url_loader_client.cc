@@ -365,7 +365,13 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::
     CommitAndCompleteResponseIfDataTransferFinished() {
   if (state_ == State::kDataTransferFinished) {
     CommitResponse();
-    CompleteResponse();
+    // Step back to State::kDataTransferFinished since MaybeCompleteResponse()
+    // completes the response only when kDataTransferFinished is set.
+    TransitionState(State::kDataTransferFinished);
+    // When handling the fallback, the network request may return the initial
+    // response, but may not be completed yet. Commit is done only when the
+    // request is completed.
+    MaybeCompleteResponse();
   }
 }
 
