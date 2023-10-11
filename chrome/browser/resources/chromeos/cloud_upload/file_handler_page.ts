@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {DialogTask, MetricsRecordedSetupPage, UserAction} from './cloud_upload.mojom-webui.js';

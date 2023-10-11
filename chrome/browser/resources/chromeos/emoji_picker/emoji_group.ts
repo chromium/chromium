@@ -6,13 +6,13 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './emoji_variants.js';
 
-import {assertInstanceof} from 'chrome://resources/js/assert_ts.js';
+import {assertInstanceof} from 'chrome://resources/js/assert.js';
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {VISUAL_CONTENT_WIDTH} from './constants.js';
-import {EmojiImageComponent} from './emoji_image.js';
 import {getTemplate} from './emoji_group.html.js';
+import {EmojiImageComponent} from './emoji_image.js';
 import {EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {createCustomEvent, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_IMG_BUTTON_CLICK, EMOJI_TEXT_BUTTON_CLICK, EMOJI_VARIANTS_SHOWN, EmojiClearRecentClickEvent, EmojiTextButtonClickEvent} from './events.js';
 import {CategoryEnum, EmojiVariants} from './types.js';

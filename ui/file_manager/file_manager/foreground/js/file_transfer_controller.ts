@@ -9,7 +9,7 @@
  */
 
 import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import {getDisallowedTransfers, grantAccess, startIOTask} from '../../common/js/api.js';

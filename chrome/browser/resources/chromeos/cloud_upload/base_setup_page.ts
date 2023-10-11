@@ -9,7 +9,7 @@
  * to switch pages or exit.
  */
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {getTemplate} from './base_setup_page.html.js';
 

@@ -4,7 +4,7 @@
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {BatteryChargeStatus, BatteryChargeStatusObserverRemote, BatteryHealth, BatteryHealthObserverRemote, BatteryInfo, CpuUsage, CpuUsageObserverRemote, MemoryUsage, MemoryUsageObserverRemote, SystemDataProviderInterface, SystemInfo} from './system_data_provider.mojom-webui.js';
 

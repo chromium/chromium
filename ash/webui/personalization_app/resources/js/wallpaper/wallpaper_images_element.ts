@@ -12,7 +12,7 @@
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '../../css/wallpaper.css.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {CurrentWallpaper, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {dismissTimeOfDayBanner} from '../ambient/ambient_controller.js';

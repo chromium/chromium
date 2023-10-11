@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 
 import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorSource, AcceleratorSubcategory, LayoutInfo, LayoutStyle, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo, StandardAcceleratorInfo, TextAcceleratorInfo} from './shortcut_types.js';

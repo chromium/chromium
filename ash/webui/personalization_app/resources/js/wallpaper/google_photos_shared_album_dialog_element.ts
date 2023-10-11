@@ -10,7 +10,7 @@
 import '../../css/cros_button_style.css.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isGooglePhotosSharedAlbumsEnabled} from '../load_time_booleans.js';

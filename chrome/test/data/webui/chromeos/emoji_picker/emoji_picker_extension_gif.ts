@@ -7,11 +7,11 @@ import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
 import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
 import {EMOJI_IMG_BUTTON_CLICK} from 'chrome://emoji-picker/events.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {initialiseEmojiPickerForTest, isGroupButtonActive, timeout, waitForCondition, waitWithTimeout, assertEmojiImageAlt} from './emoji_picker_test_util.js';
+import {assertEmojiImageAlt, initialiseEmojiPickerForTest, isGroupButtonActive, timeout, waitForCondition, waitWithTimeout} from './emoji_picker_test_util.js';
 import {TestEmojiPickerApiProxyImpl} from './test_emoji_picker_api_proxy.js';
 
 const ACTIVE_CATEGORY_BUTTON = 'category-button-active';

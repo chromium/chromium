@@ -9,7 +9,7 @@ import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browse
 import {AccordionTopCardElement} from 'chrome://cloud-upload/file_handler_card.js';
 import {FileHandlerPageElement} from 'chrome://cloud-upload/file_handler_page.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

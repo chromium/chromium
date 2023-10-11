@@ -9,7 +9,7 @@
 import '../../../css/common.css.js';
 import '../../../css/wallpaper.css.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {PersonalizationRouterElement} from '../../personalization_router_element.js';
 import {WithPersonalizationStore} from '../../personalization_store.js';

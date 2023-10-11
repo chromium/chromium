@@ -10,7 +10,7 @@ import './color_icon_element.js';
 import '../../css/common.css.js';
 import '../../css/cros_button_style.css.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
 import {BacklightColor, CurrentBacklightState} from '../../personalization_app.mojom-webui.js';

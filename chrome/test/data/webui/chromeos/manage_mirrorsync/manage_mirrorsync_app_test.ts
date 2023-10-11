@@ -8,7 +8,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {BrowserProxy} from 'chrome://manage-mirrorsync/browser_proxy.js';
 import {FolderSelector} from 'chrome://manage-mirrorsync/components/folder_selector.js';
 import {PageHandlerRemote} from 'chrome://manage-mirrorsync/manage_mirrorsync.mojom-webui.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {assertArrayEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';

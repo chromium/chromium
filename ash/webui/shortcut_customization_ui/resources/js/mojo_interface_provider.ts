@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {AcceleratorConfigurationProvider, AcceleratorConfigurationProviderRemote, AcceleratorResultData, AcceleratorsUpdatedObserverRemote, PolicyUpdatedObserverRemote, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 

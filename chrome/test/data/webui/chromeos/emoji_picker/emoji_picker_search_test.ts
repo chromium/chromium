@@ -5,7 +5,7 @@
 import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
 import {EmojiSearch} from 'chrome://emoji-picker/emoji_search.js';
 import {EMOJI_TEXT_BUTTON_CLICK} from 'chrome://emoji-picker/events.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertGT} from 'chrome://webui-test/chai_assert.js';
 
 import {initialiseEmojiPickerForTest, waitForCondition, waitWithTimeout} from './emoji_picker_test_util.js';

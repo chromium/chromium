@@ -4,7 +4,7 @@
 
 import './setup_cancel_dialog.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {CANCEL_SETUP_EVENT, NEXT_PAGE_EVENT} from './base_setup_page.js';
 import {MetricsRecordedSetupPage, UserAction} from './cloud_upload.mojom-webui.js';

@@ -7,7 +7,7 @@
  * that the user can select from.
  */
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {DefaultUserImage, UserImage} from '../../personalization_app.mojom-webui.js';

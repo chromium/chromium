@@ -16,7 +16,7 @@ import '../../css/cros_button_style.css.js';
 import './info_svg_element.js';
 import './google_photos_shared_album_dialog_element.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {CurrentAttribution, CurrentWallpaper, GooglePhotosPhoto, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {NetworkGuidInfo} from './diagnostics_types.js';
 import {Network, NetworkHealthProviderInterface, NetworkListObserverRemote, NetworkStateObserverRemote} from './network_health_provider.mojom-webui.js';

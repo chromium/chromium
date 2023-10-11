@@ -10,7 +10,7 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {PersonalizationRouterElement} from '../../personalization_router_element.js';
 import {WithPersonalizationStore} from '../../personalization_store.js';

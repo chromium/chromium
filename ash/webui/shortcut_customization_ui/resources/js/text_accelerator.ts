@@ -5,7 +5,7 @@
 import './input_key.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';

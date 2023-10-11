@@ -16,7 +16,7 @@ import './strings.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';

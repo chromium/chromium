@@ -15,7 +15,7 @@ import './ambient_theme_list_element.js';
 import './toggle_row_element.js';
 import './topic_source_list_element.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AmbientModeAlbum, AmbientTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';

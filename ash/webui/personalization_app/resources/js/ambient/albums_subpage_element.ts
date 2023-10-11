@@ -14,7 +14,7 @@ import './album_list_element.js';
 import './art_album_dialog_element.js';
 import '../../css/common.css.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {AmbientModeAlbum, TopicSource} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationRouterElement} from '../personalization_router_element.js';

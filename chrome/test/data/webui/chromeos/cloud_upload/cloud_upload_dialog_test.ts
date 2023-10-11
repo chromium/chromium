@@ -12,7 +12,7 @@ import {OfficeSetupCompletePageElement} from 'chrome://cloud-upload/office_setup
 import {SetupCancelDialogElement} from 'chrome://cloud-upload/setup_cancel_dialog.js';
 import {SignInPageElement} from 'chrome://cloud-upload/sign_in_page.js';
 import {WelcomePageElement} from 'chrome://cloud-upload/welcome_page.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

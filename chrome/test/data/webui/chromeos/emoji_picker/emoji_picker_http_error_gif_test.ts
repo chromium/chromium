@@ -5,7 +5,7 @@
 import {TRENDING_GROUP_ID} from 'chrome://emoji-picker/constants.js';
 import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
 import {EmojiSearch} from 'chrome://emoji-picker/emoji_search.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 

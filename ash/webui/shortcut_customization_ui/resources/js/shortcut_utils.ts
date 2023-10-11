@@ -5,7 +5,7 @@
 import '../strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 
 import {Accelerator, AcceleratorCategory, AcceleratorConfigResult, AcceleratorId, AcceleratorInfo, AcceleratorKeyState, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, Modifier, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from './shortcut_types.js';

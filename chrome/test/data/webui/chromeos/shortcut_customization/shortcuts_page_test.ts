@@ -4,7 +4,7 @@
 import 'chrome://shortcut-customization/js/shortcuts_page.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {AcceleratorRowElement} from 'chrome://shortcut-customization/js/accelerator_row.js';

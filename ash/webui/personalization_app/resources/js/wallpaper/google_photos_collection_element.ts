@@ -12,7 +12,7 @@ import '../../css/wallpaper.css.js';
 import '../../css/common.css.js';
 import './google_photos_zero_state_element.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperProviderInterface} from '../../personalization_app.mojom-webui.js';

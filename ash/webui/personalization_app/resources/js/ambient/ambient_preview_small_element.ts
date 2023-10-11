@@ -15,7 +15,7 @@ import './ambient_zero_state_svg_element.js';
 import '../../css/common.css.js';
 import '../../css/cros_button_style.css.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {AmbientUiVisibility} from '../../personalization_app.mojom-webui.js';
 import {isAmbientModeAllowed} from '../load_time_booleans.js';

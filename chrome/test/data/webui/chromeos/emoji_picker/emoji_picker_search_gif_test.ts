@@ -4,10 +4,10 @@
 
 import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
 import {EmojiSearch} from 'chrome://emoji-picker/emoji_search.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertGT} from 'chrome://webui-test/chai_assert.js';
 
-import {initialiseEmojiPickerForTest, timeout, waitForCondition, assertEmojiImageAlt} from './emoji_picker_test_util.js';
+import {assertEmojiImageAlt, initialiseEmojiPickerForTest, timeout, waitForCondition} from './emoji_picker_test_util.js';
 import {TestEmojiPickerApiProxyImpl} from './test_emoji_picker_api_proxy.js';
 
 

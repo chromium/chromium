@@ -14,7 +14,7 @@ import '../../css/common.css.js';
 import '../../css/wallpaper.css.js';
 import '../../css/cros_button_style.css.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {CurrentAttribution, CurrentWallpaper, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {isPersonalizationJellyEnabled} from '../load_time_booleans.js';

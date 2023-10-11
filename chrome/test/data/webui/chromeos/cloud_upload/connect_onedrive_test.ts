@@ -7,7 +7,7 @@ import 'chrome://cloud-upload/connect_onedrive.js';
 import {DialogPage, OperationType} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
 import {ConnectOneDriveElement} from 'chrome://cloud-upload/connect_onedrive.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {CloudUploadTestBrowserProxy, ProxyOptions} from './cloud_upload_test_browser_proxy.js';

@@ -9,7 +9,7 @@ import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browse
 import {CloudProvider, MoveConfirmationPageElement} from 'chrome://cloud-upload/move_confirmation_page.js';
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {CrosLottieEvent} from 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

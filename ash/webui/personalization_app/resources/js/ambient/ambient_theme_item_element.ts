@@ -10,7 +10,7 @@ import '../../css/common.css.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 
 import {AmbientTheme} from '../../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
