@@ -14,6 +14,7 @@ import '../../components/buttons/oobe_next_button.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 
@@ -26,15 +27,29 @@ const PasswordType = {
   GAIA_PASSWORD: 'gaia-password',
 };
 
+/**
+ * UI mode for the dialog.
+ * @enum {string}
+ */
+const PasswordSelectionState = {
+  SELECTION: 'selection',
+  PROGRESS: 'progress',
+};
 
 /**
  * @constructor
  * @extends {PolymerElement}
  * @implements {LoginScreenBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
  */
 const PasswordSelectionBase = mixinBehaviors(
-    [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+    [
+      OobeI18nBehavior,
+      OobeDialogHostBehavior,
+      LoginScreenBehavior,
+      MultiStepBehavior,
+    ],
     PolymerElement);
 
 /**
@@ -73,12 +88,35 @@ class PasswordSelection extends PasswordSelectionBase {
   /** @override */
   ready() {
     super.ready();
+
     this.initializeLoginScreen('PasswordSelectionScreen');
+  }
+  get EXTERNAL_API() {
+    return [
+      'showProgress',
+      'showPasswordChoice',
+    ];
+  }
+
+  get UI_STEPS() {
+    return PasswordSelectionState;
+  }
+
+  defaultUIStep() {
+    return PasswordSelectionState.PROGRESS;
   }
 
   // Invoked just before being shown. Contains all the data for the screen.
   onBeforeShow(data) {
     this.selectedPasswordType = PasswordType.LOCAL_PASSWORD;
+  }
+
+  showProgress() {
+    this.setUIStep(PasswordSelectionState.PROGRESS);
+  }
+
+  showPasswordChoice() {
+    this.setUIStep(PasswordSelectionState.SELECTION);
   }
 
   onBackClicked_() {

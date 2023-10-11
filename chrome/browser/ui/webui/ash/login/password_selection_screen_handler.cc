@@ -33,4 +33,12 @@ void PasswordSelectionScreenHandler::Show() {
   ShowInWebUI();
 }
 
+void PasswordSelectionScreenHandler::ShowProgress() {
+  CallExternalAPI("showProgress");
+}
+
+void PasswordSelectionScreenHandler::ShowPasswordChoice() {
+  CallExternalAPI("showPasswordChoice");
+}
+
 }  // namespace ash

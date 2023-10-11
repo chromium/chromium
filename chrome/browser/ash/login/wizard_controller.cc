@@ -1320,12 +1320,10 @@ void WizardController::OnLocalPasswordSetupScreenExit(
   OnScreenExit(LocalPasswordSetupView::kScreenId,
                LocalPasswordSetupScreen::GetResultString(result));
   switch (result) {
-    case LocalPasswordSetupScreen::Result::kDone:
-      ShowFingerprintSetupScreen();
-      return;
     case LocalPasswordSetupScreen::Result::kBack:
       ShowPasswordSelectionScreen();
       return;
+    case LocalPasswordSetupScreen::Result::kDone:
     case LocalPasswordSetupScreen::Result::kNotApplicable:
       ShowFingerprintSetupScreen();
       return;
@@ -2198,7 +2196,7 @@ void WizardController::OnPasswordSelectionScreenExit(
       return;
     }
     case PasswordSelectionScreen::Result::LOCAL_PASSWORD:
-      // TODO(b/291808449): Go to the new local password screen.
+      ShowLocalPasswordSetupScreen();
       return;
     case PasswordSelectionScreen::Result::GAIA_PASSWORD:
       // TODO(b/291808449): Screen should set up GAIA password

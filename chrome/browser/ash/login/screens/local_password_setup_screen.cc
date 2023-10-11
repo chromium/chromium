@@ -51,6 +51,8 @@ LocalPasswordSetupScreen::LocalPasswordSetupScreen(
 LocalPasswordSetupScreen::~LocalPasswordSetupScreen() = default;
 
 void LocalPasswordSetupScreen::ShowImpl() {
+  CHECK(!context()->skip_post_login_screens_for_tests);
+
   if (!view_) {
     return;
   }

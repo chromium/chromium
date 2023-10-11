@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/password_selection_screen_handler.h"
+#include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 
@@ -25,7 +26,7 @@ constexpr char kUserActionGaiaPassword[] = "gaia-password";
 
 // Returns `true` if the active Profile is enterprise managed.
 bool IsUserEnterpriseManaged() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
   return profile->GetProfilePolicyConnector()->IsManaged() &&
          !profile->IsChild();
 }
@@ -60,8 +61,8 @@ void PasswordSelectionScreen::ShowImpl() {
   if (!view_) {
     return;
   }
-
   view_->Show();
+  CheckPasswordPresence();
 }
 
 void PasswordSelectionScreen::HideImpl() {}
@@ -73,17 +74,23 @@ void PasswordSelectionScreen::OnUserAction(const base::Value::List& args) {
     return;
   }
   if (action_id == kUserActionLocalPassword) {
+    LOG(WARNING) << "Choice : Local password";
+    context()->knowledge_factor_setup.local_password_forced = false;
     exit_callback_.Run(Result::LOCAL_PASSWORD);
     return;
   }
   if (action_id == kUserActionGaiaPassword) {
-    exit_callback_.Run(Result::GAIA_PASSWORD);
+    LOG(WARNING) << "Choice : Online password";
+    SetGaiaPassword();
     return;
   }
   BaseScreen::OnUserAction(args);
 }
 
 bool PasswordSelectionScreen::MaybeSkip(WizardContext& wizard_context) {
+  CHECK(features::AreLocalPasswordsEnabledForConsumers());
+  // We do not check context.skip_post_login_screens_for_tests here,
+  // as we need to set up GAIA password anyway.
   const UserContext* user_context = nullptr;
   if (ash::features::ShouldUseAuthSessionStorage()) {
     CHECK(wizard_context.extra_factors_token.has_value());
@@ -103,12 +110,90 @@ bool PasswordSelectionScreen::MaybeSkip(WizardContext& wizard_context) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
-  if (IsUserEnterpriseManaged()) {
-    LOG(WARNING) << "Managed user must use Gaia password.";
-    exit_callback_.Run(Result::GAIA_PASSWORD);
-    return true;
-  }
   return false;
+}
+
+void PasswordSelectionScreen::CheckPasswordPresence() {
+  if (ash::features::ShouldUseAuthSessionStorage()) {
+    CHECK(context()->extra_factors_token.has_value());
+    auto* storage = ash::AuthSessionStorage::Get();
+    auto& token = context()->extra_factors_token.value();
+    CHECK(storage->IsValid(token));
+    storage->BorrowAsync(
+        FROM_HERE, token,
+        base::BindOnce(
+            &PasswordSelectionScreen::CheckPasswordPresenceWithContext,
+            weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    CheckPasswordPresenceWithContext(
+        std::move(context()->extra_factors_auth_session));
+  }
+}
+
+void PasswordSelectionScreen::CheckPasswordPresenceWithContext(
+    std::unique_ptr<UserContext> user_context) {
+  if (!user_context) {
+    // Session have expired
+    LOG(ERROR) << "Session expired while waiting for user's decision";
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return;
+  }
+
+  bool has_online_password = user_context->GetOnlinePassword().has_value();
+  bool has_password_in_cryptohme =
+      user_context->GetAuthFactorsConfiguration().HasConfiguredFactor(
+          cryptohome::AuthFactorType::kPassword);
+
+  if (ash::features::ShouldUseAuthSessionStorage()) {
+    CHECK(context()->extra_factors_token.has_value());
+    auto* storage = ash::AuthSessionStorage::Get();
+    auto& token = context()->extra_factors_token.value();
+    storage->Return(token, std::move(user_context));
+  } else {
+    context()->extra_factors_auth_session = std::move(user_context);
+  }
+
+  if (context()->skip_post_login_screens_for_tests) {
+    LOG(WARNING) << "Skipping post-login screens, assuming that user has "
+                    "online password";
+    CHECK(has_online_password)
+        << "Skipping post-login screens requires non-empty GAIA password";
+    SetGaiaPassword();
+  }
+
+  if (has_password_in_cryptohme) {
+    LOG(WARNING) << "User already has a password configured.";
+    exit_callback_.Run(Result::GAIA_PASSWORD);
+    return;
+  }
+
+  if (IsUserEnterpriseManaged()) {
+    LOG(WARNING) << "Managed user must use online password.";
+    CHECK(has_online_password)
+        << "Managed users should have online password by this point";
+    SetGaiaPassword();
+    return;
+  }
+
+  if (!has_online_password) {
+    LOG(WARNING)
+        << "User does not have online password, forcing local password";
+    context()->knowledge_factor_setup.local_password_forced = true;
+    exit_callback_.Run(Result::LOCAL_PASSWORD);
+    return;
+  }
+  view_->ShowPasswordChoice();
+}
+
+void PasswordSelectionScreen::SetGaiaPassword() {
+  // TODO(b/291808449): Use PasswordFactorEditor here once it is implemented.
+  view_->ShowProgress();
+  OnGaiaPasswordSet();
+}
+
+void PasswordSelectionScreen::OnGaiaPasswordSet() {
+  exit_callback_.Run(Result::GAIA_PASSWORD);
+  return;
 }
 
 }  // namespace ash

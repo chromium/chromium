@@ -24,6 +24,9 @@ class PasswordSelectionScreenView
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
+
+  virtual void ShowProgress() = 0;
+  virtual void ShowPasswordChoice() = 0;
 };
 
 class PasswordSelectionScreenHandler : public PasswordSelectionScreenView,
@@ -43,6 +46,8 @@ class PasswordSelectionScreenHandler : public PasswordSelectionScreenView,
  private:
   // PasswordSelectionScreenView
   void Show() override;
+  void ShowProgress() override;
+  void ShowPasswordChoice() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(

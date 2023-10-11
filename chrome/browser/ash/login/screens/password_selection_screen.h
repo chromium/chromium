@@ -11,6 +11,8 @@
 
 namespace ash {
 
+class UserContext;
+
 class PasswordSelectionScreenView;
 
 // Controller for the Password Selection Screen, which allows the user to choose
@@ -47,6 +49,12 @@ class PasswordSelectionScreen : public BaseScreen {
   bool MaybeSkip(WizardContext& context) override;
 
  private:
+  void SetGaiaPassword();
+  void OnGaiaPasswordSet();
+  void CheckPasswordPresence();
+  void CheckPasswordPresenceWithContext(
+      std::unique_ptr<UserContext> user_context);
+
   base::WeakPtr<PasswordSelectionScreenView> view_ = nullptr;
   ScreenExitCallback exit_callback_;
   base::WeakPtrFactory<PasswordSelectionScreen> weak_ptr_factory_{this};
