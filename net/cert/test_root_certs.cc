@@ -81,8 +81,9 @@ TestRootCerts::TestRootCerts() {
 
 ScopedTestRoot::ScopedTestRoot() = default;
 
-ScopedTestRoot::ScopedTestRoot(X509Certificate* cert, CertificateTrust trust) {
-  Reset({cert}, trust);
+ScopedTestRoot::ScopedTestRoot(scoped_refptr<X509Certificate> cert,
+                               CertificateTrust trust) {
+  Reset({std::move(cert)}, trust);
 }
 
 ScopedTestRoot::ScopedTestRoot(CertificateList certs, CertificateTrust trust) {
@@ -109,7 +110,7 @@ void ScopedTestRoot::Reset(CertificateList certs, CertificateTrust trust) {
     TestRootCerts::GetInstance()->Clear();
   for (const auto& cert : certs)
     TestRootCerts::GetInstance()->Add(cert.get(), trust);
-  certs_ = certs;
+  certs_ = std::move(certs);
 }
 
 ScopedTestKnownRoot::ScopedTestKnownRoot() = default;

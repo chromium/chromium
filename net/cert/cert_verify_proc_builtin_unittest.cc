@@ -615,7 +615,7 @@ TEST_F(CertVerifyProcBuiltinTest, UnknownSignatureAlgorithmTarget) {
   leaf->SetSignatureAlgorithmTLV(UnknownSignatureAlgorithmTLV());
 
   // Trust the root and build a chain to verify that includes the intermediate.
-  ScopedTestRoot scoped_root(root->GetX509Certificate().get());
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 
@@ -639,7 +639,7 @@ TEST_F(CertVerifyProcBuiltinTest,
   leaf->SetTBSSignatureAlgorithmTLV(InvalidSignatureAlgorithmTLV());
 
   // Trust the root and build a chain to verify.
-  ScopedTestRoot scoped_root(root->GetX509Certificate().get());
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 
@@ -661,7 +661,7 @@ TEST_F(CertVerifyProcBuiltinTest, UnknownSignatureAlgorithmIntermediate) {
   intermediate->SetSignatureAlgorithmTLV(UnknownSignatureAlgorithmTLV());
 
   // Trust the root and build a chain to verify that includes the intermediate.
-  ScopedTestRoot scoped_root(root->GetX509Certificate().get());
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 
@@ -685,7 +685,7 @@ TEST_F(CertVerifyProcBuiltinTest,
   intermediate->SetTBSSignatureAlgorithmTLV(InvalidSignatureAlgorithmTLV());
 
   // Trust the root and build a chain to verify that includes the intermediate.
-  ScopedTestRoot scoped_root(root->GetX509Certificate().get());
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
   ASSERT_EQ(chain->intermediate_buffers().size(), 1U);
@@ -708,7 +708,7 @@ TEST_F(CertVerifyProcBuiltinTest, UnknownSignatureAlgorithmRoot) {
   root->SetSignatureAlgorithmTLV(UnknownSignatureAlgorithmTLV());
 
   // Trust the root and build a chain to verify that includes the intermediate.
-  ScopedTestRoot scoped_root(root->GetX509Certificate().get());
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 
@@ -742,7 +742,7 @@ TEST_F(CertVerifyProcBuiltinTest,
   root->SetTBSSignatureAlgorithmTLV(InvalidSignatureAlgorithmTLV());
 
   // Trust the root and build a chain to verify that includes the intermediate.
-  ScopedTestRoot scoped_root(root->GetX509Certificate().get());
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 

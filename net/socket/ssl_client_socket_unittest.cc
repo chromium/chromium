@@ -2620,7 +2620,7 @@ TEST_P(SSLClientSocketVersionTest, VerifyReturnChainProperlyOrdered) {
   scoped_refptr<X509Certificate> root_cert = ImportCertFromFile(
       GetTestCertsDirectory(), "redundant-validated-chain-root.pem");
   ASSERT_NE(static_cast<X509Certificate*>(nullptr), root_cert.get());
-  ScopedTestRoot scoped_root(root_cert.get());
+  ScopedTestRoot scoped_root(root_cert);
 
   // Set up a test server with CERT_CHAIN_WRONG_ROOT.
   ASSERT_TRUE(StartEmbeddedTestServer(EmbeddedTestServer::CERT_CHAIN_WRONG_ROOT,

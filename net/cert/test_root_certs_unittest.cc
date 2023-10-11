@@ -68,7 +68,7 @@ TEST(TestRootCertsTest, AddFromPointer) {
   EXPECT_TRUE(test_roots->IsEmpty());
 
   {
-    ScopedTestRoot scoped_root(root_cert.get());
+    ScopedTestRoot scoped_root(root_cert);
     EXPECT_FALSE(test_roots->IsEmpty());
   }
   EXPECT_TRUE(test_roots->IsEmpty());
@@ -105,7 +105,7 @@ TEST(TestRootCertsTest, OverrideTrust) {
   scoped_refptr<X509Certificate> root_cert =
       ImportCertFromFile(GetTestCertsDirectory(), kRootCertificateFile);
   ASSERT_TRUE(root_cert);
-  ScopedTestRoot scoped_root(root_cert.get());
+  ScopedTestRoot scoped_root(root_cert);
   EXPECT_FALSE(test_roots->IsEmpty());
 
   // Test that the certificate verification now succeeds, because the
@@ -149,7 +149,7 @@ TEST(TestRootCertsTest, OverrideKnownRoot) {
   auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
 
   // Add the root certificate and mark it as trusted and as a known root.
-  ScopedTestRoot scoped_root(root->GetX509Certificate().get());
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
   ScopedTestKnownRoot scoped_known_root(root->GetX509Certificate().get());
   EXPECT_FALSE(test_roots->IsEmpty());
 
@@ -175,7 +175,7 @@ TEST(TestRootCertsTest, OverrideKnownRoot) {
   // lingers, it will likely break other tests in net_unittests.
   // Trust the root again so that the `is_issued_by_known_root` value will be
   // calculated, and ensure that it is false now.
-  ScopedTestRoot scoped_root2(root->GetX509Certificate().get());
+  ScopedTestRoot scoped_root2(root->GetX509Certificate());
   CertVerifyResult restored_verify_result;
   int restored_status =
       verify_proc->Verify(leaf->GetX509Certificate().get(), "www.example.com",
@@ -220,7 +220,7 @@ TEST(TestRootCertsTest, Moveable) {
       scoped_refptr<X509Certificate> root_cert =
           ImportCertFromFile(GetTestCertsDirectory(), kRootCertificateFile);
       ASSERT_TRUE(root_cert);
-      ScopedTestRoot scoped_root_inner(root_cert.get());
+      ScopedTestRoot scoped_root_inner(root_cert);
       EXPECT_FALSE(test_roots->IsEmpty());
 
       // Test that the certificate verification now succeeds, because the

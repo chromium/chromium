@@ -303,7 +303,7 @@ ScopedTestRoot EmbeddedTestServer::RegisterTestCerts() {
   auto root = ImportCertFromFile(GetRootCertPemPath());
   if (!root)
     return ScopedTestRoot();
-  return ScopedTestRoot(root.get());
+  return ScopedTestRoot(root);
 }
 
 void EmbeddedTestServer::SetConnectionListener(

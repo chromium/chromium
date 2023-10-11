@@ -109,7 +109,7 @@ class NET_EXPORT ScopedTestRoot {
   // |trust| may be specified to change the details of how the trust is
   // interpreted (applies only to CertVerifyProcBuiltin).
   explicit ScopedTestRoot(
-      X509Certificate* cert,
+      scoped_refptr<X509Certificate> cert,
       CertificateTrust trust = CertificateTrust::ForTrustAnchor());
   // Creates a ScopedTestRoot that adds |certs| to the TestRootCerts store.
   // |trust| may be specified to change the details of how the trust is

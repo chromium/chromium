@@ -117,8 +117,7 @@ bool VerifyUsingCertVerifyProc(
       PrintCertError("ERROR: X509Certificate::CreateFromBytes failed:",
                      cert_input_with_trust.cert_input);
     } else {
-      scoped_test_roots.emplace_back(x509_root.get(),
-                                     cert_input_with_trust.trust);
+      scoped_test_roots.emplace_back(x509_root, cert_input_with_trust.trust);
     }
   }
 
