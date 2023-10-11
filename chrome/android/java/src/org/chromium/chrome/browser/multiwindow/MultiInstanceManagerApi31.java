@@ -343,7 +343,20 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         mTabModelObserver = new TabModelSelectorTabModelObserver(selector) {
             @Override
             public void didSelectTab(Tab tab, int type, int lastId) {
-                if (mActiveTab == tab) return;
+                // We will check if |mActiveTab| is the same as the selected |tab| to avoid a
+                // superfluous update to an instance's stored active tab info that remains
+                // unchanged.
+                // The check on |lastId| is required to continue updating this info for an instance
+                // even when |mActiveTab| is the same as the selected |tab|, in the following
+                // scenario:
+                // If |mActiveTab| is the last tab in instance 1, and is moved to instance 2,
+                // instance 1 stores "empty" active tab information since it now contains no tabs.
+                // When |mActiveTab| is moved back to instance 1, |mActiveTab| is now the same as
+                // the selected |tab| in instance 1, however instance 1's active tab information
+                // will not be updated, unless we establish that this instance is currently holding
+                // "empty" info, reflected by the fact that it has an invalid last selected tab ID,
+                // so it's active tab info can then be updated.
+                if (mActiveTab == tab && lastId != Tab.INVALID_TAB_ID) return;
                 if (mActiveTab != null) mActiveTab.removeObserver(mActiveTabObserver);
                 mActiveTab = tab;
                 if (mActiveTab != null) {
