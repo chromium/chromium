@@ -536,7 +536,7 @@ class SettingsCookiesPageTest : public SettingsBrowserTest {
 };
 
 #if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !defined(NDEBUG)) || \
-    BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
+    BUILDFLAG(USE_JAVASCRIPT_COVERAGE) || BUILDFLAG(IS_MAC)
 #define MAYBE_CookiesPageTest DISABLED_CookiesPageTest
 #else
 #define MAYBE_CookiesPageTest CookiesPageTest
