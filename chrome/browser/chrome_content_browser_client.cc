@@ -7401,7 +7401,8 @@ void ChromeContentBrowserClient::GetMediaDeviceIDSalt(
   media_device_salt::MediaDeviceSaltService* salt_service =
       MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
           browser_context);
-  if (!salt_service) {
+  if (!allowed || !salt_service) {
+    // Use ephemeral salt.
     std::move(callback).Run(allowed, browser_context->UniqueId());
     return;
   }
