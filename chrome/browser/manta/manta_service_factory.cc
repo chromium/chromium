@@ -12,6 +12,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/manta/features.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
 
 namespace manta {
 
@@ -38,8 +39,10 @@ std::unique_ptr<KeyedService>
 MantaServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* const context) const {
   Profile* const profile = Profile::FromBrowserContext(context);
-
-  return std::make_unique<MantaService>(profile);
+  return std::make_unique<MantaService>(
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess(),
+      IdentityManagerFactory::GetForProfile(profile));
 }
 
 bool MantaServiceFactory::ServiceIsCreatedWithBrowserContext() const {

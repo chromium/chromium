@@ -6,40 +6,40 @@
 
 #include <memory>
 
-#include "base/check.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/manta/orca_provider.h"
 #include "components/manta/snapper_provider.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "content/public/browser/storage_partition.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace manta {
 
-MantaService::MantaService(Profile* const profile) : profile_(profile) {
-  CHECK(profile_);
-}
+MantaService::MantaService(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    signin::IdentityManager* identity_manager)
+    : shared_url_loader_factory_(shared_url_loader_factory),
+      identity_manager_(identity_manager) {}
+
+MantaService::~MantaService() = default;
 
 std::unique_ptr<OrcaProvider> MantaService::CreateOrcaProvider() {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
-  CHECK(identity_manager);
-
-  return std::make_unique<OrcaProvider>(
-      profile_->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess(),
-      identity_manager);
+  if (!identity_manager_) {
+    return nullptr;
+  }
+  return std::make_unique<OrcaProvider>(shared_url_loader_factory_,
+                                        identity_manager_);
 }
 
 std::unique_ptr<SnapperProvider> MantaService::CreateSnapperProvider() {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
-  CHECK(identity_manager);
+  if (!identity_manager_) {
+    return nullptr;
+  }
+  return std::make_unique<SnapperProvider>(shared_url_loader_factory_,
+                                           identity_manager_);
+}
 
-  return std::make_unique<SnapperProvider>(
-      profile_->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess(),
-      identity_manager);
+void MantaService::Shutdown() {
+  identity_manager_ = nullptr;
 }
 
 }  // namespace manta

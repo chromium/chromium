@@ -8,39 +8,51 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-class Profile;
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace manta {
 
 class OrcaProvider;
 class SnapperProvider;
 
-// The MantaService class is a Profile keyed service for the chrome Manta
+// The MantaService class is a KeyedService for the Chrome/ChromeOS Manta
 // project. It serves two main functions:
 // 1. It hands clients instances to specific providers for calling and
 // interacting with google services relevant to the Manta project.
-// 2. It provides utility methods for clients to query profile specific
-// information relevant to the Manta project.
+// 2. It provides utility methods for clients to query specific information
+// relevant to the Manta project.
 class MantaService : public KeyedService {
  public:
-  explicit MantaService(Profile* profile);
+  MantaService(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      signin::IdentityManager* identity_manager);
 
   MantaService(const MantaService&) = delete;
   MantaService& operator=(const MantaService&) = delete;
 
+  ~MantaService() override;
+
   // Returns a unique pointer to an instance of the Providers for the
   // profile associated with the MantaService instance from which this method
   // is called.
-  // NOTE: The returned Provider instance is tied to the
-  // IdentityManager and should not be called past its lifetime. See
-  // `Provider` header for details.
   std::unique_ptr<OrcaProvider> CreateOrcaProvider();
   virtual std::unique_ptr<SnapperProvider> CreateSnapperProvider();
 
+  // KeyedService:
+  void Shutdown() override;
+
  private:
-  const raw_ptr<Profile> profile_;
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 };
 
 }  // namespace manta
