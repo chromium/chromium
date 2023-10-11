@@ -864,7 +864,7 @@ void CloudOpenTask::FinishedOneDriveUpload(
 void CloudOpenTask::LogGoogleDriveOpenResultUMA(
     OfficeTaskResult success_task_result,
     OfficeDriveOpenErrors open_result) {
-  UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName, open_result);
+  cloud_open_metrics_->LogGoogleDriveOpenError(open_result);
   cloud_open_metrics_->LogTaskResult(open_result ==
                                              OfficeDriveOpenErrors::kSuccess
                                          ? success_task_result

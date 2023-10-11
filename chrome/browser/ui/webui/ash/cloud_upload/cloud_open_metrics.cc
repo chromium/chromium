@@ -11,6 +11,7 @@ namespace ash::cloud_upload {
 
 CloudOpenMetrics::CloudOpenMetrics(CloudProvider cloud_provider)
     : cloud_provider_(cloud_provider),
+      drive_open_error_(kDriveErrorMetricName),
       one_drive_open_error_(kOneDriveErrorMetricName),
       task_result_(cloud_provider_ == CloudProvider::kGoogleDrive
                        ? kGoogleDriveTaskResultMetricName
@@ -23,6 +24,10 @@ CloudOpenMetrics::CloudOpenMetrics(CloudProvider cloud_provider)
                          : kOneDriveUploadResultMetricName) {}
 
 CloudOpenMetrics::~CloudOpenMetrics() = default;
+
+void CloudOpenMetrics::LogGoogleDriveOpenError(OfficeDriveOpenErrors value) {
+  drive_open_error_.Log(value);
+}
 
 void CloudOpenMetrics::LogOneDriveOpenError(OfficeOneDriveOpenErrors value) {
   one_drive_open_error_.Log(value);

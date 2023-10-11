@@ -99,33 +99,28 @@ void LogGoogleDriveOpenErrorUmaAfterFallback(
     std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics) {
   switch (fallback_reason) {
     case ash::office_fallback::FallbackReason::kOffline:
-      UMA_HISTOGRAM_ENUMERATION(
-          ash::cloud_upload::kDriveErrorMetricName,
+      cloud_open_metrics->LogGoogleDriveOpenError(
           ash::cloud_upload::OfficeDriveOpenErrors::kOffline);
       break;
     case ash::office_fallback::FallbackReason::kDriveDisabled:
-      UMA_HISTOGRAM_ENUMERATION(
-          ash::cloud_upload::kDriveErrorMetricName,
+      cloud_open_metrics->LogGoogleDriveOpenError(
           ash::cloud_upload::OfficeDriveOpenErrors::kDriveDisabled);
       break;
     case ash::office_fallback::FallbackReason::kNoDriveService:
-      UMA_HISTOGRAM_ENUMERATION(
-          ash::cloud_upload::kDriveErrorMetricName,
+      cloud_open_metrics->LogGoogleDriveOpenError(
           ash::cloud_upload::OfficeDriveOpenErrors::kNoDriveService);
       break;
     case ash::office_fallback::FallbackReason::kDriveAuthenticationNotReady:
-      UMA_HISTOGRAM_ENUMERATION(ash::cloud_upload::kDriveErrorMetricName,
-                                ash::cloud_upload::OfficeDriveOpenErrors::
-                                    kDriveAuthenticationNotReady);
+      cloud_open_metrics->LogGoogleDriveOpenError(
+          ash::cloud_upload::OfficeDriveOpenErrors::
+              kDriveAuthenticationNotReady);
       break;
     case ash::office_fallback::FallbackReason::kDriveFsInterfaceError:
-      UMA_HISTOGRAM_ENUMERATION(
-          ash::cloud_upload::kDriveErrorMetricName,
+      cloud_open_metrics->LogGoogleDriveOpenError(
           ash::cloud_upload::OfficeDriveOpenErrors::kDriveFsInterface);
       break;
     case ash::office_fallback::FallbackReason::kMeteredConnection:
-      UMA_HISTOGRAM_ENUMERATION(
-          ash::cloud_upload::kDriveErrorMetricName,
+      cloud_open_metrics->LogGoogleDriveOpenError(
           ash::cloud_upload::OfficeDriveOpenErrors::kMeteredConnection);
       break;
   }
