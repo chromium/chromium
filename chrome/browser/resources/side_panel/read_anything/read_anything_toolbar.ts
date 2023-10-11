@@ -72,6 +72,7 @@ enum ReadAnythingSettingsChange {
 
 const SETTINGS_CHANGE_UMA = 'Accessibility.ReadAnything.SettingsChange';
 const moreOptionsClass = '.more-options-icon';
+const activeClass = ' active';
 
 const ReadAnythingToolbarBase = WebUiListenerMixin(PolymerElement);
 export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
@@ -260,6 +261,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
 
   private isReadAloudEnabled_: boolean;
   private isHighlightOn_: boolean = true;
+  private activeButton_: HTMLElement|null;
 
   // If Read Aloud is in the paused state.
   private isPaused_: boolean = true;
@@ -511,6 +513,12 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   }
 
   private openMenu_(menuToOpen: CrActionMenuElement, target: HTMLElement) {
+    // The button should stay active while the menu is open and deactivate when
+    // the menu closes.
+    menuToOpen.addEventListener('close', () => {
+      target.className = target.className.replace(activeClass, '');
+    });
+    target.className += activeClass;
     this.closeMenus_();
 
     const shadowRoot = this.shadowRoot;
