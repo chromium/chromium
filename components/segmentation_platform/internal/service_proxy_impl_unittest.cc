@@ -45,16 +45,6 @@ proto::SegmentInfo* AddSegmentInfo(
   return info;
 }
 
-base::flat_set<SegmentId> GetAllSegmentIds(
-    const std::vector<std::unique_ptr<Config>>& configs) {
-  base::flat_set<SegmentId> all_segment_ids;
-  for (const auto& config : configs) {
-    for (const auto& segment_id : config->segments)
-      all_segment_ids.insert(segment_id.first);
-  }
-  return all_segment_ids;
-}
-
 class MockModelExecutionScheduler : public ModelExecutionScheduler {
  public:
   MockModelExecutionScheduler() = default;
