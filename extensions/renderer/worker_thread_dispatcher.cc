@@ -43,6 +43,7 @@ ServiceWorkerData* GetServiceWorkerDataChecked() {
   return data;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 void BindAutomationOnIO(
     mojo::PendingAssociatedRemote<ax::mojom::Automation> pending_remote) {
   auto* dispatcher = WorkerThreadDispatcher::Get();
@@ -131,6 +132,7 @@ void RemoveEventFilteredListenerOnIO(const std::string& extension_id,
                                        worker_thread_id),
       std::move(filter), remove_lazy_listener);
 }
+#endif
 
 }  // namespace
 
@@ -203,6 +205,7 @@ void WorkerThreadDispatcher::UpdateBindingsOnWorkerThread(
       Dispatcher::GetWorkerScriptContextSet());
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 // static
 void WorkerThreadDispatcher::DispatchEventOnWorkerThread(
     mojom::DispatchEventParamsPtr params,
@@ -210,6 +213,7 @@ void WorkerThreadDispatcher::DispatchEventOnWorkerThread(
   auto* dispatcher = WorkerThreadDispatcher::Get();
   dispatcher->DispatchEventHelper(std::move(params), std::move(event_args));
 }
+#endif
 
 bool WorkerThreadDispatcher::OnControlMessageReceived(
     const IPC::Message& message) {
@@ -253,6 +257,7 @@ bool WorkerThreadDispatcher::UpdateBindingsForWorkers(
   return success;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 void WorkerThreadDispatcher::SendAddEventListener(
     const std::string& extension_id,
     const GURL& scope,
@@ -331,6 +336,7 @@ void WorkerThreadDispatcher::SendRemoveEventFilteredListener(
                      event_name, service_worker_version_id, worker_thread_id,
                      std::move(filter), remove_lazy_listener));
 }
+#endif
 
 void WorkerThreadDispatcher::OnMessageReceivedOnWorkerThread(
     int worker_thread_id,
@@ -377,6 +383,7 @@ bool WorkerThreadDispatcher::Send(IPC::Message* message) {
   return message_filter_->Send(message);
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 mojom::EventRouter* WorkerThreadDispatcher::GetEventRouterOnIO() {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   if (!event_router_remote_) {
@@ -412,6 +419,7 @@ WorkerThreadDispatcher::GetAutomationRegistryOnIO() {
   }
   return renderer_automation_registry_remote_.get();
 }
+#endif
 
 void WorkerThreadDispatcher::OnResponseWorker(
     int worker_thread_id,
@@ -424,6 +432,7 @@ void WorkerThreadDispatcher::OnResponseWorker(
       std::move(response.extra_data));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 void WorkerThreadDispatcher::DispatchEventHelper(
     mojom::DispatchEventParamsPtr params,
     base::Value::List event_args) {
@@ -466,6 +475,8 @@ void WorkerThreadDispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
       base::BindOnce(&WorkerThreadDispatcher::DispatchEventOnWorkerThread,
                      std::move(params), std::move(event_args)));
 }
+#endif
+
 void WorkerThreadDispatcher::OnDispatchOnConnect(
     int worker_thread_id,
     const ExtensionMsg_OnConnectData& connect_data) {
@@ -514,13 +525,14 @@ void WorkerThreadDispatcher::OnDispatchOnDisconnect(
 }
 
 void WorkerThreadDispatcher::AddWorkerData(
+    blink::WebServiceWorkerContextProxy* proxy,
     int64_t service_worker_version_id,
     base::UnguessableToken activation_sequence,
     ScriptContext* script_context,
     std::unique_ptr<NativeExtensionBindingsSystem> bindings_system) {
   if (!service_worker_data) {
     service_worker_data = new ServiceWorkerData(
-        service_worker_version_id, std::move(activation_sequence),
+        proxy, service_worker_version_id, std::move(activation_sequence),
         script_context, std::move(bindings_system));
   }
 
@@ -533,6 +545,23 @@ void WorkerThreadDispatcher::AddWorkerData(
   }
 }
 
+void WorkerThreadDispatcher::RemoveWorkerData(
+    int64_t service_worker_version_id) {
+  if (service_worker_data) {
+    DCHECK_EQ(service_worker_version_id,
+              service_worker_data->service_worker_version_id());
+    delete service_worker_data;
+    service_worker_data = nullptr;
+  }
+
+  int worker_thread_id = content::WorkerThread::GetCurrentId();
+  {
+    base::AutoLock lock(task_runner_map_lock_);
+    task_runner_map_.erase(worker_thread_id);
+  }
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 void WorkerThreadDispatcher::DidInitializeContext(
     int64_t service_worker_version_id) {
   DCHECK_EQ(service_worker_version_id,
@@ -618,22 +647,6 @@ void WorkerThreadDispatcher::SendResponseAck(const base::Uuid& request_uuid) {
       request_uuid));
 }
 
-void WorkerThreadDispatcher::RemoveWorkerData(
-    int64_t service_worker_version_id) {
-  if (service_worker_data) {
-    DCHECK_EQ(service_worker_version_id,
-              service_worker_data->service_worker_version_id());
-    delete service_worker_data;
-    service_worker_data = nullptr;
-  }
-
-  int worker_thread_id = content::WorkerThread::GetCurrentId();
-  {
-    base::AutoLock lock(task_runner_map_lock_);
-    task_runner_map_.erase(worker_thread_id);
-  }
-}
-
 mojo::PendingAssociatedRemote<mojom::EventDispatcher>
 WorkerThreadDispatcher::BindEventDispatcher(int worker_thread_id) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
@@ -654,5 +667,6 @@ void WorkerThreadDispatcher::UnbindEventDispatcher(int worker_thread_id) {
   event_dispatchers_.Remove(receiver_id);
   event_dispatcher_ids_.erase(receiver_id);
 }
+#endif
 
 }  // namespace extensions

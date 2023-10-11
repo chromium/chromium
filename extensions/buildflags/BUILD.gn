@@ -14,5 +14,8 @@ import("//extensions/buildflags/buildflags.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "ENABLE_EXTENSIONS=$enable_extensions" ]
+  flags = [
+    "ENABLE_EXTENSIONS=$enable_extensions",
+    "ENABLE_EXTENSIONS_LEGACY_IPC=$enable_extensions_legacy_ipc",
+  ]
 }

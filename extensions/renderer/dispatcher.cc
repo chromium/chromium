@@ -33,6 +33,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/cors_util.h"
@@ -86,6 +87,7 @@
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
 #include "extensions/renderer/script_injection_manager.h"
+#include "extensions/renderer/service_worker_data.h"
 #include "extensions/renderer/service_worker_natives.h"
 #include "extensions/renderer/set_icon_natives.h"
 #include "extensions/renderer/shared_l10n_map.h"
@@ -532,7 +534,8 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     // won't work before that event has fired?
     return;
   }
-
+  const int thread_id = content::WorkerThread::GetCurrentId();
+  CHECK_NE(thread_id, kMainThreadId);
   // Only the script specific in the manifest's background data gets bindings.
   //
   // TODO(crbug/961821): We may want to give other service workers registered
@@ -556,9 +559,8 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
         *RendererExtensionRegistry::Get()->GetWorkerActivationToken(
             extension->id());
     worker_dispatcher->AddWorkerData(
-        service_worker_version_id, worker_activation_token, context,
-        CreateBindingsSystem(std::move(ipc_sender)));
-    worker_thread_util::SetWorkerContextProxy(context_proxy);
+        context_proxy, service_worker_version_id, worker_activation_token,
+        context, CreateBindingsSystem(std::move(ipc_sender)));
 
     // TODO(lazyboy): Make sure accessing |source_map_| in worker thread is
     // safe.
@@ -579,7 +581,7 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     // necessary for Extension SW.
     RequireGuestViewModules(context);
 
-    worker_dispatcher->DidInitializeContext(service_worker_version_id);
+    WorkerThreadDispatcher::GetServiceWorkerData()->Init();
   }
 
   g_worker_script_context_set.Get().Insert(base::WrapUnique(context));
@@ -661,9 +663,18 @@ void Dispatcher::DidStartServiceWorkerContextOnWorkerThread(
                                                        script_url))
     return;
 
-  DCHECK(worker_thread_util::IsWorkerThread());
+  const int thread_id = content::WorkerThread::GetCurrentId();
+  CHECK_NE(thread_id, kMainThreadId);
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   WorkerThreadDispatcher::Get()->DidStartContext(service_worker_scope,
                                                  service_worker_version_id);
+#else
+  auto* service_worker_data = WorkerThreadDispatcher::GetServiceWorkerData();
+  service_worker_data->GetServiceWorkerHost()->DidStartServiceWorkerContext(
+      service_worker_data->context()->GetExtensionID(),
+      service_worker_data->activation_sequence(), service_worker_scope,
+      service_worker_version_id, thread_id);
+#endif
 }
 
 void Dispatcher::WillDestroyServiceWorkerContextOnWorkerThread(
@@ -674,25 +685,35 @@ void Dispatcher::WillDestroyServiceWorkerContextOnWorkerThread(
   // Note that using ExtensionAPIEnabledForServiceWorkerScript() won't work here
   // as RendererExtensionRegistry might have already unloaded this extension.
   // Use the existence of ServiceWorkerData as the source of truth instead.
-  if (!WorkerThreadDispatcher::GetServiceWorkerData()) {
-    // If extension APIs in service workers aren't enabled, we just need to
-    // remove the context.
-    g_worker_script_context_set.Get().Remove(v8_context, script_url);
-  } else {
+  if (auto* service_worker_data =
+          WorkerThreadDispatcher::GetServiceWorkerData()) {
+    const int thread_id = content::WorkerThread::GetCurrentId();
+    CHECK_NE(thread_id, kMainThreadId);
+
     // TODO(lazyboy/devlin): Should this cleanup happen in a worker class, like
     // WorkerThreadDispatcher? If so, we should move the initialization as well.
-    ScriptContext* script_context = WorkerThreadDispatcher::GetScriptContext();
+    ScriptContext* script_context = service_worker_data->context();
     NativeExtensionBindingsSystem* worker_bindings_system =
         WorkerThreadDispatcher::GetBindingsSystem();
     worker_bindings_system->WillReleaseScriptContext(script_context);
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
     WorkerThreadDispatcher::Get()->DidStopContext(service_worker_scope,
                                                   service_worker_version_id);
+#else
+    service_worker_data->GetServiceWorkerHost()->DidStopServiceWorkerContext(
+        script_context->GetExtensionID(),
+        service_worker_data->activation_sequence(), service_worker_scope,
+        service_worker_version_id, thread_id);
+#endif
     // Note: we have to remove the context (and thus perform invalidation on
     // the native handlers) prior to removing the worker data, which destroys
     // the associated bindings system.
     g_worker_script_context_set.Get().Remove(v8_context, script_url);
     WorkerThreadDispatcher::Get()->RemoveWorkerData(service_worker_version_id);
-    worker_thread_util::SetWorkerContextProxy(nullptr);
+  } else {
+    // If extension APIs in service workers aren't enabled, we just need to
+    // remove the context.
+    g_worker_script_context_set.Get().Remove(v8_context, script_url);
   }
 
   std::string extension_id =
