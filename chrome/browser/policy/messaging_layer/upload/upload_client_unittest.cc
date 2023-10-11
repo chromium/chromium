@@ -116,8 +116,10 @@ using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;
 TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   static constexpr int64_t kExpectedCallTimes = 10;
   static constexpr int64_t kGenerationId = 1234;
+#if BUILDFLAG(IS_CHROMEOS)
   static constexpr char kGenerationGuid[] =
       "c947e7e9-b87d-4592-9fe7-407792544e53";
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::Value::Dict data;
   data.Set("TEST_KEY", "TEST_VALUE");
@@ -141,7 +143,9 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
         encrypted_record.mutable_sequence_information();
     sequence_information->set_sequencing_id(static_cast<int64_t>(i));
     sequence_information->set_generation_id(kGenerationId);
+#if BUILDFLAG(IS_CHROMEOS)
     sequence_information->set_generation_guid(kGenerationGuid);
+#endif  // BUILDFLAG(IS_CHROMEOS)
     sequence_information->set_priority(Priority::IMMEDIATE);
     ScopedReservation record_reservation(encrypted_record.ByteSizeLong(),
                                          memory_resource_);
@@ -165,6 +169,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   ReportingServerConnector::TestEnvironment test_env;
 
   static constexpr char matched_record_template[] =
+#if BUILDFLAG(IS_CHROMEOS)
       R"JSON(
 {
   "sequenceInformation": {
@@ -174,7 +179,19 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
     "sequencingId": "%d"
   }
 }
-)JSON";
+)JSON"
+#else   // BUILDFLAG(IS_CHROMEOS)
+      R"JSON(
+{
+  "sequenceInformation": {
+    "generationId": "1234",
+    "priority": 1,
+    "sequencingId": "%d"
+  }
+}
+)JSON"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      ;
 
   test::TestMultiEvent<SequenceInformation, bool> upload_success_event;
 

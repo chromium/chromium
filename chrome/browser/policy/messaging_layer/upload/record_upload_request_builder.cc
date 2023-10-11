@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/token.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -267,12 +268,16 @@ SequenceInformationDictionaryBuilder::SequenceInformationDictionaryBuilder(
   // required only for unmanaged devices.
   if (!sequence_information.has_sequencing_id() ||
       !sequence_information.has_generation_id() ||
-      !sequence_information.has_priority() ||
-      // Require generation guid for non ChromeOS-managed devices.
+      !sequence_information.has_priority()
+#if BUILDFLAG(IS_CHROMEOS)
+      ||
+      // Require generation guid for unmanaged ChromeOS devices.
       (!policy::ManagementServiceFactory::GetForPlatform()
             ->HasManagementAuthority(
                 policy::EnterpriseManagementAuthority::CLOUD_DOMAIN) &&
-       !sequence_information.has_generation_guid())) {
+       !sequence_information.has_generation_guid())
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  ) {
     return;
   }
 
@@ -282,7 +287,9 @@ SequenceInformationDictionaryBuilder::SequenceInformationDictionaryBuilder(
   result_->Set(GetGenerationIdPath(),
                base::NumberToString(sequence_information.generation_id()));
   result_->Set(GetPriorityPath(), sequence_information.priority());
+#if BUILDFLAG(IS_CHROMEOS)
   result_->Set(GetGenerationGuidPath(), sequence_information.generation_guid());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 SequenceInformationDictionaryBuilder::~SequenceInformationDictionaryBuilder() =
@@ -309,9 +316,11 @@ std::string_view SequenceInformationDictionaryBuilder::GetPriorityPath() {
 }
 
 // static
+#if BUILDFLAG(IS_CHROMEOS)
 std::string_view SequenceInformationDictionaryBuilder::GetGenerationGuidPath() {
   return UploadEncryptedReportingRequestBuilder::kGenerationGuid;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 EncryptionInfoDictionaryBuilder::EncryptionInfoDictionaryBuilder(
     const EncryptionInfo& encryption_info) {
