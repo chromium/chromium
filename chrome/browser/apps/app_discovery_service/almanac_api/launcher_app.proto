@@ -36,33 +36,8 @@ message LauncherAppResponse {
     // A set of icons for the app group in the requested language.
     repeated Icon icons = 3;
 
-    // One or more app instances belonging to the app group.
-    repeated AppInstance app_instances = 4;
-  }
-
-  message AppInstance {
-    // PackageId for the installable app that the information is being requested
-    // for. This is always "platform:primary_key", for example
-    // "android:com.spotify.music" or "web:http://manifest/id"
-    optional string package_id = 1;
-
-    // The name of the app in the requested language.
-    optional string name = 2;
-
-    // A set of icons for this app instance.
-    repeated Icon icons = 3;
-
-    // TODO(b/296157719): verify whether we need the fields and whether to move
-    // them to extras.
-
-    // The deeplink of the app.
-    optional string deeplink = 4;
-
-    // The app identifier for the given platform.
-    optional string app_id_for_platform = 5;
-
-    // Codes of countries where the app is available.
-    repeated string available_country_codes = 6;
+    // An action link for the app. This is typically a deeplink.
+    optional string action_link = 4;
   }
 
   message Icon {
@@ -72,10 +47,7 @@ message LauncherAppResponse {
     // Width of the icon in pixels.
     optional int32 width_in_pixels = 2;
 
-    // Mime type of the icon.
-    optional string mime_type = 3;
-
     // Whether or not we have permission from the platform to mask the icon.
-    optional bool is_masking_allowed = 4;
+    optional bool is_masking_allowed = 3;
   }
 }

@@ -28,26 +28,24 @@ constexpr char kLastLauncherAppAlmanacCallTimestamp[] =
     "app_discovery_service.last_launcher_app_almanac_call_timestamp";
 
 // Maps the Almanac Launcher App proto response to an app result. The icon
-// information is not needed here as this is all handled by the icon cache.
+// url is passed and later handled by the icon cache.
 std::vector<Result> MapToApps(const proto::LauncherAppResponse& proto) {
   std::vector<Result> apps;
   for (proto::LauncherAppResponse::AppGroup app_group : proto.app_groups()) {
-    if (app_group.app_instances().empty()) {
+    // Skip apps we cannot display.
+    if (app_group.icons().empty() || app_group.name().empty() ||
+        app_group.action_link().empty()) {
       continue;
     }
-    // There should be just a single GFN instance. We want to handle more
-    // platforms in the future but for now just read the first one.
-    const proto::LauncherAppResponse::AppInstance& instance =
-        app_group.app_instances(0);
+    // There should be just a single GFN app with a single icon. We want to
+    // handle more in the future but for now just read the first icon.
+    const proto::LauncherAppResponse::Icon& icon = app_group.icons(0);
     auto extras = std::make_unique<GameExtras>(
-        // TODO(b/296157719): construct this from the package id platform
-        // instead of hardcoding.
         u"GeForce NOW",
-        /*relative_icon_path_=*/base::FilePath(""),
-        /*is_icon_masking_allowed_=*/false, GURL(instance.deeplink()));
+        /*relative_icon_path_=*/base::FilePath(""), icon.is_masking_allowed(),
+        GURL(app_group.action_link()));
 
-    // TODO(b/296157719): use the package id instead.
-    apps.emplace_back(AppSource::kGames, instance.app_id_for_platform(),
+    apps.emplace_back(AppSource::kGames, icon.url(),
                       base::UTF8ToUTF16(app_group.name()), std::move(extras));
   }
   return apps;

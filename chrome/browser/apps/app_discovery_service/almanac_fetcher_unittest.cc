@@ -32,52 +32,60 @@ namespace {
 constexpr char kOneApp[] =
     R"pb(app_groups: {
            uuid: "cf2890ac-486f-11ee-be56-0242ac120002"
-           name: "group_name"
-           app_instances: {
-             name: "app_name"
-             package_id: "gfn:cf2be56486f11ee"
-             app_id_for_platform: "cf2be56486f11ee"
-             deeplink: "https://game-deeplink.com/cf2be56486f11ee"
-             icons: {
-               url: "http://icon/"
-               width_in_pixels: 20
-               mime_type: "image/png"
-               is_masking_allowed: true
-             }
+           name: "app_name"
+           action_link: "https://game-deeplink.com/cf2be56486f11ee"
+           icons: {
+             url: "http://icon/"
+             width_in_pixels: 20
+             is_masking_allowed: true
            }
          })pb";
-constexpr char kTwoApps[] =
+constexpr char kTwoValidApps[] =
     R"pb(app_groups: {
            uuid: "e42c6c70-7732-437f-b2e7-0d17036b8cc1"
-           name: "group_name1"
-           app_instances: {
-             name: "app_name1"
-             package_id: "gfn:jrioj324j2095245234320o"
-             app_id_for_platform: "jrioj324j2095245234320o"
-             deeplink: "https://game-deeplink.com/jrioj324j2095245234320o"
-             icons: {
-               url: "http://icon/"
-               width_in_pixels: 20
-               mime_type: "image/png"
-               is_masking_allowed: true
-             }
+           name: "app_name1"
+           action_link: "https://game-deeplink.com/jrioj324j2095245234320o"
+           icons: {
+             url: "http://icon1/"
+             width_in_pixels: 20
+             is_masking_allowed: true
            }
          }
          app_groups: {
            uuid: "d8eb7470-9d43-472c-aa49-125f5c3111d4"
-           name: "group_name2"
-           app_instances: {
-             name: "app_name2"
-             package_id: "gfn:reijarowaiore131983u12jkljs893"
-             app_id_for_platform: "reijarowaiore131983u12jkljs893"
-             deeplink: "https://game-deeplink.com/reijarowaiore131983u12jkljs893"
-             icons: {
-               url: "http://icon2/"
-               width_in_pixels: 30
-               mime_type: "image/png"
-               is_masking_allowed: false
-             }
+           name: "app_name2"
+           action_link: "https://game-deeplink.com/reijarowaiore131983u12jkljs893"
+           icons: {
+             url: "http://icon2/"
+             width_in_pixels: 30
+             is_masking_allowed: false
            }
+         }
+         # The invalid games below are filtered out.
+         app_groups: {
+           uuid: "invalid-game1-id"
+           name: ""
+           action_link: "https://invalid-game1-deeplink.com/"
+           icons: {
+             url: "http://icon3/"
+             width_in_pixels: 30
+             is_masking_allowed: false
+           }
+         }
+         app_groups: {
+           uuid: "invalid-game2-id"
+           name: "invalid-game2"
+           action_link: ""
+           icons: {
+             url: "http://icon3/"
+             width_in_pixels: 30
+             is_masking_allowed: false
+           }
+         }
+         app_groups: {
+           uuid: "invalid-game3-id"
+           name: "invalid-game3"
+           action_link: "https://invalid-game3-deeplink.com/"
          })pb";
 
 // The path is equivalent to $root_gen_dir, where the protos are generated.
@@ -118,7 +126,7 @@ class AlmanacFetcherTest : public testing::Test {
 
     proto_loader_ = std::make_unique<base::TestProtoLoader>(
         launcher_app_descriptor_, "apps.proto.LauncherAppResponse");
-    SetServerResponse(url_loader_factory_, proto_loader(), kTwoApps);
+    SetServerResponse(url_loader_factory_, proto_loader(), kTwoValidApps);
   }
 
   TestingProfile* profile() { return profile_.get(); }
@@ -148,18 +156,19 @@ TEST_F(AlmanacFetcherTest, RegisterForUpdatesTwoApps) {
   std::vector<Result> results = waiter.Take();
   ASSERT_EQ(results.size(), 2u);
   EXPECT_EQ(results[0].GetAppSource(), AppSource::kGames);
-  EXPECT_EQ(results[0].GetAppId(), "jrioj324j2095245234320o");
-  EXPECT_EQ(results[0].GetAppTitle(), u"group_name1");
+  EXPECT_EQ(results[0].GetAppId(), "http://icon1/");
+  EXPECT_EQ(results[0].GetAppTitle(), u"app_name1");
   ASSERT_TRUE(results[0].GetSourceExtras());
   auto* game_extras = results[0].GetSourceExtras()->AsGameExtras();
   ASSERT_TRUE(game_extras);
   EXPECT_EQ(game_extras->GetSource(), u"GeForce NOW");
   EXPECT_EQ(game_extras->GetDeeplinkUrl(),
             GURL("https://game-deeplink.com/jrioj324j2095245234320o"));
+  EXPECT_TRUE(game_extras->GetIsIconMaskingAllowed());
 
   EXPECT_EQ(results[1].GetAppSource(), AppSource::kGames);
-  EXPECT_EQ(results[1].GetAppId(), "reijarowaiore131983u12jkljs893");
-  EXPECT_EQ(results[1].GetAppTitle(), u"group_name2");
+  EXPECT_EQ(results[1].GetAppId(), "http://icon2/");
+  EXPECT_EQ(results[1].GetAppTitle(), u"app_name2");
   EXPECT_TRUE(results[1].GetSourceExtras());
   game_extras = results[1].GetSourceExtras()->AsGameExtras();
   ASSERT_TRUE(game_extras);
@@ -167,6 +176,7 @@ TEST_F(AlmanacFetcherTest, RegisterForUpdatesTwoApps) {
   EXPECT_EQ(game_extras->GetDeeplinkUrl(),
             GURL("https://game-deeplink.com/"
                  "reijarowaiore131983u12jkljs893"));
+  EXPECT_FALSE(game_extras->GetIsIconMaskingAllowed());
   EXPECT_GT(almanac_fetcher()->GetLastAppsUpdateTime(), before_download);
 }
 
@@ -189,8 +199,8 @@ TEST_F(AlmanacFetcherTest, RegisterForUpdatesAfterUpdate) {
       almanac_fetcher()->RegisterForAppUpdates(waiter.GetRepeatingCallback());
   std::vector<Result> results = waiter.Take();
   ASSERT_EQ(results.size(), 2u);
-  EXPECT_EQ(results[0].GetAppTitle(), u"group_name1");
-  EXPECT_EQ(results[1].GetAppTitle(), u"group_name2");
+  EXPECT_EQ(results[0].GetAppTitle(), u"app_name1");
+  EXPECT_EQ(results[1].GetAppTitle(), u"app_name2");
 
   // Confirm a new subscriber also gets notified as the apps are available.
   base::test::TestFuture<const std::vector<Result>&> waiter2;
@@ -206,8 +216,8 @@ TEST_F(AlmanacFetcherTest, RegisterForUpdatesReadFromDisk) {
       almanac_fetcher()->RegisterForAppUpdates(waiter.GetRepeatingCallback());
   std::vector<Result> results = waiter.Take();
   ASSERT_EQ(results.size(), 2u);
-  EXPECT_EQ(results[0].GetAppTitle(), u"group_name1");
-  EXPECT_EQ(results[1].GetAppTitle(), u"group_name2");
+  EXPECT_EQ(results[0].GetAppTitle(), u"app_name1");
+  EXPECT_EQ(results[1].GetAppTitle(), u"app_name2");
 
   base::Time after_download = almanac_fetcher()->GetLastAppsUpdateTime();
   EXPECT_GT(after_download, before_download);
@@ -228,8 +238,8 @@ TEST_F(AlmanacFetcherTest, RegisterForUpdatesServerCallFails) {
       almanac_fetcher()->RegisterForAppUpdates(waiter.GetRepeatingCallback());
   std::vector<Result> results = waiter.Take();
   ASSERT_EQ(results.size(), 2u);
-  EXPECT_EQ(results[0].GetAppTitle(), u"group_name1");
-  EXPECT_EQ(results[1].GetAppTitle(), u"group_name2");
+  EXPECT_EQ(results[0].GetAppTitle(), u"app_name1");
+  EXPECT_EQ(results[1].GetAppTitle(), u"app_name2");
   EXPECT_GT(almanac_fetcher()->GetLastAppsUpdateTime(), before_download);
 
   // Re-set to initiate a new login.
@@ -265,18 +275,19 @@ TEST_F(AlmanacFetcherTest, GetAppsUpdateOnSecondLogin) {
         EXPECT_EQ(error, DiscoveryError::kSuccess);
         ASSERT_EQ(results.size(), 2u);
         EXPECT_EQ(results[0].GetAppSource(), AppSource::kGames);
-        EXPECT_EQ(results[0].GetAppId(), "jrioj324j2095245234320o");
-        EXPECT_EQ(results[0].GetAppTitle(), u"group_name1");
+        EXPECT_EQ(results[0].GetAppId(), "http://icon1/");
+        EXPECT_EQ(results[0].GetAppTitle(), u"app_name1");
         ASSERT_TRUE(results[0].GetSourceExtras());
         auto* game_extras = results[0].GetSourceExtras()->AsGameExtras();
         ASSERT_TRUE(game_extras);
         EXPECT_EQ(game_extras->GetSource(), u"GeForce NOW");
         EXPECT_EQ(game_extras->GetDeeplinkUrl(),
                   GURL("https://game-deeplink.com/jrioj324j2095245234320o"));
+        EXPECT_TRUE(game_extras->GetIsIconMaskingAllowed());
 
         EXPECT_EQ(results[1].GetAppSource(), AppSource::kGames);
-        EXPECT_EQ(results[1].GetAppId(), "reijarowaiore131983u12jkljs893");
-        EXPECT_EQ(results[1].GetAppTitle(), u"group_name2");
+        EXPECT_EQ(results[1].GetAppId(), "http://icon2/");
+        EXPECT_EQ(results[1].GetAppTitle(), u"app_name2");
         EXPECT_TRUE(results[1].GetSourceExtras());
         game_extras = results[1].GetSourceExtras()->AsGameExtras();
         ASSERT_TRUE(game_extras);
@@ -284,6 +295,7 @@ TEST_F(AlmanacFetcherTest, GetAppsUpdateOnSecondLogin) {
         EXPECT_EQ(game_extras->GetDeeplinkUrl(),
                   GURL("https://game-deeplink.com/"
                        "reijarowaiore131983u12jkljs893"));
+        EXPECT_FALSE(game_extras->GetIsIconMaskingAllowed());
       }));
 
   // Re-set to initiate a new login.
@@ -301,14 +313,15 @@ TEST_F(AlmanacFetcherTest, GetAppsUpdateOnSecondLogin) {
         EXPECT_EQ(error, DiscoveryError::kSuccess);
         ASSERT_EQ(results.size(), 1u);
         EXPECT_EQ(results[0].GetAppSource(), AppSource::kGames);
-        EXPECT_EQ(results[0].GetAppId(), "cf2be56486f11ee");
-        EXPECT_EQ(results[0].GetAppTitle(), u"group_name");
+        EXPECT_EQ(results[0].GetAppId(), "http://icon/");
+        EXPECT_EQ(results[0].GetAppTitle(), u"app_name");
         ASSERT_TRUE(results[0].GetSourceExtras());
         auto* game_extras = results[0].GetSourceExtras()->AsGameExtras();
         ASSERT_TRUE(game_extras);
         EXPECT_EQ(game_extras->GetSource(), u"GeForce NOW");
         EXPECT_EQ(game_extras->GetDeeplinkUrl(),
                   GURL("https://game-deeplink.com/cf2be56486f11ee"));
+        EXPECT_TRUE(game_extras->GetIsIconMaskingAllowed());
       }));
 }
 }  // namespace

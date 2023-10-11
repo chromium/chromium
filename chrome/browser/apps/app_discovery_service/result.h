@@ -45,7 +45,10 @@ class Result {
   // The endpoint from which the app was fetched from.
   AppSource GetAppSource() const;
 
-  // The identifier used by the AppSource to identify the app.
+  // The identifier used by the AppSource to identify an app icon.
+  // Note this is NOT the same as ChromeOS app id.
+  // For the Almanac fetcher this is an icon url. After the migration is
+  // complete, we can further refactor and rename this.
   const std::string& GetAppId() const;
 
   // The title of the app to display to users.
