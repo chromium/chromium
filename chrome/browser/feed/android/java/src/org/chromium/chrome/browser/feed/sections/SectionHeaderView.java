@@ -192,6 +192,8 @@ public class SectionHeaderView extends LinearLayout {
             mTabListener = new SectionHeaderTabListener();
             mTabLayout.addOnTabSelectedListener(mTabListener);
             if (mIsSurfacePolishEnabled) {
+                // Sets the default width for the header.
+                updateTabLayoutHeaderWidth(false);
                 mTabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
                 mTabLayout.setBackgroundResource(
                         R.drawable.header_title_section_tab_background_polished);
