@@ -1377,6 +1377,7 @@ android_apk("cronet_perf_test_apk") {
       "cronet_impl_common_proguard.cfg",
       "test/proguard.cfg",
       "//testing/android/proguard_for_test.flags",
+      "//third_party/jni_zero/proguard_for_test.flags",
     ]
     enable_proguard_checks = false
   }

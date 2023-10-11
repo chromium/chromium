@@ -4268,8 +4268,7 @@ if (is_android) {
     public_deps = [
       # Public because @CheckDiscard is added to generated *Jni.java files.
       "//build/android:build_java",
-      "//third_party/jni_zero:native_library_loaded_status_java",
-      "//third_party/jni_zero:test_mocker_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 

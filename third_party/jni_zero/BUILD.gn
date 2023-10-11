@@ -14,14 +14,21 @@ source_set("jni_helpers") {
 
 if (enable_java_templates && is_android) {
   import("//build/config/android/rules.gni")
-  java_library("test_mocker_java") {
-    supports_android = true
-    sources = [ "java/src/org/jni_zero/JniStaticTestMocker.java" ]
-  }
 
-  java_library("native_library_loaded_status_java") {
+  java_library("jni_zero_java") {
     supports_android = true
-    sources = [ "java/src/org/jni_zero/NativeLibraryLoadedStatus.java" ]
     deps = [ "//build/android:build_java" ]
+    sources = [
+      "java/src/org/jni_zero/AccessedByNative.java",
+      "java/src/org/jni_zero/CalledByNative.java",
+      "java/src/org/jni_zero/CalledByNativeForTesting.java",
+      "java/src/org/jni_zero/CalledByNativeUnchecked.java",
+      "java/src/org/jni_zero/JNINamespace.java",
+      "java/src/org/jni_zero/JniStaticTestMocker.java",
+      "java/src/org/jni_zero/NativeClassQualifiedName.java",
+      "java/src/org/jni_zero/NativeLibraryLoadedStatus.java",
+      "java/src/org/jni_zero/NativeMethods.java",
+    ]
+    proguard_configs = [ "proguard.flags" ]
   }
 }
