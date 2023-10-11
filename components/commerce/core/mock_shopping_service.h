@@ -141,6 +141,11 @@ class MockShoppingService : public commerce::ShoppingService {
   void SetResponseForGetDiscountInfoForUrls(const DiscountsMap& discounts_map);
   void SetBookmarkModelUsedForSync(bookmarks::BookmarkModel* bookmark_model);
   void SetIsParcelTrackingEligible(bool is_eligible);
+
+ private:
+  // Since the discount API wants a const ref to some map, keep a default
+  // instance here.
+  DiscountsMap default_discounts_map_;
 };
 
 }  // namespace commerce

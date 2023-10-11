@@ -39,6 +39,7 @@ MockShoppingService::MockShoppingService()
       .WillByDefault(testing::Return(30));
   SetResponseForGetMerchantInfoForUrl(absl::nullopt);
   SetResponseForIsShoppingPage(absl::nullopt);
+  SetResponseForGetDiscountInfoForUrls(default_discounts_map_);
   SetSubscribeCallbackValue(true);
   SetUnsubscribeCallbackValue(true);
   SetIsSubscribedCallbackValue(true);

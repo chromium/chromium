@@ -114,7 +114,7 @@ const char kEnableChromeCart[] = "enable-chrome-cart";
 
 BASE_FEATURE(kCommerceAllowChipExpansion,
              "CommerceAllowChipExpansion",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCommerceAllowLocalImages,
              "CommerceAllowLocalImages",

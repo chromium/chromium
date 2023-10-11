@@ -43,6 +43,10 @@ class MockShoppingListUiTabHelper : public commerce::ShoppingListUiTabHelper {
   MOCK_METHOD(const absl::optional<commerce::PriceInsightsInfo>&,
               GetPriceInsightsInfo,
               ());
+  MOCK_METHOD(bool, ShouldExpandPageActionIcon, (PageActionIconType type));
+  MOCK_METHOD(PriceInsightsIconView::PriceInsightsIconLabelType,
+              GetPriceInsightsIconLabelTypeForPage,
+              ());
 
  private:
   gfx::Image valid_product_image_;

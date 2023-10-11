@@ -22,6 +22,8 @@ namespace views {
 class StyledLabel;
 }  // namespace views
 
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kPriceTrackingBubbleDialogId);
+
 class PriceTrackingBubbleDialogView : public LocationBarBubbleDelegateView {
  public:
   METADATA_HEADER(PriceTrackingBubbleDialogView);

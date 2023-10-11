@@ -60,21 +60,11 @@ void PriceInsightsIconView::UpdateImpl() {
   bool should_show = ShouldShow();
 
   if (should_show) {
-    if (!GetVisible()) {
-      // Reset the last_shown_label_type_ first.
-      last_shown_label_type_ =
-          PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
+    // Reset the last_shown_label_type_ first.
+    last_shown_label_type_ =
+        PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
 
-      auto label_to_be_shown = GetPriceInsightsIconLabelType();
-      if (label_to_be_shown !=
-              PriceInsightsIconView::PriceInsightsIconLabelType::kNone &&
-          MaybeShowPageActionLabel()) {
-        last_shown_label_type_ = label_to_be_shown;
-      }
-      base::UmaHistogramEnumeration(
-          "Commerce.PriceInsights.OmniboxIconShownLabel",
-          last_shown_label_type_);
-    }
+    MaybeShowPageActionLabel();
   } else {
     HidePageActionLabel();
   }
@@ -87,34 +77,27 @@ void PriceInsightsIconView::HidePageActionLabel() {
   ResetSlideAnimation(false);
 }
 
-bool PriceInsightsIconView::MaybeShowPageActionLabel() {
+void PriceInsightsIconView::MaybeShowPageActionLabel() {
   if (!base::FeatureList::IsEnabled(commerce::kCommerceAllowChipExpansion)) {
-    return false;
+    return;
   }
+  auto* tab_helper =
+      commerce::ShoppingListUiTabHelper::FromWebContents(GetWebContents());
 
-  auto* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
-
-  if (!tracker ||
-      !tracker->ShouldTriggerHelpUI(
-          feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature)) {
-    return false;
+  if (!tab_helper || !tab_helper->ShouldExpandPageActionIcon(
+                         PageActionIconType::kPriceInsights)) {
+    return;
   }
 
   should_extend_label_shown_duration_ = true;
+  last_shown_label_type_ = GetLabelTypeForPage();
+  UpdatePriceInsightsIconLabel();
+
   AnimateIn(absl::nullopt);
-
-  // Note that `Dismiss()` in this case does not dismiss the UI. It's telling
-  // the FE backend that the promo is done so that other promos can run. Showing
-  // the label should not block other promos from displaying.
-  tracker->Dismissed(
-      feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature);
-
-  return true;
 }
 
 PriceInsightsIconView::PriceInsightsIconLabelType
-PriceInsightsIconView::GetPriceInsightsIconLabelType() {
+PriceInsightsIconView::GetLabelTypeForPage() {
   auto* web_contents = GetWebContents();
 
   if (!web_contents) {
@@ -124,30 +107,25 @@ PriceInsightsIconView::GetPriceInsightsIconLabelType() {
       commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
   CHECK(tab_helper);
 
-  auto& price_insights_info = tab_helper->GetPriceInsightsInfo();
+  return tab_helper->GetPriceInsightsIconLabelTypeForPage();
+}
 
-  if (!price_insights_info.has_value() ||
-      !price_insights_info->typical_low_price_micros.has_value() ||
-      !price_insights_info->typical_high_price_micros.has_value() ||
-      price_insights_info->catalog_history_prices.empty()) {
-    return PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
-  } else if (price_insights_info->price_bucket ==
-             commerce::PriceBucket::kLowPrice) {
+void PriceInsightsIconView::UpdatePriceInsightsIconLabel() {
+  if (last_shown_label_type_ ==
+      PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsLow) {
     SetLabel(
         l10n_util::GetStringUTF16(
             IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE),
         l10n_util::GetStringUTF16(IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT));
-    return PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsLow;
-  } else if (price_insights_info->price_bucket ==
-                 commerce::PriceBucket::kHighPrice &&
-             commerce::kPriceInsightsChipLabelExpandOnHighPrice.Get()) {
+  } else if (last_shown_label_type_ ==
+             PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsHigh) {
     SetLabel(
         l10n_util::GetStringUTF16(
             IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_HIGH_PRICE),
         l10n_util::GetStringUTF16(IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT));
-    return PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsHigh;
   } else {
-    return PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
+    SetLabel(u"", l10n_util::GetStringUTF16(
+                      IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT));
   }
 }
 
