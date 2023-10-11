@@ -53,6 +53,9 @@ class CONTENT_EXPORT PreloadingDecider
   PreloadingDeciderObserverForTesting* SetObserverForTesting(
       PreloadingDeciderObserverForTesting* observer);
 
+  // Returns the prerenderer for testing.
+  Prerenderer& GetPrerendererForTesting();
+
   // Sets the new prerenderer for testing and returns the old one.
   std::unique_ptr<Prerenderer> SetPrerendererForTesting(
       std::unique_ptr<Prerenderer> prerenderer);

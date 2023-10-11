@@ -498,8 +498,15 @@ PreloadingDeciderObserverForTesting* PreloadingDecider::SetObserverForTesting(
   return std::exchange(observer_for_testing_, observer);
 }
 
+Prerenderer& PreloadingDecider::GetPrerendererForTesting() {
+  CHECK(prerenderer_);
+  return *prerenderer_;
+}
+
 std::unique_ptr<Prerenderer> PreloadingDecider::SetPrerendererForTesting(
     std::unique_ptr<Prerenderer> prerenderer) {
+  prerenderer->SetPrerenderCancellationCallback(base::BindRepeating(
+      &OnPrerenderCanceled, render_frame_host().GetWeakDocumentPtr()));
   return std::exchange(prerenderer_, std::move(prerenderer));
 }
 
