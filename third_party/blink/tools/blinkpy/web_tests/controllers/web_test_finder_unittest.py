@@ -289,54 +289,55 @@ class WebTestFinderTests(unittest.TestCase):
 
 
 class FilterTestsTests(unittest.TestCase):
-    simple_test_list = ['a/a1.html', 'a/a2.html', 'b/b1.html']
+    simple_test_filter = ['a/a1.html', 'a/a2.html', 'b/b1.html']
 
     def check(self, tests, filters, expected_tests):
         self.assertEqual(expected_tests,
                          web_test_finder.filter_tests(tests, filters))
 
     def test_no_filters(self):
-        self.check(self.simple_test_list, [], self.simple_test_list)
+        self.check(self.simple_test_filter, [], self.simple_test_filter)
 
     def test_empty_glob_is_rejected(self):
-        self.assertRaises(ValueError, self.check, self.simple_test_list,
+        self.assertRaises(ValueError, self.check, self.simple_test_filter,
                           [['']], [])
-        self.assertRaises(ValueError, self.check, self.simple_test_list,
+        self.assertRaises(ValueError, self.check, self.simple_test_filter,
                           [['-']], [])
 
     def test_one_all_positive_filter(self):
-        self.check(self.simple_test_list, [['a*']], ['a/a1.html', 'a/a2.html'])
-        self.check(self.simple_test_list, [['+a*']],
+        self.check(self.simple_test_filter, [['a*']],
+                   ['a/a1.html', 'a/a2.html'])
+        self.check(self.simple_test_filter, [['+a*']],
                    ['a/a1.html', 'a/a2.html'])
 
-        self.check(self.simple_test_list, [['a*', 'b*']],
-                   self.simple_test_list)
+        self.check(self.simple_test_filter, [['a*', 'b*']],
+                   self.simple_test_filter)
 
     def test_one_exact_positive_filter(self):
-        self.check(self.simple_test_list, [['a/a1.html']], ['a/a1.html'])
-        self.check(self.simple_test_list, [['+a/a1.html']], ['a/a1.html'])
+        self.check(self.simple_test_filter, [['a/a1.html']], ['a/a1.html'])
+        self.check(self.simple_test_filter, [['+a/a1.html']], ['a/a1.html'])
 
     def test_one_all_negative_filter(self):
-        self.check(self.simple_test_list, [['-c*']], self.simple_test_list)
+        self.check(self.simple_test_filter, [['-c*']], self.simple_test_filter)
 
     def test_one_exact_negative_filter(self):
-        self.check(self.simple_test_list, [['-a/a1.html']],
+        self.check(self.simple_test_filter, [['-a/a1.html']],
                    ['a/a2.html', 'b/b1.html'])
 
     def test_one_mixed_filter(self):
-        self.check(self.simple_test_list, [['a*', '-c*']],
+        self.check(self.simple_test_filter, [['a*', '-c*']],
                    ['a/a1.html', 'a/a2.html'])
 
     def test_two_all_positive_filters(self):
-        self.check(self.simple_test_list, [['a*'], ['b*']], [])
+        self.check(self.simple_test_filter, [['a*'], ['b*']], [])
 
     def test_two_all_negative_filters(self):
-        self.check(self.simple_test_list, [['-a*'], ['-b*']], [])
+        self.check(self.simple_test_filter, [['-a*'], ['-b*']], [])
 
-        self.check(self.simple_test_list, [['-a*'], ['-c*']], ['b/b1.html'])
+        self.check(self.simple_test_filter, [['-a*'], ['-c*']], ['b/b1.html'])
 
     def test_two_mixed_filters(self):
-        self.check(self.simple_test_list, [['a*'], ['-b*']],
+        self.check(self.simple_test_filter, [['a*'], ['-b*']],
                    ['a/a1.html', 'a/a2.html'])
 
     def test_longest_glob_wins(self):
@@ -344,24 +345,27 @@ class FilterTestsTests(unittest.TestCase):
         # part of the same filter expression, the longest matching
         # glob wins (takes precedence). The order of the two globs
         # must not matter.
-        self.check(self.simple_test_list, [['a/a*', '-a/a2*']], ['a/a1.html'])
-        self.check(self.simple_test_list, [['-a/a*', 'a/a2*']], ['a/a2.html'])
+        self.check(self.simple_test_filter, [['a/a*', '-a/a2*']],
+                   ['a/a1.html'])
+        self.check(self.simple_test_filter, [['-a/a*', 'a/a2*']],
+                   ['a/a2.html'])
 
         # In this test, the positive and negative globs are in
         # separate filter expressions, so a2 should be filtered out
         # and nothing should run (tests should only be run if they
         # would be run by every filter individually).
-        self.check(self.simple_test_list, [['-a/a*'], ['a/a2*']], [])
+        self.check(self.simple_test_filter, [['-a/a*'], ['a/a2*']], [])
 
     def test_only_trailing_unescaped_globs_work(self):
-        self.check(self.simple_test_list, [['a*']], ['a/a1.html', 'a/a2.html'])
+        self.check(self.simple_test_filter, [['a*']],
+                   ['a/a1.html', 'a/a2.html'])
         # These test that if you have a glob that contains a "*" that isn't
         # at the end, it is rejected; only globs at the end should work.
-        self.assertRaises(ValueError, self.check, self.simple_test_list,
+        self.assertRaises(ValueError, self.check, self.simple_test_filter,
                           [['*1.html']], [])
-        self.assertRaises(ValueError, self.check, self.simple_test_list,
+        self.assertRaises(ValueError, self.check, self.simple_test_filter,
                           [['a*.html']], [])
 
     def test_escaped_globs_allowed(self):
-        self.check(self.simple_test_list + ['a\\*1'], [['-a\\*1']],
-                   self.simple_test_list)
+        self.check(self.simple_test_filter + ['a\\*1'], [['-a\\*1']],
+                   self.simple_test_filter)
