@@ -4435,6 +4435,9 @@ extern const char kThirdPartyProfileManagementDescription[];
 
 extern const char kUnoDesktopName[];
 extern const char kUnoDesktopDescription[];
+
+extern const char kDesktopPWAsUserLinkCapturingName[];
+extern const char kDesktopPWAsUserLinkCapturingDescription[];
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)

@@ -7657,6 +7657,10 @@ const char kUnoDesktopName[] = "UNO Desktop";
 const char kUnoDesktopDescription[] =
     "Enables the UNO model on Desktop. This is currently an experiment in a "
     "prototype stage in order to validate the model.";
+
+const char kDesktopPWAsUserLinkCapturingName[] = "Desktop PWA Link Capturing";
+const char kDesktopPWAsUserLinkCapturingDescription[] =
+    "Enables opening links from Chrome in an installed PWA";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)

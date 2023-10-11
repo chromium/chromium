@@ -3791,6 +3791,11 @@
     "expiry_milestone": 119
   },
   {
+    "name": "enable-user-link-capturing-pwa",
+    "owners": [ "dibyapal", "desktop-pwas-team@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "enable-user-policy-for-signin-and-nosync-consent-level",
     "owners": [ "vincb" ],
     "expiry_milestone": 130
