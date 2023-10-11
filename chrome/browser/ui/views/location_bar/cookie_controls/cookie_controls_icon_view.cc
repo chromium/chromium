@@ -248,7 +248,9 @@ void CookieControlsIconView::OnFinishedPageReloadWithChangedSettings() {
   // Do not attempt to change the visibility of the icon, only animate it, as
   // it should have already been visible for the user to have changed the
   // setting.
-  AnimateIn(GetLabelForStatus());
+  if (ShouldBeVisible()) {
+    AnimateIn(GetLabelForStatus());
+  }
 }
 
 bool CookieControlsIconView::ShouldBeVisible() const {
