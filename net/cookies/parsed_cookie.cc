@@ -145,14 +145,11 @@ ParsedCookie::ParsedCookie(const std::string& cookie_line,
   ParseTokenValuePairs(cookie_line, block_truncated, *status_out);
   if (IsValid()) {
     SetupAttributes();
-  } else if (status_out->IsInclude()) {
-    // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
-    status_out->AddExclusionReason(
-        CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+  } else {
+    // Status should indicate exclusion if the resulting ParsedCookie is
+    // invalid.
+    CHECK(!status_out->IsInclude());
   }
-
-  // Status should indicate exclusion if the resulting ParsedCookie is invalid.
-  DCHECK(IsValid() || !status_out->IsInclude());
 }
 
 ParsedCookie::~ParsedCookie() = default;
