@@ -24,35 +24,39 @@ public class SiteSettingsUtil {
     // Defining the order for content settings based on http://crbug.com/610358
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static final int[] SETTINGS_ORDER = {
-            ContentSettingsType.COOKIES,
-            ContentSettingsType.GEOLOCATION,
-            ContentSettingsType.MEDIASTREAM_CAMERA,
-            ContentSettingsType.MEDIASTREAM_MIC,
-            ContentSettingsType.NOTIFICATIONS,
-            ContentSettingsType.JAVASCRIPT,
-            ContentSettingsType.POPUPS,
-            ContentSettingsType.ADS,
-            ContentSettingsType.BACKGROUND_SYNC,
-            ContentSettingsType.AUTOMATIC_DOWNLOADS,
-            ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER,
-            ContentSettingsType.SOUND,
-            ContentSettingsType.MIDI_SYSEX,
-            ContentSettingsType.CLIPBOARD_READ_WRITE,
-            ContentSettingsType.NFC,
-            ContentSettingsType.BLUETOOTH_SCANNING,
-            ContentSettingsType.VR,
-            ContentSettingsType.AR,
-            ContentSettingsType.IDLE_DETECTION,
-            ContentSettingsType.FEDERATED_IDENTITY_API,
-            ContentSettingsType.SENSORS,
-            ContentSettingsType.AUTO_DARK_WEB_CONTENT,
-            ContentSettingsType.REQUEST_DESKTOP_SITE,
+        ContentSettingsType.COOKIES,
+        ContentSettingsType.GEOLOCATION,
+        ContentSettingsType.MEDIASTREAM_CAMERA,
+        ContentSettingsType.MEDIASTREAM_MIC,
+        ContentSettingsType.NOTIFICATIONS,
+        ContentSettingsType.JAVASCRIPT,
+        ContentSettingsType.POPUPS,
+        ContentSettingsType.ADS,
+        ContentSettingsType.BACKGROUND_SYNC,
+        ContentSettingsType.AUTOMATIC_DOWNLOADS,
+        ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER,
+        ContentSettingsType.SOUND,
+        ContentSettingsType.MIDI_SYSEX,
+        ContentSettingsType.CLIPBOARD_READ_WRITE,
+        ContentSettingsType.NFC,
+        ContentSettingsType.BLUETOOTH_SCANNING,
+        ContentSettingsType.VR,
+        ContentSettingsType.AR,
+        ContentSettingsType.IDLE_DETECTION,
+        ContentSettingsType.FEDERATED_IDENTITY_API,
+        ContentSettingsType.SENSORS,
+        ContentSettingsType.AUTO_DARK_WEB_CONTENT,
+        ContentSettingsType.REQUEST_DESKTOP_SITE,
     };
 
     static final int[] CHOOSER_PERMISSIONS = {
             ContentSettingsType.USB_CHOOSER_DATA,
             // Bluetooth is only shown when WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND is enabled.
             ContentSettingsType.BLUETOOTH_CHOOSER_DATA,
+    };
+
+    static final int[] EMBEDDED_PERMISSIONS = {
+        ContentSettingsType.STORAGE_ACCESS,
     };
 
     /**
@@ -69,6 +73,7 @@ public class SiteSettingsUtil {
                 }
             }
         }
+
         for (@ContentSettingsType int setting : CHOOSER_PERMISSIONS) {
             for (@ContentSettingsType int type : types) {
                 if (type == ContentSettingsType.BLUETOOTH_CHOOSER_DATA
@@ -81,6 +86,15 @@ public class SiteSettingsUtil {
                 }
             }
         }
+
+        for (@ContentSettingsType int setting : EMBEDDED_PERMISSIONS) {
+            for (@ContentSettingsType int type : types) {
+                if (setting == type) {
+                    return type;
+                }
+            }
+        }
+
         return ContentSettingsType.DEFAULT;
     }
 

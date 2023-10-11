@@ -857,6 +857,8 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
 
         for (List<ContentSettingException> entries : mSite.getEmbeddedPermissions().values()) {
             for (ContentSettingException info : entries) {
+                assert arrayContains(
+                        SiteSettingsUtil.EMBEDDED_PERMISSIONS, info.getContentSettingType());
                 var preference = new ChromeSwitchPreference(getStyledContext());
                 preference.setKey(EMBEDDED_PERMISSION_PREFERENCE_KEY);
                 preference.setIcon(getContentSettingsIcon(info.getContentSettingType(), null));

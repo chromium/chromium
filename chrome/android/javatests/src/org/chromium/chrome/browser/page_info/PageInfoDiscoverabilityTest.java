@@ -138,9 +138,10 @@ public class PageInfoDiscoverabilityTest {
             parameters.add(new ParameterSet()
                                    .name("RequestType.kProtectedMediaIdentifier")
                                    .value(ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER, true));
-            parameters.add(new ParameterSet()
-                                   .name("RequestType.kStorageAccess")
-                                   .value(ContentSettingsType.STORAGE_ACCESS, false));
+            parameters.add(
+                    new ParameterSet()
+                            .name("RequestType.kStorageAccess")
+                            .value(ContentSettingsType.STORAGE_ACCESS, true));
             parameters.add(new ParameterSet()
                                    .name("RequestType.kVrSession")
                                    .value(ContentSettingsType.VR, true));
