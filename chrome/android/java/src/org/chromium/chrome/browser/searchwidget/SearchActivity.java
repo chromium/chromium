@@ -12,7 +12,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -232,12 +231,8 @@ public class SearchActivity extends AsyncInitializationActivity
             return true;
         };
 
-        BackPressManager backPressManager = null;
-        boolean isAtLeastT = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU;
-        if (BackPressManager.isEnabled() || isAtLeastT) {
-            backPressManager = new BackPressManager();
-            getOnBackPressedDispatcher().addCallback(this, backPressManager.getCallback());
-        }
+        BackPressManager backPressManager = new BackPressManager();
+        getOnBackPressedDispatcher().addCallback(this, backPressManager.getCallback());
         // clang-format off
         mLocationBarCoordinator = new LocationBarCoordinator(mSearchBox, mAnchorView,
             mProfileSupplier, PrivacyPreferencesManagerImpl.getInstance(),

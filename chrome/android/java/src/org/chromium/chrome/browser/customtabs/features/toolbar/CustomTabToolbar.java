@@ -1041,6 +1041,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         @Override
+        public boolean unfocusUrlBarOnBackPressed() {
+            return false;
+        }
+
+        @Override
         public void showBrandingLocationBar() {
             mBrandingStarted = true;
             // Store the title and domain setting, if the empty state is not in used. Otherwise

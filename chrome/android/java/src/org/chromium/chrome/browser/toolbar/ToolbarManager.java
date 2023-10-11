@@ -706,28 +706,44 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     ? (OmniboxSuggestionsDropdownScrollListener) toolbarLayout
                     : null;
             // clang-format off
-            LocationBarCoordinator locationBarCoordinator = new LocationBarCoordinator(
-                    mActivity.findViewById(R.id.location_bar), toolbarLayout, profileSupplier,
-                    PrivacyPreferencesManagerImpl.getInstance(), mLocationBarModel,
-                    mActionModeController.getActionModeCallback(),
-                    new WindowDelegate(mActivity.getWindow()), windowAndroid, mActivityTabProvider,
-                    modalDialogManagerSupplier, shareDelegateSupplier, mIncognitoStateProvider,
-                    activityLifecycleDispatcher, overrideUrlLoadingDelegate,
-                    new BackKeyBehaviorDelegate() {}, SearchEngineLogoUtils.getInstance(),
-                    toolbarPageInfo::show, IntentHandler::bringTabToFront,
-                    DownloadUtils::isAllowedToDownloadPage, NewTabPageUma::recordOmniboxNavigation,
-                    TabWindowManagerSingleton::getInstance,
-                    (url) -> mBookmarkModelSupplier.hasValue()
-                            && mBookmarkModelSupplier.get().isBookmarked(url),
-                    () ->
-                    {
-                        return mToolbar.getCurrentOptionalButtonVariant() ==
-                            AdaptiveToolbarButtonVariant.VOICE;
-                    },
-                    merchantTrustSignalsCoordinatorSupplier,
-                    omniboxActionDelegate, mControlsVisibilityDelegate,
-                    ChromePureJavaExceptionReporter::reportJavaException, backPressManager,
-                    scrollListener, openHistoryClustersDelegate, tabModelSelectorSupplier);
+            LocationBarCoordinator locationBarCoordinator =
+                    new LocationBarCoordinator(
+                            mActivity.findViewById(R.id.location_bar),
+                            toolbarLayout,
+                            profileSupplier,
+                            PrivacyPreferencesManagerImpl.getInstance(),
+                            mLocationBarModel,
+                            mActionModeController.getActionModeCallback(),
+                            new WindowDelegate(mActivity.getWindow()),
+                            windowAndroid,
+                            mActivityTabProvider,
+                            modalDialogManagerSupplier,
+                            shareDelegateSupplier,
+                            mIncognitoStateProvider,
+                            activityLifecycleDispatcher,
+                            overrideUrlLoadingDelegate,
+                            new BackKeyBehaviorDelegate() {},
+                            SearchEngineLogoUtils.getInstance(),
+                            toolbarPageInfo::show,
+                            IntentHandler::bringTabToFront,
+                            DownloadUtils::isAllowedToDownloadPage,
+                            NewTabPageUma::recordOmniboxNavigation,
+                            TabWindowManagerSingleton::getInstance,
+                            (url) ->
+                                    mBookmarkModelSupplier.hasValue()
+                                            && mBookmarkModelSupplier.get().isBookmarked(url),
+                            () -> {
+                                return mToolbar.getCurrentOptionalButtonVariant()
+                                        == AdaptiveToolbarButtonVariant.VOICE;
+                            },
+                            merchantTrustSignalsCoordinatorSupplier,
+                            omniboxActionDelegate,
+                            mControlsVisibilityDelegate,
+                            ChromePureJavaExceptionReporter::reportJavaException,
+                            BackPressManager.isEnabled() ? backPressManager : null,
+                            scrollListener,
+                            openHistoryClustersDelegate,
+                            tabModelSelectorSupplier);
             // clang-format on
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             toolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
@@ -1946,11 +1962,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @return Whether url bar is focused when this method is called.
      */
     public boolean unfocusUrlBarOnBackPress() {
-        if (mOmniboxFocusStateSupplier.get()) {
-            setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
-            return true;
-        }
-        return false;
+        return mLocationBar.unfocusUrlBarOnBackPressed();
     }
 
     /**

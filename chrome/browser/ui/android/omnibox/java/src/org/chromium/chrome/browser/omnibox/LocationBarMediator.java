@@ -37,7 +37,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -1143,21 +1142,6 @@ class LocationBarMediator
         boolean isRtl = view.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
         if (mAutocompleteCoordinator.handleKeyEvent(keyCode, event)) {
             return true;
-        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (BackPressManager.isEnabled()) {
-                return false;
-            }
-            if (KeyNavigationUtil.isActionDown(event) && event.getRepeatCount() == 0) {
-                // Tell the framework to start tracking this event.
-                mLocationBarLayout.getKeyDispatcherState().startTracking(event, this);
-                return true;
-            } else if (KeyNavigationUtil.isActionUp(event)) {
-                mLocationBarLayout.getKeyDispatcherState().handleUpEvent(event);
-                if (event.isTracking() && !event.isCanceled()) {
-                    backKeyPressed();
-                    return true;
-                }
-            }
         } else if (keyCode == KeyEvent.KEYCODE_ESCAPE) {
             if (KeyNavigationUtil.isActionDown(event) && event.getRepeatCount() == 0) {
                 revertChanges();
@@ -1396,9 +1380,6 @@ class LocationBarMediator
     // Traditional way to intercept keycode_back, which is deprecated from T.
     @Override
     public void backKeyPressed() {
-        if (!BackPressManager.isEnabled()) {
-            BackPressManager.record(BackPressHandler.Type.LOCATION_BAR);
-        }
         if (mBackKeyBehavior.handleBackKeyPressed()) {
             return;
         }

@@ -197,7 +197,7 @@ public class LocationBarCoordinator
                 searchEngineLogoUtils, LensController.getInstance(), saveOfflineButtonState,
                 omniboxUma, isToolbarMicEnabledSupplier, mOmniboxDropdownEmbedderImpl,
                 tabModelSelectorSupplier);
-        if (backPressManager != null && BackPressManager.isEnabled()) {
+        if (backPressManager != null) {
             backPressManager.addHandler(mLocationBarMediator, BackPressHandler.Type.LOCATION_BAR);
         }
         final boolean isIncognito =
@@ -368,6 +368,15 @@ public class LocationBarCoordinator
     @Override
     public void clearUrlBarCursorWithoutFocusAnimations() {
         mLocationBarMediator.clearUrlBarCursorWithoutFocusAnimations();
+    }
+
+    @Override
+    public boolean unfocusUrlBarOnBackPressed() {
+        if (mLocationBarMediator.isUrlBarFocused()) {
+            mLocationBarMediator.backKeyPressed();
+            return true;
+        }
+        return false;
     }
 
     @Override

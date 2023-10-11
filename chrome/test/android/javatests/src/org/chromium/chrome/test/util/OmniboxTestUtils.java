@@ -19,6 +19,7 @@ import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 
+import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.test.espresso.UiController;
@@ -219,7 +220,11 @@ public class OmniboxTestUtils {
      * Expects the Omnibox to be focused before the call.
      */
     public void clearFocus() {
-        sendKey(KeyEvent.KEYCODE_BACK);
+        checkFocus(true);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ((ComponentActivity) mActivity).getOnBackPressedDispatcher().onBackPressed();
+                });
         checkFocus(false);
     }
 

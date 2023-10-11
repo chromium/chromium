@@ -31,7 +31,6 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
 import android.util.Property;
 import android.view.ContextThemeWrapper;
@@ -62,7 +61,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensController;
@@ -558,33 +556,37 @@ public class LocationBarMediatorTest {
         verify(mUrlCoordinator).clearFocus();
     }
 
-    // KEYCODE_BACK will not be sent from Android OS starting from T.
+    // KEYCODE_BACK will not be sent from Android OS starting from T. And no feature should
+    // rely on KEYCODE_BACK to intercept back press.
     @Test
-    @MaxAndroidSdkLevel(VERSION_CODES.S_V2)
     public void testOnKey_autocompleteHandles() {
-        doReturn(true)
+        doReturn(false)
                 .when(mAutocompleteCoordinator)
                 .handleKeyEvent(KeyEvent.KEYCODE_BACK, mKeyEvent);
         mMediator.onKey(mView, KeyEvent.KEYCODE_BACK, mKeyEvent);
+        // No-op.
         verify(mAutocompleteCoordinator).handleKeyEvent(KeyEvent.KEYCODE_BACK, mKeyEvent);
     }
 
     @Test
-    @MaxAndroidSdkLevel(VERSION_CODES.S_V2)
     public void testOnKey_back() {
         doReturn(mKeyDispatcherState).when(mLocationBarLayout).getKeyDispatcherState();
         doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
-        assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_BACK, mKeyEvent));
+        assertFalse(mMediator.onKey(mView, KeyEvent.KEYCODE_BACK, mKeyEvent));
 
-        verify(mKeyDispatcherState).startTracking(mKeyEvent, mMediator);
+        verify(mKeyDispatcherState, never()).startTracking(mKeyEvent, mMediator);
 
-        doReturn(true).when(mKeyEvent).isTracking();
+        doReturn(false).when(mKeyEvent).isTracking();
         doReturn(KeyEvent.ACTION_UP).when(mKeyEvent).getAction();
 
-        assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_BACK, mKeyEvent));
+        assertFalse(mMediator.onKey(mView, KeyEvent.KEYCODE_BACK, mKeyEvent));
 
-        verify(mKeyDispatcherState).handleUpEvent(mKeyEvent);
-        verify(mOverrideBackKeyBehaviorDelegate).handleBackKeyPressed();
+        verify(mKeyDispatcherState, never().description("Should not handle KEYCODE_BACK"))
+                .handleUpEvent(mKeyEvent);
+        verify(
+                        mOverrideBackKeyBehaviorDelegate,
+                        never().description("should not handle KEYCODE_BACK"))
+                .handleBackKeyPressed();
     }
 
     @Test
