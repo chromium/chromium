@@ -90,8 +90,9 @@ def delete_files_in_directory(directory_path):
     for file in files:
       file_path = os.path.join(directory_path, file)
 
-      # Make sure not to remove the default icon (globe)
-      if os.path.basename(file_path) == 'default_favicon.png':
+      # Only remove pngs and don't remove the default icon (globe)
+      filename = os.path.basename(file_path)
+      if not filename.endswith('.png') or filename == 'default_favicon.png':
         continue
 
       if os.path.isfile(file_path):
