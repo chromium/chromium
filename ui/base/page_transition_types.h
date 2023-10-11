@@ -205,18 +205,15 @@ bool PageTransitionIsWebTriggerable(PageTransition type);
 COMPONENT_EXPORT(UI_BASE)
 const char* PageTransitionGetCoreTransitionString(PageTransition type);
 
-// Declare a dummy class that is intentionally never defined.
-class DontUseOperatorEquals;
-
 // Ban operator== and operator!= as it's way too easy to forget to strip the
 // qualifiers. Use PageTransitionCoreTypeIs() instead or, in rare cases,
 // PageTransitionTypeIncludingQualifiersIs().
-DontUseOperatorEquals operator==(PageTransition, PageTransition);
-DontUseOperatorEquals operator==(PageTransition, int32_t);
-DontUseOperatorEquals operator==(int32_t, PageTransition);
-DontUseOperatorEquals operator!=(PageTransition, PageTransition);
-DontUseOperatorEquals operator!=(PageTransition, int32_t);
-DontUseOperatorEquals operator!=(int32_t, PageTransition);
+bool operator==(PageTransition, PageTransition) = delete;
+bool operator==(PageTransition, int32_t) = delete;
+bool operator==(int32_t, PageTransition) = delete;
+bool operator!=(PageTransition, PageTransition) = delete;
+bool operator!=(PageTransition, int32_t) = delete;
+bool operator!=(int32_t, PageTransition) = delete;
 
 }  // namespace ui
 
