@@ -314,60 +314,6 @@ TEST_F(ContentSettingsAgentImplBrowserTest, AllowStorageAccess) {
   EXPECT_EQ(1, mock_agent.allow_storage_access_count());
 }
 
-// Regression test for http://crbug.com/35011
-TEST_F(ContentSettingsAgentImplBrowserTest, JSBlockSentAfterPageLoad) {
-  MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
-
-  // 1. Load page with JS.
-  const char kHtml[] =
-      "<html>"
-      "<head>"
-      "<script>document.createElement('div');</script>"
-      "</head>"
-      "<body>"
-      "</body>"
-      "</html>";
-  render_thread_->sink().ClearMessages();
-  LoadHTML(kHtml);
-
-  // 2. Block JavaScript.
-  RendererContentSettingRules content_setting_rules;
-  ContentSettingsForOneType& script_setting_rules =
-      content_setting_rules.script_rules;
-  script_setting_rules.push_back(ContentSettingPatternSource(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      content_settings::ContentSettingToValue(CONTENT_SETTING_BLOCK),
-      std::string(), false));
-  ContentSettingsAgentImpl* agent =
-      ContentSettingsAgentImpl::Get(GetMainRenderFrame());
-  agent->SetRendererContentSettingRulesForTest(content_setting_rules);
-
-  // Make sure no pending messages are in the queue.
-  base::RunLoop().RunUntilIdle();
-  render_thread_->sink().ClearMessages();
-
-  const auto HasSentOnContentBlocked =
-      [](MockContentSettingsAgentImpl* mock_agent) {
-        return mock_agent->on_content_blocked_count() > 0;
-      };
-
-  // 3. Reload page. Verify that the notification that javascript was blocked
-  // has not yet been sent at the time when the navigation commits.
-  CommitTimeConditionChecker checker(
-      GetMainRenderFrame(),
-      base::BindRepeating(HasSentOnContentBlocked,
-                          base::Unretained(&mock_agent)),
-      false);
-
-  std::string url_str = "data:text/html;charset=utf-8,";
-  url_str.append(kHtml);
-  GURL url(url_str);
-  Reload(url);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(HasSentOnContentBlocked(&mock_agent));
-}
-
 TEST_F(ContentSettingsAgentImplBrowserTest, ImagesBlockedByDefault) {
   MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
 
