@@ -6890,7 +6890,10 @@ test("unit_tests") {
   }
 
   if (enable_compose) {
-    sources += [ "../browser/compose/chrome_compose_client_unittest.cc" ]
+    sources += [
+      "../browser/compose/chrome_compose_client_unittest.cc",
+      "../browser/compose/compose_enabling_unittest.cc",
+    ]
     deps += [
       "//chrome/common/compose:mojo_bindings",
       "//components/compose/core/browser:features",
