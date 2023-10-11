@@ -972,6 +972,13 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
                                     "Couldn't create SkImage for reading."));
   }
 
+  gfx::Size src_size = source_shared_image->size();
+  gfx::Rect src_rect(src_x, src_y, dst_info.width(), dst_info.height());
+  if (!gfx::Rect(src_size).Contains(src_rect)) {
+    return base::unexpected(GLError(GL_INVALID_VALUE, "glReadbackImagePixels",
+                                    "source shared image bad dimensions."));
+  }
+
   bool success = false;
   if (gr_context) {
     success = sk_image->readPixels(gr_context, dst_info, pixel_address,
@@ -979,11 +986,10 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
   } else {
     CHECK(shared_context_state_->graphite_context());
     ReadPixelsContext context;
-    const SkIRect src_rect =
-        SkIRect::MakeXYWH(src_x, src_y, dst_info.width(), dst_info.height());
     shared_context_state_->graphite_context()->asyncRescaleAndReadPixels(
-        sk_image.get(), dst_info, src_rect, SkImage::RescaleGamma::kSrc,
-        SkImage::RescaleMode::kRepeatedLinear, &OnReadPixelsDone, &context);
+        sk_image.get(), dst_info, RectToSkIRect(src_rect),
+        SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
+        &OnReadPixelsDone, &context);
     InsertRecordingAndSubmit(shared_context_state_, /*sync_cpu=*/true);
     CHECK(context.finished);
     if (context.async_result) {
