@@ -4561,6 +4561,17 @@ void LayoutObject::SetShouldInvalidateSelection() {
   NOT_DESTROYED();
   bitfields_.SetShouldInvalidateSelection(true);
   SetShouldCheckForPaintInvalidation();
+  // Invalidate overflow for ::selection styles that contain overflowing
+  // effects. Do this only for text objects, at least until
+  // crbug.com/1128199 is resolved (see InvalidateVisualOverflow())
+  if (IsText()) {
+    if (auto* computed_style = GetSelectionStyle()) {
+      if (computed_style->HasAppliedTextDecorations() ||
+          computed_style->HasVisualOverflowingEffect()) {
+        InvalidateVisualOverflow();
+      }
+    }
+  }
 }
 
 void LayoutObject::SetShouldDoFullPaintInvalidation(

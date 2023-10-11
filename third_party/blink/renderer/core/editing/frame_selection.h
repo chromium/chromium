@@ -226,7 +226,7 @@ class CORE_EXPORT FrameSelection final
   void CommitAppearanceIfNeeded();
   void SetCaretEnabled(bool caret_is_visible);
   void ScheduleVisualUpdate() const;
-  void ScheduleVisualUpdateForPaintInvalidationIfNeeded() const;
+  void ScheduleVisualUpdateForVisualOverflowIfNeeded() const;
 
   // Paint invalidation methods delegating to FrameCaret.
   void LayoutBlockWillBeDestroyed(const LayoutBlock&);

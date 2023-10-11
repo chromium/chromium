@@ -268,7 +268,7 @@ bool FrameSelection::SetSelectionDeprecated(
   is_directional_ = options.IsDirectional();
   should_shrink_next_tap_ = options.ShouldShrinkNextTap();
   is_handle_visible_ = should_show_handle;
-  ScheduleVisualUpdateForPaintInvalidationIfNeeded();
+  ScheduleVisualUpdateForVisualOverflowIfNeeded();
 
   frame_->GetEditor().RespondToChangedSelection();
   DCHECK_EQ(current_document, GetDocument());
@@ -476,7 +476,7 @@ bool FrameSelection::Modify(SelectionModifyAlteration alter,
   if (set_selection_by == SetSelectionBy::kUser)
     granularity_ = TextGranularity::kCharacter;
 
-  ScheduleVisualUpdateForPaintInvalidationIfNeeded();
+  ScheduleVisualUpdateForVisualOverflowIfNeeded();
 
   return true;
 }
@@ -1165,9 +1165,9 @@ void FrameSelection::ScheduleVisualUpdate() const {
     page->Animator().ScheduleVisualUpdate(&frame_->LocalFrameRoot());
 }
 
-void FrameSelection::ScheduleVisualUpdateForPaintInvalidationIfNeeded() const {
+void FrameSelection::ScheduleVisualUpdateForVisualOverflowIfNeeded() const {
   if (LocalFrameView* frame_view = frame_->View())
-    frame_view->ScheduleVisualUpdateForPaintInvalidationIfNeeded();
+    frame_view->ScheduleVisualUpdateForVisualOverflowIfNeeded();
 }
 
 bool FrameSelection::SelectWordAroundCaret() {
