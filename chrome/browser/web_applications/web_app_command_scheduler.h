@@ -31,6 +31,7 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -413,6 +414,17 @@ class WebAppCommandScheduler {
   // state some web apps have gotten into, see https://crbug.com/1427340.
   void ScheduleDedupeInstallUrls(base::OnceClosure callback,
                                  const base::Location& location = FROM_HERE);
+
+  // Sets the user preference for link capturing for the given app. If
+  // `set_to_preferred` is true, then links in the browser can be launched in
+  // the app corresponding to app_id, respecting the app's launch handler
+  // preferences. Additionally, if there are multiple apps within the same
+  // scope, this will reset the preference on those apps to false.
+  void SetAppCapturesSupportedLinksDisableOverlapping(
+      const webapps::AppId app_id,
+      bool set_to_preferred,
+      base::OnceClosure done,
+      const base::Location& location = FROM_HERE);
 
   // TODO(https://crbug.com/1298130): expose all commands for web app
   // operations.

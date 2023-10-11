@@ -200,10 +200,10 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
 #if BUILDFLAG(IS_CHROMEOS)
     apps_util::SetSupportedLinksPreferenceAndWait(profile(), app_id);
 #else
-    ScopedRegistryUpdate update = provider().sync_bridge_unsafe().BeginUpdate();
-    WebApp* app = update->UpdateApp(app_id);
-    CHECK(app);
-    app->SetIsUserSelectedAppForSupportedLinks(true);
+    base::test::TestFuture<void> preference_set;
+    provider().scheduler().SetAppCapturesSupportedLinksDisableOverlapping(
+        app_id, true, preference_set.GetCallback());
+    ASSERT_TRUE(preference_set.Wait());
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 

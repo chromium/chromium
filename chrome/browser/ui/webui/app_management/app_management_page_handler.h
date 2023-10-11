@@ -118,12 +118,6 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
   void OnPreferredAppsListWillBeDestroyed(
       apps::PreferredAppsListHandle* handle) override;
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  void MakeAppPreferredAndResetOthers(const webapps::AppId& app_id,
-                                      bool set_to_preferred,
-                                      web_app::AllAppsLock& lock);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
   mojo::Receiver<app_management::mojom::PageHandler> receiver_;
 
   mojo::Remote<app_management::mojom::Page> page_;

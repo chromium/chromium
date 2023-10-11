@@ -343,6 +343,13 @@ source_set("web_applications") {
     ]
   }
 
+  if (!is_chromeos) {
+    sources += [
+      "jobs/link_capturing.cc",
+      "jobs/link_capturing.h",
+    ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "web_app_system_web_app_delegate_map_utils.cc",
@@ -768,6 +775,10 @@ source_set("web_applications_unit_tests") {
       "os_integration/web_app_run_on_os_login_chromeos_unittest.cc",
       "web_app_run_on_os_login_manager_unittest.cc",
     ]
+  }
+
+  if (!is_chromeos) {
+    sources += [ "jobs/link_capturing_unittest.cc" ]
   }
 
   deps = [

@@ -282,8 +282,10 @@ WebAppInstallInfo WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
 // static
 std::unique_ptr<WebAppInstallInfo>
 WebAppInstallInfo::CreateWithStartUrlForTesting(const GURL& start_url) {
-  return std::make_unique<WebAppInstallInfo>(
+  auto info = std::make_unique<WebAppInstallInfo>(
       GenerateManifestIdFromStartUrlOnly(start_url), start_url);
+  info->scope = start_url.GetWithoutFilename();
+  return info;
 }
 
 WebAppInstallInfo::WebAppInstallInfo() = default;

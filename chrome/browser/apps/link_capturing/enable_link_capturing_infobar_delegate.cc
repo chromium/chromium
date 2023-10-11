@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/numerics/clamped_math.h"
@@ -68,24 +69,6 @@ base::Value IncrementDismissCount(webapps::AppId app_id,
   app->SetSupportedLinksOfferDismissCount(new_count);
 
   debug_result.Set("supported_links_offer_dismiss_count", new_count);
-  return base::Value(std::move(debug_result));
-}
-
-base::Value EnableUserLinkCapturing(webapps::AppId app_id,
-                                    web_app::AppLock& app_lock) {
-  web_app::ScopedRegistryUpdate update = app_lock.sync_bridge().BeginUpdate();
-  web_app::WebApp* app = update->UpdateApp(app_id);
-
-  base::Value::Dict debug_result;
-  debug_result.Set("app_id", app_id);
-  if (!app) {
-    debug_result.Set("error", "AppId does not exist.");
-    debug_result.Set("user_link_capturing_set", false);
-    return base::Value(std::move(debug_result));
-  }
-  app->SetIsUserSelectedAppForSupportedLinks(true);
-
-  debug_result.Set("user_link_capturing_set", true);
   return base::Value(std::move(debug_result));
 }
 }  // namespace
@@ -222,10 +205,8 @@ bool EnableLinkCapturingInfoBarDelegate::Accept() {
   action_taken_ = true;
   base::RecordAction(
       base::UserMetricsAction("LinkCapturingAcceptedFromInfoBar"));
-  provider_->scheduler().ScheduleCallbackWithLock(
-      "EnableUserLinkCapturing",
-      std::make_unique<web_app::AppLockDescription>(app_id_),
-      base::BindOnce(&EnableUserLinkCapturing, app_id_));
+  provider_->scheduler().SetAppCapturesSupportedLinksDisableOverlapping(
+      app_id_, true, base::DoNothing());
   return true;
 }
 

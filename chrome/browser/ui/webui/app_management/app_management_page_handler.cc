@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
@@ -407,11 +408,9 @@ void AppManagementPageHandler::SetPreferredApp(const std::string& app_id,
 #else
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForWebApps(profile_);
-  provider->scheduler().ScheduleCallbackWithLock<web_app::AllAppsLock>(
-      "AppManagementPageHandler::MakeAppPreferredAndResetOthers",
-      std::make_unique<web_app::AllAppsLockDescription>(),
-      base::BindOnce(&AppManagementPageHandler::MakeAppPreferredAndResetOthers,
-                     weak_ptr_factory_.GetWeakPtr(), app_id, is_preferred_app));
+
+  provider->scheduler().SetAppCapturesSupportedLinksDisableOverlapping(
+      app_id, is_preferred_app, base::DoNothing());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -769,52 +768,3 @@ void AppManagementPageHandler::OnPreferredAppsListWillBeDestroyed(
     apps::PreferredAppsListHandle* handle) {
   preferred_apps_list_handle_observer_.Reset();
 }
-
-#if !BUILDFLAG(IS_CHROMEOS)
-void AppManagementPageHandler::MakeAppPreferredAndResetOthers(
-    const webapps::AppId& app_id,
-    bool set_to_preferred,
-    web_app::AllAppsLock& lock) {
-  bool is_already_preferred = lock.registrar().CapturesLinksInScope(app_id);
-
-  // Only update in web_app DB if the user selected choice does not match the
-  // one in the DB currently.
-  bool requires_update = (set_to_preferred && !is_already_preferred) ||
-                         (!set_to_preferred && is_already_preferred);
-
-  if (!requires_update) {
-    return;
-  }
-
-  // TODO(b/273830801): Automatically call observers when changes are committed
-  //  to the web_app DB.
-  for (const webapps::AppId& id : lock.registrar().GetAppIds()) {
-    if (id == app_id) {
-      {
-        web_app::ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();
-        web_app::WebApp* app_to_update = update->UpdateApp(app_id);
-        app_to_update->SetIsUserSelectedAppForSupportedLinks(set_to_preferred);
-      }
-      lock.registrar().NotifyWebAppUserLinkCapturingPreferencesChanged(
-          app_id, set_to_preferred);
-    } else {
-      // For all other app_ids, if one is already set as the preferred, reset
-      // all other apps in the registry if they were previously set to be a
-      // preferred app to capture similar type of links according to scope
-      // prefixes.
-      if (set_to_preferred && lock.registrar().CapturesLinksInScope(id) &&
-          lock.registrar().AppScopesMatchForUserLinkCapturing(app_id, id)) {
-        {
-          web_app::ScopedRegistryUpdate update =
-              lock.sync_bridge().BeginUpdate();
-          web_app::WebApp* app_to_update = update->UpdateApp(id);
-          app_to_update->SetIsUserSelectedAppForSupportedLinks(
-              /*is_user_selected_app_for_capturing_links=*/false);
-        }
-        lock.registrar().NotifyWebAppUserLinkCapturingPreferencesChanged(
-            id, /*is_preferred=*/false);
-      }
-    }
-  }
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)

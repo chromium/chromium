@@ -11,13 +11,14 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -72,6 +73,10 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/jobs/link_capturing.h"
+#endif
 
 namespace web_app {
 
@@ -825,6 +830,28 @@ void WebAppCommandScheduler::ScheduleDedupeInstallUrls(
       std::make_unique<DedupeInstallUrlsCommand>(profile_.get(),
                                                  std::move(callback)),
       location);
+}
+
+void WebAppCommandScheduler::SetAppCapturesSupportedLinksDisableOverlapping(
+    const webapps::AppId app_id,
+    bool set_to_preferred,
+    base::OnceClosure done,
+    const base::Location& location) {
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED() << "Preferred apps in ChromeOS are implemented in AppService";
+#else
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                             std::move(done));
+    return;
+  }
+
+  ScheduleCallbackWithLock(
+      "SetAppCapturesSupporedLinks", std::make_unique<AllAppsLockDescription>(),
+      base::BindOnce(::web_app::SetAppCapturesSupportedLinksDisableOverlapping,
+                     app_id, set_to_preferred),
+      location, std::move(done));
+#endif
 }
 
 void WebAppCommandScheduler::LaunchApp(apps::AppLaunchParams params,
