@@ -714,7 +714,7 @@
     "yep": {
       "name": "Yep",
       "keyword": "yep.com",
-      "favicon_url": "https://yep.com/assets/opensearch-64x64.png",
+      "favicon_url": "https://cdn.yep.com/static/meta/favicon.ico",
       "search_url": "https://yep.com/web?q={searchTerms}",
       "suggest_url": "https://api.yep.com/ac/?query={searchTerms}&os=true",
       "type": "SEARCH_ENGINE_YEP",
