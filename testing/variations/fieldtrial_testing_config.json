@@ -6446,7 +6446,7 @@
                     "name": "MatchPresentationIndexAndReportOnRealPaint_V2",
                     "enable_features": [
                         "EventTimingMatchPresentationIndex",
-                        "MatchPresentationIndexAndReportOnRealPaint"
+                        "EventTimingReportAllEarlyEntriesOnPaintedPresentation"
                     ]
                 }
             ]
