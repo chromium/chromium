@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {fakeFirmwareUpdates} from './fake_data.js';
 import {FakeUpdateController} from './fake_update_controller.js';
@@ -17,45 +17,31 @@ import {InstallController, InstallControllerInterface, UpdateProvider, UpdatePro
 
 /**
  * If true this will replace UpdateProvider with a fake.
- * @type {boolean}
  */
 let useFakeProviders = false;
 
-/**
- * @type {?UpdateProviderInterface}
- */
-let updateProvider = null;
+let updateProvider: UpdateProviderInterface|null = null;
 
-/**
- * @type {?InstallControllerInterface}
- */
-let updateController = null;
+let updateController: InstallControllerInterface|null = null;
 
-/**
- * @param {boolean} value
- */
-export function setUseFakeProviders(value) {
+export function setUseFakeProviders(value: boolean): void {
   useFakeProviders = value;
 }
 
-/**
- * @param {!UpdateProviderInterface} testProvider
- */
-export function setUpdateProviderForTesting(testProvider) {
+export function setUpdateProviderForTesting(
+    testProvider: UpdateProviderInterface): void {
   updateProvider = testProvider;
 }
 
-/**
- * @param {!InstallControllerInterface} testUpdateController
- */
-export function setUpdateControllerForTesting(testUpdateController) {
+export function setUpdateControllerForTesting(
+    testUpdateController: InstallControllerInterface): void {
   updateController = testUpdateController;
 }
 
 /**
  * Sets up a FakeUpdateProvider to be used at runtime.
  */
-function setupFakeUpdateProvider() {
+function setupFakeUpdateProvider(): void {
   const provider = new FakeUpdateProvider();
 
   provider.setFakeFirmwareUpdates(fakeFirmwareUpdates);
@@ -65,14 +51,11 @@ function setupFakeUpdateProvider() {
 /**
  * Sets up a FakeUpdateController to be used at runtime.
  */
-function setupFakeUpdateController() {
+function setupFakeUpdateController(): void {
   setUpdateControllerForTesting(new FakeUpdateController());
 }
 
-/**
- * @return {!UpdateProviderInterface}
- */
-export function getUpdateProvider() {
+export function getUpdateProvider(): UpdateProviderInterface {
   if (!updateProvider) {
     if (useFakeProviders) {
       setupFakeUpdateProvider();
@@ -85,10 +68,7 @@ export function getUpdateProvider() {
   return updateProvider;
 }
 
-/**
- * @return {!InstallControllerInterface}
- */
-export function getUpdateController() {
+export function getUpdateController(): InstallControllerInterface {
   if (!updateController) {
     if (useFakeProviders) {
       setupFakeUpdateController();

@@ -31,7 +31,7 @@ build_webui("build") {
     "fake_update_controller.js",
     "fake_update_provider.js",
     "firmware_update_types.js",
-    "mojo_interface_provider.js",
+    "mojo_interface_provider.ts",
   ]
 
   mojo_files = [ "$root_gen_dir/mojom-webui/ash/webui/firmware_update_ui/mojom/firmware_update.mojom-webui.js" ]
