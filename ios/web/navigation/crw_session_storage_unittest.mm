@@ -45,8 +45,11 @@ class CRWSessionStorageTest : public PlatformTest {
  protected:
   CRWSessionStorageTest() {
     // Set up `session_storage_`.
+    const base::Time now = base::Time::Now();
     session_storage_ = [[CRWSessionStorage alloc] init];
     session_storage_.hasOpener = YES;
+    session_storage_.creationTime = now - base::Minutes(15);
+    session_storage_.lastActiveTime = now;
     session_storage_.lastCommittedItemIndex = 0;
     session_storage_.userAgentType = web::UserAgentType::DESKTOP;
     session_storage_.stableIdentifier = [[NSUUID UUID] UUIDString];
@@ -101,6 +104,25 @@ TEST_F(CRWSessionStorageTest, EncodeDecode) {
       DecodeSessionStorage(EncodeSessionStorage(session_storage_));
 
   EXPECT_NSEQ(session_storage_, decoded);
+}
+
+// Tests that unarchiving CRWSessionStorage data set lastActiveTime to
+// creationTime if the value is unset.
+TEST_F(CRWSessionStorageTest, EncodeDecode_LastActiveTimeUnset) {
+  CRWSessionStorage* decoded =
+      DecodeSessionStorage(EncodeSessionStorage(session_storage_));
+
+  EXPECT_NSEQ(session_storage_, decoded);
+
+  // Reset the lastActiveTime to simulate having it incorrectly initialized
+  // in WebStateImpl constructor.
+  decoded.lastActiveTime = base::Time();
+  ASSERT_NSNE(session_storage_, decoded);
+
+  // Check that encoding and then decoding the value with an unitialized
+  // last active time correctly restore the property (to creation time).
+  decoded = DecodeSessionStorage(EncodeSessionStorage(decoded));
+  EXPECT_EQ(decoded.lastActiveTime, decoded.creationTime);
 }
 
 // Tests that conversion to/from proto results in an equivalent storage.
