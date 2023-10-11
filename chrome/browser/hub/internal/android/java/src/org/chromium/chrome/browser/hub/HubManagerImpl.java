@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.hub;
 
 import android.content.Context;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
@@ -22,7 +20,7 @@ public class HubManagerImpl implements HubManager, HubController {
 
     // Final Hub specific fields:
     private final PaneManagerImpl mPaneManager;
-    private final FrameLayout mHubContainerView;
+    private final HubContainerView mHubContainerView;
 
     private HubCoordinator mHubCoordinator;
 
@@ -37,7 +35,7 @@ public class HubManagerImpl implements HubManager, HubController {
         mPaneManager = new PaneManagerImpl(paneListBuilder);
 
         // TODO(crbug/1487315): Consider making this a xml file so the entire core UI is inflated.
-        mHubContainerView = new FrameLayout(mContext);
+        mHubContainerView = new HubContainerView(mContext);
     }
 
     // HubManager implementation.
@@ -55,8 +53,8 @@ public class HubManagerImpl implements HubManager, HubController {
     // HubController implementation.
 
     @Override
-    public @NonNull ViewGroup getContainerView() {
-        assert mHubCoordinator != null : "Accessed a possibly empty Hub container view.";
+    public @NonNull HubContainerView getContainerView() {
+        assert mHubCoordinator != null : "Access of a HubContainerView with no descendants.";
         return mHubContainerView;
     }
 

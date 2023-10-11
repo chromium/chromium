@@ -4,14 +4,12 @@
 
 package org.chromium.chrome.browser.hub;
 
-import android.view.View;
-
 import androidx.annotation.NonNull;
 
 /** The interface for communication between the {@link HubLayout} and Hub internals. */
 public interface HubController {
     /** Returns the view that contains all the Hub UI. */
-    public @NonNull View getContainerView();
+    public @NonNull HubContainerView getContainerView();
 
     /** Called at the start of {@link HubLayout#show(long, boolean)}. */
     public void onHubLayoutShow();

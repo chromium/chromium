@@ -8,6 +8,7 @@ import("//chrome/android/features/android_library_factory_tmpl.gni")
 android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/hub/DefaultPaneOrderController.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubContainerView.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubController.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubFieldTrial.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimation.java",
@@ -18,6 +19,8 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/PaneListBuilder.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneManager.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneOrderController.java",
+    "android/java/src/org/chromium/chrome/browser/hub/RunOnNextLayout.java",
+    "android/java/src/org/chromium/chrome/browser/hub/RunOnNextLayoutDelegate.java",
   ]
 
   deps = [
@@ -39,6 +42,7 @@ robolectric_library("junit") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/hub/HubFieldTrialTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneListBuilderUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/RunOnNextLayoutDelegateUnitTest.java",
   ]
 
   deps = [
