@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
@@ -95,6 +96,13 @@ class PendingBeaconHostTestBase : public RenderViewHostTestHarness {
   PendingBeaconHostTestBase& operator=(const PendingBeaconHostTestBase&) =
       delete;
   PendingBeaconHostTestBase() = default;
+
+  void TearDown() override {
+    // Clean up error handler, to avoid causing other tests run in the same
+    // process from crashing.
+    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+    RenderViewHostTestHarness::TearDown();
+  }
 
  protected:
   PendingBeaconHost* host() { return GetOrCreateHostIfNotExist(); }
