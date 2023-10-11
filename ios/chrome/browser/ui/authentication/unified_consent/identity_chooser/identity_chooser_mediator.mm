@@ -133,4 +133,10 @@
   [self updateTableViewIdentityItem:item withIdentity:identity];
 }
 
+- (void)onChromeAccountManagerServiceShutdown:
+    (ChromeAccountManagerService*)accountManagerService {
+  // TODO(crbug.com/1489595): Remove `[self disconnect]`.
+  [self disconnect];
+}
+
 @end

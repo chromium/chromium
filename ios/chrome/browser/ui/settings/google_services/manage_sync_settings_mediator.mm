@@ -1087,6 +1087,12 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   }
 }
 
+- (void)onChromeAccountManagerServiceShutdown:
+    (ChromeAccountManagerService*)accountManagerService {
+  // TODO(crbug.com/1489595): Remove `[self disconnect]`.
+  [self disconnect];
+}
+
 #pragma mark - ManageSyncSettingsServiceDelegate
 
 - (void)toggleSwitchItem:(TableViewItem*)item withValue:(BOOL)value {

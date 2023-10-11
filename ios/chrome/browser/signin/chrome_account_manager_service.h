@@ -51,6 +51,11 @@ class ChromeAccountManagerService : public KeyedService,
     virtual void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                             id<RefreshAccessTokenError> error) {
     }
+
+    // Called on Shutdown(), for observers that aren't KeyedServices to remove
+    // their observers.
+    virtual void OnChromeAccountManagerServiceShutdown(
+        ChromeAccountManagerService* chrome_account_manager_service) {}
   };
 
   // Initializes the service.

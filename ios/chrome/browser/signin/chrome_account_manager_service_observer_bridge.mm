@@ -33,3 +33,13 @@ void ChromeAccountManagerServiceObserverBridge::OnIdentityUpdated(
     [observer_ identityUpdated:identity];
   }
 }
+
+void ChromeAccountManagerServiceObserverBridge::
+    OnChromeAccountManagerServiceShutdown(
+        ChromeAccountManagerService* chrome_account_manager_service) {
+  if ([observer_ respondsToSelector:@selector
+                 (onChromeAccountManagerServiceShutdown:)]) {
+    [observer_
+        onChromeAccountManagerServiceShutdown:chrome_account_manager_service];
+  }
+}
