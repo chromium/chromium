@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/toolchain/rbe.gni")
+import("//build/toolchain/siso.gni")
+
 template("node") {
   action(target_name) {
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
@@ -14,14 +17,32 @@ template("node") {
       "//third_party/node/node_modules.tar.gz.sha1",
     ]
 
-    if (is_linux || is_chromeos) {
-      inputs += [ "//third_party/node/linux/node-linux-x64.tar.gz.sha1" ]
+    # When use_remoteexec=true or use_siso=true, node actions run on remote
+    # Linux worker. So it should include linux node binary in inputs.
+    if (is_linux || is_chromeos || use_remoteexec || use_siso) {
+      inputs += [
+        "//third_party/node/linux/node-linux-x64.tar.gz.sha1",
+        "//third_party/node/linux/node-linux-x64/bin/node",
+      ]
     }
-    if (is_win) {
-      inputs += [ "//third_party/node/win/node.exe.sha1" ]
+    if (is_win && host_os == "win") {
+      inputs += [
+        "//third_party/node/win/node.exe",
+        "//third_party/node/win/node.exe.sha1",
+      ]
     }
-    if (is_mac) {
-      inputs += [ "//third_party/node/mac/node-darwin-x64.tar.gz.sha1" ]
+    if (is_mac && host_os == "mac") {
+      if (host_cpu == "arm64") {
+        inputs += [
+          "//third_party/node/mac/node-darwin-arm64.tar.gz.sha1",
+          "//third_party/node/mac/node-darwin-arm64/bin/node",
+        ]
+      } else {
+        inputs += [
+          "//third_party/node/mac/node-darwin-x64.tar.gz.sha1",
+          "//third_party/node/mac/node-darwin-x64/bin/node",
+        ]
+      }
     }
   }
 }
