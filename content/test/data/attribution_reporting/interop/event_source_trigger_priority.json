@@ -9,15 +9,17 @@
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "event"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination.test",
-              "source_event_id": "123"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "123"
+              }
             }
           }
-        }]
+        ]
       },
       {
         "timestamp": "1000",
@@ -25,19 +27,21 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "0",
-                  "priority": "-1"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "0",
+                    "priority": "-1"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       // Will replace the first report as its priority is higher.
       {
@@ -46,18 +50,20 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "1"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       // Will not replace the second report as its priority is not higher.
       {
@@ -66,20 +72,22 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "debug_permission": true,
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "0"
-                }
-              ],
-              "debug_reporting": true
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "0"
+                  }
+                ],
+                "debug_reporting": true
+              }
             }
           }
-        }]
+        ]
       }
     ]
   },
@@ -87,19 +95,21 @@
     "unparsable_registrations": [],
     "reports": [
       {
-        "payload": [ {
-          "body": {
-             "attribution_destination": "https://destination.test",
-             "randomized_trigger_rate": 0.0000025,
-             "scheduled_report_time": "2592000",
-             "source_event_id": "123",
-             "source_type": "event",
-             "trigger_data": "0"
-          },
-          "type": "trigger-event-low-priority"
-       } ],
-       "report_time": "3000",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "randomized_trigger_rate": 0.0000025,
+              "scheduled_report_time": "2592000",
+              "source_event_id": "123",
+              "source_type": "event",
+              "trigger_data": "0"
+            },
+            "type": "trigger-event-low-priority"
+          }
+        ],
+        "report_time": "3000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
         "payload": {

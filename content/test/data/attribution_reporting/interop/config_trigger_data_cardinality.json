@@ -12,15 +12,17 @@
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination.test",
-              "source_event_id": "123"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "123"
+              }
             }
           }
-        }]
+        ]
       },
       {
         "timestamp": "1000",
@@ -28,18 +30,20 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "7"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "7"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       }
     ]
   },
@@ -49,8 +53,8 @@
       {
         "payload": {
           "attribution_destination": "https://destination.test",
-	  // (3 * 4 + 3) choose 3 = 455
-	  // 455 / (455 - 1 + exp(14)) = .0003782
+          // (3 * 4 + 3) choose 3 = 455
+          // 455 / (455 - 1 + exp(14)) = .0003782
           "randomized_trigger_rate": 0.0003782,
           "scheduled_report_time": "172800",
           "source_event_id": "123",

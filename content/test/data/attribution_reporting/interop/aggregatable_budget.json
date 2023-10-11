@@ -9,21 +9,23 @@
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination.test",
-              "source_event_id": "123",
-              "aggregation_keys": {
-                "a": "0x159",
-                "b": "0x5"
-              },
-              // Will be cleared as debug_permission is not set.
-              "source_debug_key": "12345"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "123",
+                "aggregation_keys": {
+                  "a": "0x159",
+                  "b": "0x5"
+                },
+                // Will be cleared as debug_permission is not set.
+                "source_debug_key": "12345"
+              }
             }
           }
-        }]
+        ]
       },
       // Should be dropped due to insufficient aggregatable budget.
       {
@@ -32,30 +34,32 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "debug_permission": true,
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "aggregatable_trigger_data": [
-                {
-                  "source_keys": ["a"],
-                  "key_piece": "0x400"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x400"
+                  },
+                  {
+                    "source_keys": ["b"],
+                    "key_piece": "0xA80"
+                  }
+                ],
+                "aggregatable_values": {
+                  "a": 65530,
+                  "b": 7
                 },
-                {
-                  "source_keys": ["b"],
-                  "key_piece": "0xA80"
-                }
-              ],
-              "aggregatable_values": {
-                "a": 65530,
-                "b": 7
-              },
-              "debug_key": "6789",
-              "debug_reporting": true
+                "debug_key": "6789",
+                "debug_reporting": true
+              }
             }
           }
-        }]
+        ]
       },
       // Should result in an aggregatable report because there's sufficient
       // aggregatable budget.
@@ -65,22 +69,24 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "aggregatable_trigger_data": [
-                {
-                  "source_keys": ["a"],
-                  "key_piece": "0x400"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x400"
+                  }
+                ],
+                "aggregatable_values": {
+                  "a": 65535
                 }
-              ],
-              "aggregatable_values": {
-                "a": 65535
               }
             }
           }
-        }]
+        ]
       },
       // Should be dropped due to insufficient aggregatable budget and verbose
       // debug report is not created as debug_permission is not set.
@@ -90,23 +96,25 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "aggregatable_trigger_data": [
-                {
-                  "source_keys": ["b"],
-                  "key_piece": "0xa80"
-                }
-              ],
-              "aggregatable_values": {
-                "a": 2
-              },
-              "debug_reporting": true
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["b"],
+                    "key_piece": "0xa80"
+                  }
+                ],
+                "aggregatable_values": {
+                  "a": 2
+                },
+                "debug_reporting": true
+              }
             }
           }
-        }]
+        ]
       },
       // Should result in an aggregatable report because there's sufficient
       // aggregatable budget.
@@ -116,22 +124,24 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "aggregatable_trigger_data": [
-                {
-                  "source_keys": ["b"],
-                  "key_piece": "0xa80"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["b"],
+                    "key_piece": "0xa80"
+                  }
+                ],
+                "aggregatable_values": {
+                  "b": 1
                 }
-              ],
-              "aggregatable_values": {
-                "b": 1
               }
             }
           }
-        }]
+        ]
       },
       // Should deactivate the first source.
       {
@@ -141,21 +151,23 @@
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-source",
-          "debug_permission": true,
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination.test",
-              "source_event_id": "456",
-              "aggregation_keys": {
-                "a": "0x159",
-                "b": "0x5"
-              },
-              "debug_key": "54321"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "456",
+                "aggregation_keys": {
+                  "a": "0x159",
+                  "b": "0x5"
+                },
+                "debug_key": "54321"
+              }
             }
           }
-        }]
+        ]
       },
       // Should result in an aggregatable report because the aggregatable
       // budget is separate for the second source.
@@ -165,22 +177,24 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "aggregatable_trigger_data": [
-                {
-                  "source_keys": ["b"],
-                  "key_piece": "0xa80"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["b"],
+                    "key_piece": "0xa80"
+                  }
+                ],
+                "aggregatable_values": {
+                  "b": 65536
                 }
-              ],
-              "aggregatable_values": {
-                "b": 65536
               }
             }
           }
-        }]
+        ]
       },
       // Should not result in an aggregatable report due to insufficient
       // aggregatable budget.
@@ -190,24 +204,26 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "debug_permission": true,
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "aggregatable_trigger_data": [
-                {
-                  "source_keys": ["b"],
-                  "key_piece": "0xa81"
-                }
-              ],
-              "aggregatable_values": {
-                "b": 1
-              },
-              "debug_reporting": true
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["b"],
+                    "key_piece": "0xa81"
+                  }
+                ],
+                "aggregatable_values": {
+                  "b": 1
+                },
+                "debug_reporting": true
+              }
             }
           }
-        }]
+        ]
       }
     ]
   },
@@ -215,32 +231,36 @@
     "unparsable_registrations": [],
     "reports": [
       {
-        "payload": [ {
-          "body": {
-             "attribution_destination": "https://destination.test",
-             "limit": "65536",
-             "source_event_id": "123",
-             "source_site": "https://source.test",
-             "trigger_debug_key": "6789"
-          },
-          "type": "trigger-aggregate-insufficient-budget"
-       } ],
-       "report_time": "1000",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "limit": "65536",
+              "source_event_id": "123",
+              "source_site": "https://source.test",
+              "trigger_debug_key": "6789"
+            },
+            "type": "trigger-aggregate-insufficient-budget"
+          }
+        ],
+        "report_time": "1000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
-        "payload": [ {
-          "body": {
-             "attribution_destination": "https://destination.test",
-             "limit": "65536",
-             "source_debug_key": "54321",
-             "source_event_id": "456",
-             "source_site": "https://source.test"
-          },
-          "type": "trigger-aggregate-insufficient-budget"
-       } ],
-       "report_time": "12000",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "limit": "65536",
+              "source_debug_key": "54321",
+              "source_event_id": "456",
+              "source_site": "https://source.test"
+            },
+            "type": "trigger-aggregate-insufficient-budget"
+          }
+        ],
+        "report_time": "12000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
         "payload": {

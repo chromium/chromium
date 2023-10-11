@@ -11,18 +11,20 @@
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-source",
-          "debug_permission": true,
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination.test",
-              "max_event_level_reports": 5,
-              "source_event_id": "123",
-              "debug_reporting": true
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "max_event_level_reports": 5,
+                "source_event_id": "123",
+                "debug_reporting": true
+              }
             }
           }
-        }]
+        ]
       },
       {
         // Should not match to a source.
@@ -31,18 +33,20 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "1"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       {
         // Should not register due to exceeding max info gain bar.
@@ -53,19 +57,21 @@
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination.test",
-              "source_event_id": "123",
-              "event_report_windows": {
-                "start_time":0,
-                "end_times":[3600,7200,10800,14400,18000]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "123",
+                "event_report_windows": {
+                  "start_time": 0,
+                  "end_times": [3600, 7200, 10800, 14400, 18000]
+                }
               }
             }
           }
-        }]
+        ]
       },
       {
         // Should not match to a source.
@@ -74,18 +80,20 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "2"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "2"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       {
         // Should register due to not exceeding max info gain bar.
@@ -96,20 +104,22 @@
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination.test",
-              "source_event_id": "123",
-              "max_event_level_reports": 2,
-              "event_report_windows": {
-                "start_time":0,
-                "end_times":[3600,7200,10800,14400,18000]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "123",
+                "max_event_level_reports": 2,
+                "event_report_windows": {
+                  "start_time": 0,
+                  "end_times": [3600, 7200, 10800, 14400, 18000]
+                }
               }
             }
           }
-        }]
+        ]
       },
       {
         // Should result in an event-level report.
@@ -118,18 +128,20 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "3"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "3"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       {
         // Max values for event_report_windows and max_event_level_reports,
@@ -142,20 +154,22 @@
           "attribution_src_url": "https://reporter2.test/register-source",
           "source_type": "navigation"
         },
-        "responses": [{
-          "url": "https://reporter2.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination2.test",
-              "source_event_id": "456",
-              "max_event_level_reports": 20,
-              "event_report_windows": {
-                "start_time":0,
-                "end_times":[3600,7200,10800,14400,18000]
+        "responses": [
+          {
+            "url": "https://reporter2.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination2.test",
+                "source_event_id": "456",
+                "max_event_level_reports": 20,
+                "event_report_windows": {
+                  "start_time": 0,
+                  "end_times": [3600, 7200, 10800, 14400, 18000]
+                }
               }
             }
           }
-        }]
+        ]
       },
       {
         // Should result in an event-level report.
@@ -164,18 +178,20 @@
           "attribution_src_url": "https://reporter2.test/register-trigger",
           "context_origin": "https://destination2.test"
         },
-        "responses": [{
-          "url": "https://reporter2.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "4"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter2.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "4"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       {
         // Should not register due to exceeding max info gain bar.
@@ -186,20 +202,22 @@
           "attribution_src_url": "https://reporter3.test/register-source",
           "source_type": "event"
         },
-        "responses": [{
-          "url": "https://reporter3.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination3.test",
-              "source_event_id": "789",
-              "max_event_level_reports": 5,
-              "event_report_windows": {
-                "start_time":0,
-                "end_times":[3600,7200,10800]
+        "responses": [
+          {
+            "url": "https://reporter3.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination3.test",
+                "source_event_id": "789",
+                "max_event_level_reports": 5,
+                "event_report_windows": {
+                  "start_time": 0,
+                  "end_times": [3600, 7200, 10800]
+                }
               }
             }
           }
-        }]
+        ]
       },
       {
         // Should not match to a source.
@@ -208,18 +226,20 @@
           "attribution_src_url": "https://reporter3.test/register-trigger",
           "context_origin": "https://destination3.test"
         },
-        "responses": [{
-          "url": "https://reporter3.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "1"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter3.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       {
         // Should register due to not exceeding max info gain bar.
@@ -230,19 +250,21 @@
           "attribution_src_url": "https://reporter3.test/register-source",
           "source_type": "event"
         },
-        "responses": [{
-          "url": "https://reporter3.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination3.test",
-              "source_event_id": "789",
-              "event_report_windows": {
-                "start_time":0,
-                "end_times":[3600,7200,10800]
+        "responses": [
+          {
+            "url": "https://reporter3.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination3.test",
+                "source_event_id": "789",
+                "event_report_windows": {
+                  "start_time": 0,
+                  "end_times": [3600, 7200, 10800]
+                }
               }
             }
           }
-        }]
+        ]
       },
       {
         // Should result in an event-level report.
@@ -251,18 +273,20 @@
           "attribution_src_url": "https://reporter3.test/register-trigger",
           "context_origin": "https://destination3.test"
         },
-        "responses": [{
-          "url": "https://reporter3.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "1"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter3.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       }
     ]
   },

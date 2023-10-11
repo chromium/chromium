@@ -9,15 +9,17 @@
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination.test",
-              "source_event_id": "123"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "123"
+              }
             }
           }
-        }]
+        ]
       },
       // Will result in an event-level report.
       {
@@ -26,19 +28,21 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "1",
-                  "priority": "1"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1",
+                    "priority": "1"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       // Will result in an event-level report but be replaced later.
       {
@@ -47,19 +51,21 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "2",
-                  "priority": "1"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "2",
+                    "priority": "1"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       // Will result in an event-level report but be replaced later.
       {
@@ -68,19 +74,21 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "3",
-                  "priority": "1"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "3",
+                    "priority": "1"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       // Will not result in an event-level report as the priority is not higher.
       {
@@ -89,21 +97,23 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "debug_permission": true,
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "debug_reporting": true,
-              "event_trigger_data": [
-                {
-                  "trigger_data": "4",
-                  "priority": "1"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "4",
+                    "priority": "1"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       // Will replace the third event-level report as its trigger time is latest.
       {
@@ -112,19 +122,21 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "5",
-                  "priority": "2"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "5",
+                    "priority": "2"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       // Will replace the second event-level report as its trigger time is latest
       // among the lowest priority reports.
@@ -134,19 +146,21 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "6",
-                  "priority": "3"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "6",
+                    "priority": "3"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       // Will not result in an event-level report as it's in a different report
       // window.
@@ -180,19 +194,21 @@
     "unparsable_registrations": [],
     "reports": [
       {
-        "payload": [ {
-          "body": {
-             "attribution_destination": "https://destination.test",
-             "randomized_trigger_rate": 0.0024263,
-             "scheduled_report_time": "172800",
-             "source_event_id": "123",
-             "source_type": "navigation",
-             "trigger_data": "4"
-          },
-          "type": "trigger-event-low-priority"
-       } ],
-       "report_time": "4000",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "randomized_trigger_rate": 0.0024263,
+              "scheduled_report_time": "172800",
+              "source_event_id": "123",
+              "source_type": "navigation",
+              "trigger_data": "4"
+            },
+            "type": "trigger-event-low-priority"
+          }
+        ],
+        "report_time": "4000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
         "payload": {
@@ -231,19 +247,21 @@
         "report_time": "172800000"
       },
       {
-        "payload": [ {
-          "body": {
-             "attribution_destination": "https://destination.test",
-             "randomized_trigger_rate": 0.0024263,
-             "scheduled_report_time": "604800",
-             "source_event_id": "123",
-             "source_type": "navigation",
-             "trigger_data": "7"
-          },
-          "type": "trigger-event-excessive-reports"
-       } ],
-       "report_time": "172801000",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "randomized_trigger_rate": 0.0024263,
+              "scheduled_report_time": "604800",
+              "source_event_id": "123",
+              "source_type": "navigation",
+              "trigger_data": "7"
+            },
+            "type": "trigger-event-excessive-reports"
+          }
+        ],
+        "report_time": "172801000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
   }

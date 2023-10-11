@@ -9,17 +9,19 @@
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination.test",
-              "source_event_id": "111",
-              "expiry": "86400",
-              "priority": "3"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "111",
+                "expiry": "86400",
+                "priority": "3"
+              }
             }
           }
-        }]
+        ]
       },
       {
         "timestamp": "1000",
@@ -28,17 +30,19 @@
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination.test",
-              "source_event_id": "222",
-              "expiry": "86400",
-              "priority": "2"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "222",
+                "expiry": "86400",
+                "priority": "2"
+              }
             }
           }
-        }]
+        ]
       },
       {
         "timestamp": "2000",
@@ -47,19 +51,21 @@
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": [
-                "https://destination.test",
-                "https://destination2.test"
-              ],
-              "source_event_id": "333",
-              "priority": "1"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": [
+                  "https://destination.test",
+                  "https://destination2.test"
+                ],
+                "source_event_id": "333",
+                "priority": "1"
+              }
             }
           }
-        }]
+        ]
       },
       // Should not result in an event-level report as filter data doesn't match
       // and therefore should not deactivate the second and third sources.
@@ -69,21 +75,23 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "1",
-                  "filters": {
-                    "source_type": ["event"]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1",
+                    "filters": {
+                      "source_type": ["event"]
+                    }
                   }
-                }
-              ]
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       // Should result in an event-level report and deactivate the third source.
       {
@@ -92,18 +100,20 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "2"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "2"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       // Should not result in an event-level report as the third source was
       // deactivated.
@@ -113,18 +123,20 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination2.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "4"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "4"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       // Should not result in an event-level report as the third source was
       // deactivated.
@@ -134,18 +146,20 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "3"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "3"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       }
     ]
   },
@@ -160,9 +174,9 @@
           "source_event_id": "222",
           "source_type": "navigation",
           "trigger_data": "2"
-       },
-       "report_time": "86401000",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
+        },
+        "report_time": "86401000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
       }
     ]
   }

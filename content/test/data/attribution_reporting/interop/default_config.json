@@ -82,7 +82,7 @@
   // storage per destination. Formatted as a base-10 string.
   "max_aggregatable_reports_per_destination": "1024",
 
-   // Non-negative integer that controls the minimum delay in minutes to deliver
+  // Non-negative integer that controls the minimum delay in minutes to deliver
   // an aggregatable report. Formatted as a base-10 string.
   "aggregatable_report_min_delay": "10",
 

@@ -9,17 +9,19 @@
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination.test",
-              "source_event_id": "123",
-              // Clamped to one day (86400 seconds).
-              "expiry": 86390
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "123",
+                // Clamped to one day (86400 seconds).
+                "expiry": 86390
+              }
             }
           }
-        }]
+        ]
       },
       // Should result in an event-level report as the expiry time was clamped
       // to one day.
@@ -29,18 +31,20 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "0"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "0"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       // Should not result in an event-level report as the source expired at
       // one day.
@@ -50,20 +54,22 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "debug_permission": true,
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "7"
-                }
-              ],
-              "debug_reporting": true
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "7"
+                  }
+                ],
+                "debug_reporting": true
+              }
             }
           }
-        }]
+        ]
       },
       {
         "timestamp": "86401000",
@@ -72,20 +78,22 @@
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "event"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination.test",
-              "source_event_id": "456",
-              // Rounded to one day (86400 seconds).
-              "expiry": "88400",
-              "aggregation_keys": {
-                "a": "0x1"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "456",
+                // Rounded to one day (86400 seconds).
+                "expiry": "88400",
+                "aggregation_keys": {
+                  "a": "0x1"
+                }
               }
             }
           }
-        }]
+        ]
       },
       {
         "timestamp": "86401001",
@@ -94,17 +102,19 @@
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "event"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://another-destination.test",
-              "source_event_id": "654",
-              // Rounded to two days (172800 seconds).
-              "expiry": "172600"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://another-destination.test",
+                "source_event_id": "654",
+                // Rounded to two days (172800 seconds).
+                "expiry": "172600"
+              }
             }
           }
-        }]
+        ]
       },
       {
         "timestamp": "86402000",
@@ -113,16 +123,18 @@
           "attribution_src_url": "https://another-reporter.test/register-source",
           "source_type": "navigation"
         },
-        "responses": [{
-          "url": "https://another-reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination.test",
-              "source_event_id": "789",
-              "expiry": "88400"
+        "responses": [
+          {
+            "url": "https://another-reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "789",
+                "expiry": "88400"
+              }
             }
           }
-        }]
+        ]
       },
       // Should not result in an aggregatable report as the expiry time was
       // rounded to one day.
@@ -132,24 +144,26 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "debug_permission": true,
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "aggregatable_trigger_data": [
-                {
-                  "source_keys": ["a"],
-                  "key_piece": "0x1"
-                }
-              ],
-              "aggregatable_values": {
-                "a": 123
-              },
-              "debug_reporting": true
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x1"
+                  }
+                ],
+                "aggregatable_values": {
+                  "a": 123
+                },
+                "debug_reporting": true
+              }
             }
           }
-        }]
+        ]
       },
       // Should result in an event-level report as the expiry time was not rounded.
       {
@@ -158,18 +172,20 @@
           "attribution_src_url": "https://another-reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://another-reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "5"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://another-reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "5"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       },
       // Should result in an event-level report as the expiry time was rounded
       // to two days.
@@ -179,18 +195,20 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://another-destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "1"
-                }
-              ]
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1"
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       }
     ]
   },
@@ -205,29 +223,33 @@
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "0"
-       },
-       "report_time": "86400000",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
+        },
+        "report_time": "86400000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
       },
       {
-        "payload": [ {
-          "body": {
-             "attribution_destination": "https://destination.test"
-          },
-          "type": "trigger-no-matching-source"
-       } ],
-       "report_time": "86400000",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test"
+            },
+            "type": "trigger-no-matching-source"
+          }
+        ],
+        "report_time": "86400000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
-        "payload": [ {
-          "body": {
-             "attribution_destination": "https://destination.test"
-          },
-          "type": "trigger-no-matching-source"
-       } ],
-       "report_time": "172801000",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test"
+            },
+            "type": "trigger-no-matching-source"
+          }
+        ],
+        "report_time": "172801000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
         "payload": {
@@ -237,9 +259,9 @@
           "source_event_id": "789",
           "source_type": "navigation",
           "trigger_data": "5"
-       },
-       "report_time": "174802000",
-       "report_url": "https://another-reporter.test/.well-known/attribution-reporting/report-event-attribution"
+        },
+        "report_time": "174802000",
+        "report_url": "https://another-reporter.test/.well-known/attribution-reporting/report-event-attribution"
       },
       {
         "payload": {
@@ -249,9 +271,9 @@
           "source_event_id": "654",
           "source_type": "event",
           "trigger_data": "1"
-       },
-       "report_time": "259201001",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
+        },
+        "report_time": "259201001",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
       }
     ]
   }

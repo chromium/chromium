@@ -9,22 +9,24 @@
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "navigation"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination.test",
-              "source_event_id": "123",
-              "filter_data": {
-                "product": ["123", "456"],
-                "geo": []
-              },
-              "aggregation_keys": {
-                "a": "0x1"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "123",
+                "filter_data": {
+                  "product": ["123", "456"],
+                  "geo": []
+                },
+                "aggregation_keys": {
+                  "a": "0x1"
+                }
               }
             }
           }
-        }]
+        ]
       },
       {
         "timestamp": "1",
@@ -33,15 +35,17 @@
           "attribution_src_url": "https://reporter.test/register-source",
           "source_type": "event"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-source",
-          "response": {
-            "Attribution-Reporting-Register-Source": {
-              "destination": "https://another-destination.test",
-              "source_event_id": "456"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://another-destination.test",
+                "source_event_id": "456"
+              }
             }
           }
-        }]
+        ]
       },
       {
         "timestamp": "1000",
@@ -49,24 +53,26 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "debug_permission": true,
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "debug_reporting": true,
-              "event_trigger_data": [
-                {
-                  "trigger_data": "1"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1"
+                  }
+                ],
+                "filters": {
+                  "product": [],
+                  "source_type": ["navigation"]
                 }
-              ],
-              "filters": {
-                "product": [],
-                "source_type": ["navigation"]
               }
             }
           }
-        }]
+        ]
       },
       {
         "timestamp": "2000",
@@ -74,23 +80,25 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "debug_reporting": true,
-              "event_trigger_data": [
-                {
-                  "trigger_data": "2"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "2"
+                  }
+                ],
+                "filters": {
+                  "geo": [],
+                  "source_type": ["event"]
                 }
-              ],
-              "filters": {
-                "geo": [],
-                "source_type": ["event"]
               }
             }
           }
-        }]
+        ]
       },
       {
         "timestamp": "3000",
@@ -98,24 +106,26 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "3"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "3"
+                  }
+                ],
+                "filters": {
+                  "product": ["123"],
+                  "geo": [],
+                  "source_type": ["navigation"],
+                  "campaign": ["example"]
                 }
-              ],
-              "filters": {
-                "product": ["123"],
-                "geo": [],
-                "source_type": ["navigation"],
-                "campaign": ["example"]
               }
             }
           }
-        }]
+        ]
       },
       {
         "timestamp": "4000",
@@ -123,28 +133,30 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "debug_permission": true,
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "aggregatable_trigger_data": [
-                {
-                  "source_keys": ["a"],
-                  "key_piece": "0x10"
-                }
-              ],
-              "aggregatable_values": {
-                "a": 123
-              },
-              "not_filters": {
-                "geo": [],
-                "source_type": ["event"]
-              },
-              "debug_reporting": true
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x10"
+                  }
+                ],
+                "aggregatable_values": {
+                  "a": 123
+                },
+                "not_filters": {
+                  "geo": [],
+                  "source_type": ["event"]
+                },
+                "debug_reporting": true
+              }
             }
           }
-        }]
+        ]
       },
       {
         "timestamp": "5000",
@@ -152,22 +164,24 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "2"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "2"
+                  }
+                ],
+                "not_filters": {
+                  "product": [],
+                  "source_type": ["navigation"]
                 }
-              ],
-              "not_filters": {
-                "product": [],
-                "source_type": ["navigation"]
               }
             }
           }
-        }]
+        ]
       },
       {
         "timestamp": "5001",
@@ -175,28 +189,30 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "aggregatable_trigger_data": [
-                {
-                  "source_keys": ["a"],
-                  "key_piece": "0x20"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x20"
+                  }
+                ],
+                "aggregatable_values": {
+                  "a": 321
+                },
+                "not_filters": {
+                  "product": [],
+                  "geo": ["US"],
+                  "source_type": ["event"],
+                  "campaign": []
                 }
-              ],
-              "aggregatable_values": {
-                "a": 321
-              },
-              "not_filters": {
-                "product": [],
-                "geo": ["US"],
-                "source_type": ["event"],
-                "campaign": []
               }
             }
           }
-        }]
+        ]
       },
       {
         "timestamp": "6000",
@@ -204,24 +220,26 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "1"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1"
+                  }
+                ],
+                "filters": {
+                  "source_type": ["navigation"]
+                },
+                "not_filters": {
+                  "product": ["123"]
                 }
-              ],
-              "filters": {
-                "source_type": ["navigation"]
-              },
-              "not_filters": {
-                "product": ["123"]
               }
             }
           }
-        }]
+        ]
       },
       {
         "timestamp": "7000",
@@ -229,24 +247,26 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "2"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "2"
+                  }
+                ],
+                "filters": {
+                  "source_type": ["event"]
+                },
+                "not_filters": {
+                  "product": ["789"]
                 }
-              ],
-              "filters": {
-                "source_type": ["event"]
-              },
-              "not_filters": {
-                "product": ["789"]
               }
             }
           }
-        }]
+        ]
       },
       {
         "timestamp": "7001",
@@ -254,24 +274,28 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "5"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "5"
+                  }
+                ],
+                "filters": [
+                  {
+                    "source_type": ["navigation"]
+                  }
+                ],
+                "not_filters": {
+                  "product": ["789"]
                 }
-              ],
-              "filters": [{
-                "source_type": ["navigation"]
-              }],
-              "not_filters": {
-                "product": ["789"]
               }
             }
           }
-        }]
+        ]
       },
       {
         "timestamp": "8000",
@@ -279,21 +303,23 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://another-destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "0"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "0"
+                  }
+                ],
+                "filters": {
+                  "source_type": ["navigation"]
                 }
-              ],
-              "filters": {
-                "source_type": ["navigation"]
               }
             }
           }
-        }]
+        ]
       },
       {
         "timestamp": "9000",
@@ -301,21 +327,23 @@
           "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://another-destination.test"
         },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "1"
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1"
+                  }
+                ],
+                "filters": {
+                  "source_type": ["event"]
                 }
-              ],
-              "filters": {
-                "source_type": ["event"]
               }
             }
           }
-        }]
+        ]
       }
     ]
   },
@@ -323,39 +351,45 @@
     "unparsable_registrations": [],
     "reports": [
       {
-        "payload": [ {
-          "body": {
-             "attribution_destination": "https://destination.test",
-             "source_event_id": "123",
-             "source_site": "https://source.test"
-          },
-          "type": "trigger-no-matching-filter-data"
-       } ],
-       "report_time": "1000",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "source_event_id": "123",
+              "source_site": "https://source.test"
+            },
+            "type": "trigger-no-matching-filter-data"
+          }
+        ],
+        "report_time": "1000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
-        "payload": [ {
-          "body": {
-             "attribution_destination": "https://destination.test",
-             "source_event_id": "123",
-             "source_site": "https://source.test"
-          },
-          "type": "trigger-no-matching-filter-data"
-       } ],
-       "report_time": "4000",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "source_event_id": "123",
+              "source_site": "https://source.test"
+            },
+            "type": "trigger-no-matching-filter-data"
+          }
+        ],
+        "report_time": "4000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
         "payload": {
           "attribution_destination": "https://destination.test",
-          "histograms": [ {
-             "key": "0x21",
-             "value": 321
-          } ]
-       },
-       "report_time": "3605001",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+          "histograms": [
+            {
+              "key": "0x21",
+              "value": 321
+            }
+          ]
+        },
+        "report_time": "3605001",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       },
       {
         "payload": {
@@ -383,12 +417,12 @@
       },
       {
         "payload": {
-           "attribution_destination": "https://another-destination.test",
-           "randomized_trigger_rate": 0.0000025,
-           "scheduled_report_time": "2592000",
-           "source_event_id": "456",
-           "source_type": "event",
-           "trigger_data": "1"
+          "attribution_destination": "https://another-destination.test",
+          "randomized_trigger_rate": 0.0000025,
+          "scheduled_report_time": "2592000",
+          "source_event_id": "456",
+          "source_type": "event",
+          "trigger_data": "1"
         },
         "report_time": "2592000001",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
