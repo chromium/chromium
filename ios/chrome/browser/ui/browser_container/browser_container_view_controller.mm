@@ -5,8 +5,12 @@
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/browser_container/browser_edit_menu_handler.h"
+#import "ios/chrome/browser/ui/link_to_text/link_to_text_delegate.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -31,6 +35,10 @@
   [super viewDidLoad];
   self.view.autoresizingMask =
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  if (@available(iOS 16, *)) {
+  } else {
+    [self addLinkToTextInEditMenu];
+  }
 }
 
 - (void)viewDidLayoutSubviews {
@@ -135,6 +143,35 @@
     self.contentBlockingView.translatesAutoresizingMaskIntoConstraints = NO;
     AddSameConstraints(self.contentBlockingView, self.view);
   }
+}
+
+#pragma mark - Link to Text methods
+
+- (void)addLinkToTextInEditMenu {
+  if (!base::FeatureList::IsEnabled(kSharedHighlightingIOS)) {
+    return;
+  }
+
+  NSString* title = l10n_util::GetNSString(IDS_IOS_SHARE_LINK_TO_TEXT);
+  UIMenuItem* menuItem =
+      [[UIMenuItem alloc] initWithTitle:title action:@selector(linkToText:)];
+  RegisterEditMenuItem(menuItem);
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+  if (@available(iOS 16, *)) {
+  } else {
+    if (action == @selector(linkToText:) && self.linkToTextDelegate) {
+      return [self.linkToTextDelegate shouldOfferLinkToText];
+    }
+  }
+  return [super canPerformAction:action withSender:sender];
+}
+
+- (void)linkToText:(UIMenuItem*)item {
+  DCHECK(base::FeatureList::IsEnabled(kSharedHighlightingIOS));
+  DCHECK(self.linkToTextDelegate);
+  [self.linkToTextDelegate handleLinkToTextSelection];
 }
 
 #pragma mark - Private

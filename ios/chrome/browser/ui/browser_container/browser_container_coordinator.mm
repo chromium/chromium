@@ -91,7 +91,7 @@
 
   self.browserEditMenuHandler = [[BrowserEditMenuHandler alloc] init];
   self.viewController.browserEditMenuHandler = self.browserEditMenuHandler;
-  self.browserEditMenuHandler.linkToTextDelegate = self.linkToTextMediator;
+  self.viewController.linkToTextDelegate = self.linkToTextMediator;
 
   if (IsPartialTranslateEnabled()) {
     PrefService* prefService =
