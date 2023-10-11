@@ -22,6 +22,10 @@ void UserInterfaceImpl::Bind(
   ui_receivers_.Add(this, std::move(ui_receiver));
 }
 
+void UserInterfaceImpl::DarkenScreen(bool darken) {
+  AccessibilityManager::Get()->SetDarkenScreen(darken);
+}
+
 void UserInterfaceImpl::SetFocusRings(
     std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
     ax::mojom::AssistiveTechnologyType at_type) {

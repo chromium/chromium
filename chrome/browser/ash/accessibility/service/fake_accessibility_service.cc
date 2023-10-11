@@ -200,6 +200,12 @@ void FakeAccessibilityService::RequestTtsVoices(
   }
 }
 
+void FakeAccessibilityService::RequestDarkenScreen(bool darken) {
+  for (auto& ux_client : ux_remotes_) {
+    ux_client->DarkenScreen(darken);
+  }
+}
+
 void FakeAccessibilityService::RequestSetFocusRings(
     std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
     ax::mojom::AssistiveTechnologyType at_type) {

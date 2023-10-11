@@ -407,6 +407,7 @@ class AccessibilityManager
   void SetProfileForTest(Profile* profile);
   static void SetBrailleControllerForTest(
       extensions::api::braille_display_private::BrailleController* controller);
+  void SetScreenDarkenObserverForTest(base::RepeatingCallback<void()> observer);
   void SetFocusRingObserverForTest(base::RepeatingCallback<void()> observer);
   // Runs when highlights are set or updated, but not when they are removed.
   void SetHighlightsObserverForTest(base::RepeatingCallback<void()> observer);
@@ -650,6 +651,7 @@ class AccessibilityManager
   bool dictation_triggered_by_user_ = false;
   bool ignore_dictation_locale_pref_change_ = false;
 
+  base::RepeatingCallback<void()> screen_darken_observer_for_test_;
   base::RepeatingCallback<void()> highlights_observer_for_test_;
   base::RepeatingCallback<void()> select_to_speak_state_observer_for_test_;
   base::RepeatingCallback<void(const gfx::Rect&)>

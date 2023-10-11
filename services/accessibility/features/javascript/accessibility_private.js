@@ -45,6 +45,14 @@ class AtpAccessibilityPrivate {
   }
 
   /**
+   * Darkens or undarkens the screen.
+   * @param {boolean} darken
+   */
+  darkenScreen(darken) {
+    this.userInterfaceRemote_.darkenScreen(darken);
+  }
+
+  /**
    * Sets the given accessibility focus rings for this extension.
    * @param {!Array<!chrome.accessibilityPrivate.FocusRingInfo>} focusRings
    *     Array of focus rings to draw.

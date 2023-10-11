@@ -531,7 +531,7 @@
         "parameters": [
           {
             "type": "boolean",
-            "name": "enabled",
+            "name": "darken",
             "description": "True to darken screen; false to undarken screen."
           }
         ]

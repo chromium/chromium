@@ -138,6 +138,8 @@ class FakeAccessibilityService
   // Methods to pretend a UserInterface request came from the service.
   //
 
+  void RequestDarkenScreen(bool darken);
+
   void RequestSetFocusRings(
       std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
       ax::mojom::AssistiveTechnologyType at_type);

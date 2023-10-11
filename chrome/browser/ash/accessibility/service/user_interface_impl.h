@@ -25,6 +25,7 @@ class UserInterfaceImpl : public ax::mojom::UserInterface {
   void Bind(mojo::PendingReceiver<ax::mojom::UserInterface> ui_receiver);
 
   // ax::mojom::UserInterface:
+  void DarkenScreen(bool enabled) override;
   void SetFocusRings(std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
                      ax::mojom::AssistiveTechnologyType at_type) override;
   void SetHighlights(const std::vector<gfx::Rect>& rects,

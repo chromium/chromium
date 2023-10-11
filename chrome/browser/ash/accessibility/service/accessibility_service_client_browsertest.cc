@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_highlight_layer.h"
 #include "ash/public/cpp/accessibility_focus_ring_info.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/tts_utterance.h"
 #include "content/public/test/browser_test.h"
@@ -863,6 +865,24 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsInterrupt) {
         second_utterance_client = std::make_unique<TtsUtteranceClientImpl>(
             std::move(result->utterance_client), std::move(second_callback));
       }));
+
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, DarkenScreen) {
+  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherUserInterface();
+
+  base::RunLoop waiter;
+  AccessibilityManager::Get()->SetScreenDarkenObserverForTest(
+      base::BindLambdaForTesting([&waiter] {
+        waiter.Quit();
+
+        EXPECT_TRUE(
+            chromeos::FakePowerManagerClient::Get()->backlights_forced_off());
+      }));
+
+  fake_service_->RequestDarkenScreen(true);
 
   waiter.Run();
 }

@@ -426,6 +426,19 @@ class AccessibilityPrivateJSApiTest : public AtpJSApiTest {
   }
 };
 
+TEST_F(AccessibilityPrivateJSApiTest, DarkenScreen) {
+  base::RunLoop waiter;
+  client_->SetDarkenScreenCallback(
+      base::BindLambdaForTesting([&waiter](bool darken) {
+        waiter.Quit();
+        ASSERT_EQ(darken, true);
+      }));
+  ExecuteJS(R"JS(
+    chrome.accessibilityPrivate.darkenScreen(true);
+  )JS");
+  waiter.Run();
+}
+
 TEST_F(AccessibilityPrivateJSApiTest, SetFocusRings) {
   base::RunLoop waiter;
   client_->SetFocusRingsCallback(base::BindLambdaForTesting([&waiter, this]() {

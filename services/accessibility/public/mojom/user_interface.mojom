@@ -52,6 +52,10 @@ struct FocusRingInfo {
 // Provides control over the user interface. Implemented in the main OS
 // browser process and called from Accessibility Service javascript in V8.
 interface UserInterface {
+    // Darkens or undarkens the screen - true to darken screen, false to
+    // undarken screen.
+    DarkenScreen(bool darken);
+
     // Sets the given accessibility focus rings for the given `at_type`
     // or clears them if the list is empty.
     // TODO(b/293348920): Cleanup after migration: pass a map of id to
