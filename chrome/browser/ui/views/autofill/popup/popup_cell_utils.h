@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/style/typography.h"
 
 namespace views {
 class View;
@@ -123,7 +124,8 @@ std::unique_ptr<views::Label> CreateMinorTextLabel(
 std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
     PopupCellView& content_view,
     base::WeakPtr<AutofillPopupController> controller,
-    int line_number);
+    int line_number,
+    int text_style = views::style::STYLE_SECONDARY);
 
 std::unique_ptr<views::Label> CreateDescriptionLabel(
     PopupCellView& content_view,

@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/views/new_badge_label.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/image_button.h"
@@ -27,6 +28,7 @@
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
 
 namespace autofill {
@@ -300,6 +302,54 @@ void PopupSuggestionStrategy::AddContentLabelsAndCallbacks(
   // Prepare the callbacks to the controller.
   popup_cell_utils::AddCallbacksToContentView(GetController(), GetLineNumber(),
                                               view);
+}
+
+/************************ PopupComposeSuggestionStrategy ********************/
+
+PopupComposeSuggestionStrategy::PopupComposeSuggestionStrategy(
+    base::WeakPtr<AutofillPopupController> controller,
+    int line_number)
+    : PopupRowBaseStrategy(std::move(controller), line_number) {}
+
+PopupComposeSuggestionStrategy::~PopupComposeSuggestionStrategy() = default;
+
+std::unique_ptr<PopupCellView> PopupComposeSuggestionStrategy::CreateContent() {
+  if (!GetController()) {
+    return nullptr;
+  }
+
+  const Suggestion& kSuggestion =
+      GetController()->GetSuggestionAt(GetLineNumber());
+  std::unique_ptr<PopupCellView> view =
+      views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
+          .SetAccessibilityDelegate(
+              std::make_unique<ContentItemAccessibilityDelegate>(
+                  GetController(), GetLineNumber()))
+          .Build();
+
+  auto main_text_label = std::make_unique<user_education::NewBadgeLabel>(
+      kSuggestion.main_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_BODY_3_MEDIUM);
+  // TODO(crbug.com/1487965): Use IPH system to determine whether the NEW badge
+  // should be shown.
+  main_text_label->SetDisplayNewBadge(true);
+  popup_cell_utils::AddSuggestionContentToView(
+      kSuggestion, std::move(main_text_label),
+      /*minor_text_label=*/nullptr,
+      /*description_label=*/nullptr, /*subtext_views=*/
+      popup_cell_utils::CreateAndTrackSubtextViews(
+          *view, GetController(), GetLineNumber(), views::style::STYLE_BODY_4),
+      *view);
+
+  // Prepare the callbacks to the controller.
+  popup_cell_utils::AddCallbacksToContentView(GetController(), GetLineNumber(),
+                                              *view);
+
+  return view;
+}
+
+std::unique_ptr<PopupCellView> PopupComposeSuggestionStrategy::CreateControl() {
+  return nullptr;
 }
 
 /************************ PopupPasswordSuggestionStrategy *******************/

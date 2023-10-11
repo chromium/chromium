@@ -92,6 +92,21 @@ class PopupSuggestionStrategy : public PopupRowBaseStrategy {
   void AddContentLabelsAndCallbacks(PopupCellView& view);
 };
 
+// A `PopupRowStrategy` that creates the content of a Compose row.
+class PopupComposeSuggestionStrategy : public PopupRowBaseStrategy {
+ public:
+  PopupComposeSuggestionStrategy(
+      base::WeakPtr<AutofillPopupController> controller,
+      int line_number);
+  ~PopupComposeSuggestionStrategy() override;
+
+  // PopupRowStrategy:
+  std::unique_ptr<PopupCellView> CreateContent() override;
+  std::unique_ptr<PopupCellView> CreateControl() override;
+
+ private:
+};
+
 // A `PopupRowStrategy` that creates the content for password suggestion rows.
 class PopupPasswordSuggestionStrategy : public PopupRowBaseStrategy {
  public:

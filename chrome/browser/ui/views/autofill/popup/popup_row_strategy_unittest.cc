@@ -41,6 +41,7 @@ namespace {
 
 enum class StrategyType {
   kSuggestion,
+  kComposeSuggestion,
   kPasswordSuggestion,
   kFooter,
 };
@@ -95,6 +96,13 @@ const RowStrategyTestdata kTestcases[] = {
         .strategy_type = StrategyType::kSuggestion,
         .set_size = 3,
         .set_index = 2,
+    },
+    RowStrategyTestdata{
+        .popup_item_ids = {PopupItemId::kCompose},
+        .line_number = 0,
+        .strategy_type = StrategyType::kComposeSuggestion,
+        .set_size = 1,
+        .set_index = 1,
     }};
 
 }  // namespace
@@ -141,6 +149,9 @@ class PopupRowStrategyTest : public ChromeViewsTestBase {
     switch (type) {
       case StrategyType::kSuggestion:
         return std::make_unique<PopupSuggestionStrategy>(
+            controller().GetWeakPtr(), line_number);
+      case StrategyType::kComposeSuggestion:
+        return std::make_unique<PopupComposeSuggestionStrategy>(
             controller().GetWeakPtr(), line_number);
       case StrategyType::kPasswordSuggestion:
         return std::make_unique<PopupPasswordSuggestionStrategy>(

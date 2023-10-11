@@ -109,6 +109,10 @@ std::unique_ptr<PopupRowView> PopupRowView::Create(PopupViewViews& popup_view,
       strategy = std::make_unique<PopupPasswordSuggestionStrategy>(controller,
                                                                    line_number);
       break;
+    case PopupItemId::kCompose:
+      strategy = std::make_unique<PopupComposeSuggestionStrategy>(controller,
+                                                                  line_number);
+      break;
     default:
       if (IsFooterPopupItemId(popup_item_id)) {
         strategy =
