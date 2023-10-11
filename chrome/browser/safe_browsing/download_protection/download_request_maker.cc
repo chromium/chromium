@@ -38,7 +38,7 @@ namespace {
 // Note: The name of this variable is checked by PRESUBMIT. Please update the
 // PRESUBMIT script before renaming this variable.
 constexpr int kTailoredWarningVersion = 1;
-constexpr int kTailoredWarningVersionWithImprovedDownloadBubbleWarnings = 2;
+constexpr int kTailoredWarningVersionWithImprovedDownloadBubbleWarnings = 3;
 
 DownloadRequestMaker::TabUrls TabUrlsFromWebContents(
     content::WebContents* web_contents) {

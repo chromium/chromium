@@ -431,7 +431,7 @@ TEST_F(DownloadRequestMakerTest, PopulateTailoredInfo_WithImprovedWarnings) {
   run_loop.Run();
 
   ASSERT_NE(request, nullptr);
-  EXPECT_EQ(request->tailored_info().version(), 2);
+  EXPECT_EQ(request->tailored_info().version(), 3);
 }
 
 TEST_F(DownloadRequestMakerTest, PopulatesFileBasename) {

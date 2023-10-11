@@ -3287,9 +3287,9 @@ are declared in tools/grit/grit_rule.gni.
                desc="Subpage summary for cookie theft warning with account info.">
         This file can harm your personal and social network accounts, including <ph name="USER_EMAIL">$1<ex>john@google.com</ex></ph>
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_MALWARE"
-               desc="Subpage summary text for a download item when the downloaded file may hide malware.">
-        This file may hide malware
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_ARCHIVE_MALWARE"
+               desc="Subpage summary text for a download item when the downloaded archive file may hide malware.">
+        This archive file includes other files that may hide malware
       </message>
 
       <!-- Deep scanning in download bubble -->

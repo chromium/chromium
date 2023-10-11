@@ -925,7 +925,7 @@ DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
           TailoredVerdict::SUSPICIOUS_ARCHIVE) {
     return DownloadUIModel::BubbleUIInfo::SuspiciousUiPattern(
         l10n_util::GetStringUTF16(
-            IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_MALWARE),
+            IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_ARCHIVE_MALWARE),
         l10n_util::GetStringUTF16(
             IDS_DOWNLOAD_BUBBLE_CONTINUE_SUSPICIOUS_FILE));
   }

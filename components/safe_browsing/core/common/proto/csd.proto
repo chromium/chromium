@@ -993,6 +993,8 @@ message ClientDownloadRequest {
     // Note: Version 1 can have inconsistent behavior because it uses
     // indeterminate UI strings (can be changed by a client-side feature flag).
     // Version 2: Client-side UI string/icon updates. Supported in M117.
+    // Version 3: Client-side UI string update for suspicious archive warnings.
+    // Supported in M120.
     optional int32 version = 1;
   }
   optional TailoredInfo tailored_info = 86;

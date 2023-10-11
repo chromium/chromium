@@ -1517,7 +1517,8 @@ TEST_F(DownloadItemModelTailoredWarningTest,
   EXPECT_EQ(DownloadCommands::Command::KEEP,
             bubble_ui_info.subpage_buttons[1].command);
   EXPECT_FALSE(bubble_ui_info.subpage_buttons[1].is_prominent);
-  EXPECT_EQ(u"This file may hide malware", bubble_ui_info.warning_summary);
+  EXPECT_EQ(u"This archive file includes other files that may hide malware",
+            bubble_ui_info.warning_summary);
 }
 
 TEST_F(DownloadItemModelTailoredWarningTest,
