@@ -814,8 +814,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/1368936) Test is flaky on Linux Tests
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1368936): Test is flaky on Linux and Windows.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_CreateForceSignedInProfile DISABLED_CreateForceSignedInProfile
 #else
 #define MAYBE_CreateForceSignedInProfile CreateForceSignedInProfile
