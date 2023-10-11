@@ -379,9 +379,11 @@ void DriveUploadHandler::ShowIOTaskError(
   base::File::Error file_error =
       GetFirstTaskError(status).value_or(base::File::FILE_ERROR_FAILED);
 
-  base::UmaHistogramExactLinear(
-      copy ? kGoogleDriveCopyErrorMetricName : kGoogleDriveMoveErrorMetricName,
-      -file_error, -base::File::FILE_ERROR_MAX);
+  if (copy) {
+    cloud_open_metrics_->LogCopyError(file_error);
+  } else {
+    cloud_open_metrics_->LogMoveError(file_error);
+  }
 
   switch (file_error) {
     case base::File::FILE_ERROR_NO_SPACE:

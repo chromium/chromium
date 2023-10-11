@@ -11,6 +11,12 @@ namespace ash::cloud_upload {
 
 CloudOpenMetrics::CloudOpenMetrics(CloudProvider cloud_provider)
     : cloud_provider_(cloud_provider),
+      copy_error_(cloud_provider_ == CloudProvider::kGoogleDrive
+                      ? kGoogleDriveCopyErrorMetricName
+                      : kOneDriveCopyErrorMetricName),
+      move_error_(cloud_provider_ == CloudProvider::kGoogleDrive
+                      ? kGoogleDriveMoveErrorMetricName
+                      : kOneDriveMoveErrorMetricName),
       drive_open_error_(kDriveErrorMetricName),
       one_drive_open_error_(kOneDriveErrorMetricName),
       source_volume_(cloud_provider_ == CloudProvider::kGoogleDrive
@@ -27,6 +33,14 @@ CloudOpenMetrics::CloudOpenMetrics(CloudProvider cloud_provider)
                          : kOneDriveUploadResultMetricName) {}
 
 CloudOpenMetrics::~CloudOpenMetrics() = default;
+
+void CloudOpenMetrics::LogCopyError(base::File::Error value) {
+  copy_error_.Log(value);
+}
+
+void CloudOpenMetrics::LogMoveError(base::File::Error value) {
+  move_error_.Log(value);
+}
 
 void CloudOpenMetrics::LogGoogleDriveOpenError(OfficeDriveOpenErrors value) {
   drive_open_error_.Log(value);
@@ -67,7 +81,7 @@ CloudOpenMetrics::Metric<MetricType>::Metric(std::string metric_name)
 
 template <class MetricType>
 void CloudOpenMetrics::Metric<MetricType>::Log(MetricType value) {
-  base::UmaHistogramEnumeration(metric_name_, value);
+  LogMetric(value);
   if (state_ == MetricState::kCorrectlyNotLogged) {
     state_ = MetricState::kCorrectlyLogged;
   } else {
@@ -78,6 +92,19 @@ void CloudOpenMetrics::Metric<MetricType>::Log(MetricType value) {
                << static_cast<std::underlying_type<MetricType>::type>(value_);
   }
   value_ = value;
+}
+
+template <class MetricType>
+void CloudOpenMetrics::Metric<MetricType>::LogMetric(MetricType value) {
+  base::UmaHistogramEnumeration(metric_name_, value);
+}
+
+// Handle a value of type base::File::Error differently.
+template <>
+void CloudOpenMetrics::Metric<base::File::Error>::LogMetric(
+    base::File::Error value) {
+  base::UmaHistogramExactLinear(metric_name_, -value,
+                                -base::File::FILE_ERROR_MAX);
 }
 
 }  // namespace ash::cloud_upload

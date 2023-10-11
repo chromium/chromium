@@ -28,6 +28,12 @@ class CloudOpenMetrics {
   CloudOpenMetrics(const CloudOpenMetrics&&) = delete;
   CloudOpenMetrics& operator=(CloudOpenMetrics&&) = delete;
 
+  // Log the `value` for the CopyError metric.
+  void LogCopyError(base::File::Error value);
+
+  // Log the `value` for the MoveError metric.
+  void LogMoveError(base::File::Error value);
+
   // Log the `value` for the DriveOpenError metric.
   void LogGoogleDriveOpenError(OfficeDriveOpenErrors value);
 
@@ -86,10 +92,13 @@ class CloudOpenMetrics {
     MetricType value_;
 
    private:
+    void LogMetric(MetricType value);
     const std::string metric_name_;
   };
 
   CloudProvider cloud_provider_;
+  Metric<base::File::Error> copy_error_;
+  Metric<base::File::Error> move_error_;
   Metric<OfficeDriveOpenErrors> drive_open_error_;
   Metric<OfficeOneDriveOpenErrors> one_drive_open_error_;
   Metric<OfficeFilesSourceVolume> source_volume_;
