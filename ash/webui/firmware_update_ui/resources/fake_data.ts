@@ -6,8 +6,7 @@ import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 
 import {FirmwareUpdate, InstallationProgress, UpdatePriority, UpdateState} from './firmware_update.mojom-webui.js';
 
-/** @type {!Array<!Array<!FirmwareUpdate>>} */
-export const fakeFirmwareUpdates = [[
+export const fakeFirmwareUpdates: FirmwareUpdate[][] = [[
   {
     deviceId: '1',
     deviceName: stringToMojoString16('HP dock'),
@@ -45,23 +44,20 @@ export const fakeFirmwareUpdates = [[
   },
 ]];
 
-/** @type {!Array<!InstallationProgress>} */
-export const fakeInstallationProgress = [
+export const fakeInstallationProgress: InstallationProgress[] = [
   {percentage: 33, state: UpdateState.kUpdating},
   {percentage: 66, state: UpdateState.kUpdating},
   {percentage: 100, state: UpdateState.kSuccess},
 ];
 
-/** @type {!Array<!InstallationProgress>} */
-export const fakeInstallationProgressFailure = [
+export const fakeInstallationProgressFailure: InstallationProgress[] = [
   {percentage: 33, state: UpdateState.kUpdating},
   {percentage: 66, state: UpdateState.kUpdating},
   {percentage: 100, state: UpdateState.kRestarting},
   {percentage: 100, state: UpdateState.kFailed},
 ];
 
-/** @type {!FirmwareUpdate} */
-export const fakeFirmwareUpdate = {
+export const fakeFirmwareUpdate: FirmwareUpdate = {
   deviceId: '1',
   deviceName: stringToMojoString16('Logitech keyboard'),
   deviceVersion: '2.1.12',
@@ -72,8 +68,7 @@ export const fakeFirmwareUpdate = {
   checksum: '3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a923f',
 };
 
-/** @type {!FirmwareUpdate} */
-export const fakeCriticalFirmwareUpdate = {
+export const fakeCriticalFirmwareUpdate: FirmwareUpdate = {
   deviceId: '1',
   deviceName: stringToMojoString16('Logitech keyboard'),
   deviceVersion: '2.1.12',

@@ -8,7 +8,6 @@ import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js
 
 import {fakeFirmwareUpdates, fakeInstallationProgress, fakeInstallationProgressFailure} from './fake_data.js';
 import {InstallationProgress, InstallControllerInterface, UpdateProviderInterface, UpdateState} from './firmware_update.mojom-webui.js';
-import {FakeUpdateProviderInterface} from './firmware_update_types.js';
 import {getUpdateProvider, setUseFakeProviders} from './mojo_interface_provider.js';
 
 // Method names.
