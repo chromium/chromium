@@ -351,6 +351,10 @@ extern const char kEnableDiscoverFeedDiscoFeedEndpointDescription[];
 extern const char kEnableFeedAblationName[];
 extern const char kEnableFeedAblationDescription[];
 
+// Title and description for the flag to enable feed containment.
+extern const char kEnableFeedContainmentName[];
+extern const char kEnableFeedContainmentDescription[];
+
 // Title and description for the flag to enable the preferences account storage.
 extern const char kEnablePreferencesAccountStorageName[];
 extern const char kEnablePreferencesAccountStorageDescription[];

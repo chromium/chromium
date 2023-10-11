@@ -2789,6 +2789,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-feed-containment",
+    "owners": [ "adamta", "chrome-feed-fundamentals@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-feed-position-on-ntp",
     "owners": ["clank-start","hanxi"],
     "expiry_milestone": 130

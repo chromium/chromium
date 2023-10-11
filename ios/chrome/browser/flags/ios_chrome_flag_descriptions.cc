@@ -385,6 +385,10 @@ const char kEnableFeedAblationName[] = "Enables Feed Ablation";
 const char kEnableFeedAblationDescription[] =
     "If Enabled the Feed will be removed from the NTP";
 
+const char kEnableFeedContainmentName[] = "Enables feed containment";
+const char kEnableFeedContainmentDescription[] =
+    "If enabled, the feed is contained in a module on the Home surface.";
+
 const char kEnableFeedCardMenuSignInPromoName[] =
     "Enable Feed card menu sign-in promotion";
 const char kEnableFeedCardMenuSignInPromoDescription[] =

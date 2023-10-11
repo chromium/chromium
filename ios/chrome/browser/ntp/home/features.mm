@@ -20,6 +20,10 @@ BASE_FEATURE(kSingleNtp, "SingleNTP", base::FEATURE_ENABLED_BY_DEFAULT);
 // Feature disabled by default.
 BASE_FEATURE(kMagicStack, "MagicStack", base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableFeedContainment,
+             "EnableFeedContainment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabResumption,
              "TabResumption",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -48,6 +52,10 @@ bool IsDiscoverFeedEnabled() {
 
 bool IsMagicStackEnabled() {
   return base::FeatureList::IsEnabled(kMagicStack);
+}
+
+bool IsFeedContainmentEnabled() {
+  return base::FeatureList::IsEnabled(kEnableFeedContainment);
 }
 
 bool IsTabResumptionEnabled() {

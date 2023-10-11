@@ -1548,6 +1548,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxPopulateShortcutsDatabaseName,
      flag_descriptions::kOmniboxPopulateShortcutsDatabaseDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kOmniboxPopulateShortcutsDatabase)},
+    {"enable-feed-containment", flag_descriptions::kEnableFeedContainmentName,
+     flag_descriptions::kEnableFeedContainmentDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableFeedContainment)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

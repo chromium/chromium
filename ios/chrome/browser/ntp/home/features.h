@@ -19,6 +19,9 @@ BASE_DECLARE_FEATURE(kSingleNtp);
 // Feature for the Magic Stack.
 BASE_DECLARE_FEATURE(kMagicStack);
 
+// Feature that contains the feed in a module.
+BASE_DECLARE_FEATURE(kEnableFeedContainment);
+
 // Feature that enables tab resumption.
 BASE_DECLARE_FEATURE(kTabResumption);
 
@@ -55,6 +58,9 @@ bool IsDiscoverFeedEnabled();
 
 // Whether the Magic Stack should be shown.
 bool IsMagicStackEnabled();
+
+// Whether the feed is contained in a Home module.
+bool IsFeedContainmentEnabled();
 
 // Whether the tab resumption feature is enabled.
 bool IsTabResumptionEnabled();
