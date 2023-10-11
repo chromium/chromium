@@ -6,11 +6,15 @@
 
 #include "base/android/jni_android.h"
 #include "chrome/android/chrome_jni_headers/ChromeBluetoothChooserAndroidDelegate_jni.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 
-ChromeBluetoothChooserAndroidDelegate::ChromeBluetoothChooserAndroidDelegate() {
+ChromeBluetoothChooserAndroidDelegate::ChromeBluetoothChooserAndroidDelegate(
+    Profile* profile) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_delegate_.Reset(Java_ChromeBluetoothChooserAndroidDelegate_create(env));
+  java_delegate_.Reset(Java_ChromeBluetoothChooserAndroidDelegate_Constructor(
+      env, ProfileAndroid::FromProfile(profile)->GetJavaObject()));
 }
 
 ChromeBluetoothChooserAndroidDelegate::

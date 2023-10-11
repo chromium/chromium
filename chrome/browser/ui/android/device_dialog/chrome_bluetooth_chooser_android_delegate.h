@@ -9,11 +9,13 @@
 
 #include "base/android/scoped_java_ref.h"
 
+class Profile;
+
 // The implementation of BluetoothChooserAndroidDelegate for Chrome.
 class ChromeBluetoothChooserAndroidDelegate
     : public permissions::BluetoothChooserAndroidDelegate {
  public:
-  ChromeBluetoothChooserAndroidDelegate();
+  explicit ChromeBluetoothChooserAndroidDelegate(Profile* profile);
 
   ChromeBluetoothChooserAndroidDelegate(
       const ChromeBluetoothChooserAndroidDelegate&) = delete;

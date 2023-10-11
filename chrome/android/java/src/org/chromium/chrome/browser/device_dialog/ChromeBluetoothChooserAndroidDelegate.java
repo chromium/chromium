@@ -14,19 +14,18 @@ import org.chromium.components.permissions.BluetoothChooserAndroidDelegate;
  *  The implementation of {@link BluetoothChooserAndroidDelegate} for Chrome.
  */
 public class ChromeBluetoothChooserAndroidDelegate implements BluetoothChooserAndroidDelegate {
+    private Profile mProfile;
+
+    @CalledByNative
+    ChromeBluetoothChooserAndroidDelegate(Profile profile) {
+        mProfile = profile;
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public AutocompleteSchemeClassifier createAutocompleteSchemeClassifier() {
-        // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
-        // incognito profile) instead of always using regular profile. It works correctly now, but
-        // it is not safe.
-        return new ChromeAutocompleteSchemeClassifier(Profile.getLastUsedRegularProfile());
-    }
-
-    @CalledByNative
-    private static ChromeBluetoothChooserAndroidDelegate create() {
-        return new ChromeBluetoothChooserAndroidDelegate();
+        return new ChromeAutocompleteSchemeClassifier(mProfile);
     }
 }

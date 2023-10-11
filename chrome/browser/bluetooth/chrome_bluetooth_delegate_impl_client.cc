@@ -46,7 +46,8 @@ ChromeBluetoothDelegateImplClient::RunBluetoothChooser(
 #if BUILDFLAG(IS_ANDROID)
   return std::make_unique<permissions::BluetoothChooserAndroid>(
       frame, event_handler,
-      std::make_unique<ChromeBluetoothChooserAndroidDelegate>());
+      std::make_unique<ChromeBluetoothChooserAndroidDelegate>(
+          Profile::FromBrowserContext(frame->GetBrowserContext())));
 #else
   auto controller =
       std::make_unique<ChromeBluetoothChooserController>(frame, event_handler);
@@ -64,7 +65,8 @@ ChromeBluetoothDelegateImplClient::ShowBluetoothScanningPrompt(
 #if BUILDFLAG(IS_ANDROID)
   return std::make_unique<permissions::BluetoothScanningPromptAndroid>(
       frame, event_handler,
-      std::make_unique<ChromeBluetoothScanningPromptAndroidDelegate>());
+      std::make_unique<ChromeBluetoothScanningPromptAndroidDelegate>(
+          Profile::FromBrowserContext(frame->GetBrowserContext())));
 #else
   return std::make_unique<permissions::BluetoothScanningPromptDesktop>(
       frame, event_handler,

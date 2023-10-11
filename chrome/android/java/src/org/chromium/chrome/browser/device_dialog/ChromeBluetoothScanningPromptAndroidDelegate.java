@@ -15,19 +15,19 @@ import org.chromium.components.permissions.BluetoothScanningPromptAndroidDelegat
  */
 public class ChromeBluetoothScanningPromptAndroidDelegate
         implements BluetoothScanningPromptAndroidDelegate {
+
+    private Profile mProfile;
+
+    @CalledByNative
+    ChromeBluetoothScanningPromptAndroidDelegate(Profile profile) {
+        mProfile = profile;
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public AutocompleteSchemeClassifier createAutocompleteSchemeClassifier() {
-        // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
-        // incognito profile) instead of always using regular profile. It works correctly now, but
-        // it is not safe.
-        return new ChromeAutocompleteSchemeClassifier(Profile.getLastUsedRegularProfile());
-    }
-
-    @CalledByNative
-    private static ChromeBluetoothScanningPromptAndroidDelegate create() {
-        return new ChromeBluetoothScanningPromptAndroidDelegate();
+        return new ChromeAutocompleteSchemeClassifier(mProfile);
     }
 }

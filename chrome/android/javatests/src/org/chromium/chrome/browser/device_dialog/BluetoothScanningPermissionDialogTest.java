@@ -25,6 +25,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -78,14 +79,19 @@ public class BluetoothScanningPermissionDialogTest {
     }
 
     private BluetoothScanningPermissionDialog createDialog() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            mWindowAndroid = sActivityTestRule.getActivity().getWindowAndroid();
-            BluetoothScanningPermissionDialog dialog = new BluetoothScanningPermissionDialog(
-                    mWindowAndroid, "https://origin.example.com/", ConnectionSecurityLevel.SECURE,
-                    new ChromeBluetoothScanningPromptAndroidDelegate(),
-                    /*nativeBluetoothScanningPermissionDialogPtr=*/42);
-            return dialog;
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    mWindowAndroid = sActivityTestRule.getActivity().getWindowAndroid();
+                    BluetoothScanningPermissionDialog dialog =
+                            new BluetoothScanningPermissionDialog(
+                                    mWindowAndroid,
+                                    "https://origin.example.com/",
+                                    ConnectionSecurityLevel.SECURE,
+                                    new ChromeBluetoothScanningPromptAndroidDelegate(
+                                            Profile.getLastUsedRegularProfile()),
+                                    /* nativeBluetoothScanningPermissionDialogPtr= */ 42);
+                    return dialog;
+                });
     }
 
     @Test
