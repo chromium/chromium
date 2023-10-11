@@ -103,6 +103,7 @@ webrtc_public_deps = [
   "//third_party/webrtc/pc:rtc_pc",
   "//third_party/webrtc/pc:session_description",
   "//third_party/webrtc/pc:webrtc_sdp",
+  "//third_party/webrtc/rtc_base:async_dns_resolver",
   "//third_party/webrtc/rtc_base:async_packet_socket",
   "//third_party/webrtc/rtc_base:async_resolver_interface",
   "//third_party/webrtc/rtc_base:byte_order",

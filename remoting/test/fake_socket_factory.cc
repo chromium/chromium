@@ -266,7 +266,8 @@ rtc::AsyncPacketSocket* FakePacketSocketFactory::CreateClientTcpSocket(
   return nullptr;
 }
 
-rtc::AsyncResolverInterface* FakePacketSocketFactory::CreateAsyncResolver() {
+std::unique_ptr<webrtc::AsyncDnsResolverInterface>
+FakePacketSocketFactory::CreateAsyncDnsResolver() {
   return nullptr;
 }
 
