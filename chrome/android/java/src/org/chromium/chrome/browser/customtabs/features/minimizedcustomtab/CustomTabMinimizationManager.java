@@ -20,6 +20,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.PictureInPictureModeChangedInfo;
 import androidx.core.util.Consumer;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -34,7 +36,6 @@ public class CustomTabMinimizationManager
     static final Rational ASPECT_RATIO = new Rational(16, 9);
     private final AppCompatActivity mActivity;
     private final ActivityTabProvider mTabProvider;
-    private MinimizedCardCoordinator mMinimizedCardCoordinator;
 
     /**
      * @param activity The {@link AppCompatActivity} to minimize.
@@ -76,7 +77,13 @@ public class CustomTabMinimizationManager
                                       .with(TITLE, tab.getTitle())
                                       .with(URL, tab.getUrl().getHost())
                                       .build();
-        mMinimizedCardCoordinator = new MinimizedCardCoordinator(mActivity, model);
+        var fragment = MinimizedCardDialogFragment.newInstance(model);
+        FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_NONE);
+        transaction
+                .add(android.R.id.content, fragment, MinimizedCardDialogFragment.TAG)
+                .commitNow();
+
         tab.stopLoading();
         tab.hide(TabHidingType.ACTIVITY_HIDDEN);
         var webContents = tab.getWebContents();
@@ -87,12 +94,17 @@ public class CustomTabMinimizationManager
     }
 
     private void updateTabForMaximization(Tab tab) {
+        if (tab == null) return;
         tab.show(FROM_USER, ON_ACTIVITY_SHOWN_THEN_SHOW);
         var webContents = tab.getWebContents();
         if (webContents != null) {
             webContents.setAudioMuted(false);
         }
-        mMinimizedCardCoordinator.destroy();
-        mMinimizedCardCoordinator = null;
+        var fragment =
+                (DialogFragment)
+                        mActivity
+                                .getSupportFragmentManager()
+                                .findFragmentByTag(MinimizedCardDialogFragment.TAG);
+        fragment.dismissNow();
     }
 }

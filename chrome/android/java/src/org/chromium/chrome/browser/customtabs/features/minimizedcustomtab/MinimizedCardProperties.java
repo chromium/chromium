@@ -17,8 +17,7 @@ public class MinimizedCardProperties {
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
 
     /** The URL of the minimized webpage. */
-    public static final WritableObjectPropertyKey<CharSequence> URL =
-            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> URL = new WritableObjectPropertyKey<>();
 
     /** The favicon of the minimized webpage. */
     public static final WritableObjectPropertyKey<Bitmap> FAVICON =
