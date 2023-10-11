@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_error_dialog.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_warn_dialog.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_string_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
@@ -29,6 +30,7 @@
 #include "components/enterprise/data_controls/component.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/views/controls/label.h"
 
 namespace policy {
 class FilesPolicyDialogBrowserTest
@@ -182,6 +184,38 @@ class ErrorDialogBrowserTest : public FilesPolicyDialogBrowserTest {
                                  FilesPolicyDialog::BlockReason::kDlp, paths)});
   }
 
+  // Checks that a error dialog with mixed errors only contains the sections for
+  // the given `reasons`.
+  void ContainMixedErrorSections(
+      FilesPolicyErrorDialog* dialog,
+      const std::vector<FilesPolicyDialog::BlockReason>& reasons) {
+    std::set<FilesPolicyDialog::BlockReason> reasons_without_sections(
+        std::begin(FilesPolicyDialog::available_reasons),
+        std::end(FilesPolicyDialog::available_reasons));
+    for (FilesPolicyDialog::BlockReason reason : reasons) {
+      // The view ID is attached to the title label.
+      views::View* title_label = dialog->GetViewByID(
+          FilesPolicyDialog::MapBlockReasonToViewID(reason));
+      EXPECT_TRUE(title_label);
+      reasons_without_sections.erase(reason);
+    }
+    for (FilesPolicyDialog::BlockReason reason : reasons_without_sections) {
+      EXPECT_FALSE(dialog->GetViewByID(
+          FilesPolicyDialog::MapBlockReasonToViewID(reason)));
+    }
+  }
+
+  std::u16string GetTitle(FilesPolicyErrorDialog* dialog,
+                          FilesPolicyDialog::BlockReason reason) {
+    views::View* title_label =
+        dialog->GetViewByID(FilesPolicyDialog::MapBlockReasonToViewID(reason));
+    if (!title_label) {
+      return u"";
+    }
+    // The view ID is attached to the title label.
+    return static_cast<views::Label*>(title_label)->GetText();
+  }
+
  protected:
   std::map<FilesPolicyDialog::BlockReason, FilesPolicyDialog::Info>
       dialog_info_map_;
@@ -261,6 +295,161 @@ IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, WithParent) {
                   GetDlpHistogramPrefix() +
                   std::string(dlp::kFileActionBlockReviewedUMA)),
               base::BucketsAre(base::Bucket(action, 1)));
+}
+
+// Tests that the error dialog is populated with one section for every available
+// block reason.
+IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, AllErrorSections) {
+  dlp::FileAction action = GetParam();
+
+  std::map<FilesPolicyDialog::BlockReason, FilesPolicyDialog::Info> info_map;
+
+  size_t count = 0;
+  for (FilesPolicyDialog::BlockReason reason :
+       FilesPolicyDialog::available_reasons) {
+    const base::FilePath path1("file" + base::NumberToString(count++) + ".txt");
+    const base::FilePath path2("file" + base::NumberToString(count++) + ".txt");
+
+    auto dialog_settings =
+        FilesPolicyDialog::Info::Error(reason, {path1, path2});
+    info_map.insert({reason, std::move(dialog_settings)});
+  }
+
+  // Sensitive data and malware have theur own section only when a custom
+  // message is defined.
+  const std::u16string sensitive_data_message =
+      u"Sensitive data custom message";
+  info_map
+      .at(FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData)
+      .SetMessage(sensitive_data_message);
+
+  const std::u16string malware_message = u"Malware data custom message";
+  info_map.at(FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware)
+      .SetMessage(malware_message);
+
+  auto* widget = FilesPolicyDialog::CreateErrorDialog(info_map, action,
+                                                      /*modal_parent=*/nullptr);
+  ASSERT_TRUE(widget);
+
+  FilesPolicyErrorDialog* dialog = static_cast<FilesPolicyErrorDialog*>(
+      widget->widget_delegate()->AsDialogDelegate());
+  ASSERT_TRUE(dialog);
+
+  std::vector<FilesPolicyDialog::BlockReason> expected_sections = {
+      FilesPolicyDialog::BlockReason::kDlp,
+      FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData,
+      FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware,
+      FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile,
+      FilesPolicyDialog::BlockReason::kEnterpriseConnectorsLargeFile,
+      FilesPolicyDialog::BlockReason::kEnterpriseConnectors};
+
+  ContainMixedErrorSections(dialog, expected_sections);
+
+  for (FilesPolicyDialog::BlockReason reason : expected_sections) {
+    if (reason == FilesPolicyDialog::BlockReason::kEnterpriseConnectors) {
+      // In this case we also expect files with
+      // FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknownScanResult
+      // block reason.
+      size_t files_num = info_map.at(reason).GetFiles().size() +
+                         info_map
+                             .at(FilesPolicyDialog::BlockReason::
+                                     kEnterpriseConnectorsUnknownScanResult)
+                             .GetFiles()
+                             .size();
+      ASSERT_EQ(GetTitle(dialog, reason),
+                files_string_util::GetBlockReasonMessage(reason, files_num));
+      continue;
+    }
+    ASSERT_EQ(GetTitle(dialog, reason), info_map.at(reason).GetMessage());
+  }
+}
+
+// Tests that when no custom message is specified for Enterprise Connectors
+// malware and sensitive data, the error dialog is a single error dialog.
+IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest,
+                       NoEnterpriseConnectorsCustomMessage) {
+  dlp::FileAction action = GetParam();
+
+  std::map<FilesPolicyDialog::BlockReason, FilesPolicyDialog::Info> info_map;
+
+  auto sensitive_data_file_dialog_settings = FilesPolicyDialog::Info::Error(
+      FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData,
+      {base::FilePath("file1.txt"), base::FilePath("file2.txt")});
+
+  auto malware_file_dialog_settings = FilesPolicyDialog::Info::Error(
+      FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware,
+      {base::FilePath("file3.txt"), base::FilePath("file4.txt")});
+
+  info_map.insert(
+      {FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData,
+       std::move(sensitive_data_file_dialog_settings)});
+  info_map.insert({FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware,
+                   std::move(malware_file_dialog_settings)});
+
+  auto* widget = FilesPolicyDialog::CreateErrorDialog(info_map, action,
+                                                      /*modal_parent=*/nullptr);
+  ASSERT_TRUE(widget);
+
+  FilesPolicyErrorDialog* dialog = static_cast<FilesPolicyErrorDialog*>(
+      widget->widget_delegate()->AsDialogDelegate());
+  ASSERT_TRUE(dialog);
+
+  // The dialog is a single error dialog, and thus it does not contain mixed
+  // error sections.
+  ContainMixedErrorSections(dialog, {});
+}
+
+// Tests that when files are blocked because of Enterprise Connectors malware
+// and sensitive data reasons, but a custom message is only defined for one of
+// them, e.g., malware, the error dialog should have two sections: one for
+// malware with the custom message, and a generic one section with a default
+// message for the other files.
+IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest,
+                       EnterpriseConnectorsCustomMessage) {
+  dlp::FileAction action = GetParam();
+
+  std::map<FilesPolicyDialog::BlockReason, FilesPolicyDialog::Info> info_map;
+
+  std::vector<base::FilePath> sensitive_data_paths = {
+      base::FilePath("file1.txt"), base::FilePath("file2.txt")};
+  auto sensitive_data_file_dialog_settings = FilesPolicyDialog::Info::Error(
+      FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData,
+      sensitive_data_paths);
+
+  auto malware_file_dialog_settings = FilesPolicyDialog::Info::Error(
+      FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware,
+      {base::FilePath("file3.txt"), base::FilePath("file4.txt")});
+  const std::u16string malware_message = u"Malware data custom message";
+  malware_file_dialog_settings.SetMessage(malware_message);
+
+  info_map.insert(
+      {FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData,
+       std::move(sensitive_data_file_dialog_settings)});
+  info_map.insert({FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware,
+                   std::move(malware_file_dialog_settings)});
+
+  auto* widget = FilesPolicyDialog::CreateErrorDialog(info_map, action,
+                                                      /*modal_parent=*/nullptr);
+  ASSERT_TRUE(widget);
+
+  FilesPolicyErrorDialog* dialog = static_cast<FilesPolicyErrorDialog*>(
+      widget->widget_delegate()->AsDialogDelegate());
+  ASSERT_TRUE(dialog);
+
+  ContainMixedErrorSections(
+      dialog, {FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware,
+               FilesPolicyDialog::BlockReason::kEnterpriseConnectors});
+
+  ASSERT_EQ(
+      GetTitle(dialog,
+               FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware),
+      malware_message);
+
+  ASSERT_EQ(
+      GetTitle(dialog, FilesPolicyDialog::BlockReason::kEnterpriseConnectors),
+      files_string_util::GetBlockReasonMessage(
+          FilesPolicyDialog::BlockReason::kEnterpriseConnectors,
+          sensitive_data_paths.size()));
 }
 
 INSTANTIATE_TEST_SUITE_P(FilesPolicyDialog,

@@ -32,6 +32,27 @@ namespace policy {
 FilesPolicyDialogFactory* factory_;
 
 // static
+PolicyDialogBase::ViewIds FilesPolicyDialog::MapBlockReasonToViewID(
+    BlockReason reason) {
+  switch (reason) {
+    case FilesPolicyDialog::BlockReason::kDlp:
+      return PolicyDialogBase::kDlpSectionId;
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknownScanResult:
+      return PolicyDialogBase::kEnterpriseConnectorsUnknownScanResultSectionId;
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData:
+      return PolicyDialogBase::kEnterpriseConnectorsSensitiveDataSectionId;
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware:
+      return PolicyDialogBase::kEnterpriseConnectorsMalwareSectionId;
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile:
+      return PolicyDialogBase::kEnterpriseConnectorsEncryptedFileSectionId;
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsLargeFile:
+      return PolicyDialogBase::kEnterpriseConnectorsLargeFileSectionId;
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectors:
+      return PolicyDialogBase::kEnterpriseConnectorsSectionId;
+  }
+}
+
+// static
 FilesPolicyDialog::Info FilesPolicyDialog::Info::Warn(
     BlockReason reason,
     const std::vector<base::FilePath>& paths) {
@@ -114,7 +135,12 @@ void FilesPolicyDialog::Info::SetMessage(
     const absl::optional<std::u16string>& message) {
   if (message.has_value() && !message->empty()) {
     message_ = message.value();
+    is_custom_message_ = true;
   }
+}
+
+bool FilesPolicyDialog::Info::HasCustomMessage() const {
+  return is_custom_message_;
 }
 
 absl::optional<GURL> FilesPolicyDialog::Info::GetLearnMoreURL() const {

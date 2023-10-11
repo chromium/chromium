@@ -50,6 +50,15 @@ class PolicyDialogBase : public views::DialogDelegateView {
   enum ViewIds {
     kScrollViewId = 1,
     kConfidentialRowTitleViewId,
+
+    // IDs related to file error dialog in a mixed error scenario.
+    kDlpSectionId,
+    kEnterpriseConnectorsUnknownScanResultSectionId,
+    kEnterpriseConnectorsSensitiveDataSectionId,
+    kEnterpriseConnectorsMalwareSectionId,
+    kEnterpriseConnectorsEncryptedFileSectionId,
+    kEnterpriseConnectorsLargeFileSectionId,
+    kEnterpriseConnectorsSectionId,
   };
 
   PolicyDialogBase();

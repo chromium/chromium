@@ -44,6 +44,7 @@ class FilesPolicyDialog : public PolicyDialogBase {
 
   // Reasons for which a file can be blocked either because of an Enterprise
   // Connectors or DLP policy.
+  // Please keep in sync with the `available_reasons` array below!
   // TODO(b/302653030): consider whether unifying BlockReason and Policy.
   enum class BlockReason {
     // File was blocked because of Data Leak Prevention policies.
@@ -64,6 +65,21 @@ class FilesPolicyDialog : public PolicyDialogBase {
     // reason for which they were blocked.
     kEnterpriseConnectors,
   };
+
+  // All the available reasons.
+  // Please keep the array in sync with the `BlockReason` enum above!
+  static constexpr std::array<BlockReason, 7> available_reasons{
+      BlockReason::kDlp,
+      BlockReason::kEnterpriseConnectorsUnknownScanResult,
+      BlockReason::kEnterpriseConnectorsSensitiveData,
+      BlockReason::kEnterpriseConnectorsMalware,
+      BlockReason::kEnterpriseConnectorsEncryptedFile,
+      BlockReason::kEnterpriseConnectorsLargeFile,
+      BlockReason::kEnterpriseConnectors};
+
+  // Returns the ID of the view that contains all details related to the given
+  // `reason` in a mixed error dialog.
+  static PolicyDialogBase::ViewIds MapBlockReasonToViewID(BlockReason reason);
 
   // Class holding information to build a dialog such as a message to the user,
   // a list of files involved, an optional learn more link, and for warning
@@ -101,6 +117,9 @@ class FilesPolicyDialog : public PolicyDialogBase {
     // Overrides the default message.
     void SetMessage(const absl::optional<std::u16string>& message);
 
+    // Returns whether a custom message was set.
+    bool HasCustomMessage() const;
+
     // Returns the learn more URL that should be shown in the dialog, if any.
     absl::optional<GURL> GetLearnMoreURL() const;
 
@@ -119,6 +138,9 @@ class FilesPolicyDialog : public PolicyDialogBase {
 
     // Default or admin defined message.
     std::u16string message_;
+
+    // Whether `message_` is a custom message.
+    bool is_custom_message_ = false;
 
     // Default, admin defined learn more URL, or none of them.
     absl::optional<GURL> learn_more_url_;

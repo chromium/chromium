@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_string_util.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
@@ -19,13 +20,42 @@
 #include "ui/views/layout/box_layout.h"
 
 namespace policy {
+namespace {
 
+// Returns whether a custom message has been defined for the given reason.
+bool HasCustomMessage(
+    FilesPolicyDialog::BlockReason reason,
+    const std::map<FilesPolicyDialog::BlockReason, FilesPolicyDialog::Info>&
+        dialog_info_map) {
+  auto it = dialog_info_map.find(reason);
+  if (it == dialog_info_map.end()) {
+    return false;
+  }
+  return it->second.HasCustomMessage();
+}
+
+// Returns files blocked for the given `reasons`.
+std::vector<DlpConfidentialFile> GetFilesBlockedByReasons(
+    const std::vector<FilesPolicyDialog::BlockReason>& reasons,
+    const std::map<FilesPolicyDialog::BlockReason, FilesPolicyDialog::Info>&
+        dialog_info_map) {
+  std::vector<DlpConfidentialFile> blocked_files;
+  for (FilesPolicyDialog::BlockReason reason : reasons) {
+    auto it = dialog_info_map.find(reason);
+    if (it == dialog_info_map.end()) {
+      continue;
+    }
+    blocked_files.insert(blocked_files.end(), it->second.GetFiles().begin(),
+                         it->second.GetFiles().end());
+  }
+  return blocked_files;
+}
+}  // namespace
 FilesPolicyErrorDialog::FilesPolicyErrorDialog(
-    const std::map<BlockReason, Info>& files,
+    const std::map<BlockReason, Info>& dialog_info_map,
     dlp::FileAction action,
     gfx::NativeWindow modal_parent)
-    : FilesPolicyDialog(files.size(), action, modal_parent),
-      dialog_info_map_(files) {
+    : FilesPolicyDialog(dialog_info_map.size(), action, modal_parent) {
   SetAcceptCallback(base::BindOnce(&FilesPolicyErrorDialog::Dismiss,
                                    weak_factory_.GetWeakPtr()));
   SetCancelCallback(base::BindOnce(&FilesPolicyErrorDialog::OpenLearnMore,
@@ -33,8 +63,10 @@ FilesPolicyErrorDialog::FilesPolicyErrorDialog(
   SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
   SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_CANCEL, GetCancelButton());
 
+  SetupBlockedFilesSections(dialog_info_map);
+
   file_count_ = 0;
-  for (const auto& [reason, info] : files) {
+  for (const auto& [reason, info] : dialog_info_map) {
     file_count_ += info.GetFiles().size();
   }
 
@@ -46,20 +78,39 @@ FilesPolicyErrorDialog::FilesPolicyErrorDialog(
 
 FilesPolicyErrorDialog::~FilesPolicyErrorDialog() = default;
 
+FilesPolicyErrorDialog::BlockedFilesSection::BlockedFilesSection(
+    int view_id,
+    const std::u16string& message,
+    const std::vector<DlpConfidentialFile>& files)
+    : view_id(view_id), message(message), files(files) {}
+
+FilesPolicyErrorDialog::BlockedFilesSection::~BlockedFilesSection() = default;
+
+FilesPolicyErrorDialog::BlockedFilesSection::BlockedFilesSection(
+    const BlockedFilesSection& other) = default;
+
+FilesPolicyErrorDialog::BlockedFilesSection&
+FilesPolicyErrorDialog::BlockedFilesSection::operator=(
+    BlockedFilesSection&& other) = default;
+
 void FilesPolicyErrorDialog::MaybeAddConfidentialRows() {
-  if (dialog_info_map_.empty()) {
+  if (sections_.empty()) {
     return;
   }
 
   SetupScrollView();
-  for (const auto& [reason, info] : dialog_info_map_) {
-    if (dialog_info_map_.size() > 1) {
-      // Only add the reason if it's a mixed errors dialog.
-      AddPolicyRow(reason);
-    }
-    for (const auto& file : info.GetFiles()) {
+
+  // Single error dialog.
+  if (sections_.size() == 1) {
+    for (const auto& file : sections_.front().files) {
       AddConfidentialRow(file.icon, file.title);
     }
+    return;
+  }
+
+  // Mixed error dialog.
+  for (BlockedFilesSection section : sections_) {
+    AddBlockedFilesSection(section);
   }
 }
 
@@ -77,18 +128,89 @@ std::u16string FilesPolicyErrorDialog::GetTitle() {
 
 std::u16string FilesPolicyErrorDialog::GetMessage() {
   // Single error dialogs specify the policy reason before the scrollable list.
-  if (dialog_info_map_.size() == 1) {
-    auto reason = dialog_info_map_.begin()->first;
-    CHECK(dialog_info_map_.contains(reason));
-    return dialog_info_map_.at(reason).GetMessage();
+  if (sections_.size() == 1) {
+    return sections_.front().message;
   }
   // Mixed error dialogs don't have a single message, but use `AddPolicyRow()`
   // to add the policy reason directly in the scrollable file list.
   return u"";
 }
 
-void FilesPolicyErrorDialog::AddPolicyRow(
-    FilesPolicyDialog::BlockReason reason) {
+void FilesPolicyErrorDialog::SetupBlockedFilesSections(
+    const std::map<BlockReason, Info>& dialog_info_map) {
+  AppendBlockedFilesSection(FilesPolicyErrorDialog::BlockReason::kDlp,
+                            dialog_info_map);
+
+  std::vector<FilesPolicyDialog::BlockReason>
+      merged_enterprise_connectors_reasons(
+          {FilesPolicyDialog::BlockReason::kEnterpriseConnectors,
+           FilesPolicyDialog::BlockReason::
+               kEnterpriseConnectorsUnknownScanResult});
+
+  // Files with block reasons
+  // - BlockReason::kEnterpriseConnectorsSensitiveData
+  // - BlockReason::kEnterpriseConnectorsMalware
+  // should be placed together with
+  // - BlockReason::kEnterpriseConnectorsUnknownScanResult
+  // - BlockReason::kEnterpriseConnectors
+  // if there is no custom message specified for them.
+  if (HasCustomMessage(
+          FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData,
+          dialog_info_map)) {
+    AppendBlockedFilesSection(
+        FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData,
+        dialog_info_map);
+  } else {
+    merged_enterprise_connectors_reasons.push_back(
+        FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData);
+  }
+
+  if (HasCustomMessage(
+          FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware,
+          dialog_info_map)) {
+    AppendBlockedFilesSection(
+        FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware,
+        dialog_info_map);
+  } else {
+    merged_enterprise_connectors_reasons.push_back(
+        FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware);
+  }
+
+  auto merged_enterprise_connectors_files = GetFilesBlockedByReasons(
+      merged_enterprise_connectors_reasons, dialog_info_map);
+  sections_.emplace_back(
+      MapBlockReasonToViewID(
+          FilesPolicyDialog::BlockReason::kEnterpriseConnectors),
+      files_string_util::GetBlockReasonMessage(
+          FilesPolicyDialog::BlockReason::kEnterpriseConnectors,
+          merged_enterprise_connectors_files.size()),
+      merged_enterprise_connectors_files);
+
+  AppendBlockedFilesSection(
+      FilesPolicyErrorDialog::BlockReason::kEnterpriseConnectorsEncryptedFile,
+      dialog_info_map);
+  AppendBlockedFilesSection(
+      FilesPolicyErrorDialog::BlockReason::kEnterpriseConnectorsLargeFile,
+      dialog_info_map);
+}
+
+void FilesPolicyErrorDialog::AppendBlockedFilesSection(
+    BlockReason reason,
+    const std::map<BlockReason, Info>& dialog_info_map) {
+  auto it = dialog_info_map.find(reason);
+  if (it == dialog_info_map.end() || it->second.GetFiles().empty()) {
+    return;
+  }
+  sections_.emplace_back(MapBlockReasonToViewID(reason),
+                         it->second.GetMessage(), it->second.GetFiles());
+}
+
+void FilesPolicyErrorDialog::AddBlockedFilesSection(
+    const BlockedFilesSection& section) {
+  if (section.files.empty()) {
+    return;
+  }
+
   DCHECK(scroll_view_container_);
   views::View* row =
       scroll_view_container_->AddChildView(std::make_unique<views::View>());
@@ -96,12 +218,15 @@ void FilesPolicyErrorDialog::AddPolicyRow(
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets::TLBR(10, 16, 10, 16), 0));
 
-  CHECK(dialog_info_map_.contains(reason));
-  views::Label* title_label =
-      AddRowTitle(dialog_info_map_.at(reason).GetMessage(), row);
+  views::Label* title_label = AddRowTitle(section.message, row);
+  title_label->SetID(section.view_id);
   title_label->SetFontList(
       ash::TypographyProvider::Get()->ResolveTypographyToken(
           ash::TypographyToken::kCrosBody1));
+
+  for (const auto& file : section.files) {
+    AddConfidentialRow(file.icon, file.title);
+  }
 }
 
 void FilesPolicyErrorDialog::OpenLearnMore() {

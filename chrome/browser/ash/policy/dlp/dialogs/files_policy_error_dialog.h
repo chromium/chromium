@@ -33,6 +33,28 @@ class FilesPolicyErrorDialog : public FilesPolicyDialog {
   ~FilesPolicyErrorDialog() override;
 
  private:
+  // Holds all the information of a section of the dialog.
+  struct BlockedFilesSection {
+    BlockedFilesSection(int view_id,
+                        const std::u16string& message,
+                        const std::vector<DlpConfidentialFile>& files);
+    ~BlockedFilesSection();
+
+    BlockedFilesSection(const BlockedFilesSection& other);
+    BlockedFilesSection& operator=(BlockedFilesSection&& other);
+
+    // A unique ID attached to the view element holding `message`. This ID is
+    // only set for mixed error dialogs and allows to figure out in tests
+    // whether certain sections have been added to the dialog.
+    int view_id;
+
+    // The message shown to the user describing why `files` have been blocked.
+    std::u16string message;
+
+    // The blocked files.
+    std::vector<DlpConfidentialFile> files;
+  };
+
   // PolicyDialogBase overrides:
   void MaybeAddConfidentialRows() override;
   std::u16string GetOkButton() override;
@@ -40,9 +62,22 @@ class FilesPolicyErrorDialog : public FilesPolicyDialog {
   std::u16string GetTitle() override;
   std::u16string GetMessage() override;
 
-  // Adds a row with blocked reason message based on `policy`. Should only be
-  // called after `SetupUpperPanel()`.
-  void AddPolicyRow(FilesPolicyDialog::BlockReason policy);
+  // Initialize the `sections_` vector by possibly aggregating data taken from
+  // the `dialog_info_map`.
+  void SetupBlockedFilesSections(
+      const std::map<BlockReason, Info>& dialog_info_map);
+
+  // Appends a section to `sections_`. Details such as the displayed message and
+  // list of blocked files are retrieved from `dialog_info_map`. It is no-op if
+  // `reason` is not in `dialog_info_map` or there are no files blocked for the
+  // given `reason`.
+  void AppendBlockedFilesSection(
+      BlockReason reason,
+      const std::map<BlockReason, Info>& dialog_info_map);
+
+  // Adds the given `section` to the dialog.
+  // Should only be called after `SetupUpperPanel()`.
+  void AddBlockedFilesSection(const BlockedFilesSection& section);
 
   // Called from the dialog's "Cancel" button.
   // Opens the help page for policy/-ies that blocked the file action.
@@ -52,10 +87,11 @@ class FilesPolicyErrorDialog : public FilesPolicyDialog {
   // Dismisses the dialog.
   void Dismiss();
 
-  // Maps policy reasons to their associated dialog info. It holds the
-  // information that allow to populate the dialog UI such as the list of warned
-  // files and the message shown for every block reason.
-  std::map<FilesPolicyDialog::BlockReason, Info> dialog_info_map_;
+  // The dialog is composed of one section in case of single error dialog or
+  // more sections for mixed errors. Every section holds the information that
+  // allows to populate the dialog UI such as the list of blocked files and the
+  // message that should be shown to the user.
+  std::vector<BlockedFilesSection> sections_;
 
   // Total number of blocked files for all policy reasons.
   size_t file_count_;

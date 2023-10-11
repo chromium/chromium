@@ -8,6 +8,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -104,11 +105,15 @@ std::u16string GetBlockReasonMessage(FilesPolicyDialog::BlockReason reason,
                        ? IDS_POLICY_DLP_FILES_POLICY_BLOCK_SINGLE_FILE_MESSAGE
                        : IDS_POLICY_DLP_FILES_POLICY_BLOCK_MESSAGE;
       break;
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile:
+      return l10n_util::GetPluralStringFUTF16(
+          IDS_DEEP_SCANNING_DIALOG_ENCRYPTED_FILE_FAILURE_MESSAGE, file_count);
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsLargeFile:
+      return l10n_util::GetPluralStringFUTF16(
+          IDS_DEEP_SCANNING_DIALOG_LARGE_FILE_FAILURE_MESSAGE, file_count);
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknownScanResult:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware:
-    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile:
-    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsLargeFile:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectors:
       // TODO(b/300705572): provide a proper message for every switch case.
       message_id = file_count == 1
@@ -134,11 +139,16 @@ std::u16string GetBlockReasonMessage(FilesPolicyDialog::BlockReason reason,
     case FilesPolicyDialog::BlockReason::kDlp:
       message_id = IDS_POLICY_DLP_FILES_POLICY_BLOCK_MESSAGE;
       break;
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile:
+      return l10n_util::GetPluralStringFUTF16(
+          IDS_DEEP_SCANNING_DIALOG_ENCRYPTED_FILE_FAILURE_MESSAGE,
+          /*number=*/1);
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsLargeFile:
+      return l10n_util::GetPluralStringFUTF16(
+          IDS_DEEP_SCANNING_DIALOG_LARGE_FILE_FAILURE_MESSAGE, /*number=*/1);
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknownScanResult:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware:
-    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile:
-    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsLargeFile:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectors:
       // TODO(b/300705572): provide a proper message for every switch case.
       message_id = IDS_POLICY_DLP_FILES_CONTENT_BLOCK_MESSAGE;
