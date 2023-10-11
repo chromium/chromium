@@ -93,10 +93,6 @@ class TPMErrorMessage extends TPMErrorMessageElementBase {
     this.setUIStep(step);
   }
 
-  onSkip_() {
-    this.userActed('tpm-skip');
-  }
-
   onRestartTap_() {
     this.userActed('reboot-system');
   }
