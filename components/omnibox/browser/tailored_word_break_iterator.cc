@@ -18,7 +18,7 @@ TailoredWordBreakIterator::TailoredWordBreakIterator(
       pos_(0),
       word_breaks_{u"0123456789"},
       non_word_breaks_{u"_"},
-      all_breaks_{word_breaks_ + non_word_breaks_} {};
+      all_breaks_{word_breaks_ + non_word_breaks_} {}
 
 TailoredWordBreakIterator::~TailoredWordBreakIterator() {}
 
