@@ -97,7 +97,9 @@
       <ul data-role="list" aria-label="implicit list name"><li data-role="listitem">implicit listitem name</li></ul>
       <ol data-role="list" aria-label="implicit list name"><li data-role="listitem">implicit listitem name</li></ol>
 
-      <div role="listbox" aria-label="listbox name">This is a listbox</div>
+      <div role="listbox" aria-label="listbox name">
+        <div role="option">option name</div>
+      </div>
       <select data-role="listbox" size="1" aria-label="implicit listbox name">
         <option value="1">First option</option>
         <option value="2">Second</option>
@@ -136,7 +138,6 @@
 
       <div role="note" aria-label="note name">This is a note</div>
 
-      <div role="option">option name</div>
       <div role="option" aria-label="option name">This is an option</div>
       <select multiple>
         <option value="1" data-role="option" data-knownFailure>implicit option name</option>

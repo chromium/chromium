@@ -5156,6 +5156,13 @@ ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
       role = ax::mojom::blink::Role::kComboBoxMenuButton;
   }
 
+  // Distinguish orphaned options out of the listbox context
+  if (role == ax::mojom::blink::Role::kListBoxOption) {
+    AXObject* parent = ParentObjectIncludedInTree();
+    if (parent && parent->RoleValue() != ax::mojom::blink::Role::kListBox)
+      return ax::mojom::blink::Role::kUnknown;
+  }
+
   return role;
 }
 
