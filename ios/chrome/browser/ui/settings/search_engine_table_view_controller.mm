@@ -505,16 +505,20 @@ const char kUmaSelectDefaultSearchEngine[] =
     for (auto& url : _choiceScreenTemplateURLs) {
       _firstList.push_back(url.get());
     }
-  }
-
-  // Classify TemplateURLs.
-  for (TemplateURL* url : urls) {
-    if (!_shouldShowUpdatedSettings &&
-        (_templateURLService->IsPrepopulatedOrCreatedByPolicy(url) ||
-         url == _templateURLService->GetDefaultSearchProvider())) {
-      _firstList.push_back(url);
-    } else {
-      _secondList.push_back(url);
+    // Add the custom search egines to the second list.
+    for (TemplateURL* url : urls) {
+      if (![self isPrepopulatedOrDefaultSearchEngine:url]) {
+        _secondList.push_back(url);
+      }
+    }
+  } else {
+    // Classify TemplateURLs.
+    for (TemplateURL* url : urls) {
+      if ([self isPrepopulatedOrDefaultSearchEngine:url]) {
+        _firstList.push_back(url);
+      } else {
+        _secondList.push_back(url);
+      }
     }
   }
 
@@ -728,6 +732,11 @@ const char kUmaSelectDefaultSearchEngine[] =
   NSString* keyword = base::SysUTF16ToNSString(templateURL->keyword());
   return [item.text isEqualToString:name] &&
          [item.detailText isEqualToString:keyword];
+}
+
+- (BOOL)isPrepopulatedOrDefaultSearchEngine:(const TemplateURL*)templateURL {
+  return _templateURLService->IsPrepopulatedOrCreatedByPolicy(templateURL) ||
+         templateURL == _templateURLService->GetDefaultSearchProvider();
 }
 
 @end
