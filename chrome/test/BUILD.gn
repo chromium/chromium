@@ -21,7 +21,6 @@ import(
 import("//chrome/common/features.gni")
 
 import("//chrome/services/speech/buildflags/buildflags.gni")
-import("//chrome/test/base/js2gtest.gni")
 import("//chrome/test/include_js_tests.gni")
 import("//chrome/version.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
@@ -64,6 +63,10 @@ if (is_android) {
   import("//chrome/android/features/dev_ui/dev_ui_module.gni")
   import("//third_party/jni_zero/jni_zero.gni")
   import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
+}
+
+if (is_chromeos_ash && include_js2gtest_tests) {
+  import("//chrome/test/base/js2gtest.gni")
 }
 
 # This target exists to reference other test executables to bring these files
@@ -2025,7 +2028,13 @@ if (!is_android) {
       "//ui/webui/resources/",
     ]
 
-    data += js2gtest_js_libraries
+    if (is_chromeos_ash) {
+      # Libraries for tests that inherit from BaseWebUIBrowserTest.
+      data += [
+        "//third_party/node/node_modules/chai/chai.js",
+        "//chrome/test/data/webui/test_api.js",
+      ]
+    }
     data += metric_integration_jsdeps
 
     sources = [
@@ -2711,7 +2720,6 @@ if (!is_android) {
       "base/save_desktop_snapshot_browsertest.cc",
       "base/test_chrome_web_ui_controller_factory_browsertest.cc",
       "base/ui_test_utils_browsertest.cc",
-      "base/web_ui_browser_test_browsertest.cc",
       "base/web_ui_mocha_browser_test_browsertest.cc",
       "data/webui/mojo/mojo_file_system_access_browsertest.cc",
       "data/webui/mojo/mojo_js_interface_broker_browsertest.cc",
@@ -2853,6 +2861,7 @@ if (!is_android) {
         "../browser/sessions/tab_restore_service_browsertest.cc",
         "../browser/support_tool/signin_data_collector_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
+        "base/web_ui_browser_test_browsertest.cc",
         "data/webui/async_gen.cc",
         "data/webui/async_gen.h",
         "data/webui/chromeos/webui_resource_browsertest.cc",
@@ -3183,26 +3192,25 @@ if (!is_android) {
     if (include_js_tests) {
       deps += [ "//chrome/test/data/webui:browser_tests" ]
     }
-    if (include_js2gtest_tests) {
-      deps += [ "//chrome/test/data/webui:browser_tests_js_webui" ]
-      if (is_chromeos_ash) {
-        deps += [
-          "//ash/webui/color_internals:browser_tests_js",
-          "//ash/webui/eche_app_ui:browser_tests_js",
-          "//ash/webui/help_app_ui:browser_tests_js",
-          "//ash/webui/media_app_ui:browser_tests_js",
-          "//ash/webui/system_apps:browser_tests",
-          "//ash/webui/system_extensions_internals_ui:browser_tests_js",
-          "//chrome/test/data/webui:browser_tests_js_mojo_lite_webui",
-          "//chrome/test/data/webui:browser_tests_js_mojo_webui",
-          "//chromeos/ash/components/human_presence:browser_tests_js",
-        ]
+    if (is_chromeos_ash && include_js2gtest_tests) {
+      deps += [
+        "//ash/webui/color_internals:browser_tests_js",
+        "//ash/webui/eche_app_ui:browser_tests_js",
+        "//ash/webui/help_app_ui:browser_tests_js",
+        "//ash/webui/media_app_ui:browser_tests_js",
+        "//ash/webui/system_apps:browser_tests",
+        "//ash/webui/system_extensions_internals_ui:browser_tests_js",
+        "//chrome/test/data/webui:browser_tests_js_mojo_lite_webui",
+        "//chrome/test/data/webui:browser_tests_js_mojo_webui",
+        "//chrome/test/data/webui:browser_tests_js_webui",
+        "//chromeos/ash/components/human_presence:browser_tests_js",
+      ]
 
-        data_deps += [ "//chrome/test/data/webui:browser_tests_js_webui" ]
+      data += js2gtest_js_libraries
+      data_deps += [ "//chrome/test/data/webui:browser_tests_js_webui" ]
 
-        if (!is_official_build) {
-          deps += [ "//ash/webui/sample_system_web_app_ui:browser_tests_js" ]
-        }
+      if (!is_official_build) {
+        deps += [ "//ash/webui/sample_system_web_app_ui:browser_tests_js" ]
       }
     }
 
@@ -6475,7 +6483,6 @@ test("unit_tests") {
     data += [ "data/" ]
   }
 
-  data += js2gtest_js_libraries
   if (is_android) {
     data += [
       "$root_gen_dir/chrome/android/chrome_apk_paks/chrome_100_percent.pak",
@@ -8056,6 +8063,7 @@ test("unit_tests") {
     data += [ "//ash/components/arc/test/data/icons/" ]
 
     if (include_js2gtest_tests && is_chromeos_ash) {
+      data += js2gtest_js_libraries
       deps +=
           [ "//chrome/browser/resources/chromeos/accessibility:unit_tests_js" ]
     }
@@ -10022,8 +10030,6 @@ if (!is_android) {
       "base/test_chrome_web_ui_controller_factory.h",
       "base/ui_test_utils.cc",
       "base/ui_test_utils.h",
-      "base/web_ui_browser_test.cc",
-      "base/web_ui_browser_test.h",
       "base/web_ui_mocha_browser_test.cc",
       "base/web_ui_mocha_browser_test.h",
       "base/web_ui_test_data_source.cc",
@@ -10224,6 +10230,8 @@ if (!is_android) {
       sources += [
         "base/mojo_web_ui_browser_test.cc",
         "base/mojo_web_ui_browser_test.h",
+        "base/web_ui_browser_test.cc",
+        "base/web_ui_browser_test.h",
       ]
       deps += [
         "//ash",
@@ -10466,7 +10474,6 @@ if (!is_android && !is_chromeos_device) {
       "//tools/metrics/histograms/enums.xml",
       "//ui/webui/resources/js/",
     ]
-    data += js2gtest_js_libraries
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     ldflags = []
@@ -10590,6 +10597,7 @@ if (!is_android && !is_chromeos_device) {
       deps += [ "//chrome/test/data/webui:interactive_ui_tests" ]
     }
     if (include_js2gtest_tests && is_chromeos_ash) {
+      data += js2gtest_js_libraries
       deps += [ "//chrome/test/data/webui:interactive_ui_tests_js_webui" ]
     }
 
