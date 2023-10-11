@@ -120,6 +120,9 @@
           '--gtest_filter=-ImportantSitesUtilBrowserTest.DSENotConsideredImportantInRegularMode', # https://crbug.com/1034001
         ],
         'swarming': {
+          'dimensions': {
+            'device_type': 'crosshatch',
+          },
           # TODO(crbug/1456515): Temporarily increase the shard by 1 for the surging number of tests.
           # Recover to original number of shards(4) after the bug is fixed.
           'shards': 5,
@@ -283,7 +286,7 @@
         # capacity has been deployed.
         'swarming': {
           'dimensions': {
-            'device_type': 'sailfish',
+            'device_type': 'crosshatch',
           },
         },
       },
@@ -5025,20 +5028,7 @@
         # capacity has been deployed.
         'swarming': {
           'dimensions': {
-            'device_type': 'sailfish',
-          },
-        },
-      },
-    },
-  },
-  'webview_cts_tests': {
-    'modifications': {
-      'android-pie-arm64-rel': {
-        # TODO(crbug.com/1111436): Move this back to walleye if/when additional
-        # capacity has been deployed.
-        'swarming': {
-          'dimensions': {
-            'device_type': 'sailfish',
+            'device_type': 'crosshatch',
           },
         },
       },
