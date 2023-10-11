@@ -5,17 +5,27 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_BASE_SESSION_BINDING_TEST_UTILS_H_
 #define COMPONENTS_SIGNIN_PUBLIC_BASE_SESSION_BINDING_TEST_UTILS_H_
 
+#include <string_view>
+
 #include "base/containers/span.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/values.h"
 #include "crypto/signature_verifier.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace signin {
 
 // Verifies that `jwt` is well-formed and properly signed.
-[[nodiscard]] bool VerifyJwtSignature(
-    base::StringPiece jwt,
+[[nodiscard]] testing::AssertionResult VerifyJwtSignature(
+    std::string_view jwt,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> public_key);
+
+// Returns a parsed header part of `jwt` or absl::nullopt if parsing fails.
+absl::optional<base::Value::Dict> ExtractHeaderFromJwt(std::string_view jwt);
+
+// Returns a parsed payload part of `jwt` or absl::nullopt if parsing fails.
+absl::optional<base::Value::Dict> ExtractPayloadFromJwt(std::string_view jwt);
 
 }  // namespace signin
 

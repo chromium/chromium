@@ -590,6 +590,7 @@ bool EmbeddedTestServer::InitializeSSLServerContext() {
 
 EmbeddedTestServerHandle
 EmbeddedTestServer::StartAcceptingConnectionsAndReturnHandle() {
+  StartAcceptingConnections();
   return EmbeddedTestServerHandle(this);
 }
 

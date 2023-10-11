@@ -104,6 +104,7 @@ static_library("test_support") {
     ":base",
     "//base",
     "//services/network:test_support",
+    "//testing/gtest",
   ]
 }
 

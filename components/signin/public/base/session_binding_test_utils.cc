@@ -4,12 +4,16 @@
 
 #include "components/signin/public/base/session_binding_test_utils.h"
 
+#include <string_view>
+
 #include "base/base64url.h"
+#include "base/check.h"
 #include "base/containers/span.h"
+#include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "crypto/signature_verifier.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -19,6 +23,13 @@
 namespace signin {
 
 namespace {
+
+constexpr size_t kJwtPartsCount = 3U;
+constexpr uint8_t kJwtSeparatorArray[] = {'.'};
+
+// JWT parts listed in the order they appear in JWT.
+enum class JwtPart : size_t { kHeader = 0, kPayload = 1, kSignature = 2 };
+
 absl::optional<std::vector<uint8_t>> ConvertRawSignatureToDER(
     base::span<const uint8_t> raw_signature) {
   const size_t kMaxBytesPerBN = 32;
@@ -43,39 +54,88 @@ absl::optional<std::vector<uint8_t>> ConvertRawSignatureToDER(
   bssl::UniquePtr<uint8_t> delete_signature(signature_bytes);
   return std::vector<uint8_t>(signature_bytes, signature_bytes + signature_len);
 }
+
+absl::optional<std::string> ExtractJwtPart(std::string_view jwt, JwtPart part) {
+  std::vector<std::string_view> encoded_parts = base::SplitStringPiece(
+      jwt, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (encoded_parts.size() != kJwtPartsCount) {
+    return absl::nullopt;
+  }
+
+  size_t part_index = static_cast<size_t>(part);
+  CHECK_LT(part_index, kJwtPartsCount);
+  std::string decoded_part;
+  if (!base::Base64UrlDecode(encoded_parts[part_index],
+                             base::Base64UrlDecodePolicy::DISALLOW_PADDING,
+                             &decoded_part)) {
+    return absl::nullopt;
+  }
+
+  return decoded_part;
+}
+
 }  // namespace
 
-bool VerifyJwtSignature(base::StringPiece jwt,
-                        crypto::SignatureVerifier::SignatureAlgorithm algorithm,
-                        base::span<const uint8_t> public_key) {
-  std::vector<base::StringPiece> parts = base::SplitStringPiece(
+testing::AssertionResult VerifyJwtSignature(
+    std::string_view jwt,
+    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    base::span<const uint8_t> public_key) {
+  std::vector<std::string_view> parts = base::SplitStringPiece(
       jwt, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (parts.size() != 3U) {
-    return false;
+  if (parts.size() != kJwtPartsCount) {
+    return testing::AssertionFailure()
+           << "JWT contains " << parts.size() << " parts instead of "
+           << kJwtPartsCount;
   }
   std::string signature_str;
-  if (!base::Base64UrlDecode(parts[2],
+  if (!base::Base64UrlDecode(parts[static_cast<size_t>(JwtPart::kSignature)],
                              base::Base64UrlDecodePolicy::DISALLOW_PADDING,
                              &signature_str)) {
-    return false;
+    return testing::AssertionFailure()
+           << "Failed to decode signature: " << signature_str;
   }
   std::vector<uint8_t> signature(signature_str.begin(), signature_str.end());
   if (algorithm == crypto::SignatureVerifier::ECDSA_SHA256) {
     absl::optional<std::vector<uint8_t>> der_signature =
         ConvertRawSignatureToDER(base::as_bytes(base::make_span(signature)));
     if (!der_signature) {
-      return false;
+      return testing::AssertionFailure()
+             << "Failed to convert raw signature to DER: " << signature_str;
     }
     signature = std::move(der_signature).value();
   }
 
   crypto::SignatureVerifier verifier;
   if (!verifier.VerifyInit(algorithm, signature, public_key)) {
-    return false;
+    return testing::AssertionFailure()
+           << "Failed to initialize the signature verifier";
   }
-  verifier.VerifyUpdate(
-      base::as_bytes(base::make_span(base::StrCat({parts[0], ".", parts[1]}))));
-  return verifier.VerifyFinal();
+  verifier.VerifyUpdate(base::as_bytes(
+      base::make_span(parts[static_cast<size_t>(JwtPart::kHeader)])));
+  verifier.VerifyUpdate(kJwtSeparatorArray);
+  verifier.VerifyUpdate(base::as_bytes(
+      base::make_span(parts[static_cast<size_t>(JwtPart::kPayload)])));
+  return verifier.VerifyFinal()
+             ? testing::AssertionSuccess()
+             : (testing::AssertionFailure() << "Invalid signature");
+}
+
+absl::optional<base::Value::Dict> ExtractHeaderFromJwt(std::string_view jwt) {
+  absl::optional<std::string> header = ExtractJwtPart(jwt, JwtPart::kHeader);
+  if (!header) {
+    return absl::nullopt;
+  }
+
+  return base::JSONReader::ReadDict(*header);
+}
+
+absl::optional<base::Value::Dict> ExtractPayloadFromJwt(std::string_view jwt) {
+  absl::optional<std::string> payload = ExtractJwtPart(jwt, JwtPart::kPayload);
+  if (!payload) {
+    return absl::nullopt;
+  }
+
+  return base::JSONReader::ReadDict(*payload);
 }
 
 }  // namespace signin
