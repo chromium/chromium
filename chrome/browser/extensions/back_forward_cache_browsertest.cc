@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
 // cross document navigation for a document with an active channel, allowing
 // the frame to be bfcached subsequently.
 IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
-                       ChromeRuntimeConnectUsageInIframe) {
+                       ChromeRuntimeConnectUsageInIframeWithIframeNavigation) {
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
                         .AppendASCII("content_script"));
@@ -482,6 +482,108 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   EXPECT_FALSE(primary_render_frame_host.IsDestroyed());
   EXPECT_EQ(primary_render_frame_host->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+}
+
+// Test that the page can enter BFCache with an active channel created from the
+// iframe.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionBackForwardCacheBrowserTest,
+    ChromeRuntimeConnectUsageInIframeWithoutIframeNavigation) {
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
+                        .AppendASCII("content_script"));
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a = embedded_test_server()->GetURL("a.com", "/iframe.html");
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  content::RenderFrameHostWrapper primary_render_frame_host(
+      ui_test_utils::NavigateToURL(browser(), url_a));
+  std::u16string expected_title = u"connected";
+  content::TitleWatcher title_watcher(
+      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+
+  content::RenderFrameHost* child =
+      ChildFrameAt(primary_render_frame_host.get(), 0);
+
+  std::string action = base::StringPrintf(
+      R"JS(
+        var p = chrome.runtime.connect('%s');
+        p.onMessage.addListener((m) => {window.top.document.title = m; });
+      )JS",
+      extension->id().c_str());
+  ASSERT_TRUE(ExecJs(child, action));
+
+  // 2) Wait for the message port to be connected.
+  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+
+  // Expect that a channel is open.
+  EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
+
+  // 3) Navigate to B, and the channel is still open.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
+
+  // 4) Expect that A is in the back forward cache.
+  EXPECT_FALSE(primary_render_frame_host.IsDestroyed());
+  EXPECT_EQ(primary_render_frame_host->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+}
+
+// Test that the page can enter BFCache with an active channel that's created
+// from the extension background with two receivers from different frames.
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
+                       ChromeTabsConnectWithMultipleReceivers) {
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
+                        .AppendASCII("content_script_all_frames"));
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/iframe.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  content::RenderFrameHostWrapper primary_render_frame_host(
+      ui_test_utils::NavigateToURL(browser(), url_a));
+
+  // 2) Create channel from the extension background.
+  static constexpr char kScript[] =
+      R"JS(
+      var p;
+      var countConnected = 0;
+      chrome.tabs.query({}, (t) => {
+        p = chrome.tabs.connect(t[0].id);
+        p.onMessage.addListener(
+         (m) => {
+          if (m == 'connected') {
+            countConnected++;
+            if (countConnected == 2) {
+              chrome.test.sendScriptResult('connected twice');
+            }
+          }
+        });
+      });
+    )JS";
+
+  // The background should receives two "connected" messages from different
+  // frames.
+  EXPECT_EQ("connected twice",
+            ExecuteScriptInBackgroundPage(extension->id(), kScript));
+  // Even though there are two ports from the receiver end, there is still one
+  // channel.
+  EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
+
+  // 3) Navigate to B.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+
+  // 4) Expect that A is in the back forward cache.
+  EXPECT_EQ(primary_render_frame_host->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  // The channel should still be active.
+  EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
 }
 
 // Test if the chrome.runtime.sendMessage API is called, the page is allowed
