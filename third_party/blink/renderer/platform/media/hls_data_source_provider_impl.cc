@@ -52,30 +52,41 @@ HlsDataSourceProviderImpl::DataSourceFactory::~DataSourceFactory() = default;
 
 MultiBufferDataSourceFactory::MultiBufferDataSourceFactory(
     media::MediaLog* media_log,
-    UrlIndex* url_index,
+    UrlDataCb get_url_data,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-    const base::TickClock* tick_clock,
-    UrlData::CorsMode cors_mode,
-    UrlIndex::CacheMode cache_mode)
+    const base::TickClock* tick_clock)
     : media_log_(media_log->Clone()),
-      url_index_(url_index),
-      main_task_runner_(std::move(main_task_runner)),
-      cors_mode_(cors_mode),
-      cache_mode_(cache_mode) {
+      get_url_data_(get_url_data),
+      main_task_runner_(std::move(main_task_runner)) {
   buffered_data_source_host_ = std::make_unique<BufferedDataSourceHostImpl>(
       base::DoNothing(), tick_clock);
 }
 
-std::unique_ptr<media::CrossOriginDataSource>
-MultiBufferDataSourceFactory::CreateDataSource(GURL uri) {
-  return std::make_unique<MultiBufferDataSource>(
-      main_task_runner_, url_index_->GetByUrl(uri, cors_mode_, cache_mode_),
-      media_log_.get(), buffered_data_source_host_.get(),
+void MultiBufferDataSourceFactory::CreateDataSource(GURL uri, DataSourceCb cb) {
+  auto download_cb =
+#if DCHECK_IS_ON()
       base::BindRepeating(
-          [](const std::string& url, bool is_downloading) {
+          [](const std::string url, bool is_downloading) {
             DVLOG(1) << __func__ << "(" << url << ", " << is_downloading << ")";
           },
-          uri.spec()));
+          uri.spec());
+#else
+      base::DoNothing();
+#endif
+
+  get_url_data_.Run(std::move(uri),
+                    base::BindOnce(&MultiBufferDataSourceFactory::OnUrlData,
+                                   weak_factory_.GetWeakPtr(), std::move(cb),
+                                   std::move(download_cb)));
+}
+
+void MultiBufferDataSourceFactory::OnUrlData(
+    DataSourceCb cb,
+    base::RepeatingCallback<void(bool)> download_cb,
+    scoped_refptr<UrlData> data) {
+  std::move(cb).Run(std::make_unique<MultiBufferDataSource>(
+      main_task_runner_, std::move(data), media_log_.get(),
+      buffered_data_source_host_.get(), std::move(download_cb)));
 }
 
 HlsDataSourceProviderImpl::HlsDataSourceProviderImpl(
@@ -95,18 +106,28 @@ HlsDataSourceProviderImpl::~HlsDataSourceProviderImpl() {
   data_source_factory_.reset();
 }
 
+void HlsDataSourceProviderImpl::OnDataSourceReady(
+    absl::optional<media::hls::types::ByteRange> range,
+    ReadCb callback,
+    std::unique_ptr<media::CrossOriginDataSource> data_source) {
+  auto stream_id = stream_id_generator_.GenerateNextId();
+  auto it = data_source_map_.try_emplace(stream_id, std::move(data_source));
+  it.first->second->Initialize(
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &HlsDataSourceProviderImpl::DataSourceInitialized,
+          weak_factory_.GetWeakPtr(), stream_id, range, std::move(callback))));
+}
+
 void HlsDataSourceProviderImpl::ReadFromUrl(
     GURL uri,
     absl::optional<media::hls::types::ByteRange> range,
     ReadCb callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto stream_id = stream_id_generator_.GenerateNextId();
-  auto it = data_source_map_.try_emplace(
-      stream_id, data_source_factory_->CreateDataSource(std::move(uri)));
-  it.first->second->Initialize(
+  data_source_factory_->CreateDataSource(
+      std::move(uri),
       base::BindPostTaskToCurrentDefault(base::BindOnce(
-          &HlsDataSourceProviderImpl::DataSourceInitialized,
-          weak_factory_.GetWeakPtr(), stream_id, range, std::move(callback))));
+          &HlsDataSourceProviderImpl::OnDataSourceReady,
+          weak_factory_.GetWeakPtr(), std::move(range), std::move(callback))));
 }
 
 void HlsDataSourceProviderImpl::ReadFromExistingStream(

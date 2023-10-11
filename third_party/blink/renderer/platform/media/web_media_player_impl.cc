@@ -1573,15 +1573,27 @@ void WebMediaPlayerImpl::AddVideoTrack(const std::string& id,
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
+
+void WebMediaPlayerImpl::GetUrlData(
+    const GURL& gurl,
+    base::OnceCallback<void(scoped_refptr<UrlData>)> cb) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  auto url_data = url_index_->GetByUrl(
+      gurl, static_cast<UrlData::CorsMode>(cors_mode_),
+      is_cache_disabled_ ? UrlIndex::kCacheDisabled : UrlIndex::kNormal);
+  std::move(cb).Run(std::move(url_data));
+}
+
 base::SequenceBound<media::HlsDataSourceProvider>
 WebMediaPlayerImpl::GetHlsDataSourceProvider() {
-  auto factory = std::make_unique<MultiBufferDataSourceFactory>(
-      media_log_.get(), url_index_, main_task_runner_, tick_clock_,
-      static_cast<UrlData::CorsMode>(cors_mode_),
-      (is_cache_disabled_ ? UrlIndex::kCacheDisabled : UrlIndex::kNormal));
-
-  return base::SequenceBound<HlsDataSourceProviderImpl>(main_task_runner_,
-                                                        std::move(factory));
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  return base::SequenceBound<HlsDataSourceProviderImpl>(
+      main_task_runner_,
+      std::make_unique<MultiBufferDataSourceFactory>(
+          media_log_.get(),
+          base::BindRepeating(&WebMediaPlayerImpl::GetUrlData,
+                              weak_factory_.GetWeakPtr()),
+          main_task_runner_, tick_clock_));
 }
 #endif
 

@@ -20,7 +20,6 @@
 
 namespace blink {
 
-class UrlIndex;
 class BufferedDataSourceHostImpl;
 
 class PLATFORM_EXPORT HlsDataSourceProviderImpl
@@ -30,9 +29,10 @@ class PLATFORM_EXPORT HlsDataSourceProviderImpl
   // and DataSourceStream buffer management for easier testing.
   class DataSourceFactory {
    public:
+    using DataSourceCb =
+        base::OnceCallback<void(std::unique_ptr<media::CrossOriginDataSource>)>;
     virtual ~DataSourceFactory() = 0;
-    virtual std::unique_ptr<media::CrossOriginDataSource> CreateDataSource(
-        GURL uri) = 0;
+    virtual void CreateDataSource(GURL uri, DataSourceCb cb) = 0;
   };
 
   ~HlsDataSourceProviderImpl() override;
@@ -49,6 +49,10 @@ class PLATFORM_EXPORT HlsDataSourceProviderImpl
   void AbortPendingReads(base::OnceClosure cb) override;
 
  private:
+  void OnDataSourceReady(
+      absl::optional<media::hls::types::ByteRange> range,
+      ReadCb callback,
+      std::unique_ptr<media::CrossOriginDataSource> data_source);
   void OnStreamReleased(media::HlsDataSourceStream::StreamId stream_id);
   void DataSourceInitialized(media::HlsDataSourceStream::StreamId stream_id,
                              absl::optional<media::hls::types::ByteRange> range,
@@ -71,26 +75,29 @@ class PLATFORM_EXPORT HlsDataSourceProviderImpl
 class PLATFORM_EXPORT MultiBufferDataSourceFactory
     : public HlsDataSourceProviderImpl::DataSourceFactory {
  public:
+  using UrlDataCb = base::RepeatingCallback<
+      void(const GURL& url, base::OnceCallback<void(scoped_refptr<UrlData>)>)>;
+
   ~MultiBufferDataSourceFactory() override;
   MultiBufferDataSourceFactory(
       media::MediaLog* media_log,
-      UrlIndex* url_index,
+      UrlDataCb get_url_data,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-      const base::TickClock* tick_clock,
-      UrlData::CorsMode cors_mode,
-      UrlIndex::CacheMode cache_mode);
+      const base::TickClock* tick_clock);
 
-  std::unique_ptr<media::CrossOriginDataSource> CreateDataSource(
-      GURL uri) override;
+  void CreateDataSource(GURL uri, DataSourceCb cb) override;
 
  private:
+  void OnUrlData(DataSourceCb cb,
+                 base::RepeatingCallback<void(bool)> download_cb,
+                 scoped_refptr<UrlData> data);
+
   std::unique_ptr<media::MediaLog> media_log_;
-  raw_ptr<UrlIndex, ExperimentalRenderer> url_index_;
+  UrlDataCb get_url_data_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  UrlData::CorsMode cors_mode_;
-  UrlIndex::CacheMode cache_mode_;
 
   std::unique_ptr<BufferedDataSourceHostImpl> buffered_data_source_host_;
+  base::WeakPtrFactory<MultiBufferDataSourceFactory> weak_factory_{this};
 };
 
 }  // namespace blink

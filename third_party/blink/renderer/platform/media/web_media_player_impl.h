@@ -435,6 +435,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
+  void GetUrlData(const GURL& gurl,
+                  base::OnceCallback<void(scoped_refptr<UrlData>)> cb);
   base::SequenceBound<media::HlsDataSourceProvider> GetHlsDataSourceProvider()
       override;
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)

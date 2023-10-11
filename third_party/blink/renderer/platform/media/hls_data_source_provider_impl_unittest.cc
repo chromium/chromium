@@ -90,8 +90,7 @@ class MockDataSourceFactory
 
   ~MockDataSourceFactory() override = default;
   MockDataSourceFactory() = default;
-  std::unique_ptr<media::CrossOriginDataSource> CreateDataSource(
-      GURL uri) override {
+  void CreateDataSource(GURL uri, DataSourceCb cb) override {
     if (!next_mock_) {
       PregenerateNextMock();
       EXPECT_CALL(*next_mock_, Initialize).WillOnce(RunOnceCallback<0>(true));
@@ -103,7 +102,7 @@ class MockDataSourceFactory
       EXPECT_CALL(*next_mock_, Abort());
       EXPECT_CALL(*next_mock_, Stop());
     }
-    return std::move(next_mock_);
+    std::move(cb).Run(std::move(next_mock_));
   }
 
   void AddReadExpectation(size_t from, size_t to, int response) {
