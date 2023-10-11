@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/tab_organization_metadata.pb.h"
 #include "content/public/browser/web_contents.h"
@@ -110,6 +112,18 @@ void PerformTabOrganizationExecution(
 
 TabOrganizationRequestFactory::~TabOrganizationRequestFactory() = default;
 
+// static
+std::unique_ptr<TabOrganizationRequestFactory>
+TabOrganizationRequestFactory::Get() {
+  const base::CommandLine* const command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(optimization_guide::switches::
+                                  kOptimizationGuideServiceModelExecutionURL)) {
+    return std::make_unique<OptimizationGuideTabOrganizationRequestFactory>();
+  }
+  return std::make_unique<TwoTabsRequestFactory>();
+}
+
 TwoTabsRequestFactory::~TwoTabsRequestFactory() = default;
 
 std::unique_ptr<TabOrganizationRequest> TwoTabsRequestFactory::CreateRequest(
@@ -145,6 +159,9 @@ std::unique_ptr<TabOrganizationRequest> TwoTabsRequestFactory::CreateRequest(
 
   return std::make_unique<TabOrganizationRequest>(std::move(start_request));
 }
+
+OptimizationGuideTabOrganizationRequestFactory::
+    ~OptimizationGuideTabOrganizationRequestFactory() = default;
 
 std::unique_ptr<TabOrganizationRequest>
 OptimizationGuideTabOrganizationRequestFactory::CreateRequest(

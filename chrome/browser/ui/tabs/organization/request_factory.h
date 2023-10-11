@@ -15,6 +15,8 @@ class TabOrganizationRequestFactory {
   virtual ~TabOrganizationRequestFactory();
   virtual std::unique_ptr<TabOrganizationRequest> CreateRequest(
       Profile* profile) = 0;
+
+  static std::unique_ptr<TabOrganizationRequestFactory> Get();
 };
 
 class TwoTabsRequestFactory : public TabOrganizationRequestFactory {

@@ -25,7 +25,7 @@ TabOrganizationSession::~TabOrganizationSession() = default;
 std::unique_ptr<TabOrganizationSession>
 TabOrganizationSession::CreateSessionForBrowser(const Browser* browser) {
   std::unique_ptr<TabOrganizationRequest> request =
-      TwoTabsRequestFactory().CreateRequest(browser->profile());
+      TabOrganizationRequestFactory::Get()->CreateRequest(browser->profile());
 
   // iterate through the tabstripmodel building the tab data.
   std::vector<std::unique_ptr<TabData>> tab_datas;
@@ -38,6 +38,15 @@ TabOrganizationSession::CreateSessionForBrowser(const Browser* browser) {
   return std::make_unique<TabOrganizationSession>(std::move(request));
 }
 
+const TabOrganization* TabOrganizationSession::GetNextTabOrganization() const {
+  for (const TabOrganization& tab_organization : tab_organizations_) {
+    if (!tab_organization.choice().has_value()) {
+      return &tab_organization;
+    }
+  }
+  return nullptr;
+}
+
 TabOrganization* TabOrganizationSession::GetNextTabOrganization() {
   for (TabOrganization& tab_organization : tab_organizations_) {
     if (!tab_organization.choice().has_value()) {
@@ -45,6 +54,18 @@ TabOrganization* TabOrganizationSession::GetNextTabOrganization() {
     }
   }
   return nullptr;
+}
+
+bool TabOrganizationSession::IsComplete() const {
+  // If the request isnt completed, then the Session isnt completed.
+  if (request_->state() == TabOrganizationRequest::State::STARTED ||
+      request_->state() == TabOrganizationRequest::State::NOT_STARTED) {
+    return false;
+  }
+
+  // If there are still tab organizations that havent been acted on, then the
+  // session is still not completed.
+  return GetNextTabOrganization();
 }
 
 void TabOrganizationSession::StartRequest() {

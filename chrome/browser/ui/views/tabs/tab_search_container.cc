@@ -163,9 +163,8 @@ void TabSearchContainer::OnToggleActionUIState(const Browser* browser,
                                                bool should_show) {
   CHECK(tab_organization_service_);
   if (should_show) {
-    TabOrganizationSession* session = const_cast<TabOrganizationSession*>(
+    tab_organization_button_->SetSession(
         tab_organization_service_->GetSessionForBrowser(browser));
-    tab_organization_button_->SetSession(session);
     ShowTabOrganization();
   } else {
     HideTabOrganization();

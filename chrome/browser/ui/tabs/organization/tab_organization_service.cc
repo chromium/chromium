@@ -20,7 +20,13 @@ TabOrganizationService::~TabOrganizationService() = default;
 
 void TabOrganizationService::OnTriggerOccured(const Browser* browser) {
   if (base::Contains(browser_session_map_, browser)) {
-    return;
+    // If the organizations havent been fully accepted or rejected, then it does
+    // not need to be reset.
+    if (!GetSessionForBrowser(browser)->IsComplete()) {
+      return;
+    } else {
+      browser_session_map_.erase(browser);
+    }
   }
 
   browser_session_map_.emplace(
@@ -32,6 +38,12 @@ void TabOrganizationService::OnTriggerOccured(const Browser* browser) {
 }
 
 const TabOrganizationSession* TabOrganizationService::GetSessionForBrowser(
+    const Browser* browser) const {
+  CHECK(base::Contains(browser_session_map_, browser));
+  return browser_session_map_.at(browser).get();
+}
+
+TabOrganizationSession* TabOrganizationService::GetSessionForBrowser(
     const Browser* browser) {
   CHECK(base::Contains(browser_session_map_, browser));
   return browser_session_map_.at(browser).get();

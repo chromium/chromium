@@ -31,6 +31,7 @@ class TabOrganizationSession {
   static std::unique_ptr<TabOrganizationSession> CreateSessionForBrowser(
       const Browser* browser);
 
+  const TabOrganization* GetNextTabOrganization() const;
   TabOrganization* GetNextTabOrganization();
 
   void StartRequest();
@@ -38,6 +39,10 @@ class TabOrganizationSession {
   void AddOrganizationForTesting(TabOrganization tab_organization) {
     tab_organizations_.emplace_back(std::move(tab_organization));
   }
+
+  // Returns true if the request is not completed or there are still actions
+  // that need to be taken on organizations.
+  bool IsComplete() const;
 
  private:
   // TODO: Remove once the full UI flow is implemented.

@@ -40,7 +40,9 @@ class TabOrganizationService : public KeyedService {
     return browser_session_map_;
   }
 
-  const TabOrganizationSession* GetSessionForBrowser(const Browser* browser);
+  const TabOrganizationSession* GetSessionForBrowser(
+      const Browser* browser) const;
+  TabOrganizationSession* GetSessionForBrowser(const Browser* browser);
 
   void AddObserver(TabOrganizationObserver* observer) {
     observers_.AddObserver(observer);
