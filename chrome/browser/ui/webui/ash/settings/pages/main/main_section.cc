@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/main_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/main/main_section.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/personalization_entry_point.h"
@@ -23,8 +23,8 @@
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/policy_indicator_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_features_util.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_hats_handler.h"
-#include "chrome/browser/ui/webui/settings/ash/send_search_feedback_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/main/os_settings_hats_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/main/send_search_feedback_handler.h"
 #include "chrome/browser/ui/webui/settings/browser_lifetime_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"

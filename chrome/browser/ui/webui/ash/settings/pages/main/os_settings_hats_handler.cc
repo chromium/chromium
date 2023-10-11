@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/os_settings_hats_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/main/os_settings_hats_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_hats_manager.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_hats_manager_factory.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_ui.h"
