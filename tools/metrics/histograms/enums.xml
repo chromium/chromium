@@ -62870,6 +62870,7 @@ from previous Chrome versions.
   <int value="-1117104514" label="smbfs-file-shares"/>
   <int value="-1116278039" label="ShelfAppScaling:disabled"/>
   <int value="-1115681358" label="FeedBackToTop:enabled"/>
+  <int value="-1114715252" label="WebAuthenticationNewPasskeyUI:disabled"/>
   <int value="-1114080030" label="ResourceLoadingHints:enabled"/>
   <int value="-1113746031" label="AppDeduplicationService:enabled"/>
   <int value="-1113373128" label="WebUIDownloadShelf:enabled"/>
@@ -64805,6 +64806,7 @@ from previous Chrome versions.
   <int value="-160571071" label="InterestFeedV2:enabled"/>
   <int value="-159877930" label="MaterialDesignUserManager:disabled"/>
   <int value="-158938746" label="NtpRealboxPedals:enabled"/>
+  <int value="-158679164" label="SyncWebauthnCredentials:enabled"/>
   <int value="-158549277" label="enable-embeddedsearch-api"/>
   <int value="-158161384" label="SafeModeForCachedFlags:disabled"/>
   <int value="-157983843" label="CrostiniUseLxd5:disabled"/>
@@ -65587,6 +65589,7 @@ from previous Chrome versions.
   <int value="226590039" label="OverviewButton:disabled"/>
   <int value="226633333"
       label="enable-experimental-accessibility-manifest-v3:disabled"/>
+  <int value="227681377" label="WebAuthenticationNewPasskeyUI:enabled"/>
   <int value="228107154"
       label="OmniboxUpdatedConnectionSecurityIndicators:enabled"/>
   <int value="228845546" label="ShimlessRMAOsUpdate:enabled"/>
@@ -68628,6 +68631,7 @@ from previous Chrome versions.
   <int value="1714746366" label="BookmarksImprovedSaveFlow:disabled"/>
   <int value="1714751652" label="CaptivePortalErrorPage:disabled"/>
   <int value="1714922056" label="GlobalMediaControls:disabled"/>
+  <int value="1715173626" label="SyncWebauthnCredentials:disabled"/>
   <int value="1715338237" label="ContextualSearchSecondTap:disabled"/>
   <int value="1715482477" label="LauncherFuzzyMatchForOmnibox:enabled"/>
   <int value="1716104463" label="enable-fullscreen-app-list"/>

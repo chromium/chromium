@@ -7766,6 +7766,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "sync-webauthn-credentials",
+    "owners": [ "chrome-webauthn@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "synthesized-restore-session",
     "owners": [ "justincohen", "ajuma" ],
     "expiry_milestone": 120
@@ -8401,6 +8406,11 @@
     "name": "web-authentication-filter-google-passkeys",
     "owners": [ "chrome-webauthn@google.com" ],
     "expiry_milestone": 121
+  },
+  {
+    "name": "web-authentication-new-passkey-ui",
+    "owners": [ "chrome-webauthn@google.com" ],
+    "expiry_milestone": 125
   },
   {
     "name": "web-authentication-permit-enterprise-attestation",

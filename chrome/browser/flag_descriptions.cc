@@ -4943,6 +4943,11 @@ const char kSmartCardWebApiDescription[] =
     "Enable access to the Smart Card API. See "
     "https://github.com/WICG/web-smart-card#readme for more information.";
 
+const char kSyncWebauthnCredentialsName[] = "Sync WebAuthn credentials";
+const char kSyncWebauthnCredentialsDescription[] =
+    "Allow syncing, managing, and displaying Google Password Manager WebAuthn "
+    "credential ('passkey') metadata";
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char kSettingsEnableGetTheMostOutOfChromeName[] =
     "'Get the most out of Chrome' documentation";
@@ -4983,6 +4988,11 @@ const char kWebAppSyncGeneratedIconUpdateFixDescription[] =
     "Allows web apps installed via sync to update their icons without prompting"
     "during a manifest update if the icons were generated, indictative of"
     "network errors during the sync install.";
+
+const char kWebAuthenticationNewPasskeyUIName[] = "Enable new passkey UI";
+const char kWebAuthenticationNewPasskeyUIDescription[] =
+    "Enable the new passkey UI that emphasizes individual passkeys instead of "
+    "authenticators where possible.";
 
 const char kWebAuthenticationPermitEnterpriseAttestationName[] =
     "Web Authentication Enterprise Attestation";
