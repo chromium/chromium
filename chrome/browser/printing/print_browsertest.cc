@@ -1925,6 +1925,17 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, NoResizeEvent) {
   EXPECT_EQ(before, after);
 }
 
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest, SpecifiedPageSizeCrash) {
+  const GURL kUrl(
+      embedded_test_server()->GetURL("/printing/specified_page_size.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
+
+  // Pass if no crash. A specified page size may trigger the print preview UI to
+  // restart and regenerate print layout.
+  // See PrintPreviewAppElement.StateChanged_.
+  PrintAndWaitUntilPreviewIsReadyAndLoaded();
+}
+
 class PrintPrerenderBrowserTest : public PrintBrowserTest {
  public:
   PrintPrerenderBrowserTest()
