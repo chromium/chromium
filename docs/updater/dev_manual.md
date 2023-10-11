@@ -332,6 +332,86 @@ name of the trybot you found.
 4. Monitor and debug any failures as you normally would for any
 builder or tester.
 
+### UI Strings & Localization
+The strings for the metainstaller live in the //chrome/app/chromium_strings.grd
+and //chrome/app/google_chrome_strings.grd files. This allows the updater
+strings to utilize the Chromium repo's translation process instead of generating
+its own. Having it in existing grd files also eliminates the need to onboard
+updater specific grd files.
+
+During the build process, the updater strings are embedded directly into the
+metainstaller binary via `generate_embedded_i18n`. `generate_embedded_i18n` also
+allows an `extractor_datafile`, which can define specific strings to pick out
+from the originating grd file. This way, the metainstaller only has the strings
+specific to the updater and not any of the other strings within the grd file.
+When the `generate_embedded_i18n` is complete, it generates an
+`updater_installer_strings.h` header, which contains macro definitions of the
+message ids and the offsets. The strings are mapped with their var name appended
+with `_BASE`. Then the  `_BASE` appended macros are defined to be the first
+localization id in the list, in which case it is `_AF`.
+
+An example from the `updater_installer_strings.h`
+```
+#define IDS_BUNDLE_INSTALLED_SUCCESSFULLY_AF 1600
+#define IDS_BUNDLE_INSTALLED_SUCCESSFULLY_AM 1601
+
+...
+
+#define IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE IDS_BUNDLE_INSTALLED_SUCCESSFULLY_AF
+
+...
+
+#define DO_STRING_MAPPING \
+  HANDLE_STRING(IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE, IDS_BUNDLE_INSTALLED_SUCCESSFULLY) \
+```
+
+Within the metainstaller, an l10_util.h/cc has three functions to get localized
+strings.
+```
+GetLocalizedString(int base_message_id)
+GetLocalizedStringF(int base_message_id, const std::wstring& replacement)
+GetLocalizedStringF(int base_message_id, std::vector<std::wstring> replacements)
+```
+
+One function for getting the literal string and two functions to get formatted
+strings. `GetLocalizedString()` uses the base id plus the offset based on the
+language to look through the binary's string table to get the correct, localized
+string. The formatted strings utilize GetLocalizedString() to get the string and
+then uses `base::ReplaceStringPlaceholders()` to remove the `$i` placeholders
+within the string. With regards to picking the correct language to utilize for
+the localized string, `base::win::i18n::GetUserPreferredUILanguageList()` is
+used to get the preferred UI languages from MUI. If there are multiple languages
+in the list, the first language in the list is picked.
+
+#### Steps to add a new UI String to the updater
+
+* Add the string to chrome/app/chromium_strings.grd and
+chrome/app/google_chrome_strings.grd. For example:
+```
+  <message name="IDS_NO_NETWORK_PRESENT_ERROR"
+           desc="Error message displayed in the main dialog when the Updater is unable to connect to the network.">
+    Unable to connect to the Internet. If you use a firewall, please allowlist <ph name="PRODUCT_EXE_NAME">$1<ex>ChromiumUpdater.exe</ex></ph>.
+  </message>
+```
+* Add the identifier for the string, for example `IDS_NO_NETWORK_PRESENT_ERROR`,
+in chrome/updater/win/ui/resources/create_metainstaller_string_rc.py.
+* Use the string identifier in the code. For example:
+```
+  GetLocalizedStringF(IDS_NO_NETWORK_PRESENT_ERROR_BASE, L"updater.exe");
+```
+* Add tests for the new string in the UI if applicable.
+* Capture a screenshot of the UI with the new string.
+* Save the screenshot as chrome\app\chromium_strings_grd\IDS_NO_NETWORK_PRESENT_ERROR.png and chrome\app\google_chrome_strings_grd\IDS_NO_NETWORK_PRESENT_ERROR.png.
+* Run `python3 tools/translation/upload_screenshots.py`
+* This will generate chrome\app\chromium_strings_grd\IDS_NO_NETWORK_PRESENT_ERROR.png.sha1.
+* Add this file to your CL. Do not add the actual image to your CL.
+* Upload the image to the crbug and delete it from your local enlistment.
+
+If tools/translation/upload_screenshots.py encounters the following error:
+`ServiceException: 401 Anonymous caller does not have storage.objects.list access to the Google Cloud Storage bucket. Permission 'storage.objects.list' denied on resource (or it may not exist).`
+
+see crbug.com/1491876 for a resolution or workaround.
+
 ## Troubleshooting
 
 ### Build errors
