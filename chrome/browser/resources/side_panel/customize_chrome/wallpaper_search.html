@@ -4,13 +4,17 @@
   }
 
   .content {
-    padding: 16px;
+    margin: 16px;
   }
 
   #btnContainer {
     display: flex;
     justify-content: flex-end;
     margin-top: 16px;
+  }
+
+  .sp-hr {
+    margin: 16px 0;
   }
 </style>
 <div class="sp-card">
@@ -34,6 +38,7 @@
         Search
       </cr-button>
     </div>
+    <hr class="sp-hr">
     <template is="dom-repeat" items="[[results_]]">
       <img src="data:image/png;base64,[[item]]">
       </img>
