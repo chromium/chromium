@@ -136,24 +136,21 @@ public class KeyboardAccessoryData {
      * The most prominent example hereof is the "Generate Password" action.
      */
     public static final class Action {
-        private final String mCaption;
         private final Callback<Action> mActionCallback;
         private final Callback<Action> mLongPressCallback;
         private @AccessoryAction int mType;
 
-        public Action(String caption, @AccessoryAction int type, Callback<Action> actionCallback) {
-            this(caption, type, actionCallback, null);
+        public Action(@AccessoryAction int type, Callback<Action> actionCallback) {
+            this(type, actionCallback, null);
         }
-        public Action(String caption, @AccessoryAction int type, Callback<Action> actionCallback,
+
+        public Action(
+                @AccessoryAction int type,
+                Callback<Action> actionCallback,
                 @Nullable Callback<Action> longPressCallback) {
-            mCaption = caption;
             mActionCallback = actionCallback;
             mLongPressCallback = longPressCallback;
             mType = type;
-        }
-
-        public String getCaption() {
-            return mCaption;
         }
 
         public Callback<Action> getCallback() {
@@ -181,8 +178,11 @@ public class KeyboardAccessoryData {
                 case AccessoryAction.MANAGE_PASSWORDS:
                     typeName = "MANAGE_PASSWORDS";
                     break;
+                case AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY:
+                    typeName = "CREDMAN_CONDITIONAL_UI_REENTRY";
+                    break;
             }
-            return "'" + mCaption + "' of type " + typeName;
+            return typeName;
         }
     }
 

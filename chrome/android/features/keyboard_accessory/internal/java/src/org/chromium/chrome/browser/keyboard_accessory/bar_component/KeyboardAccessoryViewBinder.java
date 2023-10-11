@@ -37,6 +37,7 @@ class KeyboardAccessoryViewBinder {
     static BarItemViewHolder create(ViewGroup parent, @BarItem.Type int viewType) {
         switch (viewType) {
             case BarItem.Type.ACTION_BUTTON:
+            case BarItem.Type.ACTION_CHIP:
                 return new BarItemTextViewHolder(parent, R.layout.keyboard_accessory_action);
             case BarItem.Type.SUGGESTION:
                 return new BarItemTextViewHolder(parent, R.layout.keyboard_accessory_chip);
@@ -80,7 +81,7 @@ class KeyboardAccessoryViewBinder {
         public void bind(BarItem barItem, TextView textView) {
             KeyboardAccessoryData.Action action = barItem.getAction();
             assert action != null : "Tried to bind item without action. Chose a wrong ViewHolder?";
-            textView.setText(action.getCaption());
+            textView.setText(barItem.getCaptionId());
             textView.setOnClickListener(view -> action.getCallback().onResult(action));
         }
     }

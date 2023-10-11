@@ -501,17 +501,22 @@ public class ManualFillingTestHelper {
                 String descriptionToMatch = view.getContext().getString(descriptionResId);
                 if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
                     KeyboardAccessoryButtonGroupView buttonGroupView =
-                        (KeyboardAccessoryButtonGroupView) view;
-                    for (int buttonIndex = 0; buttonIndex < buttonGroupView.getButtons().size(); buttonIndex++) {
-                        final ChromeImageButton button = buttonGroupView.getButtons().get(buttonIndex);
+                            (KeyboardAccessoryButtonGroupView) view;
+                    for (int buttonIndex = 0;
+                            buttonIndex < buttonGroupView.getButtons().size();
+                            buttonIndex++) {
+                        final ChromeImageButton button =
+                                buttonGroupView.getButtons().get(buttonIndex);
                         if (descriptionToMatch.equals(button.getContentDescription())) {
                             PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, button::performClick);
                             return;
                         }
                     }
                     throw new PerformException.Builder()
-                        .withCause(new Throwable("No button with description: " + descriptionToMatch))
-                        .build();
+                            .withCause(
+                                    new Throwable(
+                                            "No button with description: " + descriptionToMatch))
+                            .build();
                 }
                 TabLayout tabLayout = (TabLayout) view;
                 for (int tabIndex = 0; tabIndex < tabLayout.getTabCount(); tabIndex++) {
@@ -616,11 +621,14 @@ public class ManualFillingTestHelper {
                 new PropertyProvider<>(AccessoryAction.GENERATE_PASSWORD_AUTOMATIC);
         getManualFillingCoordinator().registerActionProvider(
                 mWebContentsRef.get(), generationActionProvider);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            generationActionProvider.notifyObservers(new KeyboardAccessoryData.Action[] {
-                    new KeyboardAccessoryData.Action("Generate Password",
-                            AccessoryAction.GENERATE_PASSWORD_AUTOMATIC, result -> {})});
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    generationActionProvider.notifyObservers(
+                            new KeyboardAccessoryData.Action[] {
+                                new KeyboardAccessoryData.Action(
+                                        AccessoryAction.GENERATE_PASSWORD_AUTOMATIC, result -> {})
+                            });
+                });
     }
 
     public void signalAutoGenerationStatus(boolean available) {

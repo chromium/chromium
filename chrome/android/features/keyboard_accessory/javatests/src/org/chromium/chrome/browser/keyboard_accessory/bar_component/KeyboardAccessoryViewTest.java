@@ -16,7 +16,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.AUTOFILL_SUGGESTION;
+import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.GENERATE_PASSWORD_AUTOMATIC;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
@@ -121,16 +121,18 @@ public class KeyboardAccessoryViewTest {
     @MediumTest
     public void testClickableActionAddedWhenChangingModel() {
         final AtomicReference<Boolean> buttonClicked = new AtomicReference<>();
-        final BarItem testItem = new BarItem(BarItem.Type.ACTION_BUTTON,
-                new Action("Test Button", GENERATE_PASSWORD_AUTOMATIC,
-                        action -> buttonClicked.set(true)));
+        final BarItem testItem =
+                new BarItem(
+                        BarItem.Type.ACTION_BUTTON,
+                        new Action(GENERATE_PASSWORD_AUTOMATIC, action -> buttonClicked.set(true)),
+                        R.string.password_generation_accessory_button);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.set(VISIBLE, true);
             mModel.get(BAR_ITEMS).add(testItem);
         });
 
-        onViewWaiting(withText("Test Button")).perform(click());
+        onViewWaiting(withText(R.string.password_generation_accessory_button)).perform(click());
 
         assertTrue(buttonClicked.get());
     }
@@ -138,56 +140,76 @@ public class KeyboardAccessoryViewTest {
     @Test
     @MediumTest
     public void testCanAddSingleButtons() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(new BarItem[] {
-                    new BarItem(BarItem.Type.ACTION_BUTTON,
-                            new Action("First", GENERATE_PASSWORD_AUTOMATIC, action -> {})),
-                    new BarItem(BarItem.Type.SUGGESTION,
-                            new Action("Second", AUTOFILL_SUGGESTION, action -> {}))});
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS)
+                            .set(
+                                    new BarItem[] {
+                                        new BarItem(
+                                                BarItem.Type.ACTION_BUTTON,
+                                                new Action(
+                                                        GENERATE_PASSWORD_AUTOMATIC, action -> {}),
+                                                R.string.password_generation_accessory_button)
+                                    });
+                });
 
-        onViewWaiting(withText("First"));
-        onView(withText("First")).check(matches(isDisplayed()));
-        onView(withText("Second")).check(matches(isDisplayed()));
+        onViewWaiting(withText(R.string.password_generation_accessory_button));
+        onView(withText(R.string.password_generation_accessory_button))
+                .check(matches(isDisplayed()));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.get(BAR_ITEMS).add(new BarItem(BarItem.Type.ACTION_BUTTON,
-                    new Action("Third", GENERATE_PASSWORD_AUTOMATIC, action -> {})));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.get(BAR_ITEMS)
+                            .add(
+                                    new BarItem(
+                                            BarItem.Type.ACTION_CHIP,
+                                            new Action(
+                                                    CREDMAN_CONDITIONAL_UI_REENTRY, action -> {}),
+                                            R.string.more_passkeys));
+                });
 
-        onViewWaiting(withText("Third"));
-        onView(withText("First")).check(matches(isDisplayed()));
-        onView(withText("Second")).check(matches(isDisplayed()));
-        onView(withText("Third")).check(matches(isDisplayed()));
+        onViewWaiting(withText(R.string.more_passkeys));
+        onView(withText(R.string.password_generation_accessory_button))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.more_passkeys)).check(matches(isDisplayed()));
     }
 
     @Test
     @MediumTest
     public void testCanRemoveSingleButtons() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(new BarItem[] {
-                    new BarItem(BarItem.Type.ACTION_BUTTON,
-                            new Action("First", GENERATE_PASSWORD_AUTOMATIC, action -> {})),
-                    new BarItem(BarItem.Type.ACTION_BUTTON,
-                            new Action("Second", GENERATE_PASSWORD_AUTOMATIC, action -> {})),
-                    new BarItem(BarItem.Type.ACTION_BUTTON,
-                            new Action("Third", GENERATE_PASSWORD_AUTOMATIC, action -> {}))});
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS)
+                            .set(
+                                    new BarItem[] {
+                                        new BarItem(
+                                                BarItem.Type.ACTION_BUTTON,
+                                                new Action(
+                                                        GENERATE_PASSWORD_AUTOMATIC, action -> {}),
+                                                R.string.password_generation_accessory_button),
+                                        new BarItem(
+                                                BarItem.Type.ACTION_CHIP,
+                                                new Action(
+                                                        CREDMAN_CONDITIONAL_UI_REENTRY,
+                                                        action -> {}),
+                                                R.string.more_passkeys),
+                                    });
+                });
 
-        onViewWaiting(withText("First"));
-        onView(withText("First")).check(matches(isDisplayed()));
-        onView(withText("Second")).check(matches(isDisplayed()));
-        onView(withText("Third")).check(matches(isDisplayed()));
+        onViewWaiting(withText(R.string.password_generation_accessory_button));
+        onView(withText(R.string.password_generation_accessory_button))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.more_passkeys)).check(matches(isDisplayed()));
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.get(BAR_ITEMS).remove(mModel.get(BAR_ITEMS).get(1)));
 
         ViewUtils.waitForViewCheckingState(
-                withText("Second"), VIEW_INVISIBLE | VIEW_GONE | VIEW_NULL);
-        onView(withText("First")).check(matches(isDisplayed()));
-        onView(withText("Second")).check(doesNotExist());
-        onView(withText("Third")).check(matches(isDisplayed()));
+                withText(R.string.more_passkeys), VIEW_INVISIBLE | VIEW_GONE | VIEW_NULL);
+        onView(withText(R.string.password_generation_accessory_button))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.more_passkeys)).check(doesNotExist());
     }
 }

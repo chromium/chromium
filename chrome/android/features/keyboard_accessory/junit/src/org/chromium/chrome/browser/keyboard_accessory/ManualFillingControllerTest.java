@@ -210,11 +210,11 @@ public class ManualFillingControllerTest {
 
         /**
          * Uses the provider as returned by {@link #getActionListProvider()} to provide an Action.
-         * @param actionCaption The caption for the provided generation action.
+         *
+         * @param actionType The type for the provided generation action.
          */
-        void provideAction(String actionCaption) {
-            provideActions(new Action[] {
-                    new Action(actionCaption, GENERATE_PASSWORD_AUTOMATIC, action -> {})});
+        void provideAction(@AccessoryAction int actionType) {
+            provideActions(new Action[] {new Action(actionType, action -> {})});
         }
 
         /**
@@ -449,8 +449,10 @@ public class ManualFillingControllerTest {
         mController.registerActionProvider(
                 mLastMockWebContents, firstTabHelper.getActionListProvider());
         getStateForBrowserTab().getActionsProvider().addObserver(firstTabHelper::record);
-        firstTabHelper.provideAction("Generate Password");
-        assertThat(firstTabHelper.getFirstRecordedAction().getCaption(), is("Generate Password"));
+        firstTabHelper.provideAction(AccessoryAction.GENERATE_PASSWORD_AUTOMATIC);
+        assertThat(
+                firstTabHelper.getFirstRecordedAction().getActionType(),
+                is(AccessoryAction.GENERATE_PASSWORD_AUTOMATIC));
 
         // Simulate creating a second tab:
         Tab secondTab = addBrowserTab(mMediator, 2222, firstTab);
@@ -462,7 +464,9 @@ public class ManualFillingControllerTest {
 
         // Simulate switching back to the first tab:
         switchBrowserTab(mMediator, /*from=*/secondTab, /*to=*/firstTab);
-        assertThat(firstTabHelper.getFirstRecordedAction().getCaption(), is("Generate Password"));
+        assertThat(
+                firstTabHelper.getFirstRecordedAction().getActionType(),
+                is(AccessoryAction.GENERATE_PASSWORD_AUTOMATIC));
 
         // And back to the second:
         switchBrowserTab(mMediator, /*from=*/firstTab, /*to=*/secondTab);
@@ -592,8 +596,10 @@ public class ManualFillingControllerTest {
         mController.registerActionProvider(
                 mLastMockWebContents, secondTabHelper.getActionListProvider());
         getStateForBrowserTab().getActionsProvider().addObserver(secondTabHelper::record);
-        secondTabHelper.provideAction("Test Action");
-        assertThat(secondTabHelper.getFirstRecordedAction().getCaption(), is("Test Action"));
+        secondTabHelper.provideAction(AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY);
+        assertThat(
+                secondTabHelper.getFirstRecordedAction().getActionType(),
+                is(AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY));
 
         // Switching back should notify the accessory about the still empty state of the accessory.
         switchBrowserTab(mMediator, secondTab, tab);
@@ -621,18 +627,22 @@ public class ManualFillingControllerTest {
         getStateForBrowserTab().getActionsProvider().addObserver(secondTabHelper::record);
 
         // And provide data to the active browser tab.
-        secondTabHelper.provideAction("Test Action");
+        secondTabHelper.provideAction(AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY);
         // Now, have the delayed provider provide data for the backgrounded browser tab.
-        delayedTabHelper.provideAction("Delayed");
+        delayedTabHelper.provideAction(AccessoryAction.GENERATE_PASSWORD_AUTOMATIC);
 
         // The current tab should not be influenced by the delayed provider.
         assertThat(secondTabHelper.getRecordedActions().size(), is(1));
-        assertThat(secondTabHelper.getFirstRecordedAction().getCaption(), is("Test Action"));
+        assertThat(
+                secondTabHelper.getFirstRecordedAction().getActionType(),
+                is(AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY));
 
         // Switching tabs back should only show the action that was received in the background.
         switchBrowserTab(mMediator, secondTab, delayedTab);
         assertThat(delayedTabHelper.getRecordedActions().size(), is(1));
-        assertThat(delayedTabHelper.getFirstRecordedAction().getCaption(), is("Delayed"));
+        assertThat(
+                delayedTabHelper.getFirstRecordedAction().getActionType(),
+                is(AccessoryAction.GENERATE_PASSWORD_AUTOMATIC));
     }
 
     @Test
@@ -655,7 +665,7 @@ public class ManualFillingControllerTest {
                 .addObserver(firstTabHelper::record);
         getStateForBrowserTab().getActionsProvider().addObserver(firstTabHelper::record);
         firstTabHelper.providePasswordSheet("FirstPassword");
-        firstTabHelper.provideAction("2BDestroyed");
+        firstTabHelper.provideAction(AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY);
 
         // Create and switch to a new tab: (because destruction shouldn't rely on tab to be active)
         Tab secondTab = addBrowserTab(mMediator, 2222, firstTab);
@@ -669,11 +679,13 @@ public class ManualFillingControllerTest {
                 .addObserver(secondTabHelper::record);
         getStateForBrowserTab().getActionsProvider().addObserver(secondTabHelper::record);
         secondTabHelper.providePasswordSheet("SecondPassword");
-        secondTabHelper.provideAction("2BKept");
+        secondTabHelper.provideAction(AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY);
 
         // The newly created tab should be valid.
         assertThat(secondTabHelper.getFirstRecordedPassword(), is("SecondPassword"));
-        assertThat(secondTabHelper.getFirstRecordedAction().getCaption(), is("2BKept"));
+        assertThat(
+                secondTabHelper.getFirstRecordedAction().getActionType(),
+                is(AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY));
 
         // Request destruction of the first Tab:
         mMediator.getTabObserverForTesting().onDestroyed(firstTab);
@@ -683,7 +695,9 @@ public class ManualFillingControllerTest {
         verify(secondSheetUpdater).requestSheet(AccessoryTabType.PASSWORDS);
         secondTabHelper.providePasswordSheet("SecondPassword");
         assertThat(secondTabHelper.getFirstRecordedPassword(), is("SecondPassword"));
-        assertThat(secondTabHelper.getFirstRecordedAction().getCaption(), is("2BKept"));
+        assertThat(
+                secondTabHelper.getFirstRecordedAction().getActionType(),
+                is(AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY));
         assertThat(getStateForBrowserTab(), is(mCache.getStateFor(secondTab)));
         // ... but the other tab's data should be gone.
         assertThat(mCache.getStateFor(firstTab).getActionsProvider(), nullValue());

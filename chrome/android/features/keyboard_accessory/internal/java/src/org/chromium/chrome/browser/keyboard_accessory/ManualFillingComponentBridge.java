@@ -284,8 +284,7 @@ class ManualFillingComponentBridge {
     }
 
     private Action[] createSingleAction(@AccessoryAction int actionType) {
-        return new Action[] {
-                new Action(getActionTitle(actionType), actionType, this::onActionSelected)};
+        return new Action[] {new Action(actionType, this::onActionSelected)};
     }
 
     private PropertyProvider<Action[]> getOrCreateActionProvider(@AccessoryAction int actionType) {
@@ -305,29 +304,6 @@ class ManualFillingComponentBridge {
         ManualFillingMetricsRecorder.recordActionSelected(action.getActionType());
         ManualFillingComponentBridgeJni.get().onOptionSelected(
                 mNativeView, ManualFillingComponentBridge.this, action.getActionType());
-    }
-
-    private String getActionTitle(@AccessoryAction int actionType) {
-        switch (actionType) {
-            case AccessoryAction.GENERATE_PASSWORD_AUTOMATIC:
-                return mWindowAndroid.getApplicationContext().getString(
-                        R.string.password_generation_accessory_button);
-            case AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY:
-                return mWindowAndroid.getApplicationContext().getString(
-                        R.string.credman_reentry_accessory_button);
-            case AccessoryAction.AUTOFILL_SUGGESTION:
-            case AccessoryAction.COUNT:
-            case AccessoryAction.TOGGLE_SAVE_PASSWORDS:
-            case AccessoryAction.USE_OTHER_PASSWORD:
-            case AccessoryAction.GENERATE_PASSWORD_MANUAL:
-            case AccessoryAction.MANAGE_ADDRESSES:
-            case AccessoryAction.MANAGE_CREDIT_CARDS:
-            case AccessoryAction.MANAGE_PASSWORDS:
-            case AccessoryAction.CROSS_DEVICE_PASSKEY:
-                assert false : "No caption defined for accessory action: " + actionType;
-        }
-        assert false : "Define a title for accessory action: " + actionType;
-        return "";
     }
 
     @NativeMethods

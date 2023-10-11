@@ -214,9 +214,6 @@
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_SWIPE_FOR_MORE" desc="Text in In-Product-Help bubble suggesting to scroll the accessory to reveal more suggestions.">
         Swipe to see more suggestions
       </message>
-      <message name="IDS_CREDMAN_REENTRY_ACCESSORY_BUTTON" desc="Text for the button used to show platform passkeys and passwords again.">
-        Choose a sign-in
-      </message>
       <message name="IDS_PASSWORD_GENERATION_ACCESSORY_BUTTON" desc="Text for the button used to generate a password.">
         Suggest strong password
       </message>
@@ -240,6 +237,12 @@
       </message>
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_PAYMENT_OFFER" desc="Text used for the In-Product-Help bubble suggesting that the current credit card suggestion has a card linked offer attached.">
         Cashback linked
+      </message>
+      <message name="IDS_MORE_PASSKEYS" desc="Title of the chip that opens Android Credential Manager UI. The user can select passkeys from other providers there.">
+        More passkeys
+      </message>
+      <message name="IDS_SELECT_PASSKEY" desc="Title of the button that opens Android Credential Manager UI when there are no passkeys in the keyboard accessory. The user can select passkeys from other providers there.">
+        Select passkey
       </message>
     </messages>
   </release>

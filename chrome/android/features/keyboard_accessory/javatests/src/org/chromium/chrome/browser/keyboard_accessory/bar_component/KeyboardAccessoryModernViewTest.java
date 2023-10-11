@@ -87,7 +87,6 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
-import org.chromium.ui.DropdownItem;
 import org.chromium.ui.ViewProvider;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -273,17 +272,27 @@ public class KeyboardAccessoryModernViewTest {
     @MediumTest
     public void testAddsLongClickableAutofillSuggestions() {
         AtomicReference<Boolean> clickRecorded = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(new BarItem[] {
-                    new AutofillBarItem(
-                            new AutofillSuggestion("Johnathan", "Smith", "", DropdownItem.NO_ICON,
-                                    false, PopupItemId.ADDRESS_ENTRY, false, false, false,
-                                    /* featureForIPH= */ ""),
-                            new Action("Unused", AUTOFILL_SUGGESTION,
-                                    result -> {}, result -> clickRecorded.set(true))),
-                    createSheetOpener()});
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS)
+                            .set(
+                                    new BarItem[] {
+                                        new AutofillBarItem(
+                                                new AutofillSuggestion.Builder()
+                                                        .setLabel("Johnathan")
+                                                        .setSubLabel("Smith")
+                                                        .setItemTag("")
+                                                        .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                                                        .setFeatureForIPH("")
+                                                        .build(),
+                                                new Action(
+                                                        AUTOFILL_SUGGESTION,
+                                                        result -> {},
+                                                        result -> clickRecorded.set(true))),
+                                        createSheetOpener()
+                                    });
+                });
 
         onViewWaiting(withText("Johnathan")).perform(longClick());
 
@@ -316,10 +325,15 @@ public class KeyboardAccessoryModernViewTest {
     @MediumTest
     public void testDismissesPasswordEducationBubbleOnFilling() {
         AutofillBarItem itemWithIPH =
-                new AutofillBarItem(new AutofillSuggestion("Johnathan", "Smith", /*itemTag=*/"",
-                                            DropdownItem.NO_ICON, false, PopupItemId.PASSWORD_ENTRY,
-                                            false, false, false, /* featureForIPH= */ ""),
-                        new KeyboardAccessoryData.Action("", AUTOFILL_SUGGESTION, unused -> {}));
+                new AutofillBarItem(
+                        new AutofillSuggestion.Builder()
+                                .setLabel("Johnathan")
+                                .setSubLabel("Smith")
+                                .setItemTag("")
+                                .setPopupItemId(PopupItemId.PASSWORD_ENTRY)
+                                .setFeatureForIPH("")
+                                .build(),
+                        new KeyboardAccessoryData.Action(AUTOFILL_SUGGESTION, unused -> {}));
         itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE);
 
         TestTracker tracker = new TestTracker();
@@ -345,10 +359,15 @@ public class KeyboardAccessoryModernViewTest {
     @MediumTest
     public void testDismissesAddressEducationBubbleOnFilling() {
         AutofillBarItem itemWithIPH =
-                new AutofillBarItem(new AutofillSuggestion("Johnathan", "Smith", /*itemTag=*/"",
-                                            DropdownItem.NO_ICON, false, PopupItemId.ADDRESS_ENTRY,
-                                            false, false, false, /* featureForIPH= */ ""),
-                        new KeyboardAccessoryData.Action("", AUTOFILL_SUGGESTION, unused -> {}));
+                new AutofillBarItem(
+                        new AutofillSuggestion.Builder()
+                                .setLabel("Johnathan")
+                                .setSubLabel("Smith")
+                                .setItemTag("")
+                                .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                                .setFeatureForIPH("")
+                                .build(),
+                        new KeyboardAccessoryData.Action(AUTOFILL_SUGGESTION, unused -> {}));
         itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE);
 
         TestTracker tracker = new TestTracker();
@@ -371,11 +390,16 @@ public class KeyboardAccessoryModernViewTest {
     @Test
     @MediumTest
     public void testDismissesPaymentEducationBubbleOnFilling() {
-        AutofillBarItem itemWithIPH = new AutofillBarItem(
-                new AutofillSuggestion("Johnathan", "Smith", /*itemTag=*/"", DropdownItem.NO_ICON,
-                        false, PopupItemId.CREDIT_CARD_ENTRY, false, false, false,
-                        /* featureForIPH= */ ""),
-                new KeyboardAccessoryData.Action("", AUTOFILL_SUGGESTION, unused -> {}));
+        AutofillBarItem itemWithIPH =
+                new AutofillBarItem(
+                        new AutofillSuggestion.Builder()
+                                .setLabel("Johnathan")
+                                .setSubLabel("Smith")
+                                .setItemTag("")
+                                .setPopupItemId(PopupItemId.CREDIT_CARD_ENTRY)
+                                .setFeatureForIPH("")
+                                .build(),
+                        new KeyboardAccessoryData.Action(AUTOFILL_SUGGESTION, unused -> {}));
         itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE);
 
         TestTracker tracker = new TestTracker();
@@ -430,11 +454,17 @@ public class KeyboardAccessoryModernViewTest {
     @MediumTest
     public void testDismissesPaymentOfferEducationBubbleOnFilling() {
         String itemTag = "Cashback linked";
-        AutofillBarItem itemWithIPH = new AutofillBarItem(
-                new AutofillSuggestion("Johnathan", "Smith", itemTag, R.drawable.ic_offer_tag,
-                        false, PopupItemId.CREDIT_CARD_ENTRY, false, false, false,
-                        /* featureForIPH= */ ""),
-                new KeyboardAccessoryData.Action("", AUTOFILL_SUGGESTION, unused -> {}));
+        AutofillBarItem itemWithIPH =
+                new AutofillBarItem(
+                        new AutofillSuggestion.Builder()
+                                .setLabel("Johnathan")
+                                .setSubLabel("Smith")
+                                .setItemTag(itemTag)
+                                .setIconId(R.drawable.ic_offer_tag)
+                                .setPopupItemId(PopupItemId.CREDIT_CARD_ENTRY)
+                                .setFeatureForIPH("")
+                                .build(),
+                        new KeyboardAccessoryData.Action(AUTOFILL_SUGGESTION, unused -> {}));
         itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE);
 
         TestTracker tracker = new TestTracker();
@@ -496,9 +526,12 @@ public class KeyboardAccessoryModernViewTest {
         when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(any(), any()))
                 .thenReturn(Optional.of(TEST_CARD_ART_IMAGE));
         // Create an autofill suggestion and set the `customIconUrl`.
-        AutofillBarItem customIconItem = new AutofillBarItem(
-                getDefaultAutofillSuggestionBuilder().setCustomIconUrl(customIconUrl).build(),
-                new KeyboardAccessoryData.Action("", AUTOFILL_SUGGESTION, unused -> {}));
+        AutofillBarItem customIconItem =
+                new AutofillBarItem(
+                        getDefaultAutofillSuggestionBuilder()
+                                .setCustomIconUrl(customIconUrl)
+                                .build(),
+                        new KeyboardAccessoryData.Action(AUTOFILL_SUGGESTION, unused -> {}));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.set(VISIBLE, true);
@@ -527,9 +560,12 @@ public class KeyboardAccessoryModernViewTest {
         // to null to indicate that the image is not present in the cache.
         when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(any(), any()))
                 .thenReturn(Optional.empty());
-        AutofillBarItem customIconItem = new AutofillBarItem(
-                getDefaultAutofillSuggestionBuilder().setCustomIconUrl(customIconUrl).build(),
-                new KeyboardAccessoryData.Action("", AUTOFILL_SUGGESTION, unused -> {}));
+        AutofillBarItem customIconItem =
+                new AutofillBarItem(
+                        getDefaultAutofillSuggestionBuilder()
+                                .setCustomIconUrl(customIconUrl)
+                                .build(),
+                        new KeyboardAccessoryData.Action(AUTOFILL_SUGGESTION, unused -> {}));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.set(VISIBLE, true);
@@ -552,8 +588,9 @@ public class KeyboardAccessoryModernViewTest {
     public void testCustomIconUrlNotSet_defaultIconSetOnChipView() throws InterruptedException {
         // Create an autofill suggestion without setting the `customIconUrl`.
         AutofillBarItem itemWithoutCustomIconUrl =
-                new AutofillBarItem(getDefaultAutofillSuggestionBuilder().build(),
-                        new KeyboardAccessoryData.Action("", AUTOFILL_SUGGESTION, unused -> {}));
+                new AutofillBarItem(
+                        getDefaultAutofillSuggestionBuilder().build(),
+                        new KeyboardAccessoryData.Action(AUTOFILL_SUGGESTION, unused -> {}));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.set(VISIBLE, true);
@@ -628,9 +665,14 @@ public class KeyboardAccessoryModernViewTest {
 
     private AutofillBarItem createAutofillBarItem(String label, Callback<Action> chipCallback) {
         return new AutofillBarItem(
-                new AutofillSuggestion(label, "Smith", /*itemTag=*/"", DropdownItem.NO_ICON, false,
-                        PopupItemId.ADDRESS_ENTRY, false, false, false, /* featureForIPH= */ ""),
-                new KeyboardAccessoryData.Action("Unused", AUTOFILL_SUGGESTION, chipCallback));
+                new AutofillSuggestion.Builder()
+                        .setLabel(label)
+                        .setSubLabel("Smith")
+                        .setItemTag("")
+                        .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                        .setFeatureForIPH("")
+                        .build(),
+                new KeyboardAccessoryData.Action(AUTOFILL_SUGGESTION, chipCallback));
     }
 
     private SheetOpenerBarItem createSheetOpener() {

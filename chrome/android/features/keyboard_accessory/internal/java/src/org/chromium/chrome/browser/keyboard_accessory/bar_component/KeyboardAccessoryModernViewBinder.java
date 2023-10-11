@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAcce
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SheetOpenerBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryViewBinder.BarItemViewHolder;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.PopupItemId;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -45,6 +46,8 @@ class KeyboardAccessoryModernViewBinder {
             case BarItem.Type.ACTION_BUTTON:
                 return new KeyboardAccessoryViewBinder.BarItemTextViewHolder(
                         parent, R.layout.keyboard_accessory_action_modern);
+            case BarItem.Type.ACTION_CHIP:
+                return new BarItemActionChipViewHolder(parent);
         }
         return KeyboardAccessoryViewBinder.create(parent, viewType);
     }
@@ -130,6 +133,19 @@ class KeyboardAccessoryModernViewBinder {
                             /* showCustomIcon= */ true),
                     /* tintWithTextColor= */ false);
             TraceEvent.end("BarItemChipViewHolder#bind");
+        }
+    }
+
+    static class BarItemActionChipViewHolder extends BarItemViewHolder<BarItem, ChipView> {
+        BarItemActionChipViewHolder(ViewGroup parent) {
+            super(parent, R.layout.keyboard_accessory_suggestion);
+        }
+
+        @Override
+        protected void bind(BarItem item, ChipView chipView) {
+            Action action = item.getAction();
+            chipView.getPrimaryTextView().setText(item.getCaptionId());
+            chipView.setOnClickListener(view -> action.getCallback().onResult(action));
         }
     }
 
