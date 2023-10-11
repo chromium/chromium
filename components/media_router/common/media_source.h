@@ -159,7 +159,7 @@ class MediaSource {
   // used for MediaDialogView to associate the local media session notification
   // with a Reote Playback MediaRoute so that users can control Remote Playback
   // session from GMC.
-  // TODO(crrev.com/c/1491212): remove the `tab_id` field from the MediaSource
+  // TODO(crbug.com/1491212): remove the `tab_id` field from the MediaSource
   // and use the MVC model in GMC to handle Remote Playback UI presentation
   // logic.
   void AppendTabIdToRemotePlaybackUrlQuery(int tab_id);
