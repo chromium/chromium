@@ -34,6 +34,13 @@ void LogDebugInfoToConsole(const std::vector<Profile*>& profiles,
           kDisableLogDebugInfoToConsole)) {
     return;
   }
+
+  // Tell users how to disable this potentially very long log output without
+  // them having to find the code that produces it by themselves.
+  std::string kDisableMessage =
+      base::StrCat({"(you can disable printing this debug info using the --",
+                    kDisableLogDebugInfoToConsole, " command line switch)"});
+
   for (Profile* profile : profiles) {
     if (!AreWebAppsEnabled(profile) ||
         !WebAppProviderFactory::IsServiceCreatedForProfile(profile)) {
@@ -44,8 +51,10 @@ void LogDebugInfoToConsole(const std::vector<Profile*>& profiles,
     WebAppInternalsHandler::BuildDebugInfo(
         profile, base::BindLambdaForTesting([&](base::Value debug_info) {
           LOG(INFO) << "chrome://web-app-internals output for profile "
-                    << profile->GetDebugName() << ":\n"
-                    << debug_info.DebugString();
+                    << profile->GetDebugName() << " " << kDisableMessage
+                    << ":\n"
+                    << debug_info.DebugString() << "\n"
+                    << kDisableMessage;
           debug_info_loop.Quit();
         }));
     debug_info_loop.Run();
