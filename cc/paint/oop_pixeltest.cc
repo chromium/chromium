@@ -717,7 +717,6 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
       make_display_item_list(1, 500.f);
   RasterOptions options(kSize);
   options.target_color_params.color_space = gfx::ColorSpace::CreateSRGBLinear();
-  options.target_color_params.enable_tone_mapping = true;
 
   // Draw using image HDR metadata indicating that 500 is the maximum luminance.
   // The result should map the image to solid white (up to rounding error).

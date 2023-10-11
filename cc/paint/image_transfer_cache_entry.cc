@@ -264,8 +264,6 @@ size_t SafeSizeForTargetColorParams(
         target_color_params->sdr_max_luminance_nits);
     target_color_params_size += PaintOpWriter::SerializedSize(
         target_color_params->hdr_max_luminance_relative);
-    target_color_params_size +=
-        PaintOpWriter::SerializedSize(target_color_params->enable_tone_mapping);
   }
   return target_color_params_size;
 }
@@ -279,7 +277,6 @@ void WriteTargetColorParams(
     writer.Write(target_color_params->color_space.ToSkColorSpace().get());
     writer.Write(target_color_params->sdr_max_luminance_nits);
     writer.Write(target_color_params->hdr_max_luminance_relative);
-    writer.Write(target_color_params->enable_tone_mapping);
   }
 }
 
@@ -302,7 +299,6 @@ bool ReadTargetColorParams(
   target_color_params->color_space = gfx::ColorSpace(*target_color_space);
   reader.Read(&target_color_params->sdr_max_luminance_nits);
   reader.Read(&target_color_params->hdr_max_luminance_relative);
-  reader.Read(&target_color_params->enable_tone_mapping);
   return true;
 }
 
@@ -803,7 +799,6 @@ bool ServiceImageTransferCacheEntry::Deserialize(
 
   // Save the tone curve parameters, if they are to be used.
   use_tone_curve_ = !has_gainmap_ && target_color_params &&
-                    target_color_params->enable_tone_mapping &&
                     gfx::ColorConversionSkFilterCache::UseToneCurve(image_);
   if (use_tone_curve_) {
     tone_curve_sdr_max_luminance_nits_ =

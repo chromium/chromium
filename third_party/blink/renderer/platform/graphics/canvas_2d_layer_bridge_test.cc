@@ -902,7 +902,6 @@ TEST_F(Canvas2DLayerBridgeTest, EnsureCCImageCacheUse) {
       MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kOpaque);
 
   cc::TargetColorParams target_color_params;
-  target_color_params.enable_tone_mapping = false;
   Vector<cc::DrawImage> images = {
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(10, 10)), false,
                     SkIRect::MakeWH(10, 10),
@@ -926,7 +925,6 @@ TEST_F(Canvas2DLayerBridgeTest, EnsureCCImageCacheUseWithColorConversion) {
       MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kOpaque);
 
   cc::TargetColorParams target_color_params;
-  target_color_params.enable_tone_mapping = false;
   Vector<cc::DrawImage> images = {
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(10, 10)), false,
                     SkIRect::MakeWH(10, 10),
