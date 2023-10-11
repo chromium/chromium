@@ -122,7 +122,7 @@ QsBatteryInfoViewBase::~QsBatteryInfoViewBase() {
 }
 
 void QsBatteryInfoViewBase::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kLabelText;
+  node_data->role = ax::mojom::Role::kButton;
   node_data->SetName(
       PowerStatus::Get()->GetAccessibleNameString(/*full_description=*/true));
 }
