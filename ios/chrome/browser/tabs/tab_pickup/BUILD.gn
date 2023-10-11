@@ -15,6 +15,8 @@ source_set("tab_pickup") {
     "//components/prefs",
     "//components/sync_sessions",
     "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/ntp:util",
+    "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

@@ -4,6 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/tabs/tab_pickup/features.h"
@@ -75,6 +76,18 @@ id<GREYMatcher> BannerTitleMatcher(NSString* session_name) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kTabPickupThreshold);
+
+  // In order to present banners on the NTP, the tab resumption feature must be
+  // disabled.
+  if ([self isRunningTest:@selector
+            (testBannerNotDisplayedOnNTPWhenTabResumptionEnbaled)]) {
+    config.features_enabled.push_back(kTabResumption);
+    config.features_enabled.push_back(kMagicStack);
+
+  } else {
+    config.features_disabled.push_back(kTabResumption);
+  }
+
   return config;
 }
 
@@ -94,6 +107,23 @@ id<GREYMatcher> BannerTitleMatcher(NSString* session_name) {
   [ChromeEarlGrey clearSyncServerData];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   [super tearDown];
+}
+
+// Verifies that the TabPickup banner is not displayed on the NTP when the tab
+// resumption feature is enabled.
+- (void)testBannerNotDisplayedOnNTPWhenTabResumptionEnbaled {
+  // Create a distant session with 4 tabs.
+  [DistantTabsAppInterface
+      addSessionToFakeSyncServer:@"Desktop"
+               modifiedTimeDelta:base::Minutes(5)
+                            tabs:[FakeDistantTab
+                                     createFakeTabsForServerURL:self.testServer
+                                                                    ->base_url()
+                                                   numberOfTabs:4]];
+  [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
+
+  // Check that the tabPickup banner is not displayed.
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
 }
 
 // Verifies that the TabPickup banner is correctly displayed if the last tab

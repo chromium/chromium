@@ -10,6 +10,8 @@
 #import "components/sync_sessions/session_sync_service.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/ntp/home/features.h"
+#import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -123,6 +125,13 @@ void TabPickupBrowserAgent::ForeignSessionsChanged() {
   }
 
   if (!active_web_state_ || infobar_in_progress_ || infobar_displayed) {
+    return;
+  }
+
+  // Don't present a tab pickup banner on the NTP if the tab resumption feature
+  // is enabled.
+  if (IsTabResumptionEnabled() &&
+      IsURLNewTabPage(active_web_state_->GetVisibleURL())) {
     return;
   }
 

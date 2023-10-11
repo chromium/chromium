@@ -9,6 +9,7 @@ source_set("eg2_tests") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/tabs/tab_pickup:features",
