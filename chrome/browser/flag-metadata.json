@@ -5476,7 +5476,7 @@
   {
     "name": "media-remoting-without-fullscreen",
     "owners": [ "muyaoxu@google.com", "openscreen-eng@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 140
   },
   {
     "name": "media-route-dial-provider",
