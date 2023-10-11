@@ -173,6 +173,10 @@ class NET_EXPORT UDPSocketPosix {
   // return ERR_IO_PENDING.
   int SetDoNotFragment();
 
+  // Requests that packets received by this socket have the ECN bit set. Returns
+  // a network error code if there was a problem.
+  int SetRecvEcn();
+
   // If |confirm| is true, then the MSG_CONFIRM flag will be passed to
   // subsequent writes if it's supported by the platform.
   void SetMsgConfirm(bool confirm);

@@ -221,6 +221,10 @@ int UDPClientSocket::SetDoNotFragment() {
   return socket_.SetDoNotFragment();
 }
 
+int UDPClientSocket::SetRecvEcn() {
+  return socket_.SetRecvEcn();
+}
+
 void UDPClientSocket::SetMsgConfirm(bool confirm) {
   socket_.SetMsgConfirm(confirm);
 }

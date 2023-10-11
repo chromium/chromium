@@ -75,6 +75,10 @@ int UDPServerSocket::SetDoNotFragment() {
   return socket_.SetDoNotFragment();
 }
 
+int UDPServerSocket::SetRecvEcn() {
+  return socket_.SetRecvEcn();
+}
+
 void UDPServerSocket::SetMsgConfirm(bool confirm) {
   return socket_.SetMsgConfirm(confirm);
 }

@@ -149,6 +149,8 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
 
   int SetDoNotFragment() override { return net::OK; }
 
+  int SetRecvEcn() override { return net::OK; }
+
   void SetMsgConfirm(bool confirm) override {}
 
   void ReceivePacket(const net::IPEndPoint& address,

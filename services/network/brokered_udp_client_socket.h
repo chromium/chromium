@@ -99,6 +99,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) BrokeredUdpClientSocket
   int SetReceiveBufferSize(int32_t size) override;
   int SetSendBufferSize(int32_t size) override;
   int SetDoNotFragment() override;
+  int SetRecvEcn() override;
   void SetMsgConfirm(bool confirm) override;
   const net::NetLogWithSource& NetLog() const override;
 

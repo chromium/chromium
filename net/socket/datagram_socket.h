@@ -45,6 +45,10 @@ class NET_EXPORT_PRIVATE DatagramSocket {
   // return ERR_IO_PENDING.
   virtual int SetDoNotFragment() = 0;
 
+  // Requests that packets received by this socket have the ECN bit set. Returns
+  // a network error code if there was a problem.
+  virtual int SetRecvEcn() = 0;
+
   // If |confirm| is true, then the MSG_CONFIRM flag will be passed to
   // subsequent writes if it's supported by the platform.
   virtual void SetMsgConfirm(bool confirm) = 0;

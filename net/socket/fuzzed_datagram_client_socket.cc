@@ -214,6 +214,10 @@ int FuzzedDatagramClientSocket::SetDoNotFragment() {
   return OK;
 }
 
+int FuzzedDatagramClientSocket::SetRecvEcn() {
+  return OK;
+}
+
 void FuzzedDatagramClientSocket::OnReadComplete(
     net::CompletionOnceCallback callback,
     int result) {

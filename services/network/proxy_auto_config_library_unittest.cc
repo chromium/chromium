@@ -184,6 +184,10 @@ class MockUDPSocket : public net::DatagramClientSocket {
     ADD_FAILURE() << "Called SetDoNotFragment()";
     return net::ERR_UNEXPECTED;
   }
+  int SetRecvEcn() override {
+    ADD_FAILURE() << "Called SetRecvEcn()";
+    return net::ERR_UNEXPECTED;
+  }
   void SetMsgConfirm(bool confirm) override {
     ADD_FAILURE() << "Called SetMsgConfirm()";
   }

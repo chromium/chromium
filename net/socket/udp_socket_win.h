@@ -262,6 +262,10 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
   // return ERR_IO_PENDING.
   int SetDoNotFragment();
 
+  // Requests that packets received by this socket have the ECN bit set. Returns
+  // a network error code if there was a problem.
+  int SetRecvEcn();
+
   // This is a no-op on Windows.
   void SetMsgConfirm(bool confirm);
 

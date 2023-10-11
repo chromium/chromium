@@ -590,6 +590,21 @@ int UDPSocketPosix::SetDoNotFragment() {
 #endif
 }
 
+int UDPSocketPosix::SetRecvEcn() {
+  DCHECK_NE(socket_, kInvalidSocket);
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  int rv;
+  unsigned int ecn = 1;
+  if (addr_family_ == AF_INET6) {
+    rv = setsockopt(socket_, IPPROTO_IPV6, IPV6_RECVTCLASS, &ecn, sizeof(ecn));
+  } else {
+    DCHECK_EQ(addr_family_, AF_INET);
+    rv = setsockopt(socket_, IPPROTO_IP, IP_RECVTOS, &ecn, sizeof(ecn));
+  }
+  return rv == 0 ? OK : MapSystemError(errno);
+}
+
 void UDPSocketPosix::SetMsgConfirm(bool confirm) {
 #if !BUILDFLAG(IS_APPLE)
   if (confirm) {

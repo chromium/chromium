@@ -326,6 +326,12 @@ int BrokeredUdpClientSocket::SetDoNotFragment() {
   return socket_->SetDoNotFragment();
 }
 
+int BrokeredUdpClientSocket::SetRecvEcn() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(socket_);
+  return socket_->SetRecvEcn();
+}
+
 void BrokeredUdpClientSocket::SetMsgConfirm(bool confirm) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   set_msg_confirm_ = confirm;

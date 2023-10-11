@@ -304,6 +304,7 @@ class FuzzedMdnsSocket : public DatagramServerSocket {
   }
   void UseNonBlockingIO() override {}
   int SetDoNotFragment() override { return OK; }
+  int SetRecvEcn() override { return OK; }
   void SetMsgConfirm(bool confirm) override {}
   const NetLogWithSource& NetLog() const override { return net_log_; }
 

@@ -1446,6 +1446,15 @@ void QuicStreamFactory::FinishConnectAndConfigureSocket(
     return;
   }
 
+  if (base::FeatureList::IsEnabled(net::features::kReceiveEcn)) {
+    rv = socket->SetRecvEcn();
+    if (rv != OK) {
+      OnFinishConnectAndConfigureSocketError(
+          std::move(callback), CREATION_ERROR_SETTING_RECEIVE_ECN, rv);
+      return;
+    }
+  }
+
   // Set a buffer large enough to contain the initial CWND's worth of packet
   // to work around the problem with CHLO packets being sent out with the
   // wrong encryption level, when the send buffer is full.
@@ -1528,6 +1537,14 @@ int QuicStreamFactory::ConfigureSocket(DatagramClientSocket* socket,
   if (rv != OK && rv != ERR_NOT_IMPLEMENTED) {
     HistogramCreateSessionFailure(CREATION_ERROR_SETTING_DO_NOT_FRAGMENT);
     return rv;
+  }
+
+  if (base::FeatureList::IsEnabled(net::features::kReceiveEcn)) {
+    rv = socket->SetRecvEcn();
+    if (rv != OK) {
+      HistogramCreateSessionFailure(CREATION_ERROR_SETTING_RECEIVE_ECN);
+      return rv;
+    }
   }
 
   // Set a buffer large enough to contain the initial CWND's worth of packet

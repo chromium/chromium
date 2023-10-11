@@ -1577,6 +1577,10 @@ int MockUDPClientSocket::SetDoNotFragment() {
   return OK;
 }
 
+int MockUDPClientSocket::SetRecvEcn() {
+  return OK;
+}
+
 void MockUDPClientSocket::Close() {
   connected_ = false;
 }

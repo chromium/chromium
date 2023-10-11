@@ -485,6 +485,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSpdyHeadersToHttpResponseUseBuilder);
 // for two weeks on Dev.
 NET_EXPORT BASE_DECLARE_FEATURE(kSpdyHeadersToHttpResponseVerifyCorrectness);
 
+// Enables receiving ECN bit by sockets in Chrome.
+NET_EXPORT BASE_DECLARE_FEATURE(kReceiveEcn);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
