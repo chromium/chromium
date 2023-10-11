@@ -170,11 +170,13 @@ mojom::KeyboardPtr BuildMojomKeyboard(const ui::KeyboardDevice& keyboard) {
   return mojom_keyboard;
 }
 
-mojom::MousePtr BuildMojomMouse(const ui::InputDevice& mouse) {
+mojom::MousePtr BuildMojomMouse(
+    const ui::InputDevice& mouse,
+    mojom::CustomizationRestriction customization_restriction) {
   mojom::MousePtr mojom_mouse = mojom::Mouse::New();
   mojom_mouse->id = mouse.id;
   mojom_mouse->name = mouse.name;
-  mojom_mouse->customization_restriction = GetCustomizationRestriction(mouse);
+  mojom_mouse->customization_restriction = customization_restriction;
   mojom_mouse->device_key =
       Shell::Get()->input_device_key_alias_manager()->GetAliasedDeviceKey(
           mouse);
@@ -496,6 +498,12 @@ InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl(
 void InputDeviceSettingsControllerImpl::Init() {
   Shell::Get()->session_controller()->AddObserver(this);
   InitializePolicyHandler();
+  // Initialize the duplicate id finder first then the notifiers to make sure
+  // duplicate ids are up to date before the controller gets updates about
+  // connected devices.
+  if (features::IsPeripheralCustomizationEnabled()) {
+    duplicate_id_finder_ = std::make_unique<InputDeviceDuplicateIdFinder>();
+  }
   keyboard_notifier_ = std::make_unique<
       InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>>(
       &keyboards_,
@@ -526,8 +534,6 @@ void InputDeviceSettingsControllerImpl::Init() {
         base::BindRepeating(
             &InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated,
             base::Unretained(this)));
-
-    duplicate_id_finder_ = std::make_unique<InputDeviceDuplicateIdFinder>();
   }
   metrics_manager_ = std::make_unique<InputDeviceSettingsMetricsManager>();
 }
@@ -1374,6 +1380,55 @@ void InputDeviceSettingsControllerImpl::DispatchGraphicsTabletSettingsChanged(
   }
 }
 
+mojom::CustomizationRestriction
+InputDeviceSettingsControllerImpl::GetMouseCustomizationRestriction(
+    const ui::InputDevice& mouse) {
+  if (!features::IsPeripheralCustomizationEnabled()) {
+    return mojom::CustomizationRestriction::kAllowCustomizations;
+  }
+
+  // If the mouse is not customizable, then the CustomizationRestriction is
+  // kDisallowCustomizations.
+  if (!IsMouseCustomizable(mouse)) {
+    return mojom::CustomizationRestriction::kDisallowCustomizations;
+  }
+
+  // If the mouse is customizable based on its vid and pid but there exists
+  // duplicate ids in the keyboard list, then the CustomizationRestriction is
+  // kDisableKeyEventRewrites to disable the key event rewrite from the mouse.
+  auto* duplicate_ids = duplicate_id_finder_->GetDuplicateDeviceIds(mouse.id);
+  CHECK(duplicate_ids);
+  for (const auto& duplicate_id : *duplicate_ids) {
+    if (keyboards_.contains(duplicate_id)) {
+      return mojom::CustomizationRestriction::kDisableKeyEventRewrites;
+    }
+  }
+
+  return mojom::CustomizationRestriction::kAllowCustomizations;
+}
+
+void InputDeviceSettingsControllerImpl::
+    ApplyCustomizationRestrictionFromKeyboard(DeviceId keyboard_id) {
+  if (!features::IsPeripheralCustomizationEnabled()) {
+    return;
+  }
+
+  auto* duplicate_ids =
+      duplicate_id_finder_->GetDuplicateDeviceIds(keyboard_id);
+  CHECK(duplicate_ids);
+  for (const auto& duplicate_id : *duplicate_ids) {
+    auto iter = mice_.find(duplicate_id);
+    if (iter == mice_.end()) {
+      return;
+    }
+    auto& mouse = *iter->second;
+    mouse.customization_restriction =
+        mojom::CustomizationRestriction::kDisableKeyEventRewrites;
+    InitializeMouseSettings(&mouse);
+    DispatchMouseSettingsChanged(mouse.id);
+  }
+}
+
 void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
     std::vector<ui::KeyboardDevice> keyboards_to_add,
     std::vector<DeviceId> keyboard_ids_to_remove) {
@@ -1384,6 +1439,8 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
     InitializeKeyboardSettings(mojom_keyboard.get());
     keyboards_.insert_or_assign(keyboard.id, std::move(mojom_keyboard));
     DispatchKeyboardConnected(keyboard.id);
+    // Update mouse restrictions if we have a keyboard with the same id.
+    ApplyCustomizationRestrictionFromKeyboard(keyboard.id);
   }
 
   for (const auto id : keyboard_ids_to_remove) {
@@ -1414,7 +1471,8 @@ void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
     std::vector<ui::InputDevice> mice_to_add,
     std::vector<DeviceId> mouse_ids_to_remove) {
   for (const auto& mouse : mice_to_add) {
-    auto mojom_mouse = BuildMojomMouse(mouse);
+    auto mojom_mouse =
+        BuildMojomMouse(mouse, GetMouseCustomizationRestriction(mouse));
     InitializeMouseSettings(mojom_mouse.get());
     mice_.insert_or_assign(mouse.id, std::move(mojom_mouse));
     DispatchMouseConnected(mouse.id);

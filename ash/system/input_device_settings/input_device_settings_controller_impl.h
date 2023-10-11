@@ -189,6 +189,19 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   void RefreshCachedKeyboardSettings();
   void RefreshCachedTouchpadSettings();
 
+  // Get the mouse customization restriction. There are three different cases:
+  // 1. If the mouse is customizable and there is no duplicate ids in the
+  // keyboards, return kAllowCustomizations.
+  // 2. If the mouse is customizable but there exists
+  // duplicate ids in the keyboards, return kDisableKeyEventRewrites.
+  // 3. If the mouse is not customizable, return kDisallowCustomizations.
+  mojom::CustomizationRestriction GetMouseCustomizationRestriction(
+      const ui::InputDevice& mouse);
+
+  // Update the restriction for currently connected mice once a keyboard with
+  // the same id connects to disable the key event rewrite for the mice.
+  void ApplyCustomizationRestrictionFromKeyboard(DeviceId keyboard_id);
+
   mojom::Mouse* FindMouse(DeviceId id);
   mojom::Touchpad* FindTouchpad(DeviceId id);
   mojom::Keyboard* FindKeyboard(DeviceId id);
