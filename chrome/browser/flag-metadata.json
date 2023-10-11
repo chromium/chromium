@@ -1254,7 +1254,7 @@
       "snianu@microsoft.com",
       "chrome-owp-storage@google.com"
     ],
-    "expiry_milestone": 120
+    "expiry_milestone": 122
   },
   {
     "name": "clipboard-well-formed-html-sanitization-write",
@@ -1265,7 +1265,7 @@
       "snianu@microsoft.com",
       "chrome-owp-storage@google.com"
     ],
-    "expiry_milestone": 120
+    "expiry_milestone": 122
   },
   {
     "name": "cloud-ap-auth-attach-as-header",
