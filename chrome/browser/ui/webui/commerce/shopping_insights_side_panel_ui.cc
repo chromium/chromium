@@ -65,6 +65,8 @@ ShoppingInsightsSidePanelUI::ShoppingInsightsSidePanelUI(content::WebUI* web_ui)
       {"trackPriceError", IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_ERROR},
       {"yesterday", IDS_PRICE_HISTORY_YESTERDAY_PRICE},
       {"historyGraphAccessibility", IDS_PRICE_HISTORY_GRAPH_ACCESSIBILITY},
+      {"historyTitleMultipleOptions", IDS_PRICE_HISTORY_TITLE_MULTIPLE_OPTIONS},
+      {"historyTitleSingleOption", IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION},
   };
   for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
