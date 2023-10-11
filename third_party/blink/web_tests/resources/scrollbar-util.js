@@ -53,12 +53,12 @@ function getScrollbarButtonScrollDelta(scroller) {
   }
 
   percentBasedDelta = (size) => {
-    return internals.runtimeFlags.percentBasedScrollingEnabled ? {
+    return internals.runtimeFlags.fractionalScrollOffsetsEnabled ? {
       x: SCROLLBAR_SCROLL_PERCENTAGE * size.x,
       y: SCROLLBAR_SCROLL_PERCENTAGE * size.y
     } : {
-      x: Math.floor(SCROLLBAR_SCROLL_PERCENTAGE * size.x),
-      y: Math.floor(SCROLLBAR_SCROLL_PERCENTAGE * size.y)
+      x: Math.round(SCROLLBAR_SCROLL_PERCENTAGE * size.x),
+      y: Math.round(SCROLLBAR_SCROLL_PERCENTAGE * size.y)
     }
   };
 

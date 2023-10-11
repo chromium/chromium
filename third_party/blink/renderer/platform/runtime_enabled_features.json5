@@ -1932,7 +1932,6 @@
     },
     {
       name: "FractionalScrollOffsets",
-      implied_by: ["PercentBasedScrolling"],
       base_feature: "none",
       public: true,
     },

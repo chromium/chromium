@@ -30,7 +30,8 @@ class CC_EXPORT ScrollUtils {
   static gfx::Vector2dF ResolveScrollPercentageToPixels(
       const gfx::Vector2dF& scroll_delta,
       const gfx::SizeF& scroller_size,
-      const gfx::SizeF& viewport_size);
+      const gfx::SizeF& viewport_size,
+      const bool clamp_delta_to_one = false);
 
   // Transforms a pixel delta into a percentage. Used for when a test needs to
   // work with percent based scrolling and non percent based scrolling.

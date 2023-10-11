@@ -67,7 +67,7 @@ window.onload = () => {
     // whereas the main thread uses Snapport rect. Therefore scrollbar_controller
     // is expected to compute a delta that is 14px less than the main thread.
     // http://crbug.com/1098383
-    assert_true(Math.abs(window.scrollY - 525) < 1 || Math.abs(window.scrollY - 511) < 1,
+    assert_true(Math.abs(window.scrollY - 526) < 1 || Math.abs(window.scrollY - 512) < 1,
       "Pressing the down trackpart didn't scroll.");
 
     // Tap on the track part just below the up arrow.
@@ -87,7 +87,7 @@ window.onload = () => {
     // whereas the main thread uses Snapport rect. Therefore scrollbar_controller
     // is expected to compute a delta that is 14px less than the main thread.
     // http://crbug.com/1098383
-    assert_true(Math.abs(window.scrollX - 700) < 1 || Math.abs(window.scrollX - 686) < 1,
+    assert_true(Math.abs(window.scrollX - 701) < 1 || Math.abs(window.scrollX - 687) < 1,
       "Pressing the right trackpart didn't scroll.");
 
     // Tap on the track part just to the right of the left arrow.
