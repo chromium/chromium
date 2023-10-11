@@ -85,6 +85,7 @@ PageNodeImpl::~PageNodeImpl() {
   DCHECK_EQ(EmbeddingType::kInvalid, embedding_type_);
   DCHECK(!page_load_tracker_data_);
   DCHECK(!site_data_);
+  DCHECK(!tab_connectedness_data_);
   DCHECK(!frozen_frame_data_);
   DCHECK(!page_aggregator_data_);
 }
@@ -489,6 +490,7 @@ void PageNodeImpl::RemoveNodeAttachedData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   page_load_tracker_data_.reset();
   site_data_.reset();
+  tab_connectedness_data_.reset();
   frozen_frame_data_.Reset();
   page_aggregator_data_.Reset();
 }

@@ -4,8 +4,10 @@
 
 #include "components/performance_manager/public/decorators/tab_connectedness_decorator.h"
 
+#include <memory>
 #include <set>
 
+#include "base/types/pass_key.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -15,9 +17,20 @@ namespace performance_manager {
 
 constexpr int kMaxSearchDepth = 10;
 
+class TabConnectednessAccess {
+ public:
+  static std::unique_ptr<NodeAttachedData>* GetUniquePtrStorage(
+      PageNodeImpl* page_node) {
+    return &page_node->GetTabConnectednessData(
+        base::PassKey<TabConnectednessAccess>());
+  }
+};
+
+namespace {
+
 class TabConnectednessData : public NodeAttachedDataImpl<TabConnectednessData> {
  public:
-  struct Traits : public NodeAttachedDataInMap<PageNodeImpl> {};
+  struct Traits : public NodeAttachedDataOwnedByNodeType<PageNodeImpl> {};
 
   ~TabConnectednessData() override = default;
 
@@ -27,6 +40,11 @@ class TabConnectednessData : public NodeAttachedDataImpl<TabConnectednessData> {
     CHECK(!data->tab_handle_);
     data->SetTabHandle(tab_handle);
     return data;
+  }
+
+  static std::unique_ptr<NodeAttachedData>* GetUniquePtrStorage(
+      PageNodeImpl* page_node) {
+    return TabConnectednessAccess::GetUniquePtrStorage(page_node);
   }
 
   // Recursively compute the connectedness from this tab to `destination`,
@@ -194,6 +212,8 @@ class TabConnectednessData : public NodeAttachedDataImpl<TabConnectednessData> {
 
   raw_ptr<TabPageDecorator::TabHandle> tab_handle_{nullptr};
 };
+
+}  // namespace
 
 TabConnectednessDecorator::TabConnectednessDecorator() = default;
 TabConnectednessDecorator::~TabConnectednessDecorator() = default;
