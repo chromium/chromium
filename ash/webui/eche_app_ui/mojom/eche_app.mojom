@@ -79,9 +79,6 @@ interface AccessibilityProvider {
   // SWA from the browser.
   SetAccessibilityObserver(pending_remote<AccessibilityObserver> observer);
 
-  // Notifies what orientation the stream has changed to for accessibility.
-  OnStreamOrientationChanged(bool isLandscape);
-
   // Returns true if an accessibility feature that requires
   // the tree stream is enabled.
   IsAccessibilityEnabled() => (bool enabled);

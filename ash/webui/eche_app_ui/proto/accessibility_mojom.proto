@@ -4,6 +4,15 @@ package ash.eche_app.proto;
 
 option optimize_for = LITE_RUNTIME;
 
+// AccessibilityActionInHost is an object to send information of
+// available AccessibilityAction in Android to Chrome.
+// https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo.AccessibilityAction.html
+// Next ID: 3
+message AccessibilityActionInHost {
+  int32 id = 1;
+  string label = 2;
+}
+
 // Next ID: 2
 message ListOfInt {
   repeated int32 values = 1;
@@ -40,9 +49,10 @@ message Rect {
 // https://developer.android.com/reference/android/view/accessibility/AccessibilityEvent.html
 //
 // Converted to protos from mojom format defined in accessibility_helper.mojom
-// https://crsrc.org/c/ash/components/arc/mojom/accessibility_helper.mojom;drc=fe2603dde9e9e94d6d0b31e4a249ead557396436
+// http://cs/android-internal/vendor/google_arc/libs/org.chromium.arc.mojom/components/arc/mojom/accessibility_helper.mojom
 // For more context, see: go/exo-a11y-service, go/exo-a11y-infrastructure,
 // go/eche-a11y-design
+
 // Next ID: 26
 enum AccessibilityEventType {
   reserved 6;
@@ -70,7 +80,7 @@ enum AccessibilityEventType {
   TYPE_WINDOWS_CHANGED = 22;
   TYPE_VIEW_CONTEXT_CLICKED = 23;
   TYPE_ASSIST_READING_CONTEXT = 24;
-  TYPE_EVENT_TYPE_UNKNOWN = 25;
+  TYPE_EVENT_TYPE_UNKNOWN = 25;  // not expected; used only in switch statements
 }
 
 // ContentChangeType lists the possible sub types of WINDOW_STATE_CHANGED and
@@ -375,16 +385,7 @@ enum AccessibilityWindowType {
   TYPE_APPLICATION = 1;
   TYPE_SPLIT_SCREEN_DIVIDER = 3;
   TYPE_SYSTEM = 4;
-  TYPE_WINDOW_TYPE_UNKNOWN = 5;
-}
-
-// AccessibilityActionInHost is an object to send information of
-// available AccessibilityAction in Android to Chrome.
-// https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo.AccessibilityAction.html
-// Next ID: 3
-message AccessibilityActionInHost {
-  int32 id = 1;
-  string label = 2;
+  TYPE_WINDOW_TYPE_UNKNOWN = 5;  // not expected; used only in switch statements
 }
 
 // AccessibilityNodeInfoData is an object to contain info of
@@ -497,7 +498,7 @@ message AccessibilityEventIntListPropertyKeyPair {
 // AccessibilityEventData is an object to contain info of
 // AccessibilityEvent in Android.
 // https://developer.android.com/reference/android/view/accessibility/AccessibilityEvent.html
-// Next ID: 11
+// Next ID: 12
 message AccessibilityEventData {
   AccessibilityEventType event_type = 1;
   int32 source_id = 2;
@@ -521,6 +522,9 @@ message AccessibilityEventData {
   repeated AccessibilityEventStringPropertyKeyPair string_properties = 9;
 
   repeated AccessibilityEventIntListPropertyKeyPair int_list_properties = 10;
+
+  // Bounds for the display on the Android device
+  Rect display_info = 11;
 }
 
 // This enum is used to represent the argument

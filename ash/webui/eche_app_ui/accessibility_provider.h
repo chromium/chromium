@@ -58,7 +58,6 @@ class AccessibilityProvider
       const std::vector<uint8_t>& serialized_proto) override;
   void SetAccessibilityObserver(
       ::mojo::PendingRemote<mojom::AccessibilityObserver> observer) override;
-  void OnStreamOrientationChanged(bool isLandscape) override;
   void IsAccessibilityEnabled(IsAccessibilityEnabledCallback callback) override;
 
   void Bind(mojo::PendingReceiver<mojom::AccessibilityProvider> receiver);
@@ -69,7 +68,7 @@ class AccessibilityProvider
 
  private:
   ax::android::mojom::AccessibilityFilterType GetFilterType();
-  void UpdateDeviceBounds(int width, int height);
+  void UpdateDeviceBounds(const proto::Rect& device_bounds);
   gfx::Rect OnGetTextLocationDataResultInternal(proto::Rect proto_rect) const;
   // Handles the result from perform action.
   void OnActionResult(const ui::AXActionData& data, bool result) const;
@@ -99,7 +98,6 @@ class AccessibilityProvider
   bool use_full_focus_mode_ = false;
 
   // device settings
-  bool is_landscape_ = false;
   gfx::Rect device_bounds_;
 
   // Proxy for accessing accessibility manager in chrome/

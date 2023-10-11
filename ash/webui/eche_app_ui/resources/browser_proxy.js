@@ -271,7 +271,6 @@ guestMessagePipe.registerHandler(
           `echeapi browser_proxy.js ` +
           `onStreamOrientationChanged ${message.isLandscape}`);
       streamOrientationObserver.onStreamOrientationChanged(message.isLandscape);
-      accessibility.onStreamOrientationChanged(message.isLandscape);
     });
 
 // Register CONNECTION_STATUS_CHANGED.
