@@ -3491,17 +3491,7 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
 Capabilities GLES2DecoderImpl::GetCapabilities() {
   DCHECK(initialized());
   Capabilities caps;
-  const gl::GLVersionInfo& version_info = gl_version_info();
-  caps.VisitPrecisions([&version_info](
-                           GLenum shader, GLenum type,
-                           Capabilities::ShaderPrecision* shader_precision) {
-    GLint range[2] = {0, 0};
-    GLint precision = 0;
-    QueryShaderPrecisionFormat(version_info, shader, type, range, &precision);
-    shader_precision->min_range = range[0];
-    shader_precision->max_range = range[1];
-    shader_precision->precision = precision;
-  });
+
   DoGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE, &caps.max_cube_map_texture_size,
                 1);
   DoGetIntegerv(GL_MAX_TEXTURE_SIZE, &caps.max_texture_size, 1);
@@ -3603,6 +3593,18 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
 GLCapabilities GLES2DecoderImpl::GetGLCapabilities() {
   CHECK(initialized());
   GLCapabilities caps;
+
+  const gl::GLVersionInfo& version_info = gl_version_info();
+  caps.VisitPrecisions([&version_info](
+                           GLenum shader, GLenum type,
+                           GLCapabilities::ShaderPrecision* shader_precision) {
+    GLint range[2] = {0, 0};
+    GLint precision = 0;
+    QueryShaderPrecisionFormat(version_info, shader, type, range, &precision);
+    shader_precision->min_range = range[0];
+    shader_precision->max_range = range[1];
+    shader_precision->precision = precision;
+  });
 
   DoGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,
                 &caps.max_combined_texture_image_units, 1);

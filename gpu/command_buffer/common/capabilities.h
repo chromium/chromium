@@ -31,49 +31,10 @@ namespace gpu {
 // entries in gpu/ipc/common/gpu_command_buffer_traits_multi.h.
 
 struct GPU_EXPORT Capabilities {
-  struct ShaderPrecision {
-    ShaderPrecision() : min_range(0), max_range(0), precision(0) {}
-    int min_range;
-    int max_range;
-    int precision;
-  };
-
-  struct GPU_EXPORT PerStagePrecisions {
-    PerStagePrecisions();
-
-    ShaderPrecision low_int;
-    ShaderPrecision medium_int;
-    ShaderPrecision high_int;
-    ShaderPrecision low_float;
-    ShaderPrecision medium_float;
-    ShaderPrecision high_float;
-  };
-
   Capabilities();
   Capabilities(const Capabilities& other);
   ~Capabilities();
 
-  template <typename T>
-  void VisitStagePrecisions(unsigned stage,
-                            PerStagePrecisions* precisions,
-                            const T& visitor) {
-    visitor(stage, GL_LOW_INT, &precisions->low_int);
-    visitor(stage, GL_MEDIUM_INT, &precisions->medium_int);
-    visitor(stage, GL_HIGH_INT, &precisions->high_int);
-    visitor(stage, GL_LOW_FLOAT, &precisions->low_float);
-    visitor(stage, GL_MEDIUM_FLOAT, &precisions->medium_float);
-    visitor(stage, GL_HIGH_FLOAT, &precisions->high_float);
-  }
-
-  template <typename T>
-  void VisitPrecisions(const T& visitor) {
-    VisitStagePrecisions(GL_VERTEX_SHADER, &vertex_shader_precisions, visitor);
-    VisitStagePrecisions(GL_FRAGMENT_SHADER, &fragment_shader_precisions,
-                         visitor);
-  }
-
-  PerStagePrecisions vertex_shader_precisions;
-  PerStagePrecisions fragment_shader_precisions;
   int max_cube_map_texture_size = 0;
   // Note this may be smaller than GL_MAX_TEXTURE_SIZE for a GLES context.
   int max_texture_size = 0;
@@ -137,6 +98,45 @@ struct GPU_EXPORT GLCapabilities {
   GLCapabilities();
   GLCapabilities(const GLCapabilities& other);
   ~GLCapabilities();
+
+  struct ShaderPrecision {
+    ShaderPrecision() : min_range(0), max_range(0), precision(0) {}
+    int min_range;
+    int max_range;
+    int precision;
+  };
+
+  struct GPU_EXPORT PerStagePrecisions {
+    PerStagePrecisions();
+    ShaderPrecision low_int;
+    ShaderPrecision medium_int;
+    ShaderPrecision high_int;
+    ShaderPrecision low_float;
+    ShaderPrecision medium_float;
+    ShaderPrecision high_float;
+  };
+
+  template <typename T>
+  void VisitStagePrecisions(unsigned stage,
+                            PerStagePrecisions* precisions,
+                            const T& visitor) {
+    visitor(stage, GL_LOW_INT, &precisions->low_int);
+    visitor(stage, GL_MEDIUM_INT, &precisions->medium_int);
+    visitor(stage, GL_HIGH_INT, &precisions->high_int);
+    visitor(stage, GL_LOW_FLOAT, &precisions->low_float);
+    visitor(stage, GL_MEDIUM_FLOAT, &precisions->medium_float);
+    visitor(stage, GL_HIGH_FLOAT, &precisions->high_float);
+  }
+
+  template <typename T>
+  void VisitPrecisions(const T& visitor) {
+    VisitStagePrecisions(GL_VERTEX_SHADER, &vertex_shader_precisions, visitor);
+    VisitStagePrecisions(GL_FRAGMENT_SHADER, &fragment_shader_precisions,
+                         visitor);
+  }
+
+  PerStagePrecisions vertex_shader_precisions;
+  PerStagePrecisions fragment_shader_precisions;
 
   int max_combined_texture_image_units = 0;
   int max_fragment_uniform_vectors = 0;

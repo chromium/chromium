@@ -271,9 +271,9 @@ gpu::ContextResult GLES2Implementation::Initialize(
 
   GLStaticState::ShaderPrecisionMap* shader_precisions =
       &static_state_.shader_precisions;
-  capabilities_.VisitPrecisions(
+  gl_capabilities_.VisitPrecisions(
       [shader_precisions](GLenum shader, GLenum type,
-                          Capabilities::ShaderPrecision* result) {
+                          GLCapabilities::ShaderPrecision* result) {
         const GLStaticState::ShaderPrecisionKey key(shader, type);
         cmds::GetShaderPrecisionFormat::Result cached_result = {
             true, result->min_range, result->max_range, result->precision};

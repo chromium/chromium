@@ -204,9 +204,9 @@ class GLES2ImplementationTest : public testing::Test {
       helper_->Initialize(limits.command_buffer_size);
 
       gpu_control_.reset(new StrictMock<MockClientGpuControl>());
-      capabilities_.VisitPrecisions(
+      gl_capabilities_.VisitPrecisions(
           [](GLenum shader, GLenum type,
-             Capabilities::ShaderPrecision* precision) {
+             GLCapabilities::ShaderPrecision* precision) {
             precision->min_range = 3;
             precision->max_range = 5;
             precision->precision = 7;
