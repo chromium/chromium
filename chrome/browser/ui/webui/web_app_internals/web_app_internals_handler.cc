@@ -12,6 +12,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -503,11 +504,6 @@ void WebAppInternalsHandler::GetDebugInfoAsJsonString(
 void WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxy(
     const GURL& url,
     InstallIsolatedWebAppFromDevProxyCallback callback) {
-  if (!web_app::AreWebAppsEnabled(&profile_.get())) {
-    SendError(std::move(callback), "web apps not enabled");
-    return;
-  }
-
   auto* provider = web_app::WebAppProvider::GetForWebApps(&profile_.get());
   if (!provider) {
     SendError(std::move(callback), "could not get web app provider");
@@ -547,11 +543,6 @@ void WebAppInternalsHandler::OnIsolatedWebAppDevModeBundleSelected(
     absl::optional<base::FilePath> path) {
   if (!path) {
     SendError(std::move(callback), "no file selected");
-    return;
-  }
-
-  if (!web_app::AreWebAppsEnabled(&profile_.get())) {
-    SendError(std::move(callback), "web apps not enabled");
     return;
   }
 
@@ -613,3 +604,23 @@ void WebAppInternalsHandler::ClearExperimentalWebAppIsolationData(
       base::BindOnce(&ObliterateStoragePartitionHelper::OnDone, helper));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+void WebAppInternalsHandler::SearchForIsolatedWebAppUpdates(
+    SearchForIsolatedWebAppUpdatesCallback callback) {
+#if BUILDFLAG(IS_CHROMEOS)
+  auto* provider = web_app::WebAppProvider::GetForWebApps(&profile_.get());
+  if (!provider) {
+    std::move(callback).Run("could not get web app provider");
+    return;
+  }
+
+  auto& manager = provider->iwa_update_manager();
+  size_t queued_task_count = manager.DiscoverUpdatesNow();
+  std::move(callback).Run(base::StringPrintf(
+      "queued %zu update discovery tasks", queued_task_count));
+#else
+  // TODO(crbug.com/1458725): Make this work outside of ChromeOS.
+  std::move(callback).Run(
+      "IWA updates are currently only supported on ChromeOS");
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}

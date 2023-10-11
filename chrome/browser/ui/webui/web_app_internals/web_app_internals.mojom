@@ -25,4 +25,7 @@ interface WebAppInternalsHandler {
   // Returns whether the installation succeeded.
   SelectFileAndInstallIsolatedWebAppFromDevBundle() =>
       (InstallIsolatedWebAppResult result);
+  // Triggers update discovery for installed non-dev-mode Isolated Web Apps.
+  // Returns a string containing a success or error message.
+  SearchForIsolatedWebAppUpdates() => (string result);
 };

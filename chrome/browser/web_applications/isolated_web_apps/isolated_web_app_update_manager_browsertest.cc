@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
       &provider().install_manager());
   manifest_updated_observer.BeginListening({url_info_.app_id()});
 
-  provider().iwa_update_manager().DiscoverUpdatesNowForTesting();
+  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
 
   manifest_updated_observer.Wait();
   const WebApp* web_app =
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
       url_info_.origin().GetURL(), storage_partition,
       content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
 
-  provider().iwa_update_manager().DiscoverUpdatesNowForTesting();
+  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
 
   // Updates will be applied once the app's window is closed.
   Browser* app_browser = GetBrowserFromFrame(app_frame);
@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   OpenApp(url_info_.app_id());
   EXPECT_THAT(provider().ui_manager().GetNumWindowsForApp(url_info_.app_id()),
               Eq(1ul));
-  provider().iwa_update_manager().DiscoverUpdatesNowForTesting();
+  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
 
   while (true) {
     const WebApp* app =

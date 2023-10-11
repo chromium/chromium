@@ -111,7 +111,9 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
     return update_discovery_timer_;
   }
 
-  void DiscoverUpdatesNowForTesting();
+  // Used to queue update discovery tasks manually from the
+  // chrome://web-app-internals page. Returns the number of tasks queued.
+  size_t DiscoverUpdatesNow();
 
  private:
   // This queue manages update discovery and apply tasks. Tasks can be added to
@@ -193,7 +195,9 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
 
   bool IsAnyIwaInstalled();
 
-  void QueueUpdateDiscoveryTasks();
+  // Queues new update discovery tasks and returns the number of new tasks that
+  // have been queued.
+  size_t QueueUpdateDiscoveryTasks();
 
   base::flat_map<web_package::SignedWebBundleId, GURL>
   GetForceInstalledBundleIdToUpdateManifestUrlMap();

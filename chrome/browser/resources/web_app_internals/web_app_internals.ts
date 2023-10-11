@@ -21,6 +21,7 @@ const iwaInstallButton =
 const iwaInstallUrl = getRequiredElement('iwa-install-url') as HTMLInputElement;
 const iwaSelectFileButton =
     getRequiredElement('iwa-select-bundle') as HTMLButtonElement;
+const iwaSearchForUpdatesButton = getRequiredElement('iwa-search-for-updates');
 
 getRequiredElement('copy-button').addEventListener('click', async () => {
   navigator.clipboard.writeText(await debugInfoAsJsonString);
@@ -125,12 +126,26 @@ async function iwaSelectFile() {
 }
 iwaSelectFileButton.addEventListener('click', iwaSelectFile);
 
+async function iwaSearchForUpdates() {
+  const messageDiv = getRequiredElement('iwa-update-discovery-message-div');
+
+  messageDiv.innerText = `Queueing update discovery tasks...`;
+  const {result} =
+      await webAppInternalsHandler.searchForIsolatedWebAppUpdates();
+  messageDiv.innerText = result;
+}
+iwaSearchForUpdatesButton.addEventListener('click', iwaSearchForUpdates);
+
 document.addEventListener('DOMContentLoaded', async () => {
   getRequiredElement('json').innerText = await debugInfoAsJsonString;
 
-  if (loadTimeData.getBoolean('experimentalIsIwaDevModeEnabled')) {
-    // Unhide the IWA install div.
-    getRequiredElement('iwa-install-div').style.display = '';
-    return;
+  if (loadTimeData.getBoolean('experimentalAreIwasEnabled')) {
+    // Unhide the IWA div.
+    getRequiredElement('iwa-div').style.display = '';
+
+    if (loadTimeData.getBoolean('experimentalIsIwaDevModeEnabled')) {
+      // Unhide the IWA install div.
+      getRequiredElement('iwa-install-div').style.display = '';
+    }
   }
 });

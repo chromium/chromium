@@ -12,6 +12,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/web_app_internals_resources.h"
 #include "chrome/grit/web_app_internals_resources_map.h"
+#include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -23,17 +24,21 @@
 
 WebAppInternalsUI::WebAppInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
+  Profile* profile = Profile::FromWebUI(web_ui);
+
   // Set up the chrome://web-app-internals source.
   content::WebUIDataSource* internals = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), chrome::kChromeUIWebAppInternalsHost);
+      profile, chrome::kChromeUIWebAppInternalsHost);
   webui::SetupWebUIDataSource(
       internals,
       base::make_span(kWebAppInternalsResources, kWebAppInternalsResourcesSize),
       IDR_WEB_APP_INTERNALS_WEB_APP_INTERNALS_HTML);
   internals->UseStringsJs();
   internals->AddBoolean(
-      "experimentalIsIwaDevModeEnabled",
-      web_app::IsIwaDevModeEnabled(Profile::FromWebUI(web_ui)));
+      "experimentalAreIwasEnabled",
+      content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile));
+  internals->AddBoolean("experimentalIsIwaDevModeEnabled",
+                        web_app::IsIwaDevModeEnabled(profile));
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   internals->AddBoolean(
