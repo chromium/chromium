@@ -22,7 +22,7 @@ import {getTemplate} from './accelerator_view.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorKeyState, AcceleratorSource, AcceleratorState, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
-import {createEmptyAcceleratorInfo, getAccelerator, getKeyDisplay, getModifiersForAcceleratorInfo, isCustomizationAllowed, isFunctionKey, isStandardAcceleratorInfo, keyCodeToModifier, keyToIconNameMap, LWIN_KEY, META_KEY, unidentifiedKeyCodeToKey} from './shortcut_utils.js';
+import {areAcceleratorsEqual, canBypassErrorWithRetry, createEmptyAcceleratorInfo, getAccelerator, getKeyDisplay, getModifiersForAcceleratorInfo, isCustomizationAllowed, isFunctionKey, isStandardAcceleratorInfo, keyCodeToModifier, keyToIconNameMap, LWIN_KEY, META_KEY, unidentifiedKeyCodeToKey} from './shortcut_utils.js';
 export interface AcceleratorViewElement {
   $: {
     container: HTMLDivElement,
@@ -156,6 +156,8 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   highlighted: boolean;
   protected pendingAcceleratorInfo: StandardAcceleratorInfo;
   protected isCapturing: boolean;
+  protected lastAccelerator: Accelerator;
+  protected lastResult: AcceleratorConfigResult;
   private modifiers: string[];
   private shortcutProvider: ShortcutProviderInterface = getShortcutProvider();
   private lookupManager: AcceleratorLookupManager =
@@ -273,13 +275,22 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   }
 
   private handleKeyDown(e: KeyboardEvent): void {
+    const pendingAccelerator = this.keystrokeToAccelerator(e);
     if (this.hasError) {
-      // Reset status state when pressing the a new key.
+      // If an error occurred, check if the pending accelerator matches the
+      // last. If they match and a retry on the same accelerator
+      // cannot bypass the error, exit early to prevent flickering error
+      // messages.
+      if (areAcceleratorsEqual(pendingAccelerator, this.lastAccelerator) &&
+          !canBypassErrorWithRetry(this.lastResult)) {
+        return;
+      }
+      // Reset status state when pressing a new key.
       this.statusMessage = '';
       this.hasError = false;
     }
 
-    const pendingAccelerator = this.keystrokeToAccelerator(e);
+    this.lastAccelerator = {...pendingAccelerator};
     // Alt + Esc will exit input handling immediately.
     if (pendingAccelerator.modifiers === Modifier.ALT &&
         pendingAccelerator.keyCode === kEscapeKey) {
@@ -378,6 +389,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   }
 
   private handleAcceleratorResultData(result: AcceleratorResultData): void {
+    this.lastResult = result.result;
     switch (result.result) {
       // Shift is the only modifier.
       case AcceleratorConfigResult.kShiftOnlyNotAllowed: {

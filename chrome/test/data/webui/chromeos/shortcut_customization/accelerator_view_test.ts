@@ -435,6 +435,7 @@ suite('acceleratorViewTest', function() {
     viewElement.dispatchEvent(new KeyboardEvent('keydown', {
       key: ' ',
       code: 'Space',
+      keyCode: 32,
       shiftKey: true,
     }));
 
@@ -446,6 +447,7 @@ suite('acceleratorViewTest', function() {
     viewElement.dispatchEvent(new KeyboardEvent('keydown', {
       key: 'F4',
       code: 'ShowAllWindows',
+      keyCode: 182,
       shiftKey: true,
     }));
     await flush();
@@ -460,6 +462,7 @@ suite('acceleratorViewTest', function() {
     viewElement.dispatchEvent(new KeyboardEvent('keydown', {
       key: 'BrightnessUp',
       code: 'BrightnessUp',
+      keyCode: 217,
       shiftKey: true,
     }));
     await flush();

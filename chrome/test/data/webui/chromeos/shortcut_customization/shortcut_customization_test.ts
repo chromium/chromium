@@ -516,7 +516,7 @@ suite('shortcutCustomizationAppTest', function() {
         editElement!.shadowRoot!.querySelector('#acceleratorInfoText')!
             .textContent!.trim());
 
-    // Press the shortcut again, this time with another error state.
+    // Press a different shortcut, this time with another error state.
     const fakeResult2: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
       shortcutName: strToMojoString16('TestConflictName'),
@@ -524,9 +524,9 @@ suite('shortcutCustomizationAppTest', function() {
     provider.setFakeAddAcceleratorResult(fakeResult2);
 
     viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: ']',
-      keyCode: 221,
-      code: 'Key]',
+      key: ' ',
+      keyCode: 32,
+      code: 'space',
       ctrlKey: false,
       altKey: true,
       shiftKey: false,
@@ -546,7 +546,7 @@ suite('shortcutCustomizationAppTest', function() {
     assertEquals(
         UserAction.kStartAddAccelerator, provider.getLatestRecordedAction());
 
-    // Press the shortcut again, this time with another success state.
+    // Press a different shortcut, this time with the success state.
     const fakeResult3: AcceleratorResultData = {
       result: AcceleratorConfigResult.kSuccess,
       shortcutName: undefined,
@@ -554,9 +554,9 @@ suite('shortcutCustomizationAppTest', function() {
     provider.setFakeAddAcceleratorResult(fakeResult3);
 
     viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: ']',
-      keyCode: 221,
-      code: 'Key]',
+      key: 'BrightnessUp',
+      keyCode: 217,
+      code: 'BrightnessUp',
       ctrlKey: false,
       altKey: true,
       shiftKey: false,
@@ -568,6 +568,132 @@ suite('shortcutCustomizationAppTest', function() {
     assertFalse(editElement.hasError);
     assertEquals(
         UserAction.kSuccessfulModification, provider.getLatestRecordedAction());
+  });
+
+  test('PreventDuplicateFailedRequest', async () => {
+    page = initShortcutCustomizationAppElement();
+    await flushTasks();
+
+    // Open dialog for first accelerator in second subsection.
+    await openDialogForAcceleratorInSubsection(1);
+    const editDialog = getPage().shadowRoot!.querySelector('#editDialog');
+    assertTrue(!!editDialog);
+
+    // Click on add button.
+    (editDialog!.shadowRoot!.querySelector('#addAcceleratorButton') as
+     CrButtonElement)
+        .click();
+    await flushTasks();
+
+    const editElement =
+        editDialog!.shadowRoot!.querySelector('#pendingAccelerator') as
+        AcceleratorEditViewElement;
+    const viewElement =
+        editElement!.shadowRoot!.querySelector('#acceleratorItem');
+
+    // Set the fake mojo return call.
+    const fakeResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kConflict,
+      shortcutName: strToMojoString16('TestConflictName'),
+    };
+    provider.setFakeAddAcceleratorResult(fakeResult);
+
+    // Before pressing any shortcut, getAddAcceleratorCallCount() should be 0.
+    assertEquals(0, provider.getAddAcceleratorCallCount());
+
+    // Press alt + ].
+    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
+      key: ']',
+      keyCode: 221,
+      code: 'Key]',
+      altKey: true,
+    }));
+    await flushTasks();
+
+    // getAddAcceleratorCallCount() should be increased to 1.
+    assertEquals(1, provider.getAddAcceleratorCallCount());
+
+    // Press alt + ] again
+    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
+      key: ']',
+      keyCode: 221,
+      code: 'Key]',
+      altKey: true,
+    }));
+    await flushTasks();
+
+    // getAddAcceleratorCallCount() should still be 1, indicating no duplicate
+    // failed request has been sent to backend.
+    assertEquals(1, provider.getAddAcceleratorCallCount());
+
+    // Press another shortcut: alt + space.
+    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
+      key: ' ',
+      keyCode: 32,
+      code: 'space',
+      altKey: true,
+    }));
+    await flushTasks();
+
+    // getAddAcceleratorCallCount() should be increased to 2.
+    assertEquals(2, provider.getAddAcceleratorCallCount());
+  });
+
+  test('DuplicatedRequestCanBypass', async () => {
+    page = initShortcutCustomizationAppElement();
+    await flushTasks();
+
+    // Open dialog for first accelerator in second subsection.
+    await openDialogForAcceleratorInSubsection(1);
+    const editDialog = getPage().shadowRoot!.querySelector('#editDialog');
+    assertTrue(!!editDialog);
+
+    // Click on add button.
+    (editDialog!.shadowRoot!.querySelector('#addAcceleratorButton') as
+     CrButtonElement)
+        .click();
+    await flushTasks();
+
+    const editElement =
+        editDialog!.shadowRoot!.querySelector('#pendingAccelerator') as
+        AcceleratorEditViewElement;
+    const viewElement =
+        editElement!.shadowRoot!.querySelector('#acceleratorItem');
+
+    // Set the fake mojo return call, and make the result to be
+    // kConflictCanOverride.
+    const fakeResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kConflictCanOverride,
+      shortcutName: strToMojoString16('TestConflictName'),
+    };
+    provider.setFakeAddAcceleratorResult(fakeResult);
+
+    // Before pressing any shortcut, getAddAcceleratorCallCount() should be 0.
+    assertEquals(0, provider.getAddAcceleratorCallCount());
+
+    // Press alt + ].
+    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
+      key: ']',
+      keyCode: 221,
+      code: 'Key]',
+      altKey: true,
+    }));
+    await flushTasks();
+
+    // getAddAcceleratorCallCount() should be increased to 1.
+    assertEquals(1, provider.getAddAcceleratorCallCount());
+
+    // Press alt + ] again, expect it to bypass the error.
+    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
+      key: ']',
+      keyCode: 221,
+      code: 'Key]',
+      altKey: true,
+    }));
+    await flushTasks();
+
+    // getAddAcceleratorCallCount() should be increased to 2.
+    assertEquals(2, provider.getAddAcceleratorCallCount());
   });
 
   test('ValidateAcceleratorMaximumAccelerators', async () => {
