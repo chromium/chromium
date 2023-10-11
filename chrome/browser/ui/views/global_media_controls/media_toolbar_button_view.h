@@ -40,6 +40,7 @@ class MediaToolbarButtonView : public ToolbarButton,
   void Hide() override;
   void Enable() override;
   void Disable() override;
+  void MaybeShowLocalMediaCastingPromo() override;
   void MaybeShowStopCastingPromo() override;
 
   MediaToolbarButtonController* media_toolbar_button_controller() {

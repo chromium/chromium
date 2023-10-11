@@ -80,6 +80,7 @@ class CastDeviceListHostTest : public testing::Test {
 
   MOCK_METHOD(void, OnMediaRemotingRequested, ());
   MOCK_METHOD(void, HideMediaDialog, ());
+  MOCK_METHOD(void, OnSinksDiscoveredCallback, ());
 
  protected:
   std::unique_ptr<CastDeviceListHost> CreateHost(
@@ -91,6 +92,8 @@ class CastDeviceListHostTest : public testing::Test {
         base::BindRepeating(&CastDeviceListHostTest::OnMediaRemotingRequested,
                             base::Unretained(this)),
         base::BindRepeating(&CastDeviceListHostTest::HideMediaDialog,
+                            base::Unretained(this)),
+        base::BindRepeating(&CastDeviceListHostTest::OnSinksDiscoveredCallback,
                             base::Unretained(this)));
   }
 
@@ -137,7 +140,6 @@ TEST_F(CastDeviceListHostTest, StartRemotePlayback) {
   UIMediaSink sink = CreateMediaSink();
   sink.cast_modes = {media_router::MediaCastMode::REMOTE_PLAYBACK};
   host_->OnModelUpdated({CreateModelWithSinks({sink})});
-
   EXPECT_CALL(
       *dialog_controller_,
       StartCasting(sink.id, media_router::MediaCastMode::REMOTE_PLAYBACK));
@@ -159,6 +161,16 @@ TEST_F(CastDeviceListHostTest, StartAudioTabMirroring) {
   host_->SelectDevice(sink.id);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(CastDeviceListHostTest, OnSinksDiscovered) {
+  EXPECT_CALL(*this, OnSinksDiscoveredCallback());
+  UIMediaSink sink = CreateMediaSink();
+  sink.cast_modes = {media_router::MediaCastMode::REMOTE_PLAYBACK};
+  host_->OnModelUpdated({CreateModelWithSinks({sink})});
+
+  EXPECT_CALL(*this, OnSinksDiscoveredCallback()).Times(0);
+  host_->OnModelUpdated({CreateModelWithSinks({})});
+}
 
 TEST_F(CastDeviceListHostTest, HideMediaDialogCallback) {
   EXPECT_CALL(*this, HideMediaDialog());

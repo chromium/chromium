@@ -19,14 +19,13 @@
 class CastDeviceListHost : public global_media_controls::mojom::DeviceListHost,
                            media_router::CastDialogController::Observer {
  public:
-  using MediaRemotingCallback = base::RepeatingCallback<void()>;
-
   CastDeviceListHost(
       std::unique_ptr<media_router::CastDialogController> dialog_controller,
       mojo::PendingRemote<global_media_controls::mojom::DeviceListClient>
           observer,
-      MediaRemotingCallback media_remoting_callback,
-      base::RepeatingClosure hide_dialog_callback);
+      base::RepeatingClosure media_remoting_callback,
+      base::RepeatingClosure hide_dialog_callback,
+      base::RepeatingClosure on_sinks_discovered_callback);
   ~CastDeviceListHost() override;
 
   // mojom::DeviceListHost:
@@ -49,9 +48,11 @@ class CastDeviceListHost : public global_media_controls::mojom::DeviceListHost,
   mojo::Remote<global_media_controls::mojom::DeviceListClient> client_;
   std::vector<media_router::UIMediaSink> sinks_;
   // Called whenever a Media Remoting session is starting.
-  MediaRemotingCallback media_remoting_callback_;
+  base::RepeatingClosure media_remoting_callback_;
   // Called whenever a tab mirroring session starts.
   base::RepeatingClosure hide_dialog_callback_;
+  // Called whenever the sink is discovered.
+  base::RepeatingClosure on_sinks_discovered_callback_;
   const int id_;
 };
 

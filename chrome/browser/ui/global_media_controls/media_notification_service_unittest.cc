@@ -17,9 +17,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/ui/global_media_controls/cast_device_list_host.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/test_helper.h"
-#include "chrome/browser/ui/media_router/cast_dialog_controller.h"
+#include "chrome/browser/ui/media_router/cast_dialog_model.h"
 #include "chrome/browser/ui/media_router/media_route_starter.h"
 #include "chrome/browser/ui/media_router/query_result_manager.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -651,4 +652,24 @@ TEST_F(MediaNotificationServiceCastTest, RequestMediaRemoting) {
   SimulatePlayingControllableMedia(id);
   // TODO(takumif): Confirm that this calls the MediaNotificationItem.
   service()->OnMediaRemotingRequested(id.ToString());
+}
+
+TEST_F(MediaNotificationServiceCastTest, OnSinksDiscoveredForLocalMedia) {
+  // Playing the media.
+  auto id = SimulatePlayingControllableMediaForWebContents(web_contents());
+
+  NiceMock<global_media_controls::test::MockMediaDialogDelegate>
+      dialog_delegate;
+
+  // Opening the dialog.
+  SimulateDialogOpened(&dialog_delegate);
+
+  service()->OnSinksDiscovered(id.ToString());
+  EXPECT_FALSE(service()->should_show_cast_local_media_iph());
+
+  // Navigating to a page with local media.
+  NavigateAndCommit(GURL("file:///example.mp4"));
+
+  service()->OnSinksDiscovered(id.ToString());
+  EXPECT_TRUE(service()->should_show_cast_local_media_iph());
 }

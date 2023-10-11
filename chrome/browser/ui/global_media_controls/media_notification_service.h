@@ -72,6 +72,8 @@ class MediaNotificationService
       base::RepeatingCallback<void(bool)> callback) override;
   void OnMediaRemotingRequested(const std::string& item_id) override;
 
+  void OnSinksDiscovered(const std::string& item_id);
+
   // global_media_controls::MediaSessionItemProducerObserver:
   void OnMediaSessionActionButtonPressed(
       const std::string& id,
@@ -114,6 +116,9 @@ class MediaNotificationService
       std::unique_ptr<media_router::StartPresentationContext> context);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  bool should_show_cast_local_media_iph() const {
+    return should_show_cast_local_media_iph_;
+  }
   void set_device_provider_for_testing(
       std::unique_ptr<MediaNotificationDeviceProvider> device_provider);
 
@@ -191,6 +196,10 @@ class MediaNotificationService
       host_receivers_;
 
   bool shutdown_has_started_ = false;
+
+  // It's set to true when MediaNotificationService receives sink updates for a
+  // local media.
+  bool should_show_cast_local_media_iph_ = false;
 
   base::WeakPtrFactory<MediaNotificationService> weak_ptr_factory_{this};
 };

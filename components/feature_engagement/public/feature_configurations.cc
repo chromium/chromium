@@ -133,6 +133,20 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHGMCLocalMediaCastingFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->trigger = EventConfig("gmc_local_media_cast_iph_trigger",
+                                  Comparator(EQUAL, 0), 180, 180);
+    config->used = EventConfig("media_route_started_from_gmc",
+                               Comparator(EQUAL, 0), 180, 180);
+
+    return config;
+  }
+
   if (kIPHDesktopSharedHighlightingFeature.name == feature->name) {
     // A config that allows the shared highlighting desktop IPH to be shown
     // when a user receives a highlight:

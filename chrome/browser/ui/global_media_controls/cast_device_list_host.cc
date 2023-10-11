@@ -83,12 +83,14 @@ global_media_controls::mojom::DevicePtr CreateDevice(
 CastDeviceListHost::CastDeviceListHost(
     std::unique_ptr<media_router::CastDialogController> dialog_controller,
     mojo::PendingRemote<global_media_controls::mojom::DeviceListClient> client,
-    MediaRemotingCallback media_remoting_callback,
-    base::RepeatingClosure hide_dialog_callback)
+    base::RepeatingClosure media_remoting_callback,
+    base::RepeatingClosure hide_dialog_callback,
+    base::RepeatingClosure on_sinks_discovered_callback)
     : cast_controller_(std::move(dialog_controller)),
       client_(std::move(client)),
       media_remoting_callback_(std::move(media_remoting_callback)),
       hide_dialog_callback_(std::move(hide_dialog_callback)),
+      on_sinks_discovered_callback_(std::move(on_sinks_discovered_callback)),
       id_(next_id_++) {
   cast_controller_->AddObserver(this);
   cast_controller_->RegisterDestructor(
@@ -154,6 +156,10 @@ void CastDeviceListHost::OnModelUpdated(
     if (GetPreferredCastMode(sink.cast_modes, sink.icon_type)) {
       devices.push_back(CreateDevice(sink));
     }
+  }
+
+  if (!devices.empty()) {
+    on_sinks_discovered_callback_.Run();
   }
   client_->OnDevicesUpdated(std::move(devices));
 }

@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/global_media_controls/public/media_dialog_delegate.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_item_producer.h"
@@ -285,8 +287,27 @@ MediaNotificationService::RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
 void MediaNotificationService::OnMediaRemotingRequested(
     const std::string& item_id) {
   auto item = media_session_item_producer_->GetMediaItem(item_id);
-  if (item) {
-    item->RequestMediaRemoting();
+  if (!item) {
+    return;
+  }
+
+  item->RequestMediaRemoting();
+  auto* web_contents =
+      content::MediaSession::GetWebContentsFromRequestId(item_id);
+  if (web_contents && web_contents->GetLastCommittedURL().SchemeIsFile()) {
+    feature_engagement::TrackerFactory::GetForBrowserContext(profile_)
+        ->NotifyEvent("media_route_started_from_gmc");
+  }
+}
+
+void MediaNotificationService::OnSinksDiscovered(const std::string& item_id) {
+  auto item = media_session_item_producer_->GetMediaItem(item_id);
+  auto* web_contents =
+      content::MediaSession::GetWebContentsFromRequestId(item_id);
+
+  if (web_contents) {
+    should_show_cast_local_media_iph_ =
+        web_contents->GetLastCommittedURL().SchemeIsFile();
   }
 }
 
@@ -515,11 +536,18 @@ void MediaNotificationService::CreateCastDeviceListHost(
                 &MediaNotificationService::OnMediaRemotingRequested,
                 weak_ptr_factory_.GetWeakPtr(), remoting_session_id.value())
           : base::DoNothing();
+  auto on_sinks_discovered_callback =
+      remoting_session_id.has_value()
+          ? base::BindRepeating(&MediaNotificationService::OnSinksDiscovered,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                remoting_session_id.value())
+          : base::DoNothing();
   auto host = std::make_unique<CastDeviceListHost>(
       std::move(dialog_controller), std::move(client_remote),
       std::move(media_remoting_callback_),
       base::BindRepeating(&global_media_controls::MediaItemManager::HideDialog,
-                          item_manager_->GetWeakPtr()));
+                          item_manager_->GetWeakPtr()),
+      std::move(on_sinks_discovered_callback));
   int host_id = host->id();
   mojo::SelfOwnedReceiverRef<global_media_controls::mojom::DeviceListHost>
       host_receiver = mojo::MakeSelfOwnedReceiver(

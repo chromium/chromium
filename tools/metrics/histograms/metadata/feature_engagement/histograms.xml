@@ -179,6 +179,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_GlobalMediaControls" summary="the Global Media Controls"/>
   <variant name="IPH_GMCCastStartStop"
       summary="Cast start stop in the Zenith dialog"/>
+  <variant name="IPH_GMCLocalMediaCasting"
+      summary="Local media cast start in GMC"/>
   <variant name="IPH_GoogleOneOfferNotification"
       summary="show google one offer notification with a visit to Google
                Drive or Google Photo"/>

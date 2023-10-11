@@ -133,6 +133,15 @@ void MediaToolbarButtonView::Disable() {
     observer.OnMediaButtonDisabled();
 }
 
+void MediaToolbarButtonView::MaybeShowLocalMediaCastingPromo() {
+  if (media_router::GlobalMediaControlsCastStartStopEnabled(
+          browser_->profile()) &&
+      service_->should_show_cast_local_media_iph()) {
+    browser_->window()->MaybeShowFeaturePromo(
+        feature_engagement::kIPHGMCLocalMediaCastingFeature);
+  }
+}
+
 void MediaToolbarButtonView::MaybeShowStopCastingPromo() {
   if (media_router::GlobalMediaControlsCastStartStopEnabled(
           browser_->profile()) &&
