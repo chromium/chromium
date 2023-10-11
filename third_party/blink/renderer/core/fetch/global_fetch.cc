@@ -102,11 +102,16 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
                                const V8RequestInfo* input,
                                const DeferredRequestInit* init,
                                ExceptionState& exception_state) override {
-    CHECK(fetch_later_manager_);
+    if (!base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI) ||
+        !fetch_later_manager_) {
+      exception_state.ThrowTypeError(
+          "FetchLater is not supported in this scope.");
+      return nullptr;
+    }
     ExecutionContext* ec = fetch_later_manager_->GetExecutionContext();
     if (!script_state->ContextIsValid() || !ec) {
       exception_state.ThrowTypeError("The global scope is shutting down.");
-      return MakeGarbageCollected<FetchLaterResult>();
+      return nullptr;
     }
 
     // https://whatpr.org/fetch/1647/9ca4bda...7bff4de.html#fetch-later-method
