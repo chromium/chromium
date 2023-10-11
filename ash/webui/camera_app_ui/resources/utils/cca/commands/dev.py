@@ -344,7 +344,7 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
                 try:
                     content = route.handler(path)
                 except Exception as e:
-                    logging.debug(f"Error while handling {path}", e)
+                    logging.debug("Error while handling %r: %r", path, e)
                     self.send_response(404)
                     self.end_headers()
                     return
