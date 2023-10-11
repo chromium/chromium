@@ -183,7 +183,7 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
           static_cast<StoragePartitionImpl*>(
               render_frame_host_->GetStoragePartition())
               ->GetCdmStorageManager();
-      DCHECK(cdm_storage_manager);
+
       cdm_storage_manager->OpenCdmStorage(
           CdmStorageBindingContext(storage_key, cdm_type_),
           std::move(receiver));
@@ -192,7 +192,6 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
           static_cast<StoragePartitionImpl*>(
               render_frame_host_->GetStoragePartition())
               ->GetMediaLicenseManager();
-      DCHECK(media_license_manager);
 
       media_license_manager->OpenCdmStorage(
           CdmStorageBindingContext(storage_key, cdm_type_),

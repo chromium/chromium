@@ -1902,11 +1902,7 @@ MediaLicenseManager* StoragePartitionImpl::GetMediaLicenseManager() {
 }
 
 CdmStorageManager* StoragePartitionImpl::GetCdmStorageManager() {
-  if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase)) {
-    CHECK(cdm_storage_manager_);
     return cdm_storage_manager_.get();
-  }
-  return nullptr;
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
