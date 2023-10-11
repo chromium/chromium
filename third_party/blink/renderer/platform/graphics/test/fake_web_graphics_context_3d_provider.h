@@ -27,7 +27,7 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
       gpu::gles2::GLES2Interface* gl,
       cc::ImageDecodeCache* cache = nullptr,
       GrDirectContext* gr_context = nullptr,
-      viz::RasterContextProvider* raster_context_provider = nullptr)
+      viz::TestContextProvider* raster_context_provider = nullptr)
       : gl_(gl),
         image_decode_cache_(cache ? cache : &stub_image_decode_cache_),
         raster_context_provider_(raster_context_provider) {
@@ -45,6 +45,8 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
       raster_interface_ =
           std::make_unique<gpu::raster::RasterImplementationGLES>(
               gl_, nullptr, capabilities_);
+      test_shared_image_interface_ =
+          std::make_unique<viz::TestSharedImageInterface>();
     }
 
     webgpu_interface_ = std::make_unique<gpu::webgpu::WebGPUInterfaceStub>();
@@ -57,11 +59,17 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
 
   explicit FakeWebGraphicsContext3DProvider(
       gpu::raster::RasterInterface* raster,
-      cc::ImageDecodeCache* cache = nullptr)
+      cc::ImageDecodeCache* cache = nullptr,
+      viz::TestContextProvider* raster_context_provider = nullptr)
       : external_raster_interface_(raster),
-        image_decode_cache_(cache ? cache : &stub_image_decode_cache_) {
+        image_decode_cache_(cache ? cache : &stub_image_decode_cache_),
+        raster_context_provider_(raster_context_provider) {
     CHECK(raster);
 
+    if (!raster_context_provider_) {
+      test_shared_image_interface_ =
+          std::make_unique<viz::TestSharedImageInterface>();
+    }
     webgpu_interface_ = std::make_unique<gpu::webgpu::WebGPUInterfaceStub>();
 
     // enable all gpu features.
@@ -122,7 +130,9 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
     return image_decode_cache_;
   }
   viz::TestSharedImageInterface* SharedImageInterface() override {
-    return &test_shared_image_interface_;
+    return raster_context_provider_
+               ? raster_context_provider_->SharedImageInterface()
+               : test_shared_image_interface_.get();
   }
   void CopyVideoFrame(media::PaintCanvasVideoRenderer* video_render,
                       media::VideoFrame* video_frame,
@@ -137,7 +147,7 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
 
  private:
   cc::StubDecodeCache stub_image_decode_cache_;
-  viz::TestSharedImageInterface test_shared_image_interface_;
+  std::unique_ptr<viz::TestSharedImageInterface> test_shared_image_interface_;
   raw_ptr<gpu::gles2::GLES2Interface, ExperimentalRenderer> gl_ = nullptr;
   std::unique_ptr<gpu::raster::RasterInterface> raster_interface_;
   raw_ptr<gpu::raster::RasterInterface, ExperimentalRenderer>
@@ -149,7 +159,7 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
   WebglPreferences webgl_preferences_;
   raw_ptr<cc::ImageDecodeCache, ExperimentalRenderer> image_decode_cache_ =
       nullptr;
-  raw_ptr<viz::RasterContextProvider, ExperimentalRenderer>
+  raw_ptr<viz::TestContextProvider, ExperimentalRenderer>
       raster_context_provider_ = nullptr;
 };
 

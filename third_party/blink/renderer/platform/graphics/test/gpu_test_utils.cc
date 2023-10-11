@@ -19,7 +19,7 @@ void InitializeSharedGpuContextGLES2(
     SetIsContextLost set_context_lost) {
   auto factory = [](viz::TestGLES2Interface* gl, GrDirectContext* context,
                     cc::ImageDecodeCache* cache,
-                    viz::RasterContextProvider* raster_context_provider,
+                    viz::TestContextProvider* raster_context_provider,
                     SetIsContextLost set_context_lost)
       -> std::unique_ptr<WebGraphicsContext3DProvider> {
     if (set_context_lost == SetIsContextLost::kSetToFalse)
@@ -31,8 +31,6 @@ void InitializeSharedGpuContextGLES2(
     auto context_provider = std::make_unique<FakeWebGraphicsContext3DProvider>(
         gl, cache, context, raster_context_provider);
     context_provider->SetCapabilities(gl->test_capabilities());
-    context_provider->SharedImageInterface()->SetCapabilities(
-        raster_context_provider->SharedImageInterface()->GetCapabilities());
     return context_provider;
   };
   test_context_provider->BindToCurrentSequence();
@@ -50,7 +48,7 @@ void InitializeSharedGpuContextRaster(
     SetIsContextLost set_context_lost) {
   auto factory = [](viz::TestRasterInterface* raster,
                     cc::ImageDecodeCache* cache,
-                    viz::RasterContextProvider* raster_context_provider,
+                    viz::TestContextProvider* raster_context_provider,
                     SetIsContextLost set_context_lost)
       -> std::unique_ptr<WebGraphicsContext3DProvider> {
 
@@ -61,11 +59,9 @@ void InitializeSharedGpuContextRaster(
     }
     // else set_context_lost will not be modified
 
-    auto context_provider =
-        std::make_unique<FakeWebGraphicsContext3DProvider>(raster, cache);
+    auto context_provider = std::make_unique<FakeWebGraphicsContext3DProvider>(
+        raster, cache, raster_context_provider);
     context_provider->SetCapabilities(raster->capabilities());
-    context_provider->SharedImageInterface()->SetCapabilities(
-        raster_context_provider->SharedImageInterface()->GetCapabilities());
     return context_provider;
   };
   test_context_provider->BindToCurrentSequence();
