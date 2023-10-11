@@ -7,6 +7,7 @@
 load("@builtin//struct.star", "module")
 load("./android.star", "android")
 load("./clang_linux.star", "clang")
+load("./cros.star", "cros")
 load("./config.star", "config")
 load("./nacl_linux.star", "nacl")
 load("./nasm_linux.star", "nasm")
@@ -19,6 +20,7 @@ def __filegroups(ctx):
     fg = {}
     fg.update(android.filegroups(ctx))
     fg.update(clang.filegroups(ctx))
+    fg.update(cros.filegroups(ctx))
     fg.update(nacl.filegroups(ctx))
     fg.update(nasm.filegroups(ctx))
     fg.update(proto.filegroups(ctx))
@@ -29,6 +31,7 @@ def __filegroups(ctx):
 __handlers = {}
 __handlers.update(android.handlers)
 __handlers.update(clang.handlers)
+__handlers.update(cros.handlers)
 __handlers.update(nacl.handlers)
 __handlers.update(nasm.handlers)
 __handlers.update(proto.handlers)
@@ -86,6 +89,7 @@ def __step_config(ctx, step_config):
         step_config = android.step_config(ctx, step_config)
 
     step_config = clang.step_config(ctx, step_config)
+    step_config = cros.step_config(ctx, step_config)
     step_config = nacl.step_config(ctx, step_config)
     step_config = nasm.step_config(ctx, step_config)
     step_config = proto.step_config(ctx, step_config)

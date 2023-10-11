@@ -6,7 +6,7 @@
 
 load("@builtin//struct.star", "module")
 
-def __filegroups(ct):
+def __filegroups(ctx):
     return {
         "third_party/libc++/src/include:headers": {
             "type": "glob",
