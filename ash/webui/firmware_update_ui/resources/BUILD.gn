@@ -28,7 +28,7 @@ build_webui("build") {
 
   non_web_component_files = [
     "fake_data.ts",
-    "fake_update_controller.js",
+    "fake_update_controller.ts",
     "fake_update_provider.js",
     "firmware_update_types.ts",
     "mojo_interface_provider.ts",

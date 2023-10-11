@@ -19,14 +19,6 @@ export function fakeUpdateControllerTest() {
     controller = null;
   });
 
-  /**
-   * @suppress {visibility}
-   * @return {!Set<string>}
-   */
-  function getCompletedFirmwareUpdates() {
-    return controller.completedFirmwareUpdates_;
-  }
-
   test('StartUpdate', async () => {
     const deviceId = '1';
     controller.setUpdateIntervalInMs(0);
@@ -53,7 +45,8 @@ export function fakeUpdateControllerTest() {
     controller.beginUpdate(deviceId, /*filepath*/ {path: 'test1.cab'});
     // Allow firmware update to complete.
     await controller.getUpdateCompletedPromiseForTesting();
-    assertFalse(controller.isUpdateInProgress());
-    assertTrue(getCompletedFirmwareUpdates().has(deviceId));
+    assertFalse(controller.getIsUpdateInProgressForTesting());
+    assertTrue(
+        controller.getCompletedFirmwareUpdatesForTesting().has(deviceId));
   });
 }

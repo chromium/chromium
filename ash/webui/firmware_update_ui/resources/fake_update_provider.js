@@ -51,7 +51,6 @@ export class FakeUpdateProvider {
    * @return {!Promise}
    */
   prepareForUpdate(deviceId) {
-    /** @type {InstallControllerInterface|FakeInstallControllerInterface} */
     const controller = getUpdateController();
     controller.setDeviceIdForUpdateInProgress(deviceId);
     return new Promise((resolve) => resolve({controller}));
