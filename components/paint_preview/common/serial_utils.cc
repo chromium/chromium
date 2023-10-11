@@ -22,6 +22,7 @@
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/encode/SkPngEncoder.h"
+#include "third_party/skia/include/private/chromium/Slug.h"
 
 namespace paint_preview {
 
@@ -295,6 +296,7 @@ SkDeserialProcs MakeDeserialProcs(DeserializationContext* ctx) {
   procs.fPictureProc = DeserializePictureAsRectData;
   procs.fPictureCtx = ctx;
   procs.fImageProc = DeserializeImage;
+  sktext::gpu::Slug::AddDeserialProcs(&procs, nullptr);
   return procs;
 }
 
