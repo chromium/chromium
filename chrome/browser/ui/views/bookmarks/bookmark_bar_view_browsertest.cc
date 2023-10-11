@@ -622,8 +622,14 @@ class PrerenderBookmarkBarOnHoverNavigationTest
       ukm_entry_builder_;
 };
 
+// TODO(https://crbug.com/1491974): Times out on Mac and Linux.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_PrerenderActivation DISABLED_PrerenderActivation
+#else
+#define MAYBE_PrerenderActivation PrerenderActivation
+#endif
 IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
-                       PrerenderActivation) {
+                       MAYBE_PrerenderActivation) {
   base::HistogramTester histogram_tester;
   // Navigate to an non-empty tab
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -681,8 +687,17 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
 
 // This test verifies prerender cancellation triggered by mouseExited, and
 // another prerender can trigger normally after that.
-IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
-                       PrerenderMouseExitedCancellationAndPrerenderActivation) {
+// TODO(https://crbug.com/1491974): Times out on Mac and Linux.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_PrerenderMouseExitedCancellationAndPrerenderActivation \
+  DISABLED_PrerenderMouseExitedCancellationAndPrerenderActivation
+#else
+#define MAYBE_PrerenderMouseExitedCancellationAndPrerenderActivation \
+  PrerenderMouseExitedCancellationAndPrerenderActivation
+#endif
+IN_PROC_BROWSER_TEST_F(
+    PrerenderBookmarkBarOnHoverNavigationTest,
+    MAYBE_PrerenderMouseExitedCancellationAndPrerenderActivation) {
   base::HistogramTester histogram_tester;
   // Navigate to an non-empty tab
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
