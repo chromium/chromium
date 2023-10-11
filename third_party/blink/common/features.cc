@@ -1615,12 +1615,7 @@ BASE_FEATURE(kSendCnameAliasesToSubresourceFilterFromRenderer,
 
 BASE_FEATURE(kSerializeAccessibilityPostLifecycle,
              "SerializeAccessibilityPostLifecycle",
-// TODO(crbug.com/1477047, fuchsia:132924): Enable for Fuchsia once tests pass.
-#if BUILDFLAG(IS_FUCHSIA)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
              base::FEATURE_ENABLED_BY_DEFAULT
-#endif
 );
 
 // Experiment of the delay from navigation to starting an update of a service
