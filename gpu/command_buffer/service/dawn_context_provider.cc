@@ -26,6 +26,7 @@
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnBackendContext.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnUtils.h"
+#include "ui/gl/gl_implementation.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "third_party/dawn/include/dawn/native/D3D11Backend.h"
@@ -146,6 +147,10 @@ wgpu::BackendType DawnContextProvider::GetDefaultBackendType() {
              switch_value == switches::kSkiaGraphiteBackendDawnVulkan) {
     return wgpu::BackendType::Vulkan;
   }
+
+  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader) {
+    return wgpu::BackendType::Vulkan;
+  }
 #if BUILDFLAG(IS_WIN)
   return base::FeatureList::IsEnabled(features::kSkiaGraphiteDawnUseD3D12)
              ? wgpu::BackendType::D3D12
@@ -164,7 +169,8 @@ wgpu::BackendType DawnContextProvider::GetDefaultBackendType() {
 bool DawnContextProvider::DefaultForceFallbackAdapter() {
   return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
              switches::kSkiaGraphiteBackend) ==
-         switches::kSkiaGraphiteBackendDawnSwiftshader;
+             switches::kSkiaGraphiteBackendDawnSwiftshader ||
+         gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader;
 }
 
 DawnContextProvider::DawnContextProvider(

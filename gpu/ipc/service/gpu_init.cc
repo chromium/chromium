@@ -459,10 +459,10 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     }
 
 #if BUILDFLAG(IS_APPLE)
-    // Graphite requires ANGLE Metal on Mac
+    // Graphite requires ANGLE Metal (or Swiftshader, handled below) on Mac
     constexpr auto kRequiredANGLEImplementation = gl::ANGLEImplementation::kMetal;
 #elif BUILDFLAG(IS_WIN)
-    // Graphite requires ANGLE D3D11 on Windows
+    // Graphite requires ANGLE D3D11 (or Swiftshader, handled below) on Windows
     constexpr auto kRequiredANGLEImplementation = gl::ANGLEImplementation::kD3D11;
 #else
     constexpr auto kRequiredANGLEImplementation = gl::ANGLEImplementation::kNone;
@@ -470,6 +470,11 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     if (kRequiredANGLEImplementation == gl::ANGLEImplementation::kNone ||
         gl::GetANGLEImplementation() == kRequiredANGLEImplementation) {
       // If ANGLE is using required implementation, fallback is not needed.
+      return false;
+    }
+
+    // If ANGLE is using Swiftshader, fallback is not needed.
+    if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader) {
       return false;
     }
 
