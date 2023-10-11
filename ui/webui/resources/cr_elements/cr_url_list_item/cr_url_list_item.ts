@@ -7,7 +7,7 @@ import '../cr_icons.css.js';
 import '../cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_auto_img/cr_auto_img.js';
 
-import {assert} from '//resources/js/assert_ts.js';
+import {assert} from '//resources/js/assert.js';
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import {getFaviconForPageURL} from '//resources/js/icon.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

@@ -24,7 +24,7 @@ import '../cr_icons.css.js';
 import '../cr_hidden_style.css.js';
 import '../cr_shared_vars.css.js';
 
-import {assert} from '//resources/js/assert_ts.js';
+import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrContainerShadowMixin} from '../cr_container_shadow_mixin.js';

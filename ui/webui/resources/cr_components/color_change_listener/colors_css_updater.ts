@@ -7,7 +7,7 @@
  * colors CSS stylesheet when a ColorProvider change in the browser is detected.
  */
 
-import {assert} from '//resources/js/assert_ts.js';
+import {assert} from '//resources/js/assert.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 

@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {$, getRequiredElement} from 'chrome://resources/js/util_ts.js';
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 

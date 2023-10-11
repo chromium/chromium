@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_segmented_button/cr_segmented_button.j
 import 'chrome://resources/cr_elements/cr_segmented_button/cr_segmented_button_option.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CustomizeColorSchemeModeBrowserProxy} from './browser_proxy.js';

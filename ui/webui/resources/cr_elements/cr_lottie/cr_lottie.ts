@@ -19,7 +19,7 @@
  * drawn on is resized.
  */
 
-import {assert, assertNotReached} from '//resources/js/assert_ts.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cr_lottie.html.js';

@@ -4,7 +4,7 @@
 
 import './aggregation_service_internals_table.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {AggregatableReportRequestID, Factory as AggregationServiceInternalsFactory, HandlerRemote as AggregationServiceInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportStatus, WebUIAggregatableReport} from './aggregation_service_internals.mojom-webui.js';
 import {AggregationServiceInternalsTableElement} from './aggregation_service_internals_table.js';

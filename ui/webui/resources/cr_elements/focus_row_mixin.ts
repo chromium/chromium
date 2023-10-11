@@ -4,7 +4,7 @@
 
 // clang-format off
 import {afterNextRender, dedupingMixin, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {FocusRow, FocusRowDelegate} from 'chrome://resources/js/focus_row.js';
 // clang-format on

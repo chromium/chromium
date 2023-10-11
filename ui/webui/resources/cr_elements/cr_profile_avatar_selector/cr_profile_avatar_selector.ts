@@ -14,7 +14,7 @@ import '//resources/polymer/v3_0/paper-styles/color.js';
 import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './cr_profile_avatar_selector_grid.js';
 
-import {assert} from '//resources/js/assert_ts.js';
+import {assert} from '//resources/js/assert.js';
 import {getImage} from '//resources/js/icon.js';
 import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

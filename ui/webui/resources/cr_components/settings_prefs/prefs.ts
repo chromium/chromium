@@ -12,7 +12,7 @@
  * is eventually consistent with the Chrome pref store.
  */
 
-import {assert} from '//resources/js/assert_ts.js';
+import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrSettingsPrefs} from './prefs_types.js';

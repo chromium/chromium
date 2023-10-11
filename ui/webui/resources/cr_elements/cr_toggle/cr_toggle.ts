@@ -16,7 +16,7 @@ export const MOVE_THRESHOLD_PX: number = 5;
  */
 import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assert} from '//resources/js/assert_ts.js';
+import {assert} from '//resources/js/assert.js';
 import '../cr_shared_vars.css.js';
 import {getTemplate} from './cr_toggle.html.js';
 

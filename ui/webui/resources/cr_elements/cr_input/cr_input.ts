@@ -8,7 +8,7 @@ import '../cr_shared_style.css.js';
 import '../cr_shared_vars.css.js';
 import './cr_input_style.css.js';
 
-import {assert} from '//resources/js/assert_ts.js';
+import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cr_input.html.js';

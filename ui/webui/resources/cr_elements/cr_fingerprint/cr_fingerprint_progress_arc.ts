@@ -7,7 +7,7 @@ import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './cr_fingerprint_icons.html.js';
 import '../cr_lottie/cr_lottie.js';
 
-import {assert} from '//resources/js/assert_ts.js';
+import {assert} from '//resources/js/assert.js';
 import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

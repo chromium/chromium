@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from '//resources/js/assert_ts.js';
+import {assertNotReached} from '//resources/js/assert.js';
 import {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {TimeTicks} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 

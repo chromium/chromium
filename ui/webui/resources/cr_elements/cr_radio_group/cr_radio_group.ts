@@ -5,7 +5,7 @@
 import '../cr_radio_button/cr_radio_button.js';
 import '../cr_shared_vars.css.js';
 
-import {assert} from '//resources/js/assert_ts.js';
+import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

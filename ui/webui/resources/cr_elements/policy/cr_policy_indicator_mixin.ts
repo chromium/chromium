@@ -8,7 +8,7 @@
  * rework the "policy" naming scheme throughout this directory.
  */
 
-import {assertNotReached} from '//resources/js/assert_ts.js';
+import {assertNotReached} from '//resources/js/assert.js';
 import {dedupingMixin, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**

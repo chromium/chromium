@@ -4,7 +4,7 @@
 
 import 'chrome://resources/js/jstemplate_compiled.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 
 let instance: TrafficLogTag|null = null;

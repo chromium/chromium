@@ -7,7 +7,7 @@ import './device_info_table.js';
 import './runtime_changelog_table.js';
 import './session_info_table.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 import {ActiveRuntimeInfoTableElement} from './active_runtime_info_table.js';

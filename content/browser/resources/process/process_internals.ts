@@ -6,7 +6,7 @@ import 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 
 import {CrTreeElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 import {CrTreeItemElement, MAY_HAVE_CHILDREN_ATTR} from 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {FrameInfo, FrameInfo_Type, ProcessInternalsHandler, ProcessInternalsHandlerRemote, WebContentsInfo} from './process_internals.mojom-webui.js';
 

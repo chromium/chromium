@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_splitter/cr_splitter.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {decorateQuickQueryControls, SyncSearchManager} from './sync_search.js';
 

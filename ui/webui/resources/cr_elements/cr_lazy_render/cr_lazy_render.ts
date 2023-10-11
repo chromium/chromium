@@ -16,7 +16,7 @@
  *   this.$.menu.get().show();
  */
 
-import {assert} from '//resources/js/assert_ts.js';
+import {assert} from '//resources/js/assert.js';
 import {html, PolymerElement, TemplateInstanceBase, templatize} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 export class CrLazyRenderElement<T extends HTMLElement> extends PolymerElement {
