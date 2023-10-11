@@ -259,7 +259,7 @@ void ConfigureVoiceSearchButton(UIButton* voice_search_button,
 
   UIImage* mic_image = DefaultSymbolWithPointSize(
       kMicrophoneSymbol, kSymbolContentSuggestionsPointSize);
-  voice_search_button.tintColor = [UIColor colorNamed:kGrey600Color];
+  voice_search_button.tintColor = SearchHintLabelColor();
 
   [voice_search_button setImage:mic_image forState:UIControlStateNormal];
   [voice_search_button setAccessibilityLabel:l10n_util::GetNSString(
@@ -289,7 +289,7 @@ void ConfigureLensButton(UIButton* lens_button, UIView* search_tap_target) {
       kCameraLensSymbol, kSymbolContentSuggestionsPointSize);
 
   [lens_button setImage:camera_image forState:UIControlStateNormal];
-  lens_button.tintColor = [UIColor colorNamed:kGrey600Color];
+  lens_button.tintColor = SearchHintLabelColor();
   lens_button.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_LENS);
   lens_button.accessibilityIdentifier = @"Lens";
 
