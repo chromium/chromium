@@ -1720,8 +1720,8 @@ TEST_F(RenderViewContextMenuPrefsTest,
 
 // Verify that the adding the companion region search option to the menu
 // issues a preconnection request to lens.google.com.
-// TODO(crbug.com/1486497): Test is flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/1486497): Test is flaky on ChromeOS and Linux.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_CompanionRegionSearchIssuesGoogleLensPreconnect \
   DISABLED_CompanionRegionSearchIssuesGoogleLensPreconnect
 #else
@@ -1784,8 +1784,8 @@ TEST_F(RenderViewContextMenuPrefsTest,
 
 // Verify that the adding the Lens region search option to the menu
 // issues a preconnection request to lens.google.com.
-// TODO(crbug.com/1486497): Test is flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/1486497): Test is flaky on ChromeOS and Linux.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_LensRegionSearchIssuesGoogleLensPreconnect \
   DISABLED_LensRegionSearchIssuesGoogleLensPreconnect
 #else
