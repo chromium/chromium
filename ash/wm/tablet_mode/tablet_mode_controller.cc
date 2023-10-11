@@ -454,8 +454,9 @@ void TabletModeController::Shutdown() {
 }
 
 void TabletModeController::AddWindow(aura::Window* window) {
-  if (InTabletMode())
+  if (tablet_mode_window_manager_) {
     tablet_mode_window_manager_->AddWindow(window);
+  }
 }
 
 bool TabletModeController::ShouldAutoHideTitlebars(views::Widget* widget) {

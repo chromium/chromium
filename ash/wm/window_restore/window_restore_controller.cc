@@ -420,8 +420,7 @@ void WindowRestoreController::OnWindowVisibilityChanged(aura::Window* window,
   // Early return if we're not in tablet mode, or the app list is null.
   aura::Window* app_list_window =
       Shell::Get()->app_list_controller()->GetWindow();
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode() ||
-      !app_list_window) {
+  if (!Shell::Get()->IsInTabletMode() || !app_list_window) {
     return;
   }
 
@@ -545,8 +544,7 @@ void WindowRestoreController::RestoreStateTypeAndClearLaunchedKey(
       // in normal or maximized state.
       // TODO(crbug.com/1164472): Investigate splitview for ARC apps, which
       // are not managed by TabletModeWindowManager.
-      if (Shell::Get()->tablet_mode_controller()->InTabletMode())
-        Shell::Get()->tablet_mode_controller()->AddWindow(window);
+      Shell::Get()->tablet_mode_controller()->AddWindow(window);
 
       if (chromeos::IsSnappedWindowStateType(*state_type)) {
         base::AutoReset<aura::Window*> auto_reset_to_be_snapped(
