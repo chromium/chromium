@@ -81,8 +81,8 @@ export class SettingsTranslatePageElement extends
 
   private onTargetLanguageChange_() {
     this.languageHelper.setTranslateTargetLanguage(
-        this.shadowRoot!.querySelector<HTMLSelectElement>('#targetLanguage')!
-            .value);
+        this.shadowRoot!.querySelector<HTMLSelectElement>(
+                            '#targetLanguage')!.value);
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
         LanguageSettingsActionType.CHANGE_TRANSLATE_TARGET);
   }
@@ -91,7 +91,7 @@ export class SettingsTranslatePageElement extends
    * Helper function to get the text to display in the target language drop down
    * list. Returns the display name in the current UI language and the native
    * name of the language.
-  */
+   */
   private getTargetLanguageDisplayOption_(
       item: chrome.languageSettingsPrivate.Language): string {
     return this.languageHelper.getFullName(item);
@@ -111,7 +111,8 @@ export class SettingsTranslatePageElement extends
   /**
    * A function used for sorting languages alphabetically by display name.
    */
-  private alphabeticalSort_(first: chrome.languageSettingsPrivate.Language,
+  private alphabeticalSort_(
+      first: chrome.languageSettingsPrivate.Language,
       second: chrome.languageSettingsPrivate.Language) {
     return first.displayName.localeCompare(second.displayName);
   }

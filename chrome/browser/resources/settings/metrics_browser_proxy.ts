@@ -368,7 +368,8 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
   recordSafetyCheckNotificationsListCountHistogram(suggestions: number) {
     chrome.send('metricsHandler:recordInHistogram', [
       'Settings.SafetyCheck.NotificationsListCount',
-      suggestions, 99 /*max value for Notification suggestions*/,
+      suggestions,
+      99 /*max value for Notification suggestions*/,
     ]);
   }
 

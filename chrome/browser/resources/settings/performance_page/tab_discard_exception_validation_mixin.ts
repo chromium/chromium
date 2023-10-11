@@ -20,8 +20,9 @@ export const TabDiscardExceptionValidationMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
     Constructor<TabDiscardExceptionValidationMixinInterface&
                 I18nMixinInterface> => {
-      class TabDiscardExceptionValidationMixin extends I18nMixin
-      (superClass) implements TabDiscardExceptionValidationMixinInterface {
+      const superClassBase = I18nMixin(superClass);
+      class TabDiscardExceptionValidationMixin extends superClassBase implements
+          TabDiscardExceptionValidationMixinInterface {
         static get properties() {
           return {
             errorMessage: {type: String, value: ''},

@@ -152,7 +152,7 @@ export class SettingsSafetyCheckPasswordsChildElement extends
     PasswordManagerImpl.getInstance().recordPasswordCheckReferrer(
         PasswordCheckReferrer.SAFETY_CHECK);
     PasswordManagerImpl.getInstance().showPasswordManager(
-          PasswordManagerPage.CHECKUP);
+        PasswordManagerPage.CHECKUP);
   }
 }
 

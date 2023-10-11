@@ -133,16 +133,16 @@ export class SettingsSpellCheckPageElement extends
 
   private onSpellCheckToggleChange_(e: Event) {
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
-      (e.target as SettingsToggleButtonElement).checked ?
-          LanguageSettingsActionType.ENABLE_SPELL_CHECK_GLOBALLY :
-          LanguageSettingsActionType.DISABLE_SPELL_CHECK_GLOBALLY);
+        (e.target as SettingsToggleButtonElement).checked ?
+            LanguageSettingsActionType.ENABLE_SPELL_CHECK_GLOBALLY :
+            LanguageSettingsActionType.DISABLE_SPELL_CHECK_GLOBALLY);
   }
 
   private onSelectedSpellingServiceChange_() {
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
-      this.prefs.spellcheck.use_spelling_service.value ?
-          LanguageSettingsActionType.SELECT_ENHANCED_SPELL_CHECK :
-          LanguageSettingsActionType.SELECT_BASIC_SPELL_CHECK);
+        this.prefs.spellcheck.use_spelling_service.value ?
+            LanguageSettingsActionType.SELECT_ENHANCED_SPELL_CHECK :
+            LanguageSettingsActionType.SELECT_BASIC_SPELL_CHECK);
   }
 
   // <if expr="not is_macosx">
@@ -270,9 +270,9 @@ export class SettingsSpellCheckPageElement extends
         item.language.code, !item.spellCheckEnabled);
 
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
-      item.spellCheckEnabled ?
-          LanguageSettingsActionType.ENABLE_SPELL_CHECK_FOR_LANGUAGE :
-          LanguageSettingsActionType.DISABLE_SPELL_CHECK_FOR_LANGUAGE);
+        item.spellCheckEnabled ?
+            LanguageSettingsActionType.ENABLE_SPELL_CHECK_FOR_LANGUAGE :
+            LanguageSettingsActionType.DISABLE_SPELL_CHECK_FOR_LANGUAGE);
   }
 
   /**

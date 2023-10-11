@@ -28,6 +28,7 @@ import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TooltipMixin} from '../tooltip_mixin.js';
+
 import {ContentSetting, ContentSettingsTypes, CookiesExceptionType, INVALID_CATEGORY_SUBTYPE, SITE_EXCEPTION_WILDCARD} from './constants.js';
 import {getTemplate} from './site_list.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';

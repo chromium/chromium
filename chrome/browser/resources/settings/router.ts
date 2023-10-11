@@ -263,8 +263,8 @@ export class Router {
   /**
    * Helper function to set the current route and notify all observers.
    */
-  setCurrentRoute(route: Route, queryParameters: URLSearchParams,
-                  isPopstate: boolean) {
+  setCurrentRoute(
+      route: Route, queryParameters: URLSearchParams, isPopstate: boolean) {
     this.recordMetrics(route.path);
 
     const oldRoute = this.currentRoute;
@@ -359,7 +359,8 @@ export class Router {
    * @param removeSearch Whether to strip the 'search' URL
    *     parameter during navigation. Defaults to false.
    */
-  navigateTo(route: Route, dynamicParameters?: URLSearchParams,
+  navigateTo(
+      route: Route, dynamicParameters?: URLSearchParams,
       removeSearch: boolean = false) {
     // The ADVANCED route only serves as a parent of subpages, and should not
     // be possible to navigate to it directly.
@@ -460,7 +461,6 @@ type Constructor<T> = new (...args: any[]) => T;
 export const RouteObserverMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
     Constructor<RouteObserverMixinInterface> => {
-
       class RouteObserverMixin extends superClass implements
           RouteObserverMixinInterface {
         override connectedCallback() {

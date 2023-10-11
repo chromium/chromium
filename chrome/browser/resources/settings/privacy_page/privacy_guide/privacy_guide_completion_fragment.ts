@@ -82,8 +82,7 @@ export class PrivacyGuideCompletionFragmentElement extends
         'update-sync-state',
         (event: UpdateSyncStateEvent) => this.updateWaaLink_(event.signedIn));
     ClearBrowsingDataBrowserProxyImpl.getInstance().getSyncState().then(
-        (status: UpdateSyncStateEvent) =>
-            this.updateWaaLink_(status.signedIn));
+        (status: UpdateSyncStateEvent) => this.updateWaaLink_(status.signedIn));
   }
 
   override focus() {

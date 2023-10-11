@@ -96,9 +96,8 @@ class SecurityKeysSubpageElement extends PolymerElement {
 
   private onCredentialManagementDialogClosed_() {
     this.showCredentialManagementDialog_ = false;
-    const toFocus =
-        this.shadowRoot!.querySelector<HTMLElement>(
-            '#credentialManagementButton');
+    const toFocus = this.shadowRoot!.querySelector<HTMLElement>(
+        '#credentialManagementButton');
     assert(toFocus);
     focusWithoutInk(toFocus);
   }

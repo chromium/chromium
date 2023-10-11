@@ -179,11 +179,6 @@ export {PrivacyGuidePreloadFragmentElement} from './privacy_page/privacy_guide/p
 export {PrivacyGuideSafeBrowsingFragmentElement} from './privacy_page/privacy_guide/privacy_guide_safe_browsing_fragment.js';
 export {PrivacyGuideSearchSuggestionsFragmentElement} from './privacy_page/privacy_guide/privacy_guide_search_suggestions_fragment.js';
 export {PrivacyGuideWelcomeFragmentElement} from './privacy_page/privacy_guide/privacy_guide_welcome_fragment.js';
-export {SettingsPrivacySandboxAdMeasurementSubpageElement} from './privacy_sandbox/privacy_sandbox_ad_measurement_subpage.js';
-export {SettingsPrivacySandboxFledgeSubpageElement} from './privacy_sandbox/privacy_sandbox_fledge_subpage.js';
-export {PrivacySandboxInterestItemElement} from './privacy_sandbox/privacy_sandbox_interest_item.js';
-export {SettingsPrivacySandboxPageElement} from './privacy_sandbox/privacy_sandbox_page.js';
-export {SettingsPrivacySandboxTopicsSubpageElement} from './privacy_sandbox/privacy_sandbox_topics_subpage.js';
 export {BioEnrollDialogPage, SettingsSecurityKeysBioEnrollDialogElement} from './privacy_page/security_keys_bio_enroll_dialog.js';
 export {Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxy, SecurityKeysBioEnrollProxyImpl, SecurityKeysCredentialBrowserProxy, SecurityKeysCredentialBrowserProxyImpl, SecurityKeysPhone, SecurityKeysPhonesBrowserProxy, SecurityKeysPhonesBrowserProxyImpl, SecurityKeysPhonesList, SecurityKeysPinBrowserProxy, SecurityKeysPinBrowserProxyImpl, SecurityKeysResetBrowserProxy, SecurityKeysResetBrowserProxyImpl} from './privacy_page/security_keys_browser_proxy.js';
 export {CredentialManagementDialogPage, SettingsSecurityKeysCredentialManagementDialogElement} from './privacy_page/security_keys_credential_management_dialog.js';
@@ -191,6 +186,11 @@ export {SecurityKeysPhonesSubpageElement} from './privacy_page/security_keys_pho
 export {ResetDialogPage, SettingsSecurityKeysResetDialogElement} from './privacy_page/security_keys_reset_dialog.js';
 export {SetPinDialogPage, SettingsSecurityKeysSetPinDialogElement} from './privacy_page/security_keys_set_pin_dialog.js';
 export {SafeBrowsingSetting, SettingsSecurityPageElement} from './privacy_page/security_page.js';
+export {SettingsPrivacySandboxAdMeasurementSubpageElement} from './privacy_sandbox/privacy_sandbox_ad_measurement_subpage.js';
+export {SettingsPrivacySandboxFledgeSubpageElement} from './privacy_sandbox/privacy_sandbox_fledge_subpage.js';
+export {PrivacySandboxInterestItemElement} from './privacy_sandbox/privacy_sandbox_interest_item.js';
+export {SettingsPrivacySandboxPageElement} from './privacy_sandbox/privacy_sandbox_page.js';
+export {SettingsPrivacySandboxTopicsSubpageElement} from './privacy_sandbox/privacy_sandbox_topics_subpage.js';
 export {SettingsResetPageElement} from './reset_page/reset_page.js';
 export {SettingsResetProfileDialogElement} from './reset_page/reset_profile_dialog.js';
 export {SettingsSafetyHubExtensionsModuleElement} from './safety_hub/extensions_module.js';

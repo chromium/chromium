@@ -152,8 +152,7 @@ export class SettingsSignoutDialogElement extends
     this.$.dialog.close();
     // <if expr="not chromeos_ash">
     const deleteProfile =
-        this.isClearProfileConfirmButtonVisible_() ||
-        this.deleteProfile_;
+        this.isClearProfileConfirmButtonVisible_() || this.deleteProfile_;
     SyncBrowserProxyImpl.getInstance().signOut(deleteProfile);
     // </if>
     // <if expr="chromeos_ash">
