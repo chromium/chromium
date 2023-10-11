@@ -11,8 +11,6 @@ if (is_android) {
 proto_library("optimization_guide_proto") {
   proto_in_dir = "//"
   sources = [
-    "aium_metadata.proto",
-    "aium_service.proto",
     "autocomplete_scoring_model_metadata.proto",
     "client_side_phishing_model_metadata.proto",
     "common_types.proto",
@@ -21,6 +19,8 @@ proto_library("optimization_guide_proto") {
     "hints.proto",
     "loading_predictor_metadata.proto",
     "model_execution.proto",
+    "model_quality_metadata.proto",
+    "model_quality_service.proto",
     "models.proto",
     "on_device_tail_suggest_model_metadata.proto",
     "page_entities_metadata.proto",

@@ -7,14 +7,14 @@ syntax = "proto3";
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.proto";
 
-option java_outer_classname = "AIUMServiceProto";
+option java_outer_classname = "ModelQualityServiceProto";
 
 package optimization_guide.proto;
 
-import "components/optimization_guide/proto/aium_metadata.proto";
+import "components/optimization_guide/proto/model_quality_metadata.proto";
 import "components/optimization_guide/proto/features/default_feature_ai_logging_data.proto";
 
-// A request to send AI data logs to the server.
+// A request to send AI data logs to the model quality server.
 message LogAiDataRequest {
   // Metadata for various AiLoggingData logs that can be batched.
   BatchedLoggingMetadata batched_metadata = 1;
