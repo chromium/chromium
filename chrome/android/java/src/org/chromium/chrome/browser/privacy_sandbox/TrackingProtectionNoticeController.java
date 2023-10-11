@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -136,7 +137,11 @@ public class TrackingProtectionNoticeController {
                                 SecurityStateModel.getSecurityLevelForWebContents(
                                         tab.getWebContents());
 
-                        if (shouldShowNotice() && securityLevel == ConnectionSecurityLevel.SECURE) {
+                        if (shouldShowNotice()
+                                && (ChromeFeatureList.isEnabled(
+                                                ChromeFeatureList
+                                                        .TRACKING_PROTECTION_ONBOARDING_SKIP_SECURE_PAGE_CHECK)
+                                        || securityLevel == ConnectionSecurityLevel.SECURE)) {
                             showNoticeCallback.onResult(tab);
                         }
                     }
