@@ -8205,21 +8205,6 @@
             ]
         }
     ],
-    "IOSAppStoreRatingLoosenedTriggers": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AppStoreRatingLoosenedTriggers"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSAutofillEnableCardArtAndCardProductName": [
         {
             "platforms": [
