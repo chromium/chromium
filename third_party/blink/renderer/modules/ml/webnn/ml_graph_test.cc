@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
@@ -484,6 +485,62 @@ TEST_P(MLGraphTest, LeakyReluTest) {
                                      .dimensions = {1, 2, 2, 1},
                                      .values = {10, 5, -100, 0}},
                            .expected = {10, 5, -20, 0}}
+        .Test(*this, scope, options);
+  }
+}
+
+template <typename T>
+struct ReduceTester {
+  ReduceKind kind;
+  OperandInfo<T> input;
+  Vector<T> expected;
+
+  void Test(MLGraphTest& helper,
+            V8TestingScope& scope,
+            MLReduceOptions* options = MLReduceOptions::Create()) {
+    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    auto* output_operand =
+        BuildReduce(scope, builder, kind, input_operand, options);
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper.ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
+    EXPECT_EQ(results, expected);
+  }
+};
+
+TEST_P(MLGraphTest, ReduceTest) {
+  V8TestingScope scope;
+  {
+    // Test reduceMean operator with default options.
+    auto* options = MLReduceOptions::Create();
+    ReduceTester<float>{.kind = ReduceKind::kMean,
+                        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                                  .dimensions = {1, 2, 2, 1},
+                                  .values = {1.0, 2.0, 3.0, 4.0}},
+                        .expected = {2.5}}
+        .Test(*this, scope, options);
+  }
+  {
+    // Test reduceMean operator with axes = {1}.
+    auto* options = MLReduceOptions::Create();
+    options->setAxes({1});
+    ReduceTester<float>{.kind = ReduceKind::kMean,
+                        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                                  .dimensions = {2, 2},
+                                  .values = {1.0, 2.0, 3.0, 4.0}},
+                        .expected = {1.5, 3.5}}
         .Test(*this, scope, options);
   }
 }

@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
@@ -1334,6 +1335,51 @@ xnn_status DefineXnnNodeForPRelu(xnn_subgraph_t subgraph,
   return xnn_status_success;
 }
 
+xnn_status DefineXnnNodeForReduce(xnn_subgraph_t subgraph,
+                                  const MLOperator* reduce,
+                                  const OperandValueIdMap& operand_value_id_map,
+                                  String& error_message) {
+  const uint32_t input_id =
+      GetOperatorInputValueId(reduce, operand_value_id_map);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(reduce, operand_value_id_map);
+
+  const MLReduceOptions* options =
+      static_cast<const MLReduceOptions*>(reduce->Options());
+  const auto* input = reduce->Inputs()[0].Get();
+  CHECK(input);
+  const auto input_rank = input->Dimensions().size();
+  Vector<uint32_t> default_axes(input_rank);
+  for (wtf_size_t i = 0; i < input_rank; i++) {
+    default_axes[i] = i;
+  }
+  const Vector<uint32_t> axes = options->getAxesOr(std::move(default_axes));
+  Vector<size_t> reduction_axes(axes.size());
+  base::ranges::transform(axes, reduction_axes.begin(), [](uint32_t value) {
+    return base::checked_cast<size_t>(value);
+  });
+
+  if (options->keepDimensions()) {
+    error_message = "XNNPACK can't support keep dimensions.";
+    return xnn_status_unsupported_parameter;
+  }
+  const uint32_t flags = 0;
+  switch (reduce->Kind()) {
+    case MLOperator::OperatorKind::kReduceMean: {
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_static_mean(
+          subgraph, reduction_axes.size(), reduction_axes.data(), input_id,
+          output_id, flags));
+      break;
+    }
+    default: {
+      // Because this method only supports reduceMean currently, it should
+      // already throw unsupported error for other operators.
+      NOTREACHED_NORETURN();
+    }
+  }
+  return xnn_status_success;
+}
+
 xnn_status DefineXnnNodeForRelu(xnn_subgraph_t subgraph,
                                 const MLOperator* relu,
                                 const OperandValueIdMap& operand_value_id_map,
@@ -1728,6 +1774,11 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
       break;
     case MLOperator::OperatorKind::kPRelu:
       XNN_CHECK_STATUS(DefineXnnNodeForPRelu(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+      // Define XNNPACK Node for reduction operators.
+    case MLOperator::OperatorKind::kReduceMean:
+      XNN_CHECK_STATUS(DefineXnnNodeForReduce(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
     case MLOperator::OperatorKind::kRelu:

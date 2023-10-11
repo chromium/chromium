@@ -128,9 +128,9 @@ FAIL reduceSum float32 5D tensor default options / sync Failed to execute 'build
 FAIL reduceSum float32 3D tensor options.axes / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceSum) is not supported.
 FAIL reduceSum float32 4D tensor options.axes / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceSum) is not supported.
 FAIL reduceSum float32 3D tensor options.keepDimensions=false / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceSum) is not supported.
-FAIL reduceSum float32 3D tensor options.keepDimensions=true / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceSum) is not supported.
+FAIL reduceSum float32 3D tensor options.keepDimensions=true / sync Failed to execute 'buildSync' on 'MLGraphBuilder': XNNPACK can't support keep dimensions.
 FAIL reduceSum float32 4D tensor options.keepDimensions=false / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceSum) is not supported.
-FAIL reduceSum float32 4D tensor options.keepDimensions=true / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceSum) is not supported.
+FAIL reduceSum float32 4D tensor options.keepDimensions=true / sync Failed to execute 'buildSync' on 'MLGraphBuilder': XNNPACK can't support keep dimensions.
 FAIL reduceSum float32 4D tensor options.axes with options.keepDimensions=false / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceSum) is not supported.
 FAIL reduceSum float32 4D tensor options.axes with options.keepDimensions=true / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceSum) is not supported.
 FAIL reduceSumSquare float32 1D tensor all positive default options / sync builder[operationName] is not a function
