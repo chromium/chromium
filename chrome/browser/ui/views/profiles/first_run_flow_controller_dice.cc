@@ -53,6 +53,15 @@ bool IsDefaultBrowserDisabledByPolicy() {
   return pref->IsManaged() && !pref->GetValue()->GetBool();
 }
 
+void MaybeLogSetAsDefaultSuccess(
+    shell_integration::DefaultWebClientState state) {
+  if (state == shell_integration::IS_DEFAULT) {
+    base::UmaHistogramEnumeration(
+        "ProfilePicker.FirstRun.DefaultBrowser",
+        DefaultBrowserChoice::kSuccessfullySetAsDefault);
+  }
+}
+
 class IntroStepController : public ProfileManagementStepController {
  public:
   explicit IntroStepController(
@@ -178,13 +187,13 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
   }
 
   void OnStepCompleted(DefaultBrowserChoice choice) {
-    if (choice == DefaultBrowserChoice::kSetAsDefault) {
+    if (choice == DefaultBrowserChoice::kClickSetAsDefault) {
       CHECK(!IsDefaultBrowserDisabledByPolicy());
       // The worker pointer is reference counted. While it is running, sequence
       // it runs on will hold references to it and it will be automatically
       // freed once all its tasks have finished.
       base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
-          ->StartSetAsDefault(base::NullCallback());
+          ->StartSetAsDefault(base::BindOnce(&MaybeLogSetAsDefaultSuccess));
     }
     base::UmaHistogramEnumeration("ProfilePicker.FirstRun.DefaultBrowser",
                                   choice);
