@@ -354,8 +354,10 @@ TEST_F(SearchEngineTableViewControllerTest,
   // There are twelve required prepopulated search egines plus the previously
   // added default one.
   ASSERT_EQ(13, NumberOfItemsInSection(0));
-  // TODO(b/303006727): Once we figure out how to keep a constant seed for each
-  // profile, check the actual list of prepopulated items.
+  CheckRealItem(default_search_engine, true, 0, 0);
+  for (size_t i = 1; i < prepopulated_engines.size(); i++) {
+    CheckRealItem(prepopulated_engines[i].get(), false, 0, i);
+  }
   ASSERT_EQ(2, NumberOfItemsInSection(1));
   CheckCustomItem(kEngineC1Name, kEngineC1Url, false, 1, 0);
   CheckCustomItem(kEngineC2Name, kEngineC2Url, false, 1, 1);
@@ -435,8 +437,9 @@ TEST_F(SearchEngineTableViewControllerTest,
   // custom one, which should be the first in the list.
   ASSERT_EQ(13, NumberOfItemsInSection(0));
   CheckCustomItem(kEngineC1Name, kEngineC1Url, true, 0, 0);
-  // TODO(b/303006727): Once we figure out how to keep a constant seed for each
-  // profile, check the actual list of prepopulated items.
+  for (size_t i = 1; i < prepopulated_engines.size(); i++) {
+    CheckRealItem(prepopulated_engines[i].get(), false, 0, i);
+  }
   ASSERT_EQ(1, NumberOfItemsInSection(1));
   CheckCustomItem(kEngineC2Name, kEngineC2Url, false, 1, 0);
 }
