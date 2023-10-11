@@ -187,7 +187,7 @@ void SavedTabGroupButton::PaintButtonContents(gfx::Canvas* canvas) {
   // header when there is no title.
   const ui::ColorProvider* const cp = GetColorProvider();
   SkColor text_and_outline_color =
-      cp->GetColor(GetSavedTabGroupForegroundColorId(tab_group_color_id_));
+      cp->GetColor(GetSavedTabGroupOutlineColorId(tab_group_color_id_));
 
   // Draw squircle (rounded rect).
   cc::PaintFlags flags;

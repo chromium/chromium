@@ -728,8 +728,7 @@ const std::u16string TabGroupEditorBubbleView::GetTextForCloseButton() {
   }
 
   return saved_tab_group_service->model()->Contains(group_)
-             ? l10n_util::GetStringUTF16(
-                   IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP)
+             ? l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_HIDE_GROUP)
              : l10n_util::GetStringUTF16(
                    IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP);
 }

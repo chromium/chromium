@@ -10367,6 +10367,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP" desc="The label of the tab group header context menu item for closing all tabs in the current group.">
           Close group
         </message>
+        <message name="IDS_TAB_GROUP_HEADER_CXMENU_HIDE_GROUP" desc="The label of the tab group header context menu item for hiding a saved group into the bookmarks bar.">
+          Hide group
+        </message>
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP" desc="The label of the tab group header context menu item for deleting all tabs in the current group.">
           Delete group
         </message>
@@ -10398,6 +10401,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP" desc="In Title Case: The label of the tab group header context menu item for closing all tabs in the current group.">
           Close Group
+        </message>
+        <message name="IDS_TAB_GROUP_HEADER_CXMENU_HIDE_GROUP" desc="The label of the tab group header context menu item for hiding a saved group into the bookmarks bar.">
+          Hide Group
         </message>
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP" desc="The label of the tab group header context menu item for deleting all tabs in the current group.">
           Delete Group
