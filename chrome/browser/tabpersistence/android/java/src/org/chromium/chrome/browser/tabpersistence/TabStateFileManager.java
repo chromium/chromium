@@ -8,11 +8,15 @@ import android.os.SystemClock;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StreamUtil;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -68,8 +72,9 @@ public class TabStateFileManager {
     }
 
     /**
-     * Restore a TabState file for a particular Tab.  Checks if the Tab exists as a regular tab
+     * Restore a TabState file for a particular Tab. Checks if the Tab exists as a regular tab
      * before searching for an encrypted version.
+     *
      * @param stateFolder Folder containing the TabState files.
      * @param id ID of the Tab to restore.
      * @return TabState that has been restored, or null if it failed.
@@ -90,7 +95,7 @@ public class TabStateFileManager {
 
         // If one of them passed, open the file input stream and read the state contents.
         long startTime = SystemClock.elapsedRealtime();
-        TabState tabState = restoreTabState(file, encrypted);
+        TabState tabState = restoreTabStateInternal(file, encrypted);
         if (tabState != null) {
             RecordHistogram.recordTimesHistogram(
                     "Tabs.TabState.LoadTime", SystemClock.elapsedRealtime() - startTime);
@@ -100,11 +105,13 @@ public class TabStateFileManager {
 
     /**
      * Restores a particular TabState file from storage.
+     *
      * @param tabFile Location of the TabState file.
      * @param isEncrypted Whether the Tab state is encrypted or not.
      * @return TabState that has been restored, or null if it failed.
      */
-    public static TabState restoreTabState(File tabFile, boolean isEncrypted) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static TabState restoreTabStateInternal(File tabFile, boolean isEncrypted) {
         FileInputStream stream = null;
         TabState tabState = null;
         try {
@@ -268,12 +275,25 @@ public class TabStateFileManager {
     }
 
     /**
+     * @param directory directory TabState files are stored in
+     * @param tabState TabState to store in a file
+     * @param tabId identifier for the Tab
+     * @param isEncrypted whether the stored Tab is encrypted or not
+     */
+    public static void saveState(
+            File directory, TabState tabState, int tabId, boolean isEncrypted) {
+        saveStateInternal(getTabStateFile(directory, tabId, isEncrypted), tabState, isEncrypted);
+    }
+
+    /**
      * Writes the TabState to disk. This method may be called on either the UI or background thread.
+     *
      * @param file File to write the tab's state to.
      * @param state State object obtained from from {@link Tab#getState()}.
      * @param encrypted Whether or not the TabState should be encrypted.
      */
-    public static void saveState(File file, TabState state, boolean encrypted) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static void saveStateInternal(File file, TabState state, boolean encrypted) {
         if (state == null || state.contentsState == null) return;
         long startTime = SystemClock.elapsedRealtime();
 
@@ -356,13 +376,31 @@ public class TabStateFileManager {
     /**
      * Generates the name of the state file that should represent the Tab specified by {@code id}
      * and {@code encrypted}.
-     * @param id        The id of the {@link Tab} to save.
+     *
+     * @param id The id of the {@link Tab} to save.
      * @param encrypted Whether or not the tab is incognito and should be encrypted.
-     * @return          The name of the file the Tab state should be saved to.
+     * @return The name of the file the Tab state should be saved to.
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static String getTabStateFilename(int id, boolean encrypted) {
         return (encrypted ? SAVED_TAB_STATE_FILE_PREFIX_INCOGNITO : SAVED_TAB_STATE_FILE_PREFIX)
                 + id;
+    }
+
+    /**
+     * Delete TabState file asynchronously on a background thread.
+     *
+     * @param directory directory the TabState files are stored in.
+     * @param tabId identifier for the Tab
+     * @param encrypted True if the Tab is incognito.
+     */
+    public static void deleteAsync(File directory, int tabId, boolean encrypted) {
+        PostTask.runOrPostTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> {
+                    ThreadUtils.assertOnBackgroundThread();
+                    deleteTabState(directory, tabId, encrypted);
+                });
     }
 
     /**

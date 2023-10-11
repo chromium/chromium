@@ -32,10 +32,10 @@ import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.TabPersistenceFileInfo.TabStateFileInfo;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
-import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
@@ -179,16 +179,20 @@ public class TabbedModeTabPersistencePolicyTest {
         TabPersistencePolicy policy =
                 orchestrator1.getTabPersistentStoreForTesting().getTabPersistencePolicyForTesting();
         final CallbackHelper callbackSignal = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            policy.cleanupInstanceState(id, (result) -> {
-                assertThat(result,
-                        Matchers.containsInAnyOrder(
-                                TabStateFileManager.getTabStateFilename(4, false),
-                                TabStateFileManager.getTabStateFilename(12, true),
-                                TabStateFileManager.getTabStateFilename(14, true)));
-                callbackSignal.notifyCalled();
-            });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    policy.cleanupInstanceState(
+                            id,
+                            (result) -> {
+                                assertThat(
+                                        result.getTabStateFileInfos(),
+                                        Matchers.containsInAnyOrder(
+                                                new TabStateFileInfo(4, false),
+                                                new TabStateFileInfo(12, true),
+                                                new TabStateFileInfo(14, true)));
+                                callbackSignal.notifyCalled();
+                            });
+                });
         callbackSignal.waitForCallback(0);
     }
 }

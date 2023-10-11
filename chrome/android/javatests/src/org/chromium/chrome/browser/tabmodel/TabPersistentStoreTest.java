@@ -804,8 +804,9 @@ public class TabPersistentStoreTest {
             // Load up each TabState and confirm that values are still correct.
             for (int j = 0; j < info.numRegularTabs; j++) {
                 if (restoredFromDisk(selector.getModel(false).getTabAt(j))) {
-                    TabState currentState = TabStateFileManager.restoreTabState(
-                            mMockDirectory.getDataDirectory(), info.contents[j].tabId);
+                    TabState currentState =
+                            TabStateFileManager.restoreTabState(
+                                    mMockDirectory.getDataDirectory(), info.contents[j].tabId);
                     Assert.assertEquals(info.contents[j].title,
                             currentState.contentsState.getDisplayTitleFromState());
                     Assert.assertEquals(info.contents[j].url,

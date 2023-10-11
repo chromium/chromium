@@ -84,21 +84,23 @@ public interface TabPersistencePolicy {
      * Trigger a clean up for any unused files (both individual state files for tabs as well as
      * state files for the models).
      *
-     * @param filesToDelete Callback that is triggered with the filenames to delete.  These files
-     *                      need to reside in {@link #getOrCreateStateDirectory()}.
+     * @param tabDataToDelete Callback that is triggered with data to identify stored Tab data to
+     *     delete. The stored Tab data must reside in {@link #getOrCreateStateDirectory()}.
      */
     // TODO(tedchoc): Clean up this API.  This does a mixture of file deletion as well as collecting
     //                files to be deleted.  It should either handle all deletions internally or not
     //                do anything but collect files to be deleted.
-    void cleanupUnusedFiles(Callback<List<String>> filesToDelete);
+    void cleanupUnusedFiles(Callback<TabPersistenceFileInfo> tabDataToDelete);
 
     /**
      * Clean up the persistent state for a given instance.
+     *
      * @param index ID of an instance whose state will be deleted.
-     * @param filesToDelete Callback that is triggered with the filenames to delete.  These files
-     *                      need to reside in {@link #getOrCreateStateDirectory()}.
+     * @param tabDataToDelete Callback that is triggered with data to identify stored Tab data to
+     *     delete. These stored Tab data must reside in {@link #getOrCreateStateDirectory()}.
      */
-    default void cleanupInstanceState(int index, Callback<List<String>> filesToDelete) {}
+    default void cleanupInstanceState(
+            int index, Callback<TabPersistenceFileInfo> tabDataToDelete) {}
 
     /**
      * Sets the {@link TabContentManager} to use.

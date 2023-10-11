@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabPersistenceFileInfo;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
@@ -173,10 +174,10 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
     }
 
     @Override
-    public void cleanupUnusedFiles(Callback<List<String>> filesToDelete) {
+    public void cleanupUnusedFiles(Callback<TabPersistenceFileInfo> tabDataToDelete) {
         synchronized (CLEAN_UP_TASK_LOCK) {
             if (sCleanupTask != null) sCleanupTask.cancel(true);
-            sCleanupTask = new CleanUpTabStateDataTask(filesToDelete);
+            sCleanupTask = new CleanUpTabStateDataTask(tabDataToDelete);
             sCleanupTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
@@ -286,14 +287,14 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
     }
 
     private class CleanUpTabStateDataTask extends AsyncTask<Void> {
-        private final Callback<List<String>> mFilesToDeleteCallback;
+        private final Callback<TabPersistenceFileInfo> mTabDataToDeleteCallback;
 
         private Set<Integer> mUnreferencedTabIds;
         private List<File> mDeletableMetadataFiles;
         private Map<File, SparseBooleanArray> mTabIdsByMetadataFile;
 
-        CleanUpTabStateDataTask(Callback<List<String>> filesToDelete) {
-            mFilesToDeleteCallback = filesToDelete;
+        CleanUpTabStateDataTask(Callback<TabPersistenceFileInfo> storedTabDataToDeleteCallback) {
+            mTabDataToDeleteCallback = storedTabDataToDeleteCallback;
         }
 
         @Override
@@ -338,14 +339,14 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
 
         @Override
         protected void onPostExecute(Void unused) {
-            List<String> filesToDelete = new ArrayList<>();
+            TabPersistenceFileInfo tabDataToDelete = new TabPersistenceFileInfo();
             if (mDestroyed) {
-                mFilesToDeleteCallback.onResult(filesToDelete);
+                mTabDataToDeleteCallback.onResult(tabDataToDelete);
                 return;
             }
 
             if (mUnreferencedTabIds.isEmpty() && mDeletableMetadataFiles.isEmpty()) {
-                mFilesToDeleteCallback.onResult(filesToDelete);
+                mTabDataToDeleteCallback.onResult(tabDataToDelete);
                 return;
             }
 
@@ -360,8 +361,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
 
                 // The tab state is not referenced by any current activities or any metadata files,
                 // so mark it for deletion.
-                filesToDelete.add(
-                        TabStateFileManager.getTabStateFilename(unreferencedTabId, false));
+                tabDataToDelete.addTabStateFileInfo(unreferencedTabId, false);
             }
 
             for (int i = 0; i < mDeletableMetadataFiles.size(); i++) {
@@ -374,13 +374,12 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
                     // BaseCustomTabActivity.
                     if (liveTaskIds.contains(taskId)) continue;
 
-                    filesToDelete.add(metadataFile.getName());
+                    tabDataToDelete.addMetadataFile(metadataFile.getName());
 
                     SparseBooleanArray unusedTabIds = mTabIdsByMetadataFile.get(metadataFile);
                     if (unusedTabIds == null) continue;
                     for (int j = 0; j < unusedTabIds.size(); j++) {
-                        filesToDelete.add(TabStateFileManager.getTabStateFilename(
-                                unusedTabIds.keyAt(j), false));
+                        tabDataToDelete.addTabStateFileInfo(unusedTabIds.keyAt(j), false);
                     }
                 } catch (NumberFormatException ex) {
                     assert false : "Unexpected tab metadata file found: " + metadataFile.getName();
@@ -388,7 +387,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
                 }
             }
 
-            mFilesToDeleteCallback.onResult(filesToDelete);
+            mTabDataToDeleteCallback.onResult(tabDataToDelete);
 
             synchronized (CLEAN_UP_TASK_LOCK) {
                 sCleanupTask = null; // Release static reference to external callback

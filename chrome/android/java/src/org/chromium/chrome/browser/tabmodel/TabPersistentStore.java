@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.state.PersistedTabData;
+import org.chromium.chrome.browser.tabmodel.TabPersistenceFileInfo.TabStateFileInfo;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
@@ -387,8 +388,7 @@ public class TabPersistentStore {
                 try {
                     TabState state = TabStateExtractor.from(tab);
                     if (state != null) {
-                        TabStateFileManager.saveState(
-                                getTabStateFile(id, incognito), state, incognito);
+                        TabStateFileManager.saveState(getStateDirectory(), state, id, incognito);
                     }
                 } catch (OutOfMemoryError e) {
                     Log.e(TAG, "Out of memory error while attempting to save tab state.  Erasing.");
@@ -890,7 +890,7 @@ public class TabPersistentStore {
     }
 
     private void cleanupPersistentData(int id, boolean incognito) {
-        deleteFileAsync(TabStateFileManager.getTabStateFilename(id, incognito), false);
+        TabStateFileManager.deleteAsync(getStateDirectory(), id, incognito);
         // No need to forward that event to the tab content manager as this is already
         // done as part of the standard tab removal process.
     }
@@ -1364,7 +1364,7 @@ public class TabPersistentStore {
         if (state == null) return false;
 
         try {
-            TabStateFileManager.saveState(getTabStateFile(tabId, encrypted), state, encrypted);
+            TabStateFileManager.saveState(getStateDirectory(), state, tabId, encrypted);
             return true;
         } catch (OutOfMemoryError e) {
             android.util.Log.e(
@@ -1472,15 +1472,22 @@ public class TabPersistentStore {
      * Asynchronously triggers a cleanup of any unused persistent data.
      */
     private void cleanUpPersistentData() {
-        mPersistencePolicy.cleanupUnusedFiles(new Callback<List<String>>() {
-            @Override
-            public void onResult(List<String> result) {
-                if (result == null) return;
-                for (int i = 0; i < result.size(); i++) {
-                    deleteFileAsync(result.get(i), true);
-                }
-            }
-        });
+        mPersistencePolicy.cleanupUnusedFiles(
+                new Callback<TabPersistenceFileInfo>() {
+                    @Override
+                    public void onResult(TabPersistenceFileInfo result) {
+                        if (result == null) return;
+                        for (String metadataFile : result.getMetadataFiles()) {
+                            deleteFileAsync(metadataFile, true);
+                        }
+                        for (TabStateFileInfo tabStateFileInfo : result.getTabStateFileInfos()) {
+                            TabStateFileManager.deleteAsync(
+                                    getStateDirectory(),
+                                    tabStateFileInfo.tabId,
+                                    tabStateFileInfo.isEncrypted);
+                        }
+                    }
+                });
         performPersistedTabDataMaintenance(null);
     }
 
@@ -1507,17 +1514,28 @@ public class TabPersistentStore {
      * @param instanceId Instance ID.
      */
     public void cleanupStateFile(int instanceId) {
-        mPersistencePolicy.cleanupInstanceState(instanceId, new Callback<List<String>>() {
-            @Override
-            public void onResult(List<String> result) {
-                // Delete the instance state file (tab_stateX) as well.
-                deleteFileAsync(TabbedModeTabPersistencePolicy.getStateFileName(instanceId), true);
+        mPersistencePolicy.cleanupInstanceState(
+                instanceId,
+                new Callback<TabPersistenceFileInfo>() {
+                    @Override
+                    public void onResult(TabPersistenceFileInfo result) {
+                        // Delete the instance state file (tab_stateX) as well.
+                        deleteFileAsync(
+                                TabbedModeTabPersistencePolicy.getStateFileName(instanceId), true);
 
-                // |result| can be null if the task gets cancelled.
-                if (result == null) return;
-                for (int i = 0; i < result.size(); i++) deleteFileAsync(result.get(i), true);
-            }
-        });
+                        // |result| can be null if the task gets cancelled.
+                        if (result == null) return;
+                        for (String metadataFile : result.getMetadataFiles()) {
+                            deleteFileAsync(metadataFile, true);
+                        }
+                        for (TabStateFileInfo tabStateFileInfo : result.getTabStateFileInfos()) {
+                            TabStateFileManager.deleteAsync(
+                                    mPersistencePolicy.getOrCreateStateDirectory(),
+                                    tabStateFileInfo.tabId,
+                                    tabStateFileInfo.isEncrypted);
+                        }
+                    }
+                });
     }
 
     /**
@@ -1689,12 +1707,14 @@ public class TabPersistentStore {
     }
 
     private void prefetchActiveTabTask(int activeTabId, TaskRunner taskRunner) {
-        mPrefetchTabStateActiveTabTask = new BackgroundOnlyAsyncTask<TabState>() {
-            @Override
-            protected TabState doInBackground() {
-                return TabStateFileManager.restoreTabState(getStateDirectory(), activeTabId);
-            }
-        }.executeOnTaskRunner(taskRunner);
+        mPrefetchTabStateActiveTabTask =
+                new BackgroundOnlyAsyncTask<TabState>() {
+                    @Override
+                    protected TabState doInBackground() {
+                        return TabStateFileManager.restoreTabState(
+                                getStateDirectory(), activeTabId);
+                    }
+                }.executeOnTaskRunner(taskRunner);
     }
 
     public void addObserver(TabPersistentStoreObserver observer) {

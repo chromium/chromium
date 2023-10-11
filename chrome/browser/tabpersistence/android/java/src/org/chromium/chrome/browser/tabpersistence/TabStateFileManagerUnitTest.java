@@ -51,9 +51,9 @@ public class TabStateFileManagerUnitTest {
     public void testSaveTabStateWithMemoryMappedContentsState() throws IOException {
         File file = createTestTabStateFile();
         TabState state = createTabStateWithMappedByteBuffer(file);
-        TabStateFileManager.saveState(file, state, false);
+        TabStateFileManager.saveStateInternal(file, state, false);
 
-        validateTestTabState(TabStateFileManager.restoreTabState(file, false));
+        validateTestTabState(TabStateFileManager.restoreTabStateInternal(file, false));
     }
 
     private TabState createTabStateWithMappedByteBuffer(File file) throws IOException {

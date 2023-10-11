@@ -47,7 +47,7 @@ public class TabStateTest {
         mTestTabModelDirectory.writeTabStateFile(info);
 
         File tabStateFile = new File(mTestTabModelDirectory.getBaseDirectory(), info.filename);
-        TabState tabState = TabStateFileManager.restoreTabState(tabStateFile, false);
+        TabState tabState = TabStateFileManager.restoreTabStateInternal(tabStateFile, false);
         Assert.assertNotNull(tabState);
         Assert.assertEquals(info.url, tabState.contentsState.getVirtualUrlFromState());
         Assert.assertEquals(info.title, tabState.contentsState.getDisplayTitleFromState());

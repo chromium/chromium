@@ -71,7 +71,7 @@ public class WebContentsStateBridgeTest {
                         'g', 'a', 'r', 'b', 'a', 'g', 'e'});
 
         File tabStateFile = new File(mTestTabModelDirectory.getBaseDirectory(), "tab0");
-        TabState tabState = TabStateFileManager.restoreTabState(tabStateFile, false);
+        TabState tabState = TabStateFileManager.restoreTabStateInternal(tabStateFile, false);
         // Garbage-in, garbage out. Client code must be tolerant to null TabState
         Assert.assertNotNull(tabState);
         Assert.assertNotNull(tabState.contentsState);
