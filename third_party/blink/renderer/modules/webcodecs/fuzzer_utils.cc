@@ -111,8 +111,8 @@ VideoEncoderConfig* MakeVideoEncoderConfig(
   config->setCodec(proto.codec().c_str());
   config->setHardwareAcceleration(ToAccelerationType(proto.acceleration()));
   config->setFramerate(proto.framerate());
-  config->setWidth(proto.width());
-  config->setHeight(proto.height());
+  config->setWidth(std::min(proto.width(), kMaxVideoFrameDimension));
+  config->setHeight(std::min(proto.height(), kMaxVideoFrameDimension));
   config->setDisplayWidth(proto.display_width());
   config->setDisplayHeight(proto.display_height());
 
