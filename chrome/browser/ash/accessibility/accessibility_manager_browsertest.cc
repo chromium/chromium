@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/dictation_test_utils.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
@@ -2121,7 +2122,11 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerDictationKeyboardImprovementsTest,
   DictationTestUtils utils =
       DictationTestUtils(speech::SpeechRecognitionType::kNetwork,
                          DictationTestUtils::EditableType::kInput);
-  utils.EnableDictation(browser());
+  utils.EnableDictation(
+      /*profile=*/AccessibilityManager::Get()->profile(),
+      /*navigate_to_url=*/base::BindLambdaForTesting([this](const GURL& url) {
+        ui_test_utils::NavigateToURL(browser(), url);
+      }));
 
   // If Dictation is already enabled, then pressing the Dictation key should
   // toggle Dictation on/off normally.

@@ -33,6 +33,7 @@
 #include "ui/base/ime/ash/mock_ime_input_context_handler.h"
 #include "ui/base/ime/input_method_base.h"
 #include "ui/events/test/event_generator.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -132,8 +133,10 @@ DictationTestUtils::~DictationTestUtils() {
   }
 }
 
-void DictationTestUtils::EnableDictation(Browser* browser) {
-  profile_ = browser->profile();
+void DictationTestUtils::EnableDictation(
+    Profile* profile,
+    base::OnceCallback<void(const GURL&)> navigate_to_url) {
+  profile_ = profile;
   console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
       profile_, extension_misc::kAccessibilityCommonExtensionId);
   generator_ = std::make_unique<ui::test::EventGenerator>(
@@ -177,7 +180,7 @@ void DictationTestUtils::EnableDictation(Browser* browser) {
       break;
   }
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, GURL(url)));
+  std::move(navigate_to_url).Run(GURL(url));
 
   // Dictation test support references the main Dictation object, so wait for
   // the main object to be created before installing test support.

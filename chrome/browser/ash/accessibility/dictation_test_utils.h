@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/speech/speech_recognition_test_helper.h"
 
-class Browser;
+class GURL;
 class Profile;
 
 namespace speech {
@@ -48,7 +48,8 @@ class DictationTestUtils {
   DictationTestUtils& operator=(const DictationTestUtils&) = delete;
 
   // Enables and sets up Dictation.
-  void EnableDictation(Browser* browser);
+  void EnableDictation(Profile* profile,
+                       base::OnceCallback<void(const GURL&)> navigate_to_url);
   // Toggles Dictation on or off depending on Dictation's current state.
   void ToggleDictationWithKeystroke();
 

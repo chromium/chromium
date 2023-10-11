@@ -22,6 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/autoclick_test_utils.h"
@@ -129,12 +130,6 @@ AccessibilityManager* GetManager() {
   return AccessibilityManager::Get();
 }
 
-// TODO(b/301475127): remove this method once we can inherit from
-// AccessibilityFeatureBrowsertest.
-Profile* GetProfile() {
-  return GetManager()->profile();
-}
-
 void EnableChromeVox() {
   GetManager()->EnableSpokenFeedback(true);
 }
@@ -192,7 +187,7 @@ class HistogramWaiter {
 
 }  // namespace
 
-class DictationTestBase : public InProcessBrowserTest,
+class DictationTestBase : public AccessibilityFeatureBrowserTest,
                           public ::testing::WithParamInterface<TestConfig> {
  public:
   DictationTestBase() = default;
@@ -217,7 +212,10 @@ class DictationTestBase : public InProcessBrowserTest,
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    utils_->EnableDictation(browser());
+    utils_->EnableDictation(
+        /*profile=*/GetProfile(),
+        /*navigate_to_url=*/base::BindOnce(&DictationTestBase::NavigateToUrl,
+                                           base::Unretained(this)));
   }
 
   // Routers to DictationTestUtils methods.
