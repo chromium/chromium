@@ -114,6 +114,8 @@ PasswordAddUsernameView::PasswordAddUsernameView(
 
   std::unique_ptr<views::EditableCombobox> username_dropdown =
       CreateUsernameEditableCombobox(password_form);
+  username_dropdown->SetCallback(base::BindRepeating(
+      &PasswordAddUsernameView::OnUsernameChanged, base::Unretained(this)));
   username_dropdown_ = username_dropdown.get();
 
   std::unique_ptr<views::Label> password_label =
@@ -140,6 +142,7 @@ PasswordAddUsernameView::PasswordAddUsernameView(
   SetFootnoteView(CreateFooterView());
   SetButtons((ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL));
 
+  SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_ADD_USERNAME));
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
@@ -198,4 +201,9 @@ std::unique_ptr<views::View> PasswordAddUsernameView::CreateFooterView() {
       /*link_message_id=*/
       IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
       controller_.GetPrimaryAccountEmail(), open_password_manager_closure);
+}
+
+void PasswordAddUsernameView::OnUsernameChanged() {
+  SetButtonEnabled(ui::DIALOG_BUTTON_OK,
+                   !username_dropdown_->GetText().empty());
 }

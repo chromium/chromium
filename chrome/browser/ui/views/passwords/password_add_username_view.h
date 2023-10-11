@@ -37,6 +37,7 @@ class PasswordAddUsernameView : public PasswordBubbleViewBase {
 
   void UpdateUsernameInModel();
   std::unique_ptr<views::View> CreateFooterView();
+  void OnUsernameChanged();
 
   AddUsernameBubbleController controller_;
   raw_ptr<views::EditableCombobox> username_dropdown_ = nullptr;
