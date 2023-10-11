@@ -103,6 +103,10 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
   main_image_->SetVisible(false);
   subtitle_->SetVisible(false);
 
+  if (features::IsChromeRefresh2023()) {
+    default_title_->SetTextStyle(style::STYLE_HEADLINE_4);
+  }
+
   auto minimize = CreateMinimizeButton(base::BindRepeating(
       [](BubbleFrameView* view, const ui::Event& event) {
         if (view->input_protector_.IsPossiblyUnintendedInteraction(event))
