@@ -16,10 +16,12 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_sync_screen_provider.h"
 #import "ios/chrome/browser/ui/authentication/signin/uno_signin_screen_provider.h"
+#import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/upgrade_signin_logger.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/tangible_sync/tangible_sync_screen_coordinator.h"
@@ -72,6 +74,16 @@ using base::UserMetricsAction;
   [super start];
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
+    if (_accessPoint ==
+        signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO) {
+      ChromeAccountManagerService* accountManagerService =
+          ChromeAccountManagerServiceFactory::GetForBrowserState(
+              self.browser->GetBrowserState());
+      // TODO(crbug.com/779791): Need to add `CHECK(accountManagerService)`.
+      [UpgradeSigninLogger
+          logSigninStartedWithAccessPoint:_accessPoint
+                    accountManagerService:accountManagerService];
+    }
     _screenProvider = [[UnoSigninScreenProvider alloc] init];
   } else {
     _screenProvider = [[SigninSyncScreenProvider alloc] init];
@@ -177,6 +189,13 @@ using base::UserMetricsAction;
 // SigninCompletionInfo object that includes the given `identity`.
 - (void)finishWithResult:(SigninCoordinatorResult)result
                 identity:(id<SystemIdentity>)identity {
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos) &&
+      _accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO) {
+    // TODO(crbug.com/1491419): `addedAccount` is not always `NO`. Need to fix
+    // that call to have the right value.
+    [UpgradeSigninLogger logSigninCompletedWithResult:result addedAccount:NO];
+  }
   // When this coordinator is interrupted, `_childCoordinator` needs to be
   // stopped here.
   if (_childCoordinator) {
