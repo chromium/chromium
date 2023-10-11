@@ -278,8 +278,6 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
         base::Unretained(this), /*animate=*/false));
   }
 
-  UpdateCaptionButtonState(/*animate=*/false);
-
   frame_observer_.Observe(frame_);
 }
 
