@@ -7215,7 +7215,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
       .starting_url = {"a.test", "/fenced_frames/title1.html"},
       .navigation_url = {"b.test", "/fenced_frames/title1.html"},
       .message = std::string(blink::kFencedFrameMaxBeaconLength + 1, '*'),
-      .expected_data = false,
+      .expected_success = false,
   };
   RunTest(config);
 }
@@ -7248,7 +7248,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
       .starting_url = {"a.test", "/fenced_frames/title1.html"},
       .navigation_url = {"b.test", "/fenced_frames/title1.html"},
       .register_beacon_data = false,
-      .expected_data = false,
+      .expected_success = false,
   };
   RunTest(config);
 }
