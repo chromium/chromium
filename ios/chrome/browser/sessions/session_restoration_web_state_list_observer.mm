@@ -154,8 +154,8 @@ void SessionRestorationWebStateListObserver::AttachWebState(
           &SessionRestorationWebStateListObserver::MarkWebStateDirty,
           base::Unretained(this)));
 
-  // If the newly attached `WebState` can be serialized, the mark it as dirty
-  // to force its serialization, otherwise adtop it (this will allow re-using
+  // If the newly attached `WebState` can be serialized, then mark it as dirty
+  // to force its serialization, otherwise adopt it (this will allow re-using
   // the existing data on disk).
   if (CanSerializeWebState(attached_web_state)) {
     MarkWebStateDirty(attached_web_state);
