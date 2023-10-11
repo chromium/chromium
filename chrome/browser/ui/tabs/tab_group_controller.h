@@ -30,7 +30,7 @@ class TabGroupController {
   virtual void CloseTabGroup(const tab_groups::TabGroupId& group) = 0;
   virtual Profile* GetProfile() = 0;
 
-  // Methods from TabStipModel that are exposed to TabGroup.
+  // Methods from TabStripModel that are exposed to TabGroup.
   virtual absl::optional<tab_groups::TabGroupId> GetTabGroupForTab(
       int index) const = 0;
   virtual content::WebContents* GetWebContentsAt(int index) const = 0;
