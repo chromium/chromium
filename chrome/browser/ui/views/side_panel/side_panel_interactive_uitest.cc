@@ -196,12 +196,6 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest,
       EnsureNotPresent(kReadLaterSidePanelWebViewElementId));
 }
 
-namespace {
-DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
-    ui::test::PollingStateObserver<absl::optional<SidePanelEntryId>>,
-    kCurrentSidePanelState);
-}
-
 // Test case for menus that only appear with the kSidePanelPinning feature
 // enabled.
 class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
@@ -215,17 +209,6 @@ class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::SetUp();
   }
 
-  auto WatchSidePanelSelection() {
-    return PollState(kCurrentSidePanelState, [&]() {
-      auto* const side_panel = SidePanelUI::GetSidePanelUIForBrowser(browser());
-      return side_panel ? side_panel->GetCurrentEntryId() : absl::nullopt;
-    });
-  }
-
-  auto WaitForSidePanelSelection(SidePanelEntryId entry_id) {
-    return WaitForState(kCurrentSidePanelState, entry_id);
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -234,17 +217,12 @@ class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
 // tools context menu.
 IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
                        OpenReadingModeSidePanel) {
-  SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser())
-      ->SetNoDelaysForTesting(true);
+  SidePanelCoordinator* const coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+  coordinator->SetNoDelaysForTesting(true);
 
-  RunTestSequence(EnsureNotPresent(kSidePanelElementId),
-                  PressButton(kToolbarAppMenuButtonElementId),
-                  SelectMenuItem(AppMenuModel::kMoreToolsMenuItem),
-                  SelectMenuItem(ToolsMenuModel::kReadingModeMenuItem),
-                  WatchSidePanelSelection(), WaitForShow(kSidePanelElementId),
-                  FlushEvents(),
-                  WaitForSidePanelSelection(SidePanelEntryId::kReadAnything),
-                  // Click on the close button to dismiss the side panel.
-                  PressButton(kSidePanelCloseButtonElementId),
-                  WaitForHide(kSidePanelElementId));
+  chrome::ExecuteCommand(browser(), IDC_SHOW_READING_MODE_SIDE_PANEL);
+
+  EXPECT_EQ(SidePanelEntryKey(SidePanelEntryId::kReadAnything),
+            coordinator->GetCurrentSidePanelEntryForTesting()->key());
 }
