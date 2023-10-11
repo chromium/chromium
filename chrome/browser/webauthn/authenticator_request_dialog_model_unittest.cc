@@ -292,9 +292,7 @@ AuthenticatorRequestDialogModel::Mechanism::CredentialInfo CredentialInfoFrom(
 
 // TODO(crbug.com/1489482): Remove non NEW_UI paths after passkey metadata
 // syncing is enabled by default.
-#if BUILDFLAG(IS_MAC)
 #define NEW_UI
-#endif
 
 class AuthenticatorRequestDialogModelTest
     : public ChromeRenderViewHostTestHarness {
