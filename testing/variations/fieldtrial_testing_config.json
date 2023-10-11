@@ -12038,21 +12038,6 @@
             ]
         }
     ],
-    "PasswordCheckupOnIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSPasswordCheckup"
-                    ]
-                }
-            ]
-        }
-    ],
     "PasswordManagerWidgetPromo": [
         {
             "platforms": [
