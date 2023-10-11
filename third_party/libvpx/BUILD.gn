@@ -30,11 +30,10 @@ if (current_cpu == "x86") {
     cpu_arch_full = "arm"
   }
 } else if (current_cpu == "arm64") {
-  if (is_chromeos || is_mac) {
+  if (is_win || is_chromeos || is_mac) {
     # This is necessary for CrOS and macOS as they reuse the Linux
     # configuration, of which there are two (see the later definition of
-    # os_category). Windows is configured with highbd enabled in its arm64
-    # path.
+    # os_category).
     cpu_arch_full = "arm64-highbd"
   } else {
     cpu_arch_full = current_cpu
@@ -263,13 +262,68 @@ if (current_cpu == "loong64") {
   }
 }
 
-if (cpu_arch_full == "arm-neon-cpu-detect") {
-  static_library("libvpx_intrinsics_neon") {
-    configs -= [ "//build/config/compiler:compiler_arm_fpu" ]
+if (current_cpu == "arm" || current_cpu == "arm64") {
+  source_set("libvpx_intrinsics_neon") {
+    check_includes = false
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
     configs += [ ":libvpx_config" ]
-    cflags = [ "-mfpu=neon" ]
-    sources = libvpx_srcs_arm_neon_cpu_detect_neon
-    deps = [ ":libvpx_arm_neon_cpu_detect_headers" ]
+    if (current_cpu == "arm") {
+      configs -= [ "//build/config/compiler:compiler_arm_fpu" ]
+      cflags = [ "-mfpu=neon" ]
+    }
+    if (cpu_arch_full == "arm-neon") {
+      sources = libvpx_srcs_arm_neon_neon
+      deps = [ ":libvpx_arm_neon_headers" ]
+    } else if (cpu_arch_full == "arm-neon-highbd") {
+      sources = libvpx_srcs_arm_neon_highbd_neon
+      deps = [ ":libvpx_arm_neon_highbd_headers" ]
+    } else if (cpu_arch_full == "arm-neon-cpu-detect") {
+      sources = libvpx_srcs_arm_neon_cpu_detect_neon
+      deps = [ ":libvpx_arm_neon_cpu_detect_headers" ]
+    } else if (cpu_arch_full == "arm64") {
+      sources = libvpx_srcs_arm64_neon
+      deps = [ ":libvpx_arm64_headers" ]
+    } else if (cpu_arch_full == "arm64-highbd") {
+      sources = libvpx_srcs_arm64_highbd_neon
+      deps = [ ":libvpx_arm64_highbd_headers" ]
+    }
+  }
+}
+
+if (current_cpu == "arm64") {
+  source_set("libvpx_intrinsics_neon_dotprod") {
+    check_includes = false
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ ":libvpx_config" ]
+    if (!is_win || is_clang) {
+      cflags = [ "-march=armv8.2-a+dotprod" ]
+    }
+    if (cpu_arch_full == "arm64") {
+      sources = libvpx_srcs_arm64_neon_dotprod
+      deps = [ ":libvpx_arm64_headers" ]
+    } else if (cpu_arch_full == "arm64-highbd") {
+      sources = libvpx_srcs_arm64_highbd_neon_dotprod
+      deps = [ ":libvpx_arm64_highbd_headers" ]
+    }
+  }
+
+  source_set("libvpx_intrinsics_neon_i8mm") {
+    check_includes = false
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ ":libvpx_config" ]
+    if (!is_win || is_clang) {
+      cflags = [ "-march=armv8.2-a+i8mm" ]
+    }
+    if (cpu_arch_full == "arm64") {
+      sources = libvpx_srcs_arm64_neon_i8mm
+      deps = [ ":libvpx_arm64_headers" ]
+    } else if (cpu_arch_full == "arm64-highbd") {
+      sources = libvpx_srcs_arm64_highbd_neon_i8mm
+      deps = [ ":libvpx_arm64_highbd_headers" ]
+    }
   }
 }
 
@@ -447,8 +501,13 @@ static_library("libvpx") {
       ":libvpx_intrinsics_ssse3",
     ]
   }
-  if (cpu_arch_full == "arm-neon-cpu-detect") {
+  if (cpu_arch_full == "arm-neon-highbd" || cpu_arch_full == "arm-neon" ||
+      cpu_arch_full == "arm-neon-cpu-detect" || current_cpu == "arm64") {
     deps += [ ":libvpx_intrinsics_neon" ]
+  }
+  if (current_cpu == "arm64") {
+    deps += [ ":libvpx_intrinsics_neon_dotprod" ]
+    deps += [ ":libvpx_intrinsics_neon_i8mm" ]
   }
   if (is_android) {
     deps += [ "//third_party/cpu_features:ndk_compat" ]
