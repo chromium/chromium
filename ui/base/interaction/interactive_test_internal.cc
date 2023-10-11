@@ -126,6 +126,28 @@ TrackedElement* InteractiveTestPrivate::GetPivotElement(
   return it->second.get();
 }
 
+bool InteractiveTestPrivate::RemoveStateObserver(ElementIdentifier id,
+                                                 ElementContext context) {
+  using It = decltype(state_observer_elements_.begin());
+  It found = state_observer_elements_.end();
+  for (It it = state_observer_elements_.begin();
+       it != state_observer_elements_.end(); ++it) {
+    auto& entry = **it;
+    if (entry.identifier() == id && (!context || entry.context() == context)) {
+      CHECK(found == state_observer_elements_.end())
+          << "RemoveStateObserver: Duplicate entries found for " << id;
+      found = it;
+    }
+  }
+  if (found == state_observer_elements_.end()) {
+    LOG(ERROR) << "RemoveStateObserver: Entry not found for " << id;
+    return false;
+  }
+
+  state_observer_elements_.erase(found);
+  return true;
+}
+
 void InteractiveTestPrivate::DoTestSetUp() {}
 void InteractiveTestPrivate::DoTestTearDown() {
   state_observer_elements_.clear();

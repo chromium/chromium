@@ -394,6 +394,18 @@ class InteractiveTestApi {
   template <typename O, typename V>
   [[nodiscard]] static MultiStep WaitForState(StateIdentifier<O> id, V&& value);
 
+  // Ends observation of a state. Each `StateObserver` is normally cleaned up
+  // at the end of a test. This cleans up the observer with `id` immediately,
+  // including halting any associated polling.
+  //
+  // Typically unnecessary; included for completeness. Stopping an observation
+  // might avoid a UAF, or allow the caller to re-use `id` for a different
+  // observation in the same context.
+  //
+  // Must be called in the same context as `ObserveState()`, `PollState()`, etc.
+  template <typename O>
+  [[nodiscard]] StepBuilder StopObservingState(StateIdentifier<O> id);
+
   // Provides syntactic sugar so you can put "in any context" before an action
   // or test step rather than after. For example the following are equivalent:
   // ```
@@ -868,13 +880,13 @@ template <typename Observer, typename>
 InteractionSequence::StepBuilder InteractiveTestApi::ObserveState(
     StateIdentifier<Observer> id,
     std::unique_ptr<Observer> observer) {
-  auto step = WithElement(
+  auto step = CheckElement(
       internal::kInteractiveTestPivotElementId,
       base::BindOnce(
           [](InteractiveTestApi* api, ElementIdentifier id,
              std::unique_ptr<Observer> observer, TrackedElement* el) {
-            api->private_test_impl().AddStateObserver(id, el->context(),
-                                                      std::move(observer));
+            return api->private_test_impl().AddStateObserver(
+                id, el->context(), std::move(observer));
           },
           base::Unretained(this), id.identifier(), std::move(observer)));
   step.SetDescription("ObserveState()");
@@ -885,12 +897,12 @@ template <typename Observer, typename... Args, typename>
 InteractionSequence::StepBuilder InteractiveTestApi::ObserveState(
     StateIdentifier<Observer> id,
     Args&&... args) {
-  auto step = WithElement(
+  auto step = CheckElement(
       internal::kInteractiveTestPivotElementId,
       base::BindOnce(
           [](InteractiveTestApi* api, ElementIdentifier id,
              std::remove_cvref_t<Args>... args, TrackedElement* el) {
-            api->private_test_impl().AddStateObserver(
+            return api->private_test_impl().AddStateObserver(
                 id, el->context(),
                 std::make_unique<Observer>(
                     (INTERACTIVE_TEST_UNWRAP_IMPL(args, Args))...));
@@ -906,12 +918,12 @@ InteractionSequence::StepBuilder InteractiveTestApi::PollState(
     C&& callback,
     base::TimeDelta polling_interval) {
   using Cb = PollingStateObserver<T>::PollCallback;
-  auto step = WithElement(
+  auto step = CheckElement(
       internal::kInteractiveTestPivotElementId,
       base::BindOnce(
           [](InteractiveTestApi* api, ElementIdentifier id, Cb callback,
              base::TimeDelta polling_interval, TrackedElement* el) {
-            api->private_test_impl().AddStateObserver(
+            return api->private_test_impl().AddStateObserver(
                 id, el->context(),
                 std::make_unique<PollingStateObserver<T>>(std::move(callback),
                                                           polling_interval));
@@ -937,14 +949,16 @@ InteractionSequence::StepBuilder InteractiveTestApi::PollElement(
              ElementIdentifier element_id, Cb callback,
              base::TimeDelta polling_interval, InteractionSequence* seq,
              TrackedElement* el) {
-            api->private_test_impl().AddStateObserver(
-                id, el->context(),
-                std::make_unique<PollingElementStateObserver<T>>(
-                    element_id,
-                    seq->IsCurrentStepInAnyContextForTesting()
-                        ? absl::nullopt
-                        : absl::make_optional(el->context()),
-                    std::move(callback), polling_interval));
+            if (!api->private_test_impl().AddStateObserver(
+                    id, el->context(),
+                    std::make_unique<PollingElementStateObserver<T>>(
+                        element_id,
+                        seq->IsCurrentStepInAnyContextForTesting()
+                            ? absl::nullopt
+                            : absl::make_optional(el->context()),
+                        std::move(callback), polling_interval))) {
+              seq->FailForTesting();
+            }
           },
           base::Unretained(this), id.identifier(), element_identifier,
           internal::MaybeBindRepeating(std::forward<C>(callback)),
@@ -993,6 +1007,27 @@ InteractiveTestApi::MultiStep InteractiveTestApi::WaitForState(
                       WaitForShow(id.identifier()));
   AddDescription(result, "WaitForState( %s )");
   return result;
+}
+
+template <typename O>
+InteractiveTestApi::StepBuilder InteractiveTestApi::StopObservingState(
+    StateIdentifier<O> id) {
+  auto step = WithElement(
+      internal::kInteractiveTestPivotElementId,
+      base::BindOnce(
+          [](InteractiveTestApi* api, ElementIdentifier id,
+             InteractionSequence* seq, TrackedElement* el) {
+            const auto context = seq->IsCurrentStepInAnyContextForTesting()
+                                     ? ElementContext()
+                                     : el->context();
+            if (!api->private_test_impl().RemoveStateObserver(id, context)) {
+              seq->FailForTesting();
+            }
+          },
+          base::Unretained(this), id.identifier()));
+  step.SetDescription(base::StringPrintf("StopObservingState(%s)",
+                                         id.identifier().GetName().c_str()));
+  return step;
 }
 
 // static

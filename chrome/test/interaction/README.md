@@ -187,6 +187,10 @@ Verbs fall into a number of different categories:
   information.
    - `ObserveState()`
    - `WaitForState()`
+   - `PollState()`
+   - `PollElement()`
+   - `PollView()` [Views]
+   - `StopObservingState()`
 - **Utility** verbs modify how the test sequence is executed.
    - `FlushEvents()` ensures that the next step happens on a fresh
      message loop rather than being able to chain successive steps.
@@ -690,6 +694,55 @@ a matcher to look for a range of values:
   WaitForState(kFooState, &GetExpectedFooValue),
   WaitForState(kFooState, testing::Ne(3)),
 ```
+
+#### Observing State Via Polling
+
+The `PollState()`, `PollElement()`, and `PollView()` verbs can be used when you
+want to observe a state but there's no established callback or observer pattern
+established for that state.
+
+For example, if a system only has a `MySystem::GetCurrentState()` property but
+has neither `MySystem::AddObserver(MySystemObserver)` or
+`MySystem::AddStateChangeCallback(MySystem::StateChangeCallback)`, you can use
+`PollState()` to monitor the state:
+
+```cpp
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
+    ui::test::PollingStateObserver<MySystem::State>,
+    kMySystemState);
+
+RunTestSequence(
+  // Do setup that would cause your system to initialize.
+  PollState(kMySystemState, [](){
+    return MySystem::GetInstance()->GetCurrentState();
+  }),
+  WaitForState(kMySystemState, MySystem::State::kReady)
+  // System will be ready now, continue with your test.
+);
+```
+
+For `PollElement()` and `PollView()`, the state value is an `absl::optional` and
+if the element or view is not present in the target context the value will be
+`absl::nullopt`.
+
+Be aware that for transient or short-lived states, the correct value might be
+missed between polls, so polling should only be used for states that should
+eventually "settle" on the expected value.
+
+#### Avoiding UAF and Stopping State Observation
+
+By default, a state observer will persist until the end of the test body, and
+lasts across multiple calls to `RunTestSequence()`.
+
+You should ideally write your state observers (polling or otherwise) to handle
+freeing of resources or underlying objects, e.g. by unregistering an observer on
+destruction, or by using `base::CallbackSubscription` which is safe with respect
+to  destruction of the subscribed object. Polling an element or view is also
+safe, with the caveat that you might get a different element each time.
+
+However, in some cases it is easier to simply remove the observer than to try to
+harden it against changes in the underlying object. The `StopObservingState()`
+verb allows you to do this.
 
 ### Custom Verbs
 

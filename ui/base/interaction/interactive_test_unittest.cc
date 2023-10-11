@@ -187,6 +187,10 @@ class InteractiveTestTest : public InteractiveTest {
         FROM_HERE, internal::MaybeBind(std::forward<C>(actions)));
   }
 
+  const auto& state_observers() {
+    return private_test_impl().state_observer_elements_;
+  }
+
   raw_ptr<TestSimulator> simulator_ = nullptr;
 
  private:
@@ -1573,6 +1577,17 @@ TEST_F(InteractiveTestTest, ObserveStateWithStruct) {
   RunTestSequenceInContext(
       kTestContext1, ObserveState(kStructTestState, &observable),
       WaitForState(kStructTestState, testing::Field(&MyStruct::my_int, 123)));
+}
+
+TEST_F(InteractiveTestTest, StopObservingState) {
+  TestObservable<int> observable(1);
+  RunTestSequenceInContext(
+      kTestContext1,
+      ObserveState(kIntTestState,
+                   std::make_unique<TestStateObserver<int>>(&observable)),
+      WaitForState(kIntTestState, 1), StopObservingState(kIntTestState),
+      EnsureNotPresent(kIntTestState.identifier()),
+      Check([this]() { return state_observers().empty(); }));
 }
 
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(PollingStateObserver<int>,

@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/invoke.h"
+#include "base/gtest_prod_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
@@ -34,6 +35,7 @@
 namespace ui::test {
 
 class InteractiveTestApi;
+class InteractiveTestTest;
 
 namespace internal {
 
@@ -107,11 +109,17 @@ class InteractiveTestPrivate {
   TrackedElement* GetPivotElement(ElementContext context) const;
 
   // Adds `state_observer` and associates it with an element with identifier
-  // `id` and context `context`.
+  // `id` and context `context`. Must be unique in its context.
+  // Returns true on success.
   template <typename Observer, typename V = Observer::ValueType>
-  void AddStateObserver(ElementIdentifier id,
+  bool AddStateObserver(ElementIdentifier id,
                         ElementContext context,
                         std::unique_ptr<Observer> state_observer);
+
+  // Removes `StateObserver` with identifier `id` in `context`; if the context
+  // is null, assumes there is exactly one matching observer in some context.
+  // Returns true on success.
+  bool RemoveStateObserver(ElementIdentifier id, ElementContext context);
 
   // Call this method during test SetUp(), or SetUpOnMainThread() for browser
   // tests.
@@ -140,6 +148,7 @@ class InteractiveTestPrivate {
   static MultiStep PostTask(const base::StringPiece& description, T&& task);
 
  private:
+  friend class ui::test::InteractiveTestTest;
   friend class ui::test::InteractiveTestApi;
 
   // Prepare for a sequence to start.
@@ -300,13 +309,22 @@ bool MatchAndExplain(const base::StringPiece& test_name,
 }
 
 template <typename Observer, typename V>
-void InteractiveTestPrivate::AddStateObserver(
+bool InteractiveTestPrivate::AddStateObserver(
     ElementIdentifier id,
     ElementContext context,
     std::unique_ptr<Observer> state_observer) {
+  CHECK(id);
+  CHECK(context);
+  for (const auto& existing : state_observer_elements_) {
+    if (existing->identifier() == id && existing->context() == context) {
+      LOG(ERROR) << "AddStateObserver: Duplicate observer added for " << id;
+      return false;
+    }
+  }
   state_observer_elements_.emplace_back(
       std::make_unique<StateObserverElementT<V>>(id, context,
                                                  std::move(state_observer)));
+  return true;
 }
 
 // static
