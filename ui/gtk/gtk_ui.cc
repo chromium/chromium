@@ -33,6 +33,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/linux/fake_input_method_context.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
@@ -620,6 +621,7 @@ int GtkUi::GetCursorThemeSize() {
 
 bool GtkUi::GetTextEditCommandsForEvent(
     const ui::Event& event,
+    int text_flags,
     std::vector<ui::TextEditCommandAuraLinux>* commands) {
   // GTK4 dropped custom key bindings.
   if (GtkCheckVersion(4)) {
@@ -632,6 +634,16 @@ bool GtkUi::GetTextEditCommandsForEvent(
   // early out here, for now, until a proper solution for ozone is implemented.
   if (!platform_->GetGdkKeymap()) {
     return false;
+  }
+
+  // Skip mapping arrow keys to edit commands for vertical text fields in a
+  // renderer.  Blink handles them.  See crbug.com/484651.
+  if (text_flags & ui::TEXT_INPUT_FLAG_VERTICAL) {
+    ui::KeyboardCode code = event.AsKeyEvent()->key_code();
+    if (code == ui::VKEY_LEFT || code == ui::VKEY_RIGHT ||
+        code == ui::VKEY_UP || code == ui::VKEY_DOWN) {
+      return false;
+    }
   }
 
   // Ensure that we have a keyboard handler.

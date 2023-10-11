@@ -1637,6 +1637,7 @@ TEST_F(TextfieldTest, OnKeyPressBinding) {
 
     bool GetTextEditCommandsForEvent(
         const ui::Event& event,
+        int text_flags,
         std::vector<ui::TextEditCommandAuraLinux>* commands) override {
       return false;
     }

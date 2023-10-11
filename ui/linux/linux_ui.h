@@ -192,8 +192,11 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
   // false will be returned if the key event doesn't correspond to a predefined
   // key binding.  Edit commands matched with |event| will be stored in
   // |edit_commands|, if |edit_commands| is non-nullptr.
+  //
+  // |text_falgs| is the current ui::TextInputFlags if available.
   virtual bool GetTextEditCommandsForEvent(
       const ui::Event& event,
+      int text_flags,
       std::vector<TextEditCommandAuraLinux>* commands) = 0;
 
   // Returns the default font rendering settings.

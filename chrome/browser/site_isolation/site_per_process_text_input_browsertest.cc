@@ -1192,6 +1192,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 
     bool GetTextEditCommandsForEvent(
         const ui::Event& event,
+        int text_flags,
         std::vector<ui::TextEditCommandAuraLinux>* commands) override {
       if (commands) {
         commands->emplace_back(ui::TextEditCommand::DELETE_TO_BEGINNING_OF_LINE,

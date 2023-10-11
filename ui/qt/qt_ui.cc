@@ -425,6 +425,7 @@ int QtUi::GetCursorThemeSize() {
 
 bool QtUi::GetTextEditCommandsForEvent(
     const ui::Event& event,
+    int text_flags,
     std::vector<ui::TextEditCommandAuraLinux>* commands) {
   // QT doesn't have "key themes" (eg. readline bindings) like GTK.
   return false;

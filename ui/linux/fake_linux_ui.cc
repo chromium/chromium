@@ -133,6 +133,7 @@ ui::NativeTheme* FakeLinuxUi::GetNativeTheme() const {
 
 bool FakeLinuxUi::GetTextEditCommandsForEvent(
     const ui::Event& event,
+    int text_falgs,
     std::vector<ui::TextEditCommandAuraLinux>* commands) {
   return false;
 }
