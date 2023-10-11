@@ -50,12 +50,28 @@ interface VisualSuggestionsResultHandler {
 interface VisualSuggestionsRequestHandler {
   // Called to kick off the visual classification request and passes all of
   // the necessary dependencies needed on the renderer side to complete task.
-  // `tflite_model` is the file pointer to the model used for classification.
+  // `visual_model_file` is the file pointer to the model used for
+  // classification.
   // `config_proto` is a base64 protobuf to configure params and thresholds
   // for the classifier.
   // `result_handler` is a mojom interface necessary to send back the results.
   StartVisualClassification(
-    mojo_base.mojom.ReadOnlyFile? visual_model_file,
+    mojo_base.mojom.ReadOnlyFile visual_model_file,
     string config_proto,
     pending_remote<VisualSuggestionsResultHandler> result_handler);
+};
+
+// Interface used by renderer to request model and metadata from the
+// VisualSearchSuggestionsService running in the browser process.
+// This interface is used in cases where we want image classification to
+// be triggered on the renderer process rather than browser process.
+interface VisualSuggestionsModelProvider {
+  // Requests the model bytes with metadata.
+  // `visual_model_file` is the file pointer to the model used for
+  // classification.
+  // `config_proto` is a base64 protobuf to configure params and thresholds
+  // for the classifier.
+  GetModelWithMetadata() => (
+    mojo_base.mojom.ReadOnlyFile visual_model_file,
+    string config_proto);
 };

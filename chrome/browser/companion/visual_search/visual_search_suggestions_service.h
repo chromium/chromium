@@ -7,10 +7,12 @@
 
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
+#include "chrome/common/companion/visual_search.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
-#include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/visual_search_model_metadata.pb.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace optimization_guide {
 class OptimizationGuideModelProvider;
@@ -23,9 +25,11 @@ using ModelMetadata =
 
 class VisualSearchSuggestionsService
     : public KeyedService,
+      public mojom::VisualSuggestionsModelProvider,
       public optimization_guide::OptimizationTargetModelObserver {
  public:
-  using ModelUpdateCallback = base::OnceCallback<void(base::File, std::string)>;
+  using ModelUpdateCallback =
+      base::OnceCallback<void(base::File, const std::string&)>;
 
   VisualSearchSuggestionsService(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
@@ -45,8 +49,15 @@ class VisualSearchSuggestionsService
       base::optional_ref<const optimization_guide::ModelInfo> model_info)
       override;
 
+  // mojom::VisualSuggestionsModelProvider implementation:
+  void GetModelWithMetadata(GetModelWithMetadataCallback callback) override;
+
   // Registers a callback used when model file is available or updated.
-  void SetModelUpdateCallback(ModelUpdateCallback callback);
+  void RegisterModelUpdateCallback(ModelUpdateCallback callback);
+
+  // Allows renderer clients to bind to the implementation of model provider.
+  void BindModelReceiver(
+      mojo::PendingReceiver<mojom::VisualSuggestionsModelProvider> receiver);
 
  private:
   // Unloads the model in background task.
@@ -68,6 +79,9 @@ class VisualSearchSuggestionsService
 
   // Pointer to the model provider that we use to fetch classifier models.
   raw_ptr<optimization_guide::OptimizationGuideModelProvider> model_provider_;
+
+  // Set of receivers from renderers used to acquire model and metadata.
+  mojo::ReceiverSet<mojom::VisualSuggestionsModelProvider> model_receivers_;
 
   // Background task runner needed to perform I/O operations.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;

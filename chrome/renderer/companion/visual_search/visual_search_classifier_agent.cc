@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/companion/visual_search/visual_search_classifier_agent.h"
 
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/metrics/histogram_functions.h"
@@ -13,11 +14,13 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/companion/visual_search.mojom.h"
+#include "chrome/common/companion/visual_search/features.h"
 #include "chrome/renderer/companion/visual_search/visual_search_classification_and_eligibility.h"
 #include "components/optimization_guide/proto/visual_search_model_metadata.pb.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -33,13 +36,6 @@ using optimization_guide::proto::OrOfThresholdingRules;
 using optimization_guide::proto::ThresholdingRule;
 
 using DOMImageList = base::flat_map<ImageId, SingleImageFeaturesAndBytes>;
-
-// Only sending back 1 result to match our current UI behavior.
-const int kMaxNumberResults = 1;
-
-// The number of seconds that we need to wait before we retry to traverse the
-// DOM again and perform visual classification.
-const int kRetryDelay = 2;
 
 EligibilitySpec CreateEligibilitySpec(std::string config_proto) {
   EligibilitySpec eligibility_spec;
@@ -146,7 +142,7 @@ ClassificationResultsAndStats ClassifyImagesOnBackground(
 
   if (classifier == nullptr) {
     LOCAL_HISTOGRAM_BOOLEAN(
-        "Companion.VisualSearch.Agent.ClassifierCreationFailure", true);
+        "Companion.VisualQuery.Agent.ClassifierCreationFailure", true);
     return results;
   }
 
@@ -163,9 +159,10 @@ ClassificationResultsAndStats ClassifyImagesOnBackground(
   results.second->results_count = metrics.result_count;
 
   int result_counter = 0;
+  int maxNumberResults = features::MaxVisualSuggestions();
   for (const auto& image_id : classifier_results) {
     results.first.emplace_back(images[image_id]);
-    if (++result_counter >= kMaxNumberResults) {
+    if (++result_counter >= maxNumberResults) {
       break;
     }
   }
@@ -215,14 +212,16 @@ void VisualSearchClassifierAgent::StartVisualClassification(
         base::BindOnce(&VisualSearchClassifierAgent::StartVisualClassification,
                        weak_ptr_factory_.GetWeakPtr(), std::move(visual_model),
                        std::move(config_proto), std::move(result_handler)),
-        base::Seconds(kRetryDelay));
+        features::StartClassificationRetryDuration());
     return;
   }
   base::UmaHistogramBoolean("Companion.VisualQuery.Agent.StartClassification",
                             true);
+  if (result_handler.is_valid()) {
+    result_handler_.reset();
+    result_handler_.Bind(std::move(result_handler));
+  }
 
-  result_handler_.reset();
-  result_handler_.Bind(std::move(result_handler));
   ClassificationResultsAndStats empty_results;
 
   if (is_classifying_) {
@@ -283,9 +282,11 @@ void VisualSearchClassifierAgent::OnClassificationDone(
     stats = std::move(results.second);
   }
 
-  result_handler_->HandleClassification(std::move(final_results),
-                                        std::move(stats));
-  LOCAL_HISTOGRAM_COUNTS_100("Companion.VisualSearch.Agent.ClassificationDone",
+  if (result_handler_.is_bound()) {
+    result_handler_->HandleClassification(std::move(final_results),
+                                          std::move(stats));
+  }
+  LOCAL_HISTOGRAM_COUNTS_100("Companion.VisualQuery.Agent.ClassificationDone",
                              results.first.size());
 }
 
@@ -294,6 +295,37 @@ void VisualSearchClassifierAgent::OnRendererAssociatedRequest(
         receiver) {
   receiver_.reset();
   receiver_.Bind(std::move(receiver));
+}
+
+void VisualSearchClassifierAgent::DidFinishLoad() {
+  if (!features::IsVisualSearchSuggestionsAgentEnabled()) {
+    return;
+  }
+  if (!render_frame_ || !render_frame_->IsMainFrame() ||
+      model_provider_.is_bound()) {
+    return;
+  }
+
+  render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+      model_provider_.BindNewPipeAndPassReceiver());
+
+  if (model_provider_.is_bound()) {
+    model_provider_->GetModelWithMetadata(
+        base::BindOnce(&VisualSearchClassifierAgent::HandleGetModelCallback,
+                       weak_ptr_factory_.GetWeakPtr()));
+    LOCAL_HISTOGRAM_BOOLEAN(
+        "Companion.VisualQuery.Agent.ModelRequestSentSuccess", true);
+  }
+}
+
+void VisualSearchClassifierAgent::HandleGetModelCallback(
+    base::File file,
+    const std::string& config) {
+  // Now that we have the result, we can unbind and reset the receiver pipe.
+  model_provider_.reset();
+
+  mojo::PendingRemote<mojom::VisualSuggestionsResultHandler> result_handler;
+  StartVisualClassification(std::move(file), config, std::move(result_handler));
 }
 
 void VisualSearchClassifierAgent::OnDestruct() {
