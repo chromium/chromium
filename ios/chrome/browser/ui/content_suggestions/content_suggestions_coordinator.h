@@ -11,9 +11,9 @@ namespace web {
 class WebState;
 }
 
+@protocol ContentSuggestionsDelegate;
 @class ContentSuggestionsMediator;
 @class ContentSuggestionsViewController;
-@protocol FeedDelegate;
 @protocol NewTabPageControllerDelegate;
 @protocol NewTabPageDelegate;
 @protocol NewTabPageMetricsDelegate;
@@ -42,8 +42,8 @@ class WebState;
 // Delegate for NTP related actions.
 @property(nonatomic, weak) id<NewTabPageDelegate> NTPDelegate;
 
-// Delegate used to communicate to communicate events to the feed.
-@property(nonatomic, weak) id<FeedDelegate> feedDelegate;
+// Delegate used to communicate Content Suggestions events to the delegate.
+@property(nonatomic, weak) id<ContentSuggestionsDelegate> delegate;
 
 // Delegate for reporting content suggestions actions to the NTP metrics
 // recorder.

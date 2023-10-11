@@ -74,12 +74,12 @@
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_preview_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
-#import "ios/chrome/browser/ui/ntp/feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_header_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/feed_menu_coordinator.h"
@@ -121,10 +121,10 @@
 @interface NewTabPageCoordinator () <AppStateObserver,
                                      AuthenticationServiceObserving,
                                      BooleanObserver,
+                                     ContentSuggestionsDelegate,
                                      DiscoverFeedObserverBridgeDelegate,
                                      DiscoverFeedPreviewDelegate,
                                      FeedControlDelegate,
-                                     FeedDelegate,
                                      FeedMenuCoordinatorDelegate,
                                      FeedSignInPromoDelegate,
                                      FeedSignInPromoCoordinatorDelegate,
@@ -726,7 +726,7 @@
 - (void)configureContentSuggestionsCoordinator {
   self.contentSuggestionsCoordinator.webState = self.webState;
   self.contentSuggestionsCoordinator.NTPDelegate = self;
-  self.contentSuggestionsCoordinator.feedDelegate = self;
+  self.contentSuggestionsCoordinator.delegate = self;
   self.contentSuggestionsCoordinator.NTPMetricsDelegate = self;
   [self.contentSuggestionsCoordinator start];
 }
@@ -979,7 +979,7 @@
   return [self.feedWrapperViewController lastVisibleFeedCardIndex];
 }
 
-#pragma mark - FeedDelegate
+#pragma mark - ContentSuggestionsDelegate
 
 - (void)contentSuggestionsWasUpdated {
   [self.NTPViewController updateHeightAboveFeed];

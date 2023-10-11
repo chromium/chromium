@@ -89,6 +89,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_favicon_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
@@ -103,7 +104,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_metrics.h"
-#import "ios/chrome/browser/ui/ntp/feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
@@ -610,7 +610,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     if ([weakSelf.setUpList allItemsComplete]) {
       [weakSelf.consumer showSetUpListDoneWithAnimations:^{
         if (!IsMagicStackEnabled()) {
-          [self.feedDelegate contentSuggestionsWasUpdated];
+          [self.delegate contentSuggestionsWasUpdated];
         }
       }];
     } else if (IsMagicStackEnabled()) {
@@ -1060,7 +1060,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
   self.mostVisitedItems = self.freshMostVisitedItems;
   [self.consumer setMostVisitedTilesWithConfigs:self.mostVisitedItems];
-  [self.feedDelegate contentSuggestionsWasUpdated];
+  [self.delegate contentSuggestionsWasUpdated];
 }
 
 // Logs a User Action if `freshMostVisitedSites` has at least one site that
@@ -1462,7 +1462,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 // Hides the Set Up List with an animation.
 - (void)hideSetUpList {
   [self.consumer hideSetUpListWithAnimations:^{
-    [self.feedDelegate contentSuggestionsWasUpdated];
+    [self.delegate contentSuggestionsWasUpdated];
   }];
 }
 

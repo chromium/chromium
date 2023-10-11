@@ -68,6 +68,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
@@ -85,7 +86,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
-#import "ios/chrome/browser/ui/ntp/feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -226,7 +226,7 @@
                     identityManager:identityManager
                     shoppingService:shoppingService
                             browser:self.browser];
-  self.contentSuggestionsMediator.feedDelegate = self.feedDelegate;
+  self.contentSuggestionsMediator.delegate = self.delegate;
   self.contentSuggestionsMediator.promosManager = promosManager;
   self.contentSuggestionsMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
@@ -650,7 +650,7 @@
 }
 
 - (void)setUpListViewHeightDidChange {
-  [self.feedDelegate contentSuggestionsWasUpdated];
+  [self.delegate contentSuggestionsWasUpdated];
 }
 
 - (void)dismissSeeMoreViewController {
