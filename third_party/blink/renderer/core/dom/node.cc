@@ -117,9 +117,7 @@
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/page/scrolling/scroll_customization_callbacks.h"
 #include "third_party/blink/renderer/core/page/scrolling/scroll_state.h"
-#include "third_party/blink/renderer/core/page/scrolling/scroll_state_callback.h"
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -150,24 +148,6 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-
-namespace {
-
-// We need to retain the scroll customization callbacks until the element
-// they're associated with is destroyed. It would be simplest if the callbacks
-// could be stored in ElementRareData, but we can't afford the space increase.
-// Instead, keep the scroll customization callbacks here. The other option would
-// be to store these callbacks on the Page or document, but that necessitates a
-// bunch more logic for transferring the callbacks between Pages when elements
-// are moved around.
-ScrollCustomizationCallbacks& GetScrollCustomizationCallbacks() {
-  DEFINE_STATIC_LOCAL(Persistent<ScrollCustomizationCallbacks>,
-                      scroll_customization_callbacks,
-                      (MakeGarbageCollected<ScrollCustomizationCallbacks>()));
-  return *scroll_customization_callbacks;
-}
-
-}  // namespace
 
 using ReattachHookScope = LayoutShiftTracker::ReattachHookScope;
 
@@ -476,180 +456,6 @@ Node* Node::getRootNode(const GetRootNodeOptions* options) const {
   return (options->hasComposed() && options->composed())
              ? &ShadowIncludingRoot()
              : &TreeRoot();
-}
-
-void Node::SetApplyScroll(ScrollStateCallback* scroll_state_callback) {
-  GetScrollCustomizationCallbacks().SetApplyScroll(this, scroll_state_callback);
-}
-
-void Node::RemoveApplyScroll() {
-  GetScrollCustomizationCallbacks().RemoveApplyScroll(this);
-}
-
-ScrollStateCallback* Node::GetApplyScroll() {
-  return GetScrollCustomizationCallbacks().GetApplyScroll(this);
-}
-
-void Node::NativeDistributeScroll(ScrollState& scroll_state) {
-  if (scroll_state.FullyConsumed())
-    return;
-
-  scroll_state.distributeToScrollChainDescendant();
-
-  // The scroll doesn't propagate, and we're currently scrolling an element
-  // other than this one, prevent the scroll from propagating to this element.
-  if (scroll_state.DeltaConsumedForScrollSequence() &&
-      scroll_state.CurrentNativeScrollingNode() != this) {
-    return;
-  }
-
-  const double delta_x = scroll_state.deltaX();
-  const double delta_y = scroll_state.deltaY();
-
-  CallApplyScroll(scroll_state);
-
-  if (delta_x != scroll_state.deltaX() || delta_y != scroll_state.deltaY())
-    scroll_state.SetCurrentNativeScrollingNode(this);
-}
-
-void Node::NativeApplyScroll(ScrollState& scroll_state) {
-  if (!GetLayoutObject())
-    return;
-
-  // All elements in the scroll chain should be boxes. However, in a scroll
-  // gesture sequence, the scroll chain is only computed on GestureScrollBegin.
-  // The type of layout object of the nodes in the scroll chain can change
-  // between GestureScrollUpdate and GestureScrollBegin (e.g. from script
-  // setting one of the nodes to display:inline). If there is no box there will
-  // not be a scrollable area to scroll, so just return.
-  if (!GetLayoutObject()->IsBox())
-    return;
-
-  if (scroll_state.FullyConsumed())
-    return;
-
-  ScrollOffset delta(scroll_state.deltaX(), scroll_state.deltaY());
-
-  if (delta.IsZero())
-    return;
-
-  // TODO: This should use updateStyleAndLayoutForNode.
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kScroll);
-
-  ScrollableArea* scrollable_area =
-      ScrollableArea::GetForScrolling(To<LayoutBox>(GetLayoutObject()));
-  if (!scrollable_area)
-    return;
-  LayoutBox* box_to_scroll = scrollable_area->GetLayoutBox();
-
-  auto& visual_viewport = GetDocument().GetPage()->GetVisualViewport();
-
-  // TODO(bokan): This is a hack to fix https://crbug.com/977954. If we have a
-  // non-default root scroller, scrolling from one of its siblings or a fixed
-  // element will chain up to the root node without passing through the root
-  // scroller. This should scroll the visual viewport (so we can still pan
-  // while zoomed) but not by using the RootFrameViewport, which would cause
-  // scrolling in the root scroller element. Implementing this on the main
-  // thread is awkward since we assume only Nodes are scrollable but the
-  // VisualViewport isn't a Node. See LTHI::ApplyScroll for the equivalent
-  // behavior in CC.
-  bool also_scroll_visual_viewport = GetDocument().IsInMainFrame() &&
-                                     visual_viewport.IsActiveViewport() &&
-                                     IsA<LayoutView>(box_to_scroll);
-  DCHECK(!also_scroll_visual_viewport ||
-         !box_to_scroll->IsGlobalRootScroller());
-
-  ScrollResult result =
-      scrollable_area->UserScroll(scroll_state.delta_granularity(), delta,
-                                  ScrollableArea::ScrollCallback());
-
-  // Also try scrolling the visual viewport if we're at the end of the scroll
-  // chain.
-  if (!result.DidScroll() && also_scroll_visual_viewport) {
-    result = visual_viewport.UserScroll(scroll_state.delta_granularity(), delta,
-                                        ScrollableArea::ScrollCallback());
-  }
-
-  if (!result.DidScroll())
-    return;
-
-  // FIXME: Native scrollers should only consume the scroll they
-  // apply. See crbug.com/457765.
-  scroll_state.ConsumeDeltaNative(delta.x(), delta.y());
-
-  // We need to setCurrentNativeScrollingElement in both the
-  // distributeScroll and applyScroll default implementations so
-  // that if JS overrides one of these methods, but not the
-  // other, this bookkeeping remains accurate.
-  scroll_state.SetCurrentNativeScrollingNode(this);
-}
-
-void Node::CallDistributeScroll(ScrollState& scroll_state) {
-  TRACE_EVENT0("input", "Node::CallDistributeScroll");
-  ScrollStateCallback* callback =
-      GetScrollCustomizationCallbacks().GetDistributeScroll(this);
-
-  // TODO(bokan): Need to add tests before we allow calling custom callbacks
-  // for non-touch modalities. For now, just call into the native callback but
-  // allow the viewport scroll callback so we don't disable overscroll.
-  // crbug.com/623079.
-  bool disable_custom_callbacks = !scroll_state.isDirectManipulation() &&
-                                  !GetDocument()
-                                       .GetPage()
-                                       ->GlobalRootScrollerController()
-                                       .IsViewportScrollCallback(callback);
-
-  if (!callback || disable_custom_callbacks) {
-    NativeDistributeScroll(scroll_state);
-    return;
-  }
-  if (callback->GetNativeScrollBehavior() !=
-      NativeScrollBehavior::kPerformAfterNativeScroll)
-    callback->Invoke(&scroll_state);
-  if (callback->GetNativeScrollBehavior() !=
-      NativeScrollBehavior::kDisableNativeScroll)
-    NativeDistributeScroll(scroll_state);
-  if (callback->GetNativeScrollBehavior() ==
-      NativeScrollBehavior::kPerformAfterNativeScroll)
-    callback->Invoke(&scroll_state);
-}
-
-void Node::CallApplyScroll(ScrollState& scroll_state) {
-  TRACE_EVENT0("input", "Node::CallApplyScroll");
-
-  if (!GetDocument().GetPage()) {
-    // We should always have a Page if we're scrolling. See
-    // crbug.com/689074 for details.
-    NOTREACHED();
-    return;
-  }
-
-  ScrollStateCallback* callback =
-      GetScrollCustomizationCallbacks().GetApplyScroll(this);
-
-  // TODO(bokan): Need to add tests before we allow calling custom callbacks
-  // for non-touch modalities. For now, just call into the native callback but
-  // allow the viewport scroll callback so we don't disable overscroll.
-  // crbug.com/623079.
-  bool disable_custom_callbacks = !scroll_state.isDirectManipulation() &&
-                                  !GetDocument()
-                                       .GetPage()
-                                       ->GlobalRootScrollerController()
-                                       .IsViewportScrollCallback(callback);
-
-  if (!callback || disable_custom_callbacks) {
-    NativeApplyScroll(scroll_state);
-    return;
-  }
-  if (callback->GetNativeScrollBehavior() !=
-      NativeScrollBehavior::kPerformAfterNativeScroll)
-    callback->Invoke(&scroll_state);
-  if (callback->GetNativeScrollBehavior() !=
-      NativeScrollBehavior::kDisableNativeScroll)
-    NativeApplyScroll(scroll_state);
-  if (callback->GetNativeScrollBehavior() ==
-      NativeScrollBehavior::kPerformAfterNativeScroll)
-    callback->Invoke(&scroll_state);
 }
 
 Node* Node::insertBefore(Node* new_child,

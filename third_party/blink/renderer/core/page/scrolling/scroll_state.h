@@ -27,9 +27,6 @@ class CORE_EXPORT ScrollState final : public GarbageCollected<ScrollState> {
 
   // Reduce deltas by x, y.
   void consumeDelta(double x, double y, ExceptionState&);
-  // Pops the first element off of |m_scrollChain| and calls |distributeScroll|
-  // on it.
-  void distributeToScrollChainDescendant();
   int positionX() { return data_->position_x; }
   int positionY() { return data_->position_y; }
   // Positive when scrolling right.

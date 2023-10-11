@@ -13,16 +13,6 @@
 
 namespace blink {
 
-namespace {
-
-Node* NodeForId(DOMNodeId node_id) {
-  Node* node = DOMNodeIds::NodeForId(node_id);
-  DCHECK(node);
-  return node;
-}
-
-}  // namespace
-
 ScrollState::ScrollState(std::unique_ptr<ScrollStateData> data)
     : data_(std::move(data)) {}
 
@@ -43,13 +33,6 @@ void ScrollState::consumeDelta(double x,
     return;
   }
   ConsumeDeltaNative(x, y);
-}
-
-void ScrollState::distributeToScrollChainDescendant() {
-  if (!scroll_chain_.empty()) {
-    DOMNodeId descendant_id = scroll_chain_.TakeFirst();
-    NodeForId(descendant_id)->CallDistributeScroll(*this);
-  }
 }
 
 void ScrollState::ConsumeDeltaNative(double x, double y) {
