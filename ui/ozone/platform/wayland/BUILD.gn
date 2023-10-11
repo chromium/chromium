@@ -371,6 +371,10 @@ source_set("wayland") {
       "//ui/gfx:memory_buffer",
       "//ui/gfx/linux:gbm",
     ]
+
+    if (is_chromeos) {
+      deps += [ "//ui/gfx/linux:gbm" ]
+    }
   }
 
   if (use_bundled_weston) {

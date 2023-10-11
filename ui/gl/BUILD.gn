@@ -493,6 +493,10 @@ static_library("test_support") {
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
+
+    if (is_chromeos) {
+      deps += [ "//ui/gfx/linux:gbm" ]
+    }
   }
 
   # If the run-time search path isn't set properly when we use ANGLE with its

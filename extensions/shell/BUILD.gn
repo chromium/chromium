@@ -425,7 +425,10 @@ source_set("browser_tests") {
   ]
 
   if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
+    deps += [
+      "//chromeos/lacros",
+      "//ui/gfx/linux:gbm",
+    ]
   }
 
   if (use_aura) {

@@ -15,6 +15,10 @@
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/linux/scoped_gbm_device.h"  // nogncheck
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/gfx/linux/gbm_util.h"  // nogncheck
+#endif
+
 namespace ui {
 
 namespace {
@@ -41,6 +45,10 @@ base::FilePath DrmRenderNodePathFinder::GetDrmRenderNodePath() const {
 }
 
 void DrmRenderNodePathFinder::FindDrmRenderNodePath() {
+#if BUILDFLAG(IS_CHROMEOS)
+  CHECK(ui::IntelMediaCompressionEnvVarIsSet());
+#endif
+
   for (uint32_t i = kRenderNodeStart; i < kRenderNodeEnd; i++) {
     /* First,  look in sysfs and skip if this is the vgem render node. */
     std::string node_link(

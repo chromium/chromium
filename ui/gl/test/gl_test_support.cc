@@ -18,6 +18,10 @@
 #include "base/run_loop.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/gfx/linux/gbm_util.h"  // nogncheck
+#endif
 #endif
 
 namespace gl {
@@ -38,6 +42,12 @@ void rgb_to_yuv(uint8_t r, uint8_t g, uint8_t b, T* y, T* u, T* v) {
 GLDisplay* GLTestSupport::InitializeGL(
     absl::optional<GLImplementationParts> prefered_impl) {
 #if BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(b/271455200): is the process single-threaded at this point and has
+  // the FeatureList been initialized? Those are requirements of
+  // ui::EnsureIntelMediaCompressionEnvVarIsSet().
+  ui::EnsureIntelMediaCompressionEnvVarIsSet();
+#endif
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
   ui::OzonePlatform::InitializeForGPU(params);

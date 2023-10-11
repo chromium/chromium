@@ -17,9 +17,21 @@
 #include "media/base/android/media_codec_util.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/gfx/linux/gbm_util.h"  // nogncheck
+#endif                              // BUILDFLAG(IS_CHROMEOS)
+
 class TestSuiteNoAtExit : public base::TestSuite {
  public:
-  TestSuiteNoAtExit(int argc, char** argv) : TestSuite(argc, argv) {}
+  TestSuiteNoAtExit(int argc, char** argv) : TestSuite(argc, argv) {
+#if BUILDFLAG(IS_CHROMEOS)
+    // TODO(b/271455200): the FeatureList has not been initialized by this
+    // point, so this call will always disable Intel media compression. We may
+    // want to move this to a later point to be able to run media unit tests
+    // with Intel media compression enabled.
+    ui::EnsureIntelMediaCompressionEnvVarIsSet();
+#endif
+  }
   ~TestSuiteNoAtExit() override = default;
 
  protected:

@@ -153,6 +153,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "components/crash/core/app/breakpad_linux.h"
+#include "ui/gfx/linux/gbm_util.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -747,6 +748,15 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   const auto* invoked_in_browser =
       absl::get_if<InvokedInBrowserProcess>(&invoked_in);
   if (!invoked_in_browser) {
+#if BUILDFLAG(IS_CHROMEOS)
+    // At this point, the base::FeatureList has been initialized and the process
+    // should still be single threaded. Additionally, minigbm shouldn't have
+    // been used yet by this process. Therefore, it's a good time to ensure the
+    // Intel media compression environment flag for minigbm is correctly set
+    // (it's possible this environment variable wasn't inherited from the
+    // browser process).
+    ui::EnsureIntelMediaCompressionEnvVarIsSet();
+#endif  // BUILDFLAG(IS_CHROMEOS)
     CommonEarlyInitialization(invoked_in);
     return absl::nullopt;
   }
@@ -835,6 +845,14 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
       chrome_content_browser_client_->startup_data()
           ->chrome_feature_list_creator();
   chrome_feature_list_creator->CreateFeatureList();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // At this point, the base::FeatureList has been initialized and the process
+  // should still be single threaded. Additionally, minigbm shouldn't have been
+  // used yet by this process. Therefore, it's a good time to ensure the Intel
+  // media compression environment flag for minigbm is correctly set.
+  ui::EnsureIntelMediaCompressionEnvVarIsSet();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   content::InitializeMojoCore();
 

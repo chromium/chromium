@@ -7,7 +7,18 @@
 #include "base/notreached.h"
 #include "ui/gfx/linux/gbm_defines.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/environment.h"
+#include "ui/gfx/switches.h"
+#endif
+
 namespace ui {
+#if BUILDFLAG(IS_CHROMEOS)
+namespace {
+constexpr base::StringPiece kEnableIntelMediaCompressionEnvVar =
+    "ENABLE_INTEL_MEDIA_COMPRESSION";
+}
+#endif
 
 uint32_t BufferUsageToGbmFlags(gfx::BufferUsage usage) {
   switch (usage) {
@@ -42,5 +53,33 @@ uint32_t BufferUsageToGbmFlags(gfx::BufferUsage usage) {
              GBM_BO_USE_FRONT_RENDERING;
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void EnsureIntelMediaCompressionEnvVarIsSet() {
+  auto environment = base::Environment::Create();
+  CHECK(environment);
+  const std::string value_to_set(
+      base::FeatureList::IsEnabled(features::kEnableIntelMediaCompression)
+          ? "1"
+          : "0");
+  if (environment->HasVar(kEnableIntelMediaCompressionEnvVar)) {
+    std::string env_var_value;
+    CHECK(environment->GetVar(kEnableIntelMediaCompressionEnvVar,
+                              &env_var_value));
+    CHECK_EQ(env_var_value, value_to_set);
+    return;
+  }
+  CHECK(environment->SetVar(kEnableIntelMediaCompressionEnvVar, value_to_set));
+}
+
+bool IntelMediaCompressionEnvVarIsSet() {
+  auto environment = base::Environment::Create();
+  CHECK(environment);
+  std::string env_var_value;
+  return environment->GetVar(kEnableIntelMediaCompressionEnvVar,
+                             &env_var_value) &&
+         (env_var_value == "0" || env_var_value == "1");
+}
+#endif
 
 }  // namespace ui

@@ -772,6 +772,10 @@ test("gpu_unittests") {
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
+
+  if (is_chromeos) {
+    deps += [ "//ui/gfx/linux:gbm" ]
+  }
 }
 
 test("gpu_perftests") {

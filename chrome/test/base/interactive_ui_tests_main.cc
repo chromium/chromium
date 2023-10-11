@@ -34,9 +34,20 @@
 #include "chrome/test/base/always_on_top_window_killer_win.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/gfx/linux/gbm_util.h"  // nogncheck
+#endif
+
 class InteractiveUITestSuite : public ChromeTestSuite {
  public:
-  InteractiveUITestSuite(int argc, char** argv) : ChromeTestSuite(argc, argv) {}
+  InteractiveUITestSuite(int argc, char** argv) : ChromeTestSuite(argc, argv) {
+#if BUILDFLAG(IS_CHROMEOS)
+    // TODO(b/271455200): is the process single-threaded at this point and has
+    // the FeatureList been initialized? Those are requirements of
+    // ui::EnsureIntelMediaCompressionEnvVarIsSet().
+    ui::EnsureIntelMediaCompressionEnvVarIsSet();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
   ~InteractiveUITestSuite() override = default;
 
  protected:

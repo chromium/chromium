@@ -90,6 +90,10 @@
 #include "content/shell/app/ios/shell_application_ios.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/gfx/linux/gbm_util.h"  // nogncheck
+#endif
+
 namespace {
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -362,6 +366,13 @@ absl::optional<int> ShellMainDelegate::PostEarlyInitialization(
     // Apply field trial testing configuration since content did not.
     browser_client_->CreateFeatureListAndFieldTrials();
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  // At this point, the base::FeatureList has been initialized and the process
+  // should still be single threaded. Additionally, minigbm shouldn't have been
+  // used yet by this process. Therefore, it's a good time to ensure the Intel
+  // media compression environment flag for minigbm is correctly set.
+  ui::EnsureIntelMediaCompressionEnvVarIsSet();
+#endif  // BUILDFLAG(IS_CHROMEOS)
   if (!ShouldInitializeMojo(invoked_in)) {
     InitializeMojoCore();
   }

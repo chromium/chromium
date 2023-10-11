@@ -66,4 +66,10 @@ BASE_FEATURE(kUseSmartRefForGPUFenceHandle,
 #endif
 );
 
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kEnableIntelMediaCompression,
+             "EnableIntelMediaCompression",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace features
