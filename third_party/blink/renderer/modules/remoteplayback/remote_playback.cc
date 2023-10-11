@@ -85,10 +85,19 @@ KURL GetAvailabilityUrl(const WebURL& source,
       source_string.data(),
       base::checked_cast<unsigned>(source_string.length()));
 
+// TODO(crbug.com/1353987): Remove the special case for Android after the
+// RemotingMediaSource on Android has been updated to parse the new Remote
+// Playback URL format.
+#if BUILDFLAG(IS_ANDROID)
+  return KURL(
+      base::StrCat({kRemotePlaybackPresentationUrlScheme, "://"}).c_str() +
+      encoded_source);
+#else
   return KURL(StringView(kRemotePlaybackPresentationUrlScheme) + "://" +
               encoded_source +
               "?video_codec=" + media::GetCodecName(video_codec).c_str() +
               "&audio_codec=" + media::GetCodecName(audio_codec).c_str());
+#endif
 }
 
 bool IsBackgroundAvailabilityMonitoringDisabled() {
