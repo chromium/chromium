@@ -121,7 +121,7 @@ void TestGLES2Interface::GetIntegerv(GLenum pname, GLint* params) {
   else if (pname == GL_FRAMEBUFFER_BINDING)
     *params = current_framebuffer_;
   else if (pname == GL_MAX_SAMPLES)
-    *params = test_capabilities_.max_samples;
+    *params = test_gl_capabilities_.max_samples;
 }
 
 void TestGLES2Interface::GetShaderiv(GLuint shader,

@@ -1240,12 +1240,34 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   caps.using_vulkan_context =
       shared_context_state_->GrContextIsVulkan() ? true : false;
 
+  caps.max_copy_texture_chromium_size =
+      feature_info()->workarounds().max_copy_texture_chromium_size;
+  caps.texture_format_etc1_npot =
+      feature_info()->feature_flags().oes_compressed_etc1_rgb8_texture &&
+      !feature_info()->workarounds().etc1_power_of_two_only;
+  caps.image_ycbcr_420v =
+      feature_info()->feature_flags().chromium_image_ycbcr_420v;
+  caps.image_ycbcr_420v_disabled_for_video_frames =
+      gpu_preferences_.disable_biplanar_gpu_memory_buffers_for_video_frames;
+  caps.image_ar30 = feature_info()->feature_flags().chromium_image_ar30;
+  caps.image_ab30 = feature_info()->feature_flags().chromium_image_ab30;
+  caps.image_ycbcr_p010 =
+      feature_info()->feature_flags().chromium_image_ycbcr_p010;
+  caps.render_buffer_format_bgra8888 =
+      feature_info()->feature_flags().ext_render_buffer_format_bgra8888;
+  // Vulkan currently doesn't support single-component cross-thread shared
+  // images.
+  caps.disable_one_component_textures =
+      disable_legacy_mailbox_ && features::IsUsingVulkan();
+  caps.angle_rgbx_internal_format =
+      feature_info()->feature_flags().angle_rgbx_internal_format;
+  caps.chromium_gpu_fence = feature_info()->feature_flags().chromium_gpu_fence;
+  caps.mesa_framebuffer_flip_y =
+      feature_info()->feature_flags().mesa_framebuffer_flip_y;
+
   if (feature_info()->workarounds().webgl_or_caps_max_texture_size) {
     caps.max_texture_size =
         std::min(caps.max_texture_size,
-                 feature_info()->workarounds().webgl_or_caps_max_texture_size);
-    caps.max_cube_map_texture_size =
-        std::min(caps.max_cube_map_texture_size,
                  feature_info()->workarounds().webgl_or_caps_max_texture_size);
   }
   caps.sync_query = feature_info()->feature_flags().chromium_sync_query;

@@ -774,7 +774,7 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
       *params = gl_capabilities_.max_combined_texture_image_units;
       return true;
     case GL_MAX_CUBE_MAP_TEXTURE_SIZE:
-      *params = capabilities_.max_cube_map_texture_size;
+      *params = gl_capabilities_.max_cube_map_texture_size;
       return true;
     case GL_MAX_FRAGMENT_UNIFORM_VECTORS:
       *params = gl_capabilities_.max_fragment_uniform_vectors;
@@ -1004,7 +1004,7 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
       *params = gl_capabilities_.max_program_texel_offset;
       return true;
     case GL_MAX_SAMPLES:
-      *params = capabilities_.max_samples;
+      *params = gl_capabilities_.max_samples;
       return true;
     case GL_MAX_SERVER_WAIT_TIMEOUT:
       *params = static_cast<GLint>(gl_capabilities_.max_server_wait_timeout);

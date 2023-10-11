@@ -198,6 +198,7 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
 
   unsigned context_id_;
   gpu::Capabilities test_capabilities_;
+  gpu::GLCapabilities test_gl_capabilities_;
   int times_end_query_succeeds_ = -1;
   bool context_lost_ = false;
   int times_map_buffer_chromium_succeeds_ = -1;

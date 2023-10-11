@@ -178,8 +178,6 @@ void QueryShaderPrecisionFormat(const gl::GLVersionInfo& gl_version_info,
 void PopulateNumericCapabilities(Capabilities* caps,
                                  const FeatureInfo* feature_info) {
   DCHECK(caps != nullptr);
-
-  glGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE, &caps->max_cube_map_texture_size);
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &caps->max_texture_size);
 
   if (feature_info->IsWebGL2OrES3OrHigherContext()) {
@@ -189,11 +187,6 @@ void PopulateNumericCapabilities(Capabilities* caps,
     } else {
       caps->minor_version = 0;
     }
-  }
-  if (feature_info->feature_flags().multisampled_render_to_texture ||
-      feature_info->feature_flags().chromium_framebuffer_multisample ||
-      feature_info->IsWebGL2OrES3OrHigherContext()) {
-    glGetIntegerv(GL_MAX_SAMPLES, &caps->max_samples);
   }
 }
 
@@ -215,6 +208,7 @@ void PopulateGLCapabilities(GLCapabilities* caps,
 
   glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,
                 &caps->max_combined_texture_image_units);
+  glGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE, &caps->max_cube_map_texture_size);
   glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS,
                 &caps->max_fragment_uniform_vectors);
   glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &caps->max_renderbuffer_size);
@@ -288,6 +282,11 @@ void PopulateGLCapabilities(GLCapabilities* caps,
       glGetIntegerv(GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT,
                     &caps->shader_storage_buffer_offset_alignment);
     }
+  }
+  if (feature_info->feature_flags().multisampled_render_to_texture ||
+      feature_info->feature_flags().chromium_framebuffer_multisample ||
+      feature_info->IsWebGL2OrES3OrHigherContext()) {
+    glGetIntegerv(GL_MAX_SAMPLES, &caps->max_samples);
   }
 }
 

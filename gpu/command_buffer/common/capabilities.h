@@ -35,12 +35,9 @@ struct GPU_EXPORT Capabilities {
   Capabilities(const Capabilities& other);
   ~Capabilities();
 
-  int max_cube_map_texture_size = 0;
   // Note this may be smaller than GL_MAX_TEXTURE_SIZE for a GLES context.
   int max_texture_size = 0;
-
   int max_copy_texture_chromium_size = 0;
-  int max_samples = 0;
   bool egl_image_external = false;
   bool egl_image_external_essl3 = false;
   bool texture_format_bgra8888 = false;
@@ -139,6 +136,7 @@ struct GPU_EXPORT GLCapabilities {
   PerStagePrecisions fragment_shader_precisions;
 
   int max_combined_texture_image_units = 0;
+  int max_cube_map_texture_size = 0;
   int max_fragment_uniform_vectors = 0;
   int max_renderbuffer_size = 0;
   int max_texture_image_units = 0;
@@ -167,6 +165,7 @@ struct GPU_EXPORT GLCapabilities {
   int max_fragment_uniform_blocks = 0;
   int max_fragment_uniform_components = 0;
   int max_program_texel_offset = 0;
+  int max_samples = 0;
   int64_t max_server_wait_timeout = 0;
   float max_texture_lod_bias = 0.f;
   int max_transform_feedback_interleaved_components = 0;

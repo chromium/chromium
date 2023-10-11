@@ -213,7 +213,7 @@ class GLES2ImplementationTest : public testing::Test {
           });
       gl_capabilities_.max_combined_texture_image_units =
           kMaxCombinedTextureImageUnits;
-      capabilities_.max_cube_map_texture_size = kMaxCubeMapTextureSize;
+      gl_capabilities_.max_cube_map_texture_size = kMaxCubeMapTextureSize;
       gl_capabilities_.max_fragment_uniform_vectors =
           kMaxFragmentUniformVectors;
       gl_capabilities_.max_renderbuffer_size = kMaxRenderbufferSize;

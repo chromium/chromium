@@ -3492,8 +3492,6 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
   DCHECK(initialized());
   Capabilities caps;
 
-  DoGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE, &caps.max_cube_map_texture_size,
-                1);
   DoGetIntegerv(GL_MAX_TEXTURE_SIZE, &caps.max_texture_size, 1);
   if (workarounds().webgl_or_caps_max_texture_size) {
     caps.max_texture_size =
@@ -3504,11 +3502,6 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
     // TODO(zmo): once we switch to MANGLE, we should query version numbers.
     caps.major_version = 3;
     caps.minor_version = 0;
-  }
-  if (feature_info_->feature_flags().multisampled_render_to_texture ||
-      feature_info_->feature_flags().chromium_framebuffer_multisample ||
-      feature_info_->IsWebGL2OrES3Context()) {
-    caps.max_samples = ComputeMaxSamples();
   }
 
   caps.egl_image_external =
@@ -3608,6 +3601,8 @@ GLCapabilities GLES2DecoderImpl::GetGLCapabilities() {
 
   DoGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,
                 &caps.max_combined_texture_image_units, 1);
+  DoGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE, &caps.max_cube_map_texture_size,
+                1);
   DoGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS,
                 &caps.max_fragment_uniform_vectors, 1);
   DoGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &caps.max_renderbuffer_size, 1);
@@ -3687,6 +3682,11 @@ GLCapabilities GLES2DecoderImpl::GetGLCapabilities() {
                   &caps.num_program_binary_formats, 1);
     DoGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT,
                   &caps.uniform_buffer_offset_alignment, 1);
+  }
+  if (feature_info_->feature_flags().multisampled_render_to_texture ||
+      feature_info_->feature_flags().chromium_framebuffer_multisample ||
+      feature_info_->IsWebGL2OrES3Context()) {
+    caps.max_samples = ComputeMaxSamples();
   }
   caps.occlusion_query = feature_info_->feature_flags().occlusion_query;
   caps.occlusion_query_boolean =
