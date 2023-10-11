@@ -47,6 +47,7 @@
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "components/url_formatter/elide_url.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -62,6 +63,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/session/connection_holder.h"
@@ -215,6 +217,38 @@ absl::optional<std::string> MaybeFormatBytes(absl::optional<uint64_t> bytes) {
 
   return absl::nullopt;
 }
+#if !BUILDFLAG(IS_CHROMEOS)
+std::string GetFormattedOrigin(const webapps::AppId& app_id,
+                               web_app::WebAppProvider& provider) {
+  GURL origin_url = provider.registrar_unsafe().GetAppStartUrl(app_id);
+  // Format origin URL to not show the scheme and default port numbers.
+  std::u16string origin_url_formatted =
+      url_formatter::FormatOriginForSecurityDisplay(
+          url::Origin::Create(origin_url),
+          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+  return base::UTF16ToUTF8(origin_url_formatted);
+}
+
+// Returns a list of origin URLs from scope_extensions of an app's Manifest.
+std::vector<std::string> GetScopeExtensions(const webapps::AppId& app_id,
+                                            web_app::WebAppProvider& provider) {
+  std::vector<std::string> scope_extensions_vector;
+
+  for (const auto& scope_extension :
+       provider.registrar_unsafe().GetScopeExtensions(app_id)) {
+    url::Origin origin = scope_extension.origin;
+    // Format origin URL to not show the scheme and default port numbers.
+    std::u16string origin_formatted =
+        url_formatter::FormatOriginForSecurityDisplay(
+            origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+    if (scope_extension.has_origin_wildcard) {
+      origin_formatted = u"*." + origin_formatted;
+    }
+    scope_extensions_vector.push_back(base::UTF16ToUTF8(origin_formatted));
+  }
+  return scope_extensions_vector;
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -690,6 +724,14 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
 #endif
 
   app->publisher_id = update.PublisherId();
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableScopeExtensions)) {
+    app->formatted_origin = GetFormattedOrigin(app->id, *provider);
+    app->scope_extensions = GetScopeExtensions(app->id, *provider);
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   return app;
 }

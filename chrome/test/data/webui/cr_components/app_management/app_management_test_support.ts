@@ -58,6 +58,8 @@ export function createTestApp(id: string, optConfig?: AppConfig): App {
     appSize: undefined,
     dataSize: undefined,
     publisherId: '',
+    formattedOrigin: '',
+    scopeExtensions: [],
   };
 
   if (optConfig) {

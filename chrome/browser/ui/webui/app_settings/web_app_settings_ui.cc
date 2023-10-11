@@ -83,6 +83,13 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
        IDS_APP_MANAGEMENT_INTENT_OVERLAP_DIALOG_TEXT_5_OR_MORE_APPS},
       {"appManagementIntentSharingTabExplanation",
        IDS_APP_MANAGEMENT_INTENT_SHARING_TAB_EXPLANATION},
+      {"appManagementAppContentLabel", IDS_APP_MANAGEMENT_APP_CONTENT_TITLE},
+      {"appManagementAppContentSublabel",
+       IDS_APP_MANAGEMENT_APP_CONTENT_SUBTITLE},
+      {"appManagementAppContentDialogSublabel",
+       IDS_APP_MANAGEMENT_APP_CONTENT_DIALOG_SUBTITLE},
+      {"appManagementPermissionsWithOriginLabel",
+       IDS_APP_MANAGEMENT_PERMISSIONS_WITH_ORIGIN},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

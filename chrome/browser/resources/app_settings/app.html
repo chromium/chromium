@@ -59,7 +59,9 @@
     </app-management-permission-item>
     <div id="permissions-card" class="permission-card-row">
       <div class="permission-section-header">
-        <div class="header-text">$i18n{appManagementPermissionsLabel}</div>
+        <div class="header-text">
+          [[getPermissionsHeader_(app_.formattedOrigin)]]
+        </div>
       </div>
       <div class="permission-list indented-permission-block">
         <app-management-permission-item class="subpermission-row"
@@ -83,6 +85,10 @@
         class="permission-card-row separated-row"
         app="[[app_]]">
     </app-management-file-handling-item>
+    <app-management-app-content-item
+      class="permission-card-row separated-row"
+      app="[[app_]]">
+    </app-management-app-content-item>
     <app-management-more-permissions-item
         class="permission-card-row separated-row" app="[[app_]]"
         more-permissions-label="$i18n{appManagementMorePermissionsLabel}">

@@ -1274,6 +1274,13 @@ apps::UrlHandlers WebAppRegistrar::GetAppUrlHandlers(
                  : std::vector<apps::UrlHandlerInfo>();
 }
 
+base::flat_set<ScopeExtensionInfo> WebAppRegistrar::GetScopeExtensions(
+    const webapps::AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return web_app ? web_app->scope_extensions()
+                 : base::flat_set<ScopeExtensionInfo>();
+}
+
 base::flat_set<ScopeExtensionInfo> WebAppRegistrar::GetValidatedScopeExtensions(
     const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);

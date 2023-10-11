@@ -249,6 +249,11 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Returns the "url_handlers" field from the app manifest.
   apps::UrlHandlers GetAppUrlHandlers(const webapps::AppId& app_id) const;
 
+  // Returns the `scope_extensions` field from the app manifest, ignoring
+  // validation.
+  base::flat_set<ScopeExtensionInfo> GetScopeExtensions(
+      const webapps::AppId& app_id) const;
+
   // Returns the `scope_extensions` field from the app manifest after
   // validation. Entries with an origin that validated association with this web
   // app are returned. Other entries are removed. See

@@ -71,6 +71,8 @@ build_webui("build") {
   grd_prefix = "cr_components_app_management"
 
   web_component_files = [
+    "app_content_dialog.ts",
+    "app_content_item.ts",
     "file_handling_item.ts",
     "more_permissions_item.ts",
     "permission_item.ts",

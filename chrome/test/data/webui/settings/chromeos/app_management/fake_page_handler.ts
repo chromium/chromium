@@ -98,6 +98,8 @@ export class FakePageHandler implements PageHandlerInterface {
       appSize: '',
       dataSize: '',
       publisherId: '',
+      formattedOrigin: '',
+      scopeExtensions: [],
     };
 
     if (optConfig) {

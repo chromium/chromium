@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/test/test_future.h"
@@ -12,12 +13,14 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
@@ -73,8 +76,10 @@ class AppManagementPageHandlerTestBase : public testing::Test {
         handler.BindNewPipeAndPassReceiver(),
         page.InitWithNewPipeAndPassRemote(), profile_.get(), *delegate_.get());
 #if !BUILDFLAG(IS_CHROMEOS)
-    scoped_feature_list_.InitAndEnableFeature(
-        apps::features::kDesktopPWAsLinkCapturing);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kDesktopPWAsLinkCapturing,
+         blink::features::kWebAppEnableScopeExtensions},
+        {});
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   }
 
@@ -547,6 +552,59 @@ TEST_F(AppManagementPageHandlerTestBase, DifferentScopeNoOverlap) {
       GetOverlappingPreferredApps(app_id1);
   EXPECT_TRUE(overlapping_apps.empty());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(AppManagementPageHandlerTestBase, GetScopeExtensions) {
+  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+  web_app_info->title = u"app_name";
+  web_app_info->start_url = GURL("https://example.com/");
+  web_app_info->scope_extensions = web_app::ScopeExtensions(
+      {web_app::ScopeExtensionInfo(
+           url::Origin::Create(GURL("https://sitea.com"))),
+       web_app::ScopeExtensionInfo(
+           url::Origin::Create(GURL("https://app.siteb.com"))),
+       web_app::ScopeExtensionInfo(
+           url::Origin::Create(GURL("https://sitec.com")),
+           /*has_origin_wildcard=*/true),
+       web_app::ScopeExtensionInfo(
+           url::Origin::Create(GURL("http://☃.net/"))) /* Unicode */,
+       web_app::ScopeExtensionInfo(
+           url::Origin::Create(GURL("https://localhost:443"))),
+       web_app::ScopeExtensionInfo(
+           url::Origin::Create(GURL("https://localhost:9999")))});
+
+  web_app::WebAppInstallParams install_params;
+  // OS Integration is not needed for this test.
+  install_params.bypass_os_hooks = true;
+  // Skip origin association validation for testing.
+  install_params.skip_origin_association_validation = true;
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      future;
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForTest(profile());
+  provider->scheduler().InstallFromInfoWithParams(
+      std::move(web_app_info), /*overwrite_existing_manifest_fields=*/false,
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, future.GetCallback(),
+      install_params);
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            future.Get<webapps::InstallResultCode>());
+  const webapps::AppId& app_id = future.Get<webapps::AppId>();
+
+  base::test::TestFuture<app_management::mojom::AppPtr> result;
+  handler()->GetApp(app_id, result.GetCallback());
+
+  std::vector<std::string> expected_scope_extensions = {
+      "xn--n3h.net" /* Unicode */,
+      "app.siteb.com",
+      "localhost",
+      "sitea.com",
+      "*.sitec.com",
+      "localhost:9999"};
+  EXPECT_EQ(result.Get()->scope_extensions, expected_scope_extensions);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // TODO(crbug.com/1476011): The overlapping nested scope based behavior is only
 // on ChromeOS, and will need to be modified if the behavior changes.

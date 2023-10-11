@@ -157,6 +157,13 @@ struct App {
   string? app_size;
   string? data_size;
   string publisher_id;
+  // A string of the formatted origin URL where it is no longer a valid URL,
+  // such as "foo.com".
+  string? formatted_origin;
+  // A list of formatted origins from the "scope_extensions" field in web app
+  // manifest that are no longer valid URLs, such as "foo.com", "app.foo.com",
+  // "*.foo2.com".
+  array<string> scope_extensions;
 };
 
 // Extension-based apps primarily use install-time permissions that cannot be

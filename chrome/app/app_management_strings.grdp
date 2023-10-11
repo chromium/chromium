@@ -19,6 +19,9 @@
   <message name="IDS_APP_MANAGEMENT_PERMISSIONS" desc="Label for permissions section in the app settings page.">
     Permissions
   </message>
+  <message name="IDS_APP_MANAGEMENT_PERMISSIONS_WITH_ORIGIN" desc="Label for permissions section in the app settings page. Shows URL of the app where permissions are applied.">
+    Permissions (<ph name="FORMATTED_ORIGIN">$1<ex>foo.com</ex></ph>)
+  </message>
   <message name="IDS_APP_MANAGEMENT_MORE_SETTINGS" desc="Label for a link to more settings and permissions for an app.">
     More settings and permissions
   </message>
@@ -220,4 +223,14 @@
     Permissions that you allow for <ph name="APP_NAME">$1<ex>Citrix</ex></ph> will also be allowed for this app. <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Manage<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
 
+  <!-- App Content, Scope Extensions -->
+  <message name="IDS_APP_MANAGEMENT_APP_CONTENT_TITLE" desc="Label for App content section in the app settings page.">
+    App Content
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_CONTENT_SUBTITLE" desc="Sub-label for App content section in the app settings page.">
+    This app contains web content from other sites
+  </message>
+   <message name="IDS_APP_MANAGEMENT_APP_CONTENT_DIALOG_SUBTITLE" desc="Sub-label for App content dialog in the app settings page.">
+    This app contains web content from
+  </message>
 </grit-part>

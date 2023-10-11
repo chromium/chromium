@@ -50,6 +50,8 @@ suite('AppSettingsAppTest', () => {
       appSize: '',
       dataSize: '',
       publisherId: '',
+      formattedOrigin: '',
+      scopeExtensions: [],
     };
 
     if (optConfig) {
@@ -360,5 +362,93 @@ suite('AppSettingsAppTest', () => {
 
     assertTrue(!!getSupportedLinksElement()!.shadowRoot!.querySelector(
         '#overlapWarning'));
+  });
+
+  test('Origin URL is present in Permissions header', async () => {
+    const appOptions = {
+      type: AppType.kWeb,
+      formattedOrigin: 'abc.com',
+    };
+
+    // Add PWA app, and make it the currently selected app.
+    await fakeHandler().setApp(createApp('app1', appOptions));
+    await fakeHandler().flushPipesForTesting();
+    await reloadPage();
+
+    assertEquals(
+        appSettingsApp.shadowRoot!.querySelector(
+                                      '.header-text')!.textContent!.trim(),
+        'Permissions (abc.com)');
+  });
+
+  // Check that the app content element is not hidden when there are
+  // scope_extensions entries.
+  test('App Content element is present', async () => {
+    const appOptions = {
+      type: AppType.kWeb,
+      scopeExtensions: ['*.abc.com', 'def.com', 'ghi.com'],
+    };
+
+    // Add PWA app, and make it the currently selected app.
+    await fakeHandler().setApp(createApp('app1', appOptions));
+    await fakeHandler().flushPipesForTesting();
+    await reloadPage();
+
+    const appContentItem = appSettingsApp.shadowRoot!.querySelector(
+        'app-management-app-content-item')!;
+    assertTrue(!!appContentItem);
+
+    assertFalse(!!appContentItem.hidden);
+  });
+
+  // Check that the app content element is hidden when there are no
+  // scope_extensions entries.
+  test('App Content element is not present', async () => {
+    const appOptions = {
+      type: AppType.kWeb,
+      scopeExtensions: [],
+    };
+
+    // Add PWA app, and make it the currently selected app.
+    await fakeHandler().setApp(createApp('app1', appOptions));
+    await fakeHandler().flushPipesForTesting();
+    await reloadPage();
+
+    const appContentItem = appSettingsApp.shadowRoot!.querySelector(
+        'app-management-app-content-item')!;
+    assertTrue(!!appContentItem);
+
+    assertTrue(appContentItem.hidden);
+  });
+
+  test('App Content dialog is shown', async () => {
+    const appOptions = {
+      type: AppType.kWeb,
+      scopeExtensions: ['*.abc.com', 'def.com', 'ghi.com'],
+    };
+
+    // Add PWA app, and make it the currently selected app.
+    await fakeHandler().setApp(createApp('app1', appOptions));
+    await fakeHandler().flushPipesForTesting();
+    await reloadPage();
+
+    const appContentItem = appSettingsApp.shadowRoot!.querySelector(
+        'app-management-app-content-item')!;
+    assertTrue(!!appContentItem);
+
+    // Check that the dialog is not shown initially.
+    assertFalse(appContentItem.showAppContentDialog);
+    assertFalse(!!appContentItem.shadowRoot!.querySelector(
+        'app-management-app-content-dialog'));
+
+    const clickableAppContentElement =
+        appContentItem.shadowRoot!.querySelector<HTMLElement>('#appContent')!;
+
+    await clickableAppContentElement.click();
+
+    // Check that the dialog is shown after clicking on the app content row.
+    assertTrue(appContentItem.showAppContentDialog);
+    assertTrue(!!appContentItem.shadowRoot!.querySelector(
+        'app-management-app-content-dialog'));
   });
 });
