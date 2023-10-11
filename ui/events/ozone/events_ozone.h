@@ -36,7 +36,10 @@ EVENTS_EXPORT bool DispatchEventFromNativeUiEvent(
     const PlatformEvent& native_event,
     base::OnceCallback<void(ui::Event*)> callback);
 
+// Disable native level event handling including dispatch,
+// capture or mouse movements for tests.
 EVENTS_EXPORT void DisableNativeUiEventDispatchForTest();
+EVENTS_EXPORT bool IsNativeUiEventDispatchDisabled();
 
 // Event::Properties constants for IBus-GTK and fcitx-GTK.
 // Both of them in async mode use gtk-specific XKeyEvent::state bits 24 and 25.

@@ -411,9 +411,10 @@ void AshTestHelper::SetUp(InitParams init_params) {
   // Tests expect empty wallpaper.
   shell->wallpaper_controller()->CreateEmptyWallpaperForTesting();
 
-  // Move the mouse cursor to far away so that native events don't interfere
-  // with test expectations.
-  Shell::GetPrimaryRootWindow()->MoveCursorTo(gfx::Point(-1000, -1000));
+  // Native events and mouse movements are disabled by
+  // `ui::DisableNativeUiEventDispatchDisabled()`. Just make sure that the the
+  // mouse cursour is not on the screen by default.
+  aura::Env::GetInstance()->SetLastMouseLocation(gfx::Point(-1000, -1000));
   shell->cursor_manager()->EnableMouseEvents();
 
   // Changing GestureConfiguration shouldn't make tests fail. These values

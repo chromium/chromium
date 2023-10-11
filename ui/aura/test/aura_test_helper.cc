@@ -68,6 +68,7 @@ AuraTestHelper::AuraTestHelper(ui::ContextFactory* context_factory) {
 #endif
 
 #if BUILDFLAG(IS_OZONE) && BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(b/304625912): Native events should be enabled for Crosier.
   ui::DisableNativeUiEventDispatchForTest();
 #endif
 

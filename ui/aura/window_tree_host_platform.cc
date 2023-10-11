@@ -32,6 +32,7 @@
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/events/keycodes/dom/dom_keyboard_layout_map.h"
+#include "ui/events/ozone/events_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -119,6 +120,11 @@ void WindowTreeHostPlatform::SetBoundsInPixels(const gfx::Rect& bounds) {
 }
 
 void WindowTreeHostPlatform::SetCapture() {
+#if BUILDFLAG(IS_OZONE)
+  if (ui::IsNativeUiEventDispatchDisabled()) {
+    return;
+  }
+#endif
   platform_window_->SetCapture();
 }
 
@@ -175,6 +181,13 @@ void WindowTreeHostPlatform::SetCursorNative(gfx::NativeCursor cursor) {
 
 void WindowTreeHostPlatform::MoveCursorToScreenLocationInPixels(
     const gfx::Point& location_in_pixels) {
+#if BUILDFLAG(IS_OZONE)
+  if (ui::IsNativeUiEventDispatchDisabled()) {
+    // Unit tests should not test or rely on the native cursor position because
+    // it is shared between multiple tests.
+    return;
+  }
+#endif
   platform_window_->MoveCursorTo(location_in_pixels);
 }
 

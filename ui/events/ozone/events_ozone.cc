@@ -59,8 +59,12 @@ bool DispatchEventFromNativeUiEvent(
   return handled;
 }
 
-EVENTS_EXPORT void DisableNativeUiEventDispatchForTest() {
+void DisableNativeUiEventDispatchForTest() {
   dispatch_disabled = true;
+}
+
+bool IsNativeUiEventDispatchDisabled() {
+  return dispatch_disabled;
 }
 
 void SetKeyboardImeFlagProperty(KeyEvent::Properties* properties,

@@ -2004,8 +2004,14 @@ void X11Window::AfterActivationStateChanged() {
   if (had_pointer_grab_ && !has_pointer_grab_)
     OnXWindowLostPointerGrab();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool had_pointer_capture = had_pointer_grab_;
+  bool has_pointer_capture = has_pointer_grab_;
+#else
+  // TODO(crbug.com/1491239): Remove has|had_pointer_
   bool had_pointer_capture = had_pointer_ || had_pointer_grab_;
   bool has_pointer_capture = has_pointer_ || has_pointer_grab_;
+#endif
   if (had_pointer_capture && !has_pointer_capture)
     OnXWindowLostCapture();
 
