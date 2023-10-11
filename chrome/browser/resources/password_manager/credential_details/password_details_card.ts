@@ -16,6 +16,7 @@ import '../sharing/share_password_flow.js';
 import '../sharing/metrics_utils.js';
 
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
@@ -31,6 +32,9 @@ import {UserUtilMixin} from '../user_utils_mixin.js';
 import {CredentialFieldElement} from './credential_field.js';
 import {CredentialNoteElement} from './credential_note.js';
 import {getTemplate} from './password_details_card.html.js';
+
+export const PASSWORD_SHARE_BUTTON_BUTTON_ELEMENT_ID =
+    'PasswordManagerUI::kSharePasswordElementId';
 
 export type PasswordRemovedEvent =
     CustomEvent<{removedFromStores: chrome.passwordsPrivate.PasswordStoreSet}>;
@@ -53,11 +57,12 @@ export interface PasswordDetailsCardElement {
     showPasswordButton: CrIconButtonElement,
     toast: CrToastElement,
     usernameValue: CredentialFieldElement,
+    shareButton: HTMLButtonElement,
   };
 }
 
-const PasswordDetailsCardElementBase =
-    UserUtilMixin(ShowPasswordMixin(I18nMixin(PolymerElement)));
+const PasswordDetailsCardElementBase = HelpBubbleMixin(
+    UserUtilMixin(ShowPasswordMixin(I18nMixin(PolymerElement))));
 
 export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   static get is() {
@@ -111,6 +116,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   private showEditPasswordDialog_: boolean;
   private showDeletePasswordDialog_: boolean;
   private showShareFlow_: boolean;
+  private showShareButton_: boolean;
   private enableSendPasswords_: boolean;
 
   private isFederated_(): boolean {
@@ -220,6 +226,15 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   private computeShowShareButton_(): boolean {
     return this.enableSendPasswords_ && !this.isFederated_() &&
         (this.isSyncingPasswords || this.isOptedInForAccountStorage);
+  }
+
+  maybeRegisterSharingHelpBubble(): void {
+    if (!this.showShareButton_) {
+      return;
+    }
+
+    this.registerHelpBubble(
+        PASSWORD_SHARE_BUTTON_BUTTON_ELEMENT_ID, this.$.shareButton);
   }
 }
 

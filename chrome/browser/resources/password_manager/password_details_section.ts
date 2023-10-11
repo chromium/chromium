@@ -11,7 +11,7 @@ import './credential_details/passkey_details_card.js';
 
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './password_details_section.html.js';
 import {PasswordManagerImpl, PasswordViewPageInteractions} from './password_manager_proxy.js';
@@ -37,7 +37,12 @@ export class PasswordDetailsSectionElement extends
   }
 
   static get properties() {
-    return {selectedGroup_: Object};
+    return {
+      selectedGroup_: {
+        type: Object,
+        observer: 'maybeRegisterPasswordSharingHelpBubble_',
+      },
+    };
   }
 
   private selectedGroup_: chrome.passwordsPrivate.CredentialGroup|undefined;
@@ -211,6 +216,17 @@ export class PasswordDetailsSectionElement extends
               Router.getInstance().currentRoute.queryParameters);
         })
         .catch(this.navigateBack_);
+  }
+
+  private maybeRegisterPasswordSharingHelpBubble_() {
+    afterNextRender(this, () => {
+      if (this.selectedGroup_?.entries[0]?.isPasskey) {
+        return;
+      }
+
+      this.shadowRoot!.querySelector('password-details-card')
+          ?.maybeRegisterSharingHelpBubble();
+    });
   }
 }
 

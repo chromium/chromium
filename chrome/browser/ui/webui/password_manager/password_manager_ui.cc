@@ -573,6 +573,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI, kAddShortcutElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI,
                                       kOverflowMenuElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI,
+                                      kSharePasswordElementId);
 DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(PasswordManagerUI,
                                        kAddShortcutCustomEventId);
 
@@ -632,5 +634,6 @@ void PasswordManagerUI::CreateHelpBubbleHandler(
       std::vector<ui::ElementIdentifier>{
           PasswordManagerUI::kSettingsMenuItemElementId,
           PasswordManagerUI::kAddShortcutElementId,
+          PasswordManagerUI::kSharePasswordElementId,
           PasswordManagerUI::kOverflowMenuElementId});
 }

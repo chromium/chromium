@@ -386,11 +386,9 @@ suite('PasswordDetailsCardTest', function() {
 
     const card = await createCardElement();
 
-    const shareButton =
-        card.shadowRoot!.querySelector<HTMLElement>('#shareButton');
-    assertTrue(!!shareButton);
-    assertTrue(isVisible(shareButton));
-    assertEquals(shareButton.textContent!.trim(), card.i18n('share'));
+    assertFalse(card.$.shareButton.hidden);
+    assertTrue(isVisible(card.$.shareButton));
+    assertEquals(card.$.shareButton.textContent!.trim(), card.i18n('share'));
   });
 
   test('sharing unavailable for federated credentials', async function() {
@@ -404,9 +402,7 @@ suite('PasswordDetailsCardTest', function() {
     const card =
         await createCardElement(createPasswordEntry({federationText: 'text'}));
 
-    const shareButton =
-        card.shadowRoot!.querySelector<HTMLElement>('#shareButton');
-    assertFalse(!!shareButton);
+    assertTrue(card.$.shareButton.hidden);
 
     const sharePasswordFlow =
         card.shadowRoot!.querySelector('share-password-flow');
@@ -423,9 +419,7 @@ suite('PasswordDetailsCardTest', function() {
 
     const card = await createCardElement();
 
-    const shareButton =
-        card.shadowRoot!.querySelector<HTMLElement>('#shareButton');
-    assertFalse(!!shareButton);
+    assertTrue(card.$.shareButton.hidden);
 
     const sharePasswordFlow =
         card.shadowRoot!.querySelector('share-password-flow');
@@ -442,9 +436,7 @@ suite('PasswordDetailsCardTest', function() {
 
     const card = await createCardElement();
 
-    const shareButton =
-        card.shadowRoot!.querySelector<HTMLElement>('#shareButton');
-    assertFalse(!!shareButton);
+    assertTrue(card.$.shareButton.hidden);
 
     const sharePasswordFlow =
         card.shadowRoot!.querySelector('share-password-flow');

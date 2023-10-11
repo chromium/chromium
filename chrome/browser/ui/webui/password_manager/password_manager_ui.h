@@ -37,6 +37,7 @@ class PasswordManagerUI : public ui::MojoBubbleWebUIController,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSettingsMenuItemElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAddShortcutElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverflowMenuElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSharePasswordElementId);
   DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kAddShortcutCustomEventId);
 
   void BindInterface(

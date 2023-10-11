@@ -4,9 +4,10 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {Page, PasskeyDetailsCardElement, PasswordDetailsCardElement, PasswordDetailsSectionElement, PasswordManagerImpl, PasswordViewPageInteractions, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {Page, PasskeyDetailsCardElement, PASSWORD_SHARE_BUTTON_BUTTON_ELEMENT_ID, PasswordDetailsCardElement, PasswordDetailsSectionElement, PasswordManagerImpl, PasswordViewPageInteractions, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {createAffiliatedDomain, createCredentialGroup, createPasswordEntry} from './test_util.js';
@@ -394,5 +395,63 @@ suite('PasswordDetailsSectionTest', function() {
         section.$.backButton.click();
         assertEquals(Page.PASSWORDS, Router.getInstance().currentRoute.page);
         assertEquals(query, Router.getInstance().currentRoute.queryParameters);
+      });
+
+  test('Register password sharing IPH for password card', async function() {
+    loadTimeData.overrideValues({enableSendPasswords: true});
+    passwordManager.data.isOptedInAccountStorage = true;
+
+    const group = createCredentialGroup({
+      name: 'test.com',
+      credentials: [
+        createPasswordEntry({id: 0, username: 'test1'}),
+      ],
+    });
+    Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
+
+    const section = document.createElement('password-details-section');
+    document.body.appendChild(section);
+    await waitAfterNextRender(section);
+    await flushTasks();
+
+    const card = section.shadowRoot!.querySelector('password-details-card');
+    assertTrue(!!card);
+
+    assertDeepEquals(
+        card.getSortedAnchorStatusesForTesting(),
+        [
+          [PASSWORD_SHARE_BUTTON_BUTTON_ELEMENT_ID, true],
+        ],
+    );
+  });
+
+  test(
+      'Password sharing IPH is not registered with passkey card present',
+      async function() {
+        loadTimeData.overrideValues({enableSendPasswords: true});
+        passwordManager.data.isOptedInAccountStorage = true;
+
+        const group = createCredentialGroup({
+          name: 'test.com',
+          credentials: [
+            createPasswordEntry({isPasskey: true, id: 0, username: 'test1'}),
+            createPasswordEntry({id: 1, username: 'test2'}),
+            createPasswordEntry({id: 2, username: 'test3'}),
+          ],
+        });
+        Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
+
+        const section = document.createElement('password-details-section');
+        document.body.appendChild(section);
+        await waitAfterNextRender(section);
+        await flushTasks();
+
+        section.shadowRoot!.querySelectorAll('password-details-card')
+            .forEach(entry => {
+              assertDeepEquals(
+                  entry.getSortedAnchorStatusesForTesting(),
+                  [],
+              );
+            });
       });
 });
