@@ -4819,16 +4819,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "history-journeys-content-clustering",
-    "owners": [ "sophiechang", "chrome-journeys@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "history-journeys-images",
-    "owners": [ "tommycli", "chrome-journeys@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "history-journeys-include-synced-visits",
     "owners": [ "tommycli", "chrome-journeys@google.com" ],
     "expiry_milestone": 125
@@ -4837,21 +4827,6 @@
     "name": "history-journeys-labels",
     "owners": [ "tommycli", "chrome-journeys@google.com" ],
     "expiry_milestone": 125
-  },
-  {
-    "name": "history-journeys-omnibox-action",
-    "owners": [ "tommycli", "chrome-journeys@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "history-journeys-omnibox-history-cluster-provider",
-    "owners": [ "tommycli", "chrome-journeys@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "history-journeys-persist-caches-to-prefs",
-    "owners": [ "pnoland", "chrome-journeys@google.com" ],
-    "expiry_milestone": 120
   },
   {
     "name": "history-journeys-show-all-clusters",

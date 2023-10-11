@@ -1177,23 +1177,8 @@ extern const char kJourneysDescription[];
 extern const char kRenameJourneysName[];
 extern const char kRenameJourneysDescription[];
 
-extern const char kJourneysContentClusteringName[];
-extern const char kJourneysContentClusteringDescription[];
-
-extern const char kJourneysImagesName[];
-extern const char kJourneysImagesDescription[];
-
 extern const char kJourneysLabelsName[];
 extern const char kJourneysLabelsDescription[];
-
-extern const char kJourneysOmniboxActionName[];
-extern const char kJourneysOmniboxActionDescription[];
-
-extern const char kJourneysOmniboxHistoryClusterProviderName[];
-extern const char kJourneysOmniboxHistoryClusterProviderDescription[];
-
-extern const char kJourneysPersistCachesToPrefsName[];
-extern const char kJourneysPersistCachesToPrefsDescription[];
 
 extern const char kJourneysShowAllClustersName[];
 extern const char kJourneysShowAllClustersDescription[];

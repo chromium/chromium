@@ -1335,71 +1335,6 @@ const FeatureEntry::FeatureVariation kJourneysVariations[] = {
     {"All Supported Locales", kJourneysAllLocalesParams,
      std::size(kJourneysAllLocalesParams), nullptr},
 };
-const FeatureEntry::FeatureParam kJourneysOmniboxActionOnAllURLsParams[] = {
-    {"omnibox_action_on_urls", "true"},
-    {"omnibox_action_on_noisy_urls", "true"},
-    {"omnibox_action_on_navigation_intents", "true"},
-    {"omnibox_action_with_pedals", "true"},
-};
-const FeatureEntry::FeatureParam kJourneysOmniboxActionOnNonNoisyURLsParams[] =
-    {
-        {"omnibox_action_on_urls", "true"},
-        {"omnibox_action_on_noisy_urls", "false"},
-        {"omnibox_action_on_navigation_intents", "true"},
-        {"omnibox_action_with_pedals", "true"},
-};
-const FeatureEntry::FeatureParam
-    kJourneysOmniboxActionOnNavigationIntentsParams[] = {
-        {"omnibox_action_on_urls", "false"},
-        {"omnibox_action_on_noisy_urls", "false"},
-        {"omnibox_action_on_navigation_intents", "true"},
-        {"omnibox_action_with_pedals", "false"},
-};
-const FeatureEntry::FeatureParam kJourneysOmniboxActionWithPedalsParams[] = {
-    {"omnibox_action_on_urls", "false"},
-    {"omnibox_action_on_noisy_urls", "false"},
-    {"omnibox_action_on_navigation_intents", "false"},
-    {"omnibox_action_with_pedals", "true"},
-};
-const FeatureEntry::FeatureVariation kJourneysOmniboxActionVariations[] = {
-    {"Action Chips on All URLs", kJourneysOmniboxActionOnAllURLsParams,
-     std::size(kJourneysOmniboxActionOnAllURLsParams), nullptr},
-    {"Action Chips on Non-Noisy URLs",
-     kJourneysOmniboxActionOnNonNoisyURLsParams,
-     std::size(kJourneysOmniboxActionOnNonNoisyURLsParams), nullptr},
-    {"Action Chips Enabled on Navigation Intents",
-     kJourneysOmniboxActionOnNavigationIntentsParams,
-     std::size(kJourneysOmniboxActionOnNavigationIntentsParams), nullptr},
-    {"Action Chips Enabled with Pedals", kJourneysOmniboxActionWithPedalsParams,
-     std::size(kJourneysOmniboxActionWithPedalsParams), nullptr},
-};
-
-const FeatureEntry::FeatureParam
-    kJourneysOmniboxHistoryClusterProviderVariationsAggressive[] = {
-        {"omnibox_history_cluster_provider_score", "1100"},
-        {"omnibox_history_cluster_provider_navigation_intent_score_threshold",
-         "1400"},
-        {"omnibox_history_cluster_provider_on_navigation_intents", "false"},
-};
-const FeatureEntry::FeatureParam
-    kJourneysOmniboxHistoryClusterProviderVariationsModerate[] = {
-        {"omnibox_history_cluster_provider_score", "900"},
-        {"omnibox_history_cluster_provider_navigation_intent_score_threshold",
-         "1300"},
-        {"omnibox_history_cluster_provider_on_navigation_intents", "false"},
-};
-const FeatureEntry::FeatureVariation
-    kJourneysOmniboxHistoryClusterProviderVariations[] = {
-        {"Aggressive - score 1100, shortcut boosting, nav-intent filtering "
-         "1400",
-         kJourneysOmniboxHistoryClusterProviderVariationsAggressive,
-         std::size(kJourneysOmniboxHistoryClusterProviderVariationsAggressive),
-         nullptr},
-        {"Moderate - Score 900, shortcut boosting, nav-intent filtering 1300",
-         kJourneysOmniboxHistoryClusterProviderVariationsModerate,
-         std::size(kJourneysOmniboxHistoryClusterProviderVariationsModerate),
-         nullptr},
-};
 
 const FeatureEntry::FeatureVariation
     kImageServiceOptimizationGuideSalientImagesVariations[] = {
@@ -1415,45 +1350,7 @@ const FeatureEntry::FeatureVariation
          kSidePanelJourneysOpensFromOmniboxParams,
          std::size(kSidePanelJourneysOpensFromOmniboxParams), nullptr},
 };
-const FeatureEntry::FeatureParam kJourneysAllVisitsNoPairwiseMergeParams[] = {
-    {"use_pairwise_merge", "false"},
-    {"search_visits_only", "false"},
-};
-const FeatureEntry::FeatureParam kJourneysAllVisitsWithPairwiseMergeParams[] = {
-    {"use_pairwise_merge", "true"},
-    {"search_visits_only", "false"},
-};
-const FeatureEntry::FeatureParam kJourneysSearchVisitsNoPairwiseMergeParams[] =
-    {
-        {"use_pairwise_merge", "false"},
-        {"search_visits_only", "true"},
-};
-const FeatureEntry::FeatureParam
-    kJourneysSearchVisitsWithPairwiseMergeParams[] = {
-        {"use_pairwise_merge", "true"},
-        {"search_visits_only", "true"},
-};
-const FeatureEntry::FeatureVariation kJourneysContentClusteringVariations[] = {
-    {"All Visits With Blocklist and No Pairwise Merge",
-     kJourneysAllVisitsNoPairwiseMergeParams,
-     std::size(kJourneysAllVisitsNoPairwiseMergeParams), nullptr},
-    {"All Visits With Blocklist and Pairwise Merge",
-     kJourneysAllVisitsWithPairwiseMergeParams,
-     std::size(kJourneysAllVisitsWithPairwiseMergeParams), nullptr},
-    {"Search Visits With Blocklist and No Pairwise Merge",
-     kJourneysSearchVisitsNoPairwiseMergeParams,
-     std::size(kJourneysSearchVisitsNoPairwiseMergeParams), nullptr},
-    {"Search Visits With Blocklist and Pairwise Merge",
-     kJourneysSearchVisitsWithPairwiseMergeParams,
-     std::size(kJourneysSearchVisitsWithPairwiseMergeParams), nullptr},
-};
-const FeatureEntry::FeatureParam kJourneysImagesCoverParams[] = {
-    {"JourneysImagesCover", "false"},
-};
-const FeatureEntry::FeatureVariation kJourneysImagesVariations[] = {
-    {"Image Does Not Cover Container", kJourneysImagesCoverParams,
-     std::size(kJourneysImagesCoverParams), nullptr},
-};
+
 const FeatureEntry::FeatureParam
     kJourneysLabelsWithSearchVisitEntitiesParams[] = {
         {"labels_from_search_visit_entities", "true"},
@@ -6491,50 +6388,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRenameJourneysDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(history_clusters::kRenameJourneys)},
 
-    {"history-journeys-content-clustering",
-     flag_descriptions::kJourneysContentClusteringName,
-     flag_descriptions::kJourneysContentClusteringDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         history_clusters::features::kOnDeviceClusteringContentClustering,
-         kJourneysContentClusteringVariations,
-         "HistoryJourneysContentClustering")},
-
-    {"history-journeys-images", flag_descriptions::kJourneysImagesName,
-     flag_descriptions::kJourneysImagesDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(history_clusters::internal::kJourneysImages,
-                                    kJourneysImagesVariations,
-                                    "HistoryJourneysImages")},
-
     {"history-journeys-labels", flag_descriptions::kJourneysLabelsName,
      flag_descriptions::kJourneysLabelsDescription, kOsDesktop | kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(history_clusters::internal::kJourneysLabels,
                                     kJourneysLabelsVariations,
                                     "HistoryJourneysLabels")},
-
-    {"history-journeys-omnibox-action",
-     flag_descriptions::kJourneysOmniboxActionName,
-     flag_descriptions::kJourneysOmniboxActionDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(history_clusters::internal::kOmniboxAction,
-                                    kJourneysOmniboxActionVariations,
-                                    "JourneysOmniboxTriggering")},
-
-    {"history-journeys-omnibox-history-cluster-provider",
-     flag_descriptions::kJourneysOmniboxHistoryClusterProviderName,
-     flag_descriptions::kJourneysOmniboxHistoryClusterProviderDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         history_clusters::internal::kOmniboxHistoryClusterProvider,
-         kJourneysOmniboxHistoryClusterProviderVariations,
-         "JourneysOmniboxTriggering")},
-
-    {"history-journeys-persist-caches-to-prefs",
-     flag_descriptions::kJourneysPersistCachesToPrefsName,
-     flag_descriptions::kJourneysPersistCachesToPrefsDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         history_clusters::internal::kJourneysPersistCachesToPrefs)},
 
     {"history-journeys-show-all-clusters",
      flag_descriptions::kJourneysShowAllClustersName,

@@ -2078,33 +2078,9 @@ const char kJourneysDescription[] = "Enables the History Journeys UI.";
 const char kRenameJourneysName[] = "Rename History Journeys";
 const char kRenameJourneysDescription[] = "Renames History Journeys in the UI.";
 
-const char kJourneysContentClusteringName[] =
-    "History Journeys Content Clustering";
-const char kJourneysContentClusteringDescription[] =
-    "Enables clustering page loads using content annotations.";
-
-const char kJourneysImagesName[] = "History Journeys Images";
-const char kJourneysImagesDescription[] =
-    "Enables Images for the History Journeys UI.";
-
 const char kJourneysLabelsName[] = "History Journeys Labels";
 const char kJourneysLabelsDescription[] =
     "Enables labels for Journeys within the History Journeys UI.";
-
-const char kJourneysOmniboxActionName[] = "History Journeys Omnibox Action";
-const char kJourneysOmniboxActionDescription[] =
-    "Enables the History Journeys Omnibox Action.";
-
-const char kJourneysOmniboxHistoryClusterProviderName[] =
-    "History Journeys Omnibox History Cluster Provider";
-const char kJourneysOmniboxHistoryClusterProviderDescription[] =
-    "Enables the History Journeys Omnibox History Cluster Provider to surface "
-    "Journeys as a suggestion row instead of an action chip.";
-
-const char kJourneysPersistCachesToPrefsName[] =
-    "History Journeys Persist Caches to Prefs";
-const char kJourneysPersistCachesToPrefsDescription[] =
-    "Enables the persistence of Journeys keyword caches via the pref service.";
 
 const char kJourneysShowAllClustersName[] =
     "History Journeys Show All Clusters";
