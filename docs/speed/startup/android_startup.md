@@ -23,8 +23,8 @@ Activity is rendered. For the latter two, we care both about:
 
 Here are some UMA metrics that measure start-up (UMA's UI has descriptions):
 
-* `Startup.Android.Cold.TimeToFirstVisibleContent`
-* `Startup.Android.Cold.TimeToFirstNavigationCommit.Tabbed`
+* `Startup.Android.Cold.TimeToFirstVisibleContent2`
+* `Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed`
 * `Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap`
 * `Startup.Android.Cold.TimeToFirstContentfulPaint.Tabbed`
 

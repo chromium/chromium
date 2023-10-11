@@ -151,9 +151,8 @@ chromium-metrics-reviews@google.com.
   <owner>pasko@chromium.org</owner>
   <owner>agrieve@chromium.org</owner>
   <summary>
-    Experimental. Same as
-    Startup.Android.Cold.TimeToFirstNavigationCommit.Tabbed with two
-    modifications.
+    Same as Startup.Android.Cold.TimeToFirstNavigationCommit.Tabbed with two
+    modifications. Aims to replace the original metric.
 
     The first difference is to record navigation commits happening before
     post-native initialization. The second modifications is not to record
@@ -219,7 +218,8 @@ chromium-metrics-reviews@google.com.
 
     - This metric does not get recorded when the first navigation commit happens
     before post-native initialization. This behaviour is not intentional, see
-    crbug.com/1273097. TimeToFirstVisibleContent2 addresses this issue.
+    crbug.com/1273097. TimeToFirstVisibleContent2 addresses this issue and aims
+    to become the replacement.
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
     The time from Chrome tabbed activity creation to the moment the Chrome first
     appears ready.
 
-    Currently experimental. Has the same semantics as
+    This metrics has the same semantics as
     Startup.Android.Cold.TimeToFirstVisibleContent, without the known bug.
   </summary>
 </histogram>
