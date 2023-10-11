@@ -76,24 +76,8 @@ void EventAckData::EmitLateAckedEventTask(int event_id) {
   }
 }
 
-void EventAckData::DecrementInflightEvent(
-    content::ServiceWorkerContext* context,
-    int render_process_id,
-    int64_t version_id,
-    int event_id,
-    bool worker_stopped,
-    base::OnceClosure failure_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  auto request_info_iter = unacked_events_.find(event_id);
-  if (request_info_iter == unacked_events_.end() ||
-      request_info_iter->second.render_process_id != render_process_id) {
-    std::move(failure_callback).Run();
-    return;
-  }
-
-  EventInfo& event_info = request_info_iter->second;
-
+// static
+void EventAckData::EmitDispatchTimeMetrics(EventInfo& event_info) {
   // Only emit events that use the EventRouter::DispatchEventToProcess() event
   // routing flow since EventRouter::DispatchEventToSender() uses a different
   // flow that doesn't include dispatch start and service worker start time.
@@ -113,8 +97,7 @@ void EventAckData::DecrementInflightEvent(
 
     // Emit only if we're within the expected event ack time limit. We'll take
     // care of the emit for a late ack via a delayed task.
-    bool late_ack = (base::TimeTicks::Now() -
-                     request_info_iter->second.dispatch_start_time) >
+    bool late_ack = (base::TimeTicks::Now() - event_info.dispatch_start_time) >
                     kEventAckMetricTimeLimit;
     if (!late_ack) {
       base::UmaHistogramBoolean(
@@ -122,6 +105,27 @@ void EventAckData::DecrementInflightEvent(
           true);
     }
   }
+}
+
+void EventAckData::DecrementInflightEvent(
+    content::ServiceWorkerContext* context,
+    int render_process_id,
+    int64_t version_id,
+    int event_id,
+    bool worker_stopped,
+    base::OnceClosure failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto request_info_iter = unacked_events_.find(event_id);
+  if (request_info_iter == unacked_events_.end() ||
+      request_info_iter->second.render_process_id != render_process_id) {
+    std::move(failure_callback).Run();
+    return;
+  }
+
+  EventInfo& event_info = request_info_iter->second;
+
+  EmitDispatchTimeMetrics(event_info);
 
   base::Uuid request_uuid = std::move(event_info.request_uuid);
   bool start_ok = event_info.start_ok;

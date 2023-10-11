@@ -83,6 +83,10 @@ class EventAckData {
   // renderer to the browser.
   void EmitLateAckedEventTask(int event_id);
 
+  // Emit all the time related event dispatch metrics when an event is acked
+  // from the renderer.
+  static void EmitDispatchTimeMetrics(EventInfo& event_info);
+
   // TODO(crbug.com/1441221): Mark events that are not acked within 5 minutes
   // (if the worker is still around) as stale, and emit
   // Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2 at that point.
