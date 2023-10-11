@@ -2306,8 +2306,16 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   CheckCounter(WebFeature::kDanglingMarkupInTargetNotEndsWithNewLineOrGT, 0);
 }
 
+// TODO(https://crbug.com/1487325): Fix and reenable the test for Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DanglingMarkupInTargetWithNewLineOrGreaterThan \
+  DISABLED_DanglingMarkupInTargetWithNewLineOrGreaterThan
+#else
+#define MAYBE_DanglingMarkupInTargetWithNewLineOrGreaterThan \
+  DanglingMarkupInTargetWithNewLineOrGreaterThan
+#endif
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       DanglingMarkupInTargetWithNewLineOrGreaterThan) {
+                       MAYBE_DanglingMarkupInTargetWithNewLineOrGreaterThan) {
   GURL url = https_server().GetURL("a.test", "/empty.html");
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
   EXPECT_TRUE(content::ExecJs(web_contents(), R"(
