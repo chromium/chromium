@@ -3,8 +3,6 @@ file://ui/webui/PLATFORM_OWNERS
 # Maintaining ownership from this file's original Chrome OS location.
 per-file device_log_ui*=stevenjb@chromium.org
 
-per-file devtools_ui*=dgozman@chromium.org
-per-file devtools_ui*=caseq@chromium.org
 per-file inspect_ui*=dgozman@chromium.org
 per-file inspect_ui*=caseq@chromium.org
 per-file review_notification_permissions*=rainhard@chromium.org
