@@ -16231,7 +16231,9 @@
                     ]
                 }
             ]
-        },
+        }
+    ],
+    "StorageAccessAPIWithPromptsAndroid": [
         {
             "platforms": [
                 "android"
