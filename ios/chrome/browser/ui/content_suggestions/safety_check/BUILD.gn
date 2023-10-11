@@ -55,3 +55,16 @@ source_set("constants") {
   ]
   frameworks = [ "Foundation.framework" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "safety_check_view_unittest.mm" ]
+  deps = [
+    ":constants",
+    ":safety_check",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/test:test_support",
+    "//ui/base:test_support",
+  ]
+}
