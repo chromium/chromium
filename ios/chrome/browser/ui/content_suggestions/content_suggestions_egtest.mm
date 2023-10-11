@@ -175,8 +175,7 @@ void TapMoreButtonIfVisible() {
         syncer::kReplaceSyncPromosWithSignInPromos);
     config.features_enabled.push_back(kConsistencyNewAccountInterface);
   }
-  if ([self isRunningTest:@selector
-            (FLAKY_testMagicStackSetUpListCompleteAllItems)] ||
+  if ([self isRunningTest:@selector(testMagicStackSetUpListCompleteAllItems)] ||
       [self isRunningTest:@selector(testMagicStackEditButton)]) {
     config.features_enabled.push_back(kMagicStack);
   } else {
@@ -598,8 +597,9 @@ void TapMoreButtonIfVisible() {
   [[EarlGrey selectElementWithMatcher:syncView] assertWithMatcher:grey_nil()];
 }
 
-// TODO(crbug.com/1491380): Re-enable this test.
-- (void)FLAKY_testMagicStackSetUpListCompleteAllItems {
+// Tests that the "All Set" module is shown after completing all Set Up List
+// Hero Cell modules in the Magic Stack.
+- (void)testMagicStackSetUpListCompleteAllItems {
   [self prepareToTestSetUpListInMagicStack];
 
   // Tap the default browser item.
@@ -623,7 +623,7 @@ void TapMoreButtonIfVisible() {
     return error == nil;
   };
   GREYAssert(
-      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(1), condition),
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
       @"Timeout waiting for Autofill Set Up List Item expired.");
   // Tap the autofill item.
   TapView(set_up_list::kAutofillItemID);
@@ -646,7 +646,7 @@ void TapMoreButtonIfVisible() {
     return error == nil;
   };
   GREYAssert(
-      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(1), condition),
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
       @"Timeout waiting for Sign in Set Up List Item expired.");
 
   // Tap the signin item.
