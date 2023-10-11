@@ -31,6 +31,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace data_decoder {
+class DataDecoder;
+}  // namespace data_decoder
+
 class Profile;
 
 /**
@@ -148,6 +152,7 @@ class CustomizeChromePageHandler
   raw_ptr<ThemeService> theme_service_;
   const std::vector<std::pair<const std::string, int>> module_id_names_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
+  std::unique_ptr<data_decoder::DataDecoder> data_decoder_;
   // Caches a request to scroll to a section in case the front-end queries the
   // last requested section, e.g. during load.
   CustomizeChromeSection last_requested_section_ =

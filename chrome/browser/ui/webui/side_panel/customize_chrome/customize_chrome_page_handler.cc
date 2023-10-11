@@ -42,6 +42,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -62,6 +63,7 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
           NtpBackgroundServiceFactory::GetForProfile(profile_)),
       theme_service_(ThemeServiceFactory::GetForProfile(profile_)),
       module_id_names_(module_id_names),
+      data_decoder_(std::make_unique<data_decoder::DataDecoder>()),
       page_(std::move(pending_page)),
       receiver_(this, std::move(pending_page_handler)) {
   CHECK(ntp_custom_background_service_);
@@ -241,7 +243,7 @@ void CustomizeChromePageHandler::OnDescriptorsRetrieved(
                        base::CompareCase::SENSITIVE)) {
     response = response.substr(strlen(kXSSIResponsePreamble));
   }
-  data_decoder::DataDecoder::ParseJsonIsolated(
+  data_decoder_->ParseJson(
       response,
       base::BindOnce(&CustomizeChromePageHandler::OnDescriptorsJsonParsed,
                      weak_ptr_factory_.GetWeakPtr()));
