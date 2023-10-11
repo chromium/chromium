@@ -52,7 +52,6 @@ export class ComposeAppElement extends PolymerElement {
       isSubmitEnabled_: {
         type: Boolean,
         value: false,
-        computed: 'computeIsSubmitEnabled_(input_)',
       },
       result_: {
         type: String,
@@ -69,8 +68,7 @@ export class ComposeAppElement extends PolymerElement {
     };
   }
 
-  private apiProxy_: ComposeApiProxy;
-
+  private apiProxy_: ComposeApiProxy = ComposeApiProxyImpl.getInstance();
   private input_: string;
   private isSubmitEnabled_: boolean;
   private result_: string;
@@ -80,12 +78,6 @@ export class ComposeAppElement extends PolymerElement {
   constructor() {
     super();
     ColorChangeUpdater.forDocument().start();
-    this.apiProxy_ = ComposeApiProxyImpl.getInstance();
-    // Not used yet.
-  }
-
-  private computeIsSubmitEnabled_(): boolean {
-    return this.input_ !== undefined && this.input_.length > 0;
   }
 
   private onRefreshClick_() {
@@ -109,6 +101,7 @@ export class ComposeAppElement extends PolymerElement {
 
   private onTextareaValueChanged_() {
     this.input_ = this.$.textarea.value;
+    this.isSubmitEnabled_ = this.$.textarea.validate();
   }
 }
 

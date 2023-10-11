@@ -55,8 +55,14 @@ suite('ComposeTextarea', () => {
     textarea.$.input.value = 'Here is some input.';
     assertTrue(textarea.validate());
 
-    // No input again, should be invalid.
-    textarea.$.input.value = '';
+    // Too short of an input, should be invalid.
+    textarea.$.input.value = 'Short';
     assertFalse(textarea.validate());
+    assertFalse(isVisible(textarea.$.error));
+
+    // Too long of an input, should show error.
+    textarea.$.input.value = Array(300).join('a');
+    assertFalse(textarea.validate());
+    assertTrue(isVisible(textarea.$.error));
   });
 });

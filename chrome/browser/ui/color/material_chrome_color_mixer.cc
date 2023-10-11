@@ -109,6 +109,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   if (base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
     // Compose colors.
     mixer[kColorComposeDialogBackground] = {ui::kColorSysSurface};
+    mixer[kColorComposeDialogError] = {ui::kColorSysError};
     mixer[kColorComposeDialogForegroundSubtle] = {ui::kColorSysOnSurfaceSubtle};
     mixer[kColorComposeDialogLink] = {ui::kColorSysPrimary};
     mixer[kColorComposeDialogResultBackground] = {ui::kColorSysBaseContainer};

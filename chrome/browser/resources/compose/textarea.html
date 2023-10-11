@@ -1,45 +1,52 @@
 <style include="cr-hidden-style">
-  #container {
-    display: flex;
-    box-sizing: border-box;
-    border-radius: 8px;
-    border: solid 1px var(--color-compose-dialog-textarea-outline);
-    font-size: 13px;
-    line-height: 20px;
-    color: var(--color-compose-dialog-textarea);
-    width: 100%;
-    padding: 12px 15px;
-  }
-
-  :host([readonly]) #container {
-    background: var(--color-compose-dialog-textarea-readonly-background);
-    color: var(--color-compose-dialog-textarea-readonly-foreground)
-  }
-
   textarea {
     appearance: none;
     background: transparent;
-    border: none;
-    color: inherit;
+    border: solid 1px var(--color-compose-dialog-textarea-outline);
+    border-radius: 8px;
+    color: var(--color-compose-dialog-textarea);
     font: inherit;
-    line-height: inherit;
+    font-size: 12px;
+    line-height: 16px;
     resize: none;
     outline: none;
     width: 100%;
-    height: 4lh;
+    box-sizing: border-box;
+    padding: 10px;
   }
 
   textarea::placeholder {
     color: var(--color-compose-dialog-textarea-placeholder);
   }
 
-  #container:has(textarea:focus) {
+  :host([too-long_]) textarea {
+    outline: solid 2px var(--color-compose-dialog-error);
+    outline-offset: -2px;
+  }
+
+  #error {
+    margin: 4px 10px 0;
+    color: var(--color-compose-dialog-error);
+    font-size: 11px;
+    line-height: 16px;
+  }
+
+  textarea:focus {
     outline: solid 2px var(--cr-focus-outline-color);
     outline-offset: -2px;
   }
 
+  #readonlyContainer {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    background: var(--color-compose-dialog-textarea-readonly-background);
+    color: var(--color-compose-dialog-textarea-readonly-foreground)
+  }
+
   #readonlyText {
     overflow: hidden;
+    line-height: 16px;
     text-overflow: ellipsis;
     white-space: nowrap;
     width: 100%;
@@ -60,17 +67,22 @@
   }
 </style>
 
-<div id="container">
+<div id="inputContainer" hidden$="[[readonly]]">
   <textarea id="input"
-      hidden$="[[readonly]]"
       placeholder="Some placeholder text"
       value="{{value::input}}"
+      rows="4"
       required>
   </textarea>
+  <div id="error" hidden$="[[!tooLong_]]">
+    This is too long. Shorten and try again.
+  </div>
+</div>
 
-  <div id="readonlyText" hidden$="[[!readonly]]">[[value]]</div>
+<div id="readonlyContainer" hidden$="[[!readonly]]">
+  <div id="readonlyText">[[value]]</div>
   <div id="editButtonContainer"
-      hidden$="[[!shouldShowEditIcon_(readonly, allowExitingReadonlyMode)]]">
+      hidden$="[[!shouldShowEditIcon_(allowExitingReadonlyMode)]]">
     <cr-icon-button iron-icon="cr:create" title="Edit"></cr-icon-button>
   </div>
 </div>

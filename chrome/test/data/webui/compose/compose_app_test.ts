@@ -41,7 +41,12 @@ suite('ComposeApp', () => {
     assertFalse(isVisible(app.$.resultContainer));
     assertFalse(isVisible(app.$.insertButton));
 
-    // Inputting text enables submit.
+    // Invalid input keeps submit disabled.
+    app.$.textarea.value = 'Short';
+    app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
+    assertTrue(app.$.submitButton.disabled);
+
+    // Inputting valid text enables submit.
     app.$.textarea.value = 'Here is my input.';
     app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
     assertFalse(app.$.submitButton.disabled);

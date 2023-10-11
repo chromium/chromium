@@ -704,6 +704,7 @@
   E_CPONLY(kColorPreviousReadAloudHighlightYellow) \
   /* Compose colors */ \
   E_CPONLY(kColorComposeDialogBackground) \
+  E_CPONLY(kColorComposeDialogError) \
   E_CPONLY(kColorComposeDialogForegroundSubtle) \
   E_CPONLY(kColorComposeDialogLink) \
   E_CPONLY(kColorComposeDialogResultBackground) \
