@@ -496,13 +496,24 @@ void ProfileMenuView::BuildIdentity() {
         ui::ImageModel::FromImage(account_info.account_image), menu_title_,
         menu_subtitle_);
   } else {
+    if (base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
+        account.IsEmpty()) {
+      account_info = signin_ui_util::GetSingleAccountForPromos(profile);
+    }
     menu_title_ = std::u16string();
     menu_subtitle_ =
         l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE);
     SetProfileIdentityInfo(
         profile_name, background_color, edit_button_params,
         ui::ImageModel::FromImage(
-            profile_attributes->GetAvatarIcon(kIdentityImageSize)),
+            // If the user is in the web-only signed-in state in the UNO model,
+            // use the account image in the profile menu header.
+            // If the account does not have an image or it's not available yet,
+            // a grey silhouette will be used.
+            // If UNO is disabled or there is no account, use the profile icon.
+            !account_info.IsEmpty()
+                ? account_info.account_image
+                : profile_attributes->GetAvatarIcon(kIdentityImageSize)),
         menu_title_, menu_subtitle_);
   }
 }
