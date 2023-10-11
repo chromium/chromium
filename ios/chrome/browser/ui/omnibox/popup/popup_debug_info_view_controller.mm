@@ -3,11 +3,25 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_view_controller.h"
+#import "components/omnibox/browser/autocomplete_match_type.h"
+#import "components/omnibox/browser/autocomplete_provider.h"
 #import "components/variations/variations_switches.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/omnibox/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
+
+typedef NS_ENUM(NSUInteger, SectionRows) {
+  SuggestionDetailsRow = 0,
+  RelevanceRow,
+  GroupIdRow,
+  IsTabMatchRow,
+  SupportsDeletionRow,
+  ProviderRow,
+  SuggestionTypeRow,
+  SectionRowsCount
+};
 
 /// Debug text view used to display text that can be selected.
 UITextView* DebugTextView() {
@@ -71,14 +85,32 @@ UILabel* VariationInstructionLabel() {
   return label;
 }
 
+UITableView* SuggestionsTableView() {
+  UITableView* tableView = [[UITableView alloc] initWithFrame:CGRectZero];
+
+  [tableView registerClass:[UITableViewCell class]
+      forCellReuseIdentifier:@"Cell"];
+  [tableView registerClass:[UITableViewHeaderFooterView class]
+      forHeaderFooterViewReuseIdentifier:NSStringFromClass(
+                                             [UITableViewHeaderFooterView
+                                                 class])];
+
+  tableView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  return tableView;
+}
+
 }  // namespace
 
-@interface PopupDebugInfoViewController () <UITextFieldDelegate>
+@interface PopupDebugInfoViewController () <UITextFieldDelegate,
+                                            UITableViewDelegate,
+                                            UITableViewDataSource>
 
 @property(nonatomic, strong) UITextView* activeVariationIDTextView;
 @property(nonatomic, strong) UITextField* variationIDTextField;
 @property(nonatomic, strong) UITextView* enableVariationIDTextView;
 @property(nonatomic, strong) UITextView* disableVariationIDsTextView;
+@property(nonatomic, strong) UITableView* suggestions;
 
 @property(nonatomic, strong) UILabel* variationInstructionLabel;
 @property(nonatomic, strong) UIButton* settingsButton;
@@ -88,7 +120,9 @@ UILabel* VariationInstructionLabel() {
 
 @end
 
-@implementation PopupDebugInfoViewController
+@implementation PopupDebugInfoViewController {
+  NSMutableArray<AutocompleteMatchFormatter*>* _suggestionsList;
+}
 
 - (instancetype)init {
   if (self = [super initWithNibName:nil bundle:nil]) {
@@ -101,6 +135,12 @@ UILabel* VariationInstructionLabel() {
     _variationInstructionLabel = VariationInstructionLabel();
     _enableVariationIDTextView = DebugTextView();
     _disableVariationIDsTextView = DebugTextView();
+    _suggestions = SuggestionsTableView();
+
+    [_suggestions setDelegate:self];
+    [_suggestions setDataSource:self];
+
+    _suggestionsList = [[NSMutableArray alloc] init];
 
     [_variationIDTextField addTarget:self
                               action:@selector(textFieldDidChange:)
@@ -120,10 +160,13 @@ UILabel* VariationInstructionLabel() {
 
   UIStackView* stackView = self.variationStackView;
   [scrollView addSubview:stackView];
+
   AddSameConstraints(stackView, scrollView);
+
   [NSLayoutConstraint activateConstraints:@[
     [scrollView.widthAnchor constraintEqualToAnchor:stackView.widthAnchor],
     [scrollView.heightAnchor constraintEqualToAnchor:self.view.heightAnchor],
+    [stackView.heightAnchor constraintEqualToAnchor:self.view.heightAnchor],
   ]];
 
   [stackView addArrangedSubview:self.activeVariationIDTextView];
@@ -132,6 +175,16 @@ UILabel* VariationInstructionLabel() {
   [stackView addArrangedSubview:self.variationInstructionLabel];
   [stackView addArrangedSubview:self.enableVariationIDTextView];
   [stackView addArrangedSubview:self.disableVariationIDsTextView];
+  [stackView addArrangedSubview:_suggestions];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_suggestions.widthAnchor constraintEqualToAnchor:stackView.widthAnchor],
+    [_suggestions.topAnchor
+        constraintEqualToAnchor:self.disableVariationIDsTextView.bottomAnchor
+                       constant:16],
+    [_suggestions.bottomAnchor constraintEqualToAnchor:stackView.bottomAnchor
+                                              constant:-16]
+  ]];
 
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
@@ -198,6 +251,15 @@ UILabel* VariationInstructionLabel() {
 
 - (void)autocompleteController:(AutocompleteController*)controller
     didUpdateResultChangingDefaultMatch:(BOOL)defaultMatchChanged {
+  [_suggestionsList removeAllObjects];
+
+  for (auto acm : controller->result()) {
+    AutocompleteMatchFormatter* matcher =
+        [[AutocompleteMatchFormatter alloc] initWithMatch:acm];
+    [_suggestionsList addObject:matcher];
+  }
+
+  [_suggestions reloadData];
 }
 
 #pragma mark - RemoteSuggestionsServiceObserver
@@ -212,6 +274,93 @@ UILabel* VariationInstructionLabel() {
     completedRequestWithIdentifier:
         (const base::UnguessableToken&)requestIdentifier
                   receivedResponse:(NSString*)response {
+}
+
+#pragma mark - UITableViewDataSource
+
+- (NSInteger)tableView:(UITableView*)tableView
+    numberOfRowsInSection:(NSInteger)section {
+  return SectionRowsCount;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
+  return [_suggestionsList count];
+}
+
+- (UIView*)tableView:(UITableView*)tableView
+    viewForHeaderInSection:(NSInteger)section {
+  AutocompleteMatchFormatter* match = _suggestionsList[section];
+
+  UITableViewHeaderFooterView* header =
+      [tableView dequeueReusableHeaderFooterViewWithIdentifier:
+                     NSStringFromClass([UITableViewHeaderFooterView class])];
+
+  UIListContentConfiguration* contentConfiguration =
+      header.defaultContentConfiguration;
+
+  contentConfiguration.text = match.text.string;
+  contentConfiguration.textProperties.font =
+      [UIFont systemFontOfSize:18 weight:UIFontWeightSemibold];
+  header.contentConfiguration = contentConfiguration;
+  return header;
+}
+
+- (UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  UITableViewCell* cell =
+      [tableView dequeueReusableCellWithIdentifier:@"Cell"
+                                      forIndexPath:indexPath];
+  UIListContentConfiguration* content = cell.defaultContentConfiguration;
+
+  AutocompleteMatchFormatter* match = _suggestionsList[indexPath.section];
+
+  switch (indexPath.row) {
+    case SuggestionDetailsRow:
+      content.text = [NSString
+          stringWithFormat:@"Detail text: %@", match.detailText.string];
+      break;
+    case RelevanceRow:
+      content.text = [NSString
+          stringWithFormat:@"Relevance: %d", match.autocompleteMatch.relevance];
+
+      break;
+    case GroupIdRow:
+      content.text =
+          [NSString stringWithFormat:@"Group Id: %@", match.suggestionGroupId];
+      break;
+    case IsTabMatchRow:
+      content.text =
+          [NSString stringWithFormat:@"Open in a tab: %@",
+                                     match.isTabMatch ? @"YES" : @"NO"];
+      break;
+    case SupportsDeletionRow:
+      content.text =
+          [NSString stringWithFormat:@"Supports deletion: %@",
+                                     match.supportsDeletion ? @"YES" : @"NO"];
+      break;
+    case ProviderRow: {
+      NSString* provider =
+          base::SysUTF8ToNSString(AutocompleteProvider::TypeToString(
+              match.autocompleteMatch.provider->type()));
+
+      content.text = [NSString stringWithFormat:@"Provider: %@", provider];
+      break;
+    }
+    case SuggestionTypeRow: {
+      NSString* type = base::SysUTF8ToNSString(
+          AutocompleteMatchType::ToString(match.autocompleteMatch.type));
+
+      content.text = [NSString stringWithFormat:@"Type: %@", type];
+      break;
+    }
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  cell.contentConfiguration = content;
+
+  return cell;
 }
 
 #pragma mark - private
