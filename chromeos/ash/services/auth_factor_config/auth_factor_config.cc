@@ -127,8 +127,7 @@ void AuthFactorConfig::IsSupportedWithContext(
       return;
     }
     case mojom::AuthFactor::kLocalPassword: {
-      std::move(callback).Run(
-          features::IsPasswordlessGaiaEnabledForConsumers());
+      std::move(callback).Run(features::AreLocalPasswordsEnabledForConsumers());
       return;
     }
   }

@@ -907,14 +907,12 @@ WizardController::CreateScreens() {
                             weak_factory_.GetWeakPtr())));
   }
 
-  if (features::IsPasswordlessGaiaEnabledForConsumers()) {
+  if (features::AreLocalPasswordsEnabledForConsumers()) {
     append(std::make_unique<PasswordSelectionScreen>(
         oobe_ui->GetView<PasswordSelectionScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnPasswordSelectionScreenExit,
                             weak_factory_.GetWeakPtr())));
-  }
 
-  if (features::AreLocalPasswordsEnabledForConsumers()) {
     append(std::make_unique<LocalPasswordSetupScreen>(
         oobe_ui->GetView<LocalPasswordSetupHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnLocalPasswordSetupScreenExit,
@@ -2176,7 +2174,7 @@ void WizardController::OnCryptohomeRecoverySetupScreenExit(
     CryptohomeRecoverySetupScreen::Result result) {
   OnScreenExit(CryptohomeRecoverySetupScreenView::kScreenId,
                CryptohomeRecoverySetupScreen::GetResultString(result));
-  if (ash::features::IsPasswordlessGaiaEnabledForConsumers()) {
+  if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
     ShowPasswordSelectionScreen();
   } else {
     ShowFingerprintSetupScreen();

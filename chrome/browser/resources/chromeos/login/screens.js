@@ -144,7 +144,7 @@ export const commonScreensList = [
   {
     tag: 'password-selection-element',
     id: 'password-selection',
-    condition: 'isPasswordlessGaiaEnabledForConsumers',
+    condition: 'isOobeConsumersLocalPasswordsEnabled',
   },
   {tag: 'pin-setup-element', id: 'pin-setup'},
   {tag: 'recommend-apps-element', id: 'recommend-apps'},
