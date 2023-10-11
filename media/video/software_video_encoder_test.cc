@@ -20,7 +20,7 @@
 #include "build/build_config.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_switches.h"
-#include "media/base/media_util.h"
+#include "media/base/mock_media_log.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame.h"
@@ -107,7 +107,7 @@ class SoftwareVideoEncoderTest
 #endif
     } else if (codec_ == VideoCodec::kAV1) {
 #if BUILDFLAG(ENABLE_DAV1D_DECODER)
-      decoder_ = std::make_unique<Dav1dVideoDecoder>(media_log_.Clone());
+      decoder_ = std::make_unique<Dav1dVideoDecoder>(&media_log_);
 #endif
     }
 
@@ -337,7 +337,7 @@ class SoftwareVideoEncoderTest
   VideoPixelFormat pixel_format_;
   std::vector<uint8_t> resize_buff_;
 
-  NullMediaLog media_log_;
+  MockMediaLog media_log_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<VideoEncoder> encoder_;
   std::unique_ptr<VideoDecoder> decoder_;

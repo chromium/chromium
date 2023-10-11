@@ -5,8 +5,6 @@
 #ifndef MEDIA_FILTERS_DAV1D_VIDEO_DECODER_H_
 #define MEDIA_FILTERS_DAV1D_VIDEO_DECODER_H_
 
-#include <memory>
-
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -28,9 +26,8 @@ class MEDIA_EXPORT Dav1dVideoDecoder : public OffloadableVideoDecoder {
  public:
   static SupportedVideoDecoderConfigs SupportedConfigs();
 
-  explicit Dav1dVideoDecoder(
-      std::unique_ptr<MediaLog> media_log,
-      OffloadState offload_state = OffloadState::kNormal);
+  Dav1dVideoDecoder(MediaLog* media_log,
+                    OffloadState offload_state = OffloadState::kNormal);
 
   Dav1dVideoDecoder(const Dav1dVideoDecoder&) = delete;
   Dav1dVideoDecoder& operator=(const Dav1dVideoDecoder&) = delete;
@@ -69,7 +66,7 @@ class MEDIA_EXPORT Dav1dVideoDecoder : public OffloadableVideoDecoder {
   scoped_refptr<VideoFrame> BindImageToVideoFrame(const Dav1dPicture* img);
 
   // Used to report error messages to the client.
-  std::unique_ptr<MediaLog> media_log_;
+  const raw_ptr<MediaLog> media_log_ = nullptr;
 
   // Indicates if the decoder is being wrapped by OffloadVideoDecoder; controls
   // whether callbacks are bound to the current loop on calls.
@@ -102,12 +99,12 @@ class MEDIA_EXPORT Dav1dVideoDecoder : public OffloadableVideoDecoder {
 // content from the media thread.
 class OffloadingDav1dVideoDecoder : public OffloadingVideoDecoder {
  public:
-  explicit OffloadingDav1dVideoDecoder(std::unique_ptr<MediaLog> media_log)
+  explicit OffloadingDav1dVideoDecoder(MediaLog* media_log)
       : OffloadingVideoDecoder(
             0,
             std::vector<VideoCodec>(1, VideoCodec::kAV1),
             std::make_unique<Dav1dVideoDecoder>(
-                std::move(media_log),
+                media_log,
                 OffloadableVideoDecoder::OffloadState::kOffloaded)) {}
 };
 
