@@ -1843,8 +1843,7 @@ PaintLayer* PaintLayer::HitTestChildren(
 void PaintLayer::UpdateFilterReferenceBox() {
   if (!HasFilterThatMovesPixels())
     return;
-  PhysicalRect result = LocalBoundingBox();
-  ExpandRectForSelfPaintingDescendants(result);
+  PhysicalRect result = LocalBoundingBoxIncludingSelfPaintingDescendants();
   gfx::RectF reference_box(result);
   if (!ResourceInfo() ||
       ResourceInfo()->FilterReferenceBox() != reference_box) {
@@ -1966,6 +1965,13 @@ bool PaintLayer::KnownToClipSubtreeToPaddingBox() const {
     return true;
   }
   return false;
+}
+
+PhysicalRect PaintLayer::LocalBoundingBoxIncludingSelfPaintingDescendants()
+    const {
+  PhysicalRect result = LocalBoundingBox();
+  ExpandRectForSelfPaintingDescendants(result);
+  return result;
 }
 
 bool PaintLayer::SupportsSubsequenceCaching() const {

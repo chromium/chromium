@@ -146,6 +146,7 @@ class BoxPainterBase {
  protected:
   virtual NGPhysicalBoxStrut ComputeBorders() const = 0;
   virtual NGPhysicalBoxStrut ComputePadding() const = 0;
+  virtual NGPhysicalBoxStrut ComputeMargins() const = 0;
   NGPhysicalBoxStrut AdjustedBorderOutsets(const FillLayerInfo&) const;
   void PaintFillLayerTextFillBox(const PaintInfo&,
                                  const FillLayerInfo&,

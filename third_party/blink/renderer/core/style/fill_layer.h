@@ -314,8 +314,8 @@ class CORE_EXPORT FillLayer {
   LengthSize size_length_;
 
   unsigned attachment_ : 2;           // EFillAttachment
-  unsigned clip_ : 2;                 // EFillBox
-  unsigned origin_ : 2;               // EFillBox
+  unsigned clip_ : 4;                 // EFillBox
+  unsigned origin_ : 4;               // EFillBox
   unsigned repeat_x_ : 3;             // EFillRepeat
   unsigned repeat_y_ : 3;             // EFillRepeat
   unsigned composite_ : 4;            // CompositeOperator
@@ -340,7 +340,7 @@ class CORE_EXPORT FillLayer {
   unsigned type_ : 1;  // EFillLayerType
 
   // EFillBox, maximum clip_ value from this to bottom layer
-  mutable unsigned layers_clip_max_ : 2;
+  mutable unsigned layers_clip_max_ : 4;
   // True if any of this or subsequent layers has content-box clip or origin.
   mutable unsigned any_layer_uses_content_box_ : 1;
   // True if any of this or subsequent layers has image.

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 
 namespace blink {
 
@@ -17,6 +18,8 @@ absl::optional<gfx::RectF> CSSMaskPainter::MaskBoundingBox(
   if (!object.IsBoxModelObject() && !object.IsSVGChild())
     return absl::nullopt;
 
+  // TODO(pdr): The SVG bounding box does not account for mask-clip values like
+  // `no-clip`.
   const ComputedStyle& style = object.StyleRef();
   if (object.IsSVG()) {
     if (SVGResourceClient* client = SVGResources::GetClient(object)) {
@@ -40,17 +43,34 @@ absl::optional<gfx::RectF> CSSMaskPainter::MaskBoundingBox(
     return absl::nullopt;
 
   PhysicalRect maximum_mask_region;
-  // For HTML/CSS objects, the extent of the mask is known as "mask
-  // painting area", which is determined by CSS mask-clip property.
-  // We don't implement mask-clip:margin-box or no-clip currently,
-  // so the maximum we can get is border-box.
+  EFillBox maximum_mask_clip = style.MaskLayers().LayersClipMax();
   if (object.IsBox()) {
-    maximum_mask_region = To<LayoutBox>(object).PhysicalBorderBoxRect();
+    if (maximum_mask_clip == EFillBox::kMarginBox ||
+        maximum_mask_clip == EFillBox::kNoClip) {
+      // We could use a tighter rect for margin-box.
+      maximum_mask_region =
+          To<LayoutBox>(object)
+              .Layer()
+              ->LocalBoundingBoxIncludingSelfPaintingDescendants();
+    } else {
+      // We could use a tighter rect for padding-box/content-box.
+      maximum_mask_region = To<LayoutBox>(object).PhysicalBorderBoxRect();
+    }
   } else {
     // For inline elements, depends on the value of box-decoration-break
     // there could be one box in multiple fragments or multiple boxes.
     // Either way here we are only interested in the bounding box of them.
-    maximum_mask_region = To<LayoutInline>(object).PhysicalLinesBoundingBox();
+    if (maximum_mask_clip == EFillBox::kMarginBox ||
+        maximum_mask_clip == EFillBox::kNoClip) {
+      // We could use a tighter rect for margin-box.
+      maximum_mask_region =
+          To<LayoutInline>(object)
+              .Layer()
+              ->LocalBoundingBoxIncludingSelfPaintingDescendants();
+    } else {
+      // We could use a tighter rect for padding-box/content-box.
+      maximum_mask_region = To<LayoutInline>(object).PhysicalLinesBoundingBox();
+    }
   }
   if (style.HasMaskBoxImageOutsets())
     maximum_mask_region.Expand(style.MaskBoxImageOutsets());

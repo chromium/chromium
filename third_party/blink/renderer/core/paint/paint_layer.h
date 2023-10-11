@@ -526,6 +526,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   void Trace(Visitor*) const override;
 
+  PhysicalRect LocalBoundingBoxIncludingSelfPaintingDescendants() const;
+
  private:
   void Update3DTransformedDescendantStatus();
 

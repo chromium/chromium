@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Masking: mask-clip: text and -webkit-mask-clip: text</title>
+<link rel="match" href="mask-clip-text-not-supported-ref.html">
+<meta name="assert" content="Test checks that the non-standard `text` clip value is only supported on -webkit-mask-clip, and not the unprefixed mask-clip.">
+<meta name="fuzzy" content="maxDifference=0-64; totalPixels=0-438">
+<style>
+  #webkit-mask-clip-text {
+    width: 100px;
+    height: 100px;
+    /* This red should be clipped out. */
+    background-color: red;
+    -webkit-mask-image: linear-gradient(black, black);
+    -webkit-mask-clip: text;
+    font-size: xx-large;
+    color: green;
+  }
+  #hidden-fail-message {
+    width: 100px;
+    height: 100px;
+    font-size: xx-large;
+    color: red;
+  }
+  #mask-clip-text {
+    width: 100px;
+    height: 100px;
+    background-color: green;
+    mask-image: linear-gradient(black, black);
+    mask-clip: text;
+    font-size: xx-large;
+    margin-top: -100px;
+    position: relative;
+  }
+</style>
+<div id="webkit-mask-clip-text">PASS</div>
+<!-- Text should be hidden because #mask-clip-text should fully cover it up. -->
+<div id="hidden-fail-message">FAIL</div>
+<div id="mask-clip-text"></div>

@@ -9213,13 +9213,18 @@ const CSSValue* WebkitMaskBoxImageWidth::CSSValueFromComputedStyleInternal(
       style.MaskBoxImage().BorderSlices(), style);
 }
 
-const CSSValue* MaskClip::ParseSingleValue(CSSParserTokenRange& range,
-                                           const CSSParserContext&,
-                                           const CSSParserLocalContext&) const {
+const CSSValue* MaskClip::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext&,
+    const CSSParserLocalContext& local_context) const {
   CHECK(RuntimeEnabledFeatures::CSSMaskingInteropEnabled());
+  if (local_context.UseAliasParsing()) {
+    return css_parsing_utils::ConsumeCommaSeparatedList(
+        css_parsing_utils::ConsumePrefixedBackgroundBox, range,
+        css_parsing_utils::AllowTextValue::kAllow);
+  }
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumePrefixedBackgroundBox, range,
-      css_parsing_utils::AllowTextValue::kAllow);
+      css_parsing_utils::ConsumeGeometryBoxOrNoClip, range);
 }
 
 const CSSValue* MaskClip::CSSValueFromComputedStyleInternal(

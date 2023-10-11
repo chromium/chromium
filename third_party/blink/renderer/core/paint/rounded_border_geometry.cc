@@ -32,6 +32,58 @@ FloatRoundedRect::Radii CalcRadiiFor(const ComputedStyle& style,
           : gfx::SizeF());
 }
 
+// https://drafts.csswg.org/css-backgrounds-3/#corner-shaping
+enum class CornerAlgorithm {
+  // Standard corner shaping used for borders, padding (aka inner-border), and
+  // content. See: https://www.w3.org/TR/css-shapes/#shapes-from-box-values.
+  kBorderPaddingContent = 0,
+  // Special corner shaping used to ensure pleasant margin curvature. See:
+  // https://www.w3.org/TR/css-shapes/#shapes-from-box-values.
+  kMargin,
+};
+
+FloatRoundedRect PixelSnappedRoundedBorderWithOutsetsInternal(
+    const ComputedStyle& style,
+    const PhysicalRect& border_rect,
+    const NGPhysicalBoxStrut& outsets,
+    PhysicalBoxSides sides_to_include,
+    CornerAlgorithm corner_algorithm) {
+  NGPhysicalBoxStrut adjusted_outsets(
+      sides_to_include.top ? outsets.top : LayoutUnit(),
+      sides_to_include.right ? outsets.right : LayoutUnit(),
+      sides_to_include.bottom ? outsets.bottom : LayoutUnit(),
+      sides_to_include.left ? outsets.left : LayoutUnit());
+  PhysicalRect rect_with_outsets = border_rect;
+  rect_with_outsets.Expand(adjusted_outsets);
+  rect_with_outsets.size.ClampNegativeToZero();
+
+  // The standard LayoutRect::ToPixelSnappedRect() method will not
+  // let small sizes snap to zero, but that has the side effect here of
+  // preventing an inner border for a very thin element from snapping to
+  // zero size as occurs when a unit width border is applied to a sub-pixel
+  // sized element. So round without forcing non-near-zero sizes to one.
+  FloatRoundedRect rounded_rect(gfx::Rect(
+      ToRoundedPoint(rect_with_outsets.offset),
+      gfx::Size(SnapSizeToPixelAllowingZero(rect_with_outsets.Width(),
+                                            rect_with_outsets.X()),
+                SnapSizeToPixelAllowingZero(rect_with_outsets.Height(),
+                                            rect_with_outsets.Y()))));
+
+  if (style.HasBorderRadius()) {
+    FloatRoundedRect pixel_snapped_rounded_border =
+        RoundedBorderGeometry::PixelSnappedRoundedBorder(style, border_rect,
+                                                         sides_to_include);
+    if (corner_algorithm == CornerAlgorithm::kMargin) {
+      pixel_snapped_rounded_border.OutsetForMarginOrShadow(
+          gfx::OutsetsF(adjusted_outsets));
+    } else {
+      pixel_snapped_rounded_border.Outset(gfx::OutsetsF(adjusted_outsets));
+    }
+    rounded_rect.SetRadii(pixel_snapped_rounded_border.GetRadii());
+  }
+  return rounded_rect;
+}
+
 }  // anonymous namespace
 
 FloatRoundedRect RoundedBorderGeometry::RoundedBorder(
@@ -88,34 +140,19 @@ FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
     const PhysicalRect& border_rect,
     const NGPhysicalBoxStrut& outsets,
     PhysicalBoxSides sides_to_include) {
-  NGPhysicalBoxStrut adjusted_outsets(
-      sides_to_include.top ? outsets.top : LayoutUnit(),
-      sides_to_include.right ? outsets.right : LayoutUnit(),
-      sides_to_include.bottom ? outsets.bottom : LayoutUnit(),
-      sides_to_include.left ? outsets.left : LayoutUnit());
-  PhysicalRect rect_with_outsets = border_rect;
-  rect_with_outsets.Expand(adjusted_outsets);
-  rect_with_outsets.size.ClampNegativeToZero();
+  return PixelSnappedRoundedBorderWithOutsetsInternal(
+      style, border_rect, outsets, sides_to_include,
+      CornerAlgorithm::kBorderPaddingContent);
+}
 
-  // The standard LayoutRect::ToPixelSnappedRect() method will not
-  // let small sizes snap to zero, but that has the side effect here of
-  // preventing an inner border for a very thin element from snapping to
-  // zero size as occurs when a unit width border is applied to a sub-pixel
-  // sized element. So round without forcing non-near-zero sizes to one.
-  FloatRoundedRect rounded_rect(gfx::Rect(
-      ToRoundedPoint(rect_with_outsets.offset),
-      gfx::Size(SnapSizeToPixelAllowingZero(rect_with_outsets.Width(),
-                                            rect_with_outsets.X()),
-                SnapSizeToPixelAllowingZero(rect_with_outsets.Height(),
-                                            rect_with_outsets.Y()))));
-
-  if (style.HasBorderRadius()) {
-    FloatRoundedRect pixel_snapped_rounded_border =
-        PixelSnappedRoundedBorder(style, border_rect, sides_to_include);
-    pixel_snapped_rounded_border.Outset(gfx::OutsetsF(adjusted_outsets));
-    rounded_rect.SetRadii(pixel_snapped_rounded_border.GetRadii());
-  }
-  return rounded_rect;
+FloatRoundedRect
+RoundedBorderGeometry::PixelSnappedRoundedBorderWithMarginOutsets(
+    const ComputedStyle& style,
+    const PhysicalRect& border_rect,
+    const NGPhysicalBoxStrut& outsets,
+    PhysicalBoxSides sides_to_include) {
+  return PixelSnappedRoundedBorderWithOutsetsInternal(
+      style, border_rect, outsets, sides_to_include, CornerAlgorithm::kMargin);
 }
 
 }  // namespace blink

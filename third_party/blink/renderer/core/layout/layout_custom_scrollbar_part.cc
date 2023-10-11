@@ -195,29 +195,33 @@ static LayoutUnit ComputeMargin(const Length& style_margin) {
 
 LayoutUnit LayoutCustomScrollbarPart::MarginTop() const {
   NOT_DESTROYED();
-  if (scrollbar_->Orientation() == kHorizontalScrollbar)
+  if (scrollbar_ && scrollbar_->Orientation() == kHorizontalScrollbar) {
     return LayoutUnit();
+  }
   return ComputeMargin(StyleRef().MarginTop());
 }
 
 LayoutUnit LayoutCustomScrollbarPart::MarginBottom() const {
   NOT_DESTROYED();
-  if (scrollbar_->Orientation() == kHorizontalScrollbar)
+  if (scrollbar_ && scrollbar_->Orientation() == kHorizontalScrollbar) {
     return LayoutUnit();
+  }
   return ComputeMargin(StyleRef().MarginBottom());
 }
 
 LayoutUnit LayoutCustomScrollbarPart::MarginLeft() const {
   NOT_DESTROYED();
-  if (scrollbar_->Orientation() == kVerticalScrollbar)
+  if (scrollbar_ && scrollbar_->Orientation() == kVerticalScrollbar) {
     return LayoutUnit();
+  }
   return ComputeMargin(StyleRef().MarginLeft());
 }
 
 LayoutUnit LayoutCustomScrollbarPart::MarginRight() const {
   NOT_DESTROYED();
-  if (scrollbar_->Orientation() == kVerticalScrollbar)
+  if (scrollbar_ && scrollbar_->Orientation() == kVerticalScrollbar) {
     return LayoutUnit();
+  }
   return ComputeMargin(StyleRef().MarginRight());
 }
 

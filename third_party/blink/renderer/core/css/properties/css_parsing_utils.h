@@ -373,6 +373,8 @@ bool ParseBackgroundOrMask(bool,
                            const CSSParserLocalContext&,
                            HeapVector<CSSPropertyValue, 64>&);
 
+CSSValue* ConsumeGeometryBoxOrNoClip(CSSParserTokenRange&);
+
 bool ConsumeRepeatStyleComponent(CSSParserTokenRange&,
                                  CSSValue*& value1,
                                  CSSValue*& value2,

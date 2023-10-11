@@ -1860,6 +1860,10 @@ NGPhysicalBoxStrut NGBoxFragmentPainter::ComputePadding() const {
   return PhysicalFragment().Padding();
 }
 
+NGPhysicalBoxStrut NGBoxFragmentPainter::ComputeMargins() const {
+  return PhysicalFragment().Margins();
+}
+
 BoxPainterBase::FillLayerInfo NGBoxFragmentPainter::GetFillLayerInfo(
     const Color& color,
     const FillLayer& bg_layer,

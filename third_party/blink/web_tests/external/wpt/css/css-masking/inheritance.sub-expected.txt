@@ -18,7 +18,7 @@ FAIL Property mask-border-source does not inherit assert_true: expected true got
 FAIL Property mask-border-width has initial value auto assert_true: mask-border-width doesn't seem to be supported in the computed style expected true got false
 FAIL Property mask-border-width does not inherit assert_true: expected true got false
 PASS Property mask-clip has initial value border-box
-FAIL Property mask-clip does not inherit assert_equals: expected "no-clip" but got "border-box"
+PASS Property mask-clip does not inherit
 FAIL Property mask-composite has initial value add assert_true: mask-composite doesn't seem to be supported in the computed style expected true got false
 FAIL Property mask-composite does not inherit assert_true: expected true got false
 PASS Property mask-image has initial value none

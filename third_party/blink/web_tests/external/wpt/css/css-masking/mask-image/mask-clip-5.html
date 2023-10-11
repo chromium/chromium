@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>CSS Masking: mask-clip: margin-box when the ratio of border-radius/margin is less than 1</title>
+    <link rel="help" href="http://www.w3.org/TR/css-masking-1/#the-mask-clip">
+    <link rel="help" href="https://drafts.csswg.org/css-shapes-1/#valdef-shape-box-margin-box">
+    <link rel="match" href="mask-clip-5-ref.html">
+    <meta name="fuzzy" content="maxDifference=0-65; totalPixels=0-319">
+    <meta name="assert" content="mask-clip: margin-box should use the correct box when the ratio of border-radius to margin is less than 1.">
+    <style>
+      div.mask {
+        mask-image: linear-gradient(black, black);
+        mask-clip: margin-box;
+        background-color: green;
+        width: 50px;
+        height: 50px;
+        margin: 50px;
+        border-radius: 10px;
+        /* This outline draws far outside the margin box and should be partially clipped. */
+        outline: 200px solid green;
+        /* Disables margin collapsing. */
+        float: left;
+      }
+    </style>
+  </head>
+  <body>
+<!--
+  Spec: If the ratio of border-radius/margin is less than 1, and margin is
+        positive, then the margin box corner radius is
+        border-radius + margin * (1 + (ratio-1)^3).
+
+  This test has a border-radius of 10 and a margin of 50, and should use a
+  margin box corner radius of: 10 + 50 * (1 + (10/50-1)^3) = 34.4
+-->
+    <div class="mask"></div>
+  </body>
+</html>

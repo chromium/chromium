@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>CSS Masking: mask-clip: margin-box</title>
+    <link rel="help" href="http://www.w3.org/TR/css-masking-1/#the-mask-clip">
+    <link rel="match" href="mask-clip-3-ref.html">
+    <meta name="assert" content="mask-clip: margin-box should clip to the appropriate box.">
+    <meta content="ahem" name="flags">
+    <link rel="stylesheet" href="/fonts/ahem.css" />
+    <style>
+      div.mask {
+        mask-image: linear-gradient(black, black);
+        mask-clip: margin-box;
+        background-color: purple;
+        outline: 10px solid pink;
+        width: 40px;
+        height: 20px;
+        margin: 1px 2px 3px 4px;
+      }
+      span.mask {
+        font: 20px/1 Ahem;
+        line-height: 20px;
+        mask-image: linear-gradient(black, black);
+        mask-clip: margin-box;
+        color: purple;
+        outline: 10px solid pink;
+        margin: 1px 2px 3px 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="mask"></div>
+    <br>
+    <span class="mask">XX</span>
+  </body>
+</html>

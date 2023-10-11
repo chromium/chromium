@@ -369,6 +369,21 @@ inline CSSIdentifierValue::CSSIdentifierValue(EFillBox e)
     case EFillBox::kText:
       value_id_ = CSSValueID::kText;
       break;
+    case EFillBox::kMarginBox:
+      value_id_ = CSSValueID::kMarginBox;
+      break;
+    case EFillBox::kFillBox:
+      value_id_ = CSSValueID::kFillBox;
+      break;
+    case EFillBox::kStrokeBox:
+      value_id_ = CSSValueID::kStrokeBox;
+      break;
+    case EFillBox::kViewBox:
+      value_id_ = CSSValueID::kViewBox;
+      break;
+    case EFillBox::kNoClip:
+      value_id_ = CSSValueID::kNoClip;
+      break;
   }
 }
 
@@ -386,6 +401,16 @@ inline EFillBox CSSIdentifierValue::ConvertTo() const {
       return EFillBox::kContent;
     case CSSValueID::kText:
       return EFillBox::kText;
+    case CSSValueID::kMarginBox:
+      return EFillBox::kMarginBox;
+    case CSSValueID::kFillBox:
+      return EFillBox::kFillBox;
+    case CSSValueID::kStrokeBox:
+      return EFillBox::kStrokeBox;
+    case CSSValueID::kViewBox:
+      return EFillBox::kViewBox;
+    case CSSValueID::kNoClip:
+      return EFillBox::kNoClip;
     default:
       break;
   }

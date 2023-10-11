@@ -43,6 +43,14 @@ class CORE_EXPORT RoundedBorderGeometry {
       const PhysicalRect& border_rect,
       const NGPhysicalBoxStrut& outsets_from_border,
       PhysicalBoxSides edges_to_include = PhysicalBoxSides());
+
+  // Similar to `PixelSnappedRoundedBorderWithOutsets` but uses the margin
+  // outset logic (https://drafts.csswg.org/css-backgrounds-3/#corner-shaping).
+  static FloatRoundedRect PixelSnappedRoundedBorderWithMarginOutsets(
+      const ComputedStyle&,
+      const PhysicalRect& border_rect,
+      const NGPhysicalBoxStrut& outsets_from_border,
+      PhysicalBoxSides edges_to_include = PhysicalBoxSides());
 };
 
 }  // namespace blink

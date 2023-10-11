@@ -385,6 +385,33 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
     NGPhysicalBoxStrut& unsnapped_dest_adjust,
     NGPhysicalBoxStrut& snapped_dest_adjust) const {
   switch (fill_layer.Clip()) {
+    case EFillBox::kNoClip: {
+      PhysicalRect border_box;
+      if (positioning_box_->IsBox()) {
+        border_box = To<LayoutBox>(positioning_box_)->PhysicalBorderBoxRect();
+      } else {
+        border_box =
+            To<LayoutInline>(positioning_box_)->PhysicalLinesBoundingBox();
+      }
+      PhysicalRect visual_overflow =
+          positioning_box_->Layer()
+              ->LocalBoundingBoxIncludingSelfPaintingDescendants();
+      unsnapped_dest_adjust =
+          NGPhysicalBoxStrut(visual_overflow.Y() - border_box.Y(),
+                             border_box.Right() - visual_overflow.Right(),
+                             border_box.Bottom() - visual_overflow.Bottom(),
+                             visual_overflow.X() - border_box.X());
+      snapped_dest_adjust = unsnapped_dest_adjust;
+      return;
+    }
+    case EFillBox::kMarginBox:
+      unsnapped_dest_adjust = -positioning_box_->MarginOutsets();
+      snapped_dest_adjust = unsnapped_dest_adjust;
+      return;
+    case EFillBox::kFillBox:
+    // Spec: For elements with associated CSS layout box, the used values for
+    // fill-box compute to content-box.
+    // https://drafts.fxtf.org/css-masking/#the-mask-clip
     case EFillBox::kContent:
       // If the PaddingOutsets are zero then this is equivalent to
       // kPadding and we should apply the snapping logic.
@@ -422,6 +449,11 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
                                      LayoutUnit(inner_border_rect.bottom());
       }
       return;
+    case EFillBox::kStrokeBox:
+    case EFillBox::kViewBox:
+    // Spec: For elements with associated CSS layout box, ... stroke-box and
+    // view-box compute to border-box.
+    // https://drafts.fxtf.org/css-masking/#the-mask-clip
     case EFillBox::kBorder: {
       if (disallow_border_derived_adjustment) {
         // All adjustments remain 0.
@@ -481,6 +513,13 @@ void BackgroundImageGeometry::ComputePositioningAreaAdjustments(
     NGPhysicalBoxStrut& unsnapped_box_outset,
     NGPhysicalBoxStrut& snapped_box_outset) const {
   switch (fill_layer.Origin()) {
+    case EFillBox::kMarginBox:
+    case EFillBox::kFillBox:
+    case EFillBox::kStrokeBox:
+    case EFillBox::kViewBox:
+      // TODO(pdr): These are not yet implemented for origin.
+      NOTREACHED();
+      break;
     case EFillBox::kContent:
       // If the PaddingOutsets are zero then this is equivalent to
       // kPadding and we should apply the snapping logic.
@@ -522,8 +561,10 @@ void BackgroundImageGeometry::ComputePositioningAreaAdjustments(
       // All adjustments remain 0.
       snapped_box_outset = unsnapped_box_outset = NGPhysicalBoxStrut();
       return;
+    case EFillBox::kNoClip:
     case EFillBox::kText:
-      return;
+      // These are not supported mask-origin values.
+      NOTREACHED();
   }
 }
 
@@ -884,12 +925,16 @@ void BackgroundImageGeometry::Calculate(const PaintInfo& paint_info,
   if (ShouldUseFixedAttachment(fill_layer))
     UseFixedAttachment(paint_rect.offset);
 
-  // Clip the final output rect to the paint rect.
-  unsnapped_dest_rect_.Intersect(paint_rect);
-
-  // Clip the snapped rect, and re-snap the dest rect as we may have
-  // adjusted it with unsnapped values.
-  snapped_dest_rect_.Intersect(paint_rect);
+  // The actual painting area can be bigger than the provided background
+  // geometry (`paint_rect`) for clip values 'margin-box' and 'no-clip', so
+  // avoid clipping in those cases.
+  if (fill_layer.Clip() != EFillBox::kMarginBox &&
+      fill_layer.Clip() != EFillBox::kNoClip) {
+    // Clip the final output rect to the paint rect.
+    unsnapped_dest_rect_.Intersect(paint_rect);
+    snapped_dest_rect_.Intersect(paint_rect);
+  }
+  // Re-snap the dest rect as we may have adjusted it with unsnapped values.
   snapped_dest_rect_ = PhysicalRect(ToPixelSnappedRect(snapped_dest_rect_));
 }
 
