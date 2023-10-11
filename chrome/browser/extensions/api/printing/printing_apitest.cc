@@ -204,6 +204,8 @@ class PrintingApiTest : public ExtensionApiTest,
   scoped_refptr<printing::TestPrintBackend> test_print_backend_;
 };
 
+using PrintingPromiseApiTest = PrintingApiTest;
+
 IN_PROC_BROWSER_TEST_P(PrintingApiTest, GetPrinters) {
   chromeos::Printer printer = chromeos::Printer(kId);
   printer.set_display_name("name");
@@ -240,6 +242,21 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, SubmitJob) {
   RunTest("submit_job.html");
 }
 
+// As above, but tests using promise based API calls.
+IN_PROC_BROWSER_TEST_P(PrintingPromiseApiTest, SubmitJob) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  AddAvailablePrinter(kId, ConstructPrinterCapabilities());
+  PrintingAPIHandler* handler = PrintingAPIHandler::Get(browser()->profile());
+  handler->SetPrintJobControllerForTesting(
+      std::make_unique<FakePrintJobControllerAsh>(GetPrintJobManager(),
+                                                  GetPrintersManager()));
+  base::AutoReset<bool> skip_confirmation_dialog_reset(
+      PrintJobSubmitter::SkipConfirmationDialogForTesting());
+
+  RunTest("submit_job_promise.html");
+}
+
 // Verifies that:
 // a) Cancel job request works smoothly.
 // b) OnJobStatusChanged() events are dispatched correctly.
@@ -262,5 +279,11 @@ INSTANTIATE_TEST_SUITE_P(/**/,
                          testing::Values(ExtensionType::kChromeApp,
                                          ExtensionType::kExtensionMV2,
                                          ExtensionType::kExtensionMV3));
+
+// We only run the promise based tests for MV3 extensions as promise based API
+// calls are only exposed to MV3.
+INSTANTIATE_TEST_SUITE_P(/**/,
+                         PrintingPromiseApiTest,
+                         testing::Values(ExtensionType::kExtensionMV3));
 
 }  // namespace extensions

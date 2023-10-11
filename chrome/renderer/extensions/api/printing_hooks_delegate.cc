@@ -8,6 +8,7 @@
 #include "extensions/renderer/v8_helpers.h"
 #include "gin/dictionary.h"
 #include "third_party/blink/public/web/web_blob.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 
@@ -52,6 +53,14 @@ RequestResult PrintingHooksDelegate::HandleRequest(
 RequestResult PrintingHooksDelegate::HandleSubmitJob(
     v8::Isolate* isolate,
     std::vector<v8::Local<v8::Value>>* arguments) {
+  // If being called without the callback parameter (i.e. a promise based API
+  // call) the bindings require the final argument to be filled out with a null
+  // argument instead.
+  // TODO(tjudkins): It would be good to fix the logic to not require this. For
+  // more details see the comment in APIBindingJSUtil::SendRequest.
+  if (arguments->size() == 1u) {
+    arguments->push_back(v8::Null(isolate));
+  }
   DCHECK_EQ(2u, arguments->size());
   DCHECK((*arguments)[0]->IsObject());
 

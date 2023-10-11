@@ -41,3 +41,10 @@ function submitJob(printerId, title, url, callback) {
     chrome.printing.submitJob(submitJobRequest, callback);
   });
 }
+
+async function submitJobPromise(printerId, title, url) {
+  let response = await fetch(url);
+  let arrayBuffer = await response.arrayBuffer();
+  const submitJobRequest = formatPrintJobRequest(printerId, title, arrayBuffer);
+  return chrome.printing.submitJob(submitJobRequest);
+}
