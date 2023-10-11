@@ -33,6 +33,7 @@ source_set("unit_tests") {
   deps = [
     ":application_delegate",
     ":application_delegate_internal",
+    ":constants",
     ":metric_kit_subscriber",
     ":tab_opening",
     ":test_support",
@@ -178,6 +179,7 @@ source_set("application_delegate_internal") {
   ]
   deps = [
     ":application_delegate",
+    ":constants",
     ":metric_kit_subscriber",
     ":tab_opening",
     ":url_opener_params",
@@ -255,6 +257,13 @@ source_set("application_delegate_internal") {
   allow_circular_includes_from = [
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/shared/coordinator/scene",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "intents_constants.h",
+    "intents_constants.mm",
   ]
 }
 

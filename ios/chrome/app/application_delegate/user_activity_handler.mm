@@ -18,6 +18,7 @@
 #import "components/handoff/handoff_utility.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/app/app_startup_parameters.h"
+#import "ios/chrome/app/application_delegate/intents_constants.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/application_mode.h"
@@ -49,36 +50,6 @@
 using base::UserMetricsAction;
 
 namespace {
-// Constants for 3D touch application static shortcuts.
-NSString* const kShortcutNewSearch = @"OpenNewSearch";
-NSString* const kShortcutNewIncognitoSearch = @"OpenIncognitoSearch";
-NSString* const kShortcutVoiceSearch = @"OpenVoiceSearch";
-NSString* const kShortcutQRScanner = @"OpenQRScanner";
-NSString* const kShortcutLensFromAppIconLongPress =
-    @"OpenLensFromAppIconLongPress";
-NSString* const kShortcutLensFromSpotlight = @"OpenLensFromSpotlight";
-
-// Constants for Siri shortcut.
-NSString* const kSiriShortcutOpenInChrome = @"OpenInChromeIntent";
-NSString* const kSiriShortcutSearchInChrome = @"SearchInChromeIntent";
-NSString* const kSiriShortcutOpenInIncognito = @"OpenInChromeIncognitoIntent";
-NSString* const kSiriOpenReadingList = @"OpenReadingListIntent";
-NSString* const kSiriOpenBookmarks = @"OpenBookmarksIntent";
-NSString* const kSiriOpenRecentTabs = @"OpenRecentTabsIntent";
-NSString* const kSiriOpenTabGrid = @"OpenTabGridIntent";
-NSString* const kSiriVoiceSearch = @"SearchWithVoiceIntent";
-NSString* const kSiriOpenNewTab = @"OpenNewTabIntent";
-NSString* const kSiriPlayDinoGame = @"PlayDinoGameIntent";
-NSString* const kSiriSetChromeDefaultBrowser = @"SetChromeDefaultBrowserIntent";
-NSString* const kSiriViewHistory = @"ViewHistoryIntent";
-NSString* const kSiriOpenNewIncognitoTab = @"OpenNewIncognitoTabIntent";
-NSString* const kSiriManagePaymentMethods = @"ManagePaymentMethodsIntent";
-NSString* const kSiriRunSafetyCheck = @"RunSafetyCheckIntent";
-NSString* const kSiriManagePasswords = @"ManagePasswordsIntent";
-NSString* const kSiriManageSettings = @"ManageSettingsIntent";
-NSString* const kSiriOpenLatestTab = @"OpenLatestTabIntent";
-NSString* const kSiriOpenLensFromIntents = @"OpenLensIntent";
-NSString* const kSiriClearBrowsingData = @"ClearBrowsingDataIntent";
 
 // Constants for compatible mode for user activities.
 NSString* const kRegularMode = @"RegularMode";
