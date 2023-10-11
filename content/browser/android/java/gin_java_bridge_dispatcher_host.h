@@ -51,8 +51,8 @@ class GinJavaBridgeDispatcherHost
 
   // WebContentsObserver
   void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
+  void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
   void PrimaryMainDocumentElementAvailable() override;
-  void WebContentsDestroyed() override;
   void PrimaryPageChanged(Page& page) override;
 
   // GinJavaMethodInvocationHelper::DispatcherDelegate
@@ -84,6 +84,7 @@ class GinJavaBridgeDispatcherHost
 
   // Run on the UI thread.
   void InstallFilterAndRegisterAllRoutingIds();
+  void InstallFilterAndRegisterRoutingId(RenderFrameHost* render_frame_host);
   WebContentsImpl* web_contents() const;
 
   // Run on any thread.
