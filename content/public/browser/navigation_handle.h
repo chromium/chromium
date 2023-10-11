@@ -35,6 +35,7 @@
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/page_transition_types.h"
 
@@ -694,6 +695,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // will be lost.
   virtual blink::RuntimeFeatureStateContext&
   GetMutableRuntimeFeatureStateContext() = 0;
+
+  // Some content settings must be enforced by the renderer (e.g. whether
+  // running javascript is allowed). See ContentSettingsType for more details.
+  virtual void SetContentSettings(
+      blink::mojom::RendererContentSettingsPtr content_settings) = 0;
 };
 
 }  // namespace content

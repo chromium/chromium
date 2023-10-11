@@ -90,6 +90,7 @@ struct ContentSettingPatternSource {
 };
 
 // This mirrors the C++ type in content_settings.h.
+// TODO(https://crbug.com/1485360): This should be removed.
 struct RendererContentSettingRules {
   array<ContentSettingPatternSource> image_rules;
   array<ContentSettingPatternSource> script_rules;

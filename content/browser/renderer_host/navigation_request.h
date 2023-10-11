@@ -438,6 +438,8 @@ class CONTENT_EXPORT NavigationRequest
   bool ExistingDocumentWasDiscarded() const override;
   blink::RuntimeFeatureStateContext& GetMutableRuntimeFeatureStateContext()
       override;
+  void SetContentSettings(
+      blink::mojom::RendererContentSettingsPtr content_settings) override;
   // End of NavigationHandle implementation.
 
   // mojom::NavigationRendererCancellationListener implementation:

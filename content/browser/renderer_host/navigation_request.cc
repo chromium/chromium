@@ -168,6 +168,7 @@
 #include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
+#include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
@@ -1370,7 +1371,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*not_restored_reasons=*/nullptr,
           /*load_with_storage_access=*/load_with_storage_access,
           /*browsing_context_group_info=*/absl::nullopt,
-          /*lcpp_hint=*/nullptr);
+          /*lcpp_hint=*/nullptr, blink::CreateDefaultRendererContentSettings());
 
   commit_params->navigation_timing->system_entropy_at_navigation_start =
       SystemEntropyUtils::ComputeSystemEntropyForFrameTreeNode(
@@ -1514,7 +1515,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*not_restored_reasons=*/nullptr,
           /*load_with_storage_access=*/false,
           /*browsing_context_group_info=*/absl::nullopt,
-          /*lcpp_hint=*/nullptr);
+          /*lcpp_hint=*/nullptr, blink::CreateDefaultRendererContentSettings());
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
@@ -3419,6 +3420,11 @@ base::SafeRef<NavigationHandle> NavigationRequest::GetSafeRef() {
 
 bool NavigationRequest::ExistingDocumentWasDiscarded() const {
   return commit_params_->was_discarded;
+}
+
+void NavigationRequest::SetContentSettings(
+    blink::mojom::RendererContentSettingsPtr content_settings) {
+  commit_params_->content_settings = std::move(content_settings);
 }
 
 void NavigationRequest::CheckForIsolationOptIn(const GURL& url) {

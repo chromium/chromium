@@ -148,6 +148,7 @@
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
@@ -970,7 +971,7 @@ WebHistoryItem NavigationApiHistoryEntryPtrToWebHistoryItem(
 // format, blink::WebNavigationParams.
 void FillMiscNavigationParams(
     const blink::mojom::CommonNavigationParams& common_params,
-    const blink::mojom::CommitNavigationParams& commit_params,
+    blink::mojom::CommitNavigationParams& commit_params,
     blink::WebNavigationParams* navigation_params) {
   navigation_params->navigation_timings = BuildNavigationTimings(
       common_params.navigation_start, *commit_params.navigation_timing,
@@ -1083,6 +1084,9 @@ void FillMiscNavigationParams(
 
   navigation_params->browsing_context_group_info =
       commit_params.browsing_context_group_info;
+
+  navigation_params->content_settings =
+      std::move(commit_params.content_settings);
 }
 
 std::string GetUniqueNameOfWebFrame(WebFrame* web_frame) {
@@ -3017,6 +3021,10 @@ void RenderFrameImpl::CommitFailedNavigation(
       WebURLError::IsWebSecurityViolation::kFalse, common_params->url,
       WebURLError::ShouldCollapseInitiator::kFalse);
 
+  // Since the URL will be set to kUnreachableWebDataURL, use default content
+  // settings.
+  commit_params->content_settings =
+      blink::CreateDefaultRendererContentSettings();
   auto navigation_params = std::make_unique<WebNavigationParams>(
       document_token,
       /*devtools_navigation_token=*/base::UnguessableToken::Create());

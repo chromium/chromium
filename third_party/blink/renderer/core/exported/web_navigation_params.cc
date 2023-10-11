@@ -5,6 +5,7 @@
 #include "third_party/blink/public/web/web_navigation_params.h"
 
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
@@ -15,7 +16,8 @@ namespace blink {
 
 WebNavigationParams::WebNavigationParams()
     : http_method(http_names::kGET),
-      devtools_navigation_token(base::UnguessableToken::Create()) {}
+      devtools_navigation_token(base::UnguessableToken::Create()),
+      content_settings(CreateDefaultRendererContentSettings()) {}
 
 WebNavigationParams::~WebNavigationParams() = default;
 
@@ -24,7 +26,8 @@ WebNavigationParams::WebNavigationParams(
     const base::UnguessableToken& devtools_navigation_token)
     : http_method(http_names::kGET),
       document_token(document_token),
-      devtools_navigation_token(devtools_navigation_token) {}
+      devtools_navigation_token(devtools_navigation_token),
+      content_settings(CreateDefaultRendererContentSettings()) {}
 
 // static
 std::unique_ptr<WebNavigationParams> WebNavigationParams::CreateFromInfo(

@@ -23,8 +23,17 @@ mojom::CommitNavigationParamsPtr CreateCommitNavigationParams() {
   commit_params->navigation_timing = mojom::NavigationTiming::New();
   commit_params->navigation_api_history_entry_arrays =
       mojom::NavigationApiHistoryEntryArrays::New();
+  commit_params->content_settings = CreateDefaultRendererContentSettings();
 
   return commit_params;
+}
+
+mojom::RendererContentSettingsPtr CreateDefaultRendererContentSettings() {
+  // These defaults mirror
+  // components/content_settings/core/browser/content_settings_registry.cc.
+  return mojom::RendererContentSettings::New(
+      /*allow_script=*/true, /*allow_image=*/true, /*allow_popup=*/false,
+      /*allow_mixed_content=*/false, /*allow_auto_dark=*/true);
 }
 
 }  // namespace blink

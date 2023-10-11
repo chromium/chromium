@@ -30,6 +30,7 @@
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-shared.h"
+#include "third_party/blink/public/mojom/navigation/renderer_content_settings.mojom.h"
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -547,6 +548,10 @@ struct BLINK_EXPORT WebNavigationParams {
   // because they cannot change browsing context group.
   absl::optional<BrowsingContextGroupInfo> browsing_context_group_info =
       absl::nullopt;
+
+  // For each document, the browser passes along state for each
+  // renderer-enforced content setting.
+  mojom::RendererContentSettingsPtr content_settings;
 };
 
 }  // namespace blink

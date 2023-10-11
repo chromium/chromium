@@ -29,6 +29,7 @@ import "third_party/blink/public/mojom/messaging/task_attribution_id.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom";
+import "third_party/blink/public/mojom/navigation/renderer_content_settings.mojom";
 import "third_party/blink/public/mojom/navigation/system_entropy.mojom";
 import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
 import "third_party/blink/public/mojom/page/browsing_context_group_info.mojom";
@@ -606,4 +607,8 @@ struct CommitNavigationParams {
 
   // LCP Critical Path Predictor hint data available at navigation timing.
   blink.mojom.LCPCriticalPathPredictorNavigationTimeHint? lcpp_hint;
+
+  // Some content settings must be enforced by the renderer. See
+  // ContentSettingsType for more details.
+  RendererContentSettings content_settings;
 };
