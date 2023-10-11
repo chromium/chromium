@@ -65,7 +65,7 @@ void AsyncAudioDecoder::DecodeAsync(DOMArrayBuffer* audio_data,
           WrapCrossThreadPersistent(audio_data), sample_rate,
           MakeCrossThreadHandle(success_callback),
           MakeCrossThreadHandle(error_callback),
-          MakeCrossThreadHandle(resolver), WrapCrossThreadPersistent(context),
+          MakeCrossThreadHandle(resolver), MakeCrossThreadHandle(context),
           std::move(task_runner), exception_state.GetContext()));
 }
 
@@ -75,7 +75,7 @@ void AsyncAudioDecoder::DecodeOnBackgroundThread(
     CrossThreadHandle<V8DecodeSuccessCallback> success_callback,
     CrossThreadHandle<V8DecodeErrorCallback> error_callback,
     CrossThreadHandle<ScriptPromiseResolver> resolver,
-    BaseAudioContext* context,
+    CrossThreadHandle<BaseAudioContext> context,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const ExceptionContext& exception_context) {
   DCHECK(!IsMainThread());
@@ -85,21 +85,16 @@ void AsyncAudioDecoder::DecodeOnBackgroundThread(
   // Decoding is finished, but we need to do the callbacks on the main thread.
   // A reference to `bus` is retained by base::OnceCallback and will be removed
   // after `NotifyComplete()` is done.
-  //
-  // We also want to avoid notifying the main thread if AudioContext does not
-  // exist any more.
-  if (context) {
-    PostCrossThreadTask(
-        *task_runner, FROM_HERE,
-        CrossThreadBindOnce(&AsyncAudioDecoder::NotifyComplete,
-                            WrapCrossThreadPersistent(audio_data),
-                            MakeUnwrappingCrossThreadHandle(success_callback),
-                            MakeUnwrappingCrossThreadHandle(error_callback),
-                            WTF::RetainedRef(std::move(bus)),
-                            MakeUnwrappingCrossThreadHandle(resolver),
-                            WrapCrossThreadPersistent(context),
-                            exception_context));
-  }
+  PostCrossThreadTask(
+      *task_runner, FROM_HERE,
+      CrossThreadBindOnce(&AsyncAudioDecoder::NotifyComplete,
+                          WrapCrossThreadPersistent(audio_data),
+                          MakeUnwrappingCrossThreadHandle(success_callback),
+                          MakeUnwrappingCrossThreadHandle(error_callback),
+                          WTF::RetainedRef(std::move(bus)),
+                          MakeUnwrappingCrossThreadHandle(resolver),
+                          MakeUnwrappingCrossThreadHandle(context),
+                          exception_context));
 }
 
 void AsyncAudioDecoder::NotifyComplete(

@@ -80,7 +80,7 @@ class AsyncAudioDecoder {
       CrossThreadHandle<V8DecodeSuccessCallback>,
       CrossThreadHandle<V8DecodeErrorCallback>,
       CrossThreadHandle<ScriptPromiseResolver>,
-      BaseAudioContext*,
+      CrossThreadHandle<BaseAudioContext>,
       scoped_refptr<base::SingleThreadTaskRunner>,
       const ExceptionContext&);
   static void NotifyComplete(DOMArrayBuffer* audio_data,
