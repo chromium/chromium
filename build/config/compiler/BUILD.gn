@@ -132,6 +132,11 @@ declare_args() {
       (is_chromeos || is_android || is_win || is_linux || is_mac ||
        (is_ios && use_lld)) && is_official_build
 
+  # Whether to enable thin lto incremental builds.
+  # See: https://clang.llvm.org/docs/ThinLTO.html#incremental
+  # The cache can lead to non-determinism: https://crbug.com/1486045
+  thin_lto_enable_cache = true
+
   # Initialize all local variables with a pattern. This flag will fill
   # uninitialized floating-point types (and 32-bit pointers) with 0xFF and the
   # rest with 0xAA. This makes behavior of uninitialized memory bugs consistent,
@@ -727,9 +732,26 @@ config("compiler") {
       "-fsplit-lto-unit",
     ]
 
-    # Limit the size of the ThinLTO cache to the lesser of 10% of
-    # available disk space, 40GB and 100000 files.
-    cache_policy = "cache_size=10%:cache_size_bytes=40g:cache_size_files=100000"
+    if (thin_lto_enable_cache) {
+      # Limit the size of the ThinLTO cache to the lesser of 10% of
+      # available disk space, 40GB and 100000 files.
+      cache_policy =
+          "cache_size=10%:cache_size_bytes=40g:cache_size_files=100000"
+      cache_dir = rebase_path("$root_out_dir/thinlto-cache", root_build_dir)
+      if (is_win) {
+        ldflags += [
+          "/lldltocache:$cache_dir",
+          "/lldltocachepolicy:$cache_policy",
+        ]
+      } else {
+        if (is_apple) {
+          ldflags += [ "-Wl,-cache_path_lto,$cache_dir" ]
+        } else {
+          ldflags += [ "-Wl,--thinlto-cache-dir=$cache_dir" ]
+        }
+        ldflags += [ "-Wl,--thinlto-cache-policy=$cache_policy" ]
+      }
+    }
 
     # An import limit of 30 has better performance (per speedometer) and lower
     # binary size than the default setting of 100.
@@ -741,9 +763,6 @@ config("compiler") {
       ldflags += [
         "/opt:lldltojobs=all",
         "-mllvm:-import-instr-limit=$import_instr_limit",
-        "/lldltocache:" +
-            rebase_path("$root_out_dir/thinlto-cache", root_build_dir),
-        "/lldltocachepolicy:$cache_policy",
         "-mllvm:-disable-auto-upgrade-debug-info",
       ]
     } else {
@@ -758,19 +777,6 @@ config("compiler") {
       # TODO(thakis): Check if '=0' (that is, number of cores, instead
       # of "all" which means number of hardware threads) is faster.
       ldflags += [ "-Wl,--thinlto-jobs=all" ]
-      if (is_apple) {
-        ldflags += [
-          "-Wl,-cache_path_lto," +
-              rebase_path("$root_out_dir/thinlto-cache", root_build_dir),
-          "-Wcrl,object_path_lto",
-        ]
-      } else {
-        ldflags +=
-            [ "-Wl,--thinlto-cache-dir=" +
-              rebase_path("$root_out_dir/thinlto-cache", root_build_dir) ]
-      }
-
-      ldflags += [ "-Wl,--thinlto-cache-policy=$cache_policy" ]
 
       if (is_chromeos) {
         # ARM was originally set lower than x86 to keep the size
@@ -786,6 +792,9 @@ config("compiler") {
 
       ldflags += [ "-Wl,-mllvm,-import-instr-limit=$import_instr_limit" ]
 
+      if (is_apple) {
+        ldflags += [ "-Wcrl,object_path_lto" ]
+      }
       if (!is_chromeos) {
         # TODO(https://crbug.com/972449): turn on for ChromeOS when that
         # toolchain has this flag.
