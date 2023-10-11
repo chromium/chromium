@@ -18,6 +18,7 @@
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "components/query_tiles/tile_service.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "components/omnibox/browser/autocomplete_scoring_model_service.h"
@@ -103,6 +104,10 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
 
   void set_shortcuts_backend(scoped_refptr<ShortcutsBackend> backend) {
     shortcuts_backend_ = std::move(backend);
+  }
+
+  void set_tile_service(std::unique_ptr<query_tiles::TileService> tile_svc) {
+    tile_service_ = std::move(tile_svc);
   }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)

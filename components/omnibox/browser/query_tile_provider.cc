@@ -6,53 +6,23 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/page_classification_functions.h"
 #include "components/query_tiles/tile_service.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/url_formatter/url_fixer.h"
-
-namespace {
+#include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 
 // The relevance score for query tile match.
-const int kQueryTilesMatchRelevanceScore = 1599;
-
-// Helper function to determine if the omnibox text matches the previously
-// selected |tile_query_text|. If |tile_query_text| is empty, empty input
-// text is considered a match.
-bool TextMatchesTileQueryText(const std::u16string& input_text,
-                              const std::string& tile_query_text) {
-  auto trimmed_input =
-      base::TrimWhitespace(input_text, base::TrimPositions::TRIM_TRAILING);
-  auto tile_text = base::UTF8ToUTF16(tile_query_text);
-  auto trimmed_tile_text =
-      base::TrimWhitespace(tile_text, base::TrimPositions::TRIM_TRAILING);
-  return trimmed_input == trimmed_tile_text;
-}
-
-// Helper function to determine if we are currently showing a URL and the
-// omnibox text matches this URL.
-bool TextMatchesPageURL(const AutocompleteInput& input) {
-  const GURL fixed_url(url_formatter::FixupURL(base::UTF16ToUTF8(input.text()),
-                                               /*desired_tld=*/std::string()));
-  return input.current_url() == fixed_url;
-}
-
-const TemplateURL* GetDefaultSearchProvider(
-    AutocompleteProviderClient* client) {
-  TemplateURLService* template_url_service = client->GetTemplateURLService();
-  return template_url_service ? template_url_service->GetDefaultSearchProvider()
-                              : nullptr;
-}
-
-}  // namespace
+constexpr int kQueryTilesMatchRelevanceScore = 1600;
 
 QueryTileProvider::QueryTileProvider(AutocompleteProviderClient* client,
                                      AutocompleteProviderListener* listener)
     : AutocompleteProvider(AutocompleteProvider::TYPE_QUERY_TILE),
-      client_(client),
-      tile_service_(client_->GetQueryTileService()) {
+      client_(client) {
   AddListener(listener);
 }
 
@@ -60,25 +30,32 @@ QueryTileProvider::~QueryTileProvider() = default;
 
 void QueryTileProvider::Start(const AutocompleteInput& input,
                               bool minimal_changes) {
-  done_ = input.omit_asynchronous_matches();
-  matches_.clear();
-  if (!AllowQueryTileSuggestions(input)) {
-    done_ = true;
+  Stop(true, false);
+  if (!IsAllowedInContext(input)) {
+    return;
+  }
+  done_ = false;
+
+  // Fetch data from server only if our caches are empty.
+  if (tiles_.empty() && !input.omit_asynchronous_matches()) {
+    client_->GetQueryTileService()->GetQueryTiles(
+        base::BindOnce(&QueryTileProvider::OnTilesFetched,
+                       weak_ptr_factory_.GetWeakPtr(), /*is_prefetch=*/false));
+  } else {
+    // Serve results from cache synchronously.
+    BuildSuggestions();
+  }
+}
+
+void QueryTileProvider::StartPrefetch(const AutocompleteInput& input) {
+  if (!IsAllowedInContext(input)) {
     return;
   }
 
-  // If the request was started by tapping on a tile, fetch the sub-tiles.
-  // Otherwise, try showing the top level tiles.
-  if (input.query_tile_id().has_value()) {
-    tile_service_->GetTile(
-        input.query_tile_id().value(),
-        base::BindOnce(&QueryTileProvider::OnSubTilesFetched,
-                       weak_ptr_factory_.GetWeakPtr(), input));
-  } else {
-    tile_service_->GetQueryTiles(
-        base::BindOnce(&QueryTileProvider::OnTopLevelTilesFetched,
-                       weak_ptr_factory_.GetWeakPtr(), input));
-  }
+  // Drop results, the contents will be served on Start().
+  client_->GetQueryTileService()->GetQueryTiles(
+      base::BindOnce(&QueryTileProvider::OnTilesFetched,
+                     weak_ptr_factory_.GetWeakPtr(), /*is_prefetch=*/true));
 }
 
 void QueryTileProvider::Stop(bool clear_cached_results,
@@ -90,8 +67,7 @@ void QueryTileProvider::Stop(bool clear_cached_results,
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-bool QueryTileProvider::AllowQueryTileSuggestions(
-    const AutocompleteInput& input) {
+bool QueryTileProvider::IsAllowedInContext(const AutocompleteInput& input) {
   if (!client_->SearchSuggestEnabled())
     return false;
 
@@ -103,71 +79,59 @@ bool QueryTileProvider::AllowQueryTileSuggestions(
     return false;
   }
 
-  // Only show suggestions for NTP or schemes that users recognize.
-  const auto& page_url = input.current_url();
-  bool is_supported_scheme =
-      page_url.is_valid() &&
-      ((page_url.scheme() == url::kHttpScheme) ||
-       (page_url.scheme() == url::kHttpsScheme) ||
-       (page_url.scheme() == url::kAboutScheme) ||
-       (page_url.scheme() ==
-        client_->GetEmbedderRepresentationOfAboutScheme()));
-  if (input.type() == metrics::OmniboxInputType::URL && !is_supported_scheme)
-    return false;
-
-  return true;
+  return (input.current_page_classification() ==
+              metrics::OmniboxEventProto::NTP_ZPS_PREFETCH ||
+          omnibox::IsNTPPage(input.current_page_classification())) &&
+         input.focus_type() == metrics::INTERACTION_FOCUS;
 }
 
-void QueryTileProvider::OnTopLevelTilesFetched(
-    const AutocompleteInput& input,
-    std::vector<query_tiles::Tile> tiles) {
-  BuildSuggestion(input, /*tile_query_text=*/"", std::move(tiles));
+void QueryTileProvider::OnTilesFetched(bool is_prefetch,
+                                       std::vector<query_tiles::Tile> tiles) {
+  tiles_ = std::move(tiles);
+  if (!is_prefetch) {
+    BuildSuggestions();
+  }
 }
 
-void QueryTileProvider::OnSubTilesFetched(
-    const AutocompleteInput& input,
-    absl::optional<query_tiles::Tile> tile) {
-  DCHECK(tile.has_value());
-  std::vector<query_tiles::Tile> sub_tiles;
-  for (const auto& sub_tile : std::move(tile->sub_tiles))
-    sub_tiles.emplace_back(std::move(*sub_tile.get()));
-
-  BuildSuggestion(input, tile->query_text, std::move(sub_tiles));
-}
-
-void QueryTileProvider::BuildSuggestion(const AutocompleteInput& input,
-                                        const std::string& tile_query_text,
-                                        std::vector<query_tiles::Tile> tiles) {
-  if (done_)
-    return;
-
+void QueryTileProvider::BuildSuggestions() {
+  // The following condition is guaranteed upon entering this function:
+  // - if `Stop()` is called before callback is executed, the callback will be
+  //   invalidated, and this method won't be invoked.
+  // - `OnceCallback`s can only be executed once.
+  // No other mechanism re-sets `done_`.
+  DCHECK(!done_);
   done_ = true;
 
-  if (tiles.empty())
-    return;
+  // Note: we already know TemplateURL is valid, because we require DSE to be
+  // Google -- see |IsAllowedInContext|.
+  auto* template_url_service = client_->GetTemplateURLService();
+  auto* template_url = template_url_service->GetDefaultSearchProvider();
+  const auto& template_url_ref = template_url->url_ref();
+  const auto& search_terms_data = template_url_service->search_terms_data();
+  std::u16string keyword = template_url->keyword();
 
-  bool is_showing_tile_text =
-      TextMatchesTileQueryText(input.text(), tile_query_text);
-  bool is_showing_url = input.type() == metrics::OmniboxInputType::URL &&
-                        TextMatchesPageURL(input);
-  bool show_query_tiles = is_showing_tile_text || is_showing_url;
-  if (!show_query_tiles)
-    return;
+  for (const auto& tile : tiles_) {
+    AutocompleteMatch match(this, kQueryTilesMatchRelevanceScore, false,
+                            AutocompleteMatchType::TILE_SUGGESTION);
+    match.contents = base::ASCIIToUTF16(tile.display_text);
+    match.contents_class = ClassifyTermMatches({}, match.contents.size(),
+                                               ACMatchClassification::MATCH,
+                                               ACMatchClassification::URL);
+    match.fill_into_edit = base::ASCIIToUTF16(tile.query_text);
+    match.suggestion_group_id = omnibox::GROUP_MOBILE_QUERY_TILES;
+    match.keyword = keyword;
+    match.search_terms_args = std::make_unique<TemplateURLRef::SearchTermsArgs>(
+        base::ASCIIToUTF16(tile.query_text));
+    match.search_terms_args->additional_query_params =
+        base::JoinString(tile.search_params, "&");
+    if (!tile.image_metadatas.empty()) {
+      match.image_url = tile.image_metadatas[0].url;
+    }
+    match.destination_url = GURL(template_url_ref.ReplaceSearchTerms(
+        *match.search_terms_args, search_terms_data));
 
-  AutocompleteMatch match(this, kQueryTilesMatchRelevanceScore, true,
-                          AutocompleteMatchType::TILE_SUGGESTION);
-  match.search_terms_args =
-      std::make_unique<TemplateURLRef::SearchTermsArgs>(input.text());
-  const TemplateURL* default_provider = GetDefaultSearchProvider(client_);
-  match.keyword =
-      default_provider ? default_provider->keyword() : std::u16string();
-  match.query_tiles = std::move(tiles);
+    matches_.push_back(std::move(match));
+  }
 
-  // The query tiles suggestion is shown as the default suggestion, unless there
-  // is an edit URL suggestion which is shown as the first suggestion.
-  if (!is_showing_url)
-    match.SetAllowedToBeDefault(input);
-
-  matches_.push_back(match);
-  NotifyListeners(true);
+  NotifyListeners(!matches_.empty());
 }
