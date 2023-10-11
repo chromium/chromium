@@ -2305,11 +2305,7 @@
       'win10-code-coverage': {
         'swarming': {
           'shards': 2,
-          'dimensions': {
-            'pool': 'chromium.tests.coverage',
-            'ssd': '1',
-          },
-        }
+        },
       },
     },
   },
