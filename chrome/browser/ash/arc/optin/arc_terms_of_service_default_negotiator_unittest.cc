@@ -135,8 +135,6 @@ class ArcTermsOfServiceDefaultNegotiatorTest
     base::SetRecordActionTaskRunner(
         task_environment()->GetMainThreadTaskRunner());
 
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<ash::FakeChromeUserManager>());
     signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(profile()), "testing@account.com",
         signin::ConsentLevel::kSync);
@@ -155,7 +153,7 @@ class ArcTermsOfServiceDefaultNegotiatorTest
     negotiator_.reset();
     fake_arc_support_.reset();
     support_host_.reset();
-    user_manager_enabler_.reset();
+    fake_user_manager_.Reset();
     owner_key_util_->Clear();
 
     test_metrics_service_.reset();
@@ -183,8 +181,7 @@ class ArcTermsOfServiceDefaultNegotiatorTest
   }
 
   ash::FakeChromeUserManager* user_manager() {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
+    return fake_user_manager_.Get();
   }
 
   consent_auditor::FakeConsentAuditor* consent_auditor() {
@@ -222,7 +219,8 @@ class ArcTermsOfServiceDefaultNegotiatorTest
       test_enabled_state_provider_;
   std::unique_ptr<metrics::MetricsService> test_metrics_service_;
 
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   std::unique_ptr<ArcSupportHost> support_host_;
   std::unique_ptr<FakeArcSupport> fake_arc_support_;
   std::unique_ptr<ArcTermsOfServiceDefaultNegotiator> negotiator_;

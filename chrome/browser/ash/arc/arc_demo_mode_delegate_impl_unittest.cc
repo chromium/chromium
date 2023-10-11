@@ -20,12 +20,7 @@ namespace {
 
 class ArcDemoModeDelegateImplTest : public testing::Test {
  public:
-  ArcDemoModeDelegateImplTest()
-      : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {
-    stub_install_attributes_ =
-        std::make_unique<ash::ScopedStubInstallAttributes>(
-            ash::StubInstallAttributes::CreateDemoMode());
-  }
+  ArcDemoModeDelegateImplTest() = default;
   ~ArcDemoModeDelegateImplTest() override = default;
   ArcDemoModeDelegateImplTest(const ArcDemoModeDelegateImplTest&) = delete;
   ArcDemoModeDelegateImplTest& operator=(const ArcDemoModeDelegateImplTest&) =
@@ -35,11 +30,14 @@ class ArcDemoModeDelegateImplTest : public testing::Test {
   ash::DemoModeTestHelper* demo_helper() { return &demo_helper_; }
 
   ArcDemoModeDelegateImpl* delegate() { return &delegate_; }
-  std::unique_ptr<ash::ScopedStubInstallAttributes> stub_install_attributes_;
+  std::unique_ptr<ash::ScopedStubInstallAttributes> stub_install_attributes_{
+      std::make_unique<ash::ScopedStubInstallAttributes>(
+          ash::StubInstallAttributes::CreateDemoMode())};
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
-  user_manager::ScopedUserManager user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   ash::DemoModeTestHelper demo_helper_;
   ArcDemoModeDelegateImpl delegate_;
 };

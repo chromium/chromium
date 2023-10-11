@@ -296,8 +296,8 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
   void SetUpOnMainThread() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<ash::FakeChromeUserManager>());
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+
     // Init ArcSessionManager for testing.
     ArcServiceLauncher::Get()->ResetForTesting();
     ArcSessionManager::SetUiEnabledForTesting(false);
@@ -317,10 +317,10 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
     // a dangling pointer to the User.
     // TODO(nya): Consider removing all users from ProfileHelper in the
     // destructor of ash::FakeChromeUserManager.
-    auto* user = GetFakeUserManager()->GetActiveUser();
+    auto* user = fake_user_manager_->GetActiveUser();
     if (user) {
-      GetFakeUserManager()->RemoveUserFromList(
-          GetFakeUserManager()->GetActiveUser()->GetAccountId());
+      fake_user_manager_->RemoveUserFromList(
+          fake_user_manager_->GetActiveUser()->GetAccountId());
     }
     // Since ArcServiceLauncher is (re-)set up with profile() in
     // SetUpOnMainThread() it is necessary to Shutdown() before the profile()
@@ -334,12 +334,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
     }
     identity_test_environment_adaptor_.reset();
     profile_.reset();
-    user_manager_enabler_.reset();
-  }
-
-  ash::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
+    fake_user_manager_.Reset();
   }
 
   void EnableRemovalOfExtendedAccountInfo() {
@@ -353,16 +348,16 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
     const user_manager::User* user = nullptr;
     switch (user_type) {
       case user_manager::USER_TYPE_CHILD:
-        user = GetFakeUserManager()->AddChildUser(account_id);
+        user = fake_user_manager_->AddChildUser(account_id);
         break;
       case user_manager::USER_TYPE_REGULAR:
-        user = GetFakeUserManager()->AddUser(account_id);
+        user = fake_user_manager_->AddUser(account_id);
         break;
       case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
-        user = GetFakeUserManager()->AddPublicAccountUser(account_id);
+        user = fake_user_manager_->AddPublicAccountUser(account_id);
         break;
       case user_manager::USER_TYPE_ARC_KIOSK_APP:
-        user = GetFakeUserManager()->AddUserWithAffiliationAndTypeAndProfile(
+        user = fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
             account_id, false /*is_affiliated*/,
             user_manager::USER_TYPE_ARC_KIOSK_APP, nullptr /*profile*/);
         break;
@@ -371,7 +366,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
         return;
     }
 
-    GetFakeUserManager()->LoginUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
 
     // Create test profile.
     TestingProfile::Builder profile_builder;
@@ -558,7 +553,8 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
   }
 
  private:
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingProfile> profile_;
   network::TestURLLoaderFactory test_url_loader_factory_;

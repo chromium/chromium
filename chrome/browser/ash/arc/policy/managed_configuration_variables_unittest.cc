@@ -203,12 +203,10 @@ class ManagedConfigurationVariablesBase {
     ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
     // Set up a fake user and capture its profile.
-    auto* const user_manager = new ash::FakeChromeUserManager();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(user_manager));
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     const AccountId account_id(
         AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId));
-    user_manager->AddUserWithAffiliation(account_id, is_affiliated);
+    fake_user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
@@ -233,7 +231,7 @@ class ManagedConfigurationVariablesBase {
   void DoTearDown() {
     fake_device_attributes_.reset();
     profile_manager_.reset();
-    scoped_user_manager_.reset();
+    fake_user_manager_.Reset();
   }
 
   const Profile* profile() { return profile_; }
@@ -245,7 +243,8 @@ class ManagedConfigurationVariablesBase {
  private:
   content::BrowserTaskEnvironment task_environment_;
 
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
 

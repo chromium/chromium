@@ -63,8 +63,7 @@ class ArcWallpaperServiceTest : public testing::Test {
  public:
   ArcWallpaperServiceTest()
       : task_environment_(std::make_unique<content::BrowserTaskEnvironment>()),
-        user_manager_(new ash::FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(user_manager_.get())) {}
+        fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
 
   ArcWallpaperServiceTest(const ArcWallpaperServiceTest&) = delete;
   ArcWallpaperServiceTest& operator=(const ArcWallpaperServiceTest&) = delete;
@@ -82,9 +81,9 @@ class ArcWallpaperServiceTest : public testing::Test {
         prefs::kDeviceWallpaperImageFilePath, std::string());
 
     // User
-    user_manager_->AddUser(user_manager::StubAccountId());
-    user_manager_->LoginUser(user_manager::StubAccountId());
-    ASSERT_TRUE(user_manager_->GetPrimaryUser());
+    fake_user_manager_->AddUser(user_manager::StubAccountId());
+    fake_user_manager_->LoginUser(user_manager::StubAccountId());
+    ASSERT_TRUE(fake_user_manager_->GetPrimaryUser());
 
     // Wallpaper
     wallpaper_controller_client_ = std::make_unique<
@@ -127,9 +126,8 @@ class ArcWallpaperServiceTest : public testing::Test {
 
  private:
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
-  const raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_ = nullptr;
-  user_manager::ScopedUserManager user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   arc::ArcServiceManager arc_service_manager_;
   // testing_profile_ needs to be deleted before arc_service_manager_.
   TestingProfile testing_profile_;

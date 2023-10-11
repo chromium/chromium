@@ -87,12 +87,11 @@ class ArcRobotAuthCodeFetcherBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<ash::FakeChromeUserManager>());
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
     const AccountId account_id(AccountId::FromUserEmail(kFakeUserName));
-    GetFakeUserManager()->AddArcKioskAppUser(account_id);
-    GetFakeUserManager()->LoginUser(account_id);
+    fake_user_manager_->AddArcKioskAppUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
 
     if (cloud_policy_client_setup_ == CloudPolicyClientSetup::kSkip)
       return;
@@ -113,12 +112,7 @@ class ArcRobotAuthCodeFetcherBrowserTest : public InProcessBrowserTest {
     cloud_policy_client->client_id_ = "client-id";
   }
 
-  void TearDownOnMainThread() override { user_manager_enabler_.reset(); }
-
-  ash::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
+  void TearDownOnMainThread() override { fake_user_manager_.Reset(); }
 
   void FetchAuthCode(ArcRobotAuthCodeFetcher* fetcher,
                      bool* output_fetch_success,
@@ -150,7 +144,8 @@ class ArcRobotAuthCodeFetcherBrowserTest : public InProcessBrowserTest {
   CloudPolicyClientSetup cloud_policy_client_setup_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(ArcRobotAuthCodeFetcherBrowserTest,

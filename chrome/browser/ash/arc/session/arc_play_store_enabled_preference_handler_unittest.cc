@@ -55,7 +55,7 @@ constexpr char kTestGaiaId[] = "1234567890";
 class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
  public:
   ArcPlayStoreEnabledPreferenceHandlerTest()
-      : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {}
+      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
 
   ArcPlayStoreEnabledPreferenceHandlerTest(
       const ArcPlayStoreEnabledPreferenceHandlerTest&) = delete;
@@ -91,8 +91,8 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
             profile_.get(), arc_session_manager_.get());
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         profile()->GetProfileUserName(), kTestGaiaId));
-    GetFakeUserManager()->AddUser(account_id);
-    GetFakeUserManager()->LoginUser(account_id);
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
 
     identity_test_env_profile_adaptor_->identity_test_env()
         ->MakePrimaryAccountAvailable(kTestEmail,
@@ -120,10 +120,6 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
   ArcPlayStoreEnabledPreferenceHandler* preference_handler() const {
     return preference_handler_.get();
   }
-  ash::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
 
   consent_auditor::FakeConsentAuditor* consent_auditor() const {
     return static_cast<consent_auditor::FakeConsentAuditor*>(
@@ -146,7 +142,8 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  user_manager::ScopedUserManager user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;

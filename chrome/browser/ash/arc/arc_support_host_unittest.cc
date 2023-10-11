@@ -66,8 +66,7 @@ class ArcSupportHostTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<ash::FakeChromeUserManager>());
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     // The code under test should not be tied to browser sync consent.
@@ -86,7 +85,7 @@ class ArcSupportHostTest : public BrowserWithTestWindowTest {
     fake_arc_support_.reset();
     support_host_.reset();
     identity_test_env_adaptor_.reset();
-    user_manager_enabler_.reset();
+    fake_user_manager_.Reset();
 
     BrowserWithTestWindowTest::TearDown();
   }
@@ -122,9 +121,10 @@ class ArcSupportHostTest : public BrowserWithTestWindowTest {
   }
 
  private:
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<ArcSupportHost> support_host_;
   std::unique_ptr<FakeArcSupport> fake_arc_support_;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
 

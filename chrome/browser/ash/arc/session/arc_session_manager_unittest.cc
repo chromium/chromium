@@ -167,7 +167,7 @@ class ShowErrorObserver : public ArcSessionManagerObserver {
 class ArcSessionManagerInLoginScreenTest : public testing::Test {
  public:
   ArcSessionManagerInLoginScreenTest()
-      : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {
+      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     ash::SessionManagerClient::InitializeFakeInMemory();
 
@@ -208,7 +208,8 @@ class ArcSessionManagerInLoginScreenTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
-  user_manager::ScopedUserManager user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
 };
 
 // We expect mini instance starts to run if EmitLoginPromptVisible signal is
@@ -269,7 +270,7 @@ class ArcSessionManagerTestBase : public testing::Test {
   ArcSessionManagerTestBase()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {
+        fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
     TestingBrowserProcess::GetGlobal()->SetLocalState(&test_local_state_);
     arc::prefs::RegisterLocalStatePrefs(test_local_state_.registry());
     ash::DemoSetupController::RegisterLocalStatePrefs(
@@ -328,8 +329,7 @@ class ArcSessionManagerTestBase : public testing::Test {
   }
 
   ash::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
+    return fake_user_manager_.Get();
   }
 
  protected:
@@ -367,10 +367,11 @@ class ArcSessionManagerTestBase : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
-  user_manager::ScopedUserManager user_manager_enabler_;
   base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple test_local_state_;
   std::unique_ptr<ash::AuthEventsRecorder> auth_events_recorder_;

@@ -33,7 +33,7 @@ namespace {
 class ArcBootPhaseMonitorBridgeTest : public testing::Test {
  public:
   ArcBootPhaseMonitorBridgeTest()
-      : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
+      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     ash::SessionManagerClient::InitializeFakeInMemory();
 
@@ -48,8 +48,8 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
 
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         testing_profile_->GetProfileUserName(), "1234567890"));
-    GetFakeUserManager()->AddUser(account_id);
-    GetFakeUserManager()->LoginUser(account_id);
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
   }
 
   ArcBootPhaseMonitorBridgeTest(const ArcBootPhaseMonitorBridgeTest&) = delete;
@@ -139,13 +139,9 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
     const raw_ptr<ArcBootPhaseMonitorBridgeTest, ExperimentalAsh> test_;
   };
 
-  ash::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-
   content::BrowserTaskEnvironment task_environment_;
-  user_manager::ScopedUserManager scoped_user_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<TestingProfile> testing_profile_;

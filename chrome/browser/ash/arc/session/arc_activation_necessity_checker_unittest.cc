@@ -55,7 +55,7 @@ class FakeAdbSideloadingAvailabilityDelegate
 class ArcActivationNecessityCheckerTest : public testing::Test {
  public:
   ArcActivationNecessityCheckerTest()
-      : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
+      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
   ~ArcActivationNecessityCheckerTest() override = default;
 
   void SetUp() override {
@@ -113,7 +113,8 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  user_manager::ScopedUserManager scoped_user_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;

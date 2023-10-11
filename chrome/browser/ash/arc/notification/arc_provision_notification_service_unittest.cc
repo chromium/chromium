@@ -44,7 +44,7 @@ const char kArcManagedProvisionNotificationId[] = "arc_managed_provision";
 class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
  protected:
   ArcProvisionNotificationServiceTest()
-      : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {}
+      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
 
   ArcProvisionNotificationServiceTest(
       const ArcProvisionNotificationServiceTest&) = delete;
@@ -87,8 +87,8 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
 
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         profile()->GetProfileUserName(), "1234567890"));
-    GetFakeUserManager()->AddUser(account_id);
-    GetFakeUserManager()->LoginUser(account_id);
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
   }
 
   void TearDown() override {
@@ -106,18 +106,14 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
     ash::ConciergeClient::Shutdown();
   }
 
-  ash::FakeChromeUserManager* GetFakeUserManager() {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   raw_ptr<session_manager::SessionManager, ExperimentalAsh> session_manager_;
 
  private:
-  user_manager::ScopedUserManager user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   TestingPrefServiceSimple local_state_;
 };
 

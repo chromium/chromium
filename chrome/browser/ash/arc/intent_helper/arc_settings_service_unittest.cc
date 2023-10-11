@@ -64,7 +64,7 @@ MATCHER_P(VerifyCaptionColor, color, "") {
 class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
  public:
   ArcSettingsServiceTest()
-      : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {}
+      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
   ArcSettingsServiceTest(const ArcSettingsServiceTest&) = delete;
   ArcSettingsServiceTest& operator=(const ArcSettingsServiceTest&) = delete;
   ~ArcSettingsServiceTest() override = default;
@@ -103,8 +103,8 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
 
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         profile()->GetProfileUserName(), "1234567890"));
-    user_manager()->AddUser(account_id);
-    user_manager()->LoginUser(account_id);
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
 
     arc_session_manager()->SetProfile(profile());
     arc_session_manager()->Initialize();
@@ -159,10 +159,6 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
     WaitForInstanceReady(arc_bridge_service()->app());
   }
 
-  ash::FakeChromeUserManager* user_manager() {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
   ArcBridgeService* arc_bridge_service() {
     return arc_service_manager_->arc_bridge_service();
   }
@@ -181,7 +177,8 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
   std::unique_ptr<ash::network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
   TestingPrefServiceSimple local_state_;
-  user_manager::ScopedUserManager user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<FakeIntentHelperHost> intent_helper_host_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
