@@ -5,24 +5,6 @@
 import Combine
 import SwiftUI
 
-/// Compatibility modifier to allow easy usage of `.scrollClipDisabled`
-/// introduced in iOS 17.
-struct ScrollClipDisabledCompat: ViewModifier {
-  var disabled: Bool
-  func body(content: Content) -> some View {
-    if #available(iOS 17, *) {
-      return content.scrollClipDisabled(disabled)
-    }
-    return content
-  }
-}
-
-extension View {
-  func scrollClipDisabledCompat(_ disabled: Bool = true) -> some View {
-    modifier(ScrollClipDisabledCompat(disabled: disabled))
-  }
-}
-
 /// A view displaying a list of destinations.
 @available(iOS 15, *)
 struct OverflowMenuDestinationList: View {
@@ -234,7 +216,6 @@ struct OverflowMenuDestinationList: View {
           }
         }
       }
-      .scrollClipDisabledCompat()
       .onAppear {
         if destinations.map(\.destination).contains(uiConfiguration.highlightDestination) {
           proxy.scrollTo(uiConfiguration.highlightDestination)
