@@ -10,7 +10,9 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
@@ -22,6 +24,9 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/events/event_handler.h"
+#include "ui/events/event_utils.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/insets_outsets_base.h"
 #include "ui/gfx/geometry/outsets_f.h"
@@ -40,6 +45,44 @@ int GetHorizontalMargin() {
              ? ChromeLayoutProvider::Get()->GetDistanceMetric(
                    DISTANCE_CONTENT_LIST_VERTICAL_SINGLE)
              : 0;
+}
+
+// Utility event handler for mouse enter/exit and tap events.
+class EnterExitHandler : public ui::EventHandler {
+ public:
+  EnterExitHandler(base::RepeatingClosure enter_callback,
+                   base::RepeatingClosure exit_callback)
+      : enter_callback_(std::move(enter_callback)),
+        exit_callback_(std::move(exit_callback)) {}
+  EnterExitHandler(const EnterExitHandler&) = delete;
+  EnterExitHandler& operator=(const EnterExitHandler&) = delete;
+  ~EnterExitHandler() override = default;
+
+  void OnEvent(ui::Event* event) override;
+
+ private:
+  base::RepeatingClosure enter_callback_;
+  base::RepeatingClosure exit_callback_;
+};
+
+void EnterExitHandler::OnEvent(ui::Event* event) {
+  switch (event->type()) {
+    case ui::ET_MOUSE_ENTERED:
+      enter_callback_.Run();
+      break;
+    case ui::ET_MOUSE_EXITED:
+      exit_callback_.Run();
+      break;
+    case ui::ET_GESTURE_TAP_DOWN:
+      enter_callback_.Run();
+      break;
+    case ui::ET_GESTURE_TAP_CANCEL:
+    case ui::ET_GESTURE_END:
+      exit_callback_.Run();
+      break;
+    default:
+      break;
+  }
 }
 
 }  // namespace
@@ -90,9 +133,13 @@ PopupRowView::PopupRowView(
     : a11y_selection_delegate_(a11y_selection_delegate),
       selection_delegate_(selection_delegate),
       controller_(controller),
-      strategy_(std::move(strategy)) {
+      strategy_(std::move(strategy)),
+      should_ignore_mouse_observed_outside_item_bounds_check_(
+          controller &&
+          controller->ShouldIgnoreMouseObservedOutsideItemBoundsCheck()) {
   CHECK(strategy_);
 
+  SetNotifyEnterExitOnChild(true);
   SetProperty(views::kMarginsKey, gfx::Insets::VH(0, GetHorizontalMargin()));
   SetBackground(
       views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
@@ -100,31 +147,106 @@ PopupRowView::PopupRowView(
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>());
 
-  auto add_exit_enter_callbacks = [&](CellType type, PopupCellView& cell) {
-    cell.SetOnExitedCallback(
-        base::BindRepeating(&SelectionDelegate::SetSelectedCell,
-                            base::Unretained(&selection_delegate),
-                            absl::nullopt, PopupCellSelectionSource::kMouse));
-    cell.SetOnEnteredCallback(base::BindRepeating(
-        &SelectionDelegate::SetSelectedCell,
-        base::Unretained(&selection_delegate),
-        PopupViewViews::CellIndex{strategy_->GetLineNumber(), type},
-        PopupCellSelectionSource::kMouse));
+  auto set_exit_enter_callbacks = [&](CellType type, views::View& cell) {
+    auto handler = std::make_unique<EnterExitHandler>(
+        /*enter_callback=*/base::BindRepeating(
+            [](PopupRowView* view, CellType type) {
+              // `OnMouseEntered()` does not imply that the mouse had been
+              // outside of the item's bounds before: `OnMouseEntered()` fires
+              // if the mouse moves just a little bit on the item. If the
+              // trigger source is not manual fallback we don't want to show a
+              // preview in such a case. In this case of manual fallback we do
+              // not care since the user has made a specific choice of opening
+              // the autofill popup.
+              bool can_select_suggestion =
+                  view->mouse_observed_outside_item_bounds_ ||
+                  view->should_ignore_mouse_observed_outside_item_bounds_check_;
+              if (can_select_suggestion) {
+                view->selection_delegate_->SetSelectedCell(
+                    PopupViewViews::CellIndex{view->strategy_->GetLineNumber(),
+                                              type},
+                    PopupCellSelectionSource::kMouse);
+              }
+            },
+            this, type),
+        /*exit_callback=*/base::BindRepeating(
+            &SelectionDelegate::SetSelectedCell,
+            base::Unretained(&selection_delegate), absl::nullopt,
+            PopupCellSelectionSource::kMouse));
+    // Setting this handler on the cell view removes its original event handler
+    // (i.e. overridden methods like OnMouse*). Make sure the root view doesn't
+    // handle events itself and consider using `ui::ScopedTargetHandler` if it
+    // actually needs them.
+    cell.SetTargetHandler(handler.get());
+    return handler;
   };
 
   content_view_ = AddChildView(strategy_->CreateContent());
-  add_exit_enter_callbacks(CellType::kContent, *content_view_);
+  content_event_handler_ =
+      set_exit_enter_callbacks(CellType::kContent, *content_view_);
   layout->SetFlexForView(content_view_.get(), 1);
 
   if (std::unique_ptr<PopupCellView> control_view =
           strategy_->CreateControl()) {
     control_view_ = AddChildView(std::move(control_view));
-    add_exit_enter_callbacks(CellType::kControl, *control_view_);
+    control_event_handler_ =
+        set_exit_enter_callbacks(CellType::kControl, *control_view_);
     layout->SetFlexForView(control_view_.get(), 0);
   }
 }
 
 PopupRowView::~PopupRowView() = default;
+
+bool PopupRowView::OnMouseDragged(const ui::MouseEvent& event) {
+  // Return `true` to be informed about subsequent `OnMouseReleased` events.
+  return true;
+}
+
+bool PopupRowView::OnMousePressed(const ui::MouseEvent& event) {
+  // Return `true` to be informed about subsequent `OnMouseReleased` events.
+  return true;
+}
+
+void PopupRowView::OnMouseExited(const ui::MouseEvent& event) {
+  // `OnMouseExited()` does not imply that the mouse has left the item's screen
+  // bounds: `OnMouseExited()` fires (on Windows, at least) when another popup
+  // overlays this item and the mouse is above the new popup
+  // (crbug.com/1287364).
+  mouse_observed_outside_item_bounds_ |= !IsMouseHovered();
+}
+
+void PopupRowView::OnMouseReleased(const ui::MouseEvent& event) {
+  // For trigger sources different from manual fallback we ignore mouse clicks
+  // unless the user made the explicit choice to select the current item. In
+  // the manual fallback case the user has made an explicit choice of opening
+  // the popup and so will not select an address by accident.
+  if (!mouse_observed_outside_item_bounds_ &&
+      !should_ignore_mouse_observed_outside_item_bounds_check_) {
+    return;
+  }
+
+  if (event.IsOnlyLeftMouseButton() &&
+      content_view_->HitTestPoint(event.location())) {
+    RunOnAcceptedForEvent(event);
+  }
+}
+
+void PopupRowView::OnGestureEvent(ui::GestureEvent* event) {
+  switch (event->type()) {
+    case ui::ET_GESTURE_TAP:
+      if (content_view_->HitTestPoint(event->location())) {
+        RunOnAcceptedForEvent(*event);
+      }
+      break;
+    default:
+      return;
+  }
+}
+
+void PopupRowView::OnPaint(gfx::Canvas* canvas) {
+  views::View::OnPaint(canvas);
+  mouse_observed_outside_item_bounds_ |= !IsMouseHovered();
+}
 
 void PopupRowView::SetSelectedCell(absl::optional<CellType> cell) {
   if (cell == selected_cell_) {
@@ -192,6 +314,19 @@ bool PopupRowView::HandleKeyPressEvent(
     return true;
   }
   return false;
+}
+
+void PopupRowView::RunOnAcceptedForEvent(const ui::Event& event) {
+  // Convert the native event timestamp into (an approximation of) time ticks.
+  base::TimeTicks time =
+      event.HasNativeEvent() &&
+              base::FeatureList::IsEnabled(
+                  features::
+                      kAutofillPopupUseLatencyInformationForAcceptThreshold)
+          ? ui::EventLatencyTimeFromNative(event.native_event(),
+                                           base::TimeTicks::Now())
+          : base::TimeTicks::Now();
+  controller_->AcceptSuggestion(strategy_->GetLineNumber(), time);
 }
 
 const PopupCellView* PopupRowView::GetCellView(CellType type) const {

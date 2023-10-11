@@ -396,31 +396,36 @@ TEST_F(PopupViewViewsTest, AccessibilityTest) {
       node_data_3.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
 }
 
-TEST_F(PopupViewViewsTest, Gestures) {
-  CreateAndShowView({PopupItemId::kPasswordEntry, PopupItemId::kSeparator,
-                     PopupItemId::kAllSavedPasswordsEntry});
+// Gestures are not supported on MacOS.
+#if !BUILDFLAG(IS_MAC)
+TEST_F(PopupViewViewsTest, AcceptingOnTap) {
+  ON_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck)
+      .WillByDefault(Return(true));
 
-  // Tap down will select an element.
-  ui::GestureEvent tap_down_event(
-      /*x=*/0, /*y=*/0, /*flags=*/0, ui::EventTimeForNow(),
-      ui::GestureEventDetails(ui::ET_GESTURE_TAP_DOWN));
-  EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>(0u)));
-  GetPopupRowViewAt(0).GetContentView().OnGestureEvent(&tap_down_event);
+  CreateAndShowView({PopupItemId::kPasswordEntry});
 
   // Tapping will accept the selection.
-  ui::GestureEvent tap_event(/*x=*/0, /*y=*/0, /*flags=*/0,
-                             ui::EventTimeForNow(),
-                             ui::GestureEventDetails(ui::ET_GESTURE_TAP));
   EXPECT_CALL(controller(), AcceptSuggestion(0, _));
-  GetPopupRowViewAt(0).GetContentView().OnGestureEvent(&tap_event);
+  generator().GestureTapAt(
+      GetPopupRowViewAt(0).GetBoundsInScreen().CenterPoint());
+}
+
+TEST_F(PopupViewViewsTest, SelectionOnTouchAndUnselectionOnCancel) {
+  ON_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck)
+      .WillByDefault(Return(true));
+
+  CreateAndShowView({PopupItemId::kPasswordEntry});
+
+  // Tap down (initiated by generating a touch press) will select an element.
+  EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>(0u)));
+  generator().PressTouch(
+      GetPopupRowViewAt(0).GetBoundsInScreen().CenterPoint());
 
   // Canceling gesture clears any selection.
-  ui::GestureEvent tap_cancel(
-      /*x=*/0, /*y=*/0, /*flags=*/0, ui::EventTimeForNow(),
-      ui::GestureEventDetails(ui::ET_GESTURE_TAP_CANCEL));
   EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>()));
-  GetPopupRowViewAt(2).GetContentView().OnGestureEvent(&tap_cancel);
+  generator().CancelTouch();
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 TEST_F(PopupViewViewsTest, ClickDisabledEntry) {
   Suggestion opt_int_suggestion("", "", "",

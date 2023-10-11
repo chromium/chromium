@@ -66,8 +66,7 @@ class PopupCellWithButtonView : public PopupCellView,
                                 public CellButtonDelegate {
  public:
   METADATA_HEADER(PopupCellWithButtonView);
-  explicit PopupCellWithButtonView(
-      bool should_ignore_mouse_observed_outside_item_bounds_check = false);
+  PopupCellWithButtonView();
   PopupCellWithButtonView(const PopupCellWithButtonView&) = delete;
   PopupCellWithButtonView& operator=(const PopupCellWithButtonView&) = delete;
   ~PopupCellWithButtonView() override;

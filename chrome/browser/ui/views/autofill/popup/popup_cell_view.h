@@ -52,9 +52,7 @@ class PopupCellView : public views::View {
 
   METADATA_HEADER(PopupCellView);
 
-  explicit PopupCellView(
-      bool should_ignore_mouse_observed_outside_item_bounds_check = false);
-
+  PopupCellView();
   PopupCellView(const PopupCellView&) = delete;
   PopupCellView& operator=(const PopupCellView&) = delete;
   ~PopupCellView() override;
@@ -121,17 +119,8 @@ class PopupCellView : public views::View {
       const content::NativeWebKeyboardEvent& event);
 
   // views::View:
-  bool OnMouseDragged(const ui::MouseEvent& event) override;
-  bool OnMousePressed(const ui::MouseEvent& event) override;
-  void OnMouseEntered(const ui::MouseEvent& event) override;
-  void OnMouseExited(const ui::MouseEvent& event) override;
-  void OnMouseReleased(const ui::MouseEvent& event) override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
-
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
-
-  void OnPaint(gfx::Canvas* canvas) override;
 
  protected:
   // The selection state.
@@ -141,10 +130,6 @@ class PopupCellView : public views::View {
   base::RepeatingClosure on_unselected_callback_;
 
  private:
-  // Returns true if the mouse is within the bounds of this item. This is not
-  // affected by whether or not the item is overlaid by another popup.
-  bool IsMouseInsideItemBounds() const { return IsMouseHovered(); }
-
   // Computes the actual `TimeTicks` at which the event occurred (taking latency
   // into account) and runs the OnAccepted callback.
   void RunOnAcceptedForEvent(const ui::Event& event);
@@ -164,39 +149,12 @@ class PopupCellView : public views::View {
   // The labels whose style is updated when the cell's selection status changes.
   std::vector<raw_ptr<views::Label>> tracked_labels_;
 
-  // We want a mouse click to accept a suggestion only if the user has made an
-  // explicit choice. Therefore, we shall ignore mouse clicks unless the mouse
-  // has been moved into the item's screen bounds. For example, if the item is
-  // hovered by the mouse at the time it's first shown, we want to ignore clicks
-  // until the mouse has left and re-entered the bounds of the item
-  // (crbug.com/1240472, crbug.com/1241585, crbug.com/1287364).
-  // This is particularly relevant because mouse click interactions may be
-  // processed with a delay, making it seem as if the two click interactions of
-  // a double click were executed at intervals larger than the threshold (500ms)
-  // checked in the controller (crbug.com/1418837).
-  bool mouse_observed_outside_item_bounds_ = false;
-
-  // Whether the `mouse_observed_outside_item_bounds_` will be ignored or not.
-  // Today this happens when:
-  // 1. The AutofillSuggestionTriggerSource is
-  // `kManualFallbackForAutocompleteUnrecognized`. This is because in this
-  // situation even though the popup could appear behind the cursor, the user
-  // intention about opening it is explicit.
-  //
-  // 2. The suggestions are of autocomplete type and were regenerated due to a
-  // suggestion being removed. We want to ignore the check in this case because
-  // the cursor can be above the popup after a row is deleted. This however does
-  // not mean that the popup just showed up to the user so there is no need to
-  // move the cursor out and in.
-  bool should_ignore_mouse_observed_outside_item_bounds_check_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export*/, PopupCellView, views::View)
 VIEW_BUILDER_PROPERTY(std::u16string, TooltipText)
 VIEW_BUILDER_PROPERTY(std::unique_ptr<PopupCellView::AccessibilityDelegate>,
                       AccessibilityDelegate)
-VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnEnteredCallback)
-VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnExitedCallback)
 VIEW_BUILDER_PROPERTY(PopupCellView::OnAcceptedCallback, OnAcceptedCallback)
 VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnSelectedCallback)
 VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnUnselectedCallback)

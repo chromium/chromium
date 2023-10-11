@@ -11,6 +11,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
@@ -35,6 +36,7 @@ namespace autofill {
 
 namespace {
 
+using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Ref;
 using ::testing::Return;
@@ -74,7 +76,7 @@ class PopupRowViewTest : public ChromeViewsTestBase {
   void ShowView(int line_number, bool has_control) {
     row_view_ = widget_->SetContentsView(std::make_unique<PopupRowView>(
         mock_a11y_selection_delegate_, mock_selection_delegate_,
-        /*controller=*/nullptr,
+        mock_controller_.GetWeakPtr(),
         std::make_unique<TestPopupRowStrategy>(line_number, has_control)));
     ON_CALL(mock_selection_delegate_, SetSelectedCell)
         .WillByDefault([this](absl::optional<CellIndex> cell,
@@ -120,6 +122,7 @@ class PopupRowViewTest : public ChromeViewsTestBase {
   MockSelectionDelegate& selection_delegate() {
     return mock_selection_delegate_;
   }
+  MockAutofillPopupController& controller() { return mock_controller_; }
   PopupRowView& row_view() { return *row_view_; }
 
  private:
@@ -127,6 +130,7 @@ class PopupRowViewTest : public ChromeViewsTestBase {
   std::unique_ptr<ui::test::EventGenerator> generator_;
   NiceMock<MockAccessibilitySelectionDelegate> mock_a11y_selection_delegate_;
   NiceMock<MockSelectionDelegate> mock_selection_delegate_;
+  NiceMock<MockAutofillPopupController> mock_controller_;
   raw_ptr<PopupRowView> row_view_ = nullptr;
 };
 
@@ -163,6 +167,23 @@ TEST_F(PopupRowViewTest, MouseEnterExitInformsSelectionDelegate) {
                               PopupCellSelectionSource::kMouse));
   generator().MoveMouseTo(kOutOfBounds);
 }
+
+// Gestures are not supported on MacOS.
+#if !BUILDFLAG(IS_MAC)
+TEST_F(PopupRowViewTest, GestureEvents) {
+  EXPECT_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck())
+      .WillOnce(Return(true));
+  ShowView(0, /*has_control=*/false);
+
+  EXPECT_CALL(
+      selection_delegate(),
+      SetSelectedCell(absl::make_optional<CellIndex>(0u, CellType::kContent),
+                      PopupCellSelectionSource::kMouse));
+  EXPECT_CALL(controller(), AcceptSuggestion(0, _));
+  generator().GestureTapAt(
+      row_view().GetContentView().GetBoundsInScreen().CenterPoint());
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 TEST_F(PopupRowViewTest, SetSelectedCellVerifiesArgumentsNoControl) {
   ShowView(0, /*has_control=*/false);
@@ -249,6 +270,38 @@ TEST_F(PopupRowViewTest, ReturnKeyEventsAreHandled) {
   row_view().SetSelectedCell(CellType::kControl);
   EXPECT_CALL(control_callback, Run);
   EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
+}
+
+TEST_F(PopupRowViewTest,
+       ShouldIgnoreMouseObservedOutsideItemBoundsCheckIsFalse_IgnoreClick) {
+  ShowView(0, /*has_control=*/false);
+
+  generator().MoveMouseTo(
+      row_view().GetContentView().GetBoundsInScreen().CenterPoint());
+  Paint();
+  EXPECT_CALL(controller(), AcceptSuggestion(0, _)).Times(0);
+  generator().ClickLeftButton();
+
+  generator().MoveMouseTo(kOutOfBounds);
+  Paint();
+  generator().MoveMouseTo(
+      row_view().GetContentView().GetBoundsInScreen().CenterPoint());
+  // If the mouse has been outside before, the accept click is passed through.
+  EXPECT_CALL(controller(), AcceptSuggestion(0, _));
+  generator().ClickLeftButton();
+}
+
+TEST_F(PopupRowViewTest,
+       ShouldIgnoreMouseObservedOutsideItemBoundsCheckIsTrue_DoNotIgnoreClick) {
+  EXPECT_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck())
+      .WillOnce(Return(true));
+  ShowView(0, /*has_control=*/false);
+
+  generator().MoveMouseTo(
+      row_view().GetContentView().GetBoundsInScreen().CenterPoint());
+  Paint();
+  EXPECT_CALL(controller(), AcceptSuggestion(0, _));
+  generator().ClickLeftButton();
 }
 
 }  // namespace autofill

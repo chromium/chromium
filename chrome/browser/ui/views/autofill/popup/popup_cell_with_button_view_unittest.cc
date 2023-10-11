@@ -75,8 +75,7 @@ class PopupCellWithButtonViewTest : public ChromeViewsTestBase {
       base::RepeatingClosure button_callback = base::DoNothing(),
       CellButtonBehavior cell_button_behavior =
           CellButtonBehavior::kShowOnHoverOrSelect) {
-    auto cell = std::make_unique<PopupCellWithButtonView>(
-        /*should_ignore_mouse_observed_outside_item_bounds_check=*/true);
+    auto cell = std::make_unique<PopupCellWithButtonView>();
     cell->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal));
     cell->AddChildView(std::make_unique<views::Label>(u"Some label"));

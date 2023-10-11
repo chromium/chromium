@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -15,6 +16,7 @@
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
 
@@ -81,6 +83,14 @@ class PopupRowView : public views::View {
   static std::unique_ptr<PopupRowView> Create(PopupViewViews& popup_view,
                                               int line_number);
 
+  // views::View:
+  bool OnMouseDragged(const ui::MouseEvent& event) override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
+  void OnMouseReleased(const ui::MouseEvent& event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
+  void OnPaint(gfx::Canvas* canvas) override;
+
   // Gets and sets the selected cell within this row.
   absl::optional<CellType> GetSelectedCell() const { return selected_cell_; }
   void SetSelectedCell(absl::optional<CellType> cell);
@@ -101,6 +111,8 @@ class PopupRowView : public views::View {
   PopupCellView* GetControlView() { return control_view_.get(); }
 
  private:
+  void RunOnAcceptedForEvent(const ui::Event& event);
+
   // Returns the cell view or `nullptr` if it was not created.
   const PopupCellView* GetCellView(CellType type) const;
   PopupCellView* GetCellView(CellType type);
@@ -130,6 +142,36 @@ class PopupRowView : public views::View {
   // The cell wrapping the control area of the row.
   // TODO(crbug.com/1411172): Add keyboard event handling.
   raw_ptr<PopupCellView> control_view_ = nullptr;
+
+  // Overriding event handles for the content and control views.
+  std::unique_ptr<ui::EventHandler> content_event_handler_;
+  std::unique_ptr<ui::EventHandler> control_event_handler_;
+
+  // We want a mouse click to accept a suggestion only if the user has made an
+  // explicit choice. Therefore, we shall ignore mouse clicks unless the mouse
+  // has been moved into the item's screen bounds. For example, if the item is
+  // hovered by the mouse at the time it's first shown, we want to ignore clicks
+  // until the mouse has left and re-entered the bounds of the item
+  // (crbug.com/1240472, crbug.com/1241585, crbug.com/1287364).
+  // This is particularly relevant because mouse click interactions may be
+  // processed with a delay, making it seem as if the two click interactions of
+  // a double click were executed at intervals larger than the threshold (500ms)
+  // checked in the controller (crbug.com/1418837).
+  bool mouse_observed_outside_item_bounds_ = false;
+
+  // Whether the `mouse_observed_outside_item_bounds_` will be ignored or not.
+  // Today this happens when:
+  // 1. The AutofillSuggestionTriggerSource is
+  // `kManualFallbackForAutocompleteUnrecognized`. This is because in this
+  // situation even though the popup could appear behind the cursor, the user
+  // intention about opening it is explicit.
+  //
+  // 2. The suggestions are of autocomplete type and were regenerated due to a
+  // suggestion being removed. We want to ignore the check in this case because
+  // the cursor can be above the popup after a row is deleted. This however does
+  // not mean that the popup just showed up to the user so there is no need to
+  // move the cursor out and in.
+  const bool should_ignore_mouse_observed_outside_item_bounds_check_;
 };
 
 }  // namespace autofill

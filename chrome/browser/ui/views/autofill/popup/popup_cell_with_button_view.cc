@@ -116,9 +116,7 @@ int ButtonPlaceholder::GetHeightForWidth(int width) const {
 }
 }  // namespace
 
-PopupCellWithButtonView::PopupCellWithButtonView(
-    bool should_ignore_mouse_observed_outside_item_bounds_check)
-    : PopupCellView(should_ignore_mouse_observed_outside_item_bounds_check) {}
+PopupCellWithButtonView::PopupCellWithButtonView() = default;
 
 PopupCellWithButtonView::~PopupCellWithButtonView() = default;
 

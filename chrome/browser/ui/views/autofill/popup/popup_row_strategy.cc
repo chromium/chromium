@@ -196,8 +196,7 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateContent() {
     return CreateAutocompleteWithDeleteButtonCell();
   }
 
-  auto view = std::make_unique<PopupCellView>(
-      GetController()->ShouldIgnoreMouseObservedOutsideItemBoundsCheck());
+  auto view = std::make_unique<PopupCellView>();
   AddContentLabelsAndCallbacks(*view);
   return view;
 }
@@ -210,10 +209,7 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateControl() {
   }
 
   std::unique_ptr<PopupCellView> view =
-      views::Builder<PopupCellView>(
-          std::make_unique<PopupCellView>(
-              GetController()
-                  ->ShouldIgnoreMouseObservedOutsideItemBoundsCheck()))
+      views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
           .SetAccessibilityDelegate(
               std::make_unique<ExpandableControlCellAccessibilityDelegate>())
           .Build();
@@ -227,8 +223,7 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateControl() {
 
 std::unique_ptr<PopupCellView>
 PopupSuggestionStrategy::CreateAutocompleteWithDeleteButtonCell() {
-  auto view = std::make_unique<PopupCellWithButtonView>(
-      GetController()->ShouldIgnoreMouseObservedOutsideItemBoundsCheck());
+  auto view = std::make_unique<PopupCellWithButtonView>();
   AddContentLabelsAndCallbacks(*view);
 
   // Add a delete button for Autocomplete entries.

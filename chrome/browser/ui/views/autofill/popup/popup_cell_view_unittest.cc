@@ -9,12 +9,10 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/mock_callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/autofill/popup/test_popup_row_strategy.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/common/aliases.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -29,13 +27,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
-using testing::StrictMock;
-
 namespace autofill {
-
-namespace {
-constexpr gfx::Point kOutOfBounds{1000, 1000};
-}  // namespace
 
 class PopupCellViewTest : public ChromeViewsTestBase {
  public:
@@ -69,11 +61,8 @@ class PopupCellViewTest : public ChromeViewsTestBase {
         views::PaintInfo::CreateRootPaintInfo(canvas_painter.context(), size));
   }
 
-  std::unique_ptr<PopupCellView> CreatePopupCellView(
-      bool should_ignore_mouse_observed_outside_item_bounds_check = false) {
-    return views::Builder<PopupCellView>(
-               std::make_unique<PopupCellView>(
-                   should_ignore_mouse_observed_outside_item_bounds_check))
+  std::unique_ptr<PopupCellView> CreatePopupCellView() {
+    return views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
         .SetAccessibilityDelegate(std::make_unique<TestAccessibilityDelegate>())
         .Build();
   }
@@ -170,108 +159,6 @@ TEST_F(PopupCellViewTest, SetSelectedUpdatesTrackedLabels) {
   view().SetSelected(false);
   view().SetPermanentlyHighlighted(true);
   EXPECT_TRUE(view().IsHighlighted());
-}
-
-TEST_F(PopupCellViewTest, MouseEvents) {
-  std::unique_ptr<PopupCellView> cell = CreatePopupCellView();
-  views::Label* label =
-      cell->AddChildView(std::make_unique<views::Label>(u"Label text"));
-  ShowView(std::move(cell));
-
-  StrictMock<base::MockCallback<base::RepeatingClosure>> enter_callback;
-  StrictMock<base::MockCallback<base::RepeatingClosure>> exit_callback;
-  StrictMock<base::MockCallback<PopupCellView::OnAcceptedCallback>>
-      accept_callback;
-
-  generator().MoveMouseTo(kOutOfBounds);
-  ASSERT_FALSE(view().IsMouseHovered());
-  generator().MoveMouseTo(label->GetBoundsInScreen().CenterPoint());
-  ASSERT_TRUE(view().IsMouseHovered());
-  generator().ClickLeftButton();
-  generator().MoveMouseTo(kOutOfBounds);
-  ASSERT_FALSE(view().IsMouseHovered());
-  Paint();
-
-  view().SetOnEnteredCallback(enter_callback.Get());
-  view().SetOnExitedCallback(exit_callback.Get());
-  view().SetOnAcceptedCallback(accept_callback.Get());
-  EXPECT_CALL(enter_callback, Run);
-  generator().MoveMouseTo(label->GetBoundsInScreen().CenterPoint());
-  EXPECT_CALL(accept_callback, Run);
-  generator().ClickLeftButton();
-  EXPECT_CALL(exit_callback, Run);
-  generator().MoveMouseTo(kOutOfBounds);
-}
-
-// Gestures are not supported on MacOS.
-#if !BUILDFLAG(IS_MAC)
-TEST_F(PopupCellViewTest, GestureEvents) {
-  std::unique_ptr<PopupCellView> cell =
-      views::Builder<PopupCellView>(CreatePopupCellView())
-          .SetAccessibilityDelegate(
-              std::make_unique<TestAccessibilityDelegate>())
-          .Build();
-  views::Label* label =
-      cell->AddChildView(std::make_unique<views::Label>(u"Label text"));
-  ShowView(std::move(cell));
-
-  StrictMock<base::MockCallback<base::RepeatingClosure>> enter_callback;
-  StrictMock<base::MockCallback<base::RepeatingClosure>> exit_callback;
-  StrictMock<base::MockCallback<PopupCellView::OnAcceptedCallback>>
-      accept_callback;
-
-  view().SetOnEnteredCallback(enter_callback.Get());
-  view().SetOnExitedCallback(exit_callback.Get());
-  view().SetOnAcceptedCallback(accept_callback.Get());
-
-  EXPECT_CALL(enter_callback, Run);
-  EXPECT_CALL(accept_callback, Run);
-  generator().GestureTapAt(label->GetBoundsInScreen().CenterPoint());
-}
-#endif  // !BUILDFLAG(IS_MAC)
-
-TEST_F(PopupCellViewTest,
-       ShouldIgnoreMouseObservedOutsideItemBoundsCheckIsFalse_IgnoreClick) {
-  std::unique_ptr<PopupCellView> cell = CreatePopupCellView(
-      /*should_ignore_mouse_observed_outside_item_bounds_check=*/false);
-  views::Label* label =
-      cell->AddChildView(std::make_unique<views::Label>(u"Label text"));
-  ShowView(std::move(cell));
-
-  StrictMock<base::MockCallback<PopupCellView::OnAcceptedCallback>>
-      accept_callback;
-
-  view().SetOnAcceptedCallback(accept_callback.Get());
-  generator().MoveMouseTo(label->GetBoundsInScreen().CenterPoint());
-  Paint();
-  // No OnAccept callback is run.
-  generator().ClickLeftButton();
-
-  generator().MoveMouseTo(kOutOfBounds);
-  Paint();
-  generator().MoveMouseTo(label->GetBoundsInScreen().CenterPoint());
-  // If the mouse has been outside before, the accept click is passed through.
-  EXPECT_CALL(accept_callback, Run);
-  generator().ClickLeftButton();
-}
-
-TEST_F(PopupCellViewTest,
-       ShouldIgnoreMouseObservedOutsideItemBoundsCheckIsTrue_DoNotIgnoreClick) {
-  std::unique_ptr<PopupCellView> cell = CreatePopupCellView(
-      /*should_ignore_mouse_observed_outside_item_bounds_check=*/true);
-  views::Label* label =
-      cell->AddChildView(std::make_unique<views::Label>(u"Label text"));
-  ShowView(std::move(cell));
-
-  StrictMock<base::MockCallback<PopupCellView::OnAcceptedCallback>>
-      accept_callback;
-
-  view().SetOnAcceptedCallback(accept_callback.Get());
-  generator().MoveMouseTo(label->GetBoundsInScreen().CenterPoint());
-  Paint();
-  // OnAccept callback is run.
-  EXPECT_CALL(accept_callback, Run);
-  generator().ClickLeftButton();
 }
 
 }  // namespace autofill
