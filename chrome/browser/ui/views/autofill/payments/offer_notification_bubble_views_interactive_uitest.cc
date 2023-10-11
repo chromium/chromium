@@ -787,7 +787,9 @@ IN_PROC_BROWSER_TEST_P(
 
   NavigateToAndWaitForForm(with_offer_url);
   EXPECT_TRUE(IsIconVisible());
-  EXPECT_TRUE(GetOfferNotificationBubbleViews());
+  EXPECT_FALSE(GetOfferNotificationBubbleViews());
+  // Click on the omnibox icon to show the bubble and verify.
+  SimulateClickOnIconAndReshowBubble();
   if (::features::IsChromeRefresh2023()) {
     auto* promo_code_label_view =
         GetOfferNotificationBubbleViews()->promo_code_label_view_.get();

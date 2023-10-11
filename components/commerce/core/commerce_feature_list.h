@@ -107,8 +107,21 @@ BASE_DECLARE_FEATURE(kShoppingPDPMetrics);
 BASE_DECLARE_FEATURE(kShoppingPDPMetricsRegionLaunched);
 
 // Feature flag for Discounts on navigation.
+enum class DiscountDialogAutoPopupBehavior {
+  // Only popup for the first time
+  kAutoPopupOnce = 0,
+  kAlwaysAutoPopup = 1,
+  kNoAutoPopup = 2
+};
 BASE_DECLARE_FEATURE(kShowDiscountOnNavigation);
 BASE_DECLARE_FEATURE(kShowDiscountOnNavigationRegionLaunched);
+BASE_DECLARE_FEATURE(kDiscountDialogAutoPopupBehaviorSetting);
+extern const char kHistoryClustersBehaviorParam[];
+extern const base::FeatureParam<int> kHistoryClustersBehavior;
+extern const char kMerchantWideBehaviorParam[];
+extern const base::FeatureParam<int> kMerchantWideBehavior;
+extern const char kNonMerchantWideBehaviorParam[];
+extern const base::FeatureParam<int> kNonMerchantWideBehavior;
 
 BASE_DECLARE_FEATURE(kRetailCoupons);
 BASE_DECLARE_FEATURE(kCommerceDeveloper);

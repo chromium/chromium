@@ -41,6 +41,33 @@ bool IsOfferValid(AutofillOfferData* offer) {
   return true;
 }
 
+bool ShouldAutoPopup(commerce::DiscountDialogAutoPopupBehavior behavior,
+                     bool shown_before) {
+  switch (behavior) {
+    case commerce::DiscountDialogAutoPopupBehavior::kAutoPopupOnce:
+      return !shown_before;
+    case commerce::DiscountDialogAutoPopupBehavior::kAlwaysAutoPopup:
+      return true;
+    case commerce::DiscountDialogAutoPopupBehavior::kNoAutoPopup:
+      return false;
+  }
+}
+
+bool ShouldAutoPopupForHistoryClustersModuleDiscounts(bool shown_before) {
+  auto behavior = static_cast<commerce::DiscountDialogAutoPopupBehavior>(
+      commerce::kHistoryClustersBehavior.Get());
+  return ShouldAutoPopup(behavior, shown_before);
+}
+
+bool ShouldAutoPopupForDiscounts(bool is_merchant_wide, bool shown_before) {
+  auto behavior = is_merchant_wide
+                      ? static_cast<commerce::DiscountDialogAutoPopupBehavior>(
+                            commerce::kMerchantWideBehavior.Get())
+                      : static_cast<commerce::DiscountDialogAutoPopupBehavior>(
+                            commerce::kNonMerchantWideBehavior.Get());
+  return ShouldAutoPopup(behavior, shown_before);
+}
+
 }  // namespace
 
 OfferNotificationHandler::OfferNotificationHandler(
@@ -155,18 +182,12 @@ bool OfferNotificationHandler::
   if (base::FeatureList::IsEnabled(
           ntp_features::kNtpHistoryClustersModuleDiscounts) &&
       commerce::UrlContainsDiscountUtmTag(url)) {
-    return !offer_has_been_shown_before;
+    return ShouldAutoPopupForHistoryClustersModuleDiscounts(
+        offer_has_been_shown_before);
   }
 
-  // If the URL doesn't contains the expected UTM tags and the available offer
-  // is a merchant-wide offer, the notification should not show automatically.
-  if (offer.IsMerchantWideOffer()) {
-    return false;
-  }
-
-  // At this point, the notification should show automatically if it hasn't
-  // been shown before.
-  return !offer_has_been_shown_before;
+  return ShouldAutoPopupForDiscounts(offer.IsMerchantWideOffer(),
+                                     offer_has_been_shown_before);
 }
 
 }  // namespace autofill
