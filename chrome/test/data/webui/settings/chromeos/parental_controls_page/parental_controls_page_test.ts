@@ -5,7 +5,7 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {CrButtonElement, CrLinkRowElement, ParentalControlsBrowserProxyImpl, SettingsParentalControlsPageElement} from 'chrome://os-settings/os_settings.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

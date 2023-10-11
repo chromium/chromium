@@ -6,7 +6,7 @@
  * @fileoverview Utility functions for settings metrics
  */
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {Setting} from './mojom-webui/setting.mojom-webui.js';
 import {SettingChangeValue} from './mojom-webui/user_action_recorder.mojom-webui.js';

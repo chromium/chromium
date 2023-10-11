@@ -4,7 +4,7 @@
 
 import {LanguageHelper, LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction, LanguageState, LifetimeBrowserProxyImpl, OsSettingsChangeDeviceLanguageDialogElement, OsSettingsLanguagesPageV2Element, SettingsLanguagesElement} from 'chrome://os-settings/lazy_load.js';
 import {CrActionMenuElement, CrCheckboxElement, CrPolicyIndicatorElement, CrSettingsPrefs, Router, routes, settingMojom, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';

@@ -10,7 +10,7 @@
  */
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 
 import {AddAppAction, AppManagementActions, ChangeAppAction, RemoveAppAction} from './actions.js';
 import {AppManagementPageState, AppMap} from './store';

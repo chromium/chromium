@@ -12,7 +12,7 @@
  * the `currentRouteChanged()` super method.
  */
 
-import {assertInstanceof} from 'chrome://resources/js/assert_ts.js';
+import {assertInstanceof} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {afterNextRender, dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
