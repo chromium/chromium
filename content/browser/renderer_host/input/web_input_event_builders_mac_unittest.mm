@@ -833,8 +833,8 @@ TEST(WebInputEventBuilderMacTest, BuildWebTouchEvents) {
             touch_event.touches[0].pointer_type);
   EXPECT_EQ(0, touch_event.touches[0].id);
   EXPECT_FLOAT_EQ(0.3, std::round(touch_event.touches[0].force * 10) / 10);
-  EXPECT_EQ(0.5 * 90, touch_event.touches[0].tilt_x);
-  EXPECT_EQ(0.6 * 90, touch_event.touches[0].tilt_y);
+  EXPECT_EQ(0.5 * 90, std::round(touch_event.touches[0].tilt_x));
+  EXPECT_EQ(0.6 * 90, std::round(touch_event.touches[0].tilt_y));
   EXPECT_FLOAT_EQ(
       0.7, std::round(touch_event.touches[0].tangential_pressure * 10) / 10);
   EXPECT_EQ(60, touch_event.touches[0].twist);

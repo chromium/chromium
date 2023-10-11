@@ -419,7 +419,7 @@ blink::WebMouseEvent WebMouseEventBuilder::Build(
   if (subtype == NSEventSubtypeTabletPoint) {
     result.force = [event pressure];
     NSPoint tilt = [event tilt];
-    result.tilt_x = tilt.x * 90.0;
+    result.tilt_x = tilt.x * 90.0f;
     // Pointer Events specification states that tiltY is positive when the
     // pen is tilted towards the user.
     // By default, in MacOS, the Y coordinate increases going up,
@@ -428,7 +428,7 @@ blink::WebMouseEvent WebMouseEventBuilder::Build(
     // In this case (if the coordinate system is not flipped) tiltY needs to
     // be reversed to match Chromium's expectation that tiltY is positive
     // towards the user
-    result.tilt_y = ([view isFlipped] ? 1.0 : (-1.0)) * tilt.y * 90.0;
+    result.tilt_y = ([view isFlipped] ? 1.0 : (-1.0)) * tilt.y * 90.0f;
     result.tangential_pressure = [event tangentialPressure];
     // NSEvent spec doesn't specify the range of rotation, we make sure that
     // this value is in the range of [0,359].
@@ -702,8 +702,8 @@ blink::WebTouchEvent WebTouchEventBuilder::Build(NSEvent* event, NSView* view) {
   result.touches[0].id = [event pointingDeviceID];
   result.touches[0].force = [event pressure];
   NSPoint tilt = [event tilt];
-  result.touches[0].tilt_x = lround(tilt.x * 90);
-  result.touches[0].tilt_y = lround(tilt.y * 90);
+  result.touches[0].tilt_x = tilt.x * 90.0f;
+  result.touches[0].tilt_y = tilt.y * 90.0f;
   result.touches[0].tangential_pressure = [event tangentialPressure];
   // NSEvent spec doesn't specify the range of rotation, we make sure that
   // this value is in the range of [0,359].

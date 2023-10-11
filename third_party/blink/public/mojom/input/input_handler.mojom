@@ -52,8 +52,8 @@ struct KeyData {
 struct PointerData {
   int32 pointer_id;
   float force;
-  float tilt_x;
-  float tilt_y;
+  double tilt_x;
+  double tilt_y;
   float tangential_pressure;
   int32 twist;
   blink.mojom.Button button;

@@ -10,8 +10,8 @@
 
 namespace blink {
 // static
-double PointerEventUtil::AzimuthFromTilt(float tilt_x_degrees,
-                                         float tilt_y_degrees) {
+double PointerEventUtil::AzimuthFromTilt(double tilt_x_degrees,
+                                         double tilt_y_degrees) {
   DCHECK(tilt_x_degrees >= -90 && tilt_x_degrees <= 90);
   DCHECK(tilt_y_degrees >= -90 && tilt_y_degrees <= 90);
 
@@ -51,8 +51,8 @@ double PointerEventUtil::AzimuthFromTilt(float tilt_x_degrees,
 }
 
 // static
-double PointerEventUtil::AltitudeFromTilt(float tilt_x_degrees,
-                                          float tilt_y_degrees) {
+double PointerEventUtil::AltitudeFromTilt(double tilt_x_degrees,
+                                          double tilt_y_degrees) {
   DCHECK(tilt_x_degrees >= -90 && tilt_x_degrees <= 90);
   DCHECK(tilt_y_degrees >= -90 && tilt_y_degrees <= 90);
 

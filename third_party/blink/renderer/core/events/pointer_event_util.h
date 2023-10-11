@@ -15,8 +15,8 @@ class CORE_EXPORT PointerEventUtil {
  public:
   PointerEventUtil() = delete;
 
-  static double AzimuthFromTilt(float tilt_x_degrees, float tilt_y_degrees);
-  static double AltitudeFromTilt(float tilt_x_degrees, float tilt_y_degrees);
+  static double AzimuthFromTilt(double tilt_x_degrees, double tilt_y_degrees);
+  static double AltitudeFromTilt(double tilt_x_degrees, double tilt_y_degrees);
   static int32_t TiltXFromSpherical(double azimuth_radians,
                                     double altitude_radians);
   static int32_t TiltYFromSpherical(double azimuth_radians,
