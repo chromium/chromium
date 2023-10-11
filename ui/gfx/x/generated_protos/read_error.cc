@@ -7,72 +7,38 @@
 //    ../../third_party/xcbproto/src \
 //    gen/ui/gfx/x \
 //    bigreq \
-//    composite \
-//    damage \
-//    dpms \
-//    dri2 \
 //    dri3 \
-//    ge \
 //    glx \
-//    present \
 //    randr \
-//    record \
 //    render \
-//    res \
 //    screensaver \
 //    shape \
 //    shm \
 //    sync \
-//    xc_misc \
-//    xevie \
-//    xf86dri \
-//    xf86vidmode \
 //    xfixes \
-//    xinerama \
 //    xinput \
 //    xkb \
-//    xprint \
 //    xproto \
-//    xselinux \
-//    xtest \
-//    xv \
-//    xvmc
+//    xtest
 
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/xproto_internal.h"
 
 #include "ui/gfx/x/bigreq.h"
-#include "ui/gfx/x/composite.h"
-#include "ui/gfx/x/damage.h"
-#include "ui/gfx/x/dpms.h"
-#include "ui/gfx/x/dri2.h"
 #include "ui/gfx/x/dri3.h"
-#include "ui/gfx/x/ge.h"
 #include "ui/gfx/x/glx.h"
-#include "ui/gfx/x/present.h"
 #include "ui/gfx/x/randr.h"
-#include "ui/gfx/x/record.h"
 #include "ui/gfx/x/render.h"
-#include "ui/gfx/x/res.h"
 #include "ui/gfx/x/screensaver.h"
 #include "ui/gfx/x/shape.h"
 #include "ui/gfx/x/shm.h"
 #include "ui/gfx/x/sync.h"
-#include "ui/gfx/x/xc_misc.h"
-#include "ui/gfx/x/xevie.h"
-#include "ui/gfx/x/xf86dri.h"
-#include "ui/gfx/x/xf86vidmode.h"
 #include "ui/gfx/x/xfixes.h"
-#include "ui/gfx/x/xinerama.h"
 #include "ui/gfx/x/xinput.h"
 #include "ui/gfx/x/xkb.h"
-#include "ui/gfx/x/xprint.h"
 #include "ui/gfx/x/xproto.h"
-#include "ui/gfx/x/xselinux.h"
 #include "ui/gfx/x/xtest.h"
-#include "ui/gfx/x/xv.h"
-#include "ui/gfx/x/xvmc.h"
 
 namespace x11 {
 
@@ -99,15 +65,6 @@ void Connection::InitErrorParsers() {
       error_parsers_[error_code] = parser;
     }
   };
-
-  if (damage().present()) {
-    uint8_t first_error = damage().first_error();
-    {
-      auto error_code = first_error + 0;
-      auto parse = MakeError<Damage::BadDamageError>;
-      add_parser(error_code, first_error, parse);
-    }
-  }
 
   if (glx().present()) {
     uint8_t first_error = glx().first_error();
@@ -203,15 +160,6 @@ void Connection::InitErrorParsers() {
     {
       auto error_code = first_error + 3;
       auto parse = MakeError<RandR::BadProviderError>;
-      add_parser(error_code, first_error, parse);
-    }
-  }
-
-  if (record().present()) {
-    uint8_t first_error = record().first_error();
-    {
-      auto error_code = first_error + 0;
-      auto parse = MakeError<Record::BadContextError>;
       add_parser(error_code, first_error, parse);
     }
   }
@@ -318,45 +266,6 @@ void Connection::InitErrorParsers() {
     }
   }
 
-  if (xf86vidmode().present()) {
-    uint8_t first_error = xf86vidmode().first_error();
-    {
-      auto error_code = first_error + 0;
-      auto parse = MakeError<XF86VidMode::BadClockError>;
-      add_parser(error_code, first_error, parse);
-    }
-    {
-      auto error_code = first_error + 1;
-      auto parse = MakeError<XF86VidMode::BadHTimingsError>;
-      add_parser(error_code, first_error, parse);
-    }
-    {
-      auto error_code = first_error + 2;
-      auto parse = MakeError<XF86VidMode::BadVTimingsError>;
-      add_parser(error_code, first_error, parse);
-    }
-    {
-      auto error_code = first_error + 3;
-      auto parse = MakeError<XF86VidMode::ModeUnsuitableError>;
-      add_parser(error_code, first_error, parse);
-    }
-    {
-      auto error_code = first_error + 4;
-      auto parse = MakeError<XF86VidMode::ExtensionDisabledError>;
-      add_parser(error_code, first_error, parse);
-    }
-    {
-      auto error_code = first_error + 5;
-      auto parse = MakeError<XF86VidMode::ClientNotLocalError>;
-      add_parser(error_code, first_error, parse);
-    }
-    {
-      auto error_code = first_error + 6;
-      auto parse = MakeError<XF86VidMode::ZoomLockedError>;
-      add_parser(error_code, first_error, parse);
-    }
-  }
-
   if (xfixes().present()) {
     uint8_t first_error = xfixes().first_error();
     {
@@ -400,20 +309,6 @@ void Connection::InitErrorParsers() {
     {
       auto error_code = first_error + 0;
       auto parse = MakeError<Xkb::KeyboardError>;
-      add_parser(error_code, first_error, parse);
-    }
-  }
-
-  if (xprint().present()) {
-    uint8_t first_error = xprint().first_error();
-    {
-      auto error_code = first_error + 0;
-      auto parse = MakeError<XPrint::BadContextError>;
-      add_parser(error_code, first_error, parse);
-    }
-    {
-      auto error_code = first_error + 1;
-      auto parse = MakeError<XPrint::BadSequenceError>;
       add_parser(error_code, first_error, parse);
     }
   }
@@ -507,24 +402,6 @@ void Connection::InitErrorParsers() {
     }
   }
 
-  if (xv().present()) {
-    uint8_t first_error = xv().first_error();
-    {
-      auto error_code = first_error + 0;
-      auto parse = MakeError<Xv::BadPortError>;
-      add_parser(error_code, first_error, parse);
-    }
-    {
-      auto error_code = first_error + 1;
-      auto parse = MakeError<Xv::BadEncodingError>;
-      add_parser(error_code, first_error, parse);
-    }
-    {
-      auto error_code = first_error + 2;
-      auto parse = MakeError<Xv::BadControlError>;
-      add_parser(error_code, first_error, parse);
-    }
-  }
 }
 
 }  // namespace x11

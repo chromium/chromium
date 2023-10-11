@@ -7,36 +7,19 @@
 //    ../../third_party/xcbproto/src \
 //    gen/ui/gfx/x \
 //    bigreq \
-//    composite \
-//    damage \
-//    dpms \
-//    dri2 \
 //    dri3 \
-//    ge \
 //    glx \
-//    present \
 //    randr \
-//    record \
 //    render \
-//    res \
 //    screensaver \
 //    shape \
 //    shm \
 //    sync \
-//    xc_misc \
-//    xevie \
-//    xf86dri \
-//    xf86vidmode \
 //    xfixes \
-//    xinerama \
 //    xinput \
 //    xkb \
-//    xprint \
 //    xproto \
-//    xselinux \
-//    xtest \
-//    xv \
-//    xvmc
+//    xtest
 
 #ifndef UI_GFX_X_GENERATED_PROTOS_SYNC_H_
 #define UI_GFX_X_GENERATED_PROTOS_SYNC_H_
@@ -174,7 +157,7 @@ class COMPONENT_EXPORT(X11) Sync {
   };
 
   struct CounterNotifyEvent {
-    static constexpr int type_id = 16;
+    static constexpr int type_id = 8;
     static constexpr uint8_t opcode = 0;
     uint8_t kind{};
     uint16_t sequence{};
@@ -189,7 +172,7 @@ class COMPONENT_EXPORT(X11) Sync {
   };
 
   struct AlarmNotifyEvent {
-    static constexpr int type_id = 17;
+    static constexpr int type_id = 9;
     static constexpr uint8_t opcode = 1;
     uint8_t kind{};
     uint16_t sequence{};

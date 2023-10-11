@@ -7,36 +7,19 @@
 //    ../../third_party/xcbproto/src \
 //    gen/ui/gfx/x \
 //    bigreq \
-//    composite \
-//    damage \
-//    dpms \
-//    dri2 \
 //    dri3 \
-//    ge \
 //    glx \
-//    present \
 //    randr \
-//    record \
 //    render \
-//    res \
 //    screensaver \
 //    shape \
 //    shm \
 //    sync \
-//    xc_misc \
-//    xevie \
-//    xf86dri \
-//    xf86vidmode \
 //    xfixes \
-//    xinerama \
 //    xinput \
 //    xkb \
-//    xprint \
 //    xproto \
-//    xselinux \
-//    xtest \
-//    xv \
-//    xvmc
+//    xtest
 
 #ifndef UI_GFX_X_GENERATED_PROTOS_SCREENSAVER_H_
 #define UI_GFX_X_GENERATED_PROTOS_SCREENSAVER_H_
@@ -99,7 +82,7 @@ class COMPONENT_EXPORT(X11) ScreenSaver {
   };
 
   struct NotifyEvent {
-    static constexpr int type_id = 13;
+    static constexpr int type_id = 5;
     static constexpr uint8_t opcode = 0;
     State state{};
     uint16_t sequence{};

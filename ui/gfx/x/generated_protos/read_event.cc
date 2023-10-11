@@ -7,74 +7,40 @@
 //    ../../third_party/xcbproto/src \
 //    gen/ui/gfx/x \
 //    bigreq \
-//    composite \
-//    damage \
-//    dpms \
-//    dri2 \
 //    dri3 \
-//    ge \
 //    glx \
-//    present \
 //    randr \
-//    record \
 //    render \
-//    res \
 //    screensaver \
 //    shape \
 //    shm \
 //    sync \
-//    xc_misc \
-//    xevie \
-//    xf86dri \
-//    xf86vidmode \
 //    xfixes \
-//    xinerama \
 //    xinput \
 //    xkb \
-//    xprint \
 //    xproto \
-//    xselinux \
-//    xtest \
-//    xv \
-//    xvmc
+//    xtest
 
 #include "ui/gfx/x/event.h"
 
 #include <xcb/xcb.h>
 
 #include "ui/gfx/x/bigreq.h"
-#include "ui/gfx/x/composite.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/damage.h"
-#include "ui/gfx/x/dpms.h"
-#include "ui/gfx/x/dri2.h"
 #include "ui/gfx/x/dri3.h"
-#include "ui/gfx/x/ge.h"
 #include "ui/gfx/x/glx.h"
-#include "ui/gfx/x/present.h"
 #include "ui/gfx/x/randr.h"
-#include "ui/gfx/x/record.h"
 #include "ui/gfx/x/render.h"
-#include "ui/gfx/x/res.h"
 #include "ui/gfx/x/screensaver.h"
 #include "ui/gfx/x/shape.h"
 #include "ui/gfx/x/shm.h"
 #include "ui/gfx/x/sync.h"
-#include "ui/gfx/x/xc_misc.h"
-#include "ui/gfx/x/xevie.h"
-#include "ui/gfx/x/xf86dri.h"
-#include "ui/gfx/x/xf86vidmode.h"
 #include "ui/gfx/x/xfixes.h"
-#include "ui/gfx/x/xinerama.h"
 #include "ui/gfx/x/xinput.h"
 #include "ui/gfx/x/xkb.h"
-#include "ui/gfx/x/xprint.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_types.h"
-#include "ui/gfx/x/xselinux.h"
 #include "ui/gfx/x/xtest.h"
-#include "ui/gfx/x/xv.h"
-#include "ui/gfx/x/xvmc.h"
 
 namespace x11 {
 
@@ -84,54 +50,9 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   auto* ge = reinterpret_cast<const xcb_ge_generic_event_t*>(buf);
   auto evtype = ev->response_type & ~kSendEventMask;
 
-  if (conn->damage().present() &&
-      evtype - conn->damage().first_event() == Damage::NotifyEvent::opcode) {
-    event->type_id_ = 1;
-    auto deleter_ = [](void* e) {
-      if (e) {
-        delete reinterpret_cast<Damage::NotifyEvent*>(e);
-      }
-    };
-    auto* event_ = new Damage::NotifyEvent;
-    ReadEvent(event_, buffer);
-    event->event_ = {event_, deleter_};
-    event->window_ = event_->GetWindow();
-    return;
-  }
-
-  if (conn->dri2().present() && evtype - conn->dri2().first_event() ==
-                                    Dri2::BufferSwapCompleteEvent::opcode) {
-    event->type_id_ = 2;
-    auto deleter_ = [](void* e) {
-      if (e) {
-        delete reinterpret_cast<Dri2::BufferSwapCompleteEvent*>(e);
-      }
-    };
-    auto* event_ = new Dri2::BufferSwapCompleteEvent;
-    ReadEvent(event_, buffer);
-    event->event_ = {event_, deleter_};
-    event->window_ = event_->GetWindow();
-    return;
-  }
-
-  if (conn->dri2().present() && evtype - conn->dri2().first_event() ==
-                                    Dri2::InvalidateBuffersEvent::opcode) {
-    event->type_id_ = 3;
-    auto deleter_ = [](void* e) {
-      if (e) {
-        delete reinterpret_cast<Dri2::InvalidateBuffersEvent*>(e);
-      }
-    };
-    auto* event_ = new Dri2::InvalidateBuffersEvent;
-    ReadEvent(event_, buffer);
-    event->event_ = {event_, deleter_};
-    event->window_ = event_->GetWindow();
-    return;
-  }
-
   if (conn->glx().present() &&
       evtype - conn->glx().first_event() == Glx::PbufferClobberEvent::opcode) {
-    event->type_id_ = 4;
+    event->type_id_ = 1;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Glx::PbufferClobberEvent*>(e);
@@ -146,7 +67,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->glx().present() && evtype - conn->glx().first_event() ==
                                    Glx::BufferSwapCompleteEvent::opcode) {
-    event->type_id_ = 5;
+    event->type_id_ = 2;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Glx::BufferSwapCompleteEvent*>(e);
@@ -159,88 +80,9 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     return;
   }
 
-  if (conn->present().present() &&
-      evtype - conn->present().first_event() == Present::GenericEvent::opcode) {
-    event->type_id_ = 6;
-    auto deleter_ = [](void* e) {
-      if (e) {
-        delete reinterpret_cast<Present::GenericEvent*>(e);
-      }
-    };
-    auto* event_ = new Present::GenericEvent;
-    ReadEvent(event_, buffer);
-    event->event_ = {event_, deleter_};
-    event->window_ = event_->GetWindow();
-    return;
-  }
-
-  if (evtype == GeGenericEvent::opcode && conn->present().present() &&
-      ge->extension == conn->present().major_opcode() &&
-      ge->event_type == Present::ConfigureNotifyEvent::opcode) {
-    event->type_id_ = 7;
-    auto deleter_ = [](void* e) {
-      if (e) {
-        delete reinterpret_cast<Present::ConfigureNotifyEvent*>(e);
-      }
-    };
-    auto* event_ = new Present::ConfigureNotifyEvent;
-    ReadEvent(event_, buffer);
-    event->event_ = {event_, deleter_};
-    event->window_ = event_->GetWindow();
-    return;
-  }
-
-  if (evtype == GeGenericEvent::opcode && conn->present().present() &&
-      ge->extension == conn->present().major_opcode() &&
-      ge->event_type == Present::CompleteNotifyEvent::opcode) {
-    event->type_id_ = 8;
-    auto deleter_ = [](void* e) {
-      if (e) {
-        delete reinterpret_cast<Present::CompleteNotifyEvent*>(e);
-      }
-    };
-    auto* event_ = new Present::CompleteNotifyEvent;
-    ReadEvent(event_, buffer);
-    event->event_ = {event_, deleter_};
-    event->window_ = event_->GetWindow();
-    return;
-  }
-
-  if (evtype == GeGenericEvent::opcode && conn->present().present() &&
-      ge->extension == conn->present().major_opcode() &&
-      ge->event_type == Present::IdleNotifyEvent::opcode) {
-    event->type_id_ = 9;
-    auto deleter_ = [](void* e) {
-      if (e) {
-        delete reinterpret_cast<Present::IdleNotifyEvent*>(e);
-      }
-    };
-    auto* event_ = new Present::IdleNotifyEvent;
-    ReadEvent(event_, buffer);
-    event->event_ = {event_, deleter_};
-    event->window_ = event_->GetWindow();
-    return;
-  }
-
-  if (evtype == GeGenericEvent::opcode && conn->present().present() &&
-      ge->extension == conn->present().major_opcode() &&
-      ge->event_type == Present::RedirectNotifyEvent::opcode) {
-    event->type_id_ = 10;
-    auto deleter_ = [](void* e) {
-      if (e) {
-        delete reinterpret_cast<Present::RedirectNotifyEvent*>(e);
-      }
-    };
-    auto* event_ = new Present::RedirectNotifyEvent;
-    ReadEvent(event_, buffer);
-    event->event_ = {event_, deleter_};
-    event->window_ = event_->GetWindow();
-    return;
-  }
-
   if (conn->randr().present() && evtype - conn->randr().first_event() ==
                                      RandR::ScreenChangeNotifyEvent::opcode) {
-    event->type_id_ = 11;
+    event->type_id_ = 3;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<RandR::ScreenChangeNotifyEvent*>(e);
@@ -255,7 +97,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->randr().present() &&
       evtype - conn->randr().first_event() == RandR::NotifyEvent::opcode) {
-    event->type_id_ = 12;
+    event->type_id_ = 4;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<RandR::NotifyEvent*>(e);
@@ -271,7 +113,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   if (conn->screensaver().present() &&
       evtype - conn->screensaver().first_event() ==
           ScreenSaver::NotifyEvent::opcode) {
-    event->type_id_ = 13;
+    event->type_id_ = 5;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<ScreenSaver::NotifyEvent*>(e);
@@ -286,7 +128,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->shape().present() &&
       evtype - conn->shape().first_event() == Shape::NotifyEvent::opcode) {
-    event->type_id_ = 14;
+    event->type_id_ = 6;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Shape::NotifyEvent*>(e);
@@ -301,7 +143,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->shm().present() &&
       evtype - conn->shm().first_event() == Shm::CompletionEvent::opcode) {
-    event->type_id_ = 15;
+    event->type_id_ = 7;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Shm::CompletionEvent*>(e);
@@ -316,7 +158,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->sync().present() &&
       evtype - conn->sync().first_event() == Sync::CounterNotifyEvent::opcode) {
-    event->type_id_ = 16;
+    event->type_id_ = 8;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Sync::CounterNotifyEvent*>(e);
@@ -331,7 +173,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->sync().present() &&
       evtype - conn->sync().first_event() == Sync::AlarmNotifyEvent::opcode) {
-    event->type_id_ = 17;
+    event->type_id_ = 9;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Sync::AlarmNotifyEvent*>(e);
@@ -346,7 +188,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->xfixes().present() && evtype - conn->xfixes().first_event() ==
                                       XFixes::SelectionNotifyEvent::opcode) {
-    event->type_id_ = 18;
+    event->type_id_ = 10;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<XFixes::SelectionNotifyEvent*>(e);
@@ -361,7 +203,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->xfixes().present() && evtype - conn->xfixes().first_event() ==
                                       XFixes::CursorNotifyEvent::opcode) {
-    event->type_id_ = 19;
+    event->type_id_ = 11;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<XFixes::CursorNotifyEvent*>(e);
@@ -376,7 +218,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->xinput().present() && evtype - conn->xinput().first_event() ==
                                       Input::DeviceValuatorEvent::opcode) {
-    event->type_id_ = 20;
+    event->type_id_ = 12;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Input::DeviceValuatorEvent*>(e);
@@ -404,7 +246,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
            Input::LegacyDeviceEvent::ProximityIn ||
        evtype - conn->xinput().first_event() ==
            Input::LegacyDeviceEvent::ProximityOut)) {
-    event->type_id_ = 21;
+    event->type_id_ = 13;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Input::LegacyDeviceEvent*>(e);
@@ -422,7 +264,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   if (conn->xinput().present() &&
       (evtype - conn->xinput().first_event() == Input::DeviceFocusEvent::In ||
        evtype - conn->xinput().first_event() == Input::DeviceFocusEvent::Out)) {
-    event->type_id_ = 22;
+    event->type_id_ = 14;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Input::DeviceFocusEvent*>(e);
@@ -439,7 +281,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->xinput().present() && evtype - conn->xinput().first_event() ==
                                       Input::DeviceStateNotifyEvent::opcode) {
-    event->type_id_ = 23;
+    event->type_id_ = 15;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Input::DeviceStateNotifyEvent*>(e);
@@ -454,7 +296,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->xinput().present() && evtype - conn->xinput().first_event() ==
                                       Input::DeviceMappingNotifyEvent::opcode) {
-    event->type_id_ = 24;
+    event->type_id_ = 16;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Input::DeviceMappingNotifyEvent*>(e);
@@ -469,7 +311,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->xinput().present() && evtype - conn->xinput().first_event() ==
                                       Input::ChangeDeviceNotifyEvent::opcode) {
-    event->type_id_ = 25;
+    event->type_id_ = 17;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Input::ChangeDeviceNotifyEvent*>(e);
@@ -485,7 +327,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   if (conn->xinput().present() &&
       evtype - conn->xinput().first_event() ==
           Input::DeviceKeyStateNotifyEvent::opcode) {
-    event->type_id_ = 26;
+    event->type_id_ = 18;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Input::DeviceKeyStateNotifyEvent*>(e);
@@ -501,7 +343,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   if (conn->xinput().present() &&
       evtype - conn->xinput().first_event() ==
           Input::DeviceButtonStateNotifyEvent::opcode) {
-    event->type_id_ = 27;
+    event->type_id_ = 19;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Input::DeviceButtonStateNotifyEvent*>(e);
@@ -517,7 +359,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   if (conn->xinput().present() &&
       evtype - conn->xinput().first_event() ==
           Input::DevicePresenceNotifyEvent::opcode) {
-    event->type_id_ = 28;
+    event->type_id_ = 20;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Input::DevicePresenceNotifyEvent*>(e);
@@ -533,7 +375,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   if (conn->xinput().present() &&
       evtype - conn->xinput().first_event() ==
           Input::DevicePropertyNotifyEvent::opcode) {
-    event->type_id_ = 29;
+    event->type_id_ = 21;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Input::DevicePropertyNotifyEvent*>(e);
@@ -549,7 +391,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   if (evtype == GeGenericEvent::opcode && conn->xinput().present() &&
       ge->extension == conn->xinput().major_opcode() &&
       ge->event_type == Input::DeviceChangedEvent::opcode) {
-    event->type_id_ = 30;
+    event->type_id_ = 22;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Input::DeviceChangedEvent*>(e);
@@ -572,7 +414,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
        ge->event_type == Input::DeviceEvent::TouchBegin ||
        ge->event_type == Input::DeviceEvent::TouchUpdate ||
        ge->event_type == Input::DeviceEvent::TouchEnd)) {
-    event->type_id_ = 31;
+    event->type_id_ = 23;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Input::DeviceEvent*>(e);
@@ -592,7 +434,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
        ge->event_type == Input::CrossingEvent::Leave ||
        ge->event_type == Input::CrossingEvent::FocusIn ||
        ge->event_type == Input::CrossingEvent::FocusOut)) {
-    event->type_id_ = 32;
+    event->type_id_ = 24;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Input::CrossingEvent*>(e);
@@ -609,7 +451,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   if (evtype == GeGenericEvent::opcode && conn->xinput().present() &&
       ge->extension == conn->xinput().major_opcode() &&
       ge->event_type == Input::HierarchyEvent::opcode) {
-    event->type_id_ = 33;
+    event->type_id_ = 25;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Input::HierarchyEvent*>(e);
@@ -625,7 +467,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   if (evtype == GeGenericEvent::opcode && conn->xinput().present() &&
       ge->extension == conn->xinput().major_opcode() &&
       ge->event_type == Input::PropertyEvent::opcode) {
-    event->type_id_ = 34;
+    event->type_id_ = 26;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Input::PropertyEvent*>(e);
@@ -648,7 +490,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
        ge->event_type == Input::RawDeviceEvent::RawTouchBegin ||
        ge->event_type == Input::RawDeviceEvent::RawTouchUpdate ||
        ge->event_type == Input::RawDeviceEvent::RawTouchEnd)) {
-    event->type_id_ = 35;
+    event->type_id_ = 27;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Input::RawDeviceEvent*>(e);
@@ -665,7 +507,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   if (evtype == GeGenericEvent::opcode && conn->xinput().present() &&
       ge->extension == conn->xinput().major_opcode() &&
       ge->event_type == Input::TouchOwnershipEvent::opcode) {
-    event->type_id_ = 36;
+    event->type_id_ = 28;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Input::TouchOwnershipEvent*>(e);
@@ -682,7 +524,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
       ge->extension == conn->xinput().major_opcode() &&
       (ge->event_type == Input::BarrierEvent::Hit ||
        ge->event_type == Input::BarrierEvent::Leave)) {
-    event->type_id_ = 37;
+    event->type_id_ = 29;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Input::BarrierEvent*>(e);
@@ -701,7 +543,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
       (ge->event_type == Input::GesturePinchEvent::Begin ||
        ge->event_type == Input::GesturePinchEvent::Update ||
        ge->event_type == Input::GesturePinchEvent::End)) {
-    event->type_id_ = 38;
+    event->type_id_ = 30;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Input::GesturePinchEvent*>(e);
@@ -720,7 +562,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
       (ge->event_type == Input::GestureSwipeEvent::Begin ||
        ge->event_type == Input::GestureSwipeEvent::Update ||
        ge->event_type == Input::GestureSwipeEvent::End)) {
-    event->type_id_ = 39;
+    event->type_id_ = 31;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Input::GestureSwipeEvent*>(e);
@@ -736,7 +578,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->xkb().present() && evtype - conn->xkb().first_event() ==
                                    Xkb::NewKeyboardNotifyEvent::opcode) {
-    event->type_id_ = 40;
+    event->type_id_ = 32;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Xkb::NewKeyboardNotifyEvent*>(e);
@@ -751,7 +593,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->xkb().present() &&
       evtype - conn->xkb().first_event() == Xkb::MapNotifyEvent::opcode) {
-    event->type_id_ = 41;
+    event->type_id_ = 33;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Xkb::MapNotifyEvent*>(e);
@@ -766,7 +608,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->xkb().present() &&
       evtype - conn->xkb().first_event() == Xkb::StateNotifyEvent::opcode) {
-    event->type_id_ = 42;
+    event->type_id_ = 34;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Xkb::StateNotifyEvent*>(e);
@@ -781,7 +623,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->xkb().present() &&
       evtype - conn->xkb().first_event() == Xkb::ControlsNotifyEvent::opcode) {
-    event->type_id_ = 43;
+    event->type_id_ = 35;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Xkb::ControlsNotifyEvent*>(e);
@@ -796,7 +638,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->xkb().present() && evtype - conn->xkb().first_event() ==
                                    Xkb::IndicatorStateNotifyEvent::opcode) {
-    event->type_id_ = 44;
+    event->type_id_ = 36;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Xkb::IndicatorStateNotifyEvent*>(e);
@@ -811,7 +653,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->xkb().present() && evtype - conn->xkb().first_event() ==
                                    Xkb::IndicatorMapNotifyEvent::opcode) {
-    event->type_id_ = 45;
+    event->type_id_ = 37;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Xkb::IndicatorMapNotifyEvent*>(e);
@@ -826,7 +668,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->xkb().present() &&
       evtype - conn->xkb().first_event() == Xkb::NamesNotifyEvent::opcode) {
-    event->type_id_ = 46;
+    event->type_id_ = 38;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Xkb::NamesNotifyEvent*>(e);
@@ -841,7 +683,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->xkb().present() &&
       evtype - conn->xkb().first_event() == Xkb::CompatMapNotifyEvent::opcode) {
-    event->type_id_ = 47;
+    event->type_id_ = 39;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Xkb::CompatMapNotifyEvent*>(e);
@@ -856,7 +698,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->xkb().present() &&
       evtype - conn->xkb().first_event() == Xkb::BellNotifyEvent::opcode) {
-    event->type_id_ = 48;
+    event->type_id_ = 40;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Xkb::BellNotifyEvent*>(e);
@@ -871,7 +713,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->xkb().present() &&
       evtype - conn->xkb().first_event() == Xkb::ActionMessageEvent::opcode) {
-    event->type_id_ = 49;
+    event->type_id_ = 41;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Xkb::ActionMessageEvent*>(e);
@@ -886,7 +728,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->xkb().present() &&
       evtype - conn->xkb().first_event() == Xkb::AccessXNotifyEvent::opcode) {
-    event->type_id_ = 50;
+    event->type_id_ = 42;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Xkb::AccessXNotifyEvent*>(e);
@@ -901,7 +743,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->xkb().present() && evtype - conn->xkb().first_event() ==
                                    Xkb::ExtensionDeviceNotifyEvent::opcode) {
-    event->type_id_ = 51;
+    event->type_id_ = 43;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<Xkb::ExtensionDeviceNotifyEvent*>(e);
@@ -914,38 +756,8 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     return;
   }
 
-  if (conn->xprint().present() &&
-      evtype - conn->xprint().first_event() == XPrint::NotifyEvent::opcode) {
-    event->type_id_ = 52;
-    auto deleter_ = [](void* e) {
-      if (e) {
-        delete reinterpret_cast<XPrint::NotifyEvent*>(e);
-      }
-    };
-    auto* event_ = new XPrint::NotifyEvent;
-    ReadEvent(event_, buffer);
-    event->event_ = {event_, deleter_};
-    event->window_ = event_->GetWindow();
-    return;
-  }
-
-  if (conn->xprint().present() && evtype - conn->xprint().first_event() ==
-                                      XPrint::AttributNotifyEvent::opcode) {
-    event->type_id_ = 53;
-    auto deleter_ = [](void* e) {
-      if (e) {
-        delete reinterpret_cast<XPrint::AttributNotifyEvent*>(e);
-      }
-    };
-    auto* event_ = new XPrint::AttributNotifyEvent;
-    ReadEvent(event_, buffer);
-    event->event_ = {event_, deleter_};
-    event->window_ = event_->GetWindow();
-    return;
-  }
-
   if ((evtype == KeyEvent::Press || evtype == KeyEvent::Release)) {
-    event->type_id_ = 54;
+    event->type_id_ = 44;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<KeyEvent*>(e);
@@ -960,7 +772,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if ((evtype == ButtonEvent::Press || evtype == ButtonEvent::Release)) {
-    event->type_id_ = 55;
+    event->type_id_ = 45;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<ButtonEvent*>(e);
@@ -975,7 +787,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == MotionNotifyEvent::opcode) {
-    event->type_id_ = 56;
+    event->type_id_ = 46;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<MotionNotifyEvent*>(e);
@@ -990,7 +802,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if ((evtype == CrossingEvent::EnterNotify ||
        evtype == CrossingEvent::LeaveNotify)) {
-    event->type_id_ = 57;
+    event->type_id_ = 47;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<CrossingEvent*>(e);
@@ -1005,7 +817,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if ((evtype == FocusEvent::In || evtype == FocusEvent::Out)) {
-    event->type_id_ = 58;
+    event->type_id_ = 48;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<FocusEvent*>(e);
@@ -1020,7 +832,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == KeymapNotifyEvent::opcode) {
-    event->type_id_ = 59;
+    event->type_id_ = 49;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<KeymapNotifyEvent*>(e);
@@ -1034,7 +846,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == ExposeEvent::opcode) {
-    event->type_id_ = 60;
+    event->type_id_ = 50;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<ExposeEvent*>(e);
@@ -1048,7 +860,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == GraphicsExposureEvent::opcode) {
-    event->type_id_ = 61;
+    event->type_id_ = 51;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<GraphicsExposureEvent*>(e);
@@ -1062,7 +874,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == NoExposureEvent::opcode) {
-    event->type_id_ = 62;
+    event->type_id_ = 52;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<NoExposureEvent*>(e);
@@ -1076,7 +888,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == VisibilityNotifyEvent::opcode) {
-    event->type_id_ = 63;
+    event->type_id_ = 53;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<VisibilityNotifyEvent*>(e);
@@ -1090,7 +902,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == CreateNotifyEvent::opcode) {
-    event->type_id_ = 64;
+    event->type_id_ = 54;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<CreateNotifyEvent*>(e);
@@ -1104,7 +916,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == DestroyNotifyEvent::opcode) {
-    event->type_id_ = 65;
+    event->type_id_ = 55;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<DestroyNotifyEvent*>(e);
@@ -1118,7 +930,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == UnmapNotifyEvent::opcode) {
-    event->type_id_ = 66;
+    event->type_id_ = 56;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<UnmapNotifyEvent*>(e);
@@ -1132,7 +944,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == MapNotifyEvent::opcode) {
-    event->type_id_ = 67;
+    event->type_id_ = 57;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<MapNotifyEvent*>(e);
@@ -1146,7 +958,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == MapRequestEvent::opcode) {
-    event->type_id_ = 68;
+    event->type_id_ = 58;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<MapRequestEvent*>(e);
@@ -1160,7 +972,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == ReparentNotifyEvent::opcode) {
-    event->type_id_ = 69;
+    event->type_id_ = 59;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<ReparentNotifyEvent*>(e);
@@ -1174,7 +986,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == ConfigureNotifyEvent::opcode) {
-    event->type_id_ = 70;
+    event->type_id_ = 60;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<ConfigureNotifyEvent*>(e);
@@ -1188,7 +1000,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == ConfigureRequestEvent::opcode) {
-    event->type_id_ = 71;
+    event->type_id_ = 61;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<ConfigureRequestEvent*>(e);
@@ -1202,7 +1014,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == GravityNotifyEvent::opcode) {
-    event->type_id_ = 72;
+    event->type_id_ = 62;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<GravityNotifyEvent*>(e);
@@ -1216,7 +1028,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == ResizeRequestEvent::opcode) {
-    event->type_id_ = 73;
+    event->type_id_ = 63;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<ResizeRequestEvent*>(e);
@@ -1230,7 +1042,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if ((evtype == CirculateEvent::Notify || evtype == CirculateEvent::Request)) {
-    event->type_id_ = 74;
+    event->type_id_ = 64;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<CirculateEvent*>(e);
@@ -1245,7 +1057,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == PropertyNotifyEvent::opcode) {
-    event->type_id_ = 75;
+    event->type_id_ = 65;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<PropertyNotifyEvent*>(e);
@@ -1259,7 +1071,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == SelectionClearEvent::opcode) {
-    event->type_id_ = 76;
+    event->type_id_ = 66;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<SelectionClearEvent*>(e);
@@ -1273,7 +1085,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == SelectionRequestEvent::opcode) {
-    event->type_id_ = 77;
+    event->type_id_ = 67;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<SelectionRequestEvent*>(e);
@@ -1287,7 +1099,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == SelectionNotifyEvent::opcode) {
-    event->type_id_ = 78;
+    event->type_id_ = 68;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<SelectionNotifyEvent*>(e);
@@ -1301,7 +1113,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == ColormapNotifyEvent::opcode) {
-    event->type_id_ = 79;
+    event->type_id_ = 69;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<ColormapNotifyEvent*>(e);
@@ -1315,7 +1127,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == ClientMessageEvent::opcode) {
-    event->type_id_ = 80;
+    event->type_id_ = 70;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<ClientMessageEvent*>(e);
@@ -1329,43 +1141,13 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   }
 
   if (evtype == MappingNotifyEvent::opcode) {
-    event->type_id_ = 81;
+    event->type_id_ = 71;
     auto deleter_ = [](void* e) {
       if (e) {
         delete reinterpret_cast<MappingNotifyEvent*>(e);
       }
     };
     auto* event_ = new MappingNotifyEvent;
-    ReadEvent(event_, buffer);
-    event->event_ = {event_, deleter_};
-    event->window_ = event_->GetWindow();
-    return;
-  }
-
-  if (conn->xv().present() &&
-      evtype - conn->xv().first_event() == Xv::VideoNotifyEvent::opcode) {
-    event->type_id_ = 83;
-    auto deleter_ = [](void* e) {
-      if (e) {
-        delete reinterpret_cast<Xv::VideoNotifyEvent*>(e);
-      }
-    };
-    auto* event_ = new Xv::VideoNotifyEvent;
-    ReadEvent(event_, buffer);
-    event->event_ = {event_, deleter_};
-    event->window_ = event_->GetWindow();
-    return;
-  }
-
-  if (conn->xv().present() &&
-      evtype - conn->xv().first_event() == Xv::PortNotifyEvent::opcode) {
-    event->type_id_ = 84;
-    auto deleter_ = [](void* e) {
-      if (e) {
-        delete reinterpret_cast<Xv::PortNotifyEvent*>(e);
-      }
-    };
-    auto* event_ = new Xv::PortNotifyEvent;
     ReadEvent(event_, buffer);
     event->event_ = {event_, deleter_};
     event->window_ = event_->GetWindow();

@@ -7,36 +7,19 @@
 //    ../../third_party/xcbproto/src \
 //    gen/ui/gfx/x \
 //    bigreq \
-//    composite \
-//    damage \
-//    dpms \
-//    dri2 \
 //    dri3 \
-//    ge \
 //    glx \
-//    present \
 //    randr \
-//    record \
 //    render \
-//    res \
 //    screensaver \
 //    shape \
 //    shm \
 //    sync \
-//    xc_misc \
-//    xevie \
-//    xf86dri \
-//    xf86vidmode \
 //    xfixes \
-//    xinerama \
 //    xinput \
 //    xkb \
-//    xprint \
 //    xproto \
-//    xselinux \
-//    xtest \
-//    xv \
-//    xvmc
+//    xtest
 
 #ifndef UI_GFX_X_GENERATED_PROTOS_XFIXES_H_
 #define UI_GFX_X_GENERATED_PROTOS_XFIXES_H_
@@ -136,7 +119,7 @@ class COMPONENT_EXPORT(X11) XFixes {
   };
 
   struct SelectionNotifyEvent {
-    static constexpr int type_id = 18;
+    static constexpr int type_id = 10;
     static constexpr uint8_t opcode = 0;
     SelectionEvent subtype{};
     uint16_t sequence{};
@@ -150,7 +133,7 @@ class COMPONENT_EXPORT(X11) XFixes {
   };
 
   struct CursorNotifyEvent {
-    static constexpr int type_id = 19;
+    static constexpr int type_id = 11;
     static constexpr uint8_t opcode = 1;
     CursorNotify subtype{};
     uint16_t sequence{};

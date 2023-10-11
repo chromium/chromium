@@ -7,36 +7,19 @@
 //    ../../third_party/xcbproto/src \
 //    gen/ui/gfx/x \
 //    bigreq \
-//    composite \
-//    damage \
-//    dpms \
-//    dri2 \
 //    dri3 \
-//    ge \
 //    glx \
-//    present \
 //    randr \
-//    record \
 //    render \
-//    res \
 //    screensaver \
 //    shape \
 //    shm \
 //    sync \
-//    xc_misc \
-//    xevie \
-//    xf86dri \
-//    xf86vidmode \
 //    xfixes \
-//    xinerama \
 //    xinput \
 //    xkb \
-//    xprint \
 //    xproto \
-//    xselinux \
-//    xtest \
-//    xv \
-//    xvmc
+//    xtest
 
 #ifndef UI_GFX_X_GENERATED_PROTOS_GLX_H_
 #define UI_GFX_X_GENERATED_PROTOS_GLX_H_
@@ -288,7 +271,7 @@ class COMPONENT_EXPORT(X11) Glx {
   };
 
   struct PbufferClobberEvent {
-    static constexpr int type_id = 4;
+    static constexpr int type_id = 1;
     static constexpr uint8_t opcode = 0;
     uint16_t sequence{};
     uint16_t event_type{};
@@ -308,7 +291,7 @@ class COMPONENT_EXPORT(X11) Glx {
   };
 
   struct BufferSwapCompleteEvent {
-    static constexpr int type_id = 5;
+    static constexpr int type_id = 2;
     static constexpr uint8_t opcode = 1;
     uint16_t sequence{};
     uint16_t event_type{};

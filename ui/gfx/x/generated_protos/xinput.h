@@ -7,36 +7,19 @@
 //    ../../third_party/xcbproto/src \
 //    gen/ui/gfx/x \
 //    bigreq \
-//    composite \
-//    damage \
-//    dpms \
-//    dri2 \
 //    dri3 \
-//    ge \
 //    glx \
-//    present \
 //    randr \
-//    record \
 //    render \
-//    res \
 //    screensaver \
 //    shape \
 //    shm \
 //    sync \
-//    xc_misc \
-//    xevie \
-//    xf86dri \
-//    xf86vidmode \
 //    xfixes \
-//    xinerama \
 //    xinput \
 //    xkb \
-//    xprint \
 //    xproto \
-//    xselinux \
-//    xtest \
-//    xv \
-//    xvmc
+//    xtest
 
 #ifndef UI_GFX_X_GENERATED_PROTOS_XINPUT_H_
 #define UI_GFX_X_GENERATED_PROTOS_XINPUT_H_
@@ -1336,7 +1319,7 @@ class COMPONENT_EXPORT(X11) Input {
   };
 
   struct DeviceValuatorEvent {
-    static constexpr int type_id = 20;
+    static constexpr int type_id = 12;
     static constexpr uint8_t opcode = 0;
     uint8_t device_id{};
     uint16_t sequence{};
@@ -1349,7 +1332,7 @@ class COMPONENT_EXPORT(X11) Input {
   };
 
   struct LegacyDeviceEvent {
-    static constexpr int type_id = 21;
+    static constexpr int type_id = 13;
     enum Opcode {
       DeviceKeyPress = 1,
       DeviceKeyRelease = 2,
@@ -1377,7 +1360,7 @@ class COMPONENT_EXPORT(X11) Input {
   };
 
   struct DeviceFocusEvent {
-    static constexpr int type_id = 22;
+    static constexpr int type_id = 14;
     enum Opcode {
       In = 6,
       Out = 7,
@@ -1393,7 +1376,7 @@ class COMPONENT_EXPORT(X11) Input {
   };
 
   struct DeviceStateNotifyEvent {
-    static constexpr int type_id = 23;
+    static constexpr int type_id = 15;
     static constexpr uint8_t opcode = 10;
     uint8_t device_id{};
     uint16_t sequence{};
@@ -1410,7 +1393,7 @@ class COMPONENT_EXPORT(X11) Input {
   };
 
   struct DeviceMappingNotifyEvent {
-    static constexpr int type_id = 24;
+    static constexpr int type_id = 16;
     static constexpr uint8_t opcode = 11;
     uint8_t device_id{};
     uint16_t sequence{};
@@ -1423,7 +1406,7 @@ class COMPONENT_EXPORT(X11) Input {
   };
 
   struct ChangeDeviceNotifyEvent {
-    static constexpr int type_id = 25;
+    static constexpr int type_id = 17;
     static constexpr uint8_t opcode = 12;
     uint8_t device_id{};
     uint16_t sequence{};
@@ -1434,7 +1417,7 @@ class COMPONENT_EXPORT(X11) Input {
   };
 
   struct DeviceKeyStateNotifyEvent {
-    static constexpr int type_id = 26;
+    static constexpr int type_id = 18;
     static constexpr uint8_t opcode = 13;
     uint8_t device_id{};
     uint16_t sequence{};
@@ -1444,7 +1427,7 @@ class COMPONENT_EXPORT(X11) Input {
   };
 
   struct DeviceButtonStateNotifyEvent {
-    static constexpr int type_id = 27;
+    static constexpr int type_id = 19;
     static constexpr uint8_t opcode = 14;
     uint8_t device_id{};
     uint16_t sequence{};
@@ -1454,7 +1437,7 @@ class COMPONENT_EXPORT(X11) Input {
   };
 
   struct DevicePresenceNotifyEvent {
-    static constexpr int type_id = 28;
+    static constexpr int type_id = 20;
     static constexpr uint8_t opcode = 15;
     uint16_t sequence{};
     Time time{};
@@ -1466,7 +1449,7 @@ class COMPONENT_EXPORT(X11) Input {
   };
 
   struct DevicePropertyNotifyEvent {
-    static constexpr int type_id = 29;
+    static constexpr int type_id = 21;
     static constexpr uint8_t opcode = 16;
     Property state{};
     uint16_t sequence{};
@@ -1478,7 +1461,7 @@ class COMPONENT_EXPORT(X11) Input {
   };
 
   struct DeviceChangedEvent {
-    static constexpr int type_id = 30;
+    static constexpr int type_id = 22;
     static constexpr uint8_t opcode = 1;
     uint16_t sequence{};
     DeviceId deviceid{};
@@ -1491,7 +1474,7 @@ class COMPONENT_EXPORT(X11) Input {
   };
 
   struct DeviceEvent {
-    static constexpr int type_id = 31;
+    static constexpr int type_id = 23;
     enum Opcode {
       KeyPress = 2,
       KeyRelease = 3,
@@ -1525,7 +1508,7 @@ class COMPONENT_EXPORT(X11) Input {
   };
 
   struct CrossingEvent {
-    static constexpr int type_id = 32;
+    static constexpr int type_id = 24;
     enum Opcode {
       Enter = 7,
       Leave = 8,
@@ -1569,7 +1552,7 @@ class COMPONENT_EXPORT(X11) Input {
   };
 
   struct HierarchyEvent {
-    static constexpr int type_id = 33;
+    static constexpr int type_id = 25;
     static constexpr uint8_t opcode = 11;
     uint16_t sequence{};
     DeviceId deviceid{};
@@ -1581,7 +1564,7 @@ class COMPONENT_EXPORT(X11) Input {
   };
 
   struct PropertyEvent {
-    static constexpr int type_id = 34;
+    static constexpr int type_id = 26;
     static constexpr uint8_t opcode = 12;
     uint16_t sequence{};
     DeviceId deviceid{};
@@ -1593,7 +1576,7 @@ class COMPONENT_EXPORT(X11) Input {
   };
 
   struct RawDeviceEvent {
-    static constexpr int type_id = 35;
+    static constexpr int type_id = 27;
     enum Opcode {
       RawKeyPress = 13,
       RawKeyRelease = 14,
@@ -1618,7 +1601,7 @@ class COMPONENT_EXPORT(X11) Input {
   };
 
   struct TouchOwnershipEvent {
-    static constexpr int type_id = 36;
+    static constexpr int type_id = 28;
     static constexpr uint8_t opcode = 21;
     uint16_t sequence{};
     DeviceId deviceid{};
@@ -1634,7 +1617,7 @@ class COMPONENT_EXPORT(X11) Input {
   };
 
   struct BarrierEvent {
-    static constexpr int type_id = 37;
+    static constexpr int type_id = 29;
     enum Opcode {
       Hit = 25,
       Leave = 26,
@@ -1658,7 +1641,7 @@ class COMPONENT_EXPORT(X11) Input {
   };
 
   struct GesturePinchEvent {
-    static constexpr int type_id = 38;
+    static constexpr int type_id = 30;
     enum Opcode {
       Begin = 27,
       Update = 28,
@@ -1690,7 +1673,7 @@ class COMPONENT_EXPORT(X11) Input {
   };
 
   struct GestureSwipeEvent {
-    static constexpr int type_id = 39;
+    static constexpr int type_id = 31;
     enum Opcode {
       Begin = 30,
       Update = 31,
