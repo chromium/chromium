@@ -46,7 +46,7 @@ constexpr uint32_t kUiSourceId = 1u;
 
 BASE_FEATURE(kUseMappableSIInViewTreeHostRootViewFrameFactory,
              "UseMappableSIInViewTreeHostRootViewFrameFactory",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
