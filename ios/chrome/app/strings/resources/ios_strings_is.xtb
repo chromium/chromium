@@ -333,6 +333,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2718352093833049315">Aðeins um Wi-Fi</translation>
 <translation id="2738375676495545665">Fela „Nýjungar“</translation>
 <translation id="2747003861858887689">Fyrri reitur</translation>
+<translation id="2749026027885331579">Fjölskyldumeðlimir þínir geta nú notað þitt notandanafn og aðgangsorð þegar þeir nota Google-aðgangsorðastjórnun til að skrá sig inn á <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Fylgir <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Reikningar í þessu tæki</translation>
 <translation id="2762000892062317888">rétt í þessu</translation>
@@ -980,7 +981,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6236952928980352967">Endurheimta viðvörun</translation>
 <translation id="6247557882553405851">Aðgangsorðastjórnun Google</translation>
 <translation id="6254066287920239840">Opna tengla í forritinu í stað vafrans.</translation>
-<translation id="625491139841322297">{count,plural, =1{Yfirfara flipann}one{Yfirfara alla flipa}other{Yfirfara alla flipa}}</translation>
 <translation id="6255097610484507482">Breyta kreditkorti</translation>
 <translation id="6266039999629596120">Bregðast þarf við</translation>
 <translation id="6277426346321820595">Engin vörn</translation>

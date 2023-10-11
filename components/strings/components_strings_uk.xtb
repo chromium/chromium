@@ -328,6 +328,7 @@
 <translation id="1615402009686901181">Адміністратор заборонив запис екрана, якщо видно конфіденційний контент</translation>
 <translation id="1617276713587758852">Кросовери</translation>
 <translation id="1618571384971354160">Послуги евакуатора й технічна допомога на дорозі</translation>
+<translation id="1619007254056372606">Керувати даними сайтів на пристрої</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622571349153632031">Вегетаріанська кухня</translation>
 <translation id="162285686621567578">Твої батьки заблокували цей веб-сайт.</translation>
@@ -1136,7 +1137,6 @@
 <translation id="3340978935015468852">налаштування</translation>
 <translation id="3342018947887487892">Пізніше сайт, який ви відвідаєте, може запитати ваші теми оголошень або рекламу, пропоновану сайтами, які ви відкривали.</translation>
 <translation id="3342366525167526994">Боді-арт</translation>
-<translation id="3344167530090084176">Щоб наступного разу платити швидше, збережіть картку й код безпеки на пристрої</translation>
 <translation id="334438173029876234">Обладнання для катання на скейтборді</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Змінити налаштування проксі...</translation>
@@ -1241,6 +1241,7 @@
 <translation id="3552297013052089404">Шрифт Sans Serif</translation>
 <translation id="3558573058928565255">День</translation>
 <translation id="355995771319966853">Скасувати автозаповнення</translation>
+<translation id="3560408312959371419">Параметри для функції захисту від відстеження й даних сайтів на пристрої</translation>
 <translation id="3560824484345057728">Переглянути пов’язані сайти</translation>
 <translation id="3566021033012934673">З’єднання не конфіденційне</translation>
 <translation id="3566336457819493938">215 x 315 мм</translation>
@@ -1531,7 +1532,6 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{Сторінка 1}one{Сторінка {COUNT}}few{Сторінка {COUNT}}many{Сторінка {COUNT}}other{Сторінка {COUNT}}}</translation>
 <translation id="4154277373259957087">Тепер Chrome підтверджуватиме вашу особу, перш ніж заповнювати способи оплати. Ви будь-коли можете змінити це налаштування на сторінці <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4159149286839604525">Це означає, що більшість функцій сайту мають працювати, проте ви будете менш захищені</translation>
-<translation id="4159575773617358878">Щоб наступного разу платити швидше, збережіть дані картки, код безпеки й платіжну адресу в обліковому записі Google</translation>
 <translation id="4159784952369912983">Пурпуровий</translation>
 <translation id="4165986682804962316">Налаштування сайтів</translation>
 <translation id="4169535189173047238">Не дозволяти</translation>
@@ -1891,6 +1891,7 @@
 <translation id="4873616204573862158">Окуляри</translation>
 <translation id="4876188919622883022">Спрощений перегляд</translation>
 <translation id="4876305945144899064">Немає імені користувача</translation>
+<translation id="4876327226315760474">Це означає, що функції сайту з більшою імовірністю працюватимуть належним чином, але рівень захисту під час перегляду може бути меншим.</translation>
 <translation id="4877047577339061095">Засоби для зберігання речей удома</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Немає}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}few{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}many{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Пошук за запитом "<ph name="TEXT" />"</translation>
@@ -2519,6 +2520,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="61877208875190028">Жіночий одяг</translation>
 <translation id="6194209731893739467">Тут можна переглянути всі відстежувані товари</translation>
+<translation id="6195163219142236913">Сторонні файли cookie обмежено</translation>
 <translation id="6195371403461054755">Геологія</translation>
 <translation id="6196640612572343990">Блокувати сторонні файли cookie</translation>
 <translation id="6197648101609735209">89 x 89 мм</translation>
@@ -3884,6 +3886,7 @@
 <translation id="893332455753468063">Додайте ім’я</translation>
 <translation id="8942355029279167844">Адміністратор надав додатку <ph name="APP_NAME" /> дозвіл збирати дані діагностики, щоб покращувати роботу продукту. Докладніше читайте на сторінці <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Лаймовий</translation>
+<translation id="8944485226638699751">Обмежено</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Закон і уряд</translation>
 <translation id="8954252855949068147">Одяг</translation>

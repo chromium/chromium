@@ -329,6 +329,7 @@
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3619593063686672873">Нет недавних видео.</translation>
 <translation id="3634507049637220048">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус подключения – "<ph name="CONNECTION_STATUS" />", под управлением администратора, подробная информация</translation>
+<translation id="36451918667380448">Вы не можете сменить поставщика мобильной сети. Свяжитесь с ним, если вам нужна помощь.</translation>
 <translation id="3645233063072417428">Перемещено объектов: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="3658269352872031728">Выбрано файлов: <ph name="SELECTED_FILE_COUNT" /></translation>
 <translation id="3685122418104378273">Синхронизация Google Диска по мобильной сети отключена по умолчанию.</translation>

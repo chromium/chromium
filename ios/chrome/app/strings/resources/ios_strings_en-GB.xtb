@@ -335,6 +335,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2718352093833049315">Only on Wi-Fi</translation>
 <translation id="2738375676495545665">Hide What's New</translation>
 <translation id="2747003861858887689">Previous field</translation>
+<translation id="2749026027885331579">Your family members can now use your username and password when they use Google Password Manager to sign in to <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Following <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Accounts on this device</translation>
 <translation id="2762000892062317888">just now</translation>
@@ -982,7 +983,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6236952928980352967">Restore warning</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6254066287920239840">Open links in the app instead of the browser.</translation>
-<translation id="625491139841322297">{count,plural, =1{Review the tab}other{Review all tabs}}</translation>
 <translation id="6255097610484507482">Edit credit card</translation>
 <translation id="6266039999629596120">Needs attention</translation>
 <translation id="6277426346321820595">No protection</translation>

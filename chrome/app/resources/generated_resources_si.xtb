@@ -6801,7 +6801,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6469702164109431067">මුරපද සහ මුරයතුරු</translation>
 <translation id="6470823736074966819">දැනුම්දීම් නිහඬ කරන්න</translation>
 <translation id="6472893788822429178">මුල්පිටු බොත්තම පෙන්වන්න</translation>
-<translation id="6474352027343282094">{COUNT,plural, =1{{COUNT} මුරපදයක් සුරැකෙන්නේ මෙම උපාංගයට පමණි. එය ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, &lt;a target='_blank' href='chrome://password-manager/'&gt;එය ඔබේ Google ගිණුමේ සුරකින්න&lt;/a&gt;.}one{මුරපද {COUNT}ක් සුරැකෙන්නේ මෙම උපාංගයට පමණි. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, &lt;a target='_blank' href='chrome://password-manager/'&gt;ඒවා ඔබේ Google ගිණුමේ සුරකින්න&lt;/a&gt;.}other{මුරපද {COUNT}ක් සුරැකෙන්නේ මෙම උපාංගයට පමණි. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, &lt;a target='_blank' href='chrome://password-manager/'&gt;ඒවා ඔබේ Google ගිණුමේ සුරකින්න&lt;/a&gt;.}}</translation>
 <translation id="6474498546677193336">යෙදුමක් මෙම ෆෝල්ඩරය භාවිත කරන බැවින් බෙදා නොගත නොහැකි විය. ලිනක්ස් මීළඟ වරට වසා දැමෙන විට ෆෝල්ඩරය බෙදා නොගැනේ.</translation>
 <translation id="6474884162850599008">Google Drive ගිණුම විසන්ධි කරන්න</translation>
 <translation id="6475294023568239942">සැකසීම් තුළ තැටියේ ඉඩ නිදහස් කරන්න හෝ Linux තැටියේ තරම ප්‍රතිප්‍රමාණ කරන්න</translation>

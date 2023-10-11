@@ -333,6 +333,7 @@ Axtarış mexanizmi: <ph name="DSE_NAME" />. Axtarış tarixçəsini silmək ü�
 <translation id="2718352093833049315">Yalnız Wi-Fi üzərindən</translation>
 <translation id="2738375676495545665">Yenilikləri gizlədin</translation>
 <translation id="2747003861858887689">Əvvəlki sahə</translation>
+<translation id="2749026027885331579">Ailə üzvləriniz Google Parol Meneceri ilə <ph name="WEBSITE" /> veb-saytına daxil olduqda istifadəçi adı və parolunuzdan istifadə edə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> izlənilir</translation>
 <translation id="2754492786623500387">Bu cihazdakı hesablar</translation>
 <translation id="2762000892062317888">indicə</translation>
@@ -980,7 +981,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6236952928980352967">Xəbərdarlığı bərpa edin</translation>
 <translation id="6247557882553405851">Google Parol Meneceri</translation>
 <translation id="6254066287920239840">Linkləri brauzer əvəzinə tətbiqdə açın</translation>
-<translation id="625491139841322297">{count,plural, =1{Tabı nəzərdən keçirin}other{Tabları nəzərdən keçirin}}</translation>
 <translation id="6255097610484507482">Kredit Kartına Düzəliş edin</translation>
 <translation id="6266039999629596120">Diqqət tələb olunur</translation>
 <translation id="6277426346321820595">Qoruma yoxdur</translation>

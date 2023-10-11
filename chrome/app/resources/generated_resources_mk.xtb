@@ -235,6 +235,7 @@
 <translation id="1175364870820465910">&amp;Печати...</translation>
 <translation id="1175914831232945926">Цифри</translation>
 <translation id="1176471985365269981">Не им е дозволено да ги изменуваат датотеките или папките на уредот</translation>
+<translation id="1177440945615690056">Може да се поврзете на која било подобна мобилна мрежа во „Поставки“</translation>
 <translation id="1177863135347784049">Приспособено</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1178601482396475810">Управување со синхронизацијата на уредот</translation>
@@ -2219,6 +2220,7 @@
 <translation id="2709516037105925701">Автоматско пополнување</translation>
 <translation id="2710101514844343743">Податоци за користење и дијагностика</translation>
 <translation id="271033894570825754">Ново</translation>
+<translation id="2710507903599773521">Вашиот <ph name="DEVICE_TYPE" /> сега е отклучен</translation>
 <translation id="2711073837061989559">Пробни периоди</translation>
 <translation id="2713106313042589954">Исклучи ја камерата</translation>
 <translation id="2713444072780614174">Бела</translation>
@@ -2592,6 +2594,7 @@
 <translation id="2990583317361835189">Не им дозволувај на сајтовите да користат сензори за движење</translation>
 <translation id="2992931425024192067">Прикажувај ја целата содржина на известувањата</translation>
 <translation id="2993517869960930405">Информации за апликациите</translation>
+<translation id="2996108796702395498">Серискиот број на вашиот уред е <ph name="SERIAL_NUMBER" />. Бројов може да се користи за активирање услуга.</translation>
 <translation id="2996286169319737844">Податоците се шифрирани со вашата лозинка за синхронизација. Тоа не ги вклучува начините на плаќање и адресите од Google Pay.</translation>
 <translation id="2996722619877761919">Прелистување од долгиот раб</translation>
 <translation id="2996932914629936323">Ќе ја исчисти историјата од сите синхронизирани уреди</translation>
@@ -2979,6 +2982,7 @@
 <translation id="3320630259304269485">Безбедно прелистување (заштита од опасни сајтови) и други безбедносни поставки</translation>
 <translation id="3321460131042519426">Овозможи прелом на зборови</translation>
 <translation id="3321494112580110651">Не го гледате вашиот печатач?</translation>
+<translation id="3321776060736518525">Од <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Бонус! Доби уште време за користење на уредот</translation>
 <translation id="3325804108816646710">Се бараат достапни профили…</translation>
 <translation id="3325910708063135066">Камерата и микрофонот се исклучени во поставките за системот Mac</translation>
@@ -3502,6 +3506,7 @@
 <translation id="3752253558646317685">Кажете му на детето постојано да го крева прстот за да се зачува отпачатокот</translation>
 <translation id="3753033997400164841">Складирајте еднаш. Користете насекаде</translation>
 <translation id="3753142252662437130">Филтри за боја</translation>
+<translation id="3753412199586870466">Отвори ја страничната табла</translation>
 <translation id="3755411799582650620">Вашиот <ph name="PHONE_NAME" /> сега исто така може да го отклучи и овој <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Сајтот го користи микрофонот</translation>
 <translation id="3756485814916578707">Се емитува екранот</translation>
@@ -6231,6 +6236,7 @@
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Прегледувањето е завршено за 1 сајт}one{Прегледувањето е завршено за {NUM_SITES} сајт}other{Прегледувањето е завршено за {NUM_SITES} сајта}}</translation>
 <translation id="5997337190805127100">Дознајте повеќе за пристап до сајтови</translation>
 <translation id="5998458948782718639">Помогнете да се подобри автоматското пополнување</translation>
+<translation id="5999024481231496910">Овозможивте тестирање на исфрлањето од употреба колачиња од трети страни. Тоа не може да се отфрли во поставките. Ако сакате да овозможите колачиња од трети страни повторно, рестартирајте го Chrome откако ќе ја оневозможите функцијава.</translation>
 <translation id="5999630716831179808">Гласови</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> резултати за „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6001839398155993679">Ајде</translation>
@@ -6714,6 +6720,7 @@
 <translation id="6399675241776343019">Одбиено</translation>
 <translation id="6399774419735315745">Шпионка</translation>
 <translation id="6400360390396538896">Секогаш на <ph name="ORIGIN" /></translation>
+<translation id="6401118106417399952">EID-бројот на вашиот уред е <ph name="EID_NUMBER" />, а серискиот број на уредот е <ph name="SERIAL_NUMBER" />. Броевиве може да се користат за активирање услуга.</translation>
 <translation id="6401458660421980302">За да ја испратите картичкава на друг уред, најавете се на Chrome таму</translation>
 <translation id="6401597285454423070">Вашиот компјутер содржи безбедносен уред Trusted Platform Module (TPM) што се користи за имплементирање на многу важни безбедносни функции во Chrome OS. Посетете го „Центарот за помош на Chromebook“ за да дознаете повеќе: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404511346730675251">Измени обележувач</translation>
@@ -6808,7 +6815,6 @@
 <translation id="6469702164109431067">Лозинки и криптографски клучеви</translation>
 <translation id="6470823736074966819">Исклучете го звукот на известувањата</translation>
 <translation id="6472893788822429178">Прикажи копче Дома</translation>
-<translation id="6474352027343282094">{COUNT,plural, =1{{COUNT} лозинка ќе се зачува само на овој уред. За да ја користите на другите ваши уреди, &lt;a target='_blank' href='chrome://password-manager/'&gt;зачувајте ја на вашата сметка на Google&lt;/a&gt;.}one{{COUNT} лозинка ќе се зачуваат само на овој уред. За да ги користите на другите ваши уреди, &lt;a target='_blank' href='chrome://password-manager/'&gt;зачувајте ги на вашата сметка на Google&lt;/a&gt;.}other{{COUNT} лозинки ќе се зачуваат само на овој уред. За да ги користите на другите ваши уреди, &lt;a target='_blank' href='chrome://password-manager/'&gt;зачувајте ги на вашата сметка на Google&lt;/a&gt;.}}</translation>
 <translation id="6474498546677193336">Не може да се откаже споделувањето бидејќи некоја апликација ја користи папкава. Споделувањето на папкава ќе се откаже кога Linux ќе се исклучи нареден пат.</translation>
 <translation id="6474884162850599008">Исклучете ја сметката на Дискот на Google</translation>
 <translation id="6475294023568239942">Ослободете простор на дискот или променете ја големината на дискот на Linux во „Поставки“</translation>
@@ -7150,6 +7156,9 @@
 <translation id="6767566652486411142">Изберете друг јазик…</translation>
 <translation id="6767639283522617719">Не може да се приклучи на доменот. Проверете дали поставките се точни за организациската единица.</translation>
 <translation id="6768034047581882264">Не им е дозволено да прикажуваат небезбедни содржини</translation>
+<translation id="6769902329858794251"><ph name="BEGIN_PARAGRAPH1" />За да го обезбеди најдоброто доживување, <ph name="DEVICE_OS" /> прибира хардверски податоци за уредите и ги споделува со Google за да се утврди кои ажурирања треба да се испорачаат. По избор, може да му дозволите на Google да ги користи податоциве за дополнителни цели како поддршка и подобрувања на доживувањето со <ph name="DEVICE_OS" /> и неговата услуга.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Може да се најавите на уредов и да ги прегледате полињата наведени како chromeosflex_ во chrome://system за да ги видите податоците што се испраќаат до Google за филтрирање ажурирања, како и други случаи каде што сте избрале да споделувате податоци со Google.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />За повеќе детали за податоците што <ph name="DEVICE_OS" /> може да ги споделува со Google, а и како се користат, одете на g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770042910635026163">Сајтови што ги посетувате што ги дефинираат вашите интереси</translation>
 <translation id="6770602306803890733">Ја подобрува безбедноста за вас и сите останати на интернет</translation>
 <translation id="6771503742377376720">Е орган за сертифицирање</translation>
@@ -8230,6 +8239,7 @@
 <translation id="7637272932128132922">Додека картичкава беше неактивна, „Штедачот на батерија“ ослободи меморија за други задачи. Ова може да го промените во секое време во <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Нема доволно простор на дискот</translation>
 <translation id="7639914187072011620">Не можеше да се вчита URL за пренасочување на SAML од серверот</translation>
+<translation id="7640256527901510478">IMEI-бројот на вашиот уред е <ph name="IMEI_NUMBER" />, а серискиот број на уредот е <ph name="SERIAL_NUMBER" />. Броевиве може да се користат за активирање услуга.</translation>
 <translation id="7640308610547854367">Се вративте на претходна верзија на ChromeOS. За да ажурирате, почекајте да стане достапна следната верзија.</translation>
 <translation id="7641513591566880111">Ново име на профил</translation>
 <translation id="764178579712141045">Контактот <ph name="USER_EMAIL" /> е додаден</translation>
@@ -8631,6 +8641,7 @@
 <translation id="793531125873261495">Грешка при преземањето на виртуелната машина. Обидете се повторно.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% завршено</translation>
 <translation id="7937809006412909895">Се прибираат дијагностички податоци</translation>
+<translation id="7938881824185772026">Лаборатории</translation>
 <translation id="7939062555109487992">Напредни опции</translation>
 <translation id="793923212791838">Вашиот уред не може да се користи со овој сајт</translation>
 <translation id="7939328347457537652">Управувајте со сертификатите на уредот</translation>
@@ -9732,6 +9743,7 @@
 <translation id="881799181680267069">Скриј други</translation>
 <translation id="8818152010000655963">Тапет</translation>
 <translation id="8818958672113348984">Потврдете преку телефонот</translation>
+<translation id="8819510664278523111">EID-бројот на вашиот уред е <ph name="EID_NUMBER" />, IMEI-бројот на уредот е <ph name="IMEI_NUMBER" />, а серискиот број на уредот е <ph name="SERIAL_NUMBER" />. Броевиве може да се користат за активирање услуга.</translation>
 <translation id="8820817407110198400">Обележувачи</translation>
 <translation id="8821045908425223359">Конфигурирајте IP-адреса автоматски</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> е подготвен за употреба.</translation>
@@ -10282,6 +10294,7 @@
 <translation id="956500788634395331">Заштитени сте од потенцијално штетни екстензии</translation>
 <translation id="957179356621191750">Со 6 точки</translation>
 <translation id="957960681186851048">Сајтов се обиде автоматски да преземе повеќе датотеки</translation>
+<translation id="958571289841636277">Движете се назад и напред со движење со повлекување</translation>
 <translation id="960987915827980018">Преостанува околу 1 час</translation>
 <translation id="962802172452141067">Дрво на папката за обележувачи</translation>
 <translation id="963000966785016697">Пребарајте ја сликата со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

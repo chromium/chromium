@@ -6816,7 +6816,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6469702164109431067">Passord og tilgangsnøkler</translation>
 <translation id="6470823736074966819">Ignorer varsler</translation>
 <translation id="6472893788822429178">Vis startsideknapp</translation>
-<translation id="6474352027343282094">{COUNT,plural, =1{{COUNT} passord er bare lagret på denne enheten. For å bruke det på andre enheter, &lt;a target='_blank' href='chrome://password-manager/'&gt;lagre det i Google-kontoen din&lt;/a&gt;.}other{{COUNT} passord lagres bare på denne enheten. For å bruke dem på de andre enhetene dine, &lt;a target='_blank' href='chrome://password-manager/'&gt;lagre dem i Google-kontoen din&lt;/a&gt;.}}</translation>
 <translation id="6474498546677193336">Kunne ikke avvise delingen, fordi et program bruker denne mappen. Mappedelingen blir avvist neste gang Linux avsluttes.</translation>
 <translation id="6474884162850599008">Koble fra Google Disk-kontoen.</translation>
 <translation id="6475294023568239942">Frigjør lagringsplass, eller endre størrelsen på Linux-disken i Innstillinger</translation>

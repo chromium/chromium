@@ -2043,6 +2043,7 @@
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> သည် <ph name="NETWORK_ID" /> သို့မချိတ်ဆက်နိုင်ပါ။ ကျေးဇူးပြု၍ အခြားကွန်ရက်တစ်ခုအား ရွေးချယ်ပါ သို့မဟုတ် နောက်တစ်ကြိမ် ထပ်မံကြိုးစားပါ။</translation>
 <translation id="2553440850688409052">ဤပလတ်အင်အား ဝှက်ထားရန်</translation>
 <translation id="2554553592469060349">ရွေးထားသည့် ဖိုင်မှာ ကြီးလွန်း(အများဆုံး ဆိုက်: 3mb)။</translation>
+<translation id="2555802059188792472">အက်ပ် <ph name="TOTAL_NUM_APPS" /> ခုအနက် <ph name="NUM_ALLOWED_APPS" /> ခုသည် အကြောင်းကြားချက်များ ပို့နိုင်သည်</translation>
 <translation id="25568951186001797">ကန့်သတ်ထားသောဖရိမ်- <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">သင်၏ ကြည့်ရှုခြင်းမှတ်တမ်းသည် သင်မြင်ရသည့်ကြော်ငြာများအပေါ် သက်ရောက်မှုရှိသည်</translation>
 <translation id="2559889124253841528">စက်တွင်သိမ်းရန်</translation>
@@ -3479,6 +3480,7 @@
 <translation id="3729957991398443677">သင့်စကားဝှက်ကြည့်ရန် (သို့) ၎င်းနှင့်ပတ်သက်ပြီး မှတ်စုထည့်ရန် ရှာဖွေမှုနှင့် လိပ်စာဘားတွင် သင့်စကားဝှက်များ စီမံရန်ကို ရွေးနိုင်သည်</translation>
 <translation id="3730076362938942381">စတိုင်လပ်စ် စာရေးသည့်အက်ပ်</translation>
 <translation id="3732078975418297900">စာကြောင်း <ph name="ERROR_LINE" /> တွင် အမှားအယွင်း ရှိနေသည်</translation>
+<translation id="3732414796052961578"><ph name="ACCOUNT_NAME" /> အဖြစ် ရှေ့ဆက်ရန်</translation>
 <translation id="3732530910372558017">ပင်နံပါတ်သည် အများဆုံးအက္ခရာ ၆၃ လုံး ရှိရမည်</translation>
 <translation id="3732857534841813090">Google Assistant နှင့် ဆက်စပ်သော အချက်အလက်များ</translation>
 <translation id="3733296813637058299">သင့်အတွက် ထိုအက်ပ်များကို ထည့်သွင်းပေးပါမည်။ Play Store တွင် သင့် <ph name="DEVICE_TYPE" /> အတွက် နောက်ထပ်အက်ပ်များကို ရှာဖွေနိုင်သည်။</translation>
@@ -4866,6 +4868,7 @@
 <translation id="4850669014075537160">အပေါ်အောက်ရွှေ့ခြင်း</translation>
 <translation id="4850886885716139402">မြင်ကွင်း</translation>
 <translation id="485088796993065002">သီချင်း၊ ဗီဒီယိုနှင့် အခြားမီဒီယာအတွက် အသံပံ့ပိုးရန် ဝဘ်ဆိုက်များက အသံဖွင့်ပေးနိုင်သည်</translation>
+<translation id="4852383141291180386">အက်ပ် အကြောင်းကြားချက်များကို စီမံရန်</translation>
 <translation id="4852916668365817106">မောက်စ်အရောင်</translation>
 <translation id="4853020600495124913">ဝင်ဒိုးအသစ် &amp;ထဲမှာ &amp;ဖွင့်ရန်</translation>
 <translation id="4854317507773910281">အတည်ပြုရန်အတွက် မိဘအကောင့်ကို ရွေးပါ</translation>
@@ -6238,6 +6241,7 @@
 <translation id="5992225669837656567">မောက်စ်အားလုံး ချိတ်ဆက်မှုဖြုတ်လိုက်သည်</translation>
 <translation id="5992652489368666106">ဘောင်မရှိပါ</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{ဝဘ်ဆိုက် ၁ ခုအတွက် စိစစ်ပြီးပြီ}other{ဝဘ်ဆိုက် {NUM_SITES} ခုအတွက် စိစစ်ပြီးပြီ}}</translation>
+<translation id="5996200702878169822">eSIM ပရိုဖိုင်ကို <ph name="BEGIN_LINK" />ကိုယ်တိုင်<ph name="END_LINK" /> စနစ်ထည့်သွင်းနိုင်သေးသည်။</translation>
 <translation id="5997337190805127100">ဝဘ်ဆိုက်အသုံးပြုခွင့်အကြောင်း ပိုမိုလေ့လာခြင်း</translation>
 <translation id="5998458948782718639">‘အော်တိုဖြည့်’ ပိုကောင်းလာအောင် ကူညီရန်</translation>
 <translation id="5999630716831179808">အသံများ</translation>
@@ -6818,7 +6822,6 @@
 <translation id="6469702164109431067">စကားဝှက်နှင့် လျှို့ဝှက်ကီးများ</translation>
 <translation id="6470823736074966819">အကြောင်းကြားချက်များကို အသံပိတ်ထားရန်</translation>
 <translation id="6472893788822429178">မူလစာမျက်နှာ ခလုတ် ပြရန်</translation>
-<translation id="6474352027343282094">{COUNT,plural, =1{စကားဝှက် {COUNT} ခုကို ယခုစက်တွင်သာ သိမ်းလိုက်သည်။ အခြားစက်များတွင်သုံးရန် &lt;a target='_blank' href='chrome://password-manager/'&gt;၎င်းကို သင့် Google Account တွင် သိမ်းနိုင်သည်&lt;/a&gt;။}other{စကားဝှက် {COUNT} ခုကို ယခုစက်တွင်သာ သိမ်းလိုက်သည်။ အခြားစက်များတွင်သုံးရန် &lt;a target='_blank' href='chrome://password-manager/'&gt;၎င်းတို့ကို သင့် Google Account တွင် သိမ်းနိုင်သည်&lt;/a&gt;။}}</translation>
 <translation id="6474498546677193336">အပလီကေးရှင်းက ဤဖိုင်တွဲကို အသုံးပြုနေသဖြင့် မျှဝေမှု မလုပ်၍မရပါ။ နောင်တွင် Linux ပိတ်လိုက်သည့်အခါ ဖိုင်တွဲကို မျှဝေမှု မလုပ်တော့ပါ။</translation>
 <translation id="6474884162850599008">Google Drive အကောင့်နှင့် ချိတ်ဆက်မှု ဖြတ်တောက်ရန်</translation>
 <translation id="6475294023568239942">ဒစ်ခ်နေရာလွတ် ပြုလုပ်ပါ (သို့) ‘ဆက်တင်များ’ တွင် Linux ဒစ်ခ် အရွယ်အစားပြောင်းပါ</translation>
@@ -10195,6 +10198,7 @@
 <translation id="9166253503936244008"><ph name="APP_NAME" /> အတွက် သုံးလိုသည့် လျှို့ဝှက်ကီးရှိသောစက်ဖြင့် ဤ QR ကုဒ်ကို စကင်ဖတ်ပါ</translation>
 <translation id="9167063903968449027">ဖတ်ရန်စာရင်း ပြရန်</translation>
 <translation id="9167450455589251456">ဤပရိုဖိုင်ကို ပံ့ပိုးမထားပါ</translation>
+<translation id="9167813284871066981">အကောင့် <ph name="NUM_ACCOUNTS" /> ခု</translation>
 <translation id="9168436347345867845">နောက်မှလုပ်ရန်</translation>
 <translation id="9169496697824289689">ကီးဘုတ် ဖြတ်လမ်းများကို ကြည့်ရန်</translation>
 <translation id="916964310188958970">ဘာကြောင့် ဤအကြံပြုချက် ပေးပါသလဲ။</translation>

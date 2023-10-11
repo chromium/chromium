@@ -213,6 +213,7 @@
 <translation id="2505327257735685095">現在の壁紙画像を更新する</translation>
 <translation id="2512979179176933762">ウィンドウを表示する</translation>
 <translation id="2513396635448525189">ログイン画像</translation>
+<translation id="2515109918609218604">ショートカットを利用できません。ファンクション キーと検索キーを使わない新しいショートカットを押してください。</translation>
 <translation id="2517472476991765520">スキャン</translation>
 <translation id="2521835766824839541">前のトラック</translation>
 <translation id="2526590354069164005">デスクトップ</translation>
@@ -868,6 +869,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
 <translation id="7718231387947923843">キーボード ライト</translation>
+<translation id="7730077286107534951">アカウント情報とシステム情報の一部が Google に送信されます。この情報は、Google の<ph name="BEGIN_LINK2" />プライバシー ポリシー<ph name="END_LINK2" />と<ph name="BEGIN_LINK3" />利用規約<ph name="END_LINK3" />に基づき、技術的な問題への対処やサービス改善のために使用されます。コンテンツの変更をリクエストするには、<ph name="BEGIN_LINK1" />法的事項に関するヘルプ<ph name="END_LINK1" />をご覧ください。</translation>
 <translation id="773153675489693198">サイクル回数</translation>
 <translation id="7747039790905080783">事前共有キー</translation>
 <translation id="7752963721013053477">夜明けから夜更けまで - 限定</translation>

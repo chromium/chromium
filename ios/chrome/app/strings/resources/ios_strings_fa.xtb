@@ -335,6 +335,7 @@
 <translation id="2718352093833049315">‏فقط در Wi-Fi</translation>
 <translation id="2738375676495545665">پنهان کردن ویژگی‌های جدید</translation>
 <translation id="2747003861858887689">فیلد قبلی</translation>
+<translation id="2749026027885331579">‏اکنون اعضای خانواده‌تان می‌توانند هنگام ورود به سیستم <ph name="WEBSITE" /> بااستفاده از «مدیر گذرواژه Google»، نام کاربری و گذرواژه شما را به‌کار ببرند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> را دنبال می‌کنید</translation>
 <translation id="2754492786623500387">حساب‌های موجود در این دستگاه</translation>
 <translation id="2762000892062317888">هم‌اکنون</translation>
@@ -982,7 +983,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6236952928980352967">بازیابی هشدار</translation>
 <translation id="6247557882553405851">‏مدیر گذرواژه Google</translation>
 <translation id="6254066287920239840">پیوندها به‌جای مرورگر در برنامه باز شوند.</translation>
-<translation id="625491139841322297">{count,plural, =1{مرور برگه}one{مرور برگه}other{مرور همه برگه‌ها}}</translation>
 <translation id="6255097610484507482">ویرایش کارت اعتباری</translation>
 <translation id="6266039999629596120">بررسی لازم است</translation>
 <translation id="6277426346321820595">بدون محافظت</translation>

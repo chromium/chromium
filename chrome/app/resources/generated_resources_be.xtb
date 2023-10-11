@@ -233,6 +233,7 @@
 <translation id="1175364870820465910">&amp;Друк...</translation>
 <translation id="1175914831232945926">Лічбы</translation>
 <translation id="1176471985365269981">Не маюць дазволу змяняць файлы або папкі на прыладзе</translation>
+<translation id="1177440945615690056">Вы можаце падключыцца да любой прыдатнай мабільнай сеткі ў наладах</translation>
 <translation id="1177863135347784049">Карыстальніцкая</translation>
 <translation id="1178581264944972037">Прыпыніць</translation>
 <translation id="1178601482396475810">Кіраванне сінхранізацыяй прылад</translation>
@@ -2204,6 +2205,7 @@
 <translation id="2709516037105925701">Аўтазапаўненне</translation>
 <translation id="2710101514844343743">Даныя пра выкарыстанне і дыягностыку</translation>
 <translation id="271033894570825754">Новае</translation>
+<translation id="2710507903599773521">Ваша прылада (<ph name="DEVICE_TYPE" />) больш не прымацавана да аператара</translation>
 <translation id="2711073837061989559">Пробныя версіі функцый</translation>
 <translation id="2713106313042589954">Выключыць камеру</translation>
 <translation id="2713444072780614174">Белы</translation>
@@ -3485,6 +3487,7 @@
 <translation id="3752253558646317685">Каб адбітак пальца быў захаваны, дзіцяці трэба некалькі разоў прыняць палец</translation>
 <translation id="3753033997400164841">Захоўвайце адзін раз – выкарыстоўвайце ўсюды</translation>
 <translation id="3753142252662437130">Фільтры колераў</translation>
+<translation id="3753412199586870466">Адкрыць бакавую панэль</translation>
 <translation id="3755411799582650620">Зараз прыладу <ph name="DEVICE_TYPE" /> можна разблакіраваць таксама з тэлефона <ph name="PHONE_NAME" />.</translation>
 <translation id="375636864092143889">Сайт выкарыстоўвае мікрафон</translation>
 <translation id="3756485814916578707">Экран трансліруецца</translation>
@@ -6790,7 +6793,6 @@
 <translation id="6469702164109431067">Паролі і ключы доступу</translation>
 <translation id="6470823736074966819">Выключыць гук паведамленняў</translation>
 <translation id="6472893788822429178">Паказаць кнопку галоўнага экрана</translation>
-<translation id="6474352027343282094">{COUNT,plural, =1{{COUNT} пароль захаваны толькі на гэтай прыладзе. Каб выкарыстоўваць яго на іншых прыладах, &lt;a target='_blank' href='chrome://password-manager/'&gt;захавайце яго ў сваім Уліковым запісе Google&lt;/a&gt;.}one{{COUNT} пароль захаваны толькі на гэтай прыладзе. Каб выкарыстоўваць яго на іншых прыладах, &lt;a target='_blank' href='chrome://password-manager/'&gt;захавайце яго ў сваім Уліковым запісе Google&lt;/a&gt;.}few{{COUNT} паролі захаваны толькі на дадзенай прыладзе. Каб выкарыстоўваць іх на іншых прыладах, &lt;a target='_blank' href='chrome://password-manager/'&gt;захавайце іх у сваім Уліковым запісе Google&lt;/a&gt;.}many{{COUNT} пароляў захаваны толькі на дадзенай прыладзе. Каб выкарыстоўваць іх на іншых прыладах, &lt;a target='_blank' href='chrome://password-manager/'&gt;захавайце іх у сваім Уліковым запісе Google&lt;/a&gt;.}other{{COUNT} пароля захаваны толькі на дадзенай прыладзе. Каб выкарыстоўваць іх на іншых прыладах, &lt;a target='_blank' href='chrome://password-manager/'&gt;захавайце іх у сваім Уліковым запісе Google&lt;/a&gt;.}}</translation>
 <translation id="6474498546677193336">Не ўдалося скасаваць абагульванне, бо гэту папку выкарыстоўвае праграма. Абагульванне папкі будзе скасавана пасля наступнага выключэння Linux.</translation>
 <translation id="6474884162850599008">Адключыць уліковы запіс Google Дыска</translation>
 <translation id="6475294023568239942">Вызваліце месца на дыску Linux або змяніце памер дыска ў наладах</translation>
@@ -7136,6 +7138,9 @@
 <translation id="6767566652486411142">Выбраць іншую мову...</translation>
 <translation id="6767639283522617719">Не ўдаецца далучыцца да дамена. Праверце правільнасць налад арганізацыйнай адзінкі.</translation>
 <translation id="6768034047581882264">Не дазволена паказваць небяспечнае змесціва</translation>
+<translation id="6769902329858794251"><ph name="BEGIN_PARAGRAPH1" />Для зручнасці карыстальнікаў <ph name="DEVICE_OS" /> збірае даныя аб апаратным забеспячэнні прылад і абагульвае іх з Google, што дазваляе выяўляць, якія абнаўленні неабходна ўсталяваць. Вы таксама можаце дазволіць Google выкарыстоўваць гэтыя даныя і ў іншых мэтах, напрыклад, каб удасканальваць работу <ph name="DEVICE_OS" /> і аказваць карыстальнікам падтрымку.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Каб паглядзець, якія звесткі адпраўляюцца ў Google для фільтрацыі абнаўленняў і для якіх яшчэ мэт можна абагульваць даныя, увайдзіце ва ўліковы запіс на гэтай прыладзе і праглядзіце палі ў раздзеле chromeosflex_ на старонцы chrome://system.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Падрабязную інфармацыю пра даныя, якія <ph name="DEVICE_OS" /> можа абагульваць з Google, і іх выкарыстанне глядзіце на старонцы g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770042910635026163">Наведаныя вамі сайты, якія дапамагаюць вызначаць вашы інтарэсы</translation>
 <translation id="6770602306803890733">Павышае бяспеку для вас і іншых карыстальнікаў у інтэрнэце</translation>
 <translation id="6771503742377376720">З'яўляецца цэнтрам сертыфікацыі</translation>
@@ -8617,6 +8622,7 @@
 <translation id="793531125873261495">Памылка спампоўвання віртуальнай машыны. Паўтарыце спробу.</translation>
 <translation id="7935451262452051102">Завершана <ph name="PERCENT" />%</translation>
 <translation id="7937809006412909895">Ідзе збор даных дыягностыкі</translation>
+<translation id="7938881824185772026">Лабараторыя</translation>
 <translation id="7939062555109487992">Дадатковыя параметры</translation>
 <translation id="793923212791838">Вашу прыладу нельга выкарыстоўваць на гэтым сайце</translation>
 <translation id="7939328347457537652">Кіраванне сертыфікатамі прылады</translation>

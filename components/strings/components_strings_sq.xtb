@@ -328,6 +328,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1615402009686901181">Politika e administratorit çaktivizon regjistrimin e ekranit kur përmbajtja konfidenciale është e dukshme</translation>
 <translation id="1617276713587758852">Automjete Crossover</translation>
 <translation id="1618571384971354160">Transporti i automjeteve dhe asistenca rrugore</translation>
+<translation id="1619007254056372606">Menaxho të dhënat e sajtit në pajisje</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Kuzhina vegjetariane</translation>
 <translation id="162285686621567578">Ky uebsajt është bllokuar nga prindi yt.</translation>
@@ -1136,7 +1137,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3340978935015468852">cilësimet</translation>
 <translation id="3342018947887487892">Më vonë, një sajt që ti viziton mund të kërkojë këto informacione - temat e tua të reklamave ose reklamat e sugjeruara nga sajtet që ke vizituar.</translation>
 <translation id="3342366525167526994">Arti trupor</translation>
-<translation id="3344167530090084176">Për të paguar më shpejt herën tjetër, ruaje kartën dhe kodin e sigurisë në pajisjen tënde</translation>
 <translation id="334438173029876234">Pajisje për ecje me patina</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Ndrysho cilësimet e përfaqësuesit...</translation>
@@ -1241,6 +1241,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3552297013052089404">Fonti sans-serif</translation>
 <translation id="3558573058928565255">Dita dhe ora</translation>
 <translation id="355995771319966853">Zhbëje plotësimin automatik</translation>
+<translation id="3560408312959371419">Opsionet për mbrojtjet nga gjurmimi dhe të dhënat e sajtit në pajisje</translation>
 <translation id="3560824484345057728">Shiko sajtet e lidhura</translation>
 <translation id="3566021033012934673">Lidhja jote nuk është private.</translation>
 <translation id="3566336457819493938">215 x 315 mm</translation>
@@ -1531,7 +1532,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4152318981910038897">{COUNT,plural, =1{Faqja 1}other{Faqja {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome tani do të verifikojë që je ti para se të plotësojë mënyrat e pagesës. Mund ta përditësosh këtë në çdo kohë te <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4159149286839604525">Kjo do të thotë që shumica e veçorive të sajtit do të punojnë, por do të kesh më pak mbrojtje</translation>
-<translation id="4159575773617358878">Për të paguar më shpejt herën tjetër, ruaje kartën, kodin e sigurisë dhe adresën e faturimit në "Llogarinë tënde të Google"</translation>
 <translation id="4159784952369912983">Vjollcë</translation>
 <translation id="4165986682804962316">Cilësimet e sajtit</translation>
 <translation id="4169535189173047238">Mos lejo</translation>
@@ -3882,6 +3882,7 @@ Detaje shtesë:
 <translation id="893332455753468063">Shto emër</translation>
 <translation id="8942355029279167844">Administratori yt ka lejuar që <ph name="APP_NAME" /> të grumbullojë të dhënat e diagnostikimit për të përmirësuar përvojën e produktit. Shiko <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> për më shumë informacion.</translation>
 <translation id="8943282376843390568">Ngjyrë limoni jeshil</translation>
+<translation id="8944485226638699751">Të kufizuara</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Ligji dhe qeverisja</translation>
 <translation id="8954252855949068147">Veshje</translation>

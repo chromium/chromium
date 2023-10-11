@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> tšk./col.</translation>
 <translation id="2338501278241028356">Įjunkite „Bluetooth“, kad aptiktumėte įrenginius netoliese</translation>
 <translation id="2346474577291266260">Puikus (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383">„<ph name="DESCRIPTION" />“ redagavimo dialogo langas atidarytas.</translation>
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2364498172489649528">Pavyko</translation>
 <translation id="2367335866686097760">Klavišų schemų klavišas</translation>
@@ -870,6 +871,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
 <translation id="7718231387947923843">klaviatūros lemputė</translation>
+<translation id="7730077286107534951">Dalis informacijos apie paskyrą ir sistemą gali būti išsiųsta į sistemą „Google“. Šią informaciją naudojame spręsdami technines problemas ir tobulindami paslaugas pagal mūsų <ph name="BEGIN_LINK2" />privatumo politiką<ph name="END_LINK2" /> ir <ph name="BEGIN_LINK3" />paslaugų teikimo sąlygas<ph name="END_LINK3" />. Jei norite pateikti turinio pakeitimų užklausą, eikite į <ph name="BEGIN_LINK1" />teisinės pagalbos puslapį<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Ciklų skaičius</translation>
 <translation id="7747039790905080783">Paruoštas bendrinti raktas</translation>
 <translation id="7752963721013053477">Nuo aušros iki sutemų – išskirtinis</translation>
@@ -1020,6 +1022,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Įrenginys yra planšetinis kompiuteris.</translation>
 <translation id="8881098542468797602">Bandymas sėkmingas</translation>
+<translation id="8892443466059986410">Atšaukti šaukinio redagavimą</translation>
 <translation id="8898840733695078011">Signalo stiprumas</translation>
 <translation id="8909114361904403025">rodyklė aukštyn</translation>
 <translation id="8910721771319628100">Numatytojo tinklo delsa viršija slenksčio vertę</translation>

@@ -261,6 +261,7 @@
 <translation id="5545693483061321551">Сайттар браузерді қолдану мәліметін көру (мысалы, жарнамаларды жекелендіру) үшін cookie файлдарын пайдалана алмайды. Кейбір сайттың функциялары жұмыс істемеуі мүмкін.</translation>
 <translation id="5553374991681107062">Ең соңғысы</translation>
 <translation id="5556459405103347317">Қайта жүктеу</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> блокталған.</translation>
 <translation id="5649053991847567735">Автоматты жүктеулер</translation>
 <translation id="5668404140385795438">Веб-сайттардың үлкейтуге тыйым салу туралы сұрауларын елемеу</translation>
 <translation id="5677928146339483299">Тыйым салынған</translation>
@@ -462,6 +463,7 @@
 <translation id="8959122750345127698"><ph name="URL" /> мекенжайына өту мүмкін емес</translation>
 <translation id="8986362086234534611">Ұмыту</translation>
 <translation id="8990043154272859344">Сіз барлық сайттағы аккаунттан шығарыласыз</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" /> үшін рұқсат етілген.</translation>
 <translation id="9019902583201351841">Ата-аналар басқарады</translation>
 <translation id="9039697262778250930">Сіз осы сайттардан шығып кетуіңіз мүмкін</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

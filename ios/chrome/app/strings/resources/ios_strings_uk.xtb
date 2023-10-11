@@ -169,6 +169,7 @@
 <translation id="1847795903283049083">Ви також можете переглядати ці об’єкти й керувати ними в закладках, списку читання або менеджері паролів.</translation>
 <translation id="1870148520156231997">Показати пароль</translation>
 <translation id="1872096359983322073">Ліхтарик</translation>
+<translation id="1876851015978093044">Показує цей елемент</translation>
 <translation id="1882901927376062252">{count,plural, =1{Закладку збережено у вашому обліковому записі Google ({email})}one{{count} закладку збережено у вашому обліковому записі Google ({email})}few{{count} закладки збережено у вашому обліковому записі Google ({email})}many{{count} закладок збережено у вашому обліковому записі Google ({email})}other{{count} закладки збережено у вашому обліковому записі Google ({email})}}</translation>
 <translation id="1883255238294161206">Згорнути список</translation>
 <translation id="1890237935065108104">Це налаштування недоступне.</translation>
@@ -282,6 +283,7 @@
 <translation id="2482878487686419369">Сповіщення</translation>
 <translation id="2484459871750294497">Як увімкнути цю функцію?</translation>
 <translation id="2496626742194544812">Перейти на першу вкладку</translation>
+<translation id="2499505845365628575">Щоб переглянути всю історію веб-перегляду, натисніть кнопку "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
 <translation id="2500374554657206846">Опції для збереження паролів</translation>
 <translation id="2511117522375201202">У вас є зламані паролі (<ph name="NUMBER_OF_PASSWORDS" />), які можуть загрожувати вашій безпеці.</translation>
 <translation id="2523363575747517183">Цей веб-сайт періодично намагається відкрити інший додаток.</translation>
@@ -333,6 +335,7 @@
 <translation id="2718352093833049315">Лише у Wi-Fi</translation>
 <translation id="2738375676495545665">Сховати опцію "Що нового"</translation>
 <translation id="2747003861858887689">Попереднє поле</translation>
+<translation id="2749026027885331579">Тепер учасники сімейної групи зможуть використовувати ваші ім’я користувача й пароль, коли входитимуть в обліковий запис <ph name="WEBSITE" /> за допомогою Google Менеджера паролів. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Ви підписалися на канал <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Облікові записи на цьому пристрої</translation>
 <translation id="2762000892062317888">щойно</translation>
@@ -980,7 +983,6 @@
 <translation id="6236952928980352967">Відновити попередження</translation>
 <translation id="6247557882553405851">Менеджер паролів Google</translation>
 <translation id="6254066287920239840">Відкривайте посилання в додатку, а не у веб-переглядачі.</translation>
-<translation id="625491139841322297">{count,plural, =1{Переглянути вкладку}one{Переглянути всі вкладки}few{Переглянути всі вкладки}many{Переглянути всі вкладки}other{Переглянути всі вкладки}}</translation>
 <translation id="6255097610484507482">Редагувати дані кредитної картки</translation>
 <translation id="6266039999629596120">Потрібна дія</translation>
 <translation id="6277426346321820595">Захист вимкнено</translation>
@@ -1112,6 +1114,7 @@
 <translation id="6785453220513215166">Надсилання звіту про аварійне завершення роботи…</translation>
 <translation id="6790502149545262384">Незабаром, відкривши нову вкладку, ви бачитимете історії із сайту <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6797885426782475225">Голосовий пошук</translation>
+<translation id="6800349425672670802">Доступ до всіх відкритих вкладок можна отримати за допомогою функції перемикача вкладок.</translation>
 <translation id="6807889908376551050">Показати всі...</translation>
 <translation id="681368974849482173">Закладку творено</translation>
 <translation id="6822587385560699678">Якщо ввімкнути цю функцію, паролі зберігатимуться в обліковому записі <ph name="ACCOUNT" />. Якщо її вимкнути, паролі зберігатимуться лише на цьому пристрої.</translation>
@@ -1206,6 +1209,7 @@
 <translation id="7367530036083223701">Установіть віджет Менеджера паролів, щоб безпечно отримувати доступ до своїх паролів із головного екрана.</translation>
 <translation id="7380220816562673297">Зараз ви можете обмінюватися паролями лише з учасниками сімейної групи. <ph name="BEGIN_LINK" />Створіть сімейну групу<ph name="END_LINK" />, додайте в неї до 6 учасників і отримуйте більше переваг від продуктів та підписок у різних сервісах Google.</translation>
 <translation id="7383797227493018512">Список читання</translation>
+<translation id="7396331865858820922">Пароль не було надіслано</translation>
 <translation id="7398893703713203428">Створити посилання</translation>
 <translation id="7399802613464275309">Перевірка безпеки</translation>
 <translation id="7400418766976504921">URL-адреса</translation>
@@ -1226,6 +1230,7 @@
 <translation id="7488874549363591659">Доставлені</translation>
 <translation id="7491131399623468277">Перейти до налаштувань…</translation>
 <translation id="7492574581995589075">Ваша організація вимкнула можливість використовувати й зберігати дані Chrome у вашому обліковому записі Google. Нові закладки, паролі тощо буде збережено лише на цьому пристрої.</translation>
+<translation id="749854780843431406">Щоб відкрити нову вкладку, натисніть кнопку "<ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
 <translation id="750149195207506638">Закладки приховано</translation>
 <translation id="750228856503700085">Оновлення недоступні</translation>
 <translation id="750493650310597496">Вибрано 0</translation>
@@ -1286,6 +1291,7 @@
 <translation id="778855399387580014">Пошук у новій вкладці Chrome.</translation>
 <translation id="7791543448312431591">Додати</translation>
 <translation id="7807060072011926525">Надано компанією Google</translation>
+<translation id="7812377703891978671">Щоб відкрити всю історію веб-перегляду, натисніть кнопку "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
 <translation id="78146569776629510">Завантаження</translation>
 <translation id="7839985698273989086">Офлайн-сторінка</translation>
 <translation id="7840771868269352570">Вибраний елемент буде видалено.</translation>
@@ -1433,6 +1439,7 @@
 <translation id="8560253818350321773">Спочатку показувати продукти, які часто використовуються.</translation>
 <translation id="8588404856427128947">Вимкнено</translation>
 <translation id="8591976964826315682">Блокувати сторонні файли cookie в анонімному режимі</translation>
+<translation id="8593565399399144771">Тут ви можете відкрити нову вкладку.</translation>
 <translation id="8605219856220328675">Закрити вкладку.</translation>
 <translation id="8613883225817609844">Сховати опцію "Останні вкладки"</translation>
 <translation id="8620640915598389714">Редагувати</translation>

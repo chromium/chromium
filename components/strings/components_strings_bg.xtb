@@ -328,6 +328,7 @@
 <translation id="1615402009686901181">Заснемането на екрана, когато се вижда поверително съдържание, е деактивирано чрез администраторско правило</translation>
 <translation id="1617276713587758852">Кросоувъри</translation>
 <translation id="1618571384971354160">Пътна помощ и теглене на превозни средства</translation>
+<translation id="1619007254056372606">Управление на локалните данни за сайтовете</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622571349153632031">Вегетарианска кухня</translation>
 <translation id="162285686621567578">Този уебсайт е блокиран от родителя ви.</translation>
@@ -1136,7 +1137,6 @@
 <translation id="3340978935015468852">настройките</translation>
 <translation id="3342018947887487892">По-късно посетен от вас сайт може да поиска тази информация – рекламните ви теми или рекламите, предложени от сайтовете, които сте посетили.</translation>
 <translation id="3342366525167526994">Боди арт</translation>
-<translation id="3344167530090084176">За да платите по-бързо следващия път, запазете картата и кода за сигурност на устройството си</translation>
 <translation id="334438173029876234">Оборудване за скейтборд</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Промяна на настройките на прокси сървъра...</translation>
@@ -1241,6 +1241,7 @@
 <translation id="3552297013052089404">Безсерифен шрифт</translation>
 <translation id="3558573058928565255">През деня</translation>
 <translation id="355995771319966853">Отмяна на автоматичното попълване</translation>
+<translation id="3560408312959371419">Опции за защитата от проследяване и локалните данни за сайтовете</translation>
 <translation id="3560824484345057728">Преглед на сродните сайтове</translation>
 <translation id="3566021033012934673">Връзката ви не е поверителна</translation>
 <translation id="3566336457819493938">215 x 315 мм</translation>
@@ -1531,7 +1532,6 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{Страница 1}other{Страница {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome вече ще потвърждава самоличността ви, преди да попълва начините на плащане. Можете да актуализирате това по всяко време в „<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />“.</translation>
 <translation id="4159149286839604525">Това означава, че повечето функции на сайта би трябвало да работят, но ще разполагате с по-ниско ниво на защита</translation>
-<translation id="4159575773617358878">За да платите по-бързо следващия път, запазете картата, кода за сигурност и адреса си за фактуриране в профила си в Google</translation>
 <translation id="4159784952369912983">лилаво</translation>
 <translation id="4165986682804962316">Настройки за сайта</translation>
 <translation id="4169535189173047238">Забраняване</translation>
@@ -3883,6 +3883,7 @@
 <translation id="893332455753468063">Добавяне на име</translation>
 <translation id="8942355029279167844">Администраторът ви е разрешил на <ph name="APP_NAME" /> да събира диагностични данни с цел подобряване на практическата работа с продукта. За повече информация вижте <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">лимоненозелено</translation>
+<translation id="8944485226638699751">Ограничени</translation>
 <translation id="8949493680961858543">A1 x 4</translation>
 <translation id="8951415078585015151">Законови и правителствени органи</translation>
 <translation id="8954252855949068147">Облекло</translation>

@@ -235,6 +235,7 @@
 <translation id="1175364870820465910">&amp;Друк...</translation>
 <translation id="1175914831232945926">Цифри</translation>
 <translation id="1176471985365269981">Заборонено змінювати файли або папки на пристрої</translation>
+<translation id="1177440945615690056">Підключитися до будь-якої сумісної мобільної мережі можна в налаштуваннях</translation>
 <translation id="1177863135347784049">Спеціальне</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1178601482396475810">Керування синхронізацією пристрою</translation>
@@ -2221,6 +2222,7 @@
 <translation id="2709516037105925701">Автозаповнення</translation>
 <translation id="2710101514844343743">Дані про використання й діагностику</translation>
 <translation id="271033894570825754">Новий</translation>
+<translation id="2710507903599773521">Ваш пристрій <ph name="DEVICE_TYPE" /> розблоковано</translation>
 <translation id="2711073837061989559">Пробні версії функцій</translation>
 <translation id="2713106313042589954">Вимкнути камеру</translation>
 <translation id="2713444072780614174">Білий</translation>
@@ -2594,6 +2596,7 @@
 <translation id="2990583317361835189">Заборонити сайтам використовувати датчики руху</translation>
 <translation id="2992931425024192067">Показувати весь вміст сповіщень</translation>
 <translation id="2993517869960930405">Про додаток</translation>
+<translation id="2996108796702395498">Серійний номер пристрою: <ph name="SERIAL_NUMBER" />. За допомогою цього номера можна активувати сервіс.</translation>
 <translation id="2996286169319737844">Дані зашифровано за допомогою парольної фрази для синхронізації. Це не стосується способів оплати й адрес із Google Pay.</translation>
 <translation id="2996722619877761919">Перевертати за довгим краєм</translation>
 <translation id="2996932914629936323">Буде видалено історію на всіх синхронізованих пристроях</translation>
@@ -2981,6 +2984,7 @@
 <translation id="3320630259304269485">Безпечний перегляд (захист від небезпечних сайтів) та інші налаштування безпеки</translation>
 <translation id="3321460131042519426">Увімкнути перенесення слів</translation>
 <translation id="3321494112580110651">Вашого принтера немає в списку?</translation>
+<translation id="3321776060736518525">Джерело: <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Бонус! Подовжено час використання пристрою</translation>
 <translation id="3325804108816646710">Пошук доступних профілів…</translation>
 <translation id="3325910708063135066">Камеру та мікрофон вимкнено в параметрах системи Mac</translation>
@@ -3504,6 +3508,7 @@
 <translation id="3752253558646317685">Щоб зберегти відбиток, дитина має піднімати палець</translation>
 <translation id="3753033997400164841">Збережіть один раз. Використовуйте на всіх пристроях</translation>
 <translation id="3753142252662437130">Фільтри кольорів</translation>
+<translation id="3753412199586870466">Відкрити бічну панель</translation>
 <translation id="3755411799582650620">Тепер ваш <ph name="PHONE_NAME" /> може також розблоковувати цей пристрій <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Сайт використовує мікрофон</translation>
 <translation id="3756485814916578707">Трансляція екрана</translation>
@@ -6230,6 +6235,7 @@
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Перевірку завершено для 1 сайту}one{Перевірку завершено для {NUM_SITES} сайту}few{Перевірку завершено для {NUM_SITES} сайтів}many{Перевірку завершено для {NUM_SITES} сайтів}other{Перевірку завершено для {NUM_SITES} сайту}}</translation>
 <translation id="5997337190805127100">Докладніше про доступ до сайтів</translation>
 <translation id="5998458948782718639">Допоможіть покращити функцію автозаповнення</translation>
+<translation id="5999024481231496910">Ви ввімкнули тестування функції, що поступово вимикає сторонні файли cookie. Це правило не можна перевизначити на сторінці налаштувань. Щоб знову ввімкнути сторонні файли cookie, вимкніть цю функцію і перезапустіть Chrome.</translation>
 <translation id="5999630716831179808">Голоси</translation>
 <translation id="6000758707621254961">Результатів для запиту "<ph name="SEARCH_TEXT" />": <ph name="RESULT_COUNT" /></translation>
 <translation id="6001839398155993679">Почати</translation>
@@ -6713,6 +6719,7 @@
 <translation id="6399675241776343019">Відхилено</translation>
 <translation id="6399774419735315745">Шпигунка</translation>
 <translation id="6400360390396538896">Завжди ввімкнено (<ph name="ORIGIN" />)</translation>
+<translation id="6401118106417399952">EID пристрою: <ph name="EID_NUMBER" />; серійний номер пристрою: <ph name="SERIAL_NUMBER" />. За допомогою цих номерів можна активувати сервіс.</translation>
 <translation id="6401458660421980302">Щоб надіслати цю вкладку на інший пристрій, увійдіть на ньому в Chrome</translation>
 <translation id="6401597285454423070">Ваш комп’ютер оснащено пристроєм Trusted Platform Module (TPM), який виконує багато важливих функцій безпеки в ОС Chrome. Щоб дізнатися більше, відвідайте Довідковий центр Chromebook: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404511346730675251">Редагувати закладку</translation>
@@ -6807,7 +6814,6 @@
 <translation id="6469702164109431067">Паролі й ключі доступу</translation>
 <translation id="6470823736074966819">Вимкнути звук сповіщень</translation>
 <translation id="6472893788822429178">Показувати кнопку головної сторінки</translation>
-<translation id="6474352027343282094">{COUNT,plural, =1{{COUNT} пароль зберігається лише на поточному пристрої. Щоб використовувати цей пароль на інших пристроях, &lt;a target='_blank' href='chrome://password-manager/'&gt;збережіть його у своєму обліковому записі Google&lt;/a&gt;.}one{{COUNT} пароль зберігається лише на поточному пристрої. Щоб використовувати ці паролі на інших пристроях, &lt;a target='_blank' href='chrome://password-manager/'&gt;збережіть їх у своєму обліковому записі Google&lt;/a&gt;.}few{{COUNT} паролі зберігаються лише на поточному пристрої. Щоб використовувати ці паролі на інших пристроях, &lt;a target='_blank' href='chrome://password-manager/'&gt;збережіть їх у своєму обліковому записі Google&lt;/a&gt;.}many{{COUNT} паролів зберігаються лише на поточному пристрої. Щоб використовувати ці паролі на інших пристроях, &lt;a target='_blank' href='chrome://password-manager/'&gt;збережіть їх у своєму обліковому записі Google&lt;/a&gt;.}other{{COUNT} пароля зберігаються лише на поточному пристрої. Щоб використовувати ці паролі на інших пристроях, &lt;a target='_blank' href='chrome://password-manager/'&gt;збережіть їх у своєму обліковому записі Google&lt;/a&gt;.}}</translation>
 <translation id="6474498546677193336">Не вдалося скасувати доступ, оскільки цю папку використовує додаток. Доступ до неї буде скасовано після завершення роботи Linux.</translation>
 <translation id="6474884162850599008">Від’єднати обліковий запис Google Диска</translation>
 <translation id="6475294023568239942">Звільніть місце на диску або змініть його розмір у налаштуваннях</translation>
@@ -7153,6 +7159,9 @@
 <translation id="6767566652486411142">Вибрати іншу мову…</translation>
 <translation id="6767639283522617719">Не вдається приєднатися до домену. Переконайтеся, що налаштування для організаційного підрозділу правильні.</translation>
 <translation id="6768034047581882264">Заборонено показувати незахищений контент</translation>
+<translation id="6769902329858794251"><ph name="BEGIN_PARAGRAPH1" />Щоб забезпечити найвищу якість роботи, <ph name="DEVICE_OS" /> збирає дані про апаратне забезпечення пристроїв і передає їх компанії Google, щоб визначати потрібні оновлення. Також ви можете дозволити нам використовувати такі відомості для інших цілей, зокрема щоб покращувати роботу й обслуговування <ph name="DEVICE_OS" /> і надавати підтримку.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Щоб побачити, які дані ви надсилаєте для оновлення пристрою, а також якщо виникнуть інші запитання, пов’язані з наданням доступу до своїх даних компанії Google, увійдіть на цьому пристрої і на сторінці chrome://system перегляньте поля chromeosflex_.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Щоб дізнатися більше про те, які дані <ph name="DEVICE_OS" /> може надавати компанії Google і як вони використовуються, перейдіть на сторінку g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770042910635026163">Відвідувані вами сайти, що визначають ваші інтереси</translation>
 <translation id="6770602306803890733">Покращує захист усіх користувачів в Інтернеті</translation>
 <translation id="6771503742377376720">Є Центром сертифікації</translation>
@@ -8233,6 +8242,7 @@
 <translation id="7637272932128132922">Коли ця вкладка була неактивною, функція заощадження пам’яті звільнила оперативну пам’ять для інших завдань. Параметри функції можна будь-коли змінити в розділі "<ph name="SETTINGS_LINK" />".</translation>
 <translation id="7637593984496473097">Недостатньо місця на диску</translation>
 <translation id="7639914187072011620">Не вдалось отримати із сервера переспрямування SAML</translation>
+<translation id="7640256527901510478">IMEI пристрою: <ph name="IMEI_NUMBER" />; серійний номер пристрою: <ph name="SERIAL_NUMBER" />. За допомогою цих номерів можна активувати сервіс.</translation>
 <translation id="7640308610547854367">Ви повернулися до попередньої версії ChromeOS. Ви зможете отримувати оновлення, коли стане доступна наступна версія.</translation>
 <translation id="7641513591566880111">Нова назва профілю</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> додано</translation>
@@ -9736,6 +9746,7 @@
 <translation id="881799181680267069">Сховати інші</translation>
 <translation id="8818152010000655963">Фоновий малюнок</translation>
 <translation id="8818958672113348984">Підтвердити через телефон</translation>
+<translation id="8819510664278523111">EID пристрою: <ph name="EID_NUMBER" />, IMEI пристрою: <ph name="IMEI_NUMBER" />, серійний номер пристрою: <ph name="SERIAL_NUMBER" />. За допомогою цих номерів можна активувати сервіс.</translation>
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="8821045908425223359">Автоматично налаштовувати ІР-адресу</translation>
 <translation id="8821268776955756404">Додаток <ph name="APP_NAME" /> установлено.</translation>
@@ -10286,6 +10297,7 @@
 <translation id="956500788634395331">Пристрій захищено від потенційно шкідливих розширень</translation>
 <translation id="957179356621191750">з 6 крапками</translation>
 <translation id="957960681186851048">Цей сайт намагався автоматично завантажити декілька файлів</translation>
+<translation id="958571289841636277">Переходьте вперед і назад за допомогою жесту гортання</translation>
 <translation id="960987915827980018">Залишилася приблизно 1 год.</translation>
 <translation id="962802172452141067">Дерево папок із закладками</translation>
 <translation id="963000966785016697">Пошук зображення через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

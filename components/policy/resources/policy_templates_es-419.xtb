@@ -9685,7 +9685,6 @@ Nota: Si reinicias el dispositivo, se borrará la memoria caché. Se almacenan e
 
       Si la inhabilitas, los dispositivos inscritos no grabarán el audio ni informarán su estado.
       Excepción: la información del volumen del sistema es controlada por <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> para M95 y versiones anteriores.</translation>
-<translation id="9071527533179676468">Si habilitas la política, las aplicaciones web de terceros podrán usar la API de Desk para controlar los escritorios de ChromeOS. Si no la estableces o la inhabilitas, la API de Desk no estará disponible.</translation>
 <translation id="9072475476775217730">Si inhabilitas la política, las ventanas emergentes destinadas a <ph name="BLANK_PAGE_NAME" /> podrán acceder (mediante JavaScript) a la página que solicitó abrir la ventana emergente.
 
       Si habilitas la política o no la estableces, se establecerá el valor <ph name="NULL_VALUE" /> en la propiedad <ph name="WINDOW_OPENER_PROPERTY" />, a menos que el ancla especifique el atributo <ph name="REL_OPENER_ATTRIBUTE" />.

@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">Sila masukkan alamat e-mel bukan kosong.</translation>
 <translation id="1758486001363313524">Lain-lain...</translation>
 <translation id="1787192514241997742">jumlah masa: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Benarkan kamera</translation>
 <translation id="1822429046913737220">PG / P/M</translation>
 <translation id="1832974991323546415">main pada peranti jauh</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">langkah semasa</translation>
 <translation id="3321030238473337787">Kelajuan main balik</translation>
 <translation id="3329013043687509092">Ketepuan</translation>
+<translation id="3377518164566272702">Benarkan mikrofon dan kamera</translation>
 <translation id="3450233048674729344">Nilai mestilah kurang daripada atau sama dengan <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Keluar daripada gambar dalam gambar</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">Memainkan video dalam gambar dalam gambar</translation>
 <translation id="4748357248530471599">togol skrin penuh potongan paparan</translation>
 <translation id="4763480195061959176">video</translation>
+<translation id="4792862212177489858">Kongsi lokasi</translation>
 <translation id="4812940957355064477">Sila masukkan nombor.</translation>
 <translation id="4912200001568447310">item semasa</translation>
 <translation id="4915360478455618802">Paparkan pemilih masa</translation>
@@ -179,6 +182,7 @@
 <translation id="9132465097189459683">Lain-lain...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, bermula pada <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Gambar dalam Gambar</translation>
+<translation id="918430632320614861">Benarkan mikrofon</translation>
 <translation id="945780513535800434">Ditandai Sebahagiannya</translation>
 <translation id="954003015749068518">masuk ke gambar dalam gambar</translation>
 </translationbundle>

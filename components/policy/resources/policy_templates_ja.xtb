@@ -8940,7 +8940,6 @@ M119 よりデフォルトで無効になります）。
 
       このポリシーを無効に設定した場合、登録済みのデバイスは音声の状態の記録および報告を行いません。
       例外: M95 以前では、システム音量レベルの情報は <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> によって制御されます。</translation>
-<translation id="9071527533179676468">このポリシーを有効にすると、サードパーティのウェブ アプリケーションが Desk API を使用して ChromeOS デスクを制御できるようになります。このポリシーを設定しないか無効にすると、Desk API は使用できません。</translation>
 <translation id="9072475476775217730">このポリシーを無効に設定した場合、<ph name="BLANK_PAGE_NAME" /> をターゲットとするポップアップに、リクエスト元ページへの（JavaScript を介した）アクセスが許可されます。
 
       このポリシーを有効に設定するか未設定のままにした場合、<ph name="WINDOW_OPENER_PROPERTY" /> プロパティは <ph name="NULL_VALUE" /> に設定されます（アンカーで <ph name="REL_OPENER_ATTRIBUTE" /> が指定されている場合は除く）。

@@ -333,6 +333,7 @@
 <translation id="2718352093833049315">Wi-Fi मा मात्र</translation>
 <translation id="2738375676495545665">"नयाँ के छ" लुकाइयोस्</translation>
 <translation id="2747003861858887689">अघिल्लो क्षेत्र</translation>
+<translation id="2749026027885331579">तपाईंका परिवारका सदस्य अब Google पासवर्ड म्यानेजर प्रयोग गरेर <ph name="WEBSITE" /> मा साइन इन गर्न तपाईंको युजरनेम र पासवर्ड प्रयोग गर्न सक्नुहुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> फलो गरिँदै छ</translation>
 <translation id="2754492786623500387">यो डिभाइसमा लिंक गरिएका खाताहरू</translation>
 <translation id="2762000892062317888">भर्खरै</translation>
@@ -980,7 +981,6 @@
 <translation id="6236952928980352967">चेतावनी पुनः देखाउनुहोस्</translation>
 <translation id="6247557882553405851">Google पासवर्ड म्यानेजर</translation>
 <translation id="6254066287920239840">लिंंकहरूलाई ब्राउजरको सट्टा यो एपमा खोल्नुहोस्।</translation>
-<translation id="625491139841322297">{count,plural, =1{यो ट्याबको समीक्षा गर्नुहोस्}other{सबै ट्याबको समीक्षा गर्नुहोस्}}</translation>
 <translation id="6255097610484507482">क्रेडिट कार्ड सम्पादन गर्नुहोस्</translation>
 <translation id="6266039999629596120">ध्यान दिनु पर्ने समस्याहरू</translation>
 <translation id="6277426346321820595">सुरक्षारहित मोड</translation>

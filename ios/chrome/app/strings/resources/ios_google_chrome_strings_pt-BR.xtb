@@ -117,6 +117,7 @@ Considerações:
 <translation id="5389212809648216794">O Google Chrome não pode usar a câmera porque ela está sendo usada por outro app</translation>
 <translation id="5395376160638294582">Garanta que você sempre possa usar os dados do Chrome na sua Conta do Google</translation>
 <translation id="5439191312780166229">Avisa você sobre sites perigosos, mesmo aqueles que o Google não conhecia, analisando mais dados de sites do que a proteção padrão. Você pode ignorar os avisos do Chrome.</translation>
+<translation id="5442013002200339429">Se você ocultar "<ph name="MODULE_NAME" />", o Chrome não vai mais rastrear automaticamente seus pacotes futuros e vai excluir todos os dados de rastreamento anteriores.</translation>
 <translation id="5460571915754665838">4. Selecione o Chrome</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{O Chrome ajudará a rastrear o pacote na página "Nova guia".}one{O Chrome ajudará a rastrear o pacote na página "Nova guia".}other{O Chrome ajudará a rastrear os pacotes na página "Nova guia".}}</translation>
 <translation id="5492504007368565877">O Gerenciador de senhas do Google não pode verificar suas senhas.</translation>
@@ -188,6 +189,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="7933491483529363150">Abrir "Minha guia mais recente" no Chrome.</translation>
 <translation id="8022947259858476807">Use o Chrome como padrão para abrir links, pesquisar em widgets e preencher senhas automaticamente em outros apps</translation>
 <translation id="804638182476029347">Permitir notificações do Chrome para receber alertas de redução no preço</translation>
+<translation id="8069507567842347179">Esse pacote já foi rastreado no Chrome.</translation>
 <translation id="81358522153858150">O Chrome agora oferece suporte para políticas do usuário na sua conta gerenciada</translation>
 <translation id="8160472928944011082">Não é possível atualizar o Chrome</translation>
 <translation id="8174679664544842874">Abre uma nova guia no Chrome.</translation>

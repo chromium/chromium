@@ -143,6 +143,7 @@
 <translation id="1264309058268477500">ალტერნატიული</translation>
 <translation id="1264974993859112054">სპორტი</translation>
 <translation id="1266469291454105242">მოწყობილობის განბლოკვის მეთოდი</translation>
+<translation id="126728463333482584">თქვენ ერთ-ერთი პირველი ცდით თვალის დევნებისგან დაცვას, რომელიც უზღუდავს საიტებს მესამე მხარის ქუქი-ჩანაწერების გამოყენებას თქვენ მიერ ვების დათვალიერებისას თქვენთვის თვალის სადევნებლად.</translation>
 <translation id="1268480293435976622">კონვერტი Chinese 7</translation>
 <translation id="1269516672602708785">Google Sites-ში ახალი საიტის სწრაფად შექმნა</translation>
 <translation id="1270328905573953738">საცხოვრებელი და სამუშაო ადგილის შეცვლა</translation>
@@ -692,6 +693,7 @@
 <translation id="2361263712565360498">275 x 395 მმ</translation>
 <translation id="236340516568226369">ზომის შეცვლის გადართვის მენიუ</translation>
 <translation id="2365355378251437925">შეიყვანეთ <ph name="FIELD" /></translation>
+<translation id="2365382709349300355">1 ფაილი დაიბლოკა წესების გამო</translation>
 <translation id="2365508935344991784">გარე ავეჯი</translation>
 <translation id="2366689192918515749">ხორცეული და ზღვის პროდუქტები</translation>
 <translation id="2367567093518048410">დონე</translation>
@@ -1137,7 +1139,6 @@
 <translation id="3340978935015468852">პარამეტრები</translation>
 <translation id="3342018947887487892">მოგვიანებით, თქვენ მიერ მონახულებულ საიტს შეუძლია მოითხოვოს ეს ინფორმაცია — თქვენი სარეკლამო თემები ან თქვენ მიერ მონახულებული საიტების მიერ შემოთავაზებული რეკლამები.</translation>
 <translation id="3342366525167526994">ბოდი არტი</translation>
-<translation id="3344167530090084176">შემდგომი გადახდების დასაჩქარებლად შეინახეთ თქვენი ბარათი და უსაფრთხოების კოდი თქვენს მოწყობილობაზე</translation>
 <translation id="334438173029876234">სკეიტბორდერების აღჭურვილობა</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">პროქსის პარამეტრების შეცვლა…</translation>
@@ -1533,7 +1534,6 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{გვერდი 1}other{გვერდი {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome ამიერიდან შეამოწმებს თქვენს ვინაობას გადახდის მეთოდების შევსებამდე. ამ ვარიანტის განახლება ნებისმიერ დროს შეგიძლიათ სექციიდან „<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />“.</translation>
 <translation id="4159149286839604525">ეს ნიშნავს, რომ საიტის ფუნქციების უმეტესობამ უნდა იმუშაოს, თუმცა დაცვის ნაკლები მექანიზმი გექნებათ</translation>
-<translation id="4159575773617358878">შემდგომი გადახდების დასაჩქარებლად შეგიძლიათ შეინახოთ თქვენი ბარათი, უსაფრთხოების კოდი და ბილინგის მისამართი თქვენს Google ანგარიშში</translation>
 <translation id="4159784952369912983">მეწამული</translation>
 <translation id="4165986682804962316">საიტის პარამეტრები</translation>
 <translation id="4169535189173047238">აკრძალვა</translation>
@@ -1893,6 +1893,7 @@
 <translation id="4873616204573862158">სათვალეები</translation>
 <translation id="4876188919622883022">გამარტივებული ხედი</translation>
 <translation id="4876305945144899064">მომხმარებლის სახელის გარეშე</translation>
+<translation id="4876327226315760474">ეს ნიშნავს, რომ საიტის ფუნქციებმა მოლოდინისამებრ უნდა იმუშაოს, თუმცა ვების დათვალიერებისას ნაკლებად იქნებით დაცული.</translation>
 <translation id="4877047577339061095">საოჯახო საცავები და თაროები</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{არცერთი}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">„<ph name="TEXT" />“-ის ძიება</translation>
@@ -2415,6 +2416,7 @@
 <translation id="5967867314010545767">ამოშალეთ ისტორიიდან</translation>
 <translation id="5968022600320704045">ძიების შედეგები ვერ მოიძებნა</translation>
 <translation id="5969199813874624822">შენახვა და ფასისთვის თვალის მიდევნება</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">მეექვსე რულონი</translation>
 <translation id="5975083100439434680">დაშორება</translation>
 <translation id="5979084224081478209">პაროლების შემოწმება</translation>
@@ -2521,6 +2523,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="61877208875190028">ქალის ტანსაცმელი</translation>
 <translation id="6194209731893739467">აქ შეგიძლიათ იხილოთ თქვენი ყველა თვალმიდევნებული პროდუქტი</translation>
+<translation id="6195163219142236913">მესამე მხარის ქუქი-ჩანაწერები შეზღუდულია</translation>
 <translation id="6195371403461054755">გეოლოგია</translation>
 <translation id="6196640612572343990">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვა</translation>
 <translation id="6197648101609735209">89 x 89 მმ</translation>
@@ -2905,6 +2908,7 @@
 <translation id="6965382102122355670">კარგი</translation>
 <translation id="6965978654500191972">მოწყობილობა</translation>
 <translation id="696703987787944103">პერცეფციული</translation>
+<translation id="6967851206780867018">1 ფაილი დაიბლოკა მისი შიგთავსის გამო</translation>
 <translation id="6970885655016700774">ქსოვილი (საარქივო)</translation>
 <translation id="6971439137020188025">Slides-ში ახალი Google პრეზენტაციის სწრაფად შექმნა</translation>
 <translation id="6972629891077993081">HID მოწყობილობები</translation>
@@ -2957,6 +2961,7 @@
 <translation id="70705239631109039">თქვენი კავშირი სრულად დაცული არ არის</translation>
 <translation id="7075452647191940183">მოთხოვნა მეტისმეტად დიდია</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">დაათვალიერეთ ვები უფრო კონფიდენციალურად</translation>
 <translation id="7079718277001814089">ეს საიტი მავნე პროგრამებს შეიცავს</translation>
 <translation id="7081308185095828845">ეს ფუნქცია მიუწვდომელია თქვენს მოწყობილობაზე</translation>
 <translation id="7083258188081898530">ლანგარი 9</translation>

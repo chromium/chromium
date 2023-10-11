@@ -143,6 +143,7 @@
 <translation id="1264309058268477500">အရန်</translation>
 <translation id="1264974993859112054">အားကစား</translation>
 <translation id="1266469291454105242">စက်လော့ခ်ဖွင့်ရန်</translation>
+<translation id="126728463333482584">ဘရောက်စ်လုပ်နေစဉ် သင့်ကိုခြေရာခံမည့် ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများ သုံးနေခြင်းမှ ဝဘ်ဆိုက်များကို ကန့်သတ်မည့် ‘ခြေရာခံခြင်းဆိုင်ရာ ကာကွယ်မှု’ ကို ပထမဆုံး သုံးနေသူများတွင် သင်ပါဝင်သည်။</translation>
 <translation id="1268480293435976622">Chinese #7 စာအိတ်</translation>
 <translation id="1269516672602708785">Google Sites တွင် ဝဘ်ဆိုက်အသစ် အမြန်ပြုလုပ်ရန်</translation>
 <translation id="1270328905573953738">ရွှေ့ခြင်းနှင့် နေရာပြန်ချထားခြင်း</translation>
@@ -692,6 +693,7 @@
 <translation id="2361263712565360498">၂၇၅ x ၃၉၅ မီလီမီတာ</translation>
 <translation id="236340516568226369">အရွယ်အစားပြင်ရန် ခလုတ်မီနူး</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> ထည့်ပါ</translation>
+<translation id="2365382709349300355">မူဝါဒကြောင့် ဖိုင် ၁ ဖိုင်ကို ပိတ်ထားသည်</translation>
 <translation id="2365508935344991784">အိမ်ပြင်သုံးပရိဘောဂ</translation>
 <translation id="2366689192918515749">အသားနှင့် ပင်လယ်စာ</translation>
 <translation id="2367567093518048410">အဆင့်</translation>
@@ -1138,7 +1140,6 @@
 <translation id="3340978935015468852">ဆက်တင်များ</translation>
 <translation id="3342018947887487892">သင်ဝင်ကြည့်သည့် ဝဘ်ဆိုက်သည် ဤအချက်အလက်ကို နောက်ပိုင်းတွင် တောင်းဆိုနိုင်သည် — သင်၏ ကြော်ငြာအကြောင်းအရာ (သို့) သင်ဝင်ကြည့်ထားသည့် ဝဘ်ဆိုက်များက အကြံပြုထားသည့်ကြော်ငြာများ။</translation>
 <translation id="3342366525167526994">ကိုယ်ပေါ်တွင်ဆေးရေးခြင်း အနုပညာ</translation>
-<translation id="3344167530090084176">နောင်တွင် မြန်ဆန်စွာပေးချေနိုင်ရန် သင့်ကတ်နှင့် လုံခြုံရေးကုဒ်ကို စက်တွင် သိမ်းပါ</translation>
 <translation id="334438173029876234">စကိတ်ဘုတ်စီးသည့် ပစ္စည်း</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">ပရောက်စီ ဆက်တင်များ ပြောင်းရန်...</translation>
@@ -1531,7 +1532,6 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{စာမျက်နှာ ၁}other{စာမျက်နှာ {COUNT}}}</translation>
 <translation id="4154277373259957087">ငွေပေးချေနည်းလမ်းများ မဖြည့်သွင်းမီ Chrome က သင်ဖြစ်ကြောင်း ယခု စိစစ်ပါမည်။ ၎င်းကို <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> တွင် အချိန်မရွေး အပ်ဒိတ်လုပ်နိုင်သည်။</translation>
 <translation id="4159149286839604525">ဆိုလိုသည်မှာ ဝဘ်ဆိုက်၏ အင်္ဂါရပ်အများစုကို လုပ်ဆောင်နိုင်မည် ဖြစ်သော်လည်း သင့်အား ကာကွယ်ပေးမှု လျော့နည်းသွားပါသည်</translation>
-<translation id="4159575773617358878">နောင်တွင် မြန်ဆန်စွာပေးချေနိုင်ရန် သင်၏ကတ်၊ လုံခြုံရေးကုဒ်နှင့် ငွေတောင်းခံလွှာပို့သော လိပ်စာကို သင့် Google Account တွင် သိမ်းပါ</translation>
 <translation id="4159784952369912983">ခရမ်း</translation>
 <translation id="4165986682804962316">ဝက်ဆိုက် ဆက်တင်များ</translation>
 <translation id="4169535189173047238">ခွင့်မပြုပါ</translation>
@@ -2415,6 +2415,7 @@
 <translation id="5967867314010545767">သမိုင်းမှ ဖယ်ရှားရန်</translation>
 <translation id="5968022600320704045">ရှာဖွေမှု ရလဒ်များ မရှိပါ</translation>
 <translation id="5969199813874624822">ဈေးနှုန်းကို သိမ်းပြီး စောင့်ကြည့်ရန်</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">ခြောက်ခုမြောက်အလိပ်</translation>
 <translation id="5975083100439434680">ဇူးမ်ဖြုတ်ရန်</translation>
 <translation id="5979084224081478209">စကားဝှက်များ စစ်ဆေးရန်</translation>
@@ -2905,6 +2906,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">စက်ပစ္စည်း</translation>
 <translation id="696703987787944103">လိုက်လျောညီထွေ</translation>
+<translation id="6967851206780867018">အကြောင်းအရာကြောင့် ဖိုင် ၁ ဖိုင်ကို ပိတ်ထားသည်</translation>
 <translation id="6970885655016700774">Fabric (မှတ်တမ်းဆိုင်ရာ)</translation>
 <translation id="6971439137020188025">Slides တွင် Google တင်ပြမှုအသစ် အမြန်ပြုလုပ်ရန်</translation>
 <translation id="6972629891077993081">HID စက်များ</translation>
@@ -2957,6 +2959,7 @@
 <translation id="70705239631109039">သင့်ချိတ်ဆက်မှုသည် လုံခြုံမှုအပြည့်အဝမရှိပါ</translation>
 <translation id="7075452647191940183">တောင်းဆိုချက် အလွန်ကြီးနေသည်</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">နောက်ထပ် ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဖြင့် ဘရောက်စ်လုပ်ခြင်း</translation>
 <translation id="7079718277001814089">ဤဆိုက်တွင် မဲလ်ဝဲ ပါဝင်ပါသည်</translation>
 <translation id="7081308185095828845">ဤဝန်ဆောင်မှုကို သင့်စက်တွင် အသုံးပြု၍မရပါ</translation>
 <translation id="7083258188081898530">ဗန်း ၉</translation>

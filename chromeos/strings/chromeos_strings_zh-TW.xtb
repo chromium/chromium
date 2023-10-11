@@ -119,6 +119,7 @@
 <translation id="1768959921651994223">驗證類型</translation>
 <translation id="1776228893584526149">桌布色調</translation>
 <translation id="1782199038061388045">翻譯</translation>
+<translation id="1788485524395674731">這個應用程式是由系統管理員管理</translation>
 <translation id="1792647875738159689">正在取消掃描</translation>
 <translation id="1801418420130173017">停用深色主題</translation>
 <translation id="1807246157184219062">淺色</translation>
@@ -194,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">開啟藍牙即可偵測附近的裝置</translation>
 <translation id="2346474577291266260">極佳 (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383">「<ph name="DESCRIPTION" />」的編輯對話方塊已開啟。</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2364498172489649528">已通過</translation>
 <translation id="2367335866686097760">按鍵對應按鍵</translation>
@@ -213,6 +215,7 @@
 <translation id="2505327257735685095">重新整理目前的桌布圖片</translation>
 <translation id="2512979179176933762">顯示視窗</translation>
 <translation id="2513396635448525189">登入圖片</translation>
+<translation id="2515109918609218604">無法使用這組快速鍵。請使用其他快速鍵，而且當中不得有功能鍵和搜尋鍵。</translation>
 <translation id="2517472476991765520">掃描</translation>
 <translation id="2521835766824839541">播放上一首曲目</translation>
 <translation id="2526590354069164005">桌面</translation>
@@ -624,6 +627,7 @@
 <translation id="584953448295717128">系統會自動偵測 APN。</translation>
 <translation id="5849570051105887917">家用提供者代碼</translation>
 <translation id="5859603669299126575">畫廊中的相簿</translation>
+<translation id="5859969039821714932">無法使用這組快速鍵，請按不含 <ph name="KEY" /> 鍵的新快速鍵。</translation>
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5860491529813859533">啟用</translation>
 <translation id="5876385649737594562">開啟即可選取選項</translation>
@@ -1019,6 +1023,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">裝置類型為平板電腦。</translation>
 <translation id="8881098542468797602">已通過測試</translation>
+<translation id="8892443466059986410">取消編輯快速鍵</translation>
 <translation id="8898840733695078011">訊號強度</translation>
 <translation id="8909114361904403025">向上鍵</translation>
 <translation id="8910721771319628100">預設網路超過延遲門檻</translation>

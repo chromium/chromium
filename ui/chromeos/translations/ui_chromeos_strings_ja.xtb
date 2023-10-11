@@ -329,6 +329,7 @@
 <translation id="3619115746895587757">カプチーノ</translation>
 <translation id="3619593063686672873">最近視聴した動画はありません</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、管理者によって管理、詳細</translation>
+<translation id="36451918667380448">モバイル ネットワーク プロバイダがロックされています。サポートについてはプロバイダにお問い合わせください。</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> 件のアイテムを移動しました。</translation>
 <translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> 個のファイルが選択されています</translation>
 <translation id="3685122418104378273">Google ドライブの同期は既定で無効になっています（モバイルデータを使用する場合）。</translation>

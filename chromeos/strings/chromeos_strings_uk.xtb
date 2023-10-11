@@ -119,6 +119,7 @@
 <translation id="1768959921651994223">Тип автентифікації</translation>
 <translation id="1776228893584526149">Відтінок фонового малюнка</translation>
 <translation id="1782199038061388045">переклад</translation>
+<translation id="1788485524395674731">Цим додатком керує адміністратор</translation>
 <translation id="1792647875738159689">Сканування скасовується</translation>
 <translation id="1801418420130173017">Вимкнути темну тему</translation>
 <translation id="1807246157184219062">Світла</translation>
@@ -213,6 +214,7 @@
 <translation id="2505327257735685095">Оновити поточний фоновий малюнок</translation>
 <translation id="2512979179176933762">показати вікна</translation>
 <translation id="2513396635448525189">Зображення облікового запису</translation>
+<translation id="2515109918609218604">Комбінація клавіш недоступна. Натисніть нову комбінацію клавіш, не використовуючи функціональні клавіші й клавіші пошуку.</translation>
 <translation id="2517472476991765520">Сканувати</translation>
 <translation id="2521835766824839541">попередня композиція</translation>
 <translation id="2526590354069164005">Google Desktop</translation>
@@ -624,6 +626,7 @@
 <translation id="584953448295717128">APN визначається автоматично.</translation>
 <translation id="5849570051105887917">Код локального постачальника</translation>
 <translation id="5859603669299126575">Альбом із мистецької галереї</translation>
+<translation id="5859969039821714932">Комбінація клавіш недоступна. Натисніть нову комбінацію без клавіші <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Вимк.</translation>
 <translation id="5860491529813859533">Увімкнути</translation>
 <translation id="5876385649737594562">Увімкніть, щоб вибрати параметри</translation>
@@ -868,6 +871,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
 <translation id="7718231387947923843">підсвічування клавіатури</translation>
+<translation id="7730077286107534951">Певні дані про ваш обліковий запис і систему можуть надсилатися в Google. Ми застосовуємо цю інформацію відповідно до <ph name="BEGIN_LINK2" />Політики конфіденційності<ph name="END_LINK2" /> й <ph name="BEGIN_LINK3" />Умов використання<ph name="END_LINK3" />, щоб вирішувати технічні проблеми й покращувати наші сервіси. Щоб надіслати запит на змінення контенту, перейдіть на <ph name="BEGIN_LINK1" />сторінку правової довідки<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Кількість циклів</translation>
 <translation id="7747039790905080783">Спільний ключ</translation>
 <translation id="7752963721013053477">Від світанку до заходу сонця – ексклюзивно</translation>

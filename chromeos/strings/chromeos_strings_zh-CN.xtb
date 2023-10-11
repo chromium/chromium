@@ -119,6 +119,7 @@
 <translation id="1768959921651994223">身份验证类型</translation>
 <translation id="1776228893584526149">壁纸色调</translation>
 <translation id="1782199038061388045">翻译</translation>
+<translation id="1788485524395674731">此应用由您的管理员管理</translation>
 <translation id="1792647875738159689">正在取消扫描</translation>
 <translation id="1801418420130173017">停用深色主题</translation>
 <translation id="1807246157184219062">浅色调</translation>
@@ -213,6 +214,7 @@
 <translation id="2505327257735685095">刷新当前壁纸图片</translation>
 <translation id="2512979179176933762">显示窗口</translation>
 <translation id="2513396635448525189">登录图片</translation>
+<translation id="2515109918609218604">此快捷键不可用。请在不使用功能键和搜索键的情况下按一个新快捷键。</translation>
 <translation id="2517472476991765520">扫描</translation>
 <translation id="2521835766824839541">上一首</translation>
 <translation id="2526590354069164005">桌面</translation>
@@ -624,6 +626,7 @@
 <translation id="584953448295717128">已自动检测到 APN。</translation>
 <translation id="5849570051105887917">家用移动网络提供商代码</translation>
 <translation id="5859603669299126575">画廊中的影集</translation>
+<translation id="5859969039821714932">此快捷键不可用。请按下不含 <ph name="KEY" /> 键的新快捷键。</translation>
 <translation id="5860033963881614850">关闭</translation>
 <translation id="5860491529813859533">启用</translation>
 <translation id="5876385649737594562">开启后才能选择所需选项</translation>

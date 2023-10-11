@@ -143,6 +143,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1264309058268477500">Alternatif</translation>
 <translation id="1264974993859112054">Sukan</translation>
 <translation id="1266469291454105242">Buka kunci peranti</translation>
+<translation id="126728463333482584">Anda antara pengguna yang pertama mendapat pengalaman Perlindungan Penjejakan, yang mengehadkan laman daripada menggunakan kuki pihak ketiga untuk menjejaki anda semasa anda menyemak imbas.</translation>
 <translation id="1268480293435976622">Sampul Cina #7</translation>
 <translation id="1269516672602708785">Buat laman baharu dalam Google Sites dengan pantas</translation>
 <translation id="1270328905573953738">Pemindahan &amp; Penempatan Semula</translation>
@@ -692,6 +693,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Ubah saiz menu togol</translation>
 <translation id="2365355378251437925">Masukkan <ph name="FIELD" /></translation>
+<translation id="2365382709349300355">1 fail disekat disebabkan oleh dasar</translation>
 <translation id="2365508935344991784">Perabot Luar Rumah</translation>
 <translation id="2366689192918515749">Daging &amp; Makanan Laut</translation>
 <translation id="2367567093518048410">Tahap</translation>
@@ -1137,7 +1139,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3340978935015468852">tetapan</translation>
 <translation id="3342018947887487892">Kemudian, laman yang anda lawati boleh meminta maklumat ini — sama ada topik iklan anda atau iklan yang dicadangkan oleh laman yang anda lawati.</translation>
 <translation id="3342366525167526994">Seni badan</translation>
-<translation id="3344167530090084176">Untuk membayar dengan lebih cepat selepas ini, simpan kad dan kod keselamatan anda pada peranti anda</translation>
 <translation id="334438173029876234">Peralatan Papan Luncur</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Tukar tetapan proksi...</translation>
@@ -1534,7 +1535,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4152318981910038897">{COUNT,plural, =1{Halaman 1}other{Halaman {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome akan mengesahkan identiti anda sebelum mengisi kaedah pembayaran. Anda boleh mengemaskinikan kaedah pembayaran ini pada bila-bila masa dalam <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4159149286839604525">Hal ini bermakna kebanyakan ciri laman boleh berfungsi tetapi anda mempunyai kurang perlindungan</translation>
-<translation id="4159575773617358878">Untuk membuat pembayaran yang lebih pantas selepas ini, simpan kad, kod keselamatan dan alamat pengebilan anda dalam Google Account anda</translation>
 <translation id="4159784952369912983">Ungu</translation>
 <translation id="4165986682804962316">Tetapan tapak</translation>
 <translation id="4169535189173047238">Jangan benarkan</translation>
@@ -2417,6 +2417,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5967867314010545767">Buang daripada sejarah</translation>
 <translation id="5968022600320704045">Tiada hasil carian</translation>
 <translation id="5969199813874624822">Simpan dan Jejak Harga</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Gulungan Keenam</translation>
 <translation id="5975083100439434680">Zum keluar</translation>
 <translation id="5979084224081478209">Semak kata laluan</translation>
@@ -2908,6 +2909,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Peranti</translation>
 <translation id="696703987787944103">Perseptual</translation>
+<translation id="6967851206780867018">1 fail disekat disebabkan oleh kandungan</translation>
 <translation id="6970885655016700774">Fabrik (Arkib)</translation>
 <translation id="6971439137020188025">Buat pembentangan Google baharu dalam Slides dengan pantas</translation>
 <translation id="6972629891077993081">Peranti HID</translation>
@@ -2960,6 +2962,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="70705239631109039">Sambungan anda tidak selamat sepenuhnya</translation>
 <translation id="7075452647191940183">Permintaan terlalu besar</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">Semak imbas dengan lebih privasi</translation>
 <translation id="7079718277001814089">Tapak ini mengandungi perisian hasad</translation>
 <translation id="7081308185095828845">Ciri ini tidak tersedia pada peranti anda</translation>
 <translation id="7083258188081898530">Dulang 9</translation>

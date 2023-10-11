@@ -328,6 +328,7 @@
 <translation id="1615402009686901181">Администраторското правило оневозможува снимање на екранот кога се видливи доверливи содржини</translation>
 <translation id="1617276713587758852">Кросовери</translation>
 <translation id="1618571384971354160">Шлепување и помош на патот</translation>
+<translation id="1619007254056372606">Управувајте со податоци од сајт на уредот</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622571349153632031">Вегетаријанска кујна</translation>
 <translation id="162285686621567578">Родителот го блокирал веб-сајтов.</translation>
@@ -1136,7 +1137,6 @@
 <translation id="3340978935015468852">поставки</translation>
 <translation id="3342018947887487892">Подоцна, сајтот што го посетувате може да ги побара овие податоци: темите за реклами или рекламите предложени од сајтовите што сте ги посетиле.</translation>
 <translation id="3342366525167526994">Сликање на тело</translation>
-<translation id="3344167530090084176">За да платите побрзо следниот пат, зачувајте ги картичката и безбедносниот код на вашиот уред</translation>
 <translation id="334438173029876234">Опрема за возење скејтборд</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Промени прокси-поставки...</translation>
@@ -1241,6 +1241,7 @@
 <translation id="3552297013052089404">Фонт Sans Serif</translation>
 <translation id="3558573058928565255">Во текот на денот</translation>
 <translation id="355995771319966853">Врати го автоматското пополнување</translation>
+<translation id="3560408312959371419">Опции за заштити од следење и податоци од сајт на уредот</translation>
 <translation id="3560824484345057728">Прикажувај поврзани сајтови</translation>
 <translation id="3566021033012934673">Вашето поврзување не е приватно</translation>
 <translation id="3566336457819493938">215 x 315 mm</translation>
@@ -1531,7 +1532,6 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{Страница 1}one{Страница {COUNT}}other{Страница {COUNT}}}</translation>
 <translation id="4154277373259957087">Сега Chrome ќе го потврди вашиот идентитет пред да ги пополни начините на плаќање. Ова може да го ажурирате во секое време во <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4159149286839604525">Ова значи дека повеќето од функциите на сајтот би требало да функционираат, но заштитата е помала</translation>
-<translation id="4159575773617358878">За да платите побрзо следниот пат, зачувајте ги картичката, безбедносниот код и адресата за наплата во вашата сметка на Google</translation>
 <translation id="4159784952369912983">Пурпурна</translation>
 <translation id="4165986682804962316">Поставки на локација</translation>
 <translation id="4169535189173047238">Не дозволувај</translation>
@@ -1891,6 +1891,7 @@
 <translation id="4873616204573862158">Очила</translation>
 <translation id="4876188919622883022">Поедноставен приказ</translation>
 <translation id="4876305945144899064">Нема корисничко име</translation>
+<translation id="4876327226315760474">Тоа значи дека функциите на сајтот би требало да функционираат според очекувањата, но можно е да бидете помалку заштитени при прелистување.</translation>
 <translation id="4877047577339061095">Складирање и полици во домот</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Ниеден}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Пребарување <ph name="TEXT" /></translation>
@@ -2519,6 +2520,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="61877208875190028">Женска облека</translation>
 <translation id="6194209731893739467">Видете ги сите ваши следени производи тука</translation>
+<translation id="6195163219142236913">Колачињата од трети страни се ограничени</translation>
 <translation id="6195371403461054755">Геологија</translation>
 <translation id="6196640612572343990">Блокирај колачиња од трети лица</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
@@ -3883,6 +3885,7 @@
 <translation id="893332455753468063">Додајте име</translation>
 <translation id="8942355029279167844">Администраторот дозволил <ph name="APP_NAME" /> да собира дијагностички податоци за да го подобри доживувањето со производот. Видете <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> за повеќе информации.</translation>
 <translation id="8943282376843390568">Боја на лимета</translation>
+<translation id="8944485226638699751">Ограничено</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Право и влада</translation>
 <translation id="8954252855949068147">Облека</translation>

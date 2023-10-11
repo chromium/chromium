@@ -169,6 +169,7 @@
 <translation id="1847795903283049083">Може да ги прегледувате и да управувате со ставкиве и во вашите обележувачи, „Списокот за читање“ или Password Manager.</translation>
 <translation id="1870148520156231997">Прикажете ја лозинката</translation>
 <translation id="1872096359983322073">Светилка</translation>
+<translation id="1876851015978093044">Ќе се прикаже ставкава</translation>
 <translation id="1882901927376062252">{count,plural, =1{Обележувачот е зачуван во вашата сметка на Google, {email}}one{{count} обележувач се зачувани во вашата сметка на Google, {email}}other{{count} обележувачи се зачувани во вашата сметка на Google, {email}}}</translation>
 <translation id="1883255238294161206">Собери список</translation>
 <translation id="1890237935065108104">Оваа поставка е недостапна.</translation>
@@ -282,6 +283,7 @@
 <translation id="2482878487686419369">Известувања</translation>
 <translation id="2484459871750294497">Како да ја овозможам функцијава?</translation>
 <translation id="2496626742194544812">Одете на првата картичка</translation>
+<translation id="2499505845365628575">Сета ваша историја на прелистувањето може да ја најдете од <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2500374554657206846">Опции за зачувување лозинка</translation>
 <translation id="2511117522375201202">Имате <ph name="NUMBER_OF_PASSWORDS" /> компромитирани лозинки што би можеле да претставуваат ризик за вашата безбедност.</translation>
 <translation id="2523363575747517183">Веб-сајтов постојано се обидува да отвори друга апликација.</translation>
@@ -333,6 +335,7 @@
 <translation id="2718352093833049315">Само преку Wi-Fi</translation>
 <translation id="2738375676495545665">Скриј „Што има ново“</translation>
 <translation id="2747003861858887689">Претходно поле</translation>
+<translation id="2749026027885331579">Членовите на вашето семејство сега може да ги користат вашите корисничко име и лозинка при користење Google Password Manager за да се најават на <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Се следи <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Сметки на овој уред</translation>
 <translation id="2762000892062317888">пред малку</translation>
@@ -980,7 +983,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6236952928980352967">Врати предупредување</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6254066287920239840">Отворајте линкови во апликацијата наместо во прелистувачот.</translation>
-<translation id="625491139841322297">{count,plural, =1{Прегледајте ја картичката}one{Прегледајте ги сите картички}other{Прегледајте ги сите картички}}</translation>
 <translation id="6255097610484507482">Измени кредитна картичка</translation>
 <translation id="6266039999629596120">Потребно е дејство</translation>
 <translation id="6277426346321820595">Без заштита</translation>
@@ -1112,6 +1114,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6785453220513215166">Извештајот за пад се испраќа...</translation>
 <translation id="6790502149545262384">Наскоро ќе гледате стории од <ph name="CHANNEL_NAME" /> при отворање нова картичка.</translation>
 <translation id="6797885426782475225">Гласовно пребарување</translation>
+<translation id="6800349425672670802">Може да пристапите до сите ваши отворени картички од „Менувачот на картички“.</translation>
 <translation id="6807889908376551050">Прикажи ги сите...</translation>
 <translation id="681368974849482173">Ставката е создадена</translation>
 <translation id="6822587385560699678">Кога е вклучено, лозинките за зачувуваат на <ph name="ACCOUNT" />. Кога е исклучено, лозинките се зачувуваат само на овој уред.</translation>
@@ -1206,6 +1209,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7367530036083223701">Со виџетот за Password Manager, безбедно пристапувајте до вашите лозинки од почетниот екран.</translation>
 <translation id="7380220816562673297">Засега, лозинки може да споделувате само со членови на семејството. <ph name="BEGIN_LINK" />Создајте семејна група<ph name="END_LINK" /> со најмногу 6 членови и извлечете го максимумот од вашите производи и претплати на Google.</translation>
 <translation id="7383797227493018512">Список за читање</translation>
+<translation id="7396331865858820922">Лозинката не е споделена</translation>
 <translation id="7398893703713203428">Создај линк</translation>
 <translation id="7399802613464275309">Проверка на безбедноста</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1226,6 +1230,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7488874549363591659">Испорачано</translation>
 <translation id="7491131399623468277">Отворете „Поставки“…</translation>
 <translation id="7492574581995589075">Вашата организација ја исклучи способноста да се користат и зачувуваат податоци од Chrome во вашата сметка на Google. Новите обележувачи, лозинки и друго ќе се зачувуваат само на овој уред.</translation>
+<translation id="749854780843431406">Нова картичка може да отворите од копчето за <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="750149195207506638">Дестинацијата „Обележувачи“ е скриена</translation>
 <translation id="750228856503700085">Ажурирања не се достапни</translation>
 <translation id="750493650310597496">0 избрани</translation>
@@ -1286,6 +1291,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="778855399387580014">Започнете пребарување во нова картичка на Chrome.</translation>
 <translation id="7791543448312431591">Додај</translation>
 <translation id="7807060072011926525">Обезбедено од Google</translation>
+<translation id="7812377703891978671">Може да пристапите до сета ваша историја на прелистувањето со избирање <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Преземања</translation>
 <translation id="7839985698273989086">Офлајн страница</translation>
 <translation id="7840771868269352570">Ставките ќе се отстранат.</translation>
@@ -1433,6 +1439,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8560253818350321773">Прво прикажувај ги често користените ставки.</translation>
 <translation id="8588404856427128947">Исклучена</translation>
 <translation id="8591976964826315682">Блокирајте колачиња од трети страни во „Инкогнито“</translation>
+<translation id="8593565399399144771">Нова картичка може да отворите тука.</translation>
 <translation id="8605219856220328675">Затвори ја картичката.</translation>
 <translation id="8613883225817609844">Скриј „Неодамнешни картички“</translation>
 <translation id="8620640915598389714">Измени</translation>

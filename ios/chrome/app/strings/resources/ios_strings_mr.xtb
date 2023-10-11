@@ -333,6 +333,7 @@
 <translation id="2718352093833049315">केवळ वाय-फाय वर</translation>
 <translation id="2738375676495545665">नवीन काय आहे ते लपवा</translation>
 <translation id="2747003861858887689">मागील फील्ड</translation>
+<translation id="2749026027885331579">तुमचे कुटुंब सदस्य हे <ph name="WEBSITE" /> मध्ये साइन इन करण्यासाठी Google Password Manager वापरतात, तेव्हा ते आता तुमचे वापरकर्ता नाव आणि पासवर्ड वापरू शकतात. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ला फॉलो करत आहे</translation>
 <translation id="2754492786623500387">या डिव्हाइस वरील खाती</translation>
 <translation id="2762000892062317888">आत्ताच</translation>
@@ -980,7 +981,6 @@
 <translation id="6236952928980352967">चेतावणी रिस्टोअर करा</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6254066287920239840">ब्राउझर ऐवजी ॲपमध्ये लिंक उघडा.</translation>
-<translation id="625491139841322297">{count,plural, =1{टॅबचे पुनरावलोकन करा}other{सर्व टॅबचे पुनरावलोकन करा}}</translation>
 <translation id="6255097610484507482">क्रेडिट कार्ड संपादित करा</translation>
 <translation id="6266039999629596120">लक्ष देणे आवश्यक आहे</translation>
 <translation id="6277426346321820595">संरक्षण नाही</translation>

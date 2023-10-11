@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ახლომდებარე მოწყობილობების საპოვნელად ჩართეთ Bluetooth</translation>
 <translation id="2346474577291266260">შესანიშნავი (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383">ელემენტისთვის <ph name="DESCRIPTION" /> გახსნილია რედაქტირების დიალოგი.</translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
 <translation id="2364498172489649528">გავლილია</translation>
 <translation id="2367335866686097760">კლავიშთა დანიშვნის კლავიში</translation>
@@ -214,6 +215,7 @@
 <translation id="2505327257735685095">ფონის ამჟამინდელი სურათის განახლება</translation>
 <translation id="2512979179176933762">ფანჯრების ჩვენება</translation>
 <translation id="2513396635448525189">შესვლის სურათი</translation>
+<translation id="2515109918609218604">მალსახმობი მიუწვდომელია. დააჭირეთ ახალ მალსახმობს ფუნქციური და ძიების კლავიშების გამოყენების გარეშე.</translation>
 <translation id="2517472476991765520">სკანირება</translation>
 <translation id="2521835766824839541">წინა ჩანაწერი</translation>
 <translation id="2526590354069164005">სამუშაო დაფა</translation>
@@ -1021,6 +1023,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">მოწყობილობა არის ტაბლეტი.</translation>
 <translation id="8881098542468797602">ტესტი წარმატებით შესრულდა</translation>
+<translation id="8892443466059986410">]მალსახმობის რედაქტირების გაუქმება</translation>
 <translation id="8898840733695078011">სიგნალის სიძლიერე</translation>
 <translation id="8909114361904403025">ისარი ზემოთ</translation>
 <translation id="8910721771319628100">ნაგულისხმევი ქსელი აღემატება რეაგირების დროის ზღვარს</translation>

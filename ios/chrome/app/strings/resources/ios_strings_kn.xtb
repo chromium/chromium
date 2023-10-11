@@ -335,6 +335,7 @@
 <translation id="2718352093833049315">ಕೇವಲ ವೈ-ಫೈ ಮಾತ್ರ</translation>
 <translation id="2738375676495545665">ಹೊಸತೇನಿದೆ ಎಂಬುದನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="2747003861858887689">ಹಿಂದಿನ ಕ್ಷೇತ್ರ</translation>
+<translation id="2749026027885331579">ನಿಮ್ಮ ಕುಟುಂಬದ ಸದಸ್ಯರು <ph name="WEBSITE" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು Google Password Manager ಅನ್ನು ಬಳಸುವಾಗ, ಅವರು ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ಅನ್ನು ಫಾಲೋ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2754492786623500387">ಈ ಸಾಧನದಲ್ಲಿನ ಖಾತೆಗಳು</translation>
 <translation id="2762000892062317888">ಈಗತಾನೇ</translation>
@@ -982,7 +983,6 @@
 <translation id="6236952928980352967">ಎಚ್ಚರಿಕೆಯನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="6247557882553405851">Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕ</translation>
 <translation id="6254066287920239840">ಬ್ರೌಸರ್ ಬದಲಿಗೆ ಅಪ್ಲಿಕೇಶನ್‌ನಲ್ಲಿ ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ.</translation>
-<translation id="625491139841322297">{count,plural, =1{ಟ್ಯಾಬ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ}one{ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ}other{ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ}}</translation>
 <translation id="6255097610484507482">ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="6266039999629596120">ಗಮನ ಹರಿಸುವ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="6277426346321820595">ಯಾವುದೇ ರಕ್ಷಣೆಯಿಲ್ಲ</translation>

@@ -9564,7 +9564,6 @@ Lưu ý: Thao tác khởi động lại thiết bị sẽ xoá bộ nhớ đệm
 
       Nếu bạn tắt chính sách này thì các thiết bị đã đăng ký sẽ không ghi lại hoặc báo cáo trạng thái âm thanh.
       Trường hợp ngoại lệ: Thông tin mức âm lượng của hệ thống do <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> kiểm soát trong M95 trở xuống.</translation>
-<translation id="9071527533179676468">Nếu bạn đặt chính sách này thành Bật, thì các ứng dụng web bên thứ ba có thể sử dụng Desk API để kiểm soát các không gian làm việc trên ChromeOS. Nếu bạn tắt hoặc không đặt chính sách này, thì Desk API sẽ không hoạt động.</translation>
 <translation id="9072475476775217730">Nếu bạn đặt chính sách này thành Tắt, các cửa sổ bật lên nhắm đến <ph name="BLANK_PAGE_NAME" /> sẽ có thể truy cập (qua JavaScript) trang đã yêu cầu mở cửa sổ bật lên.
 
       Nếu bạn đặt chính sách này thành Bật hoặc không đặt chính sách này, thuộc tính <ph name="WINDOW_OPENER_PROPERTY" /> sẽ được đặt thành <ph name="NULL_VALUE" /> trừ phi thẻ liên kết chỉ định <ph name="REL_OPENER_ATTRIBUTE" />.

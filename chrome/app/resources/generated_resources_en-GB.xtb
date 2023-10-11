@@ -6825,7 +6825,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6469702164109431067">Passwords and passkeys</translation>
 <translation id="6470823736074966819">Mute notifications</translation>
 <translation id="6472893788822429178">Show Home button</translation>
-<translation id="6474352027343282094">{COUNT,plural, =1{{COUNT} password is saved only to this device. To use it on your other devices, &lt;a target='_blank' href='chrome://password-manager/'&gt;save it in your Google Account&lt;/a&gt;.}other{{COUNT} passwords are saved only to this device. To use them on your other devices, &lt;a target='_blank' href='chrome://password-manager/'&gt;save them in your Google Account&lt;/a&gt;.}}</translation>
 <translation id="6474498546677193336">Couldn't unshare because an application is using this folder. The folder will be unshared when Linux is next shut down.</translation>
 <translation id="6474884162850599008">Disconnect Google Drive account</translation>
 <translation id="6475294023568239942">Free up disk space or resize the Linux disk in settings</translation>

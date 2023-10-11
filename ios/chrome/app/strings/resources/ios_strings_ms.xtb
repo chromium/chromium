@@ -335,6 +335,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2718352093833049315">Hanya pada Wi-Fi</translation>
 <translation id="2738375676495545665">Sembunyikan Perkara Baharu</translation>
 <translation id="2747003861858887689">Medan sebelumnya</translation>
+<translation id="2749026027885331579">Kini ahli keluarga anda boleh menggunakan nama pengguna dan kata laluan anda apabila mereka menggunakan Google Password Manager untuk log masuk ke <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Mengikuti <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Akaun pada Peranti ini</translation>
 <translation id="2762000892062317888">sebentar tadi</translation>
@@ -982,7 +983,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6236952928980352967">Pulihkan Amaran</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6254066287920239840">Buka pautan dalam Apl dan bukannya penyemak imbas.</translation>
-<translation id="625491139841322297">{count,plural, =1{Semak tab}other{Semak semua tab}}</translation>
 <translation id="6255097610484507482">Edit Kad Kredit</translation>
 <translation id="6266039999629596120">Memerlukan perhatian</translation>
 <translation id="6277426346321820595">Tiada Perlindungan</translation>

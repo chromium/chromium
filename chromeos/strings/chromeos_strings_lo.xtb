@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ເປີດ Bluetooth ເພື່ອຊອກຫາອຸປະກອນທີ່ຢູ່ໃກ້ຄຽງ</translation>
 <translation id="2346474577291266260">ດີເລີດ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383">ກ່ອງໂຕ້ຕອບການແກ້ໄຂສຳລັບ <ph name="DESCRIPTION" /> ເປີດຢູ່.</translation>
 <translation id="2359808026110333948">ສືບຕໍ່</translation>
 <translation id="2364498172489649528">ຜ່ານແລ້ວ</translation>
 <translation id="2367335866686097760">ປຸ່ມ Keymapping</translation>
@@ -214,6 +215,7 @@
 <translation id="2505327257735685095">ໂຫຼດຂໍ້ມູນຮູບພື້ນຫຼັງປັດຈຸບັນຄືນໃໝ່</translation>
 <translation id="2512979179176933762">ສະແດງໜ້າຈໍ</translation>
 <translation id="2513396635448525189">ຮູບການເຂົ້າສູ່ລະບົບ</translation>
+<translation id="2515109918609218604">ບໍ່ສາມາດໃຊ້ທາງລັດໄດ້. ກົດແປ້ນພິມທາງລັດໃໝ່ໂດຍໃຊ້ຟັງຊັນ ແລະ ປຸ່ມຊອກຫາ.</translation>
 <translation id="2517472476991765520">ສະແກນ</translation>
 <translation id="2521835766824839541">ເພງກ່ອນໜ້າ</translation>
 <translation id="2526590354069164005">ເດັສທັອບ</translation>
@@ -1022,6 +1024,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ອຸປະກອນແມ່ນແທັບເລັດ.</translation>
 <translation id="8881098542468797602">ສຳເລັດການທົດສອບແລ້ວ</translation>
+<translation id="8892443466059986410">ຍົກເລີກການແກ້ໄຂທາງລັດ</translation>
 <translation id="8898840733695078011">ຄວາມແຮງສັນຍານ</translation>
 <translation id="8909114361904403025">ລູກສອນຂຶ້ນ</translation>
 <translation id="8910721771319628100">ເຄືອຂ່າຍເລີ່ມຕົ້ນສູງກວ່າເກນເວລາໃນການຕອບສະໜອງ</translation>

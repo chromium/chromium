@@ -233,6 +233,7 @@
 <translation id="1175364870820465910">&amp;Տպել…</translation>
 <translation id="1175914831232945926">Թվանշաններ</translation>
 <translation id="1176471985365269981">Չի թույլատրվում ձեր սարքում խմբագրել ֆայլեր և պանակներ</translation>
+<translation id="1177440945615690056">Կարգավորումներում դուք կարող եք միանալ պահանջներին համապատասխանող ցանկացած բջջային ցանցի</translation>
 <translation id="1177863135347784049">Անհատականացված</translation>
 <translation id="1178581264944972037">Դադար</translation>
 <translation id="1178601482396475810">Սարքի համաժամացման կառավարում</translation>
@@ -2203,6 +2204,7 @@
 <translation id="2709516037105925701">Ինքնալցում</translation>
 <translation id="2710101514844343743">Օգտագործման և դիագնոստիկ տվյալներ</translation>
 <translation id="271033894570825754">New</translation>
+<translation id="2710507903599773521">Ձեր <ph name="DEVICE_TYPE" />-ն այժմ ապակողպված է</translation>
 <translation id="2711073837061989559">Փորձնական տարբերակներ</translation>
 <translation id="2713106313042589954">Անջատել տեսախցիկը</translation>
 <translation id="2713444072780614174">Սպիտակ</translation>
@@ -3486,6 +3488,7 @@
 <translation id="3752253558646317685">Երեխան պետք է փոքր-ինչ տեղաշարժի իր մատը, որպեսզի մատնահետքը պահվի։</translation>
 <translation id="3753033997400164841">Պահեք մեկ անգամ և օգտագործեք ամենուրեք</translation>
 <translation id="3753142252662437130">Գունային զտիչներ</translation>
+<translation id="3753412199586870466">Բացել կողային վահանակը</translation>
 <translation id="3755411799582650620">Ձեր <ph name="PHONE_NAME" /> հեռախոսն այժմ կարող է ապակողպել նաև այս <ph name="DEVICE_TYPE" /> սարքը:</translation>
 <translation id="375636864092143889">Կայքն օգտագործում է ձեր խոսափողը</translation>
 <translation id="3756485814916578707">Էկրանի հեռարձակում</translation>
@@ -6791,7 +6794,6 @@
 <translation id="6469702164109431067">Գաղտնաբառեր և անցաբառեր</translation>
 <translation id="6470823736074966819">Անջատել ծանուցումների ձայնը</translation>
 <translation id="6472893788822429178">Ցույց տալ Սկիզբ կոճակը</translation>
-<translation id="6474352027343282094">{COUNT,plural, =1{{COUNT} գաղտնաբառ պահվում է միայն այս սարքում։ Գաղտնաբառը ձեր մյուս սարքերում օգտագործելու համար &lt;a target='_blank' href='chrome://password-manager/'&gt;պահեք այն ձեր Google հաշվում&lt;/a&gt;։}one{{COUNT} գաղտնաբառ պահվում է միայն այս սարքում։ Գաղտնաբառը ձեր մյուս սարքերում օգտագործելու համար &lt;a target='_blank' href='chrome://password-manager/'&gt;պահեք այն ձեր Google հաշվում&lt;/a&gt;։}other{{COUNT} գաղտնաբառ պահվում է միայն այս սարքում։ Գաղտնաբառերը ձեր մյուս սարքերում օգտագործելու համար &lt;a target='_blank' href='chrome://password-manager/'&gt;պահեք դրանք ձեր Google հաշվում&lt;/a&gt;։}}</translation>
 <translation id="6474498546677193336">Չհաջողվեց չեղարկել պանակի հասանելիությունը, քանի որ այն օգտագործվում է հավելվածի կողմից։ Պանակն անհասանելի կդառնա, երբ Լինուքսը հաջորդ անգամ անջատվի։</translation>
 <translation id="6474884162850599008">Google Drive հաշվի անջատում</translation>
 <translation id="6475294023568239942">Սկավառակում տարածք ազատեք կամ կարգավորումներում փոխեք Լինուքսի սկավառակի չափսը</translation>
@@ -7133,6 +7135,9 @@
 <translation id="6767566652486411142">Ընտրել մեկ այլ լեզու...</translation>
 <translation id="6767639283522617719">Չհաջողվեց միանալ տիրույթին: Համոզվեք, որ ստորաբաժանման կարգավորումները ճիշտ են:</translation>
 <translation id="6768034047581882264">Չի թույլատրվում ցուցադրել վտանգավոր բովանդակություն</translation>
+<translation id="6769902329858794251"><ph name="BEGIN_PARAGRAPH1" />Լավագույն որակն ապահովելու համար <ph name="DEVICE_OS" />-ը հավաքում է սարքակազմի տվյալները և տրամադրում Google-ին, որն այդ տվյալների հիման վրա որոշում է, թե ինչ թարմացումներ է անհրաժեշտ տրամադրել։ Ցանկության դեպքում կարող եք նաև թույլատրել Google-ին օգտագործել այս տվյալներն այլ նպատակներով, օրինակ՝ <ph name="DEVICE_OS" />-ի աշխատանքի և սպասարկման որակը բարձրացնելու համար։<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Մուտք գործեք հաշիվ այս սարքում և դիտեք որպես chromeosflex_ նշված դաշտերը chrome://system էջում՝ իմանալու, թե ինչ տվյալներ եք ուղարկում Google-ին, որպեսզի դրանց հիման վրա թարմացումներ ստանաք, և թե ինչ այլ նպատակներով կարող եք տվյալներ փոխանցել Google-ին։<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Եթե ուզում եք ավելին իմանալ, թե <ph name="DEVICE_OS" />-ն ինչ տվյալներ կարող է տրամադրել Google-ին, և ինչպես են դրանք օգտագործվում, այցելեք g.co/flex/HWDataCollection էջ։<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770042910635026163">Ձեր այցելած կայքերը, որոնք ազդում են ձեր հետաքրքրությունների ընտրության վրա</translation>
 <translation id="6770602306803890733">Համացանցը դարձնում է ավելի անվտանգ ձեր և մյուս օգտատերերի համար</translation>
 <translation id="6771503742377376720">Հավաստագրման կենտրոն է</translation>
@@ -8613,6 +8618,7 @@
 <translation id="793531125873261495">Չհաջողվեց ներբեռնել վիրտուալ մեքենան: Նորից փորձեք:</translation>
 <translation id="7935451262452051102">Կատարված է <ph name="PERCENT" />%</translation>
 <translation id="7937809006412909895">Դիագնոստիկ տվյալների հավաքում</translation>
+<translation id="7938881824185772026">Լաբորատարիա</translation>
 <translation id="7939062555109487992">Ընդլայնված ընտրանքներ</translation>
 <translation id="793923212791838">Ձեր սարքը չի կարող օգտագործվել այս կայքի հետ</translation>
 <translation id="7939328347457537652">Կառավարել սարքի հավաստագրերը</translation>

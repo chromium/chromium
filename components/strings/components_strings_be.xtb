@@ -1136,7 +1136,6 @@
 <translation id="3340978935015468852">налады</translation>
 <translation id="3342018947887487892">Сайты, якія вы будзеце наведваць пазней, могуць запытваць гэту інфармацыю – тэмы рэкламы або рэкламныя аб'явы, прапанаваныя сайтамі, якія вы наведалі.</translation>
 <translation id="3342366525167526994">Бодзі-арт</translation>
-<translation id="3344167530090084176">Каб наступны раз плаціць хутчэй, захавайце картку і код бяспекі на сваёй прыладзе</translation>
 <translation id="334438173029876234">Рыштунак для скейтбордынгу</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Змяніць налады проксі-сервера...</translation>
@@ -1530,7 +1529,6 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{Старонка 1}one{Старонка {COUNT}}few{Старонка {COUNT}}many{Старонка {COUNT}}other{Старонка {COUNT}}}</translation>
 <translation id="4154277373259957087">Цяпер Chrome уносіць даныя спосабаў аплаты толькі пасля спраўджання асобы. Калі вы хочаце змяніць гэтыя параметры, перайдзіце ў <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4159149286839604525">Гэта азначае, што большасць функцый сайта павінна працаваць, але ваша абароненасць будзе меншай</translation>
-<translation id="4159575773617358878">Каб наступны раз плаціць хутчэй, захавайце картку, код бяспекі і адрас для выстаўлення рахункаў ва Уліковым запісе Google</translation>
 <translation id="4159784952369912983">Фіялетавы</translation>
 <translation id="4165986682804962316">Налады сайтаў</translation>
 <translation id="4169535189173047238">Не дазваляць</translation>
@@ -1890,6 +1888,7 @@
 <translation id="4873616204573862158">Акуляры</translation>
 <translation id="4876188919622883022">Спрошчаны выгляд</translation>
 <translation id="4876305945144899064">Адсутнічае імя карыстальніка</translation>
+<translation id="4876327226315760474">Гэта азначае, што функцыі сайтаў павінны працаваць правільна, але прагляд можа стаць менш бяспечным.</translation>
 <translation id="4877047577339061095">Стэлажы і прыстасаванні для дамашняга захоўвання</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Няма}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}few{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}many{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Пошук па запыце "<ph name="TEXT" />"</translation>
@@ -2518,6 +2517,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="61877208875190028">Жаночае адзенне</translation>
 <translation id="6194209731893739467">Тут можна паглядзець усе прадукты, за якімі вы сочыце</translation>
+<translation id="6195163219142236913">Староннія файлы cookie абмежаваны</translation>
 <translation id="6195371403461054755">Геалогія</translation>
 <translation id="6196640612572343990">Блакіраваць староннія файлы cookie</translation>
 <translation id="6197648101609735209">89 x 89 мм</translation>

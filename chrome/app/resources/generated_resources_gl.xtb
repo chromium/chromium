@@ -6790,7 +6790,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6469702164109431067">Contrasinais e claves de acceso</translation>
 <translation id="6470823736074966819">Silenciar notificacións</translation>
 <translation id="6472893788822429178">Mostrar botón de inicio</translation>
-<translation id="6474352027343282094">{COUNT,plural, =1{Hai {COUNT} contrasinal gardado só neste dispositivo. Para usalo noutros, &lt;a target='_blank' href='chrome://password-manager/'&gt;gárdao na túa Conta de Google&lt;/a&gt;.}other{Hai {COUNT} contrasinais gardados só neste dispositivo. Para usalos noutros, &lt;a target='_blank' href='chrome://password-manager/'&gt;gárdaos na túa Conta de Google&lt;/a&gt;.}}</translation>
 <translation id="6474498546677193336">Non se puido deixar de compartir este cartafol porque había unha aplicación usándoo. O cartafol deixará de compartirse cando Linux se apague.</translation>
 <translation id="6474884162850599008">Desconectar a conta de Google Drive</translation>
 <translation id="6475294023568239942">Libera espazo ou cambia o tamaño do disco de Linux en Configuración</translation>

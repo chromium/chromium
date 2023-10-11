@@ -333,6 +333,7 @@
 <translation id="2718352093833049315">Wi-Fi เท่านั้น</translation>
 <translation id="2738375676495545665">ซ่อน "มีอะไรใหม่"</translation>
 <translation id="2747003861858887689">ช่องก่อนหน้า</translation>
+<translation id="2749026027885331579">ตอนนี้สมาชิกในครอบครัวสามารถใช้ชื่อผู้ใช้และรหัสผ่านของคุณเมื่อใช้เครื่องมือจัดการรหัสผ่านบน Google เพื่อลงชื่อเข้าใช้ <ph name="WEBSITE" /> <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">กำลังติดตาม <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">บัญชีในอุปกรณ์นี้</translation>
 <translation id="2762000892062317888">เมื่อสักครู่</translation>
@@ -980,7 +981,6 @@
 <translation id="6236952928980352967">กู้คืนคำเตือน</translation>
 <translation id="6247557882553405851">เครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="6254066287920239840">เปิดลิงก์ในแอปแทนเบราว์เซอร์</translation>
-<translation id="625491139841322297">{count,plural, =1{ดูแท็บ}other{ดูแท็บทั้งหมด}}</translation>
 <translation id="6255097610484507482">แก้ไขบัตรเครดิต</translation>
 <translation id="6266039999629596120">ต้องดำเนินการ</translation>
 <translation id="6277426346321820595">ไม่มีการปกป้อง</translation>

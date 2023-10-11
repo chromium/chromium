@@ -1142,7 +1142,6 @@
 <translation id="3340978935015468852">կարգավորումներում</translation>
 <translation id="3342018947887487892">Հետագայում ձեր այցելած ցանկացած կայք կարող է հայցել այս տեղեկությունները՝ կամ գովազդի ձեր թեմաները, կամ ձեր այցելած կայքերի կողմից առաջարկվող գովազդները։</translation>
 <translation id="3342366525167526994">Բոդի-արտ</translation>
-<translation id="3344167530090084176">Հաջորդ անգամ ավելի արագ վճարելու համար պահեք քարտը և անվտանգության կոդը ձեր սարքում</translation>
 <translation id="334438173029876234">Սքեյթբորդինգի պարագաներ</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Փոխել պրոքսի-սերվերի կարգավորումները…</translation>
@@ -1539,7 +1538,6 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{Էջ 1}one{Էջ {COUNT}}other{Էջ {COUNT}}}</translation>
 <translation id="4154277373259957087">Նախքան վճարման եղանակները լրացնելը Chrome-ն այժմ պետք է հաստատի ձեր ինքնությունը։ Դուք ցանկացած ժամանակ կարող եք փոխել այս կարգավորումը <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> էջում։</translation>
 <translation id="4159149286839604525">Սա նշանակում է, որ կայքի գործառույթների մեծ մասը կաշխատի, սակայն դուք պակաս պաշտպանված կլինեք</translation>
-<translation id="4159575773617358878">Հաջորդ անգամ ավելի արագ վճարելու համար պահեք ձեր քարտը, անվտանգության կոդը և վճարային հասցեն ձեր Google հաշվում։</translation>
 <translation id="4159784952369912983">Մանուշակագույն</translation>
 <translation id="4165986682804962316">Կայքի կարգավորումներ</translation>
 <translation id="4169535189173047238">Չեղարկել</translation>
@@ -1899,6 +1897,7 @@
 <translation id="4873616204573862158">Ակնոցներ</translation>
 <translation id="4876188919622883022">Պարզեցված դիտակերպ</translation>
 <translation id="4876305945144899064">Օգտանունը նշված չէ</translation>
+<translation id="4876327226315760474">Սա նշանակում է, որ կայքի գործառույթները պետք է աշխատեն պատշաճ կերպով, սակայն դիտարկիչի պաշտպանվածությունը կթուլանա։</translation>
 <translation id="4877047577339061095">Տնային պայմաններում պահպանման հարմարանքներ և դարակներ</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Չկա}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Որոնել «<ph name="TEXT" />»</translation>
@@ -2530,6 +2529,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="61877208875190028">Կանացի հագուստ</translation>
 <translation id="6194209731893739467">Տեսեք բոլոր ապրանքները, որոնք հետագծում եք, այստեղ</translation>
+<translation id="6195163219142236913">Երրորդ կողմի քուքիները սահմանափակված են</translation>
 <translation id="6195371403461054755">Երկրաբանություն</translation>
 <translation id="6196640612572343990">Արգելափակել երրորդ կողմի քուքիները</translation>
 <translation id="6197648101609735209">89 x 89 մմ</translation>

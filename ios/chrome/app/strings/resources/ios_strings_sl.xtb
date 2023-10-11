@@ -335,6 +335,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="2718352093833049315">Samo v omrežju Wi-Fi</translation>
 <translation id="2738375676495545665">Skrij »Novosti«</translation>
 <translation id="2747003861858887689">Prejšnje polje</translation>
+<translation id="2749026027885331579">Družinski člani lahko zdaj uporabijo vaše uporabniško ime in geslo pri uporabi Googlovega upravitelja gesel za prijavo na <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Spremljate <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Računi v tej napravi</translation>
 <translation id="2762000892062317888">pravkar</translation>
@@ -982,7 +983,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6236952928980352967">Obnovi opozorilo</translation>
 <translation id="6247557882553405851">Google Upravitelj gesel</translation>
 <translation id="6254066287920239840">Povezave namesto v brskalniku odpri v aplikaciji.</translation>
-<translation id="625491139841322297">{count,plural, =1{Preglejte zavihek}one{Preglejte vse zavihke}two{Preglejte vse zavihke}few{Preglejte vse zavihke}other{Preglejte vse zavihke}}</translation>
 <translation id="6255097610484507482">Urejanje kreditne kartice</translation>
 <translation id="6266039999629596120">Potrebno je ukrepanje</translation>
 <translation id="6277426346321820595">Brez zaščite</translation>

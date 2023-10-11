@@ -329,6 +329,7 @@
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3619593063686672873">Саяхны видео байхгүй байна</translation>
 <translation id="3634507049637220048">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, таны администратор удирддаг, дэлгэрэнгүй мэдээлэл</translation>
+<translation id="36451918667380448">Мобайл сүлжээ нийлүүлэгчийг түгжсэн. Тусламж авах бол нийлүүлэгчтэйгээ холбогдоно уу.</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> зүйлийг зөөсөн.</translation>
 <translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> файл сонгосон</translation>
 <translation id="3685122418104378273">Гар утасны мэдээллийг ашиглаж байх үед Google Drive синк нь автоматаар идэвхгүй болно.</translation>

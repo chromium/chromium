@@ -326,6 +326,7 @@
 <translation id="2718352093833049315">‏רק ב-Wi-Fi</translation>
 <translation id="2738375676495545665">הסתרת האפשרות 'מה חדש'</translation>
 <translation id="2747003861858887689">השדה הקודם</translation>
+<translation id="2749026027885331579">‏עכשיו החברים בקבוצה המשפחתית יכולים להשתמש בשם המשתמש ובסיסמה שלך כשהם משתמשים במנהל הסיסמאות של Google כדי להיכנס אל <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">האתר <ph name="CHANNEL_NAME" /> נמצא במעקב</translation>
 <translation id="2754492786623500387">החשבונות במכשיר הזה</translation>
 <translation id="2762000892062317888">ברגע זה</translation>
@@ -964,7 +965,6 @@
 <translation id="6236952928980352967">שחזור האזהרה</translation>
 <translation id="6247557882553405851">‏מנהל הסיסמאות של Google</translation>
 <translation id="6254066287920239840">פתיחת קישורים באפליקציה ולא בדפדפן.</translation>
-<translation id="625491139841322297">{count,plural, =1{בדיקת הכרטיסייה}one{בדיקת כל הכרטיסיות}two{בדיקת כל הכרטיסיות}other{בדיקת כל הכרטיסיות}}</translation>
 <translation id="6255097610484507482">עריכת כרטיס אשראי</translation>
 <translation id="6266039999629596120">נדרש טיפול</translation>
 <translation id="6277426346321820595">ללא הגנה</translation>

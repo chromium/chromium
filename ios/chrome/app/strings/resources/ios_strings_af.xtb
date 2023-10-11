@@ -333,6 +333,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="2718352093833049315">Net met Wi-Fi</translation>
 <translation id="2738375676495545665">Versteek wat nuut is</translation>
 <translation id="2747003861858887689">Vorige veld</translation>
+<translation id="2749026027885331579">Jou gesinslede kan nou jou gebruikersnaam en wagwoord gebruik wanneer hulle Google Wagwoordbestuurder gebruik om by <ph name="WEBSITE" /> aan te meld. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Volg <ph name="CHANNEL_NAME" /> tans</translation>
 <translation id="2754492786623500387">Rekeninge op hierdie toestel</translation>
 <translation id="2762000892062317888">sopas</translation>
@@ -980,7 +981,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6236952928980352967">Stel waarskuwing terug</translation>
 <translation id="6247557882553405851">Google Wagwoordbestuurder</translation>
 <translation id="6254066287920239840">Maak skakels in die program oop, in plaas van die blaaier.</translation>
-<translation id="625491139841322297">{count,plural, =1{Gaan die oortjie na}other{Gaan alle oortjies na}}</translation>
 <translation id="6255097610484507482">Wysig kredietkaart</translation>
 <translation id="6266039999629596120">Benodig aandag</translation>
 <translation id="6277426346321820595">Geen beskerming nie</translation>

@@ -335,6 +335,7 @@
 <translation id="2718352093833049315">কেৱল ৱাই-ফাইত</translation>
 <translation id="2738375676495545665">নতুন কি আছে লুকুৱাওক</translation>
 <translation id="2747003861858887689">আগৰ ক্ষেত্ৰ</translation>
+<translation id="2749026027885331579">আপোনাৰ পৰিয়ালৰ সদস্যসকলে <ph name="WEBSITE" />ত ছাইন ইন কৰিবলৈ Google Password Manager ব্যৱহাৰ কৰাৰ সময়ত তেওঁলোকে আপোনাৰ ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ড এতিয়া ব্যৱহাৰ কৰিব পাৰিব। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ফ’ল’ কৰি থকা হৈছে</translation>
 <translation id="2754492786623500387">এই ডিভাইচটোত থকা একাউণ্টসমূহ</translation>
 <translation id="2762000892062317888">এইমাত্ৰ</translation>
@@ -982,7 +983,6 @@
 <translation id="6236952928980352967">সকীয়নি পুনঃস্থাপন কৰক</translation>
 <translation id="6247557882553405851">Google পাছৱৰ্ড পৰিচালক</translation>
 <translation id="6254066287920239840">ব্ৰাউজাৰৰ পৰিৱৰ্তে এপত লিংকসমূহ খোলক৷</translation>
-<translation id="625491139841322297">{count,plural, =1{টেবটো পৰ্যালোচনা কৰক}one{আটাইবোৰ টেব পৰ্যালোচনা কৰক}other{আটাইবোৰ টেব পৰ্যালোচনা কৰক}}</translation>
 <translation id="6255097610484507482">ক্ৰেডিট কাৰ্ড সম্পাদনা কৰক</translation>
 <translation id="6266039999629596120">মনোযোগ দিয়াৰ প্ৰয়োজন</translation>
 <translation id="6277426346321820595">কোনো সুৰক্ষা নাই</translation>

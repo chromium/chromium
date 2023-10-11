@@ -337,6 +337,7 @@
 <translation id="2718352093833049315">‏باستخدام شبكة Wi-Fi فقط</translation>
 <translation id="2738375676495545665">إخفاء الميزات الجديدة</translation>
 <translation id="2747003861858887689">الحقل السابق</translation>
+<translation id="2749026027885331579">‏يمكن لأفراد عائلتك الآن استخدام اسم المستخدم وكلمة المرور عند استخدام "مدير كلمات المرور في Google" لتسجيل الدخول إلى <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">تتم متابعة <ph name="CHANNEL_NAME" /> حاليًا.</translation>
 <translation id="2754492786623500387">الحسابات على هذا الجهاز</translation>
 <translation id="2762000892062317888">الآن</translation>
@@ -984,7 +985,6 @@
 <translation id="6236952928980352967">استعادة التحذير</translation>
 <translation id="6247557882553405851">‏مدير كلمات المرور في Google</translation>
 <translation id="6254066287920239840">فتح الروابط في التطبيق بدلاً من المتصفح.</translation>
-<translation id="625491139841322297">{count,plural, =1{مراجعة علامة التبويب}zero{مراجعة جميع علامات التبويب}two{مراجعة جميع علامات التبويب}few{مراجعة جميع علامات التبويب}many{مراجعة جميع علامات التبويب}other{مراجعة جميع علامات التبويب}}</translation>
 <translation id="6255097610484507482">تعديل بطاقة الائتمان</translation>
 <translation id="6266039999629596120">يستدعي الانتباه</translation>
 <translation id="6277426346321820595">بلا حماية</translation>

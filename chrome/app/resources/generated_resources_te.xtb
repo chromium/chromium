@@ -6820,7 +6820,6 @@
 <translation id="6469702164109431067">పాస్‌వర్డ్‌లు, పాస్-కీలు</translation>
 <translation id="6470823736074966819">నోటిఫికేషన్‌లను మ్యూట్ చేయండి</translation>
 <translation id="6472893788822429178">హోమ్ బటన్‌ను చూపించు</translation>
-<translation id="6474352027343282094">{COUNT,plural, =1{ఈ పరికరంలో {COUNT} పాస్‌వర్డ్ మాత్రమే సేవ్ చేయబడుతుంది. దాన్ని మీ ఇతర పరికరాలలో ఉపయోగించడానికి, &lt;a target='_blank' href='chrome://password-manager/'&gt;దాన్ని మీ Google ఖాతాకు సేవ్ చేయండి&lt;/a&gt;.}other{ఈ పరికరంలో {COUNT} పాస్‌వర్డ్‌లు మాత్రమే సేవ్ చేయబడతాయి. వాటిని మీ ఇతర పరికరాలలో ఉపయోగించడానికి, &lt;a target='_blank' href='chrome://password-manager/'&gt;వాటిని మీ Google ఖాతాకు సేవ్ చేయండి&lt;/a&gt;.}}</translation>
 <translation id="6474498546677193336">ఒక యాప్ ఈ ఫోల్డర్‌ను ఉపయోగిస్తోంది కాబట్టి షేరింగ్‌ను తీసివేయలేకపోయాము. Linux మళ్లీ షట్ డౌన్ అయినప్పుడు ఫోల్డర్ షేరింగ్ తీసివేయబడుతుంది.</translation>
 <translation id="6474884162850599008">Google Drive ఖాతాను డిస్‌కనెక్ట్ చేయి</translation>
 <translation id="6475294023568239942">సెట్టింగ్‌లలో డిస్క్ స్పేస్‌ను ఖాళీ చేయండి లేదా Linux డిస్క్ సైజ్‌ మార్చండి</translation>

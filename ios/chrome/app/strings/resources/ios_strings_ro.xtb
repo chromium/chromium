@@ -333,6 +333,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="2718352093833049315">Numai prin Wi-Fi</translation>
 <translation id="2738375676495545665">Ascunde Noutăți</translation>
 <translation id="2747003861858887689">Câmpul anterior</translation>
+<translation id="2749026027885331579">Membrii familiei îți pot folosi acum numele de utilizator și parola când folosesc Managerul de parole Google pentru a se conecta la <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Urmărești <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Conturi de pe acest dispozitiv</translation>
 <translation id="2762000892062317888">adineauri</translation>
@@ -980,7 +981,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6236952928980352967">Restabilește avertismentul</translation>
 <translation id="6247557882553405851">Manager de parole Google</translation>
 <translation id="6254066287920239840">Deschide linkurile în aplicație, nu în browser.</translation>
-<translation id="625491139841322297">{count,plural, =1{Examinează fila}few{Examinează toate filele}other{Examinează toate filele}}</translation>
 <translation id="6255097610484507482">Editați cardul de credit</translation>
 <translation id="6266039999629596120">Necesită atenție</translation>
 <translation id="6277426346321820595">Fără protecție</translation>

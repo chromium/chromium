@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">Заавал имэйл хаяг оруулах ёстой.</translation>
 <translation id="1758486001363313524">Бусад ...</translation>
 <translation id="1787192514241997742">нийт хугацаа: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Камерыг зөвшөөрөх</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">алсын төхөөрөмж дээр тоглуулах</translation>
 <translation id="1921819250265091946">өө</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">одоогийн алхам</translation>
 <translation id="3321030238473337787">Дахин тоглуулах хурд</translation>
 <translation id="3329013043687509092">Өнгөний нэвчилт</translation>
+<translation id="3377518164566272702">Микрофон болон камерыг зөвшөөрөх</translation>
 <translation id="3450233048674729344">Оруулсан утга нь <ph name="MAXIMUM" />-тай тэнцүү эсвэл бага байх ёстой.</translation>
 <translation id="3732799496749320381">сс</translation>
 <translation id="3754210790023674521">Дэлгэцэн доторх дэлгэцээс гарах</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">Дэлгэцэн доторх дэлгэц дээр тоглуулж байна</translation>
 <translation id="4748357248530471599">дэлгэцийг таслахыг бүтэн дэлгэцээр асаах/унтраах</translation>
 <translation id="4763480195061959176">видео</translation>
+<translation id="4792862212177489858">Байршил хуваалцах</translation>
 <translation id="4812940957355064477">Нэг тоо оруулна уу.</translation>
 <translation id="4912200001568447310">одоогийн зүйл</translation>
 <translation id="4915360478455618802">Цаг сонгогчийг харуулах</translation>
@@ -179,6 +182,7 @@
 <translation id="9132465097189459683">Бусад...</translation>
 <translation id="9155987714137265666"><ph name="WEEK_START_DATE" />-ээс эхэлж буй <ph name="WEEK" /></translation>
 <translation id="916607977885256133">Дэлгэцэн доторх дэлгэц</translation>
+<translation id="918430632320614861">Микрофоныг зөвшөөрөх</translation>
 <translation id="945780513535800434">Хэсэгчлэн тэмдэглэсэн</translation>
 <translation id="954003015749068518">дэлгэцэн доторх дэлгэцийг оруулах</translation>
 </translationbundle>

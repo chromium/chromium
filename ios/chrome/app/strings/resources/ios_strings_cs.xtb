@@ -333,6 +333,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="2718352093833049315">Pouze v sítích Wi-Fi</translation>
 <translation id="2738375676495545665">Skrýt možnost Co je nového</translation>
 <translation id="2747003861858887689">Předchozí pole</translation>
+<translation id="2749026027885331579">Členové vaší rodiny teď při přihlašování k webu <ph name="WEBSITE" /> pomocí Správce hesel Google mohou používat vaše uživatelské jméno a heslo. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Sledujete kanál <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Účty v tomto zařízení</translation>
 <translation id="2762000892062317888">právě teď</translation>
@@ -980,7 +981,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6236952928980352967">Obnovit upozornění</translation>
 <translation id="6247557882553405851">Správce hesel Google</translation>
 <translation id="6254066287920239840">Namísto prohlížeče otevírat odkazy v aplikaci.</translation>
-<translation id="625491139841322297">{count,plural, =1{Zkontrolovat kartu}few{Zkontrolovat všechny karty}many{Zkontrolovat všechny karty}other{Zkontrolovat všechny karty}}</translation>
 <translation id="6255097610484507482">Upravit platební kartu</translation>
 <translation id="6266039999629596120">Vyžaduje pozornost</translation>
 <translation id="6277426346321820595">Bez ochrany</translation>

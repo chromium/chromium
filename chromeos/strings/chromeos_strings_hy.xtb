@@ -213,6 +213,7 @@
 <translation id="2505327257735685095">Թարմացնել ընթացիկ պաստառը</translation>
 <translation id="2512979179176933762">ցուցադրել պատուհանները</translation>
 <translation id="2513396635448525189">Մուտքի պատկեր</translation>
+<translation id="2515109918609218604">Դյուրանցումը հասանելի չէ։ Սեղմեք նոր դյուրանցման՝ առանց օգտագործելու գործառնական և որոնման ստեղները։</translation>
 <translation id="2517472476991765520">Որոնել</translation>
 <translation id="2521835766824839541">նախորդ կատարումը</translation>
 <translation id="2526590354069164005">Աշխատասեղան</translation>
@@ -868,6 +869,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
 <translation id="7718231387947923843">ստեղնաշարի լույս</translation>
+<translation id="7730077286107534951">Հաշվի և համակարգի որոշ տվյալներ կարող են ուղարկվել Google-ին։ Այդ տեղեկություններն օգտագործվում են տեխնիկական խնդիրները լուծելու և մեր ծառայությունների որակը բարելավելու նպատակով՝ մեր <ph name="BEGIN_LINK2" />Գաղտնիության քաղաքականության<ph name="END_LINK2" /> և <ph name="BEGIN_LINK3" />Օգտագործման պայմանների<ph name="END_LINK3" /> համաձայն։ Բովանդակության փոփոխություն պահանջելու համար անցեք <ph name="BEGIN_LINK1" />Իրավական հարցերով օգնության էջ<ph name="END_LINK1" />։</translation>
 <translation id="773153675489693198">Շրջափուլերի թիվը</translation>
 <translation id="7747039790905080783">Ընդհանուր բանալի</translation>
 <translation id="7752963721013053477">Լուսաբացից մայրամուտ. բացառիկ</translation>

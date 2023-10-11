@@ -335,6 +335,7 @@
 <translation id="2718352093833049315">Wi-Fiలో మాత్రమే</translation>
 <translation id="2738375676495545665">కొత్తగా ఏమి ఉన్నాయో వాటిని దాచండి</translation>
 <translation id="2747003861858887689">మునుపటి ఫీల్డ్</translation>
+<translation id="2749026027885331579">మీ ఫ్యామిలీ మెంబర్‌లు <ph name="WEBSITE" />‌కు సైన్ ఇన్ చేయడానికి Google Password Managerను ఉపయోగించినప్పుడు, వారు ఇప్పుడు మీ యూజర్‌నేమ్‌ను, పాస్‌వర్డ్‌ను ఉపయోగించవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" />‌ను ఫాలో అవుతున్నారు</translation>
 <translation id="2754492786623500387">ఈ పరికరంలోని ఖాతాలు</translation>
 <translation id="2762000892062317888">ఇప్పుడే</translation>
@@ -982,7 +983,6 @@
 <translation id="6236952928980352967">హెచ్చరికను రీస్టోర్ చేయండి</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6254066287920239840">లింక్‌లను బ్రౌజర్‌కు బదులుగా యాప్‌లో తెరవండి.</translation>
-<translation id="625491139841322297">{count,plural, =1{ట్యాబ్‌ను రివ్యూ చేయండి}other{ట్యాబ్‌లన్నింటినీ రివ్యూ చేయండి}}</translation>
 <translation id="6255097610484507482">క్రెడిట్ కార్డ్‌ను ఎడిట్ చేయండి</translation>
 <translation id="6266039999629596120">చర్య అవసరం</translation>
 <translation id="6277426346321820595">రక్షణ లేదు</translation>

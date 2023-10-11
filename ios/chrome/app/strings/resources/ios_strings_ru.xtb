@@ -333,6 +333,7 @@
 <translation id="2718352093833049315">Только Wi-Fi</translation>
 <translation id="2738375676495545665">Скрыть раздел "Что нового"</translation>
 <translation id="2747003861858887689">Предыдущее поле</translation>
+<translation id="2749026027885331579">Участники вашей семейной группы теперь могут при помощи Google Менеджера паролей использовать ваши имя пользователя и пароль для входа на сайте <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Вы подписались на "<ph name="CHANNEL_NAME" />".</translation>
 <translation id="2754492786623500387">Аккаунты на этом устройстве</translation>
 <translation id="2762000892062317888">только что</translation>
@@ -980,7 +981,6 @@
 <translation id="6236952928980352967">Восстановить предупреждение</translation>
 <translation id="6247557882553405851">Google Менеджер паролей</translation>
 <translation id="6254066287920239840">Открывать ссылки в приложении, а не в браузере.</translation>
-<translation id="625491139841322297">{count,plural, =1{Посмотреть вкладку}one{Посмотреть все вкладки}few{Посмотреть все вкладки}many{Посмотреть все вкладки}other{Посмотреть все вкладки}}</translation>
 <translation id="6255097610484507482">Изменение данных кредитной карты</translation>
 <translation id="6266039999629596120">Внимание</translation>
 <translation id="6277426346321820595">Защита отключена</translation>

@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Ouvre la grille d'onglets de Chromium.</translation>
 <translation id="1617663976202781617">Données de la synchronisation de Chromium</translation>
 <translation id="1647558790457890304">Paramètres de Chromium</translation>
+<translation id="164952285225495380">Ce colis a déjà été suivi sur Chromium.</translation>
 <translation id="1722370509450468186">Votre mot de passe sera enregistré dans votre compte (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Données Chromium effacées</translation>
 <translation id="1791845338122684020">Ouvre votre page de l'historique de Chromium.</translation>
@@ -140,6 +141,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromi
 1. Ouvrez l'application Réglages.
 2. Touchez Navigateur par défaut.
 3. Sélectionnez Chromium.</translation>
+<translation id="6197255575340902638">Si vous masquez « <ph name="MODULE_NAME" /> », Chromium ne suivra plus automatiquement vos futurs colis et supprimera toutes vos anciennes données de suivi de colis.</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
 <translation id="6268381023930128611">Se déconnecter de Chromium?</translation>
 <translation id="6324041800010509197">Consulter la grille d'onglets dans Chromium</translation>

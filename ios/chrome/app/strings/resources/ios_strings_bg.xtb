@@ -169,6 +169,7 @@
 <translation id="1847795903283049083">Можете също да преглеждате и управлявате тези елементи в отметките си, списъка си за четене или Мениджър на пароли.</translation>
 <translation id="1870148520156231997">Показване на паролата</translation>
 <translation id="1872096359983322073">Фенерче</translation>
+<translation id="1876851015978093044">Показва този елемент</translation>
 <translation id="1882901927376062252">{count,plural, =1{Отметката е запазена в профила ви в Google {email}}other{{count} отметки са запазени в профила ви в Google {email}}}</translation>
 <translation id="1883255238294161206">Свиване на списъка</translation>
 <translation id="1890237935065108104">Тази настройка не е налице.</translation>
@@ -282,6 +283,7 @@
 <translation id="2482878487686419369">Известия</translation>
 <translation id="2484459871750294497">Как да активирам тази функция?</translation>
 <translation id="2496626742194544812">Към първия раздел</translation>
+<translation id="2499505845365628575">Можете да намерите цялата си история на сърфиране чрез „<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />“.</translation>
 <translation id="2500374554657206846">Опции за запазване на паролата</translation>
 <translation id="2511117522375201202">Имате <ph name="NUMBER_OF_PASSWORDS" /> компрометирани пароли, които могат да представляват риск за сигурността ви.</translation>
 <translation id="2523363575747517183">Този уебсайт многократно се опитва да отвори друго приложение.</translation>
@@ -333,6 +335,7 @@
 <translation id="2718352093833049315">Само при Wi-Fi</translation>
 <translation id="2738375676495545665">Скриване на „Новите неща“</translation>
 <translation id="2747003861858887689">Предишното поле</translation>
+<translation id="2749026027885331579">Членовете на семейството ви вече могат да използват потребителското име и паролата ви, когато ползват Google Мениджър на пароли за вход в(ъв) <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Следите <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Профили на това устройство</translation>
 <translation id="2762000892062317888">току-що</translation>
@@ -980,7 +983,6 @@
 <translation id="6236952928980352967">Възстановяване на предупреждението</translation>
 <translation id="6247557882553405851">Google Мениджър на паролите</translation>
 <translation id="6254066287920239840">Отваряне на връзките в приложението вместо в браузъра.</translation>
-<translation id="625491139841322297">{count,plural, =1{Преглед на раздела}other{Преглед на всички раздели}}</translation>
 <translation id="6255097610484507482">Редактиране на кредитната карта</translation>
 <translation id="6266039999629596120">Изисква внимание</translation>
 <translation id="6277426346321820595">Без защита</translation>
@@ -1112,6 +1114,7 @@
 <translation id="6785453220513215166">Сигналите за сривове се изпращат...</translation>
 <translation id="6790502149545262384">Скоро ще виждате материали от <ph name="CHANNEL_NAME" />, когато отворите нов раздел.</translation>
 <translation id="6797885426782475225">Гласово търсене</translation>
+<translation id="6800349425672670802">Имате достъп до всичките си отворени раздели посредством превключвателя на раздели.</translation>
 <translation id="6807889908376551050">Показване на всички...</translation>
 <translation id="681368974849482173">Елементът е създаден</translation>
 <translation id="6822587385560699678">Когато функцията е включена, паролите се запазват в(ъв) <ph name="ACCOUNT" />. Когато е изключена, те се запазват само на това устройство.</translation>
@@ -1206,6 +1209,7 @@
 <translation id="7367530036083223701">Осъществявайте сигурен достъп до паролите си от началния екран посредством приспособлението на Мениджър на пароли.</translation>
 <translation id="7380220816562673297">Засега можете да споделяте пароли само с членове на семейството. <ph name="BEGIN_LINK" />Създайте семейна група<ph name="END_LINK" /> с до 6 членове и се възползвайте в по-голяма степен от продуктите и абонаментите си за услуги на Google.</translation>
 <translation id="7383797227493018512">Списък за четене</translation>
+<translation id="7396331865858820922">Паролата не бе споделена</translation>
 <translation id="7398893703713203428">Създаване на връзка</translation>
 <translation id="7399802613464275309">Проверка на безопасността</translation>
 <translation id="7400418766976504921">URL адрес</translation>
@@ -1226,6 +1230,7 @@
 <translation id="7488874549363591659">Доставена</translation>
 <translation id="7491131399623468277">Към настройките…</translation>
 <translation id="7492574581995589075">Организацията ви изключи възможността за използване и запазване на данните от Chrome в профила ви в Google. Новите отметки, пароли и др. ще се запазват само на това устройство.</translation>
+<translation id="749854780843431406">Можете да отворите нов раздел чрез бутона „<ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />“.</translation>
 <translation id="750149195207506638">Отметките са скрити</translation>
 <translation id="750228856503700085">Не са налице актуализации</translation>
 <translation id="750493650310597496">Избрахте 0</translation>
@@ -1286,6 +1291,7 @@
 <translation id="778855399387580014">Започнете търсене в нов раздел в Chrome.</translation>
 <translation id="7791543448312431591">Добавяне</translation>
 <translation id="7807060072011926525">Предоставено от Google</translation>
+<translation id="7812377703891978671">Имате достъп до цялата си история на сърфиране, като изберете „<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />“.</translation>
 <translation id="78146569776629510">Изтегляния</translation>
 <translation id="7839985698273989086">Офлайн страница</translation>
 <translation id="7840771868269352570">Избраните елементи ще бъдат премахнати.</translation>
@@ -1433,6 +1439,7 @@
 <translation id="8560253818350321773">Първо да се показват често използваните елементи.</translation>
 <translation id="8588404856427128947">Изключено</translation>
 <translation id="8591976964826315682">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“</translation>
+<translation id="8593565399399144771">Можете да отворите нов раздел оттук.</translation>
 <translation id="8605219856220328675">Затваряне на раздела.</translation>
 <translation id="8613883225817609844">Скриване на „Скорошни раздели“</translation>
 <translation id="8620640915598389714">Редактиране</translation>

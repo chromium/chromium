@@ -6789,7 +6789,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6469702164109431067">Wachtwoorden en toegangssleutels</translation>
 <translation id="6470823736074966819">Meldingen negeren</translation>
 <translation id="6472893788822429178">Homepage-knop tonen</translation>
-<translation id="6474352027343282094">{COUNT,plural, =1{{COUNT} wachtwoord is alleen op dit apparaat opgeslagen. &lt;a target='_blank' href='chrome://password-manager/'&gt;Sla het op in je Google-account&lt;/a&gt; om het op andere apparaten te gebruiken.}other{{COUNT} wachtwoorden zijn alleen op dit apparaat opgeslagen. &lt;a target='_blank' href='chrome://password-manager/'&gt;Sla ze op in je Google-account&lt;/a&gt; om ze op andere apparaten te gebruiken.}}</translation>
 <translation id="6474498546677193336">Kan het delen niet opheffen omdat een app deze map gebruikt. Het delen van de map wordt opgeheven als Linux weer wordt uitgezet.</translation>
 <translation id="6474884162850599008">Google Drive-account ontkoppelen</translation>
 <translation id="6475294023568239942">Maak schijfruimte vrij of pas de grootte van de Linux-schijf aan via Instellingen</translation>

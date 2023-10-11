@@ -333,6 +333,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="2718352093833049315">Só con wifi</translation>
 <translation id="2738375676495545665">Ocultar Novidades</translation>
 <translation id="2747003861858887689">Campo anterior</translation>
+<translation id="2749026027885331579">Os membros da familia agora poden usar o teu nome de usuario e contrasinal para iniciar sesión en <ph name="WEBSITE" /> se usan o xestor de contrasinais de Google. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Comezaches a seguir a canle <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Contas neste dispositivo</translation>
 <translation id="2762000892062317888">agora</translation>
@@ -980,7 +981,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6236952928980352967">Restaurar advertencia</translation>
 <translation id="6247557882553405851">Xestor de contrasinais de Google</translation>
 <translation id="6254066287920239840">Abre as ligazóns na aplicación en vez de no navegador.</translation>
-<translation id="625491139841322297">{count,plural, =1{Revisar a pestana}other{Revisar as pestanas}}</translation>
 <translation id="6255097610484507482">Editar tarxeta</translation>
 <translation id="6266039999629596120">Require atención</translation>
 <translation id="6277426346321820595">Sen protección</translation>

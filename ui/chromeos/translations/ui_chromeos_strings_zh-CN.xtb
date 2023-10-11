@@ -329,6 +329,7 @@
 <translation id="3619115746895587757">卡布奇诺</translation>
 <translation id="3619593063686672873">没有任何近期视频</translation>
 <translation id="3634507049637220048">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，由您的管理员管理，详细信息</translation>
+<translation id="36451918667380448">移动网络提供商已锁定。请向您的提供商寻求支持。</translation>
 <translation id="3645233063072417428">已移动 <ph name="NUMBER_OF_ITEMS" /> 项。</translation>
 <translation id="3658269352872031728">已选择 <ph name="SELECTED_FILE_COUNT" /> 个文件</translation>
 <translation id="3685122418104378273">当您使用移动数据网络时，Google 云端硬盘同步功能默认情况下处于停用状态。</translation>

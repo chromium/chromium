@@ -9360,7 +9360,6 @@ Opmerking: Als het apparaat opnieuw wordt opgestart, wordt het cachegeheugen gew
 
       Als je het beleid niet toepast, betekent dit dat ingeschreven apparaten geen audiostatus vastleggen of rapporteren.
       Uitzondering: informatie over het systeemvolumeniveau wordt beheerd door <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> voor M95 en lager.</translation>
-<translation id="9071527533179676468">Als je het beleid toepast, kunnen web-apps van derden Desk API gebruiken om ChromeOS-bureaus te beheren. Als je het beleid niet instelt of niet toepast, is Desk API niet beschikbaar.</translation>
 <translation id="9072475476775217730">Als je het beleid niet toepast, hebben pop-ups die <ph name="BLANK_PAGE_NAME" /> targeten, toegang (via JavaScript) tot de pagina die het openen van de pop-up heeft aangevraagd.
 
       Als je het beleid toepast of niet instelt, wordt de property <ph name="WINDOW_OPENER_PROPERTY" /> ingesteld op <ph name="NULL_VALUE" />, tenzij het anker <ph name="REL_OPENER_ATTRIBUTE" /> opgeeft.

@@ -233,6 +233,7 @@
 <translation id="1175364870820465910">&amp;Печать...</translation>
 <translation id="1175914831232945926">по цифрам</translation>
 <translation id="1176471985365269981">Сайты, которым запрещено изменять файлы и папки на устройстве:</translation>
+<translation id="1177440945615690056">Теперь вы можете подключиться к любой доступной мобильной сети. Это делается в настройках.</translation>
 <translation id="1177863135347784049">Персонализированные</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1178601482396475810">Настройки синхронизации устройств</translation>
@@ -2205,6 +2206,7 @@
 <translation id="2709516037105925701">Автозаполнение</translation>
 <translation id="2710101514844343743">Данные о работе устройства</translation>
 <translation id="271033894570825754">Новое</translation>
+<translation id="2710507903599773521">Устройство <ph name="DEVICE_TYPE" /> разблокировано</translation>
 <translation id="2711073837061989559">Эксперименты</translation>
 <translation id="2713106313042589954">Выключить камеру</translation>
 <translation id="2713444072780614174">Белый</translation>
@@ -3488,6 +3490,7 @@
 <translation id="3752253558646317685">Чтобы отпечаток сохранился, ребенок должен немного перемещать палец.</translation>
 <translation id="3753033997400164841">Автозаполнение паролей</translation>
 <translation id="3753142252662437130">Цветовые фильтры</translation>
+<translation id="3753412199586870466">Открыть боковую панель</translation>
 <translation id="3755411799582650620">Теперь <ph name="PHONE_NAME" /> может разблокировать <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Сайт использует микрофон</translation>
 <translation id="3756485814916578707">Трансляция экрана…</translation>
@@ -6793,7 +6796,6 @@
 <translation id="6469702164109431067">Пароли и ключи доступа</translation>
 <translation id="6470823736074966819">Отключить звук уведомлений</translation>
 <translation id="6472893788822429178">Показывать кнопку "Главная страница"</translation>
-<translation id="6474352027343282094">{COUNT,plural, =1{{COUNT} пароль сохранен только на этом устройстве. Чтобы он синхронизировался с другими устройствами, &lt;a target='_blank' href='chrome://password-manager/'&gt;добавьте его в аккаунт Google&lt;/a&gt;.}one{{COUNT} пароль сохранен только на этом устройстве. Чтобы они синхронизировались с другими устройствами, &lt;a target='_blank' href='chrome://password-manager/'&gt;добавьте их в аккаунт Google&lt;/a&gt;.}few{{COUNT} пароля сохранено только на этом устройстве. Чтобы они синхронизировались с другими устройствами, &lt;a target='_blank' href='chrome://password-manager/'&gt;добавьте их в аккаунт Google&lt;/a&gt;.}many{{COUNT} паролей сохранено только на этом устройстве. Чтобы они синхронизировались с другими устройствами, &lt;a target='_blank' href='chrome://password-manager/'&gt;добавьте их в аккаунт Google&lt;/a&gt;.}other{{COUNT} пароля сохранено только на этом устройстве. Чтобы они синхронизировались с другими устройствами, &lt;a target='_blank' href='chrome://password-manager/'&gt;добавьте их в аккаунт Google&lt;/a&gt;.}}</translation>
 <translation id="6474498546677193336">Папка используется приложением. Доступ к ней будет закрыт при следующем выключении Linux.</translation>
 <translation id="6474884162850599008">Отключить аккаунт Google Диска</translation>
 <translation id="6475294023568239942">Освободите пространство на диске Linux или увеличьте его размер в настройках.</translation>
@@ -7139,6 +7141,9 @@
 <translation id="6767566652486411142">Выбрать другой язык…</translation>
 <translation id="6767639283522617719">Не удалось подключить устройство к домену. Проверьте настройки организационного подразделения.</translation>
 <translation id="6768034047581882264">Запретить сайтам показывать небезопасный контент</translation>
+<translation id="6769902329858794251"><ph name="BEGIN_PARAGRAPH1" />Для удобства пользователей <ph name="DEVICE_OS" /> собирает информацию об аппаратном обеспечении устройств и передает ее Google, чтобы определять подходящие обновления. Вы также можете разрешить Google использовать эти данные в других целях, например для улучшения <ph name="DEVICE_OS" /> и предоставления поддержки.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Чтобы посмотреть, какие сведения отправляются в Google для фильтрации обновлений и в каких ещё случаях вы передаете нам данные, войдите в аккаунт на этом устройстве и ознакомьтесь с полями, начинающимися с "chromeosflex_", на странице chrome://system.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Если вы хотите узнать больше о том, какую информацию <ph name="DEVICE_OS" /> может отправлять в Google и как она будет использоваться, перейдите по ссылке g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770042910635026163">Посещаемые вами сайты, по данным которых определяются ваши интересы</translation>
 <translation id="6770602306803890733">Делает интернет более безопасным для вас и других пользователей.</translation>
 <translation id="6771503742377376720">Является центром сертификации</translation>

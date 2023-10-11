@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Ativar o Bluetooth para detetar dispositivos próximos</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383">A caixa de diálogo de edição de <ph name="DESCRIPTION" /> está aberta.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2364498172489649528">Aprovado</translation>
 <translation id="2367335866686097760">Tecla do mapeamento de teclas</translation>
@@ -214,6 +215,7 @@
 <translation id="2505327257735685095">Atualizar a imagem de fundo atual</translation>
 <translation id="2512979179176933762">mostrar janelas</translation>
 <translation id="2513396635448525189">Imagem de início de sessão</translation>
+<translation id="2515109918609218604">Atalho não disponível. Prima um novo atalho sem usar as teclas de função e pesquisa.</translation>
 <translation id="2517472476991765520">Digitalizar</translation>
 <translation id="2521835766824839541">faixa anterior</translation>
 <translation id="2526590354069164005">Ambiente de trabalho</translation>
@@ -870,6 +872,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
 <translation id="7718231387947923843">luz do teclado</translation>
+<translation id="7730077286107534951">Algumas informações da conta e do sistema podem ser enviadas para a Google. Usamos estas informações para ajudar a resolver problemas técnicos e melhorar os nossos serviços, sujeitas à nossa <ph name="BEGIN_LINK2" />Política de Privacidade<ph name="END_LINK2" /> e <ph name="BEGIN_LINK3" />Termos de Utilização<ph name="END_LINK3" />. Para pedir alterações de conteúdo, aceda à <ph name="BEGIN_LINK1" />Ajuda Legal<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Número de ciclos</translation>
 <translation id="7747039790905080783">Chave pré-partilhada</translation>
 <translation id="7752963721013053477">Do amanhecer ao anoitecer: exclusivo</translation>
@@ -1020,6 +1023,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">O dispositivo é um tablet.</translation>
 <translation id="8881098542468797602">Teste com êxito</translation>
+<translation id="8892443466059986410">Cancelar edição de atalhos</translation>
 <translation id="8898840733695078011">Intensidade do sinal</translation>
 <translation id="8909114361904403025">seta para cima</translation>
 <translation id="8910721771319628100">Rede predefinida acima do limite de latência.</translation>

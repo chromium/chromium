@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">ກະ​ລຸ​ນາ​ໃສ່​ທີ່​ຢູ່​ອີ​ເມວທີ່​ບໍ່​ວ່າງ​ເປົ່າ​.</translation>
 <translation id="1758486001363313524">ອື່ນ...</translation>
 <translation id="1787192514241997742">ເວລາທັງໝົດ: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">ອະນຸຍາດກ້ອງຖ່າຍຮູບ</translation>
 <translation id="1822429046913737220">ໂມງເຊົ້າ/ໂມງແລງ</translation>
 <translation id="1832974991323546415">ຫຼິ້ນ​ຢູ່​ເທິງ​ອຸ​ປະ​ກອນ​ທາງໄກ</translation>
 <translation id="1921819250265091946">ວວ</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">ຂັ້ນຕອນປັດຈຸບັນ</translation>
 <translation id="3321030238473337787">ຄວາມໄວການຫຼິ້ນ</translation>
 <translation id="3329013043687509092">ການອີ່ມຕົວ</translation>
+<translation id="3377518164566272702">ອະນຸຍາດໄມໂຄຣໂຟນ ແລະ ກ້ອງຖ່າຍຮູບ</translation>
 <translation id="3450233048674729344">ຄ່າຕ້ອງນ້ອຍກ່ວາ ຫຼືເທົ່າກັບ <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">ມ​ມ</translation>
 <translation id="3754210790023674521">ອອກຈາກໂໝດສະແດງຜົນຊ້ອນກັນ</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">ກຳລັງຫຼິ້ນໃນໂໝດສະແດງຜົນຊ້ອນກັນ</translation>
 <translation id="4748357248530471599">ປ່ຽນເປັນໜ້າຈໍເຕັມສຳລັບຈໍສະແດງຜົນທີ່ມີຮອຍບາກ</translation>
 <translation id="4763480195061959176">ວິ​ດີ​ໂອ</translation>
+<translation id="4792862212177489858">ແບ່ງປັນສະຖານທີ່</translation>
 <translation id="4812940957355064477">ກະ​ລຸ​ນາ​ປ້ອນຕົວເລກ​.</translation>
 <translation id="4912200001568447310">ລາຍການປັດຈຸບັນ</translation>
 <translation id="4915360478455618802">ສະແດງຕົວເລືອກເວລາ</translation>
@@ -179,6 +182,7 @@
 <translation id="9132465097189459683">ອື່ນໆ...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, ເລີ່ມຕົ້ນໃນວັນທີ <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">ສະແດງຜົນຫຼາຍຢ່າງພ້ອມກັນ</translation>
+<translation id="918430632320614861">ອະນຸຍາດໄມໂຄຣໂຟນ</translation>
 <translation id="945780513535800434">ໝາຍເລືອກບາງສ່ວນ</translation>
 <translation id="954003015749068518">ເຂົ້າໂໝດສະແດງຜົນຊ້ອນກັນ</translation>
 </translationbundle>

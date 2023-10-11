@@ -335,6 +335,7 @@
 <translation id="2718352093833049315">Μόνο σε Wi-Fi</translation>
 <translation id="2738375676495545665">Απόκρυψη της επιλογής Τι νέο υπάρχει</translation>
 <translation id="2747003861858887689">Προηγούμενο πεδίο</translation>
+<translation id="2749026027885331579">Τα μέλη της οικογένειάς σας μπορούν πλέον να χρησιμοποιήσουν το όνομα χρήστη και τον κωδικό πρόσβασής σας όταν χρησιμοποιούν τον Διαχειριστή κωδικών πρόσβασης Google για να συνδεθούν στον ιστότοπο <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Παρακολουθείτε το κανάλι <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Λογαριασμοί σε αυτήν τη συσκευή</translation>
 <translation id="2762000892062317888">μόλις τώρα</translation>
@@ -982,7 +983,6 @@
 <translation id="6236952928980352967">Επαναφορά προειδοποίησης</translation>
 <translation id="6247557882553405851">Διαχειριστής κωδικών πρόσβασης Google</translation>
 <translation id="6254066287920239840">Άνοιγμα συνδέσμων στην εφαρμογή αντί για το πρόγραμμα περιήγησης.</translation>
-<translation id="625491139841322297">{count,plural, =1{Έλεγχος καρτέλας}other{Έλεγχος όλων των καρτελών}}</translation>
 <translation id="6255097610484507482">Επεξεργασία πιστωτικής κάρτας</translation>
 <translation id="6266039999629596120">Απαιτείται ενέργεια</translation>
 <translation id="6277426346321820595">Χωρίς προστασία</translation>
