@@ -257,7 +257,18 @@ void ManagePasswordsUIController::OnAutomaticPasswordSave(
     std::unique_ptr<PasswordFormManagerForUI> form_manager) {
   DestroyPopups();
   save_fallback_timer_.Stop();
-  passwords_data_.OnAutomaticPasswordSave(std::move(form_manager));
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kNewConfirmationBubbleForGeneratedPasswords)) {
+    passwords_data_.OnSubmittedGeneratedPassword(
+        form_manager->GetPendingCredentials().username_value.empty()
+            ? password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE
+            : password_manager::ui::CONFIRMATION_STATE,
+        std::move(form_manager));
+  } else {
+    passwords_data_.OnAutomaticPasswordSave(std::move(form_manager));
+  }
+
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   UpdateBubbleAndIconVisibility();
 }
@@ -416,6 +427,20 @@ void ManagePasswordsUIController::OnBiometricAuthBeforeFillingDeclined() {
   UpdateBubbleAndIconVisibility();
 }
 
+void ManagePasswordsUIController::OnAddUsernameSaveClicked(
+    const std::u16string& username) {
+  CHECK(!dialog_controller_);
+  passwords_data_.form_manager()->OnUpdateUsernameFromPrompt(username);
+  save_fallback_timer_.Stop();
+
+  passwords_data_.form_manager()->Save();
+  passwords_data_.OnSubmittedGeneratedPassword(
+      password_manager::ui::CONFIRMATION_STATE, nullptr);
+  // After adding a new username, confirmation helium bubble should appear.
+  bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+  UpdateBubbleAndIconVisibility();
+}
+
 void ManagePasswordsUIController::NotifyUnsyncedCredentialsWillBeDeleted(
     std::vector<password_manager::PasswordForm> unsynced_credentials) {
   passwords_data_.ProcessUnsyncedCredentialsWillBeDeleted(
@@ -501,10 +526,12 @@ ManagePasswordsUIController::GetPendingPassword() const {
   if (GetState() == password_manager::ui::AUTO_SIGNIN_STATE)
     return *GetCurrentForms()[0];
 
-  DCHECK(GetState() == password_manager::ui::PENDING_PASSWORD_STATE ||
-         GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
-         GetState() == password_manager::ui::CONFIRMATION_STATE ||
-         GetState() == password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE)
+  CHECK(
+      GetState() == password_manager::ui::PENDING_PASSWORD_STATE ||
+      GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
+      GetState() == password_manager::ui::CONFIRMATION_STATE ||
+      GetState() == password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE ||
+      GetState() == password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE)
       << GetState();
   password_manager::PasswordFormManagerForUI* form_manager =
       passwords_data_.form_manager();

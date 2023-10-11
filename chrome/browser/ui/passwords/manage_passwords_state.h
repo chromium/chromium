@@ -68,6 +68,12 @@ class ManagePasswordsState {
   void OnAutomaticPasswordSave(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager);
 
+  // Move to |state|. Updates local_credentials_forms_ to contain pending
+  // credentials.
+  void OnSubmittedGeneratedPassword(
+      password_manager::ui::State state,
+      std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager);
+
   // Move to MANAGE_STATE or INACTIVE_STATE for PSL matched passwords.
   // |password_forms| contains best matches from the password store for the
   // form which was autofilled, |origin| is an origin of the form which was

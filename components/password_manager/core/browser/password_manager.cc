@@ -1151,8 +1151,9 @@ void PasswordManager::OnLoginSuccessful() {
           submitted_manager->Clone());
     }
 
-    if (submitted_manager->HasGeneratedPassword())
+    if (submitted_manager->HasGeneratedPassword()) {
       client_->AutomaticPasswordSave(MoveOwnedSubmittedManager());
+    }
   }
   ResetSubmittedManager();
 }

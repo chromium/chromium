@@ -111,6 +111,10 @@ class PasswordsModelDelegateMock
       (override));
   MOCK_METHOD(void, ShowBiometricActivationConfirmation, (), (override));
   MOCK_METHOD(void, OnBiometricAuthBeforeFillingDeclined, (), (override));
+  MOCK_METHOD(void,
+              OnAddUsernameSaveClicked,
+              (const std::u16string&),
+              (override));
   MOCK_METHOD(void, MaybeShowIOSPasswordPromo, (), (override));
 };
 

@@ -134,6 +134,29 @@ void ManagePasswordsState::OnAutomaticPasswordSave(
   SetState(password_manager::ui::CONFIRMATION_STATE);
 }
 
+void ManagePasswordsState::OnSubmittedGeneratedPassword(
+    password_manager::ui::State state,
+    std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager) {
+  CHECK(state == password_manager::ui::CONFIRMATION_STATE ||
+        state == password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE);
+  if (form_manager) {
+    ClearData();
+    form_manager_ = std::move(form_manager);
+  }
+
+  local_credentials_forms_ =
+      DeepCopyNonPSLVector(form_manager_->GetBestMatches());
+  AppendDeepCopyVector(form_manager_->GetFederatedMatches(),
+                       &local_credentials_forms_);
+  // In the confirmation state, a list of saved passwords is displayed, and that
+  // list should contain the just added one.
+  local_credentials_forms_.push_back(
+      std::make_unique<PasswordForm>(form_manager_->GetPendingCredentials()));
+
+  origin_ = url::Origin::Create(form_manager_->GetURL());
+  SetState(state);
+}
+
 void ManagePasswordsState::OnPasswordAutofilled(
     const std::vector<const PasswordForm*>& password_forms,
     url::Origin origin,

@@ -384,6 +384,7 @@ void PasswordGenerationManager::CommitGeneratedPassword(
   }
   form_saver->UpdateReplace(generated, matches, old_password,
                             presaved_.value() /* old_primary_key */);
+  presaved_ = std::move(generated);
 }
 
 void PasswordGenerationManager::OnPresaveBubbleResult(

@@ -68,6 +68,7 @@ using ::testing::AtMost;
 using ::testing::Contains;
 using ::testing::DoAll;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Pointee;
@@ -322,14 +323,15 @@ ManagePasswordsUIControllerTest::CreateFormManagerWithBestMatches(
   auto form_manager =
       std::make_unique<testing::StrictMock<MockPasswordFormManagerForUI>>();
   EXPECT_CALL(*form_manager, GetBestMatches())
-      .Times(AtMost(1))
-      .WillOnce(ReturnRef(*best_matches));
+      .Times(AtMost(2))
+      .WillRepeatedly(ReturnRef(*best_matches));
   EXPECT_CALL(*form_manager, GetFederatedMatches())
-      .Times(AtMost(1))
-      .WillOnce(Return(std::vector<const password_manager::PasswordForm*>()));
+      .Times(AtMost(2))
+      .WillRepeatedly(
+          Return(std::vector<const password_manager::PasswordForm*>()));
   EXPECT_CALL(*form_manager, GetURL())
-      .Times(AtMost(1))
-      .WillOnce(ReturnRef(test_local_form_.url));
+      .Times(AtMost(2))
+      .WillRepeatedly(ReturnRef(test_local_form_.url));
   EXPECT_CALL(*form_manager, IsBlocklisted())
       .Times(AtMost(1))
       .WillOnce(Return(is_blocklisted));
@@ -1763,6 +1765,22 @@ TEST_F(ManagePasswordsUIControllerTest, ReauthenticateFailsBeforeMove) {
   std::move(reauth_callback).Run(ReauthSucceeded(false));
   ExpectIconAndControllerStateIs(
       password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE);
+}
+
+TEST_F(ManagePasswordsUIControllerTest, UsernameAdded) {
+  std::vector<const PasswordForm*> best_matches;
+  auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
+  MockPasswordFormManagerForUI* test_form_manager_raw = test_form_manager.get();
+  controller()->OnAutomaticPasswordSave(std::move(test_form_manager));
+
+  EXPECT_CALL(*test_form_manager_raw, Save());
+  EXPECT_CALL(*test_form_manager_raw,
+              OnUpdateUsernameFromPrompt(Eq(kExampleUsername)));
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnAddUsernameSaveClicked(kExampleUsername);
+
+  EXPECT_TRUE(controller()->opened_automatic_bubble());
+  EXPECT_EQ(password_manager::ui::CONFIRMATION_STATE, controller()->GetState());
 }
 
 TEST_F(ManagePasswordsUIControllerTest, IsDeviceAuthenticatorObtained) {

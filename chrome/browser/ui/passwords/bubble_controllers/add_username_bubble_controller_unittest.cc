@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::Eq;
 using ::testing::Return;
 using ::testing::ReturnRef;
 
@@ -56,8 +57,8 @@ class AddUsernameBubbleControllerTest : public ::testing::Test {
   }
 
  private:
-  std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;
   std::unique_ptr<AddUsernameBubbleController> controller_;
+  std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;
   password_manager::PasswordForm pending_password_;
 };
 
@@ -76,8 +77,7 @@ TEST_F(AddUsernameBubbleControllerTest, SavePassword) {
   base::HistogramTester histogram_tester;
   CreateController();
 
-  EXPECT_CALL(*delegate(), SavePassword(pending_password().username_value,
-                                        pending_password().password_value));
+  EXPECT_CALL(*delegate(), OnAddUsernameSaveClicked(Eq(kUsername)));
   controller()->OnSaveClicked();
 
   EXPECT_CALL(*delegate(), OnBubbleHidden());

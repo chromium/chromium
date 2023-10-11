@@ -151,6 +151,10 @@ std::u16string GetManagePasswordsDialogTitleText(
                       : IDS_MANAGE_PASSWORDS_NO_PASSWORDS_TITLE);
 }
 
+std::u16string GetConfirmationManagePasswordsDialogTitleText() {
+  return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_CONFIRM_SAVED_TITLE);
+}
+
 std::u16string GetDisplayUsername(const password_manager::PasswordForm& form) {
   return form.username_value.empty()
              ? l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN)

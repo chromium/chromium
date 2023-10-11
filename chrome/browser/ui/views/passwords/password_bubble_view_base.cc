@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_view.h"
 #include "chrome/browser/ui/views/passwords/move_to_account_store_bubble_view.h"
+#include "chrome/browser/ui/views/passwords/password_add_username_view.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
 #include "chrome/browser/ui/views/passwords/password_generation_confirmation_view.h"
 #include "chrome/browser/ui/views/passwords/password_save_unsynced_credentials_locally_view.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/views/passwords/shared_passwords_notification_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "ui/views/controls/button/button.h"
@@ -86,8 +88,14 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
   } else if (model_state == password_manager::ui::AUTO_SIGNIN_STATE) {
     view = new PasswordAutoSignInView(web_contents, anchor_view);
   } else if (model_state == password_manager::ui::CONFIRMATION_STATE) {
-    view = new PasswordGenerationConfirmationView(web_contents, anchor_view,
-                                                  reason);
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::
+                kNewConfirmationBubbleForGeneratedPasswords)) {
+      view = new ManagePasswordsView(web_contents, anchor_view);
+    } else {
+      view = new PasswordGenerationConfirmationView(web_contents, anchor_view,
+                                                    reason);
+    }
   } else if (model_state ==
                  password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
              model_state == password_manager::ui::PENDING_PASSWORD_STATE) {
@@ -103,6 +111,9 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
              model_state ==
                  password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX) {
     view = new PostSaveCompromisedBubbleView(web_contents, anchor_view);
+  } else if (model_state ==
+             password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE) {
+    view = new PasswordAddUsernameView(web_contents, anchor_view, reason);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   } else if (model_state ==
              password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE) {

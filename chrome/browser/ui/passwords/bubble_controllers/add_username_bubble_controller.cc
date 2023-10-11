@@ -30,8 +30,7 @@ void AddUsernameBubbleController::OnSaveClicked() {
   if (!delegate_) {
     return;
   }
-  delegate_->SavePassword(GetPendingPassword().username_value,
-                          GetPendingPassword().password_value);
+  delegate_->OnAddUsernameSaveClicked(pending_password().username_value);
 }
 
 std::u16string AddUsernameBubbleController::GetTitle() const {
