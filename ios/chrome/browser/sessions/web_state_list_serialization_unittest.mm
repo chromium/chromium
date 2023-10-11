@@ -33,6 +33,7 @@ namespace {
 std::unique_ptr<web::WebState> CreateWebStateWithNavigations(
     int navigation_count,
     bool has_pending_load,
+    bool restore_in_progress,
     const GURL& url) {
   auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
   for (int index = 0; index < navigation_count; ++index) {
@@ -45,6 +46,10 @@ std::unique_ptr<web::WebState> CreateWebStateWithNavigations(
       navigation_manager->SetPendingItemIndex(pending_item_index);
       navigation_manager->SetPendingItem(
           navigation_manager->GetItemAtIndex(pending_item_index));
+    }
+  } else {
+    if (restore_in_progress) {
+      navigation_manager->SetIsRestoreSessionInProgress(true);
     }
   }
 
@@ -60,18 +65,37 @@ std::unique_ptr<web::WebState> CreateWebStateWithNavigations(
 
 // Creates a fake WebState with some navigations.
 std::unique_ptr<web::WebState> CreateWebState() {
-  return CreateWebStateWithNavigations(1, false, GURL(kChromeUIVersionURL));
+  return CreateWebStateWithNavigations(1, false, false,
+                                       GURL(kChromeUIVersionURL));
 }
 
 // Creates a fake WebState with no navigation items.
 std::unique_ptr<web::WebState> CreateWebStateWithNoNavigation() {
-  return CreateWebStateWithNavigations(0, false, GURL());
+  return CreateWebStateWithNavigations(0, false, false, GURL());
+}
+
+// Creates a fake WebState with no navigation items and restoration in progress.
+std::unique_ptr<web::WebState> CreateWebStateRestoreSessionInProgress() {
+  return CreateWebStateWithNavigations(0, false, true, GURL());
+}
+
+// Creates a fake WebState with no navigation items but one pending item.
+std::unique_ptr<web::WebState> CreateWebStateWithPendingNavigation(
+    web::NavigationItem* pending_item) {
+  auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
+  navigation_manager->SetPendingItem(pending_item);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetNavigationManager(std::move(navigation_manager));
+  web_state->SetNavigationItemCount(0);
+
+  return web_state;
 }
 
 // Creates a fake WebState on NTP. If `has_pending_load`, then the last
 // item is marked as pending.
 std::unique_ptr<web::WebState> CreateWebStateOnNTP(bool has_pending_load) {
-  return CreateWebStateWithNavigations(1, has_pending_load,
+  return CreateWebStateWithNavigations(1, has_pending_load, false,
                                        GURL(kChromeUINewTabURL));
 }
 
@@ -189,10 +213,17 @@ TEST_F(WebStateListSerializationTest, Serialize_ObjC) {
 //
 // Objective-C (legacy) variant.
 TEST_F(WebStateListSerializationTest, Serialize_ObjC_DropNoNavigation) {
+  // In production, it is possible to have a real NavigationManager with
+  // no navigation item but a pending item; it is not really possible to
+  // simulate this with FakeNavigationManager API except by storing the
+  // pending NavigationItem outside of the FakeNavigationManager.
+  std::unique_ptr<web::NavigationItem> pending_item =
+      web::NavigationItem::Create();
+
   FakeWebStateListDelegate delegate;
   WebStateList web_state_list(&delegate);
   web_state_list.InsertWebState(
-      0, CreateWebState(),
+      0, CreateWebStateRestoreSessionInProgress(),
       WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
       WebStateOpener());
   web_state_list.InsertWebState(
@@ -209,7 +240,8 @@ TEST_F(WebStateListSerializationTest, Serialize_ObjC_DropNoNavigation) {
   web_state_list.InsertWebState(
       3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
   web_state_list.InsertWebState(
-      4, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
+      4, CreateWebStateWithPendingNavigation(pending_item.get()),
+      WebStateList::INSERT_FORCE_INDEX,
       WebStateOpener(web_state_list.GetWebStateAt(2), 1));
 
   // Serialize the session and check the serialized data is correct.
@@ -295,10 +327,17 @@ TEST_F(WebStateListSerializationTest, Serialize_Proto) {
 //
 // Protobuf message variant.
 TEST_F(WebStateListSerializationTest, Serialize_Proto_DropNoNavigation) {
+  // In production, it is possible to have a real NavigationManager with
+  // no navigation item but a pending item; it is not really possible to
+  // simulate this with FakeNavigationManager API except by storing the
+  // pending NavigationItem outside of the FakeNavigationManager.
+  std::unique_ptr<web::NavigationItem> pending_item =
+      web::NavigationItem::Create();
+
   FakeWebStateListDelegate delegate;
   WebStateList web_state_list(&delegate);
   web_state_list.InsertWebState(
-      0, CreateWebState(),
+      0, CreateWebStateRestoreSessionInProgress(),
       WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
       WebStateOpener());
   web_state_list.InsertWebState(
@@ -315,7 +354,8 @@ TEST_F(WebStateListSerializationTest, Serialize_Proto_DropNoNavigation) {
   web_state_list.InsertWebState(
       3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
   web_state_list.InsertWebState(
-      4, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
+      4, CreateWebStateWithPendingNavigation(pending_item.get()),
+      WebStateList::INSERT_FORCE_INDEX,
       WebStateOpener(web_state_list.GetWebStateAt(2), 1));
 
   // Serialize the session and check the serialized data is correct.

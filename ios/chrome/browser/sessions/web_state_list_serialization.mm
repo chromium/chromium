@@ -42,13 +42,22 @@ namespace {
 RemovingIndexes GetIndexOfWebStatesToDrop(const WebStateList& web_state_list) {
   std::vector<int> web_state_to_skip_indexes;
   for (int index = 0; index < web_state_list.count(); ++index) {
-    web::WebState* web_state = web_state_list.GetWebStateAt(index);
-    bool in_restore =
-        web_state->IsRealized() && web_state->GetNavigationManager() &&
-        web_state->GetNavigationManager()->IsRestoreSessionInProgress();
-    if (!in_restore && web_state->GetNavigationItemCount() == 0) {
-      web_state_to_skip_indexes.push_back(index);
+    const web::WebState* web_state = web_state_list.GetWebStateAt(index);
+    if (web_state->GetNavigationItemCount()) {
+      // WebState has navigation history, do not drop.
+      continue;
     }
+
+    if (web_state->IsRealized()) {
+      const web::NavigationManager* manager = web_state->GetNavigationManager();
+      if (manager->IsRestoreSessionInProgress() || manager->GetPendingItem()) {
+        // WebState restoration or navigation in progress, do not drop.
+        continue;
+      }
+    }
+
+    // Drop WebState.
+    web_state_to_skip_indexes.push_back(index);
   }
   return RemovingIndexes(std::move(web_state_to_skip_indexes));
 }
