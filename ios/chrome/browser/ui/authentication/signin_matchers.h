@@ -34,9 +34,6 @@ id<GREYMatcher> WebSigninPrimaryButtonMatcher();
 id<GREYMatcher> GoogleSyncSettingsButton();
 
 // Matcher for the upgrade sign-in promo.
-id<GREYMatcher> UpgradeSigninPromoMatcher();
-
-// Matcher for the upgrade sign-in promo.
 id<GREYMatcher> SigninScreenPromoMatcher();
 
 // Matcher for the secondary button ("No Thanks") in the history opt-in screen.

@@ -50,10 +50,6 @@ id<GREYMatcher> GoogleSyncSettingsButton() {
                     grey_sufficientlyVisible(), nil);
 }
 
-id<GREYMatcher> UpgradeSigninPromoMatcher() {
-  return SigninScreenPromoMatcher();
-}
-
 id<GREYMatcher> SigninScreenPromoMatcher() {
   return grey_accessibilityID(
       first_run::kFirstRunSignInScreenAccessibilityIdentifier);
