@@ -1355,8 +1355,9 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {
       return TextFieldIntrinsicInlineSize(*input, *this);
     }
     const AtomicString& type = input->type();
-    if (type == input_type_names::kFile)
+    if (type == input_type_names::kFile && apply_fixed_size) {
       return FileUploadControlIntrinsicInlineSize(*input, *this);
+    }
     if (type == input_type_names::kRange)
       return SliderIntrinsicInlineSize(*this);
     auto effective_appearance = StyleRef().EffectiveAppearance();

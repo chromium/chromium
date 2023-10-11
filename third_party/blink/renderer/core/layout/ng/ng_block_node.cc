@@ -299,8 +299,9 @@ absl::optional<LayoutUnit> ContentMinimumInlineSize(
   }
   if (const auto* input_element = DynamicTo<HTMLInputElement>(node)) {
     const AtomicString& type = input_element->type();
-    if (type == input_type_names::kFile)
+    if (type == input_type_names::kFile && apply_form_sizing) {
       return inline_size;
+    }
     if (type == input_type_names::kRange)
       return inline_size;
   }
