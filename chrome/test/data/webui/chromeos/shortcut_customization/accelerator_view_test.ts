@@ -530,7 +530,7 @@ suite('acceleratorViewTest', function() {
     const viewContainer =
         viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
     // The icon name is 'overview' in keyToIconNameMap.
-    const regex = /^meta (search|launcher) alt shift overview$/;
+    const regex = /^(search|launcher) alt shift overview$/;
     assertTrue(!!viewContainer.ariaLabel);
     assertTrue(regex.test(viewContainer.ariaLabel));
   });
@@ -550,7 +550,7 @@ suite('acceleratorViewTest', function() {
 
     const viewContainer =
         viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
-    const regex = /^meta (search|launcher)$/;
+    const regex = /^(search|launcher)$/;
     assertTrue(!!viewContainer.ariaLabel);
     assertTrue(regex.test(viewContainer.ariaLabel));
   });

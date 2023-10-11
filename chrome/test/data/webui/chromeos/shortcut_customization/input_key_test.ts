@@ -109,7 +109,7 @@ suite('inputKeyTest', function() {
     assertEquals('shortcut-customization-keys:launcher', iconElement.icon);
     const iconDescriptionElement = inputKeyElement.shadowRoot!.querySelector(
                                        '#icon-description') as HTMLDivElement;
-    assertEquals('meta launcher', iconDescriptionElement.textContent);
+    assertEquals('launcher', iconDescriptionElement.textContent);
   });
 
   test('MetaKeyShowSearchIcon', async () => {
@@ -130,7 +130,7 @@ suite('inputKeyTest', function() {
 
     const iconDescriptionElement = inputKeyElement.shadowRoot!.querySelector(
                                        '#icon-description') as HTMLDivElement;
-    assertEquals('meta search', iconDescriptionElement.textContent);
+    assertEquals('search', iconDescriptionElement.textContent);
   });
 
   test('LwinKeyAsSearchModifier', async () => {
