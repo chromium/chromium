@@ -49,7 +49,7 @@ size_t FatalCrashEventsObserver::TestEnvironment::GetLocalIdEntryQueueSize(
   DCHECK_CALLED_ON_VALID_SEQUENCE(observer.sequence_checker_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(
       observer.reported_local_id_manager_->sequence_checker_);
-  return observer.reported_local_id_manager_->local_id_entries_.size();
+  return observer.reported_local_id_manager_->local_id_entry_queue_.size();
 }
 
 }  // namespace reporting

@@ -108,7 +108,8 @@ class FatalCrashEventsObserver
     // Give `TestEnvironment` the access to `kMaxNumOfLocalIds`.
     friend class FatalCrashEventsObserver::TestEnvironment;
 
-    // `LocalIdEntry` comparator for local_id_entries_, based on the timestamp.
+    // `LocalIdEntry` comparator for `local_id_entry_queue_`, based on the
+    // timestamp.
     class LocalIdEntryComparator {
      public:
       bool operator()(const LocalIdEntry& a, const LocalIdEntry& b) const;
@@ -142,12 +143,12 @@ class FatalCrashEventsObserver
     // again as uploaded in an efficient manner.
     void CleanUpLocalIdEntryQueue();
 
-    // (Re)constructs `local_id_entries_` from `local_ids_`.
+    // (Re)constructs `local_id_entry_queue_` from `local_ids_`.
     void ReconstructLocalIdEntries();
 
     // Gets the local ID entry corresponding to the earliest unuploaded crash.
     // Must be used before the earliest local ID is removed by any operations on
-    // `local_id_entries_`.
+    // `local_id_entry_queue_`.
     const LocalIdEntry& GetEarliestLocalIdEntry();
 
     // Remove the local ID entry corresponding to the earliest unuploaded crash.
@@ -176,12 +177,10 @@ class FatalCrashEventsObserver
     // that have already been reported again as uploaded crashes. This is to
     // avoid removing removing non-top elements from a priority queue as this
     // operation is inefficient.
-    // TODO(b/266018440): Rename this variable to a string that contains the
-    // word "queue".
     std::priority_queue<LocalIdEntry,
                         std::vector<LocalIdEntry>,
                         LocalIdEntryComparator>
-        local_id_entries_ GUARDED_BY_CONTEXT(sequence_checker_);
+        local_id_entry_queue_ GUARDED_BY_CONTEXT(sequence_checker_);
   };
 
   // Manages uploaded crash info, namely the creation time and offset of
