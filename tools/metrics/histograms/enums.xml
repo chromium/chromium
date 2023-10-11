@@ -72097,10 +72097,6 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Android Tv"/>
 </enum>
 
-<enum name="MediaRouterSinkPositionLabel">
-  <int value="100" label="100+"/>
-</enum>
-
 <enum name="MediaRouterSourceTypes">
   <int value="1" label="App"/>
   <int value="2" label="Tab"/>

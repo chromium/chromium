@@ -75,8 +75,6 @@ MediaRouterMetrics::MediaRouterMetrics() = default;
 MediaRouterMetrics::~MediaRouterMetrics() = default;
 
 // static
-const char MediaRouterMetrics::kHistogramCloseLatency[] =
-    "MediaRouter.Ui.Action.CloseLatency";
 const char MediaRouterMetrics::kHistogramIconClickLocation[] =
     "MediaRouter.Icon.Click.Location";
 const char MediaRouterMetrics::kHistogramMediaRouterFileFormat[] =
@@ -87,22 +85,12 @@ const char MediaRouterMetrics::kHistogramMediaSinkType[] =
     "MediaRouter.Sink.SelectedType";
 const char MediaRouterMetrics::kHistogramPresentationUrlType[] =
     "MediaRouter.PresentationRequest.AvailabilityUrlType";
-const char MediaRouterMetrics::kHistogramStartLocalLatency[] =
-    "MediaRouter.Ui.Action.StartLocal.Latency";
-const char MediaRouterMetrics::kHistogramStartLocalPosition[] =
-    "MediaRouter.Ui.Action.StartLocalPosition";
-const char MediaRouterMetrics::kHistogramStartLocalSessionSuccessful[] =
-    "MediaRouter.Ui.Action.StartLocalSessionSuccessful";
-const char MediaRouterMetrics::kHistogramStopRoute[] =
-    "MediaRouter.Ui.Action.StopRoute";
 const char MediaRouterMetrics::kHistogramUiDeviceCount[] =
     "MediaRouter.Ui.Device.Count";
 const char MediaRouterMetrics::kHistogramUiDialogIconStateAtOpen[] =
     "MediaRouter.Ui.Dialog.IconStateAtOpen";
 const char MediaRouterMetrics::kHistogramUiDialogLoadedWithData[] =
     "MediaRouter.Ui.Dialog.LoadedWithData";
-const char MediaRouterMetrics::kHistogramUiDialogPaint[] =
-    "MediaRouter.Ui.Dialog.Paint";
 const char MediaRouterMetrics::kHistogramUiAndroidDialogType[] =
     "MediaRouter.Ui.Android.DialogType";
 const char MediaRouterMetrics::kHistogramUiAndroidDialogAction[] =
@@ -127,21 +115,9 @@ void MediaRouterMetrics::RecordMediaRouterDialogActivationLocation(
 }
 
 // static
-void MediaRouterMetrics::RecordMediaRouterDialogPaint(
-    const base::TimeDelta& delta) {
-  UMA_HISTOGRAM_TIMES(kHistogramUiDialogPaint, delta);
-}
-
-// static
 void MediaRouterMetrics::RecordMediaRouterDialogLoaded(
     const base::TimeDelta& delta) {
   UMA_HISTOGRAM_TIMES(kHistogramUiDialogLoadedWithData, delta);
-}
-
-// static
-void MediaRouterMetrics::RecordCloseDialogLatency(
-    const base::TimeDelta& delta) {
-  UMA_HISTOGRAM_TIMES(kHistogramCloseLatency, delta);
 }
 
 // static
@@ -188,34 +164,6 @@ void MediaRouterMetrics::RecordMediaSinkTypeForCastDialog(
 // static
 void MediaRouterMetrics::RecordDeviceCount(int device_count) {
   UMA_HISTOGRAM_COUNTS_100(kHistogramUiDeviceCount, device_count);
-}
-
-// static
-void MediaRouterMetrics::RecordStartRouteDeviceIndex(int index) {
-  base::UmaHistogramSparse(kHistogramStartLocalPosition, std::min(index, 100));
-}
-
-// static
-void MediaRouterMetrics::RecordStartLocalSessionLatency(
-    const base::TimeDelta& delta) {
-  UMA_HISTOGRAM_TIMES(kHistogramStartLocalLatency, delta);
-}
-
-// static
-void MediaRouterMetrics::RecordStartLocalSessionSuccessful(bool success) {
-  UMA_HISTOGRAM_BOOLEAN(kHistogramStartLocalSessionSuccessful, success);
-}
-
-// static
-void MediaRouterMetrics::RecordStopLocalRoute() {
-  // Local routes have the enum value 0.
-  UMA_HISTOGRAM_BOOLEAN(kHistogramStopRoute, 0);
-}
-
-// static
-void MediaRouterMetrics::RecordStopRemoteRoute() {
-  // Remote routes have the enum value 1.
-  UMA_HISTOGRAM_BOOLEAN(kHistogramStopRoute, 1);
 }
 
 // static

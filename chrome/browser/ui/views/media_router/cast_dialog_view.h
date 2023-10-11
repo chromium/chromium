@@ -25,10 +25,6 @@
 
 class Profile;
 
-namespace gfx {
-class Canvas;
-}  // namespace gfx
-
 namespace media_router {
 
 class CastDialogSinkView;
@@ -68,9 +64,6 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   // CastDialogController::Observer:
   void OnModelUpdated(const CastDialogModel& model) override;
   void OnControllerDestroying() override;
-
-  // views::BubbleDialogDelegateView:
-  void OnPaint(gfx::Canvas* canvas) override;
 
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;
