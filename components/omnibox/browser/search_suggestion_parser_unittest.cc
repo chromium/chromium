@@ -120,7 +120,7 @@ TEST(SearchSuggestionParserTest, ParseEmptyValueIsInvalid) {
   bool is_keyword_result = false;
   SearchSuggestionParser::Results results;
   ASSERT_FALSE(SearchSuggestionParser::ParseSuggestResults(
-      root_val, input, scheme_classifier, default_result_relevance,
+      root_val, input.text(), scheme_classifier, default_result_relevance,
       is_keyword_result, &results));
 }
 
@@ -135,8 +135,8 @@ TEST(SearchSuggestionParserTest, ParseNonSuggestionValueIsInvalid) {
   bool is_keyword_result = false;
   SearchSuggestionParser::Results results;
   ASSERT_FALSE(SearchSuggestionParser::ParseSuggestResults(
-      root_val->GetList(), input, scheme_classifier, default_result_relevance,
-      is_keyword_result, &results));
+      root_val->GetList(), input.text(), scheme_classifier,
+      default_result_relevance, is_keyword_result, &results));
 }
 
 TEST(SearchSuggestionParserTest, ParseSuggestResults) {
@@ -182,7 +182,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
                           scheme_classifier);
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-      root_val->GetList(), input, scheme_classifier,
+      root_val->GetList(), input.text(), scheme_classifier,
       /*default_result_relevance=*/400,
       /*is_keyword_result=*/false, &results));
   // We have "google:suggestrelevance".
@@ -247,7 +247,7 @@ TEST(SearchSuggestionParserTest, ParsePrerenderSuggestion) {
                           scheme_classifier);
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-      root_val->GetList(), input, scheme_classifier,
+      root_val->GetList(), input.text(), scheme_classifier,
       /*default_result_relevance=*/400,
       /*is_keyword_result=*/false, &results));
   {
@@ -283,7 +283,7 @@ TEST(SearchSuggestionParserTest, ParseBothPrefetchAndPrerenderSuggestion) {
                           scheme_classifier);
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-      root_val->GetList(), input, scheme_classifier,
+      root_val->GetList(), input.text(), scheme_classifier,
       /*default_result_relevance=*/400,
       /*is_keyword_result=*/false, &results));
   {
@@ -426,7 +426,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
 
     SearchSuggestionParser::Results results;
     ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-        root_val->GetList(), input, scheme_classifier,
+        root_val->GetList(), input.text(), scheme_classifier,
         /*default_result_relevance=*/400,
         /*is_keyword_result=*/false, &results));
 
@@ -522,7 +522,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
 
     SearchSuggestionParser::Results results;
     ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-        root_val->GetList(), input, scheme_classifier,
+        root_val->GetList(), input.text(), scheme_classifier,
         /*default_result_relevance=*/400,
         /*is_keyword_result=*/false, &results));
 
@@ -643,7 +643,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionEntityInfo) {
 
     SearchSuggestionParser::Results results;
     ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-        root_val->GetList(), input, scheme_classifier,
+        root_val->GetList(), input.text(), scheme_classifier,
         /*default_result_relevance=*/400,
         /*is_keyword_result=*/false, &results));
 
@@ -704,7 +704,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionEntityInfo) {
 
     SearchSuggestionParser::Results results;
     ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-        root_val->GetList(), input, scheme_classifier,
+        root_val->GetList(), input.text(), scheme_classifier,
         /*default_result_relevance=*/400,
         /*is_keyword_result=*/false, &results));
 
@@ -748,7 +748,7 @@ TEST(SearchSuggestionParserTest, ParseValidTypes) {
                           scheme_classifier);
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-      root_val->GetList(), input, scheme_classifier,
+      root_val->GetList(), input.text(), scheme_classifier,
       /*default_result_relevance=*/400,
       /*is_keyword_result=*/false, &results));
 
@@ -810,7 +810,7 @@ TEST(SearchSuggestionParserTest, ParseValidSubtypes) {
                           scheme_classifier);
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-      root_val->GetList(), input, scheme_classifier,
+      root_val->GetList(), input.text(), scheme_classifier,
       /*default_result_relevance=*/400,
       /*is_keyword_result=*/false, &results));
 
@@ -857,7 +857,7 @@ TEST(SearchSuggestionParserTest, IgnoresExcessiveSubtypeEntries) {
                           scheme_classifier);
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-      root_val->GetList(), input, scheme_classifier,
+      root_val->GetList(), input.text(), scheme_classifier,
       /*default_result_relevance=*/400,
       /*is_keyword_result=*/false, &results));
 
@@ -886,7 +886,7 @@ TEST(SearchSuggestionParserTest, IgnoresMissingSubtypeEntries) {
                           scheme_classifier);
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-      root_val->GetList(), input, scheme_classifier,
+      root_val->GetList(), input.text(), scheme_classifier,
       /*default_result_relevance=*/400,
       /*is_keyword_result=*/false, &results));
 
@@ -917,7 +917,7 @@ TEST(SearchSuggestionParserTest, IgnoresUnexpectedSubtypeValues) {
                           scheme_classifier);
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-      root_val->GetList(), input, scheme_classifier,
+      root_val->GetList(), input.text(), scheme_classifier,
       /*default_result_relevance=*/400,
       /*is_keyword_result=*/false, &results));
 
@@ -949,7 +949,7 @@ TEST(SearchSuggestionParserTest, IgnoresSubtypesIfNotAList) {
                           scheme_classifier);
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-      root_val->GetList(), input, scheme_classifier,
+      root_val->GetList(), input.text(), scheme_classifier,
       /*default_result_relevance=*/400,
       /*is_keyword_result=*/false, &results));
 
@@ -978,7 +978,7 @@ TEST(SearchSuggestionParserTest, SubtypesWithEmptyArraysAreValid) {
                           scheme_classifier);
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-      root_val->GetList(), input, scheme_classifier,
+      root_val->GetList(), input.text(), scheme_classifier,
       /*default_result_relevance=*/400,
       /*is_keyword_result=*/false, &results));
 
@@ -1005,7 +1005,7 @@ TEST(SearchSuggestionParserTest, FuzzTestCaseFailsGracefully) {
                           scheme_classifier);
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-      root_val->GetList(), input, scheme_classifier,
+      root_val->GetList(), input.text(), scheme_classifier,
       /*default_result_relevance=*/400,
       /*is_keyword_result=*/false, &results));
 }
@@ -1039,7 +1039,7 @@ TEST(SearchSuggestionParserTest, BadAnswersFailGracefully) {
                             scheme_classifier);
     SearchSuggestionParser::Results results;
     ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-        root_val->GetList(), input, scheme_classifier,
+        root_val->GetList(), input.text(), scheme_classifier,
         /*default_result_relevance=*/400,
         /*is_keyword_result=*/false, &results));
   }
@@ -1103,7 +1103,7 @@ TEST(SearchSuggestionParserTest, ParseCalculatorSuggestion) {
 
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-      root_val->GetList(), input, scheme_classifier,
+      root_val->GetList(), input.text(), scheme_classifier,
       /*default_result_relevance=*/400,
       /*is_keyword_result=*/false, &results));
 
@@ -1194,7 +1194,7 @@ TEST(SearchSuggestionParserTest, ParseTailSuggestion) {
 
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-      root_val->GetList(), input, scheme_classifier,
+      root_val->GetList(), input.text(), scheme_classifier,
       /*default_result_relevance=*/400,
       /*is_keyword_result=*/false, &results));
 

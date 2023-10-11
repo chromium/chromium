@@ -586,7 +586,7 @@ absl::optional<base::Value::List> SearchSuggestionParser::DeserializeJsonData(
 // static
 bool SearchSuggestionParser::ParseSuggestResults(
     const base::Value::List& root_list,
-    const AutocompleteInput& input,
+    const std::u16string& input_text,
     const AutocompleteSchemeClassifier& scheme_classifier,
     int default_result_relevance,
     bool is_keyword_result,
@@ -595,8 +595,9 @@ bool SearchSuggestionParser::ParseSuggestResults(
   if (root_list.empty() || !root_list[0].is_string())
     return false;
   std::u16string query = base::UTF8ToUTF16(root_list[0].GetString());
-  if (query != input.text())
+  if (query != input_text) {
     return false;
+  }
 
   // 2nd element: suggestions list.
   if (root_list.size() < 2u || !root_list[1].is_list())
@@ -710,7 +711,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
   std::string type;
   int relevance = default_result_relevance;
   const std::u16string& trimmed_input =
-      base::CollapseWhitespace(input.text(), false);
+      base::CollapseWhitespace(input_text, false);
 
   for (size_t index = 0;
        index < results_list.size() && results_list[index].is_string();
@@ -774,7 +775,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
         results->navigation_results.push_back(NavigationResult(
             scheme_classifier, url, match_type, suggest_type, subtypes[index],
             title, deletion_url, is_keyword_result, relevance,
-            relevances != nullptr, input.text()));
+            relevances != nullptr, input_text));
       }
     } else {
       std::u16string annotation;

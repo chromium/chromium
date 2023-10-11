@@ -239,8 +239,9 @@ bool StoreRemoteResponse(const std::string& response_json,
       GetZeroSuggestInput(input, client);
 
   if (!SearchSuggestionParser::ParseSuggestResults(
-          *response_data, zero_suggest_input, client->GetSchemeClassifier(),
-          kDefaultZeroSuggestRelevance,
+          *response_data, zero_suggest_input.text(),
+          client->GetSchemeClassifier(),
+          /*default_result_relevance=*/kDefaultZeroSuggestRelevance,
           /*is_keyword_result=*/false, results)) {
     return false;
   }
@@ -298,8 +299,9 @@ bool ReadStoredResponse(const AutocompleteProviderClient* client,
   }
 
   if (!SearchSuggestionParser::ParseSuggestResults(
-          *response_data, zero_suggest_input, client->GetSchemeClassifier(),
-          kDefaultZeroSuggestRelevance,
+          *response_data, zero_suggest_input.text(),
+          client->GetSchemeClassifier(),
+          /*default_result_relevance=*/kDefaultZeroSuggestRelevance,
           /*is_keyword_result=*/false, results)) {
     return false;
   }

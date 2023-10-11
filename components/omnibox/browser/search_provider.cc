@@ -444,8 +444,9 @@ void SearchProvider::OnURLLoadComplete(
       SearchSuggestionParser::Results* results =
           is_keyword ? &keyword_results_ : &default_results_;
       results_updated = SearchSuggestionParser::ParseSuggestResults(
-          *data, GetInput(is_keyword), client()->GetSchemeClassifier(), -1,
-          is_keyword, results);
+          *data, GetInput(is_keyword).text(), client()->GetSchemeClassifier(),
+          /*default_result_relevance=*/-1, /*is_keyword_result=*/is_keyword,
+          results);
       if (results_updated) {
         if (results->field_trial_triggered) {
           client()->GetOmniboxTriggeredFeatureService()->FeatureTriggered(

@@ -115,7 +115,7 @@ class ImageService::SuggestEntityImageURLFetcher {
                             *autocomplete_scheme_classifier_);
     SearchSuggestionParser::Results results;
     if (!SearchSuggestionParser::ParseSuggestResults(
-            *response_data, input, *autocomplete_scheme_classifier_,
+            *response_data, input.text(), *autocomplete_scheme_classifier_,
             /*default_result_relevance=*/100,
             /*is_keyword_result=*/false, &results)) {
       UmaHistogramEnumerationForClient(

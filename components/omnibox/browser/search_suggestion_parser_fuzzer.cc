@@ -51,7 +51,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     SearchSuggestionParser::Results results;
     // Copied from BaseSearchProvider::ParseSuggestResults()
     SearchSuggestionParser::ParseSuggestResults(
-        *root_list, input, TestSchemeClassifier(), -1, is_keyword, &results);
+        *root_list, input.text(), TestSchemeClassifier(),
+        /*default_result_relevance=*/-1,
+        /*is_keyword_result=*/is_keyword, &results);
   }
   return 0;
 }

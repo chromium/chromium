@@ -152,7 +152,7 @@ SearchSuggestionParser::SuggestResults CacheEntry::GetSuggestResults(
 
   SearchSuggestionParser::Results results;
   if (!SearchSuggestionParser::ParseSuggestResults(
-          *response_data, input, client.GetSchemeClassifier(),
+          *response_data, input.text(), client.GetSchemeClassifier(),
           /*default_result_relevance=*/100, /*is_keyword_result=*/false,
           &results)) {
     return SearchSuggestionParser::SuggestResults();

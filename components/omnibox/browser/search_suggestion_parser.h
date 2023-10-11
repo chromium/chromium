@@ -359,7 +359,7 @@ class SearchSuggestionParser {
   // Returns whether the appropriate result list members were updated.
   static bool ParseSuggestResults(
       const base::Value::List& root_list,
-      const AutocompleteInput& input,
+      const std::u16string& input_text,
       const AutocompleteSchemeClassifier& scheme_classifier,
       int default_result_relevance,
       bool is_keyword_result,
