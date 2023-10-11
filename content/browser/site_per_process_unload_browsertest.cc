@@ -905,15 +905,18 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // 1) Navigate to a(b(c(b)))
   EXPECT_TRUE(NavigateToURL(shell(), initial_url));
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  RenderFrameHostImpl* rfh_a = root->current_frame_host();
-  RenderFrameHostImpl* rfh_b1 = rfh_a->child_at(0)->current_frame_host();
-  RenderFrameHostImpl* rfh_c = rfh_b1->child_at(0)->current_frame_host();
-  RenderFrameHostImpl* rfh_b2 = rfh_c->child_at(0)->current_frame_host();
+  RenderFrameHostImplWrapper rfh_a(root->current_frame_host());
+  RenderFrameHostImplWrapper rfh_b1(rfh_a->child_at(0)->current_frame_host());
+  RenderFrameHostImplWrapper rfh_c(rfh_b1->child_at(0)->current_frame_host());
+  RenderFrameHostImplWrapper rfh_b2(rfh_c->child_at(0)->current_frame_host());
 
   // 2) Add unload handlers on B1, B2 and C.
   UnloadPrint(rfh_b1->frame_tree_node(), "B1");
+  rfh_b1->DisableUnloadTimerForTesting();
   UnloadPrint(rfh_b2->frame_tree_node(), "B2");
+  rfh_b2->DisableUnloadTimerForTesting();
   UnloadPrint(rfh_c->frame_tree_node(), "C");
+  rfh_c->DisableUnloadTimerForTesting();
 
   DOMMessageQueue dom_message_queue(web_contents());
   RenderProcessHostWatcher shutdown_B(
