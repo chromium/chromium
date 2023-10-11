@@ -2209,13 +2209,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("iframe-with-region-role.html"));
 }
 
-// TODO(crbug.com/1475950): Test always fails on some Linux builds, not others.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_AccessibilityImg DISABLED_AccessibilityImg
-#else
-#define MAYBE_AccessibilityImg AccessibilityImg
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MAYBE_AccessibilityImg) {
+// TODO(crbug.com/1475950): Fix and reenable the test.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, DISABLED_AccessibilityImg) {
   RunHtmlTest(FILE_PATH_LITERAL("img.html"));
 }
 
