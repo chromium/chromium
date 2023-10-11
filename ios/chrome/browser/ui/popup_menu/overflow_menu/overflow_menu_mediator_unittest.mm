@@ -75,6 +75,7 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
+#import "ios/chrome/browser/ui/whats_new/constants.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/web/font_size/font_size_java_script_feature.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"

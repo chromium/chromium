@@ -215,6 +215,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history",
     "//ios/chrome/browser/ui/toolbar/test",
+    "//ios/chrome/browser/ui/whats_new:constants",
     "//ios/chrome/browser/ui/whats_new:util",
     "//ios/chrome/browser/web/font_size",
     "//ios/chrome/test:test_support",
