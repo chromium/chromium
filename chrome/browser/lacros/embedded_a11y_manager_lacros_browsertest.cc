@@ -28,7 +28,6 @@
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
-#include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
@@ -113,21 +112,6 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
   EmbeddedA11yManagerLacrosTest(const EmbeddedA11yManagerLacrosTest&) = delete;
   EmbeddedA11yManagerLacrosTest& operator=(
       const EmbeddedA11yManagerLacrosTest&) = delete;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kApiAccessibilityServicePrivate);
-  }
-
-  void SetUp() override {
-    // Start unique Ash instance for AccessibilityServicePrivate enabled.
-    StartUniqueAshChrome(
-        /*enabled_features=*/{"ApiAccessibilityServicePrivate"},
-        /*disabled_features=*/{}, /*additional_cmdline_switches=*/{},
-        "crbug/1459275 Switch to shared ash when the "
-        "AccessibilityServicePrivate API is enabled by default.");
-    InProcessBrowserTest::SetUp();
-  }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -259,7 +243,6 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
   std::unique_ptr<base::RunLoop> focus_waiter_;
   int num_context_clicks_ = 0;
   gfx::Rect last_focus_bounds_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,

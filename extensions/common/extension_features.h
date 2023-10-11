@@ -34,7 +34,6 @@ namespace extensions_features {
 // NOTE(devlin): If there are consistently enough of these in flux, it might
 // make sense to have their own file.
 
-BASE_DECLARE_FEATURE(kApiAccessibilityServicePrivate);
 BASE_DECLARE_FEATURE(kApiReadingList);
 BASE_DECLARE_FEATURE(kApiRuntimeGetContexts);
 BASE_DECLARE_FEATURE(kApiSidePanelOpen);
