@@ -195,27 +195,6 @@ class ServiceWorkerTaskQueue : public KeyedService,
                              const SequencedContextId& context_id,
                              const Extension& extension);
 
-  // Dispatch a task and start the worker if there are no pending tasks. If
-  // there are pending tasks, then do not dispatch and assume the start worker
-  // callback will run them for us.
-  void DispatchTask(PendingTask& task,
-                    std::vector<PendingTask>& tasks,
-                    WorkerState* worker_state,
-                    const SequencedContextId& context_id);
-  // Dispatch a task but skip starting the worker if it is already
-  // started/running. Like DispatchTask(), if there are pending tasks then do
-  // not dispatch and assume the start worker callback will run them for us.
-  void DispatchTaskBasedOnRunningStatus(PendingTask& task,
-                                        std::vector<PendingTask>& tasks,
-                                        WorkerState* worker_state,
-                                        const SequencedContextId& context_id,
-                                        const LazyContextId& lazy_context_id);
-
-  // Whether the worker can immediately run tasks without needing to be started.
-  // `true` if the worker is running, otherwise false.
-  bool CanWorkerImmediatelyRunTasks(const WorkerState* worker_state,
-                                    content::ServiceWorkerContext* context);
-
   void RunTasksAfterStartWorker(const SequencedContextId& context_id);
 
   void DidRegisterServiceWorker(const SequencedContextId& context_id,

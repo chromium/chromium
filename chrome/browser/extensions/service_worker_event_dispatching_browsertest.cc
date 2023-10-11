@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api_helpers.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "content/public/browser/service_worker_context.h"
@@ -14,7 +13,6 @@
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,7 +33,9 @@ void DispatchWebNavigationEvent(content::BrowserContext* browser_context,
 
 // TODO(crbug.com/1467015): Combine with service_worker_apitest.cc
 // TestWorkerObserver?
-// Tracks when a worker enters each blink::EmbeddedWorkerStatus.
+// Tracks when a worker finishes starting
+// (`blink::EmbeddedWorkerStatus::kRunning) and is stopped
+// (`blink::EmbeddedWorkerStatus::kStopping`).
 class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
  public:
   TestWorkerStatusObserver(content::BrowserContext* browser_context,
@@ -95,7 +95,7 @@ class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
   }
 
   // Called when a worker has entered the
-  // `blink::EmbeddedWorkerStatus::kStopped` status. Used to indicate when our
+  // `blink::EmbeddedWorkerStatus::kStopping` status. Used to indicate when our
   // test extension has stopped.
   void OnVersionStoppedRunning(int64_t version_id) override {
     // `test_worker_version_id` is the previously running version's id.
@@ -117,15 +117,9 @@ class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
       scoped_observation_{this};
 };
 
-class ServiceWorkerEventDispatchingBrowserTest
-    : public ExtensionBrowserTest,
-      public testing::WithParamInterface<bool> {
+class ServiceWorkerEventDispatchingBrowserTest : public ExtensionBrowserTest {
  public:
-  ServiceWorkerEventDispatchingBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch,
-        GetParam());
-  }
+  ServiceWorkerEventDispatchingBrowserTest() = default;
 
   ServiceWorkerEventDispatchingBrowserTest(
       const ServiceWorkerEventDispatchingBrowserTest&) = delete;
@@ -152,12 +146,11 @@ class ServiceWorkerEventDispatchingBrowserTest
  protected:
   raw_ptr<const Extension> extension = nullptr;
   raw_ptr<content::ServiceWorkerContext> sw_context_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that dispatching an event to a worker with status
 // `blink::EmbeddedWorkerStatus::kRunning` succeeds.
-IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
                        DispatchToRunningWorker) {
   TestWorkerStatusObserver test_event_observer(profile(), kTestExtensionId);
   ExtensionTestMessageListener extension_oninstall_listener_fired(
@@ -191,7 +184,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
 
 // Tests that dispatching an event to a worker with status
 // `blink::EmbeddedWorkerStatus::kStopped` succeeds.
-IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
                        DispatchToStoppedWorker) {
   TestWorkerStatusObserver test_event_observer(profile(), kTestExtensionId);
   ExtensionTestMessageListener extension_oninstall_listener_fired(
@@ -240,7 +233,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
 // TODO(jlulejian): If we suspect or see worker bugs that occur on extension
 // install then create test cases where we dispatch events immediately on
 // extension install.
-IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
                        DispatchToStartingWorker) {
   // Install the extension and ensure the worker is started.
   TestWorkerStatusObserver start_worker_observer(profile(), kTestExtensionId);
@@ -304,7 +297,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
 
 // Tests that dispatching an event to a
 // worker with status `blink::EmbeddedWorkerStatus::kStopping` succeeds.
-IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
                        DISABLED_DispatchToStoppingWorker) {
   TestWorkerStatusObserver test_event_observer(profile(), kTestExtensionId);
   ExtensionTestMessageListener extension_oninstall_listener_fired(
@@ -345,13 +338,6 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
       "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2",
       /*expected_count=*/1);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ServiceWorkerEventDispatchingBrowserTest,
-    /* extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch
-       enabled status */
-    testing::Bool());
 
 // TODO(crbug.com/1467015): Create test for event dispatching that uses the
 // `EventRouter::DispatchEventToSender()` event flow.
