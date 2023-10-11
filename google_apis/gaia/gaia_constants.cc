@@ -177,6 +177,10 @@ const char kKAnonymityServiceOAuth2Scope[] =
 const char kCalendarReadOnlyOAuth2Scope[] =
     "https://www.googleapis.com/auth/calendar.readonly";
 
+// OAuth 2 scope for Google Password Manager passkey enclaves.
+const char kPasskeysEnclaveOAuth2Scope[] =
+  "https://www.googleapis.com/auth/secureidentity.action";
+
 // OAuth 2 scopes for Google Tasks API.
 const char kTasksReadOnlyOAuth2Scope[] =
     "https://www.googleapis.com/auth/tasks.readonly";

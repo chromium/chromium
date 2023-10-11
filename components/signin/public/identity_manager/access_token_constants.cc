@@ -79,6 +79,10 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
       // Required by supervision features that verify parent password.
       GaiaConstants::kAccountsReauthOAuth2Scope,
 
+      // Used by desktop Chrome to talk to passkey enclaves when using Google
+      // Password Manager.
+      GaiaConstants::kPasskeysEnclaveOAuth2Scope,
+
     // Required by ChromeOS only.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       GaiaConstants::kAssistantOAuth2Scope,

@@ -74,6 +74,7 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kSecureConnectOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kFeedOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kKAnonymityServiceOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kCalendarReadOnlyOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kPasskeysEnclaveOAuth2Scope[];
 
 // OAuth 2 scopes for Google Tasks API.
 // https://developers.google.com/identity/protocols/oauth2/scopes#tasks
