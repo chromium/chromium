@@ -1024,7 +1024,7 @@ external/wpt/selection/anonymous/details-ancestor.html
 external/wpt/selection/bidi/modify.tentative.html
 external/wpt/selection/caret/collapse-pre-linestart-2.html
 external/wpt/selection/crashtests/table.html
-external/wpt/shadow-dom/declarative/declarative-shadow-dom-opt-in.tentative.html
+external/wpt/shadow-dom/declarative/declarative-shadow-dom-opt-in.html
 external/wpt/shadow-dom/focus/focus-tabindex-order-shadow-slot-one.html
 external/wpt/shadow-dom/input-element-list.html
 external/wpt/shadow-dom/leaktests/get-elements.html
