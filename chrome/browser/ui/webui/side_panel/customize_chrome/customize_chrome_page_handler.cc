@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 
+#include <vector>
+
+#include "base/barrier_callback.h"
+#include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -44,9 +48,12 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "skia/ext/image_operations.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/native_theme/native_theme.h"
 
 CustomizeChromePageHandler::CustomizeChromePageHandler(
@@ -55,7 +62,8 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
     mojo::PendingRemote<side_panel::mojom::CustomizeChromePage> pending_page,
     NtpCustomBackgroundService* ntp_custom_background_service,
     content::WebContents* web_contents,
-    const std::vector<std::pair<const std::string, int>> module_id_names)
+    const std::vector<std::pair<const std::string, int>> module_id_names,
+    image_fetcher::ImageDecoder* image_decoder)
     : ntp_custom_background_service_(ntp_custom_background_service),
       profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       web_contents_(web_contents),
@@ -64,6 +72,7 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
       theme_service_(ThemeServiceFactory::GetForProfile(profile_)),
       module_id_names_(module_id_names),
       data_decoder_(std::make_unique<data_decoder::DataDecoder>()),
+      image_decoder_(*image_decoder),
       page_(std::move(pending_page)),
       receiver_(this, std::move(pending_page_handler)) {
   CHECK(ntp_custom_background_service_);
@@ -410,6 +419,89 @@ void CustomizeChromePageHandler::SearchWallpaper(
           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
       request,
       base::BindOnce(&CustomizeChromePageHandler::WallpaperSearchCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+// Save the full sized bitmaps and create a much smaller image version of each
+// for sending back to the UI through the callback. Re-encode the bitmap and
+// make it base64 for easy reading by the UI.
+void CustomizeChromePageHandler::OnWallpaperSearchResultsDecoded(
+    GetWallpaperSearchResultsCallback callback,
+    std::vector<SkBitmap> bitmaps) {
+  std::vector<std::string> thumbnails;
+  wallpaper_search_results_.clear();
+
+  for (auto& bitmap : bitmaps) {
+    SkBitmap small_bitmap = skia::ImageOperations::Resize(
+        bitmap, skia::ImageOperations::RESIZE_GOOD, 200, 200);
+    std::vector<unsigned char> encoded;
+    const bool success = gfx::PNGCodec::EncodeBGRASkBitmap(
+        small_bitmap, /*discard_transparency=*/false, &encoded);
+    if (success) {
+      thumbnails.push_back(base::Base64Encode(encoded));
+      wallpaper_search_results_.push_back(bitmap);
+    }
+  }
+
+  std::move(callback).Run(thumbnails);
+}
+
+void CustomizeChromePageHandler::OnGotWallpaperSearchResults(
+    GetWallpaperSearchResultsCallback callback,
+    optimization_guide::OptimizationGuideModelExecutionResult result) {
+  if (!result.has_value()) {
+    return;
+  }
+  auto response = optimization_guide::ParsedAnyMetadata<
+      chrome_intelligence_modelexecution_proto::WallpaperSearchResponse>(
+      result.value());
+  if (response->images().empty()) {
+    return;
+  }
+  auto barrier = base::BarrierCallback<SkBitmap>(
+      response->images_size(),
+      base::BindOnce(
+          &CustomizeChromePageHandler::OnWallpaperSearchResultsDecoded,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  // Decode each image that is sent back for security purposes. Switched them
+  // from gfx::Image to SkBitmap before passing to the barrier callback because
+  // of some issues with const gfx::Image& and base::BarrierCallback.
+  for (auto& image : response->images()) {
+    image_decoder_->DecodeImage(
+        image, gfx::Size(), nullptr,
+        base::BindOnce(
+            [](base::RepeatingCallback<void(SkBitmap)> barrier,
+               const gfx::Image& image) {
+              std::move(barrier).Run(image.AsBitmap());
+            },
+            barrier));
+  }
+}
+
+void CustomizeChromePageHandler::GetWallpaperSearchResults(
+    const std::string& query,
+    GetWallpaperSearchResultsCallback callback) {
+  callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), std::vector<std::string>());
+  if (!base::FeatureList::IsEnabled(
+          ntp_features::kCustomizeChromeWallpaperSearch) ||
+      !base::FeatureList::IsEnabled(
+          optimization_guide::features::kOptimizationGuideModelExecution)) {
+    return;
+  }
+  auto* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
+  if (!optimization_guide_keyed_service) {
+    return;
+  }
+  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
+  request.set_query(query);
+  optimization_guide_keyed_service->ExecuteModel(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
+      request,
+      base::BindOnce(&CustomizeChromePageHandler::OnGotWallpaperSearchResults,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 

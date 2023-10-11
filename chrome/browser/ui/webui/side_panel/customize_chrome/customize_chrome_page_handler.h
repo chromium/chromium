@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_PAGE_HANDLER_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
@@ -35,6 +38,10 @@ namespace data_decoder {
 class DataDecoder;
 }  // namespace data_decoder
 
+namespace image_fetcher {
+class ImageDecoder;
+}  // namespace image_fetcher
+
 class Profile;
 
 /**
@@ -63,7 +70,8 @@ class CustomizeChromePageHandler
       mojo::PendingRemote<side_panel::mojom::CustomizeChromePage> pending_page,
       NtpCustomBackgroundService* ntp_custom_background_service,
       content::WebContents* web_contents,
-      const std::vector<std::pair<const std::string, int>> module_id_names);
+      const std::vector<std::pair<const std::string, int>> module_id_names,
+      image_fetcher::ImageDecoder* image_decoder);
 
   CustomizeChromePageHandler(const CustomizeChromePageHandler&) = delete;
   CustomizeChromePageHandler& operator=(const CustomizeChromePageHandler&) =
@@ -102,6 +110,9 @@ class CustomizeChromePageHandler
   void GetDescriptors(GetDescriptorsCallback callback) override;
   void SearchWallpaper(const std::string& query,
                        SearchWallpaperCallback callback) override;
+  void GetWallpaperSearchResults(
+      const std::string& query,
+      GetWallpaperSearchResultsCallback callback) override;
 
  private:
   void LogEvent(NTPLoggingEventType event);
@@ -111,6 +122,12 @@ class CustomizeChromePageHandler
   void WallpaperSearchCallback(
       SearchWallpaperCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult result);
+  void OnGotWallpaperSearchResults(
+      GetWallpaperSearchResultsCallback callback,
+      optimization_guide::OptimizationGuideModelExecutionResult result);
+  void OnWallpaperSearchResultsDecoded(
+      GetWallpaperSearchResultsCallback callback,
+      std::vector<SkBitmap> bitmaps);
 
   bool IsCustomLinksEnabled() const;
   bool IsShortcutsVisible() const;
@@ -153,6 +170,8 @@ class CustomizeChromePageHandler
   const std::vector<std::pair<const std::string, int>> module_id_names_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   std::unique_ptr<data_decoder::DataDecoder> data_decoder_;
+  const raw_ref<image_fetcher::ImageDecoder> image_decoder_;
+  std::vector<SkBitmap> wallpaper_search_results_;
   // Caches a request to scroll to a section in case the front-end queries the
   // last requested section, e.g. during load.
   CustomizeChromeSection last_requested_section_ =

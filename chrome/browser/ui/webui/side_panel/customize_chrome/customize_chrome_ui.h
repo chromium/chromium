@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
+#include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "components/user_education/webui/help_bubble_handler.h"
@@ -122,6 +123,12 @@ class CustomizeChromeUI
       mojo::PendingRemote<theme_color_picker::mojom::ThemeColorPickerClient>
           client) override;
 
+  // image_decoder_ needs to be initialized before
+  // customize_chrome_page_handler_ so that the image decoder will be
+  // deconstructed after the handler. Otherwise, we will get a dangling pointer
+  // error from the raw_ptr in the handler not pointing to anything after
+  // image_decoder_ object is deleted.
+  std::unique_ptr<ImageDecoderImpl> image_decoder_;
   std::unique_ptr<CustomizeChromePageHandler> customize_chrome_page_handler_;
   std::unique_ptr<CartHandler> cart_handler_;
   raw_ptr<Profile> profile_;

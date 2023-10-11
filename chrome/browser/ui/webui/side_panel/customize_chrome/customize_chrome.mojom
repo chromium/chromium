@@ -171,6 +171,9 @@ interface CustomizeChromePageHandler {
 
   // Searches for NTP descriptors.
   GetDescriptors() => (Descriptors? descriptors);
+
+  // Searches NTP wallpaper for `query`. Returns list of sanitized image data.
+  GetWallpaperSearchResults(string query) => (array<string> results);
 };
 
 // WebUI-side handler for requests from the browser.

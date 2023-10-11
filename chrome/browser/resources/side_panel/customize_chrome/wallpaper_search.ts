@@ -35,10 +35,12 @@ export class WallpaperSearchElement extends PolymerElement {
   static get properties() {
     return {
       query_: String,
+      results_: Object,
     };
   }
 
   private query_: string;
+  private results_: string[];
 
   focusOnBackButton() {
     this.$.heading.getBackButton().focus();
@@ -49,10 +51,10 @@ export class WallpaperSearchElement extends PolymerElement {
   }
 
   private async onSearchClick_() {
-    const {success} =
-        await CustomizeChromeApiProxy.getInstance().handler.searchWallpaper(
-            this.query_);
-    this.$.queryInput.invalid = !success;
+    const {results} = await CustomizeChromeApiProxy.getInstance()
+                          .handler.getWallpaperSearchResults(this.query_);
+    this.results_ = results;
+    this.$.queryInput.invalid = !results.length;
     this.$.queryInput.errorMessage = 'Error';
   }
 }

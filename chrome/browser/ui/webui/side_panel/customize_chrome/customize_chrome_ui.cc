@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/cart/cart_handler.h"
+#include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -49,6 +50,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CustomizeChromeUI, kChromeThemeElementId);
 
 CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui),
+      image_decoder_(std::make_unique<ImageDecoderImpl>()),
       profile_(Profile::FromWebUI(web_ui)),
       web_contents_(web_ui->GetWebContents()),
       module_id_names_(ntp::MakeModuleIdNames(
@@ -233,7 +235,7 @@ void CustomizeChromeUI::CreatePageHandler(
   customize_chrome_page_handler_ = std::make_unique<CustomizeChromePageHandler>(
       std::move(pending_page_handler), std::move(pending_page),
       NtpCustomBackgroundServiceFactory::GetForProfile(profile_), web_contents_,
-      module_id_names_);
+      module_id_names_, image_decoder_.get());
   if (section_.has_value()) {
     customize_chrome_page_handler_->ScrollToSection(*section_);
     section_.reset();

@@ -43,15 +43,15 @@ suite('WallpaperSearchTest', () => {
   test('clicking search invokes backend', () => {
     wallpaperSearchElement.$.queryInput.value = 'foo';
     wallpaperSearchElement.$.submitButton.click();
-    assertEquals(1, handler.getCallCount('searchWallpaper'));
-    assertEquals('foo', handler.getArgs('searchWallpaper')[0]);
+    assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
+    assertEquals('foo', handler.getArgs('getWallpaperSearchResults')[0]);
   });
 
-  test('search failure shows error message', async () => {
-    const failurePromise = Promise.resolve({success: false});
-    handler.setResultFor('searchWallpaper', failurePromise);
+  test('empty result shows error message', async () => {
+    const emptyResultPromise = Promise.resolve({results: []});
+    handler.setResultFor('getWallpaperSearchResults', emptyResultPromise);
     wallpaperSearchElement.$.submitButton.click();
-    await failurePromise;
+    await emptyResultPromise;
     assertTrue(wallpaperSearchElement.$.queryInput.invalid);
     assertEquals('Error', wallpaperSearchElement.$.queryInput.errorMessage);
   });

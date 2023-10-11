@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -20,6 +21,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -42,6 +44,7 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/image_fetcher/core/mock_image_decoder.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -59,6 +62,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "skia/ext/image_operations.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -66,6 +70,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 
@@ -281,7 +286,9 @@ class CustomizeChromePageHandlerTest : public testing::Test {
         mock_optimization_guide_keyed_service_(
             static_cast<MockOptimizationGuideKeyedService*>(
                 OptimizationGuideKeyedServiceFactory::GetForProfile(
-                    profile_.get()))) {}
+                    profile_.get()))),
+        mock_image_decoder_(
+            std::make_unique<image_fetcher::MockImageDecoder>()) {}
 
   void SetUp() override {
     TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
@@ -298,7 +305,7 @@ class CustomizeChromePageHandlerTest : public testing::Test {
     handler_ = std::make_unique<CustomizeChromePageHandler>(
         mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>(),
         mock_page_.BindAndGetRemote(), &mock_ntp_custom_background_service_,
-        web_contents_, module_id_names);
+        web_contents_, module_id_names, mock_image_decoder_.get());
     mock_page_.FlushForTesting();
     EXPECT_EQ(handler_.get(), ntp_background_service_observer_);
     EXPECT_EQ(handler_.get(), ntp_custom_background_service_observer_);
@@ -337,6 +344,9 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   MockOptimizationGuideKeyedService& mock_optimization_guide_keyed_service() {
     return *mock_optimization_guide_keyed_service_;
   }
+  image_fetcher::MockImageDecoder& mock_image_decoder() {
+    return *mock_image_decoder_;
+  }
   Browser& browser() { return *browser_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
   base::UserActionTester& user_action_tester() { return user_action_tester_; }
@@ -364,6 +374,7 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   raw_ptr<MockThemeService> mock_theme_service_;
   raw_ptr<MockOptimizationGuideKeyedService>
       mock_optimization_guide_keyed_service_;
+  std::unique_ptr<image_fetcher::MockImageDecoder> mock_image_decoder_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestBrowserWindow> browser_window_;
@@ -1095,4 +1106,172 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
 
   std::move(done_callback).Run(result);
   EXPECT_FALSE(success);
+}
+
+TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
+       GetWallpaperSearchResults_Success) {
+  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      done_callback;
+  base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
+  base::OnceCallback<void(const gfx::Image&)> decoder_callback2;
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+      .WillOnce(Invoke(
+          [&request, &done_callback](
+              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              const google::protobuf::MessageLite& request_arg,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  done_callback_arg) {
+            ASSERT_EQ(request.GetTypeName(), request_arg.GetTypeName());
+            request.CheckTypeAndMergeFrom(request_arg);
+            done_callback = std::move(done_callback_arg);
+          }));
+  EXPECT_CALL(mock_image_decoder(), DecodeImage(_, _, _, _))
+      .Times(2)
+      .WillOnce(Invoke(
+          [&decoder_callback1](const std::string& image_data,
+                               const gfx::Size& desired_image_frame_size,
+                               data_decoder::DataDecoder* data_decoder,
+                               image_fetcher::ImageDecodedCallback callback) {
+            decoder_callback1 = std::move(callback);
+          }))
+      .WillOnce(Invoke(
+          [&decoder_callback2](const std::string& image_data,
+                               const gfx::Size& desired_image_frame_size,
+                               data_decoder::DataDecoder* data_decoder,
+                               image_fetcher::ImageDecodedCallback callback) {
+            decoder_callback2 = std::move(callback);
+          }));
+  base::MockCallback<
+      CustomizeChromePageHandler::GetWallpaperSearchResultsCallback>
+      callback;
+
+  handler().GetWallpaperSearchResults("foo", callback.Get());
+  EXPECT_EQ("foo", request.query());
+
+  chrome_intelligence_modelexecution_proto::WallpaperSearchResponse response;
+
+  // Create test bitmap 1 and add it to response.
+  SkBitmap bitmap1;
+  bitmap1.allocN32Pixels(32, 32);
+  bitmap1.eraseColor(SK_ColorRED);
+  std::vector<unsigned char> encoded1;
+  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap1, /*discard_transparency=*/false,
+                                    &encoded1);
+  response.add_images(std::string(encoded1.begin(), encoded1.end()));
+
+  // Create test bitmap 2 and add it to response.
+  SkBitmap bitmap2;
+  bitmap2.allocN32Pixels(32, 32);
+  bitmap2.eraseColor(SK_ColorBLUE);
+  std::vector<unsigned char> encoded2;
+  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap2, /*discard_transparency=*/false,
+                                    &encoded2);
+  response.add_images(std::string(encoded2.begin(), encoded2.end()));
+
+  // Serialize and set result to later send to done_callback.
+  std::string serialized_metadata;
+  response.SerializeToString(&serialized_metadata);
+  auto result = absl::make_optional(optimization_guide::proto::Any());
+  result->set_value(serialized_metadata);
+  result->set_type_url("type.googleapis.com/" + response.GetTypeName());
+
+  std::vector<std::string> images;
+  EXPECT_CALL(callback, Run(_)).WillOnce(SaveArg<0>(&images));
+
+  std::move(done_callback).Run(result);
+
+  std::move(decoder_callback1).Run(gfx::Image::CreateFrom1xBitmap(bitmap1));
+  std::move(decoder_callback2).Run(gfx::Image::CreateFrom1xBitmap(bitmap2));
+
+  ASSERT_EQ(static_cast<int>(images.size()), response.images_size());
+
+  // Check that resized encoded versions of the original bitmaps is what we
+  // get back.
+  auto resized_bitmap1 = skia::ImageOperations::Resize(
+      bitmap1, skia::ImageOperations::RESIZE_GOOD, 200, 200);
+  std::vector<unsigned char> resized_encoded1;
+  gfx::PNGCodec::EncodeBGRASkBitmap(
+      resized_bitmap1, /*discard_transparency=*/false, &resized_encoded1);
+  EXPECT_EQ(images[0], base::Base64Encode(resized_encoded1));
+
+  auto resized_bitmap2 = skia::ImageOperations::Resize(
+      bitmap2, skia::ImageOperations::RESIZE_GOOD, 200, 200);
+  std::vector<unsigned char> resized_encoded2;
+  gfx::PNGCodec::EncodeBGRASkBitmap(
+      resized_bitmap2, /*discard_transparency=*/false, &resized_encoded2);
+  EXPECT_EQ(images[1], base::Base64Encode(resized_encoded2));
+}
+
+TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
+       GetWallpaperSearchResults_NoResponse) {
+  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      done_callback;
+  base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
+  base::OnceCallback<void(const gfx::Image&)> decoder_callback2;
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+      .WillOnce(Invoke(
+          [&request, &done_callback](
+              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              const google::protobuf::MessageLite& request_arg,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  done_callback_arg) {
+            ASSERT_EQ(request.GetTypeName(), request_arg.GetTypeName());
+            request.CheckTypeAndMergeFrom(request_arg);
+            done_callback = std::move(done_callback_arg);
+          }));
+  base::MockCallback<
+      CustomizeChromePageHandler::GetWallpaperSearchResultsCallback>
+      callback;
+
+  handler().GetWallpaperSearchResults("foo", callback.Get());
+  EXPECT_EQ("foo", request.query());
+
+  std::vector<std::string> images;
+  EXPECT_CALL(callback, Run(_)).WillOnce(SaveArg<0>(&images));
+
+  std::move(done_callback).Run(absl::nullopt);
+
+  EXPECT_EQ(images.size(), 0u);
+}
+
+TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
+       GetWallpaperSearchResults_NoImages) {
+  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      done_callback;
+  base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
+  base::OnceCallback<void(const gfx::Image&)> decoder_callback2;
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+      .WillOnce(Invoke(
+          [&request, &done_callback](
+              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              const google::protobuf::MessageLite& request_arg,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  done_callback_arg) {
+            ASSERT_EQ(request.GetTypeName(), request_arg.GetTypeName());
+            request.CheckTypeAndMergeFrom(request_arg);
+            done_callback = std::move(done_callback_arg);
+          }));
+  base::MockCallback<
+      CustomizeChromePageHandler::GetWallpaperSearchResultsCallback>
+      callback;
+
+  handler().GetWallpaperSearchResults("foo", callback.Get());
+  EXPECT_EQ("foo", request.query());
+
+  chrome_intelligence_modelexecution_proto::WallpaperSearchResponse response;
+  std::string serialized_metadata;
+  response.SerializeToString(&serialized_metadata);
+  auto result = absl::make_optional(optimization_guide::proto::Any());
+  result->set_value(serialized_metadata);
+  result->set_type_url("type.googleapis.com/" + response.GetTypeName());
+
+  std::vector<std::string> images;
+  EXPECT_CALL(callback, Run(_)).WillOnce(SaveArg<0>(&images));
+
+  std::move(done_callback).Run(result);
+
+  EXPECT_EQ(static_cast<int>(images.size()), response.images_size());
 }
