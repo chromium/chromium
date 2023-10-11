@@ -803,7 +803,7 @@ BASE_FEATURE(kGridTabSwitcherAndroidAnimations,
 
 BASE_FEATURE(kGridTabSwitcherLandscapeAspectRatioPhones,
              "GridTabSwitcherLandscapeAspectRatioPhones",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHideTabOnTabSwitcher,
              "HideTabOnTabSwitcher",

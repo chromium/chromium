@@ -575,7 +575,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sGridTabSwitcherAndroidAnimations =
             new CachedFlag(GRID_TAB_SWITCHER_ANDROID_ANIMATIONS, false);
     public static final CachedFlag sGridTabSwitcherLandscapeAspectRatioPhones =
-            new CachedFlag(GRID_TAB_SWITCHER_LANDSCAPE_ASPECT_RATIO_PHONES, false);
+            new CachedFlag(GRID_TAB_SWITCHER_LANDSCAPE_ASPECT_RATIO_PHONES, true);
     public static final CachedFlag sIncognitoReauthenticationForAndroid =
             new CachedFlag(INCOGNITO_REAUTHENTICATION_FOR_ANDROID, false);
     public static final CachedFlag sInstanceSwitcher = new CachedFlag(INSTANCE_SWITCHER, true);
