@@ -78,8 +78,9 @@ void DocumentScannerServiceClient::CheckDocumentModeReadiness(
     OnReadyCallback callback) {
   {
     base::AutoLock auto_lock(load_status_lock_);
-    if (document_scanner_loaded_) {
-      std::move(callback).Run(true);
+    if (document_scanner_loaded_ == LoadStatus::LOADED ||
+        document_scanner_loaded_ == LoadStatus::LOAD_FAILED) {
+      std::move(callback).Run(document_scanner_loaded_ == LoadStatus::LOADED);
       return;
     }
     on_ready_callbacks_.push_back(std::move(callback));
@@ -89,7 +90,7 @@ void DocumentScannerServiceClient::CheckDocumentModeReadiness(
 
 bool DocumentScannerServiceClient::IsLoaded() {
   base::AutoLock auto_lock(load_status_lock_);
-  return document_scanner_loaded_;
+  return document_scanner_loaded_ == LoadStatus::LOADED;
 }
 
 void DocumentScannerServiceClient::DetectCornersFromNV12Image(
@@ -161,12 +162,22 @@ void DocumentScannerServiceClient::OnMojoDisconnected() {
   document_scanner_.reset();
   {
     base::AutoLock auto_lock(load_status_lock_);
-    is_loading_ = false;
+    if (document_scanner_loaded_ == LoadStatus::LOAD_FAILED) {
+      return;
+    }
+    document_scanner_loaded_ = LoadStatus::NOT_LOADED;
   }
   LoadDocumentScanner();
 }
 
 void DocumentScannerServiceClient::LoadDocumentScanner() {
+  {
+    base::AutoLock auto_lock(load_status_lock_);
+    if (document_scanner_loaded_ != LoadStatus::NOT_LOADED) {
+      return;
+    }
+    document_scanner_loaded_ = LoadStatus::LOADING;
+  }
   if (IsEnabledOnRootfs()) {
     LoadDocumentScannerInternal(kLibDocumentScannerDefaultDir);
   } else if (IsEnabledOnDlc()) {
@@ -174,6 +185,9 @@ void DocumentScannerServiceClient::LoadDocumentScanner() {
         base::BindPostTaskToCurrentDefault(base::BindOnce(
             &DocumentScannerServiceClient::LoadDocumentScannerInternal,
             weak_ptr_factory_.GetWeakPtr())));
+  } else {
+    OnLoadedDocumentScanner(chromeos::machine_learning::mojom::LoadModelResult::
+                                FEATURE_NOT_SUPPORTED_ERROR);
   }
 }
 
@@ -184,12 +198,6 @@ void DocumentScannerServiceClient::LoadDocumentScannerInternal(
                                 FEATURE_NOT_SUPPORTED_ERROR);
     return;
   }
-
-  base::AutoLock auto_lock(load_status_lock_);
-  if (is_loading_) {
-    return;
-  }
-  is_loading_ = true;
 
   auto config = chromeos::machine_learning::mojom::DocumentScannerConfig::New();
   config->library_dlc_path = base::FilePath(lib_path);
@@ -208,11 +216,12 @@ void DocumentScannerServiceClient::LoadDocumentScannerInternal(
 void DocumentScannerServiceClient::OnLoadedDocumentScanner(
     chromeos::machine_learning::mojom::LoadModelResult result) {
   base::AutoLock auto_lock(load_status_lock_);
-  document_scanner_loaded_ = result == LoadModelResult::OK;
-  is_loading_ = false;
+  document_scanner_loaded_ = result == LoadModelResult::OK
+                                 ? LoadStatus::LOADED
+                                 : LoadStatus::LOAD_FAILED;
 
   for (auto& callback : on_ready_callbacks_) {
-    std::move(callback).Run(document_scanner_loaded_);
+    std::move(callback).Run(document_scanner_loaded_ == LoadStatus::LOADED);
   }
   on_ready_callbacks_.clear();
 }
