@@ -165,6 +165,8 @@ public class UrlOverridingTest {
             BASE_PATH + "navigation_from_xhr_callback_parent_frame.html";
     private static final String NAVIGATION_FROM_XHR_CALLBACK_AND_SHORT_TIMEOUT_PAGE =
             BASE_PATH + "navigation_from_xhr_callback_and_short_timeout.html";
+    private static final String NAVIGATION_FROM_XHR_CALLBACK_AND_LOST_ACTIVATION_PAGE =
+            BASE_PATH + "navigation_from_xhr_callback_lost_activation.html";
     private static final String NAVIGATION_WITH_FALLBACK_URL_PAGE =
             BASE_PATH + "navigation_with_fallback_url.html";
     private static final String FALLBACK_LANDING_PATH = BASE_PATH + "hello.html";
@@ -769,7 +771,16 @@ public class UrlOverridingTest {
 
     @Test
     @SmallTest
-    public void testNavigationFromXHRCallbackAndLongTimeout() throws Exception {
+    public void testNavigationFromXHRCallbackAndLostActivation() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
+        loadUrlAndWaitForIntentUrl(new TestParams(
+                mTestServer.getURL(NAVIGATION_FROM_XHR_CALLBACK_AND_LOST_ACTIVATION_PAGE), true,
+                true));
+    }
+
+    @Test
+    @SmallTest
+    public void testNavigationFromXHRCallbackAndLostActivationLongTimeout() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
@@ -779,14 +790,13 @@ public class UrlOverridingTest {
         Mockito.doReturn(SystemClock.elapsedRealtime()) // Initial Navigation create
                 .doReturn(SystemClock.elapsedRealtime()) // Initial Navigation shouldOverride
                 .doReturn(SystemClock.elapsedRealtime()) // XHR Navigation create
-                .doReturn(SystemClock.elapsedRealtime()) // XHR callback navigation create
                 .doReturn(SystemClock.elapsedRealtime()
                         + RedirectHandler.NAVIGATION_CHAIN_TIMEOUT_MILLIS + 1) // xhr callback
                 .when(mSpyRedirectHandler)
                 .currentRealtime();
 
         OverrideUrlLoadingResult result = loadUrlAndWaitForIntentUrl(new TestParams(
-                mTestServer.getURL(NAVIGATION_FROM_XHR_CALLBACK_AND_SHORT_TIMEOUT_PAGE), true,
+                mTestServer.getURL(NAVIGATION_FROM_XHR_CALLBACK_AND_LOST_ACTIVATION_PAGE), true,
                 false));
 
         Assert.assertEquals(
