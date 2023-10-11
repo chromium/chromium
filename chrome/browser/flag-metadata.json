@@ -7318,17 +7318,17 @@
   {
     "name": "scrollable-tabstrip",
     "owners": [ "chrome-desktop-ui-sea@google.com", "tbergquist" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "scrollable-tabstrip-overflow",
     "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "scrollable-tabstrip-with-dragging",
     "owners": [ "chrome-desktop-ui-sea@google.com", "shibalik" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "sct-auditing",
@@ -7888,7 +7888,7 @@
   {
     "name": "tab-scrolling-button-position",
     "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "tab-search-fuzzy-search",
