@@ -220,9 +220,10 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
   [super setEditing:editing animated:animated];
-  if (!editing)
+  if (!editing && self.navigationController.topViewController == self) {
     [self.navigationController setToolbarHidden:self.shouldHideToolbar
                                        animated:YES];
+  }
 }
 
 - (void)viewDidLayoutSubviews {

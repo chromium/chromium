@@ -890,6 +890,12 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   [self.tableView endUpdates];
 }
 
+#pragma mark - SettingsRootTableViewController
+
+- (BOOL)shouldHideToolbar {
+  return YES;
+}
+
 #pragma mark - Private
 
 // Applies tint colour and resizes image.
