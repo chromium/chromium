@@ -359,7 +359,6 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   void SetPrinting();
   void SetPrintingForFrame(const std::string& frame_name);
   void SetPrintingSize(int width, int height);
-  void SetScriptsAllowed(bool allowed);
   void SetShouldGeneratePixelResults(bool);
   void SetShouldStayOnPageAfterHandlingBeforeUnload(bool value);
   void SetSpellCheckResolvedCallback(v8::Local<v8::Function> callback);
@@ -779,7 +778,6 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
       .SetMethod("setPrintingForFrame",
                  &TestRunnerBindings::SetPrintingForFrame)
       .SetMethod("setPrintingSize", &TestRunnerBindings::SetPrintingSize)
-      .SetMethod("setScriptsAllowed", &TestRunnerBindings::SetScriptsAllowed)
       .SetMethod("setScrollbarPolicy", &TestRunnerBindings::NotImplemented)
       .SetMethod("setShouldGeneratePixelResults",
                  &TestRunnerBindings::SetShouldGeneratePixelResults)
@@ -1551,12 +1549,6 @@ void TestRunnerBindings::SetImagesAllowed(bool allowed) {
   if (invalid_)
     return;
   runner_->SetImagesAllowed(allowed);
-}
-
-void TestRunnerBindings::SetScriptsAllowed(bool allowed) {
-  if (invalid_)
-    return;
-  runner_->SetScriptsAllowed(allowed);
 }
 
 void TestRunnerBindings::SetStorageAllowed(bool allowed) {
@@ -3206,11 +3198,6 @@ void TestRunner::DumpTitleChanges() {
 
 void TestRunner::SetImagesAllowed(bool allowed) {
   web_test_runtime_flags_.set_images_allowed(allowed);
-  OnWebTestRuntimeFlagsChanged();
-}
-
-void TestRunner::SetScriptsAllowed(bool allowed) {
-  web_test_runtime_flags_.set_scripts_allowed(allowed);
   OnWebTestRuntimeFlagsChanged();
 }
 

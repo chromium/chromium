@@ -463,7 +463,6 @@ class TestRunner {
 
   // WebContentSettingsClient related.
   void SetImagesAllowed(bool allowed);
-  void SetScriptsAllowed(bool allowed);
   void SetStorageAllowed(bool allowed);
   void SetAllowRunningOfInsecureContent(bool allowed);
   void DumpPermissionClientCallbacks();

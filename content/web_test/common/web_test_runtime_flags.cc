@@ -34,7 +34,6 @@ void WebTestRuntimeFlags::Reset() {
 
   set_dump_web_content_settings_client_callbacks(false);
   set_images_allowed(true);
-  set_scripts_allowed(true);
   set_storage_allowed(true);
   set_running_insecure_content_allowed(false);
 

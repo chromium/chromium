@@ -116,7 +116,6 @@ class WebTestRuntimeFlags {
 
   // Flags influencing behavior of WebTestContentSettingsClient.
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(images_allowed)
-  DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(scripts_allowed)
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(storage_allowed)
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(running_insecure_content_allowed)
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(dump_web_content_settings_client_callbacks)

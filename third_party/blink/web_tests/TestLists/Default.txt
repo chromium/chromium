@@ -829,7 +829,6 @@ paint/invalidation/svg/invalid-clip-path-crash.html
 paint/roundedrects/degenerate-radius-assert.html
 paint/selection/selection-drag-image-in-iframe.html
 payments/payment-request-in-iframe-allowed.html
-permissionclient/script-permissions.html
 permissionclient/storage-permission.html
 plugins/instance-available-before-stylesheets-loaded.html
 pointer-lock/lock-already-locked.html

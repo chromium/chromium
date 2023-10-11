@@ -35,14 +35,10 @@ bool WebTestContentSettingsClient::AllowImage(bool enabled_per_settings,
   return allowed;
 }
 
-bool WebTestContentSettingsClient::AllowScript(bool enabled_per_settings) {
-  return enabled_per_settings && flags_->scripts_allowed();
-}
-
 bool WebTestContentSettingsClient::AllowScriptFromSource(
     bool enabled_per_settings,
     const blink::WebURL& script_url) {
-  bool allowed = enabled_per_settings && flags_->scripts_allowed();
+  bool allowed = enabled_per_settings;
   if (flags_->dump_web_content_settings_client_callbacks()) {
     test_runner_->PrintMessage(
         std::string("WebTestContentSettingsClient: allowScriptFromSource(") +

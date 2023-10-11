@@ -4,15 +4,19 @@
 
 if (window.testRunner) {
     testRunner.dumpAsText();
-    testRunner.setScriptsAllowed(false);
+    if (window.internals) {
+        internals.settings.setScriptEnabled(false);
 
-    document.getElementById('button').addEventListener('keydown', function() { console.log('keydown event in main world') });
-    testRunner.evaluateScriptInIsolatedWorld(1, "document.getElementById('button').addEventListener('keydown', function() { console.log('keydown event in isolated world') });");
+        document.getElementById('button').addEventListener('keydown', function() { console.log('keydown event in main world') });
+        testRunner.evaluateScriptInIsolatedWorld(1, "document.getElementById('button').addEventListener('keydown', function() { console.log('keydown event in isolated world') });");
 
-    document.getElementById("button").focus();
-    eventSender.keyDown('e', []);
+        document.getElementById("button").focus();
+        eventSender.keyDown('e', []);
+    } else {
+        console.log("This test requires internals.settings.setScriptEnabled, so it can't run in a browser.");
+    }
 } else {
-    console.log("This test reuqires testRunner.setScriptsAllowed, so it can't run in a browser.");
+    console.log("This test requires window.testRunner, so it can't run in a browser.");
 }
 </script>
 
