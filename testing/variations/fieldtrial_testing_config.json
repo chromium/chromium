@@ -14435,6 +14435,27 @@
             ]
         }
     ],
+    "SafeBrowsingSkipSubResources2": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingSkipSubResources2"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingTailoredSecurityRetryForSyncUsers": [
         {
             "platforms": [
