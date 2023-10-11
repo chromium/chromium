@@ -19,7 +19,15 @@ void TabHoverCardThumbnailObserver::Observe(
   if (!current_image_)
     return;
 
+  // Check if the current image is not null again after calling
+  // Subscribe to handle situations around reenterency which might
+  // invalidate the current image (crbug.com/1353340).
   subscription_ = current_image_->Subscribe();
+  if (!current_image_) {
+    subscription_.reset();
+    return;
+  }
+
   subscription_->SetSizeHint(TabStyle::Get()->GetPreviewImageSize());
   subscription_->SetUncompressedImageCallback(base::BindRepeating(
       &TabHoverCardThumbnailObserver::ThumbnailImageCallback,

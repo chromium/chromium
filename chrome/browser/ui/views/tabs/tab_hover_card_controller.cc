@@ -373,7 +373,10 @@ void TabHoverCardController::UpdateOrShowCard(
   // If a hover card is being updated because of a data change, the hover card
   // had better already be showing for the affected tab.
   if (update_type == TabSlotController::HoverCardUpdateType::kTabDataChanged) {
-    DCHECK(IsHoverCardShowingForTab(tab));
+    if (!IsHoverCardShowingForTab(tab)) {
+      return;
+    }
+
     UpdateCardContent(tab);
 
     // When a tab has been discarded, the thumbnail is moved to a new
@@ -521,8 +524,9 @@ void TabHoverCardController::OnViewVisibilityChanged(
     views::View* observed_view,
     views::View* starting_view) {
   // Only care about target tab becoming invisible.
-  if (observed_view != target_tab_)
+  if (observed_view != target_tab_) {
     return;
+  }
   // Visibility comes from `starting_view` or the widget, if no starting view;
   // see documentation for ViewObserver::OnViewVisibilityChanged().
   const bool visible = starting_view
@@ -531,8 +535,9 @@ void TabHoverCardController::OnViewVisibilityChanged(
                               observed_view->GetWidget()->IsVisible());
   // If visibility changed to false, treat it as if the target tab had gone
   // away.
-  if (!visible)
+  if (!visible) {
     OnViewIsDeleting(observed_view);
+  }
 }
 
 void TabHoverCardController::OnMemoryMetricsRefreshed() {
@@ -684,6 +689,12 @@ void TabHoverCardController::MaybeStartThumbnailObservation(
 void TabHoverCardController::StartThumbnailObservation(Tab* tab) {
   if (tab != target_tab_)
     return;
+
+  // If the preview image feature is not enabled, |thumbnail_observer_| will be
+  // null.
+  if (!thumbnail_observer_) {
+    return;
+  }
 
   DCHECK(tab);
   DCHECK(hover_card_);

@@ -492,7 +492,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
 
   std::u16string title;
   absl::optional<TabAlertState> old_alert_state = alert_state_;
-  TabRendererData tab_data = tab->data();
+  const TabRendererData& tab_data = tab->data();
   GURL domain_url;
   // Use committed URL to determine if no page has yet loaded, since the title
   // can be blank for some web pages.
