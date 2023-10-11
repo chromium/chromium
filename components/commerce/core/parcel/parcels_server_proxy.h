@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/commerce/core/parcel/parcels_utils.h"
 #include "components/commerce/core/proto/parcel.pb.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -27,23 +28,6 @@ class IdentityManager;
 }  // namespace signin
 
 namespace commerce {
-
-// Possible result status of a parcel tracking request.
-// TODO(qinmin): emit histogram with these enums. And merge these
-// enums with the ones defined in SubscriptionsManager.
-enum class ParcelRequestStatus {
-  // Subscriptions successfully added or removed on server.
-  kSuccess = 0,
-  // Parcel identifiers are invalid, missing tracking id or carrier.
-  kInvalidParcelIdentifiers = 1,
-  // Server failed to process the request, e.g. the request is invalid or
-  // network error.
-  kServerError = 2,
-  // Error parsing server response, the response may be malformed.
-  kServerReponseParsingError = 3,
-  // This enum must be last and is only used for histograms.
-  kMaxValue = kServerReponseParsingError,
-};
 
 // Class for getting the parcel tracking status from the server.
 class ParcelsServerProxy {
@@ -97,17 +81,20 @@ class ParcelsServerProxy {
  private:
   // Parse the server response to get the parcel status.
   void ProcessGetParcelStatusResponse(
+      ParcelRequestType request_type,
       GetParcelStatusCallback callback,
       std::unique_ptr<EndpointFetcher> endpoint_fetcher,
       std::unique_ptr<EndpointResponse> response);
 
   // Called when json string from server response is parsed.
   void OnGetParcelStatusJsonParsed(
+      ParcelRequestType request_type,
       GetParcelStatusCallback callback,
       data_decoder::DataDecoder::ValueOrError result);
 
   // Called when response for stop tracking request is returned.
-  void OnStopTrackingResponse(StopParcelTrackingCallback callback,
+  void OnStopTrackingResponse(ParcelRequestType request_type,
+                              StopParcelTrackingCallback callback,
                               std::unique_ptr<EndpointFetcher> endpoint_fetcher,
                               std::unique_ptr<EndpointResponse> response);
 
@@ -125,6 +112,7 @@ class ParcelsServerProxy {
 
   // Helper method to send stop tracking request to a server.
   void SendStopTrackingRequestToServer(
+      ParcelRequestType request_type,
       const GURL& server_url,
       const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
       StopParcelTrackingCallback callback);

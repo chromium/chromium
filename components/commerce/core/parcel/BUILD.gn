@@ -10,6 +10,8 @@ source_set("parcel") {
     "parcels_server_proxy.h",
     "parcels_storage.cc",
     "parcels_storage.h",
+    "parcels_utils.cc",
+    "parcels_utils.h",
   ]
   deps = [
     "//base",

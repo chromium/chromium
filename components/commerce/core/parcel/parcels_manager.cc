@@ -11,6 +11,7 @@
 #include "base/time/default_clock.h"
 #include "components/commerce/core/parcel/parcels_server_proxy.h"
 #include "components/commerce/core/parcel/parcels_storage.h"
+#include "components/commerce/core/parcel/parcels_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace commerce {
@@ -37,20 +38,7 @@ std::vector<ParcelIdentifier> ConvertParcelIdentifier(
 bool IsParcelDone(const parcel_tracking_db::ParcelTrackingContent& tracking) {
   ParcelStatus::ParcelState parcel_state =
       tracking.parcel_status().parcel_state();
-#pragma push_macro("ERROR")
-#undef ERROR
-  switch (parcel_state) {
-    case ParcelStatus::FINISHED:
-    case ParcelStatus::ERROR:
-    case ParcelStatus::CANCELLED:
-    case ParcelStatus::ORDER_TOO_OLD:
-    case ParcelStatus::RETURN_COMPLETED:
-    case ParcelStatus::UNDELIVERABLE:
-      return true;
-    default:
-      return false;
-  }
-#pragma pop_macro("ERROR")
+  return IsParcelStateDone(parcel_state);
 }
 
 std::vector<ParcelIdentifier> GetParcelIdentifiersToRefresh(
@@ -213,6 +201,9 @@ void ParcelsManager::OnParcelStorageInitialized(bool success) {
   // TODO(qinmin): determine if we need to handle storage failure issue.
   storage_status_ = success ? StorageInitializationStatus::kSuccess
                             : StorageInitializationStatus::kFailed;
+  if (success) {
+    parcels_storage_->ModifyOldDoneParcels();
+  }
   OnCurrentOperationFinished();
 }
 

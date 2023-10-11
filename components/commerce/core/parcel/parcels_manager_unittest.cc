@@ -211,6 +211,7 @@ class MockParcelsStorage : public ParcelsStorage {
               DeleteAllParcelStatus,
               (StorageUpdateCallback callback),
               (override));
+  MOCK_METHOD(void, ModifyOldDoneParcels, (), (override));
 
   void MockInitCallback(bool succeeded) {
     ON_CALL(*this, Init)
@@ -218,6 +219,9 @@ class MockParcelsStorage : public ParcelsStorage {
             [succeeded](ParcelsStorage::OnInitializedCallback callback) {
               std::move(callback).Run(succeeded);
             });
+    if (succeeded) {
+      EXPECT_CALL(*this, ModifyOldDoneParcels()).Times(1);
+    }
   }
 
   void MockGetAllParcelTrackingContents(const std::string& tracking_id,
