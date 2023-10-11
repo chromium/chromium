@@ -4,6 +4,9 @@
 
 #include "components/search_engines/template_url_prepopulate_data.h"
 
+#include <algorithm>
+#include <random>
+
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -1609,7 +1612,8 @@ const std::vector<EngineAndTier> GetPrepopulationSetFromCountryID(
 }
 
 std::vector<std::unique_ptr<TemplateURLData>>
-GetPrepopulatedEnginesForEeaRegionCountries(int country_id) {
+GetPrepopulatedEnginesForEeaRegionCountries(int country_id,
+                                            PrefService* prefs) {
   std::vector<std::unique_ptr<TemplateURLData>> t_urls;
   std::vector<const PrepopulatedEngine*> top_engines;
   std::vector<const PrepopulatedEngine*> tying_engines;
@@ -1637,12 +1641,21 @@ GetPrepopulatedEnginesForEeaRegionCountries(int country_id) {
     }
   }
 
-  // Randomize all vectors.
-  // TODO(b/282656014): Change this to be randomized based on a seed that is
-  // constant for the profile.
-  base::RandomShuffle(top_engines.begin(), top_engines.end());
-  base::RandomShuffle(tying_engines.begin(), tying_engines.end());
-  base::RandomShuffle(remaining_engines.begin(), remaining_engines.end());
+  uint64_t profile_seed = prefs->GetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenRandomShuffleSeed);
+  // Ensure that the generated seed is not 0 to avoid accidental re-seeding.
+  while (profile_seed == 0) {
+    profile_seed = base::RandUint64();
+    prefs->SetInt64(prefs::kDefaultSearchProviderChoiceScreenRandomShuffleSeed,
+                    profile_seed);
+  }
+
+  // Randomize all vectors using the generated seed.
+  std::default_random_engine generator;
+  generator.seed(profile_seed);
+  std::shuffle(top_engines.begin(), top_engines.end(), generator);
+  std::shuffle(tying_engines.begin(), tying_engines.end(), generator);
+  std::shuffle(remaining_engines.begin(), remaining_engines.end(), generator);
 
   size_t current_number_of_engines = 0;
   for (const PrepopulatedEngine* engine : top_engines) {
@@ -1671,13 +1684,15 @@ GetPrepopulatedEnginesForEeaRegionCountries(int country_id) {
 }
 
 std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedTemplateURLData(
-    int country_id) {
+    int country_id,
+    PrefService* prefs) {
   std::vector<std::unique_ptr<TemplateURLData>> t_urls;
 
   if (search_engines::IsEeaChoiceCountry(country_id) &&
       search_engines::IsChoiceScreenFlagEnabled(
           search_engines::ChoicePromo::kAny)) {
-    return GetPrepopulatedEnginesForEeaRegionCountries(country_id);
+    CHECK(prefs);
+    return GetPrepopulatedEnginesForEeaRegionCountries(country_id, prefs);
   }
 
   std::vector<EngineAndTier> engines =
@@ -1719,6 +1734,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   country_codes::RegisterProfilePrefs(registry);
   registry->RegisterListPref(prefs::kSearchProviderOverrides);
   registry->RegisterIntegerPref(prefs::kSearchProviderOverridesVersion, -1);
+  registry->RegisterInt64Pref(
+      prefs::kDefaultSearchProviderChoiceScreenRandomShuffleSeed, 0);
 }
 
 int GetDataVersion(PrefService* prefs) {
@@ -1739,7 +1756,7 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
       GetOverriddenTemplateURLData(prefs);
   if (t_urls.empty()) {
     t_urls = GetPrepopulatedTemplateURLData(
-        search_engines::GetSearchEngineChoiceCountryId(prefs));
+        search_engines::GetSearchEngineChoiceCountryId(prefs), prefs);
 
     if (include_current_default && template_url_service) {
       CHECK(search_engines::IsChoiceScreenFlagEnabled(
@@ -1787,7 +1804,9 @@ std::vector<std::unique_ptr<TemplateURLData>> GetLocalPrepopulatedEngines(
     return std::vector<std::unique_ptr<TemplateURLData>>();
   }
 
-  return GetPrepopulatedTemplateURLData(country_id);
+  // TODO(b/303632061): Pass the correct PrefService to this method to fetch the
+  // search engines for Android.
+  return GetPrepopulatedTemplateURLData(country_id, nullptr);
 }
 
 #endif

@@ -888,6 +888,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         r'content/browser/webid/federated_auth_request_impl\.cc',
         r'media/cast/test/utility/udp_proxy\.h',
         r'sql/recover_module/module_unittest\.cc',
+        r'components/search_engines/template_url_prepopulate_data.cc',
       ],
     ),
     BanRule(
