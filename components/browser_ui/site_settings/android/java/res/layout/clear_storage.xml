@@ -10,6 +10,6 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:contentDescription="@string/webstorage_clear_data_dialog_title"
+    android:contentDescription="@string/webstorage_delete_data_dialog_title"
     android:src="@drawable/ic_delete_white_24dp"
     app:tint="@macro/default_icon_color"/>

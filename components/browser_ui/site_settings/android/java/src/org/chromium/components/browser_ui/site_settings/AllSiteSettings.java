@@ -139,12 +139,12 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
         if (mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
             mCategory = SiteSettingsCategory.createFromType(
                     browserContextHandle, SiteSettingsCategory.Type.ZOOM);
-        };
+        }
         if (!(mCategory.getType() == SiteSettingsCategory.Type.ALL_SITES
                     || mCategory.getType() == SiteSettingsCategory.Type.USE_STORAGE
                     || mCategory.getType() == SiteSettingsCategory.Type.ZOOM)) {
             throw new IllegalArgumentException("Use SingleCategorySettings instead.");
-        };
+        }
 
         ViewGroup view = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
 
@@ -292,10 +292,10 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
             adDataRow.setVisibility(View.VISIBLE);
         }
         signedOutText.setText(R.string.webstorage_clear_data_dialog_sign_out_all_message);
-        offlineText.setText(R.string.webstorage_clear_data_dialog_offline_message);
+        offlineText.setText(R.string.webstorage_delete_data_dialog_offline_message);
         String dialogFormattedText =
-                getString(includesApps ? R.string.webstorage_clear_data_dialog_message_with_app
-                                       : R.string.webstorage_clear_data_dialog_message,
+                getString(includesApps ? R.string.webstorage_delete_data_dialog_message_with_app
+                                       : R.string.webstorage_delete_data_dialog_message,
                         Formatter.formatShortFileSize(getContext(), totalUsage));
         message.setText(dialogFormattedText);
         builder.setView(dialogView);

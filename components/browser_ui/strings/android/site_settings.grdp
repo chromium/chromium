@@ -290,32 +290,32 @@
 
   <!-- Site settings Clear Data Dialog and other ways of resetting permissions -->
 
-  <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_TITLE" desc="Title of the confirmation dialog when the user ask to clear all data for an origin">
-    Clear site data?
+  <message name="IDS_WEBSTORAGE_DELETE_DATA_DIALOG_TITLE" desc="Title of the confirmation dialog when the user ask to delete all data for an origin">
+    Delete site data?
   </message>
-  <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_OK_BUTTON" desc="Button confirming site data cleanup [CHAR_LIMIT=20]">
-    Clear
+  <message name="IDS_WEBSTORAGE_DELETE_DATA_DIALOG_OK_BUTTON" desc="Button confirming site data cleanup [CHAR_LIMIT=20]">
+    Delete
   </message>
-  <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_MESSAGE_SINGLE" desc="Text of the confirmation dialog when the user asks to clear all data (and app) for a single origin">
-    This will clear all data and cookies stored by <ph name="ORIGIN">%1$s<ex>google.com</ex></ph>.
+  <message name="IDS_WEBSTORAGE_DELETE_DATA_DIALOG_MESSAGE_SINGLE" desc="Text of the confirmation dialog when the user asks to delete all data (and app) for a single origin">
+    This will delete all data and cookies stored by <ph name="ORIGIN">%1$s<ex>google.com</ex></ph>.
   </message>
-  <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_MESSAGE_SINGLE_WITH_APP" desc="Text of the confirmation dialog when the user asks to clear all data (and app) for a single origin, when there's an app associated with it.">
-    This will clear all data and cookies stored by <ph name="ORIGIN">%1$s<ex>google.com</ex></ph> or by its app on your Home screen.
+  <message name="IDS_WEBSTORAGE_DELETE_DATA_DIALOG_MESSAGE_SINGLE_WITH_APP" desc="Text of the confirmation dialog when the user asks to delete all data (and app) for a single origin, when there's an app associated with it.">
+    This will delete all data and cookies stored by <ph name="ORIGIN">%1$s<ex>google.com</ex></ph> or by its app on your Home screen.
   </message>
-  <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_MESSAGE_GROUP" desc="Text of the confirmation dialog when the user asks to clear all data (and app) for a group of sites">
-    This action will clear all data and cookies for <ph name="ORIGIN">%1$s<ex>google.com</ex></ph> and all sites under it
+  <message name="IDS_WEBSTORAGE_DELETE_DATA_DIALOG_MESSAGE_GROUP" desc="Text of the confirmation dialog when the user asks to delete all data (and app) for a group of sites">
+    This action will delete all data and cookies for <ph name="ORIGIN">%1$s<ex>google.com</ex></ph> and all sites under it
   </message>
-  <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_MESSAGE_GROUP_WITH_APP" desc="Text of the confirmation dialog when the user asks to clear all data (and app) for a group of sites, when there's an app associated with it.">
-    This action will clear all data and cookies stored by all sites under <ph name="ORIGIN">%1$s<ex>google.com</ex></ph> or by its app on your Home screen
+  <message name="IDS_WEBSTORAGE_DELETE_DATA_DIALOG_MESSAGE_GROUP_WITH_APP" desc="Text of the confirmation dialog when the user asks to delete all data (and app) for a group of sites, when there's an app associated with it.">
+    This action will delete all data and cookies stored by all sites under <ph name="ORIGIN">%1$s<ex>google.com</ex></ph> or by its app on your Home screen
   </message>
-  <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_OFFLINE_MESSAGE" desc="Text of the confirmation dialog, explaining that all offline data will be cleared (when clearing a site/sites).">
-    Any offline data will be cleared
+  <message name="IDS_WEBSTORAGE_DELETE_DATA_DIALOG_OFFLINE_MESSAGE" desc="Text of the confirmation dialog, explaining that all offline data will be deleted (when clearing a site/sites).">
+    Any offline data will be deleted
   </message>
-  <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_MESSAGE" desc="Text of the confirmation dialog when the user ask to clear all data for multiple origins">
-    This will clear <ph name="DATASIZE">%1$s<ex>1 GB</ex></ph> of data and cookies stored by sites.
+  <message name="IDS_WEBSTORAGE_DELETE_DATA_DIALOG_MESSAGE" desc="Text of the confirmation dialog when the user ask to delete all data for multiple origins">
+    This will delete <ph name="DATASIZE">%1$s<ex>1 GB</ex></ph> of data and cookies stored by sites.
   </message>
-  <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_MESSAGE_WITH_APP" desc="Text of the confirmation dialog when the user ask to clear all data for multiple origins, some of which have an app associated with them.">
-    This will clear <ph name="DATASIZE">%1$s<ex>1 GB</ex></ph> of data and cookies stored by sites or by apps on your Home screen.
+  <message name="IDS_WEBSTORAGE_DELETE_DATA_DIALOG_MESSAGE_WITH_APP" desc="Text of the confirmation dialog when the user ask to delete all data for multiple origins, some of which have an app associated with them.">
+    This will delete <ph name="DATASIZE">%1$s<ex>1 GB</ex></ph> of data and cookies stored by sites or by apps on your Home screen.
   </message>
   <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_SIGN_OUT_MESSAGE" desc="Text of the confirmation dialog, explaining that the user will be signed out of the site being cleared.">
     You may be signed out of this site

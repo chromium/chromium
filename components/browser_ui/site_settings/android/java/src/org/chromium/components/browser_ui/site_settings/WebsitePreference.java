@@ -95,7 +95,7 @@ class WebsitePreference extends ChromeImageViewPreference {
 
         if (mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
             // Create and set the delete button for this preference.
-            setImageView(R.drawable.btn_close, R.string.webstorage_clear_data_dialog_title,
+            setImageView(R.drawable.btn_close, R.string.webstorage_delete_data_dialog_title,
                     (OnClickListener) view -> {
                         SiteSettingsUtil.resetZoomLevel(
                                 mSite, mSiteSettingsDelegate.getBrowserContextHandle());

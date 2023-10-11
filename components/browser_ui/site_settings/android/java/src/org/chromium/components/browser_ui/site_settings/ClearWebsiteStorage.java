@@ -48,12 +48,12 @@ public class ClearWebsiteStorage extends DialogPreference {
         int resourceId;
         if (!mIsGroup) {
             resourceId = mClearingApps
-                    ? R.string.webstorage_clear_data_dialog_message_single_with_app
-                    : R.string.webstorage_clear_data_dialog_message_single;
+                    ? R.string.webstorage_delete_data_dialog_message_single_with_app
+                    : R.string.webstorage_delete_data_dialog_message_single;
         } else {
             resourceId = mClearingApps
-                    ? R.string.webstorage_clear_data_dialog_message_group_with_app
-                    : R.string.webstorage_clear_data_dialog_message_group;
+                    ? R.string.webstorage_delete_data_dialog_message_group_with_app
+                    : R.string.webstorage_delete_data_dialog_message_group;
         }
 
         setDialogMessage(mContext.getString(resourceId, mHost));
@@ -84,6 +84,6 @@ public class ClearWebsiteStorage extends DialogPreference {
      * Returns the string resource id to use to explain what happens with offline files.
      */
     public static int getOfflineText() {
-        return R.string.webstorage_clear_data_dialog_offline_message;
+        return R.string.webstorage_delete_data_dialog_offline_message;
     }
 }
