@@ -138,7 +138,7 @@ export {AppManagementSupportedLinksOverlappingAppsDialogElement} from 'chrome://
 // Tests should use this export of `sanitizerInnerHtml` to prevent repeated
 // TrustedTypes policies from being created.
 export {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol} from './crostini_page/crostini_browser_proxy.js';
+export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting} from './crostini_page/crostini_browser_proxy.js';
 export {ExtraContainersElement} from './crostini_page/crostini_extra_containers.js';
 export {ExtraContainersCreateDialog} from './crostini_page/crostini_extra_containers_create_dialog.js';
 export {SettingsCrostiniPageElement} from './crostini_page/crostini_page.js';
