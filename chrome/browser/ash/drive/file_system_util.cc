@@ -157,10 +157,8 @@ bool IsDriveFsBulkPinningAvailable() {
 }
 
 bool IsOobeDrivePinningAvailable(const Profile* const profile) {
-  const bool b =
-      base::FeatureList::IsEnabled(ash::features::kOobeDrivePinning) &&
-      ash::features::IsOobeChoobeEnabled() &&
-      IsDriveFsBulkPinningAvailable(profile);
+  const bool b = IsOobeDrivePinningScreenEnabled() &&
+                 IsDriveFsBulkPinningAvailable(profile);
   VLOG(1) << "IsOobeDrivePinningAvailable() returned " << b;
   return b;
 }
