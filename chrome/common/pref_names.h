@@ -1964,10 +1964,6 @@ inline constexpr char kDownloadDefaultDirectory[] =
 // upgrade a unsafe location to a safe location.
 inline constexpr char kDownloadDirUpgraded[] = "download.directory_upgrade";
 
-// base::Time value indicating the last timestamp when a download is completed.
-inline constexpr char kDownloadLastCompleteTime[] =
-    "download.last_complete_time";
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_MAC)
 inline constexpr char kOpenPdfDownloadInSystemReader[] =

@@ -416,8 +416,8 @@ class DownloadDisplayControllerTest : public testing::Test {
         .WillRepeatedly(Return(is_insecure));
     if (state == DownloadState::COMPLETE) {
       EXPECT_CALL(item(item_index), IsDone()).WillRepeatedly(Return(true));
-      DownloadPrefs::FromBrowserContext(profile())->SetLastCompleteTime(
-          base::Time::Now());
+      EXPECT_CALL(item(item_index), GetEndTime())
+          .WillRepeatedly(Return(base::Time::Now()));
     } else {
       EXPECT_CALL(item(item_index), IsDone()).WillRepeatedly(Return(false));
     }
@@ -876,44 +876,6 @@ TEST_F(DownloadDisplayControllerTest,
                                  /*is_active=*/true));
 }
 
-TEST_F(DownloadDisplayControllerTest, InitialState_OldLastDownload) {
-  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
-                   download::DownloadItem::COMPLETE);
-  base::Time current_time = base::Time::Now();
-  // Set the last complete time to more than 1 hour ago.
-  DownloadPrefs::FromBrowserContext(profile())->SetLastCompleteTime(
-      current_time - base::Minutes(61));
-
-  DownloadDisplayController controller(&display(), browser(),
-                                       &bubble_controller());
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
-                                 /*icon_state=*/DownloadIconState::kComplete,
-                                 /*is_active=*/false));
-}
-
-TEST_F(DownloadDisplayControllerTest, InitialState_NewLastDownload) {
-  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
-                   download::DownloadItem::COMPLETE);
-  base::Time current_time = base::Time::Now();
-  // Set the last complete time to less than 1 hour ago.
-  DownloadPrefs::FromBrowserContext(profile())->SetLastCompleteTime(
-      current_time - base::Minutes(59));
-
-  DownloadDisplayController controller(&display(), browser(),
-                                       &bubble_controller());
-  // The initial state should not display details.
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
-                                 /*icon_state=*/DownloadIconState::kComplete,
-                                 /*is_active=*/false));
-
-  // The display should stop showing once the last download is more than 1 day
-  // ago.
-  task_environment_.FastForwardBy(base::Minutes(1));
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
-                                 /*icon_state=*/DownloadIconState::kComplete,
-                                 /*is_active=*/false));
-}
-
 TEST_F(DownloadDisplayControllerTest, InitialState_InProgressDownload) {
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS);
@@ -925,23 +887,6 @@ TEST_F(DownloadDisplayControllerTest, InitialState_InProgressDownload) {
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
-}
-
-TEST_F(DownloadDisplayControllerTest,
-       InitialState_NewLastDownloadWithEmptyItem) {
-  base::Time current_time = base::Time::Now();
-  // Set the last complete time to less than 1 hour ago.
-  DownloadPrefs::FromBrowserContext(profile())->SetLastCompleteTime(
-      current_time - base::Minutes(59));
-
-  DownloadDisplayController controller(&display(), browser(),
-                                       &bubble_controller());
-  // Although the last complete time is set, the download display is not shown
-  // because the download item list is empty. This can happen if the download
-  // history is deleted by the user.
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
-                                 /*icon_state=*/DownloadIconState::kComplete,
-                                 /*is_active=*/false));
 }
 
 TEST_F(DownloadDisplayControllerTest, InitialState_NoLastDownload) {

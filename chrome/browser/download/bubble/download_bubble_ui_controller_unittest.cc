@@ -300,13 +300,8 @@ class DownloadBubbleUIControllerTest : public testing::Test {
           DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS) {
     DCHECK_GT(items_.size(), static_cast<size_t>(item_index));
     EXPECT_CALL(item(item_index), GetState()).WillRepeatedly(Return(state));
-    if (state == DownloadState::COMPLETE) {
-      EXPECT_CALL(item(item_index), IsDone()).WillRepeatedly(Return(true));
-      DownloadPrefs::FromDownloadManager(&manager())
-          ->SetLastCompleteTime(base::Time::Now());
-    } else {
-      EXPECT_CALL(item(item_index), IsDone()).WillRepeatedly(Return(false));
-    }
+    EXPECT_CALL(item(item_index), IsDone())
+        .WillRepeatedly(Return(state == DownloadState::COMPLETE));
     EXPECT_CALL(item(item_index), IsDangerous())
         .WillRepeatedly(
             Return(danger_type !=

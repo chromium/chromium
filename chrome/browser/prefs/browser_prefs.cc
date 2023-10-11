@@ -903,39 +903,36 @@ const char kDriveFsBulkPinningMaxQueueSize[] =
 const char kPrivacySandboxM1Unrestricted[] = "privacy_sandbox.m1.unrestricted";
 #if BUILDFLAG(IS_WIN)
 const char kSwReporter[] = "software_reporter";
-inline constexpr char kChromeCleaner[] = "chrome_cleaner";
-inline constexpr char kSettingsResetPrompt[] = "settings_reset_prompt";
+const char kChromeCleaner[] = "chrome_cleaner";
+const char kSettingsResetPrompt[] = "settings_reset_prompt";
 #endif
 // A boolean specifying whether the new download bubble UI is enabled. If it is
 // set to false, the old download shelf UI will be shown instead.
-inline constexpr char kDownloadBubbleEnabled[] = "download_bubble_enabled";
+const char kDownloadBubbleEnabled[] = "download_bubble_enabled";
 
 // Deprecated 09/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kGestureEducationNotificationShown[] =
+const char kGestureEducationNotificationShown[] =
     "ash.gesture_education.notification_shown";
 
 // Note that this very name is used outside ChromeOS Ash, where it isn't
 // deprecated.
-constexpr char kSyncInitialSyncFeatureSetupCompleteOnAsh[] =
+const char kSyncInitialSyncFeatureSetupCompleteOnAsh[] =
     "sync.has_setup_completed";
 #endif
 
 // Deprecated 09/2023.
-// Synced boolean that indicates if a user has manually toggled the settings
-// associated with the PrivacySandboxSettings feature.
-inline constexpr char kPrivacySandboxManuallyControlled[] =
+const char kPrivacySandboxManuallyControlled[] =
     "privacy_sandbox.manually_controlled";
 
 // Deprecated 09/2023.
-// Boolean value indicating whether the regular prefs were migrated to UPM
-// settings for syncing users.
 #if BUILDFLAG(IS_ANDROID)
 const char kSettingsMigratedToUPM[] = "profile.settings_migrated_to_upm";
 #endif
 
 // Deprecated 10/2023.
-inline constexpr char kSyncRequested[] = "sync.requested";
+const char kSyncRequested[] = "sync.requested";
+const char kDownloadLastCompleteTime[] = "download.last_complete_time";
 
 // Deprecated 10/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1321,6 +1318,7 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterStringPref(kLastSuccessfulDomainPref, std::string());
   registry->RegisterBooleanPref(kShouldAttemptReenable, true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterTimePref(kDownloadLastCompleteTime, base::Time());
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {

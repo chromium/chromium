@@ -192,7 +192,12 @@ class DownloadBubbleUpdateServiceTest : public testing::Test {
     EXPECT_CALL(item, GetGuid()).WillRepeatedly(ReturnRefOfCopy(guid));
     EXPECT_CALL(item, GetState()).WillRepeatedly(Return(state));
     EXPECT_CALL(item, GetStartTime()).WillRepeatedly(Return(start_time));
-    EXPECT_CALL(item, GetEndTime()).WillRepeatedly(Return(start_time));
+    if (state == DownloadState::COMPLETE) {
+      EXPECT_CALL(item, GetEndTime())
+          .WillRepeatedly(Return(start_time + base::Minutes(1)));
+    } else {
+      EXPECT_CALL(item, GetEndTime()).WillRepeatedly(Return(base::Time()));
+    }
     EXPECT_CALL(item, GetTargetFilePath())
         .WillRepeatedly(
             ReturnRefOfCopy(base::FilePath(FILE_PATH_LITERAL("foo"))));
@@ -791,7 +796,57 @@ TEST_F(DownloadBubbleUpdateServiceTest, GetProgressInfoForWebApp) {
   EXPECT_EQ(app_b_progress_info.progress_percentage, 50);
 }
 
-TEST_F(DownloadBubbleUpdateServiceTest, GetAllUIModelsInfo) {
+TEST_F(DownloadBubbleUpdateServiceTest, GetDisplayInfo_InProgress) {
+  base::Time now = base::Time::Now();
+  base::Time two_hours_ago = now - base::Hours(2);
+  InitDownloadItem(DownloadState::IN_PROGRESS, "now_download",
+                   /*is_paused=*/false, now);
+  InitDownloadItem(DownloadState::IN_PROGRESS, "two_hours_ago_download",
+                   /*is_paused=*/false, two_hours_ago);
+  InitOfflineItems({OfflineItemState::PAUSED, OfflineItemState::PAUSED},
+                   {"now_offline_item", "two_hours_ago_offline_item"},
+                   {now, two_hours_ago});
+
+  DownloadBubbleDisplayInfo info =
+      update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
+  EXPECT_EQ(info.all_models_size, 4u);
+  // The last_completed_time is null, because no downloads have finished.
+  EXPECT_EQ(info.last_completed_time, base::Time());
+  EXPECT_EQ(info.in_progress_count, 4);
+  EXPECT_EQ(info.paused_count, 2);
+  EXPECT_TRUE(info.has_unactioned);
+  EXPECT_FALSE(info.has_deep_scanning);
+}
+
+TEST_F(DownloadBubbleUpdateServiceTest,
+       GetDisplayInfo_UpdateForCompleteDownload) {
+  base::Time now = base::Time::Now();
+  base::Time two_hours_ago = now - base::Hours(2);
+  InitDownloadItem(DownloadState::IN_PROGRESS, "now_download",
+                   /*is_paused=*/false, now);
+  InitDownloadItem(DownloadState::IN_PROGRESS, "two_hours_ago_download",
+                   /*is_paused=*/false, two_hours_ago);
+  InitDownloadItem(DownloadState::COMPLETE, "completed_download",
+                   /*is_paused=*/false, two_hours_ago);
+  InitOfflineItems({OfflineItemState::PAUSED, OfflineItemState::PAUSED},
+                   {"now_offline_item", "two_hours_ago_offline_item"},
+                   {now, two_hours_ago});
+
+  // Make the download completed to update the last_completed_time.
+  UpdateDownloadItem(0, DownloadState::COMPLETE);
+
+  DownloadBubbleDisplayInfo info =
+      update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
+  EXPECT_EQ(info.all_models_size, 5u);
+  EXPECT_EQ(info.last_completed_time, now);
+  EXPECT_EQ(info.in_progress_count, 3);
+  EXPECT_EQ(info.paused_count, 2);
+  EXPECT_TRUE(info.has_unactioned);
+  EXPECT_FALSE(info.has_deep_scanning);
+}
+
+TEST_F(DownloadBubbleUpdateServiceTest,
+       GetDisplayInfo_ExistingCompleteDownload) {
   base::Time now = base::Time::Now();
   base::Time two_hours_ago = now - base::Hours(2);
   InitDownloadItem(DownloadState::IN_PROGRESS, "now_download",
@@ -807,8 +862,38 @@ TEST_F(DownloadBubbleUpdateServiceTest, GetAllUIModelsInfo) {
   DownloadBubbleDisplayInfo info =
       update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(info.all_models_size, 5u);
-  EXPECT_EQ(info.last_completed_time, now);
+  // The last_completed_time should be set to the end time of the completed
+  // download, which is 1 minute past its start time (set in InitDownloadItem).
+  EXPECT_EQ(info.last_completed_time, two_hours_ago + base::Minutes(1));
   EXPECT_EQ(info.in_progress_count, 4);
+  EXPECT_EQ(info.paused_count, 2);
+  EXPECT_TRUE(info.has_unactioned);
+  EXPECT_FALSE(info.has_deep_scanning);
+}
+
+TEST_F(DownloadBubbleUpdateServiceTest, GetDisplayInfo_UpdateForDangerous) {
+  base::Time now = base::Time::Now();
+  base::Time two_hours_ago = now - base::Hours(2);
+  InitDownloadItem(DownloadState::IN_PROGRESS, "now_download",
+                   /*is_paused=*/false, now);
+  InitDownloadItem(DownloadState::IN_PROGRESS, "two_hours_ago_download",
+                   /*is_paused=*/false, two_hours_ago);
+  InitDownloadItem(DownloadState::COMPLETE, "completed_download",
+                   /*is_paused=*/false, two_hours_ago);
+  InitOfflineItems({OfflineItemState::PAUSED, OfflineItemState::PAUSED},
+                   {"now_offline_item", "two_hours_ago_offline_item"},
+                   {now, two_hours_ago});
+
+  // Make the download dangerous to update the last_completed_time.
+  UpdateDownloadItem(
+      0, DownloadState::IN_PROGRESS, /*is_paused=*/false,
+      DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT);
+
+  DownloadBubbleDisplayInfo info =
+      update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
+  EXPECT_EQ(info.all_models_size, 5u);
+  EXPECT_EQ(info.last_completed_time, now);
+  EXPECT_EQ(info.in_progress_count, 3);
   EXPECT_EQ(info.paused_count, 2);
   EXPECT_TRUE(info.has_unactioned);
   EXPECT_FALSE(info.has_deep_scanning);

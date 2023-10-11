@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/download/bubble/download_bubble_display_info.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/download/download_ui_model.h"
@@ -294,13 +295,20 @@ class DownloadBubbleUpdateService
 
     // Updates |display_info_| based on the current contents of the cache.
     // This is kept updated as items are added or removed from the cache.
-    void UpdateDisplayInfo();
+    // `updating_for_item` is the id of the item (download or offline item)
+    // whose update triggered calling this function.
+    void UpdateDisplayInfo(const std::string& updating_for_item);
+    void UpdateDisplayInfo(
+        const offline_items_collection::ContentId& updating_for_item);
     // Implements the above.
     void UpdateDisplayInfoForDownloadItem(
+        base::optional_ref<const std::string> updating_for_item,
         base::Time cutoff_time,
         DownloadBubbleDisplayInfo& info,
         SortedDownloadItems::iterator& download_item_it);
     void UpdateDisplayInfoForOfflineItem(
+        base::optional_ref<const offline_items_collection::ContentId>
+            updating_for_item,
         base::Time cutoff_time,
         DownloadBubbleDisplayInfo& info,
         SortedOfflineItems::iterator& offline_item_it);

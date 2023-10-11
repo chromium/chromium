@@ -55,7 +55,7 @@ class DownloadDisplay {
   // Shows the download display.
   virtual void Show() = 0;
 
-  // Hides the download display.
+  // Hides the download display immediately.
   virtual void Hide() = 0;
 
   // Returns whether or not the download display is visible.

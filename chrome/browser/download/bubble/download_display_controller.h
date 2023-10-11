@@ -128,12 +128,6 @@ class DownloadDisplayController : public FullscreenObserver,
 
   // Decides whether the toolbar button should be shown when it is created.
   virtual void MaybeShowButtonWhenCreated();
-  // Whether the last download complete time is less than `interval` ago.
-  bool HasRecentCompleteDownload(base::TimeDelta interval,
-                                 base::Time last_complete_time);
-
-  base::Time GetLastCompleteTime(
-      base::Time last_completed_time_from_current_models) const;
 
   // The pointer is created in ToolbarView and owned by ToolbarView.
   raw_ptr<DownloadDisplay> const display_;

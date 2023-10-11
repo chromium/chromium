@@ -56,6 +56,17 @@ bool IsAllDone(const DownloadBubbleDisplayInfo& info) {
   return info.in_progress_count == info.paused_count;
 }
 
+// Whether the last download complete time is more recent than `interval` ago.
+bool HasRecentCompleteDownload(base::TimeDelta interval,
+                               base::Time last_complete_time) {
+  if (last_complete_time.is_null()) {
+    return false;
+  }
+  base::TimeDelta time_since_last_completion =
+      base::Time::Now() - last_complete_time;
+  return time_since_last_completion < interval;
+}
+
 }  // namespace
 
 DownloadDisplayController::DownloadDisplayController(
@@ -174,6 +185,7 @@ void DownloadDisplayController::ShowToolbarButton() {
 }
 
 void DownloadDisplayController::HideToolbarButton() {
+  // TODO(chlily): This should only hide the bubble/button when it is not open.
   if (display_->IsShowing()) {
     display_->Hide();
   }
@@ -234,7 +246,6 @@ void DownloadDisplayController::UpdateToolbarButtonState(
     HideToolbarButton();
     return;
   }
-  base::Time last_complete_time = GetLastCompleteTime(info.last_completed_time);
 
   DownloadDisplay::IconUpdateInfo updates;
 
@@ -247,7 +258,7 @@ void DownloadDisplayController::UpdateToolbarButtonState(
     updates.new_state = DownloadIconState::kComplete;
     bool complete_unactioned =
         HasRecentCompleteDownload(kToolbarIconActiveTimeInterval,
-                                  last_complete_time) &&
+                                  info.last_completed_time) &&
         info.has_unactioned;
     bool exited_fullscreen_owed_details =
         !display_->IsFullscreenWithParentViewHidden() &&
@@ -266,7 +277,7 @@ void DownloadDisplayController::UpdateToolbarButtonState(
 
   if (updates.new_state != DownloadIconState::kComplete ||
       HasRecentCompleteDownload(kToolbarIconVisibilityTimeInterval,
-                                last_complete_time)) {
+                                info.last_completed_time)) {
     ShowToolbarButton();
   }
 
@@ -310,13 +321,6 @@ void DownloadDisplayController::ScheduleToolbarInactive(
       &DownloadDisplayController::UpdateDownloadIconToInactive);
 }
 
-base::Time DownloadDisplayController::GetLastCompleteTime(
-    base::Time last_completed_time_from_current_models) const {
-  base::Time last_time = DownloadPrefs::FromBrowserContext(browser_->profile())
-                             ->GetLastCompleteTime();
-  return std::max(last_time, last_completed_time_from_current_models);
-}
-
 void DownloadDisplayController::MaybeShowButtonWhenCreated() {
   if (!download::ShouldShowDownloadBubble(browser_->profile())) {
     return;
@@ -324,20 +328,12 @@ void DownloadDisplayController::MaybeShowButtonWhenCreated() {
 
   const DownloadBubbleDisplayInfo& info = UpdateButtonStateFromUpdateService();
   if (display_->IsShowing()) {
+    base::Time disappearance_time =
+        info.last_completed_time + kToolbarIconVisibilityTimeInterval;
+    base::TimeDelta interval_until_disappearance =
+        disappearance_time - base::Time::Now();
+    // Avoid passing a negative time interval.
     ScheduleToolbarDisappearance(
-        kToolbarIconVisibilityTimeInterval -
-        (base::Time::Now() - GetLastCompleteTime(info.last_completed_time)));
+        std::max(base::TimeDelta(), interval_until_disappearance));
   }
-}
-
-bool DownloadDisplayController::HasRecentCompleteDownload(
-    base::TimeDelta interval,
-    base::Time last_complete_time) {
-  base::Time current_time = base::Time::Now();
-  base::TimeDelta time_since_last_completion =
-      current_time - last_complete_time;
-  // Also check that the current time is not smaller than the last complete
-  // time, this can happen if the system clock has moved backward.
-  return time_since_last_completion < interval &&
-         current_time >= last_complete_time;
 }
