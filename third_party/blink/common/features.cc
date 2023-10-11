@@ -1238,6 +1238,10 @@ BASE_FEATURE(kOriginAgentClusterDefaultWarning,
              "OriginAgentClusterDefaultWarning",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOriginTrialStateHostApplyFeatureDiff,
+             "OriginTrialStateHostApplyFeatureDiff",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enable defer commits to avoid flash of unstyled content, for same origin
 // navigation only.
 BASE_FEATURE(kPaintHolding, "PaintHolding", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1554,10 +1558,6 @@ BASE_FEATURE(kRetriggerPreloadingOnBFCacheRestoration,
 
 BASE_FEATURE(kRunTextInputUpdatePostLifecycle,
              "RunTextInputUpdatePostLifecycle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kOriginTrialStateHostApplyFeatureDiff,
-             "OriginTrialStateHostApplyFeatureDiff",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // https://html.spec.whatwg.org/multipage/system-state.html#safelisted-scheme

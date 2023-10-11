@@ -716,6 +716,13 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOriginAgentClusterDefaultEnabled);
 // kOriginAgentClusterDefaultEnabled above.)
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOriginAgentClusterDefaultWarning);
 
+// Kill-switch for any calls to the mojo interface OriginTrialStateHost
+// in the RuntimeFeatureStateOverrideContext class. If
+// `kOriginTrialStateHostApplyFeatureDiff` is disabled,
+// origin/deprecation trial token information is not sent to the browser
+// process.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOriginTrialStateHostApplyFeatureDiff);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPath2DPaintCache);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPaintHolding);
@@ -955,13 +962,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // If enabled, IME updates are computed at the end of a lifecycle update rather
 // than the beginning.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRunTextInputUpdatePostLifecycle);
-
-// Kill-switch for any calls to the mojo interface OriginTrialStateHost
-// in the RuntimeFeatureStateOverrideContext class. If
-// `kOriginTrialStateHostApplyFeatureDiff` is disabled,
-// origin/deprecation trial token information is not sent to the browser
-// process.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOriginTrialStateHostApplyFeatureDiff);
 
 // When enabled, it adds FTP / FTPS / SFTP to the safe list for
 // registerProtocolHandler. This feature is enabled by default and meant to
