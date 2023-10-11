@@ -590,10 +590,7 @@ ModelTypeSet EncryptableUserTypes() {
   // Password sharing invitations have different encryption implementation.
   encryptable_user_types.Remove(INCOMING_PASSWORD_SHARING_INVITATION);
   encryptable_user_types.Remove(OUTGOING_PASSWORD_SHARING_INVITATION);
-  // Proxy types have no sync representation and are therefore not encrypted.
-  // Note however that proxy types map to one or more protocol types, which
-  // may or may not be encrypted themselves.
-  encryptable_user_types.RetainAll(ProtocolTypes());
+
   return encryptable_user_types;
 }
 

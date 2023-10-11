@@ -252,54 +252,12 @@ void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics);
 ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics);
 
 // Protocol types are those types that have actual protocol buffer
-// representations. This distinguishes them from Proxy types, which have no
-// protocol representation and are never sent to the server.
+// representations. This is the same as the "real" model types, i.e. all types
+// except UNSPECIFIED.
 constexpr ModelTypeSet ProtocolTypes() {
-  return {BOOKMARKS,
-          PREFERENCES,
-          PASSWORDS,
-          AUTOFILL_PROFILE,
-          AUTOFILL,
-          AUTOFILL_WALLET_CREDENTIAL,
-          AUTOFILL_WALLET_DATA,
-          AUTOFILL_WALLET_METADATA,
-          AUTOFILL_WALLET_OFFER,
-          AUTOFILL_WALLET_USAGE,
-          THEMES,
-          EXTENSIONS,
-          SEARCH_ENGINES,
-          SESSIONS,
-          APPS,
-          APP_SETTINGS,
-          EXTENSION_SETTINGS,
-          HISTORY_DELETE_DIRECTIVES,
-          DICTIONARY,
-          DEVICE_INFO,
-          PRIORITY_PREFERENCES,
-          SUPERVISED_USER_SETTINGS,
-          APP_LIST,
-          ARC_PACKAGE,
-          PRINTERS,
-          READING_LIST,
-          USER_EVENTS,
-          NIGORI,
-          USER_CONSENTS,
-          SEND_TAB_TO_SELF,
-          SECURITY_EVENTS,
-          WEB_APPS,
-          WIFI_CONFIGURATIONS,
-          OS_PREFERENCES,
-          OS_PRIORITY_PREFERENCES,
-          SHARING_MESSAGE,
-          WORKSPACE_DESK,
-          HISTORY,
-          PRINTERS_AUTHORIZATION_SERVERS,
-          CONTACT_INFO,
-          SAVED_TAB_GROUP,
-          POWER_BOOKMARK,
-          WEBAUTHN_CREDENTIAL,
-          INCOMING_PASSWORD_SHARING_INVITATION,
-          OUTGOING_PASSWORD_SHARING_INVITATION};
+  // Note that ModelTypeSet only covers the real types, not UNSPECIFIED.
+  static_assert(!ModelTypeSet::All().Has(ModelType::UNSPECIFIED));
+  return ModelTypeSet::All();
 }
 
 // These are the normal user-controlled types. This is to distinguish from
