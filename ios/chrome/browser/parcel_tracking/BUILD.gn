@@ -19,7 +19,11 @@ source_set("infobar_delegate") {
     ":parcel_tracking_step",
     ":util",
     "//base",
+    "//components/commerce/core:proto",
+    "//components/commerce/core:shopping_service",
     "//components/infobars/core",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/web/annotations",
     "//ios/web/public",
@@ -50,12 +54,16 @@ source_set("util") {
   deps = [
     ":prefs",
     "//base",
+    "//components/commerce/core:proto",
+    "//components/commerce/core:shopping_service",
     "//components/prefs",
     "//components/signin/public/base",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin",
+    "//ios/web/public/annotations:custom_text_check_result",
   ]
 }
 

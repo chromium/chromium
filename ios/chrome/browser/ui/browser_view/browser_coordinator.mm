@@ -10,6 +10,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/commerce/core/shopping_service.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -26,6 +27,7 @@
 #import "ios/chrome/browser/app_launcher/model/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/default_browser/utils.h"
@@ -2397,19 +2399,27 @@ enum class ToolbarKind {
       static_cast<IOSParcelTrackingOptInStatus>(
           self.browser->GetBrowserState()->GetPrefs()->GetInteger(
               prefs::kIosParcelTrackingOptInStatus));
-  ParcelTrackingStep step;
   switch (optInStatus) {
-    case IOSParcelTrackingOptInStatus::kAlwaysTrack:
-      step = ParcelTrackingStep::kNewPackageTracked;
+    case IOSParcelTrackingOptInStatus::kAlwaysTrack: {
+      commerce::ShoppingService* shoppingService =
+          commerce::ShoppingServiceFactory::GetForBrowserState(
+              self.activeWebState->GetBrowserState());
+      // Track parcels and display infobar if successful.
+      TrackParcels(
+          shoppingService, parcels, std::string(),
+          HandlerForProtocol(self.dispatcher, ParcelTrackingOptInCommands),
+          /*display_infobar=*/true);
       break;
+    }
     case IOSParcelTrackingOptInStatus::kAskToTrack:
-      step = ParcelTrackingStep::kAskedToTrackPackage;
+      [self showParcelTrackingInfobarWithParcels:parcels
+                                         forStep:ParcelTrackingStep::
+                                                     kAskedToTrackPackage];
       break;
     case IOSParcelTrackingOptInStatus::kNeverTrack:
       // Do not display infobar.
-      return;
+      break;
   }
-  [self showParcelTrackingInfobarWithParcels:parcels forStep:step];
 }
 
 - (void)showParcelTrackingOptInPromptWithParcels:

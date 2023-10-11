@@ -7,11 +7,16 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/web/public/annotations/custom_text_checking_result.h"
 #import "ios/web/public/web_state.h"
 
 // Mediator for parcel tracking opt-in prompt that manages model interactions.
 @interface ParcelTrackingOptInMediator : NSObject
+
+// Handler for ParcelTrackingOptInCommands.
+@property(nonatomic, weak) id<ParcelTrackingOptInCommands>
+    parcelTrackingCommandsHandler;
 
 // Designated initializer. `webState` should not be null.
 - (instancetype)initWithWebState:(web::WebState*)webState

@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_mediator.h"
 #import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_view_controller.h"
 
@@ -37,6 +38,8 @@
 - (void)start {
   [super start];
   _mediator = [[ParcelTrackingOptInMediator alloc] initWithWebState:_webState];
+  _mediator.parcelTrackingCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ParcelTrackingOptInCommands);
   _viewController = [[ParcelTrackingOptInViewController alloc] init];
   _viewController.actionHandler = self;
   [self.baseViewController presentViewController:_viewController
