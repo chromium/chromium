@@ -10,6 +10,7 @@
 
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 
 namespace autofill {
@@ -33,6 +34,9 @@ class CreditCardRiskBasedAuthenticator {
 
     // Whether the RPC call was successful.
     bool did_succeed = false;
+    // The `error_dialog_context` will be set if the RPC call fails, and is used
+    // to render the error dialog in CreditCardAccessManager.
+    AutofillErrorDialogContext error_dialog_context;
     // The card will be set when the server response was successful and the
     // card's real pan was returned from the server side.
     absl::optional<CreditCard> card;
@@ -76,8 +80,6 @@ class CreditCardRiskBasedAuthenticator {
     OnUnmaskResponseReceived(result, response_details);
   }
 
-  void OnCardUnmaskCancelledForTesting() { OnCardUnmaskCancelled(); }
-
  private:
   // Callback function invoked when risk data is fetched.
   void OnDidGetUnmaskRiskData(const std::string& risk_data);
@@ -86,10 +88,6 @@ class CreditCardRiskBasedAuthenticator {
   void OnUnmaskResponseReceived(
       AutofillClient::PaymentsRpcResult result,
       payments::PaymentsClient::UnmaskResponseDetails& response_details);
-
-  // Callback function invoked when the user has cancelled the risk-based
-  // unmasking.
-  void OnCardUnmaskCancelled();
 
   // Reset the authenticator to its initial state.
   virtual void Reset();

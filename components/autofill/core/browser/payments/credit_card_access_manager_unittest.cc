@@ -2626,6 +2626,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
   EXPECT_TRUE(autofill_client_.risk_based_authentication_invoked());
+  EXPECT_TRUE(autofill_client_.autofill_progress_dialog_shown());
 
   CreditCard card = *masked_server_card;
   card.set_record_type(CreditCard::RecordType::kFullServerCard);
@@ -2642,10 +2643,9 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 }
 
 // Ensures that the masked server card risk-based unmasking response is
-// handled correctly if the flow does not succeed (including flow cancelled or
-// retrieval failed).
+// handled correctly if the retrieval failed.
 TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
-       RiskBasedMaskedServerCardUnmasking_DidNotSucceed) {
+       RiskBasedMaskedServerCardUnmasking_RetrievalError) {
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/true, kTestServerId);
   CreditCard* masked_server_card =
       personal_data().GetCreditCardByGUID(kTestGUID);
@@ -2656,11 +2656,36 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
   EXPECT_TRUE(autofill_client_.risk_based_authentication_invoked());
+  EXPECT_TRUE(autofill_client_.autofill_progress_dialog_shown());
 
-  // Mock the flow does not succeed.
+  // Mock an error being returned from the server side.
   credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
       CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
           .with_did_succeed(false));
+
+  // Expect the CreditCardAccessManager to end the session.
+  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
+  EXPECT_TRUE(autofill_client_.autofill_error_dialog_shown());
+}
+
+// Ensures that the masked server card risk-based unmasking response is
+// handled correctly if the flow is cancelled.
+TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
+       RiskBasedMaskedServerCardUnmasking_FlowCancelled) {
+  CreateServerCard(kTestGUID, kTestNumber, /*masked=*/true, kTestServerId);
+  CreditCard* masked_server_card =
+      personal_data().GetCreditCardByGUID(kTestGUID);
+
+  credit_card_access_manager().FetchCreditCard(masked_server_card,
+                                               accessor_->GetWeakPtr());
+
+  // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
+  // invoked.
+  EXPECT_TRUE(autofill_client_.risk_based_authentication_invoked());
+  EXPECT_TRUE(autofill_client_.autofill_progress_dialog_shown());
+
+  // Mock the flow is cancelled.
+  credit_card_access_manager().OnRiskBasedAuthenticationCancelledForTesting();
 
   // Expect the CreditCardAccessManager to end the session.
   EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);

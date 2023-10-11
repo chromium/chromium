@@ -465,6 +465,12 @@ class TestAutofillClientTemplate : public T {
     autofill_error_dialog_context_ = context;
   }
 
+  void ShowAutofillProgressDialog(
+      AutofillProgressDialogType autofill_progress_dialog_type,
+      base::OnceClosure cancel_callback) override {
+    autofill_progress_dialog_shown_ = true;
+  }
+
   void CloseAutofillProgressDialog(
       bool show_confirmation_before_closing,
       base::OnceClosure no_user_perceived_authentication_callback) override {
@@ -649,6 +655,10 @@ class TestAutofillClientTemplate : public T {
 
   bool autofill_error_dialog_shown() { return autofill_error_dialog_shown_; }
 
+  bool autofill_progress_dialog_shown() {
+    return autofill_progress_dialog_shown_;
+  }
+
   bool virtual_card_error_dialog_is_permanent_error() {
     return autofill_error_dialog_context().type ==
            AutofillErrorDialogType::kVirtualCardPermanentError;
@@ -787,6 +797,8 @@ class TestAutofillClientTemplate : public T {
   bool confirm_save_iban_locally_called_ = false;
 
   bool autofill_error_dialog_shown_ = false;
+
+  bool autofill_progress_dialog_shown_ = false;
 
   // Context parameters that are used to display an error dialog during card
   // number retrieval. This context will have information that the autofill

@@ -199,6 +199,10 @@ class CreditCardAccessManager
     OnVirtualCardUnmaskResponseReceived(result, response_details);
   }
 
+  void OnRiskBasedAuthenticationCancelledForTesting() {
+    OnRiskBasedAuthenticationCancelled();
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   bool ShouldOfferFidoAuthForTesting() { return ShouldOfferFidoAuth(); }
 #endif
@@ -385,6 +389,10 @@ class CreditCardAccessManager
   // Callback function invoked when the user has cancelled the virtual card
   // unmasking.
   void OnVirtualCardUnmaskCancelled();
+
+  // Callback function invoked when the user has cancelled the risk-based card
+  // authentication.
+  void OnRiskBasedAuthenticationCancelled();
 
   // Reset all the member variables of |this| and restore initial states.
   void Reset();

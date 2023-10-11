@@ -1049,6 +1049,12 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
   is_authentication_in_progress_ = true;
 
   if (IsMaskedServerCardRiskBasedAuthAvailable()) {
+    client_->ShowAutofillProgressDialog(
+        AutofillProgressDialogType::kServerCardUnmaskProgressDialog,
+        /*cancel_callback=*/base::BindOnce(
+            &CreditCardAccessManager::OnRiskBasedAuthenticationCancelled,
+            weak_ptr_factory_.GetWeakPtr()));
+
     client_->GetRiskBasedAuthenticator()->Authenticate(
         *card_, weak_ptr_factory_.GetWeakPtr());
     // Risk-based authentication is handled in CreditCardRiskBasedAuthenticator.
@@ -1316,8 +1322,11 @@ void CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived(
     const CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse&
         response) {
   if (!response.did_succeed) {
+    client_->CloseAutofillProgressDialog(
+        /*show_confirmation_before_closing=*/false);
     accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError,
                                    nullptr);
+    client_->ShowAutofillErrorDialog(response.error_dialog_context);
     Reset();
     return;
   }
@@ -1328,6 +1337,8 @@ void CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived(
   // TODO(crbug.com/1470933): Authenticate the user before filling the card
   // if mandatory re-auth is enabled.
   CHECK(response.card.has_value());
+  client_->CloseAutofillProgressDialog(
+      /*show_confirmation_before_closing=*/true);
   card_ = std::make_unique<CreditCard>(response.card.value());
   accessor_->OnCreditCardFetched(CreditCardFetchResult::kSuccess, card_.get());
 
@@ -1435,6 +1446,14 @@ void CreditCardAccessManager::OnVirtualCardUnmaskCancelled() {
   autofill_metrics::LogServerCardUnmaskResult(
       autofill_metrics::ServerCardUnmaskResult::kFlowCancelled,
       AutofillClient::PaymentsRpcCardType::kVirtualCard, flow_type);
+  Reset();
+}
+
+void CreditCardAccessManager::OnRiskBasedAuthenticationCancelled() {
+  accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError,
+                                 nullptr);
+
+  // TODO(crbug.com/1470933): Log the cancel metrics.
   Reset();
 }
 

@@ -92,16 +92,4 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest, AuthenticateServerCardFailure) {
   EXPECT_TRUE(requester_->number().empty());
 }
 
-// Test that risk-based authentication doesn't return the full PAN when the user
-// cancels risk-based authentication.
-TEST_F(CreditCardRiskBasedAuthenticatorTest, AuthenticationCancelled) {
-  authenticator_->Authenticate(card_, requester_->GetWeakPtr());
-
-  // Simulate user cancels the authentication.
-  authenticator_->OnCardUnmaskCancelledForTesting();
-  ASSERT_TRUE(requester_->did_succeed().has_value());
-  EXPECT_FALSE(requester_->did_succeed().value());
-  EXPECT_TRUE(requester_->number().empty());
-}
-
 }  // namespace autofill

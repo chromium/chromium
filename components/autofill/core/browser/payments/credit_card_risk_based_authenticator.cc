@@ -6,7 +6,6 @@
 
 #include "base/check_deref.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 
@@ -33,11 +32,6 @@ void CreditCardRiskBasedAuthenticator::Authenticate(
       std::make_unique<payments::PaymentsClient::UnmaskRequestDetails>();
   card_ = std::move(card);
   requester_ = requester;
-
-  autofill_client_->ShowAutofillProgressDialog(
-      AutofillProgressDialogType::kServerCardUnmaskProgressDialog,
-      base::BindOnce(&CreditCardRiskBasedAuthenticator::OnCardUnmaskCancelled,
-                     weak_ptr_factory_.GetWeakPtr()));
 
   unmask_request_details_->card = card_;
 
@@ -68,10 +62,6 @@ void CreditCardRiskBasedAuthenticator::OnDidGetUnmaskRiskData(
 void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
     AutofillClient::PaymentsRpcResult result,
     payments::PaymentsClient::UnmaskResponseDetails& response_details) {
-  autofill_client_->CloseAutofillProgressDialog(
-      /*show_confirmation_before_closing=*/result ==
-          AutofillClient::PaymentsRpcResult::kSuccess &&
-      !response_details.real_pan.empty());
   RiskBasedAuthenticationResponse response;
   if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     response.did_succeed = true;
@@ -92,29 +82,18 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
   } else {
     // We received an error when attempting to unmask the card.
     response.did_succeed = false;
-    AutofillErrorDialogContext autofill_error_dialog_context;
     CHECK(card_.record_type() == CreditCard::RecordType::kMaskedServerCard);
-    autofill_error_dialog_context.type =
+    response.error_dialog_context.type =
         result == AutofillClient::PaymentsRpcResult::kNetworkError
             ? AutofillErrorDialogType::
                   kMaskedServerCardRiskBasedUnmaskingNetworkError
             : AutofillErrorDialogType::
                   kMaskedServerCardRiskBasedUnmaskingPermanentError;
-    autofill_client_->ShowAutofillErrorDialog(autofill_error_dialog_context);
 
     // TODO(crbug.com/1470933): Log the error metrics.
   }
   if (requester_) {
     requester_->OnRiskBasedAuthenticationResponseReceived(response);
-  }
-  Reset();
-}
-
-void CreditCardRiskBasedAuthenticator::OnCardUnmaskCancelled() {
-  // TODO(crbug.com/1470933): Log the cancel metrics.
-  if (requester_) {
-    requester_->OnRiskBasedAuthenticationResponseReceived(
-        RiskBasedAuthenticationResponse().with_did_succeed(false));
   }
   Reset();
 }
