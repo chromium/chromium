@@ -60,7 +60,6 @@ class CORE_EXPORT TextPainterBase {
   const NGInlinePaintContext* InlineContext() const { return inline_context_; }
 
   void SetEmphasisMark(const AtomicString&, TextEmphasisPosition);
-  void SetEllipsisOffset(int offset) { ellipsis_offset_ = offset; }
 
   enum ShadowMode { kBothShadowsAndTextProper, kShadowsOnly, kTextProperOnly };
   static void UpdateGraphicsContext(GraphicsContext&,
@@ -115,7 +114,6 @@ class CORE_EXPORT TextPainterBase {
   const LineRelativeRect text_frame_rect_;
   AtomicString emphasis_mark_;
   int emphasis_mark_offset_ = 0;
-  int ellipsis_offset_ = 0;
   const bool horizontal_;
 };
 

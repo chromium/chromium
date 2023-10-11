@@ -371,9 +371,7 @@ void NGTextPainter::PaintInternal(
     PaintInternalFragment<Step>(fragment_paint_info, node_id, auto_dark_mode);
   } else {
     if (fragment_paint_info.to > 0) {
-      PaintInternalFragment<Step>(
-          fragment_paint_info.WithStartOffset(ellipsis_offset_), node_id,
-          auto_dark_mode);
+      PaintInternalFragment<Step>(fragment_paint_info, node_id, auto_dark_mode);
     }
     if (fragment_paint_info.from < truncation_point) {
       PaintInternalFragment<Step>(
