@@ -4,8 +4,15 @@
 
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_actions.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "content/public/browser/browser_context.h"
@@ -14,6 +21,8 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "ui/actions/actions.h"
+#include "ui/base/ui_base_features.h"
 
 namespace extensions {
 
@@ -35,6 +44,8 @@ ExtensionSidePanelManager::ExtensionSidePanelManager(
       registry_(registry) {
   side_panel_registry_observation_.Observe(registry_);
   profile_observation_.Observe(profile);
+
+  InitializeActions();
   RegisterExtensionEntries();
 }
 
@@ -96,10 +107,82 @@ void ExtensionSidePanelManager::RegisterExtensionEntries() {
   }
 }
 
+void ExtensionSidePanelManager::InitializeActions() {
+  ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
+  for (const auto& extension : extension_registry->enabled_extensions()) {
+    MaybeCreateActionItemForExtension(extension.get());
+  }
+}
+
 void ExtensionSidePanelManager::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
+  MaybeCreateActionItemForExtension(extension);
   MaybeCreateExtensionSidePanelCoordinator(extension);
+}
+
+void ExtensionSidePanelManager::MaybeCreateActionItemForExtension(
+    const Extension* extension) {
+  if (browser_ && base::FeatureList::IsEnabled(features::kSidePanelPinning) &&
+      extension->permissions_data()->HasAPIPermission(
+          mojom::APIPermissionID::kSidePanel)) {
+    actions::ActionId extension_action_id =
+        GetOrCreateActionIdForExtension(extension);
+
+    BrowserActions* browser_actions = BrowserActions::FromBrowser(browser_);
+    actions::ActionItem* extension_action_item =
+        actions::ActionManager::Get().FindAction(
+            extension_action_id, browser_actions->root_action_item());
+
+    // Create the action item if it does not exist.
+    if (!extension_action_item) {
+      actions::ActionItem* root_action_item =
+          browser_actions->root_action_item();
+      root_action_item->AddChild(
+          actions::ActionItem::Builder(
+              base::BindRepeating(
+                  [](scoped_refptr<const Extension> extension, Browser* browser,
+                     actions::ActionItem* item) {
+                    SidePanelUI::GetSidePanelUIForBrowser(browser)->Show(
+                        SidePanelEntry::Key(SidePanelEntry::Id::kExtension,
+                                            extension->id()));
+                  },
+                  base::WrapRefCounted(extension), browser_))
+              .SetText(base::UTF8ToUTF16(extension->short_name()))
+              .SetActionId(extension_action_id)
+              .Build());
+    }
+  }
+}
+
+actions::ActionId ExtensionSidePanelManager::GetOrCreateActionIdForExtension(
+    const Extension* extension) {
+  CHECK(base::FeatureList::IsEnabled(features::kSidePanelPinning));
+  return actions::ActionManager::CreateActionId(
+             SidePanelEntry::Key(SidePanelEntry::Id::kExtension,
+                                 extension->id())
+                 .ToString())
+      .first;
+}
+
+void ExtensionSidePanelManager::MaybeRemoveActionItemForExtension(
+    const Extension* extension) {
+  if (browser_ && base::FeatureList::IsEnabled(features::kSidePanelPinning) &&
+      extension->permissions_data()->HasAPIPermission(
+          mojom::APIPermissionID::kSidePanel)) {
+    BrowserActions* browser_actions = BrowserActions::FromBrowser(browser_);
+    absl::optional<actions::ActionId> extension_action_id =
+        actions::ActionManager::StringToActionId(
+            SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension->id())
+                .ToString());
+    CHECK(extension_action_id.has_value());
+    actions::ActionItem* actionItem = actions::ActionManager::Get().FindAction(
+        extension_action_id.value(), browser_actions->root_action_item());
+
+    if (actionItem) {
+      browser_actions->root_action_item()->RemoveChild(actionItem).reset();
+    }
+  }
 }
 
 void ExtensionSidePanelManager::OnExtensionUnloaded(
@@ -107,6 +190,7 @@ void ExtensionSidePanelManager::OnExtensionUnloaded(
     const Extension* extension,
     UnloadedExtensionReason reason) {
   coordinators_.erase(extension->id());
+  MaybeRemoveActionItemForExtension(extension);
 }
 
 void ExtensionSidePanelManager::OnRegistryDestroying(

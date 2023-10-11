@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_api.h"
@@ -10,7 +11,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -29,6 +31,8 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
+#include "ui/actions/actions.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace extensions {
@@ -126,6 +130,7 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
   explicit ExtensionSidePanelBrowserTest(bool enable_open_panel = false) {
     std::vector<base::test::FeatureRef> features;
     features.push_back(extensions_features::kExtensionSidePanelIntegration);
+    features.push_back(features::kSidePanelPinning);
     if (enable_open_panel) {
       features.push_back(extensions_features::kApiSidePanelOpen);
     }
@@ -219,6 +224,18 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
                      key);
   }
 
+  actions::ActionItem* GetActionItemForExtension(
+      const extensions::Extension* extension,
+      BrowserActions* browser_actions) {
+    absl::optional<actions::ActionId> extension_action_id =
+        actions::ActionManager::StringToActionId(
+            GetKey(extension->id()).ToString());
+    EXPECT_TRUE(extension_action_id.has_value());
+    actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
+        extension_action_id.value(), browser_actions->root_action_item());
+    return action_item;
+  }
+
   // Runs a script in the extension's side panel WebContents to retrieve the
   // value of document.sidePanelTemp.
   std::string GetGlobalVariableInExtensionSidePanel(
@@ -289,6 +306,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
           test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
   ASSERT_TRUE(side_panel_extension);
 
+  // Check if ActionItem is created.
+  BrowserActions* browser_actions = BrowserActions::FromBrowser(browser());
+  actions::ActionItem* action_item =
+      GetActionItemForExtension(side_panel_extension.get(), browser_actions);
+  EXPECT_EQ(action_item->GetText(),
+            base::UTF8ToUTF16(side_panel_extension->short_name()));
+  EXPECT_FALSE(action_item->GetImage().IsEmpty());
+
+  absl::optional<actions::ActionId> no_side_panel_extension_action_id =
+      actions::ActionManager::StringToActionId(
+          GetKey(no_side_panel_extension->id()).ToString());
+
+  EXPECT_FALSE(no_side_panel_extension_action_id.has_value());
+
   // Check that only the extension with the side panel entry in its manifest is
   // shown as an entry in the global side panel registry.
   EXPECT_TRUE(global_registry()->GetEntryForKey(SidePanelEntry::Key(
@@ -300,6 +331,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   UnloadExtension(side_panel_extension->id());
   EXPECT_FALSE(global_registry()->GetEntryForKey(SidePanelEntry::Key(
       SidePanelEntry::Id::kExtension, side_panel_extension->id())));
+
+  // Check if ActionItem is deleted.
+  action_item =
+      GetActionItemForExtension(side_panel_extension.get(), browser_actions);
+  EXPECT_FALSE(action_item);
+  // The other ActionItems should not be deleted.
+  EXPECT_GE(
+      browser_actions->root_action_item()->GetChildren().children().size(),
+      1UL);
 }
 
 // Test that an extension's view is shown/behaves correctly in the side panel.
@@ -355,13 +395,46 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, MultipleBrowsers) {
   SidePanelEntry::Key extension_key = GetKey(extension->id());
 
   EXPECT_TRUE(global_registry()->GetEntryForKey(extension_key));
+  BrowserActions* browser_actions = BrowserActions::FromBrowser(browser());
+  actions::ActionItem* browser_one_action_item =
+      GetActionItemForExtension(extension.get(), browser_actions);
+  EXPECT_EQ(browser_one_action_item->GetText(),
+            base::UTF8ToUTF16(extension->short_name()));
 
   // Open a new browser window. The extension's SidePanelEntry should also be
   // registered for the new window's global SidePanelRegistry.
   Browser* second_browser = CreateBrowser(browser()->profile());
+  BrowserActions* browser_actions_second_browser =
+      BrowserActions::FromBrowser(second_browser);
+
   SidePanelRegistry* second_global_registry =
       SidePanelCoordinator::GetGlobalSidePanelRegistry(second_browser);
   EXPECT_TRUE(second_global_registry->GetEntryForKey(extension_key));
+  EXPECT_TRUE(global_registry()->GetEntryForKey(extension_key));
+
+  actions::ActionItem* browser_two_action_item = GetActionItemForExtension(
+      extension.get(), browser_actions_second_browser);
+
+  // Validate the state of the action items are still correct.
+  EXPECT_EQ(browser_one_action_item->GetText(),
+            base::UTF8ToUTF16(extension->short_name()));
+  EXPECT_EQ(browser_two_action_item->GetText(),
+            base::UTF8ToUTF16(extension->short_name()));
+  // Unloading the extension should remove it from the registry.
+  UnloadExtension(extension->id());
+  EXPECT_FALSE(global_registry()->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension->id())));
+  EXPECT_FALSE(SidePanelCoordinator::GetGlobalSidePanelRegistry(second_browser)
+                   ->GetEntryForKey(SidePanelEntry::Key(
+                       SidePanelEntry::Id::kExtension, extension->id())));
+
+  browser_one_action_item =
+      GetActionItemForExtension(extension.get(), browser_actions);
+  browser_two_action_item = GetActionItemForExtension(
+      extension.get(), browser_actions_second_browser);
+
+  EXPECT_FALSE(browser_one_action_item);
+  EXPECT_FALSE(browser_two_action_item);
 }
 
 // Test that if the side panel is closed while the extension's side panel view

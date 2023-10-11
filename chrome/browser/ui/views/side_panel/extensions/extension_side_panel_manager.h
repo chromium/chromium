@@ -15,6 +15,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
+#include "ui/actions/action_id.h"
 
 class Browser;
 class Profile;
@@ -84,6 +85,19 @@ class ExtensionSidePanelManager : public SidePanelRegistryObserver,
   // Creates an ExtensionSidePanelCoordinator for `extension` and adds it to
   // `coordinators_` if the extension is capable of hosting side panel content.
   void MaybeCreateExtensionSidePanelCoordinator(const Extension* extension);
+  // Removes the action item from the action manager for the extension.
+  // This should be called on unloading an extension.
+  void MaybeRemoveActionItemForExtension(const Extension* extension);
+  // Creates an action item for this extension if it is not already created.
+  // This is only valid for extensions that are capable of hosting side panel
+  // content.
+  void MaybeCreateActionItemForExtension(const Extension* extension);
+  // Dynamically creates an action id for an extension if it does not exist.
+  // This uses the `SidePanelEntry::Key.ToString()` method as an unique string.
+  actions::ActionId GetOrCreateActionIdForExtension(const Extension* extension);
+  // Callback responsible for initializing action items for all enabled
+  // extensions. Triggered by the action manager's notification.
+  void InitializeActions();
 
   // The profile associated with either `browser_` or `web_contents_`.
   raw_ptr<Profile> profile_;
