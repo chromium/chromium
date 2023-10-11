@@ -27,8 +27,7 @@
 #include "third_party/icu/source/common/unicode/uscript.h"
 #include "third_party/re2/src/re2/re2.h"
 
-namespace autofill {
-namespace data_util {
+namespace autofill::data_util {
 
 using bit_field_type_groups::kAddress;
 using bit_field_type_groups::kEmail;
@@ -274,8 +273,7 @@ bool SplitCJKName(const std::vector<base::StringPiece16>& name_tokens,
 }
 
 void AddGroupToBitmask(uint32_t* group_bitmask, ServerFieldType type) {
-  const FieldTypeGroup group =
-      AutofillType(AutofillType(type).GetStorableType()).group();
+  const FieldTypeGroup group = GroupTypeOfServerFieldType(type);
   switch (group) {
     case autofill::FieldTypeGroup::kName:
       *group_bitmask |= kName;
@@ -564,5 +562,4 @@ std::string GetCountryCodeWithFallback(const autofill::AutofillProfile& profile,
   return country_code;
 }
 
-}  // namespace data_util
-}  // namespace autofill
+}  // namespace autofill::data_util

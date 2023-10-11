@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/rationalization_util.h"
@@ -361,7 +362,7 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
                 << LoggingScope::kRationalization
                 << LogMessage::kRationalization
                 << "Credit card rationalization: Found expiration year but no "
-                   "full expriration date.";
+                   "full expiration date.";
           }
         }
         break;
@@ -475,7 +476,7 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
   // iff all fields in the range
   // 1. `{f, f + N + 1}` are credit card number fields, and
   // 2. `{f, f + N + 1}` originate from the same form in the same frame, and
-  // 3. `{f, f + N + 1}` are all focuseable or all unfocusable,
+  // 3. `{f, f + N + 1}` are all focusable or all unfocusable,
   // 4. `{f, f + N}` have the same `FormFieldData::max_length <
   //    kMaxGroupElementLength`.
   //
@@ -788,8 +789,9 @@ bool FormStructureRationalizer::FieldShouldBeRationalizedToCountry(
   // is a country.
   for (int field_index = upper_index - 1; field_index >= 0; --field_index) {
     if ((*fields_)[field_index]->IsFocusable() &&
-        AutofillType((*fields_)[field_index]->Type().GetStorableType())
-                .group() == FieldTypeGroup::kAddress &&
+        GroupTypeOfServerFieldType(
+            (*fields_)[field_index]->Type().GetStorableType()) ==
+            FieldTypeGroup::kAddress &&
         (*fields_)[field_index]->section == (*fields_)[upper_index]->section) {
       return false;
     }
@@ -965,7 +967,7 @@ void FormStructureRationalizer::RationalizeTypeRelationships(
     ServerFieldType field_type = field->Type().GetStorableType();
     ServerFieldTypeSet necessary_types = GetNecessaryTypesFor(field_type);
     if (!necessary_types.empty() && !types.contains_any(necessary_types)) {
-      // We have relationship rules for this type, but no `neccessary_type` was
+      // We have relationship rules for this type, but no `necessary_type` was
       // found. Disabling Autofill for this field.
       field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
       LOG_AF(log_manager)

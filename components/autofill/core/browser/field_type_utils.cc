@@ -15,10 +15,8 @@ namespace autofill {
 
 size_t NumberOfPossibleFieldTypesInGroup(const AutofillField& field,
                                          FieldTypeGroup group) {
-  return base::ranges::count_if(field.possible_types(),
-                                [&](const ServerFieldType& type) {
-                                  return AutofillType(type).group() == group;
-                                });
+  return base::ranges::count(field.possible_types(), group,
+                             GroupTypeOfServerFieldType);
 }
 
 bool FieldHasMeaningfulPossibleFieldTypes(const AutofillField& field) {

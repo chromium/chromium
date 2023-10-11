@@ -48,7 +48,7 @@ PhoneNumber::PhoneNumber(const PhoneNumber& number) : profile_(nullptr) {
   *this = number;
 }
 
-PhoneNumber::~PhoneNumber() {}
+PhoneNumber::~PhoneNumber() = default;
 
 PhoneNumber& PhoneNumber::operator=(const PhoneNumber& number) {
   if (this == &number)
@@ -83,7 +83,7 @@ void PhoneNumber::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
 }
 
 std::u16string PhoneNumber::GetRawInfo(ServerFieldType type) const {
-  DCHECK_EQ(FieldTypeGroup::kPhone, AutofillType(type).group());
+  DCHECK_EQ(FieldTypeGroup::kPhone, GroupTypeOfServerFieldType(type));
   if (type == PHONE_HOME_WHOLE_NUMBER)
     return number_;
 
@@ -96,7 +96,7 @@ std::u16string PhoneNumber::GetRawInfo(ServerFieldType type) const {
 void PhoneNumber::SetRawInfoWithVerificationStatus(ServerFieldType type,
                                                    const std::u16string& value,
                                                    VerificationStatus status) {
-  DCHECK_EQ(FieldTypeGroup::kPhone, AutofillType(type).group());
+  DCHECK_EQ(FieldTypeGroup::kPhone, GroupTypeOfServerFieldType(type));
   if (type != PHONE_HOME_WHOLE_NUMBER) {
     // Only full phone numbers should be set directly. The browser is
     // intentionally caused to crash to prevent all users from setting raw info
@@ -326,9 +326,9 @@ void PhoneNumber::UpdateCacheIfNeeded(const std::string& app_locale) const {
   }
 }
 
-PhoneNumber::PhoneCombineHelper::PhoneCombineHelper() {}
+PhoneNumber::PhoneCombineHelper::PhoneCombineHelper() = default;
 
-PhoneNumber::PhoneCombineHelper::~PhoneCombineHelper() {}
+PhoneNumber::PhoneCombineHelper::~PhoneCombineHelper() = default;
 
 bool PhoneNumber::PhoneCombineHelper::SetInfo(const AutofillType& type,
                                               const std::u16string& value) {

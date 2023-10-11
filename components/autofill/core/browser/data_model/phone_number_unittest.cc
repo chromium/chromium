@@ -298,7 +298,7 @@ TEST(PhoneNumberTest, HelperSetsAllPhoneFieldTypes) {
   profile.GetSupportedTypes(&types);
   std::vector<ServerFieldType> fields{types.begin(), types.end()};
   base::EraseIf(fields, [](ServerFieldType type) {
-    return AutofillType(type).group() != FieldTypeGroup::kPhone;
+    return GroupTypeOfServerFieldType(type) != FieldTypeGroup::kPhone;
   });
 
   base::ranges::for_each(fields, [](ServerFieldType type) {

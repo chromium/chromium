@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/state_names.h"
@@ -111,7 +112,7 @@ AddressCountryCode Address::GetAddressCountryCode() const {
 }
 
 std::u16string Address::GetRawInfo(ServerFieldType type) const {
-  DCHECK_EQ(FieldTypeGroup::kAddress, AutofillType(type).group());
+  DCHECK_EQ(FieldTypeGroup::kAddress, GroupTypeOfServerFieldType(type));
 
   return structured_address_->GetValueForType(type);
 }
@@ -119,7 +120,7 @@ std::u16string Address::GetRawInfo(ServerFieldType type) const {
 void Address::SetRawInfoWithVerificationStatus(ServerFieldType type,
                                                const std::u16string& value,
                                                VerificationStatus status) {
-  DCHECK_EQ(FieldTypeGroup::kAddress, AutofillType(type).group());
+  DCHECK_EQ(FieldTypeGroup::kAddress, GroupTypeOfServerFieldType(type));
   // The street address has a structure that may have already been set before
   // using the settings dialog. In case the settings dialog was used to change
   // the address to contain different tokens, the structure must be reset.

@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
 
@@ -15,7 +16,7 @@ bool operator==(const Birthdate& a, const Birthdate& b) {
 }
 
 std::u16string Birthdate::GetRawInfo(ServerFieldType type) const {
-  DCHECK_EQ(AutofillType(type).group(), FieldTypeGroup::kBirthdateField);
+  DCHECK_EQ(GroupTypeOfServerFieldType(type), FieldTypeGroup::kBirthdateField);
 
   switch (type) {
     case BIRTHDATE_DAY:
@@ -47,7 +48,7 @@ int Birthdate::GetRawInfoAsInt(ServerFieldType type) const {
 void Birthdate::SetRawInfoWithVerificationStatus(ServerFieldType type,
                                                  const std::u16string& value,
                                                  VerificationStatus status) {
-  DCHECK_EQ(AutofillType(type).group(), FieldTypeGroup::kBirthdateField);
+  DCHECK_EQ(GroupTypeOfServerFieldType(type), FieldTypeGroup::kBirthdateField);
 
   switch (type) {
     case BIRTHDATE_DAY:

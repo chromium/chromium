@@ -199,8 +199,8 @@ void SelectRightNameType(AutofillField* field, bool is_credit_card) {
   ServerFieldTypeSet types_to_keep;
   const auto& old_types = field->possible_types();
 
-  for (auto type : old_types) {
-    FieldTypeGroup group = AutofillType(type).group();
+  for (ServerFieldType type : old_types) {
+    FieldTypeGroup group = GroupTypeOfServerFieldType(type);
     if ((is_credit_card && group == FieldTypeGroup::kCreditCard) ||
         (!is_credit_card && group == FieldTypeGroup::kName)) {
       types_to_keep.insert(type);
@@ -709,12 +709,14 @@ void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
     const FormData& form,
     const FormFieldData& field_data) {
   AutofillField* autofill_field = GetAutofillField(form, field_data);
-  AutofillType type = autofill_field ? autofill_field->Type()
-                                     : AutofillType(CREDIT_CARD_NUMBER);
-  DCHECK_EQ(FieldTypeGroup::kCreditCard, type.group());
+  ServerFieldType field_type = autofill_field
+                                   ? autofill_field->Type().GetStorableType()
+                                   : CREDIT_CARD_NUMBER;
+  DCHECK_EQ(FieldTypeGroup::kCreditCard,
+            GroupTypeOfServerFieldType(field_type));
 
   bool should_display_gpay_logo = false;
-  auto cards = GetCreditCardSuggestions(field_data, type.GetStorableType(),
+  auto cards = GetCreditCardSuggestions(field_data, field_type,
                                         should_display_gpay_logo);
   DCHECK(!cards.empty());
   external_delegate_->OnSuggestionsReturned(

@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/validation.h"
@@ -122,8 +123,7 @@ std::vector<ServerFieldType> ExtractSpecifiedAddressFieldTypes(
     const std::vector<ServerFieldType>& types) {
   auto should_be_extracted =
       [&extract_street_address_types](ServerFieldType type) -> bool {
-    return AutofillType(AutofillType(type).GetStorableType()).group() ==
-               FieldTypeGroup::kAddress &&
+    return GroupTypeOfServerFieldType(type) == FieldTypeGroup::kAddress &&
            (extract_street_address_types ? IsStreetAddressPart(type)
                                          : !IsStreetAddressPart(type));
   };
@@ -272,8 +272,7 @@ std::u16string GetLabelName(const std::vector<ServerFieldType>& types,
   // The form contains neither a full name field nor a first name field,
   // so choose some name field in the form and make it the label text.
   for (const ServerFieldType type : types) {
-    if (AutofillType(AutofillType(type).GetStorableType()).group() ==
-        FieldTypeGroup::kName) {
+    if (GroupTypeOfServerFieldType(type) == FieldTypeGroup::kName) {
       return profile.GetInfo(AutofillType(type), app_locale);
     }
   }

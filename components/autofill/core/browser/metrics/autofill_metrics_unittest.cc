@@ -9432,8 +9432,9 @@ TEST_P(AutofillMetricsTestForLaxLocalHeuristics, TestHistogramReporting) {
                       /*masked_card_is_enrolled_for_virtual_card=*/false);
   // Set up our form data.
   FormData form = test::GetFormData(GetParam().form);
-  bool is_cc_form = AutofillType(GetParam().form.fields[0].role).group() ==
-                    FieldTypeGroup::kCreditCard;
+  bool is_cc_form =
+      GroupTypeOfServerFieldType(GetParam().form.fields[0].role) ==
+      FieldTypeGroup::kCreditCard;
   autofill_manager().AddSeenForm(form, GetParam().heuristic_types,
                                  GetParam().server_types);
   // User interacted with form.

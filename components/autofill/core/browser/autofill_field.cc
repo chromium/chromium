@@ -456,7 +456,7 @@ AutofillType AutofillField::ComputedType() const {
     // Either way, retain a preference for the CVC heuristic over the
     // server's password predictions (http://crbug.com/469007)
     believe_server =
-        believe_server && !(AutofillType(server_type()).group() ==
+        believe_server && !(GroupTypeOfServerFieldType(server_type()) ==
                                 FieldTypeGroup::kPasswordField &&
                             heuristic_type() == CREDIT_CARD_VERIFICATION_CODE);
 
@@ -553,8 +553,10 @@ void AutofillField::NormalizePossibleTypesValidities() {
 }
 
 bool AutofillField::IsCreditCardPrediction() const {
-  return AutofillType(server_type()).group() == FieldTypeGroup::kCreditCard ||
-         AutofillType(heuristic_type()).group() == FieldTypeGroup::kCreditCard;
+  return GroupTypeOfServerFieldType(server_type()) ==
+             FieldTypeGroup::kCreditCard ||
+         GroupTypeOfServerFieldType(heuristic_type()) ==
+             FieldTypeGroup::kCreditCard;
 }
 
 void AutofillField::AppendLogEventIfNotRepeated(

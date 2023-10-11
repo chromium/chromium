@@ -48,7 +48,8 @@ std::vector<std::string> GetList(const autofill::AutofillProfile& profile,
   std::vector<std::string> list;
 
   std::vector<std::u16string> values;
-  if (autofill::AutofillType(type).group() == autofill::FieldTypeGroup::kName) {
+  if (autofill::GroupTypeOfServerFieldType(type) ==
+      autofill::FieldTypeGroup::kName) {
     values.push_back(
         profile.GetInfo(autofill::AutofillType(type),
                         g_browser_process->GetApplicationLocale()));
