@@ -27382,6 +27382,7 @@ Called by update_debug_scenarios.py.-->
   <int value="109" label="Override Content Context Menu Source Mapped Warning"/>
   <int value="110"
       label="Override Content Context Menu Redirect To Deployed File"/>
+  <int value="111" label="Add a new style rule in the styles pane"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">
