@@ -2,4 +2,4 @@ monorail {
   component: "Services>SignIn"
 }
 
-team_email: "chrome-signin@chromium.org"
+team_email: "chrome-signin-team@google.com"
