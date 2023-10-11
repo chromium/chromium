@@ -292,7 +292,7 @@ class ValueSyncIterable {
   static_assert(
       sizeof(SyncIteratorType),  // Read the following for a compile error.
       "You need to include a generated header for SyncIterator<IDLInterface> "
-      "in order to inherit from PairSyncIterable. "
+      "in order to inherit from ValueSyncIterable. "
       "For an IDL interface FooBar, #include "
       "\"third_party/blink/renderer/bindings/<component>/v8/"
       "v8_sync_iterator_foo_bar.h\" is required.");
