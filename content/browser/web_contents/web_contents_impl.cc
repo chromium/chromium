@@ -7946,6 +7946,15 @@ void WebContentsImpl::DidStopLoading() {
   SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidStopLoading");
   observers_.NotifyObservers(&WebContentsObserver::DidStopLoading);
 
+  GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      [](RenderFrameHostImpl* render_frame_host) {
+        BrowserAccessibilityManager* manager =
+            render_frame_host->browser_accessibility_manager();
+        if (manager) {
+          manager->DidStopLoading();
+        }
+      });
+
   // TODO(avi): Remove. http://crbug.com/170921
   NotificationService::current()->Notify(
       NOTIFICATION_LOAD_STOP, Source<NavigationController>(&GetController()),

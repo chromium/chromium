@@ -109,7 +109,9 @@ class SiteInstanceGroup;
 struct AXEventNotificationDetails;
 struct AXLocationChangeNotificationDetails;
 struct ContextMenuParams;
+struct CookieAccessDetails;
 struct GlobalRequestID;
+struct TrustTokenAccessDetails;
 
 namespace mojom {
 class CreateNewWindowParams;

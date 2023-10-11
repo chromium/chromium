@@ -135,10 +135,6 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::FromID(
 BrowserAccessibilityManager::BrowserAccessibilityManager(
     WebAXPlatformTreeManagerDelegate* delegate)
     : AXPlatformTreeManager(std::make_unique<ui::AXSerializableTree>()),
-      WebContentsObserver(delegate
-                              ? WebContents::FromRenderFrameHost(
-                                    delegate->AccessibilityRenderFrameHost())
-                              : nullptr),
       delegate_(delegate),
       user_is_navigating_away_(false),
       device_scale_factor_(1.0f),
@@ -353,6 +349,13 @@ void BrowserAccessibilityManager::NavigationFailed() {
 void BrowserAccessibilityManager::DidStopLoading() {
   user_is_navigating_away_ = false;
   FireFocusEventsIfNeeded();
+}
+
+void BrowserAccessibilityManager::DidActivatePortal() {
+  if (GetTreeData().loaded) {
+    FireGeneratedEvent(ui::AXEventGenerator::Event::PORTAL_ACTIVATED,
+                       GetRoot());
+  }
 }
 
 bool BrowserAccessibilityManager::UseRootScrollOffsetsWhenComputingBounds() {
@@ -1794,15 +1797,6 @@ void BrowserAccessibilityManager::CacheHitTestResult(
   last_hover_ax_tree_id_ = hit_test_result->manager()->GetTreeID();
   last_hover_node_id_ = hit_test_result->GetId();
   last_hover_bounds_ = hit_test_result->GetClippedScreenBoundsRect();
-}
-
-void BrowserAccessibilityManager::DidActivatePortal(
-    WebContents* predecessor_contents,
-    base::TimeTicks activation_time) {
-  if (GetTreeData().loaded) {
-    FireGeneratedEvent(ui::AXEventGenerator::Event::PORTAL_ACTIVATED,
-                       GetRoot());
-  }
 }
 
 void BrowserAccessibilityManager::SetPageScaleFactor(float page_scale_factor) {

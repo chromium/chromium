@@ -12,6 +12,8 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
+#include "content/public/browser/cookie_access_details.h"
+#include "content/public/browser/trust_token_access_details.h"
 #include "ipc/ipc_message.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom.h"

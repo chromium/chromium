@@ -2118,6 +2118,10 @@ void RenderFrameHostImpl::OnPortalActivated(
             std::move(callback).Run(result);
           },
           std::move(callback)));
+
+  if (browser_accessibility_manager_) {
+    browser_accessibility_manager_->DidActivatePortal();
+  }
 }
 
 void RenderFrameHostImpl::OnPortalCreatedForTesting(
