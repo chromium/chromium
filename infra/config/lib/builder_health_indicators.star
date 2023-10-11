@@ -867,7 +867,6 @@ _exempted_from_contact_builders = {
         "tricium-metrics-analysis",
         "tricium-oilpan-analysis",
         "tricium-simple",
-        "try-nougat-phone-tester",
         "win-angle-chromium-x64-try",
         "win-angle-chromium-x86-try",
         "win-annotator-rel",

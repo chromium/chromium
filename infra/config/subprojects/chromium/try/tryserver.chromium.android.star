@@ -789,15 +789,6 @@ try_.builder(
     tryjob = try_.job(),
 )
 
-try_.builder(
-    name = "try-nougat-phone-tester",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    mirrors = [
-        "ci/Android arm64 Builder (dbg)",
-        "ci/Nougat Phone Tester",
-    ],
-)
-
 try_.gpu.optional_tests_builder(
     name = "android_optional_gpu_tests_rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,

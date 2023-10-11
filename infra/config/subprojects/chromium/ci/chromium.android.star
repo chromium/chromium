@@ -479,40 +479,6 @@ ci.builder(
 )
 
 ci.thin_tester(
-    name = "Nougat Phone Tester",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    triggered_by = ["ci/Android arm64 Builder (dbg)"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "android",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "android",
-            apply_configs = [
-                "download_xr_test_apks",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(
-            config = "main_builder_mb",
-        ),
-        build_gs_bucket = "chromium-android-archive",
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "tester|phone",
-        short_name = "N",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    contact_team_email = "clank-engprod@google.com",
-)
-
-ci.thin_tester(
     name = "Oreo Phone Tester",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     triggered_by = ["ci/Android arm64 Builder (dbg)"],

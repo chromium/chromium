@@ -42,16 +42,6 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
-    name = "android_nougat_gtests",
-    basic_suites = [
-        "android_ar_gtests",
-        "android_ddready_vr_gtests",
-        "android_monochrome_smoke_tests",
-        "android_smoke_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "android_oreo_emulator_gtests",
     basic_suites = [
         "android_emulator_specific_chrome_public_tests",

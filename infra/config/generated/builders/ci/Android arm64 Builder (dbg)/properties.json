@@ -112,41 +112,6 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Nougat Phone Tester",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "build_gs_bucket": "chromium-android-archive",
-              "builder_group": "chromium.android",
-              "execution_mode": "TEST",
-              "legacy_android_config": {
-                "config": "main_builder_mb"
-              },
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "download_xr_test_apks"
-                ],
-                "build_config": "Debug",
-                "config": "android",
-                "target_bits": 64,
-                "target_platform": "android"
-              },
-              "legacy_gclient_config": {
-                "apply_configs": [
-                  "android"
-                ],
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "Android arm64 Builder (dbg)",
-                "project": "chromium"
-              }
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
               "builder": "Oreo Phone Tester",
               "project": "chromium"
             },
@@ -236,11 +201,6 @@
         },
         {
           "bucket": "ci",
-          "builder": "Nougat Phone Tester",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
           "builder": "Oreo Phone Tester",
           "project": "chromium"
         },
@@ -269,10 +229,6 @@
         },
         {
           "builder": "android_arm64_dbg_recipe",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "try-nougat-phone-tester",
           "group": "tryserver.chromium.android"
         }
       ]

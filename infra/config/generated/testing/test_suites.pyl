@@ -5757,13 +5757,6 @@
       'vr_platform_specific_chromium_gtests',
     ],
 
-    'android_nougat_gtests': [
-      'android_ar_gtests',
-      'android_ddready_vr_gtests',
-      'android_monochrome_smoke_tests',
-      'android_smoke_tests',
-    ],
-
     'android_oreo_emulator_gtests': [
       'android_emulator_specific_chrome_public_tests',
       'android_monochrome_smoke_tests',

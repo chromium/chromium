@@ -636,24 +636,6 @@
           'junit_tests': 'cast_junit_tests',
         },
       },
-      'Nougat Phone Tester': {
-        'test_suites': {
-          'gtest_tests': 'android_nougat_gtests',
-        },
-        'mixins': [
-          'has_native_resultdb_integration'
-        ],
-        'swarming': {
-          'dimensions': {
-            'android_devices': '1',
-            'device_os': 'NMF26U',
-            'device_type': 'marlin',
-            'os': 'Android',
-          },
-        },
-        'skip_output_links': True,
-        'os_type': 'android',
-      },
       'Oreo Phone Tester': {
         'os_type': 'android',
         'test_suites': {

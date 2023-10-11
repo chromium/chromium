@@ -3701,7 +3701,6 @@
       'android-pie-arm64-rel',
       'android-pie-x86-rel',
       'android-11-x86-rel',
-      'Nougat Phone Tester',
       'ToTAndroid'
     ]
   },
