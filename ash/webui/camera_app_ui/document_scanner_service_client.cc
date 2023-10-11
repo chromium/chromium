@@ -152,7 +152,9 @@ void DocumentScannerServiceClient::DoPostProcessing(
           std::move(callback)));
 }
 
-DocumentScannerServiceClient::DocumentScannerServiceClient() {}
+DocumentScannerServiceClient::DocumentScannerServiceClient() {
+  LoadDocumentScanner();
+}
 
 void DocumentScannerServiceClient::OnMojoDisconnected() {
   ml_service_.reset();
