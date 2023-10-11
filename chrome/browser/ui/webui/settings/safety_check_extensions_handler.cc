@@ -13,9 +13,6 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 
-using extensions::ExtensionPrefs;
-using extensions::ExtensionRegistry;
-
 namespace settings {
 
 namespace {
@@ -29,9 +26,7 @@ constexpr extensions::PrefMap kPrefAcknowledgeSafetyCheckWarning = {
 }  // namespace
 
 SafetyCheckExtensionsHandler::SafetyCheckExtensionsHandler(Profile* profile)
-    : profile_(profile) {
-  prefs_observation_.Observe(ExtensionPrefs::Get(profile_));
-}
+    : profile_(profile) {}
 
 SafetyCheckExtensionsHandler::~SafetyCheckExtensionsHandler() = default;
 
@@ -43,20 +38,11 @@ void SafetyCheckExtensionsHandler::HandleGetNumberOfExtensionsThatNeedReview(
                             base::Value(GetNumberOfExtensionsThatNeedReview()));
 }
 
-void SafetyCheckExtensionsHandler::UpdateNumberOfExtensionsThatNeedReview() {
+void SafetyCheckExtensionsHandler::
+    HandleUpdateNumberOfExtensionsThatNeedReview() {
   AllowJavascript();
   FireWebUIListener("extensions-review-list-maybe-changed",
                     GetNumberOfExtensionsThatNeedReview());
-}
-
-void SafetyCheckExtensionsHandler::OnExtensionPrefsDeleted(
-    const std::string& extension_id) {
-  UpdateNumberOfExtensionsThatNeedReview();
-}
-
-void SafetyCheckExtensionsHandler::OnExtensionPrefsUpdated(
-    const std::string& extension_id) {
-  UpdateNumberOfExtensionsThatNeedReview();
 }
 
 void SafetyCheckExtensionsHandler::SetCWSInfoServiceForTest(
