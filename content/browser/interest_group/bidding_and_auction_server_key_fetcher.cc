@@ -5,6 +5,7 @@
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 
 #include "base/base64.h"
+#include "base/json/json_reader.h"
 #include "base/rand_util.h"
 #include "net/base/isolation_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -71,11 +72,36 @@ BiddingAndAuctionServerKeyFetcher::PerCoordinatorFetcherState::operator=(
 BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher() {
   if (base::FeatureList::IsEnabled(
           blink::features::kFledgeBiddingAndAuctionServer)) {
-    PerCoordinatorFetcherState state;
-    url::Origin gcp_coordinator = url::Origin::Create(
-        GURL(kDefaultBiddingAndAuctionGCPCoordinatorOrigin));
-    state.key_url = GURL(blink::features::kFledgeBiddingAndAuctionKeyURL.Get());
-    fetcher_state_map_.insert_or_assign(gcp_coordinator, std::move(state));
+    std::string config =
+        blink::features::kFledgeBiddingAndAuctionKeyConfig.Get();
+    if (!config.empty()) {
+      absl::optional<base::Value> config_value = base::JSONReader::Read(config);
+      if (config_value && config_value->is_dict()) {
+        for (const auto kv : config_value->GetDict()) {
+          if (!kv.second.is_string()) {
+            continue;
+          }
+          url::Origin coordinator = url::Origin::Create(GURL(kv.first));
+          if (coordinator.scheme() != url::kHttpsScheme) {
+            continue;
+          }
+
+          PerCoordinatorFetcherState state;
+          state.key_url = GURL(kv.second.GetString());
+          fetcher_state_map_.insert_or_assign(std::move(coordinator),
+                                              std::move(state));
+        }
+      }
+    }
+    GURL key_url = GURL(blink::features::kFledgeBiddingAndAuctionKeyURL.Get());
+    if (key_url.is_valid()) {
+      PerCoordinatorFetcherState state;
+      state.key_url = std::move(key_url);
+      url::Origin coordinator = url::Origin::Create(
+          GURL(kDefaultBiddingAndAuctionGCPCoordinatorOrigin));
+      fetcher_state_map_.insert_or_assign(std::move(coordinator),
+                                          std::move(state));
+    }
   }
 }
 
