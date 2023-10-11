@@ -1715,12 +1715,23 @@ std::u16string ChromeFileSystemAccessPermissionContext::GetPickerTitle(
   // picker, as well. Returning the empty string will fall back to the platform
   // default for the given picker type.
   std::u16string title;
-  if (options->type_specific_options->is_directory_picker_options()) {
-    title = l10n_util::GetStringUTF16(
-        options->type_specific_options->get_directory_picker_options()
-                ->request_writable
-            ? IDS_FILE_SYSTEM_ACCESS_CHOOSER_OPEN_WRITABLE_DIRECTORY_TITLE
-            : IDS_FILE_SYSTEM_ACCESS_CHOOSER_OPEN_READABLE_DIRECTORY_TITLE);
+  switch (options->type_specific_options->which()) {
+    case blink::mojom::TypeSpecificFilePickerOptionsUnion::Tag::
+        kDirectoryPickerOptions:
+      title = l10n_util::GetStringUTF16(
+          options->type_specific_options->get_directory_picker_options()
+                  ->request_writable
+              ? IDS_FILE_SYSTEM_ACCESS_CHOOSER_OPEN_WRITABLE_DIRECTORY_TITLE
+              : IDS_FILE_SYSTEM_ACCESS_CHOOSER_OPEN_READABLE_DIRECTORY_TITLE);
+      break;
+    case blink::mojom::TypeSpecificFilePickerOptionsUnion::Tag::
+        kSaveFilePickerOptions:
+      title = l10n_util::GetStringUTF16(
+          IDS_FILE_SYSTEM_ACCESS_CHOOSER_OPEN_SAVE_FILE_TITLE);
+      break;
+    case blink::mojom::TypeSpecificFilePickerOptionsUnion::Tag::
+        kOpenFilePickerOptions:
+      break;
   }
   return title;
 }
