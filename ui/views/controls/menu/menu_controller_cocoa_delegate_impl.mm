@@ -213,9 +213,20 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
     }
   }
 
+  // A weak reference to the menu for the two blocks. This shouldn't be
+  // necessary, as there aren't any references back that make a retain cycle,
+  // but it's hard to be fully convinced that such a cycle isn't possible now or
+  // in the future with updates.
+  __weak NSMenu* weakMenu = menu;
+
   if (alertedIndex.has_value() || !elementIds.empty()) {
     __block bool menuShown = false;
     auto shownCallback = ^(NSNotification* note) {
+      NSMenu* strongMenu = weakMenu;
+      if (!strongMenu) {
+        return;
+      }
+
       if (@available(macOS 14.0, *)) {
         // This early return handles two cases.
         //
@@ -227,8 +238,8 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
         //    the menu item bounds will be reported to have a width of 10. If
         //    the width is too small, early return, as the callback will happen
         //    again, that time with the correct bounds.
-        if (menu.numberOfItems &&
-            NSWidth([menu itemAtIndex:0].accessibilityFrame) < 20) {
+        if (strongMenu.numberOfItems &&
+            NSWidth([strongMenu itemAtIndex:0].accessibilityFrame) < 20) {
           return;
         }
       }
@@ -243,17 +254,17 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
       if (alertedIndex.has_value()) {
         const auto index = base::checked_cast<NSInteger>(alertedIndex.value());
         if (@available(macOS 14.0, *)) {
-          [menu itemAtIndex:index].accessibilitySelected = true;
+          [strongMenu itemAtIndex:index].accessibilitySelected = true;
         } else {
-          [menu._menuImpl highlightItemAtIndex:index];
+          [strongMenu._menuImpl highlightItemAtIndex:index];
         }
       }
 
       if (@available(macOS 14.0, *)) {
         for (auto [elementId, index] : elementIds) {
-          NSRect frame = [menu itemAtIndex:index].accessibilityFrame;
+          NSRect frame = [strongMenu itemAtIndex:index].accessibilityFrame;
           ui::ElementTrackerMac::GetInstance()->NotifyMenuItemShown(
-              menu, elementId, gfx::ScreenRectFromNSRect(frame));
+              strongMenu, elementId, gfx::ScreenRectFromNSRect(frame));
         }
       } else {
         // macOS 13 and earlier use the old Carbon Menu Manager, and getting the
@@ -270,10 +281,11 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
         dispatch_after(
             dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_MSEC),
             dispatch_get_main_queue(), ^{
-              gfx::Rect bounds = gfx::ScreenRectFromNSRect(menu._boundsIfOpen);
+              gfx::Rect bounds =
+                  gfx::ScreenRectFromNSRect(strongMenu._boundsIfOpen);
               for (auto [elementId, index] : elementIds) {
                 ui::ElementTrackerMac::GetInstance()->NotifyMenuItemShown(
-                    menu, elementId, bounds);
+                    strongMenu, elementId, bounds);
               }
             });
       };
@@ -299,6 +311,11 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
 
   if (!elementIds.empty()) {
     auto hiddenCallback = ^(NSNotification* note) {
+      NSMenu* strongMenu = weakMenu;
+      if (!strongMenu) {
+        return;
+      }
+
       // We expect to see the following order of events:
       // - element shown
       // - element activated (optional)
@@ -312,7 +329,7 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
           dispatch_get_main_queue(), ^{
             for (auto [elementId, index] : elementIds) {
               ui::ElementTrackerMac::GetInstance()->NotifyMenuItemHidden(
-                  menu, elementId);
+                  strongMenu, elementId);
             }
           });
     };
