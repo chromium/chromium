@@ -2164,6 +2164,10 @@
       status: "experimental",
     },
     {
+      name: "InterruptComposedScrollbarDisappearance",
+      status: "stable",
+    },
+    {
       // If enabled, IntersectionObserverScrollMargin will be parsed.
       name: "IntersectionObserverScrollMargin",
       status: "experimental",
