@@ -28,10 +28,10 @@
   }
 </style>
 <template is="dom-if"
-    if="[[shouldShowUpdateDialog_(installationProgress.*,
-        isInitiallyInflight_)]]" restamp>
+    if="[[shouldShowUpdateDialog(installationProgress.*,
+        isInitiallyInflight)]]" restamp>
   <cr-dialog id="updateDialog" show-on-attach
-      on-close="closeDialog_">
+      on-close="closeDialog">
     <div slot="title" id="updateDialogTitle" class="firmware-dialog-title-font"
         tabindex="0" aria-labelledby="updateDialogTitle">
       [[dialogContent.title]]
@@ -42,31 +42,31 @@
       </div>
     </div>
     <div slot="footer"
-        hidden$="[[!shouldShowProgressBar_(installationProgress.*,
-                   isInitiallyInflight_)]]">
+        hidden$="[[!shouldShowProgressBar(installationProgress.*,
+                   isInitiallyInflight)]]">
       <label id="progress" class="firmware-dialog-installing-font"
           aria-live="polite" tabindex="0">
         [[dialogContent.footer]]
       </label>
       <template is="dom-if"
-          if="[[!isInIndeterminateState_(installationProgress.*)]]" restamp>
+          if="[[!isInIndeterminateState(installationProgress.*)]]" restamp>
         <paper-progress id="updateProgressBar"
-            value="[[computePercentageValue_(installationProgress.percentage)]]"
+            value="[[computePercentageValue(installationProgress.percentage)]]"
             max="100">
         </paper-progress>
       </template>
       <template is="dom-if"
-          if="[[isInIndeterminateState_(installationProgress.*)]]" restamp>
+          if="[[isInIndeterminateState(installationProgress.*)]]" restamp>
         <paper-progress id="indeterminateProgressBar" indeterminate>
         </paper-progress>
       </template>
     </div>
     <div slot="button-container"
-        hidden$="[[!isUpdateDone_(installationProgress.state)]]">
+        hidden$="[[!isUpdateDone(installationProgress.state)]]">
       <cr-button class="action-button"
-          on-click="closeDialog_"
+          on-click="closeDialog"
           id="updateDoneButton">
-        [[computeButtonText_(installationProgress.state)]]
+        [[computeButtonText(installationProgress.state)]]
       </cr-button>
     </div>
   </cr-dialog>

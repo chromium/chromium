@@ -50,11 +50,10 @@ export function firmwareUpdateDialogTest() {
   }
 
   /**
-   * @suppress {visibility}
    * @param {boolean} inflight
    */
   function setIsInitiallyInflight(inflight) {
-    updateDialogElement.isInitiallyInflight_ = inflight;
+    updateDialogElement.setIsInitiallyInflightForTesting(inflight);
   }
 
   test('DialogStateUpdatesCorrectly', async () => {
