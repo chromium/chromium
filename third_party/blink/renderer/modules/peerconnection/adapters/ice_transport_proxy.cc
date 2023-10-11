@@ -28,7 +28,8 @@ IceTransportProxy::IceTransportProxy(
       delegate_(delegate),
       feature_handle_for_scheduler_(frame.GetFrameScheduler()->RegisterFeature(
           SchedulingPolicy::Feature::kWebRTC,
-          {SchedulingPolicy::DisableAggressiveThrottling()})) {
+          {SchedulingPolicy::DisableAggressiveThrottling(),
+           SchedulingPolicy::DisableAlignWakeUps()})) {
   DCHECK(host_thread_);
   DCHECK(delegate_);
   DCHECK(adapter_factory);

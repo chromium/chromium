@@ -20,10 +20,12 @@ struct PLATFORM_EXPORT SchedulingPolicy {
   // List of opt-outs which form a policy.
   struct DisableAggressiveThrottling {};
   struct DisableBackForwardCache {};
+  struct DisableAlignWakeUps {};
 
   struct ValidPolicies {
     ValidPolicies(DisableAggressiveThrottling);
     ValidPolicies(DisableBackForwardCache);
+    ValidPolicies(DisableAlignWakeUps);
   };
 
   template <class... ArgTypes,
@@ -36,12 +38,16 @@ struct PLATFORM_EXPORT SchedulingPolicy {
                                           ArgTypes...>()),
         disable_back_forward_cache(
             base::trait_helpers::HasTrait<DisableBackForwardCache,
-                                          ArgTypes...>()) {}
+                                          ArgTypes...>()),
+        disable_align_wake_ups(
+            base::trait_helpers::HasTrait<DisableAlignWakeUps, ArgTypes...>()) {
+  }
 
   SchedulingPolicy() {}
 
   bool disable_aggressive_throttling = false;
   bool disable_back_forward_cache = false;
+  bool disable_align_wake_ups = false;
 };
 
 }  // namespace blink

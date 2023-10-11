@@ -184,6 +184,11 @@ BLINK_COMMON_EXPORT WebSchedulerTrackedFeatures StickyFeatures();
 BLINK_COMMON_EXPORT std::vector<uint64_t> ToEnumBitMasks(
     WebSchedulerTrackedFeatures features);
 
+// Disables wake up alignment permanently for the process. This is called when a
+// feature that is incompatible with wake up alignment is used. Thread-safe.
+BLINK_COMMON_EXPORT void DisableAlignWakeUpsForProcess();
+BLINK_COMMON_EXPORT bool IsAlignWakeUpsDisabledForProcess();
+
 }  // namespace scheduler
 }  // namespace blink
 

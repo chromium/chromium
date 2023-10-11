@@ -275,7 +275,10 @@ DOMTimer::DOMTimer(ExecutionContext& context,
   // A timer with a long timeout probably doesn't need to run at a precise time,
   // so allow some leeway on it. On the other hand, a timer with a short timeout
   // may need to run on time to deliver the best user experience.
-  bool precise = (timeout < kMaxHighResolutionInterval);
+  // TODO(crbug.com/1153139): Remove IsAlignWakeUpsDisabledForProcess() in M121
+  // once workaround is no longer needed by WebRTC apps.
+  bool precise = (timeout < kMaxHighResolutionInterval) ||
+                 scheduler::IsAlignWakeUpsDisabledForProcess();
 
   if (nesting_level_ >= max_nesting_level && timeout < kMinimumInterval) {
     timeout = kMinimumInterval;

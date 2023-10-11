@@ -13,6 +13,8 @@ namespace scheduler {
 
 namespace {
 
+std::atomic_bool disable_align_wake_ups{false};
+
 struct FeatureNames {
   std::string short_name;
   std::string human_readable;
@@ -221,6 +223,16 @@ WebSchedulerTrackedFeatures StickyFeatures() {
           WebSchedulerTrackedFeature::kWebRTCSticky,
           WebSchedulerTrackedFeature::kWebSocketSticky,
           WebSchedulerTrackedFeature::kWebTransportSticky};
+}
+
+// static
+void DisableAlignWakeUpsForProcess() {
+  disable_align_wake_ups.store(true, std::memory_order_relaxed);
+}
+
+// static
+bool IsAlignWakeUpsDisabledForProcess() {
+  return disable_align_wake_ups.load(std::memory_order_relaxed);
 }
 
 // static

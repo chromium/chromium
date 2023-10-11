@@ -742,7 +742,8 @@ void RTCDataChannel::CreateFeatureHandleForScheduler() {
   feature_handle_for_scheduler_ =
       window->GetFrame()->GetFrameScheduler()->RegisterFeature(
           SchedulingPolicy::Feature::kWebRTC,
-          {SchedulingPolicy::DisableAggressiveThrottling()});
+          {SchedulingPolicy::DisableAggressiveThrottling(),
+           SchedulingPolicy::DisableAlignWakeUps()});
 }
 
 }  // namespace blink
