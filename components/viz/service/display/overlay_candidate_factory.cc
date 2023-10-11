@@ -799,19 +799,6 @@ gfx::RectF OverlayCandidateFactory::GetDamageRect(
     return gfx::RectF();
   }
 
-  // Assigned damage assumes that |candidate.display_rect| is already in target
-  // space, but that isn't true for transformation matrices.
-  if (absl::holds_alternative<gfx::Transform>(candidate.transform)) {
-    return gfx::RectF();
-  }
-
-  // Ash can't overlay candidates that aren't pixel-aligned so don't bother
-  // assigning damage to them. This would also be a challenge because
-  // |OverlayCandidate.damage_rect| is only a gfx::Rect.
-  if (!candidate.display_rect.IsExpressibleAsRect()) {
-    return gfx::RectF();
-  }
-
   auto damage = gfx::RectF((*surface_damage_rect_list_)[overlay_damage_index]);
   DBG_DRAW_RECT("damage_assigned", damage);
   return damage;

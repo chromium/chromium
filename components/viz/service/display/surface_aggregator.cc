@@ -617,14 +617,26 @@ const DrawQuad* SurfaceAggregator::FindQuadWithOverlayDamage(
   // quad. So if we promote the now smaller quad to an overlay this frame we
   // should not remove this damage rect. i.e. we should not assign the damage
   // rect to this quad.
+  // For similar reasons, we should not assign damage to quads with non-axis
+  // aligned transforms, because those won't be promoted to overlay.
   auto& damage_rect_in_target_space = surface_damage_rect_list_->back();
   if (!damage_rect_in_target_space.IsEmpty()) {
     gfx::Transform transform =
         parent_target_transform *
         target_quad->shared_quad_state->quad_to_target_transform;
-    gfx::Rect rect_in_target_space =
-        cc::MathUtil::MapEnclosingClippedRect(transform, target_quad->rect);
-    if (!rect_in_target_space.Contains(damage_rect_in_target_space)) {
+    if (!transform.Preserves2dAxisAlignment()) {
+      return nullptr;
+    }
+
+    gfx::RectF rect_in_target_space =
+        cc::MathUtil::MapClippedRect(transform, gfx::RectF(target_quad->rect));
+    // Because OverlayCandidate.damage_rect is a gfx::Rect, we can't really
+    // assign damage if the display_rect is not pixel-aligned.
+    if (!gfx::IsNearestRectWithinDistance(rect_in_target_space, 0.01f)) {
+      return nullptr;
+    }
+    if (!rect_in_target_space.Contains(
+            gfx::RectF(damage_rect_in_target_space))) {
       return nullptr;
     }
   }
