@@ -317,6 +317,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
 
   virtual void SeedWebAppDatabase() {}
 
+#if BUILDFLAG(IS_CHROMEOS)
   void SetIwaForceInstallPolicy(
       std::vector<std::pair<IsolatedWebAppUrlInfo, base::StringPiece>>
           entries) {
@@ -329,6 +330,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
     profile()->GetPrefs()->SetList(prefs::kIsolatedWebAppInstallForceList,
                                    std::move(list));
   }
+#endif
 
   NiceMock<MockCommandScheduler>& mock_command_scheduler() {
     return static_cast<NiceMock<MockCommandScheduler>&>(
@@ -387,6 +389,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
   absl::optional<IwaInfo> iwa_info2_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
        DiscoversAndPreparesUpdateOfPolicyInstalledApps) {
   IsolatedWebAppUrlInfo non_installed_url_info =
@@ -775,6 +778,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
       ->Shutdown();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class IsolatedWebAppUpdateManagerUpdateApplyOnStartupTest
     : public IsolatedWebAppUpdateManagerUpdateTest {
@@ -949,7 +953,10 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         FeatureFlagParam{.feature_states = {}, .expected_result = false},
         FeatureFlagParam{.feature_states = {{features::kIsolatedWebApps, true}},
-                         .expected_result = false},
+                         .expected_result = false}
+// TODO(crbug.com/1458725): Enable automatic updates on other platforms.
+#if BUILDFLAG(IS_CHROMEOS)
+        ,
         FeatureFlagParam{
             .feature_states = {{features::kIsolatedWebAppAutomaticUpdates,
                                 true}},
@@ -958,7 +965,9 @@ INSTANTIATE_TEST_SUITE_P(
             .feature_states = {{features::kIsolatedWebApps, true},
                                {features::kIsolatedWebAppAutomaticUpdates,
                                 true}},
-            .expected_result = true}));
+            .expected_result = true}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        ));
 
 }  // namespace
 }  // namespace web_app

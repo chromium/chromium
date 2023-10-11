@@ -29,6 +29,7 @@ class ExternallyManagedAppManager;
 class FileUtilsWrapper;
 class GeneratedIconFixManager;
 class IsolatedWebAppInstallationManager;
+class IsolatedWebAppUpdateManager;
 class ManifestUpdateManager;
 class OsIntegrationManager;
 class PreinstalledWebAppManager;
@@ -48,7 +49,6 @@ class WebAppUiManager;
 class WebContentsManager;
 
 #if BUILDFLAG(IS_CHROMEOS)
-class IsolatedWebAppUpdateManager;
 class WebAppRunOnOsLoginManager;
 #endif
 
@@ -150,13 +150,11 @@ class WebAppProvider : public KeyedService {
   // `IsolatedWebAppInstallationManager` is the entry point for Isolated Web App
   // installation.
   IsolatedWebAppInstallationManager& isolated_web_app_installation_manager();
-#if BUILDFLAG(IS_CHROMEOS)
   // Keeps Isolated Web Apps up to date by regularly checking for updates,
   // downloading them, and applying them.
-  // TODO(crbug.com/1458725): We currently only support automatic updates on
-  // ChromeOS.
   IsolatedWebAppUpdateManager& iwa_update_manager();
 
+#if BUILDFLAG(IS_CHROMEOS)
   // Runs web apps on OS login.
   WebAppRunOnOsLoginManager& run_on_os_login_manager();
 #endif
@@ -246,8 +244,8 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;
   std::unique_ptr<IsolatedWebAppInstallationManager>
       isolated_web_app_installation_manager_;
-#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<IsolatedWebAppUpdateManager> iwa_update_manager_;
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<WebAppRunOnOsLoginManager> web_app_run_on_os_login_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<WebAppUiManager> ui_manager_;

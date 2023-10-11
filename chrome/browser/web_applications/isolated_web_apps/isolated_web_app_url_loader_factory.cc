@@ -408,10 +408,6 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
                    });
   const IsolatedWebAppLocation& location = iwa.isolation_data()->location;
 
-// TODO(crbug.com/1444407): Make this work on all platform as soon as we support
-// updates (be it production or dev mode updates) on platforms other than
-// ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
   IsolatedWebAppUpdateManager& update_manager = provider->iwa_update_manager();
   auto pass_key = base::PassKey<IsolatedWebAppURLLoaderFactory>();
   if (update_manager.IsUpdateBeingApplied(pass_key, url_info.app_id())) {
@@ -424,7 +420,6 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
                        traffic_annotation));
     return;
   }
-#endif
 
   HandleRequest(url_info, location,
                 /*is_pending_install=*/false, std::move(loader_receiver),

@@ -60,17 +60,23 @@ IsolatedWebAppUpdateManager::IsolatedWebAppUpdateManager(
     : profile_(profile),
       automatic_updates_enabled_(
           content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(&profile) &&
-          base::FeatureList::IsEnabled(
-              features::kIsolatedWebAppAutomaticUpdates) &&
           // Similar to extensions, we don't do any automatic updates in guest
           // sessions.
           !profile.IsGuestSession() &&
           // Web Apps are not a thing in off the record profiles, but have this
           // here just in case - we also wouldn't want to update IWAs in
           // incognito windows.
-          !profile.IsOffTheRecord()),
+          !profile.IsOffTheRecord() &&
+#if BUILDFLAG(IS_CHROMEOS)
+          base::FeatureList::IsEnabled(
+              features::kIsolatedWebAppAutomaticUpdates)
+#else
+          false
+#endif
+              ),
       update_discovery_frequency_(std::move(update_discovery_frequency)),
-      task_queue_{*this} {}
+      task_queue_{*this} {
+}
 
 IsolatedWebAppUpdateManager::~IsolatedWebAppUpdateManager() = default;
 
@@ -252,6 +258,8 @@ IsolatedWebAppUpdateManager::GetForceInstalledBundleIdToUpdateManifestUrlMap() {
   base::flat_map<web_package::SignedWebBundleId, GURL>
       id_to_update_manifest_map;
 
+// TODO(crbug.com/1458725): Enable automatic updates on other platforms.
+#if BUILDFLAG(IS_CHROMEOS)
   const base::Value::List& iwa_force_install_list =
       profile_->GetPrefs()->GetList(prefs::kIsolatedWebAppInstallForceList);
   for (const base::Value& policy_entry : iwa_force_install_list) {
@@ -267,6 +275,7 @@ IsolatedWebAppUpdateManager::GetForceInstalledBundleIdToUpdateManifestUrlMap() {
     id_to_update_manifest_map.emplace(options->web_bundle_id(),
                                       options->update_manifest_url());
   }
+#endif
 
   return id_to_update_manifest_map;
 }

@@ -607,7 +607,6 @@ void WebAppInternalsHandler::ClearExperimentalWebAppIsolationData(
 
 void WebAppInternalsHandler::SearchForIsolatedWebAppUpdates(
     SearchForIsolatedWebAppUpdatesCallback callback) {
-#if BUILDFLAG(IS_CHROMEOS)
   auto* provider = web_app::WebAppProvider::GetForWebApps(&profile_.get());
   if (!provider) {
     std::move(callback).Run("could not get web app provider");
@@ -618,9 +617,4 @@ void WebAppInternalsHandler::SearchForIsolatedWebAppUpdates(
   size_t queued_task_count = manager.DiscoverUpdatesNow();
   std::move(callback).Run(base::StringPrintf(
       "queued %zu update discovery tasks", queued_task_count));
-#else
-  // TODO(crbug.com/1458725): Make this work outside of ChromeOS.
-  std::move(callback).Run(
-      "IWA updates are currently only supported on ChromeOS");
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
