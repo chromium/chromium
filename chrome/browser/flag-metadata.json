@@ -1373,7 +1373,7 @@
   {
     "name": "convert-trackpad-events-to-mouse",
     "owners": [ "mvanouwerkerk", "wbjacksonjr" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 124
   },
   {
     "name": "copy-link-to-text",
@@ -5659,7 +5659,7 @@
   {
     "name": "mouse-and-trackpad-dropdown-menu",
     "owners": [ "wbjacksonjr" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 124
   },
   {
     "name": "multi-zone-rgb-keyboard",
