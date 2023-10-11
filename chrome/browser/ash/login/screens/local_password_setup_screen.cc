@@ -54,7 +54,8 @@ void LocalPasswordSetupScreen::ShowImpl() {
   if (!view_) {
     return;
   }
-  view_->Show();
+  bool can_go_back = !context()->knowledge_factor_setup.local_password_forced;
+  view_->Show(can_go_back);
 }
 
 void LocalPasswordSetupScreen::HideImpl() {}

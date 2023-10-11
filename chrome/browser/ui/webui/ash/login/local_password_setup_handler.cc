@@ -16,8 +16,8 @@ LocalPasswordSetupHandler::LocalPasswordSetupHandler()
 
 LocalPasswordSetupHandler::~LocalPasswordSetupHandler() = default;
 
-void LocalPasswordSetupHandler::Show() {
-  ShowInWebUI();
+void LocalPasswordSetupHandler::Show(bool can_go_back) {
+  ShowInWebUI(base::Value::Dict().Set("showBackButton", can_go_back));
 }
 
 void LocalPasswordSetupHandler::DeclareLocalizedValues(

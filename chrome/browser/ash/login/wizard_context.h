@@ -71,6 +71,11 @@ class WizardContext {
     bool recovery_factor_opted_in = false;
   };
 
+  struct KnowledgeFactorSetup {
+    // Whether usage of local password is forced.
+    bool local_password_forced = false;
+  };
+
   // Configuration for automating OOBE screen actions, e.g. during device
   // version rollback.
   // Set by WizardController.
@@ -143,6 +148,8 @@ class WizardContext {
 
   // The data for recovery setup flow.
   RecoverySetup recovery_setup;
+
+  KnowledgeFactorSetup knowledge_factor_setup;
 
   // Authorization data that is required by PinSetup screen to add PIN as
   // another possible auth factor. Can be empty (if PIN is not supported).

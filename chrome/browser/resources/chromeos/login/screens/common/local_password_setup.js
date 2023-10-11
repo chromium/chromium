@@ -61,11 +61,19 @@ class LocalPasswordSetup extends LocalPasswordSetupBase {
   }
 
   static get properties() {
-    return {};
+    return {
+      /**
+       * @private
+       */
+      backButtonVisible_: {
+        type: Boolean,
+      },
+    };
   }
 
   constructor() {
     super();
+    this.backButtonVisible_ = true;
   }
 
   defaultUIStep() {
@@ -92,17 +100,21 @@ class LocalPasswordSetup extends LocalPasswordSetupBase {
    */
   onBeforeShow(data) {
     this.reset_();
+    this.backButtonVisible_ = data['showBackButton'];
   }
 
   reset_() {
     this.$.passwordInput.reset();
   }
 
-  onBackClicked() {
+  onBackClicked_() {
+    if (!this.backButtonVisible_) {
+      return;
+    }
     this.userActed(['back', this.$.passwordInput.value]);
   }
 
-  onSubmit() {
+  onSubmit_() {
     this.setUIStep(LocalPasswordSetupState.PROGRESS);
     this.userActed(['inputPassword', this.$.passwordInput.value]);
   }

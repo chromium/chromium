@@ -858,6 +858,26 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
     {
       id: 'local-password-setup',
       kind: ScreenKind.NORMAL,
+      states: [
+        {
+          // Forced password setup
+          id: 'forced',
+          trigger: (screen) => {
+            screen.onBeforeShow({
+              showBackButton: false,
+            });
+          },
+        },
+        {
+          // Forced password setup
+          id: 'optional',
+          trigger: (screen) => {
+            screen.onBeforeShow({
+              showBackButton: true,
+            });
+          },
+        },
+      ],
     },
     {
       id: 'saml-confirm-password',
