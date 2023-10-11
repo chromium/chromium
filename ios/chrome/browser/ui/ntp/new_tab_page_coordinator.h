@@ -97,6 +97,9 @@ class WebState;
 // Checks if NTP is active for the current webState.
 - (BOOL)isNTPActiveForCurrentWebState;
 
+// Returns YES if the fakebox is pinned or scrolled to the top.
+- (BOOL)isFakeboxPinned;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_COORDINATOR_H_

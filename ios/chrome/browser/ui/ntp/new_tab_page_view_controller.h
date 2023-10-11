@@ -75,6 +75,9 @@
 // The mutator to provide updates to the NTP mediator.
 @property(nonatomic, weak) id<NewTabPageMutator> mutator;
 
+// Whether or not the fake omnibox is pinned to the top of the NTP.
+@property(nonatomic, readonly) BOOL fakeOmniboxPinnedToTop;
+
 // Initializes the new tab page view controller.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

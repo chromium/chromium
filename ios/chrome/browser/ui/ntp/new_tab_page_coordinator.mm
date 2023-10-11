@@ -544,6 +544,13 @@
   self.webState = nullptr;
 }
 
+- (BOOL)isFakeboxPinned {
+  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
+    return YES;
+  }
+  return self.NTPViewController.fakeOmniboxPinnedToTop;
+}
+
 #pragma mark - Setters
 
 - (void)setSelectedFeed:(FeedType)selectedFeed {
@@ -1129,7 +1136,7 @@
 - (void)focusOmnibox {
   id<FakeboxFocuser> fakeboxFocuserHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), FakeboxFocuser);
-  [fakeboxFocuserHandler fakeboxFocused];
+  [fakeboxFocuserHandler focusOmniboxFromFakeboxPinned:[self isFakeboxPinned]];
 }
 
 - (void)refreshNTPContent {

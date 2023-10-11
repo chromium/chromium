@@ -25,6 +25,9 @@
 - (void)setLocationBarHeightToMatchFakeOmnibox;
 - (void)setLocationBarHeightExpanded;
 
+// Changes related to the toolbar itself.
+- (void)setToolbarFaded:(BOOL)faded;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_ORCHESTRATOR_TOOLBAR_ANIMATEE_H_

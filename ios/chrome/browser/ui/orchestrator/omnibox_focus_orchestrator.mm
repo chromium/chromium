@@ -26,16 +26,16 @@
 
 @implementation OmniboxFocusOrchestrator {
   ProceduralBlock _completion;
-  BOOL _animateFromLargeFakebox;
+  OmniboxFocusTrigger _trigger;
 }
 
 - (void)transitionToStateOmniboxFocused:(BOOL)omniboxFocused
                         toolbarExpanded:(BOOL)toolbarExpanded
-                animateFromLargeFakebox:(BOOL)animateFromLargeFakebox
+                                trigger:(OmniboxFocusTrigger)trigger
                                animated:(BOOL)animated
                              completion:(ProceduralBlock)completion {
   _completion = completion;
-  _animateFromLargeFakebox = animateFromLargeFakebox;
+  _trigger = trigger;
   // If a new transition is requested while one is ongoing, we don't want
   // to start the new one immediately. However, we do want the omnibox to end
   // up in whatever state was requested last. Therefore, we cache the last
@@ -253,8 +253,16 @@
     // Use UIView animateWithDuration instead of UIViewPropertyAnimator to
     // avoid UIKit bug. See https://crbug.com/856155.
     self.inProgressAnimationCount += 1;
-    if (_animateFromLargeFakebox) {
-      [self.toolbarAnimatee setLocationBarHeightToMatchFakeOmnibox];
+    [self.toolbarAnimatee setToolbarFaded:NO];
+    switch (_trigger) {
+      case OmniboxFocusTrigger::kPinnedLargeFakebox:
+        [self.toolbarAnimatee setLocationBarHeightToMatchFakeOmnibox];
+        break;
+      case OmniboxFocusTrigger::kUnpinnedLargeFakebox:
+        [self.toolbarAnimatee setToolbarFaded:YES];
+        break;
+      default:
+        break;
     }
     [UIView animateKeyframesWithDuration:kMaterialDuration1
         delay:0
@@ -339,14 +347,14 @@
   if (self.stateChangedDuringAnimation) {
     [self transitionToStateOmniboxFocused:self.finalOmniboxFocusedState
                           toolbarExpanded:self.finalToolbarExpandedState
-                  animateFromLargeFakebox:_animateFromLargeFakebox
+                                  trigger:_trigger
                                  animated:NO
                                completion:_completion];
   } else {
     if (_completion) {
       _completion();
       _completion = nil;
-      if (_animateFromLargeFakebox) {
+      if (_trigger == OmniboxFocusTrigger::kPinnedLargeFakebox) {
         // Reset the location bar height back to the default.
         [self.toolbarAnimatee setLocationBarHeightExpanded];
       }
@@ -361,15 +369,22 @@
 - (void)expansion {
   [self.toolbarAnimatee expandLocationBar];
   [self.toolbarAnimatee showCancelButton];
-  if (_animateFromLargeFakebox) {
-    [self.toolbarAnimatee setLocationBarHeightExpanded];
+  switch (_trigger) {
+    case OmniboxFocusTrigger::kPinnedLargeFakebox:
+      [self.toolbarAnimatee setLocationBarHeightExpanded];
+      break;
+    case OmniboxFocusTrigger::kUnpinnedLargeFakebox:
+      [self.toolbarAnimatee setToolbarFaded:NO];
+      break;
+    default:
+      break;
   }
 }
 
 // Visually contracts the location bar for defocus.
 - (void)contraction {
   [self.toolbarAnimatee contractLocationBar];
-  if (_animateFromLargeFakebox) {
+  if (_trigger == OmniboxFocusTrigger::kPinnedLargeFakebox) {
     [self.toolbarAnimatee setLocationBarHeightToMatchFakeOmnibox];
   }
 }

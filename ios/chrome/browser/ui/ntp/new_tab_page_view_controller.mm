@@ -55,7 +55,8 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 // TODO(crbug.com/1277504): Modify this comment when Web Channels is released.
 @property(nonatomic, assign, getter=isScrolledIntoFeed) BOOL scrolledIntoFeed;
 
-// Whether or not the fake omnibox is pineed to the top of the NTP.
+// Whether or not the fake omnibox is pinned to the top of the NTP. Redefined
+// to make readwrite.
 @property(nonatomic, assign) BOOL fakeOmniboxPinnedToTop;
 
 // Array of constraints used to pin the fake Omnibox header into the top of the

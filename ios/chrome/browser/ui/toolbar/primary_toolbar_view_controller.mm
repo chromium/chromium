@@ -266,6 +266,10 @@
   }
 }
 
+- (void)setToolbarFaded:(BOOL)faded {
+  self.view.alpha = faded ? 0 : 1;
+}
+
 - (void)setLocationBarHeightToMatchFakeOmnibox {
   if (!IsSplitToolbarMode(self)) {
     return;

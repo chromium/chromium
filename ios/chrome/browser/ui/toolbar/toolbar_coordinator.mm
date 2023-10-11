@@ -75,6 +75,9 @@
   ToolbarType _steadyStateOmniboxPosition;
   /// Whether the omnibox focusing should happen with animation.
   BOOL _enableAnimationsForOmniboxFocus;
+  /// Indicates whether the fakebox was pinned on last signal to focus from
+  /// the fakebox.
+  BOOL _fakeboxPinned;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser {
@@ -292,7 +295,7 @@
       transitionToStateOmniboxFocused:focused
                       toolbarExpanded:focused && !IsRegularXRegularSizeClass(
                                                      self.traitEnvironment)
-              animateFromLargeFakebox:[self animateFromLargeFakebox]
+                              trigger:[self omniboxFocusTrigger]
                              animated:animateTransition
                            completion:completion];
   self.locationBarFocused = focused;
@@ -364,7 +367,7 @@
 
 - (void)focusOmniboxNoAnimation {
   _enableAnimationsForOmniboxFocus = NO;
-  [self fakeboxFocused];
+  [self.locationBarCoordinator focusOmniboxFromFakebox];
   _enableAnimationsForOmniboxFocus = YES;
   // If the pasteboard is containing a URL, the omnibox popup suggestions are
   // displayed as soon as the omnibox is focused.
@@ -375,7 +378,8 @@
   }
 }
 
-- (void)fakeboxFocused {
+- (void)focusOmniboxFromFakeboxPinned:(BOOL)pinned {
+  _fakeboxPinned = pinned;
   [self.locationBarCoordinator focusOmniboxFromFakebox];
 }
 
@@ -576,23 +580,33 @@
                       toolbarExpanded:omniboxFocused &&
                                       !IsRegularXRegularSizeClass(
                                           self.traitEnvironment)
-              animateFromLargeFakebox:[self animateFromLargeFakebox]
+                              trigger:[self omniboxFocusTrigger]
                              animated:NO
                            completion:nil];
 }
 
-/// Returns YES if the transition animation is from/to an NTP with a large
-/// fakebox.
-- (BOOL)animateFromLargeFakebox {
-  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
-    return NO;
+/// Returns the appropriate `OmniboxFocusTrigger` depending on whether this is
+/// an incognito browser, the NTP is displayed, and whether the fakebox was
+/// pinned if it was selected.
+- (OmniboxFocusTrigger)omniboxFocusTrigger {
+  if (self.browser->GetBrowserState()->IsOffTheRecord() ||
+      !IsSplitToolbarMode(self.traitEnvironment)) {
+    return OmniboxFocusTrigger::kOther;
   }
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
   if (!webState) {
-    return NO;
+    return OmniboxFocusTrigger::kOther;
   }
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
-  return NTPHelper && NTPHelper->IsActive() && IsIOSLargeFakeboxEnabled();
+  if (!NTPHelper || !NTPHelper->IsActive()) {
+    return OmniboxFocusTrigger::kOther;
+  }
+  if (IsIOSLargeFakeboxEnabled()) {
+    return _fakeboxPinned ? OmniboxFocusTrigger::kPinnedLargeFakebox
+                          : OmniboxFocusTrigger::kUnpinnedLargeFakebox;
+  }
+  return OmniboxFocusTrigger::kPinnedFakebox;
 }
+
 @end

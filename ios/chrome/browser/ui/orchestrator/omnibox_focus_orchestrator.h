@@ -13,7 +13,15 @@
 @protocol LocationBarAnimatee;
 @protocol ToolbarAnimatee;
 
-// Orchestrator for the animation occuring when the omnibox is
+// Specifies what triggered the omnibox focus transition.
+enum class OmniboxFocusTrigger {
+  kOther,
+  kPinnedFakebox,
+  kPinnedLargeFakebox,
+  kUnpinnedLargeFakebox,
+};
+
+// Orchestrator for the animation occurring when the omnibox is
 // focused/unfocused.
 @interface OmniboxFocusOrchestrator : NSObject
 
@@ -30,7 +38,7 @@
 // the transition is complete, `completion` will be executed.
 - (void)transitionToStateOmniboxFocused:(BOOL)omniboxFocused
                         toolbarExpanded:(BOOL)toolbarExpanded
-                animateFromLargeFakebox:(BOOL)animateFromLargeFakebox
+                                trigger:(OmniboxFocusTrigger)trigger
                                animated:(BOOL)animated
                              completion:(ProceduralBlock)completion;
 

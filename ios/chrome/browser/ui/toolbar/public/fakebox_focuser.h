@@ -14,7 +14,7 @@
 - (void)focusOmniboxNoAnimation;
 // Give focus to the omnibox, but indicate that the focus event was initiated
 // from the fakebox on the Google landing page.
-- (void)fakeboxFocused;
+- (void)focusOmniboxFromFakeboxPinned:(BOOL)pinned;
 // Hides the toolbar when the fakebox is blurred.
 - (void)onFakeboxBlur;
 // Shows the toolbar when the fakebox has animated to full bleed.
