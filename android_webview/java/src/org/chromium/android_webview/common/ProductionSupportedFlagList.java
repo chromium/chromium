@@ -19,6 +19,7 @@ import org.chromium.components.metrics.MetricsFeatures;
 import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.network_session_configurator.NetworkSessionSwitches;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
+import org.chromium.components.safe_browsing.SafeBrowsingFeatures;
 import org.chromium.components.variations.VariationsSwitches;
 import org.chromium.components.viz.common.VizFeatures;
 import org.chromium.content_public.common.ContentFeatures;
@@ -449,6 +450,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AwFeatures.WEBVIEW_METRICS_FILTERING,
                     "If enabled, clients used to be out-sampled will report filtered metrics."
                             + " This has no effect if metrics reporting is disabled"),
+            Flag.baseFeature(SafeBrowsingFeatures.SAFE_BROWSING_SKIP_SUBRESOURCES,
+                "When enabled, Safe Browsing will skip subresources"),
             Flag.baseFeature("SafeBrowsingOnUIThread"),
             Flag.baseFeature(BlinkFeatures.ANDROID_EXTENDED_KEYBOARD_SHORTCUTS,
                     "Enables WebView to use the extended keyboard shortcuts added for Android U"),
