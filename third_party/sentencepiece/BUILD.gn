@@ -11,6 +11,11 @@ config("sentencepiece_config") {
     "shims",
     "$root_gen_dir/third_party/sentencepiece/src",
   ]
+
+  defines = [
+    "DARTS_DISABLE_EXCEPTIONS=1",
+    "SENTENCEPIECE_DISABLE_EXCEPTIONS=1",
+  ]
 }
 
 config("sentencepiece_flags") {
@@ -72,10 +77,7 @@ static_library("sentencepiece") {
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:exceptions",
-    "//build/config/compiler:no_chromium_code",
-  ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
 
   public_configs = [
     ":sentencepiece_config",

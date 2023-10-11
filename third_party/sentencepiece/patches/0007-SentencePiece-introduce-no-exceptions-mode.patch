@@ -1,0 +1,124 @@
+From f056d5f4cc818a6b9da93e93b5d47cdd7cfb5ca5 Mon Sep 17 00:00:00 2001
+From: Piotr Bialecki <bialpio@chromium.org>
+Date: Tue, 10 Oct 2023 11:26:05 -0700
+Subject: [PATCH] SentencePiece: introduce no-exceptions mode
+
+---
+ third_party/sentencepiece/src/src/util.cc     |  4 +++
+ .../src/third_party/darts_clone/darts.h       | 35 +++++++++----------
+ 2 files changed, 20 insertions(+), 19 deletions(-)
+
+diff --git a/third_party/sentencepiece/src/src/util.cc b/third_party/sentencepiece/src/src/util.cc
+index 322406cbc2782..c5e5289807a0c 100644
+--- a/third_party/sentencepiece/src/src/util.cc
++++ b/third_party/sentencepiece/src/src/util.cc
+@@ -32,11 +32,15 @@ void SetRandomGeneratorSeed(unsigned int seed) {
+ }
+ 
+ uint32 GetRandomGeneratorSeed() {
++#if !SENTENCEPIECE_DISABLE_EXCEPTIONS
+   try {
++#endif
+     return g_seed == kDefaultSeed ? std::random_device{}() : g_seed.load();
++#if !SENTENCEPIECE_DISABLE_EXCEPTIONS
+   } catch (...) {
+     return g_seed.load();
+   }
++#endif
+ }
+ 
+ namespace logging {
+diff --git a/third_party/sentencepiece/src/third_party/darts_clone/darts.h b/third_party/sentencepiece/src/third_party/darts_clone/darts.h
+index f9b32b1ec615b..9b975545aece1 100644
+--- a/third_party/sentencepiece/src/third_party/darts_clone/darts.h
++++ b/third_party/sentencepiece/src/third_party/darts_clone/darts.h
+@@ -5,6 +5,10 @@
+ #include <exception>
+ #include <new>
+ 
++#if DARTS_DISABLE_EXCEPTIONS
++#include "absl/log/absl_check.h"
++#endif
++
+ #define DARTS_VERSION "0.32"
+ 
+ // DARTS_THROW() throws a <Darts::Exception> whose message starts with the
+@@ -15,9 +19,14 @@
+ #define DARTS_INT_TO_STR(value) #value
+ #define DARTS_LINE_TO_STR(line) DARTS_INT_TO_STR(line)
+ #define DARTS_LINE_STR DARTS_LINE_TO_STR(__LINE__)
++
++#if DARTS_DISABLE_EXCEPTIONS
++#define DARTS_THROW(msg) ABSL_CHECK(false) << msg
++#else
+ #define DARTS_THROW(msg)                                      \
+   throw Darts::Details::Exception(__FILE__ ":" DARTS_LINE_STR \
+                                            ": exception: " msg)
++#endif
+ 
+ namespace Darts {
+ 
+@@ -74,6 +83,7 @@ class DoubleArrayUnit {
+   // Copyable.
+ };
+ 
++#if !DARTS_DISABLE_EXCEPTIONS
+ // Darts-clone throws an <Exception> for memory allocation failure, invalid
+ // arguments or a too large offset. The last case means that there are too many
+ // keys in the given set of keys. Note that the `msg' of <Exception> must be a
+@@ -96,6 +106,7 @@ class Exception : public std::exception {
+   // Disallows operator=.
+   Exception& operator=(const Exception&);
+ };
++#endif  // !DARTS_DISABLE_EXCEPTIONS
+ 
+ }  // namespace Details
+ 
+@@ -373,15 +384,9 @@ int DoubleArrayImpl<A, B, T, C>::open(const char* file_name,
+     }
+   }
+ 
+-  unit_type* buf;
+-  try {
+-    buf = new unit_type[size];
+-    for (id_type i = 0; i < 256; ++i) {
+-      buf[i] = units[i];
+-    }
+-  } catch (const std::bad_alloc&) {
+-    std::fclose(file);
+-    DARTS_THROW("failed to open double-array: std::bad_alloc");
++  unit_type* buf = new unit_type[size];
++  for (id_type i = 0; i < 256; ++i) {
++    buf[i] = units[i];
+   }
+ 
+   if (size > 256) {
+@@ -688,11 +693,7 @@ void AutoPool<T>::resize_buf(std::size_t size) {
+   }
+ 
+   AutoArray<char> buf;
+-  try {
+-    buf.reset(new char[sizeof(T) * capacity]);
+-  } catch (const std::bad_alloc&) {
+-    DARTS_THROW("failed to resize pool: std::bad_alloc");
+-  }
++  buf.reset(new char[sizeof(T) * capacity]);
+ 
+   if (size_ > 0) {
+     T* src = reinterpret_cast<T*>(&buf_[0]);
+@@ -804,11 +805,7 @@ class BitVector {
+ };
+ 
+ inline void BitVector::build() {
+-  try {
+-    ranks_.reset(new id_type[units_.size()]);
+-  } catch (const std::bad_alloc&) {
+-    DARTS_THROW("failed to build rank index: std::bad_alloc");
+-  }
++  ranks_.reset(new id_type[units_.size()]);
+ 
+   num_ones_ = 0;
+   for (std::size_t i = 0; i < units_.size(); ++i) {
+-- 
+2.42.0.609.gbb76f46606-goog
+

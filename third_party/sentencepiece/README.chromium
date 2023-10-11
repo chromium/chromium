@@ -2,7 +2,7 @@ Name: Sentencepiece
 Short Name: sentencepiece
 URL: https://github.com/google/sentencepiece
 Version: 8cbdf13794284c30877936f91c6f31e2c1d5aef7
-Date: 2023/08/16
+Date: 2023-08-16
 License: Apache 2.0
 License File: LICENSE
 Security Critical: Yes
@@ -13,7 +13,7 @@ Description:
 SentencePiece is an unsupervised text tokenizer and detokenizer mainly for
 Neural Network-based text generation systems where the vocabulary size is
 predetermined prior to the neural model training. SentencePiece implements
-subword units (e.g., byte-pair-encoding (BPE) [Sennrich et al.]) and unigram
+subword units (e.g., byte-pair-encoding (BPE) [Sennrich et al.] and unigram
 language model [Kudo.]) with the extension of direct training from raw
 sentences. SentencePiece allows us to make a purely end-to-end system that does
 not depend on language-specific pre/postprocessing.
@@ -34,6 +34,9 @@ absl::Status.
 * 0005-Fix-utf8towide.patch - Fixes file loading on Windows.
 * 0006-Fix-gn-check-in-sentencepiece.patch - Removes more usage of absl flags
 which was not needed and was giving "gn check" errors.
+* 0007-SentencePiece-introduce-no-exceptions-mode.patch - Introduces a new build
+variant that allows us to build SentencePiece and its dependencies without
+having to enable exceptions. Candidate for upstreaming.
 
 In addition the python, third_party/absl, and third_party/protobuf-lite
 directories were removed to avoid adding a bunch of unused code which could
