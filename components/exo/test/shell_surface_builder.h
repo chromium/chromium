@@ -7,12 +7,12 @@
 
 #include <memory>
 
+#include "ash/constants/app_types.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/base/region.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/shell_surface.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/class_property.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -57,6 +57,7 @@ class ShellSurfaceBuilder {
   ShellSurfaceBuilder& SetDisableMovement();
   ShellSurfaceBuilder& SetCentered();
   ShellSurfaceBuilder& SetSecurityDelegate(SecurityDelegate* security_delegate);
+  ShellSurfaceBuilder& SetAppType(ash::AppType app_type);
 
   // Sets parameters defined in ShellSurface.
   ShellSurfaceBuilder& SetParent(ShellSurface* shell_surface);
@@ -103,6 +104,7 @@ class ShellSurfaceBuilder {
   absl::optional<cc::Region> input_region_;
   absl::optional<SurfaceFrameType> type_;
   raw_ptr<SecurityDelegate, ExperimentalAsh> security_delegate_ = nullptr;
+  ash::AppType app_type_ = ash::AppType::NON_APP;
   std::string application_id_;
   bool use_system_modal_container_ = false;
   bool system_modal_ = false;

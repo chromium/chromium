@@ -7,12 +7,14 @@
 #include <sstream>
 #include <vector>
 
-#include "ash/constants/ash_constants.h"
+#include "ash/constants/app_types.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/test/test_widget_builder.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/window_state.h"
@@ -4068,6 +4070,38 @@ TEST_F(ShellSurfaceTest, DeleteWithGrab) {
                             .BuildShellSurface();
   popup_shell_surface->GetWidget()->CloseNow();
   popup_shell_surface.reset();
+}
+
+TEST_F(ShellSurfaceTest, WindowPropertyChangedNotificationWithoutRootSurface) {
+  // Test OnWindowPropertyChanged() notification on a ShellSurface, whose root
+  // surface has gone.
+
+  auto* overview_controller = ash::Shell::Get()->overview_controller();
+
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAppType(ash::AppType::LACROS)
+          .BuildShellSurface();
+
+  std::unique_ptr<ShellSurface> shell_surface1 =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAppType(ash::AppType::LACROS)
+          .BuildShellSurface();
+
+  overview_controller->StartOverview(ash::OverviewStartAction::kTests);
+  ash::WaitForOverviewEnterAnimation();
+
+  test::ShellSurfaceBuilder::DestroyRootSurface(shell_surface1.get());
+
+  // Destroying `shell_surface` will close its aura window, causing update of
+  // frame throttling in the overview mode for the remaining Lacros window(s).
+  // In this case, the remaining window is associated with `shell_surface1`. It
+  // receives OnWindowPropertyChanged() notification with
+  // ash::kFrameRateThrottleKey key. The root surface of `shell_surface1` has
+  // gone at this point. Verify that it doesn't cause crash.
+  shell_surface.reset();
+
+  overview_controller->EndOverview(ash::OverviewEndAction::kTests);
 }
 
 }  // namespace exo

@@ -1469,7 +1469,7 @@ void ShellSurfaceBase::OnWindowDestroying(aura::Window* window) {
   if (window == parent_)
     SetParentInternal(nullptr);
   window->RemoveObserver(this);
-  if (widget_ && window == widget_->GetNativeWindow() && root_surface()) {
+  if (IsShellSurfaceWindow(window) && root_surface()) {
     root_surface()->ThrottleFrameRate(false);
   }
 }
@@ -1477,19 +1477,21 @@ void ShellSurfaceBase::OnWindowDestroying(aura::Window* window) {
 void ShellSurfaceBase::OnWindowPropertyChanged(aura::Window* window,
                                                const void* key,
                                                intptr_t old_value) {
-  if (IsShellSurfaceWindow(window)) {
-    if (key == aura::client::kSkipImeProcessing) {
-      SetSkipImeProcessingToDescendentSurfaces(
-          window, window->GetProperty(aura::client::kSkipImeProcessing));
-    } else if (key == chromeos::kFrameRestoreLookKey) {
-      root_surface()->SetFrameLocked(
-          window->GetProperty(chromeos::kFrameRestoreLookKey));
-    } else if (key == aura::client::kWindowWorkspaceKey) {
-      root_surface()->OnDeskChanged(GetWindowDeskStateChanged(window));
-    } else if (key == ash::kFrameRateThrottleKey) {
-      root_surface()->ThrottleFrameRate(
-          window->GetProperty(ash::kFrameRateThrottleKey));
-    }
+  if (!IsShellSurfaceWindow(window) || !root_surface()) {
+    return;
+  }
+
+  if (key == aura::client::kSkipImeProcessing) {
+    SetSkipImeProcessingToDescendentSurfaces(
+        window, window->GetProperty(aura::client::kSkipImeProcessing));
+  } else if (key == chromeos::kFrameRestoreLookKey) {
+    root_surface()->SetFrameLocked(
+        window->GetProperty(chromeos::kFrameRestoreLookKey));
+  } else if (key == aura::client::kWindowWorkspaceKey) {
+    root_surface()->OnDeskChanged(GetWindowDeskStateChanged(window));
+  } else if (key == ash::kFrameRateThrottleKey) {
+    root_surface()->ThrottleFrameRate(
+        window->GetProperty(ash::kFrameRateThrottleKey));
   }
 }
 
@@ -1502,7 +1504,7 @@ void ShellSurfaceBase::OnWindowAddedToRootWindow(aura::Window* window) {
 
 void ShellSurfaceBase::OnWindowParentChanged(aura::Window* window,
                                              aura::Window* parent) {
-  if (!IsShellSurfaceWindow(window)) {
+  if (!IsShellSurfaceWindow(window) || !root_surface()) {
     return;
   }
   root_surface()->OnDeskChanged(GetWindowDeskStateChanged(window));
