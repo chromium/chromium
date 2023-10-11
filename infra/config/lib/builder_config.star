@@ -614,8 +614,8 @@ def _get_builder_mirror_description(bucket_name, builder, bc_state):
         description += "This builder is mirrored by any of the following try builders:<br/>"
 
     description += "<ul>"
-    for m in mirrored_builders or mirroring_builders:
-        m_id = _builder_id(m)
+    m_ids = [_builder_id(m) for m in mirrored_builders or mirroring_builders]
+    for m_id in sorted(m_ids, key = _builder_id_sort_key):
         if (bucket_name, m_id["bucket"]) not in [("try", "ci"), ("ci", "try")]:
             # Change the descriptions above if this assertion no
             # longer holds true.
