@@ -3148,7 +3148,7 @@
   {
     "name": "enable-media-dynamic-cgroup",
     "owners": [ "erin.park@intel.com", "youssefesmat" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "enable-media-foundation-clear",
