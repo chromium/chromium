@@ -2404,6 +2404,7 @@
     {
       name: "MediaSessionEnterPictureInPicture",
       public: true,
+      status: "experimental",
     },
     {
       name: "MediaSessionSlides",

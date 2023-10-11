@@ -81,6 +81,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     this.categoryList_ = [
       ContentSettingsTypes.ADS,
       ContentSettingsTypes.AR,
+      ContentSettingsTypes.AUTO_PICTURE_IN_PICTURE,
       ContentSettingsTypes.AUTOMATIC_DOWNLOADS,
       ContentSettingsTypes.BACKGROUND_SYNC,
       ContentSettingsTypes.BLUETOOTH_DEVICES,

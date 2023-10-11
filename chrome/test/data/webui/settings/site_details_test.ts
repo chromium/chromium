@@ -91,6 +91,9 @@ suite('SiteDetails', function() {
               ContentSettingsTypes.CAMERA,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
+              ContentSettingsTypes.AUTO_PICTURE_IN_PICTURE,
+              [createRawSiteException('https://foo.com:443')]),
+          createContentSettingTypeToValuePair(
               ContentSettingsTypes.AUTOMATIC_DOWNLOADS,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(

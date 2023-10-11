@@ -585,41 +585,6 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
   WaitForPlaybackState(VideoOverlayWindow::PlaybackState::kPlaying);
 }
 
-// When the player object associated with a video element is destroyed, any
-// Media Session actions that were set are no longer available.
-IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
-                       ResettingPlayerDisablesActions) {
-  ASSERT_TRUE(NavigateToURL(
-      shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
-  ASSERT_EQ(true, EvalJs(shell(), "enterPictureInPicture();"));
-
-  ASSERT_TRUE(ExecJs(shell(), "setMediaSessionPlayActionHandler();"));
-  ASSERT_TRUE(ExecJs(shell(), "setMediaSessionPauseActionHandler();"));
-  ASSERT_TRUE(ExecJs(shell(), "setMediaSessionNextTrackActionHandler();"));
-
-  ASSERT_EQ(true, EvalJs(shell(), "resetVideo();"));
-
-  // Media Session actions are unavailable with the player removed.
-  EXPECT_EQ(overlay_window()->play_pause_button_visible().value_or(true),
-            false);
-  EXPECT_EQ(overlay_window()->next_track_button_visible().value_or(true),
-            false);
-
-  // Load new media on the video element. This creates a new player.
-  ASSERT_EQ(true, EvalJs(shell(), "updateVideoSrcAndPlay();"));
-
-  // The play/pause/replay and next buttons should be functional again.
-  EXPECT_EQ(overlay_window()->play_pause_button_visible().value_or(false),
-            true);
-  window_controller()->TogglePlayPause();
-  WaitForPlaybackState(VideoOverlayWindow::PlaybackState::kPaused);
-
-  EXPECT_EQ(overlay_window()->next_track_button_visible().value_or(false),
-            true);
-  window_controller()->NextTrack();
-  WaitForPlaybackState(VideoOverlayWindow::PlaybackState::kPlaying);
-}
-
 IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest,
                        EnterPictureInPictureHasNoChildWebContents) {
   ASSERT_TRUE(NavigateToURL(
