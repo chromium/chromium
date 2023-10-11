@@ -1447,6 +1447,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
     auto* identifier_value = DynamicTo<CSSIdentifierValue>(curr_value->Get());
     if (identifier_value &&
         identifier_value->GetValueID() == CSSValueID::kSubgrid) {
+      state.GetDocument().CountUse(WebFeature::kCSSSubgridLayout);
       computed_grid_track_list.axis_type = GridAxisType::kSubgriddedAxis;
       track_list.SetAxisType(GridAxisType::kSubgriddedAxis);
       is_subgrid = true;

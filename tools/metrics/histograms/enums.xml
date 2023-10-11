@@ -44132,6 +44132,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4677" label="HTMLDetailsElementNameAttribute"/>
   <int value="4678" label="HTMLDetailsElementNameAttributeClosesSelf"/>
   <int value="4679" label="HTMLDetailsElementNameAttributeClosesOther"/>
+  <int value="4680" label="CSSSubgridLayout"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
