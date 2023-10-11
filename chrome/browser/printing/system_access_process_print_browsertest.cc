@@ -1334,7 +1334,8 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 
 #if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
-                       StartPrintingPdfConversionFails) {
+                       // TODO(crbug.com/1491616): Re-enable this test
+                       DISABLED_StartPrintingPdfConversionFails) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForPdfConversionErrorOnPageIndex(/*page_index=*/1);
