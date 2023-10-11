@@ -377,50 +377,60 @@ std::string GetTextForServiceError(int error) {
       return "";
   }
 }
+#undef SWITCH_ENTRY
 
 std::string GetTextForUpdateCheckError(int error) {
-  switch (error) {
-    SWITCH_ENTRY(update_client::ProtocolError::RESPONSE_NOT_TRUSTED);
-    SWITCH_ENTRY(update_client::ProtocolError::MISSING_PUBLIC_KEY);
-    SWITCH_ENTRY(update_client::ProtocolError::MISSING_URLS);
-    SWITCH_ENTRY(update_client::ProtocolError::PARSE_FAILED);
-    SWITCH_ENTRY(update_client::ProtocolError::UPDATE_RESPONSE_NOT_FOUND);
-    SWITCH_ENTRY(update_client::ProtocolError::URL_FETCHER_FAILED);
-    SWITCH_ENTRY(update_client::ProtocolError::INVALID_APPID);
+#define UPDATE_CHECK_SWITCH_ENTRY(error_code)                       \
+  case static_cast<int>(error_code):                                \
+    return GetLocalizedStringF(IDS_GENERIC_UPDATE_CHECK_ERROR_BASE, \
+                               L#error_code)
 
-    case static_cast<int>(update_client::ProtocolError::UNKNOWN_APPLICATION):
-      return base::WideToUTF8(GetLocalizedString(IDS_UNKNOWN_APPLICATION_BASE));
+  return base::WideToUTF8([&]() {
+    switch (error) {
+      UPDATE_CHECK_SWITCH_ENTRY(
+          update_client::ProtocolError::RESPONSE_NOT_TRUSTED);
+      UPDATE_CHECK_SWITCH_ENTRY(
+          update_client::ProtocolError::MISSING_PUBLIC_KEY);
+      UPDATE_CHECK_SWITCH_ENTRY(update_client::ProtocolError::MISSING_URLS);
+      UPDATE_CHECK_SWITCH_ENTRY(update_client::ProtocolError::PARSE_FAILED);
+      UPDATE_CHECK_SWITCH_ENTRY(
+          update_client::ProtocolError::UPDATE_RESPONSE_NOT_FOUND);
+      UPDATE_CHECK_SWITCH_ENTRY(
+          update_client::ProtocolError::URL_FETCHER_FAILED);
+      UPDATE_CHECK_SWITCH_ENTRY(update_client::ProtocolError::INVALID_APPID);
 
-    case static_cast<int>(update_client::ProtocolError::RESTRICTED_APPLICATION):
-      return base::WideToUTF8(
-          GetLocalizedString(IDS_RESTRICTED_RESPONSE_FROM_SERVER_BASE));
+      case static_cast<int>(update_client::ProtocolError::UNKNOWN_APPLICATION):
+        return GetLocalizedString(IDS_UNKNOWN_APPLICATION_BASE);
 
-    case HRESULT_FROM_WIN32(ERROR_WINHTTP_NAME_NOT_RESOLVED):
-      return base::WideToUTF8(
-          GetLocalizedStringF(IDS_NO_NETWORK_PRESENT_ERROR_BASE,
-                              GetExecutableRelativePath().value()));
+      case static_cast<int>(
+          update_client::ProtocolError::RESTRICTED_APPLICATION):
+        return GetLocalizedString(IDS_RESTRICTED_RESPONSE_FROM_SERVER_BASE);
 
-    // Http Status Code `401` Unauthorized.
-    case 401:
-      return base::WideToUTF8(
-          GetLocalizedString(IDS_ERROR_HTTPSTATUS_UNAUTHORIZED_BASE));
+      // Http Status Code `401` Unauthorized.
+      case 401:
+        return GetLocalizedString(IDS_ERROR_HTTPSTATUS_UNAUTHORIZED_BASE);
 
-    // Http Status Code `403` Forbidden.
-    case 403:
-      return base::WideToUTF8(
-          GetLocalizedString(IDS_ERROR_HTTPSTATUS_FORBIDDEN_BASE));
+      // Http Status Code `403` Forbidden.
+      case 403:
+        return GetLocalizedString(IDS_ERROR_HTTPSTATUS_FORBIDDEN_BASE);
 
-    // Http Status Code `407` Proxy Authentication Required.
-    case 407:
-      return base::WideToUTF8(
-          GetLocalizedString(IDS_ERROR_HTTPSTATUS_PROXY_AUTH_REQUIRED_BASE));
+      // Http Status Code `407` Proxy Authentication Required.
+      case 407:
+        return GetLocalizedString(
+            IDS_ERROR_HTTPSTATUS_PROXY_AUTH_REQUIRED_BASE);
 
-    default:
-      return base::WideToUTF8(GetLocalizedStringF(
-          IDS_GENERIC_UPDATE_CHECK_ERROR_BASE, base::NumberToWString(error)));
-  }
+      case HRESULT_FROM_WIN32(ERROR_WINHTTP_NAME_NOT_RESOLVED):
+        return GetLocalizedStringF(IDS_NO_NETWORK_PRESENT_ERROR_BASE,
+                                   GetExecutableRelativePath().value());
+
+      default:
+        return GetLocalizedStringF(
+            IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
+            base::UTF8ToWide(GetTextForSystemError(error)));
+    }
+  }());
+#undef UPDATE_CHECK_SWITCH_ENTRY
 }
-#undef SWITCH_ENTRY
 
 // Implements installing a single application by invoking the code in
 // |UpdateService|, listening to |UpdateService| and UI events, and

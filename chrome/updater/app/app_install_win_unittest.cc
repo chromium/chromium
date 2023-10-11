@@ -120,23 +120,35 @@ INSTANTIATE_TEST_SUITE_P(
         {UpdateService::ErrorCategory::kService, 0xFFFF, u""},
         {UpdateService::ErrorCategory::kUpdateCheck,
          static_cast<int>(update_client::ProtocolError::RESPONSE_NOT_TRUSTED),
-         u"update_client::ProtocolError::RESPONSE_NOT_TRUSTED"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
+             L"update_client::ProtocolError::RESPONSE_NOT_TRUSTED"))},
         {UpdateService::ErrorCategory::kUpdateCheck,
          static_cast<int>(update_client::ProtocolError::MISSING_PUBLIC_KEY),
-         u"update_client::ProtocolError::MISSING_PUBLIC_KEY"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
+             L"update_client::ProtocolError::MISSING_PUBLIC_KEY"))},
         {UpdateService::ErrorCategory::kUpdateCheck,
          static_cast<int>(update_client::ProtocolError::MISSING_URLS),
-         u"update_client::ProtocolError::MISSING_URLS"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
+             L"update_client::ProtocolError::MISSING_URLS"))},
         {UpdateService::ErrorCategory::kUpdateCheck,
          static_cast<int>(update_client::ProtocolError::PARSE_FAILED),
-         u"update_client::ProtocolError::PARSE_FAILED"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
+             L"update_client::ProtocolError::PARSE_FAILED"))},
         {UpdateService::ErrorCategory::kUpdateCheck,
          static_cast<int>(
              update_client::ProtocolError::UPDATE_RESPONSE_NOT_FOUND),
-         u"update_client::ProtocolError::UPDATE_RESPONSE_NOT_FOUND"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
+             L"update_client::ProtocolError::UPDATE_RESPONSE_NOT_FOUND"))},
         {UpdateService::ErrorCategory::kUpdateCheck,
          static_cast<int>(update_client::ProtocolError::URL_FETCHER_FAILED),
-         u"update_client::ProtocolError::URL_FETCHER_FAILED"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
+             L"update_client::ProtocolError::URL_FETCHER_FAILED"))},
         {UpdateService::ErrorCategory::kUpdateCheck,
          static_cast<int>(update_client::ProtocolError::UNKNOWN_APPLICATION),
          base::WideToUTF16(GetLocalizedString(IDS_UNKNOWN_APPLICATION_BASE))},
@@ -146,7 +158,9 @@ INSTANTIATE_TEST_SUITE_P(
              GetLocalizedString(IDS_RESTRICTED_RESPONSE_FROM_SERVER_BASE))},
         {UpdateService::ErrorCategory::kUpdateCheck,
          static_cast<int>(update_client::ProtocolError::INVALID_APPID),
-         u"update_client::ProtocolError::INVALID_APPID"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
+             L"update_client::ProtocolError::INVALID_APPID"))},
         {UpdateService::ErrorCategory::kUpdateCheck, 401,
          base::WideToUTF16(
              GetLocalizedString(IDS_ERROR_HTTPSTATUS_UNAUTHORIZED_BASE))},
@@ -159,7 +173,7 @@ INSTANTIATE_TEST_SUITE_P(
         {UpdateService::ErrorCategory::kUpdateCheck, 0xFFFF,
          base::WideToUTF16(
              GetLocalizedStringF(IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
-                                 base::NumberToWString(0xFFFF)))},
+                                 L"0xffff"))},
     }));
 
 TEST_P(AppInstallWinHandleInstallResultTest, TestCases) {

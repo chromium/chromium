@@ -1096,7 +1096,7 @@ std::string GetTextForSystemError(int error) {
   base::win::ScopedLocalAllocTyped<wchar_t> free_buffer(
       system_allocated_buffer);
   return chars_written > 0 ? base::WideToUTF8(system_allocated_buffer)
-                           : base::StringPrintf("Unknown error %#x", error);
+                           : base::StringPrintf("%#x", error);
 }
 
 }  // namespace updater

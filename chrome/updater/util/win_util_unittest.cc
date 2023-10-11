@@ -570,7 +570,7 @@ TEST(WinUtil, GetTextForSystemError) {
             "The server name or address could not be resolved ");
   EXPECT_EQ(
       GetTextForSystemError(MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x200)),
-      "Unknown error 0x80040200");
+      "0x80040200");
 }
 
 }  // namespace updater
