@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {fakeCriticalFirmwareUpdate, fakeFirmwareUpdate} from 'chrome://accessory-update/fake_data.js';
-import {FirmwareUpdate, UpdatePriority} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
 import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';

@@ -237,33 +237,47 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
     const {deviceName, deviceVersion} = this.update;
     const {percentage} = this.installationProgress;
 
-    const dialogContent = {
-      [UpdateState.kUpdating]: {
-        title: this.i18n('updating', mojoString16ToString(deviceName)),
-        body: this.i18n('updatingInfo'),
-        footer: this.i18n('installing', percentage),
-      },
-      [UpdateState.kRestarting]: {
-        title:
-            this.i18n('restartingTitleText', mojoString16ToString(deviceName)),
-        body: this.i18n('restartingBodyText'),
-        footer: this.i18n('restartingFooterText'),
-      },
-      [UpdateState.kFailed]: {
-        title: this.i18n(
-            'updateFailedTitleText', mojoString16ToString(deviceName)),
-        body: this.i18n('updateFailedBodyText'),
-        footer: '',
-      },
-      [UpdateState.kSuccess]: {
-        title: this.i18n('deviceUpToDate', mojoString16ToString(deviceName)),
-        body: this.i18n(
-            'hasBeenUpdated', mojoString16ToString(deviceName), deviceVersion),
-        footer: '',
-      },
-    };
+    const dialogContent = new Map<UpdateState, DialogContent>([
+      [
+        UpdateState.kUpdating,
+        {
+          title: this.i18n('updating', mojoString16ToString(deviceName)),
+          body: this.i18n('updatingInfo'),
+          footer: this.i18n('installing', percentage),
+        },
+      ],
+      [
+        UpdateState.kRestarting,
+        {
+          title: this.i18n(
+              'restartingTitleText', mojoString16ToString(deviceName)),
+          body: this.i18n('restartingBodyText'),
+          footer: this.i18n('restartingFooterText'),
+        },
+      ],
+      [
+        UpdateState.kFailed,
+        {
+          title: this.i18n(
+              'updateFailedTitleText', mojoString16ToString(deviceName)),
+          body: this.i18n('updateFailedBodyText'),
+          footer: '',
+        },
+      ],
+      [
+        UpdateState.kSuccess,
+        {
+          title: this.i18n('deviceUpToDate', mojoString16ToString(deviceName)),
+          body: this.i18n(
+              'hasBeenUpdated', mojoString16ToString(deviceName),
+              deviceVersion),
+          footer: '',
+        },
+      ],
+    ]);
 
-    return dialogContent[state];
+    assert(dialogContent.has(state));
+    return dialogContent.get(state) as DialogContent;
   }
 
   computeDialogContent(): DialogContent {

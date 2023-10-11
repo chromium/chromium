@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {fakeFirmwareUpdate} from 'chrome://accessory-update/fake_data.js';
-import {FirmwareUpdate, UpdateState} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
+import {UpdateState} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
 import {FirmwareUpdateDialogElement} from 'chrome://accessory-update/firmware_update_dialog.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';

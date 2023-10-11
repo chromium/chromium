@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {fakeFirmwareUpdates} from 'chrome://accessory-update/fake_data.js';
 import {FakeUpdateController} from 'chrome://accessory-update/fake_update_controller.js';
 import {FakeUpdateProvider} from 'chrome://accessory-update/fake_update_provider.js';
-import {FirmwareUpdate, UpdateProviderInterface, UpdateState} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
+import {UpdateState} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
 import {FirmwareUpdateAppElement} from 'chrome://accessory-update/firmware_update_app.js';
 import {getUpdateProvider, setUpdateControllerForTesting, setUpdateProviderForTesting} from 'chrome://accessory-update/mojo_interface_provider.js';
 import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
