@@ -223,6 +223,22 @@ class BaseTest(unittest.TestCase):
               tdir.replace('/', '_').upper(), 'TEMP_DIR')
           self.AssertGoldenTextEquals(contents, header_golden)
 
+  def _TestParseError(self, error_snippet, input_data):
+    with tempfile.TemporaryDirectory() as tdir:
+      input_file = os.path.join(tdir, 'MyFile.java')
+      pathlib.Path(input_file).write_text(input_data)
+      options = CliOptions()
+      options.input_file = input_file
+      options.output_dir = tdir
+      cmd = options.to_args()
+
+      logging.info('Running: %s', shlex.join(cmd))
+      result = subprocess.run(cmd, capture_output=True, check=False, text=True)
+      self.assertEqual(result.returncode, 1)
+      self.assertIn('MyFile.java', result.stderr)
+      self.assertIn(error_snippet, result.stderr)
+      return result.stderr
+
   def _ReadGoldenFile(self, path):
     _accessed_goldens.add(path)
     if not os.path.exists(path):
@@ -379,6 +395,74 @@ class Tests(BaseTest):
     self._TestEndToEndRegistration(['SampleForAnnotationProcessor.java'],
                                    enable_jni_multiplexing=True,
                                    use_proxy_hash=True)
+
+  def testParseError_noPackage(self):
+    data = """
+class MyFile {}
+"""
+    self._TestParseError('Unable to find "package" line', data)
+
+  def testParseError_noClass(self):
+    data = """
+package foo;
+"""
+    self._TestParseError('No classes found', data)
+
+  def testParseError_wrongClass(self):
+    data = """
+package foo;
+class YourFile {}
+"""
+    self._TestParseError('Found class "YourFile" but expected "MyFile"', data)
+
+  def testParseError_noMethods(self):
+    data = """
+package foo;
+class MyFile {
+  void foo() {}
+}
+"""
+    self._TestParseError('No native methods found', data)
+
+  def testParseError_noInterfaceMethods(self):
+    data = """
+package foo;
+class MyFile {
+  @NativeMethods
+  interface A {}
+}
+"""
+    self._TestParseError('Found no methods within', data)
+
+  def testParseError_twoInterfaces(self):
+    data = """
+package foo;
+class MyFile {
+  @NativeMethods
+  interface A {
+    void a();
+  }
+  @NativeMethods
+  interface B {
+    void b();
+  }
+}
+"""
+    self._TestParseError('Multiple @NativeMethod interfaces', data)
+
+  def testParseError_twoNamespaces(self):
+    data = """
+package foo;
+@JNINamespace("one")
+@JNINamespace("two")
+class MyFile {
+  @NativeMethods
+  interface A {
+    void a();
+  }
+}
+"""
+    self._TestParseError('Found multiple @JNINamespace', data)
 
 
 def main():

@@ -26,7 +26,7 @@ class ParseError(Exception):
   suffix = ''
 
   def __str__(self):
-    return super.__str__() + self.suffix
+    return super().__str__() + self.suffix
 
 
 @dataclasses.dataclass(order=True)
@@ -346,7 +346,7 @@ def _parse_jni_namespace(contents):
   if not m:
     return ''
   if len(m) > 1:
-    raise ParseError('Found multiple @JNINamespace attributes.')
+    raise ParseError('Found multiple @JNINamespace annotations.')
   return m[0]
 
 
