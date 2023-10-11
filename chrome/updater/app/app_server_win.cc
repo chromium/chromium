@@ -252,6 +252,10 @@ AppServerWin::~AppServerWin() {
   NOTREACHED();  // The instance of this class is a leaky singleton.
 }
 
+void AppServerWin::PostRpcTask(base::OnceClosure task) {
+  GetAppServerWinInstance()->PostRpcTaskOnMainSequence(std::move(task));
+}
+
 void AppServerWin::Stop() {
   VLOG(2) << __func__ << ": COM server is shutting down.";
   UnregisterClassObjects();
@@ -262,6 +266,10 @@ void AppServerWin::Stop() {
                                 this_server->update_service_internal_ = nullptr;
                                 this_server->Shutdown(0);
                               }));
+}
+
+void AppServerWin::PostRpcTaskOnMainSequence(base::OnceClosure task) {
+  main_task_runner_->PostTask(FROM_HERE, std::move(task));
 }
 
 bool AppServerWin::RestoreComInterfaces(bool is_internal) {

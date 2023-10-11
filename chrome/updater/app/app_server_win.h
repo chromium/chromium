@@ -22,18 +22,6 @@ struct RegistrationRequest;
 // Returns S_OK if user install, or if the COM caller is admin. Error otherwise.
 HRESULT IsCOMCallerAllowed();
 
-// The COM objects involved in this server are free threaded. Incoming COM calls
-// arrive on COM RPC threads. Outgoing COM calls are posted from a blocking
-// sequenced task runner in the thread pool. Calls to the services hosted
-// in this server occur in the main sequence, which is bound to the main
-// thread of the process.
-//
-// If such a COM object has state which is visible to multiple threads, then the
-// access to the shared state of the object must be synchronized. This is done
-// by using a lock, internal to the object. Since the code running on the
-// main sequence can't use synchronization primitives, another task runner is
-// typically used to sequence the callbacks.
-//
 // This class is responsible for the lifetime of the COM server, as well as
 // class factory registration.
 //
@@ -46,15 +34,14 @@ class AppServerWin : public AppServer {
   using AppServer::config;
   using AppServer::prefs;
 
-  scoped_refptr<base::SequencedTaskRunner> main_task_runner() {
-    return main_task_runner_;
-  }
+  // Posts the `task` to the sequence bound to this instance.
+  static void PostRpcTask(base::OnceClosure task);
+
   scoped_refptr<UpdateService> update_service() {
-    CHECK(update_service_);
     return update_service_;
   }
+
   scoped_refptr<UpdateServiceInternal> update_service_internal() {
-    CHECK(update_service_internal_);
     return update_service_internal_;
   }
 
@@ -74,7 +61,7 @@ class AppServerWin : public AppServer {
   // `UpdateServiceInternal` method. Increments the WRL Module count.
   void TaskStarted();
 
-  // Overrides for AppServer
+  // Overrides for AppServer.
   void ActiveDuty(scoped_refptr<UpdateService> update_service) override;
   void ActiveDutyInternal(
       scoped_refptr<UpdateServiceInternal> update_service_internal) override;
@@ -104,6 +91,8 @@ class AppServerWin : public AppServer {
 
   // Handles COM setup and registration.
   void Start(base::OnceCallback<HRESULT()> register_callback);
+
+  void PostRpcTaskOnMainSequence(base::OnceClosure task);
 
   // Task runner bound to the main sequence.
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_ =

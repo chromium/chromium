@@ -361,66 +361,76 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   // For backward-compatibility purposes, the `CheckForUpdate` call assumes
   // foreground priority and disallows same version updates.
   HRESULT CheckForUpdate() {
-    using AppWebImplPtr = Microsoft::WRL::ComPtr<AppWebImpl>;
-    scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
-    com_server->main_task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](scoped_refptr<UpdateService> update_service, AppWebImplPtr obj) {
-              update_service->CheckForUpdate(
-                  obj->app_id_, UpdateService::Priority::kForeground,
-                  obj->policy_same_version_update_,
-                  base::BindRepeating(
-                      [](AppWebImplPtr obj,
-                         const UpdateService::UpdateState& state_update) {
-                        obj->task_runner_->PostTask(
-                            FROM_HERE,
-                            base::BindOnce(&AppWebImpl::UpdateStateCallback,
-                                           obj, state_update));
-                      },
-                      obj),
-                  base::BindOnce(
-                      [](AppWebImplPtr obj, UpdateService::Result result) {
-                        obj->task_runner_->PostTask(
-                            FROM_HERE,
-                            base::BindOnce(&AppWebImpl::UpdateResultCallback,
-                                           obj, result));
-                      },
-                      obj));
+    AppWebImplPtr obj(this);
+    UpdateService::StateChangeCallback state_change_callback =
+        base::BindRepeating(
+            [](AppWebImplPtr obj,
+               const UpdateService::UpdateState& state_update) {
+              obj->task_runner_->PostTask(
+                  FROM_HERE, base::BindOnce(&AppWebImpl::UpdateStateCallback,
+                                            obj, state_update));
             },
-            com_server->update_service(), AppWebImplPtr(this)));
+            obj);
+    UpdateService::Callback complete_callback = base::BindOnce(
+        [](AppWebImplPtr obj, UpdateService::Result result) {
+          obj->task_runner_->PostTask(
+              FROM_HERE,
+              base::BindOnce(&AppWebImpl::UpdateResultCallback, obj, result));
+        },
+        obj);
+    AppServerWin::PostRpcTask(base::BindOnce(
+        [](UpdateService::StateChangeCallback state_change_callback,
+           UpdateService::Callback complete_callback, AppWebImplPtr obj) {
+          scoped_refptr<UpdateService> update_service =
+              GetAppServerWinInstance()->update_service();
+          if (!update_service) {
+            std::move(complete_callback)
+                .Run(UpdateService::Result::kServiceStopped);
+            return;
+          }
+          update_service->CheckForUpdate(
+              obj->app_id_, UpdateService::Priority::kForeground,
+              obj->policy_same_version_update_,
+              std::move(state_change_callback), std::move(complete_callback));
+        },
+        std::move(state_change_callback), std::move(complete_callback), obj));
     return S_OK;
   }
 
   HRESULT Update() {
-    using AppWebImplPtr = Microsoft::WRL::ComPtr<AppWebImpl>;
-    scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
-    com_server->main_task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](scoped_refptr<UpdateService> update_service, AppWebImplPtr obj) {
-              update_service->Update(
-                  obj->app_id_, "", UpdateService::Priority::kForeground,
-                  obj->policy_same_version_update_,
-                  base::BindRepeating(
-                      [](AppWebImplPtr obj,
-                         const UpdateService::UpdateState& state_update) {
-                        obj->task_runner_->PostTask(
-                            FROM_HERE,
-                            base::BindOnce(&AppWebImpl::UpdateStateCallback,
-                                           obj, state_update));
-                      },
-                      obj),
-                  base::BindOnce(
-                      [](AppWebImplPtr obj, UpdateService::Result result) {
-                        obj->task_runner_->PostTask(
-                            FROM_HERE,
-                            base::BindOnce(&AppWebImpl::UpdateResultCallback,
-                                           obj, result));
-                      },
-                      obj));
+    AppWebImplPtr obj(this);
+    UpdateService::StateChangeCallback state_change_callback =
+        base::BindRepeating(
+            [](AppWebImplPtr obj,
+               const UpdateService::UpdateState& state_update) {
+              obj->task_runner_->PostTask(
+                  FROM_HERE, base::BindOnce(&AppWebImpl::UpdateStateCallback,
+                                            obj, state_update));
             },
-            com_server->update_service(), AppWebImplPtr(this)));
+            obj);
+    UpdateService::Callback complete_callback = base::BindOnce(
+        [](AppWebImplPtr obj, UpdateService::Result result) {
+          obj->task_runner_->PostTask(
+              FROM_HERE,
+              base::BindOnce(&AppWebImpl::UpdateResultCallback, obj, result));
+        },
+        obj);
+    AppServerWin::PostRpcTask(base::BindOnce(
+        [](UpdateService::StateChangeCallback state_change_callback,
+           UpdateService::Callback complete_callback, AppWebImplPtr obj) {
+          scoped_refptr<UpdateService> update_service =
+              GetAppServerWinInstance()->update_service();
+          if (!update_service) {
+            std::move(complete_callback)
+                .Run(UpdateService::Result::kServiceStopped);
+            return;
+          }
+          update_service->Update(
+              obj->app_id_, "", UpdateService::Priority::kForeground,
+              obj->policy_same_version_update_,
+              std::move(state_change_callback), std::move(complete_callback));
+        },
+        std::move(state_change_callback), std::move(complete_callback), obj));
     return S_OK;
   }
 
@@ -445,8 +455,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
     };
 
     auto result = base::MakeRefCounted<CurrentVersionResult>();
-    GetAppServerWinInstance()->main_task_runner()->PostTask(
-        FROM_HERE,
+    AppServerWin::PostRpcTask(
         base::BindOnce(
             [](const std::string app_id,
                scoped_refptr<CurrentVersionResult> result) {
@@ -617,6 +626,8 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   }
 
  private:
+  using AppWebImplPtr = Microsoft::WRL::ComPtr<AppWebImpl>;
+
   ~AppWebImpl() override = default;
 
   void UpdateStateCallback(UpdateService::UpdateState state_update) {
@@ -1112,8 +1123,7 @@ class PolicyStatusResult
 
   static auto Get(ValueGetter value_getter) {
     auto result = base::WrapRefCounted(new PolicyStatusResult<T>(value_getter));
-    GetAppServerWinInstance()->main_task_runner()->PostTask(
-        FROM_HERE,
+    AppServerWin::PostRpcTask(
         base::BindOnce(&PolicyStatusResult::GetValueOnSequence, result));
     result->completion_event.TimedWait(base::Seconds(60));
     return result->value;
@@ -1146,8 +1156,7 @@ STDMETHODIMP PolicyStatusImpl::get_lastCheckedTime(DATE* last_checked) {
 
   using PolicyStatusImplPtr = Microsoft::WRL::ComPtr<PolicyStatusImpl>;
   auto result = base::MakeRefCounted<LastCheckedTimeResult>();
-  GetAppServerWinInstance()->main_task_runner()->PostTask(
-      FROM_HERE,
+  AppServerWin::PostRpcTask(
       base::BindOnce(
           [](PolicyStatusImplPtr obj,
              scoped_refptr<LastCheckedTimeResult> result) {
@@ -1195,12 +1204,16 @@ STDMETHODIMP PolicyStatusImpl::refreshPolicies() {
   // self reference of the COM object, otherwise the server could shutdown if
   // the caller releases its interface pointer when this function returns.
   using PolicyStatusImplPtr = Microsoft::WRL::ComPtr<PolicyStatusImpl>;
-  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
-  com_server->main_task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&UpdateService::FetchPolicies,
-                     com_server->update_service(),
-                     base::DoNothingWithBoundArgs(PolicyStatusImplPtr(this))));
+  AppServerWin::PostRpcTask(base::BindOnce(
+      [](PolicyStatusImplPtr obj) {
+        scoped_refptr<UpdateService> update_service =
+            GetAppServerWinInstance()->update_service();
+        if (!update_service) {
+          return;
+        }
+        update_service->FetchPolicies(base::DoNothing());
+      },
+      PolicyStatusImplPtr(this)));
   return S_OK;
 }
 
