@@ -1609,7 +1609,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
 
     if (device_scale_factor.has_value()) {
       msk.ApplyTransform(
-          gfx::Transform::MakeScale(device_scale_factor.has_value()));
+          gfx::Transform::MakeScale(device_scale_factor.value()));
     }
   }
 
