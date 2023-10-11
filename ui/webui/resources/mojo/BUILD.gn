@@ -29,7 +29,6 @@ mojo_js_files = [
   "skia/public/mojom/bitmap.mojom-webui.js",
   "skia/public/mojom/image_info.mojom-webui.js",
   "url/mojom/url.mojom-webui.js",
-  "url/mojom/origin.mojom-webui.js",
 ]
 
 mojo_ts_files = [
@@ -38,6 +37,7 @@ mojo_ts_files = [
   "ui/gfx/image/mojom/image.mojom-webui.ts",
   "ui/gfx/range/mojom/range.mojom-webui.ts",
   "ui/gfx/geometry/mojom/geometry.mojom-webui.ts",
+  "url/mojom/origin.mojom-webui.ts",
 ]
 
 if (is_ios) {
@@ -85,6 +85,7 @@ preprocess_if_expr("copy_mojo_ts") {
     "//ui/gfx/geometry/mojom:mojom_ts__generator",
     "//ui/gfx/image/mojom:mojom_ts__generator",
     "//ui/gfx/range/mojom:mojom_ts__generator",
+    "//url/mojom:url_mojom_origin_ts__generator",
   ]
 
   if (is_chromeos_ash) {
@@ -109,7 +110,6 @@ preprocess_if_expr("copy_mojo") {
     "//mojo/public/mojom/base:base_js__generator",
     "//skia/public/mojom:mojom_js__generator",
     "//url/mojom:url_mojom_gurl_js__generator",
-    "//url/mojom:url_mojom_origin_js__generator",
   ]
 
   if (is_chromeos_ash) {

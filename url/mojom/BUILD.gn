@@ -86,6 +86,8 @@ mojom("url_mojom_origin") {
   ]
 
   webui_module_path = "chrome://resources/mojo/url/mojom"
+  use_typescript_sources = true
+  generate_legacy_js_bindings = true
 }
 
 mojom("url_mojom_scheme_host_port") {
