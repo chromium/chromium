@@ -680,17 +680,14 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
         gfx::ColorSpace::CreateHDR10().ToSkColorSpace());
   }
 
-  // Create a DisplayItemList drawing `image` with 10k nits and 500 nits HDR
-  // metadata.
-  scoped_refptr<DisplayItemList> display_item_list_10k_nits;
-  scoped_refptr<DisplayItemList> display_item_list_500_nits;
-  for (int i = 0; i < 2; ++i) {
+  const auto make_display_item_list = [&](int i, float peak_luminance,
+                                          PaintFlags* paint_flags = nullptr) {
     auto image_generator =
         sk_make_sp<FakePaintImageGenerator>(image->imageInfo());
     {
       ImageHeaderMetadata image_metadata;
       image_metadata.hdr_metadata.emplace(
-          gfx::HdrMetadataCta861_3(i == 0 ? 10000.f : 500.f, kContentAvgNits));
+          gfx::HdrMetadataCta861_3(peak_luminance, kContentAvgNits));
       image_generator->SetImageHeaderMetadata(image_metadata);
       EXPECT_TRUE(image->peekPixels(&image_generator->GetPixmap()));
     }
@@ -706,16 +703,18 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
     SkSamplingOptions sampling(
         PaintFlags::FilterQualityToSkSamplingOptions(kDefaultFilterQuality));
     display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
-                                         nullptr);
+                                         paint_flags);
     display_item_list->EndPaintOfUnpaired(kRect);
     display_item_list->Finalize();
 
-    if (i == 0) {
-      display_item_list_10k_nits = display_item_list;
-    } else {
-      display_item_list_500_nits = display_item_list;
-    }
-  }
+    return display_item_list;
+  };
+  // Create a DisplayItemList drawing `image` with 10k nits and 500 nits HDR
+  // metadata.
+  scoped_refptr<DisplayItemList> display_item_list_10k_nits =
+      make_display_item_list(0, 10000.f);
+  scoped_refptr<DisplayItemList> display_item_list_500_nits =
+      make_display_item_list(1, 500.f);
   RasterOptions options(kSize);
   options.target_color_params.color_space = gfx::ColorSpace::CreateSRGBLinear();
   options.target_color_params.enable_tone_mapping = true;
@@ -734,13 +733,13 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
   // Draw using image HDR metadata indicating that 10,000 nits is the maximum
   // luminance. The result should map the image to something darker than solid
   // white.
+  constexpr float kExpected10kToSdr = 0.7114198123454021f;
   {
-    constexpr float kExpected = 0.7114198123454021f;
     auto actual = Raster(display_item_list_10k_nits, options);
     auto color = actual.getColor4f(0, 0);
-    EXPECT_NEAR(color.fR, kExpected, kEpsilon);
-    EXPECT_NEAR(color.fG, kExpected, kEpsilon);
-    EXPECT_NEAR(color.fB, kExpected, kEpsilon);
+    EXPECT_NEAR(color.fR, kExpected10kToSdr, kEpsilon);
+    EXPECT_NEAR(color.fG, kExpected10kToSdr, kEpsilon);
+    EXPECT_NEAR(color.fB, kExpected10kToSdr, kEpsilon);
   }
 
   // Increase the destination HDR headroom. The result should now be brighter.
@@ -753,6 +752,22 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
     EXPECT_NEAR(color.fR, kExpected, kEpsilon);
     EXPECT_NEAR(color.fG, kExpected, kEpsilon);
     EXPECT_NEAR(color.fB, kExpected, kEpsilon);
+  }
+
+  // Draw with PaintFlags constraining the dynamic range as if by CSS property
+  // `dynamic-range-limit`. The result should therefore be back to being darker,
+  // despite the (still) increased headroom.
+  {
+    PaintFlags sdr_paint_flags;
+    sdr_paint_flags.setDynamicRangeLimit(
+        PaintFlags::DynamicRangeLimit::kStandard);
+    scoped_refptr<DisplayItemList> display_item_list_10k_nits_sdr =
+        make_display_item_list(2, 10000.f, &sdr_paint_flags);
+    auto actual = Raster(display_item_list_10k_nits_sdr, options);
+    auto color = actual.getColor4f(0, 0);
+    EXPECT_NEAR(color.fR, kExpected10kToSdr, kEpsilon);
+    EXPECT_NEAR(color.fG, kExpected10kToSdr, kEpsilon);
+    EXPECT_NEAR(color.fB, kExpected10kToSdr, kEpsilon);
   }
 }
 

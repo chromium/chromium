@@ -330,7 +330,8 @@ void PaintOpReader::Read(PaintFlags* flags) {
   Read(&flags->shader_);
 }
 
-void PaintOpReader::Read(PaintImage* image) {
+void PaintOpReader::Read(PaintImage* image,
+                         PaintFlags::DynamicRangeLimit dynamic_range_limit) {
   uint8_t serialized_type_int = 0u;
   Read(&serialized_type_int);
   if (serialized_type_int >
@@ -472,8 +473,21 @@ void PaintOpReader::Read(PaintImage* image) {
     // from here to playback time.
     sk_sp<SkImage> sk_image;
     if (entry->NeedsToneMapApplied()) {
-      sk_image =
-          entry->GetImageWithToneMapApplied(options_->hdr_headroom, needs_mips);
+      float hdr_headroom = options_->hdr_headroom;
+      switch (dynamic_range_limit) {
+        case PaintFlags::DynamicRangeLimit::kStandard:
+          hdr_headroom = 1.f;
+          break;
+        case PaintFlags::DynamicRangeLimit::kConstrainedHigh:
+          if (hdr_headroom > 2.f) {
+            hdr_headroom = 2.f;
+          }
+          break;
+        case PaintFlags::DynamicRangeLimit::kHigh:
+            // Leave the headroom as it is.
+            ;
+      }
+      sk_image = entry->GetImageWithToneMapApplied(hdr_headroom, needs_mips);
     } else {
       if (needs_mips) {
         entry->EnsureMips();
@@ -625,7 +639,7 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
   ReadSimple(&ref.start_degrees_);
   ReadSimple(&ref.end_degrees_);
   ReadSimple(&ref.gradient_interpolation_);
-  Read(&ref.image_);
+  Read(&ref.image_, PaintFlags::DynamicRangeLimit::kHigh);
   bool has_record = false;
   ReadSimple(&has_record);
   uint32_t shader_id = PaintShader::kInvalidRecordShaderId;
@@ -1213,7 +1227,7 @@ void PaintOpReader::ReadImagePaintFilter(
     sk_sp<PaintFilter>* filter,
     const absl::optional<PaintFilter::CropRect>& crop_rect) {
   PaintImage image;
-  Read(&image);
+  Read(&image, PaintFlags::DynamicRangeLimit::kHigh);
   if (!image) {
     SetInvalid(DeserializationError::kReadImageFailure);
     return;

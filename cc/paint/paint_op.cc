@@ -793,7 +793,7 @@ PaintOp* DrawImageOp::Deserialize(PaintOpReader& reader, void* output) {
   DrawImageOp* op = new (output) DrawImageOp;
   reader.Read(&op->flags);
 
-  reader.Read(&op->image);
+  reader.Read(&op->image, op->flags.getDynamicRangeLimit());
   reader.Read(&op->scale_adjustment.fWidth);
   reader.Read(&op->scale_adjustment.fHeight);
 
@@ -808,7 +808,7 @@ PaintOp* DrawImageRectOp::Deserialize(PaintOpReader& reader, void* output) {
   DrawImageRectOp* op = new (output) DrawImageRectOp;
   reader.Read(&op->flags);
 
-  reader.Read(&op->image);
+  reader.Read(&op->image, op->flags.getDynamicRangeLimit());
   reader.Read(&op->scale_adjustment.fWidth);
   reader.Read(&op->scale_adjustment.fHeight);
 
@@ -909,7 +909,7 @@ bool DeserializeSkottieMap(
 
 SkottieFrameData DeserializeSkottieFrameData(PaintOpReader& reader) {
   SkottieFrameData frame_data;
-  reader.Read(&frame_data.image);
+  reader.Read(&frame_data.image, PaintFlags::DynamicRangeLimit::kHigh);
   reader.Read(&frame_data.quality);
   return frame_data;
 }
