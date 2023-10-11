@@ -1394,16 +1394,12 @@ void InjectNTP(Browser* browser) {
 
 // Returns YES if the sign-in upgrade promo should be presented.
 - (BOOL)shouldPresentSigninUpgradePromo {
-  if (self.sceneState.appState.initStage <= InitStageFirstRun) {
+  if (![self isTabAvailableToPresentViewController]) {
     return NO;
   }
   if (!signin::ShouldPresentUserSigninUpgrade(
           self.sceneState.appState.mainBrowserState,
           version_info::GetVersion())) {
-    return NO;
-  }
-  // Don't show the promo if there is a blocking task in process.
-  if (self.sceneState.appState.currentUIBlocker) {
     return NO;
   }
   // Don't show the promo in Incognito mode.
@@ -1416,10 +1412,6 @@ void InjectNTP(Browser* browser) {
   }
   // Don't show the promo if the window is not active.
   if (self.sceneState.activationLevel < SceneActivationLevelForegroundActive) {
-    return NO;
-  }
-  // Don't show the promo if the tab grid is active.
-  if (self.mainCoordinator.isTabGridActive) {
     return NO;
   }
   // Don't show the promo if already presented.
@@ -1869,13 +1861,8 @@ void InjectNTP(Browser* browser) {
             (UIViewController*)baseViewController
                                          URL:(const GURL&)url {
   // Do not display the web sign-in promo if there is any UI on the screen.
-  if (self.signinCoordinator || self.settingsNavigationController) {
-    return;
-  }
-  if (self.sceneState.appState.initStage == InitStageFirstRun) {
-    // This case is possible when using force FRE flag and opening chrome
-    // with accounts.google.com in the background.
-    // crbug.com/1293305.
+  if (baseViewController.presentedViewController ||
+      ![self isTabAvailableToPresentViewController]) {
     return;
   }
   if (!signin::ShouldPresentWebSignin(self.mainInterface.browserState)) {
@@ -2010,7 +1997,12 @@ void InjectNTP(Browser* browser) {
 
 // TODO(crbug.com/779791) : Remove show settings from MainController.
 - (void)showAccountsSettingsFromViewController:
-    (UIViewController*)baseViewController {
+            (UIViewController*)baseViewController
+                          skipIfUINotAvailable:(BOOL)skipIfUINotAvailable {
+  if (skipIfUINotAvailable && (baseViewController.presentedViewController ||
+                               ![self isTabAvailableToPresentViewController])) {
+    return;
+  }
   DCHECK(!self.signinCoordinator)
       << "self.signinCoordinator: "
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
@@ -2026,7 +2018,8 @@ void InjectNTP(Browser* browser) {
   }
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
-        showAccountsSettingsFromViewController:baseViewController];
+        showAccountsSettingsFromViewController:baseViewController
+                          skipIfUINotAvailable:NO];
     return;
   }
 

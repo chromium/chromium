@@ -2741,7 +2741,8 @@ enum class ToolbarKind {
 
 - (void)showAccountSettings {
   [HandlerForProtocol(self.dispatcher, ApplicationCommands)
-      showAccountsSettingsFromViewController:self.viewController];
+      showAccountsSettingsFromViewController:self.viewController
+                        skipIfUINotAvailable:NO];
 }
 
 - (void)showTrustedVaultReauthForFetchKeysWithTrigger:

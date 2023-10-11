@@ -1787,7 +1787,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (void)showAccountSettings {
-  [self.handler showAccountsSettingsFromViewController:self];
+  [self.handler showAccountsSettingsFromViewController:self
+                                  skipIfUINotAvailable:NO];
 }
 
 - (void)showTrustedVaultReauthForFetchKeysWithTrigger:

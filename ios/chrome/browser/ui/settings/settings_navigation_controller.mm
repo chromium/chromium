@@ -1106,7 +1106,11 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 // TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
 - (void)showAccountsSettingsFromViewController:
-    (UIViewController*)baseViewController {
+            (UIViewController*)baseViewController
+                          skipIfUINotAvailable:(BOOL)skipIfUINotAvailable {
+  // This command should only be triggered by the settinsg, therefore there is
+  // no issue for the UI to be available or not.
+  CHECK(!skipIfUINotAvailable);
   AccountsTableViewController* controller =
       [[AccountsTableViewController alloc] initWithBrowser:self.browser
                                  closeSettingsOnAddAccount:NO];

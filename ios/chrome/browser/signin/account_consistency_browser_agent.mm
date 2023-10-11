@@ -65,7 +65,8 @@ void AccountConsistencyBrowserAgent::OnManageAccounts() {
       ios::AccountReconcilorFactory::GetForBrowserState(
           browser_->GetBrowserState())
           ->GetState());
-  [handler_ showAccountsSettingsFromViewController:base_view_controller_];
+  [handler_ showAccountsSettingsFromViewController:base_view_controller_
+                              skipIfUINotAvailable:YES];
 }
 
 void AccountConsistencyBrowserAgent::OnShowConsistencyPromo(

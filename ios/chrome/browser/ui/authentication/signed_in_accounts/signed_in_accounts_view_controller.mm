@@ -316,7 +316,8 @@ constexpr CGFloat kDefaultCellHeight = 54;
       self.presentingViewController;
   [self dismissWithCompletion:^{
     [weakDispatcher
-        showAccountsSettingsFromViewController:weakPresentingViewController];
+        showAccountsSettingsFromViewController:weakPresentingViewController
+                          skipIfUINotAvailable:NO];
   }];
 }
 

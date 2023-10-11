@@ -35,8 +35,11 @@ enum class WarningType;
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
 // Shows the accounts settings UI, presenting from `baseViewController`. If
 // `baseViewController` is nil BVC will be used as presenterViewController.
+// `skipIfUINotAvailable` if YES, this command will be ignored when the tab
+// is already presenting any view controllers.
 - (void)showAccountsSettingsFromViewController:
-    (UIViewController*)baseViewController;
+            (UIViewController*)baseViewController
+                          skipIfUINotAvailable:(BOOL)skipIfUINotAvailable;
 
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
 // Shows the Google services settings UI, presenting from `baseViewController`.

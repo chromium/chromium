@@ -106,7 +106,8 @@ bool SigninNotificationInfoBarDelegate::UseIconBackgroundTint() const {
 }
 
 bool SigninNotificationInfoBarDelegate::Accept() {
-  [dispatcher_ showAccountsSettingsFromViewController:base_view_controller_];
+  [dispatcher_ showAccountsSettingsFromViewController:base_view_controller_
+                                 skipIfUINotAvailable:NO];
   base::RecordAction(base::UserMetricsAction(
       "Settings.GoogleServices.FromSigninNotificationInfobar"));
   return true;
