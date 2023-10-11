@@ -724,13 +724,13 @@ class TestImporter(object):
         patchset = self.git_cl.run(['status', '--field=patch']).strip()
         # Construct the notifier here so that any errors won't affect the import.
         notifier = ImportNotifier(self.host, self.chromium_git, local_wpt)
-        notifier.main(
-            self.last_wpt_revision,
-            self.wpt_revision,
-            self.rebaselined_tests,
-            self.new_test_expectations,
-            issue,
-            patchset,
-            dry_run=not auto_file_bugs,
-            service_account_key_json=monorail_auth_json)
+        notifier.main(self.last_wpt_revision,
+                      self.wpt_revision,
+                      self.rebaselined_tests,
+                      self.new_test_expectations,
+                      issue,
+                      patchset,
+                      sheriff_email=self.sheriff_email(),
+                      dry_run=not auto_file_bugs,
+                      service_account_key_json=monorail_auth_json)
         return True
