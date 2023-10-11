@@ -233,6 +233,8 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_RESOLVE_FILTERS_BEFORE_RESTORE
 
+#define SK_USE_LEGACY_CONTENT_BOUNDS_PROPAGATION
+
 #define SK_ENABLE_SKSL_IN_RASTER_PIPELINE
 
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
