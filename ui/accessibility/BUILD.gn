@@ -270,6 +270,7 @@ test("accessibility_unittests") {
     "ax_generated_tree_unittest.cc",
     "ax_language_detection_unittest.cc",
     "ax_mode_histogram_logger_unittest.cc",
+    "ax_mode_unittest.cc",
     "ax_node_data_unittest.cc",
     "ax_node_position_unittest.cc",
     "ax_node_unittest.cc",
