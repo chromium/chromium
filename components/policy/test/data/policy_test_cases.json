@@ -21219,6 +21219,198 @@
       }
     ]
   },
+  "RelatedWebsiteSetsOverrides": {
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "android", "fuchsia"],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set)",
+        "prefs": {
+          "first_party_sets.overrides": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Empty policy.",
+        "policies": {},
+        "prefs": {
+          "first_party_sets.overrides": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Invalid policy, violates policy schema.",
+        "policies": {
+          "RelatedWebsiteSetsOverrides": {
+            "replacements": "clearly not a list",
+            "additions": 123
+          }
+        },
+        "prefs": {
+          "first_party_sets.overrides": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Invalid policy, violates Related Website Sets invariants.",
+        "policies": {
+          "RelatedWebsiteSetsOverrides": {
+            "replacements": [
+              {
+                "primary": "https://primary1.test",
+                "associatedSites": ["https://associate1.test"]
+              }
+             ],
+             "additions": [
+              {
+                "primary": "https://primary1.test",
+                "associatedSites": ["https://associate2.test"]
+              }
+             ]
+          }
+        },
+        "prefs": {
+          "first_party_sets.overrides": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Check when FirstPartySetsOverrides is set with properly formatted replacements and additions policy set lists.",
+        "policies": {
+          "FirstPartySetsOverrides": {
+            "replacements": [
+              {
+                "primary": "https://primary1.test",
+                "associatedSites": ["https://associate1.test"]
+              }
+             ],
+             "additions": [
+              {
+                "primary": "https://primary2.test",
+                "associatedSites": ["https://associate2.test"]
+              }
+             ]
+          }
+        },
+        "prefs": {
+          "first_party_sets.overrides": {
+            "value": {
+              "replacements": [
+                {
+                  "primary": "https://primary1.test",
+                  "associatedSites": ["https://associate1.test"]
+                }
+              ],
+              "additions": [
+                {
+                  "primary": "https://primary2.test",
+                  "associatedSites": ["https://associate2.test"]
+                }
+              ]
+            },
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Check when RelatedWebsiteSetsOverrides is set with properly formatted replacements and additions policy set lists.",
+        "policies": {
+          "RelatedWebsiteSetsOverrides": {
+            "replacements": [
+              {
+                "primary": "https://primary1.test",
+                "associatedSites": ["https://associate1.test"]
+              }
+             ],
+             "additions": [
+              {
+                "primary": "https://primary2.test",
+                "associatedSites": ["https://associate2.test"]
+              }
+             ]
+          }
+        },
+        "prefs": {
+          "first_party_sets.overrides": {
+            "value": {
+              "replacements": [
+                {
+                  "primary": "https://primary1.test",
+                  "associatedSites": ["https://associate1.test"]
+                }
+              ],
+              "additions": [
+                {
+                  "primary": "https://primary2.test",
+                  "associatedSites": ["https://associate2.test"]
+                }
+              ]
+            },
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Check when FirstPartySetsOverrides and RelatedWebsiteSetsOverrides are both set.",
+        "policies": {
+          "FirstPartySetsOverrides": {
+            "replacements": [
+              {
+                "primary": "https://primary1-FPS.test",
+                "associatedSites": ["https://associate1-FPS.test"]
+              }
+             ],
+             "additions": [
+              {
+                "primary": "https://primary2-FPS.test",
+                "associatedSites": ["https://associate2-FPS.test"]
+              }
+             ]
+          },
+          "RelatedWebsiteSetsOverrides": {
+            "replacements": [
+              {
+                "primary": "https://primary1-RWS.test",
+                "associatedSites": ["https://associate1-RWS.test"]
+              }
+             ],
+             "additions": [
+              {
+                "primary": "https://primary2-RWS.test",
+                "associatedSites": ["https://associate2-RWS.test"]
+              }
+             ]
+          }
+        },
+        "prefs": {
+          "first_party_sets.overrides": {
+            "value": {
+              "replacements": [
+                {
+                  "primary": "https://primary1-RWS.test",
+                  "associatedSites": ["https://associate1-RWS.test"]
+                }
+              ],
+              "additions": [
+                {
+                  "primary": "https://primary2-RWS.test",
+                  "associatedSites": ["https://associate2-RWS.test"]
+                }
+              ]
+            },
+            "location": "user_profile"
+          }
+        }
+      }
+    ]
+  },
   "ForceMajorVersionToMinorPositionInUserAgent": {
     "reason_for_missing_test": "Policy was removed in M118"
   },
@@ -25145,6 +25337,19 @@
         "note": "Check value when FirstPartySetsEnabled policy is set to false",
         "policies": {
           "FirstPartySetsEnabled": false
+        },
+        "prefs": {
+          "privacy_sandbox.first_party_sets_enabled": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "Check value when FirstPartySetsEnabled and RelatedWebsiteSetsEnabled are both set",
+        "policies": {
+          "FirstPartySetsEnabled": true,
+          "RelatedWebsiteSetsEnabled": false
         },
         "prefs": {
           "privacy_sandbox.first_party_sets_enabled": {

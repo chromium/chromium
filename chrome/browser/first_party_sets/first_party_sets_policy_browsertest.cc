@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/json/json_reader.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -47,7 +48,8 @@ class EnabledPolicyBrowsertest
       public ::testing::WithParamInterface<std::tuple<
           bool,                       // Feature Enabled
           PolicyTest::BooleanPolicy,  // FirstPartySetsEnabled Policy State
-          PolicyTest::BooleanPolicy   // RelatedWebsiteSetsEnabled Policy State
+          PolicyTest::BooleanPolicy,  // RelatedWebsiteSetsEnabled Policy State
+          const char*                 // Overrides Policy
           >> {
  public:
   EnabledPolicyBrowsertest()
@@ -96,7 +98,7 @@ class EnabledPolicyBrowsertest
     PolicyTest::SetUpInProcessBrowserTestFixture();
     if (absl::optional<std::string> policy = GetOverridesPolicy();
         policy.has_value()) {
-      SetPolicyValue(policy::key::kFirstPartySetsOverrides,
+      SetPolicyValue(GetOverridesPolicyName(),
                      base::JSONReader::Read(policy.value()));
     }
 
@@ -192,6 +194,7 @@ class EnabledPolicyBrowsertest
   PolicyTest::BooleanPolicy GetInitialRelatedWebsiteSetPolicyState() {
     return std::get<2>(GetParam());
   }
+  const char* GetOverridesPolicyName() { return std::get<3>(GetParam()); }
 
   // If the RelatedWebsiteSetEnabled policy is unset
   // SimpleDeprecatingPolicyHandler falls back to the FirstPartySetEnabled
@@ -229,9 +232,9 @@ std::string TestNameGenerator(
 
   bool is_feature_enabled = std::get<0>(info.param);
   if (is_feature_enabled) {
-    name += "_Enabled";
+    base::StrAppend(&name, {"_Enabled"});
   } else {
-    name += "_Disabled";
+    base::StrAppend(&name, {"_Disabled"});
   }
 
   auto policy_state_to_string =
@@ -248,11 +251,16 @@ std::string TestNameGenerator(
 
   PolicyTest::BooleanPolicy first_party_sets_policy_state =
       std::get<1>(info.param);
-  name += "_" + policy_state_to_string(first_party_sets_policy_state);
+  base::StrAppend(&name,
+                  {"_", policy_state_to_string(first_party_sets_policy_state)});
 
   PolicyTest::BooleanPolicy related_website_sets_policy_state =
       std::get<2>(info.param);
-  name += "_" + policy_state_to_string(related_website_sets_policy_state);
+  base::StrAppend(
+      &name, {"_", policy_state_to_string(related_website_sets_policy_state)});
+
+  const char* override_policy_name = std::get<3>(info.param);
+  base::StrAppend(&name, {"_", override_policy_name});
 
   return name;
 }
@@ -290,7 +298,10 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(
             PolicyTest::BooleanPolicy::kNotConfigured,
             PolicyTest::BooleanPolicy::kFalse,
-            PolicyTest::BooleanPolicy::kTrue)  // RelatedWebsiteSetsEnabled
+            PolicyTest::BooleanPolicy::kTrue),  // RelatedWebsiteSetsEnabled
+        ::testing::Values(
+            policy::key::kFirstPartySetsOverrides,
+            policy::key::kRelatedWebsiteSetsOverrides)  // Overrides Policy
         ),
     TestNameGenerator);
 
@@ -302,11 +313,11 @@ class OverridesPolicyEmptyBrowsertest : public EnabledPolicyBrowsertest {
 };
 
 IN_PROC_BROWSER_TEST_P(OverridesPolicyEmptyBrowsertest, CheckMemberships) {
-  // The initial First-Party Sets were:
+  // The initial Related Website Sets were:
   // {primary: A, associatedSites: [B, C]}
   //
-  // After the Overrides policy is applied, the expected First-Party Sets are:
-  // {primary: A, associatedSites: [B, C]} (unchanged)
+  // After the Overrides policy is applied, the expected Related Website Sets
+  // are: {primary: A, associatedSites: [B, C]} (unchanged)
   EXPECT_EQ(IsRelatedWebsiteSetsEnabledInitially(),
             AreSitesInSameRelatedWebsiteSet(kHostC, kHostA));
   EXPECT_EQ(IsRelatedWebsiteSetsEnabledInitially(),
@@ -325,7 +336,10 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(
             PolicyTest::BooleanPolicy::kNotConfigured,
             PolicyTest::BooleanPolicy::kFalse,
-            PolicyTest::BooleanPolicy::kTrue)  // RelatedWebsiteSetsEnabled
+            PolicyTest::BooleanPolicy::kTrue),  // RelatedWebsiteSetsEnabled
+        ::testing::Values(
+            policy::key::kFirstPartySetsOverrides,
+            policy::key::kRelatedWebsiteSetsOverrides)  // Overrides Policy
         ),
     TestNameGenerator);
 
@@ -348,11 +362,11 @@ class OverridesPolicyReplacementBrowsertest : public EnabledPolicyBrowsertest {
 
 IN_PROC_BROWSER_TEST_P(OverridesPolicyReplacementBrowsertest,
                        CheckMemberships) {
-  // The initial First-Party Sets were:
+  // The initial Related Website Sets were:
   // {primary: A, associatedSites: [B, C]}
   //
-  // After the Overrides policy is applied, the expected First-Party Sets are:
-  // {primary: D, associatedSites: [A, B]}
+  // After the Overrides policy is applied, the expected Related Website Sets
+  // are: {primary: D, associatedSites: [A, B]}
   EXPECT_EQ(IsRelatedWebsiteSetsEnabledInitially(),
             AreSitesInSameRelatedWebsiteSet(kHostA, kHostB));
   EXPECT_EQ(IsRelatedWebsiteSetsEnabledInitially(),
@@ -372,7 +386,10 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(
             PolicyTest::BooleanPolicy::kNotConfigured,
             PolicyTest::BooleanPolicy::kFalse,
-            PolicyTest::BooleanPolicy::kTrue)  // RelatedWebsiteSetsEnabled
+            PolicyTest::BooleanPolicy::kTrue),  // RelatedWebsiteSetsEnabled
+        ::testing::Values(
+            policy::key::kFirstPartySetsOverrides,
+            policy::key::kRelatedWebsiteSetsOverrides)  // Overrides Policy
         ),
     TestNameGenerator);
 
@@ -394,11 +411,11 @@ class OverridesPolicyAdditionBrowsertest : public EnabledPolicyBrowsertest {
 };
 
 IN_PROC_BROWSER_TEST_P(OverridesPolicyAdditionBrowsertest, CheckMemberships) {
-  // The initial First-Party Sets were:
+  // The initial Related Website Sets were:
   // {primary: A, associatedSites: [B, C]}
   //
-  // After the Overrides policy is applied, the expected First-Party Sets are:
-  // {primary: A, associatedSites: [B, C, D]}}
+  // After the Overrides policy is applied, the expected Related Website Sets
+  // are: {primary: A, associatedSites: [B, C, D]}}
   EXPECT_EQ(IsRelatedWebsiteSetsEnabledInitially(),
             AreSitesInSameRelatedWebsiteSet(kHostA, kHostD));
   EXPECT_EQ(IsRelatedWebsiteSetsEnabledInitially(),
@@ -419,7 +436,10 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(
             PolicyTest::BooleanPolicy::kNotConfigured,
             PolicyTest::BooleanPolicy::kFalse,
-            PolicyTest::BooleanPolicy::kTrue)  // RelatedWebsiteSetsEnabled
+            PolicyTest::BooleanPolicy::kTrue),  // RelatedWebsiteSetsEnabled
+        ::testing::Values(
+            policy::key::kFirstPartySetsOverrides,
+            policy::key::kRelatedWebsiteSetsOverrides)  // Overrides Policy
         ),
     TestNameGenerator);
 
@@ -448,10 +468,11 @@ class OverridesPolicyReplacementAndAdditionBrowsertest
 
 IN_PROC_BROWSER_TEST_P(OverridesPolicyReplacementAndAdditionBrowsertest,
                        CheckMemberships) {
-  // The initial First-Party Sets were:
+  // The initial Related Website Sets were:
   // {primary: A, associatedSites: [B, C]}
   //
-  // After the Overrides policy is applied, the expected First-Party Sets are:
+  // After the Overrides policy is applied, the expected Related Website Sets
+  // are:
   // {primary: A, associatedSites: [D]} and {primary: B, associatedSites: [C]}.
   EXPECT_FALSE(AreSitesInSameRelatedWebsiteSet(kHostB, kHostA));
   EXPECT_EQ(IsRelatedWebsiteSetsEnabledInitially(),
@@ -472,7 +493,10 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(
             PolicyTest::BooleanPolicy::kNotConfigured,
             PolicyTest::BooleanPolicy::kFalse,
-            PolicyTest::BooleanPolicy::kTrue)  // RelatedWebsiteSetsEnabled
+            PolicyTest::BooleanPolicy::kTrue),  // RelatedWebsiteSetsEnabled
+        ::testing::Values(
+            policy::key::kFirstPartySetsOverrides,
+            policy::key::kRelatedWebsiteSetsOverrides)  // Overrides Policy
         ),
     TestNameGenerator);
 }  // namespace
