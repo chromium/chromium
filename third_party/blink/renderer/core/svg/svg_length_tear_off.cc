@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_length_tear_off.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -54,10 +55,6 @@ inline bool IsValidLengthUnit(CSSPrimitiveValue::UnitType unit) {
 
 inline bool IsValidLengthUnit(uint16_t type) {
   return IsValidLengthUnit(static_cast<CSSPrimitiveValue::UnitType>(type));
-}
-
-inline bool CanResolveRelativeUnits(const SVGElement* context_element) {
-  return context_element && context_element->isConnected();
 }
 
 inline CSSPrimitiveValue::UnitType ToCSSUnitType(uint16_t type) {
@@ -106,6 +103,47 @@ bool HasExposedLengthUnit(const SVGLength& length) {
          unit == CSSPrimitiveValue::UnitType::kUserUnits;
 }
 
+bool EnsureResolvable(SVGElement* context_element, bool needs_layout) {
+  if (!context_element || !context_element->isConnected()) {
+    return false;
+  }
+  Document& document = context_element->GetDocument();
+  if (needs_layout) {
+    document.UpdateStyleAndLayoutForNode(context_element,
+                                         DocumentUpdateReason::kJavaScript);
+  } else {
+    document.UpdateStyleAndLayoutTreeForNode(context_element,
+                                             DocumentUpdateReason::kJavaScript);
+  }
+  return true;
+}
+
+bool EnsureResolvable(const SVGLength& length, SVGElement* context_element) {
+  if (!length.IsRelative()) {
+    return true;
+  }
+  const bool needs_layout = length.IsPercentage() || length.IsCalculated();
+  return EnsureResolvable(context_element, needs_layout);
+}
+
+bool EnsureResolvable(const SVGLength& length,
+                      CSSPrimitiveValue::UnitType other_unit_type,
+                      SVGElement* context_element) {
+  if (!length.IsRelative() &&
+      !CSSPrimitiveValue::IsRelativeUnit(other_unit_type)) {
+    return true;
+  }
+  const bool needs_layout =
+      length.IsPercentage() || length.IsCalculated() ||
+      other_unit_type == CSSPrimitiveValue::UnitType::kPercentage;
+  return EnsureResolvable(context_element, needs_layout);
+}
+
+void ThrowUnresolvableRelativeLength(ExceptionState& exception_state) {
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "Could not resolve relative length.");
+}
+
 }  // namespace
 
 uint16_t SVGLengthTearOff::unitType() {
@@ -119,12 +157,12 @@ SVGLengthMode SVGLengthTearOff::UnitMode() {
 }
 
 float SVGLengthTearOff::value(ExceptionState& exception_state) {
-  if (Target()->IsRelative() && !CanResolveRelativeUnits(ContextElement())) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Could not resolve relative length.");
+  SVGElement* context_element = ContextElement();
+  if (!EnsureResolvable(*Target(), context_element)) {
+    ThrowUnresolvableRelativeLength(exception_state);
     return 0;
   }
-  SVGLengthContext length_context(ContextElement());
+  SVGLengthContext length_context(context_element);
   return Target()->Value(length_context);
 }
 
@@ -133,15 +171,15 @@ void SVGLengthTearOff::setValue(float value, ExceptionState& exception_state) {
     ThrowReadOnly(exception_state);
     return;
   }
-  if (Target()->IsRelative() && !CanResolveRelativeUnits(ContextElement())) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Could not resolve relative length.");
-    return;
-  }
   if (Target()->IsCalculated() || Target()->HasContainerRelativeUnits()) {
     Target()->SetValueAsNumber(value);
   } else {
-    SVGLengthContext length_context(ContextElement());
+    SVGElement* context_element = ContextElement();
+    if (!EnsureResolvable(*Target(), context_element)) {
+      ThrowUnresolvableRelativeLength(exception_state);
+      return;
+    }
+    SVGLengthContext length_context(context_element);
     Target()->SetValueInSpecifiedUnits(length_context.ConvertValueFromUserUnits(
         value, Target()->UnitMode(), Target()->NumericLiteralType()));
   }
@@ -221,14 +259,12 @@ void SVGLengthTearOff::convertToSpecifiedUnits(
             String::Number(unit_type) + ").");
     return;
   }
-  if ((Target()->IsRelative() ||
-       CSSPrimitiveValue::IsRelativeUnit(ToCSSUnitType(unit_type))) &&
-      !CanResolveRelativeUnits(ContextElement())) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Could not resolve relative length.");
+  SVGElement* context_element = ContextElement();
+  if (!EnsureResolvable(*Target(), ToCSSUnitType(unit_type), context_element)) {
+    ThrowUnresolvableRelativeLength(exception_state);
     return;
   }
-  SVGLengthContext length_context(ContextElement());
+  SVGLengthContext length_context(context_element);
   Target()->ConvertToSpecifiedUnits(ToCSSUnitType(unit_type), length_context);
   CommitChange();
 }
