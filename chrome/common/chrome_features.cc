@@ -756,9 +756,7 @@ BASE_FEATURE(kHttpsFirstModeV2ForTypicallySecureUsers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables automatically upgrading main frame navigations to HTTPS.
-BASE_FEATURE(kHttpsUpgrades,
-             "HttpsUpgrades",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kHttpsUpgrades, "HttpsUpgrades", base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
 // Enables immersive fullscreen. The tab strip and toolbar are placed underneath

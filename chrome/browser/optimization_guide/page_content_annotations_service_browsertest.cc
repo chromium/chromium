@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/random_title.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/random_title.html"));
 
   // Navigate to the page for the first time.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -407,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   service()->OverridePageContentAnnotatorForTesting(&test_annotator);
 #endif
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -564,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   TestPageContentAnnotationsObserver observer;
   service()->AddObserver(AnnotationType::kContentVisibility, &observer);
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   RetryForHistogramUntilCountReached(
@@ -603,7 +603,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
                        StoresAllTheThingsFromRemoteService) {
   base::HistogramTester histogram_tester;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
   proto::PageEntitiesMetadata page_entities_metadata;
   proto::Entity* entity = page_entities_metadata.add_entities();
@@ -642,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
                        StoresPageEntitiesAndCategoriesFromRemoteService) {
   base::HistogramTester histogram_tester;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
   proto::PageEntitiesMetadata page_entities_metadata;
   proto::Entity* entity = page_entities_metadata.add_entities();
@@ -679,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
                        StoresAlternateTitleFromRemoteService) {
   base::HistogramTester histogram_tester;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
   proto::PageEntitiesMetadata page_entities_metadata;
   page_entities_metadata.set_alternative_title("alternative title");
@@ -701,7 +701,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
                        EmptyMetadataNotStored) {
   base::HistogramTester histogram_tester;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
   proto::PageEntitiesMetadata page_entities_metadata;
   OptimizationMetadata metadata;
@@ -742,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(
     EmptyMetadataNotStored) {
   base::HistogramTester histogram_tester;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
   proto::SalientImageMetadata salient_image_metadata;
   OptimizationMetadata metadata;
@@ -764,7 +764,7 @@ IN_PROC_BROWSER_TEST_F(
     MetadataWithNoNonEmptyUrlNotStored) {
   base::HistogramTester histogram_tester;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
   proto::SalientImageMetadata salient_image_metadata;
   salient_image_metadata.add_thumbnails();
@@ -788,7 +788,7 @@ IN_PROC_BROWSER_TEST_F(
     MetadataWithNonEmptyUrlStored) {
   base::HistogramTester histogram_tester;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
   proto::SalientImageMetadata salient_image_metadata;
   salient_image_metadata.add_thumbnails();
@@ -835,7 +835,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
 
   base::HistogramTester histogram_tester;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   RetryForHistogramUntilCountReached(
@@ -868,7 +868,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
   {
     base::HistogramTester histogram_tester;
 
-    GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+    GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     RetryForHistogramUntilCountReached(
@@ -881,7 +881,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
   }
   {
     base::HistogramTester histogram_tester;
-    GURL url2(embedded_test_server()->GetURL("a.com", "/hello.html"));
+    GURL url2(embedded_test_server()->GetURL("a.test", "/hello.html"));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
 
     RetryForHistogramUntilCountReached(
@@ -955,14 +955,14 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
                        ModelExecutesWithFullBatch) {
   base::HistogramTester histogram_tester;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   RetryForHistogramUntilCountReached(
       &histogram_tester,
       "PageContentAnnotations.AnnotateVisit.AnnotationRequested", 1);
 
-  GURL url2(embedded_test_server()->GetURL("b.com", "/hello.html"));
+  GURL url2(embedded_test_server()->GetURL("b.test", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
 
   RetryForHistogramUntilCountReached(
@@ -1056,7 +1056,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
                        NoModelExecutionWithoutFullBatch) {
   base::HistogramTester histogram_tester;
 
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   RetryForHistogramUntilCountReached(

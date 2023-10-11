@@ -115,10 +115,11 @@ class OfferNotificationBubbleViewsInteractiveUiTest
   void ShowBubbleForCardLinkedOfferAndVerify() {
     NavigateTo(GURL(chrome::kChromeUINewTabPageURL));
     // Set the initial origin that the bubble will be displayed on.
-    SetUpCardLinkedOfferDataWithDomains({GetUrl("www.merchantsite1.com", "/"),
-                                         GetUrl("www.merchantsite2.com", "/")});
+    SetUpCardLinkedOfferDataWithDomains(
+        {GetUrl("www.merchantsite1.test", "/"),
+         GetUrl("www.merchantsite2.test", "/")});
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-    NavigateToAndWaitForForm(GetUrl("www.merchantsite1.com", "/first"));
+    NavigateToAndWaitForForm(GetUrl("www.merchantsite1.test", "/first"));
     ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(IsIconVisible());
     EXPECT_TRUE(GetOfferNotificationBubbleViews());
@@ -128,10 +129,10 @@ class OfferNotificationBubbleViewsInteractiveUiTest
     NavigateTo(GURL(chrome::kChromeUINewTabPageURL));
     // Set the initial origin that the bubble will be displayed on.
     SetUpFreeListingCouponOfferDataWithDomains(
-        {GetUrl("www.merchantsite1.com", "/"),
-         GetUrl("www.merchantsite2.com", "/")});
+        {GetUrl("www.merchantsite1.test", "/"),
+         GetUrl("www.merchantsite2.test", "/")});
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-    NavigateToAndWaitForForm(GetUrl("www.merchantsite1.com", "/first"));
+    NavigateToAndWaitForForm(GetUrl("www.merchantsite1.test", "/first"));
     ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(IsIconVisible());
     EXPECT_TRUE(GetOfferNotificationBubbleViews());
@@ -141,10 +142,10 @@ class OfferNotificationBubbleViewsInteractiveUiTest
     NavigateTo(GURL(chrome::kChromeUINewTabPageURL));
     // Set the initial origin that the bubble will be displayed on.
     SetUpGPayPromoCodeOfferDataWithDomains(
-        {GetUrl("www.merchantsite1.com", "/"),
-         GetUrl("www.merchantsite2.com", "/")});
+        {GetUrl("www.merchantsite1.test", "/"),
+         GetUrl("www.merchantsite2.test", "/")});
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-    NavigateToAndWaitForForm(GetUrl("www.merchantsite1.com", "/first"));
+    NavigateToAndWaitForForm(GetUrl("www.merchantsite1.test", "/first"));
     ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(IsIconVisible());
     EXPECT_TRUE(GetOfferNotificationBubbleViews());
@@ -243,23 +244,23 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
     bool bubble_should_be_visible;
   } test_cases[] = {
       // Different page on same domain keeps bubble.
-      {GetUrl("www.merchantsite1.com", "/second/"), true},
+      {GetUrl("www.merchantsite1.test", "/second/"), true},
       // Different domain not in offer's list dismisses bubble.
-      {GetUrl("www.about.com", "/"), false},
+      {GetUrl("www.about.test", "/"), false},
       // Subdomain not in offer's list dismisses bubble.
-      {GetUrl("support.merchantsite1.com", "/first/"), false},
+      {GetUrl("support.merchantsite1.test", "/first/"), false},
       // http vs. https mismatch dismisses bubble.
-      {GetUrl("www.merchantsite1.com", "/first/")
+      {GetUrl("www.merchantsite1.test", "/first/")
            .ReplaceComponents(replace_scheme),
        false},
       // Different domain in the offer's list keeps bubble.
-      {GetUrl("www.merchantsite2.com", "/first/"), true},
+      {GetUrl("www.merchantsite2.test", "/first/"), true},
   };
 
   // Set the initial origin that the bubble will be displayed on.
   SetUpOfferDataWithDomains(test_offer_type_,
-                            {GetUrl("www.merchantsite1.com", "/"),
-                             GetUrl("www.merchantsite2.com", "/")});
+                            {GetUrl("www.merchantsite1.test", "/"),
+                             GetUrl("www.merchantsite2.test", "/")});
 
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StrCat(
@@ -269,7 +270,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
     NavigateTo(GURL(chrome::kChromeUINewTabPageURL));
 
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-    NavigateToAndWaitForForm(GetUrl("www.merchantsite1.com", "/first"));
+    NavigateToAndWaitForForm(GetUrl("www.merchantsite1.test", "/first"));
     ASSERT_TRUE(WaitForObservedEvent());
 
     // Bubble should be visible.
@@ -318,15 +319,15 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        CrossTabTracking) {
   SetUpOfferDataWithDomains(test_offer_type_,
-                            {GetUrl("www.merchantsite1.com", "/"),
-                             GetUrl("www.merchantsite2.com", "/")});
+                            {GetUrl("www.merchantsite1.test", "/"),
+                             GetUrl("www.merchantsite2.test", "/")});
 
   // Makes sure the foreground tab is a blank site.
   NavigateTo(GURL("about:blank"));
 
   // Creates first background tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GetUrl("www.merchantsite1.com", "/"),
+      browser(), GetUrl("www.merchantsite1.test", "/"),
       WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   OfferNotificationBubbleControllerImpl* controller =
@@ -338,7 +339,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
 
   // Creates another merchant website in a second background tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GetUrl("www.merchantsite2.com", "/"),
+      browser(), GetUrl("www.merchantsite2.test", "/"),
       WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   controller = static_cast<OfferNotificationBubbleControllerImpl*>(
@@ -393,12 +394,12 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   CloseBubbleWithReason(views::Widget::ClosedReason::kAcceptButtonClicked);
 
   // Navigates to another valid domain will not reshow the bubble.
-  NavigateToAndWaitForForm(GetUrl("www.merchantsite1.com", "/second"));
+  NavigateToAndWaitForForm(GetUrl("www.merchantsite1.test", "/second"));
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
   EXPECT_TRUE(IsIconVisible());
 
   // Navigates to an invalid domain will dismiss the icon.
-  NavigateToAndWaitForForm(GetUrl("www.about.com", "/"));
+  NavigateToAndWaitForForm(GetUrl("www.about.test", "/"));
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
   EXPECT_FALSE(IsIconVisible());
 }
@@ -716,14 +717,14 @@ IN_PROC_BROWSER_TEST_P(
   test_clock_.Advance(kAutofillBubbleSurviveNavigationTime);
 
   // Navigates to another valid domain will not reshow the bubble.
-  NavigateToAndWaitForForm(GetUrl("www.merchantsite1.com", "/second"));
+  NavigateToAndWaitForForm(GetUrl("www.merchantsite1.test", "/second"));
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
   EXPECT_TRUE(IsIconVisible());
   histogram_tester.ExpectBucketCount(
       "Autofill.PageLoadsWithOfferIconShowing.FreeListingCouponOffer", true, 2);
 
   // Navigates to an invalid domain will dismiss the icon.
-  NavigateToAndWaitForForm(GetUrl("www.about.com", "/"));
+  NavigateToAndWaitForForm(GetUrl("www.about.test", "/"));
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
   EXPECT_FALSE(IsIconVisible());
   histogram_tester.ExpectBucketCount(
@@ -749,7 +750,7 @@ IN_PROC_BROWSER_TEST_P(
     return;
   }
 
-  const std::string domain_url = "www.merchantsite1.com";
+  const std::string domain_url = "www.merchantsite1.test";
   const GURL with_offer_url = GetUrl(domain_url, "/product1");
   const GURL without_offer_url = GetUrl(domain_url, "/product2");
   const GURL with_merchant_wide_offer_url = GetUrl(domain_url, "/product3");
@@ -828,7 +829,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     OfferNotificationBubbleViewsInteractiveUiTest,
     ShowGPayPromoCodeOffer_WhenGPayPromoCodeOfferAndShoppingServiceOfferAreBothAvailable) {
-  const std::string domain_url = "www.merchantsite1.com";
+  const std::string domain_url = "www.merchantsite1.test";
   const GURL with_offer_url = GetUrl(domain_url, "/first");
   const std::string detail = "Discount description detail";
   const std::string discount_code = "freelisting-discount-code";
@@ -854,8 +855,8 @@ IN_PROC_BROWSER_TEST_P(
       .Times(testing::AtLeast(1));
 
   SetUpGPayPromoCodeOfferDataWithDomains(
-      {GetUrl("www.merchantsite1.com", "/"),
-       GetUrl("www.merchantsite2.com", "/")});
+      {GetUrl("www.merchantsite1.test", "/"),
+       GetUrl("www.merchantsite2.test", "/")});
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
   NavigateToAndWaitForForm(with_offer_url);
   ASSERT_TRUE(WaitForObservedEvent());
@@ -903,8 +904,8 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(
     OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest,
     ShowShoppingServiceFreeListingOffer_WhenNavigatedFromChromeHistoryCluster) {
-  const std::string non_merchant_wide_domain_url = "www.merchantsite1.com";
-  const std::string merchant_wide_domain_url = "www.merchantsite2.com";
+  const std::string non_merchant_wide_domain_url = "www.merchantsite1.test";
+  const std::string merchant_wide_domain_url = "www.merchantsite2.test";
   const GURL with_non_merchant_wide_offer_url =
       GetUrl(non_merchant_wide_domain_url,
              "/first?utm_source=chrome&utm_medium=app&utm_campaign=chrome-"
@@ -942,8 +943,8 @@ IN_PROC_BROWSER_TEST_P(
       .Times(testing::AtLeast(3));
 
   SetUpGPayPromoCodeOfferDataWithDomains(
-      {GetUrl("www.merchantsite1.com", "/"),
-       GetUrl("www.merchantsite2.com", "/")});
+      {GetUrl("www.merchantsite1.test", "/"),
+       GetUrl("www.merchantsite2.test", "/")});
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
   NavigateToAndWaitForForm(with_non_merchant_wide_offer_url);
   ASSERT_TRUE(WaitForObservedEvent());
@@ -1000,7 +1001,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest,
     NotShowShoppingServiceFreeListingOfferWithoutUTM) {
-  const std::string non_merchant_wide_domain_url = "www.merchantsite1.com";
+  const std::string non_merchant_wide_domain_url = "www.merchantsite1.test";
   const GURL with_non_merchant_wide_offer_url =
       GetUrl(non_merchant_wide_domain_url, "/first");
   const std::string detail = "Discount description detail";
