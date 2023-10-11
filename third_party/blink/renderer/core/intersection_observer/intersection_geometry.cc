@@ -675,7 +675,7 @@ bool IntersectionGeometry::ClipToRoot(const LayoutObject* root,
         intersection_rect.Move(scroll_offset);
         unclipped_intersection_rect.Move(scroll_offset);
       }
-      LayoutRect root_clip_rect = root_rect.ToLayoutRect();
+      DeprecatedLayoutRect root_clip_rect = root_rect.ToLayoutRect();
       // TODO(szager): This flipping seems incorrect because root_rect is
       // already physical.
       local_ancestor->DeprecatedFlipForWritingMode(root_clip_rect);

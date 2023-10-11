@@ -1061,7 +1061,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Inherit other flipping methods from LayoutObject.
   using LayoutObject::FlipForWritingMode;
 
-  void DeprecatedFlipForWritingMode(LayoutRect& rect) const {
+  void DeprecatedFlipForWritingMode(DeprecatedLayoutRect& rect) const {
     NOT_DESTROYED();
     if (LIKELY(!HasFlippedBlocksWritingMode()))
       return;

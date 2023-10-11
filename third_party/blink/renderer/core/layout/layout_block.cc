@@ -693,7 +693,7 @@ PhysicalRect LayoutBlock::LocalCaretRect(
     }
     return CreateWritingModeConverter().ToPhysical(caret_rect);
   }
-  LayoutRect caret_rect;
+  DeprecatedLayoutRect caret_rect;
   if (is_horizontal) {
     caret_rect =
         LocalCaretRectForEmptyElement(Size().width, TextIndentOffset());

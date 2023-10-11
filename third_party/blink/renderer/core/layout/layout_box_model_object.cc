@@ -754,7 +754,7 @@ LayoutUnit LayoutBoxModelObject::ContainingBlockLogicalWidthForContent() const {
   return ContainingBlock()->AvailableLogicalWidth();
 }
 
-LayoutRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
+DeprecatedLayoutRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
     LayoutUnit width,
     LayoutUnit text_indent_offset) const {
   NOT_DESTROYED();
@@ -836,12 +836,12 @@ LayoutRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
   if (RuntimeEnabledFeatures::EmptyCaretInVerticalEnabled()) {
     LayoutUnit block_start = border_padding.block_start + (vertical_space / 2);
     // Returns a logical box.
-    return LayoutRect(x, block_start, caret_width, height);
+    return DeprecatedLayoutRect(x, block_start, caret_width, height);
   }
   LayoutUnit y = PaddingTop() + BorderTop() + (vertical_space / 2);
   return current_style.IsHorizontalWritingMode()
-             ? LayoutRect(x, y, caret_width, height)
-             : LayoutRect(y, x, height, caret_width);
+             ? DeprecatedLayoutRect(x, y, caret_width, height)
+             : DeprecatedLayoutRect(y, x, height, caret_width);
 }
 
 void LayoutBoxModelObject::MoveChildTo(

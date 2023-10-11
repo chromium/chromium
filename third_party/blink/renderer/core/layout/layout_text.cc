@@ -662,7 +662,7 @@ gfx::RectF LayoutText::LocalBoundingBoxRectForAccessibility() const {
       UNLIKELY(HasFlippedBlocksWritingMode()) ? ContainingBlock() : nullptr;
   CollectLineBoxRects(
       [this, &result, block_for_flipping](const PhysicalRect& r) {
-        LayoutRect rect = FlipForWritingMode(r, block_for_flipping);
+        DeprecatedLayoutRect rect = FlipForWritingMode(r, block_for_flipping);
         result.Union(gfx::RectF(rect));
       },
       kClipToEllipsis);
@@ -1133,7 +1133,7 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
   const unsigned start_pos = selection_status.start;
   const unsigned end_pos = selection_status.end;
   DCHECK_LE(start_pos, end_pos);
-  LayoutRect rect;
+  DeprecatedLayoutRect rect;
   return FlipForWritingMode(rect);
 }
 

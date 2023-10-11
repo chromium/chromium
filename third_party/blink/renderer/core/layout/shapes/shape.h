@@ -82,13 +82,14 @@ class CORE_EXPORT Shape {
                                             const LogicalSize& logical_box_size,
                                             WritingMode,
                                             float margin);
-  static std::unique_ptr<Shape> CreateRasterShape(Image*,
-                                                  float threshold,
-                                                  const LayoutRect& image_rect,
-                                                  const LayoutRect& margin_rect,
-                                                  WritingMode,
-                                                  float margin,
-                                                  RespectImageOrientationEnum);
+  static std::unique_ptr<Shape> CreateRasterShape(
+      Image*,
+      float threshold,
+      const DeprecatedLayoutRect& image_rect,
+      const DeprecatedLayoutRect& margin_rect,
+      WritingMode,
+      float margin,
+      RespectImageOrientationEnum);
   static std::unique_ptr<Shape> CreateLayoutBoxShape(const FloatRoundedRect&,
                                                      WritingMode,
                                                      float margin);

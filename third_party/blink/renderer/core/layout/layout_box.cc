@@ -130,7 +130,7 @@ static const int kAutoscrollBeltSize = 20;
 static const unsigned kBackgroundObscurationTestMaxDepth = 4;
 
 struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
-  LayoutRect frame_rect;
+  DeprecatedLayoutRect frame_rect;
   PhysicalSize previous_size;
   NGPhysicalBoxStrut margin_box_outsets;
   MinMaxSizes intrinsic_logical_widths;

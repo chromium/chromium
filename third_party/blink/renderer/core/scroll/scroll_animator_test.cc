@@ -71,7 +71,6 @@ class MockScrollableAreaForAnimatorTest
         min_offset_(min_offset),
         max_offset_(max_offset) {}
 
-  MOCK_CONST_METHOD0(VisualRectForScrollbarParts, LayoutRect());
   MOCK_CONST_METHOD0(IsActive, bool());
   MOCK_CONST_METHOD0(IsThrottled, bool());
   MOCK_CONST_METHOD1(ScrollSize, int(ScrollbarOrientation));

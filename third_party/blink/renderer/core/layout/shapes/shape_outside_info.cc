@@ -183,11 +183,12 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
 
   const LogicalRect& margin_rect =
       GetShapeImageMarginRect(*layout_box_, reference_box_logical_size_);
-  const LayoutRect& image_rect = (layout_box_->IsLayoutImage())
-                                     ? To<LayoutImage>(layout_box_.Get())
-                                           ->ReplacedContentRect()
-                                           .ToLayoutRect()
-                                     : LayoutRect(LayoutPoint(), image_size);
+  const DeprecatedLayoutRect& image_rect =
+      (layout_box_->IsLayoutImage())
+          ? To<LayoutImage>(layout_box_.Get())
+                ->ReplacedContentRect()
+                .ToLayoutRect()
+          : DeprecatedLayoutRect(LayoutPoint(), image_size);
 
   scoped_refptr<Image> image =
       style_image->GetImage(*layout_box_, layout_box_->GetDocument(),

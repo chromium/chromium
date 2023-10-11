@@ -66,7 +66,6 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
         maximum_scroll_offset_(offset),
         chrome_client_(MakeGarbageCollected<MockPlatformChromeClient>()) {}
 
-  MOCK_CONST_METHOD0(VisualRectForScrollbarParts, LayoutRect());
   MOCK_CONST_METHOD0(IsActive, bool());
   MOCK_CONST_METHOD0(IsThrottled, bool());
   MOCK_CONST_METHOD1(ScrollSize, int(ScrollbarOrientation));

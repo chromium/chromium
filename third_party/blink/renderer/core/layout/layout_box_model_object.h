@@ -411,8 +411,9 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   // This returns a logical rectangle.
   // TODO(crbug.com/1229581): Change it to LogicalRect.
-  LayoutRect LocalCaretRectForEmptyElement(LayoutUnit width,
-                                           LayoutUnit text_indent_offset) const;
+  DeprecatedLayoutRect LocalCaretRectForEmptyElement(
+      LayoutUnit width,
+      LayoutUnit text_indent_offset) const;
 
   void AddOutlineRectsForDescendant(const LayoutObject& descendant,
                                     OutlineRectCollector&,

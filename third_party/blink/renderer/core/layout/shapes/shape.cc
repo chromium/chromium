@@ -313,8 +313,8 @@ static bool IsValidRasterShapeSize(const gfx::Size& size) {
 std::unique_ptr<Shape> Shape::CreateRasterShape(
     Image* image,
     float threshold,
-    const LayoutRect& image_r,
-    const LayoutRect& margin_r,
+    const DeprecatedLayoutRect& image_r,
+    const DeprecatedLayoutRect& margin_r,
     WritingMode writing_mode,
     float margin,
     RespectImageOrientationEnum respect_orientation) {

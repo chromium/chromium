@@ -176,10 +176,11 @@ struct CORE_EXPORT PhysicalRect {
 
   // Conversions from/to existing code. New code prefers type safety for
   // logical/physical distinctions.
-  constexpr explicit PhysicalRect(const LayoutRect& r)
+  constexpr explicit PhysicalRect(const DeprecatedLayoutRect& r)
       : offset(r.X(), r.Y()), size(r.Width(), r.Height()) {}
-  constexpr LayoutRect ToLayoutRect() const {
-    return LayoutRect(offset.left, offset.top, size.width, size.height);
+  constexpr DeprecatedLayoutRect ToLayoutRect() const {
+    return DeprecatedLayoutRect(offset.left, offset.top, size.width,
+                                size.height);
   }
 
   constexpr explicit operator gfx::RectF() const {

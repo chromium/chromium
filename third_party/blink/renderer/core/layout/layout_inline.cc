@@ -272,7 +272,7 @@ PhysicalRect LayoutInline::LocalCaretRect(
   LayoutUnit inline_size = RuntimeEnabledFeatures::EmptyCaretInVerticalEnabled()
                                ? BorderAndPaddingLogicalWidth()
                                : BorderAndPaddingWidth();
-  LayoutRect caret_rect =
+  DeprecatedLayoutRect caret_rect =
       LocalCaretRectForEmptyElement(inline_size, LayoutUnit());
 
   if (IsInLayoutNGInlineFormattingContext()) {
