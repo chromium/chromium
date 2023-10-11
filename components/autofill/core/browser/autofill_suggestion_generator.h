@@ -60,10 +60,8 @@ class AutofillSuggestionGenerator {
   // `last_targeted_fields` is used to know which fields were targeted on a
   // prior form interaction. In the context of granular filling, this could lead
   // the user to be in one of the available filling granularities, field by
-  // field filling, group filling or full form (default). `skip_statuses` is
-  // used to know which fields are skipped during filling and which are not, and
-  // only use fillable fields for suggestion deduplication and label generation.
-  // It is assumed that skip_statuses and form_structure have the sane size.
+  // field filling, group filling or full form (default). `field_types` are the
+  // relevant types for the current suggestions.
   std::vector<Suggestion> GetSuggestionsForProfiles(
       const ServerFieldTypeSet& field_types,
       const FormFieldData& triggering_field,
@@ -156,7 +154,7 @@ class AutofillSuggestionGenerator {
   // Checks whether the suggestion accepted by the user, generated from the
   // profile with `backend_id`, would've been hidden prior to landing the
   // feature `kAutofillUseAddressRewriterInProfileSubsetComparison`.
-  // `skip_statuses` denotes for each field if it is relevant for the current
+  // `skip_reasons` denotes for each field if it is relevant for the current
   // suggestion or not.
   // TODO(crbug/1439742): Remove when
   // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.

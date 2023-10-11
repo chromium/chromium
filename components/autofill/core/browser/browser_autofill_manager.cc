@@ -145,8 +145,8 @@ constexpr base::TimeDelta kWaitTimeForDynamicForms = base::Milliseconds(200);
 constexpr char16_t kCharsToBeRemoved[] = u"-_/\\.";
 
 std::string_view GetSkipFieldFillLogMessage(
-    FieldFillingSkipReason skip_status) {
-  switch (skip_status) {
+    FieldFillingSkipReason skip_reason) {
+  switch (skip_reason) {
     case FieldFillingSkipReason::kNotInFilledSection:
       return "Skipped: Not part of filled section";
     case FieldFillingSkipReason::kNotFocused:
@@ -2339,7 +2339,7 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
   type_count.reserve(form_structure.field_count());
 
   CHECK_EQ(form.fields.size(), form_structure.field_count());
-  std::vector<FieldFillingSkipReason> skip_statuses(
+  std::vector<FieldFillingSkipReason> skip_reasons(
       form_structure.field_count());
   for (size_t i = 0; i < form_structure.field_count(); ++i) {
     // Log events when the fields on the form are filled by autofill suggestion.
@@ -2348,12 +2348,12 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
         FormFieldData::DeepEqual(*autofill_field, trigger_field);
 
     if (autofill_field->section != filling_section) {
-      skip_statuses[i] = FieldFillingSkipReason::kNotInFilledSection;
+      skip_reasons[i] = FieldFillingSkipReason::kNotInFilledSection;
       continue;
     }
 
     if (autofill_field->only_fill_when_focused() && !is_triggering_field) {
-      skip_statuses[i] = FieldFillingSkipReason::kNotFocused;
+      skip_reasons[i] = FieldFillingSkipReason::kNotFocused;
       continue;
     }
 
@@ -2361,7 +2361,7 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
     // when triggered through manual fallbacks.
     if (!is_triggering_field && skip_unrecognized_autocomplete_fields &&
         autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
-      skip_statuses[i] =
+      skip_reasons[i] =
           FieldFillingSkipReason::kUnrecognizedAutocompleteAttribute;
       continue;
     }
@@ -2369,14 +2369,14 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
     // TODO(crbug/1203667#c9): Skip if the form has changed in the meantime,
     // which may happen with refills.
     if (autofill_field->global_id() != form.fields[i].global_id()) {
-      skip_statuses[i] = FieldFillingSkipReason::kFormChanged;
+      skip_reasons[i] = FieldFillingSkipReason::kFormChanged;
       continue;
     }
 
     // Don't fill unfocusable fields, with the exception of <select> fields, for
     // the sake of filling the synthetic fields.
     if (!autofill_field->IsFocusable() && !autofill_field->IsSelectElement()) {
-      skip_statuses[i] = FieldFillingSkipReason::kInvisibleField;
+      skip_reasons[i] = FieldFillingSkipReason::kInvisibleField;
       continue;
     }
 
@@ -2387,20 +2387,20 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
     if ((form.fields[i].properties_mask & kUserTyped) &&
         (!form.fields[i].value.empty() || !autofill_field->value.empty()) &&
         !is_triggering_field) {
-      skip_statuses[i] = FieldFillingSkipReason::kUserFilledFields;
+      skip_reasons[i] = FieldFillingSkipReason::kUserFilledFields;
       continue;
     }
 
     // Don't fill previously autofilled fields except the initiating field or
     // when it's a refill.
     if (form.fields[i].is_autofilled && !is_triggering_field && !is_refill) {
-      skip_statuses[i] = FieldFillingSkipReason::kAutofilledFieldsNotRefill;
+      skip_reasons[i] = FieldFillingSkipReason::kAutofilledFieldsNotRefill;
       continue;
     }
 
     FieldTypeGroup field_group_type = autofill_field->Type().group();
     if (field_group_type == FieldTypeGroup::kNoGroup) {
-      skip_statuses[i] = FieldFillingSkipReason::kNoFillableGroup;
+      skip_reasons[i] = FieldFillingSkipReason::kNoFillableGroup;
       continue;
     }
 
@@ -2409,7 +2409,7 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
     if (is_refill && optional_type_groups_originally_filled &&
         !base::Contains(*optional_type_groups_originally_filled,
                         field_group_type)) {
-      skip_statuses[i] = FieldFillingSkipReason::kRefillNotInInitialFill;
+      skip_reasons[i] = FieldFillingSkipReason::kRefillNotInInitialFill;
       continue;
     }
 
@@ -2418,14 +2418,14 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
     if (data_util::IsCreditCardExpirationType(field_type) &&
         (optional_credit_card &&
          optional_credit_card->IsExpired(AutofillClock::Now()))) {
-      skip_statuses[i] = FieldFillingSkipReason::kExpiredCards;
+      skip_reasons[i] = FieldFillingSkipReason::kExpiredCards;
       continue;
     }
 
     if (base::FeatureList::IsEnabled(
             features::kAutofillGranularFillingAvailable)) {
       if (!field_types_to_fill.contains(field_type)) {
-        skip_statuses[i] =
+        skip_reasons[i] =
             FieldFillingSkipReason::kFieldDoesNotMatchTargetFieldsSet;
         continue;
       }
@@ -2434,12 +2434,12 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
     // A field with a specific type is only allowed to be filled a limited
     // number of times given by |TypeValueFormFillingLimit(field_type)|.
     if (++type_count[field_type] > TypeValueFormFillingLimit(field_type)) {
-      skip_statuses[i] = FieldFillingSkipReason::kFillingLimitReachedType;
+      skip_reasons[i] = FieldFillingSkipReason::kFillingLimitReachedType;
       continue;
     }
-    skip_statuses[i] = FieldFillingSkipReason::kNotSkipped;
+    skip_reasons[i] = FieldFillingSkipReason::kNotSkipped;
   }
-  return skip_statuses;
+  return skip_reasons;
 }
 
 void BrowserAutofillManager::FillOrPreviewDataModelForm(
@@ -2542,29 +2542,28 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     result.fields[i].section = form_structure->field(i)->section;
   }
 
-  std::vector<FieldFillingSkipReason> skip_statuses =
-      GetFieldFillingSkipReasons(
-          result, *form_structure, field, autofill_trigger_field->section,
-          absl::holds_alternative<const CreditCard*>(profile_or_credit_card)
-              ? absl::get<const CreditCard*>(profile_or_credit_card)
-              : nullptr,
-          trigger_details.field_types_to_fill,
-          filling_context ? &filling_context->type_groups_originally_filled
-                          : nullptr,
-          /*skip_unrecognized_autocomplete_fields=*/
-          trigger_details.trigger_source !=
-              AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized,
-          is_refill);
+  std::vector<FieldFillingSkipReason> skip_reasons = GetFieldFillingSkipReasons(
+      result, *form_structure, field, autofill_trigger_field->section,
+      absl::holds_alternative<const CreditCard*>(profile_or_credit_card)
+          ? absl::get<const CreditCard*>(profile_or_credit_card)
+          : nullptr,
+      trigger_details.field_types_to_fill,
+      filling_context ? &filling_context->type_groups_originally_filled
+                      : nullptr,
+      /*skip_unrecognized_autocomplete_fields=*/
+      trigger_details.trigger_source !=
+          AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized,
+      is_refill);
 
   constexpr DenseSet<FieldFillingSkipReason> pre_ukm_logging_skips{
       FieldFillingSkipReason::kNotInFilledSection,
       FieldFillingSkipReason::kFormChanged,
       FieldFillingSkipReason::kNotFocused};
-  CHECK_EQ(skip_statuses.size(), result.fields.size());
+  CHECK_EQ(skip_reasons.size(), result.fields.size());
   for (size_t i = 0; i < result.fields.size(); ++i) {
     AutofillField* autofill_field = form_structure->field(i);
 
-    if (!pre_ukm_logging_skips.contains(skip_statuses[i]) &&
+    if (!pre_ukm_logging_skips.contains(skip_reasons[i]) &&
         !autofill_field->IsFocusable()) {
       form_interactions_ukm_logger()
           ->LogHiddenRepresentationalFieldSkipDecision(
@@ -2574,14 +2573,14 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     const bool has_value_before = !result.fields[i].value.empty();
     // Log when the suggestion is selected and log on non-checkable fields that
     // skip filling.
-    if (skip_statuses[i] != FieldFillingSkipReason::kNotSkipped) {
+    if (skip_reasons[i] != FieldFillingSkipReason::kNotSkipped) {
       LOG_AF(buffer) << Tr{} << base::StringPrintf("Field %zu", i)
-                     << GetSkipFieldFillLogMessage(skip_statuses[i]);
+                     << GetSkipFieldFillLogMessage(skip_reasons[i]);
       if (fill_event_id && !IsCheckable(autofill_field->check_status)) {
         autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
             .fill_event_id = *fill_event_id,
             .had_value_before_filling = ToOptionalBoolean(has_value_before),
-            .autofill_skipped_status = skip_statuses[i],
+            .autofill_skipped_status = skip_reasons[i],
             .was_autofilled = OptionalBoolean::kFalse,
             .had_value_after_filling = ToOptionalBoolean(has_value_before),
         });
@@ -2861,7 +2860,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
   // assumes that the passed FormData and FormStructure have the same size. If
   // it's not the case we just assume as a fallback that all fields are
   // relevant.
-  std::vector<FieldFillingSkipReason> skip_statuses =
+  std::vector<FieldFillingSkipReason> skip_reasons =
       form.fields.size() == form_structure.field_count()
           ? GetFieldFillingSkipReasons(
                 form, form_structure, field, autofill_field.section,
@@ -2881,7 +2880,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
                 FieldFillingSkipReason::kNotSkipped);
   ServerFieldTypeSet field_types;
   for (size_t i = 0; i < form_structure.field_count(); ++i) {
-    if (skip_statuses[i] == FieldFillingSkipReason::kNotSkipped) {
+    if (skip_reasons[i] == FieldFillingSkipReason::kNotSkipped) {
       field_types.insert(form_structure.field(i)->Type().GetStorableType());
     }
   }
