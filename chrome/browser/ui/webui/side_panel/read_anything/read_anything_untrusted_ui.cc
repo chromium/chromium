@@ -57,7 +57,6 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"themeTitle", IDS_READING_MODE_COLORS_COMBOBOX_LABEL},
       {"letterSpacingTitle", IDS_READING_MODE_LETTER_SPACING_COMBOBOX_LABEL},
       {"fontSizeTitle", IDS_READING_MODE_FONT_SIZE},
-      {"displaySectionTitle", IDS_READING_MODE_DISPLAY_SETTINGS},
       {"defaultColorTitle", IDS_READING_MODE_DEFAULT_COLOR_LABEL},
       {"lightColorTitle", IDS_READING_MODE_LIGHT_COLOR_LABEL},
       {"darkColorTitle", IDS_READING_MODE_DARK_COLOR_LABEL},
@@ -75,6 +74,19 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"letterSpacingWideTitle", IDS_READING_MODE_SPACING_COMBOBOX_WIDE},
       {"letterSpacingVeryWideTitle",
        IDS_READING_MODE_SPACING_COMBOBOX_VERY_WIDE},
+      {"playDescription", IDS_READING_MODE_PLAY_DESCRIPTION},
+      {"playLabel", IDS_READING_MODE_PLAY_SPEECH},
+      {"pauseLabel", IDS_READING_MODE_PAUSE_SPEECH},
+      {"previousSentenceLabel", IDS_READING_MODE_NAVIGATE_PREVIOUS_SENTENCE},
+      {"nextSentenceLabel", IDS_READING_MODE_NAVIGATE_NEXT_SENTENCE},
+      {"moreOptionsLabel", IDS_READING_MODE_MORE_OPTIONS},
+      {"voiceSpeedLabel", IDS_READING_MODE_VOICE_SPEED},
+      {"voiceSelectionLabel", IDS_READING_MODE_VOICE_SELECTION},
+      {"increaseFontSizeLabel",
+       IDS_READING_MODE_INCREASE_FONT_SIZE_BUTTON_LABEL},
+      {"decreaseFontSizeLabel",
+       IDS_READING_MODE_DECREASE_FONT_SIZE_BUTTON_LABEL},
+      {"readingModeToolbarLabel", IDS_READING_MODE_TOOLBAR_LABEL},
   };
   for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);

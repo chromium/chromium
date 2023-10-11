@@ -50,6 +50,7 @@ interface MenuStateItem<T> {
 interface MenuButton {
   id: string;
   icon: string;
+  ariaLabel: string;
   // This is a function instead of just the menu itself because the menu isn't
   // ready by the time we create the MenuButton entries.
   menuToOpen: () => CrActionMenuElement;
@@ -232,16 +233,19 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     {
       id: 'color',
       icon: 'read-anything:color',
+      ariaLabel: loadTimeData.getString('themeTitle'),
       menuToOpen: () => this.$.colorMenu,
     },
     {
       id: 'line-spacing',
       icon: 'read-anything:line-spacing',
+      ariaLabel: loadTimeData.getString('lineSpacingTitle'),
       menuToOpen: () => this.$.lineSpacingMenu,
     },
     {
       id: 'letter-spacing',
       icon: 'read-anything:letter-spacing',
+      ariaLabel: loadTimeData.getString('letterSpacingTitle'),
       menuToOpen: () => this.$.letterSpacingMenu,
     },
   ];
@@ -268,11 +272,13 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
           {
             id: 'font-size',
             icon: 'read-anything:font-size',
+            ariaLabel: loadTimeData.getString('fontSizeTitle'),
             menuToOpen: () => this.$.fontSizeMenu,
           },
           {
             id: 'font',
             icon: 'read-anything:font',
+            ariaLabel: loadTimeData.getString('fontNameTitle'),
             menuToOpen: () => this.$.fontMenu,
           },
       );
@@ -371,6 +377,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     const button = shadowRoot.getElementById('play-pause');
     assert(button);
     button.setAttribute('iron-icon', 'read-anything-20:pause');
+    button.setAttribute('aria-label', loadTimeData.getString('pauseLabel'));
     this.isPaused_ = false;
 
     this.updateStyles({
@@ -417,6 +424,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     const button = shadowRoot.getElementById('play-pause');
     assert(button);
     button.setAttribute('iron-icon', 'read-anything-20:play');
+    button.setAttribute('aria-label', loadTimeData.getString('playLabel'));
     this.isPaused_ = true;
 
     this.updateStyles({
@@ -741,24 +749,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
           });
     }
 
-    if (!this.maybeUpdateTabIndex_(e, focusableElements)) {
-      this.onKeyDown_(e, focusableElements);
-    }
-  }
-
-  // When the user tabs away from the toolbar and then tabs back, we want to
-  // focus the last focused item in the toolbar
-  private maybeUpdateTabIndex_(
-      e: KeyboardEvent, focusableElements: HTMLElement[]): boolean {
-    if (e.key !== 'Tab') {
-      return false;
-    }
-
-    const target = e.target as HTMLElement;
-    focusableElements.forEach(el => {
-      el.tabIndex = (el.id === target.id) ? 0 : -1;
-    });
-    return true;
+    this.onKeyDown_(e, focusableElements);
   }
 
   private onFontSizeMenuKeyDown_(e: KeyboardEvent) {
@@ -798,6 +789,13 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
       assert(moreOptionsButton);
       this.openMenu_(this.$.moreOptionsMenu, moreOptionsButton);
     }
+
+    // When the user tabs away from the toolbar and then tabs back, we want to
+    // focus the last focused item in the toolbar
+    focusableElements.forEach(el => {
+      el.tabIndex = -1;
+    });
+    elementToFocus.tabIndex = 0;
 
     // Wait for the next animation frame for the overflow menu to show or hide.
     requestAnimationFrame(() => {
