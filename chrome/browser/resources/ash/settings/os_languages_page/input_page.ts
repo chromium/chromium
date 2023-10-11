@@ -630,11 +630,9 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     }
   }
 
-  private shouldShowSpinner_(item: chrome.languageSettingsPrivate.InputMethod):
+  private shouldShowSpinner_(_item: chrome.languageSettingsPrivate.InputMethod):
       boolean {
-    return this.languagePacksInSettingsEnabled_ &&
-        this.languageHelper.getImeLanguagePackStatus(item.id) ===
-        chrome.inputMethodPrivate.LanguagePackStatus.IN_PROGRESS;
+    return this.languagePacksInSettingsEnabled_;
   }
 }
 
