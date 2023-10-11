@@ -47,11 +47,7 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
   std::string label;
   WGPURenderBundleEncoderDescriptor dawn_desc = {};
   dawn_desc.nextInChain = nullptr;
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
   dawn_desc.colorFormatCount = color_formats_count;
-#else
-  dawn_desc.colorFormatsCount = color_formats_count;
-#endif
   dawn_desc.colorFormats = color_formats.get();
   dawn_desc.depthStencilFormat = depth_stencil_format;
   dawn_desc.sampleCount = webgpu_desc->sampleCount();

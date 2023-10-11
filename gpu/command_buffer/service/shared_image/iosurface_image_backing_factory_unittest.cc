@@ -196,11 +196,7 @@ class IOSurfaceImageBackingFactoryDawnTest
 
     wgpu::DawnTogglesDescriptor adapter_toggles_desc;
     adapter_toggles_desc.enabledToggles = adapter_enabled_toggles.data();
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
     adapter_toggles_desc.enabledToggleCount = adapter_enabled_toggles.size();
-#else
-    adapter_toggles_desc.enabledTogglesCount = adapter_enabled_toggles.size();
-#endif
     adapter_options.nextInChain = &adapter_toggles_desc;
 
     std::vector<dawn::native::Adapter> adapters =
@@ -224,11 +220,7 @@ class IOSurfaceImageBackingFactoryDawnTest
     // internal methods that would need specific usages.
     features.push_back(wgpu::FeatureName::DawnInternalUsages);
     wgpu::DeviceDescriptor device_descriptor;
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
     device_descriptor.requiredFeatureCount = features.size();
-#else
-    device_descriptor.requiredFeaturesCount = features.size();
-#endif
     device_descriptor.requiredFeatures = features.data();
 
     wgpu::Device device = adapter.CreateDevice(&device_descriptor);

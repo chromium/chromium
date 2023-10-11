@@ -644,11 +644,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_SkiaGL) {
   // internal methods that would need specific usages.
   wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
   device_descriptor.requiredFeatureCount = 1;
-#else
-  device_descriptor.requiredFeaturesCount = 1;
-#endif
   device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
@@ -837,11 +833,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
   // internal methods that would need specific usages.
   wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
   device_descriptor.requiredFeatureCount = 1;
-#else
-  device_descriptor.requiredFeaturesCount = 1;
-#endif
   device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
@@ -1002,11 +994,7 @@ TEST_F(D3DImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
   // internal methods that would need specific usages.
   wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
   device_descriptor.requiredFeatureCount = 1;
-#else
-  device_descriptor.requiredFeaturesCount = 1;
-#endif
   device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
@@ -1092,11 +1080,7 @@ TEST_F(D3DImageBackingFactoryTest, UnclearDawn_SkiaFails) {
   // internal methods that would need specific usages.
   wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
   device_descriptor.requiredFeatureCount = 1;
-#else
-  device_descriptor.requiredFeaturesCount = 1;
-#endif
   device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
@@ -1357,11 +1341,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
   // internal methods that would need specific usages.
   wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
   device_descriptor.requiredFeatureCount = 1;
-#else
-  device_descriptor.requiredFeaturesCount = 1;
-#endif
   device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
@@ -1485,11 +1465,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_HasLastRef) {
   // internal methods that would need specific usages.
   wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
   device_descriptor.requiredFeatureCount = 1;
-#else
-  device_descriptor.requiredFeaturesCount = 1;
-#endif
   device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =

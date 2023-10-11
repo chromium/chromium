@@ -225,13 +225,8 @@ bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
   wgpu::DawnTogglesDescriptor toggles_desc;
   toggles_desc.enabledToggles = enabled_toggles.data();
   toggles_desc.disabledToggles = disabled_toggles.data();
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
   toggles_desc.enabledToggleCount = enabled_toggles.size();
   toggles_desc.disabledToggleCount = disabled_toggles.size();
-#else
-  toggles_desc.enabledTogglesCount = enabled_toggles.size();
-  toggles_desc.disabledTogglesCount = disabled_toggles.size();
-#endif
 
   wgpu::DeviceDescriptor descriptor;
   descriptor.nextInChain = &toggles_desc;
@@ -292,11 +287,7 @@ bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
   }
 
   descriptor.requiredFeatures = features.data();
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
   descriptor.requiredFeatureCount = std::size(features);
-#else
-  descriptor.requiredFeaturesCount = std::size(features);
-#endif
 
   wgpu::Device device = adapter.CreateDevice(&descriptor);
   if (!device) {
