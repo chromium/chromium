@@ -9645,7 +9645,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8811923271770626905">Diese Erweiterung kann im Hintergrund ausgeführt werden</translation>
 <translation id="8812593354822910461">Auch Browserdaten (<ph name="URL" />) löschen, wodurch du von <ph name="DOMAIN" /> abgemeldet wirst. <ph name="LEARN_MORE" /></translation>
 <translation id="8813698869395535039">Anmeldung unter <ph name="USERNAME" /> nicht möglich</translation>
-<translation id="8813872945700551674">Elternteil um Genehmigung von <ph name="EXTENSION_NAME" /> bitten</translation>
+<translation id="8813872945700551674">Eltern um Genehmigung von „<ph name="EXTENSION_NAME" />“ bitten</translation>
 <translation id="8813937837706331325">Mittlere Einsparungen</translation>
 <translation id="8814190375133053267">WLAN</translation>
 <translation id="8814319344131658221">Für welche Sprachen die Rechtschreibprüfung verfügbar ist, hängt von deinen Spracheinstellungen ab</translation>
