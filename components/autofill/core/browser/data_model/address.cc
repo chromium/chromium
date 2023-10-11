@@ -59,7 +59,7 @@ Address& Address::operator=(const Address& address) {
 
   structured_address_->CopyFrom(address.GetStructuredAddress());
   return *this;
-};
+}
 
 bool Address::operator==(const Address& other) const {
   if (this == &other)
