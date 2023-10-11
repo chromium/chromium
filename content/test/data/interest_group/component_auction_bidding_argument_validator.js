@@ -193,7 +193,13 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     if (browserSignals.prevWinsMs.length !== 0)
       throw 'Wrong prevWinsMs ' + JSON.stringify(browserSignals.prevWinsMs);
   } else {
-    if (Object.keys(browserSignals).length !== 15) {
+    // FledgePassKAnonStatusToReportWin feature adds a new parameter
+    // KAnonStatus to reportWin(), which is under a Finch trial for some enabled
+    // tests.
+    // TODO(xtlsheep): Check length only equals to 16 after
+    // FledgePassKAnonStatusToReportWin is completely turned on.
+    if (Object.keys(browserSignals).length !== 15 &&
+        Object.keys(browserSignals).length !== 16) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
