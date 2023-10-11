@@ -4147,12 +4147,26 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
     return false;
   }
 
-  // At this point, all nodes should have updated style. If they don't, it can
-  // cause crashes such as the one at crbug.com/1485059 when
-  // Element::SupportsFocus() calls IsFocusableStyleAfterUpdate() and
-  // the element doesn't have updated style yet, causing layout to update,
-  // resulting in unwanted recursion into ProcessDeferredAccessibilityEvents().
-  CHECK(!elem->NeedsStyleRecalc());
+  // TODO(crbug.com/1489580) Investigate why this is not yet true, and the
+  // early return is necessary, rather than just having a CHECK().
+  // At this point, all nodes that are not display:none or
+  // content-visibility:hidden should have updated style, which means it is safe
+  // to call Element::SupportsFocus(), Element::IsKeyboardFocusable(), and
+  // Element::IsFocusableStyle() without causing an update.
+  // Updates are problematic when we are expecting the tree to be frozen,
+  // or are in the middle of ProcessDeferredAccessibilityEvents(), where an
+  // update would cause unwanted recursion.
+  // Code that pvoes that this is impossible to reach is at:
+  // AXObjectCacheImpl::CheckStyleIsComplete().
+  if (elem->NeedsStyleRecalc()) {
+    DCHECK(false) << "Avoiding IsFocusableStyle() crash for style update on:"
+                  << "\n* Element: " << elem
+                  << "\n* LayoutObject: " << elem->GetLayoutObject()
+                  << "\n* NeedsStyleRecalc: " << elem->NeedsStyleRecalc()
+                  << "\n* IsDisplayLockedPreventingPaint: "
+                  << DisplayLockUtilities::IsDisplayLockedPreventingPaint(elem);
+    return false;
+  }
 
   // NOT focusable: hidden elements.
   // TODO(aleventhal) Consider caching visibility when it's safe to compute.
