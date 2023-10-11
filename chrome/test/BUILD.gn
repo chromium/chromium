@@ -1269,9 +1269,6 @@ if (is_android) {
       "//components/webapps/browser:test_support",
     ]
 
-    if (enable_chrome_android_internal) {
-      data_deps += [ "//clank/build/bot/filters:android_browsertests_filters" ]
-    }
     # Add unwind tables in android_browsertests apk to support enabling
     # sampling profiler. The unwind tables are generated from debug info in the
     # binary. Removing "default_symbols" and adding symbols config removes the
