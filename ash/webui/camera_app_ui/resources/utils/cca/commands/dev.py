@@ -341,9 +341,17 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
         routes = self._handler.routes
         for route in routes:
             if _route_match(route):
-                return self._send_200(path, route.handler(path))
+                try:
+                    content = route.handler(path)
+                except Exception as e:
+                    logging.debug(f"Error while handling {path}", e)
+                    self.send_response(404)
+                    self.end_headers()
+                    return
+                return self._send_200(path, content)
 
         self.send_response(404)
+        self.end_headers()
 
 
 _DEV_OUTPUT_TEMP_DIR = "/tmp/cca-dev-out"
