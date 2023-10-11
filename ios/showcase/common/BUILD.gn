@@ -6,8 +6,6 @@ source_set("common") {
   sources = [
     "coordinator.h",
     "navigation_coordinator.h",
-    "protocol_alerter.h",
-    "protocol_alerter.mm",
   ]
   deps = [ "//base" ]
   frameworks = [ "UIKit.framework" ]

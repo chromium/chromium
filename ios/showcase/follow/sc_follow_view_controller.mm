@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/ui/ntp/feed_management/follow_management_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/followed_web_channels_data_source.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
-#import "ios/showcase/common/protocol_alerter.h"
+#import "ios/testing/protocol_fake.h"
 
 namespace {
 
@@ -36,7 +36,7 @@ NSInteger kFaviconSymbolPointSize = 17;
 @interface SCFollowViewController () <FollowedWebChannelsDataSource,
                                       TableViewFaviconDataSource>
 // Shows alerts of protocol method calls.
-@property(nonatomic, strong) ProtocolAlerter* alerter;
+@property(nonatomic, strong) ProtocolFake* alerter;
 // Called to unfollow/refollow channels in the follow mgmt UI.
 @property(nonatomic, weak) id<FollowManagementUIUpdater>
     followManagementUIUpdater;
@@ -50,7 +50,7 @@ NSInteger kFaviconSymbolPointSize = 17;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.alerter = [[ProtocolAlerter alloc] initWithProtocols:@[
+  self.alerter = [[ProtocolFake alloc] initWithProtocols:@[
     @protocol(FeedManagementFollowDelegate),
     @protocol(FeedManagementNavigationDelegate)
   ]];

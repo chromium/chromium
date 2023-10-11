@@ -7,9 +7,9 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_controller.h"
 #import "ios/showcase/common/coordinator.h"
-#import "ios/showcase/common/protocol_alerter.h"
 #import "ios/showcase/omnibox_popup/sc_omnibox_popup_container_view_controller.h"
 #import "ios/showcase/omnibox_popup/sc_omnibox_popup_mediator.h"
+#import "ios/testing/protocol_fake.h"
 
 @interface SCOmniboxPopupCoordinator () <Coordinator>
 
@@ -18,7 +18,7 @@
     SCOmniboxPopupContainerViewController* containerViewController;
 @property(nonatomic, strong) SCOmniboxPopupMediator* mediator;
 
-@property(nonatomic, strong) ProtocolAlerter* alerter;
+@property(nonatomic, strong) ProtocolFake* alerter;
 
 @end
 
@@ -26,7 +26,7 @@
 @synthesize baseViewController = _baseViewController;
 
 - (void)start {
-  self.alerter = [[ProtocolAlerter alloc]
+  self.alerter = [[ProtocolFake alloc]
       initWithProtocols:@[ @protocol(AutocompleteResultConsumerDelegate) ]];
 
   // Ignore didScroll because it's fired all the time.

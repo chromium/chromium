@@ -46,6 +46,14 @@ source_set("block_swizzler") {
   deps = [ "//base" ]
 }
 
+source_set("protocol_fake") {
+  sources = [
+    "protocol_fake.h",
+    "protocol_fake.mm",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("nserror_support") {
   testonly = true
   sources = [
@@ -91,6 +99,7 @@ test("ios_testing_unittests") {
   deps = [
     ":block_swizzler",
     ":ocmock_support",
+    ":protocol_fake",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//testing/gmock",

@@ -9,12 +9,12 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
-#import "ios/showcase/common/protocol_alerter.h"
+#import "ios/testing/protocol_fake.h"
 #import "ios/web/public/web_state_id.h"
 
 @interface SCTabGridCoordinator ()<UINavigationControllerDelegate>
 @property(nonatomic, strong) TabGridViewController* viewController;
-@property(nonatomic, strong) ProtocolAlerter* alerter;
+@property(nonatomic, strong) ProtocolFake* alerter;
 @end
 
 @implementation SCTabGridCoordinator
@@ -24,7 +24,7 @@
 
 - (void)start {
   self.alerter =
-      [[ProtocolAlerter alloc] initWithProtocols:@[ @protocol(GridCommands) ]];
+      [[ProtocolFake alloc] initWithProtocols:@[ @protocol(GridCommands) ]];
   self.viewController = [[TabGridViewController alloc]
       initWithPageConfiguration:TabGridPageConfiguration::kAllPagesEnabled];
   self.alerter.baseViewController = self.viewController;

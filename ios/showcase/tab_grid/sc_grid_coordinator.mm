@@ -7,7 +7,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
-#import "ios/showcase/common/protocol_alerter.h"
+#import "ios/testing/protocol_fake.h"
 #import "ios/web/public/web_state_id.h"
 
 // This Showcase-only item returns a sample image as snapshot.
@@ -23,7 +23,7 @@
 @end
 
 @interface SCGridCoordinator () <UINavigationControllerDelegate>
-@property(nonatomic, strong) ProtocolAlerter* alerter;
+@property(nonatomic, strong) ProtocolFake* alerter;
 @property(nonatomic, strong) GridViewController* gridViewController;
 @end
 
@@ -34,7 +34,7 @@
 
 - (void)start {
   self.baseViewController.delegate = self;
-  self.alerter = [[ProtocolAlerter alloc]
+  self.alerter = [[ProtocolFake alloc]
       initWithProtocols:@[ @protocol(GridViewControllerDelegate) ]];
   GridViewController* gridViewController = [[GridViewController alloc] init];
   gridViewController.theme = GridThemeLight;

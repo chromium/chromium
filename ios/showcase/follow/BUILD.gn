@@ -19,6 +19,7 @@ source_set("follow") {
     "//ios/chrome/browser/ui/ntp/feed_management:navigation_delegate",
     "//ios/chrome/common/ui/favicon",
     "//ios/showcase/common",
+    "//ios/testing:protocol_fake",
   ]
   frameworks = [ "UIKit.framework" ]
 }

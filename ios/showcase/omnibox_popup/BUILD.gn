@@ -24,6 +24,7 @@ source_set("omnibox_popup") {
     "//ios/chrome/browser/ui/toolbar/buttons",
     "//ios/chrome/common/ui/util",
     "//ios/showcase/common",
+    "//ios/testing:protocol_fake",
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]

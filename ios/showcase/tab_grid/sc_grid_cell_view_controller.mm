@@ -8,7 +8,7 @@
 #import "base/numerics/safe_conversions.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
-#import "ios/showcase/common/protocol_alerter.h"
+#import "ios/testing/protocol_fake.h"
 
 namespace {
 NSString* const kCellIdentifier = @"GridCellIdentifier";
@@ -18,7 +18,7 @@ NSString* const kCellIdentifier = @"GridCellIdentifier";
                                        UICollectionViewDelegate>
 @property(nonatomic, strong) NSArray* sizes;
 @property(nonatomic, strong) NSIndexPath* selectedIndexPath;
-@property(nonatomic, strong) ProtocolAlerter* alerter;
+@property(nonatomic, strong) ProtocolFake* alerter;
 @end
 
 @implementation SCGridCellViewController
@@ -33,7 +33,7 @@ NSString* const kCellIdentifier = @"GridCellIdentifier";
   layout.minimumInteritemSpacing = 15.0f;
   layout.minimumLineSpacing = 15.0f;
   if (self = [super initWithCollectionViewLayout:layout]) {
-    _alerter = [[ProtocolAlerter alloc]
+    _alerter = [[ProtocolFake alloc]
         initWithProtocols:@[ @protocol(GridCellDelegate) ]];
     self.alerter.baseViewController = self;
     self.collectionView.dataSource = self;
