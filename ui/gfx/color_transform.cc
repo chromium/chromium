@@ -1065,11 +1065,13 @@ class ColorTransformSrcNitsToSdrRelative : public ColorTransformStep {
  private:
   float ComputeNitsToSdrRelativeFactor(
       const ColorTransform::RuntimeOptions& options) const {
-    // TODO(https://crbug.com/1421266, https://crbug.com/1483235): Use source
-    // HDR metadata for this conversion.
-    const float sdr_white_nits = use_src_sdr_white_
-                                     ? ColorSpace::kDefaultSDRWhiteLevel
-                                     : options.dst_sdr_max_luminance_nits;
+    float sdr_white_nits = options.dst_sdr_max_luminance_nits;
+    if (use_src_sdr_white_) {
+      sdr_white_nits = ColorSpace::kDefaultSDRWhiteLevel;
+      if (options.src_hdr_metadata && options.src_hdr_metadata->ndwl) {
+        sdr_white_nits = options.src_hdr_metadata->ndwl->nits;
+      }
+    }
     return unity_nits_ / sdr_white_nits;
   }
 
