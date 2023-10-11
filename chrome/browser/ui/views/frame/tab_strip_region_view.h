@@ -93,6 +93,11 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   // input of the computation of the border's sizing changes.
   void UpdateButtonBorders();
 
+  // Updates the left and right margins for the tab strip. This should be
+  // called whenever `tab_search_container_` changes size, if
+  // `render_tab_search_before_tab_strip_` is true.
+  void UpdateTabStripMargin();
+
   raw_ptr<views::FlexLayout, DanglingUntriaged> layout_manager_ = nullptr;
   raw_ptr<views::View, AcrossTasksDanglingUntriaged> tab_strip_container_ =
       nullptr;
