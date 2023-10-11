@@ -6,7 +6,10 @@ import("//third_party/blink/renderer/config.gni")
 
 # Generated sources for production
 
-generated_async_iterator_sources_in_modules = []
+generated_async_iterator_sources_in_modules = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_async_iterator_file_system_directory_handle.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_async_iterator_file_system_directory_handle.h",
+]
 
 generated_callback_function_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_animate_callback.cc",
@@ -1983,8 +1986,6 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_change_record.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_directory_handle.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_directory_handle.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_directory_iterator.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_directory_iterator.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_file_handle.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_file_handle.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_handle.cc",

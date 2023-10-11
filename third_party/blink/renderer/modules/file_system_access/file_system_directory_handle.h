@@ -7,17 +7,21 @@
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/async_iterable.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_async_iterator_file_system_directory_handle.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
+
 class FileSystemGetDirectoryOptions;
 class FileSystemGetFileOptions;
 class FileSystemRemoveOptions;
-class FileSystemDirectoryIterator;
 
-class FileSystemDirectoryHandle final : public FileSystemHandle {
+class FileSystemDirectoryHandle final
+    : public FileSystemHandle,
+      public PairAsyncIterable<FileSystemDirectoryHandle> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -25,11 +29,6 @@ class FileSystemDirectoryHandle final : public FileSystemHandle {
       ExecutionContext* context,
       const String& name,
       mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryHandle>);
-
-  // FileSystemDirectoryHandle IDL interface:
-  FileSystemDirectoryIterator* entries(ExceptionState&);
-  FileSystemDirectoryIterator* keys(ExceptionState&);
-  FileSystemDirectoryIterator* values(ExceptionState&);
 
   bool isDirectory() const override { return true; }
 
@@ -60,6 +59,8 @@ class FileSystemDirectoryHandle final : public FileSystemHandle {
   void Trace(Visitor*) const override;
 
  private:
+  class IterationSource;
+
   void QueryPermissionImpl(
       bool writable,
       base::OnceCallback<void(mojom::blink::PermissionStatus)>) override;
@@ -89,6 +90,13 @@ class FileSystemDirectoryHandle final : public FileSystemHandle {
       base::OnceCallback<void(
           mojom::blink::FileSystemAccessErrorPtr,
           Vector<mojom::blink::FileSystemAccessCloudIdentifierPtr>)>) override;
+
+  // PairAsyncIterable<FileSystemDirectoryHandle> overrides:
+  PairAsyncIterable<FileSystemDirectoryHandle>::IterationSource*
+  CreateIterationSource(
+      ScriptState* script_state,
+      PairAsyncIterable<FileSystemDirectoryHandle>::IterationSource::Kind kind,
+      ExceptionState& exception_state) override;
 
   HeapMojoRemote<mojom::blink::FileSystemAccessDirectoryHandle> mojo_ptr_;
 };

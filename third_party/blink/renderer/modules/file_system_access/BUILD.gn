@@ -24,8 +24,6 @@ blink_modules_sources("file_system_access") {
     "file_system_change_record.h",
     "file_system_directory_handle.cc",
     "file_system_directory_handle.h",
-    "file_system_directory_iterator.cc",
-    "file_system_directory_iterator.h",
     "file_system_file_handle.cc",
     "file_system_file_handle.h",
     "file_system_handle.cc",
