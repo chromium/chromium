@@ -53,20 +53,18 @@ export function peripheralUpdatesListTest() {
   }
 
   /**
-   * @suppress {visibility}
    * @return {!Promise}
    */
   function clearFirmwareUpdates() {
-    peripheralUpdateListElement.firmwareUpdates_ = [];
+    peripheralUpdateListElement.setFirmwareUpdatesForTesting([]);
     return flushTasks();
   }
 
   /**
-   * @suppress {visibility}
    * @return {!Array<!FirmwareUpdate>}
    */
   function getFirmwareUpdates() {
-    return peripheralUpdateListElement.firmwareUpdates_;
+    return peripheralUpdateListElement.getFirmwareUpdatesForTesting();
   }
 
   /**

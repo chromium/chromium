@@ -60,3 +60,10 @@ export let OpenUpdateDialogEventDetail;
  * }}
  */
 export let OpenConfirmationDialogEventDetail;
+
+/**
+ * @typedef {{
+ *    text: string;
+ * }}
+ */
+export let IronAnnounceEventDetail;
