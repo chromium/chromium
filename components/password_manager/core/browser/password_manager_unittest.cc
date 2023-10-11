@@ -49,10 +49,12 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/possible_username_data.h"
 #include "components/password_manager/core/browser/stub_credentials_filter.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/votes_uploader.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -4001,7 +4003,8 @@ TEST_F(PasswordManagerTest, UsernameFirstFlowSignUpFormWithIntermediaryFields) {
   // predictions.
   EXPECT_EQ(password_form.username_value,
             password_form.form_data.fields[1].value);
-  EXPECT_THAT(manager()->possible_usernames(), SizeIs(2));
+  // Possible usernames are cleared after successful login.
+  EXPECT_THAT(manager()->possible_usernames(), IsEmpty());
   EXPECT_THAT(
       store_->stored_passwords(),
       ElementsAre(Pair(password_form.signon_realm,
@@ -4071,8 +4074,8 @@ TEST_F(PasswordManagerTest, UsernameFirstFlowSignInFormWithIntermediaryFields) {
   // Simulate accepting the prompt and expect saving the new credential.
   form_manager->Save();
   task_environment_.RunUntilIdle();
-
-  EXPECT_THAT(manager()->possible_usernames(), SizeIs(2));
+  // Possible usernames are cleared after successful login.
+  EXPECT_THAT(manager()->possible_usernames(), IsEmpty());
   // The value didn't change even though there are `SINGLE_USERNAME`
   // predictions.
   EXPECT_EQ(password_form.username_value, u"");
@@ -4295,6 +4298,65 @@ TEST_F(PasswordManagerTest, UsernameFirstFlowSavingWithoutServerPredictions) {
   EXPECT_THAT(store_->stored_passwords(),
               ElementsAre(Pair(saved_form.signon_realm,
                                ElementsAre(FormMatches(saved_form)))));
+}
+
+// Tests submitting an OTP password form after a single username form.
+// `OnLoginSuccessful` doesn't get called, so `possible_usernames_` are not
+// cleared, and the potential single username value is proposed in the manual
+// fallback for saving.
+TEST_F(PasswordManagerTest, UsernameFirstFlowOTPPasswordForm) {
+  // Simulate the user typed a previously not saved username in username form.
+  PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
+  const std::u16string kUsername = u"newusername@gmail.com";
+  EXPECT_CALL(driver_, GetLastCommittedURL())
+      .WillOnce(ReturnRef(username_form.url));
+  manager()->OnUserModifiedNonPasswordField(
+      &driver_, username_form.form_data.fields[0].unique_renderer_id,
+      /*value=*/kUsername,
+      /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+  // Set up a server prediction for the single username field.
+  manager()->ProcessAutofillPredictions(
+      &driver_, username_form.form_data,
+      CreateServerPredictions(username_form.form_data,
+                              {{0, ServerFieldType::SINGLE_USERNAME}}));
+
+  PasswordForm otp_form = MakeSimpleFormWithOnlyPasswordField();
+  otp_form.password_element = u"one-time-code";
+  otp_form.only_for_fallback = true;
+  otp_form.form_data.fields[0].name = otp_form.password_element;
+  otp_form.form_data.fields[0].name_attribute = otp_form.password_element;
+
+  manager()->OnPasswordFormsParsed(&driver_, {otp_form.form_data});
+  manager()->OnPasswordFormsRendered(&driver_, {otp_form.form_data});
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(otp_form.url))
+      .WillRepeatedly(Return(true));
+
+  std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
+  EXPECT_CALL(client_, ShowManualFallbackForSaving)
+      .WillOnce(MoveArg<0>(&form_manager_to_save));
+  task_environment_.RunUntilIdle();
+  manager()->OnInformAboutUserInput(&driver_, otp_form.form_data);
+  ASSERT_TRUE(form_manager_to_save);
+
+  // Username and password are still available for saving in case of a manual
+  // fallback. Currently, we don't have excellent confidence in OTP detection.
+  PasswordForm expected_pending_form(otp_form);
+  expected_pending_form.username_value = kUsername;
+  EXPECT_THAT(form_manager_to_save->GetPendingCredentials(),
+              FormMatches(expected_pending_form));
+
+  // Simulate that the user submitted the password form.
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
+  OnPasswordFormSubmitted(otp_form.form_data);
+  manager()->OnPasswordFormsRendered(&driver_, /*visible_forms_data=*/{});
+  // Possible usernames are not cleared after OTP form submission.
+  EXPECT_THAT(manager()->possible_usernames(),
+              ElementsAre(Pair(
+                  PossibleUsernameFieldIdentifier(
+                      driver_.GetId(),
+                      username_form.form_data.fields[0].unique_renderer_id),
+                  _)));
 }
 
 // Checks that possible single username value is not used to build pending

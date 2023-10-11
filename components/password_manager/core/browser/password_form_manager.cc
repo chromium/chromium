@@ -918,7 +918,6 @@ bool PasswordFormManager::ProvisionallySave(
         possible_username.password_form_had_matching_username ||  // Case (2).
         possible_username.priority ==                             // Case (3).
             UsernameFoundOutsideOfFormType::kSingleUsernameOverride) {
-      // TODO(crbug.com/959776): Reset `possible_username` after it's used.
       HandleUsernameFirstFlow(possible_username);
     }
   }

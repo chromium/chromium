@@ -1071,6 +1071,12 @@ void PasswordManager::OnLoginSuccessful() {
   CHECK(submitted_manager);
   const PasswordForm* submitted_form = submitted_manager->GetSubmittedForm();
   CHECK(submitted_form);
+
+  // User might fill several login flows during their user journey. For example,
+  // Forgot Password Flow followed by sign-in flow. To not suggest usernames
+  // from the old flow, clear after successful login.
+  possible_usernames_.Clear();
+
   client_->MaybeReportEnterpriseLoginEvent(
       submitted_form->url, submitted_form->IsFederatedCredential(),
       submitted_form->federation_origin,
