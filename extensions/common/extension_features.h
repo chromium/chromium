@@ -103,6 +103,8 @@ BASE_DECLARE_FEATURE(kExtensionsZipFileInstalledInProfileDir);
 
 BASE_DECLARE_FEATURE(kExtensionsServiceWorkerOptimizedEventDispatch);
 
+BASE_DECLARE_FEATURE(kNewWebstoreURL);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

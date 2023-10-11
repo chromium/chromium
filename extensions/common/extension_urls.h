@@ -52,8 +52,8 @@ GURL GetNewWebstoreLaunchURL();
 GURL AppendUtmSource(const GURL& url,
                      const base::StringPiece& utm_source_value);
 
-// Returns the URL to the extensions category on the Web Store. This is
-// derived from GetWebstoreLaunchURL().
+// Returns the URL to the extensions category on the old and new Web Store
+// depending on extensions_features::kNewWebstoreURL feature flag.
 std::string GetWebstoreExtensionsCategoryURL();
 
 // Returns the URL prefix for an item in the extension/app gallery. This URL

@@ -26,6 +26,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -197,19 +198,63 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuModelInteractiveTest, ManageExtensions) {
                                MENU_ACTION_VISIT_CHROME_WEB_STORE, 0);
 }
 
-// Test to confirm that the visit Chome Web Store menu item navigates when
-// selected and emits histograms that it did so.
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuModelInteractiveTest,
+// TODO(crbug.com/1488136): Remove this test in favor of a unit test
+// extension_urls::GetWebstoreLaunchURL().
+class ExtensionsMenuVisitChromeWebstoreModelInteractiveTest
+    : public AppMenuModelInteractiveTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ExtensionsMenuVisitChromeWebstoreModelInteractiveTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kExtensionsMenuInAppMenu};
+    std::vector<base::test::FeatureRef> disabled_features{};
+    if (GetParam()) {
+      enabled_features.push_back(extensions_features::kNewWebstoreURL);
+    } else {
+      LOG(ERROR) << "disabling new webstore URL";
+      disabled_features.push_back(extensions_features::kNewWebstoreURL);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  void SetUp() override {
+    set_open_about_blank_on_browser_launch(true);
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    InteractiveBrowserTest::SetUp();
+  }
+
+ protected:
+  base::HistogramTester histograms;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ExtensionsMenuVisitChromeWebstoreModelInteractiveTest,
+    // extensions_features::kNewWebstoreURL enabled status.
+    testing::Bool(),
+    [](const testing::TestParamInfo<ExtensionsMenuModelPresenceTest::ParamType>&
+           info) {
+      return info.param ? "NewVisitChromeWebstoreUrl"
+                        : "OldVisitChromeWebstoreUrl";
+    });
+
+// Test to confirm that the visit Chrome Web Store menu item navigates to the
+// correct chrome webstore URL when selected and emits histograms that it did
+// so.
+IN_PROC_BROWSER_TEST_P(ExtensionsMenuVisitChromeWebstoreModelInteractiveTest,
                        VisitChromeWebStore) {
+  GURL expected_webstore_launch_url =
+      GetParam() ? extension_urls::GetNewWebstoreLaunchURL()
+                 : extension_urls::GetWebstoreLaunchURL();
   RunTestSequence(
       InstrumentTab(kPrimaryTabPageElementId),
       PressButton(kToolbarAppMenuButtonElementId),
       SelectMenuItem(AppMenuModel::kExtensionsMenuItem),
       SelectMenuItem(ExtensionsMenuModel::kVisitChromeWebStoreMenuItem),
-      WaitForWebContentsNavigation(kPrimaryTabPageElementId,
-                                   extension_urls::AppendUtmSource(
-                                       extension_urls::GetWebstoreLaunchURL(),
-                                       extension_urls::kAppMenuUtmSource)));
+      WaitForWebContentsNavigation(
+          kPrimaryTabPageElementId,
+          extension_urls::AppendUtmSource(expected_webstore_launch_url,
+                                          extension_urls::kAppMenuUtmSource)));
 
   histograms.ExpectTotalCount("WrenchMenu.TimeToAction.VisitChromeWebStore", 1);
   histograms.ExpectTotalCount("WrenchMenu.TimeToAction.ManageExtensions", 0);
