@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/grit/components_scaled_resources.h"
@@ -254,8 +255,13 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  [self.handler primaryButtonTapped:[_creditCardData[[self selectedRow]]
-                                        backendIdentifier]];
+  NSInteger index = [self selectedRow];
+  [self.handler primaryButtonTapped:[_creditCardData[index] backendIdentifier]];
+
+  if (_creditCardData.count > 1) {
+    base::UmaHistogramCounts100("Autofill.TouchToFill.CreditCard.SelectedIndex",
+                                (int)index);
+  }
 }
 
 - (void)confirmationAlertSecondaryAction {

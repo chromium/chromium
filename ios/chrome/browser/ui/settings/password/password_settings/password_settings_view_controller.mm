@@ -708,6 +708,8 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 #pragma mark - Actions
 
 - (void)savePasswordsSwitchChanged:(UISwitch*)switchView {
+  base::UmaHistogramBoolean(
+      "PasswordManager.Settings.ToggleOfferToSavePasswords", switchView.on);
   [self.delegate savedPasswordSwitchDidChange:switchView.on];
 }
 
