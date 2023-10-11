@@ -776,13 +776,12 @@ bool StylePropertySerializer::AppendFontLonghandValueIfNotNormal(
   }
 
   String value;
-  // In the font-variant shorthand a "none" ligatures value needs to be
-  // expanded.
   if (property.IDEquals(CSSPropertyID::kFontVariantLigatures) &&
       identifier_value && identifier_value->GetValueID() == CSSValueID::kNone) {
-    value =
-        "no-common-ligatures no-discretionary-ligatures "
-        "no-historical-ligatures no-contextual";
+    // A shorter representation is preferred in general. Thus, 'none' returns
+    // instead of the spelling-out form.
+    // https://www.w3.org/Bugs/Public/show_bug.cgi?id=29594#c1
+    value = "none";
   } else {
     value = val->CssText();
   }
@@ -1277,12 +1276,15 @@ String StylePropertySerializer::FontValue() const {
 
 String StylePropertySerializer::FontVariantValue() const {
   StringBuilder result;
+  bool is_variant_ligatures_none = false;
 
-  // TODO(drott): Decide how we want to return ligature values in shorthands,
-  // reduced to "none" or spelled out, filed as W3C bug:
-  // https://www.w3.org/Bugs/Public/show_bug.cgi?id=29594
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantLigatures(),
                                      result);
+  if (result.ToString() == "none") {
+    is_variant_ligatures_none = true;
+  }
+  const unsigned variant_ligatures_result_length = result.length();
+
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantCaps(), result);
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantAlternates(),
                                      result);
@@ -1293,6 +1295,15 @@ String StylePropertySerializer::FontVariantValue() const {
   if (RuntimeEnabledFeatures::FontVariantPositionEnabled()) {
     AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantPosition(),
                                        result);
+  }
+
+  // The font-variant shorthand should return an empty string where
+  // it cannot represent "font-variant-ligatures: none" along
+  // with any other non-normal longhands.
+  // https://drafts.csswg.org/cssom-1/#serializing-css-values
+  if (is_variant_ligatures_none &&
+      result.length() != variant_ligatures_result_length) {
+    return g_empty_string;
   }
 
   if (result.empty()) {

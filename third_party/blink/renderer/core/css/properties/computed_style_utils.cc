@@ -3869,7 +3869,8 @@ CSSValue* ComputedStyleUtils::ValuesForFontVariantProperty(
   enum VariantShorthandCases {
     kAllNormal,
     kNoneLigatures,
-    kConcatenateNonNormal
+    kConcatenateNonNormal,
+    kEmptyString
   };
   StylePropertyShorthand shorthand = fontVariantShorthand();
   VariantShorthandCases shorthand_case = kAllNormal;
@@ -3886,7 +3887,8 @@ CSSValue* ComputedStyleUtils::ValuesForFontVariantProperty(
       shorthand_case = kNoneLigatures;
     } else if (!(identifier_value &&
                  identifier_value->GetValueID() == CSSValueID::kNormal)) {
-      shorthand_case = kConcatenateNonNormal;
+      shorthand_case = shorthand_case == kNoneLigatures ? kEmptyString
+                                                        : kConcatenateNonNormal;
       break;
     }
   }
@@ -3914,6 +3916,8 @@ CSSValue* ComputedStyleUtils::ValuesForFontVariantProperty(
       }
       return list;
     }
+    case kEmptyString:
+      return nullptr;
     default:
       NOTREACHED();
       return nullptr;

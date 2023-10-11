@@ -16,7 +16,7 @@ PASS Sub properties set from longhand value: ordinal discretionary-ligatures all
 PASS Shorthand from written subproperties: normal
 PASS Shorthand from written subproperties: normal
 PASS Shorthand from written subproperties: none
-PASS Shorthand from written subproperties: no-common-ligatures no-discretionary-ligatures no-historical-ligatures no-contextual all-small-caps
+PASS Shorthand from written subproperties: 
 PASS Shorthand from written subproperties: all-small-caps
 PASS Shorthand from written subproperties: discretionary-ligatures historical-ligatures
 PASS Shorthand from written subproperties: discretionary-ligatures petite-caps

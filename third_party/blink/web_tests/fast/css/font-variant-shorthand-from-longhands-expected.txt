@@ -26,8 +26,8 @@ PASS style.fontVariant is "small-caps proportional-nums ruby"
 PASS computedStyle.fontVariant is "small-caps proportional-nums ruby"
 PASS style.fontVariant is "small-caps ruby"
 PASS computedStyle.fontVariant is "small-caps ruby"
-PASS style.fontVariant is "no-common-ligatures no-discretionary-ligatures no-historical-ligatures no-contextual small-caps ruby"
-PASS computedStyle.fontVariant is "no-common-ligatures no-discretionary-ligatures no-historical-ligatures no-contextual small-caps ruby"
+PASS style.fontVariant is ""
+PASS computedStyle.fontVariant is ""
 PASS style.fontVariant is "initial"
 PASS successfullyParsed is true
 
