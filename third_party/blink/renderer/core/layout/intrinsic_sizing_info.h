@@ -13,14 +13,16 @@ namespace blink {
 struct IntrinsicSizingInfo {
   DISALLOW_NEW();
 
-  IntrinsicSizingInfo() : has_width(true), has_height(true) {}
+  static IntrinsicSizingInfo None() {
+    return {gfx::SizeF(), gfx::SizeF(), false, false};
+  }
 
   // Because they are using float instead of LayoutUnit, we can't use
   // PhysicalSize here.
   gfx::SizeF size;
   gfx::SizeF aspect_ratio;
-  bool has_width;
-  bool has_height;
+  bool has_width = true;
+  bool has_height = true;
 };
 
 }  // namespace blink

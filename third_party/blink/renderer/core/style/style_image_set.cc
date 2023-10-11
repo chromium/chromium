@@ -83,6 +83,16 @@ bool StyleImageSet::IsAccessAllowed(String& failing_url) const {
   return !best_fit_image_ || best_fit_image_->IsAccessAllowed(failing_url);
 }
 
+IntrinsicSizingInfo StyleImageSet::GetNaturalSizingInfo(
+    float multiplier,
+    RespectImageOrientationEnum respect_orientation) const {
+  if (best_fit_image_) {
+    return best_fit_image_->GetNaturalSizingInfo(multiplier,
+                                                 respect_orientation);
+  }
+  return IntrinsicSizingInfo::None();
+}
+
 gfx::SizeF StyleImageSet::ImageSize(
     float multiplier,
     const gfx::SizeF& default_object_size,

@@ -70,6 +70,45 @@ bool StyleCrossfadeImage::IsAccessAllowed(String& failing_url) const {
          (!to_image_ || to_image_->IsAccessAllowed(failing_url));
 }
 
+IntrinsicSizingInfo StyleCrossfadeImage::GetNaturalSizingInfo(
+    float multiplier,
+    RespectImageOrientationEnum respect_orientation) const {
+  if (!from_image_ || !to_image_) {
+    return IntrinsicSizingInfo::None();
+  }
+  // TODO(fs): Consider `respect_orientation`?
+  const IntrinsicSizingInfo from_sizing_info =
+      from_image_->GetNaturalSizingInfo(multiplier, kRespectImageOrientation);
+  const IntrinsicSizingInfo to_sizing_info =
+      to_image_->GetNaturalSizingInfo(multiplier, kRespectImageOrientation);
+
+  // (See `StyleCrossfadeImage::ImageSize()`)
+  if (from_sizing_info.size == to_sizing_info.size &&
+      from_sizing_info.aspect_ratio == to_sizing_info.aspect_ratio &&
+      from_sizing_info.has_width == to_sizing_info.has_width &&
+      from_sizing_info.has_height == to_sizing_info.has_height) {
+    return from_sizing_info;
+  }
+
+  const float percentage = original_value_->Percentage().GetFloatValue();
+  const float inverse_percentage = 1 - percentage;
+  IntrinsicSizingInfo result_sizing_info;
+  result_sizing_info.size =
+      gfx::SizeF(from_sizing_info.size.width() * inverse_percentage +
+                     to_sizing_info.size.width() * percentage,
+                 from_sizing_info.size.height() * inverse_percentage +
+                     to_sizing_info.size.height() * percentage);
+  result_sizing_info.has_width =
+      from_sizing_info.has_width || to_sizing_info.has_width;
+  result_sizing_info.has_height =
+      from_sizing_info.has_height || to_sizing_info.has_height;
+
+  if (result_sizing_info.has_width && result_sizing_info.has_height) {
+    result_sizing_info.aspect_ratio = result_sizing_info.size;
+  }
+  return result_sizing_info;
+}
+
 gfx::SizeF StyleCrossfadeImage::ImageSize(float multiplier,
                                           const gfx::SizeF& default_object_size,
                                           RespectImageOrientationEnum) const {

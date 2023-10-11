@@ -60,6 +60,11 @@ class CORE_EXPORT StylePendingImage final : public StyleImage {
                              bool allow_visited_style) const override;
 
   bool IsAccessAllowed(String&) const override { return true; }
+  IntrinsicSizingInfo GetNaturalSizingInfo(
+      float multiplier,
+      RespectImageOrientationEnum) const override {
+    return IntrinsicSizingInfo();
+  }
   gfx::SizeF ImageSize(float,
                        const gfx::SizeF&,
                        RespectImageOrientationEnum) const override {

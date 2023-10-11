@@ -57,6 +57,9 @@ class StyleImageSet final : public StyleImage {
   bool ErrorOccurred() const override;
   bool IsAccessAllowed(String& failing_url) const override;
 
+  IntrinsicSizingInfo GetNaturalSizingInfo(
+      float multiplier,
+      RespectImageOrientationEnum) const override;
   gfx::SizeF ImageSize(float multiplier,
                        const gfx::SizeF& default_object_size,
                        RespectImageOrientationEnum) const override;

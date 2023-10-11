@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
@@ -149,17 +148,23 @@ bool StyleFetchedImage::IsAccessAllowed(String& failing_url) const {
   return false;
 }
 
-gfx::SizeF StyleFetchedImage::ImageSize(
-    float multiplier,
-    const gfx::SizeF& default_object_size,
-    RespectImageOrientationEnum respect_orientation) const {
+float StyleFetchedImage::ApplyImageResolution(float multiplier) const {
   const Image& image = *image_->GetImage();
   if (image.IsBitmapImage() && override_image_resolution_ > 0.0f) {
     multiplier /= override_image_resolution_;
   } else if (image_->HasDevicePixelRatioHeaderValue()) {
     multiplier /= image_->DevicePixelRatioHeaderValue();
   }
+  return multiplier;
+}
 
+gfx::SizeF StyleFetchedImage::ImageSize(
+    float multiplier,
+    const gfx::SizeF& default_object_size,
+    RespectImageOrientationEnum respect_orientation) const {
+  multiplier = ApplyImageResolution(multiplier);
+
+  const Image& image = *image_->GetImage();
   gfx::SizeF size;
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
     const gfx::SizeF unzoomed_default_object_size =
@@ -170,6 +175,26 @@ gfx::SizeF StyleFetchedImage::ImageSize(
         image.Size(ForceOrientationIfNecessary(respect_orientation)));
   }
   return ApplyZoom(size, multiplier);
+}
+
+IntrinsicSizingInfo StyleFetchedImage::GetNaturalSizingInfo(
+    float multiplier,
+    RespectImageOrientationEnum respect_orientation) const {
+  const Image& image = *image_->GetImage();
+  IntrinsicSizingInfo intrinsic_sizing_info;
+  if (auto* svg_image = DynamicTo<SVGImage>(image)) {
+    svg_image->GetIntrinsicSizingInfo(intrinsic_sizing_info);
+  } else {
+    gfx::SizeF size(
+        image.Size(ForceOrientationIfNecessary(respect_orientation)));
+    intrinsic_sizing_info.size = size;
+    intrinsic_sizing_info.aspect_ratio = size;
+  }
+
+  multiplier = ApplyImageResolution(multiplier);
+  intrinsic_sizing_info.size =
+      ApplyZoom(intrinsic_sizing_info.size, multiplier);
+  return intrinsic_sizing_info;
 }
 
 bool StyleFetchedImage::HasIntrinsicSize() const {

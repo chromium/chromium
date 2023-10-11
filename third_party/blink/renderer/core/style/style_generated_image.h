@@ -55,6 +55,9 @@ class CORE_EXPORT StyleGeneratedImage final : public StyleImage {
 
   bool IsAccessAllowed(String&) const override { return true; }
 
+  IntrinsicSizingInfo GetNaturalSizingInfo(
+      float multiplier,
+      RespectImageOrientationEnum) const override;
   gfx::SizeF ImageSize(float multiplier,
                        const gfx::SizeF& default_object_size,
                        RespectImageOrientationEnum) const override;
