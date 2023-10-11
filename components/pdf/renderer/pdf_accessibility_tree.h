@@ -240,14 +240,21 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   virtual void OnOcrDataReceived(std::vector<PdfOcrRequest> ocr_requests,
                                  std::vector<ui::AXTreeUpdate> tree_updates);
 
-  ui::AXTree& tree_for_testing() { return tree_; }
-
   const ui::AXTreeUpdate* postamble_page_tree_update_for_testing() const {
     return postamble_page_tree_update_.get();
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   bool ShowContextMenu();
+
+  ui::AXTree& tree_for_testing() { return tree_; }
+
+  // Sets the ID of a child tree which this node will be hosting. In this way,
+  // multiple trees could be stitched together. Clears any existing descendants
+  // of the hosting node in order to maintain the consistency of the tree
+  // structure, and because they would be hidden by the child tree anyway.
+  bool SetChildTree(const ui::AXNodeID& target_node_id,
+                    const ui::AXTreeID& child_tree_id);
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
  protected:

@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "ui/accessibility/ax_action_target.h"
+#include "ui/accessibility/ax_tree_id.h"
 
 namespace ui {
 class AXNode;
@@ -53,6 +54,7 @@ class PdfAXActionTarget : public ui::AXActionTarget {
   bool Click() const;
   bool ShowContextMenu() const;
   bool ScrollToGlobalPoint(const gfx::Point& point) const;
+  bool StitchChildTree(const ui::AXTreeID& child_tree_id) const;
 
   const raw_ref<const ui::AXNode, ExperimentalRenderer> target_plugin_node_;
   raw_ptr<PdfAccessibilityTree, ExperimentalRenderer>

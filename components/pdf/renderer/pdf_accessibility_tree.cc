@@ -2429,6 +2429,33 @@ bool PdfAccessibilityTree::ShowContextMenu() {
   return true;
 }
 
+bool PdfAccessibilityTree::SetChildTree(const ui::AXNodeID& target_node_id,
+                                        const ui::AXTreeID& child_tree_id) {
+  ui::AXNode* target_node = tree_.GetFromId(target_node_id);
+  if (!target_node) {
+    return false;
+  }
+  // `nodes_` will be empty once they are unserialized to `tree_`.
+  if (!nodes_.empty()) {
+    // The `tree_` is not yet fully loaded, thus unable to stitch.
+    return false;
+  }
+  content::RenderAccessibility* render_accessibility =
+      GetRenderAccessibilityIfEnabled();
+  if (!render_accessibility) {
+    return false;
+  }
+  ui::AXTreeUpdate tree_update;
+  ui::AXNodeData target_node_data = target_node->data();
+  target_node_data.child_ids = {};
+  target_node_data.AddChildTreeId(child_tree_id);
+  tree_update.root_id = doc_node_->id;
+  tree_update.nodes = {target_node_data};
+  CHECK(tree_.Unserialize(tree_update)) << tree_.error();
+  render_accessibility->SetPluginTreeSource(this);
+  return true;
+}
+
 void PdfAccessibilityTree::HandleAction(
     const chrome_pdf::AccessibilityActionData& action_data) {
   action_handler_->HandleAccessibilityAction(action_data);

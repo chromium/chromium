@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <map>
+#include <memory>
 
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -29,6 +30,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/ax_tree_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/point.h"
@@ -347,14 +349,16 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
     viewport_info_.scale = 1.0;
     viewport_info_.scroll = gfx::Point(0, 0);
     viewport_info_.offset = gfx::Point(0, 0);
-    viewport_info_.selection_start_page_index = 0;
-    viewport_info_.selection_start_char_index = 0;
-    viewport_info_.selection_end_page_index = 0;
-    viewport_info_.selection_end_char_index = 0;
-    doc_info_.page_count = 1;
-    page_info_.page_index = 0;
-    page_info_.text_run_count = 0;
-    page_info_.char_count = 0;
+    viewport_info_.selection_start_page_index = 0u;
+    viewport_info_.selection_start_char_index = 0u;
+    viewport_info_.selection_end_page_index = 0u;
+    viewport_info_.selection_end_char_index = 0u;
+    doc_info_.text_accessible = true;
+    doc_info_.text_copyable = true;
+    doc_info_.page_count = 1u;
+    page_info_.page_index = 0u;
+    page_info_.text_run_count = 0u;
+    page_info_.char_count = 0u;
     page_info_.bounds = gfx::Rect(0, 0, 1, 1);
   }
 
@@ -2209,6 +2213,143 @@ TEST_F(PdfAccessibilityTreeTest, TestShowContextMenuAction) {
   }
 }
 
+TEST_F(PdfAccessibilityTreeTest, StitchChildTreeAction) {
+  CreatePdfAccessibilityTree();
+  text_runs_ = {kFirstTextRun, kSecondTextRun};
+  chars_ = {std::begin(kDummyCharsData), std::end(kDummyCharsData)};
+  page_info_.text_run_count = text_runs_.size();
+  page_info_.char_count = chars_.size();
+  chrome_pdf::AccessibilityImageInfo fake_image = CreateMockInaccessibleImage();
+  fake_image.text_run_index = 1u;
+  fake_image.page_object_index = 0u;
+  page_objects_.images.push_back(fake_image);
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+
+  ui::AXNode fake_root(&pdf_accessibility_tree_->tree_for_testing(),
+                       /*parent=*/nullptr, /*id=*/1,
+                       /*index_in_parent=*/0u);
+  auto child_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kStitchChildTree;
+  action_data.target_tree_id =
+      pdf_accessibility_tree_->tree_for_testing().data().tree_id;
+  action_data.target_node_id = fake_root.id();
+  action_data.child_tree_id = child_tree_id;
+  {
+    std::unique_ptr<ui::AXActionTarget> pdf_action_target =
+        pdf_accessibility_tree_->CreateActionTarget(fake_root);
+    ASSERT_EQ(ui::AXActionTarget::Type::kPdf, pdf_action_target->GetType());
+    EXPECT_FALSE(pdf_action_target->PerformAction(action_data))
+        << "PDF must first be fully loaded.";
+  }
+
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  WaitForThreadTasks();
+
+  ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_NE(nullptr, pdf_root);
+  ASSERT_EQ(ax::mojom::Role::kPdfRoot, pdf_root->GetRole());
+
+  ASSERT_EQ(1u, pdf_root->GetChildCount());
+  ui::AXNode* page = pdf_root->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  ui::AXNode* paragraph = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, paragraph);
+  ASSERT_EQ(2u, paragraph->GetChildCount());
+
+  ui::AXNode* image = paragraph->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, image);
+  ASSERT_EQ(ax::mojom::Role::kImage, image->GetRole());
+
+  std::unique_ptr<ui::AXTreeManager> child_tree_manager;
+  {
+    //
+    // Set up a child tree that will be stitched into the PDF making the above
+    // `image` invisible.
+    //
+
+    ui::AXNodeData root;
+    root.id = 1;
+    ui::AXNodeData button;
+    button.id = 2;
+    ui::AXNodeData static_text;
+    static_text.id = 3;
+    ui::AXNodeData inline_box;
+    inline_box.id = 4;
+
+    root.role = ax::mojom::Role::kRootWebArea;
+    root.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                          true);
+    root.child_ids = {button.id};
+
+    button.role = ax::mojom::Role::kButton;
+    button.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                            true);
+    button.SetName("Button");
+    // Name is not visible in the tree's text representation, i.e. it may be
+    // coming from an aria-label.
+    button.SetNameFrom(ax::mojom::NameFrom::kAttribute);
+    button.relative_bounds.bounds = gfx::RectF(20, 20, 200, 30);
+    button.child_ids = {static_text.id};
+
+    static_text.role = ax::mojom::Role::kStaticText;
+    static_text.SetName("Button's visible text");
+    static_text.child_ids = {inline_box.id};
+
+    inline_box.role = ax::mojom::Role::kInlineTextBox;
+    inline_box.SetName("Button's visible text");
+
+    ui::AXTreeUpdate update;
+    update.root_id = root.id;
+    update.nodes = {root, button, static_text, inline_box};
+    update.has_tree_data = true;
+    update.tree_data.tree_id = child_tree_id;
+    update.tree_data.parent_tree_id =
+        pdf_accessibility_tree_->tree_for_testing().GetAXTreeID();
+    update.tree_data.title = "Generated content";
+
+    auto child_tree = std::make_unique<ui::AXTree>(update);
+    child_tree_manager =
+        std::make_unique<ui::AXTreeManager>(std::move(child_tree));
+  }
+
+  action_data.target_node_id = paragraph->id();
+  {
+    std::unique_ptr<ui::AXActionTarget> pdf_action_target =
+        pdf_accessibility_tree_->CreateActionTarget(*paragraph);
+    ASSERT_EQ(ui::AXActionTarget::Type::kPdf, pdf_action_target->GetType());
+    EXPECT_TRUE(pdf_action_target->PerformAction(action_data));
+  }
+
+  // Fetch `paragraph` again since its pointer would have been invalidated.
+  paragraph = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, paragraph);
+  ASSERT_EQ(ax::mojom::Role::kParagraph, paragraph->GetRole());
+  EXPECT_EQ(child_tree_id.ToString(),
+            paragraph->data().GetStringAttribute(
+                ax::mojom::StringAttribute::kChildTreeId));
+  EXPECT_EQ(1u, paragraph->GetChildCountCrossingTreeBoundary());
+
+  const ui::AXNode* child_root =
+      paragraph->GetChildAtIndexCrossingTreeBoundary(0u);
+  ASSERT_NE(nullptr, child_root);
+  EXPECT_EQ(ax::mojom::Role::kRootWebArea, child_root->GetRole());
+  const ui::AXNode* button = child_root->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, button);
+  EXPECT_EQ(ax::mojom::Role::kButton, button->GetRole());
+  const ui::AXNode* static_text = button->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, static_text);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static_text->GetRole());
+  const ui::AXNode* inline_box = static_text->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, inline_box);
+  EXPECT_EQ(ax::mojom::Role::kInlineTextBox, inline_box->GetRole());
+  EXPECT_EQ(0u, inline_box->GetChildCount());
+}
+
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 struct PdfOcrServiceTestBatchData {
   uint32_t page_count;
@@ -2233,8 +2374,6 @@ class PdfOcrServiceTest
       bool create_empty_results) {
     ASSERT_TRUE(pdf_accessibility_tree_);
     doc_info_.page_count = page_count;
-    doc_info_.text_accessible = true;
-    doc_info_.text_copyable = true;
 
     chrome_pdf::AccessibilityImageInfo image = CreateMockInaccessibleImage();
     ASSERT_EQ(0u, image.text_run_index)
