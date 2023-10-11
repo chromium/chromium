@@ -39,7 +39,7 @@ class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
   // `src` maybe specified in `src_bit_depth` (relevant only for YUV to RGB
   // conversion). The filter also applies the offset `src_resource_offset` and
   // then scales by `src_resource_multiplier`. Apply tone mapping of `src` is
-  // HLG or PQ, using `sdr_max_luminance_nits`, `src_hdr_metadata`, and
+  // HLG or PQ, using `src_hdr_metadata`, `dst_sdr_max_luminance_nits`, and
   // `dst_max_luminance_relative` as parameters.
   sk_sp<SkColorFilter> Get(const gfx::ColorSpace& src,
                            const gfx::ColorSpace& dst,
@@ -47,18 +47,18 @@ class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
                            float resource_multiplier,
                            absl::optional<uint32_t> src_bit_depth,
                            absl::optional<gfx::HDRMetadata> src_hdr_metadata,
-                           float sdr_max_luminance_nits,
+                           float dst_sdr_max_luminance_nits,
                            float dst_max_luminance_relative);
 
   // Return if ApplyToneCurve can be called on `image`.
   static bool UseToneCurve(sk_sp<SkImage> image);
 
-  // Perform global tone mapping on `image`, using `sdr_max_luminance_nits`,
+  // Perform global tone mapping on `image`, using `dst_sdr_max_luminance_nits`,
   // `dst_max_luminance_relative`, and `src_hdr_metadata`. The resulting image
   // will be in Rec2020 linear space, and will not have mipmaps.
   sk_sp<SkImage> ApplyToneCurve(sk_sp<SkImage> image,
                                 absl::optional<HDRMetadata> src_hdr_metadata,
-                                float sdr_max_luminance_nits,
+                                float dst_sdr_max_luminance_nits,
                                 float dst_max_luminance_relative,
                                 GrDirectContext* gr_context,
                                 skgpu::graphite::Recorder* graphite_recorder);
@@ -83,12 +83,12 @@ class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
     Key(const gfx::ColorSpace& src,
         uint32_t src_bit_depth,
         const gfx::ColorSpace& dst,
-        float sdr_max_luminance_nits);
+        float dst_sdr_max_luminance_nits);
 
     gfx::ColorSpace src;
     uint32_t src_bit_depth = 0;
     gfx::ColorSpace dst;
-    float sdr_max_luminance_nits = 0.f;
+    float dst_sdr_max_luminance_nits = 0.f;
 
     bool operator==(const Key& other) const;
     bool operator!=(const Key& other) const;

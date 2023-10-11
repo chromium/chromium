@@ -89,7 +89,7 @@ bool ColorConversionSkFilterCache::Key::Key::operator==(
     const Key& other) const {
   return src == other.src && src_bit_depth == other.src_bit_depth &&
          dst == other.dst &&
-         sdr_max_luminance_nits == other.sdr_max_luminance_nits;
+         dst_sdr_max_luminance_nits == other.dst_sdr_max_luminance_nits;
 }
 
 bool ColorConversionSkFilterCache::Key::operator!=(const Key& other) const {
@@ -97,19 +97,19 @@ bool ColorConversionSkFilterCache::Key::operator!=(const Key& other) const {
 }
 
 bool ColorConversionSkFilterCache::Key::operator<(const Key& other) const {
-  return std::tie(src, src_bit_depth, dst, sdr_max_luminance_nits) <
+  return std::tie(src, src_bit_depth, dst, dst_sdr_max_luminance_nits) <
          std::tie(other.src, other.src_bit_depth, other.dst,
-                  other.sdr_max_luminance_nits);
+                  other.dst_sdr_max_luminance_nits);
 }
 
 ColorConversionSkFilterCache::Key::Key(const gfx::ColorSpace& src,
                                        uint32_t src_bit_depth,
                                        const gfx::ColorSpace& dst,
-                                       float sdr_max_luminance_nits)
+                                       float dst_sdr_max_luminance_nits)
     : src(src),
       src_bit_depth(src_bit_depth),
       dst(dst),
-      sdr_max_luminance_nits(sdr_max_luminance_nits) {}
+      dst_sdr_max_luminance_nits(dst_sdr_max_luminance_nits) {}
 
 ColorConversionSkFilterCache::Value::Value() = default;
 
@@ -132,7 +132,7 @@ sk_sp<SkColorFilter> ColorConversionSkFilterCache::Get(
     float resource_multiplier,
     absl::optional<uint32_t> src_bit_depth,
     absl::optional<gfx::HDRMetadata> src_hdr_metadata,
-    float sdr_max_luminance_nits,
+    float dst_sdr_max_luminance_nits,
     float dst_max_luminance_relative) {
   // Set unused parameters to bogus values, so that they do not result in
   // different keys for the same conversion.
@@ -143,14 +143,15 @@ sk_sp<SkColorFilter> ColorConversionSkFilterCache::Get(
     src_hdr_metadata = absl::nullopt;
     dst_max_luminance_relative = 0;
 
-    // If neither source nor destination will use `sdr_max_luminance_nits`, then
-    // set it to a nonsense value.
+    // If neither source nor destination will use `dst_sdr_max_luminance_nits`,
+    // then set it to a nonsense value.
     if (!dst.IsAffectedBySDRWhiteLevel() && !src.IsAffectedBySDRWhiteLevel()) {
-      sdr_max_luminance_nits = 0;
+      dst_sdr_max_luminance_nits = 0;
     }
   }
 
-  const Key key(src, src_bit_depth.value_or(0), dst, sdr_max_luminance_nits);
+  const Key key(src, src_bit_depth.value_or(0), dst,
+                dst_sdr_max_luminance_nits);
   Value& value = cache_[key];
 
   if (!value.effect) {
@@ -166,8 +167,8 @@ sk_sp<SkColorFilter> ColorConversionSkFilterCache::Get(
   gfx::ColorTransform::RuntimeOptions options;
   options.offset = resource_offset;
   options.multiplier = resource_multiplier;
-  options.sdr_max_luminance_nits = sdr_max_luminance_nits;
   options.src_hdr_metadata = src_hdr_metadata;
+  options.dst_sdr_max_luminance_nits = dst_sdr_max_luminance_nits;
   options.dst_max_luminance_relative = dst_max_luminance_relative;
   return value.effect->makeColorFilter(
       value.transform->GetSkShaderUniforms(options));
@@ -264,7 +265,7 @@ bool ColorConversionSkFilterCache::UseToneCurve(sk_sp<SkImage> image) {
 sk_sp<SkImage> ColorConversionSkFilterCache::ApplyToneCurve(
     sk_sp<SkImage> image,
     absl::optional<HDRMetadata> src_hdr_metadata,
-    float sdr_max_luminance_nits,
+    float dst_sdr_max_luminance_nits,
     float dst_max_luminance_relative,
     GrDirectContext* gr_context,
     skgpu::graphite::Recorder* graphite_recorder) {
@@ -292,7 +293,7 @@ sk_sp<SkImage> ColorConversionSkFilterCache::ApplyToneCurve(
       Get(image_color_space, target_color_space,
           /*resource_offset=*/0, /*resource_multiplier=*/1,
           /*src_bit_depth=*/absl::nullopt, src_hdr_metadata,
-          sdr_max_luminance_nits, dst_max_luminance_relative);
+          dst_sdr_max_luminance_nits, dst_max_luminance_relative);
   SkPaint paint;
   paint.setBlendMode(SkBlendMode::kSrc);
   paint.setColorFilter(filter);

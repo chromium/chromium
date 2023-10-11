@@ -62,7 +62,7 @@ bool IsHlgPqSdrRelative() {
 struct SkShaderUniforms {
   float offset = 0.f;
   float multiplier = 0.f;
-  float sdr_max_luminance_nits = ColorSpace::kDefaultSDRWhiteLevel;
+  float dst_sdr_max_luminance_nits = ColorSpace::kDefaultSDRWhiteLevel;
   float pq_tonemap_a = 1.f;
   float pq_tonemap_b = 1.f;
   float hlg_ootf_gamma_minus_one = 0.f;
@@ -920,7 +920,7 @@ class ColorTransformHLG_OOTF : public ColorTransformStep {
       const gfx::ColorTransform::RuntimeOptions& options,
       float& gamma_minus_one) {
     const float dst_max_luminance_nits =
-        options.sdr_max_luminance_nits * options.dst_max_luminance_relative;
+        options.dst_sdr_max_luminance_nits * options.dst_max_luminance_relative;
     gamma_minus_one =
         1.2f +
         0.42f * logf(dst_max_luminance_nits / kHLGRefMaxLumNits) / logf(10.f) -
@@ -1012,7 +1012,7 @@ class ColorTransformToneMapInRec2020Linear : public ColorTransformStep {
     if (IsHlgPqSdrRelative()) {
       return src_max_lum_nits / ColorSpace::kDefaultSDRWhiteLevel;
     }
-    return src_max_lum_nits / options.sdr_max_luminance_nits;
+    return src_max_lum_nits / options.dst_sdr_max_luminance_nits;
   }
   // Computes the constants used by the tone mapping algorithm described in
   // https://colab.research.google.com/drive/1hI10nq6L6ru_UFvz7-f7xQaQp0qarz_K
@@ -1036,8 +1036,10 @@ class ColorTransformToneMapInRec2020Linear : public ColorTransformStep {
 
 // Converts from nits-relative (where 1.0 is `unity_nits` nits) to SDR-relative
 // (where 1.0 is SDR white). If `use_default_sdr_white` is true then use 203
-// nits for SDR white, otherwise use `RuntimeOptions::sdr_max_luminance_nits`
-// for SDR white.
+// nits for SDR white, otherwise use
+// `RuntimeOptions::dst_sdr_max_luminance_nits` for SDR white.
+// TODO(https://crbug.com/1421266, https://crbug.com/1483235): Use source HDR
+// metadata for this conversion.
 class ColorTransformNitsToSdrRelative : public ColorTransformStep {
  public:
   ColorTransformNitsToSdrRelative(float unity_nits, bool use_default_sdr_white)
@@ -1050,7 +1052,7 @@ class ColorTransformNitsToSdrRelative : public ColorTransformStep {
                  const ColorTransform::RuntimeOptions& options) const override {
     const float sdr_white_nits = use_default_sdr_white_
                                      ? ColorSpace::kDefaultSDRWhiteLevel
-                                     : options.sdr_max_luminance_nits;
+                                     : options.dst_sdr_max_luminance_nits;
     const float factor = unity_nits_ / sdr_white_nits;
     for (size_t i = 0; i < num; i++) {
       color[i].Scale(factor);
@@ -1061,12 +1063,12 @@ class ColorTransformNitsToSdrRelative : public ColorTransformStep {
     if (use_default_sdr_white_) {
       *src << ColorSpace::kDefaultSDRWhiteLevel << ";";
     } else {
-      *src << "sdr_max_luminance_nits;\n";
+      *src << "dst_sdr_max_luminance_nits;\n";
     }
   }
   void SetShaderUniforms(const ColorTransform::RuntimeOptions& options,
                          SkShaderUniforms* uniforms) const override {
-    uniforms->sdr_max_luminance_nits = options.sdr_max_luminance_nits;
+    uniforms->dst_sdr_max_luminance_nits = options.dst_sdr_max_luminance_nits;
   }
 
  private:
@@ -1075,8 +1077,8 @@ class ColorTransformNitsToSdrRelative : public ColorTransformStep {
 };
 
 // Converts from SDR-relative (where 1.0 is SDR white) to nits-relative (where
-// 1.0 is `unity_nits` nits). Use `RuntimeOptions::sdr_max_luminance_nits` for
-// the number of nits of SDR white.
+// 1.0 is `unity_nits` nits). Use `RuntimeOptions::dst_sdr_max_luminance_nits`
+// for the number of nits of SDR white.
 class ColorTransformSdrToNitsRelative : public ColorTransformStep {
  public:
   explicit ColorTransformSdrToNitsRelative(float unity_nits)
@@ -1086,18 +1088,18 @@ class ColorTransformSdrToNitsRelative : public ColorTransformStep {
   void Transform(ColorTransform::TriStim* color,
                  size_t num,
                  const ColorTransform::RuntimeOptions& options) const override {
-    const float factor = options.sdr_max_luminance_nits / unity_nits_;
+    const float factor = options.dst_sdr_max_luminance_nits / unity_nits_;
     for (size_t i = 0; i < num; i++) {
       color[i].Scale(factor);
     }
   }
   void AppendSkShaderSource(std::stringstream* src) const override {
-    *src << "  color.rgb *= (sdr_max_luminance_nits / " << unity_nits_
+    *src << "  color.rgb *= (dst_sdr_max_luminance_nits / " << unity_nits_
          << ");\n";
   }
   void SetShaderUniforms(const ColorTransform::RuntimeOptions& options,
                          SkShaderUniforms* uniforms) const override {
-    uniforms->sdr_max_luminance_nits = options.sdr_max_luminance_nits;
+    uniforms->dst_sdr_max_luminance_nits = options.dst_sdr_max_luminance_nits;
   }
 
  private:
@@ -1327,7 +1329,7 @@ sk_sp<SkRuntimeEffect> ColorTransformInternal::GetSkRuntimeEffect() const {
 
   src << "uniform half offset;\n"
       << "uniform half multiplier;\n"
-      << "uniform half sdr_max_luminance_nits;\n"
+      << "uniform half dst_sdr_max_luminance_nits;\n"
       << "uniform half pq_tonemap_a;\n"
       << "uniform half pq_tonemap_b;\n"
       << "uniform half hlg_ootf_gamma_minus_one;\n"

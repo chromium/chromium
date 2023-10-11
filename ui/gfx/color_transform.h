@@ -46,15 +46,15 @@ class COLOR_SPACE_EXPORT ColorTransform {
     float offset = 0.f;
     float multiplier = 1.f;
 
-    // Used for interpreting color spaces whose definition depends on an SDR
-    // white point and for tone mapping.
-    float sdr_max_luminance_nits = ColorSpace::kDefaultSDRWhiteLevel;
-
     // Used for tone mapping PQ sources.
     absl::optional<gfx::HDRMetadata> src_hdr_metadata;
 
+    // Used for interpreting color spaces whose definition depends on an SDR
+    // white point and for tone mapping.
+    float dst_sdr_max_luminance_nits = ColorSpace::kDefaultSDRWhiteLevel;
+
     // The maximum luminance value for the destination, as a multiple of
-    // `sdr_max_luminance_nits` (so this is 1 for SDR displays).
+    // `dst_sdr_max_luminance_nits` (so this is 1 for SDR displays).
     float dst_max_luminance_relative = 1.f;
   };
 
