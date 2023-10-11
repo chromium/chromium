@@ -226,7 +226,9 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     }
     [stackView addArrangedSubview:contentView];
 
-    self.accessibilityElements = @[ _title, contentView ];
+    self.accessibilityElements = [self shouldShowSubtitle]
+                                     ? @[ _title, _subtitle, contentView ]
+                                     : @[ _title, contentView ];
 
     _contentViewWidthAnchor = [contentView.widthAnchor
         constraintEqualToConstant:[self contentViewWidth]];

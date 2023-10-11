@@ -135,6 +135,14 @@ int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
   [self createSubviews];
 }
 
+- (NSString*)accessibilityLabel {
+  return
+      [NSString stringWithFormat:@"%@, %@", [self titleText],
+                                 _layoutType == SafetyCheckItemLayoutType::kHero
+                                     ? [self descriptionText]
+                                     : [self compactDescriptionText]];
+}
+
 #pragma mark - Private
 
 - (void)handleTap:(UITapGestureRecognizer*)sender {
