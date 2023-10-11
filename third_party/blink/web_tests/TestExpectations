@@ -6787,3 +6787,6 @@ crbug.com/1476826 [ Win ] http/tests/xmlhttprequest/small-chunks-response-text.h
 crbug.com/1491468 [ Linux ] external/wpt/html/semantics/popovers/popover-light-dismiss.html [ Failure Pass ]
 
 crbug.com/1491468 [ Linux ] virtual/popover-hint-disabled/external/wpt/html/semantics/popovers/popover-light-dismiss.html [ Failure Pass ]
+
+# Gardener 2023-10-11
+crbug.com/1491918 [ Mac ] fast/scrolling/scroll-animation-on-by-default.html [ Failure Pass ]
