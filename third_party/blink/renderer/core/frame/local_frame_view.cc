@@ -1805,8 +1805,8 @@ void LocalFrameView::InitializeRootScroller() {
   viewport_scrollable_area_ = root_frame_viewport;
 
   DCHECK(frame_->GetDocument());
-  page->GlobalRootScrollerController().InitializeViewportScrollCallback(
-      *root_frame_viewport, *frame_->GetDocument());
+  page->GlobalRootScrollerController().Initialize(*root_frame_viewport,
+                                                  *frame_->GetDocument());
 }
 
 Color LocalFrameView::DocumentBackgroundColor() {
