@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/lacros_launcher.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_launcher.h"
@@ -174,14 +175,8 @@ bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line,
     return false;
   }
 
-  KioskAppManager* app_manager = KioskAppManager::Get();
-  WebKioskAppManager* web_app_manager = WebKioskAppManager::Get();
-  ArcKioskAppManager* arc_app_manager = ArcKioskAppManager::Get();
-
   return command_line.HasSwitch(switches::kLoginManager) &&
-         (app_manager->IsAutoLaunchEnabled() ||
-          web_app_manager->GetAutoLaunchAccountId().is_valid() ||
-          arc_app_manager->GetAutoLaunchAccountId().is_valid()) &&
+         KioskController::Get().GetAutoLaunchApp().has_value() &&
          KioskAppLaunchError::Get() == KioskAppLaunchError::Error::kNone &&
          // IsOobeCompleted() is needed to prevent kiosk session start in case
          // of enterprise rollback, when keeping the enrollment, policy, not

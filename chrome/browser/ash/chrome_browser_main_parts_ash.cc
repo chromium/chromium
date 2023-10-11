@@ -25,6 +25,7 @@
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
 #include "ash/webui/camera_app_ui/document_scanner_installer.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -51,6 +52,7 @@
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/arc/memory_pressure/container_app_killer.h"
@@ -970,6 +972,10 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   kiosk_app_manager_ = std::make_unique<KioskAppManager>();
   arc_kiosk_app_manager_ = std::make_unique<ArcKioskAppManager>();
   web_kiosk_app_manager_ = std::make_unique<WebKioskAppManager>();
+  kiosk_controller_ = std::make_unique<KioskController>(
+      CHECK_DEREF(web_kiosk_app_manager_.get()),
+      CHECK_DEREF(kiosk_app_manager_.get()),
+      CHECK_DEREF(arc_kiosk_app_manager_.get()));
 
   if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting)) {
     DeviceNameStore::Initialize(g_browser_process->local_state(),
@@ -1132,8 +1138,8 @@ void GuestLanguageSetCallbackData::Callback(
   // The previous one must be "locale default layout".
   // First, enable all hardware input methods.
   input_methods = manager->GetInputMethodUtil()->GetHardwareInputMethodIds();
-  for (size_t i = 0; i < input_methods.size(); ++i) {
-    ime_state->EnableInputMethod(input_methods[i]);
+  for (const auto& input_method : input_methods) {
+    ime_state->EnableInputMethod(input_method);
   }
 
   // Second, enable locale based input methods.
@@ -1401,7 +1407,7 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   // later initializer.
   PeripheralNotificationManager::Initialize(
       user_manager::UserManager::Get()->IsLoggedInAsGuest(),
-      /*initial_state=*/false);
+      /*is_pcie_tunneling_allowed=*/false);
   Shell::Get()
       ->pcie_peripheral_notification_controller()
       ->OnPeripheralNotificationManagerInitialized();
@@ -1606,6 +1612,9 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // Let the AutomaticRebootManager unregister itself as an observer of several
   // subsystems.
   g_browser_process->platform_part()->ShutdownAutomaticRebootManager();
+
+  // Clean before the Kiosk web, Chrome app, and ARC app managers.
+  kiosk_controller_.reset();
 
   // Clean up dependency on CrosSettings and stop pending data fetches.
   kiosk_app_manager_.reset();

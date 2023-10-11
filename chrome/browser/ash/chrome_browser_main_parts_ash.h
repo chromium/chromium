@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/external_metrics.h"
 #include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
@@ -28,11 +29,9 @@ class ArcServiceLauncher;
 class ContainerAppKiller;
 }  // namespace arc
 
-namespace chromeos {
-namespace default_app_order {
+namespace chromeos::default_app_order {
 class ExternalLoader;
-}
-}  // namespace chromeos
+}  // namespace chromeos::default_app_order
 
 namespace crosapi {
 class BrowserManager;
@@ -223,6 +222,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<ArcKioskAppManager> arc_kiosk_app_manager_;
   std::unique_ptr<WebKioskAppManager> web_kiosk_app_manager_;
   std::unique_ptr<KioskAppManager> kiosk_app_manager_;
+  std::unique_ptr<KioskController> kiosk_controller_;
   std::unique_ptr<MultiCaptureNotifications> multi_capture_notifications_;
 
   std::unique_ptr<ShortcutMappingPrefService> shortcut_mapping_pref_service_;
