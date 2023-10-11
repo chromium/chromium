@@ -57,7 +57,7 @@ void AddThemedSysColorOverrides(ColorMixer& mixer,
                                               : kColorRefPrimary90};
   mixer[kColorSysNeutralContainer] = {dark_mode ? kColorRefNeutralVariant15
                                                 : kColorRefNeutral94};
-  mixer[kColorSysDivider] = {dark_mode ? kColorRefSecondary25
+  mixer[kColorSysDivider] = {dark_mode ? kColorRefSecondary35
                                        : kColorRefPrimary90};
 
   // Chrome surfaces.
@@ -67,8 +67,6 @@ void AddThemedSysColorOverrides(ColorMixer& mixer,
                                              : kColorSysSurface4};
   mixer[kColorSysBaseContainerElevated] = {dark_mode ? kColorRefSecondary25
                                                      : kColorRefNeutral98};
-  mixer[kColorSysOnBaseDivider] = {dark_mode ? kColorRefSecondary35
-                                             : kColorRefPrimary90};
 
   mixer[kColorSysHeader] = {dark_mode ? kColorRefSecondary12
                                       : kColorRefSecondary90};
@@ -97,9 +95,11 @@ void AddGrayscaleSysColorOverrides(ColorMixer& mixer,
                                    const ColorProviderKey& key) {
   const bool dark_mode = key.color_mode == ColorProviderKey::ColorMode::kDark;
 
+  // General
+  mixer[kColorSysDivider] = {dark_mode ? kColorRefNeutral40
+                                       : kColorRefNeutral90};
+
   // Chrome surfaces.
-  mixer[kColorSysOnBaseDivider] = {dark_mode ? kColorRefNeutral40
-                                             : kColorRefNeutral90};
   mixer[kColorSysHeader] = {dark_mode ? kColorRefNeutral12
                                       : kColorRefNeutral90};
   mixer[kColorSysHeaderInactive] = {
@@ -255,7 +255,7 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
                                               : kColorRefNeutral80};
   mixer[kColorSysNeutralContainer] = {dark_mode ? kColorRefNeutral15
                                                 : kColorRefNeutral95};
-  mixer[kColorSysDivider] = {dark_mode ? kColorRefNeutral30
+  mixer[kColorSysDivider] = {dark_mode ? kColorRefNeutral40
                                        : kColorRefPrimary90};
 
   // Chrome surfaces.
@@ -264,8 +264,6 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
                                              : kColorSysSurface4};
   mixer[kColorSysBaseContainerElevated] = {dark_mode ? kColorRefNeutral25
                                                      : kColorRefNeutral100};
-  mixer[kColorSysOnBaseDivider] = {dark_mode ? kColorRefNeutral40
-                                             : kColorRefPrimary90};
 
   mixer[kColorSysHeader] = {dark_mode ? kColorRefNeutral12
                                       : kColorRefPrimary90};

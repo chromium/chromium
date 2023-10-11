@@ -82,7 +82,7 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
                                                         : kColorRefSecondary0};
   mixer[kColorFrameInactive] = {kColorSysHeaderInactive};
   mixer[kColorIcon] = {kColorSysOnSurfaceSubtle};
-  mixer[kColorHistoryClustersSidePanelDivider] = {kColorSysOnBaseDivider};
+  mixer[kColorHistoryClustersSidePanelDivider] = {kColorSysDivider};
   mixer[kColorHistoryClustersSidePanelDialogBackground] = {kColorSysSurface};
   mixer[kColorHistoryClustersSidePanelDialogDivider] = {
       kColorSysNeutralOutline};
