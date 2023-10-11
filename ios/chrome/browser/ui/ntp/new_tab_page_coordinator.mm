@@ -548,7 +548,7 @@
   if (self.browser->GetBrowserState()->IsOffTheRecord()) {
     return YES;
   }
-  return self.NTPViewController.fakeOmniboxPinnedToTop;
+  return self.NTPViewController.isFakeboxPinned;
 }
 
 #pragma mark - Setters

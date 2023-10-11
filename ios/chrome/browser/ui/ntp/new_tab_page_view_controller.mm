@@ -57,7 +57,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
 // Whether or not the fake omnibox is pinned to the top of the NTP. Redefined
 // to make readwrite.
-@property(nonatomic, assign) BOOL fakeOmniboxPinnedToTop;
+@property(nonatomic, assign) BOOL isFakeboxPinned;
 
 // Array of constraints used to pin the fake Omnibox header into the top of the
 // view.
@@ -607,7 +607,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 }
 
 - (void)updateScrollPositionForFeedTopSectionClosed {
-  if (self.fakeOmniboxPinnedToTop) {
+  if (self.isFakeboxPinned) {
     [self setContentOffset:[self scrollPosition] + [self feedTopSectionHeight]];
   }
 }
@@ -662,7 +662,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 }
 
 - (void)omniboxWillResignFirstResponder {
-  if (IsIOSLargeFakeboxEnabled() && [self fakeOmniboxPinnedToTop]) {
+  if (IsIOSLargeFakeboxEnabled() && [self isFakeboxPinned]) {
     // Return early to allow the omnibox defocus animation show.
     return;
   }
@@ -1021,13 +1021,13 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
 // Pins the fake omnibox to the top of the NTP.
 - (void)pinFakeOmniboxToTop {
-  self.fakeOmniboxPinnedToTop = YES;
+  self.isFakeboxPinned = YES;
   [self stickFakeOmniboxToTop];
 }
 
 // Resets the fake omnibox to its original position.
 - (void)resetFakeOmniboxConstraints {
-  self.fakeOmniboxPinnedToTop = NO;
+  self.isFakeboxPinned = NO;
   [self setInitialFakeOmniboxConstraints];
 }
 
@@ -1237,13 +1237,13 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   // Handles the sticky omnibox. Does not stick for iPads.
   if ([self shouldPinFakeOmnibox]) {
     if (scrollPosition > [self offsetToStickOmnibox] &&
-        (!self.fakeOmniboxPinnedToTop || force)) {
+        (!self.isFakeboxPinned || force)) {
       [self pinFakeOmniboxToTop];
     } else if (scrollPosition <= [self offsetToStickOmnibox] &&
-               (self.fakeOmniboxPinnedToTop || force)) {
+               (self.isFakeboxPinned || force)) {
       [self resetFakeOmniboxConstraints];
     }
-  } else if (self.fakeOmniboxPinnedToTop) {
+  } else if (self.isFakeboxPinned) {
     [self resetFakeOmniboxConstraints];
   }
 

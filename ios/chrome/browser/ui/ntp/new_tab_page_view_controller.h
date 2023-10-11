@@ -76,7 +76,7 @@
 @property(nonatomic, weak) id<NewTabPageMutator> mutator;
 
 // Whether or not the fake omnibox is pinned to the top of the NTP.
-@property(nonatomic, readonly) BOOL fakeOmniboxPinnedToTop;
+@property(nonatomic, readonly) BOOL isFakeboxPinned;
 
 // Initializes the new tab page view controller.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
