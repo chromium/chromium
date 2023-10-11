@@ -612,8 +612,10 @@ HRESULT OSUserManager::FindUserBySID(const wchar_t* sid,
     wcscpy_s(domain, domain_size, local_domain_buffer);
   }
 
-  LOGFN(VERBOSE) << "username=" << std::wstring(username)
-                 << " domain=" << std::wstring(domain);
+  std::wstring username_str = (username == nullptr) ? L"" : username;
+  std::wstring domain_str = (domain == nullptr) ? L"" : domain;
+  LOGFN(VERBOSE) << "username=" << username_str << " domain=" << domain_str;
+
   ::LocalFree(psid);
   return hr;
 }

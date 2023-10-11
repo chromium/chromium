@@ -539,18 +539,26 @@ AssociatedUserValidator::GetAuthEnforceReason(const std::wstring& sid) {
   LOGFN(VERBOSE);
 
   // Is user not associated, then we shouldn't have any auth enforcement.
-  if (!IsUserAssociated(sid))
+  if (!IsUserAssociated(sid)) {
+    LOGFN(VERBOSE) << "IsUserAssociated is false, not forcing auth";
     return AssociatedUserValidator::EnforceAuthReason::NOT_ENFORCED;
+  }
 
   // Check if online sign in is enforced.
-  if (IsOnlineLoginEnforced(sid))
+  if (IsOnlineLoginEnforced(sid)) {
+    LOGFN(VERBOSE) << "IsOnlineLoginEnforced is true, forcing auth";
     return AssociatedUserValidator::EnforceAuthReason::ONLINE_LOGIN_ENFORCED;
+  }
 
   // All token handles are valid when no internet connection is available.
   if (!HasInternetConnection()) {
     if (!IsOnlineLoginStale(sid)) {
+      LOGFN(VERBOSE) << "HasInternetConnectionis false and IsOnlineLoginStale "
+                        "is false - not forcing auth";
       return AssociatedUserValidator::EnforceAuthReason::NOT_ENFORCED;
     }
+    LOGFN(VERBOSE) << "HasInternetConnectionis false and IsOnlineLoginStale is "
+                      "true - forcing auth";
     return AssociatedUserValidator::EnforceAuthReason::ONLINE_LOGIN_STALE;
   }
 
@@ -559,14 +567,18 @@ AssociatedUserValidator::GetAuthEnforceReason(const std::wstring& sid) {
   // user.
   if (UserPoliciesManager::Get()->CloudPoliciesEnabled() &&
       UserPoliciesManager::Get()->IsUserPolicyStaleOrMissing(sid)) {
+    LOGFN(VERBOSE) << "CloudPolicies enabled and  >IsUserPolicyStaleOrMissing "
+                      "is true - forcing auth";
     return AssociatedUserValidator::EnforceAuthReason::
         MISSING_OR_STALE_USER_POLICIES;
   }
 
   // Force a reauth only for this user if mdm enrollment is needed, so that they
   // enroll.
-  if (NeedsToEnrollWithMdm(sid))
+  if (NeedsToEnrollWithMdm(sid)) {
+    LOGFN(VERBOSE) << "NeedsToEnrollWithMdm is true, forcing auth";
     return AssociatedUserValidator::EnforceAuthReason::NOT_ENROLLED_WITH_MDM;
+  }
 
   if (PasswordRecoveryEnabled()) {
     std::wstring store_key = GetUserPasswordLsaStoreKey(sid);
@@ -580,10 +592,13 @@ AssociatedUserValidator::GetAuthEnforceReason(const std::wstring& sid) {
     }
   }
 
-  if (!IsTokenHandleValidForUser(sid))
+  if (!IsTokenHandleValidForUser(sid)) {
+    LOGFN(VERBOSE) << "IsTokenHandleValidForUser is false, forcing auth";
     return AssociatedUserValidator::EnforceAuthReason::INVALID_TOKEN_HANDLE;
+  }
 
   if (UploadDeviceDetailsNeeded(sid)) {
+    LOGFN(VERBOSE) << "UploadDeviceDetailsNeeded is true, forcing auth";
     return AssociatedUserValidator::EnforceAuthReason::
         UPLOAD_DEVICE_DETAILS_FAILED;
   }
