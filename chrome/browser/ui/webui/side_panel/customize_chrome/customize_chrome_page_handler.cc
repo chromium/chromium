@@ -259,35 +259,51 @@ void CustomizeChromePageHandler::OnDescriptorsJsonParsed(
 
   const base::Value::List* descriptor_a =
       result->GetDict().FindList("descriptor_a");
-  if (!descriptor_a) {
-    DVLOG(1) << "Parsing JSON failed: " << result.error();
+  const base::Value::List* descriptor_b =
+      result->GetDict().FindList("descriptor_b");
+  if (!descriptor_a && !descriptor_b) {
+    DVLOG(1) << "Parsing JSON failed: no valid descriptors.";
     std::move(get_descriptors_callback_).Run(nullptr);
     return;
   }
 
-  auto mojo_descriptors = side_panel::mojom::Descriptors::New();
   std::vector<side_panel::mojom::DescriptorAPtr> mojo_descriptor_a_list;
-  for (const auto& descriptor : *descriptor_a) {
-    const base::Value::Dict& descriptor_dict = descriptor.GetDict();
-    auto* category = descriptor_dict.FindString("category");
-    auto* label_values = descriptor_dict.FindList("labels");
-    if (!category || !label_values) {
-      continue;
+  if (descriptor_a) {
+    for (const auto& descriptor : *descriptor_a) {
+      const base::Value::Dict& descriptor_a_dict = descriptor.GetDict();
+      auto* category = descriptor_a_dict.FindString("category");
+      auto* label_values = descriptor_a_dict.FindList("labels");
+      if (!category || !label_values) {
+        continue;
+      }
+      auto mojo_descriptor_a = side_panel::mojom::DescriptorA::New();
+      mojo_descriptor_a->category = *category;
+      std::vector<std::string> labels;
+      for (const auto& label_value : *label_values) {
+        labels.push_back(label_value.GetString());
+      }
+      mojo_descriptor_a->labels = std::move(labels);
+      mojo_descriptor_a_list.push_back(std::move(mojo_descriptor_a));
     }
-    auto mojo_descriptor_a = side_panel::mojom::DescriptorA::New();
-    mojo_descriptor_a->category = *category;
-    std::vector<std::string> labels;
-    for (const auto& label_value : *label_values) {
-      labels.push_back(label_value.GetString());
-    }
-    mojo_descriptor_a->labels = std::move(labels);
-    mojo_descriptor_a_list.push_back(std::move(mojo_descriptor_a));
   }
-  if (mojo_descriptor_a_list.empty()) {
-    std::move(get_descriptors_callback_).Run(nullptr);
-    return;
-  }
+  auto mojo_descriptors = side_panel::mojom::Descriptors::New();
   mojo_descriptors->descriptor_a = std::move(mojo_descriptor_a_list);
+  std::vector<side_panel::mojom::DescriptorBPtr> mojo_descriptor_b_list;
+  if (descriptor_b) {
+    for (const auto& descriptor : *descriptor_b) {
+      const base::Value::Dict& descriptor_b_dict = descriptor.GetDict();
+      auto* label = descriptor_b_dict.FindString("label");
+      auto* image_path = descriptor_b_dict.FindString("image");
+      if (!label || !image_path) {
+        continue;
+      }
+      auto mojo_descriptor_b = side_panel::mojom::DescriptorB::New();
+      mojo_descriptor_b->label = *label;
+      mojo_descriptor_b->image_path = *image_path;
+      mojo_descriptor_b_list.push_back(std::move(mojo_descriptor_b));
+    }
+  }
+  mojo_descriptors->descriptor_b = std::move(mojo_descriptor_b_list);
   std::move(get_descriptors_callback_).Run(std::move(mojo_descriptors));
 }
 

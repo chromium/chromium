@@ -93,8 +93,14 @@ struct DescriptorA {
   array<string> labels;
 };
 
+struct DescriptorB {
+  string label;
+  string image_path;
+};
+
 struct Descriptors {
   array<DescriptorA> descriptor_a;
+  array<DescriptorB> descriptor_b;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.

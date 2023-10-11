@@ -851,7 +851,55 @@ class CustomizeChromePageHandlerWithWallpaperSearchTest
 };
 
 TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
-       GetDescriptors_Success) {
+       GetDescriptors_Success_DescriptorsFormatCorrect) {
+  side_panel::mojom::DescriptorsPtr descriptors;
+  base::MockCallback<CustomizeChromePageHandler::GetDescriptorsCallback>
+      callback;
+  EXPECT_CALL(callback, Run(_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&descriptors](
+              side_panel::mojom::DescriptorsPtr descriptors_ptr_arg) {
+            descriptors = std::move(descriptors_ptr_arg);
+          }));
+  SetUpDescriptorsResponseWithData(
+      R"()]}'
+        {
+          "descriptor_a":[
+            {"category":"foo","labels":["bar","baz"]},
+            {"category":"qux","labels":["foobar"]}
+          ],
+          "descriptor_b":[
+            {"label":"foo","image":"bar.png"}
+          ]
+        })");
+
+  ASSERT_FALSE(descriptors);
+  handler().GetDescriptors(callback.Get());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(descriptors);
+
+  const auto& descriptor_a = descriptors->descriptor_a;
+  EXPECT_EQ(2u, descriptor_a.size());
+  const auto& foo_descriptor = descriptor_a[0];
+  EXPECT_EQ(foo_descriptor->category, "foo");
+  EXPECT_EQ(2u, foo_descriptor->labels.size());
+  EXPECT_EQ("bar", foo_descriptor->labels[0]);
+  EXPECT_EQ("baz", foo_descriptor->labels[1]);
+  const auto& qux_descriptor = descriptor_a[1];
+  EXPECT_EQ(qux_descriptor->category, "qux");
+  EXPECT_EQ(1u, qux_descriptor->labels.size());
+  EXPECT_EQ("foobar", qux_descriptor->labels[0]);
+
+  const auto& descriptor_b = descriptors->descriptor_b;
+  EXPECT_EQ(1u, descriptor_b.size());
+  EXPECT_EQ(descriptor_b[0]->label, "foo");
+  EXPECT_EQ(descriptor_b[0]->image_path, "bar.png");
+}
+
+TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
+       GetDescriptors_Success_DescriptorsFormatIncorrect) {
   side_panel::mojom::DescriptorsPtr descriptors;
   base::MockCallback<CustomizeChromePageHandler::GetDescriptorsCallback>
       callback;
@@ -865,26 +913,16 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
   SetUpDescriptorsResponseWithData(
       R"()]}'
         {"descriptor_a":[
-          {"category":"foo","labels":["bar","baz"]},
-          {"category":"qux","labels":["foobar"]}
+          {"category":"foo"}
       ]})");
-
   ASSERT_FALSE(descriptors);
+
   handler().GetDescriptors(callback.Get());
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(descriptors);
-  const auto& descriptor_a = descriptors->descriptor_a;
-  EXPECT_EQ(2u, descriptor_a.size());
-  const auto& foo_descriptor = descriptor_a[0];
-  EXPECT_EQ(foo_descriptor->category, "foo");
-  EXPECT_EQ(2u, foo_descriptor->labels.size());
-  EXPECT_EQ("bar", foo_descriptor->labels[0]);
-  EXPECT_EQ("baz", foo_descriptor->labels[1]);
-  const auto& qux_descriptor = descriptor_a[1];
-  EXPECT_EQ(qux_descriptor->category, "qux");
-  EXPECT_EQ(1u, qux_descriptor->labels.size());
-  EXPECT_EQ("foobar", qux_descriptor->labels[0]);
+  EXPECT_EQ(0u, descriptors->descriptor_a.size());
+  EXPECT_EQ(0u, descriptors->descriptor_b.size());
 }
 
 TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
@@ -904,31 +942,6 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
         {"not_a_valid_descriptor":[
           {"category":"foo","labels":["bar","baz"]},
           {"category":"qux","labels":["foobar"]}
-      ]})");
-  ASSERT_FALSE(descriptors);
-
-  handler().GetDescriptors(callback.Get());
-  task_environment_.RunUntilIdle();
-
-  EXPECT_FALSE(descriptors);
-}
-
-TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
-       GetDescriptors_Fails_NoCategoriesWithLabels) {
-  side_panel::mojom::DescriptorsPtr descriptors;
-  base::MockCallback<CustomizeChromePageHandler::GetDescriptorsCallback>
-      callback;
-  EXPECT_CALL(callback, Run(_))
-      .Times(1)
-      .WillOnce(testing::Invoke(
-          [&descriptors](
-              side_panel::mojom::DescriptorsPtr descriptors_ptr_arg) {
-            descriptors = std::move(descriptors_ptr_arg);
-          }));
-  SetUpDescriptorsResponseWithData(
-      R"()]}'
-        {"descriptor_a":[
-          {"category":"foo"}
       ]})");
   ASSERT_FALSE(descriptors);
 
