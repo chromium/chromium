@@ -265,12 +265,6 @@ const char kPrivacyIndicatorsDescription[] =
     "While screen sharing or camera/microphone is being accessed, show a green "
     "icon in the status area as well as add a silent notification to the tray.";
 
-const char kEnableBluetoothSerialPortProfileInSerialApiName[] =
-    "Enable Bluetooth Serial Port Profile in Serial API";
-const char kEnableBluetoothSerialPortProfileInSerialApiDescription[] =
-    "When enabled, Bluetooth Serial Port Profile devices will be enumerated "
-    "for use with the Serial API.";
-
 const char kEnableDrDcName[] =
     "Enables Display Compositor to use a new gpu thread.";
 const char kEnableDrDcDescription[] =

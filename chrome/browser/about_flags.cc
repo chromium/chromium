@@ -8502,13 +8502,6 @@ const FeatureEntry kFeatureEntries[] = {
          "LauncherDynamicAnimations")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"enable-bluetooth-spp-in-serial-api",
-     flag_descriptions::kEnableBluetoothSerialPortProfileInSerialApiName,
-     flag_descriptions::kEnableBluetoothSerialPortProfileInSerialApiDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         features::kEnableBluetoothSerialPortProfileInSerialApi)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"frame-throttle-fps", flag_descriptions::kFrameThrottleFpsName,
      flag_descriptions::kFrameThrottleFpsDescription, kOsCrOS,
