@@ -813,6 +813,18 @@ void SearchBoxView::UpdateSearchBoxFocusPaint() {
   }
 }
 
+void SearchBoxView::OnAfterUserAction(views::Textfield* sender) {
+  if (highlight_range_.length() > 0 &&
+      !search_box()->GetSelectedRange().EqualsIgnoringDirection(
+          highlight_range_)) {
+    ResetHighlightRange();
+    if (search_box()->GetSelectedRange().length() == 0 &&
+        current_query_ != search_box()->GetText()) {
+      RunLauncherSearchQuery(search_box()->GetText());
+    }
+  }
+}
+
 void SearchBoxView::OnKeyEvent(ui::KeyEvent* evt) {
   // Only handle the key event that triggers the focus or result selection
   // traversal here. Propagate the event to `delegate_` otherwise.
@@ -1125,8 +1137,10 @@ bool SearchBoxView::IsValidAutocompleteText(
     const std::u16string& autocomplete_text) {
   // Don't set autocomplete text if it's the same as current search box
   // text.
-  if (autocomplete_text == search_box()->GetText())
+  if (autocomplete_text == search_box()->GetText()) {
     return false;
+  }
+
   // Don't set autocomplete text if the highlighted text is the same as
   // before.
   if (autocomplete_text.length() > highlight_range_.start() &&
@@ -1134,6 +1148,7 @@ bool SearchBoxView::IsValidAutocompleteText(
           search_box()->GetSelectedText()) {
     return false;
   }
+
   return true;
 }
 
@@ -1204,11 +1219,10 @@ void SearchBoxView::AcceptAutocompleteText() {
   if (!ShouldProcessAutocomplete())
     return;
 
-  // Do not trigger another search here in case the user is left clicking to
-  // select existing autocomplete text. (This also matches omnibox behavior.)
   DCHECK(HasAutocompleteText());
   search_box()->ClearSelection();
   ResetHighlightRange();
+  RunLauncherSearchQuery(search_box()->GetText());
 }
 
 bool SearchBoxView::HasAutocompleteText() {
@@ -1615,7 +1629,6 @@ bool SearchBoxView::ShouldProcessAutocomplete() {
 }
 
 void SearchBoxView::ResetHighlightRange() {
-  DCHECK(ShouldProcessAutocomplete());
   const uint32_t text_length = search_box()->GetText().length();
   highlight_range_.set_start(text_length);
   highlight_range_.set_end(text_length);

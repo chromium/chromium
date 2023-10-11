@@ -92,6 +92,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   void UpdateSearchBoxBorder() override;
   void OnSearchBoxActiveChanged(bool active) override;
   void UpdateSearchBoxFocusPaint() override;
+  void OnAfterUserAction(views::Textfield* sender) override;
 
   // AppListModelProvider::Observer:
   void OnActiveAppListModelsChanged(AppListModel* model,

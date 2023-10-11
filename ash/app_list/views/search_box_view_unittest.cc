@@ -840,12 +840,11 @@ TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAcceptsAutocompleteForClick) {
   // AshTestBase in order to test events using EventGenerator instead.
   static_cast<views::TextfieldController*>(view())->HandleMouseEvent(
       view()->search_box(), mouse_event);
-  // Search box autocomplete suggestion is accepted, but it should not
-  // trigger another query, thus it is not reflected in Search Model.
+  // Search box autocomplete suggestion is accepted, and triggers another query.
   EXPECT_EQ(u"hello world!", view()->search_box()->GetText());
-  EXPECT_EQ(u"he", view()->current_query());
-
-  EXPECT_EQ("Websites", view()->GetSearchBoxGhostTextForTest());
+  EXPECT_EQ(u"hello world!", view()->current_query());
+  EXPECT_EQ(u"", view()->search_box()->GetSelectedText());
+  EXPECT_EQ("", view()->GetSearchBoxGhostTextForTest());
 }
 
 TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAcceptsAutocompleteForTap) {
@@ -861,10 +860,45 @@ TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAcceptsAutocompleteForTap) {
   // EventGenerator instead.
   static_cast<views::TextfieldController*>(view())->HandleGestureEvent(
       view()->search_box(), gesture_event);
-  // Search box autocomplete suggestion is accepted, but it should not
-  // trigger another query, thus it is not reflected in Search Model.
+  // Search box autocomplete suggestion is accepted, and trigger updated query.
   EXPECT_EQ(u"hello world!", view()->search_box()->GetText());
-  EXPECT_EQ(u"he", view()->current_query());
+  EXPECT_EQ(u"hello world!", view()->current_query());
+  EXPECT_EQ(u"", view()->search_box()->GetSelectedText());
+  EXPECT_EQ("", view()->GetSearchBoxGhostTextForTest());
+}
+
+TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAcceptsAutocompleteForRightKey) {
+  SetupAutocompleteBehaviorTest();
+
+  KeyPress(ui::VKEY_RIGHT);
+
+  // Search box autocomplete suggestion is accepted, and trigger updated query.
+  EXPECT_EQ(u"hello world!", view()->search_box()->GetText());
+  EXPECT_EQ(u"hello world!", view()->current_query());
+  EXPECT_EQ(u"", view()->search_box()->GetSelectedText());
+  EXPECT_EQ("", view()->GetSearchBoxGhostTextForTest());
+
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5, u"hello world 1",
+                     std::u16string(), ash::AppListSearchResultCategory::kApps);
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5,
+                     u"hello world! 123", std::u16string(),
+                     ash::AppListSearchResultCategory::kWeb);
+  base::RunLoop().RunUntilIdle();
+
+  // Change selection to the non-default item, and verify the search box text is
+  // updated as expected.
+  KeyPress(ui::VKEY_DOWN);
+
+  EXPECT_EQ(u"hello world!", view()->search_box()->GetText());
+  EXPECT_EQ(u"hello world!", view()->current_query());
+  EXPECT_EQ(u"", view()->search_box()->GetSelectedText());
+  EXPECT_EQ("hello world 1 - Apps", view()->GetSearchBoxGhostTextForTest());
+
+  KeyPress(ui::VKEY_DOWN);
+
+  EXPECT_EQ(u"hello world! 123", view()->search_box()->GetText());
+  EXPECT_EQ(u"hello world!", view()->current_query());
+  EXPECT_EQ(u" 123", view()->search_box()->GetSelectedText());
   EXPECT_EQ("Websites", view()->GetSearchBoxGhostTextForTest());
 }
 
