@@ -141,6 +141,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromi
 1. Ouvrez l'application Réglages.
 2. Touchez Navigateur par défaut.
 3. Sélectionnez Chromium.</translation>
+<translation id="6197255575340902638">Si vous masquez « <ph name="MODULE_NAME" /> », Chromium ne suivra plus automatiquement vos futurs colis et supprimera toutes vos anciennes données de suivi de colis.</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
 <translation id="6268381023930128611">Se déconnecter de Chromium?</translation>
 <translation id="6324041800010509197">Consulter la grille d'onglets dans Chromium</translation>

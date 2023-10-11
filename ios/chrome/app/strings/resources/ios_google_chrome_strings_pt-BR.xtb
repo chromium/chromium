@@ -118,6 +118,7 @@ Considerações:
 <translation id="5389212809648216794">O Google Chrome não pode usar a câmera porque ela está sendo usada por outro app</translation>
 <translation id="5395376160638294582">Garanta que você sempre possa usar os dados do Chrome na sua Conta do Google</translation>
 <translation id="5439191312780166229">Avisa você sobre sites perigosos, mesmo aqueles que o Google não conhecia, analisando mais dados de sites do que a proteção padrão. Você pode ignorar os avisos do Chrome.</translation>
+<translation id="5442013002200339429">Se você ocultar "<ph name="MODULE_NAME" />", o Chrome não vai mais rastrear automaticamente seus pacotes futuros e vai excluir todos os dados de rastreamento anteriores.</translation>
 <translation id="5460571915754665838">4. Selecione o Chrome</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{O Chrome ajudará a rastrear o pacote na página "Nova guia".}one{O Chrome ajudará a rastrear o pacote na página "Nova guia".}other{O Chrome ajudará a rastrear os pacotes na página "Nova guia".}}</translation>
 <translation id="5492504007368565877">O Gerenciador de senhas do Google não pode verificar suas senhas.</translation>

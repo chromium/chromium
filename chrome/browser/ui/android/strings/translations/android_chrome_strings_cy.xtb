@@ -250,6 +250,7 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="235789365079050412">Polisi Preifatrwydd Google</translation>
 <translation id="2359808026110333948">Parhau</translation>
 <translation id="2362083820973145409">Wedi mewngofnodi fel <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Yn agor gosodiadau.</translation>
+<translation id="2364539095045928896">Caewch y botwm i gau hysbysiad preifatrwydd hwb mewnwelediadau'r dudalen.</translation>
 <translation id="2386938421315164605">Cuddio a datguddio pynciau</translation>
 <translation id="2390510615457643724">Ydych chi am lawrlwytho <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> eto?</translation>
 <translation id="2394602618534698961">Mae'r ffeiliau rydych yn eu lawrlwytho yn ymddangos yma</translation>
@@ -873,6 +874,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5458366071038729214">Byddwch yn gweld gwefannau rydych yn eu dilyn yma</translation>
 <translation id="5468068603361015296">Ydych chi am lawrlwytho <ph name="FILE_NAME" /> beth bynnag?</translation>
 <translation id="548278423535722844">Agor yn ap mapiau</translation>
+<translation id="5486841595534124508">Logo hysbysiad preifatrwydd ar gyfer hwb mewnwelediadau'r dudalen sy'n ailgyfeirio i fy nhudalen gweithgarwch.</translation>
 <translation id="5487521232677179737">Clirio data</translation>
 <translation id="5492637351392383067">Amgryptio ar y ddyfais</translation>
 <translation id="5514904542973294328">Wedi'i analluogi gan weinyddwr y ddyfais hon</translation>
@@ -1347,6 +1349,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7810647596859435254">Agor gyda…</translation>
 <translation id="7815484226266492798">Sgrinlun hir</translation>
 <translation id="7822705602465980873">Pan fyddwch wedi mewngofnodi, mae'r data hyn wedi'u cysylltu â'ch Cyfrif Google i'ch diogelu ar draws gwasanaethau Google, er enghraifft cynyddu diogelwch yn Gmail ar ôl digwyddiad diogelwch.</translation>
+<translation id="782705168687182233">Mae'ch gweithgarwch wedi'i gadw yn eich <ph name="BEGIN_LINK" />Cyfrif Google<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Mae eich cyfrifiadur eisiau cofrestru'r ddyfais hon i fewngofnodi i wefan</translation>
 <translation id="7844171778363018843">Ni ddewiswyd unrhyw ddata i'w cysoni</translation>
 <translation id="7846296061357476882">Gwasanaethau Google</translation>

@@ -250,6 +250,7 @@
 <translation id="235789365079050412">Google Купуялык эрежелери</translation>
 <translation id="2359808026110333948">Улантуу</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> катары кирдиңиз. <ph name="USER_EMAIL" />. Параметрлерди ачат.</translation>
+<translation id="2364539095045928896">Барактын статистика борборунда купуялык билдирмесин жабуу үчүн Жабуу баскычын колдонуңуз.</translation>
 <translation id="2386938421315164605">Темаларды жашыруу жана көрсөтүү</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" /> файлы (<ph name="FILE_SIZE" />) кайрадан жүктөлүп алынсынбы?</translation>
 <translation id="2394602618534698961">Жүктөп алган файлдар ушул жерде көрүнөт</translation>
@@ -865,6 +866,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5458366071038729214">Жазылган сайттарды ушул жерден табасыз</translation>
 <translation id="5468068603361015296"><ph name="FILE_NAME" /> файлы баары бир жүктөлүп алынсынбы?</translation>
 <translation id="548278423535722844">Карталар колдонмосунан ачыңыз</translation>
+<translation id="5486841595534124508">Менин аракеттерим барагына багыттаган барактын статистика борбору үчүн купуялык билдирмесинин логотиби.</translation>
 <translation id="5487521232677179737">Маалыматты өчүрүү</translation>
 <translation id="5492637351392383067">Түзмөктө шифрлөө</translation>
 <translation id="5514904542973294328">Түзмөктүн администратору өчүрүп койгон</translation>
@@ -1339,6 +1341,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7810647596859435254">Төмөнкү менен ачуу…</translation>
 <translation id="7815484226266492798">Узун скриншот</translation>
 <translation id="7822705602465980873">Бул маалымат сиз кирип турган Google аккаунту менен байланыштырылат. Бул сизди Google кызматтарында коргоого, мисалы, коопсуздук тутумундагы бузулуулардан кийин Gmail'де кошумча чараларды көрүүгө жардам берет.</translation>
+<translation id="782705168687182233">Аракетиңиз <ph name="BEGIN_LINK" />Google аккаунтуңузда<ph name="END_LINK" /> сакталат.</translation>
 <translation id="78270725016672455">Компьютериңиз бул түзмөктү сайтка кирүү үчүн каттагысы келет</translation>
 <translation id="7844171778363018843">Шайкештириле турган маалымат тандалган жок</translation>
 <translation id="7846296061357476882">Google кызматтары</translation>

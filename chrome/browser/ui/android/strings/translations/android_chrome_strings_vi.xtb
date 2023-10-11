@@ -250,6 +250,7 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="235789365079050412">Chính sách quyền riêng tư của Google</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2362083820973145409">Đã đăng nhập bằng <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Mở phần cài đặt.</translation>
+<translation id="2364539095045928896">Nút Đóng để đóng thông báo về quyền riêng tư của trung tâm thông tin chi tiết về trang.</translation>
 <translation id="2386938421315164605">Ẩn và hiện chủ đề</translation>
 <translation id="2390510615457643724">Bạn có muốn tải <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) xuống lần nữa?</translation>
 <translation id="2394602618534698961">Các tệp bạn tải xuống sẽ xuất hiện ở đây</translation>
@@ -873,6 +874,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5458366071038729214">Bạn sẽ thấy các trang web mình theo dõi tại đây</translation>
 <translation id="5468068603361015296">Bạn vẫn muốn tải <ph name="FILE_NAME" /> xuống?</translation>
 <translation id="548278423535722844">Mở trong ứng dụng bản đồ</translation>
+<translation id="5486841595534124508">Biểu trưng của thông báo về quyền riêng tư cho trung tâm thông tin chi tiết về trang chuyển hướng đến trang hoạt động của tôi.</translation>
 <translation id="5487521232677179737">Xóa dữ liệu</translation>
 <translation id="5492637351392383067">Mã hoá trên thiết bị</translation>
 <translation id="5514904542973294328">Bị quản trị viên của thiết bị này vô hiệu hóa</translation>
@@ -1347,6 +1349,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7810647596859435254">Mở bằng…</translation>
 <translation id="7815484226266492798">Ảnh chụp toàn bộ màn hình</translation>
 <translation id="7822705602465980873">Khi bạn đăng nhập, dữ liệu này được liên kết với Tài khoản Google của bạn nhằm bảo vệ bạn trên các dịch vụ của Google, chẳng hạn như tăng cường khả năng bảo vệ trong Gmail sau sự cố bảo mật.</translation>
+<translation id="782705168687182233">Hoạt động của bạn được lưu trong <ph name="BEGIN_LINK" />Tài khoản Google<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Máy tính của bạn muốn đăng ký thiết bị này để đăng nhập vào một trang web</translation>
 <translation id="7844171778363018843">Bạn chưa chọn dữ liệu nào để đồng bộ hóa</translation>
 <translation id="7846296061357476882">Dịch vụ của Google</translation>

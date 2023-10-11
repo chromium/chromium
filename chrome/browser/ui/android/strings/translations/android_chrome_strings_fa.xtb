@@ -250,6 +250,7 @@
 <translation id="235789365079050412">‏خط‌مشی رازداری Google</translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2362083820973145409">با <ph name="USER_NAME" /> به سیستم وارد شده‌اید. <ph name="USER_EMAIL" />. تنظیمات را باز می‌کند.</translation>
+<translation id="2364539095045928896">دکمه بستن برای بستن اعلان حریم خصوصی مرکز اطلاعات آماری صفحه</translation>
 <translation id="2386938421315164605">پنهان و آشکار کردن موضوعات</translation>
 <translation id="2390510615457643724">می‌خواهید <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> دوباره بارگیری شود؟</translation>
 <translation id="2394602618534698961">فایل‌هایی که بارگیری می‌کنید، اینجا نشان داده می‌شود</translation>
@@ -873,6 +874,7 @@
 <translation id="5458366071038729214">سایت‌هایی را که دنبال می‌کنید اینجا پیدا خواهید کرد</translation>
 <translation id="5468068603361015296">می‌خواهید <ph name="FILE_NAME" /> درهرصورت بارگیری شود؟</translation>
 <translation id="548278423535722844">‏باز کردن در برنامه Maps</translation>
+<translation id="5486841595534124508">نشان‌واره اعلان حریم خصوصی برای مرکز اطلاعات آماری صفحه که به صفحه فعالیت‌هایم هدایت می‌کند.</translation>
 <translation id="5487521232677179737">پاک کردن داده‌ها</translation>
 <translation id="5492637351392383067">رمزگذاری درون‌دستگاهی</translation>
 <translation id="5514904542973294328">توسط سرپرست این دستگاه غیرفعال شده است</translation>
@@ -1347,6 +1349,7 @@
 <translation id="7810647596859435254">باز کردن با…</translation>
 <translation id="7815484226266492798">نماگرفت طولانی</translation>
 <translation id="7822705602465980873">‏وقتی به سیستم وارد شده باشید، این داده‌ها به «حساب Google» شما پیوند داده می‌شود تا از شما در سراسر سرویس‌های Google محافظت کند؛ مثلاً افزایش محافظت در Gmail پس‌از یک حادثه امنیتی.</translation>
+<translation id="782705168687182233">‏فعالیتتان در <ph name="BEGIN_LINK" />حساب Google<ph name="END_LINK" /> شما ذخیره می‌شود.</translation>
 <translation id="78270725016672455">رایانه‌تان می‌خواهد این دستگاه را برای ورود به سیستم یک سایت ثبت کند</translation>
 <translation id="7844171778363018843">هیچ داده‌ای برای همگام‌سازی انتخاب نشده است</translation>
 <translation id="7846296061357476882">‏سرویس‌های Google</translation>

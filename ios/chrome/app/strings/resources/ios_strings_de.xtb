@@ -808,6 +808,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5360976571138293719">Weitere Einstellungen in Verbindung mit Datenschutz, Sicherheit und der Erhebung von Daten findest du unter <ph name="BEGIN_LINK" />Google-Dienste<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Hier findest du Seiten, denen du folgst</translation>
 <translation id="5388358297987318779">Bild öffnen</translation>
+<translation id="5396950905475481456">Familienmitglieder einladen</translation>
 <translation id="5407969256130905701">Änderungen verwerfen</translation>
 <translation id="5414763847370083940">Du wirst benachrichtigt, wenn der Preis auf einer Website sinkt.</translation>
 <translation id="5416022985862681400">Letzte 7 Tage</translation>
@@ -1561,4 +1562,5 @@ Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. G
 <translation id="988141524645182168">Andere Geräte</translation>
 <translation id="989988560359834682">Adresse bearbeiten</translation>
 <translation id="994757059139821576">Vorgeschlagene Artikel</translation>
+<translation id="999768147936949692">Derzeit kannst du Passwörter nur mit Familienmitgliedern teilen. <ph name="BEGIN_LINK" />Lade Familienmitglieder in deine Gruppe ein<ph name="END_LINK" />, damit ihr eure Google-Produkte und ‑Abos gemeinsam nutzen könnt.</translation>
 </translationbundle>

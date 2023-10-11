@@ -250,6 +250,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="235789365079050412">Googles personvernregler</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2362083820973145409">Logget på som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Åpner innstillinger.</translation>
+<translation id="2364539095045928896">Lukkeknapp for å lukke merknaden om personvern for sidestatistikksenteret.</translation>
 <translation id="2386938421315164605">Skjul emner og gjør dem synlige</translation>
 <translation id="2390510615457643724">Vil du laste ned <ph name="FILE_NAME" /> <ph name="FILE_SIZE" /> på nytt?</translation>
 <translation id="2394602618534698961">Filer du laster ned, vises her</translation>
@@ -873,6 +874,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5458366071038729214">Her finner du nettsteder du følger</translation>
 <translation id="5468068603361015296">Vil du laste ned <ph name="FILE_NAME" /> likevel?</translation>
 <translation id="548278423535722844">Åpne i en kartapp</translation>
+<translation id="5486841595534124508">Logo for merknaden om personvern for sidestatistikksenteret, som viderekobler til Min aktivitet-siden.</translation>
 <translation id="5487521232677179737">Slett data</translation>
 <translation id="5492637351392383067">Kryptering på enheten</translation>
 <translation id="5514904542973294328">Deaktivert av administratoren for denne enheten</translation>
@@ -1347,6 +1349,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7810647596859435254">Åpne med…</translation>
 <translation id="7815484226266492798">Lang skjermdump</translation>
 <translation id="7822705602465980873">Når du er logget på, blir disse dataene knyttet til Google-kontoen din for å beskytte deg på alle Google-tjenester, for eksempel ved at beskyttelsen i Gmail økes etter sikkerhetshendelser.</translation>
+<translation id="782705168687182233">Aktiviteten lagres i <ph name="BEGIN_LINK" />Google-kontoen<ph name="END_LINK" /> din.</translation>
 <translation id="78270725016672455">Datamaskinen din vil registrere denne enheten for pålogging på et nettsted</translation>
 <translation id="7844171778363018843">Ingen data er valgt for synkronisering</translation>
 <translation id="7846296061357476882">Google-tjenester</translation>

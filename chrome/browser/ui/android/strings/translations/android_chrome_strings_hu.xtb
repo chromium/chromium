@@ -250,6 +250,7 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="235789365079050412">Google Adatvédelmi irányelvek</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2362083820973145409">Bejelentkezve a következőként: <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Megnyitja a beállításokat.</translation>
+<translation id="2364539095045928896">Bezárás gomb az oldal statisztikai központjával kapcsolatos adatvédelmi közlemény bezárásához.</translation>
 <translation id="2386938421315164605">Témakörök elrejtése és felfedése</translation>
 <translation id="2390510615457643724">Ismét letölti a következő fájlt: <ph name="FILE_NAME" /><ph name="FILE_SIZE" />?</translation>
 <translation id="2394602618534698961">Itt találhatja majd a letöltött fájlokat</translation>
@@ -873,6 +874,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5458366071038729214">A követett webhelyeket itt láthatja majd</translation>
 <translation id="5468068603361015296">Mindenképpen le szeretné tölteni a következő fájlt: <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Megnyitás térképalkalmazásban</translation>
+<translation id="5486841595534124508">Az oldal statisztikai központjával kapcsolatos adatvédelmi közlemény logója, amely a Saját tevékenységek oldalra irányít át.</translation>
 <translation id="5487521232677179737">Adatok törlése</translation>
 <translation id="5492637351392383067">Eszközalapú titkosítás</translation>
 <translation id="5514904542973294328">Letiltotta az eszköz rendszergazdája</translation>
@@ -1347,6 +1349,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7810647596859435254">Megnyitás ezzel:</translation>
 <translation id="7815484226266492798">Hosszú képernyőkép</translation>
 <translation id="7822705602465980873">Amikor be van jelentkezve, ezek az adatok a Google-fiókjához kapcsolódnak, hogy segítsék az Ön védelmét az összes Google-szolgáltatásban, például egy biztonsági incidens után fokozva a védelmet a Gmailben.</translation>
+<translation id="782705168687182233">Tevékenységeit <ph name="BEGIN_LINK" />Google-fiókjába<ph name="END_LINK" /> menti a rendszer.</translation>
 <translation id="78270725016672455">Számítógépe ezt az eszközt szeretné regisztrálni az adott webhelyre való bejelentkezéshez</translation>
 <translation id="7844171778363018843">Nincs szinkronizálásra kiválasztott adat</translation>
 <translation id="7846296061357476882">Google-szolgáltatások</translation>

@@ -250,6 +250,7 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="235789365079050412">Patakaran sa Privacy ng Google</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2362083820973145409">Naka-sign in bilang <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Binubuksan ang mga setting.</translation>
+<translation id="2364539095045928896">Button na Isara para isara ang notification ng privacy ng hub ng mga insight ng page.</translation>
 <translation id="2386938421315164605">Itago at i-unhide ang mga paksa</translation>
 <translation id="2390510615457643724">Gusto mo bang i-download ulit ang <ph name="FILE_NAME" /><ph name="FILE_SIZE" />?</translation>
 <translation id="2394602618534698961">Lalabas dito ang mga file na dina-download mo</translation>
@@ -873,6 +874,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5458366071038729214">Makikita mo ang mga site na sinusubaybayan mo rito</translation>
 <translation id="5468068603361015296">Gusto mo bang i-download pa rin ang <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Buksan sa app na mga mapa</translation>
+<translation id="5486841595534124508">Logo ng notification ng privacy para sa hub ng mga insight ng page na nagre-redirect sa page na aking aktibidad.</translation>
 <translation id="5487521232677179737">I-clear ang data</translation>
 <translation id="5492637351392383067">On-device na pag-encrypt</translation>
 <translation id="5514904542973294328">Na-disable ng administrator ng device na ito</translation>
@@ -1347,6 +1349,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7810647596859435254">Buksan gamit ang…</translation>
 <translation id="7815484226266492798">Mahabang Screenshot</translation>
 <translation id="7822705602465980873">Kapag naka-sign in ka, naka-link ang data na ito sa iyong Google Account para protektahan ka sa lahat ng serbisyo ng Google, halimbawa, pagpapaigting ng proteksyon sa Gmail pagkatapos ng isang insidente sa seguridad.</translation>
+<translation id="782705168687182233">Na-save ang aktibidad mo sa iyong <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Gustong irehistro ng iyong computer ang device na ito para sa pag-sign in sa isang site</translation>
 <translation id="7844171778363018843">Walang piniling data para i-sync</translation>
 <translation id="7846296061357476882">Mga serbisyo ng Google</translation>

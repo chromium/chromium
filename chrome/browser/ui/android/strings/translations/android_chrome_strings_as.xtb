@@ -250,6 +250,7 @@
 <translation id="235789365079050412">Googleৰ গোপনীয়তা নীতি</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> হিচাপে ছাইন ইন কৰিছে। <ph name="USER_EMAIL" />। ছেটিং খোলে।</translation>
+<translation id="2364539095045928896">পৃষ্ঠাৰ ইনছাইটৰ হাবৰ গোপনীয়তাৰ জাননী বন্ধ কৰাৰ বুটাম।</translation>
 <translation id="2386938421315164605">বিষয়বস্তু লুকুৱাওক আৰু দেখুৱাওক</translation>
 <translation id="2390510615457643724">আপুনি <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> পুনৰ ডাউনল’ড কৰিব বিচাৰে নেকি?</translation>
 <translation id="2394602618534698961">আপুনি ডাউনল'ড কৰা ফাইলসমূহ ইয়াত প্ৰদর্শন কৰা হয়</translation>
@@ -873,6 +874,7 @@
 <translation id="5458366071038729214">আপুনি নিজে ফ'ল' কৰা ছাইটসমূহ ইয়াত বিচাৰি পাব</translation>
 <translation id="5468068603361015296">আপুনি তথাপি <ph name="FILE_NAME" /> ডাউনল’ড কৰিব বিচাৰেনে?</translation>
 <translation id="548278423535722844">maps এপত খোলক</translation>
+<translation id="5486841595534124508">পৃষ্ঠাৰ ইনছাইটৰ হাবৰ বাবে গোপনীয়তাৰ জাননীৰ ল'গ', যি মোৰ কাৰ্যকলাপৰ পৃষ্ঠালৈ ৰিডাইৰেক্ট কৰে।</translation>
 <translation id="5487521232677179737">ডেটা মচক</translation>
 <translation id="5492637351392383067">অন-ডিভাইচ এনক্ৰিপশ্বন</translation>
 <translation id="5514904542973294328">এই ডিভাইচটোৰ প্ৰশাসকে অক্ষম কৰিছে</translation>
@@ -1347,6 +1349,7 @@
 <translation id="7810647596859435254">ইয়াৰ জৰিয়তে খোলক…</translation>
 <translation id="7815484226266492798">দীঘল স্ক্ৰীনশ্বট</translation>
 <translation id="7822705602465980873">আপুনি ছাইন ইন হৈ থকা অৱস্থাত, আপোনাক সমগ্ৰ Google সেৱাসমূহত সুৰক্ষিত কৰিবলৈ এই ডেটাখিনি আপোনাৰ Google একাউণ্টৰ সৈতে লিংক কৰা হয়, উদাহৰণস্বৰূপে, কোনো সুৰক্ষা সম্পৰ্কীয় ঘটনাৰ পাছত Gmailত সুৰক্ষা বৃদ্ধি কৰা।</translation>
+<translation id="782705168687182233">আপোনাৰ কাৰ্যকলাপ আপোনাৰ <ph name="BEGIN_LINK" />Google একাউণ্ট<ph name="END_LINK" />ত ছেভ কৰা হয়।</translation>
 <translation id="78270725016672455">আপোনাৰ কম্পিউটাৰটোৱে এটা ছাইটত ছাইন ইন কৰিবলৈ এই ডিভাইচটো পঞ্জীয়ন কৰিব বিচাৰে</translation>
 <translation id="7844171778363018843">ছিংক কৰিবলৈ কোনো ডেটা বাছনি কৰা হোৱা নাই</translation>
 <translation id="7846296061357476882">Google সেৱাসমূহ</translation>

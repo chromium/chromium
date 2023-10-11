@@ -2064,6 +2064,7 @@ Se a política for definida como desativada ou não for definida, o usuário pod
 
       Quando esta política é definida como falsa ou não está configurada, os ícones ficam visíveis.</translation>
 <translation id="2744751866269053547">Registrar gerenciadores de protocolos</translation>
+<translation id="2744980433176488921">As configurações F11/F12 usam o atalho que contém a tecla modificadora Shift</translation>
 <translation id="2745150813292162313">Permitir que o particionamento de armazenamento de terceiros seja ativado.</translation>
 <translation id="2746016768603629042">Esta política foi desativada. Utilize a DefaultJavaScriptSetting em seu lugar.
 
@@ -3671,6 +3672,9 @@ Até o Chrome 114, esta política exigia que a <ph name="SYNC_DISABLED_POLICY_NA
 
       Se o <ph name="PRODUCT_NAME" /> não for fechado corretamente (por exemplo, se o navegador ou o SO falhar), os dados de navegação serão excluídos da próxima vez que o perfil for carregado.</translation>
 <translation id="4056910949759281379">Desativar o protocolo SPDY</translation>
+<translation id="4057442294431066708">Esta política controla a opção de atalho selecionada para remapear eventos para
+F11/F12 na subpágina de remapeamento de teclas. Essas configurações se aplicam apenas a
+teclados ChromeOS e serão desativadas por padrão se a política não for definida.</translation>
 <translation id="4061107397839125009">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não podem exibir notificações.
 
       Se a política for deixada sem definição, <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
@@ -3793,6 +3797,7 @@ as extensões fixadas na versão também são ignoradas.
 
 Se a política for definida como <ph name="ALLOW_UNPUBLISHED" /> (0) ou for deixada sem definição, as extensões não publicadas na Chrome Web Store serão permitidas.
 Se a política for definida como <ph name="DISABLE_UNPUBLISHED" /> (1), as extensões não publicadas na Chrome Web Store serão desativadas.</translation>
+<translation id="4164866067069311355">Controla o atalho usado para acionar F11/F12</translation>
 <translation id="4165986682804962316">Configurações do site</translation>
 <translation id="4166174702671320480">Se a política for definida como "Ativada", as políticas vindas de um grupo atômico que não compartilha a origem com a maior prioridade do grupo serão ignoradas.
 
@@ -6256,6 +6261,7 @@ Confira mais detalhes em https://developer.chrome.com/blog/immutable-document-do
 
       Observação: não ative esta política quando a <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> estiver ativada, porque esse recurso usa a mesma funcionalidade do lado do cliente. Nesse caso, a sincronização hospedada pelo Google será completamente desativada.</translation>
 <translation id="6320935916601887506">O novo comportamento de offsetParent vai ser usado por padrão.</translation>
+<translation id="6324274808543634377">As configurações F11/F12 usam o atalho que contém a tecla modificadora Alt</translation>
 <translation id="6327643515544933974">Configurações de USB na Web</translation>
 <translation id="6330882599388782338">Permite que os sites acessem sensores</translation>
 <translation id="6331167725613770725">Esta política está obsoleta e será removida na versão 85 do <ph name="PRODUCT_OS_NAME" />. Por isso, passe a usar <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
@@ -7584,6 +7590,7 @@ Esta política foi removida no <ph name="PRODUCT_NAME" />
 para <ph name="MS_WIN_NAME" /> e <ph name="MAC_OS_NAME" /> versão 113
 após a remoção do suporte para uso das raízes e do verificador de certificados fornecidos pela plataforma.</translation>
 <translation id="7298197471363105063">Substituir o First-Party Sets.</translation>
+<translation id="7300320787419338290">As configurações F11/F12 usam o atalho que contém as teclas modificadoras Ctrl e Shift</translation>
 <translation id="7302043767260300182">Intervalo de bloqueio da tela no funcionamento com alimentação CA</translation>
 <translation id="7303902834678570827">Usuários de Sessões de visitante gerenciadas não podem armazenar configurações de tela para o dispositivo</translation>
 <translation id="7306926210354955892">A definição da política especifica a ação a ser executada quando o diretório de dados ARC do usuário tiver sido criado com virtio-fs. A menos que os dados do virtio-fs sejam migrados para o virtio-blk, os apps Android poderão ficar mais lentos na VM do ARC.
@@ -9570,6 +9577,7 @@ Quando a política não for definida em um dispositivo gerenciado, não será po
 
       O valor da política precisa ser especificado em segundos.</translation>
 <translation id="9015578113567730893">Frequência de coleta da telemetria de áudio em milissegundos.</translation>
+<translation id="9015759770696099204">As configurações F11/F12 estão desativadas</translation>
 <translation id="9015952763003753868">Fazer com que <ph name="ACAM_HEADER_NAME" /> corresponda à especificação de simulação do <ph name="CORS" /> em conformidade</translation>
 <translation id="9020630127193895800">Luz de fundo índigo do teclado</translation>
 <translation id="9031831501689819108">Ativar o Suporte a navegadores legados</translation>

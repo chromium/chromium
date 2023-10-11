@@ -734,6 +734,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="165769015320654523">Websites automatisch die Berechtigung erteilen, eine Verbindung zu HID-Geräten mit den angegebenen Anbieter- und Produkt-IDs herzustellen.</translation>
 <translation id="1659406551862245683">Das Standardverhalten der Bildschirmtastatur wird geändert, um die Größe des Layout-Darstellungsbereichs anzupassen</translation>
 <translation id="166427968280387991">Proxyserver</translation>
+<translation id="1670638264428789878">Gruppen ähnlicher Websites aktivieren</translation>
 <translation id="1673097259557436886">Websites immer mitteilen, dass keine Zahlungsmethoden gespeichert sind</translation>
 <translation id="1674287836076801014">SAML</translation>
 <translation id="1675002386741412210">Unterstützt von:</translation>
@@ -1820,6 +1821,13 @@ Hinweis: Wenn du ein Feld auslässt, gelten alle Werte für dieses Feld als übe
 
       Nutzer können nicht ändern, in welchem Ordner die Lesezeichen abgelegt werden. Aber sie haben die Möglichkeit, den Ordner in der Lesezeichenleiste auszublenden. Der Standardname des Ordners für verwaltete Lesezeichen lautet "Verwaltete Lesezeichen", kann jedoch angepasst werden. Dazu muss der Richtlinie ein neues untergeordnetes Wörterbuch mit einem einfachen Schlüssel namens "<ph name="TOPLEVEL_NAME" />" hinzugefügt werden, wobei der gewünschte Ordnername der Wert ist. Verwaltete Lesezeichen werden nicht mit dem Nutzerkonto synchronisiert und können nicht von Erweiterungen geändert werden.</translation>
 <translation id="2552966063069741410">Zeitzone</translation>
+<translation id="2554010621206996293">Mit dieser Richtlinie lässt sich die Aktivierung der Funktion für Gruppen ähnlicher Websites verwalten.
+
+Diese Richtlinie überschreibt die Richtlinie <ph name="FIRST_PARTY_SETS_ENABLED_POLICY_NAME" />.
+
+Wenn diese Richtlinie nicht konfiguriert oder auf „True“ gesetzt ist, ist die Funktion für Gruppen ähnlicher Websites aktiviert.
+
+Wenn sie auf „False“ gesetzt ist, ist die Funktion für Gruppen ähnlicher Websites deaktiviert.</translation>
 <translation id="2555244983262829274">„Home“-Schaltfläche in der Symbolleiste ausblenden</translation>
 <translation id="2562213287271514629">Zulassen, dass veraltete <ph name="FLASH_PLUGIN_NAME" />-Plug-ins als normale <ph name="FLASH_PLUGIN_NAME" />-Plug-ins verwendet werden</translation>
 <translation id="2562339630163277285">Gibt die URL an, die die Suchmaschine für die Bereitstellung von Instant-Ergebnissen verwendet. Die URL sollte den String "<ph name="SEARCH_TERM_MARKER" />" enthalten, der bei der Abfrage durch den Text ersetzt wird, den der Nutzer bisher eingegeben hat.
@@ -1837,6 +1845,7 @@ Hinweis: Wenn du ein Feld auslässt, gelten alle Werte für dieses Feld als übe
 <translation id="2576324725151524912">Entwicklermodus für isolierte Apps erlauben.</translation>
 <translation id="257717978573041245">Hardwarebeschleunigung aktivieren</translation>
 <translation id="257788512393330403">Passworteingabe alle sechs Stunden erforderlich</translation>
+<translation id="2580606791930800692">Dient dem Festlegen einer Liste mit Datenkontrollregeln.</translation>
 <translation id="2580757713966614760">Durch die Richtlinie wird angegeben, welche Zugriffsrichtlinie für die Massenkonfiguration von Druckern verwendet wird. Dadurch wird festgelegt, welche Drucker von <ph name="DEVICE_PRINTERS_POLICY_NAME" /> für Nutzer verfügbar sind.
 
       * <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_BLOCKLISTRESTRICTIONS" /> (Wert 0): <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> kann den Zugriff auf die angegebenen Drucker einschränken
@@ -3678,6 +3687,7 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 <translation id="4157594634940419685">Zugriff auf native CUPS-Drucker erlauben</translation>
 <translation id="4158531549614162499">Google Drive-Synchronisierung über Mobilfunkverbindungen aktivieren</translation>
 <translation id="4160962198980004898">Quelle für die Geräte-MAC-Adresse bei angedocktem Gerät</translation>
+<translation id="4161019158509414446">Dient der Verwaltung von Richtlinien zur Funktion für Gruppen ähnlicher Websites.</translation>
 <translation id="4164511138197196839">Wenn diese Richtlinie aktiviert ist, werden Erweiterungen, die nicht im Chrome Web Store veröffentlicht sind, für <ph name="PRODUCT_NAME" /> deaktiviert.
 Diese Richtlinie gilt nur für Erweiterungen, die über den Chrome Web Store installiert und aktualisiert werden.
 
@@ -6124,6 +6134,7 @@ ACHTUNG: Du musst vorsichtig sein, wenn du diese Einstellung änderst, da dadurc
       Wenn die Richtlinie auf "False" gesetzt ist, werden die Signed HTTP Exchanges nicht geladen.</translation>
 <translation id="6368011194414932347">Startseiten-URL konfigurieren</translation>
 <translation id="6368403635025849609">JavaScript auf diesen Websites zulassen</translation>
+<translation id="6371005337713685988">Einstellungen für Gruppen ähnlicher Websites</translation>
 <translation id="6371561334154580937">Dialogfeld für die Abmeldung beim Schließen des letzten Fensters anzeigen.</translation>
 <translation id="6372105930898423193">Ermöglicht die Aktivierung der AppCache-Funktion, selbst wenn sie standardmäßig deaktiviert ist.</translation>
 <translation id="6373299801585455337">Melden der CPU-Informationen auf Geräten aktivieren</translation>
@@ -7836,6 +7847,7 @@ werden abgelehnt.</translation>
 <translation id="7758378441185523981">Aktiviert die passive Authentifizierung für Profiltypen.</translation>
 <translation id="776110834126722255">Eingestellt</translation>
 <translation id="7763614521440615342">Inhaltsvorschläge auf der "Neuer Tab"-Seite anzeigen</translation>
+<translation id="776465643636059256">Gruppen ähnlicher Websites deaktivieren</translation>
 <translation id="7765879851993224640">Verwendung von Smart Lock zur Anmeldung erlauben.</translation>
 <translation id="7767066506143083523">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die die Tabaufnahme verwenden können.
 

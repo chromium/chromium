@@ -13,6 +13,7 @@
 <translation id="1024913885641459127">Avis sur les produits et comparaison de prix</translation>
 <translation id="1028781062521375153">Voir les renseignements</translation>
 <translation id="1030706264415084469">L'URL <ph name="URL" /> veut stocker de façon permanente de grandes quantités de données sur votre appareil</translation>
+<translation id="1030949145805074938">{COUNT,plural, =0{Aucun}=1{À partir de 1 site. Cette option vous déconnectera de la plupart des sites. }one{À partir de # site. Cette option vous déconnectera de la plupart des sites. }other{À partir de # sites. Cette option vous déconnectera de la plupart des sites. }}</translation>
 <translation id="1033329911862281889">La navigation privée ne vous rend pas invisible en ligne :
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Les sites et les services qu'ils utilisent peuvent voir les visites.<ph name="END_LIST_ITEM" />
@@ -484,6 +485,7 @@
 <translation id="1939059826036755332">Incrustation d'image automatique</translation>
 <translation id="1939175642807587452">Les sites peuvent demander à envoyer des notifications</translation>
 <translation id="1940441167050915935">Supprimer les codes de sécurité enregistrés</translation>
+<translation id="194174710521904357">Vous avez temporairement autorisé ce site à utiliser des témoins tiers, ce qui signifie moins de protection de la navigation, mais les fonctionnalités du site sont plus susceptibles de fonctionner comme prévu.</translation>
 <translation id="1943994668912612445">Design</translation>
 <translation id="1945968466830820669">Vous risquez de perdre l'accès au compte de votre organisation ou d'être victime d'un vol d'identité. Chromium recommande de modifier votre mot de passe maintenant.</translation>
 <translation id="1946849748901605102">12 po x 15 po</translation>
@@ -661,6 +663,7 @@
 <translation id="2300306941146563769">Non téléversé</translation>
 <translation id="230286397113210245">Bouton Ouvrir la fenêtre de navigation privée, activez-le pour ouvrir une nouvelle fenêtre de navigation privée pour naviguer en privé</translation>
 <translation id="2312234273148520048">Condiments et vinaigrettes</translation>
+<translation id="2316087952091171402">Moins de <ph name="UPPER_ESTIMATE" />. Certains sites peuvent prendre plus de temps à charger lors de votre prochaine visite.</translation>
 <translation id="2316159751672436664">Personnalisez vos outils d'accessibilité dans les paramètres de Chrome OS</translation>
 <translation id="2316887270356262533">Libère moins de 1 Mo d'espace. Certains sites peuvent être plus longs à charger lors de votre prochaine visite.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> requiert un nom d'utilisateur et un mot de passe.</translation>
@@ -1105,6 +1108,7 @@
 <translation id="3271648667212143903"><ph name="ORIGIN" /> veut se connecter</translation>
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Entrez le code de vérification à <ph name="NUMBER_OF_DIGITS" /> chiffres</translation>
+<translation id="3272643614306383237">Moins de 1 Mo. Certains sites peuvent prendre plus de temps à charger lors de votre prochaine visite.</translation>
 <translation id="3281350579597955952">{0,plural, =1{La politique de l'administrateur ne recommande pas d'ouvrir ce fichier dans <ph name="DESTINATION_NAME" />}one{La politique de l'administrateur ne recommande pas d'ouvrir ce fichier dans <ph name="DESTINATION_NAME" />}other{La politique de l'administrateur ne recommande pas d'ouvrir ces fichiers dans <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Votre organisation, <ph name="ENROLLMENT_DOMAIN" />, a envoyé de l'information, comme des paramètres ou des politiques, aux sites Web suivants.</translation>
 <translation id="3286372614333682499">portrait</translation>
@@ -2869,6 +2873,7 @@
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Votre moteur de recherche par défaut vous permet d'effectuer des recherches sur le Web et alimente les fonctionnalités de Chrome<ph name="END_BOLD" />, telles que la recherche à partir de la barre d'adresse et des images sur des pages Web. Une fonctionnalité peut ne pas être proposée si votre moteur de recherche ne la prend pas en charge.</translation>
 <translation id="6934672428414710184">Ce nom provient de votre compte Google</translation>
 <translation id="6935082727755903526">Emplois dans le domaine de la finance ou de la comptabilité</translation>
+<translation id="6935179587384421592"><ph name="SIZE" />. Certains sites peuvent prendre plus de temps à charger lors de votre prochaine visite.</translation>
 <translation id="6936976777388162184">Il s'agit d'un appareil lié, il ne peut donc pas être inscrit avec la mise à niveau de Kiosk et Signage.</translation>
 <translation id="6939469646605424232">Émissions dramatiques</translation>
 <translation id="6944692733090228304">Vous avez entré votre mot de passe sur un site non géré par <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Pour protéger votre compte, ne réutilisez pas votre mot de passe dans d'autres applications ni sur d'autres sites.</translation>
@@ -3134,6 +3139,7 @@ Détails supplémentaires :
 <translation id="7441864845853794192">Gastronomie et aliments de spécialité</translation>
 <translation id="7442725080345379071">Orange clair</translation>
 <translation id="7444046173054089907">Ce site est bloqué</translation>
+<translation id="7444176988908839653">{COUNT,plural, =0{Les témoins seront bloqués à nouveau aujourd'hui}=1{Les témoins seront bloqués à nouveau demain}one{# jour jusqu'à ce que les témoins soient bloqués à nouveau}other{# jours jusqu'à ce que les témoins soient bloqués à nouveau}}</translation>
 <translation id="7445762425076701745">Il n'est pas possible de valider entièrement l'identité du serveur auquel vous êtes connecté. Le nom utilisé pour cette connexion n'est valide que sur votre réseau et aucune autorité de certification externe ne peut en vérifier la propriété. Certaines autorités de certification délivrent tout de même des certificats pour ces types de noms. Par conséquent, nous ne sommes pas en mesure de vérifier que vous êtes connecté au site voulu et non à un site malveillant.</translation>
 <translation id="7447234474237738389">Services d'habillement</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> mm x <ph name="HEIGHT" /> mm)</translation>
@@ -3500,6 +3506,7 @@ Détails supplémentaires :
 <translation id="81563721597823545">Équipement de hockey</translation>
 <translation id="8161095570253161196">Reprendre la navigation</translation>
 <translation id="8163866351304776260">Quadruple perforation à gauche</translation>
+<translation id="8164078261547504572">Voulez-vous recevoir des courriels lorsque les prix baissent?</translation>
 <translation id="8175796834047840627">Chrome vous propose d'enregistrer vos cartes dans votre compte Google parce que vous y êtes connecté. Vous pouvez modifier ce comportement dans les paramètres.</translation>
 <translation id="8176440868214972690">L'administrateur de cet appareil a envoyé de l'information, comme des paramètres ou des politiques, aux sites Web suivants.</translation>
 <translation id="817820454357658398">Produits d'hygiène féminine</translation>
@@ -3940,6 +3947,7 @@ Détails supplémentaires :
 <translation id="9078912659001679888">Mélangeurs et centrifugeuses</translation>
 <translation id="9078964945751709336">Plus de renseignements nécessaires</translation>
 <translation id="9080712759204168376">Résumé de la commande</translation>
+<translation id="9084304544887760521">Recevez des courriels à l'adresse <ph name="EMAIL" /> lorsque le prix des articles que vous suivez baisse sur n'importe quel site.</translation>
 <translation id="908796725011587895">Sports universitaires</translation>
 <translation id="9089260154716455634">Politique en dehors des heures normales :</translation>
 <translation id="9090243919347147717">Pièces jointes</translation>
@@ -4009,7 +4017,7 @@ Détails supplémentaires :
 <translation id="9207861905230894330">Échec de l'ajout d'un article.</translation>
 <translation id="9213433120051936369">Personnaliser l'apparence</translation>
 <translation id="9215416866750762878">Une application empêche Chrome de se connecter à ce site en toute sécurité</translation>
-<translation id="9218430445555521422">Définir comme navigateur par défaut</translation>
+<translation id="9218430445555521422">Définir par défaut</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Personnaliser Chrome</translation>
 <translation id="9222403027701923763">Enseignement primaire et secondaire</translation>
@@ -4024,6 +4032,7 @@ Détails supplémentaires :
 <translation id="944540589955480312">Utiliser les mots de passe et les clés d'accès enregistrés dans votre compte Google</translation>
 <translation id="945855313015696284">Vérifiez les renseignements ci-dessous et supprimez les cartes incorrectes</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour créer un site dans Google Sites rapidement</translation>
+<translation id="947974362755924771">{COUNT,plural, =0{Chrome limitera à nouveau les témoins aujourd'hui}=1{Chrome limitera à nouveau les témoins demain}one{# jours jusqu'à ce que Chrome limite à nouveau les témoins}other{# jours jusqu'à ce que Chrome limite à nouveau les témoins}}</translation>
 <translation id="949314938206378263">Tu as demandé à consulter ce site. Ton parent peut répondre dans Family Link.</translation>
 <translation id="950736567201356821">Triple perforation en haut</translation>
 <translation id="961663415146723894">Reliure en bas</translation>

@@ -3893,6 +3893,7 @@
 <translation id="8975012916872825179">Утасны дугаар, имэйл хаяг болон тээвэрлэх хаяг зэрэг мэдээллийг багтаадаг</translation>
 <translation id="8975263830901772334">Таны хэвлэх файлуудын нэр</translation>
 <translation id="8978053250194585037">Google-н аюулгүй хайлт саяхан <ph name="SITE" />-с <ph name="BEGIN_LINK" />фишинг олж илрүүллээ<ph name="END_LINK" />. Фишинг сайтууд нь таныг хууран мэхлэх зорилгоор бусад сайт мэт харагдана.</translation>
+<translation id="8982884016487650216">PDF-г ачаалж дууслаа</translation>
 <translation id="8983369100812962543">Та одоо энэ аппын хэмжээг өөрчлөх боломжтой</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-д хөтчийн түүхээ үзэхийн тулд эхлээд tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="8987663052629670333">Зурган хэвлэлийн үйлчилгээнүүд</translation>
@@ -3919,6 +3920,7 @@
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Энэ табыг холбоос хуваалцаж, QR код үүсгэж, дамжуулж мөн бусад зүйлийг хийснээр хуваалцахын тулд tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="9023536760430404133">Тээврийн хэрэгслийн обуд болон дугуйнууд</translation>
 <translation id="9025348182339809926">(Хүчингүй)</translation>
+<translation id="902590795160480390">PDF-г ачаалж байна</translation>
 <translation id="9030265603405983977">Дан өнгөтэй</translation>
 <translation id="9035022520814077154">Аюулгүй байдлын алдаа</translation>
 <translation id="9035824888276246493">Аюулгүй байдлын кодуудыг хадгалах</translation>

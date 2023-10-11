@@ -250,6 +250,7 @@
 <translation id="235789365079050412">Політика конфіденційності Google</translation>
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2362083820973145409">Ви ввійшли як <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ця опція відкриває налаштування.</translation>
+<translation id="2364539095045928896">Кнопка "Закрити", яка закриває Примітку про конфіденційність у центрі статистики сторінки.</translation>
 <translation id="2386938421315164605">Ховайте й показуйте теми</translation>
 <translation id="2390510615457643724">Завантажити файл "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) знову?</translation>
 <translation id="2394602618534698961">Завантажені файли з’являться тут</translation>
@@ -873,6 +874,7 @@
 <translation id="5458366071038729214">Тут відображатимуться сайти, на які ви підпишетеся</translation>
 <translation id="5468068603361015296">Усе одно завантажити файл "<ph name="FILE_NAME" />"?</translation>
 <translation id="548278423535722844">Відкрити в додатку Карти</translation>
+<translation id="5486841595534124508">Логотип Примітки про конфіденційність для центру статистики сторінки, який переспрямовує на сторінку "Мої дії".</translation>
 <translation id="5487521232677179737">Видалити дані</translation>
 <translation id="5492637351392383067">Шифрування на пристрої</translation>
 <translation id="5514904542973294328">Вимкнено адміністратором пристрою</translation>
@@ -1347,6 +1349,7 @@
 <translation id="7810647596859435254">Відкрити за допомогою…</translation>
 <translation id="7815484226266492798">Довгий знімок екрана</translation>
 <translation id="7822705602465980873">Якщо ви ввійшли у свій обліковий запис Google, ці дані зв’язуються з ним. Завдяки цьому ми можемо захищати вас у всіх сервісах Google, наприклад підвищити захист у Gmail після інциденту безпеки.</translation>
+<translation id="782705168687182233">Ваші дії зберігаються у вашому <ph name="BEGIN_LINK" />обліковому записі Google<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Ваш комп’ютер пропонує зареєструвати цей пристрій для входу на сайті</translation>
 <translation id="7844171778363018843">Дані не синхронізуються</translation>
 <translation id="7846296061357476882">Сервіси Google</translation>

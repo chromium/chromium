@@ -704,6 +704,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="385300504083504382">Começo</translation>
 <translation id="3859364108019690">Não é possível fazer streaming de apps</translation>
 <translation id="3861651314799684201">Pressione "Enter" para gravar em tela cheia</translation>
+<translation id="3865912916886104060">Nenhum dispositivo conectado. O Wi-Fi será desativado para iniciar o ponto de acesso.</translation>
 <translation id="3886872229787704059">Aberto hoje</translation>
 <translation id="3891340733213178823">Pressione Ctrl+Shift+Q duas vezes para sair.</translation>
 <translation id="3893630138897523026">ChromeVox (resposta falada)</translation>
@@ -788,6 +789,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4197790712631116042">Desativado</translation>
 <translation id="4201033867194214117">O recurso <ph name="FEATURE_NAME" /> não está disponível.</translation>
 <translation id="4201051445878709314">Mostrar mês anterior</translation>
+<translation id="4202362334312791952">1 dispositivo conectado. O Wi-Fi será desativado para iniciar o ponto de acesso.</translation>
 <translation id="4209973997261364186">O Wi-Fi está ativado</translation>
 <translation id="4212472694152630271">Usar PIN</translation>
 <translation id="4215497585250573029">Configurações de VPN</translation>
@@ -1051,6 +1053,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5258528442992323769">Nenhum espaço de trabalho salvo</translation>
 <translation id="5260676007519551770">Espaço de trabalho 4</translation>
 <translation id="5268819379131021772">Lista de tarefas do Google</translation>
+<translation id="5275923704957843041">Visualização do espaço de trabalho</translation>
 <translation id="5278086053818066789">Ativar/desativar o ChromeVox (resposta falada)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> precisa de atenção.</translation>
 <translation id="5283198616748585639">Adicionar 1 min</translation>
@@ -1167,6 +1170,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5707775774148071965">Seu dispositivo oferece suporte a uma taxa de dados mais alta do que seu cabo. O desempenho do dispositivo pode ser limitado.</translation>
 <translation id="5710450975648804523">O "Não perturbe" está ativado</translation>
 <translation id="571295407079589142">Os dados móveis estão desativados</translation>
+<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> dispositivos conectados. O Wi-Fi será desativado para iniciar o ponto de acesso.</translation>
 <translation id="5727460725221669831">Se você esqueceu a senha do dispositivo ou mudou a da sua Conta do Google recentemente, tente recuperar o usuário.</translation>
 <translation id="573413375004481890">Este dispositivo não é compatível com essa quantidade de telas. Por isso, uma delas foi desconectada</translation>
 <translation id="5740328398383587084">Compartilhar por proximidade</translation>

@@ -3893,6 +3893,7 @@ Mga karagdagang detalye:
 <translation id="8975012916872825179">May kasamang impormasyon tulad ng mga numero ng telepono, email address, at address sa pagpapadala</translation>
 <translation id="8975263830901772334">Mga pangalan ng mga file na pini-print mo</translation>
 <translation id="8978053250194585037">May <ph name="BEGIN_LINK" />na-detect na phishing<ph name="END_LINK" /> sa <ph name="SITE" /> kamakailan ang Ligtas na Pag-browse sa Google. Nagpapanggap ang mga phishing site bilang ibang website upang linlangin ka.</translation>
+<translation id="8982884016487650216">Na-load na ang PDF</translation>
 <translation id="8983369100812962543">Puwede mo na ngayong i-resize ang app</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang tab at pagkatapos ay ang Enter para tingnan ang iyong history ng pag-browse sa Chrome</translation>
 <translation id="8987663052629670333">Mga Serbisyo sa Pag-print ng Larawan</translation>
@@ -3919,6 +3920,7 @@ Mga karagdagang detalye:
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang tab at pagkatapos ay ang Enter para ibahagi ang tab na ito sa pamamagitan ng pagbabahagi sa link, paggawa ng QR code, pag-cast, at higit pa</translation>
 <translation id="9023536760430404133">Mga Gulong ng Sasakyan</translation>
 <translation id="9025348182339809926">(Invalid)</translation>
+<translation id="902590795160480390">Nilo-load ang PDF</translation>
 <translation id="9030265603405983977">Monochrome</translation>
 <translation id="9035022520814077154">Error sa seguridad</translation>
 <translation id="9035824888276246493">Mag-save ng mga panseguridad na code</translation>

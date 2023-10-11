@@ -250,6 +250,7 @@
 <translation id="235789365079050412">Google-н нууцлалын бодлого</translation>
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" />-р нэвтэрсэн. <ph name="USER_EMAIL" />. Тохиргоог нээнэ.</translation>
+<translation id="2364539095045928896">Хуудасны статистикийн хабын нууцлалын сануулгыг хаах товчлуур.</translation>
 <translation id="2386938421315164605">Сэдвүүдийг нуух болон ил болгох</translation>
 <translation id="2390510615457643724">Та <ph name="FILE_NAME" /><ph name="FILE_SIZE" />-г дахин татахыг хүсэж байна уу?</translation>
 <translation id="2394602618534698961">Таны татсан файлууд энд харагддаг</translation>
@@ -872,6 +873,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5458366071038729214">Та дагадаг сайтуудаа эндээс олно</translation>
 <translation id="5468068603361015296">Та <ph name="FILE_NAME" />-г ямартай ч татахыг хүсэж байна уу?</translation>
 <translation id="548278423535722844">Газрын зургийн апп-д нээх</translation>
+<translation id="5486841595534124508">Миний үйл ажиллагааны хуудас руу дахин чиглүүлдэг хуудасны статистикийн хабын нууцлалын сануулгын лого.</translation>
 <translation id="5487521232677179737">Өгөгдлийг устгах</translation>
 <translation id="5492637351392383067">Төхөөрөмж дээрх шифрлэлт</translation>
 <translation id="5514904542973294328">Энэ төхөөрөмжийн администратор цуцалсан</translation>
@@ -1346,6 +1348,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7810647596859435254">Дараахаар нээх...</translation>
 <translation id="7815484226266492798">Урт дэлгэцийн агшин</translation>
 <translation id="7822705602465980873">Таныг нэвтэрсэн үед аюулгүй байдалтай холбоотой тохиолдлын дараа Gmail-д хамгаалалтыг нэмэх зэргээр таныг Google-н үйлчилгээнүүдэд хамгаалахын тулд энэ өгөгдлийг Google Бүртгэлтэй тань холбодог.</translation>
+<translation id="782705168687182233">Таны үйл ажиллагааг <ph name="BEGIN_LINK" />Google Бүртгэлд<ph name="END_LINK" /> тань хадгалсан.</translation>
 <translation id="78270725016672455">Таны компьютер энэ төхөөрөмжийг сайтад нэвтрэхэд бүртгүүлэхийг хүсэж байна</translation>
 <translation id="7844171778363018843">Синк хийх өгөгдөл сонгоогүй</translation>
 <translation id="7846296061357476882">Google-н үйлчилгээнүүд</translation>
