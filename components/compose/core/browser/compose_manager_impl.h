@@ -37,9 +37,6 @@ class ComposeManagerImpl : public ComposeManager {
   const raw_ref<ComposeClient> client_;
 
   // A callback to Autofill that triggers filling the field.
-  // TODO(b/301368162): Potentially make into a
-  // `flat_map<FieldGlobalId, ComposeCallback>` to accommodate keeping
-  // state for multiple input fields.
   ComposeCallback callback_;
 };
 

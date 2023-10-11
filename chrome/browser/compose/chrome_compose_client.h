@@ -9,6 +9,7 @@
 #include <string>
 
 #include "chrome/common/compose/compose.mojom.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_manager.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
@@ -35,7 +36,12 @@ class ChromeComposeClient
 
   // compose::ComposeClient:
   compose::ComposeManager& GetManager() override;
-  void ShowComposeDialog(ComposeDialogCallback callback) override;
+  void ShowComposeDialog(
+      autofill::AutofillComposeDelegate::UiEntryPoint ui_entry_point,
+      const autofill::FormFieldData& trigger_field,
+      std::optional<autofill::AutofillClient::PopupScreenLocation>
+          popup_screen_location,
+      ComposeDialogCallback callback) override;
 
   void BindComposeDialog(
       mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler> handler,
@@ -66,6 +72,9 @@ class ChromeComposeClient
 
   raw_ptr<optimization_guide::OptimizationGuideModelExecutor>
       model_executor_for_test_;
+
+  // The unique renderer ID of the last field the user selected compose on.
+  autofill::FieldGlobalId last_compose_field_id_;
 
   base::WeakPtrFactory<ChromeComposeClient> weak_ptr_factory_{this};
 

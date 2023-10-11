@@ -13,6 +13,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/compose/proto/compose.pb.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -85,7 +86,13 @@ void ChromeComposeClient::ModelExecutionCallback(
   std::move(callback).Run(std::move(ui_response));
 }
 
-void ChromeComposeClient::ShowComposeDialog(ComposeDialogCallback callback) {
+void ChromeComposeClient::ShowComposeDialog(
+    autofill::AutofillComposeDelegate::UiEntryPoint ui_entry_point,
+    const autofill::FormFieldData& trigger_field,
+    std::optional<autofill::AutofillClient::PopupScreenLocation>
+        popup_screen_location,
+    ComposeDialogCallback callback) {
+  last_compose_field_id_ = trigger_field.global_id();
   // TODO(b/301609035) Add the compose dialog call here.
 }
 

@@ -8,6 +8,9 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_compose_delegate.h"
+#include "components/autofill/core/common/form_field_data.h"
 
 namespace compose {
 
@@ -28,7 +31,12 @@ class ComposeClient {
   virtual ComposeManager& GetManager() = 0;
 
   using ComposeDialogCallback = base::OnceCallback<void(const QueryParams&)>;
-  virtual void ShowComposeDialog(ComposeDialogCallback callback) = 0;
+  virtual void ShowComposeDialog(
+      autofill::AutofillComposeDelegate::UiEntryPoint ui_entry_point,
+      const autofill::FormFieldData& trigger_field,
+      std::optional<autofill::AutofillClient::PopupScreenLocation>
+          popup_screen_location,
+      ComposeDialogCallback callback) = 0;
 };
 
 }  // namespace compose

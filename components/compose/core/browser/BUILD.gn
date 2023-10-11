@@ -23,7 +23,8 @@ static_library("browser") {
 
   deps = [
     "//base",
-    "//components/autofill/core/browser:browser",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
     "//components/keyed_service/core",
   ]
 }
