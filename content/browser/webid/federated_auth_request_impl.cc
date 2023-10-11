@@ -17,8 +17,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/url_formatter/elide_url.h"
-#include "components/url_formatter/url_formatter.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -40,8 +38,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/page_visibility_state.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
@@ -272,36 +268,9 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
   }
 }
 
-std::string FormatUrlWithDomain(const GURL& url, bool for_display) {
-  // We do not use url_formatter::FormatUrlForSecurityDisplay() directly because
-  // our UI intentionally shows only the eTLD+1, as it makes for a shorter text
-  // that is also clearer to users. The identity provider's well-known file is
-  // in the root of the eTLD+1, and sign-in status within identity provider and
-  // relying party can be domain-wide because it relies on cookies.
-  std::string formatted_url_str =
-      net::IsLocalhost(url)
-          ? url.host()
-          : net::registry_controlled_domains::GetDomainAndRegistry(
-                url,
-                net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  if (for_display) {
-    return base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
-        GURL(url.scheme() + "://" + formatted_url_str),
-        url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
-  }
-  // We want defaults but we need to keep the scheme.
-  url_formatter::FormatUrlTypes types =
-      url_formatter::kFormatUrlOmitDefaults &
-      ~(url_formatter::kFormatUrlOmitHTTP | url_formatter::kFormatUrlOmitHTTPS |
-        url_formatter::kFormatUrlOmitFileScheme);
-  return base::UTF16ToUTF8(url_formatter::FormatUrl(
-      GURL(url.scheme() + "://" + formatted_url_str), types,
-      base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
-}
-
 std::string FormatOriginForDisplay(const url::Origin& origin) {
-  return FormatUrlWithDomain(origin.GetURL(),
-                             /*for_display=*/true);
+  return webid::FormatUrlWithDomain(origin.GetURL(),
+                                    /*for_display=*/true);
 }
 
 bool ShouldSuppressIdpSigninFailureDialog(
@@ -1238,7 +1207,7 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
   bool request_permission = ShouldMediateAuthz(idp_info->provider->scope);
 
   const std::string idp_for_display =
-      FormatUrlWithDomain(idp_config_url, /*for_display=*/true);
+      webid::FormatUrlWithDomain(idp_config_url, /*for_display=*/true);
   idp_info->data = IdentityProviderData(
       idp_for_display, accounts, idp_info->metadata,
       ClientMetadata{client_metadata.terms_of_service_url,
@@ -1941,16 +1910,6 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
       IsFedCmErrorEnabled() &&
       (result.error ||
        status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess);
-  if (should_show_error_ui && result.error) {
-    std::string error_url_etld_plus_one =
-        FormatUrlWithDomain(result.error->url, /*for_display=*/false);
-    std::string idp_etld_plus_one =
-        FormatUrlWithDomain(idp->config_url, /*for_display=*/false);
-    if (error_url_etld_plus_one != idp_etld_plus_one) {
-      result.error->url = GURL();
-    }
-  }
-
   auto complete_request_callback =
       should_show_error_ui
           ? base::BindOnce(&FederatedAuthRequestImpl::ShowErrorDialog,
@@ -2573,8 +2532,8 @@ bool FederatedAuthRequestImpl::ShouldFailBeforeFetchingAccounts(
 }
 
 bool FederatedAuthRequestImpl::RequiresUserMediation() {
-  std::string site = FormatUrlWithDomain(origin().GetURL(),
-                                         /*for_display=*/false);
+  std::string site = webid::FormatUrlWithDomain(origin().GetURL(),
+                                                /*for_display=*/false);
   return auto_reauthn_permission_delegate_->RequiresUserMediation(GURL(site));
 }
 
@@ -2583,8 +2542,8 @@ void FederatedAuthRequestImpl::SetRequiresUserMediation(
   // Get the domain and set RequiresUserMediation to the given value on it.
   // Include the scheme to make sure that for example that http://domain and
   // https://domain are not treated as the same.
-  std::string site = FormatUrlWithDomain(origin().GetURL(),
-                                         /*for_display=*/false);
+  std::string site = webid::FormatUrlWithDomain(origin().GetURL(),
+                                                /*for_display=*/false);
   auto_reauthn_permission_delegate_->SetRequiresUserMediation(
       GURL(site), requires_user_mediation);
 }
@@ -2603,9 +2562,10 @@ void FederatedAuthRequestImpl::PreventSilentAccess(
     RenderFrameHost* main_rfh = render_frame_host().GetMainFrame();
     if (main_rfh != &render_frame_host()) {
       std::string site =
-          FormatUrlWithDomain(origin().GetURL(), /*for_display=*/false);
-      std::string embedder = FormatUrlWithDomain(GetEmbeddingOrigin().GetURL(),
-                                                 /*for_display=*/false);
+          webid::FormatUrlWithDomain(origin().GetURL(), /*for_display=*/false);
+      std::string embedder =
+          webid::FormatUrlWithDomain(GetEmbeddingOrigin().GetURL(),
+                                     /*for_display=*/false);
       if (site == embedder) {
         frame_type = PreventSilentAccessFrameType::kSameSiteIframe;
       } else {

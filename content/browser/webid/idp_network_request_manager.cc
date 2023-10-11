@@ -13,6 +13,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/flags.h"
+#include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -596,6 +597,36 @@ void OnAccountsRequestParsed(
                           std::move(account_list));
 }
 
+GURL GetErrorUrl(const std::string* url, const GURL& idp_url) {
+  if (!url) {
+    return GURL();
+  }
+
+  GURL error_url = idp_url.Resolve(*url);
+  if (!error_url.is_valid()) {
+    return GURL();
+  }
+
+  url::Origin error_origin = url::Origin::Create(error_url);
+  if (!network::IsOriginPotentiallyTrustworthy(error_origin)) {
+    return GURL();
+  }
+
+  std::string error_url_etld_plus_one =
+      webid::FormatUrlWithDomain(error_url, /*for_display=*/false);
+  if (error_url_etld_plus_one.empty()) {
+    return GURL();
+  }
+
+  std::string idp_etld_plus_one =
+      webid::FormatUrlWithDomain(idp_url, /*for_display=*/false);
+  if (error_url_etld_plus_one != idp_etld_plus_one) {
+    return GURL();
+  }
+
+  return error_url;
+}
+
 void OnTokenRequestParsed(
     IdpNetworkRequestManager::TokenRequestCallback callback,
     IdpNetworkRequestManager::ContinueOnCallback continue_on_callback,
@@ -622,9 +653,9 @@ void OnTokenRequestParsed(
     const base::Value::Dict* response_error = response.FindDict(kErrorKey);
     if (response_error) {
       std::string error_code = ExtractString(*response_error, kErrorCodeKey);
-      GURL error_url = ExtractUrl(*response_error, kErrorUrlKey);
+      const std::string* url = response_error->FindString(kErrorUrlKey);
+      GURL error_url = GetErrorUrl(url, token_url);
       token_result.error = TokenError{error_code, error_url};
-
       std::move(callback).Run(
           {ParseStatus::kSuccess, fetch_status.response_code}, token_result);
       return;

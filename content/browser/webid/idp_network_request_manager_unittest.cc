@@ -1287,7 +1287,7 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnCanBeRelativeUrl) {
   run_loop.Run();
 }
 
-TEST_F(IdpNetworkRequestManagerTest, TokenRequestIdpError) {
+TEST_F(IdpNetworkRequestManagerTest, TokenRequestErrorWithProperField) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmError);
 
@@ -1310,6 +1310,111 @@ TEST_F(IdpNetworkRequestManagerTest, TokenRequestIdpError) {
         EXPECT_TRUE(result.error);
         EXPECT_EQ("invalid_request", result.error->code);
         EXPECT_EQ("https://idp.test/error", result.error->url);
+        run_loop.Quit();
+      });
+
+  auto on_continue =
+      base::BindLambdaForTesting([&](FetchStatus status, const GURL& url) {});
+
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SendTokenRequest(token_endpoint, "account", "request",
+                            std::move(callback), std::move(on_continue));
+  run_loop.Run();
+}
+
+TEST_F(IdpNetworkRequestManagerTest, TokenRequestErrorWithRelativePath) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmError);
+
+  net::HttpStatusCode http_status = net::HTTP_OK;
+  const std::string& mime_type = "application/json";
+
+  const char response[] =
+      R"({
+        "error": {
+          "code": "invalid_request",
+          "url": "/error"
+        }
+      })";
+  GURL token_endpoint(kTestTokenEndpoint);
+  AddResponse(token_endpoint, http_status, mime_type, response);
+
+  base::RunLoop run_loop;
+  auto callback =
+      base::BindLambdaForTesting([&](FetchStatus status, TokenResult result) {
+        EXPECT_TRUE(result.error);
+        EXPECT_EQ("invalid_request", result.error->code);
+        EXPECT_EQ("https://idp.test/error", result.error->url);
+        run_loop.Quit();
+      });
+
+  auto on_continue =
+      base::BindLambdaForTesting([&](FetchStatus status, const GURL& url) {});
+
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SendTokenRequest(token_endpoint, "account", "request",
+                            std::move(callback), std::move(on_continue));
+  run_loop.Run();
+}
+
+TEST_F(IdpNetworkRequestManagerTest, TokenRequestErrorWithCrossSiteUrl) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmError);
+
+  net::HttpStatusCode http_status = net::HTTP_OK;
+  const std::string& mime_type = "application/json";
+
+  const char response[] =
+      R"({
+        "error": {
+          "code": "invalid_request",
+          "url": "https://cross-site-idp.test/error"
+        }
+      })";
+  GURL token_endpoint(kTestTokenEndpoint);
+  AddResponse(token_endpoint, http_status, mime_type, response);
+
+  base::RunLoop run_loop;
+  auto callback =
+      base::BindLambdaForTesting([&](FetchStatus status, TokenResult result) {
+        EXPECT_TRUE(result.error);
+        EXPECT_EQ("invalid_request", result.error->code);
+        EXPECT_EQ(GURL(), result.error->url);
+        run_loop.Quit();
+      });
+
+  auto on_continue =
+      base::BindLambdaForTesting([&](FetchStatus status, const GURL& url) {});
+
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SendTokenRequest(token_endpoint, "account", "request",
+                            std::move(callback), std::move(on_continue));
+  run_loop.Run();
+}
+
+TEST_F(IdpNetworkRequestManagerTest, TokenRequestErrorWithUntrustworthyUrl) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmError);
+
+  net::HttpStatusCode http_status = net::HTTP_OK;
+  const std::string& mime_type = "application/json";
+
+  const char response[] =
+      R"({
+        "error": {
+          "code": "invalid_request",
+          "url": "http://idp.test/error"
+        }
+      })";
+  GURL token_endpoint(kTestTokenEndpoint);
+  AddResponse(token_endpoint, http_status, mime_type, response);
+
+  base::RunLoop run_loop;
+  auto callback =
+      base::BindLambdaForTesting([&](FetchStatus status, TokenResult result) {
+        EXPECT_TRUE(result.error);
+        EXPECT_EQ("invalid_request", result.error->code);
+        EXPECT_EQ(GURL(), result.error->url);
         run_loop.Quit();
       });
 

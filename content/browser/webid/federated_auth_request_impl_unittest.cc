@@ -5137,8 +5137,8 @@ TEST_F(FederatedAuthRequestImplTest, NoResponseErrorDialogShown) {
   EXPECT_TRUE(dialog_controller_state_.did_show_error_dialog);
 }
 
-// Test that an error url is sent to the UI if it's same-site with the IdP.
-TEST_F(FederatedAuthRequestImplTest, ErrorUrlIsSameSiteWithIdP) {
+// Test that the error UI has proper url set.
+TEST_F(FederatedAuthRequestImplTest, ErrorUrlDisplayedWithProperUrl) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmError);
 
@@ -5157,27 +5157,6 @@ TEST_F(FederatedAuthRequestImplTest, ErrorUrlIsSameSiteWithIdP) {
   EXPECT_TRUE(dialog_controller_state_.did_show_error_dialog);
   EXPECT_EQ(dialog_controller_state_.token_error->url,
             GURL("https://foo.idp.example/error"));
-}
-
-// Test that an error url is not sent to the UI if it's cross-site with the IdP.
-TEST_F(FederatedAuthRequestImplTest, ErrorUrlIsCrossSiteWithIdP) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmError);
-
-  MockConfiguration configuration = kConfigurationValid;
-  configuration.token_error =
-      TokenError(/*token=*/"", GURL("https://not-idp.example/error"));
-
-  RequestExpectations expectations = {
-      RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
-      /*standalone_console_message=*/absl::nullopt,
-      /*selected_idp_config_url=*/absl::nullopt};
-  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
-
-  EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
-  EXPECT_TRUE(dialog_controller_state_.did_show_error_dialog);
-  EXPECT_EQ(dialog_controller_state_.token_error->url, GURL());
 }
 
 // Test that permission is embargoed upon closing a mismatch dialog.
