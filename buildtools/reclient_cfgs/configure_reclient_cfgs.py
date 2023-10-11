@@ -54,8 +54,8 @@ def NaclRevision():
       return None
     return subprocess.check_output(
         ['git', 'log', '-1', '--format=%H'],
-        cwd= nacl_dir, shell=os.name == 'nt',
-    ).decode('utf-8').strip()
+        cwd= nacl_dir, shell=os.name == 'nt', text=True,
+    ).strip()
 
 class CipdError(Exception):
   """Raised by configure_reclient_cfgs on fatal cipd error."""
