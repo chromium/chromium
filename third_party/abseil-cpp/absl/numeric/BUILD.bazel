@@ -19,7 +19,13 @@ load(
     "ABSL_TEST_COPTS",
 )
 
-package(default_visibility = ["//visibility:public"])
+package(
+    default_visibility = ["//visibility:public"],
+    features = [
+        "layering_check",
+        "parse_headers",
+    ],
+)
 
 licenses(["notice"])
 
@@ -48,6 +54,7 @@ cc_binary(
         "//absl/base:core_headers",
         "//absl/random",
         "@com_github_google_benchmark//:benchmark_main",
+        "@com_google_googletest//:gtest",
     ],
 )
 
@@ -62,6 +69,7 @@ cc_test(
     deps = [
         ":bits",
         "//absl/random",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -98,6 +106,7 @@ cc_test(
         "//absl/hash:hash_testing",
         "//absl/meta:type_traits",
         "//absl/strings",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -112,6 +121,7 @@ cc_test(
         ":int128",
         "//absl/base:config",
         "@com_github_google_benchmark//:benchmark_main",
+        "@com_google_googletest//:gtest",
     ],
 )
 

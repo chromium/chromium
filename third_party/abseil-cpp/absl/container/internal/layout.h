@@ -55,7 +55,7 @@
 // `Partial()` comes in handy when the array sizes are embedded into the
 // allocation.
 //
-//   // size_t[1] containing N, size_t[1] containing M, double[N], int[M].
+//   // size_t[0] containing N, size_t[1] containing M, double[N], int[M].
 //   using L = Layout<size_t, size_t, double, int>;
 //
 //   unsigned char* Allocate(size_t n, size_t m) {

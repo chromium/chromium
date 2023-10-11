@@ -1657,7 +1657,7 @@ bool c_prev_permutation(C& c, LessThan&& comp) {
 //
 // Container-based version of the <numeric> `std::iota()` function
 // to compute successive values of `value`, as if incremented with `++value`
-// after each element is written. and write them to the container.
+// after each element is written, and write them to the container.
 template <typename Sequence, typename T>
 void c_iota(Sequence& sequence, const T& value) {
   std::iota(container_algorithm_internal::c_begin(sequence),

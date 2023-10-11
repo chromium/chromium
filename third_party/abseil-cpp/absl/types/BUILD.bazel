@@ -20,7 +20,13 @@ load(
     "ABSL_TEST_COPTS",
 )
 
-package(default_visibility = ["//visibility:public"])
+package(
+    default_visibility = ["//visibility:public"],
+    features = [
+        "layering_check",
+        "parse_headers",
+    ],
+)
 
 licenses(["notice"])
 
@@ -79,6 +85,7 @@ cc_test(
         "//absl/base:exception_testing",
         "//absl/container:test_instance_tracker",
         "//absl/log",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -92,6 +99,7 @@ cc_test(
         ":any",
         "//absl/base:config",
         "//absl/base:exception_safety_testing",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -129,6 +137,7 @@ cc_test(
         "//absl/container:inlined_vector",
         "//absl/hash:hash_testing",
         "//absl/strings",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -188,6 +197,7 @@ cc_test(
         "//absl/log",
         "//absl/meta:type_traits",
         "//absl/strings",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -203,6 +213,7 @@ cc_test(
         ":optional",
         "//absl/base:config",
         "//absl/base:exception_safety_testing",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -236,6 +247,7 @@ cc_test(
         "//absl/memory",
         "//absl/meta:type_traits",
         "//absl/strings",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -252,6 +264,7 @@ cc_test(
         ":variant",
         "//absl/utility",
         "@com_github_google_benchmark//:benchmark_main",
+        "@com_google_googletest//:gtest",
     ],
 )
 
@@ -268,6 +281,7 @@ cc_test(
         "//absl/base:config",
         "//absl/base:exception_safety_testing",
         "//absl/memory",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -293,6 +307,7 @@ cc_test(
     deps = [
         ":compare",
         "//absl/base",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )

@@ -28,7 +28,13 @@ default_package_visibility = [
     "//absl/random:__pkg__",
 ]
 
-package(default_visibility = default_package_visibility)
+package(
+    default_visibility = default_package_visibility,
+    features = [
+        "layering_check",
+        "parse_headers",
+    ],
+)
 
 licenses(["notice"])
 
@@ -409,6 +415,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":traits",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -425,6 +432,7 @@ cc_test(
         ":generate_real",
         "//absl/flags:flag",
         "//absl/numeric:bits",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -437,6 +445,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":distribution_test_util",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -449,6 +458,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":fastmath",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -462,6 +472,7 @@ cc_test(
     deps = [
         ":explicit_seed_seq",
         "//absl/random:seed_sequences",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -474,6 +485,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":salted_seed_seq",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -489,6 +501,7 @@ cc_test(
     deps = [
         ":distribution_test_util",
         "//absl/base:core_headers",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -503,6 +516,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":fast_uniform_bits",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -543,6 +557,7 @@ cc_test(
         "//absl/random:distributions",
         "//absl/random:seed_sequences",
         "//absl/strings",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -555,6 +570,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":seed_material",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -571,6 +587,7 @@ cc_test(
         ":pool_urbg",
         "//absl/meta:type_traits",
         "//absl/types:span",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -586,6 +603,7 @@ cc_test(
         ":explicit_seed_seq",
         ":pcg_engine",
         "//absl/time",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -604,6 +622,7 @@ cc_test(
         "//absl/log",
         "//absl/strings",
         "//absl/time",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -617,6 +636,7 @@ cc_test(
     deps = [
         ":randen",
         "//absl/meta:type_traits",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -631,6 +651,7 @@ cc_test(
         ":platform",
         ":randen_slow",
         "//absl/base:endian",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -662,6 +683,7 @@ cc_test(
         ":wide_multiply",
         "//absl/numeric:bits",
         "//absl/numeric:int128",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -742,6 +764,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":iostream_state_saver",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -754,6 +777,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":uniform_helper",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )

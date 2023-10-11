@@ -21,9 +21,15 @@ load(
     "ABSL_TEST_COPTS",
 )
 
-package(default_visibility = [
-    "//absl/log:__pkg__",
-])
+package(
+    default_visibility = [
+        "//absl/log:__pkg__",
+    ],
+    features = [
+        "layering_check",
+        "parse_headers",
+    ],
+)
 
 licenses(["notice"])
 
@@ -390,6 +396,7 @@ cc_test(
         "//absl/base:log_severity",
         "//absl/log",
         "//absl/log:globals",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -401,6 +408,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":fnmatch",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )

@@ -200,7 +200,7 @@
 #include "absl/base/options.h"
 #include "absl/base/port.h"
 #include "absl/base/prefetch.h"
-#include "absl/container/internal/common.h"  // IWYU pragma: export (for node_handle)
+#include "absl/container/internal/common.h"  // IWYU pragma: export // for node_handle
 #include "absl/container/internal/compressed_tuple.h"
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hash_policy_traits.h"

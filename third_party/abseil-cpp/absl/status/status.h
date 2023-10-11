@@ -67,8 +67,8 @@
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
 
-// TODO: danilchap - Remove include below when other third_party libraries
-// stop silently rely on it.
+// TODO: crbug.com/1491724 - Remove include below when other third_party
+// libraries stop silently rely on it.
 #include "absl/strings/str_cat.h"
 
 namespace absl {
@@ -431,7 +431,7 @@ inline StatusToStringMode& operator^=(StatusToStringMode& lhs,
 // Returned Status objects may not be ignored. status_internal.h has a forward
 // declaration of the form
 // class ABSL_MUST_USE_RESULT Status;
-class Status final {
+class ABSL_ATTRIBUTE_TRIVIAL_ABI Status final {
  public:
   // Constructors
 
