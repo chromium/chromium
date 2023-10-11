@@ -4573,7 +4573,7 @@
   {
     "name": "force-password-initial-sync-when-decryption-fails",
     "owners": [ "derinel@google.com", "mamir" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 124
   },
   {
     "name": "force-resync-drive",
@@ -6627,7 +6627,7 @@
   {
     "name": "passwords-in-android-credential-management",
     "owners": ["derinel@google.com", "fhorschig", "kenrb", "agl"],
-    "expiry_milestone": 120
+    "expiry_milestone": 124
   },
   {
     "name": "pcie-billboard-notification",
@@ -7612,7 +7612,7 @@
   {
     "name": "skip-undecryptable-passwords",
     "owners": [ "derinel@google.com", "mamir" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 124
   },
   {
     "name": "smart-sorting-price-tracking-destination",
@@ -8420,12 +8420,7 @@
   {
     "name": "web-authentication-android-credential-management",
     "owners": ["kenrb", "agl"],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "web-authentication-android-credential-management-and-gmscore",
-    "owners": ["derinel", "kenrb"],
-    "expiry_milestone": 123
+    "expiry_milestone": 124
   },
   {
     "name": "web-authentication-filter-google-passkeys",
