@@ -328,7 +328,34 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
     }
   }
 
-  if (event->type() == ui::ET_GESTURE_BEGIN) {
+  if (event->type() == ui::ET_GESTURE_PINCH_BEGIN) {
+    in_pinch_ = true;
+  } else if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN ||
+             event->type() == ui::ET_GESTURE_PINCH_END) {
+    in_pinch_ = false;
+  }
+
+  if (event->handled()) {
+    return;
+  }
+  if (!target->delegate()) {
+    return;
+  }
+
+  if (window_resizer_ && !in_gesture_drag_) {
+    return;
+  }
+
+  if (window_resizer_ && window_resizer_->resizer()->GetTarget() != target &&
+      !target->bounds().IsEmpty()) {
+    CompleteDrag(DragResult::SUCCESS);
+    return;
+  }
+
+  if (event->type() == ui::ET_GESTURE_END &&
+      event->details().touch_points() == 1) {
+    UpdateGestureTarget(nullptr);
+  } else if (event->type() == ui::ET_GESTURE_BEGIN) {
     // We don't always process ET_GESTURE_END events (i.e. on a fling or swipe),
     // so reset `is_moving_floated_window_` in ET_GESTURE_BEGIN.
     is_moving_floated_window_ = false;
@@ -361,24 +388,6 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
                                        &location_in_target);
     UpdateGestureTarget(gesture_target_, location_in_target);
   }
-
-  if (event->type() == ui::ET_GESTURE_PINCH_BEGIN) {
-    in_pinch_ = true;
-  } else if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN) {
-    in_pinch_ = false;
-  }
-
-  if (event->handled())
-    return;
-  if (!target->delegate())
-    return;
-
-  if (window_resizer_ && !in_gesture_drag_)
-    return;
-
-  if (window_resizer_ && window_resizer_->resizer()->GetTarget() != target &&
-      !target->bounds().IsEmpty())
-    return;
 
   if (event->details().touch_points() > 2) {
     if (CompleteDrag(DragResult::SUCCESS))
@@ -799,7 +808,6 @@ bool ToplevelWindowEventHandler::PrepareForPinch(
   Shell::Get()->multi_display_metrics_controller()->OnWindowMovedOrResized(
       window);
 
-  in_pinch_ = true;
   return true;
 }
 
@@ -925,11 +933,9 @@ bool ToplevelWindowEventHandler::CompleteDrag(DragResult result) {
 }
 
 bool ToplevelWindowEventHandler::CompletePinch() {
-  if (!window_resizer_ || !in_pinch_) {
+  if (!window_resizer_) {
     return false;
   }
-
-  in_pinch_ = false;
 
   // Reinitialize the `window_resizer_` if an `ET_GESTURE_SCROLL_UPDATE` event
   // is called right after pinch is completed. This is necessary because

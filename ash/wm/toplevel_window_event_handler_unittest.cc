@@ -1521,6 +1521,32 @@ TEST_F(ToplevelWindowEventHandlerPipPinchToResizeTest,
   const WMEvent exit_pip(WM_EVENT_NORMAL);
   WindowState::Get(window.get())->OnWMEvent(&exit_pip);
 }
+
+TEST_F(ToplevelWindowEventHandlerPipPinchToResizeTest,
+       PlacingThirdFingerWithDifferentTargetDuringPipPinchToResizeEndsDrag) {
+  std::unique_ptr<aura::Window> window(CreatePipWindow());
+  auto* toplevel_window_event_handler =
+      Shell::Get()->toplevel_window_event_handler();
+  ui::test::EventGenerator* gen = GetEventGenerator();
+
+  // Start a two-finger pinch with the PiP window as the target.
+  gen->PressTouchId(0, gfx::Point(100, 100));
+  gen->PressTouchId(1, gfx::Point(250, 100));
+  gen->MoveTouchId(gfx::Point(10, 0), 0);
+  gen->MoveTouchId(gfx::Point(10, 0), 1);
+
+  // Place another finger on the screen, one that has a target
+  // other than the PiP window.
+  gen->PressTouchId(2, gfx::Point(600, 600));
+  gen->MoveTouchId(gfx::Point(10, 10), 2);
+  gen->ReleaseTouchId(2);
+
+  // Expect that the drag has ended.
+  EXPECT_FALSE(toplevel_window_event_handler->gesture_target());
+
+  const WMEvent exit_pip(WM_EVENT_NORMAL);
+  WindowState::Get(window.get())->OnWMEvent(&exit_pip);
+}
 // Showing the resize shadows when the mouse is over the window edges is
 // tested in resize_shadow_and_cursor_test.cc
 
