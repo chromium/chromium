@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/web_applications/diagnostics/app_type_initialized_event.h"
 #include "chrome/browser/ui/web_applications/diagnostics/web_app_icon_diagnostic.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "components/webapps/common/web_app_id.h"
 

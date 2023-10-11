@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
@@ -105,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskInstallerLacrosBrowserTest,
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
-  absl::optional<AppId> app_id = registrar().LookupExternalAppId(url);
+  absl::optional<webapps::AppId> app_id = registrar().LookupExternalAppId(url);
   ASSERT_TRUE(app_id.has_value());
   EXPECT_TRUE(
       registrar().IsPlaceholderApp(app_id.value(), WebAppManagement::kKiosk));
@@ -115,7 +116,8 @@ IN_PROC_BROWSER_TEST_F(WebKioskInstallerLacrosBrowserTest,
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
-  absl::optional<AppId> final_app_id = registrar().LookupExternalAppId(url);
+  absl::optional<webapps::AppId> final_app_id =
+      registrar().LookupExternalAppId(url);
   ASSERT_TRUE(final_app_id.has_value());
   EXPECT_FALSE(registrar().IsPlaceholderApp(final_app_id.value(),
                                             WebAppManagement::kKiosk));

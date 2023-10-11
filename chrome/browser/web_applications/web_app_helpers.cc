@@ -42,8 +42,8 @@ const char kCrxAppPrefix[] = "_crx_";
 const char kSubAppIdConcatenation[] = ":";
 
 std::string MaybeConcatenateParentAppManifestId(
-    const ManifestId& manifest_id,
-    const absl::optional<ManifestId>& parent_manifest_id) {
+    const webapps::ManifestId& manifest_id,
+    const absl::optional<webapps::ManifestId>& parent_manifest_id) {
   if (parent_manifest_id.has_value()) {
     CHECK(parent_manifest_id->is_valid());
     CHECK_NE(parent_manifest_id.value(), manifest_id)
@@ -78,7 +78,7 @@ webapps::AppId GetAppIdFromApplicationName(const std::string& app_name) {
 webapps::AppId GenerateAppIdFromManifestId(
 
     const webapps::ManifestId& manifest_id,
-    const absl::optional<ManifestId>& parent_manifest_id) {
+    const absl::optional<webapps::ManifestId>& parent_manifest_id) {
   // The app ID is hashed twice: here and in GenerateId.
   // The double-hashing is for historical reasons and it needs to stay
   // this way for backwards compatibility. (Back then, a web app's input to the

@@ -80,18 +80,19 @@ class EnableLinkCapturingInfobarBrowserTest
   }
 
   // Returns [app_id, in_scope_url]
-  std::tuple<AppId, GURL> InstallTestApp() {
+  std::tuple<webapps::AppId, GURL> InstallTestApp() {
     GURL start_url = embedded_test_server()->GetURL("/web_apps/basic.html");
     GURL in_scope_url = embedded_test_server()->GetURL("/web_apps/page1.html");
 
-    AppId app_id =
+    webapps::AppId app_id =
         InstallWebAppFromPageAndCloseAppBrowser(browser(), start_url);
     apps::AppReadinessWaiter(profile(), app_id).Await();
     return {app_id, in_scope_url};
   }
 
   // Returns [outer app_id, inner app_id, inner app in_scope_url]
-  std::tuple<AppId, AppId, GURL> InstallOuterAppAndInnerApp() {
+  std::tuple<webapps::AppId, webapps::AppId, GURL>
+  InstallOuterAppAndInnerApp() {
     GURL outer_start_url =
         embedded_test_server()->GetURL("/web_apps/nesting/index.html");
     GURL inner_start_url =
@@ -100,10 +101,10 @@ class EnableLinkCapturingInfobarBrowserTest
         embedded_test_server()->GetURL("/web_apps/nesting/nested/page1.html");
 
     // The inner app must be installed first so that it is installable.
-    AppId inner_app_id =
+    webapps::AppId inner_app_id =
         InstallWebAppFromPageAndCloseAppBrowser(browser(), inner_start_url);
     apps::AppReadinessWaiter(profile(), inner_app_id).Await();
-    AppId outer_app_id =
+    webapps::AppId outer_app_id =
         InstallWebAppFromPageAndCloseAppBrowser(browser(), outer_start_url);
     apps::AppReadinessWaiter(profile(), outer_app_id).Await();
     return {outer_app_id, inner_app_id, inner_in_scope_url};

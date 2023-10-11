@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
-  absl::optional<AppId> app_id = registrar().LookupExternalAppId(url);
+  absl::optional<webapps::AppId> app_id = registrar().LookupExternalAppId(url);
   ASSERT_TRUE(app_id.has_value());
   EXPECT_TRUE(
       registrar().IsPlaceholderApp(app_id.value(), WebAppManagement::kPolicy));
@@ -226,7 +226,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
-  absl::optional<AppId> final_app_id = registrar().LookupExternalAppId(url);
+  absl::optional<webapps::AppId> final_app_id =
+      registrar().LookupExternalAppId(url);
   ASSERT_TRUE(final_app_id.has_value());
   EXPECT_FALSE(registrar().IsPlaceholderApp(final_app_id.value(),
                                             WebAppManagement::kPolicy));
@@ -254,12 +255,14 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   options.add_to_desktop = true;
   InstallApp(options);
 
-  const AppId placeholder_app_id = GenerateAppId(absl::nullopt, install_url);
+  const webapps::AppId placeholder_app_id =
+      GenerateAppId(absl::nullopt, install_url);
   apps::AppReadinessWaiter(profile(), placeholder_app_id).Await();
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
-  absl::optional<AppId> app_id = registrar().LookupExternalAppId(install_url);
+  absl::optional<webapps::AppId> app_id =
+      registrar().LookupExternalAppId(install_url);
   ASSERT_TRUE(app_id.has_value());
   EXPECT_EQ(placeholder_app_id, *app_id);
   EXPECT_TRUE(registrar().IsPlaceholderApp(*app_id, WebAppManagement::kPolicy));
@@ -272,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
 
-  const AppId new_app_id = GenerateAppId(absl::nullopt, start_url);
+  const webapps::AppId new_app_id = GenerateAppId(absl::nullopt, start_url);
 
   EXPECT_NE(new_app_id, placeholder_app_id);
   EXPECT_FALSE(registrar().IsInstalled(placeholder_app_id));
@@ -303,12 +306,14 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   options.add_to_desktop = true;
   InstallApp(options);
 
-  const AppId placeholder_app_id = GenerateAppId(absl::nullopt, install_url);
+  const webapps::AppId placeholder_app_id =
+      GenerateAppId(absl::nullopt, install_url);
   apps::AppReadinessWaiter(profile(), placeholder_app_id).Await();
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
-  absl::optional<AppId> app_id = registrar().LookupExternalAppId(install_url);
+  absl::optional<webapps::AppId> app_id =
+      registrar().LookupExternalAppId(install_url);
   ASSERT_TRUE(app_id.has_value());
   EXPECT_EQ(placeholder_app_id, *app_id);
   EXPECT_TRUE(registrar().IsPlaceholderApp(*app_id, WebAppManagement::kPolicy));
@@ -320,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
 
-  const AppId new_app_id = GenerateAppId("some_id", start_url);
+  const webapps::AppId new_app_id = GenerateAppId("some_id", start_url);
 
   base::RunLoop().RunUntilIdle();
 

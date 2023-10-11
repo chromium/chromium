@@ -257,7 +257,7 @@ void SubAppsServiceImpl::Add(
 void SubAppsServiceImpl::CollectInstallData(
     int add_call_id,
     std::vector<std::pair<webapps::ManifestId, GURL>> requested_installs,
-    ManifestId parent_manifest_id) {
+    webapps::ManifestId parent_manifest_id) {
   const auto install_info_collector = base::BarrierCallback<
       std::pair<webapps::ManifestId, std::unique_ptr<WebAppInstallInfo>>>(
       requested_installs.size(),
@@ -500,12 +500,12 @@ void SubAppsServiceImpl::RemoveSubApp(
 
   WebAppProvider* provider = GetWebAppProvider(render_frame_host());
 
-  const AppId* parent_app_id = GetAppId(render_frame_host());
+  const webapps::AppId* parent_app_id = GetAppId(render_frame_host());
   if (!parent_app_id) {
     return ReportBadMessageAndDeleteThis("Parent app id is null");
   }
 
-  ManifestId parent_manifest_id =
+  webapps::ManifestId parent_manifest_id =
       provider->registrar_unsafe().GetAppManifestId(*parent_app_id);
   if (!parent_manifest_id.is_valid()) {
     return ReportBadMessageAndDeleteThis("Parent manifest is null");

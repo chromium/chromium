@@ -12,7 +12,6 @@
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
@@ -65,7 +64,7 @@ const LockDescription& FetchInstallInfoFromInstallUrlCommand::lock_description()
 FetchInstallInfoFromInstallUrlCommand::FetchInstallInfoFromInstallUrlCommand(
     webapps::ManifestId manifest_id,
     GURL install_url,
-    absl::optional<ManifestId> parent_manifest_id,
+    absl::optional<webapps::ManifestId> parent_manifest_id,
     base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback)
     : WebAppCommandTemplate<SharedWebContentsLock>(
           "FetchInstallInfoFromInstallUrlCommand"),

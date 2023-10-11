@@ -14,7 +14,6 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -107,10 +106,11 @@ class FetchInstallInfoFromInstallUrlCommandTest : public WebAppTest {
  private:
   const GURL app_url_{"http://www.foo.bar/web_apps/basic.html"};
   const GURL parent_app_url_{"http://www.foo.bar/basic.html"};
-  const ManifestId manifest_id_ = GenerateManifestIdFromStartUrlOnly(app_url_);
-  const ManifestId parent_manifest_id_ =
+  const webapps::ManifestId manifest_id_ =
+      GenerateManifestIdFromStartUrlOnly(app_url_);
+  const webapps::ManifestId parent_manifest_id_ =
       GenerateManifestIdFromStartUrlOnly(parent_app_url_);
-  const ManifestId wrong_parent_manifest_id_ =
+  const webapps::ManifestId wrong_parent_manifest_id_ =
       GenerateManifestIdFromStartUrlOnly(
           GURL("http://other.origin.com/basic.html"));
 };

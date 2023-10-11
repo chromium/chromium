@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_APP_SETTINGS_WEB_APP_SETTINGS_NAVIGATION_THROTTLE_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_throttle.h"
 

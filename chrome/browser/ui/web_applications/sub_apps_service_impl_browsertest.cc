@@ -24,7 +24,6 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -115,7 +114,7 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
     return web_contents->GetPrimaryMainFrame();
   }
 
-  ManifestId parent_manifest_id() {
+  webapps::ManifestId parent_manifest_id() {
     return provider().registrar_unsafe().GetAppManifestId(parent_app_id_);
   }
 
@@ -131,7 +130,7 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
   webapps::AppId GenerateSubAppIdFromPath(
       const std::string& path,
       const content::RenderFrameHost* parent_frame,
-      const ManifestId& parent_manifest_id) {
+      const webapps::ManifestId& parent_manifest_id) {
     return GenerateAppId(/*manifest_id_path=*/absl::nullopt,
                          GetURLFromPath(path, parent_frame),
                          parent_manifest_id);
@@ -377,8 +376,8 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
       {{GetURLFromPath(kSubAppPath), SubAppsServiceResultCode::kSuccess}},
       {{kSubAppPath, kSubAppPath}});
 
-  AppId standalone_app_id = InstallPwaFromPath(kSubAppPath);
-  AppId sub_app_id =
+  webapps::AppId standalone_app_id = InstallPwaFromPath(kSubAppPath);
+  webapps::AppId sub_app_id =
       GenerateSubAppIdFromPath(kSubAppPath, iwa_frame, parent_manifest_id());
 
   EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(sub_app_id));
@@ -402,8 +401,8 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(standalone_app_id));
 
   // Inverting the order of installations.
-  AppId standalone_app_id2 = InstallPwaFromPath(kSubAppPath2);
-  AppId sub_app_id2 =
+  webapps::AppId standalone_app_id2 = InstallPwaFromPath(kSubAppPath2);
+  webapps::AppId sub_app_id2 =
       GenerateSubAppIdFromPath(kSubAppPath2, iwa_frame, parent_manifest_id());
   ExpectCallAdd(
       {{GetURLFromPath(kSubAppPath2), SubAppsServiceResultCode::kSuccess}},

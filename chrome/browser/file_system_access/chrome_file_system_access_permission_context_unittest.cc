@@ -1618,7 +1618,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   const base::FilePath kTestPath2 = base::FilePath(FILE_PATH_LITERAL("/a/b"));
   // Install a web app for `kTestOrigin`.
   const GURL kTestOriginUrl = GURL("https://example.com");
-  const web_app::AppId app_id =
+  const webapps::AppId app_id =
       web_app::test::InstallDummyWebApp(profile(), "Test App", kTestOriginUrl);
 
   // Create a grant, then revoke its active permissions.
@@ -1650,7 +1650,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        OnWebAppUninstalled_NoGrantedActiveGrants) {
   // Install a web app for `kTestOrigin`.
   const GURL kTestOriginUrl = GURL("https://example.com");
-  const web_app::AppId app_id =
+  const webapps::AppId app_id =
       web_app::test::InstallDummyWebApp(profile(), "Test App", kTestOriginUrl);
 
   // Create a persistent grant, and revoke its active permissions.

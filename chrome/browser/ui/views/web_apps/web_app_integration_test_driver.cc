@@ -3936,7 +3936,7 @@ webapps::AppId WebAppIntegrationTestDriver::GetAppIdBySiteMode(Site site) {
 
   auto parent_manifest = site_config.parent_manifest_id;
   if (parent_manifest.has_value()) {
-    ManifestId parent_manifest_id =
+    webapps::ManifestId parent_manifest_id =
         GetTestServerForSiteMode(site).GetURL(parent_manifest.value());
     return GenerateAppId(manifest_id, start_url, parent_manifest_id);
 

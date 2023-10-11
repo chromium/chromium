@@ -63,7 +63,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -1980,7 +1979,7 @@ void ChromeFileSystemAccessPermissionContext::OnShutdown() {
 }
 
 void ChromeFileSystemAccessPermissionContext::OnWebAppInstalled(
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(profile()));
   const auto& registrar = provider->registrar_unsafe();
@@ -2023,7 +2022,7 @@ void ChromeFileSystemAccessPermissionContext::OnWebAppInstalled(
 }
 
 void ChromeFileSystemAccessPermissionContext::OnWebAppWillBeUninstalled(
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(profile()));
   const auto& registrar = provider->registrar_unsafe();
