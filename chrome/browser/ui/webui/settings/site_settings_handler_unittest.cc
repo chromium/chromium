@@ -1635,7 +1635,7 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
     EXPECT_EQ("https://google.com/",
               CHECK_DEREF(origin_info_1.FindString("origin")));
     EXPECT_EQ(0, origin_info_1.FindDouble("engagement"));
-    EXPECT_EQ(0, origin_info_1.FindDouble("usage"));
+    EXPECT_EQ(100, origin_info_1.FindDouble("usage"));
     EXPECT_EQ(0, origin_info_1.FindDouble("numCookies"));
     EXPECT_TRUE(origin_info_1.FindBool("isPartitioned").value_or(false));
 
@@ -1670,7 +1670,7 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
     EXPECT_EQ("https://www.example.com/",
               CHECK_DEREF(partitioned_origin_info.FindString("origin")));
     EXPECT_EQ(0, partitioned_origin_info.FindDouble("engagement"));
-    EXPECT_EQ(0, partitioned_origin_info.FindDouble("usage"));
+    EXPECT_EQ(302, partitioned_origin_info.FindDouble("usage"));
     EXPECT_EQ(1, partitioned_origin_info.FindDouble("numCookies"));
     EXPECT_TRUE(
         partitioned_origin_info.FindBool("isPartitioned").value_or(false));
@@ -1734,7 +1734,7 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
     EXPECT_EQ("https://www.example.com/",
               CHECK_DEREF(partitioned_origin_three_info.FindString("origin")));
     EXPECT_EQ(0, partitioned_origin_three_info.FindDouble("engagement"));
-    EXPECT_EQ(0, partitioned_origin_three_info.FindDouble("usage"));
+    EXPECT_EQ(302, partitioned_origin_three_info.FindDouble("usage"));
     EXPECT_EQ(1, partitioned_origin_three_info.FindDouble("numCookies"));
     EXPECT_TRUE(partitioned_origin_three_info.FindBool("isPartitioned")
                     .value_or(false));
