@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/paint/ng/ng_highlight_painter.h"
+#include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -70,13 +71,15 @@ TEST_P(NGHighlightPainterTest, FastSpellingGrammarPaintCase) {
                                        text_item.GetLayoutObject()->GetNode(),
                                        paint_info, text_style);
     }
-
-    NGTextPainter text_painter(graphics_context, text_item.ScaledFont(), rect,
-                               physical_offset, physical_rect, &inline_context,
-                               true);
+    LineRelativeRect rotated_rect =
+        LineRelativeRect::CreateFromLineBox(physical_rect, true);
+    NGTextPainter text_painter(
+        graphics_context, text_item.ScaledFont(), rect,
+        LineRelativeOffset::CreateFromBoxOrigin(physical_offset), rotated_rect,
+        &inline_context, true);
     NGTextDecorationPainter decoration_painter(text_painter, text_item,
                                                paint_info, style, text_style,
-                                               physical_rect, selection);
+                                               rotated_rect, selection);
     NGHighlightPainter highlight_painter(
         cursor.Current()->TextPaintInfo(cursor.Items()), text_painter,
         decoration_painter, paint_info, cursor, text_item, {}, physical_offset,

@@ -16,9 +16,10 @@
 
 namespace blink {
 
-NGTextCombinePainter::NGTextCombinePainter(GraphicsContext& context,
-                                           const ComputedStyle& style,
-                                           const PhysicalRect& text_frame_rect)
+NGTextCombinePainter::NGTextCombinePainter(
+    GraphicsContext& context,
+    const ComputedStyle& style,
+    const LineRelativeRect& text_frame_rect)
     : NGTextPainterBase(context,
                         style.GetFont(),
                         text_frame_rect.offset,
@@ -58,13 +59,14 @@ void NGTextCombinePainter::Paint(const PaintInfo& paint_info,
       style.GetTextEmphasisMark() != TextEmphasisMark::kNone;
   DCHECK(has_text_decoration | has_emphasis_mark);
 
-  const PhysicalRect& text_frame_rect =
+  const LineRelativeRect& text_frame_rect =
       text_combine.ComputeTextFrameRect(paint_offset);
 
   // To match the logical direction
   GraphicsContextStateSaver state_saver(paint_info.context);
   paint_info.context.ConcatCTM(
-      TextPainterBase::Rotation(text_frame_rect, style.GetWritingMode()));
+      text_frame_rect.ComputeRelativeToPhysicalTransform(
+          style.GetWritingMode()));
 
   NGTextCombinePainter text_painter(paint_info.context, style, text_frame_rect);
   const TextPaintStyle text_style = TextPainterBase::TextPaintingStyle(
@@ -97,7 +99,7 @@ void NGTextCombinePainter::PaintDecorations(const PaintInfo& paint_info,
   // Setup arguments for painting text decorations
   const absl::optional<AppliedTextDecoration> selection_text_decoration;
   TextDecorationInfo decoration_info(
-      text_frame_rect_.offset, text_frame_rect_.size.width, style_,
+      text_frame_rect_.offset, text_frame_rect_.size.inline_size, style_,
       /* inline_context */ nullptr, selection_text_decoration);
 
   const NGTextDecorationOffset decoration_offset(style_);
@@ -131,8 +133,9 @@ void NGTextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
   const auto font_ascent = font_data->GetFontMetrics().Ascent();
   const TextRun placeholder_text_run(&kIdeographicFullStopCharacter, 1);
   const gfx::PointF emphasis_mark_text_origin(
-      text_frame_rect_.X().ToFloat(),
-      text_frame_rect_.Y().ToFloat() + font_ascent + emphasis_mark_offset_);
+      text_frame_rect_.LineLeft().ToFloat(),
+      text_frame_rect_.LineOver().ToFloat() + font_ascent +
+          emphasis_mark_offset_);
   const TextRunPaintInfo text_run_paint_info(placeholder_text_run);
   graphics_context_.DrawEmphasisMarks(
       emphasis_mark_font, text_run_paint_info, emphasis_mark_,

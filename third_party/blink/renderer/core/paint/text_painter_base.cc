@@ -23,8 +23,8 @@ namespace blink {
 
 TextPainterBase::TextPainterBase(GraphicsContext& context,
                                  const Font& font,
-                                 const PhysicalOffset& text_origin,
-                                 const PhysicalRect& text_frame_rect,
+                                 const LineRelativeOffset& text_origin,
+                                 const LineRelativeRect& text_frame_rect,
                                  NGInlinePaintContext* inline_context,
                                  bool horizontal)
     : inline_context_(inline_context),
@@ -240,5 +240,4 @@ void TextPainterBase::PaintDecorationsOnlyLineThrough(
     }
   }
 }
-
 }  // namespace blink

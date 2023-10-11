@@ -18,10 +18,10 @@ class GraphicsContext;
 class NGInlinePaintContext;
 class NGTextDecorationOffset;
 class TextDecorationInfo;
+struct LineRelativeOffset;
+struct LineRelativeRect;
 struct NGTextFragmentPaintInfo;
 struct PaintInfo;
-struct PhysicalOffset;
-struct PhysicalRect;
 struct TextPaintStyle;
 
 // LayoutNG-specific base class for text painting. Augments TextPainterBase with
@@ -32,8 +32,8 @@ class CORE_EXPORT NGTextPainterBase : public TextPainterBase {
  public:
   NGTextPainterBase(GraphicsContext& context,
                     const Font& font,
-                    const PhysicalOffset& text_origin,
-                    const PhysicalRect& text_frame_rect,
+                    const LineRelativeOffset& text_origin,
+                    const LineRelativeRect& text_frame_rect,
                     NGInlinePaintContext* inline_context,
                     bool horizontal)
       : TextPainterBase(context,

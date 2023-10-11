@@ -16,8 +16,8 @@ class ComputedStyle;
 class GraphicsContextStateSaver;
 class NGFragmentItem;
 class NGTextPainter;
+struct LineRelativeRect;
 struct PaintInfo;
-struct PhysicalRect;
 struct TextPaintStyle;
 
 // NGTextFragmentPainter helper that paints text-decoration.
@@ -41,7 +41,7 @@ class CORE_EXPORT NGTextDecorationPainter {
       const PaintInfo& paint_info,
       const ComputedStyle& style,
       const TextPaintStyle& text_style,
-      const PhysicalRect& decoration_rect,
+      const LineRelativeRect& decoration_rect,
       NGHighlightPainter::SelectionPaintState* selection);
   ~NGTextDecorationPainter();
 
@@ -49,7 +49,7 @@ class CORE_EXPORT NGTextDecorationPainter {
   // that need to be painted, or nullopt if decorations should not be painted.
   void UpdateDecorationInfo(absl::optional<TextDecorationInfo>&,
                             const ComputedStyle&,
-                            absl::optional<PhysicalRect> = {},
+                            absl::optional<LineRelativeRect> = {},
                             const AppliedTextDecoration* = nullptr);
 
   enum Phase { kOriginating, kSelection };
@@ -66,7 +66,7 @@ class CORE_EXPORT NGTextDecorationPainter {
   const PaintInfo& paint_info_;
   const ComputedStyle& style_;
   const TextPaintStyle& text_style_;
-  const PhysicalRect& decoration_rect_;
+  const LineRelativeRect& decoration_rect_;
   NGHighlightPainter::SelectionPaintState* selection_;
 
   Step step_;

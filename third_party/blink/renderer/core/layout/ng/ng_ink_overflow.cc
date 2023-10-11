@@ -635,7 +635,8 @@ LogicalRect NGInkOverflow::ComputeAppliedDecorationOverflow(
   // so use it as a proxy for determining minimum thickness.
   const MinimumThickness1 kMinimumThicknessIsOne(!decoration_override);
   TextDecorationInfo decoration_info(
-      offset_in_container, ink_overflow.size.inline_size, style, inline_context,
+      LineRelativeOffset::CreateFromBoxOrigin(offset_in_container),
+      ink_overflow.size.inline_size, style, inline_context,
       /* selection_text_decoration */ absl::nullopt, decoration_override,
       &scaled_font, kMinimumThicknessIsOne);
   NGTextDecorationOffset decoration_offset(style);

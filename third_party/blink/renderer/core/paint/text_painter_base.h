@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/paint/applied_decoration_painter.h"
+#include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
@@ -50,8 +51,8 @@ class CORE_EXPORT TextPainterBase {
  public:
   TextPainterBase(GraphicsContext&,
                   const Font&,
-                  const PhysicalOffset& text_origin,
-                  const PhysicalRect& text_frame_rect,
+                  const LineRelativeOffset& text_origin,
+                  const LineRelativeRect& text_frame_rect,
                   NGInlinePaintContext* inline_context,
                   bool horizontal);
   ~TextPainterBase();
@@ -110,45 +111,13 @@ class CORE_EXPORT TextPainterBase {
   NGInlinePaintContext* inline_context_ = nullptr;
   GraphicsContext& graphics_context_;
   const Font& font_;
-  const PhysicalOffset text_origin_;
-  const PhysicalRect text_frame_rect_;
+  const LineRelativeOffset text_origin_;
+  const LineRelativeRect text_frame_rect_;
   AtomicString emphasis_mark_;
   int emphasis_mark_offset_ = 0;
   int ellipsis_offset_ = 0;
   const bool horizontal_;
 };
-
-inline AffineTransform TextPainterBase::Rotation(
-    const PhysicalRect& box_rect,
-    RotationDirection rotation_direction) {
-  // Why this matrix is correct: consider the case of a clockwise rotation.
-
-  // Let the corner points that define |boxRect| be ABCD, where A is top-left
-  // and B is bottom-left.
-
-  // 1. We want B to end up at the same pixel position after rotation as A is
-  //    before rotation.
-  // 2. Before rotation, B is at (x(), maxY())
-  // 3. Rotating clockwise by 90 degrees places B at the coordinates
-  //    (-maxY(), x()).
-  // 4. Point A before rotation is at (x(), y())
-  // 5. Therefore the translation from (3) to (4) is (x(), y()) - (-maxY(), x())
-  //    = (x() + maxY(), y() - x())
-
-  // A similar argument derives the counter-clockwise case.
-  return rotation_direction == kClockwise
-             ? AffineTransform(0, 1, -1, 0, box_rect.X() + box_rect.Bottom(),
-                               box_rect.Y() - box_rect.X())
-             : AffineTransform(0, -1, 1, 0, box_rect.X() - box_rect.Y(),
-                               box_rect.X() + box_rect.Bottom());
-}
-
-inline AffineTransform TextPainterBase::Rotation(const PhysicalRect& box_rect,
-                                                 WritingMode writing_mode) {
-  return Rotation(box_rect, writing_mode != WritingMode::kSidewaysLr
-                                ? TextPainterBase::kClockwise
-                                : TextPainterBase::kCounterclockwise);
-}
 
 }  // namespace blink
 

@@ -264,7 +264,7 @@ cc::PaintRecord PrepareWavyTileRecord(const WavyParams& params,
 }  // anonymous namespace
 
 TextDecorationInfo::TextDecorationInfo(
-    PhysicalOffset local_origin,
+    LineRelativeOffset local_origin,
     LayoutUnit width,
     const ComputedStyle& target_style,
     const NGInlinePaintContext* inline_context,
@@ -454,7 +454,7 @@ LayoutUnit TextDecorationInfo::OffsetFromDecoratingBox() const {
   const LayoutUnit decorating_box_paint_offset =
       decorating_box_->ContentOffsetInContainer().top +
       inline_context_->PaintOffset().top;
-  return decorating_box_paint_offset - local_origin_.top;
+  return decorating_box_paint_offset - local_origin_.line_over;
 }
 
 void TextDecorationInfo::SetUnderlineLineData(

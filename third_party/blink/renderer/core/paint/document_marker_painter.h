@@ -9,10 +9,6 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
-namespace gfx {
-class RectF;
-}
-
 namespace blink {
 
 class ComputedStyle;
@@ -21,9 +17,9 @@ class GraphicsContext;
 class LayoutUnit;
 class Node;
 class StyleableMarker;
+struct LineRelativeRect;
 struct PaintInfo;
 struct PhysicalOffset;
-struct PhysicalRect;
 struct TextPaintStyle;
 
 // Document marker painter for both LayoutNG and legacy layout.
@@ -38,7 +34,7 @@ class DocumentMarkerPainter {
                                             const StyleableMarker& marker,
                                             const ComputedStyle& style,
                                             const Document& document,
-                                            const gfx::RectF& marker_rect,
+                                            const LineRelativeRect& marker_rect,
                                             LayoutUnit logical_height,
                                             bool in_dark_mode);
   static void PaintDocumentMarker(
@@ -46,7 +42,7 @@ class DocumentMarkerPainter {
       const PhysicalOffset& box_origin,
       const ComputedStyle& style,
       DocumentMarker::MarkerType marker_type,
-      const PhysicalRect& local_rect,
+      const LineRelativeRect& local_rect,
       absl::optional<Color> custom_marker_color = absl::nullopt);
   static TextPaintStyle ComputeTextPaintStyleFrom(const Document& document,
                                                   Node* node,

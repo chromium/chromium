@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/document_marker_painter.h"
+#include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_highlight_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_decoration_painter.h"
@@ -57,10 +58,10 @@ inline const DisplayItemClient& AsDisplayItemClient(
   return *cursor.Current().GetDisplayItemClient();
 }
 
-inline PhysicalRect BoxInPhysicalSpace(const NGInlineCursor& cursor,
-                                       const PhysicalOffset& paint_offset,
-                                       const PhysicalOffset& parent_offset,
-                                       const LayoutTextCombine* text_combine) {
+inline PhysicalRect PhysicalBoxRect(const NGInlineCursor& cursor,
+                                    const PhysicalOffset& paint_offset,
+                                    const PhysicalOffset& parent_offset,
+                                    const LayoutTextCombine* text_combine) {
   PhysicalRect box_rect;
   if (const auto* svg_data = cursor.CurrentItem()->SvgFragmentData()) {
     box_rect = PhysicalRect::FastAndLossyFromRectF(svg_data->rect);
@@ -84,14 +85,6 @@ inline PhysicalRect BoxInPhysicalSpace(const NGInlineCursor& cursor,
         text_combine->AdjustTextLeftForPaint(box_rect.offset.left);
   }
   return box_rect;
-}
-
-inline PhysicalRect BoxInWritingModeSpace(const PhysicalRect& physical_box,
-                                          bool is_horizontal) {
-  PhysicalRect result = physical_box;
-  if (!is_horizontal)
-    result.size = PhysicalSize(result.Height(), result.Width());
-  return result;
 }
 
 inline const NGInlineCursor& InlineCursorForBlockFlow(
@@ -275,7 +268,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   const auto* const text_combine =
       DynamicTo<LayoutTextCombine>(layout_object->Parent());
   const PhysicalRect physical_box =
-      BoxInPhysicalSpace(cursor_, paint_offset, parent_offset_, text_combine);
+      PhysicalBoxRect(cursor_, paint_offset, parent_offset_, text_combine);
 #if DCHECK_IS_ON()
   if (UNLIKELY(text_combine))
     LayoutTextCombine::AssertStyleIsValid(style);
@@ -293,10 +286,12 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   absl::optional<AffineTransform> rotation;
   const WritingMode writing_mode = style.GetWritingMode();
   const bool is_horizontal = IsHorizontalWritingMode(writing_mode);
-  const PhysicalRect rotated_box =
-      BoxInWritingModeSpace(physical_box, is_horizontal);
-  if (!is_horizontal)
-    rotation.emplace(TextPainterBase::Rotation(rotated_box, writing_mode));
+  const LineRelativeRect rotated_box =
+      LineRelativeRect::CreateFromLineBox(physical_box, is_horizontal);
+  if (!is_horizontal) {
+    rotation.emplace(
+        rotated_box.ComputeRelativeToPhysicalTransform(writing_mode));
+  }
 
   // Determine whether or not we're selected.
   NGHighlightPainter::SelectionPaintState* selection = nullptr;
@@ -355,7 +350,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
             selection_for_bounds_recording->State())) {
       selection_recorder.emplace(
           selection_for_bounds_recording->State(),
-          selection_for_bounds_recording->RectInPhysicalSpace(),
+          selection_for_bounds_recording->PhysicalSelectionRect(),
           paint_info.context.GetPaintController(),
           cursor_.Current().ResolvedDirection(), style.GetWritingMode(),
           *cursor_.Current().GetLayoutObject());
@@ -412,14 +407,14 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
       paint_info.phase != PaintPhase::kTextClip && !is_printing;
   GraphicsContextStateSaver state_saver(context, /*save_and_restore=*/false);
   const int ascent = font_data ? font_data->GetFontMetrics().Ascent() : 0;
-  PhysicalOffset text_origin(
+  LineRelativeOffset text_origin{
       physical_box.offset.left,
       UNLIKELY(text_combine)
           ? text_combine->AdjustTextTopForPaint(physical_box.offset.top)
-          : physical_box.offset.top + ascent);
+          : physical_box.offset.top + ascent};
 
   NGTextPainter text_painter(context, font, visual_rect, text_origin,
-                             physical_box, inline_context_, is_horizontal);
+                             rotated_box, inline_context_, is_horizontal);
   NGTextDecorationPainter decoration_painter(text_painter, text_item,
                                              paint_info, style, text_style,
                                              rotated_box, selection);
@@ -477,7 +472,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
 
   if (UNLIKELY(highlight_painter.Selection())) {
     PhysicalRect physical_selection =
-        highlight_painter.Selection()->RectInPhysicalSpace();
+        highlight_painter.Selection()->PhysicalSelectionRect();
     if (scaling_factor != 1.0f) {
       physical_selection.offset.Scale(1 / scaling_factor);
       physical_selection.size.Scale(1 / scaling_factor);

@@ -19,7 +19,7 @@ NGTextDecorationPainter::NGTextDecorationPainter(
     const PaintInfo& paint_info,
     const ComputedStyle& style,
     const TextPaintStyle& text_style,
-    const PhysicalRect& decoration_rect,
+    const LineRelativeRect& decoration_rect,
     NGHighlightPainter::SelectionPaintState* selection)
     : text_painter_(text_painter),
       text_item_(text_item),
@@ -38,7 +38,7 @@ NGTextDecorationPainter::~NGTextDecorationPainter() {
 void NGTextDecorationPainter::UpdateDecorationInfo(
     absl::optional<TextDecorationInfo>& result,
     const ComputedStyle& style,
-    absl::optional<PhysicalRect> decoration_rect_override,
+    absl::optional<LineRelativeRect> decoration_rect_override,
     const AppliedTextDecoration* decoration_override) {
   result.reset();
 
@@ -66,7 +66,7 @@ void NGTextDecorationPainter::UpdateDecorationInfo(
     // Adjust the origin of the decoration because
     // NGTextPainter::PaintDecorationsExceptLineThrough() will change the
     // scaling of the GraphicsContext.
-    LayoutUnit top = decoration_rect_.offset.top;
+    LayoutUnit top = decoration_rect_.offset.line_over;
     // In svg/text/text-decorations-in-scaled-pattern.svg, the size of
     // ScaledFont() is zero, and the top position is unreliable. So we
     // adjust the baseline position, then shift it for scaled_font.
@@ -74,16 +74,16 @@ void NGTextDecorationPainter::UpdateDecorationInfo(
         text_item_.ScaledFont().PrimaryFont()->GetFontMetrics().FixedAscent();
     top *= scaling_factor / text_item_.SvgScalingFactor();
     top -= scaled_font.PrimaryFont()->GetFontMetrics().FixedAscent();
-    result.emplace(PhysicalOffset(decoration_rect_.offset.left, top),
-                   decoration_rect_.Width(), style,
+    result.emplace(LineRelativeOffset{decoration_rect_.offset.line_left, top},
+                   decoration_rect_.InlineSize(), style,
                    text_painter_.InlineContext(),
                    effective_selection_decoration, decoration_override,
                    &scaled_font, MinimumThickness1(false), scaling_factor);
   } else {
-    PhysicalRect decoration_rect =
+    LineRelativeRect decoration_rect =
         decoration_rect_override.value_or(decoration_rect_);
     result.emplace(
-        decoration_rect.offset, decoration_rect.Width(), style,
+        decoration_rect.offset, decoration_rect.InlineSize(), style,
         text_painter_.InlineContext(), effective_selection_decoration,
         decoration_override, &text_item_.ScaledFont(),
         MinimumThickness1(text_item_.Type() != NGFragmentItem::kSvgText));
@@ -98,7 +98,7 @@ void NGTextDecorationPainter::Begin(Phase phase) {
   clip_rect_.reset();
 
   if (decoration_info_ && UNLIKELY(selection_)) {
-    clip_rect_.emplace(selection_->RectInWritingModeSpace());
+    clip_rect_.emplace(selection_->LineRelativeSelectionRect());
 
     // Whether it’s best to clip to selection rect on both axes or only inline
     // depends on the situation, but the latter can improve the appearance of

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
+#include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
@@ -140,12 +141,12 @@ void DocumentMarkerPainter::PaintStyleableMarkerUnderline(
     const StyleableMarker& marker,
     const ComputedStyle& style,
     const Document& document,
-    const gfx::RectF& marker_rect,
+    const LineRelativeRect& marker_rect,
     LayoutUnit logical_height,
     bool in_dark_mode) {
   // start of line to draw, relative to box_origin.X()
-  LayoutUnit start = LayoutUnit(marker_rect.x());
-  LayoutUnit width = LayoutUnit(marker_rect.width());
+  LayoutUnit start = LayoutUnit(marker_rect.LineLeft());
+  LayoutUnit width = LayoutUnit(marker_rect.InlineSize());
 
   // We need to have some space between underlines of subsequent clauses,
   // because some input methods do not use different underline styles for those.
@@ -224,7 +225,7 @@ void DocumentMarkerPainter::PaintDocumentMarker(
     const PhysicalOffset& box_origin,
     const ComputedStyle& style,
     DocumentMarker::MarkerType marker_type,
-    const PhysicalRect& local_rect,
+    const LineRelativeRect& local_rect,
     absl::optional<Color> custom_marker_color) {
   // IMPORTANT: The misspelling underline is not considered when calculating the
   // text bounds, so we have to make sure to fit within those bounds.  This
@@ -240,13 +241,13 @@ void DocumentMarkerPainter::PaintDocumentMarker(
   const SimpleFontData* font_data = style.GetFont().PrimaryFont();
   DCHECK(font_data);
   int baseline = font_data->GetFontMetrics().Ascent();
-  int available_height = (local_rect.Height() - baseline).ToInt();
+  int available_height = (local_rect.BlockSize() - baseline).ToInt();
   int underline_offset;
   if (available_height <= line_thickness + 2 * zoom) {
     // Place the underline at the very bottom of the text in small/medium fonts.
     // The underline will overlap with the bottom of the text if
     // available_height is smaller than line_thickness.
-    underline_offset = (local_rect.Height() - line_thickness).ToInt();
+    underline_offset = (local_rect.BlockSize() - line_thickness).ToInt();
   } else {
     // In larger fonts, though, place the underline up near the baseline to
     // prevent a big gap.
@@ -267,10 +268,11 @@ void DocumentMarkerPainter::PaintDocumentMarker(
                            ? spelling_marker
                            : grammar_marker;
 
-  DrawDocumentMarker(paint_info.context,
-                     gfx::PointF((box_origin.left + local_rect.X()).ToFloat(),
-                                 (box_origin.top + underline_offset).ToFloat()),
-                     local_rect.Width().ToFloat(), zoom, marker);
+  DrawDocumentMarker(
+      paint_info.context,
+      gfx::PointF((box_origin.left + local_rect.LineLeft()).ToFloat(),
+                  (box_origin.top + underline_offset).ToFloat()),
+      local_rect.InlineSize().ToFloat(), zoom, marker);
 }
 
 TextPaintStyle DocumentMarkerPainter::ComputeTextPaintStyleFrom(

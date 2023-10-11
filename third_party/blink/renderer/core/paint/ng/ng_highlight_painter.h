@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/editing/markers/highlight_pseudo_marker.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/selection_state.h"
+#include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_highlight_overlay.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
@@ -78,8 +79,8 @@ class CORE_EXPORT NGHighlightPainter {
     // need to rotate the canvas into a line-relative coordinate space. Paint
     // ops done while rotated need coordinates in this rotated space, but ops
     // done outside of these rotations need the original physical rect.
-    const PhysicalRect& RectInPhysicalSpace();
-    const PhysicalRect& RectInWritingModeSpace();
+    const PhysicalRect& PhysicalSelectionRect();
+    const LineRelativeRect& LineRelativeSelectionRect();
 
     void PaintSelectionBackground(
         GraphicsContext& context,
@@ -106,7 +107,7 @@ class CORE_EXPORT NGHighlightPainter {
    private:
     struct SelectionRect {
       PhysicalRect physical;
-      PhysicalRect rotated;
+      LineRelativeRect rotated;
       STACK_ALLOCATED();
     };
 
@@ -246,9 +247,9 @@ class CORE_EXPORT NGHighlightPainter {
       const ComputedStyle& style,
       const TextPaintStyle& text_style,
       const AppliedTextDecoration* decoration_override);
-  PhysicalRect RectInWritingModeSpace(
+  LineRelativeRect LineRelativeWorldRect(
       const NGHighlightOverlay::HighlightRange&);
-  void ClipToPartDecorations(const PhysicalRect&);
+  void ClipToPartDecorations(const LineRelativeRect&);
   void PaintDecorationsExceptLineThrough(
       const NGHighlightOverlay::HighlightPart&);
   void PaintDecorationsExceptLineThrough(

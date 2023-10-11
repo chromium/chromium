@@ -206,7 +206,7 @@ void NGTextPainter::PaintSelectedText(
     unsigned length,
     const TextPaintStyle& text_style,
     const TextPaintStyle& selection_style,
-    const PhysicalRect& selection_rect,
+    const LineRelativeRect& selection_rect,
     DOMNodeId node_id,
     const AutoDarkMode& auto_dark_mode) {
   if (!fragment_paint_info.shape_result)

@@ -8,6 +8,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 
 namespace blink {
 
@@ -87,7 +88,8 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutNGBlockFlow {
   bool NeedsAffineTransformInPaint() const;
 
   // Returns text frame rect, in logical direction, used with text painters.
-  PhysicalRect ComputeTextFrameRect(const PhysicalOffset paint_offset) const;
+  LineRelativeRect ComputeTextFrameRect(
+      const PhysicalOffset paint_offset) const;
 
   // Returns visual rect for painting emphasis mark and text decoration for
   // |NGBoxFragmentPainter|.

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
@@ -207,20 +208,16 @@ bool LayoutTextCombine::NeedsAffineTransformInPaint() const {
   return scale_x_.has_value() || UsingSyntheticOblique();
 }
 
-PhysicalRect LayoutTextCombine::ComputeTextFrameRect(
+LineRelativeRect LayoutTextCombine::ComputeTextFrameRect(
     const PhysicalOffset paint_offset) const {
   const ComputedStyle& style = Parent()->StyleRef();
   DCHECK(style.GetFont().GetFontDescription().IsVerticalBaseline());
 
-  // Because we rotate the GraphicsContext to match the logical direction,
-  // transpose the |text_frame_rect| to match to it.
-  // See also |NGTextFragmentPainter::Paint()|
   const LayoutUnit one_em = style.ComputedFontSizeAsFixed();
   const FontHeight text_metrics = style.GetFontHeight();
   const LayoutUnit line_height = text_metrics.LineHeight();
-  return PhysicalRect(PhysicalOffset(LayoutUnit(paint_offset.left),
-                                     LayoutUnit(paint_offset.top)),
-                      PhysicalSize(one_em, line_height));
+  return {LineRelativeOffset::CreateFromBoxOrigin(paint_offset),
+          LogicalSize(one_em, line_height)};
 }
 
 PhysicalRect LayoutTextCombine::RecalcContentsInkOverflow(
@@ -228,8 +225,16 @@ PhysicalRect LayoutTextCombine::RecalcContentsInkOverflow(
   const ComputedStyle& style = Parent()->StyleRef();
   DCHECK(style.GetFont().GetFontDescription().IsVerticalBaseline());
 
-  // Note: |text_rect| and |ink_overflow| are in logical direction.
-  const PhysicalRect text_rect = ComputeTextFrameRect(PhysicalOffset());
+  const LineRelativeRect line_relative_text_rect =
+      ComputeTextFrameRect(PhysicalOffset());
+
+  // Note: |text_rect| and |ink_overflow| are both in logical direction.
+  // It is unusual for a PhysicalRect to be in a logical direction, typically
+  // a LineRelativeRect will be used instead, but the TextCombine case
+  // requires it.
+  const PhysicalRect text_rect{
+      PhysicalOffset(), PhysicalSize{line_relative_text_rect.size.inline_size,
+                                     line_relative_text_rect.size.block_size}};
   LogicalRect ink_overflow(text_rect.offset.left, text_rect.offset.top,
                            text_rect.size.width, text_rect.size.height);
 
