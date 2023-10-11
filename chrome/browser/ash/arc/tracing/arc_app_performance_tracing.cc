@@ -84,6 +84,14 @@ class AppToCategoryMapper {
     Add("icloenboalgjkknjdficgpgpcedmmojn", "Netflix");
     Add("nlhkolcnehphdkaljhgcbkmahloeacoj", "PUBGMobile");
     Add("gihmggjjlnjaldngedmnegjmhccccahg", "MinecraftConsumerEdition");
+    Add("aejndhminbfocgmlbmmccankkembehmc", "AmongUs");
+    Add("lbefcdhjbnilmnokeflglbaiaebadckd", "RaidLegends");
+    Add("bifaabbnnccaenolhjngemgmegdjflkg", "Underlords");
+    Add("indkdfghopoafaifcjbnonjkgdjnbhli", "TocaLife");
+    Add("kmglgjicdcmjphkoojighlhjejkiefih", "CandyCrush");
+    Add("ckkdolbnmedndlibioieibdjnifacikn", "Homescapes");
+    Add("hpnpilodeljgmlapcmaaachbolchfcmh", "FIFAMobile");
+    Add("fkhbcehgdndojcdlkhkihhhnhipkgddd", "GenshinImpact");
   }
 
   static AppToCategoryMapper& GetInstance() {

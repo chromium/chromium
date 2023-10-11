@@ -48,6 +48,12 @@ constexpr base::TimeDelta kTestPeriod = base::Seconds(1) / (60 / 20);
 
 constexpr int kMillisecondsToFirstFrame = 500;
 
+struct Application {
+  std::string package;
+  std::string activity;
+  std::string name;
+};
+
 std::string GetStatisticName(const std::string& name,
                              const std::string& category) {
   return base::StringPrintf("Arc.Runtime.Performance.%s.%s", name.c_str(),
@@ -107,12 +113,14 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
   }
 
  protected:
+  int64_t task_id = 1;
   // Ensures that tracing is active.
   views::Widget* StartArcAppTracing(const std::string& package_name,
                                     const std::string& activity_name) {
     shell_root_surface_ = std::make_unique<exo::Surface>();
     views::Widget* arc_widget =
         ArcTaskWindowBuilder()
+            .SetTaskId(task_id)
             .SetShellRootSurface(shell_root_surface_.get())
             .BuildOwnedByNativeWidget();
     arc_widget->Show();
@@ -122,8 +130,9 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
         wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
         arc_widget->GetNativeWindow(), arc_widget->GetNativeWindow());
     tracing_helper().GetTracing()->OnTaskCreated(
-        1 /* task_Id */, package_name, activity_name,
+        task_id /* task_Id */, package_name, activity_name,
         std::string() /* intent */, 0 /* session_id */);
+    task_id++;
     DCHECK(tracing_helper().GetTracingSession());
     tracing_helper().GetTracingSession()->FireTimerForTesting();
     DCHECK(tracing_helper().GetTracingSession());
@@ -270,19 +279,65 @@ TEST_F(ArcAppPerformanceTracingTest, StatisticsReported) {
   arc_widget->Close();
 }
 
-TEST_F(ArcAppPerformanceTracingTest,
-       MinecraftConsumerEditionStatisticsReported) {
-  const std::string package = "com.mojang.minecraftpe";
-  const std::string activity = "com.mojang.minecraftpe.MainActivity";
-  views::Widget* const arc_widget = StartArcAppTracing(package, activity);
+TEST_F(ArcAppPerformanceTracingTest, ApplicationStatisticsReported) {
+  std::vector<const Application> applications;
 
-  tracing_helper().PlayDefaultSequence();
-  tracing_helper().FireTimerForTesting();
-  EXPECT_EQ(45L, ReadStatistics("FPS2", "MinecraftConsumerEdition"));
-  EXPECT_EQ(216L,
-            ReadStatistics("CommitDeviation2", "MinecraftConsumerEdition"));
-  EXPECT_EQ(48L, ReadStatistics("RenderQuality2", "MinecraftConsumerEdition"));
-  arc_widget->Close();
+  const Application minecraft = {"com.mojang.minecraftpe",
+                                 "com.mojang.minecraftpe.MainActivity",
+                                 "MinecraftConsumerEdition"};
+  applications.push_back(minecraft);
+
+  const Application among_us = {
+      "com.innersloth.spacemafia",
+      "com.innersloth.spacemafia.EosUnityPlayerActivity", "AmongUs"};
+  applications.push_back(among_us);
+
+  const Application raid_legends = {"com.plarium.raidlegends",
+                                    "com.plarium.unity_app.UnityMainActivity",
+                                    "RaidLegends"};
+  applications.push_back(raid_legends);
+
+  const Application underlords = {"com.valvesoftware.underlords",
+                                  "com.valvesoftware.underlords.applauncher",
+                                  "Underlords"};
+  applications.push_back(underlords);
+
+  const Application toca_life = {"com.tocaboca.tocalifeworld",
+                                 "com.tocaboca.activity.TocaBocaMainActivity",
+                                 "TocaLife"};
+  applications.push_back(toca_life);
+
+  const Application candy_crush = {
+      "com.king.candycrushsaga",
+      "com.king.candycrushsaga.CandyCrushSagaActivity", "CandyCrush"};
+  applications.push_back(candy_crush);
+
+  const Application homescapes = {"com.playrix.homescapes",
+                                  "com.playrix.homescapes.GoogleActivity",
+                                  "Homescapes"};
+  applications.push_back(homescapes);
+
+  const Application fifa_mobile = {"com.ea.gp.fifamobile",
+                                   "com.ea.gp.fifamobile.FifaMainActivity",
+                                   "FIFAMobile"};
+  applications.push_back(fifa_mobile);
+
+  const Application genshin_impact = {"com.miHoYo.GenshinImpact",
+                                      "com.miHoYo.GetMobileInfo.MainActivity",
+                                      "GenshinImpact"};
+  applications.push_back(genshin_impact);
+
+  for (const Application& application : applications) {
+    views::Widget* const arc_widget =
+        StartArcAppTracing(application.package, application.activity);
+
+    tracing_helper().PlayDefaultSequence();
+    tracing_helper().FireTimerForTesting();
+    EXPECT_EQ(45L, ReadStatistics("FPS2", application.name));
+    EXPECT_EQ(216L, ReadStatistics("CommitDeviation2", application.name));
+    EXPECT_EQ(48L, ReadStatistics("RenderQuality2", application.name));
+    arc_widget->Close();
+  }
 }
 
 TEST_F(ArcAppPerformanceTracingTest, TracingNotScheduledWhenAppSyncDisabled) {

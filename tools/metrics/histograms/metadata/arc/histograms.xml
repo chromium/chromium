@@ -110,13 +110,23 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="ArcPerformanceAppCategories">
+  <variant name=".AmongUs" summary="Casual game 2: Among Us"/>
+  <variant name=".CandyCrush" summary="Casual game 2: Candy Crush"/>
+  <variant name=".FIFAMobile" summary="Online game: FIFA Mobile"/>
   <variant name=".GachaClub" summary="Casual game 2: Gacha Club"/>
   <variant name=".GarenaFreeFire" summary="Shooter game: Garena Free Fire"/>
+  <variant name=".GenshinImpact" summary="Online game: Genshin Impact"/>
+  <variant name=".Homescapes" summary="Casual game 2: Homescapes"/>
+  <variant name=".MinecraftConsumerEdition"
+      summary="Online game 2: Minecraft: Consumer Edition"/>
   <variant name=".MinecraftEducationEdition"
       summary="Online game 2: Minecraft: Education Edition"/>
   <variant name=".Netflix" summary="Video playback app: Netflix"/>
   <variant name=".PUBGMobile" summary="Heavy Game: PUBG Mobile"/>
+  <variant name=".RaidLegends" summary="Online game: Raid: Shadow Legends"/>
   <variant name=".Roblox" summary="Online game: Roblox"/>
+  <variant name=".TocaLife" summary="Online game: Toca Life"/>
+  <variant name=".Underlords" summary="Online game: Underlords"/>
 </variants>
 
 <variants name="ArcSyncAppTypes">
