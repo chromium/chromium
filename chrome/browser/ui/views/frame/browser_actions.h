@@ -12,7 +12,6 @@ class Browser;
 
 namespace actions {
 class ActionItem;
-class ActionManager;
 }  // namespace actions
 
 class BrowserActions : public base::SupportsUserData::Data {
@@ -29,9 +28,8 @@ class BrowserActions : public base::SupportsUserData::Data {
 
  private:
   static const int kUserDataKey = 0;
-  void InitializeBrowserActions(actions::ActionManager* manager);
+  void InitializeBrowserActions();
 
-  base::CallbackListSubscription action_initialization_subscription_;
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   const raw_ref<Browser> browser_;
 };

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/ui/views/frame/browser_actions.h"
 
 #include <vector>
 
@@ -64,15 +65,19 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
 
 TEST_F(PinnedToolbarActionsContainerTest, PinningAndUnpinning) {
   const std::u16string kActionTooltipText = u"Test Action";
-  auto builder = actions::ActionItem::Builder()
-                     .SetText(u"Test Action")
-                     .SetTooltipText(kActionTooltipText)
-                     .SetActionId(actions::kActionCut)
-                     .SetVisible(true)
-                     .SetEnabled(true)
-                     .SetInvokeActionCallback(base::DoNothing());
+  actions::ActionItem* browser_action_item =
+      BrowserActions::FromBrowser(browser_view()->browser())
+          ->root_action_item();
+  auto action_item = actions::ActionItem::Builder()
+                         .SetText(u"Test Action")
+                         .SetTooltipText(kActionTooltipText)
+                         .SetActionId(actions::kActionCut)
+                         .SetVisible(true)
+                         .SetEnabled(true)
+                         .SetInvokeActionCallback(base::DoNothing())
+                         .Build();
   // clang-format on
-  actions::ActionManager::Get().AddAction(std::move(builder).Build());
+  browser_action_item->AddChild(std::move(action_item));
 
   auto* model = PinnedToolbarActionsModel::Get(profile());
   ASSERT_TRUE(model);

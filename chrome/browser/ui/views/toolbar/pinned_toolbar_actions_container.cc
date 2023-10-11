@@ -175,6 +175,7 @@ void PinnedToolbarActionsContainer::RemovePinnedActionButtonFor(
   if (iter == pinned_buttons_.end()) {
     return;
   }
-  RemoveChildView(*iter);
+  // This returns a unique_ptr which is immediately destroyed.
+  RemoveChildViewT(*iter);
   pinned_buttons_.erase(iter);
 }

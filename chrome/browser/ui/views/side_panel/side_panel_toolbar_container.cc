@@ -258,7 +258,8 @@ void SidePanelToolbarContainer::RemovePinnedEntryButtonFor(
   const auto iter = base::ranges::find(
       pinned_entry_buttons_, id, [](auto* button) { return button->id(); });
   DCHECK(iter != pinned_entry_buttons_.end());
-  RemoveChildView(*iter);
+  // This returns a unique_ptr which is immediately destroyed.
+  RemoveChildViewT(*iter);
   pinned_entry_buttons_.erase(iter);
   pinned_button_visibility_change_subscription_ =
       base::CallbackListSubscription();
