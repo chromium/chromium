@@ -6,8 +6,6 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/crostini/crostini_manager_factory.h"
-#include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/profiles/profile.h"
 
@@ -35,8 +33,6 @@ GuestOsSharePathFactory::GuestOsSharePathFactory()
               .WithSystem(ProfileSelection::kNone)
               .Build()) {
   DependsOn(crostini::CrostiniManagerFactory::GetInstance());
-  DependsOn(file_manager::VolumeManagerFactory::GetInstance());
-  DependsOn(drive::DriveIntegrationServiceFactory::GetInstance());
 }
 
 GuestOsSharePathFactory::~GuestOsSharePathFactory() = default;

@@ -218,10 +218,6 @@ VolumeManager* VolumeManager::Get(content::BrowserContext* context) {
   return VolumeManagerFactory::Get(context);
 }
 
-VolumeManager* VolumeManager::Find(content::BrowserContext* context) {
-  return VolumeManagerFactory::Find(context);
-}
-
 void VolumeManager::Initialize() {
   VLOG(1) << *this << "::Initialize";
 

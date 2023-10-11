@@ -17,19 +17,11 @@
 
 namespace file_manager {
 
-// static
 VolumeManager* VolumeManagerFactory::Get(content::BrowserContext* context) {
   return static_cast<VolumeManager*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
-// static
-VolumeManager* VolumeManagerFactory::Find(content::BrowserContext* context) {
-  return static_cast<VolumeManager*>(
-      GetInstance()->GetServiceForBrowserContext(context, false));
-}
-
-// static
 VolumeManagerFactory* VolumeManagerFactory::GetInstance() {
   static base::NoDestructor<VolumeManagerFactory> instance;
   return instance.get();
