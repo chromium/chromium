@@ -72,13 +72,13 @@ test(function() {
     test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase() + buffer.substr(e.updateRangeEnd);
   });
 
-  let compositionStartCount = 0;
-  let compositionEndCount = 0;
+  let compositionStartData = [];
+  let compositionEndData = [];
   editContext.addEventListener("compositionstart", e => {
-    compositionStartCount++;
+    compositionStartData.push(e.data);
   });
   editContext.addEventListener("compositionend", e => {
-    compositionEndCount++;
+    compositionEndData.push(e.data);
   });
 
   test.editContext = editContext;
@@ -87,21 +87,39 @@ test(function() {
   textInputController.setComposition("foo");
   assert_equals(editContext.text, "abfoocd");
   assert_equals(test.innerHTML, "ABFOOCD");
-  assert_equals(compositionStartCount, 1, "Should get compositionstart after setting non-empty composition");
-  assert_equals(compositionEndCount, 0, "Should not get compositionend until terminating composition");
+  assert_array_equals(compositionStartData, ["foo"], "Should get compositionstart after setting non-empty composition");
+  assert_array_equals(compositionEndData, [], "Should not get compositionend until terminating composition");
 
   textInputController.setComposition("");
   assert_equals(editContext.text, "abcd");
   assert_equals(test.innerHTML, "ABCD");
-  assert_equals(compositionStartCount, 1, "Shouldn't get another compositionstart when setting empty composition");
-  assert_equals(compositionEndCount, 1, "Should get compositionend when setting empty composition");
+  assert_array_equals(compositionStartData, ["foo"], "Shouldn't get another compositionstart when setting empty composition");
+  assert_array_equals(compositionEndData, [""], "Should get compositionend when setting empty composition");
 
   textInputController.setComposition("bar");
   assert_equals(editContext.text, "abbarcd");
   assert_equals(test.innerHTML, "ABBARCD");
-  assert_equals(compositionStartCount, 2, "Should get another compositionstart after setting non-empty composition");
-  assert_equals(compositionEndCount, 1, "Should not get another compositionend until terminating composition");
-}, 'Testing EditContext TextUpdate with empty string');
+  assert_array_equals(compositionStartData, ["foo", "bar"], "Should get another compositionstart after setting non-empty composition");
+  assert_array_equals(compositionEndData, [""], "Should not get another compositionend until terminating composition");
+
+  textInputController.insertText("bar");
+  assert_equals(editContext.text, "abbarcd");
+  assert_equals(test.innerHTML, "ABBARCD");
+  assert_array_equals(compositionStartData, ["foo", "bar"], "Shouldn't get another compositionstart when committing composition");
+  assert_array_equals(compositionEndData, ["", "bar"], "Should get compositionend when committing composition");
+
+  textInputController.setComposition("baz");
+  assert_equals(editContext.text, "abbarbazcd");
+  assert_equals(test.innerHTML, "ABBARBAZCD");
+  assert_array_equals(compositionStartData, ["foo", "bar", "baz"], "Should get another compositionstart after setting non-empty composition");
+  assert_array_equals(compositionEndData, ["", "bar"], "Should not get another compositionend until terminating composition");
+
+  test.blur();
+  assert_equals(editContext.text, "abbarbazcd");
+  assert_equals(test.innerHTML, "ABBARBAZCD");
+  assert_array_equals(compositionStartData, ["foo", "bar", "baz"], "Shouldn't get compositionend when removing focus from EditContext");
+  assert_array_equals(compositionEndData, ["", "bar", "baz"], "Should get compositionend when removing focus from EditContext");
+}, 'Testing EditContext composition text updates and events');
 
 test(function() {
   const editContext = new EditContext();

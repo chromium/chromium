@@ -582,11 +582,12 @@ bool EditContext::FinishComposingText(
 
   String text;
   if (has_composition_) {
-    text = text_.Substring(composition_range_start_, composition_range_end_);
+    text = text_.Substring(composition_range_start_,
+                           composition_range_end_ - composition_range_start_);
     DispatchTextFormatEvent(WebVector<ui::ImeTextSpan>());
     DispatchCompositionEndEvent(text);
   } else {
-    text = text_.Substring(selection_start_, selection_end_);
+    text = text_.Substring(selection_start_, selection_end_ - selection_start_);
   }
 
   if (selection_behavior == kDoNotKeepSelection) {
