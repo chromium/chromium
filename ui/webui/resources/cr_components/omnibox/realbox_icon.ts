@@ -132,7 +132,7 @@ export class RealboxIconElement extends PolymerElement {
           this.match.type !== PEDAL) {
         return getFaviconForPageURL(
             this.match.destinationUrl.url, /* isSyncedUrlForHistoryUi= */ false,
-            /* remoteIconUrlForUma= */ '', /* size= */ 32,
+            /* remoteIconUrlForUma= */ '', /* size= */ 16,
             /* forceLightMode= */ true);
       }
 
