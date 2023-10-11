@@ -17,7 +17,6 @@
 #elif BUILDFLAG(IS_LINUX)
 #include "media/capture/video/linux/v4l2_gpu_memory_buffer_tracker.h"
 #elif BUILDFLAG(IS_WIN)
-#include "media/capture/video/shared_memory_buffer_tracker.h"
 #include "media/capture/video/win/gpu_memory_buffer_tracker_win.h"
 #endif
 
@@ -54,11 +53,11 @@ VideoCaptureBufferTrackerFactoryImpl::CreateTracker(
       return nullptr;
 #endif
     default:
-#if BUILDFLAG(IS_WIN)
-      // Since windows capturer outputs NV12 only for GMBs and I420 for
-      // software frames the pixel format is used to choose between shmem
-      // and gmb trackers. Therefore I420 shmem trackers must not be
-      // reusable for NV12 format.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+      // Since Windows and macOS capturer outputs NV12 only for GMBs and I420
+      // for software frames, the pixel format is used to choose between shmem
+      // and gmb trackers. Therefore I420 shmem trackers must not be reusable
+      // for NV12 format.
       return std::make_unique<SharedMemoryBufferTracker>(
           /*reusable_only_for_same_format=*/true);
 #else

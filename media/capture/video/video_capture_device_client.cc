@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -179,6 +180,14 @@ FourccAndFlip GetFourccAndFlipFromPixelFormat(
 }  // anonymous namespace
 
 namespace media {
+
+#if BUILDFLAG(IS_MAC)
+// TODO(https://crbug.com/1474871): When this code path has been verified on
+// Canary, change to enabled-by-default.
+BASE_FEATURE(kFallbackToSharedMemoryIfNotNv12OnMac,
+             "FallbackToSharedMemoryIfNotNv12OnMac",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 namespace {
 
@@ -618,11 +627,17 @@ VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
 
   if (!base::Contains(buffer_ids_known_by_receiver_, buffer_id)) {
     VideoCaptureBufferType target_buffer_type = target_buffer_type_;
-#if BUILDFLAG(IS_WIN)
-    // If MediaFoundationD3D11VideoCapture fails, a shared memory buffer may be
-    // sent instead.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    // If MediaFoundationD3D11VideoCapture or VideoCaptureDeviceAVFoundation
+    // fails to produce NV12 as is expected on these platforms when the target
+    // buffer type is `kGpuMemoryBuffer`, a shared memory buffer may be sent
+    // instead.
     if (target_buffer_type == VideoCaptureBufferType::kGpuMemoryBuffer &&
-        pixel_format != PIXEL_FORMAT_NV12) {
+        pixel_format != PIXEL_FORMAT_NV12
+#if BUILDFLAG(IS_MAC)
+        && base::FeatureList::IsEnabled(kFallbackToSharedMemoryIfNotNv12OnMac)
+#endif
+    ) {
       target_buffer_type = VideoCaptureBufferType::kSharedMemory;
     }
 #endif

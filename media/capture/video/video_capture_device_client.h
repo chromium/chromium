@@ -11,8 +11,10 @@
 #include <memory>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_collision_warner.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/video_capture_device.h"
@@ -27,6 +29,10 @@ class VideoCaptureJpegDecoder;
 
 using VideoCaptureJpegDecoderFactoryCB =
     base::OnceCallback<std::unique_ptr<VideoCaptureJpegDecoder>()>;
+
+#if BUILDFLAG(IS_MAC)
+CAPTURE_EXPORT BASE_DECLARE_FEATURE(kFallbackToSharedMemoryIfNotNv12OnMac);
+#endif
 
 // Implementation of VideoCaptureDevice::Client that uses a buffer pool
 // to provide buffers and converts incoming data to the I420 format for
