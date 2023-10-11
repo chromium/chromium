@@ -17,6 +17,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-forward.h"
@@ -58,7 +59,7 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
   EmbeddedSharedWorkerStub(
       blink::mojom::SharedWorkerInfoPtr info,
       const blink::SharedWorkerToken& token,
-      const url::Origin& constructor_origin,
+      const blink::StorageKey& constructor_key,
       bool is_constructor_secure_context,
       const std::string& user_agent,
       const blink::UserAgentMetadata& ua_metadata,
@@ -100,6 +101,7 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
 
   scoped_refptr<blink::WebWorkerFetchContext> CreateWorkerFetchContext(
       const GURL& url,
+      bool is_third_party_context,
       const blink::RendererPreferences& renderer_preferences,
       mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
           preference_watcher_receiver,

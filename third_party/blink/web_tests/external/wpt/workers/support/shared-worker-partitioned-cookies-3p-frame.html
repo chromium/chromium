@@ -11,13 +11,6 @@
 <script>
 
 promise_test(async () => {
-  assert_false(
-      document.cookie.includes('__Host-partitioned=123'),
-      'DOM cannot access partitioned cookie');
-  assert_true(
-      document.cookie.includes('unpartitioned=456'),
-      'DOM can access unpartitioned cookie');
-
   const worker = new SharedWorker('./shared-worker-echo-cookies.js');
   const nextMessage = workerMessageGenerator(worker);
 

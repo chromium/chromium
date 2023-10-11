@@ -13,13 +13,13 @@ import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/renderer_preferences.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_container.mojom";
+import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "third_party/blink/public/mojom/worker/shared_worker.mojom";
 import "third_party/blink/public/mojom/worker/shared_worker_host.mojom";
 import "third_party/blink/public/mojom/worker/shared_worker_info.mojom";
 import "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom";
 import "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom";
-import "url/mojom/origin.mojom";
 
 // The name of the InterfaceProviderSpec in service manifests used by the
 // frame tree to expose shared-worker-specific interfaces between renderer and
@@ -43,11 +43,11 @@ interface SharedWorkerFactory {
       // should not be shared with any renderer except that hosting the worker.
       SharedWorkerToken token,
 
-      // The origin of the page where `new SharedWorker()` is called.
-      // This origin must be able to access shared workers.
+      // The StorageKey of the page where `new SharedWorker()` is called.
+      // StorageKey.origin must be able to access shared workers.
       // (see blink::SecurityOrigin::CanAccessSharedWorkers())
       // https://html.spec.whatwg.org/C/#concept-sharedworkerglobalscope-constructor-origin
-      url.mojom.Origin constructor_origin,
+      blink.mojom.StorageKey constructor_key,
 
       // Whether the page where `new SharedWorker()` is called is a secure
       // context or not. Note that this may be false even if
