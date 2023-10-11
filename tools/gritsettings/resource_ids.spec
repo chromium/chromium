@@ -97,6 +97,9 @@
     "includes": [2220],
     "structures": [2240],
   },
+  "chrome/browser/nearby_sharing/internal/nearby_share_internal_strings.grd": {
+    "messages": [2250],
+  },
   "chrome/browser/recent_tabs/internal/android/java/strings/android_restore_tabs_strings.grd": {
     "messages": [2260],
   },
