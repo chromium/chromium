@@ -1241,6 +1241,11 @@
           'shards': 20,
         },
       },
+      'linux-ubsan-fyi-rel': {
+        'swarming': {
+          'shards': 20,
+        }
+      },
       'mac-code-coverage': {
         'args': [
           '--coverage-continuous-mode=1',
@@ -2123,6 +2128,11 @@
         # shards.
         # crbug.com/1475852
         'retry_only_failed_tests': True,
+      },
+      'linux-ubsan-fyi-rel': {
+        'swarming': {
+          'shards': 16,
+        }
       },
       'mac-code-coverage': {
         'args': [
@@ -3177,6 +3187,11 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux.linux-rel-cft.interactive_ui_tests.filter',
         ],
+      },
+      'linux-ubsan-fyi-rel': {
+        'swarming': {
+          'shards': 6,
+        }
       },
       'mac-code-coverage': {
         'args': [
@@ -4445,6 +4460,11 @@
           },
         },
       },
+      'linux-ubsan-fyi-rel': {
+        'swarming': {
+          'shards': 2,
+        }
+      },
       'win-arm64-rel': {
         'args': [
           '--top-chrome-touch-ui=disabled',
@@ -4989,6 +5009,11 @@
         'swarming': {
           'shards': 2,
         },
+      },
+      'linux-ubsan-fyi-rel': {
+        'swarming': {
+          'shards': 2,
+        }
       },
       'win10-code-coverage': {
         'swarming': {
