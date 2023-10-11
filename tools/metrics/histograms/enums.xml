@@ -90797,8 +90797,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="32" label="kProfileDeletionProcess"/>
   <int value="33" label="kProfileStatistics"/>
   <int value="34" label="kIsolatedWebAppInstall"/>
-  <int value="35" label="kWebAppUninstall"/>
-  <int value="36" label="kOsIntegrationForceUnregistration"/>
+  <int value="35" label="kIsolatedWebAppUpdate"/>
+  <int value="36" label="kWebAppUninstall"/>
+  <int value="37" label="kOsIntegrationForceUnregistration"/>
+  <int value="38" label="kRemoteDebugging"/>
 </enum>
 
 <enum name="ProfileMenuActionableItem">

@@ -16,6 +16,7 @@
 // numeric values should never be reused.
 //
 // Keep this in sync with ProfileKeepAliveOrigin in enums.xml.
+// LINT.IfChange
 enum class ProfileKeepAliveOrigin {
   // When a Profile gets created by ProfileManager, it initially has this type
   // of keep-alive. This ensures that the Profile has a refcount >=1, at least
@@ -160,8 +161,13 @@ enum class ProfileKeepAliveOrigin {
   // Used during ForceUnregistration of OsIntegrationManger's sub managers.
   kOsIntegrationForceUnregistration = 37,
 
-  kMaxValue = kOsIntegrationForceUnregistration,
+  // Used for remote debugging to keep a profile alive when all pages are
+  // closed.
+  kRemoteDebugging = 38,
+
+  kMaxValue = kRemoteDebugging,
 };
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml)
 
 std::ostream& operator<<(std::ostream& out,
                          const ProfileKeepAliveOrigin& origin);

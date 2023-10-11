@@ -24,6 +24,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -52,6 +53,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/switches.h"
 #include "ui/views/controls/webview/webview.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -125,7 +127,8 @@ ChromeDevToolsManagerDelegate::ChromeDevToolsManagerDelegate() {
   // manager daemon. The extra keep alive is not needed and makes ChromeOS
   // not able to shutdown chrome properly. See https://crbug.com/1174627.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kNoStartupWindow) &&
+  if ((command_line->HasSwitch(switches::kNoStartupWindow) ||
+       command_line->HasSwitch(switches::kHeadless)) &&
       (command_line->HasSwitch(switches::kRemoteDebuggingPipe) ||
        command_line->HasSwitch(switches::kRemoteDebuggingPort))) {
     // If running without a startup window with remote debugging,
@@ -134,6 +137,18 @@ ChromeDevToolsManagerDelegate::ChromeDevToolsManagerDelegate() {
     // protocol.
     keep_alive_ = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::REMOTE_DEBUGGING, KeepAliveRestartOption::DISABLED);
+
+    // Also keep the initial profile alive so that TargetHandler::CreateTarget()
+    // can retrieve it without risking disk access even when all pages are
+    // closed. Keep-a-living the very first loaded profile looks like a
+    // reasonable option.
+    if (Profile* profile = ProfileManager::GetLastUsedProfile()) {
+      if (profile->IsOffTheRecord()) {
+        profile = profile->GetOriginalProfile();
+      }
+      profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+          profile, ProfileKeepAliveOrigin::kRemoteDebugging);
+    }
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }

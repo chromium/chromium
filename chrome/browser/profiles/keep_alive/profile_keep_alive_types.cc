@@ -81,6 +81,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kWebAppUninstall";
     case ProfileKeepAliveOrigin::kOsIntegrationForceUnregistration:
       return out << "kOsIntegrationForceUnregistration";
+    case ProfileKeepAliveOrigin::kRemoteDebugging:
+      return out << "kRemoteDebugging";
   }
   NOTREACHED();
   return out << static_cast<int>(origin);
