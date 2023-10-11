@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <limits>
+#include <memory>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -257,7 +258,7 @@ class VideoDecoderTest : public ::testing::Test {
     }
 
     Dav1dVideoDecoder decoder(
-        /*media_log=*/nullptr,
+        std::make_unique<NullMediaLog>(),
         OffloadableVideoDecoder::OffloadState::kOffloaded);
     VideoDecoderConfig decoder_config(
         video->Codec(), video->Profile(),

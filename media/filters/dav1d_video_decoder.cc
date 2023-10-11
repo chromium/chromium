@@ -142,9 +142,9 @@ SupportedVideoDecoderConfigs Dav1dVideoDecoder::SupportedConfigs() {
            /*require_encrypted=*/false}};
 }
 
-Dav1dVideoDecoder::Dav1dVideoDecoder(MediaLog* media_log,
+Dav1dVideoDecoder::Dav1dVideoDecoder(std::unique_ptr<MediaLog> media_log,
                                      OffloadState offload_state)
-    : media_log_(media_log),
+    : media_log_(std::move(media_log)),
       bind_callbacks_(offload_state == OffloadState::kNormal) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
