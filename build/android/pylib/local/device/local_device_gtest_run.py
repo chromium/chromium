@@ -643,33 +643,42 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
 
     return all_tests
 
-  def _UploadTestArtifacts(self, device, test_artifacts_dir):
+  def _UploadTestArtifacts(self, device, test_artifacts_device_dir):
     # TODO(jbudorick): Reconcile this with the output manager once
     # https://codereview.chromium.org/2933993002/ lands.
-    if test_artifacts_dir:
-      with tempfile_ext.NamedTemporaryDirectory() as test_artifacts_host_dir:
-        device.PullFile(test_artifacts_dir.name, test_artifacts_host_dir)
-        with tempfile_ext.NamedTemporaryDirectory() as temp_zip_dir:
-          zip_base_name = os.path.join(temp_zip_dir, 'test_artifacts')
-          test_artifacts_zip = shutil.make_archive(
-              zip_base_name, 'zip', test_artifacts_host_dir)
-          link = google_storage_helper.upload(
-              google_storage_helper.unique_name(
-                  'test_artifacts', device=device),
-              test_artifacts_zip,
-              bucket='%s/test_artifacts' % (
-                  self._test_instance.gs_test_artifacts_bucket))
-          logging.info('Uploading test artifacts to %s.', link)
-          return link
-    return None
+    if self._env.force_main_user:
+      test_artifacts_device_dir = device.ResolveSpecialPath(
+          test_artifacts_device_dir)
+
+    with tempfile_ext.NamedTemporaryDirectory() as test_artifacts_host_dir:
+      device.PullFile(test_artifacts_device_dir,
+                      test_artifacts_host_dir,
+                      as_root=self._env.force_main_user)
+      with tempfile_ext.NamedTemporaryDirectory() as temp_zip_dir:
+        zip_base_name = os.path.join(temp_zip_dir, 'test_artifacts')
+        test_artifacts_zip = shutil.make_archive(zip_base_name, 'zip',
+                                                 test_artifacts_host_dir)
+        link = google_storage_helper.upload(
+            google_storage_helper.unique_name('test_artifacts', device=device),
+            test_artifacts_zip,
+            bucket='%s/test_artifacts' %
+            (self._test_instance.gs_test_artifacts_bucket))
+        logging.info('Uploading test artifacts to %s.', link)
+        return link
 
   def _PullRenderTestOutput(self, device, render_test_output_device_dir):
     # We pull the render tests into a temp directory then copy them over
     # individually. Otherwise we end up with a temporary directory name
     # in the host output directory.
+    if self._env.force_main_user:
+      render_test_output_device_dir = device.ResolveSpecialPath(
+          render_test_output_device_dir)
+
     with tempfile_ext.NamedTemporaryDirectory() as tmp_host_dir:
       try:
-        device.PullFile(render_test_output_device_dir, tmp_host_dir)
+        device.PullFile(render_test_output_device_dir,
+                        tmp_host_dir,
+                        as_root=self._env.force_main_user)
       except device_errors.CommandFailedError:
         logging.exception('Failed to pull render test output dir %s',
                           render_test_output_device_dir)
@@ -789,31 +798,45 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
                                           retries=0)
 
             if self._test_instance.enable_xml_result_parsing:
+              file_path = device_tmp_results_file.name
+              if self._env.force_main_user:
+                file_path = device.ResolveSpecialPath(file_path)
               try:
-                gtest_xml = device.ReadFile(device_tmp_results_file.name)
+                gtest_xml = device.ReadFile(file_path,
+                                            as_root=self._env.force_main_user)
               except device_errors.CommandFailedError:
                 logging.exception('Failed to pull gtest results XML file %s',
-                                  device_tmp_results_file.name)
+                                  file_path)
                 gtest_xml = None
 
             if self._test_instance.isolated_script_test_output:
+              file_path = device_tmp_results_file.name
+              if self._env.force_main_user:
+                file_path = device.ResolveSpecialPath(file_path)
               try:
-                gtest_json = device.ReadFile(device_tmp_results_file.name)
+                gtest_json = device.ReadFile(file_path,
+                                             as_root=self._env.force_main_user)
               except device_errors.CommandFailedError:
                 logging.exception('Failed to pull gtest results JSON file %s',
-                                  device_tmp_results_file.name)
+                                  file_path)
                 gtest_json = None
 
             if test_perf_output_filename:
+              file_path = isolated_script_test_perf_output.name
+              if self._env.force_main_user:
+                file_path = device.ResolveSpecialPath(file_path)
               try:
-                device.PullFile(isolated_script_test_perf_output.name,
-                                test_perf_output_filename)
+                device.PullFile(file_path,
+                                test_perf_output_filename,
+                                as_root=self._env.force_main_user)
               except device_errors.CommandFailedError:
                 logging.exception('Failed to pull chartjson results %s',
-                                  isolated_script_test_perf_output.name)
+                                  file_path)
 
-            test_artifacts_url = self._UploadTestArtifacts(
-                device, test_artifacts_dir)
+            test_artifacts_url = None
+            if test_artifacts_dir:
+              test_artifacts_url = self._UploadTestArtifacts(
+                  device, test_artifacts_dir.name)
 
             if render_test_output_dir:
               self._PullRenderTestOutput(device, render_test_output_dir.name)

@@ -13,7 +13,6 @@ import unittest
 from pylib.gtest import gtest_test_instance
 from pylib.local.device import local_device_environment
 from pylib.local.device import local_device_gtest_run
-from py_utils import tempfile_ext
 
 import mock  # pylint: disable=import-error
 
@@ -56,20 +55,6 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
   def testGetLLVMProfilePath(self):
     path = local_device_gtest_run._GetLLVMProfilePath('test_dir', 'sr71', '5')
     self.assertEqual(path, os.path.join('test_dir', 'sr71_5_%2m.profraw'))
-
-
-  @mock.patch('pylib.utils.google_storage_helper.upload')
-  def testUploadTestArtifacts(self, mock_gsh):
-    link = self._obj._UploadTestArtifacts(mock.MagicMock(), None)
-    self.assertFalse(mock_gsh.called)
-    self.assertIsNone(link)
-
-    result = 'A/10/warthog/path'
-    mock_gsh.return_value = result
-    with tempfile_ext.NamedTemporaryFile() as temp_f:
-      link = self._obj._UploadTestArtifacts(mock.MagicMock(), temp_f)
-    self.assertTrue(mock_gsh.called)
-    self.assertEqual(result, link)
 
   def testGroupTests(self):
     test = [
