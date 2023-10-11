@@ -171,6 +171,11 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
             "ZeroCopyRasterTile", gpu::kNullSurfaceHandle, kBufferUsage);
       }
 
+      if (backing_->mailbox.IsZero()) {
+        LOG(ERROR) << "Creation of MappableSharedImage failed.";
+        return;
+      }
+
       mapping = sii->MapSharedImage(backing_->mailbox);
       if (!mapping) {
         LOG(ERROR) << "MapSharedImage Failed.";
