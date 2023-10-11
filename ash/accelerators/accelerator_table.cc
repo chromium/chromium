@@ -484,6 +484,7 @@ const AcceleratorAction kActionsDuplicatedWithBrowser[] = {
     AcceleratorAction::kNewIncognitoWindow,
     AcceleratorAction::kRestoreTab,
     AcceleratorAction::kNewTab,
+    AcceleratorAction::kToggleMultitaskMenu,
 // clang-format on
 
 // AcceleratorAction::kOpenFeedbackPage is guarded by the BRANDING macro on

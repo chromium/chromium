@@ -19,14 +19,12 @@
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view_test_api.h"
 #include "chromeos/ui/frame/multitask_menu/split_button_view.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -50,8 +48,7 @@ constexpr int kVerticalPosition = 8;
 
 class TabletModeMultitaskMenuTest : public AshTestBase {
  public:
-  TabletModeMultitaskMenuTest()
-      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
+  TabletModeMultitaskMenuTest() = default;
   TabletModeMultitaskMenuTest(const TabletModeMultitaskMenuTest&) = delete;
   TabletModeMultitaskMenuTest& operator=(const TabletModeMultitaskMenuTest&) =
       delete;
@@ -142,9 +139,6 @@ class TabletModeMultitaskMenuTest : public AshTestBase {
 
  protected:
   base::HistogramTester histogram_tester_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that a scroll down gesture from the top center activates the

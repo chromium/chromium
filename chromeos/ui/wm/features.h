@@ -6,14 +6,12 @@
 #define CHROMEOS_UI_WM_FEATURES_H_
 
 #include "base/component_export.h"
-#include "base/feature_list.h"
 
 namespace chromeos::wm::features {
 
-COMPONENT_EXPORT(CHROMEOS_UI_WM) BASE_DECLARE_FEATURE(kWindowLayoutMenu);
-
 // Checks if the window layout menu feature is enabled. On ash, this checks the
-// feature flag. On lacros, this checks the lacros service.
+// feature flag. On lacros, this checks the lacros service. Temporary while
+// http://b/299957114 is underway.
 COMPONENT_EXPORT(CHROMEOS_UI_WM) bool IsWindowLayoutMenuEnabled();
 
 }  // namespace chromeos::wm::features

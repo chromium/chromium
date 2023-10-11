@@ -31,7 +31,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
-#include "chromeos/ui/wm/features.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_tracker.h"
@@ -506,10 +505,8 @@ void Desk::PrepareForActivationAnimation() {
 
   // Floated window doesn't belong to desk container and needed to be handled
   // separately.
-  aura::Window* floated_window = nullptr;
-  if (chromeos::wm::features::IsWindowLayoutMenuEnabled() &&
-      (floated_window =
-           Shell::Get()->float_controller()->FindFloatedWindowOfDesk(this))) {
+  if (aura::Window* floated_window =
+          Shell::Get()->float_controller()->FindFloatedWindowOfDesk(this)) {
     // Ensure the floated window remain hidden during activation animation.
     // The floated window will be shown when desk is activated.
     ScopedAnimationDisabler disabler(floated_window);
@@ -678,10 +675,8 @@ void Desk::MoveWindowsToDesk(Desk* target_desk) {
   // floated window back to desk container before the removal, so all windows
   // under the to-be-removed desk's container can be collected in
   // `windows_to_move` to move to target desk.
-  if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
-    Shell::Get()->float_controller()->OnMovingAllWindowsOutToDesk(this,
-                                                                  target_desk);
-  }
+  Shell::Get()->float_controller()->OnMovingAllWindowsOutToDesk(this,
+                                                                target_desk);
 
   // Moving windows will change the hierarchy and hence `windows_`, and has to
   // be done without changing the relative z-order. So we make a copy of all the
@@ -837,10 +832,8 @@ std::vector<aura::Window*> Desk::GetAllAppWindows() const {
                         });
   // Note that floated window is also app window but needs to be handled
   // separately since it doesn't store in desk container.
-  aura::Window* floated_window = nullptr;
-  if (chromeos::wm::features::IsWindowLayoutMenuEnabled() &&
-      (floated_window =
-           Shell::Get()->float_controller()->FindFloatedWindowOfDesk(this))) {
+  if (aura::Window* floated_window =
+          Shell::Get()->float_controller()->FindFloatedWindowOfDesk(this)) {
     app_windows.push_back(floated_window);
   }
 
@@ -851,10 +844,7 @@ std::vector<aura::Window*> Desk::GetAllAssociatedWindows() const {
   // Note that floated window needs to be handled separately since it doesn't
   // store in desk container.
   if (auto* floated_window =
-          !chromeos::wm::features::IsWindowLayoutMenuEnabled()
-              ? nullptr
-              : Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
-                    this)) {
+          Shell::Get()->float_controller()->FindFloatedWindowOfDesk(this)) {
     std::vector<aura::Window*> all_windows;
     base::ranges::copy(windows_, std::back_inserter(all_windows));
     all_windows.push_back(floated_window);

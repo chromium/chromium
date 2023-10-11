@@ -2434,9 +2434,6 @@ TEST_P(ClientControlledShellSurfaceTest, SnappedClientBounds) {
 // The shell surface with resize lock on should be unresizable.
 TEST_P(ClientControlledShellSurfaceTest,
        ShellSurfaceWithResizeLockOnIsUnresizable) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      chromeos::wm::features::kWindowLayoutMenu);
-
   auto shell_surface = exo::test::ShellSurfaceBuilder({256, 256})
                            .BuildClientControlledShellSurface();
   auto* surface = shell_surface->root_surface();
@@ -2535,9 +2532,6 @@ TEST_P(ClientControlledShellSurfaceTest,
 }
 
 TEST_P(ClientControlledShellSurfaceTest, SupportsFloatedState) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      chromeos::wm::features::kWindowLayoutMenu);
-
   // Test disabling support.
   {
     auto shell_surface = exo::test::ShellSurfaceBuilder()

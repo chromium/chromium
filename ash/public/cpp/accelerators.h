@@ -63,12 +63,6 @@ ASH_PUBLIC_EXPORT extern const AcceleratorData
 ASH_PUBLIC_EXPORT extern const size_t
     kEnableWithSameAppWindowCycleAcceleratorDataLength;
 
-// Accelerators that are enabled with the floating windows feature.
-ASH_PUBLIC_EXPORT extern const AcceleratorData
-    kEnableWithFloatWindowAcceleratorData[];
-ASH_PUBLIC_EXPORT extern const size_t
-    kEnableWithFloatWindowAcceleratorDataLength;
-
 // Accelerators that are enabled with the game dashboard feature.
 ASH_PUBLIC_EXPORT extern const AcceleratorData
     kToggleGameDashboardAcceleratorData[];

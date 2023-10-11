@@ -14,7 +14,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/wm/public/activation_client.h"
@@ -36,8 +35,7 @@ constexpr SkColor kCueColor = SK_ColorGRAY;
 }  // namespace
 
 TabletModeMultitaskCueController::TabletModeMultitaskCueController() {
-  DCHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
-  DCHECK(Shell::Get()->IsInTabletMode());
+  CHECK(Shell::Get()->IsInTabletMode());
   Shell::Get()->activation_client()->AddObserver(this);
 
   // If an app window is active before switching to tablet mode, show the cue.

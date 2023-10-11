@@ -600,9 +600,6 @@ bool CanEnableOrToggleDictation() {
 }
 
 bool CanToggleFloatingWindow() {
-  if (!chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
-    return false;
-  }
   return GetTargetWindow() != nullptr;
 }
 
@@ -615,9 +612,6 @@ bool CanToggleGameDashboard() {
 }
 
 bool CanToggleMultitaskMenu() {
-  if (!chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
-    return false;
-  }
   aura::Window* window = GetTargetWindow();
   if (!window) {
     return false;
@@ -1369,7 +1363,6 @@ void ToggleDockedMagnifier() {
 }
 
 void ToggleFloating() {
-  DCHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
   aura::Window* window = GetTargetWindow();
   DCHECK(window);
   // `CanFloatWindow` check is placed here rather than
@@ -1603,7 +1596,6 @@ void ToggleMirrorMode() {
 }
 
 void ToggleMultitaskMenu() {
-  DCHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
   aura::Window* window = GetTargetWindow();
   DCHECK(window);
   if (auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();

@@ -27,7 +27,6 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/ui/wm/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -77,11 +76,7 @@ class MockNewWindowDelegate : public TestNewWindowDelegate {
 
 class TabDragDropDelegateTest : public AshTestBase {
  public:
-  TabDragDropDelegateTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::wm::features::kWindowLayoutMenu},
-        /*disabled_features=*/{});
-  }
+  TabDragDropDelegateTest() = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -121,7 +116,6 @@ class TabDragDropDelegateTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<NiceMock<MockShellDelegate>, ExperimentalAsh> mock_shell_delegate_ =
       nullptr;
 

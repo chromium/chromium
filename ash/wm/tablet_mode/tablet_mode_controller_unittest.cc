@@ -44,7 +44,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_chromeos_version_info.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/ui/wm/features.h"
@@ -2067,24 +2066,9 @@ TEST_F(TabletModeControllerScreenshotTest, TransientChildTypeWindow) {
   EXPECT_TRUE(IsShelfAndFloatContainerOpaque());
 }
 
-class TabletModeControllerFloatScreenshotTest
-    : public TabletModeControllerScreenshotTest {
- public:
-  TabletModeControllerFloatScreenshotTest()
-      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
-  TabletModeControllerFloatScreenshotTest(
-      const TabletModeControllerFloatScreenshotTest&) = delete;
-  TabletModeControllerFloatScreenshotTest& operator=(
-      const TabletModeControllerFloatScreenshotTest&) = delete;
-  ~TabletModeControllerFloatScreenshotTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Floated window in tablet mode only covers a portion of the work area, so we
 // don't take a screenshot.
-TEST_F(TabletModeControllerFloatScreenshotTest, NoScreenshotFloatedWindow) {
+TEST_F(TabletModeControllerScreenshotTest, NoScreenshotFloatedWindow) {
   auto window = CreateAppWindow();
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());

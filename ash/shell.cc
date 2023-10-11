@@ -239,7 +239,6 @@
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
-#include "chromeos/ui/wm/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -1669,11 +1668,9 @@ void Shell::Init(
 
   projector_controller_ = std::make_unique<ProjectorControllerImpl>();
 
-  if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
-    float_controller_ = std::make_unique<FloatController>();
-    multitask_menu_nudge_delegate_ =
-        std::make_unique<MultitaskMenuNudgeDelegateAsh>();
-  }
+  float_controller_ = std::make_unique<FloatController>();
+  multitask_menu_nudge_delegate_ =
+      std::make_unique<MultitaskMenuNudgeDelegateAsh>();
 
   if (features::IsFederatedServiceEnabled()) {
     federated_service_controller_ =

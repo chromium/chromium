@@ -18,7 +18,6 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
@@ -342,25 +341,7 @@ TEST_F(FrameCaptionButtonContainerViewTest, ResizeButtonRestoreBehavior) {
   EXPECT_TRUE(window_state->IsSnapped());
 }
 
-// Test float button requires `kWindowLayoutMenu` feature to be enabled during
-// setup.
-class FrameCaptionButtonContainerViewWithFloatTest
-    : public FrameCaptionButtonContainerViewTest {
- public:
-  FrameCaptionButtonContainerViewWithFloatTest()
-      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
-  FrameCaptionButtonContainerViewWithFloatTest(
-      const FrameCaptionButtonContainerViewWithFloatTest&) = delete;
-  FrameCaptionButtonContainerViewWithFloatTest& operator=(
-      const FrameCaptionButtonContainerViewWithFloatTest&) = delete;
-  ~FrameCaptionButtonContainerViewWithFloatTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(FrameCaptionButtonContainerViewWithFloatTest,
-       TabletSizeButtonVisibility) {
+TEST_F(FrameCaptionButtonContainerViewTest, TabletSizeButtonVisibility) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   // Create a window in tablet mode. It should be maximized and the size button
@@ -385,7 +366,7 @@ TEST_F(FrameCaptionButtonContainerViewWithFloatTest,
 }
 
 // Test how the allowed actions affect the visibility of the float button.
-TEST_F(FrameCaptionButtonContainerViewWithFloatTest, FloatButtonVisibility) {
+TEST_F(FrameCaptionButtonContainerViewTest, FloatButtonVisibility) {
   // The float button should not be visible when minimizing and maximizing are
   // allowed.
   auto* widget1 = CreateTestWidget(MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED,
@@ -421,7 +402,7 @@ TEST_F(FrameCaptionButtonContainerViewWithFloatTest, FloatButtonVisibility) {
                                   *t2.close_button()));
 }
 
-TEST_F(FrameCaptionButtonContainerViewWithFloatTest, TestFloatButtonBehavior) {
+TEST_F(FrameCaptionButtonContainerViewTest, TestFloatButtonBehavior) {
   auto* widget = CreateTestWidget(MAXIMIZE_DISALLOWED, MINIMIZE_ALLOWED,
                                   CLOSE_BUTTON_VISIBLE);
   auto* window = widget->GetNativeWindow();

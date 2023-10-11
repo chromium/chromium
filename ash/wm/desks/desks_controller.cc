@@ -66,7 +66,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chromeos/ui/wm/features.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_info.h"
@@ -2152,12 +2151,8 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
     // container are removed from the container in case we want to immediately
     // reuse that container. Since floated window doesn't belong to desk
     // container, handle it separately.
-    aura::Window* floated_window = nullptr;
-    if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
-      floated_window =
-          Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
-              removed_desk);
-    }
+    aura::Window* floated_window =
+        Shell::Get()->float_controller()->FindFloatedWindowOfDesk(removed_desk);
 
     // When windows are being closed, they do so asynchronously. So, to free up
     // the desk container while the windows are being closed, we want to move
@@ -2338,9 +2333,8 @@ const Desk* DesksController::FindDeskOfWindow(aura::Window* window) const {
   DCHECK(window);
 
   // Floating windows are stored in float container, their relationship with
-  // desks can be found in `FloatedWindowInfo`.
-  if (chromeos::wm::features::IsWindowLayoutMenuEnabled() &&
-      WindowState::Get(window)->IsFloated()) {
+  // desks can be found in `FloatController::FloatedWindowInfo`.
+  if (WindowState::Get(window)->IsFloated()) {
     return Shell::Get()->float_controller()->FindDeskOfFloatedWindow(window);
   }
 

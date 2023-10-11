@@ -22,7 +22,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "chromeos/ui/base/nudge_util.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -32,7 +31,6 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view_test_api.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
@@ -67,8 +65,7 @@ chromeos::MultitaskMenuNudgeController* GetNudgeControllerForWindow(
 
 class MultitaskMenuNudgeControllerTest : public AshTestBase {
  public:
-  MultitaskMenuNudgeControllerTest()
-      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
+  MultitaskMenuNudgeControllerTest() = default;
   MultitaskMenuNudgeControllerTest(const MultitaskMenuNudgeControllerTest&) =
       delete;
   MultitaskMenuNudgeControllerTest& operator=(
@@ -126,9 +123,6 @@ class MultitaskMenuNudgeControllerTest : public AshTestBase {
   }
 
   base::SimpleTestClock test_clock_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that there is no crash after toggling fullscreen on and off. Regression
@@ -158,7 +152,7 @@ TEST_F(MultitaskMenuNudgeControllerTest, NoCrashAfterFullscreening) {
 }
 
 // Tests that there is no crash after floating a window via the multitask menu.
-// Regression test for b/265189622.
+// Regression test for http://b/265189622.
 TEST_F(MultitaskMenuNudgeControllerTest,
        NoCrashAfterFloatingFromMultitaskMenu) {
   auto window = CreateAppWindow(gfx::Rect(300, 300));
@@ -191,7 +185,8 @@ TEST_F(MultitaskMenuNudgeControllerTest,
 }
 
 // Tests that there is no crash after entering tablet mode with the multitask
-// menu created on the secondary display. Regression test for b/278165707.
+// menu created on the secondary display. Regression test for
+// http://b/278165707.
 TEST_F(MultitaskMenuNudgeControllerTest,
        NoCrashAfterEnterTabletFromMultidisplay) {
   UpdateDisplay("800x600,801+0-800x600");
@@ -212,7 +207,7 @@ TEST_F(MultitaskMenuNudgeControllerTest,
 }
 
 // Tests that there is no crash after a window is placed such that the nudge
-// widget should be offscreen. Regression test for b/282994793.
+// widget should be offscreen. Regression test for http://b/282994793.
 TEST_F(MultitaskMenuNudgeControllerTest,
        NoCrashAfterActivatingMostlyOffscreenWindowMultidisplay) {
   // Crash is multidisplay related since it involves switching root windows.
@@ -442,7 +437,7 @@ TEST_F(MultitaskMenuNudgeControllerTest, MenuShown) {
 }
 
 // Tests that the nudge gets properly hidden after switching desks with a
-// floated window. Regression test for b/276786909.
+// floated window. Regression test for http://b/276786909.
 TEST_F(MultitaskMenuNudgeControllerTest, FloatedWindowNudge) {
   // Create a new desk.
   NewDesk();

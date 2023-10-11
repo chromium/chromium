@@ -26,8 +26,6 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/scoped_observation.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/ui/wm/features.h"
 #include "components/account_id/account_id.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -65,8 +63,7 @@ class WindowRestoreControllerTest : public AshTestBase,
     std::unique_ptr<app_restore::WindowInfo> info;
   };
 
-  WindowRestoreControllerTest()
-      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
+  WindowRestoreControllerTest() = default;
   WindowRestoreControllerTest(const WindowRestoreControllerTest&) = delete;
   WindowRestoreControllerTest& operator=(const WindowRestoreControllerTest&) =
       delete;
@@ -332,8 +329,6 @@ class WindowRestoreControllerTest : public AshTestBase,
   base::flat_map<int32_t, WindowInfo> fake_window_restore_file_;
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests window save with setting on or off.

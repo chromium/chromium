@@ -148,7 +148,6 @@
 #include "chromeos/services/machine_learning/public/cpp/ml_switches.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/startup/startup.h"
-#include "chromeos/ui/wm/features.h"
 #include "chromeos/version/version_loader.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -628,8 +627,8 @@ void InjectBrowserInitParams(
   params->is_floss_availability_check_needed =
       floss::features::IsFlossAvailabilityCheckNeeded();
 
-  params->enable_window_layout_menu =
-      base::FeatureList::IsEnabled(chromeos::wm::features::kWindowLayoutMenu);
+  // TODO(b/299957114): Remove this parameter.
+  params->enable_window_layout_menu = true;
   // TODO(b/267528378): Remove this after M114.
   params->enable_partial_split_deprecated = true;
 

@@ -70,7 +70,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
-#include "chromeos/ui/wm/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "ui/compositor/compositor.h"
@@ -223,8 +222,7 @@ aura::Window* GetTopVisibleWindow() {
 
     // Floated windows can be tucked offscreen in tablet mode. Their target
     // visibility is true but the app list is fully visible under them.
-    if (chromeos::wm::features::IsWindowLayoutMenuEnabled() &&
-        WindowState::Get(window)->IsFloated() &&
+    if (WindowState::Get(window)->IsFloated() &&
         Shell::Get()->float_controller()->IsFloatedWindowTuckedForTablet(
             window)) {
       continue;

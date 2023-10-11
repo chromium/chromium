@@ -37,9 +37,7 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/compositor/layer.h"
@@ -1432,8 +1430,7 @@ TEST_F(DragWindowFromShelfControllerTest,
 class FloatDragWindowFromShelfControllerTest
     : public DragWindowFromShelfControllerTest {
  public:
-  FloatDragWindowFromShelfControllerTest()
-      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
+  FloatDragWindowFromShelfControllerTest() = default;
   FloatDragWindowFromShelfControllerTest(
       const FloatDragWindowFromShelfControllerTest&) = delete;
   FloatDragWindowFromShelfControllerTest& operator=(
@@ -1452,9 +1449,6 @@ class FloatDragWindowFromShelfControllerTest
     DCHECK(WindowState::Get(floated_window.get())->IsFloated());
     return floated_window;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(FloatDragWindowFromShelfControllerTest, DragFloatedWindow) {

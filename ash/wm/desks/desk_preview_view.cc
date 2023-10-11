@@ -32,7 +32,6 @@
 #include "base/containers/flat_set.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -431,11 +430,10 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
 
   // If there is a floated window that belongs to this desk, since it doesn't
   // belong to `desk_container`, we need to add it separately.
-  aura::Window* floated_window = nullptr;
-  if (chromeos::wm::features::IsWindowLayoutMenuEnabled() &&
-      (floated_window =
-           Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
-               mini_view_->desk()))) {
+  aura::Window* floated_window =
+      Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
+          mini_view_->desk());
+  if (floated_window) {
     GetLayersData(floated_window, &layers_data);
   }
 

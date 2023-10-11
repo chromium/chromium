@@ -28,7 +28,6 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view_test_api.h"
 #include "chromeos/ui/frame/multitask_menu/split_button_view.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
@@ -663,12 +662,9 @@ TEST_F(FrameSizeButtonPortraitDisplayTest, SnapButtons) {
   EXPECT_TRUE(HasStateType(WindowStateType::kPrimarySnapped));
 }
 
-// Test multitask menu requires kWindowLayoutMenu feature to be enabled during
-// setup.
 class MultitaskMenuTest : public FrameSizeButtonTest {
  public:
-  MultitaskMenuTest()
-      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
+  MultitaskMenuTest() = default;
   MultitaskMenuTest(const MultitaskMenuTest&) = delete;
   MultitaskMenuTest& operator=(const MultitaskMenuTest&) = delete;
   ~MultitaskMenuTest() override = default;
@@ -691,12 +687,9 @@ class MultitaskMenuTest : public FrameSizeButtonTest {
     static_cast<FrameSizeButton*>(size_button())->ShowMultitaskMenu(entry_type);
     waiter.WaitIfNeededAndGet();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Test Float Button Functionality.
+// Test float button functionality.
 TEST_F(MultitaskMenuTest, TestMultitaskMenuFloatFunctionality) {
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(window_state()->IsNormalStateType());

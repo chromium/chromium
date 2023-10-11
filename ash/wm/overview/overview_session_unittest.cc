@@ -88,7 +88,6 @@
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_state_type.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
@@ -5272,8 +5271,7 @@ INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
 
 class FloatOverviewSessionTest : public OverviewTestBase {
  public:
-  FloatOverviewSessionTest()
-      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
+  FloatOverviewSessionTest() = default;
   FloatOverviewSessionTest(const FloatOverviewSessionTest&) = delete;
   FloatOverviewSessionTest& operator=(const FloatOverviewSessionTest&) = delete;
   ~FloatOverviewSessionTest() override = default;
@@ -5309,9 +5307,6 @@ class FloatOverviewSessionTest : public OverviewTestBase {
 
     return true;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the float container is stacked properly when entering and exiting

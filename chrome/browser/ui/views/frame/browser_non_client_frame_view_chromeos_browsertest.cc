@@ -1317,20 +1317,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
 
 // TODO(b/270175923): Consider using WebUiTabStripOverrideTest, since it
 // makes sense for it to always be enabled.
-class FloatBrowserNonClientFrameViewChromeOSTest
-    : public TopChromeMdParamTest<InProcessBrowserTest> {
- public:
-  FloatBrowserNonClientFrameViewChromeOSTest() = default;
-  FloatBrowserNonClientFrameViewChromeOSTest(
-      const FloatBrowserNonClientFrameViewChromeOSTest&) = delete;
-  FloatBrowserNonClientFrameViewChromeOSTest& operator=(
-      const FloatBrowserNonClientFrameViewChromeOSTest&) = delete;
-  ~FloatBrowserNonClientFrameViewChromeOSTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      chromeos::wm::features::kWindowLayoutMenu};
-};
+using FloatBrowserNonClientFrameViewChromeOSTest =
+    TopChromeMdParamTest<InProcessBrowserTest>;
 
 IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
                        TabletModeMultitaskMenu) {

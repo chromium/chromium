@@ -26,7 +26,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chromeos/ui/wm/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -149,12 +148,7 @@ std::vector<ash::AcceleratorData> GetDefaultAccelerators() {
             ash::kEnableWithSameAppWindowCycleAcceleratorData,
             ash::kEnableWithSameAppWindowCycleAcceleratorDataLength));
   }
-  if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
-    AppendAcceleratorData(
-        accelerators,
-        base::make_span(ash::kEnableWithFloatWindowAcceleratorData,
-                        ash::kEnableWithFloatWindowAcceleratorDataLength));
-  }
+
   if (ash::features::IsGameDashboardEnabled()) {
     AppendAcceleratorData(
         accelerators,

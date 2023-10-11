@@ -17,8 +17,6 @@
 #include "ash/wm/wm_event.h"
 #include "base/functional/bind.h"
 #include "base/posix/unix_domain_socket.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/ui/wm/features.h"
 #include "components/exo/display.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/test/exo_test_base.h"
@@ -65,11 +63,6 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
 
   // test::ExoTestBase:
   void SetUp() override {
-    // We need to enable the flag before `test::ExoTestBase::SetUp()` to make
-    // FloatController instantiated in Shell.
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::wm::features::kWindowLayoutMenu);
-
     test::ExoTestBase::SetUp();
 
     ResetEventRecords();
@@ -229,7 +222,6 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
       /*set_use_default_scale_cancellation_since_version=*/0,
       /*has_bounds_change_reason_float=*/true,
   };
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 std::vector<RemoteShellEventType>
     WaylandRemoteShellTest::remote_shell_event_sequence_;

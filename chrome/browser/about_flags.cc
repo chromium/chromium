@@ -7475,9 +7475,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"window-layout-menu", flag_descriptions::kWindowLayoutMenu,
-     flag_descriptions::kWindowLayoutMenuDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::wm::features::kWindowLayoutMenu)},
     {"cros-labs-overview-desk-navigation",
      flag_descriptions::kOverviewDeskNavigationName,
      flag_descriptions::kOverviewDeskNavigationDescription, kOsCrOS,

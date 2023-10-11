@@ -34,7 +34,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -213,10 +212,8 @@ void TabletModeWindowManager::Init() {
   accounts_since_entering_tablet_.insert(
       Shell::Get()->session_controller()->GetActiveAccountId());
   event_handler_ = std::make_unique<TabletModeToggleFullscreenEventHandler>();
-  if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
-    tablet_mode_multitask_menu_controller_ =
-        std::make_unique<TabletModeMultitaskMenuController>();
-  }
+  tablet_mode_multitask_menu_controller_ =
+      std::make_unique<TabletModeMultitaskMenuController>();
 }
 
 void TabletModeWindowManager::Shutdown() {

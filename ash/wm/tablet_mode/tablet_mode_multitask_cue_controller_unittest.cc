@@ -9,8 +9,6 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/wm/core/window_util.h"
@@ -19,8 +17,7 @@ namespace ash {
 
 class TabletModeMultitaskCueControllerTest : public AshTestBase {
  public:
-  TabletModeMultitaskCueControllerTest()
-      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
+  TabletModeMultitaskCueControllerTest() = default;
   TabletModeMultitaskCueControllerTest(
       const TabletModeMultitaskCueControllerTest&) = delete;
   TabletModeMultitaskCueControllerTest& operator=(
@@ -39,9 +36,6 @@ class TabletModeMultitaskCueControllerTest : public AshTestBase {
     AshTestBase::SetUp();
     TabletModeControllerTestApi().EnterTabletMode();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the cue layer is created properly.

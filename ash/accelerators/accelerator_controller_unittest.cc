@@ -1537,13 +1537,11 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleQuickSettings) {
 }
 
 TEST_F(AcceleratorControllerTest, ToggleMultitaskMenu) {
-  base::test::ScopedFeatureList scoped_feature_list;
   // Accelerators behind a flag should also be accompanied by the
   // `kShortcutCustomization` to support dynamic accelerator registration.
-  scoped_feature_list.InitWithFeatures(
-      {chromeos::wm::features::kWindowLayoutMenu,
-       ::features::kShortcutCustomization},
-      {});
+  base::test::ScopedFeatureList scoped_feature_list(
+      ::features::kShortcutCustomization);
+
   // Simulate fake user login to ensure pref registration is done correctly.
   SimulateUserLogin("fakeuser");
   // Enabling `kShortcutCustomization` will start letting

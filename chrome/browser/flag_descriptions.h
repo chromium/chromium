@@ -2107,9 +2107,6 @@ extern const char kWebXrRuntimeChoiceOpenXR[];
 extern const char kWebXrIncubationsName[];
 extern const char kWebXrIncubationsDescription[];
 
-extern const char kWindowLayoutMenu[];
-extern const char kWindowLayoutMenuDescription[];
-
 extern const char kZeroCopyName[];
 extern const char kZeroCopyDescription[];
 

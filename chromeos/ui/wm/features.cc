@@ -4,21 +4,17 @@
 
 #include "chromeos/ui/wm/features.h"
 
+#include "build/chromeos_buildflags.h"
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 namespace chromeos::wm::features {
 
-// Enables a window to float.
-// https://crbug.com/1240411
-BASE_FEATURE(kWindowLayoutMenu,
-             "WindowLayoutMenu",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsWindowLayoutMenuEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return base::FeatureList::IsEnabled(kWindowLayoutMenu);
+  return true;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsWindowLayoutMenuEnabled();
 #else

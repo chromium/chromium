@@ -78,11 +78,6 @@ const char kAllowInsecureLocalhostDescription[] =
     "Allows requests to localhost over HTTPS even when an invalid certificate "
     "is presented.";
 
-const char kWindowLayoutMenu[] = "New Window Layout Menu";
-const char kWindowLayoutMenuDescription[] =
-    "Enables the new Window Layout menu for adjusting window layouts. Also "
-    "enables Floating windows and partial split-screen layouts.";
-
 const char kAndroidAppIntegrationName[] = "Integrate with Android App Search";
 const char kAndroidAppIntegrationDescription[] =
     "If enabled, allows Chrome to integrate with the Android App Search.";

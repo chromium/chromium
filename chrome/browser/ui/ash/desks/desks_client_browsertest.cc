@@ -519,8 +519,7 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest,
  public:
   DesksClientTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        ash::features::kDesksTemplates,
-        chromeos::wm::features::kWindowLayoutMenu};
+        ash::features::kDesksTemplates};
     std::vector<base::test::FeatureRef> disabled_features = {
         ash::features::kDeskTemplateSync};
     if (GetParam()) {

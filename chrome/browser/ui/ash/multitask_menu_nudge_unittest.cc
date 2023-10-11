@@ -8,9 +8,7 @@
 
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
-#include "chromeos/ui/wm/features.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "ui/aura/window.h"
@@ -19,8 +17,7 @@ namespace ash {
 
 class MultitaskMenuNudgeTest : public AshTestBase {
  public:
-  MultitaskMenuNudgeTest()
-      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
+  MultitaskMenuNudgeTest() = default;
   MultitaskMenuNudgeTest(const MultitaskMenuNudgeTest&) = delete;
   MultitaskMenuNudgeTest& operator=(const MultitaskMenuNudgeTest&) = delete;
   ~MultitaskMenuNudgeTest() override = default;
@@ -34,9 +31,6 @@ class MultitaskMenuNudgeTest : public AshTestBase {
             .nudge_controller();
     return nudge_controller ? nudge_controller->nudge_widget_.get() : nullptr;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(MultitaskMenuNudgeTest, NoNudgeForNewUser) {

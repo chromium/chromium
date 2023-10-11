@@ -44,7 +44,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -52,7 +51,6 @@
 #include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "chromeos/ui/wm/constants.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window_observer.h"
@@ -142,15 +140,6 @@ class WindowFloatTest : public AshTestBase {
     CHECK(WindowState::Get(floated_window.get())->IsFloated());
     return floated_window;
   }
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::wm::features::kWindowLayoutMenu}, {});
-    AshTestBase::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test float/unfloat window.
