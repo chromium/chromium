@@ -784,7 +784,7 @@ void LacrosService::BindStableVideoDecoderFactory(
 }
 
 absl::optional<uint32_t> LacrosService::CrosapiVersion() const {
-  if (chromeos::BrowserParamsProxy::Get()->DisableCrosapiForTesting()) {
+  if (chromeos::BrowserParamsProxy::Get()->IsCrosapiDisabledForTesting()) {
     return absl::nullopt;
   }
   DCHECK(did_bind_receiver_);
@@ -820,7 +820,7 @@ void LacrosService::ConstructRemote() {
 }
 
 int LacrosService::GetInterfaceVersionImpl(base::Token interface_uuid) const {
-  if (chromeos::BrowserParamsProxy::Get()->DisableCrosapiForTesting()) {
+  if (chromeos::BrowserParamsProxy::Get()->IsCrosapiDisabledForTesting()) {
     return -1;
   }
   if (!chromeos::BrowserParamsProxy::Get()->InterfaceVersions()) {

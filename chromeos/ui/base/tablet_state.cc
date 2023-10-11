@@ -66,7 +66,7 @@ void TabletState::EnableTabletModeForTesting(bool enable) {
   // Do not use this method in case where crosapi is enabled since it implies
   // Ash server is available.
   DCHECK(chromeos::BrowserParamsProxy::Get()
-             ->DisableCrosapiForTesting());                     // IN-TEST
+             ->IsCrosapiDisabledForTesting());                  // IN-TEST
   display::Screen::GetScreen()->OverrideTabletStateForTesting(  // IN-TEST
       enable ? display::TabletState::kInTabletMode
              : display::TabletState::kInClamshellMode);
