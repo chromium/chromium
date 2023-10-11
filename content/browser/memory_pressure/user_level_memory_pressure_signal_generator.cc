@@ -39,6 +39,13 @@ constexpr uint64_t k1MB = 1024ull * 1024;
 constexpr base::TimeDelta kDefaultMeasurementInterval = base::Seconds(1);
 
 // Time interval between measuring total private memory footprint.
+base::TimeDelta MeasurementIntervalFor3GbDevices() {
+  static const base::FeatureParam<base::TimeDelta> kMeasurementInterval{
+      &content::features::kUserLevelMemoryPressureSignalOn3GbDevices,
+      "measurement_interval", kDefaultMeasurementInterval};
+  return kMeasurementInterval.Get();
+}
+
 base::TimeDelta MeasurementIntervalFor4GbDevices() {
   static const base::FeatureParam<base::TimeDelta> kMeasurementInterval{
       &content::features::kUserLevelMemoryPressureSignalOn4GbDevices,
@@ -51,6 +58,18 @@ base::TimeDelta MeasurementIntervalFor6GbDevices() {
       &content::features::kUserLevelMemoryPressureSignalOn6GbDevices,
       "measurement_interval", kDefaultMeasurementInterval};
   return kMeasurementInterval.Get();
+}
+
+// The memory threshold: 738 was selected at around the 99th percentile of
+// the Memory.Total.PrivateMemoryFootprint reported by Android devices whose
+// system memory were 3GB.
+constexpr size_t kMemoryThresholdMBOf3GbDevices = 738;
+
+uint64_t MemoryThresholdParamFor3GbDevices() {
+  static const base::FeatureParam<int> kMemoryThresholdParam{
+      &content::features::kUserLevelMemoryPressureSignalOn3GbDevices,
+      "memory_threshold_mb", kMemoryThresholdMBOf3GbDevices};
+  return base::as_unsigned(kMemoryThresholdParam.Get()) * k1MB;
 }
 
 // The memory threshold: 458 was selected at around the 99th percentile of
@@ -81,6 +100,13 @@ uint64_t MemoryThresholdParamFor6GbDevices() {
 
 // static
 void UserLevelMemoryPressureSignalGenerator::Initialize() {
+  if (content::features::IsUserLevelMemoryPressureSignalEnabledOn3GbDevices()) {
+    UserLevelMemoryPressureSignalGenerator::Get().Start(
+        MemoryThresholdParamFor3GbDevices(), MeasurementIntervalFor3GbDevices(),
+        content::features::MinUserMemoryPressureIntervalOn3GbDevices());
+    return;
+  }
+
   if (content::features::IsUserLevelMemoryPressureSignalEnabledOn4GbDevices()) {
     UserLevelMemoryPressureSignalGenerator::Get().Start(
         MemoryThresholdParamFor4GbDevices(), MeasurementIntervalFor4GbDevices(),

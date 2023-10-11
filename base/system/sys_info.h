@@ -297,6 +297,19 @@ class BASE_EXPORT SysInfo {
   static bool IsLowEndDeviceOrPartialLowEndModeEnabled(
       const FeatureParam<bool>& param_for_exclusion);
 
+#if BUILDFLAG(IS_ANDROID)
+  // Returns true for Android devices whose memory is X GB, considering
+  // carveouts. The carveouts is memory reserved by the system, e.g.
+  // for drivers, MTE, etc. It's very common for querying app to see
+  // hundreds MBs less than actual physical memory installed on the system.
+  static bool IsAndroid3GbDevice();
+  static bool IsAndroid4GbDevice();
+  static bool IsAndroid6GbDevice();
+  // Returns true for Android devices whose memory is 4GB or 6GB, considering
+  // carveouts.
+  static bool IsAndroid4GbOr6GbDevice();
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_MAC)
   // Indicates that CPU security mitigations are enabled for the current
   // process. This is used to control the behavior of NumberOfProcessors(), see

@@ -88,27 +88,78 @@ bool SysInfo::IsLowEndDevice() {
 
 namespace {
 
-bool IsAndroid4GbOr6GbDevice() {
+enum class BucketizedSize {
+  k2GbOrLess,
+  k3Gb,
+  k4Gb,
+  k6Gb,
+  k8GbOrHigher,
+};
+
+BucketizedSize GetAndroidSystemRamBucketizedSize() {
+  int physical_memory = base::SysInfo::AmountOfPhysicalMemoryMB();
+
   // Because of Android carveouts, AmountOfPhysicalMemory() returns smaller
-  // than the actual memory size, So we will use a small lowerbound than 4GB
-  // to discriminate real 4GB devices from lower memory ones.
-  constexpr int kLowerBoundMB = 3.2 * 1024;
-  constexpr int kUpperBoundMB = 6 * 1024;
-  static bool is_4gb_or_6g_device =
-      kLowerBoundMB <= base::SysInfo::AmountOfPhysicalMemoryMB() &&
-      base::SysInfo::AmountOfPhysicalMemoryMB() <= kUpperBoundMB;
-  return is_4gb_or_6g_device;
+  // than the actual memory size, So we will use a small lowerbound than "X"GB
+  // to discriminate real "X"GB devices from lower memory ones.
+
+  constexpr int kUpperBound2GB = 2 * 1024;  // inclusive
+  if (physical_memory <= kUpperBound2GB) {
+    return BucketizedSize::k2GbOrLess;
+  }
+
+  constexpr int kLowerBound3GB = kUpperBound2GB;  // exclusive
+  constexpr int kUpperBound3GB = 3.2 * 1024;      // inclusive
+  if (kLowerBound3GB < physical_memory && physical_memory <= kUpperBound3GB) {
+    return BucketizedSize::k3Gb;
+  }
+
+  constexpr int kLowerBound4GB = kUpperBound3GB;  // exclusive
+  constexpr int kUpperBound4GB = 4 * 1024;        // inclusive
+  if (kLowerBound4GB < physical_memory && physical_memory <= kUpperBound4GB) {
+    return BucketizedSize::k4Gb;
+  }
+
+  constexpr int kLowerBound6GB = kUpperBound4GB;  // exclusive
+  constexpr int kUpperBound6GB = 6.5 * 1024 - 1;  // inclusive
+  if (kLowerBound6GB < physical_memory && physical_memory <= kUpperBound6GB) {
+    return BucketizedSize::k6Gb;
+  }
+
+  return BucketizedSize::k8GbOrHigher;
+}
+
+BucketizedSize GetCachedAndroidSystemRamBucketizedSize() {
+  static BucketizedSize s_size = GetAndroidSystemRamBucketizedSize();
+  return s_size;
 }
 
 bool IsPartialLowEndModeOnMidRangeDevicesEnabled() {
   // TODO(crbug.com/1434873): make the feature not enable on 32-bit devices
   // before launching or going to high Stable %.
-  return IsAndroid4GbOr6GbDevice() &&
+  return SysInfo::IsAndroid4GbOr6GbDevice() &&
          base::FeatureList::IsEnabled(
              features::kPartialLowEndModeOnMidRangeDevices);
 }
 
 }  // namespace
+
+bool SysInfo::IsAndroid3GbDevice() {
+  return GetCachedAndroidSystemRamBucketizedSize() == BucketizedSize::k3Gb;
+}
+
+bool SysInfo::IsAndroid4GbDevice() {
+  return GetCachedAndroidSystemRamBucketizedSize() == BucketizedSize::k4Gb;
+}
+
+bool SysInfo::IsAndroid4GbOr6GbDevice() {
+  return GetCachedAndroidSystemRamBucketizedSize() == BucketizedSize::k4Gb ||
+         GetCachedAndroidSystemRamBucketizedSize() == BucketizedSize::k6Gb;
+}
+
+bool SysInfo::IsAndroid6GbDevice() {
+  return GetCachedAndroidSystemRamBucketizedSize() == BucketizedSize::k6Gb;
+}
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

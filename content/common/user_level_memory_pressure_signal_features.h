@@ -14,16 +14,20 @@
 
 namespace content::features {
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserLevelMemoryPressureSignalOn3GbDevices);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserLevelMemoryPressureSignalOn4GbDevices);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserLevelMemoryPressureSignalOn6GbDevices);
 
 // Helper functions for UserLevelMemoryPressureSignal features.
+CONTENT_EXPORT bool IsUserLevelMemoryPressureSignalEnabledOn3GbDevices();
 CONTENT_EXPORT bool IsUserLevelMemoryPressureSignalEnabledOn4GbDevices();
 CONTENT_EXPORT bool IsUserLevelMemoryPressureSignalEnabledOn6GbDevices();
 
+CONTENT_EXPORT base::TimeDelta InertIntervalFor3GbDevices();
 CONTENT_EXPORT base::TimeDelta InertIntervalFor4GbDevices();
 CONTENT_EXPORT base::TimeDelta InertIntervalFor6GbDevices();
 
+CONTENT_EXPORT base::TimeDelta MinUserMemoryPressureIntervalOn3GbDevices();
 CONTENT_EXPORT base::TimeDelta MinUserMemoryPressureIntervalOn4GbDevices();
 CONTENT_EXPORT base::TimeDelta MinUserMemoryPressureIntervalOn6GbDevices();
 

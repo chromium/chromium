@@ -16,8 +16,6 @@ namespace content::features {
 
 namespace {
 
-constexpr uint64_t k1MB = 1024ull * 1024;
-constexpr uint64_t k1GB = 1024ull * k1MB;
 constexpr base::TimeDelta kDefaultMinimumInterval = base::Minutes(10);
 
 // Each renderer does not generate memory pressure signals until the interval
@@ -33,7 +31,13 @@ constexpr base::TimeDelta kDefaultInertInterval = base::Minutes(5);
 }  // namespace
 
 // Monitor total private memory footprint and dispatch memory pressure signal
-// if the value exceeds the pre-defined threshold. (for Android 4GB devices)
+// if the value exceeds the pre-defined threshold.
+
+// (for Android 3GB devices)
+BASE_FEATURE(kUserLevelMemoryPressureSignalOn3GbDevices,
+             "UserLevelMemoryPressureSignalOn3GbDevices",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// (for Android 4GB devices)
 BASE_FEATURE(kUserLevelMemoryPressureSignalOn4GbDevices,
              "UserLevelMemoryPressureSignalOn4GbDevices",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -42,26 +46,38 @@ BASE_FEATURE(kUserLevelMemoryPressureSignalOn6GbDevices,
              "UserLevelMemoryPressureSignalOn6GbDevices",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+bool IsUserLevelMemoryPressureSignalEnabledOn3GbDevices() {
+  static bool s_enabled =
+      base::SysInfo::IsAndroid3GbDevice() &&
+      base::FeatureList::IsEnabled(kUserLevelMemoryPressureSignalOn3GbDevices);
+  return s_enabled;
+}
+
 bool IsUserLevelMemoryPressureSignalEnabledOn4GbDevices() {
   // Because of Android carveouts, AmountOfPhysicalMemory() returns smaller
   // than the actual memory size, So we will use a small lowerbound than 4GB
   // to discriminate real 4GB devices from lower memory ones.
   static bool s_enabled =
-      (3 * k1GB + 200 * k1MB <= base::SysInfo::AmountOfPhysicalMemory() &&
-       base::SysInfo::AmountOfPhysicalMemory() <= 4 * k1GB) &&
+      base::SysInfo::IsAndroid4GbDevice() &&
       base::FeatureList::IsEnabled(kUserLevelMemoryPressureSignalOn4GbDevices);
   return s_enabled;
 }
 
 bool IsUserLevelMemoryPressureSignalEnabledOn6GbDevices() {
   static bool s_enabled =
-      (4 * k1GB < base::SysInfo::AmountOfPhysicalMemory() &&
-       base::SysInfo::AmountOfPhysicalMemory() <= 6 * k1GB) &&
+      base::SysInfo::IsAndroid6GbDevice() &&
       base::FeatureList::IsEnabled(kUserLevelMemoryPressureSignalOn6GbDevices);
   return s_enabled;
 }
 
 // Minimum time interval between generated memory pressure signals.
+base::TimeDelta MinUserMemoryPressureIntervalOn3GbDevices() {
+  static const base::FeatureParam<base::TimeDelta> kMinimumInterval{
+      &kUserLevelMemoryPressureSignalOn3GbDevices, "minimum_interval",
+      kDefaultMinimumInterval};
+  return kMinimumInterval.Get();
+}
+
 base::TimeDelta MinUserMemoryPressureIntervalOn4GbDevices() {
   static const base::FeatureParam<base::TimeDelta> kMinimumInterval{
       &kUserLevelMemoryPressureSignalOn4GbDevices, "minimum_interval",
@@ -74,6 +90,13 @@ base::TimeDelta MinUserMemoryPressureIntervalOn6GbDevices() {
       &kUserLevelMemoryPressureSignalOn6GbDevices, "minimum_interval",
       kDefaultMinimumInterval};
   return kMinimumInterval.Get();
+}
+
+base::TimeDelta InertIntervalFor3GbDevices() {
+  static const base::FeatureParam<base::TimeDelta> kInertInterval{
+      &features::kUserLevelMemoryPressureSignalOn3GbDevices,
+      "inert_interval_after_loading", kDefaultInertInterval};
+  return kInertInterval.Get();
 }
 
 base::TimeDelta InertIntervalFor4GbDevices() {
