@@ -1632,9 +1632,9 @@ export class CommandHandler extends CommandHandlerInterface {
    * @private
    */
   toggleSelection_() {
-    if (!ChromeVoxState.instance.pageSel) {
+    if (!ChromeVoxRange.pageSel) {
       ChromeVox.earcons.playEarcon(EarconId.SELECTION);
-      ChromeVoxState.instance.pageSel = ChromeVoxRange.current;
+      ChromeVoxRange.pageSel = ChromeVoxRange.current;
       DesktopAutomationInterface.instance.ignoreDocumentSelectionFromAction(
           true);
     } else {
@@ -1658,7 +1658,7 @@ export class CommandHandler extends CommandHandlerInterface {
         DesktopAutomationInterface.instance.ignoreDocumentSelectionFromAction(
             false);
       }
-      ChromeVoxState.instance.pageSel = null;
+      ChromeVoxRange.pageSel = null;
       return false;
     }
     return true;

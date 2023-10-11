@@ -66,9 +66,6 @@ export class Background extends ChromeVoxState {
     /** @private {boolean} */
     this.isReadingContinuously_ = false;
 
-    /** @private {CursorRange} */
-    this.pageSel_ = null;
-
     /** @private {boolean} */
     this.talkBackEnabled_ = false;
 
@@ -152,11 +149,6 @@ export class Background extends ChromeVoxState {
   }
 
   /** @override */
-  get pageSel() {
-    return this.pageSel_;
-  }
-
-  /** @override */
   get talkBackEnabled() {
     return this.talkBackEnabled_;
   }
@@ -164,11 +156,6 @@ export class Background extends ChromeVoxState {
   /** @override */
   set isReadingContinuously(newValue) {
     this.isReadingContinuously_ = newValue;
-  }
-
-  /** @override */
-  set pageSel(newPageSel) {
-    this.pageSel_ = newPageSel;
   }
 
   /** @override */

@@ -53,6 +53,8 @@ export class ChromeVoxRange {
     /** @private {?CursorRange} */
     this.current_ = null;
     /** @private {?CursorRange} */
+    this.pageSel_ = null;
+    /** @private {?CursorRange} */
     this.previous_ = null;
   }
 
@@ -72,6 +74,16 @@ export class ChromeVoxRange {
       return ChromeVoxRange.instance.current_;
     }
     return null;
+  }
+
+  /** @return {?CursorRange} */
+  static get pageSel() {
+    return ChromeVoxRange.instance.pageSel_;
+  }
+
+  /** @param {?CursorRange} newPageSel */
+  static set pageSel(newPageSel) {
+    ChromeVoxRange.instance.pageSel_ = newPageSel;
   }
 
   /** @return {?CursorRange} */
@@ -198,13 +210,13 @@ export class ChromeVoxRange {
     let selectedRange;
     let msg;
 
-    if (ChromeVoxState.instance.pageSel?.isValid() && range.isValid()) {
+    if (this.pageSel_?.isValid() && range.isValid()) {
       // Suppress hints.
       o.withoutHints();
 
       // Selection across roots isn't supported.
-      const pageRootStart = ChromeVoxState.instance.pageSel.start.node.root;
-      const pageRootEnd = ChromeVoxState.instance.pageSel.end.node.root;
+      const pageRootStart = this.pageSel_.start.node.root;
+      const pageRootEnd = this.pageSel_.end.node.root;
       const curRootStart = range.start.node.root;
       const curRootEnd = range.end.node.root;
 
@@ -214,7 +226,7 @@ export class ChromeVoxRange {
         o.format('@end_selection');
         DesktopAutomationInterface.instance.ignoreDocumentSelectionFromAction(
             false);
-        ChromeVoxState.instance.pageSel = null;
+        this.pageSel_ = null;
       } else {
         // Expand or shrink requires different feedback.
 
@@ -222,7 +234,7 @@ export class ChromeVoxRange {
         // selections. It is important to keep track of the directedness in
         // places, but when comparing to other ranges, take the undirected
         // range.
-        const dir = ChromeVoxState.instance.pageSel.normalize().compare(range);
+        const dir = this.pageSel_.normalize().compare(range);
         if (dir) {
           // Directed expansion.
           msg = '@selected';
@@ -232,13 +244,11 @@ export class ChromeVoxRange {
           selectedRange = prevRange;
         }
         const wasBackwardSel =
-            ChromeVoxState.instance.pageSel.start.compare(
-                ChromeVoxState.instance.pageSel.end) === Dir.BACKWARD ||
+            this.pageSel_.start.compare(this.pageSel_.end) === Dir.BACKWARD ||
             dir === Dir.BACKWARD;
-        ChromeVoxState.instance.pageSel = new CursorRange(
-            ChromeVoxState.instance.pageSel.start,
-            wasBackwardSel ? range.start : range.end);
-        ChromeVoxState.instance.pageSel?.select();
+        this.pageSel_ = new CursorRange(
+            this.pageSel_.start, wasBackwardSel ? range.start : range.end);
+        this.pageSel_.select();
       }
     } else if (!opt_skipSettingSelection) {
       // Ensure we don't select the editable when we first encounter it.

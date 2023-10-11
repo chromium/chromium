@@ -27,11 +27,6 @@ export class ChromeVoxState {
     return false;
   }
 
-  /** @return {CursorRange} */
-  get pageSel() {
-    return null;
-  }
-
   /** @return {boolean} */
   get talkBackEnabled() {
     return false;
@@ -41,11 +36,6 @@ export class ChromeVoxState {
    * @param {boolean} newValue
    */
   set isReadingContinuously(newValue) {}
-
-  /**
-   * @param {CursorRange} newPageSel
-   */
-  set pageSel(newPageSel) {}
 
   /**
    * Restores the last valid ChromeVox range.

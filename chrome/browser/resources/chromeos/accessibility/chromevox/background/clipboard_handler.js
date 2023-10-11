@@ -9,7 +9,7 @@ import {Msgs} from '../common/msgs.js';
 import {QueueMode} from '../common/tts_types.js';
 
 import {ChromeVox} from './chromevox.js';
-import {ChromeVoxState} from './chromevox_state.js';
+import {ChromeVoxRange} from './chromevox_range.js';
 
 
 /** Handles accessing and tracking access to the clipboard. */
@@ -60,7 +60,7 @@ export class ClipboardHandler {
     textarea.remove();
     ChromeVox.tts.speak(
         Msgs.getMsg(eventType, [clipboardContent]), QueueMode.FLUSH);
-    ChromeVoxState.instance.pageSel = null;
+    ChromeVoxRange.pageSel = null;
   }
 
   readNextClipboardDataChange() {
