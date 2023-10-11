@@ -304,6 +304,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRequestDesktopSiteDefaultsLogging,
     &kRestoreTabsOnFRE,
     &kSearchEnginesPromoV3,
+    &kShowNtpAtStartupAndroid,
     &kShowScrollableMVTOnNTPAndroid,
     &kFeedPositionAndroid,
     &kSearchResumptionModuleAndroid,
@@ -1002,6 +1003,10 @@ BASE_FEATURE(kRestoreTabsOnFRE,
 
 BASE_FEATURE(kScrollToTLDOptimization,
              "ScrollToTLDOptimization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kShowNtpAtStartupAndroid,
+             "ShowNtpAtStartupAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShowScrollableMVTOnNTPAndroid,

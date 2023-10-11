@@ -3545,6 +3545,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-show-ntp-at-startup",
+    "owners": ["clank-start","hanxi","xinyiji"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-show-scrollable-mvt-on-ntp",
     "owners": ["clank-start","hanxi"],
     "expiry_milestone": 130

@@ -61231,6 +61231,7 @@ from previous Chrome versions.
   <int value="-1911153473" label="enable-easy-signin"/>
   <int value="-1910984835" label="CCTPreventTouches:enabled"/>
   <int value="-1910725149" label="kFastPairHID:enabled"/>
+  <int value="-1910438159" label="ShowNtpAtStartupAndroid:enabled"/>
   <int value="-1910427915" label="HttpsOnlyMode:enabled"/>
   <int value="-1910305102" label="EnhancedDeskAnimations:enabled"/>
   <int value="-1909983714" label="ExperimentalTabController:disabled"/>
@@ -67769,6 +67770,7 @@ from previous Chrome versions.
   <int value="1295005331" label="SupportPepperVideoDecoderDevAPI:enabled"/>
   <int value="1295669314" label="OmniboxOnClobberFocusTypeOnContent:enabled"/>
   <int value="1295688198" label="ClipboardHistoryRefresh:enabled"/>
+  <int value="1295887301" label="ShowNtpAtStartupAndroid:disabled"/>
   <int value="1296661698" label="CrOSLateBootMediaDynamicCgroup:disabled"/>
   <int value="1296878388" label="PermissionPredictions:disabled"/>
   <int value="1296958520" label="hide-active-apps-from-shelf"/>

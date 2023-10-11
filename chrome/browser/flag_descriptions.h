@@ -2557,6 +2557,9 @@ extern const char kScreenshotsForAndroidV2Description[];
 extern const char kSecurePaymentConfirmationAndroidName[];
 extern const char kSecurePaymentConfirmationAndroidDescription[];
 
+extern const char kShowNtpAtStartupAndroidName[];
+extern const char kShowNtpAtStartupAndroidDescription[];
+
 extern const char kShowScrollableMVTOnNTPAndroidName[];
 extern const char kShowScrollableMVTOnNTPAndroidDescription[];
 

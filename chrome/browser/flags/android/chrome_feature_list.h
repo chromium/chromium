@@ -170,6 +170,7 @@ BASE_DECLARE_FEATURE(kRequestDesktopSiteDefaultsLogging);
 BASE_DECLARE_FEATURE(kRestoreTabsOnFRE);
 BASE_DECLARE_FEATURE(kSearchEnginesPromoV3);
 BASE_DECLARE_FEATURE(kSharingHubLinkToggle);
+BASE_DECLARE_FEATURE(kShowNtpAtStartupAndroid);
 BASE_DECLARE_FEATURE(kShowScrollableMVTOnNTPAndroid);
 BASE_DECLARE_FEATURE(kFeedPositionAndroid);
 BASE_DECLARE_FEATURE(kScrollToTLDOptimization);

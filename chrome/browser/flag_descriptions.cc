@@ -4338,6 +4338,10 @@ const char kScreenshotsForAndroidV2Description[] =
     "Adds functionality to the share screenshot panel within Chrome Browser"
     " on Android";
 
+const char kShowNtpAtStartupAndroidName[] = "Show a NewTabPage at startup";
+const char kShowNtpAtStartupAndroidDescription[] =
+    "Enable showing a NewTabPage at startup after leaving Chrome for a while.";
+
 const char kShowScrollableMVTOnNTPAndroidName[] = "Show scrollable MVT on NTP";
 const char kShowScrollableMVTOnNTPAndroidDescription[] =
     "Enable showing the scrollable most visited tiles on NTP.";

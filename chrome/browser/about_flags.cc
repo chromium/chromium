@@ -7229,6 +7229,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kSurfacePolishVariations,
                                     "SurfacePolish")},
 
+    {"enable-show-ntp-at-startup",
+     flag_descriptions::kShowNtpAtStartupAndroidName,
+     flag_descriptions::kShowNtpAtStartupAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kShowNtpAtStartupAndroid)},
+
     {"enable-show-scrollable-mvt-on-ntp",
      flag_descriptions::kShowScrollableMVTOnNTPAndroidName,
      flag_descriptions::kShowScrollableMVTOnNTPAndroidDescription, kOsAndroid,

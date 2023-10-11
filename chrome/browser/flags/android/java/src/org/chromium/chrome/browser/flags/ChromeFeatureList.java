@@ -432,6 +432,7 @@ public abstract class ChromeFeatureList {
     public static final String SEND_TAB_TO_SELF_V2 = "SendTabToSelfV2";
     public static final String SHOPPING_LIST = "ShoppingList";
     public static final String SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID = "ShowScrollableMVTOnNTPAndroid";
+    public static final String SHOW_NTP_AT_STARTUP_ANDROID = "ShowNtpAtStartupAndroid";
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =
             "SmartSuggestionForLargeDownloads";
     public static final String SPARE_TAB = "SpareTab";
@@ -604,6 +605,8 @@ public abstract class ChromeFeatureList {
             new CachedFlag(SEARCH_ENGINE_CHOICE, false);
     public static final CachedFlag sShouldIgnoreIntentSkipInternalCheck =
             new CachedFlag(SHOULD_IGNORE_INTENT_SKIP_INTERNAL_CHECK, true);
+    public static final CachedFlag sShowNtpAtStartupAndroid =
+            new CachedFlag(SHOW_NTP_AT_STARTUP_ANDROID, false);
     public static final CachedFlag sSpareTab = new CachedFlag(SPARE_TAB, false);
     public static final CachedFlag sStartSurfaceAndroid = new CachedFlag(
             START_SURFACE_ANDROID, ChromePreferenceKeys.FLAGS_CACHED_START_SURFACE_ENABLED, true);
@@ -700,6 +703,7 @@ public abstract class ChromeFeatureList {
                     sQueryTilesOnStart,
                     sSearchEngineChoice,
                     sShouldIgnoreIntentSkipInternalCheck,
+                    sShowNtpAtStartupAndroid,
                     sSpareTab,
                     sStartSurfaceAndroid,
                     sStartSurfaceDisabledFeedImprovement,
