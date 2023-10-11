@@ -98,6 +98,12 @@ void VerifyPdf(base::span<const uint8_t> pdf_data,
 }
 
 base::span<const gfx::SizeF> GetExpectedPdfSizes(base::StringPiece pdf_name) {
+  if (pdf_name == "hello_world.pdf") {
+    static constexpr gfx::SizeF kSizes[] = {
+        {612.0f, 792.0f},
+    };
+    return kSizes;
+  }
   if (pdf_name == "pdf_converter_basic.pdf") {
     static constexpr gfx::SizeF kSizes[] = {
         {612.0f, 792.0f},
@@ -119,6 +125,10 @@ class PdfNupConverterClientBrowserTest : public InProcessBrowserTest {
     base::ReadOnlySharedMemoryRegion nup_pdf_region;
   };
 
+  using NupTestFuture =
+      base::test::TestFuture<mojom::PdfNupConverter::Status,
+                             base::ReadOnlySharedMemoryRegion>;
+
   PdfNupConverterClientBrowserTest() = default;
   ~PdfNupConverterClientBrowserTest() override = default;
 
@@ -128,9 +138,7 @@ class PdfNupConverterClientBrowserTest : public InProcessBrowserTest {
     auto converter = std::make_unique<PdfNupConverterClient>(
         browser()->tab_strip_model()->GetActiveWebContents());
 
-    base::test::TestFuture<mojom::PdfNupConverter::Status,
-                           base::ReadOnlySharedMemoryRegion>
-        future;
+    NupTestFuture future;
     converter->DoNupPdfDocumentConvert(
         /*document_cookie=*/PrintSettings::NewCookie(), pages_per_sheet,
         /*page_size=*/gfx::Size(612, 792),
@@ -141,6 +149,28 @@ class PdfNupConverterClientBrowserTest : public InProcessBrowserTest {
       // Give the caller a chance to fail gracefully. Whereas calling
       // `future.Take()` without handling the Wait() failure will result in a
       // CHECK() crash.
+      return absl::nullopt;
+    }
+
+    auto result = future.Take();
+    return ConvertResult{std::get<0>(result), std::move(std::get<1>(result))};
+  }
+
+  absl::optional<ConvertResult> ConvertPages(
+      std::vector<base::ReadOnlySharedMemoryRegion> pdf_regions,
+      int pages_per_sheet) {
+    auto converter = std::make_unique<PdfNupConverterClient>(
+        browser()->tab_strip_model()->GetActiveWebContents());
+
+    NupTestFuture future;
+    converter->DoNupPdfConvert(
+        /*document_cookie=*/PrintSettings::NewCookie(), pages_per_sheet,
+        /*page_size=*/gfx::Size(612, 792),
+        /*printable_area=*/gfx::Rect(612, 792), std::move(pdf_regions),
+        future.GetCallback());
+
+    if (!future.Wait()) {
+      // See comment in the `future.Wait()` call in ConvertDocument() above.
       return absl::nullopt;
     }
 
@@ -209,6 +239,69 @@ IN_PROC_BROWSER_TEST_F(PdfNupConverterClientBrowserTest,
 
   absl::optional<ConvertResult> result =
       ConvertDocument(std::move(pdf_region.region), /*pages_per_sheet=*/2);
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(mojom::PdfNupConverter::Status::CONVERSION_FAILURE,
+            result.value().status);
+  base::ReadOnlySharedMemoryMapping nup_pdf_mapping =
+      result.value().nup_pdf_region.Map();
+  EXPECT_FALSE(nup_pdf_mapping.IsValid());
+}
+
+IN_PROC_BROWSER_TEST_F(PdfNupConverterClientBrowserTest,
+                       PagesConvert2UpSuccess) {
+  std::vector<base::ReadOnlySharedMemoryRegion> pdf_regions;
+  {
+    base::MappedReadOnlyRegion pdf_region = GetPdfRegion("hello_world.pdf");
+    ASSERT_TRUE(pdf_region.IsValid());
+
+    // Make sure hello_world.pdf is as expected.
+    VerifyPdf(pdf_region.mapping.GetMemoryAsSpan<uint8_t>(),
+              GetExpectedPdfSizes("hello_world.pdf"));
+
+    // Use hello_world.pdf, which only has 1 page, as the 2 pages of input for
+    // this N-up operation.
+    auto pdf_region_copy = pdf_region.region.Duplicate();
+    ASSERT_TRUE(pdf_region_copy.IsValid());
+    pdf_regions.push_back(std::move(pdf_region_copy));
+    pdf_regions.push_back(std::move(pdf_region.region));
+  }
+
+  absl::optional<ConvertResult> result =
+      ConvertPages(std::move(pdf_regions), /*pages_per_sheet=*/2);
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(mojom::PdfNupConverter::Status::SUCCESS, result.value().status);
+  base::ReadOnlySharedMemoryMapping nup_pdf_mapping =
+      result.value().nup_pdf_region.Map();
+  ASSERT_TRUE(nup_pdf_mapping.IsValid());
+
+  // For 2-up, a 2 page portrait document fits on 1 landscape-oriented pages.
+  static constexpr gfx::SizeF kExpectedSizes[] = {
+      {792.0f, 612.0f},
+  };
+  VerifyPdf(nup_pdf_mapping.GetMemoryAsSpan<uint8_t>(), kExpectedSizes);
+}
+
+IN_PROC_BROWSER_TEST_F(PdfNupConverterClientBrowserTest, PagesConvertBadData) {
+  std::vector<base::ReadOnlySharedMemoryRegion> pdf_regions;
+  {
+    base::MappedReadOnlyRegion pdf_region = GetPdfRegion("hello_world.pdf");
+    ASSERT_TRUE(pdf_region.IsValid());
+
+    // Make sure hello_world.pdf is as expected.
+    VerifyPdf(pdf_region.mapping.GetMemoryAsSpan<uint8_t>(),
+              GetExpectedPdfSizes("hello_world.pdf"));
+
+    base::MappedReadOnlyRegion bad_pdf_region = GetBadDataRegion();
+    ASSERT_TRUE(bad_pdf_region.IsValid());
+
+    pdf_regions.push_back(std::move(pdf_region.region));
+    pdf_regions.push_back(std::move(bad_pdf_region.region));
+  }
+
+  absl::optional<ConvertResult> result =
+      ConvertPages(std::move(pdf_regions), /*pages_per_sheet=*/2);
 
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(mojom::PdfNupConverter::Status::CONVERSION_FAILURE,
