@@ -35,8 +35,10 @@ PromoCodeLabelView::PromoCodeLabelView(
       AddChildView(std::make_unique<views::View>());
   promo_code_label_container->SetLayoutManager(
       std::make_unique<views::FillLayout>());
-  promo_code_label_ = promo_code_label_container->AddChildView(
-      std::make_unique<views::Label>(promo_code_text));
+  promo_code_label_ =
+      promo_code_label_container->AddChildView(std::make_unique<views::Label>(
+          promo_code_text, views::style::CONTEXT_LABEL,
+          views::style::STYLE_BODY_2));
   promo_code_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   promo_code_label_->SetMaximumWidthSingleLine(kPromoCodeMaxWidthPx);
   promo_code_label_container->SetProperty(
