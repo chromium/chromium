@@ -13,6 +13,9 @@ CloudOpenMetrics::CloudOpenMetrics(CloudProvider cloud_provider)
     : cloud_provider_(cloud_provider),
       drive_open_error_(kDriveErrorMetricName),
       one_drive_open_error_(kOneDriveErrorMetricName),
+      source_volume_(cloud_provider_ == CloudProvider::kGoogleDrive
+                         ? kDriveOpenSourceVolumeMetric
+                         : kOneDriveOpenSourceVolumeMetric),
       task_result_(cloud_provider_ == CloudProvider::kGoogleDrive
                        ? kGoogleDriveTaskResultMetricName
                        : kOneDriveTaskResultMetricName),
@@ -31,6 +34,10 @@ void CloudOpenMetrics::LogGoogleDriveOpenError(OfficeDriveOpenErrors value) {
 
 void CloudOpenMetrics::LogOneDriveOpenError(OfficeOneDriveOpenErrors value) {
   one_drive_open_error_.Log(value);
+}
+
+void CloudOpenMetrics::LogSourceVolume(OfficeFilesSourceVolume value) {
+  source_volume_.Log(value);
 }
 
 void CloudOpenMetrics::LogTaskResult(OfficeTaskResult value) {

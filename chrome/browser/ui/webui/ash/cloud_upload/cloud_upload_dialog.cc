@@ -455,11 +455,7 @@ void CloudOpenTask::OpenOrMoveFiles() {
       source_volume = OfficeFilesSourceVolume::kUnknown;
     }
   }
-  if (cloud_provider_ == CloudProvider::kGoogleDrive) {
-    UMA_HISTOGRAM_ENUMERATION(kDriveOpenSourceVolumeMetric, source_volume);
-  } else if (cloud_provider_ == CloudProvider::kOneDrive) {
-    UMA_HISTOGRAM_ENUMERATION(kOneDriveOpenSourceVolumeMetric, source_volume);
-  }
+  cloud_open_metrics_->LogSourceVolume(source_volume);
 
   if (cloud_provider_ == CloudProvider::kGoogleDrive &&
       PathIsOnDriveFS(profile_, file_urls_.front().path())) {

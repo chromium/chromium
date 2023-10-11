@@ -34,6 +34,9 @@ class CloudOpenMetrics {
   // Log the `value` for the OneDriveOpenError metric.
   void LogOneDriveOpenError(OfficeOneDriveOpenErrors value);
 
+  // Log the `value` for the SourceVolume metric.
+  void LogSourceVolume(OfficeFilesSourceVolume value);
+
   // Log the `value` for the TaskResult metric.
   void LogTaskResult(OfficeTaskResult value);
 
@@ -89,6 +92,7 @@ class CloudOpenMetrics {
   CloudProvider cloud_provider_;
   Metric<OfficeDriveOpenErrors> drive_open_error_;
   Metric<OfficeOneDriveOpenErrors> one_drive_open_error_;
+  Metric<OfficeFilesSourceVolume> source_volume_;
   Metric<OfficeTaskResult> task_result_;
   Metric<OfficeFilesTransferRequired> transfer_required_;
   Metric<OfficeFilesUploadResult> upload_result_;
