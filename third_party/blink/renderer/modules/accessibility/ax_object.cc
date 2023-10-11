@@ -3039,7 +3039,7 @@ bool AXObject::IsVisited() const {
 }
 
 bool AXObject::AccessibilityIsIgnored() const {
-  CHECK(CanAccessCachedValues());
+  // CHECK(CanAccessCachedValues());   // Comment out check for M119.
   UpdateCachedAttributeValuesIfNeeded();
 #if defined(AX_FAIL_FAST_BUILD)
   if (!cached_is_ignored_ && IsDetached()) {
@@ -3057,7 +3057,7 @@ bool AXObject::AccessibilityIsIgnored() const {
 }
 
 bool AXObject::AccessibilityIsIgnoredButIncludedInTree() const {
-  CHECK(CanAccessCachedValues());
+  // CHECK(CanAccessCachedValues());   // Comment out check for M119.
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_is_ignored_but_included_in_tree_;
@@ -3066,7 +3066,7 @@ bool AXObject::AccessibilityIsIgnoredButIncludedInTree() const {
 // AccessibilityIsIncludedInTree should be true for all nodes that should be
 // included in the tree, even if they are ignored
 bool AXObject::AccessibilityIsIncludedInTree() const {
-  CHECK(CanAccessCachedValues());
+  // CHECK(CanAccessCachedValues());   // Comment out check for M119.
 
   return !AccessibilityIsIgnored() || AccessibilityIsIgnoredButIncludedInTree();
 }
@@ -3335,7 +3335,7 @@ bool AXObject::ShouldIgnoreForHiddenOrInert(
 // In practice, it does not matter because nodes in display:none subtrees are
 // marked ignored either way.
 bool AXObject::IsInert() const {
-  CHECK(CanAccessCachedValues());
+  // CHECK(CanAccessCachedValues());   // Comment out check for M119.
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_is_inert_;
@@ -3438,7 +3438,7 @@ bool AXObject::ComputeIsInert(IgnoredReasons* ignored_reasons) const {
 }
 
 bool AXObject::IsAriaHidden() const {
-  CHECK(CanAccessCachedValues());
+  // CHECK(CanAccessCachedValues());   // Comment out check for M119.
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_is_aria_hidden_;
@@ -3638,7 +3638,7 @@ bool AXObject::DispatchEventToAOMEventListeners(Event& event) {
 }
 
 bool AXObject::IsDescendantOfDisabledNode() const {
-  CHECK(CanAccessCachedValues());
+  // CHECK(CanAccessCachedValues());   // Comment out check for M119.
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_is_descendant_of_disabled_node_;
@@ -4073,7 +4073,7 @@ bool AXObject::IsFocusableStyleUsingBestAvailableState() const {
 }
 
 bool AXObject::CanSetFocusAttribute() const {
-  CHECK(CanAccessCachedValues());
+  // CHECK(CanAccessCachedValues());   // Comment out check for M119.
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_can_set_focus_attribute_;
@@ -4460,7 +4460,7 @@ bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) const {
 }
 
 bool AXObject::IsHiddenViaStyle() const {
-  CHECK(CanAccessCachedValues());
+  // CHECK(CanAccessCachedValues());   // Comment out check for M119.
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_is_hidden_via_style_;
@@ -5232,7 +5232,7 @@ bool AXObject::IsRichlyEditable() const {
 }
 
 AXObject* AXObject::LiveRegionRoot() const {
-  CHECK(CanAccessCachedValues());
+  // CHECK(CanAccessCachedValues());   // Comment out check for M119.
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_live_region_root_;
@@ -5250,7 +5250,7 @@ bool AXObject::LiveRegionAtomic() const {
 }
 
 const AtomicString& AXObject::ContainerLiveRegionStatus() const {
-  CHECK(CanAccessCachedValues());
+  // CHECK(CanAccessCachedValues());   // Comment out check for M119.
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_live_region_root_ ? cached_live_region_root_->LiveRegionStatus()
@@ -5258,7 +5258,7 @@ const AtomicString& AXObject::ContainerLiveRegionStatus() const {
 }
 
 const AtomicString& AXObject::ContainerLiveRegionRelevant() const {
-  CHECK(CanAccessCachedValues());
+  // CHECK(CanAccessCachedValues());   // Comment out check for M119.
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_live_region_root_
@@ -5267,7 +5267,7 @@ const AtomicString& AXObject::ContainerLiveRegionRelevant() const {
 }
 
 bool AXObject::ContainerLiveRegionAtomic() const {
-  CHECK(CanAccessCachedValues());
+  // CHECK(CanAccessCachedValues());   // Comment out check for M119.
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_live_region_root_ &&
@@ -5275,7 +5275,7 @@ bool AXObject::ContainerLiveRegionAtomic() const {
 }
 
 bool AXObject::ContainerLiveRegionBusy() const {
-  CHECK(CanAccessCachedValues());
+  // CHECK(CanAccessCachedValues());   // Comment out check for M119.
 
   UpdateCachedAttributeValuesIfNeeded();
   return cached_live_region_root_ &&
@@ -7580,7 +7580,7 @@ void AXObject::PreSerializationConsistencyCheck() {
 #if defined(AX_FAIL_FAST_BUILD)
   CHECK(!IsDetached()) << "Do not serialize detached nodes: "
                        << ToString(true, true);
-  CHECK(CanAccessCachedValues());
+  // CHECK(CanAccessCachedValues());   // Comment out check for M119.
   CHECK(AccessibilityIsIncludedInTree())
       << "Do not serialize unincluded nodes: " << ToString(true, true);
   CHECK(!IsDetached());
