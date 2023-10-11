@@ -38,16 +38,20 @@ void ParcelTrackingInfobarDelegate::TrackPackages(bool display_infobar) {
 }
 
 void ParcelTrackingInfobarDelegate::UntrackPackages(bool display_infobar) {
-  for (std::pair<commerce::ParcelIdentifier::Carrier, std::string> parcel :
-       ConvertCustomTextCheckingResult(parcel_list_)) {
-    shopping_service_->StopTrackingParcel(parcel.second, base::DoNothing());
-  }
-  if (display_infobar) {
-    [parcel_tracking_commands_handler_
-        showParcelTrackingInfobarWithParcels:parcel_list_
-                                     forStep:ParcelTrackingStep::
-                                                 kPackageUntracked];
-  }
+  shopping_service_->StopTrackingParcels(
+      ConvertCustomTextCheckingResult(parcel_list_),
+      base::BindOnce(
+          [](bool display_infobar,
+             id<ParcelTrackingOptInCommands> parcel_tracking_commands_handler,
+             NSArray<CustomTextCheckingResult*>* parcels, bool success) {
+            if (success && display_infobar) {
+              [parcel_tracking_commands_handler
+                  showParcelTrackingInfobarWithParcels:parcels
+                                               forStep:ParcelTrackingStep::
+                                                           kPackageUntracked];
+            }
+          },
+          display_infobar, parcel_tracking_commands_handler_, parcel_list_));
 }
 
 void ParcelTrackingInfobarDelegate::OpenNTP() {
