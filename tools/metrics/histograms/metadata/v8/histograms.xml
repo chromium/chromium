@@ -1395,19 +1395,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.SourceMapReference" enum="V8SourceMapReference"
-    expires_after="2024-06-30">
-  <owner>szuend@chromium.org</owner>
-  <owner>bmeurer@chromium.org</owner>
-  <summary>
-    Each time a script is parsed we report how the source map for that script is
-    specified.
-
-    This histogram does not care whether a source map is actually publicly
-    available or if it's specified inline as a data URL.
-  </summary>
-</histogram>
-
 <histogram name="V8.TurboFan1KTicks" units="1000 ticks"
     expires_after="2023-06-30">
   <owner>tebbi@chromium.org</owner>

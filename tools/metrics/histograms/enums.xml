@@ -110743,21 +110743,6 @@ Full version information for the fingerprint enum values:
   </int>
 </enum>
 
-<enum name="V8SourceMapReference">
-  <int value="0" label="None">The script did not specify a source map</int>
-  <int value="1" label="HTTP">
-    The source map was specified via &quot;SourceMap&quot; HTTP header
-  </int>
-  <int value="2" label="HashSignComment">
-    The source map was specified via hash sign prefixed sourceMappingURL magic
-    comment
-  </int>
-  <int value="3" label="AtSignComment">
-    The source map was specified via atsgin prefixed sourceMappingURL magic
-    comment
-  </int>
-</enum>
-
 <enum name="VaapiFunctions">
   <int value="0" label="vaBeginPicture()"/>
   <int value="1" label="vaCreateBuffer()"/>
