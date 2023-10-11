@@ -14,6 +14,7 @@ from .force_google_safe_search.force_google_safe_search import *
 # Disable fullscreenallowed test due to pywinauto infra issue http://b/259118140
 # from .fullscreen_allowed.fullscreen_allowed import *
 from .homepage.homepage import *
+from .mergelist.mergelist import *
 from .password_manager_enabled.password_manager_enabled import *
 from .popups_allowed.popups_allowed import *
 from .precedence.precedence import *
