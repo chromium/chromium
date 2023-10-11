@@ -51,7 +51,7 @@ void TestBrowserAccessibilityDelegate::AccessibilityHitTest(
                             ui::AXNodeID hit_node_id)> opt_callback) {}
 
 gfx::NativeWindow TestBrowserAccessibilityDelegate::GetTopLevelNativeWindow() {
-  return nullptr;
+  return gfx::NativeWindow();
 }
 
 bool TestBrowserAccessibilityDelegate::AccessibilityIsRootFrame() const {

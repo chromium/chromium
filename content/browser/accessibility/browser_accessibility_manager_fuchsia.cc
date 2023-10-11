@@ -68,7 +68,7 @@ BrowserAccessibilityManagerFuchsia::GetAccessibilityBridge() const {
     return accessibility_bridge_for_test_;
 
   gfx::NativeWindow top_level_native_window =
-      delegate_ ? delegate_->GetTopLevelNativeWindow() : nullptr;
+      delegate_ ? delegate_->GetTopLevelNativeWindow() : gfx::NativeWindow();
 
   aura::Window* accessibility_bridge_key =
       top_level_native_window ? top_level_native_window->GetRootWindow()
