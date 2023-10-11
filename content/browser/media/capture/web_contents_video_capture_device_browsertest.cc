@@ -27,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/shell/browser/shell.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -639,7 +640,12 @@ IN_PROC_BROWSER_TEST_P(WebContentsVideoCaptureDeviceBrowserTestP,
 
   capture_stack()->SetFrameReceivedCallback(base::BindRepeating(
       [](media::VideoPixelFormat expected_format, media::VideoFrame* frame) {
-        EXPECT_EQ(frame->format(), expected_format);
+        // TODO(crbug.com/1452092): Remove this when zero-copy tab capture works
+        // with Graphite.
+        if (!features::IsSkiaGraphiteEnabled(
+                base::CommandLine::ForCurrentProcess())) {
+          EXPECT_EQ(frame->format(), expected_format);
+        }
       },
       expected_format));
 
