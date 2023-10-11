@@ -6,8 +6,11 @@
 
 #include <string>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/win/ui/l10n_util.h"
+#include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "components/update_client/update_client_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -136,14 +139,27 @@ INSTANTIATE_TEST_SUITE_P(
          u"update_client::ProtocolError::URL_FETCHER_FAILED"},
         {UpdateService::ErrorCategory::kUpdateCheck,
          static_cast<int>(update_client::ProtocolError::UNKNOWN_APPLICATION),
-         u"update_client::ProtocolError::UNKNOWN_APPLICATION"},
+         base::WideToUTF16(GetLocalizedString(IDS_UNKNOWN_APPLICATION_BASE))},
         {UpdateService::ErrorCategory::kUpdateCheck,
          static_cast<int>(update_client::ProtocolError::RESTRICTED_APPLICATION),
-         u"update_client::ProtocolError::RESTRICTED_APPLICATION"},
+         base::WideToUTF16(
+             GetLocalizedString(IDS_RESTRICTED_RESPONSE_FROM_SERVER_BASE))},
         {UpdateService::ErrorCategory::kUpdateCheck,
          static_cast<int>(update_client::ProtocolError::INVALID_APPID),
          u"update_client::ProtocolError::INVALID_APPID"},
-        {UpdateService::ErrorCategory::kUpdateCheck, 0xFFFF, u""},
+        {UpdateService::ErrorCategory::kUpdateCheck, 401,
+         base::WideToUTF16(
+             GetLocalizedString(IDS_ERROR_HTTPSTATUS_UNAUTHORIZED_BASE))},
+        {UpdateService::ErrorCategory::kUpdateCheck, 403,
+         base::WideToUTF16(
+             GetLocalizedString(IDS_ERROR_HTTPSTATUS_FORBIDDEN_BASE))},
+        {UpdateService::ErrorCategory::kUpdateCheck, 407,
+         base::WideToUTF16(GetLocalizedString(
+             IDS_ERROR_HTTPSTATUS_PROXY_AUTH_REQUIRED_BASE))},
+        {UpdateService::ErrorCategory::kUpdateCheck, 0xFFFF,
+         base::WideToUTF16(
+             GetLocalizedStringF(IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
+                                 base::NumberToWString(0xFFFF)))},
     }));
 
 TEST_P(AppInstallWinHandleInstallResultTest, TestCases) {

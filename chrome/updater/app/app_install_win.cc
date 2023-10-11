@@ -14,6 +14,7 @@
 #include <shldisp.h>
 #include <shlobj.h>
 #include <windows.h>
+#include <winhttp.h>
 #include <wrl/client.h>
 
 #include "base/check.h"
@@ -385,11 +386,38 @@ std::string GetTextForUpdateCheckError(int error) {
     SWITCH_ENTRY(update_client::ProtocolError::PARSE_FAILED);
     SWITCH_ENTRY(update_client::ProtocolError::UPDATE_RESPONSE_NOT_FOUND);
     SWITCH_ENTRY(update_client::ProtocolError::URL_FETCHER_FAILED);
-    SWITCH_ENTRY(update_client::ProtocolError::UNKNOWN_APPLICATION);
-    SWITCH_ENTRY(update_client::ProtocolError::RESTRICTED_APPLICATION);
     SWITCH_ENTRY(update_client::ProtocolError::INVALID_APPID);
+
+    case static_cast<int>(update_client::ProtocolError::UNKNOWN_APPLICATION):
+      return base::WideToUTF8(GetLocalizedString(IDS_UNKNOWN_APPLICATION_BASE));
+
+    case static_cast<int>(update_client::ProtocolError::RESTRICTED_APPLICATION):
+      return base::WideToUTF8(
+          GetLocalizedString(IDS_RESTRICTED_RESPONSE_FROM_SERVER_BASE));
+
+    case HRESULT_FROM_WIN32(ERROR_WINHTTP_NAME_NOT_RESOLVED):
+      return base::WideToUTF8(
+          GetLocalizedStringF(IDS_NO_NETWORK_PRESENT_ERROR_BASE,
+                              GetExecutableRelativePath().value()));
+
+    // Http Status Code `401` Unauthorized.
+    case 401:
+      return base::WideToUTF8(
+          GetLocalizedString(IDS_ERROR_HTTPSTATUS_UNAUTHORIZED_BASE));
+
+    // Http Status Code `403` Forbidden.
+    case 403:
+      return base::WideToUTF8(
+          GetLocalizedString(IDS_ERROR_HTTPSTATUS_FORBIDDEN_BASE));
+
+    // Http Status Code `407` Proxy Authentication Required.
+    case 407:
+      return base::WideToUTF8(
+          GetLocalizedString(IDS_ERROR_HTTPSTATUS_PROXY_AUTH_REQUIRED_BASE));
+
     default:
-      return "";
+      return base::WideToUTF8(GetLocalizedStringF(
+          IDS_GENERIC_UPDATE_CHECK_ERROR_BASE, base::NumberToWString(error)));
   }
 }
 #undef SWITCH_ENTRY
@@ -1003,7 +1031,7 @@ void AppInstallControllerImpl::DoCancel() {
   if (update_state.state != UpdateService::UpdateState::State::kNoUpdate) {
     app_info.app_id = base::ASCIIToUTF16(update_state.app_id);
     app_info.error_code = update_state.error_code;
-    app_info.completion_message = base::ASCIIToUTF16([&]() {
+    app_info.completion_message = base::UTF8ToUTF16([&]() {
       if (!update_state.installer_text.empty()) {
         return update_state.installer_text;
       }
@@ -1030,7 +1058,8 @@ void AppInstallControllerImpl::DoCancel() {
     app_info.extra_code1 = update_state.extra_code1;
     app_info.post_install_launch_command_line =
         base::SysUTF8ToWide(update_state.installer_cmd_line);
-    VLOG(1) << app_info.app_id << " installation completed: error_code["
+    VLOG(1) << app_info.app_id << " installation completed: error category["
+            << update_state.error_category << "], error_code["
             << app_info.error_code << "], extra_code1[" << app_info.extra_code1
             << "], completion_message[" << app_info.completion_message
             << "], post_install_launch_command_line["

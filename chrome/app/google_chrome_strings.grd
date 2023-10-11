@@ -1848,6 +1848,38 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_BUNDLE_INSTALLED_SUCCESSFULLY" desc="Installation complete message.">
           Installation complete.
         </message>
+
+        <!--Network errors.-->
+        <message name="IDS_NO_NETWORK_PRESENT_ERROR"
+                 desc="Error message displayed in the main dialog when the Updater is unable to connect to the network.">
+          Unable to connect to the Internet. If you use a firewall, please allowlist <ph name="PRODUCT_EXE_NAME">$1<ex>GoogleUpdater.exe</ex></ph>.
+        </message>
+        <message name="IDS_ERROR_HTTPSTATUS_UNAUTHORIZED"
+                 desc="Error message displayed in the main dialog when an update check or download fails due to unauthorized access, usually due to proxy problems.">
+          Unable to connect to the Internet. HTTP 401 Unauthorized. Please check your proxy configuration.
+        </message>
+        <message name="IDS_ERROR_HTTPSTATUS_FORBIDDEN"
+                 desc="Error message displayed in the main dialog when an update check or download fails due to forbidden access, usually due to proxy problems.">
+          Unable to connect to the Internet. HTTP 403 Forbidden. Please check your proxy configuration.
+        </message>
+        <message name="IDS_ERROR_HTTPSTATUS_PROXY_AUTH_REQUIRED"
+                 desc="Error message displayed in the main dialog when an update check or download fails due to a need for proxy authentication.">
+          Unable to connect to the Internet. Proxy server requires authentication.
+        </message>
+
+        <!--Update server response errors.-->
+        <message name="IDS_UNKNOWN_APPLICATION"
+                 desc="Error message displayed in the main dialog when the server responds with an error of unknown application.">
+          Unable to install, the application is unknown to the server.
+        </message>
+        <message name="IDS_RESTRICTED_RESPONSE_FROM_SERVER"
+                 desc="Error message displayed in the main dialog when the user is in a export-restricted country.">
+          Installation failed because access is restricted in this country.
+        </message>
+        <message name="IDS_GENERIC_UPDATE_CHECK_ERROR"
+                 desc="Error message displayed in the main dialog when the update client returns an error in the update check.">
+          Update check error: <ph name="UPDATE_CHECK_ERROR">$1<ex>error-internal</ex></ph>.
+        </message>
       </if>
       <!-- High Efficiency Chip strings -->
       <if expr="not is_android">
