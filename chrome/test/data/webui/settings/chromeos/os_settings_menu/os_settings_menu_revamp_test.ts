@@ -11,6 +11,7 @@ import 'chrome://os-settings/os_settings.js';
 
 import {Account, AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
 import {createPageAvailabilityForTesting, OsSettingsMenuElement, OsSettingsMenuItemElement, routesMojom} from 'chrome://os-settings/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -199,6 +200,22 @@ suite('<os-settings-menu>', () => {
         assertTrue(!!accountsMenuItem);
         assertEquals(fakeAccounts[0]!.email, accountsMenuItem.sublabel);
       });
+
+      test('Description should update when an account is added', async () => {
+        await createMenu();
+
+        const accountsMenuItem =
+            queryMenuItemByPath(`/${routesMojom.PEOPLE_SECTION_PATH}`);
+        assertTrue(!!accountsMenuItem);
+        assertEquals(fakeAccounts[0]!.email, accountsMenuItem.sublabel);
+
+        // Update accounts to have 2 accounts
+        browserProxy.setAccountsForTesting(fakeAccounts);
+        webUIListenerCallback('accounts-changed');
+        await flushTasks();
+
+        assertEquals('2 accounts', accountsMenuItem.sublabel);
+      });
     });
 
     suite('When there is more than one account', () => {
@@ -213,6 +230,22 @@ suite('<os-settings-menu>', () => {
             queryMenuItemByPath(`/${routesMojom.PEOPLE_SECTION_PATH}`);
         assertTrue(!!accountsMenuItem);
         assertEquals('2 accounts', accountsMenuItem.sublabel);
+      });
+
+      test('Description should update when an account is removed', async () => {
+        await createMenu();
+
+        const accountsMenuItem =
+            queryMenuItemByPath(`/${routesMojom.PEOPLE_SECTION_PATH}`);
+        assertTrue(!!accountsMenuItem);
+        assertEquals('2 accounts', accountsMenuItem.sublabel);
+
+        // Remove an account to leave only 1 account
+        browserProxy.setAccountsForTesting(fakeAccounts.slice(0, 1));
+        webUIListenerCallback('accounts-changed');
+        await flushTasks();
+
+        assertEquals(fakeAccounts[0]!.email, accountsMenuItem.sublabel);
       });
     });
   });
