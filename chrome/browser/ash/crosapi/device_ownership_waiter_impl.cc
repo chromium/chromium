@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
@@ -24,6 +25,11 @@ void DeviceOwnershipWaiterImpl::WaitForOwnershipFetched(
     std::move(callback).Run();
     return;
   }
+
+  // We assume that there are no kiosk sessions in consumer setups, for more
+  // information see docs of this method.
+  CHECK(policy::ManagementServiceFactory::GetForPlatform()->IsManaged() ||
+        !user_manager::UserManager::Get()->IsLoggedInAsKioskApp());
 
   user_manager::UserManager::Get()->GetOwnerAccountIdAsync(
       base::IgnoreArgs<const AccountId&>(std::move(callback)));

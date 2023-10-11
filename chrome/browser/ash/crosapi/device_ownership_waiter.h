@@ -20,13 +20,22 @@ class DeviceOwnershipWaiter {
   // `UserManager`. The delay is skipped (and the callback invoked immediately)
   // in the following cases:
   // - we are launching at the login screen: The device owner might not be
-  // determined yet.
+  //   determined yet.
   // - this is a guest session: Guest sessions can occur before the initial OOBE
-  // and are by design without an owner.
+  //   and are by design without an owner.
   // - this is a demo mode session: Same as guest session.
   // - we are running ChromeOS on Linux: The `DeviceSettingsService` is not
-  // behaving as in the real world for these builds, hence we can skip the
-  // check.
+  //   behaving as in the real world for these builds, hence we can skip the
+  //   check.
+  //
+  // Furthermore there are some situations that we don't need to special case,
+  // although the ownership question might seem tricky:
+  // - this is a managed guest session: To start a MGS, devices need
+  //   to first go through enterprise enrollment, which is an action that
+  //   already establishes device ownership.
+  // - this is a kiosk session: Currently kiosk sessions are only allowed after
+  //   enterprise enrollment, which similar to MGS, establishes device
+  //   ownership.
   virtual void WaitForOwnershipFetched(base::OnceClosure callback,
                                        bool launching_at_login_screen) = 0;
 };
