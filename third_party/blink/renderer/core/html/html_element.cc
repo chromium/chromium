@@ -196,30 +196,6 @@ HTMLElement* GetParentForDirectionality(const HTMLElement& element,
   return DynamicTo<HTMLElement>(FlatTreeTraversal::ParentElement(element));
 }
 
-void CheckSoftNavigationHeuristicsTracking(const Document& document,
-                                           const Node* insertion_point) {
-  DCHECK(insertion_point);
-  if (document.IsTrackingSoftNavigationHeuristics()) {
-    LocalDOMWindow* window = document.domWindow();
-    if (!window) {
-      return;
-    }
-    LocalFrame* frame = window->GetFrame();
-    if (!frame || !frame->IsMainFrame()) {
-      return;
-    }
-    ScriptState* script_state = ToScriptStateForMainWorld(frame);
-    if (!script_state) {
-      return;
-    }
-
-    SoftNavigationHeuristics* heuristics =
-        SoftNavigationHeuristics::From(*window);
-    DCHECK(heuristics);
-    heuristics->ModifiedDOM(script_state);
-  }
-}
-
 class PopoverCloseWatcherEventListener : public NativeEventListener {
  public:
   explicit PopoverCloseWatcherEventListener(HTMLElement* popover)
@@ -2453,10 +2429,6 @@ void HTMLElement::ChildrenChanged(const ChildrenChange& change) {
         ElementInheritsDirectionality(element)) {
       element->UpdateDirectionalityAndDescendant(CachedDirectionality());
     }
-  }
-  if (change.IsChildInsertion()) {
-    CheckSoftNavigationHeuristicsTracking(GetDocument(),
-                                          change.sibling_changed);
   }
 }
 

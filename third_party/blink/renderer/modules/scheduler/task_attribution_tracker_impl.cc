@@ -62,8 +62,10 @@ TaskAttributionInfo* TaskAttributionTrackerImpl::RunningTask(
 
 template <typename F>
 TaskAttributionTracker::AncestorStatus
-TaskAttributionTrackerImpl::IsAncestorInternal(ScriptState* script_state,
-                                               F is_ancestor) {
+TaskAttributionTrackerImpl::IsAncestorInternal(
+    ScriptState* script_state,
+    F is_ancestor,
+    const TaskAttributionInfo* task) {
   DCHECK(script_state);
   if (!script_state->World().IsMainWorld()) {
     // As RunningTask will not return a TaskAttributionInfo for
@@ -71,10 +73,11 @@ TaskAttributionTrackerImpl::IsAncestorInternal(ScriptState* script_state,
     return AncestorStatus::kNotAncestor;
   }
 
-  TaskAttributionInfo* current_task = RunningTask(script_state);
+  const TaskAttributionInfo* current_task =
+      task ? task : RunningTask(script_state);
 
   while (current_task) {
-    TaskAttributionInfo* parent_task = current_task->Parent();
+    const TaskAttributionInfo* parent_task = current_task->Parent();
     if (is_ancestor(current_task->Id())) {
       return AncestorStatus::kAncestor;
     }
@@ -88,17 +91,21 @@ TaskAttributionTracker::AncestorStatus TaskAttributionTrackerImpl::IsAncestor(
     TaskAttributionId ancestor_id) {
   return IsAncestorInternal(
       script_state,
-      [&](const TaskAttributionId& task_id) { return task_id == ancestor_id; });
+      [&](const TaskAttributionId& task_id) { return task_id == ancestor_id; },
+      /*task=*/nullptr);
 }
 
 TaskAttributionTracker::AncestorStatus
 TaskAttributionTrackerImpl::HasAncestorInSet(
     ScriptState* script_state,
-    const WTF::HashSet<scheduler::TaskAttributionIdType>& set) {
-  return IsAncestorInternal(script_state,
-                            [&](const TaskAttributionId& task_id) {
-                              return set.Contains(task_id.value());
-                            });
+    const WTF::HashSet<scheduler::TaskAttributionIdType>& set,
+    const TaskAttributionInfo& task) {
+  return IsAncestorInternal(
+      script_state,
+      [&](const TaskAttributionId& task_id) {
+        return set.Contains(task_id.value());
+      },
+      &task);
 }
 
 std::unique_ptr<TaskAttributionTracker::TaskScope>
@@ -126,7 +133,7 @@ TaskAttributionTrackerImpl::CreateTaskScope(ScriptState* script_state,
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   for (Observer* observer : observers_) {
     if (observer->GetExecutionContext() == execution_context) {
-      observer->OnCreateTaskScope(next_task_id_);
+      observer->OnCreateTaskScope(*running_task_);
     }
   }
 

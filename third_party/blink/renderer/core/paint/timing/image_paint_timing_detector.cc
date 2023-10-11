@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
@@ -62,6 +63,19 @@ bool ShouldReportAnimatedImages() {
       RuntimeEnabledFeatures::LCPAnimatedImagesWebExposedEnabled() &&
       (base::FeatureList::IsEnabled(features::kLCPAnimatedImagesReporting) ||
        base::FeatureList::IsEnabled(features::kLCPVideoFirstFrame)));
+}
+
+void RecordPotentialSoftNavigationPaint(LocalFrameView* frame_view,
+                                        gfx::RectF rect,
+                                        Node* node) {
+  LocalFrame& frame = frame_view->GetFrame();
+  if (LocalDOMWindow* window = frame.DomWindow()) {
+    if (SoftNavigationHeuristics* soft_navigation =
+            SoftNavigationHeuristics::From(*window)) {
+      soft_navigation->RecordPaint(&frame, rect.size().GetArea(),
+                                   node->IsModifiedBySoftNavigation());
+    }
+  }
 }
 
 }  // namespace
@@ -366,6 +380,8 @@ bool ImagePaintTimingDetector::RecordImage(
   uint64_t rect_size = ComputeImageRectSize(
       image_border, mapped_visual_rect, intrinsic_size,
       current_paint_chunk_properties, object, media_timing);
+
+  RecordPotentialSoftNavigationPaint(frame_view_, mapped_visual_rect, node);
 
   double bpp = (rect_size > 0)
                    ? media_timing.ContentSizeForEntropy() * 8.0 / rect_size

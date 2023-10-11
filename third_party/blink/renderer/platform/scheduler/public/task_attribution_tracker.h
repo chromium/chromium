@@ -58,7 +58,8 @@ class PLATFORM_EXPORT TaskAttributionTracker {
 
   class Observer : public GarbageCollectedMixin {
    public:
-    virtual void OnCreateTaskScope(const TaskAttributionId&) = 0;
+    virtual void OnCreateTaskScope(TaskAttributionInfo&) = 0;
+    virtual void OnTaskDisposal(const TaskAttributionInfo&) = 0;
     virtual ExecutionContext* GetExecutionContext() = 0;
   };
 
@@ -84,9 +85,15 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   // |parentId|.
   virtual AncestorStatus IsAncestor(ScriptState*,
                                     TaskAttributionId parentId) = 0;
+
+  // Check for ancestry in a set of potential parent tasks. ScriptState is
+  // required as well as the |set|. |task| could be either a pointer to a
+  // TaskAttributionInfo or a nullptr, in which case, the current running task
+  // will be used.
   virtual AncestorStatus HasAncestorInSet(
       ScriptState*,
-      const WTF::HashSet<scheduler::TaskAttributionIdType>&) = 0;
+      const WTF::HashSet<scheduler::TaskAttributionIdType>& set,
+      const TaskAttributionInfo& task) = 0;
 
   // Register an observer to be notified when a task is started.
   virtual void RegisterObserver(Observer* observer) = 0;

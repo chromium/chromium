@@ -518,6 +518,9 @@ class CORE_EXPORT ContainerNode : public Node {
                                                      ExceptionState&) const;
   inline bool IsChildTypeAllowed(const Node& child) const;
 
+  void CheckSoftNavigationHeuristicsTracking(const Document& document,
+                                             Node& inserted_node);
+
   Member<Node> first_child_;
   Member<Node> last_child_;
 };

@@ -36,6 +36,7 @@ class PropertyTreeStateOrAlias;
 class MediaTiming;
 class StyleFetchedImage;
 class TextPaintTimingDetector;
+class TextRecord;
 
 // |PaintTimingCallbackManager| is an interface between
 // |ImagePaintTimingDetector|/|TextPaintTimingDetector| and |ChromeClient|.
@@ -220,6 +221,7 @@ class CORE_EXPORT PaintTimingDetector
     return *image_paint_timing_detector_;
   }
   void RestartRecordingLCP();
+  void SoftNavigationDetected(LocalDOMWindow*);
 
   void RestartRecordingLCPToUkm();
 
@@ -293,6 +295,13 @@ class CORE_EXPORT PaintTimingDetector
   bool record_lcp_to_metrics_ = true;
   // LCP was restarted, due to a potential soft navigation.
   bool lcp_was_restarted_ = false;
+  // The soft navigation was detected, so the LCP entries can be updated.
+  bool soft_navigation_was_detected_ = false;
+  // Records of entries discovered after LCP was restarted but before a soft
+  // navigation was detected.
+  Member<TextRecord> potential_soft_navigation_text_record_;
+  Member<ImageRecord> potential_soft_navigation_image_record_;
+
   // This flag indicates if LCP is being reported to UKM.
   bool record_soft_navigation_lcp_for_metrics_ = false;
 };

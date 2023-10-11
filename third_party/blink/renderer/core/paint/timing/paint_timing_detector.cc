@@ -347,7 +347,33 @@ void PaintTimingDetector::RestartRecordingLCP() {
   text_paint_timing_detector_->RestartRecordingLargestTextPaint();
   image_paint_timing_detector_->RestartRecordingLargestImagePaint();
   lcp_was_restarted_ = true;
+  soft_navigation_was_detected_ = false;
   latest_lcp_details_.Reset();
+}
+
+void PaintTimingDetector::SoftNavigationDetected(LocalDOMWindow* window) {
+  soft_navigation_was_detected_ = true;
+  auto* lcp_calculator = GetLargestContentfulPaintCalculator();
+  // If the window is detached (no calculator) or we haven't yet got any
+  // presentation times for neither a text record nor an image one, bail. The
+  // web exposed entry will get updated when the presentation times callback
+  // will be called.
+  if (!lcp_calculator || (!potential_soft_navigation_text_record_ &&
+                          !potential_soft_navigation_image_record_)) {
+    return;
+  }
+  if (!lcp_was_restarted_ ||
+      RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window)) {
+    lcp_calculator->UpdateWebExposedLargestContentfulPaintIfNeeded(
+        potential_soft_navigation_text_record_,
+        potential_soft_navigation_image_record_,
+        /*is_triggered_by_soft_navigation=*/lcp_was_restarted_);
+  }
+
+  // Report the soft navigation LCP to metrics.
+  CHECK(record_soft_navigation_lcp_for_metrics_);
+  soft_navigation_lcp_details_for_metrics_ = latest_lcp_details_;
+  DidChangePerformanceTiming();
 }
 
 void PaintTimingDetector::RestartRecordingLCPToUkm() {
@@ -518,6 +544,11 @@ void PaintTimingDetector::UpdateLargestContentfulPaintTimeForMetrics() {
   }
 
   if (record_soft_navigation_lcp_for_metrics_) {
+    // If we're waiting on a softnav and it wasn't detected yet, keep on waiting
+    // and don't update.
+    if (!soft_navigation_was_detected_) {
+      return;
+    }
     soft_navigation_lcp_details_for_metrics_ = latest_lcp_details_;
   }
   DidChangePerformanceTiming();
@@ -612,8 +643,8 @@ void PaintTimingDetector::UpdateLargestContentfulPaintCandidate() {
   // user input or no content show up on the page.
   // * Record.paint_time == 0 means there is an image but the image is still
   // loading. The perf API should wait until the paint-time is available.
-  const TextRecord* largest_text_record = nullptr;
-  const ImageRecord* largest_image_record = nullptr;
+  TextRecord* largest_text_record = nullptr;
+  ImageRecord* largest_image_record = nullptr;
   if (text_paint_timing_detector_->IsRecordingLargestTextPaint()) {
     largest_text_record = text_paint_timing_detector_->UpdateMetricsCandidate();
   }
@@ -621,6 +652,19 @@ void PaintTimingDetector::UpdateLargestContentfulPaintCandidate() {
     largest_image_record =
         image_paint_timing_detector_->UpdateMetricsCandidate();
   }
+
+  // If we stopped and then restarted LCP measurement (to support soft
+  // navigations), and didn't yet detect a soft navigation, put aside the
+  // records as potential soft navigation LCP ones, and don't update the web
+  // exposed entries just yet. We'll do that once we actually detect the soft
+  // navigation.
+  if (lcp_was_restarted_ && !soft_navigation_was_detected_) {
+    potential_soft_navigation_text_record_ = largest_text_record;
+    potential_soft_navigation_image_record_ = largest_image_record;
+    return;
+  }
+  potential_soft_navigation_text_record_ = nullptr;
+  potential_soft_navigation_image_record_ = nullptr;
 
   // If we're still recording the initial LCP, or if LCP was explicitly
   // restarted for soft navigations, fire the web exposed entry.
@@ -696,6 +740,8 @@ void PaintTimingDetector::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
   visitor->Trace(largest_contentful_paint_calculator_);
   visitor->Trace(callback_manager_);
+  visitor->Trace(potential_soft_navigation_image_record_);
+  visitor->Trace(potential_soft_navigation_text_record_);
 }
 
 void PaintTimingCallbackManagerImpl::
