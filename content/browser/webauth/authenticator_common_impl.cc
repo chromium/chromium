@@ -1410,8 +1410,7 @@ void AuthenticatorCommonImpl::IsConditionalMediationAvailable(
   }
   // Passkeys from a phone can be discovered through conditional mediation. To
   // avoid leaking bluetooth or sync status, advertise the feature as available.
-  if (base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys) &&
-      base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
+  if (GetWebAuthenticationDelegate()->SupportsPasskeyMetadataSyncing()) {
     std::move(callback).Run(true);
     return;
   }

@@ -344,6 +344,11 @@ bool ChromeWebAuthenticationDelegate::SupportsResidentKeys(
   return true;
 }
 
+bool ChromeWebAuthenticationDelegate::SupportsPasskeyMetadataSyncing() {
+  return base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
+         base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI);
+}
+
 bool ChromeWebAuthenticationDelegate::IsFocused(
     content::WebContents* web_contents) {
   return web_contents->GetVisibility() == content::Visibility::VISIBLE;
@@ -730,7 +735,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
       webauthn_api && webauthn_api->SupportsHybrid() &&
       // For now, Chrome handles hybrid even if Windows supports it for synced
       // GPM passkeys.
-      !base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys);
+      !base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials);
 #else
   constexpr bool system_handles_cable = false;
 #endif
@@ -896,8 +901,7 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
           FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
     }
   }
-  if (base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys) &&
-      base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
+  if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
       base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
       !IsVirtualEnvironmentEnabled() && can_use_synced_phone_passkeys_) {
     GetPhoneContactableGpmPasskeysForRpId(&data.recognized_credentials);

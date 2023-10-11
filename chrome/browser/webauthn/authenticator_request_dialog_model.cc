@@ -376,8 +376,7 @@ AuthenticatorRequestDialogModel::AuthenticatorRequestDialogModel(
     content::RenderFrameHost* frame_host) {
   if (frame_host) {
     frame_host_id_ = frame_host->GetGlobalId();
-    if (base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys) &&
-        base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
+    if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
       webauthn::PasskeyModel* passkey_model =
           PasskeyModelFactory::GetInstance()->GetForProfile(
               Profile::FromBrowserContext(frame_host->GetBrowserContext()));
@@ -1710,7 +1709,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
   absl::optional<std::u16string> priority_phone_name = GetPriorityPhoneName();
   bool list_phone_passkeys =
       is_new_get_assertion_ui && priority_phone_index_ &&
-      base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys);
+      base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials);
   bool specific_phones_listed = false;
   bool specific_local_passkeys_listed = false;
   if (is_new_get_assertion_ui && !use_conditional_mediation_) {

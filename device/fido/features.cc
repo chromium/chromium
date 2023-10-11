@@ -145,11 +145,6 @@ BASE_FEATURE(kWebAuthnWindowsUIv6,
              "WebAuthenticationWindowsUIv6",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Not yet enabled by default.
-BASE_FEATURE(kWebAuthnListSyncedPasskeys,
-             "WebAuthenticationListSyncedPasskeys",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enabled in M117. Remove in or after M120.
 BASE_FEATURE(kWebAuthConditionalUIExperimentation,
              "WebAuthenticationConditionalUIExperimentation",

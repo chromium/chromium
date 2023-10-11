@@ -116,11 +116,6 @@ BASE_DECLARE_FEATURE(kWebAuthnSkipSingleAccountMacOS);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnWindowsUIv6);
 
-// List synced GPM passkeys on webauthn credential pickers.
-// Depends on kWebAuthnNewPasskeyUI.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnListSyncedPasskeys);
-
 // Allow sites to opt into experimenting with conditional UI presentations.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthConditionalUIExperimentation);

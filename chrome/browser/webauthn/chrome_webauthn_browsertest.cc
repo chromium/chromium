@@ -379,8 +379,7 @@ class WebAuthnGpmPasskeyTest : public WebAuthnBrowserTest {
 
   WebAuthnGpmPasskeyTest() {
     scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnListSyncedPasskeys, syncer::kSyncWebauthnCredentials,
-         device::kWebAuthnNewPasskeyUI},
+        {syncer::kSyncWebauthnCredentials, device::kWebAuthnNewPasskeyUI},
         /*disabled_features=*/{});
   }
 

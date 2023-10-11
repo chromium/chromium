@@ -1362,7 +1362,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   }
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {device::kWebAuthnNewPasskeyUI, device::kWebAuthnListSyncedPasskeys},
+      {device::kWebAuthnNewPasskeyUI, syncer::kSyncWebauthnCredentials},
       /*disabled_features=*/{});
   for (const auto& test : kListSyncedPasskeysTests) {
     RunTest(test, /*windows_hybrid_smoke_test=*/false);
@@ -2012,9 +2012,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIPhonePasskey) {
 // request is restarted.
 TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIPhonePasskeyUpdated) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {device::kWebAuthnListSyncedPasskeys, syncer::kSyncWebauthnCredentials},
-      /*disabled_features=*/{});
+  scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
   auto model = std::make_unique<AuthenticatorRequestDialogModel>(main_rfh());
   model->StartFlow(TransportAvailabilityInfo(),
                    /*is_conditional_mediation=*/true);
@@ -2043,9 +2041,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIPhonePasskeyUpdated) {
 TEST_F(AuthenticatorRequestDialogModelTest,
        ConditionalUITransportAvailabilityUpdated) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {device::kWebAuthnListSyncedPasskeys, syncer::kSyncWebauthnCredentials},
-      /*disabled_features=*/{});
+  scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
 
   NavigateAndCommit(GURL("rp.com"));
   ChromeWebAuthnCredentialsDelegate* delegate =
@@ -2278,7 +2274,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, ContactPriorityPhone_NoSync) {
 TEST_F(AuthenticatorRequestDialogModelTest, ContactPriorityPhone_WithSync) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {device::kWebAuthnNewPasskeyUI, device::kWebAuthnListSyncedPasskeys},
+      {device::kWebAuthnNewPasskeyUI, syncer::kSyncWebauthnCredentials},
       /*disabled_features=*/{});
   AuthenticatorRequestDialogModel model(main_rfh());
   std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
@@ -2643,7 +2639,7 @@ class ListPasskeysFromSyncTest : public AuthenticatorRequestDialogModelTest {
  public:
   ListPasskeysFromSyncTest() {
     scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnNewPasskeyUI, device::kWebAuthnListSyncedPasskeys},
+        {device::kWebAuthnNewPasskeyUI, syncer::kSyncWebauthnCredentials},
         /*disabled_features=*/{});
   }
 

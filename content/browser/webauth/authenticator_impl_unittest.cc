@@ -1520,17 +1520,6 @@ TEST_F(AuthenticatorImplTest, GetAssertionResponseWithAttestedCredentialData) {
       AuthenticatorStatus::NOT_ALLOWED_ERROR);
 }
 
-TEST_F(AuthenticatorImplTest, GPMPasskeys_IsConditionalMediationAvailable) {
-  // Conditional mediation should always be available if gpm passkeys are
-  // enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {device::kWebAuthnListSyncedPasskeys, device::kWebAuthnNewPasskeyUI},
-      /*disabled_features=*/{});
-  NavigateAndCommit(GURL(kTestOrigin1));
-  ASSERT_TRUE(AuthenticatorIsConditionalMediationAvailable());
-}
-
 #if BUILDFLAG(IS_WIN)
 TEST_F(AuthenticatorImplTest, IsUVPAA) {
   virtual_device_factory_->set_discover_win_webauthn_api_authenticator(true);
@@ -1786,6 +1775,10 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
     return supports_resident_keys;
   }
 
+  bool SupportsPasskeyMetadataSyncing() override {
+    return supports_passkey_metadata_syncing;
+  }
+
   bool IsFocused(WebContents* web_contents) override { return is_focused; }
 
 #if BUILDFLAG(IS_MAC)
@@ -1833,6 +1826,9 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
   // Indicates whether resident key operations should be permitted by the
   // delegate.
   bool supports_resident_keys = false;
+
+  // Indicates whether metadata syncing should be assumed to be supported.
+  bool supports_passkey_metadata_syncing = false;
 
   // The return value of the focus check issued at the end of a request.
   bool is_focused = true;
@@ -3323,6 +3319,16 @@ TEST_F(AuthenticatorContentBrowserClientTest, IsUVPAAOverride) {
 
     EXPECT_EQ(AuthenticatorIsUvpaa(), is_uvpaa);
   }
+}
+
+TEST_F(AuthenticatorContentBrowserClientTest,
+       GPMPasskeys_IsConditionalMediationAvailable) {
+  // Conditional mediation should always be available if gpm passkeys are
+  // enabled.
+  test_client_.GetTestWebAuthenticationDelegate()
+      ->supports_passkey_metadata_syncing = true;
+  NavigateAndCommit(GURL(kTestOrigin1));
+  ASSERT_TRUE(AuthenticatorIsConditionalMediationAvailable());
 }
 
 // AuthenticatorImplRemoteDesktopClientOverrideTest exercises the
@@ -10068,9 +10074,8 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, IsConditionalMediationAvailable) {
 // default.
 TEST_F(AuthenticatorImplWithRequestProxyTest,
        IsConditionalMediationAvailable_MetadataSyncing) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {device::kWebAuthnListSyncedPasskeys, device::kWebAuthnNewPasskeyUI}, {});
+  test_client_.GetTestWebAuthenticationDelegate()
+      ->supports_passkey_metadata_syncing = true;
 
   // We can't autofill credentials over the request proxy. Hence, conditional
   // mediation is unavailable, even if IsUVPAA returns true.

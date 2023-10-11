@@ -117,7 +117,7 @@ class ChromeAuthenticatorRequestDelegateTest
  public:
   ChromeAuthenticatorRequestDelegateTest() {
     scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnListSyncedPasskeys, syncer::kSyncWebauthnCredentials,
+        {syncer::kSyncWebauthnCredentials, syncer::kSyncWebauthnCredentials,
          device::kWebAuthnNewPasskeyUI},
         /*disabled_features=*/{});
   }
@@ -391,10 +391,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
       base::test::ScopedFeatureList scoped_feature_list;
       if (windows_has_hybrid == kWinHybridNoPasskeySyncing) {
         scoped_feature_list.InitWithFeatures(
-            {}, {device::kWebAuthnListSyncedPasskeys});
+            {}, {syncer::kSyncWebauthnCredentials});
       } else if (windows_has_hybrid == kWinHybridPasskeySyncing) {
-        scoped_feature_list.InitWithFeatures(
-            {device::kWebAuthnListSyncedPasskeys}, {});
+        scoped_feature_list.InitWithFeatures({syncer::kSyncWebauthnCredentials},
+                                             {});
       }
       SCOPED_TRACE(windows_has_hybrid);
 #endif

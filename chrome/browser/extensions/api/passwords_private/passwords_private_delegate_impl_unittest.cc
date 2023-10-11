@@ -893,10 +893,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 
 TEST_F(PasswordsPrivateDelegateImplTest, ChangeCredential_Passkey) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {password_manager::features::kPasswordManagerPasskeys,
-       syncer::kSyncWebauthnCredentials},
-      /*disabled_features=*/{});
+  scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
 
   webauthn::PasskeyModel* passkey_model =
       PasskeyModelFactory::GetForProfile(profile());
@@ -1474,10 +1471,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, PasswordManagerAppInstalled) {
 
 TEST_F(PasswordsPrivateDelegateImplTest, GetPasskeyInGroups) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {password_manager::features::kPasswordManagerPasskeys,
-       syncer::kSyncWebauthnCredentials},
-      /*disabled_features=*/{});
+  scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
 
   auto delegate = CreateDelegate();
 
@@ -1520,10 +1514,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetPasskeyInGroups) {
 TEST_F(PasswordsPrivateDelegateImplTest, RemovePasskey) {
   base::UserActionTester user_action_tester;
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {password_manager::features::kPasswordManagerPasskeys,
-       syncer::kSyncWebauthnCredentials},
-      /*disabled_features=*/{});
+  scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
 
   auto delegate = CreateDelegate();
 

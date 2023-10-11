@@ -156,8 +156,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnListSyncedPasskeys, syncer::kSyncWebauthnCredentials,
-         device::kWebAuthnNewPasskeyUI},
+        {syncer::kSyncWebauthnCredentials, device::kWebAuthnNewPasskeyUI},
         /*disabled_features=*/{});
     ASSERT_TRUE(https_server_.InitializeAndListen());
 

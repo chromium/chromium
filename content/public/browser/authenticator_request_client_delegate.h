@@ -114,6 +114,10 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // create or get assertions will be immediately rejected.
   virtual bool SupportsResidentKeys(RenderFrameHost* render_frame_host);
 
+  // SupportsPasskeyMetadataSyncing returns true if the embedder supports
+  // syncing passkey metadata from external authenticators.
+  virtual bool SupportsPasskeyMetadataSyncing();
+
   // Returns whether |web_contents| is the active tab in the focused window. We
   // do not want to allow authenticatorMakeCredential operations to be triggered
   // by background tabs.

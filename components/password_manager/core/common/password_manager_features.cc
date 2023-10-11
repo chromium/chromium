@@ -193,13 +193,6 @@ BASE_FEATURE(kUsernameFirstFlowWithIntermediateValues,
              "UsernameFirstFlowWithIntermediateValues",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-// Show, update, and delete GPM passkeys on the Chrome Password Manager.
-BASE_FEATURE(kPasswordManagerPasskeys,
-             "PasswordManagerPasskeys",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 
 // The version of the password migration warning prefs. When the version
