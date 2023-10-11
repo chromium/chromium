@@ -116,7 +116,7 @@
         <template is="dom-if" if="[[shouldShowApnTypeErrorMessage_]]" restamp>
           <div id="defaultApnRequiredInfo" class="default-apn-info">
             <iron-icon icon="cr:info-outline"></iron-icon>
-            <span>[[i18n('apnDetailDefaultApnRequired')]]</span>
+            <span aria-live="polite">[[i18n('apnDetailDefaultApnRequired')]]</span>
           </div>
         </template>
       </div>
