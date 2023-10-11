@@ -195,7 +195,9 @@ class SurfaceTreeHost : public SurfaceDelegate,
   // If the client has submitted a scale factor, we use that. Otherwise we use
   // the host window's layer's scale factor.
   virtual float GetScaleFactor() const;
-  float GetPendingScaleFactor() const;
+  virtual float GetPendingScaleFactor() const;
+
+  bool HasDoubleBufferedPendingScaleFactor() const;
 
   // Sets the appropriate transform for the given scale factor.
   // NOTE: This should only be done if the client submits in pixel coordinates.

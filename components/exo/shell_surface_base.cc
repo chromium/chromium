@@ -1504,6 +1504,20 @@ void ShellSurfaceBase::SetRootSurface(Surface* root_surface) {
   }
 }
 
+float ShellSurfaceBase::GetPendingScaleFactor() const {
+  if (!host_window()->parent() && !HasDoubleBufferedPendingScaleFactor()) {
+    // Before the initial commit, `host_window()` has not been a descendant of
+    // the root window yet so we need to fetch the scale factor directly from
+    // the pending target display.
+    display::Display display;
+    if (display::Screen::GetScreen()->GetDisplayWithDisplayId(
+            pending_display_id_, &display)) {
+      return display.device_scale_factor();
+    }
+  }
+  return SurfaceTreeHost::GetPendingScaleFactor();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // ShellSurfaceBase, protected:
 

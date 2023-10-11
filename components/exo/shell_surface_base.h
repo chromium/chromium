@@ -323,6 +323,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   // SurfaceTreeHost:
   void SetRootSurface(Surface* root_surface) override;
+  float GetPendingScaleFactor() const override;
 
   bool frame_enabled() const {
     return frame_type_ != SurfaceFrameType::NONE &&

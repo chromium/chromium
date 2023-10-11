@@ -630,6 +630,10 @@ float SurfaceTreeHost::GetPendingScaleFactor() const {
   return CalculateScaleFactor(pending_scale_factor_);
 }
 
+bool SurfaceTreeHost::HasDoubleBufferedPendingScaleFactor() const {
+  return pending_scale_factor_.has_value();
+}
+
 void SurfaceTreeHost::CleanUpCallbacks() {
   const base::TimeTicks now = base::TimeTicks::Now();
   while (!frame_callbacks_.empty()) {
