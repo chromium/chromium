@@ -3638,15 +3638,6 @@ const FeatureEntry::FeatureVariation
          std::size(kTPCPhaseOutFacilitatedTestingForceControl2), nullptr},
 };
 
-const FeatureEntry::FeatureParam kDIPSWithDeletion[] = {
-    {"persist_database", "true"},
-    {"delete", "true"},
-    {"triggering_action", "stateful_bounce"}};
-
-const FeatureEntry::FeatureVariation kDIPSVariations[] = {
-    {"With Deletion", kDIPSWithDeletion, std::size(kDIPSWithDeletion),
-     nullptr}};
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::FeatureParam kVcSegmentationModelHighResolution[] = {
     {"segmentation_model", "high_resolution"},
@@ -9272,7 +9263,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"bounce-tracking-mitigations", flag_descriptions::kDIPSName,
      flag_descriptions::kDIPSDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kDIPS, kDIPSVariations, "DIPS")},
+     FEATURE_VALUE_TYPE(features::kDIPS)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {kBorealisBigGlInternalName, flag_descriptions::kBorealisBigGlName,
