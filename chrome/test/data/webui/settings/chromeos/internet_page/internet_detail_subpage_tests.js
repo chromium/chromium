@@ -1743,11 +1743,21 @@ suite('InternetDetailPage', function() {
             loadTimeData.overrideValues({isSuppressTextMessagesEnabled});
             init();
             mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+            const test_iccid = '11111111111111111';
             const cellularNetwork =
                 getManagedProperties(NetworkType.kCellular, 'cellular');
+            cellularNetwork.typeProperties.cellular.iccid = test_iccid;
             mojoApi_.setManagedPropertiesForTest(cellularNetwork);
             internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
-
+            mojoApi_.setDeviceStateForTest({
+              type: NetworkType.kCellular,
+              deviceState: DeviceStateType.kEnabled,
+              inhibitReason: InhibitReason.kNotInhibited,
+              simInfos: [{
+                iccid: test_iccid,
+                isPrimary: true,
+              }],
+            });
             await flushAsync();
             const getSuppressTextMessagesToggle = () =>
                 internetDetailPage.shadowRoot.querySelector(
@@ -1765,14 +1775,25 @@ suite('InternetDetailPage', function() {
       init();
       mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
 
+      const test_iccid = '11111111111111111';
       const cellularNetwork =
           getManagedProperties(NetworkType.kCellular, 'cellular');
+      cellularNetwork.typeProperties.cellular.iccid = test_iccid;
       cellularNetwork.typeProperties.cellular.allowTextMessages = {
         activeValue: true,
         policySource: PolicySource.kNone,
       };
       mojoApi_.setManagedPropertiesForTest(cellularNetwork);
       internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+      mojoApi_.setDeviceStateForTest({
+        type: NetworkType.kCellular,
+        deviceState: DeviceStateType.kEnabled,
+        inhibitReason: InhibitReason.kNotInhibited,
+        simInfos: [{
+          iccid: test_iccid,
+          isPrimary: true,
+        }],
+      });
       await flushAsync();
 
       const networkToggle = internetDetailPage.shadowRoot.querySelector(
@@ -1785,19 +1806,60 @@ suite('InternetDetailPage', function() {
           props.typeConfig.cellular.textMessageAllowState.allowTextMessages);
     });
 
+    test(
+        'Suppress text messages toggle only shown for active SIM', async () => {
+          loadTimeData.overrideValues({isSuppressTextMessagesEnabled: true});
+          init();
+          mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+
+          const test_iccid = '11111111111111111';
+          const cellularNetwork =
+              getManagedProperties(NetworkType.kCellular, 'cellular');
+          cellularNetwork.typeProperties.cellular.iccid = test_iccid;
+          mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+          internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+          await flushAsync();
+          const getSuppressTextMessagesToggle = () =>
+              internetDetailPage.shadowRoot.querySelector(
+                  '#suppressTextMessagesToggle');
+          assertFalse(!!getSuppressTextMessagesToggle());
+          mojoApi_.setDeviceStateForTest({
+            type: NetworkType.kCellular,
+            deviceState: DeviceStateType.kEnabled,
+            inhibitReason: InhibitReason.kNotInhibited,
+            simInfos: [{
+              iccid: test_iccid,
+              isPrimary: true,
+            }],
+          });
+          await flushAsync();
+          assertTrue(!!getSuppressTextMessagesToggle());
+        });
+
     test('Suppress text messages via policy', async () => {
       loadTimeData.overrideValues({isSuppressTextMessagesEnabled: true});
       init();
       mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
 
+      const test_iccid = '11111111111111111';
       const cellularNetwork =
           getManagedProperties(NetworkType.kCellular, 'cellular');
       cellularNetwork.typeProperties.cellular.allowTextMessages = {
         activeValue: true,
         policySource: PolicySource.kDevicePolicyEnforced,
       };
+      cellularNetwork.typeProperties.cellular.iccid = test_iccid;
       mojoApi_.setManagedPropertiesForTest(cellularNetwork);
       internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+      mojoApi_.setDeviceStateForTest({
+        type: NetworkType.kCellular,
+        deviceState: DeviceStateType.kEnabled,
+        inhibitReason: InhibitReason.kNotInhibited,
+        simInfos: [{
+          iccid: test_iccid,
+          isPrimary: true,
+        }],
+      });
       await flushAsync();
 
       const networkToggle = internetDetailPage.shadowRoot.querySelector(

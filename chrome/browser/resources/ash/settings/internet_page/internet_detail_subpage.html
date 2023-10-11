@@ -358,7 +358,8 @@
 
         <!-- Suppress Text Messages (Cellular only). -->
         <template is="dom-if"
-            if="[[shouldShowSuppressTextMessagesToggle_(managedProperties_)]]" restamp>
+            if="[[shouldShowSuppressTextMessagesToggle_(managedProperties_,
+                  deviceState_)]]" restamp>
           <div class="single-column stretch">
             <network-config-toggle id="suppressTextMessagesToggle" policy-on-left
                 property="[[managedProperties_.typeProperties.cellular.allowTextMessages]]"

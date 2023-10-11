@@ -1264,8 +1264,17 @@ class SettingsInternetDetailPageElement extends
   }
 
   private shouldShowSuppressTextMessagesToggle_(): boolean {
-    return this.isSuppressTextMessagesEnabled_ &&
-        this.isCellular_(this.managedProperties_);
+    if (!this.isSuppressTextMessagesEnabled_ || !this.managedProperties_ ||
+        !this.deviceState_) {
+      return false;
+    }
+    const networkState = this.getNetworkState_(this.managedProperties_);
+    if (!networkState) {
+      return false;
+    }
+    // Only show the toggle for the active SIM with the flag enabled.
+    return this.isCellular_(this.managedProperties_) &&
+        isActiveSim(networkState, this.deviceState_);
   }
 
   private showConnect_(
