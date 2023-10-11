@@ -71800,6 +71800,14 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="MediaFling"/>
 </enum>
 
+<enum name="MediaNotificationDisplayPage">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Quick settings media view"/>
+  <int value="2" label="Quick settings media detailed view"/>
+  <int value="3" label="System shelf media detailed view"/>
+  <int value="4" label="Lock screen media view"/>
+</enum>
+
 <enum name="MediaNotificationMetadata">
   <int value="0" label="Title"/>
   <int value="1" label="Artist"/>

@@ -37,14 +37,23 @@ namespace {
 class MediaButton;
 }
 
-// Indicates this media notification view will be displayed on which page.
+// Indicates this media notification view will be displayed on which page. These
+// values are persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused. Keep them in sync with
+// tools/metrics/histograms/enums.xml.
 enum class MediaDisplayPage {
+  // Default value.
+  kUnknown = 0,
   // Media will be displayed on the Quick Settings media view page.
-  kQuickSettingsMediaView = 0,
+  kQuickSettingsMediaView = 1,
   // Media will be displayed on the Quick Settings media detailed view page.
-  kQuickSettingsMediaDetailedView = 1,
-  // Media will be displayed on the lock screen view.
-  kLockScreenMediaView = 2,
+  kQuickSettingsMediaDetailedView = 2,
+  // Media will be displayed on the system shelf media detailed view page.
+  kSystemShelfMediaDetailedView = 3,
+  // Media will be displayed on the lock screen media view page.
+  kLockScreenMediaView = 4,
+  // Special enumerator that must share the highest enumerator value.
+  kMaxValue = kLockScreenMediaView,
 };
 
 // CrOS implementation of media notification view.

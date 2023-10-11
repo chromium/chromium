@@ -4462,13 +4462,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Notification.Count" units="count"
-    expires_after="2024-03-17">
-  <owner>beccahughes@chromium.org</owner>
+    expires_after="2024-03-31">
+  <owner>yrw@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     The number of media notifications that are currently being displayed
     (including ones for Cast sessions). This is recorded when a media
     notification starts being displayed.
+  </summary>
+</histogram>
+
+<histogram name="Media.Notification.DisplayPage"
+    enum="MediaNotificationDisplayPage" expires_after="2024-03-31">
+  <owner>yrw@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The page where the media notification is displayed to users. This is
+    recorded when a media notification starts being displayed.
   </summary>
 </histogram>
 
@@ -4484,8 +4494,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Notification.Source" enum="MediaNotificationSource"
-    expires_after="2024-02-04">
-  <owner>beccahughes@chromium.org</owner>
+    expires_after="2024-03-31">
+  <owner>yrw@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     The source of the underlying media session (e.g. ARC, web, Cast) that
@@ -4495,11 +4505,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Notification.UserAction" enum="MediaSessionAction"
-    expires_after="2024-03-17">
-  <owner>beccahughes@chromium.org</owner>
+    expires_after="2024-03-31">
+  <owner>yrw@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
-    The action (e.g. pause) that a user clicked on a media notification
+    The media session action that a user clicked on a media notification
     (including ones for Cast sessions).
   </summary>
 </histogram>

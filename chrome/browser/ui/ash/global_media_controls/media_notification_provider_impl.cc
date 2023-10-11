@@ -219,11 +219,15 @@ MediaNotificationProviderImpl::ShowMediaItem(
 
   bool show_devices =
       (!show_devices_for_item_id_.empty() && (id == show_devices_for_item_id_));
+  auto media_display_page =
+      (MediaTray::IsPinnedToShelf() ? global_media_controls::MediaDisplayPage::
+                                          kSystemShelfMediaDetailedView
+                                    : global_media_controls::MediaDisplayPage::
+                                          kQuickSettingsMediaDetailedView);
   auto item_ui = std::make_unique<global_media_controls::MediaItemUIView>(
       id, item, BuildFooterView(id, item),
       BuildDeviceSelectorView(id, item, entry_point_, show_devices),
-      color_theme_, media_color_theme_,
-      global_media_controls::MediaDisplayPage::kQuickSettingsMediaDetailedView);
+      color_theme_, media_color_theme_, media_display_page);
   auto* item_ui_ptr = item_ui.get();
   item_ui_observer_set_.Observe(id, item_ui_ptr);
 

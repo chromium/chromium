@@ -116,6 +116,15 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
         MediaDisplayPage::kQuickSettingsMediaView);
   }
 
+  std::unique_ptr<MediaNotificationViewAshImpl> CreateLockScreenMediaView() {
+    return std::make_unique<MediaNotificationViewAshImpl>(
+        container_.get(), /*item=*/nullptr, /*footer_view=*/nullptr,
+        /*device_selector_view=*/nullptr,
+        /*dismiss_button=*/std::make_unique<views::View>(),
+        media_message_center::MediaColorTheme(),
+        MediaDisplayPage::kLockScreenMediaView);
+  }
+
   void EnableAllActions() {
     actions_.insert(MediaSessionAction::kPlay);
     actions_.insert(MediaSessionAction::kPause);
@@ -181,6 +190,12 @@ TEST_F(MediaNotificationViewAshImplTest, ChevronIconVisibilityCheck) {
   EXPECT_NE(view->GetChevronIconForTesting(), nullptr);
 
   view = CreateView(MediaDisplayPage::kQuickSettingsMediaDetailedView);
+  EXPECT_EQ(view->GetChevronIconForTesting(), nullptr);
+
+  view = CreateView(MediaDisplayPage::kSystemShelfMediaDetailedView);
+  EXPECT_EQ(view->GetChevronIconForTesting(), nullptr);
+
+  view = CreateLockScreenMediaView();
   EXPECT_EQ(view->GetChevronIconForTesting(), nullptr);
 }
 
