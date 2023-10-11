@@ -2483,8 +2483,10 @@ void CSSAnimations::CalculateTransitionUpdateForStandardProperty(
                                  transition_index) ==
           CSSTransitionData::TransitionBehavior::kAllowDiscrete;
   const StylePropertyShorthand& property_list =
-      animate_all ? PropertiesForTransitionAll(with_discrete)
-                  : shorthandForProperty(resolved_id);
+      animate_all
+          ? PropertiesForTransitionAll(
+                with_discrete, state.animating_element.GetExecutionContext())
+          : shorthandForProperty(resolved_id);
   // If not a shorthand we only execute one iteration of this loop, and
   // refer to the property directly.
   for (unsigned i = 0; !i || i < property_list.length(); ++i) {
@@ -3058,7 +3060,8 @@ void CSSAnimations::TransitionEventDelegate::Trace(Visitor* visitor) const {
 }
 
 const StylePropertyShorthand& CSSAnimations::PropertiesForTransitionAll(
-    bool with_discrete) {
+    bool with_discrete,
+    const ExecutionContext* execution_context) {
   DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties, ());
   DEFINE_STATIC_LOCAL(StylePropertyShorthand, property_shorthand, ());
   if (properties.empty()) {
@@ -3082,6 +3085,10 @@ const StylePropertyShorthand& CSSAnimations::PropertiesForTransitionAll(
         DCHECK(with_discrete);
         continue;
       }
+      if (!property.IsWebExposed(execution_context)) {
+        continue;
+      }
+
       properties.push_back(&property);
     }
     property_shorthand = StylePropertyShorthand(

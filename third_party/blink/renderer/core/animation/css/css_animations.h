@@ -73,7 +73,8 @@ class CORE_EXPORT CSSAnimations final {
   // many properties, which may result in slower style update performance, so
   // they are worth separating.
   static const StylePropertyShorthand& PropertiesForTransitionAll(
-      bool with_discrete);
+      bool with_discrete,
+      const ExecutionContext* execution_context);
 
   static bool IsAnimationAffectingProperty(const CSSProperty&);
   static bool IsAffectedByKeyframesFromScope(const Element&, const TreeScope&);
