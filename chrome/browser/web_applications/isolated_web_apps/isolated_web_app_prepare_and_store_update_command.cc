@@ -59,10 +59,8 @@ IsolatedWebAppUpdatePrepareAndStoreCommand::
         std::unique_ptr<content::WebContents> web_contents,
         std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
         std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-        base::OnceCallback<void(
-            base::expected<void,
-                           IsolatedWebAppUpdatePrepareAndStoreCommandError>)>
-            callback,
+        base::OnceCallback<
+            void(IsolatedWebAppUpdatePrepareAndStoreCommandResult)> callback,
         std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper)
     : WebAppCommandTemplate<AppLock>(
           "IsolatedWebAppUpdatePrepareAndStoreCommand"),
@@ -262,9 +260,9 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::
 void IsolatedWebAppUpdatePrepareAndStoreCommand::Finalize(
     WebAppInstallInfo info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate(
-      base::BindOnce(&IsolatedWebAppUpdatePrepareAndStoreCommand::OnFinalized,
-                     weak_factory_.GetWeakPtr()));
+  ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate(base::BindOnce(
+      &IsolatedWebAppUpdatePrepareAndStoreCommand::OnFinalized,
+      weak_factory_.GetWeakPtr(), info.isolated_web_app_version));
 
   WebApp* app_to_update = update->UpdateApp(url_info_.app_id());
   CHECK(app_to_update);
@@ -277,9 +275,11 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::Finalize(
   app_to_update->SetIsolationData(std::move(updated_isolation_data));
 }
 
-void IsolatedWebAppUpdatePrepareAndStoreCommand::OnFinalized(bool success) {
+void IsolatedWebAppUpdatePrepareAndStoreCommand::OnFinalized(
+    const base::Version& update_version,
+    bool success) {
   if (success) {
-    ReportSuccess();
+    ReportSuccess(update_version);
   } else {
     ReportFailure("Failed to save pending update info to Web App Database.");
   }
@@ -307,14 +307,17 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::ReportFailure(
       base::BindOnce(std::move(callback_), base::unexpected(std::move(error))));
 }
 
-void IsolatedWebAppUpdatePrepareAndStoreCommand::ReportSuccess() {
+void IsolatedWebAppUpdatePrepareAndStoreCommand::ReportSuccess(
+    const base::Version& update_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!callback_.is_null());
 
   debug_log_.Set("result", "success");
   SignalCompletionAndSelfDestruct(
       CommandResult::kSuccess,
-      base::BindOnce(std::move(callback_), base::ok()));
+      base::BindOnce(std::move(callback_),
+                     IsolatedWebAppUpdatePrepareAndStoreCommandSuccess{
+                         .update_version = update_version}));
 }
 
 Profile& IsolatedWebAppUpdatePrepareAndStoreCommand::profile() {

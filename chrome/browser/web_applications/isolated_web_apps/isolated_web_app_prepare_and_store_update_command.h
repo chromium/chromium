@@ -44,6 +44,18 @@ class WebAppUrlLoader;
 
 enum class WebAppUrlLoaderResult;
 
+struct IsolatedWebAppUpdatePrepareAndStoreCommandSuccess {
+  base::Version update_version;
+
+  friend std::ostream& operator<<(
+      std::ostream& os,
+      const IsolatedWebAppUpdatePrepareAndStoreCommandSuccess& success) {
+    return os << "IsolatedWebAppUpdatePrepareAndStoreCommandSuccess { "
+                 "update_version = \""
+              << success.update_version.GetString() << "\" }.";
+  }
+};
+
 struct IsolatedWebAppUpdatePrepareAndStoreCommandError {
   std::string message;
 
@@ -55,6 +67,10 @@ struct IsolatedWebAppUpdatePrepareAndStoreCommandError {
               << error.message << "\" }.";
   }
 };
+
+using IsolatedWebAppUpdatePrepareAndStoreCommandResult =
+    base::expected<IsolatedWebAppUpdatePrepareAndStoreCommandSuccess,
+                   IsolatedWebAppUpdatePrepareAndStoreCommandError>;
 
 // This command prepares the update of an Isolated Web App by dry-running the
 // update, and, on success, persisting the information about the pending update
@@ -94,9 +110,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
       std::unique_ptr<content::WebContents> web_contents,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-      base::OnceCallback<
-          void(base::expected<void,
-                              IsolatedWebAppUpdatePrepareAndStoreCommandError>)>
+      base::OnceCallback<void(IsolatedWebAppUpdatePrepareAndStoreCommandResult)>
           callback,
       std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper);
 
@@ -120,7 +134,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
 
  private:
   void ReportFailure(base::StringPiece message);
-  void ReportSuccess();
+  void ReportSuccess(const base::Version& update_version);
 
   template <typename T, std::enable_if_t<std::is_void_v<T>, bool> = true>
   void RunNextStepOnSuccess(base::OnceClosure next_step_callback,
@@ -169,7 +183,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
 
   void Finalize(WebAppInstallInfo info);
 
-  void OnFinalized(bool success);
+  void OnFinalized(const base::Version& update_version, bool success);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -187,8 +201,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
   std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;
 
-  base::OnceCallback<void(
-      base::expected<void, IsolatedWebAppUpdatePrepareAndStoreCommandError>)>
+  base::OnceCallback<void(IsolatedWebAppUpdatePrepareAndStoreCommandResult)>
       callback_;
 
   std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper_;

@@ -200,9 +200,7 @@ class WebAppCommandScheduler {
       const IsolatedWebAppUrlInfo& url_info,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-      base::OnceCallback<
-          void(base::expected<void,
-                              IsolatedWebAppUpdatePrepareAndStoreCommandError>)>
+      base::OnceCallback<void(IsolatedWebAppUpdatePrepareAndStoreCommandResult)>
           callback,
       const base::Location& call_location = FROM_HERE);
 

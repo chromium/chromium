@@ -43,7 +43,7 @@ class IsolatedWebAppApplyUpdateCommandBrowserTest
   using InstallResult = base::expected<InstallIsolatedWebAppCommandSuccess,
                                        InstallIsolatedWebAppCommandError>;
   using PrepareAndStoreUpdateResult =
-      base::expected<void, IsolatedWebAppUpdatePrepareAndStoreCommandError>;
+      IsolatedWebAppUpdatePrepareAndStoreCommandResult;
   using ApplyUpdateResult =
       base::expected<void, IsolatedWebAppApplyUpdateCommandError>;
 

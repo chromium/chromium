@@ -94,8 +94,7 @@ class IsolatedWebAppUpdateDiscoveryTask {
                              int32_t net_error);
 
   void OnUpdateDryRunDone(
-      base::expected<void, IsolatedWebAppUpdatePrepareAndStoreCommandError>
-          result);
+      IsolatedWebAppUpdatePrepareAndStoreCommandResult result);
 
   base::Value::Dict debug_log_;
   bool has_started_ = false;
