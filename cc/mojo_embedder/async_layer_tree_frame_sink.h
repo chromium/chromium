@@ -118,6 +118,7 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   }
 
   bool auto_needs_begin_frame() const { return auto_needs_begin_frame_; }
+  bool needs_begin_frames() const { return needs_begin_frames_; }
 
   // LayerTreeFrameSink implementation.
   bool BindToClient(LayerTreeFrameSinkClient* client) override;
