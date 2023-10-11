@@ -317,10 +317,19 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 mActivity.getWindow(), mWindowAndroid.getKeyboardDelegate(),
                 () -> mActivity.findViewById(R.id.page_insights_hub_container));
 
-        mPageInsightsCoordinator = new PageInsightsCoordinator(mActivity, mActivityTabProvider,
-                mShareDelegateSupplier, controller, getBottomSheetController(),
-                mExpandedBottomSheetHelper, mBrowserControlsManager, mBrowserControlsManager,
-                this::isPageInsightsHubEnabled, mPageInsightsFirstLoadTimeMs);
+        mPageInsightsCoordinator =
+                new PageInsightsCoordinator(
+                        mActivity,
+                        mActivityTabProvider,
+                        mShareDelegateSupplier,
+                        mProfileSupplier,
+                        controller,
+                        getBottomSheetController(),
+                        mExpandedBottomSheetHelper,
+                        mBrowserControlsManager,
+                        mBrowserControlsManager,
+                        this::isPageInsightsHubEnabled,
+                        mPageInsightsFirstLoadTimeMs);
 
         mContextualSearchObserver = new ContextualSearchObserver() {
             @Override

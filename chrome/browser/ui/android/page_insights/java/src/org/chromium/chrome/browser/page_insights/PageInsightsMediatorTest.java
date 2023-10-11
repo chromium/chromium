@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.page_insights;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
@@ -68,9 +69,11 @@ import org.chromium.chrome.browser.page_insights.proto.PageInsights.PageInsights
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsActionsHandler;
+import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsLoggingParameters;
 import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsSurfaceRenderer;
 import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsSurfaceScope;
 import org.chromium.chrome.browser.xsurface_provider.XSurfaceProcessScopeProvider;
@@ -84,6 +87,9 @@ import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -100,6 +106,7 @@ public class PageInsightsMediatorTest {
     private static final String TEST_CHILD_PAGE_TITLE = "People also View";
     private static final byte[] TEST_FEED_ELEMENTS_OUTPUT = new byte[123];
     private static final byte[] TEST_CHILD_ELEMENTS_OUTPUT = new byte[456];
+    private static final byte[] TEST_LOGGING_CGI = new byte[789];
     private static final int SHORT_TRIGGER_DELAY_MS = 2 * (int) DateUtils.SECOND_IN_MILLIS;
 
     @Rule
@@ -126,7 +133,15 @@ public class PageInsightsMediatorTest {
     @Mock
     private ProcessScope mProcessScope;
     @Mock
+    private Supplier<Profile> mProfileSupplier;
+    @Mock
     private Profile mProfile;
+    @Mock
+    private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock
+    private IdentityManager mIdentityManager;
+    @Mock
+    private CoreAccountInfo mCoreAccountInfo;
     @Mock
     private PageInsightsSurfaceScope mSurfaceScope;
     @Mock
@@ -145,8 +160,8 @@ public class PageInsightsMediatorTest {
     @Captor private ArgumentCaptor<Map<String, Object>> mSurfaceRendererContextValues;
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParams;
     @Captor private ArgumentCaptor<ShareParams> mShareParams;
-    @Captor private ArgumentCaptor<Callback<PageInsightsMetadata>> mCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Tab>> mTabObserver;
+    @Captor private ArgumentCaptor<PageInsightsLoggingParameters> mLoggingParameters;
 
     private ShadowLooper mShadowLooper;
 
@@ -173,6 +188,9 @@ public class PageInsightsMediatorTest {
         when(mMockTabProvider.get()).thenReturn(mTab);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);
+        when(mProfileSupplier.get()).thenReturn(mProfile);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
     }
 
     private void createMediator() {
@@ -190,9 +208,19 @@ public class PageInsightsMediatorTest {
         FeatureList.setTestValues(testValues);
         Context context = ContextUtils.getApplicationContext();
         context.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
-        mMediator = new PageInsightsMediator(context, mMockTabProvider, mShareDelegateSupplier,
-                mBottomSheetController, mBottomUiController, mExpandedSheetHelper,
-                mControlsStateProvider, mBrowserControlsSizer, () -> true, firstLoadTimeMs);
+        mMediator =
+                new PageInsightsMediator(
+                        context,
+                        mMockTabProvider,
+                        mShareDelegateSupplier,
+                        mProfileSupplier,
+                        mBottomSheetController,
+                        mBottomUiController,
+                        mExpandedSheetHelper,
+                        mControlsStateProvider,
+                        mBrowserControlsSizer,
+                        () -> true,
+                        firstLoadTimeMs);
         verify(mControlsStateProvider).addObserver(mBrowserControlsStateProviderObserver.capture());
         mockOptimizationGuideResponse(getPageInsightsMetadata());
         setBackgroundDrawable();
@@ -253,7 +281,58 @@ public class PageInsightsMediatorTest {
 
     @Test
     @MediumTest
-    public void testOpenInExpandedState_showsBottomSheet() throws Exception {
+    public void testAutoTrigger_enoughDuration_signedIn_providesBothXSurfaceLoggingParamsAndLogs()
+            throws Exception {
+        createMediator(SHORT_TRIGGER_DELAY_MS);
+        View feedView = new View(ContextUtils.getApplicationContext());
+        when(mSurfaceRenderer.render(eq(TEST_FEED_ELEMENTS_OUTPUT), any())).thenReturn(feedView);
+        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
+                .thenReturn(mCoreAccountInfo);
+        when(mCoreAccountInfo.getEmail()).thenReturn("email@address.com");
+
+        mMediator.onLoadStopped(mTab, true);
+        mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        mBrowserControlsStateProviderObserver.getValue().onControlsOffsetChanged(0, 70, 0, 0, true);
+
+        verify(mSurfaceRenderer).onSurfaceCreated(mLoggingParameters.capture());
+        assertEquals(
+                ByteString.copyFrom(TEST_LOGGING_CGI),
+                ByteString.copyFrom(mLoggingParameters.getValue().parentData()));
+        assertEquals("email@address.com", mLoggingParameters.getValue().accountName());
+        verify(mSurfaceRenderer)
+                .onEvent(
+                        org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsEvent
+                                .BOTTOM_SHEET_PEEKING);
+    }
+
+    @Test
+    @MediumTest
+    public void
+            testAutoTrigger_enoughDuration_signedOut_providesPartialXSurfaceLoggingParamsAndLogs()
+                    throws Exception {
+        createMediator(SHORT_TRIGGER_DELAY_MS);
+        View feedView = new View(ContextUtils.getApplicationContext());
+        when(mSurfaceRenderer.render(eq(TEST_FEED_ELEMENTS_OUTPUT), any())).thenReturn(feedView);
+        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(null);
+
+        mMediator.onLoadStopped(mTab, true);
+        mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        mBrowserControlsStateProviderObserver.getValue().onControlsOffsetChanged(0, 70, 0, 0, true);
+
+        verify(mSurfaceRenderer).onSurfaceCreated(mLoggingParameters.capture());
+        assertEquals(
+                ByteString.copyFrom(TEST_LOGGING_CGI),
+                ByteString.copyFrom(mLoggingParameters.getValue().parentData()));
+        assertNull(mLoggingParameters.getValue().accountName());
+        verify(mSurfaceRenderer)
+                .onEvent(
+                        org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsEvent
+                                .BOTTOM_SHEET_PEEKING);
+    }
+
+    @Test
+    @MediumTest
+    public void testLaunch_showsBottomSheet() throws Exception {
         createMediator();
         View feedView = new View(ContextUtils.getApplicationContext());
         when(mSurfaceRenderer.render(eq(TEST_FEED_ELEMENTS_OUTPUT), any())).thenReturn(feedView);
@@ -276,6 +355,51 @@ public class PageInsightsMediatorTest {
                          R.id.page_insights_feed_content))
                         .getChildAt(0));
         verify(mBottomSheetController).expandSheet();
+    }
+
+    @Test
+    @MediumTest
+    public void testLaunch_signedIn_providesFullXSurfaceLoggingParamsAndLogs() throws Exception {
+        createMediator();
+        View feedView = new View(ContextUtils.getApplicationContext());
+        when(mSurfaceRenderer.render(eq(TEST_FEED_ELEMENTS_OUTPUT), any())).thenReturn(feedView);
+        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
+                .thenReturn(mCoreAccountInfo);
+        when(mCoreAccountInfo.getEmail()).thenReturn("email@address.com");
+
+        mMediator.launch();
+
+        verify(mSurfaceRenderer).onSurfaceCreated(mLoggingParameters.capture());
+        assertEquals(
+                ByteString.copyFrom(TEST_LOGGING_CGI),
+                ByteString.copyFrom(mLoggingParameters.getValue().parentData()));
+        assertEquals("email@address.com", mLoggingParameters.getValue().accountName());
+        verify(mSurfaceRenderer)
+                .onEvent(
+                        org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsEvent
+                                .BOTTOM_SHEET_EXPANDED);
+    }
+
+    @Test
+    @MediumTest
+    public void testLaunch_signedOut_providesPartialhXSurfaceLoggingParamsAndLogs()
+            throws Exception {
+        createMediator();
+        View feedView = new View(ContextUtils.getApplicationContext());
+        when(mSurfaceRenderer.render(eq(TEST_FEED_ELEMENTS_OUTPUT), any())).thenReturn(feedView);
+        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(null);
+
+        mMediator.launch();
+
+        verify(mSurfaceRenderer).onSurfaceCreated(mLoggingParameters.capture());
+        assertEquals(
+                ByteString.copyFrom(TEST_LOGGING_CGI),
+                ByteString.copyFrom(mLoggingParameters.getValue().parentData()));
+        assertNull(mLoggingParameters.getValue().accountName());
+        verify(mSurfaceRenderer)
+                .onEvent(
+                        org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsEvent
+                                .BOTTOM_SHEET_EXPANDED);
     }
 
     @Test
@@ -435,20 +559,29 @@ public class PageInsightsMediatorTest {
 
     @Test
     @MediumTest
-    public void autoTrigger_swipeToExpandedState_recordsHistogramInStateExpanded() {
+    public void swipeToExpandedState_recordsHistogramInStateExpanded() {
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher("CustomTabs.PageInsights.Event",
-                        PageInsightsMediator.PageInsightsEvent.STATE_EXPANDED);
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.PageInsights.Event", PageInsightsEvent.STATE_EXPANDED);
+        createMediator();
 
-        createMediator(SHORT_TRIGGER_DELAY_MS);
-        when(mSurfaceRenderer.render(
-                     eq(TEST_FEED_ELEMENTS_OUTPUT), mSurfaceRendererContextValues.capture()))
-                .thenReturn(new View(ContextUtils.getApplicationContext()));
-
-        // STATE_EXPANDED is recorded
         mMediator.onSheetStateChanged(SheetState.FULL, StateChangeReason.SWIPE);
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void swipeToExpandedStateFromPeek_xSurfaceLogs() {
+        createMediator();
+        mMediator.onSheetStateChanged(SheetState.PEEK, StateChangeReason.NONE);
+
+        mMediator.onSheetStateChanged(SheetState.FULL, StateChangeReason.SWIPE);
+
+        verify(mSurfaceRenderer)
+                .onEvent(
+                        org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsEvent
+                                .BOTTOM_SHEET_EXPANDED);
     }
 
     @Test
@@ -466,6 +599,47 @@ public class PageInsightsMediatorTest {
         mMediator.onSheetStateChanged(SheetState.PEEK, StateChangeReason.SWIPE);
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void dismiss_unbindsXSurfaceViewsAndCallsOnSurfaceClosed() {
+        createMediator();
+        View childView = new View(ContextUtils.getApplicationContext());
+        View feedView = new View(ContextUtils.getApplicationContext());
+        when(mSurfaceRenderer.render(
+                        eq(TEST_FEED_ELEMENTS_OUTPUT), mSurfaceRendererContextValues.capture()))
+                .thenReturn(feedView);
+        when(mSurfaceRenderer.render(eq(TEST_CHILD_ELEMENTS_OUTPUT), any())).thenReturn(childView);
+        mMediator.launch();
+        ((PageInsightsActionsHandler)
+                        mSurfaceRendererContextValues
+                                .getValue()
+                                .get(PageInsightsActionsHandler.KEY))
+                .navigateToPageInsightsPage(1);
+
+        mMediator.onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.SWIPE);
+
+        verify(mSurfaceRenderer).unbindView(feedView);
+        verify(mSurfaceRenderer).unbindView(childView);
+        verify(mSurfaceRenderer).onSurfaceClosed();
+    }
+
+    @Test
+    @MediumTest
+    public void dismissFromPeekState_XSurfaceLogs() {
+        createMediator(SHORT_TRIGGER_DELAY_MS);
+        when(mSurfaceRenderer.render(
+                        eq(TEST_FEED_ELEMENTS_OUTPUT), mSurfaceRendererContextValues.capture()))
+                .thenReturn(new View(ContextUtils.getApplicationContext()));
+        mMediator.onSheetStateChanged(SheetState.PEEK, StateChangeReason.NONE);
+
+        mMediator.onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.SWIPE);
+
+        verify(mSurfaceRenderer)
+                .onEvent(
+                        org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsEvent
+                                .DISMISSED_FROM_PEEKING_STATE);
     }
 
     @Test
@@ -534,6 +708,7 @@ public class PageInsightsMediatorTest {
                 .setFeedPage(feedPage)
                 .addPages(childPage)
                 .setAutoPeekConditions(mAutoPeekConditions)
+                .setLoggingCgi(ByteString.copyFrom(TEST_LOGGING_CGI))
                 .build();
     }
 

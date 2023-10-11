@@ -16,10 +16,13 @@ import java.lang.annotation.RetentionPolicy;
         PageInsightsEvent.DISMISSED_FROM_PEEKING_STATE})
 @Retention(RetentionPolicy.SOURCE)
 public @interface PageInsightsEvent {
-    /** The Page Insights bottom sheet enters its peeking state. */
+    /** The Page Insights bottom sheet opens automatically in its peeking state. */
     int BOTTOM_SHEET_PEEKING = 0;
 
-    /** The Page Insights bottom sheet enters its expanded state. */
+    /**
+     * The Page Insights bottom sheet enters its expanded state, either by the feature being
+     * launched by the user, or by the user dragging up from peek state.
+     */
     int BOTTOM_SHEET_EXPANDED = 1;
 
     /** The child page back button is visible. */

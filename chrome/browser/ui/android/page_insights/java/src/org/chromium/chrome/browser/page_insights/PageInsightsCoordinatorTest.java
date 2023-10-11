@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.page_insights.proto.PageInsights.Page;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.PageInsightsMetadata;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsSurfaceRenderer;
@@ -75,6 +76,7 @@ import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.HintsProto;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -129,7 +131,13 @@ public class PageInsightsCoordinatorTest {
     @Mock
     private ProcessScope mProcessScope;
     @Mock
+    private Supplier<Profile> mProfileSupplier;
+    @Mock
     private Profile mProfile;
+    @Mock
+    private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock
+    private IdentityManager mIdentityManager;
     @Mock
     private PageInsightsSurfaceScope mSurfaceScope;
     @Mock
@@ -167,6 +175,9 @@ public class PageInsightsCoordinatorTest {
                 .when(mSurfaceRenderer)
                 .render(any(), any());
         doReturn(false).when(mIsPageInsightsHubEnabled).getAsBoolean();
+        doReturn(mProfile).when(mProfileSupplier).get();
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(mProfile);
         mFeatureListValues = new FeatureList.TestValues();
         FeatureList.setTestValues(mFeatureListValues);
         mFeatureListValues.addFieldTrialParamOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
@@ -209,10 +220,19 @@ public class PageInsightsCoordinatorTest {
                     KeyboardVisibilityDelegate.getInstance(), () -> rootView());
         });
         doReturn(true).when(mIsPageInsightsHubEnabled).getAsBoolean();
-        mPageInsightsCoordinator = new PageInsightsCoordinator(activity, mTabProvider,
-                mShareDelegateSupplier, mPageInsightsController, mBottomUiController,
-                mExpandedSheetHelper, mBrowserControlsStateProvider, mBrowserControlsSizer,
-                mIsPageInsightsHubEnabled, 0);
+        mPageInsightsCoordinator =
+                new PageInsightsCoordinator(
+                        activity,
+                        mTabProvider,
+                        mShareDelegateSupplier,
+                        mProfileSupplier,
+                        mPageInsightsController,
+                        mBottomUiController,
+                        mExpandedSheetHelper,
+                        mBrowserControlsStateProvider,
+                        mBrowserControlsSizer,
+                        mIsPageInsightsHubEnabled,
+                        0);
         doReturn(mTab).when(mTabProvider).get();
         doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mTab).getUrl();
         verify(mTabProvider).addObserver(mTabCallbackCaptor.capture());
