@@ -27,6 +27,7 @@
 #include "services/network/network_service_memory_cache.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
@@ -1284,6 +1285,14 @@ mojom::ClientSecurityStatePtr CorsURLLoader::CloneClientSecurityState() const {
 
 bool CorsURLLoader::ShouldIgnorePrivateNetworkAccessErrors() const {
   const mojom::ClientSecurityState* state = GetClientSecurityState();
+  // When the PNA permission prompt shown, we should always respect the
+  // preflight results, otherwise it would be a bypass of mixed content checker.
+  if (base::FeatureList::IsEnabled(
+          network::features::kPrivateNetworkAccessPermissionPrompt) &&
+      state->is_web_secure_context &&
+      !network::IsUrlPotentiallyTrustworthy(request_.url)) {
+    return false;
+  }
   return state && state->private_network_request_policy ==
                       mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
 }
