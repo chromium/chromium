@@ -12,6 +12,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/memory/ref_counted.h"
@@ -783,6 +784,13 @@ class BrowserAutofillManagerTest : public testing::Test {
   void FormSubmitted(const FormData& form) {
     browser_autofill_manager_->OnFormSubmitted(
         form, false, SubmissionSource::FORM_SUBMISSION);
+  }
+
+  void AddFormFillHistoryEntry(
+      base::span<const FormFieldData* const> filled_fields,
+      bool is_refill) {
+    test_api(*browser_autofill_manager_)
+        .AddFormFillEntry(filled_fields, is_refill);
   }
 
   void FillAutofillFormData(
@@ -2977,6 +2985,31 @@ TEST_F(BrowserAutofillManagerTest, UndoAutofillCallsDriver) {
 
   browser_autofill_manager_->UndoAutofill(
       mojom::AutofillActionPersistence::kFill, form, form.fields.front());
+}
+
+TEST_F(BrowserAutofillManagerTest, UndoResetsCachedAutofillState) {
+  FormData form = CreateTestAddressFormData();
+  std::vector<const FormFieldData* const> filled_fields = {
+      &form.fields.front()};
+
+  form.fields.front().is_autofilled = false;
+  AddFormFillHistoryEntry(filled_fields, /*is_refill=*/false);
+  form.fields.front().is_autofilled = true;
+  FormsSeen({form});
+
+  FormStructure* form_structure;
+  AutofillField* autofill_field;
+  std::vector<FieldGlobalId> safe_fields{form.fields.front().global_id()};
+  ASSERT_TRUE(browser_autofill_manager_->GetCachedFormAndField(
+      form, form.fields.front(), &form_structure, &autofill_field));
+  ASSERT_TRUE(autofill_field->is_autofilled);
+
+  browser_autofill_manager_->UndoAutofill(
+      mojom::AutofillActionPersistence::kFill, form, form.fields.front());
+
+  ASSERT_TRUE(browser_autofill_manager_->GetCachedFormAndField(
+      form, form.fields.front(), &form_structure, &autofill_field));
+  EXPECT_FALSE(autofill_field->is_autofilled);
 }
 
 TEST_F(BrowserAutofillManagerTest,

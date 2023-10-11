@@ -1446,10 +1446,19 @@ void BrowserAutofillManager::UndoAutofill(
            form_autofill_history_.GetLastFillingOperationForField(
                field.global_id()) != operation;
   });
+
   for (FormFieldData& field : form.fields) {
-    // Using the form history, reset the field's value and is_autofilled state.
-    std::tie(field.value, field.is_autofilled) =
+    const auto& [previous_value, previous_is_autofilled] =
         operation.GetAutofillValue(field.global_id());
+    // Update `field` to send for the renderer.
+    field.value = previous_value;
+    field.is_autofilled = previous_is_autofilled;
+
+    // If the field is cached update the cached autofill state in the browser.
+    // TODO(crbug.com/1345089): Consider updating the value too.
+    if (AutofillField* autofill_field = GetAutofillField(form, field)) {
+      autofill_field->is_autofilled = previous_is_autofilled;
+    }
   }
 
   // Since Undo only affects fields that were already filled, and only sets
