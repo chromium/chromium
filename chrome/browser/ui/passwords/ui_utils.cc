@@ -227,6 +227,7 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
       case ManagePasswordsReferrer::kChromeMenuItem:
       case ManagePasswordsReferrer::kSharedPasswordsNotificationBubble:
       case ManagePasswordsReferrer::kSearchPasswordsWidget:
+      case ManagePasswordsReferrer::kOmniboxPedalSuggestion:
         NOTREACHED_NORETURN();
     }
 

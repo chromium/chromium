@@ -21,6 +21,7 @@
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/browser/remote_suggestions_service.h"
 #import "components/omnibox/common/omnibox_features.h"
+#import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/variations/variations_associated_data.h"
 #import "components/variations/variations_ids_provider.h"
@@ -255,6 +256,12 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
           "Omnibox.SuggestionUsed.Pedal",
           (OmniboxPedalId)pedalSuggestionWrapper.innerPedal.type,
           OmniboxPedalId::TOTAL_COUNT);
+      if ((OmniboxPedalId)pedalSuggestionWrapper.innerPedal.type ==
+          OmniboxPedalId::MANAGE_PASSWORDS) {
+        base::UmaHistogramEnumeration(
+            "PasswordManager.ManagePasswordsReferrer",
+            password_manager::ManagePasswordsReferrer::kOmniboxPedalSuggestion);
+      }
       pedalSuggestionWrapper.innerPedal.action();
     }
   } else if ([suggestion isKindOfClass:[AutocompleteMatchFormatter class]]) {
