@@ -828,13 +828,18 @@ class IOTaskBrowserTest
           auto warn_cb = base::BindOnce(
               [](DlpFilesControllerAsh::CheckIfTransferAllowedCallback cb,
                  const bool expected_should_proceed,
+                 const std::vector<storage::FileSystemURL>& transferred_files,
                  absl::optional<std::u16string> user_justification,
                  bool should_proceed) {
                 EXPECT_EQ(should_proceed, expected_should_proceed);
-                // No file is blocked.
-                std::move(cb).Run({});
+                if (should_proceed) {
+                  std::move(cb).Run({});
+                } else {
+                  std::move(cb).Run({transferred_files});
+                }
               },
-              std::move(result_callback), expected_should_proceed);
+              std::move(result_callback), expected_should_proceed,
+              transferred_files);
           if (type == Policy::kDlp) {
             fpnm_->ShowDlpWarning(std::move(warn_cb), task_id.value(),
                                   warning_files, DlpFileDestination(), action);
@@ -1021,8 +1026,9 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   notification1 = bridge_->GetDisplayedNotification(kNotificationId1);
   ASSERT_TRUE(notification1.has_value());
   EXPECT_EQ(notification1->title(), timeout_title);
-
   EXPECT_FALSE(fpnm_->HasIOTask(kTaskId1));
+  // Dismiss the notification.
+  bridge_->Click(kNotificationId1, absl::nullopt);
 
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
@@ -1032,6 +1038,8 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
                          /*action_warned_buckets=*/{base::Bucket(action, 1)},
                          /*warning_count_buckets=*/{base::Bucket(2, 1)},
                          /*action_timedout_buckets=*/{base::Bucket(action, 1)});
+
+  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
 }
 
 // Tests that clicking the OK button on a warning notification shown for copy or
@@ -1117,9 +1125,7 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   ASSERT_EQ(first_app, FindFilesApp());
 
   // The first notification should be closed.
-  // TODO(b/297031519): Uncomment after investigating test failures.
-  // EXPECT_FALSE(
-  //  bridge_->GetDisplayedNotification(kNotificationId1).has_value());
+  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
 
   // Show the second dialog.
   ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId2).has_value());
@@ -1130,9 +1136,7 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   ASSERT_EQ(first_app, FindFilesApp());
 
   // The notification should be closed.
-  // TODO(b/297031519): Uncomment after investigating test failures.
-  // EXPECT_FALSE(
-  //  bridge_->GetDisplayedNotification(kNotificationId2).has_value());
+  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId2).has_value());
 
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 1);

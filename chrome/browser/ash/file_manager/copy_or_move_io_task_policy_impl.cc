@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task_policy_impl.h"
 
-#include <cmath>
 #include <memory>
 #include <string>
 #include <vector>
@@ -28,7 +27,6 @@
 #include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/common/chrome_features.h"
-#include "components/enterprise/data_controls/component.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate_composite.h"
@@ -493,8 +491,10 @@ void CopyOrMoveIOTaskPolicyImpl::IsTransferAllowed(
 
 void CopyOrMoveIOTaskPolicyImpl::OnCheckIfTransferAllowed(
     std::vector<storage::FileSystemURL> blocked_entries) {
-  // This function won't be reached if the user cancelled the DLP warning or the
-  // DLP warning timed out.
+  // Check if the task was cancelled by the user.
+  if (progress_->state == State::kCancelled) {
+    return;
+  }
 
   for (const auto& entry : blocked_entries) {
     dlp_blocked_files_.insert(entry.path());
