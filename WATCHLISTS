@@ -2543,7 +2543,6 @@
                                 'dschulze@chromium.org',
                                 'fmalita+watch@chromium.org',
                                 'fserb+watch@chromium.org',
-                                'pdr+graphicswatchlist@chromium.org',
                                 'schenney@chromium.org'],
     'blink_preloadScanner': ['yoavweiss@chromium.org'],
     'blink_prerender': ['gavinp+prerender@chromium.org',
