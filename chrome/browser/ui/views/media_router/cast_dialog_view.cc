@@ -292,8 +292,7 @@ void CastDialogView::InitializeSourcesButton() {
           l10n_util::GetStringUTF16(
               IDS_MEDIA_ROUTER_ALTERNATIVE_SOURCES_BUTTON)));
   sources_button_->SetEnabled(false);
-  // TODO(crbug.com/1467969): Set the button style to `ui::ButtonStyle::kTonal`
-  // once crbug.com/1486965 is fixed.
+  sources_button_->SetStyle(ui::ButtonStyle::kTonal);
 }
 
 void CastDialogView::ShowSourcesMenu() {
