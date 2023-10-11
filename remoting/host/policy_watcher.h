@@ -55,7 +55,7 @@ class PolicyWatcher : public policy::PolicyService::Observer {
   //
   // |policy_error_callback| will be called when malformed policies are detected
   // (i.e. wrong type of policy value, or unparseable files under
-  // /etc/opt/chrome/policies/managed).
+  // $POLICY_PATH/managed).
   // When called, the |policy_error_callback| is responsible for mitigating the
   // security risk of running with incorrectly formulated policies (by either
   // shutting down or locking down the host).

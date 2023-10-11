@@ -41,6 +41,7 @@
 #include "components/policy/core/common/preferences_mac.h"
 #elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 #include "components/policy/core/common/config_dir_policy_loader.h"
+#include "components/policy/core/common/policy_paths.h"  // nogncheck
 #endif
 
 namespace remoting {
@@ -463,8 +464,7 @@ std::unique_ptr<PolicyWatcher> PolicyWatcher::CreateWithTaskRunner(
       new MacPreferences(), bundle_id);
 #elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
   policy_loader = std::make_unique<policy::ConfigDirPolicyLoader>(
-      file_task_runner,
-      base::FilePath(FILE_PATH_LITERAL("/etc/opt/chrome/policies")),
+      file_task_runner, base::FilePath(policy::kPolicyPath),
       policy::POLICY_SCOPE_MACHINE);
 #elif BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();

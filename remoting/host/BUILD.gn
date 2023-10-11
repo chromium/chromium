@@ -483,6 +483,10 @@ static_library("common") {
       "posix/signal_handler.cc",
       "posix/signal_handler.h",
     ]
+
+    if (!is_android) {
+      deps += [ "//components/policy/core/common:policy_path_constants" ]
+    }
   }
 
   if (!is_ios) {
