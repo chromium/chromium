@@ -329,7 +329,7 @@ std::string ClientTagBasedModelTypeProcessor::TrackedCacheGuid() const {
 
 void ClientTagBasedModelTypeProcessor::ReportError(const ModelError& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ReportErrorImpl(error, ErrorSite::kBridgeInitiated);
+  ReportErrorImpl(error, ErrorSite::kReportedByBridge);
 }
 
 void ClientTagBasedModelTypeProcessor::ReportErrorImpl(const ModelError& error,

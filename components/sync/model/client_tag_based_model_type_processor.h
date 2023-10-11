@@ -135,7 +135,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused. Public for tests.
   enum class ErrorSite {
-    kBridgeInitiated = 0,
+    kReportedByBridge = 0,
     kApplyFullUpdates = 1,
     kApplyIncrementalUpdates = 2,
     kApplyUpdatesOnCommitResponse = 3,

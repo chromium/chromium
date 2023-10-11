@@ -789,26 +789,26 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldReportErrorDuringMerge) {
 // Test that errors before it's called are passed to |start_callback| correctly.
 TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldDeferErrorsBeforeStart) {
   type_processor()->ReportError({FROM_HERE, "boom"});
-  ExpectError(ClientTagBasedModelTypeProcessor::ErrorSite::kBridgeInitiated);
+  ExpectError(ClientTagBasedModelTypeProcessor::ErrorSite::kReportedByBridge);
   OnSyncStarting();
 
   // Test OnSyncStarting happening first.
   ResetState(false);
   OnSyncStarting();
-  ExpectError(ClientTagBasedModelTypeProcessor::ErrorSite::kBridgeInitiated);
+  ExpectError(ClientTagBasedModelTypeProcessor::ErrorSite::kReportedByBridge);
   type_processor()->ReportError({FROM_HERE, "boom"});
 
   // Test an error loading pending data.
   ResetStateWriteItem(kKey1, kValue1);
   bridge()->ErrorOnNextCall();
   InitializeToMetadataLoaded();
-  ExpectError(ClientTagBasedModelTypeProcessor::ErrorSite::kBridgeInitiated);
+  ExpectError(ClientTagBasedModelTypeProcessor::ErrorSite::kReportedByBridge);
   OnSyncStarting();
 
   // Test an error prior to metadata load.
   ResetState(false);
   type_processor()->ReportError({FROM_HERE, "boom"});
-  ExpectError(ClientTagBasedModelTypeProcessor::ErrorSite::kBridgeInitiated);
+  ExpectError(ClientTagBasedModelTypeProcessor::ErrorSite::kReportedByBridge);
   OnSyncStarting();
   ModelReadyToSync();
 
@@ -816,7 +816,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldDeferErrorsBeforeStart) {
   ResetStateWriteItem(kKey1, kValue1);
   InitializeToMetadataLoaded();
   type_processor()->ReportError({FROM_HERE, "boom"});
-  ExpectError(ClientTagBasedModelTypeProcessor::ErrorSite::kBridgeInitiated);
+  ExpectError(ClientTagBasedModelTypeProcessor::ErrorSite::kReportedByBridge);
   OnSyncStarting();
 }
 
