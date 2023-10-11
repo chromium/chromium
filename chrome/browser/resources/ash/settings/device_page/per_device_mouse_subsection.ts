@@ -243,6 +243,12 @@ export class SettingsPerDeviceMouseSubsectionElement extends
         this.isPeripheralCustomizationEnabled_;
   }
 
+  private showSwapToggleButton(): boolean {
+    return this.customizationRestriction ===
+        CustomizationRestriction.kDisallowCustomizations &&
+        this.isPeripheralCustomizationEnabled_;
+  }
+
   private updateSettingsToCurrentPrefs(): void {
     // `updateSettingsToCurrentPrefs` gets called when the `keyboard` object
     // gets updated. This subsection element can be reused multiple times so we

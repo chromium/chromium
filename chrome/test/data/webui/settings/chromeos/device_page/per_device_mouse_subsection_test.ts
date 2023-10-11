@@ -144,6 +144,58 @@ suite('<settings-per-device-mouse-subsection>', function() {
   });
 
   /**
+   * Test that there is mouse swap toggle button if the mouse
+   * has kDisallowCustomizations restriction and PeripheralCustomization
+   * is enabled.
+   */
+  test('Check if show mouse swap toggle button', async () => {
+    await initializePerDeviceMouseSubsection(fakeMice2);
+    let mouseSwapToggleButton =
+        subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#mouseSwapToggleButton');
+    let customizeButtonsRow =
+        subsection.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#customizeMouseButtons');
+    assertTrue(!!mouseSwapToggleButton);
+    assertTrue(mouseSwapToggleButton!.pref!.value);
+    assertEquals(
+        fakeMice2[0]!.settings.swapRight, mouseSwapToggleButton!.pref!.value);
+    assertFalse(!!customizeButtonsRow);
+
+    // Click mouse swap toggle button will update the pref value.
+    mouseSwapToggleButton.click();
+    await flushTasks();
+    assertFalse(mouseSwapToggleButton!.pref!.value);
+    assertEquals(
+        fakeMice2[0]!.settings.swapRight, mouseSwapToggleButton!.pref!.value);
+
+    // Turn off the feature flag, the mouse swap toggle button disappear.
+    setPeripheralCustomizationEnabled(false);
+    await initializePerDeviceMouseSubsection(fakeMice2);
+    mouseSwapToggleButton =
+        subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#mouseSwapToggleButton');
+    assertFalse(!!mouseSwapToggleButton);
+    customizeButtonsRow =
+        subsection.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#customizeMouseButtons');
+    assertFalse(!!customizeButtonsRow);
+
+    // If the customization restriction is not kDisallowCustomizations,
+    // the mouse swap toggle button disappear.
+    setPeripheralCustomizationEnabled(true);
+    await initializePerDeviceMouseSubsection(fakeMice);
+    mouseSwapToggleButton =
+        subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#mouseSwapToggleButton');
+    assertFalse(!!mouseSwapToggleButton);
+    customizeButtonsRow =
+        subsection.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#customizeMouseButtons');
+    assertTrue(!!customizeButtonsRow);
+  });
+
+  /**
    * Test that mouse settings data are from the mouse provider.
    */
   test('Verify mouse settings data', async () => {
