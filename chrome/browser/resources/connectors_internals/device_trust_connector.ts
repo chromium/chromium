@@ -144,6 +144,14 @@ export class DeviceTrustConnectorElement extends CustomElement {
     } else {
       console.error('Could not find #signals element.');
     }
+
+    const signalsSection = (this.$('#signals-section') as HTMLElement);
+    if (signalsSection) {
+      str === '' ? this.hideElement(signalsSection) :
+                   this.showElement(signalsSection);
+    } else {
+      console.error('Could not find #signals-section element.');
+    }
   }
 
   get copyButton(): HTMLButtonElement|undefined {
