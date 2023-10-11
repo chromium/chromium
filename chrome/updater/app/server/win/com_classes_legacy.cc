@@ -72,28 +72,23 @@ absl::optional<std::wstring> StringFromVariant(const VARIANT& source) {
   return {};
 }
 
-template <typename T>
-std::string GetStringFromValue(const T& value) {
+std::string GetStringFromValue(const std::string& value) {
   return value;
 }
 
-template <>
 std::string GetStringFromValue(const int& value) {
   return base::NumberToString(value);
 }
 
-template <>
 std::string GetStringFromValue(const bool& value) {
   return value ? "true" : "false";
 }
 
-template <>
 std::string GetStringFromValue(const updater::UpdatesSuppressedTimes& value) {
   return base::StringPrintf("%d, %d, %d", value.start_hour_,
                             value.start_minute_, value.duration_minute_);
 }
 
-template <>
 std::string GetStringFromValue(const std::vector<std::string>& value) {
   return base::JoinString(value, ";");
 }
