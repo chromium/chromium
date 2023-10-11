@@ -693,17 +693,6 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileOKShowsDialog_Timeout) {
   // The notification should be closed.
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
 
-  // Cancel the dialog, which opens the Learn more link.
-  EXPECT_NE(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetURL().spec(),
-      dlp::kDlpLearnMoreUrl);
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_ESCAPE, /*control=*/false,
-      /*shift=*/false, /*alt=*/false, /*command=*/false));
-  EXPECT_EQ(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetURL().spec(),
-      dlp::kDlpLearnMoreUrl);
-
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
   histogram_tester_.ExpectBucketCount(

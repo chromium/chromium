@@ -25,6 +25,11 @@ policy::FilesPolicyDialog::Info GetDialogInfoForEnterpriseConnectorsBlockReason(
         std::unique_ptr<enterprise_connectors::FileTransferAnalysisDelegate>>&
         file_transfer_analysis_delegates);
 
+// Appends a learn more link to the given `view`.
+void AddLearnMoreLink(const std::u16string& text,
+                      const GURL& url,
+                      views::View* view);
+
 }  // namespace policy
 
 #endif  // CHROME_BROWSER_ASH_POLICY_DLP_DIALOGS_FILES_POLICY_DIALOG_UTILS_H_

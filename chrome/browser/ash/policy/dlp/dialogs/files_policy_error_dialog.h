@@ -37,7 +37,8 @@ class FilesPolicyErrorDialog : public FilesPolicyDialog {
   struct BlockedFilesSection {
     BlockedFilesSection(int view_id,
                         const std::u16string& message,
-                        const std::vector<DlpConfidentialFile>& files);
+                        const std::vector<DlpConfidentialFile>& files,
+                        const std::set<GURL>& learn_more_urls);
     ~BlockedFilesSection();
 
     BlockedFilesSection(const BlockedFilesSection& other);
@@ -53,12 +54,16 @@ class FilesPolicyErrorDialog : public FilesPolicyDialog {
 
     // The blocked files.
     std::vector<DlpConfidentialFile> files;
+
+    // Learn more URLs displayed to the user. Because a section may hold files
+    // blocked for different reasons, each of which defining its own learn more
+    // URL, we use a set to collect distinct URLs only.
+    std::set<GURL> learn_more_urls;
   };
 
   // PolicyDialogBase overrides:
   void MaybeAddConfidentialRows() override;
   std::u16string GetOkButton() override;
-  std::u16string GetCancelButton() override;
   std::u16string GetTitle() override;
   std::u16string GetMessage() override;
 
@@ -78,10 +83,6 @@ class FilesPolicyErrorDialog : public FilesPolicyDialog {
   // Adds the given `section` to the dialog.
   // Should only be called after `SetupUpperPanel()`.
   void AddBlockedFilesSection(const BlockedFilesSection& section);
-
-  // Called from the dialog's "Cancel" button.
-  // Opens the help page for policy/-ies that blocked the file action.
-  void OpenLearnMore();
 
   // Called from the dialog's "OK" button.
   // Dismisses the dialog.

@@ -9,6 +9,7 @@
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog_utils.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_string_util.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
@@ -50,6 +51,24 @@ std::vector<DlpConfidentialFile> GetFilesBlockedByReasons(
   }
   return blocked_files;
 }
+
+// Returns learn more links associated with the given `reasons`.
+std::set<GURL> GetLearnMoreLinks(
+    const std::vector<FilesPolicyDialog::BlockReason>& reasons,
+    const std::map<FilesPolicyDialog::BlockReason, FilesPolicyDialog::Info>&
+        dialog_info_map) {
+  std::set<GURL> links;
+  for (FilesPolicyDialog::BlockReason reason : reasons) {
+    auto it = dialog_info_map.find(reason);
+    if (it == dialog_info_map.end() ||
+        !it->second.GetLearnMoreURL().has_value()) {
+      continue;
+    }
+    links.insert(it->second.GetLearnMoreURL().value());
+  }
+  return links;
+}
+
 }  // namespace
 FilesPolicyErrorDialog::FilesPolicyErrorDialog(
     const std::map<BlockReason, Info>& dialog_info_map,
@@ -58,10 +77,8 @@ FilesPolicyErrorDialog::FilesPolicyErrorDialog(
     : FilesPolicyDialog(dialog_info_map.size(), action, modal_parent) {
   SetAcceptCallback(base::BindOnce(&FilesPolicyErrorDialog::Dismiss,
                                    weak_factory_.GetWeakPtr()));
-  SetCancelCallback(base::BindOnce(&FilesPolicyErrorDialog::OpenLearnMore,
-                                   weak_factory_.GetWeakPtr()));
   SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
-  SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_CANCEL, GetCancelButton());
+  SetButtons(ui::DIALOG_BUTTON_OK);
 
   SetupBlockedFilesSections(dialog_info_map);
 
@@ -81,8 +98,12 @@ FilesPolicyErrorDialog::~FilesPolicyErrorDialog() = default;
 FilesPolicyErrorDialog::BlockedFilesSection::BlockedFilesSection(
     int view_id,
     const std::u16string& message,
-    const std::vector<DlpConfidentialFile>& files)
-    : view_id(view_id), message(message), files(files) {}
+    const std::vector<DlpConfidentialFile>& files,
+    const std::set<GURL>& learn_more_urls)
+    : view_id(view_id),
+      message(message),
+      files(files),
+      learn_more_urls(learn_more_urls) {}
 
 FilesPolicyErrorDialog::BlockedFilesSection::~BlockedFilesSection() = default;
 
@@ -116,10 +137,6 @@ void FilesPolicyErrorDialog::MaybeAddConfidentialRows() {
 
 std::u16string FilesPolicyErrorDialog::GetOkButton() {
   return l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_OK_BUTTON);
-}
-
-std::u16string FilesPolicyErrorDialog::GetCancelButton() {
-  return l10n_util::GetStringUTF16(IDS_LEARN_MORE);
 }
 
 std::u16string FilesPolicyErrorDialog::GetTitle() {
@@ -184,7 +201,8 @@ void FilesPolicyErrorDialog::SetupBlockedFilesSections(
       files_string_util::GetBlockReasonMessage(
           FilesPolicyDialog::BlockReason::kEnterpriseConnectors,
           merged_enterprise_connectors_files.size()),
-      merged_enterprise_connectors_files);
+      merged_enterprise_connectors_files,
+      GetLearnMoreLinks(merged_enterprise_connectors_reasons, dialog_info_map));
 
   AppendBlockedFilesSection(
       FilesPolicyErrorDialog::BlockReason::kEnterpriseConnectorsEncryptedFile,
@@ -202,7 +220,8 @@ void FilesPolicyErrorDialog::AppendBlockedFilesSection(
     return;
   }
   sections_.emplace_back(MapBlockReasonToViewID(reason),
-                         it->second.GetMessage(), it->second.GetFiles());
+                         it->second.GetMessage(), it->second.GetFiles(),
+                         GetLearnMoreLinks({reason}, dialog_info_map));
 }
 
 void FilesPolicyErrorDialog::AddBlockedFilesSection(
@@ -224,14 +243,21 @@ void FilesPolicyErrorDialog::AddBlockedFilesSection(
       ash::TypographyProvider::Get()->ResolveTypographyToken(
           ash::TypographyToken::kCrosBody1));
 
+  // Add the learn more link if provided.
+  for (const GURL& url : section.learn_more_urls) {
+    views::View* learn_more_row =
+        scroll_view_container_->AddChildView(std::make_unique<views::View>());
+    learn_more_row->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal,
+        gfx::Insets::TLBR(0, 16, 10, 16), 0));
+
+    AddLearnMoreLink(l10n_util::GetStringUTF16(IDS_LEARN_MORE), url,
+                     learn_more_row);
+  }
+
   for (const auto& file : section.files) {
     AddConfidentialRow(file.icon, file.title);
   }
-}
-
-void FilesPolicyErrorDialog::OpenLearnMore() {
-  // TODO(b/291896216): Open page based on policy.
-  dlp::OpenLearnMore();
 }
 
 void FilesPolicyErrorDialog::Dismiss() {

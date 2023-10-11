@@ -42,9 +42,11 @@ class FilesPolicyWarnDialog : public FilesPolicyDialog {
   // PolicyDialogBase overrides:
   void MaybeAddConfidentialRows() override;
   std::u16string GetOkButton() override;
-  std::u16string GetCancelButton() override;
   std::u16string GetTitle() override;
   std::u16string GetMessage() override;
+
+  // Returns the Cancel button label.
+  std::u16string GetCancelButton();
 
   // Called when the user proceeds the warning.
   void ProceedWarning(

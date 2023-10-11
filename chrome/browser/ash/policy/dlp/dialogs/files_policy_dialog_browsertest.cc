@@ -260,8 +260,8 @@ IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, NoParent) {
 }
 
 // Tests that the error dialog is created as a window modal if a Files app
-// window is passed as the parent, and that cancelling the dialog opens the help
-// article page.
+// window is passed as the parent, and that accepting the dialog dismisses it
+// without any other action.
 IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, WithParent) {
   dlp::FileAction action = GetParam();
 
@@ -281,15 +281,9 @@ IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, WithParent) {
   EXPECT_EQ(dialog->GetModalType(), ui::ModalType::MODAL_TYPE_WINDOW);
   EXPECT_EQ(widget->parent()->GetNativeWindow(),
             files_app->window()->GetNativeWindow());
-  // Cancel -> Learn more.
-  EXPECT_NE(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetURL().spec(),
-      dlp::kDlpLearnMoreUrl);
-  dialog->CancelDialog();
+  // Accept -> dismiss.
+  dialog->AcceptDialog();
   EXPECT_TRUE(widget->IsClosed());
-  EXPECT_EQ(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetURL().spec(),
-      dlp::kDlpLearnMoreUrl);
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   GetDlpHistogramPrefix() +

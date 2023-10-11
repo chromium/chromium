@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog_utils.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_string_util.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
@@ -97,6 +98,10 @@ FilesPolicyWarnDialog::FilesPolicyWarnDialog(
   SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_CANCEL, GetCancelButton());
 
   AddGeneralInformation();
+  if (dialog_info_.GetLearnMoreURL().has_value()) {
+    AddLearnMoreLink(l10n_util::GetStringUTF16(IDS_LEARN_MORE),
+                     dialog_info_.GetLearnMoreURL().value(), upper_panel_);
+  }
   MaybeAddConfidentialRows();
 
   // TODO(b/299578935): Customize the warning dialog according to
