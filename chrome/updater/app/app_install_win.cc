@@ -426,7 +426,9 @@ std::string GetTextForUpdateCheckError(int error) {
       default:
         return GetLocalizedStringF(
             IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
-            base::UTF8ToWide(GetTextForSystemError(error)));
+            base::UTF8ToWide(error >= 400 && error < 600
+                                 ? base::StringPrintf("HTTP %d", error)
+                                 : GetTextForSystemError(error)));
     }
   }());
 #undef UPDATE_CHECK_SWITCH_ENTRY

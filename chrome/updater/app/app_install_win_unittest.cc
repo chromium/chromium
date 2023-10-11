@@ -170,6 +170,10 @@ INSTANTIATE_TEST_SUITE_P(
         {UpdateService::ErrorCategory::kUpdateCheck, 407,
          base::WideToUTF16(GetLocalizedString(
              IDS_ERROR_HTTPSTATUS_PROXY_AUTH_REQUIRED_BASE))},
+        {UpdateService::ErrorCategory::kUpdateCheck, 404,
+         base::WideToUTF16(
+             GetLocalizedStringF(IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
+                                 L"HTTP 404"))},
         {UpdateService::ErrorCategory::kUpdateCheck, 0xFFFF,
          base::WideToUTF16(
              GetLocalizedStringF(IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
