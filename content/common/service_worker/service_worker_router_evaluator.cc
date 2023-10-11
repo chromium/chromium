@@ -21,9 +21,6 @@
 
 namespace {
 
-// TODO(crbug.com/1485792): set this value by discussing in spec proposal.
-static constexpr int kRouterConditionMaxRecursionDepth = 10;
-
 class BaseCondition;
 class OrCondition;
 class ConditionObject;
@@ -297,7 +294,7 @@ bool IsValidSources(
 [[nodiscard]] bool ExceedsMaxConditionDepth(
     const std::vector<blink::ServiceWorkerRouterCondition>& conditions,
     int depth = 0) {
-  if (depth >= kRouterConditionMaxRecursionDepth) {
+  if (depth >= blink::kServiceWorkerRouterConditionMaxRecursionDepth) {
     return true;
   }
   for (const auto& c : conditions) {

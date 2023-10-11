@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/service_worker/service_worker_router_type_converter.h"
 
+#include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_router_condition.h"
@@ -23,6 +24,31 @@
 namespace blink {
 
 namespace {
+
+absl::optional<ServiceWorkerRouterConditionObject> RouterConditionToBlink(
+    RouterCondition* v8_condition,
+    const KURL& url_pattern_base_url,
+    ExceptionState& exception_state);
+
+[[nodiscard]] bool ExceedsMaxConditionDepth(const RouterCondition* v8_condition,
+                                            ExceptionState& exception_state,
+                                            int depth = 0) {
+  CHECK(v8_condition);
+  if (depth >= blink::kServiceWorkerRouterConditionMaxRecursionDepth) {
+    exception_state.ThrowTypeError("Conditions are nested too much");
+    return true;
+  }
+  if (!v8_condition->hasOrConditions()) {
+    return false;
+  }
+  for (const auto& v8_ob : v8_condition->orConditions()) {
+    if (ExceedsMaxConditionDepth(v8_ob, exception_state, depth + 1)) {
+      CHECK(exception_state.HadException());
+      return true;
+    }
+  }
+  return false;
+}
 
 absl::optional<std::vector<liburlpattern::Part>> ToPartList(
     const String& pattern,
@@ -183,6 +209,29 @@ RouterRunningStatusConditionToBlink(RouterCondition* v8_condition,
   return condition;
 }
 
+absl::optional<ServiceWorkerRouterCondition> RouterOrConditionToBlink(
+    RouterCondition* v8_condition,
+    const KURL& url_pattern_base_url,
+    ExceptionState& exception_state) {
+  ServiceWorkerRouterOrCondition or_condition;
+  const auto& v8_objects = v8_condition->orConditions();
+  or_condition.objects.reserve(v8_objects.size());
+  for (auto&& v8_ob : v8_objects) {
+    absl::optional<ServiceWorkerRouterConditionObject> ob =
+        RouterConditionToBlink(v8_ob, url_pattern_base_url, exception_state);
+    if (!ob) {
+      CHECK(exception_state.HadException());
+      return absl::nullopt;
+    }
+    or_condition.objects.emplace_back(std::move(*ob));
+  }
+  ServiceWorkerRouterCondition condition;
+  condition.type = ServiceWorkerRouterCondition::Type::kOr;
+  condition.or_condition = std::move(or_condition);
+
+  return condition;
+}
+
 absl::optional<ServiceWorkerRouterConditionObject> RouterConditionToBlink(
     RouterCondition* v8_condition,
     const KURL& url_pattern_base_url,
@@ -216,6 +265,22 @@ absl::optional<ServiceWorkerRouterConditionObject> RouterConditionToBlink(
       return absl::nullopt;
     }
     ret.conditions.emplace_back(*condition);
+  }
+  if (v8_condition->hasOrConditions()) {
+    if (!ret.conditions.empty()) {
+      // `or` condition must be exclusive.
+      exception_state.ThrowTypeError(
+          "Cannot set other conditions when the `or` condition is specified");
+      return absl::nullopt;
+    }
+    const absl::optional<ServiceWorkerRouterCondition> condition =
+        RouterOrConditionToBlink(v8_condition, url_pattern_base_url,
+                                 exception_state);
+    if (!condition.has_value()) {
+      CHECK(exception_state.HadException());
+      return absl::nullopt;
+    }
+    ret.conditions.emplace_back(std::move(*condition));
   }
   if (ret.conditions.empty()) {
     // At least one condition should exist per rule.
@@ -307,14 +372,18 @@ absl::optional<ServiceWorkerRouterRule> ConvertV8RouterRuleToBlink(
   }
   ServiceWorkerRouterRule rule;
   // Set up conditions.
+  if (ExceedsMaxConditionDepth(input->condition(), exception_state)) {
+    CHECK(exception_state.HadException());
+    return absl::nullopt;
+  }
   const absl::optional<ServiceWorkerRouterConditionObject> condition_object =
       RouterConditionToBlink(input->condition(), url_pattern_base_url,
                              exception_state);
   if (!condition_object.has_value()) {
-    CHECK(exception_state.HadException());
     return absl::nullopt;
   }
   rule.conditions = std::move(condition_object->conditions);
+
   // Set up sources.
   // TODO(crbug.com/1371756): support multiple sources.
   // i.e. support full form shown in

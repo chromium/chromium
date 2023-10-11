@@ -19,5 +19,9 @@ dictionary RouterCondition {
 
   // For the running status.
   RunningStatusEnum runningStatus;
-};
 
+  // For the `or` condition.
+  // `ImplementedAs` is necessary to avoid conflicts with C++ keyword `or`.
+  // Chrome WebIDL compiler emits error without the leading underscore.
+  [ImplementedAs=orConditions] sequence<RouterCondition> _or;
+};
