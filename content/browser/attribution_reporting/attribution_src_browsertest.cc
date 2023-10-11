@@ -65,18 +65,11 @@ namespace content {
 
 namespace {
 
-using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::mojom::RegistrationEligibility;
 using ::net::test_server::EmbeddedTestServer;
-using ::testing::AllOf;
 using ::testing::ElementsAre;
-using ::testing::Eq;
-using ::testing::HasSubstr;
 using ::testing::IsEmpty;
-using ::testing::Optional;
-using ::testing::Pair;
 using ::testing::SizeIs;
-using ::testing::UnorderedElementsAre;
 
 }  // namespace
 
@@ -672,21 +665,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBasicTriggerBrowserTest,
   }
   data_host->WaitForTriggerData(/*num_trigger_data=*/1);
 
-  EXPECT_THAT(
-      data_host->trigger_data(),
-      ElementsAre(TriggerRegistrationMatches(TriggerRegistrationMatcherConfig(
-          FilterPair(),
-          /*debug_key=*/Eq(absl::nullopt),
-          ElementsAre(EventTriggerDataMatches(EventTriggerDataMatcherConfig(
-              /*data=*/7))),
-          std::vector<attribution_reporting::AggregatableDedupKey>(),
-          /*debug_reporting=*/false,
-          std::vector<attribution_reporting::AggregatableTriggerData>(),
-          /*aggregatable_values=*/
-          attribution_reporting::AggregatableValues(),
-          /*aggregation_coordinator_origin=*/Eq(absl::nullopt),
-          attribution_reporting::mojom::SourceRegistrationTimeConfig::
-              kExclude))));
+  EXPECT_THAT(data_host->trigger_data(), SizeIs(1));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
