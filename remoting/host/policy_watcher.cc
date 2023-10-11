@@ -18,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/async_policy_loader.h"
@@ -37,6 +38,8 @@
 #if BUILDFLAG(IS_WIN)
 #include "components/policy/core/common/policy_loader_win.h"
 #elif BUILDFLAG(IS_APPLE)
+#include "base/apple/foundation_util.h"
+#include "base/strings/sys_string_conversions.h"
 #include "components/policy/core/common/policy_loader_mac.h"
 #include "components/policy/core/common/preferences_mac.h"
 #elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
@@ -51,8 +54,12 @@ namespace key = ::policy::key;
 namespace {
 
 #if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr wchar_t kChromePolicyKey[] = L"SOFTWARE\\Policies\\Google\\Chrome";
-#endif
+#else
+constexpr wchar_t kChromePolicyKey[] = L"SOFTWARE\\Policies\\Chromium";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Copies all policy values from one dictionary to another, using values from
 // |default_values| if they are not set in |from|.
@@ -457,7 +464,15 @@ std::unique_ptr<PolicyWatcher> PolicyWatcher::CreateWithTaskRunner(
   policy_loader = std::make_unique<policy::PolicyLoaderWin>(
       file_task_runner, management_service, kChromePolicyKey);
 #elif BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Explicitly watch the "com.google.Chrome" bundle ID, no matter what this
+  // app's bundle ID actually is. All channels of Chrome should obey the same
+  // policies.
   CFStringRef bundle_id = CFSTR("com.google.Chrome");
+#else
+  base::apple::ScopedCFTypeRef<CFStringRef> bundle_id(
+      base::SysUTF8ToCFStringRef(base::apple::BaseBundleID()));
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   policy_loader = std::make_unique<policy::PolicyLoaderMac>(
       file_task_runner,
       policy::PolicyLoaderMac::GetManagedPolicyPath(bundle_id),
