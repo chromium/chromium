@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -377,6 +378,32 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest_CreateShortcutIgnoresManifest,
     EXPECT_EQ(registrar().GetAppById(app_id)->start_url(),
               PageWithDifferentStartUrlManifestStartUrl());
   }
+}
+
+IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest_CreateShortcutIgnoresManifest,
+                       CanInstallOverTabShortcutApp) {
+  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+  webapps::AppId shortcut_app_id = InstallShortcutAppForCurrentUrl();
+
+  bool create_shortcut_ignores_manifest = GetParam();
+  if (create_shortcut_ignores_manifest) {
+    EXPECT_TRUE(registrar().IsShortcutApp(shortcut_app_id));
+  } else {
+    EXPECT_FALSE(registrar().IsShortcutApp(shortcut_app_id));
+  }
+
+  Browser* new_browser =
+      NavigateInNewWindowAndAwaitInstallabilityCheck(GetInstallableAppURL());
+
+  EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, new_browser), kEnabled);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, new_browser), kEnabled);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, new_browser),
+            kNotPresent);
+
+  webapps::AppId web_app_id = test::InstallPwaForCurrentUrl(new_browser);
+
+  EXPECT_EQ(shortcut_app_id, web_app_id);
+  EXPECT_FALSE(registrar().IsShortcutApp(web_app_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(
