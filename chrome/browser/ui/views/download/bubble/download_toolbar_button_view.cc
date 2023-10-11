@@ -418,7 +418,7 @@ bool DownloadToolbarButtonView::OpenMostSpecificDialog(
   DownloadBubbleRowView* row = ShowPrimaryDialogRow(content_id);
 
   // Open the more specific security subpage if it has one.
-  if (row && row->ui_info().HasSubpage()) {
+  if (row && row->info().has_subpage()) {
     // TODO(b:279794441): Add warning action event for this warning being shown
     // from a notification.
     OpenSecurityDialog(content_id);

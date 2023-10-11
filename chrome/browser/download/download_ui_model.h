@@ -623,12 +623,12 @@ class DownloadUIModel {
   // specialize certain strings.
   virtual bool IsEncryptedArchive() const;
 
+  // Returns whether the download is triggered by an extension.
+  virtual bool IsExtensionDownload() const;
+
  protected:
   // Returns the MIME type of the download.
   virtual std::string GetMimeType() const;
-
-  // Returns whether the download is triggered by an extension.
-  virtual bool IsExtensionDownload() const;
 
   raw_ptr<Delegate> delegate_ = nullptr;
 

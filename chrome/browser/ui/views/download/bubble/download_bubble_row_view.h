@@ -92,11 +92,7 @@ class DownloadBubbleRowView : public views::View,
   const std::u16string& GetSecondaryLabelTextForTesting();
 
   DownloadUIModel* model() { return info_->model(); }
-
-  DownloadUIModel::BubbleUIInfo& ui_info() { return ui_info_; }
-  void SetUIInfoForTesting(DownloadUIModel::BubbleUIInfo ui_info) {
-    ui_info_ = std::move(ui_info);
-  }
+  const DownloadBubbleRowViewInfo& info() const { return *info_; }
 
   void SimulateMainButtonClickForTesting(const ui::Event& event);
   bool IsQuickActionButtonVisibleForTesting(DownloadCommands::Command command);
@@ -120,10 +116,6 @@ class DownloadBubbleRowView : public views::View,
       DownloadCommands::Command command);
   std::u16string GetAccessibleNameForMainPageButton(
       DownloadCommands::Command command);
-
-  // If there is any change in state, update UI info.
-  // Returns whether the ui info was changed.
-  bool UpdateBubbleUIInfo(bool initial_setup);
 
   // Update the DownloadBubbleRowView's members.
   void UpdateRow(bool initial_setup);
@@ -224,8 +216,6 @@ class DownloadBubbleRowView : public views::View,
   base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;
 
   base::WeakPtr<Browser> browser_ = nullptr;
-
-  DownloadUIModel::BubbleUIInfo ui_info_;
 
   // The last override icon, e.g. an incognito or warning icon. If this is
   // null, we should either use the filetype icon or a default icon.

@@ -137,6 +137,7 @@ class DownloadItemModel : public DownloadUIModel,
       const base::FilePath& target_path,
       bool is_filetype_handled_safely) override;
   bool IsEncryptedArchive() const override;
+  bool IsExtensionDownload() const override;
 
   // download::DownloadItem::Observer implementation.
   void OnDownloadUpdated(download::DownloadItem* download) override;
@@ -146,7 +147,6 @@ class DownloadItemModel : public DownloadUIModel,
  private:
   // DownloadUIModel implementation.
   std::string GetMimeType() const override;
-  bool IsExtensionDownload() const override;
 
   // The DownloadItem that this model represents. Note that DownloadItemModel
   // itself shouldn't maintain any state since there can be more than one

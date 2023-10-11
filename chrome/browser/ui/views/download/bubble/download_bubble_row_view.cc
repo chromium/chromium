@@ -139,43 +139,20 @@ BEGIN_METADATA(TransparentButton, Button)
 END_METADATA
 }  // namespace
 
-bool DownloadBubbleRowView::UpdateBubbleUIInfo(bool initial_setup) {
-  if (!info_->model()) {
-    return false;
-  }
-
-  // If either of mode or state changes, or if it is the initial setup,
-  // we might need to change UI.
-  if (!browser_) {
-    return false;
-  }
-  ui_info_ = info_->model()->GetBubbleUIInfo(
-      download::IsDownloadBubbleV2Enabled(browser_->profile()));
-  return true;
-}
-
 void DownloadBubbleRowView::UpdateRow(bool initial_setup) {
-  if (!info_->model()) {
-    return;
-  }
-
   if (initial_setup &&
       info_->model()->GetState() == download::DownloadItem::IN_PROGRESS) {
     AnnounceInProgressAlert();
     accessible_alert_in_progress_timer_.Reset();
   }
 
-  bool ui_info_changed = UpdateBubbleUIInfo(initial_setup);
-  if (ui_info_changed) {
-    RecordMetricsOnUpdate();
-    SetIcon();
-    UpdateButtons();
-  }
+  RecordMetricsOnUpdate();
+  SetIcon();
+  UpdateButtons();
   RecordDownloadDisplayed();
   UpdateLabels();
   UpdateProgressBar();
-  if ((initial_setup || ui_info_changed) &&
-      !update_status_text_timer_.IsRunning()) {
+  if (!update_status_text_timer_.IsRunning()) {
     update_status_text_timer_.Reset();
   }
 }
@@ -220,9 +197,6 @@ void DownloadBubbleRowView::SetIconFromImage(gfx::Image icon) {
 }
 
 bool DownloadBubbleRowView::StartLoadFileIcon() {
-  if (!info_->model()) {
-    return false;
-  }
   base::FilePath file_path = info_->model()->GetTargetFilePath();
   // Use a default icon (drive file outline icon) in case we have an empty
   // target path, which is empty for non download offline items, and newly
@@ -284,9 +258,6 @@ void DownloadBubbleRowView::SetIcon() {
   if (!GetWidget()) {
     return;
   }
-  if (!info_->model()) {
-    return;
-  }
 
   // Load the file icon unconditionally because it is used for drag-and-drop,
   // even if it is not used as the |icon_|. If this returns true, it set the
@@ -294,11 +265,11 @@ void DownloadBubbleRowView::SetIcon() {
   // But if there is an override, it will be re-set below.
   bool file_type_icon_set = StartLoadFileIcon();
 
-  if (ui_info_.icon_model_override) {
-    last_overridden_icon_ = ui_info_.icon_model_override;
+  if (info_->icon_override()) {
+    last_overridden_icon_ = info_->icon_override();
     has_default_icon_ = false;
     SetIconFromImageModel(ui::ImageModel::FromVectorIcon(
-        *ui_info_.icon_model_override, ui_info_.secondary_color,
+        *info_->icon_override(), info_->secondary_color(),
         GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
     return;
   }
@@ -668,8 +639,8 @@ void DownloadBubbleRowView::UpdateRowForFocus(
   bool should_set_focus = request_focus_on_last_quick_action &&
                           GetFocusManager() &&
                           !Contains(GetFocusManager()->GetFocusedView());
-  if (should_set_focus && !ui_info_.quick_actions.empty()) {
-    GetActionButtonForCommand(ui_info_.quick_actions.back().command)
+  if (should_set_focus && !info_->quick_actions().empty()) {
+    GetActionButtonForCommand(info_->quick_actions().back().command)
         ->RequestFocus();
   }
 }
@@ -689,12 +660,12 @@ void DownloadBubbleRowView::Layout() {
 
 void DownloadBubbleRowView::OnMainButtonPressed(const ui::Event& event) {
   if (!bubble_controller_ || !navigation_handler_ ||
-      !ui_info_.main_button_enabled || !info_->model() ||
+      !info_->main_button_enabled() || !info_->model() ||
       input_protector_->IsPossiblyUnintendedInteraction(event)) {
     return;
   }
   bubble_controller_->RecordDownloadBubbleInteraction();
-  if (ui_info_.HasSubpage()) {
+  if (info_->has_subpage()) {
     DownloadItemWarningData::AddWarningActionEvent(
         info_->model()->GetDownloadItem(),
         DownloadItemWarningData::WarningSurface::BUBBLE_MAINPAGE,
@@ -724,7 +695,7 @@ void DownloadBubbleRowView::UpdateButtons() {
   cancel_action_->SetVisible(false);
   show_in_folder_action_->SetVisible(false);
 
-  for (const auto& action : ui_info_.quick_actions) {
+  for (const auto& action : info_->quick_actions()) {
     if (!DownloadCommands(info_->model()->GetWeakPtr())
              .IsCommandEnabled(action.command)) {
       continue;
@@ -745,22 +716,22 @@ void DownloadBubbleRowView::UpdateButtons() {
     button->SetVisible(false);
   }
 
-  if (ui_info_.primary_button_command) {
+  if (info_->primary_button_command()) {
     views::MdTextButton* main_button =
-        main_page_buttons_[*ui_info_.primary_button_command];
+        main_page_buttons_[*info_->primary_button_command()];
     main_button->SetAccessibleName(GetAccessibleNameForMainPageButton(
-        ui_info_.primary_button_command.value()));
+        info_->primary_button_command().value()));
     main_button->SetVisible(true);
   }
 
-  subpage_icon_->SetVisible(ui_info_.HasSubpage());
+  subpage_icon_->SetVisible(info_->has_subpage());
 }
 
 void DownloadBubbleRowView::UpdateProgressBar() {
   if (!navigation_handler_) {
     return;
   }
-  if (ui_info_.has_progress_bar) {
+  if (info_->has_progress_bar()) {
     if (!progress_bar_->GetVisible()) {
       progress_bar_->SetVisible(true);
       // Need for a few cases, for example if the view is the only one in a
@@ -768,7 +739,7 @@ void DownloadBubbleRowView::UpdateProgressBar() {
       navigation_handler_->ResizeDialog();
     }
     progress_bar_->SetValue(
-        ui_info_.is_progress_bar_looping
+        info_->is_progress_bar_looping()
             ? -1
             : static_cast<double>(info_->model()->PercentComplete()) / 100);
     progress_bar_->SetPaused(info_->model()->IsPaused());
@@ -784,7 +755,7 @@ void DownloadBubbleRowView::UpdateLabels() {
       info_->model()->GetFileNameToReportUser().LossyDisplayName());
   UpdateStatusText();
 
-  if (ui_info_.HasSubpage()) {
+  if (info_->has_subpage()) {
     transparent_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_DOWNLOAD_BUBBLE_MAIN_BUTTON_SUBPAGE, primary_label_->GetText(),
         secondary_label_->GetText()));
@@ -793,13 +764,10 @@ void DownloadBubbleRowView::UpdateLabels() {
         {primary_label_->GetText(), secondary_label_->GetText()}, u" "));
   }
 
-  secondary_label_->SetEnabledColorId(ui_info_.GetColorForSecondaryText());
+  secondary_label_->SetEnabledColorId(info_->secondary_text_color());
 }
 
 void DownloadBubbleRowView::RecordMetricsOnUpdate() {
-  if (!info_->model()) {
-    return;
-  }
   // This should only be logged once per download.
   if (is_download_warning(
           download::GetDesiredDownloadItemMode(info_->model())) &&
@@ -818,9 +786,6 @@ void DownloadBubbleRowView::RecordMetricsOnUpdate() {
 }
 
 void DownloadBubbleRowView::RecordDownloadDisplayed() {
-  if (!info_->model()) {
-    return;
-  }
   if (info_->model()->IsDangerous()) {
     DownloadItemWarningData::AddWarningActionEvent(
         info_->model()->GetDownloadItem(),
@@ -985,25 +950,18 @@ void DownloadBubbleRowView::ShowContextMenuForViewImpl(
 }
 
 void DownloadBubbleRowView::AnnounceInProgressAlert() {
-  if (!info_->model()) {
-    return;
-  }
   GetViewAccessibility().AnnounceText(
       info_->model()->GetInProgressAccessibleAlertText());
 }
 
 void DownloadBubbleRowView::UpdateStatusText() {
-  if (!info_->model()) {
-    return;
-  }
   secondary_label_->SetText(info_->model()->GetStatusTextForLabel(
       secondary_label_->font_list(), secondary_label_->width()));
 }
 
 bool DownloadBubbleRowView::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
-  if (!info_->model() ||
-      info_->model()->GetState() != download::DownloadItem::COMPLETE) {
+  if (info_->model()->GetState() != download::DownloadItem::COMPLETE) {
     return false;
   }
 

@@ -143,14 +143,12 @@ TEST_F(DownloadBubbleRowViewTest, OnlyEnabledQuickActionsVisible) {
   ON_CALL(*download_item(), GetState())
       .WillByDefault(Return(download::DownloadItem::COMPLETE));
   ON_CALL(*download_item(), CanShowInFolder()).WillByDefault(Return(true));
+  info_->SetQuickActionsForTesting(
+      {{DownloadCommands::PAUSE, u"label", &vector_icons::kPauseIcon},
+       {DownloadCommands::SHOW_IN_FOLDER, u"label",
+        &vector_icons::kFolderIcon}});
   download_item()->NotifyObserversDownloadUpdated();
-  row_view()->SetUIInfoForTesting(
-      DownloadUIModel::BubbleUIInfo()
-          .AddQuickAction(DownloadCommands::PAUSE, u"label",
-                          &vector_icons::kPauseIcon)
-          .AddQuickAction(DownloadCommands::SHOW_IN_FOLDER, u"label",
-                          &vector_icons::kFolderIcon));
-  ASSERT_EQ(row_view()->ui_info().quick_actions.size(), 2u);
+  ASSERT_EQ(row_view()->info().quick_actions().size(), 2u);
 
   // Should not be available because they are not present in the ui_info.
   EXPECT_FALSE(row_view()->IsQuickActionButtonVisibleForTesting(
@@ -185,11 +183,9 @@ TEST_F(DownloadBubbleRowViewTest, InputProtectorDeniesClicks) {
   ON_CALL(*download_item(), GetState())
       .WillByDefault(Return(download::DownloadItem::COMPLETE));
   ON_CALL(*download_item(), CanOpenDownload()).WillByDefault(Return(true));
+  info_->SetQuickActionsForTesting({{DownloadCommands::OPEN_WHEN_COMPLETE,
+                                     u"label", &vector_icons::kFolderIcon}});
   download_item()->NotifyObserversDownloadUpdated();
-  row_view()->SetUIInfoForTesting(
-      DownloadUIModel::BubbleUIInfo().AddQuickAction(
-          DownloadCommands::OPEN_WHEN_COMPLETE, u"label",
-          &vector_icons::kFolderIcon));
   ASSERT_TRUE(row_view()->IsQuickActionButtonVisibleForTesting(
       DownloadCommands::OPEN_WHEN_COMPLETE));
 
