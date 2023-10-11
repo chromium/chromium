@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/copy_only_int.h"
+#include "base/test/gtest_util.h"
 #include "base/test/move_only_int.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -879,9 +880,7 @@ TEST(CircularDeque, EmplaceFrontBackReturnsReference) {
   EXPECT_EQ(&back, &q.back());
 }
 
-/*
-This test should assert in a debug build. It tries to dereference an iterator
-after mutating the container. Uncomment to double-check that this works.
+// This test tries to dereference an iterator after mutating the container.
 TEST(CircularDeque, UseIteratorAfterMutate) {
   circular_deque<int> q;
   q.push_back(0);
@@ -890,9 +889,10 @@ TEST(CircularDeque, UseIteratorAfterMutate) {
   EXPECT_EQ(0, *old_begin);
 
   q.push_back(1);
-  EXPECT_EQ(0, *old_begin);  // Should DCHECK.
+
+  // This statement is not executed when DCHECKs are disabled.
+  EXPECT_DCHECK_DEATH(*old_begin);
 }
-*/
 
 // This test verifies that a scoped_refptr specifically is moved rather than
 // copied when a circular_deque is resized. It would be extremely inefficient if
