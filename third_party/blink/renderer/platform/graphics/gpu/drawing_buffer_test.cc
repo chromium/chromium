@@ -753,7 +753,7 @@ TEST_F(DrawingBufferTest, VerifySetIsHiddenProperlyAffectsMailboxes) {
 TEST_F(DrawingBufferTest,
        VerifyTooBigDrawingBufferExceedingV8MaxSizeFailsToCreate) {
   constexpr size_t kBytesPerPixel = 4;
-  constexpr size_t kMaxSize = v8::TypedArray::kMaxLength / kBytesPerPixel;
+  constexpr size_t kMaxSize = v8::TypedArray::kMaxByteLength / kBytesPerPixel;
 
   // Statically compute a width and height such that the product is above
   // kMaxSize.

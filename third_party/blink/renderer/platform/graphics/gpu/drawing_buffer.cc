@@ -169,7 +169,7 @@ scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
   data_size *= size.width();
   data_size *= size.height();
   if (!data_size.IsValid() ||
-      data_size.ValueOrDie() > v8::TypedArray::kMaxLength) {
+      data_size.ValueOrDie() > v8::TypedArray::kMaxByteLength) {
     return nullptr;
   }
 

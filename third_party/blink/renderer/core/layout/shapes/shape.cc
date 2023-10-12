@@ -225,7 +225,7 @@ static bool ExtractImageData(Image* image,
   size_t dst_size_bytes = dst_info.computeMinByteSize();
   {
     if (SkImageInfo::ByteSizeOverflowed(dst_size_bytes) ||
-        dst_size_bytes > v8::TypedArray::kMaxLength) {
+        dst_size_bytes > v8::TypedArray::kMaxByteLength) {
       return false;
     }
     ArrayBufferContents result(dst_size_bytes, 1,

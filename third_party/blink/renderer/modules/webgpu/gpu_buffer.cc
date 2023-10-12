@@ -350,7 +350,7 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(ScriptState* script_state,
   // Note that we put this check after the checks in Dawn because the latest
   // WebGPU SPEC requires the checks on the buffer state (mapped or not) should
   // be done before the creation of ArrayBuffer.
-  if (range_size > v8::TypedArray::kMaxLength) {
+  if (range_size > v8::TypedArray::kMaxByteLength) {
     exception_state.ThrowRangeError(
         "getMappedRange failed, size is too large for the implementation");
     return nullptr;
@@ -416,7 +416,7 @@ DOMArrayBuffer* GPUBuffer::CreateArrayBufferForMappedData(v8::Isolate* isolate,
                                                           void* data,
                                                           size_t data_length) {
   DCHECK(data);
-  DCHECK_LE(static_cast<uint64_t>(data_length), v8::TypedArray::kMaxLength);
+  DCHECK_LE(static_cast<uint64_t>(data_length), v8::TypedArray::kMaxByteLength);
 
   ArrayBufferContents contents(v8::ArrayBuffer::NewBackingStore(
       data, data_length, v8::BackingStore::EmptyDeleter, nullptr));

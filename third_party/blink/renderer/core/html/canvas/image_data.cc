@@ -102,7 +102,8 @@ ImageData* ImageData::ValidateAndCreate(
       }
     }
     if (!size_in_elements_checked.IsValid() ||
-        size_in_elements_checked.ValueOrDie() > v8::TypedArray::kMaxLength) {
+        size_in_elements_checked.ValueOrDie() >
+            v8::TypedArray::kMaxByteLength) {
       exception_state.ThrowRangeError("Out of memory at ImageData creation.");
       return nullptr;
     }
@@ -264,8 +265,9 @@ ImageData* ImageData::CreateForTest(const gfx::Size& size) {
   data_size *= size.width();
   data_size *= size.height();
   if (!data_size.IsValid() ||
-      data_size.ValueOrDie() > v8::TypedArray::kMaxLength)
+      data_size.ValueOrDie() > v8::TypedArray::kMaxByteLength) {
     return nullptr;
+  }
 
   NotShared<DOMUint8ClampedArray> byte_array(
       DOMUint8ClampedArray::CreateOrNull(data_size.ValueOrDie()));

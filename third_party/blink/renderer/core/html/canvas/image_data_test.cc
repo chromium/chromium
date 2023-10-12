@@ -31,7 +31,7 @@ TEST_F(ImageDataTest, CreateImageDataTooBig) {
 
 TEST_F(ImageDataTest, ImageDataTooBigToAllocateDoesNotCrash) {
   constexpr size_t kBytesPerPixel = 4;
-  constexpr size_t kMaxSize = v8::TypedArray::kMaxLength / kBytesPerPixel;
+  constexpr size_t kMaxSize = v8::TypedArray::kMaxByteLength / kBytesPerPixel;
 
   // Statically compute a width and height such that the product is above
   // kMaxSize.
