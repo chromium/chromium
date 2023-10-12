@@ -51,6 +51,8 @@ class TabInteractionRecorderAndroidBrowserTest : public AndroidBrowserTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
         content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+    // TODO(crbug.com/1491942): This fails with the field trial testing config.
+    command_line->AppendSwitch("disable-field-trial-config");
   }
 
   // Helper functions to verify Histogram
