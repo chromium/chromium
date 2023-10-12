@@ -19,6 +19,9 @@ FakeInputMethodPrivate.prototype = {
 
   setCurrentInputMethod: () => Promise.resolve(),
 
+  getLanguagePackStatus: () =>
+      Promise.resolve(chrome.inputMethodPrivate.LanguagePackStatus.UNKNOWN),
+
   get onChanged() {
     return {
       addListener: function() {

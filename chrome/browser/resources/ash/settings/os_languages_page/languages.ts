@@ -54,6 +54,9 @@ const kArcImeLanguage = '_arc_ime_language_';
 export const ACCESSIBILITY_COMMON_IME_ID =
     '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
 
+// How often to poll language packs for pack updates.
+const LANGUAGE_PACKS_POLLING_RATE_MS = 1000;
+
 interface ModelArgs {
   // Unused.
   supportedLanguages: chrome.languageSettingsPrivate.Language[];
@@ -230,6 +233,7 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
       Map<string, chrome.languageSettingsPrivate.InputMethod[]>;
   private enabledInputMethodSet_: Set<string>;
   private originalProspectiveUILanguage_?: string;
+  private languagePackPollIntervalId?: number = undefined;
 
   // Bound methods.
   // Instances of SettingsLanguagesElement below should be replaced with
@@ -325,6 +329,13 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
       this.languageSettingsPrivate_.getSpellcheckDictionaryStatuses().then(
           this.boundOnSpellcheckDictionariesChanged_);
 
+      // Poll language packs now to prevent test flakiness.
+      // Do so in the next microtask to prevent `connectedCallback()` from
+      // failing and stalling tests.
+      Promise.resolve().then(() => this.pollLanguagePacks_());
+      this.languagePackPollIntervalId = setInterval(
+          () => this.pollLanguagePacks_(), LANGUAGE_PACKS_POLLING_RATE_MS);
+
       this.resolver_.resolve(undefined);
     });
 
@@ -358,6 +369,10 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
       this.languageSettingsPrivate_.onSpellcheckDictionariesChanged
           .removeListener(this.boundOnSpellcheckDictionariesChanged_);
       this.boundOnSpellcheckDictionariesChanged_ = null;
+    }
+
+    if (this.languagePackPollIntervalId !== undefined) {
+      clearInterval(this.languagePackPollIntervalId);
     }
   }
 
@@ -650,6 +665,7 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
       enabled: this.getEnabledInputMethods_(),
       // Safety: `ModelArgs.currentInputMethodId` is always defined on CrOS.
       currentId: args.currentInputMethodId!,
+      imeLanguagePackStatus: {},
     };
 
     // Initialize the Polymer languages model.
@@ -1294,6 +1310,33 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
       return '';
     }
     return inputMethod.displayName;
+  }
+
+  private pollLanguagePacks_(): void {
+    if (!this.languages) {
+      return;
+    }
+    // Safety: `LanguagesModel.inputMethods` is always defined on CrOS.
+    for (const inputMethod of this.languages.inputMethods!.enabled) {
+      void this.inputMethodPrivate_.getLanguagePackStatus(inputMethod.id)
+          .then((status) => {
+            this.set(
+                [
+                  'languages',
+                  'inputMethods',
+                  'imeLanguagePackStatus',
+                  inputMethod.id,
+                ],
+                status);
+          });
+    }
+  }
+
+  getImeLanguagePackStatus(id: string):
+      chrome.inputMethodPrivate.LanguagePackStatus {
+    // Safety: `LanguagesModel.inputMethods` is always defined on CrOS.
+    return this.languages?.inputMethods!.imeLanguagePackStatus[id] ??
+        chrome.inputMethodPrivate.LanguagePackStatus.UNKNOWN;
   }
 }
 
