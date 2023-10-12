@@ -4894,4 +4894,54 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
           ~network::mojom::WebSandboxFlags::kAutomaticFeatures);
 }
 
+// Tests the scenario when a navigation without URLLoader is cancelled and an
+// error page is committed using the same NavigationRequest.
+// See https://crbug.com/1487944.
+IN_PROC_BROWSER_TEST_F(
+    NavigationRequestBrowserTest,
+    ThrottleDeferAndCancelCommitWithoutUrlLoaderWithErrorPage) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  GURL about_blank_url(url::kAboutBlankURL);
+
+  // Perform a new-document navigation (setup).
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Navigate to about:blank so the NavigationRequest is expected to commit
+  // without URL loader.
+  {
+    TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
+    NavigationHandleObserver observer(shell()->web_contents(), about_blank_url);
+    TestNavigationThrottleInstaller installer(
+        shell()->web_contents(), NavigationThrottle::DEFER,
+        NavigationThrottle::DEFER, NavigationThrottle::DEFER,
+        NavigationThrottle::DEFER, NavigationThrottle::DEFER);
+
+    shell()->LoadURL(about_blank_url);
+
+    // Wait for WillCommitWithoutUrlLoader.
+    installer.WaitForThrottleWillCommitWithoutUrlLoader();
+    EXPECT_EQ(0, installer.will_start_called());
+    EXPECT_EQ(0, installer.will_redirect_called());
+    EXPECT_EQ(0, installer.will_fail_called());
+    EXPECT_EQ(0, installer.will_process_called());
+    EXPECT_EQ(1, installer.will_commit_without_url_loader_called());
+
+    // Cancel the deferred navigation with `net::ERR_BLOCKED_BY_RESPONSE`, so
+    // the NavigationRequest will be used for an error page commit.
+    installer.navigation_throttle()->CancelNavigation(
+        {NavigationThrottle::CANCEL_AND_IGNORE, net::ERR_BLOCKED_BY_RESPONSE});
+
+    // Wait for the end of the navigation.
+    navigation_observer.Wait();
+
+    EXPECT_FALSE(observer.is_same_document());
+    EXPECT_TRUE(observer.has_committed());
+    EXPECT_FALSE(observer.was_redirected());
+    EXPECT_TRUE(observer.is_error());
+
+    EXPECT_TRUE(
+        shell()->web_contents()->GetPrimaryMainFrame()->IsErrorDocument());
+  }
+}
+
 }  // namespace content

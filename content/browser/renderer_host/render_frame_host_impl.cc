@@ -1716,8 +1716,6 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
       } else if (navigation_request->state() >=
                      NavigationRequest::WILL_PROCESS_RESPONSE &&
                  navigation_request->GetRenderFrameHost() == this) {
-        frame_tree_node_->ResetNavigationRequest(
-            NavigationDiscardReason::kRenderFrameHostDestruction);
         // As we are unable to come up with a case that will lead to this path,
         // we instead record the dumps for debugging the scenario.
         // TODO(crbug.com/1430653): if we verify that this path is impossible,

@@ -2717,6 +2717,9 @@ void NavigationRequest::BeginNavigationImpl() {
 void NavigationRequest::
     SelectFrameHostForCrossDocumentNavigationWithNoUrlLoader() {
   DCHECK(!NeedsUrlLoader());
+  CHECK(!HasRenderFrameHost())
+      << "`render_frame_host_` should not be set before the "
+         "`NavigationRequest` starts to select the RFH.";
 
   if (auto result =
           frame_tree_node_->render_manager()->GetFrameHostForNavigation(
@@ -4283,6 +4286,9 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
     bool is_download,
     absl::optional<SubresourceLoaderParams> subresource_loader_params) {
+  CHECK(!HasRenderFrameHost())
+      << "`render_frame_host_` should not be set before the "
+         "`NavigationRequest` starts to select the RFH.";
   ScopedCrashKeys crash_keys(*this);
 
   std::string rfh_selected_reason;
@@ -4671,6 +4677,13 @@ void NavigationRequest::OnRequestFailedInternal(
   // anymore from now while the error page is being loaded.
   loader_.reset();
 
+  // Reset the RenderFrameHost R1 that had been computed for committing the
+  // failed navigation. This breaks the binding between the current
+  // NavigationRequest and R1, so that if we create another speculative
+  // RenderFrameHost R2 to commit an error page after this, deleting R1 won't
+  // try to delete this NavigationRequest along with it.
+  render_frame_host_ = absl::nullopt;
+
   ssl_info_ = status.ssl_info;
 
   devtools_instrumentation::OnNavigationRequestFailed(*this, status);
@@ -4722,6 +4735,10 @@ void NavigationRequest::SelectFrameHostForOnRequestFailedInternal(
     bool exists_in_cache,
     bool skip_throttles,
     const absl::optional<std::string>& error_page_content) {
+  CHECK(!HasRenderFrameHost())
+      << "`render_frame_host_` should not be set before the "
+         "`NavigationRequest` starts to select the RFH.";
+
   switch (ComputeErrorPageProcess()) {
     case ErrorPageProcess::kCurrentProcess:
       // There's no way to get here with a same-document navigation, it would
@@ -4780,10 +4797,6 @@ void NavigationRequest::SelectFrameHostForOnRequestFailedInternal(
     }
   }
 
-  // Sanity check that we haven't changed the RenderFrameHost picked for the
-  // error page in OnRequestFailedInternal when running the WillFailRequest
-  // checks.
-  CHECK(!HasRenderFrameHost() || GetRenderFrameHost() == render_frame_host);
   render_frame_host_ = render_frame_host->GetSafeRef();
 
   // Update the associated RenderFrameHost type.
@@ -5426,21 +5439,15 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
       !response_should_be_rendered_) {
     MaybeAddResourceTimingEntryForCancelledNavigation();
 
-    // Reset the RenderFrameHost that had been computed for the commit of the
-    // navigation.
-    // TODO(https://crbug.com/1416916): Reconsider if we really need to unset
-    // the `render_frame_host_` here, as the NavigationRequest might stay alive
-    // for a bit longer to commit an error page.
-    render_frame_host_ = absl::nullopt;
-
     // TODO(clamy): distinguish between CANCEL and CANCEL_AND_IGNORE.
     if (!response_should_be_rendered_) {
-      // DO NOT ADD CODE after this. The previous call to OnRequestFailed has
-      // destroyed the NavigationRequest.
       OnRequestFailedInternal(
           network::URLLoaderCompletionStatus(net::ERR_ABORTED),
           true /* skip_throttles */, absl::nullopt /* error_page_content */,
           false /* collapse_frame */);
+
+      // DO NOT ADD CODE after this. The previous call to
+      // OnRequestFailedInternal has destroyed the NavigationRequest.
       return;
     }
 
@@ -5458,12 +5465,6 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
 
   if (result.action() == NavigationThrottle::BLOCK_RESPONSE) {
     DCHECK_EQ(net::ERR_BLOCKED_BY_RESPONSE, result.net_error_code());
-    // Reset the RenderFrameHost that had been computed for the commit of the
-    // navigation.
-    // TODO(https://crbug.com/1416916): Reconsider if we really need to unset
-    // the `render_frame_host_` here, as the NavigationRequest might stay alive
-    // for a bit longer to commit an error page.
-    render_frame_host_ = absl::nullopt;
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(result.net_error_code()),
         true /* skip_throttles */, result.error_page_content(),
