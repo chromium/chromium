@@ -57,10 +57,15 @@ enum class UploadType {
   kMaxValue = kMove,
 };
 
-// Either OneDrive for the Office PWA or Drive for Drive Web editing.
+// List of UMA enum values for the cloud provider used when opening a file. The
+// enum values must be kept in sync with CloudProvider in
+// tools/metrics/histograms/enums.xml.
 enum class CloudProvider {
-  kGoogleDrive,
-  kOneDrive,
+  kNone = 0,
+  kUnknown = 1,
+  kGoogleDrive = 2,
+  kOneDrive = 3,
+  kMaxValue = kOneDrive,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -207,6 +212,9 @@ constexpr char kDriveOpenSourceVolumeMetric[] =
     "FileBrowser.OfficeFiles.Open.SourceVolume.GoogleDrive";
 constexpr char kOneDriveOpenSourceVolumeMetric[] =
     "FileBrowser.OfficeFiles.Open.SourceVolume.MicrosoftOneDrive";
+
+constexpr char kOpenCloudProviderMetric[] =
+    "FileBrowser.OfficeFiles.Open.CloudProvider";
 
 constexpr char kDriveTransferRequiredMetric[] =
     "FileBrowser.OfficeFiles.Open.TransferRequired.GoogleDrive";

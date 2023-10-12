@@ -801,6 +801,8 @@ bool ExecuteFileTask(Profile* profile,
   const std::string parsed_action_id(ParseFilesAppActionId(task.action_id));
 
   if (IsWebDriveOfficeTask(task)) {
+    UMA_HISTOGRAM_ENUMERATION(ash::cloud_upload::kOpenCloudProviderMetric,
+                              ash::cloud_upload::CloudProvider::kGoogleDrive);
     for (const FileSystemURL& file_url : file_urls) {
       RecordOfficeOpenExtensionDriveMetric(file_url);
     }
@@ -818,8 +820,9 @@ bool ExecuteFileTask(Profile* profile,
       }
     }
     return true;
-  }
-  if (IsOpenInOfficeTask(task)) {
+  } else if (IsOpenInOfficeTask(task)) {
+    UMA_HISTOGRAM_ENUMERATION(ash::cloud_upload::kOpenCloudProviderMetric,
+                              ash::cloud_upload::CloudProvider::kOneDrive);
     for (const FileSystemURL& file_url : file_urls) {
       RecordOfficeOpenExtensionOneDriveMetric(file_url);
     }
@@ -837,6 +840,9 @@ bool ExecuteFileTask(Profile* profile,
       }
     }
     return true;
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(ash::cloud_upload::kOpenCloudProviderMetric,
+                              ash::cloud_upload::CloudProvider::kNone);
   }
   // TODO(b/284800493): Add a test that VirtualTasks get run.
   if (IsVirtualTask(task)) {
