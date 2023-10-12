@@ -684,7 +684,14 @@ TEST(StringPieceTest, ConstexprCtor) {
   }
 }
 
-#if defined(_LIBCPP_ENABLE_ASSERTIONS)
+// Chromium development assumes StringPiece (which is std::string_view) is
+// implemented with an STL that enables hardening checks. We treat bugs that
+// trigger one of these conditions as functional rather than security bugs. If
+// this test fails on some embedder, it should not be disabled. Instead, the
+// embedder should fix their STL or build configuration to enable corresponding
+// hardening checks.
+//
+// See https://chromium.googlesource.com/chromium/src/+/main/docs/security/faq.md#indexing-a-container-out-of-bounds-hits-a-libcpp_verbose_abort_is-this-a-security-bug
 TEST(StringPieceTest, OutOfBoundsDeath) {
   {
     constexpr StringPiece piece;
@@ -726,7 +733,6 @@ TEST(StringPieceTest, InvalidLengthDeath) {
   int length = -1;
   ASSERT_DEATH_IF_SUPPORTED({ StringPiece piece("hello", length); }, "");
 }
-#endif  // defined(_LIBCPP_ENABLE_ASSERTIONS)
 
 TEST(StringPieceTest, ConstexprData) {
   {

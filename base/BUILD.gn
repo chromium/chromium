@@ -3290,6 +3290,7 @@ test("base_unittests") {
     "sequence_checker_unittest.cc",
     "sequence_token_unittest.cc",
     "state_transitions_unittest.cc",
+    "std_clamp_unittest.cc",
     "stl_util_unittest.cc",
     "strings/abseil_string_number_conversions_unittest.cc",
     "strings/escape_unittest.cc",
@@ -3470,10 +3471,7 @@ test("base_unittests") {
   }
 
   if (use_safe_libcxx) {
-    sources += [
-      "libcpp_hardening_test.cc",
-      "std_clamp_unittest.cc",
-    ]
+    sources += [ "libcpp_hardening_test.cc" ]
   }
 
   defines = []
