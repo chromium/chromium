@@ -679,7 +679,8 @@ TEST_F(SaveCardBubbleControllerImplTest, LocalCvcOnlySaveDialogContent) {
   ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
   EXPECT_EQ(controller()->GetWindowTitle(), u"Save security code?");
   EXPECT_EQ(controller()->GetExplanatoryMessage(),
-            u"For faster checkout, save the CVC for this card to your device");
+            u"This card's CVC will be encrypted and saved to your device for "
+            u"faster checkout");
 }
 
 TEST_F(SaveCardBubbleControllerImplTest, UploadCardSaveDialogContent) {
@@ -710,8 +711,8 @@ TEST_F(SaveCardBubbleControllerImplTest, UploadCvcOnlySaveDialogContent) {
   ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
   EXPECT_EQ(controller()->GetWindowTitle(), u"Save security code?");
   EXPECT_EQ(controller()->GetExplanatoryMessage(),
-            u"For faster checkout, save the CVC for this card in your "
-            u"Google Account");
+            u"This card's CVC will be encrypted and saved in your Google "
+            u"Account for faster checkout");
   EXPECT_TRUE(controller()->GetLegalMessageLines().empty());
 }
 

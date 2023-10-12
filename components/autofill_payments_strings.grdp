@@ -129,7 +129,7 @@
     Save security code?
   </message>
   <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_LOCAL" desc="Explanation text for the Autofill save CVC prompt that offers to save CVC for existing local cards. This prompt is shown if a CVC is detected for an existing local card on form submission.">
-    For faster checkout, save the CVC for this card to your device
+    This card's CVC will be encrypted and saved to your device for faster checkout
   </message>
   <message name="IDS_AUTOFILL_FIX_FLOW_PROMPT_SAVE_CARD_LABEL" desc="Text to show on the button to save the card to Google when the fix flow dialog is shown after the Autofill save card prompt." formatter_data="android_java">
     Save card
@@ -215,7 +215,7 @@
     Pay faster next time and protect your card with Google’s industry-leading security.
   </message>
   <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD" desc="Explanation text for the Autofill save CVC prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission.">
-    For faster checkout, save the CVC for this card in your Google Account
+    This card's CVC will be encrypted and saved in your Google Account for faster checkout
   </message>
 
   <if expr="is_android">
