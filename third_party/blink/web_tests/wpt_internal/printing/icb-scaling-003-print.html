@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://bugs.chromium.org/p/chromium/issues/detail?id=1485969">
+<link rel="match" href="icb-scaling-003-print-ref.html">
+<style>
+  @page {
+    size: 300px 600px;
+    margin: 0;
+  }
+  body { margin: 0; }
+</style>
+<!-- This test assumes that the printing implementation shrinks the content (and
+     grows the initial containing block) to avoid overflowing content. -->
+<div style="width:450px; height:100px;">
+  <div style="position:absolute; left:150px; top:150px; width:50vw; height:50vh; background:green;"></div>
+</div>
