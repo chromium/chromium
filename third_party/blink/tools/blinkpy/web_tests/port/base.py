@@ -1664,14 +1664,6 @@ class Port(object):
         """
         return self._filesystem.join(self.web_tests_dir(), test_name)
 
-    def _should_run_with_single_threaded_compositing(self, test_name):
-        # Threaded compositing is currently only turned on for web tests
-        # on Linux machines
-        if not self.host.platform.is_linux() or self.is_wpt_test(test_name):
-            return True
-
-        return False
-
     @memoized
     def args_for_test(self, test_name):
         args = self._lookup_virtual_test_args(test_name)
@@ -1679,16 +1671,19 @@ class Port(object):
         if pac_url is not None:
             args.append("--proxy-pac-url=" + pac_url)
 
-        if ENABLE_THREADED_COMPOSITING_FLAG in args:
+        if ENABLE_THREADED_COMPOSITING_FLAG not in args:
+            # We run single-threaded by default.
+            # Note that this logic is mirrored in wptrunner:
+            # third_party/wpt_tools/wpt/tools/wptrunner/wptrunner/browsers/content_shell.py
+            args.append(DISABLE_THREADED_COMPOSITING_FLAG)
+            args.append(DISABLE_THREADED_ANIMATION_FLAG)
+        else:
             # Explicitly enabling threaded compositing takes precedence over
             # explicitly disabling it.
             if DISABLE_THREADED_COMPOSITING_FLAG in args:
                 args.remove(DISABLE_THREADED_COMPOSITING_FLAG)
             if DISABLE_THREADED_ANIMATION_FLAG in args:
                 args.remove(DISABLE_THREADED_ANIMATION_FLAG)
-        elif self._should_run_with_single_threaded_compositing(test_name):
-            args.append(DISABLE_THREADED_COMPOSITING_FLAG)
-            args.append(DISABLE_THREADED_ANIMATION_FLAG)
 
         tracing_categories = self.get_option('enable_tracing')
         if tracing_categories:

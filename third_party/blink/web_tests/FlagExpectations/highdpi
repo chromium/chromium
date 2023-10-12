@@ -445,3 +445,6 @@ crbug.com/1339051 fast/forms/suggestion-picker/month-suggestion-picker-appearanc
 
 # Re-enable after new baselines are generated
 crbug.com/1456636 [ Linux ] virtual/view-transition/external/wpt/css/css-view-transitions/new-and-old-sizes-match.html [ Failure ]  # Reftest image failure
+
+# Fails with a single-pixel offset when run with single-threaded compositing.
+crbug.com/1491883 [ Linux ] fast/forms/date/date-with-csp.html [ Failure ]  # Reftest image failure
