@@ -405,8 +405,14 @@ IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest, BarRemoved) {
   EXPECT_FALSE(GetLinkCapturingInfoBar(web_contents.get()));
 }
 
+// TODO(https://crbug.com/1492121): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_InfoBarHiddenAfterDismissals DISABLED_InfoBarHiddenAfterDismissals
+#else
+#define MAYBE_InfoBarHiddenAfterDismissals InfoBarHiddenAfterDismissals
+#endif
 IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest,
-                       InfoBarHiddenAfterDismissals) {
+                       MAYBE_InfoBarHiddenAfterDismissals) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const auto [_, in_scope_url] = InstallTestApp();
 
