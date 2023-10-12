@@ -132,19 +132,21 @@ public class ActivityTabStartupMetricsTracker {
                     public void onPageLoadStarted(Tab tab, GURL url) {
                         // Discard startup navigation measurements when the user interfered and
                         // started the 2nd navigation (in activity lifetime) in parallel.
-                        if (!mIsFirstPageLoadStart) {
-                            mShouldTrackStartupMetrics = false;
-                        } else {
+                        if (mIsFirstPageLoadStart) {
                             mIsFirstPageLoadStart = false;
+                        } else {
+                            mShouldTrackStartupMetrics = false;
                         }
                     }
 
                     @Override
                     public void onDidFinishNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigation) {
-                        boolean isTrackedPage = navigation.hasCommitted()
-                                && !navigation.isErrorPage() && !navigation.isSameDocument()
-                                && UrlUtilities.isHttpOrHttps(navigation.getUrl());
+                        boolean isTrackedPage =
+                                navigation.hasCommitted()
+                                        && !navigation.isErrorPage()
+                                        && !navigation.isSameDocument()
+                                        && UrlUtilities.isHttpOrHttps(navigation.getUrl());
                         registerFinishNavigation(isTrackedPage);
                     }
                 };

@@ -116,6 +116,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.metrics.AndroidSessionDurationsServiceState;
+import org.chromium.chrome.browser.metrics.ExperimentalStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.MainIntentBehaviorMetrics;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
@@ -409,6 +410,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     // Delegate to handle drag and drop features for tablets.
     private DragAndDropDelegate mDragDropDelegate;
 
+    private ExperimentalStartupMetricsTracker mExperimentalStartupMetricsTracker;
+
     private final IncognitoTabHost mIncognitoTabHost = new IncognitoTabHost() {
         @Override
         public boolean hasIncognitoTabs() {
@@ -484,6 +487,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     protected void onPreCreate() {
         super.onPreCreate();
+        mExperimentalStartupMetricsTracker =
+                new ExperimentalStartupMetricsTracker(getTabModelSelectorSupplier());
         mMultiInstanceManager = MultiInstanceManager.create(this, getTabModelOrchestratorSupplier(),
                 getMultiWindowModeStateDispatcher(), getLifecycleDispatcher(),
                 getModalDialogManagerSupplier(), this);
@@ -1230,6 +1235,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // Cancel recording cold startup metrics if an overview is shown as they expect a tab to
             // be the first thing shown after startup.
             setTrackColdStartupMetrics(false);
+            mExperimentalStartupMetricsTracker.destroy();
             disablePaintPreviewOnRestore();
             showOverview(StartSurfaceState.SHOWING_START);
             mAppLaunchDrawBlocker.onOverviewPageAvailable(
@@ -1243,6 +1249,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // Cancel recording cold startup metrics if an overview is shown as they expect a tab to
             // be the first thing shown after startup.
             setTrackColdStartupMetrics(false);
+            mExperimentalStartupMetricsTracker.destroy();
             disablePaintPreviewOnRestore();
             showOverview(StartSurfaceState.SHOWING_START);
         }
@@ -2909,6 +2916,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         if (mDragDropDelegate != null) {
             mDragDropDelegate.destroy();
+        }
+
+        if (mExperimentalStartupMetricsTracker != null) {
+            mExperimentalStartupMetricsTracker.destroy();
+            mExperimentalStartupMetricsTracker = null;
         }
 
         super.onDestroyInternal();

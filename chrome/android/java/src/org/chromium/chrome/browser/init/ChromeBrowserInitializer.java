@@ -156,6 +156,10 @@ public class ChromeBrowserInitializer {
         parts.setContentViewAndLoadLibrary(() -> this.onInflationComplete(parts));
     }
 
+    public boolean isPostInflationStartupComplete() {
+        return mPostInflationStartupComplete;
+    }
+
     /**
      * This is called after the layout inflation has been completed (in the callback sent to {@link
      * BrowserParts#setContentViewAndLoadLibrary}). This continues the post-inflation pre-native
