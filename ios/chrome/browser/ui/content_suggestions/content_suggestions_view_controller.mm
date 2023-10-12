@@ -397,7 +397,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }
   [self populateMostVisitedModule];
   [self.contentSuggestionsMetricsRecorder recordMostVisitedTilesShown];
-  if (IsMagicStackEnabled()) {
+  if (IsMagicStackEnabled() && [self hasMagicStackLoaded]) {
     [self logTopModuleImpressionForType:ContentSuggestionsModuleType::
                                             kMostVisited];
   }
@@ -427,7 +427,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         [[ContentSuggestionsShortcutTileView alloc] initWithConfiguration:item];
     [self.shortcutsViews addObject:view];
   }
-  if (IsMagicStackEnabled()) {
+  if (IsMagicStackEnabled() && [self hasMagicStackLoaded]) {
     [self
         logTopModuleImpressionForType:ContentSuggestionsModuleType::kShortcuts];
   }
@@ -533,12 +533,14 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     if (shouldShowCompactedSetUpListModule) {
       _compactedSetUpListViews = [NSMutableArray array];
     }
-    ContentSuggestionsModuleType firstItemType =
-        SetUpListModuleTypeForSetUpListType([items firstObject].type);
-    [self logTopModuleImpressionForType:shouldShowCompactedSetUpListModule
-                                            ? ContentSuggestionsModuleType::
-                                                  kCompactedSetUpList
-                                            : firstItemType];
+    if ([self hasMagicStackLoaded]) {
+      ContentSuggestionsModuleType firstItemType =
+          SetUpListModuleTypeForSetUpListType([items firstObject].type);
+      [self logTopModuleImpressionForType:shouldShowCompactedSetUpListModule
+                                              ? ContentSuggestionsModuleType::
+                                                    kCompactedSetUpList
+                                              : firstItemType];
+    }
     for (SetUpListItemViewData* data in items) {
       data.compactLayout = shouldShowCompactedSetUpListModule;
       data.heroCellMagicStackLayout = !shouldShowCompactedSetUpListModule;
@@ -759,6 +761,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         @(int(self.safetyCheckModuleContainer.type));
   }
 
+  [self logTopModuleImpressionForType:self.safetyCheckModuleContainer.type];
   [self insertModuleIntoMagicStack:self.safetyCheckModuleContainer];
 }
 
@@ -792,8 +795,10 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
 - (void)showTabResumptionWithItem:(TabResumptionItem*)item {
   CHECK(IsTabResumptionEnabled());
-  [self logTopModuleImpressionForType:ContentSuggestionsModuleType::
-                                          kTabResumption];
+  if ([self hasMagicStackLoaded]) {
+    [self logTopModuleImpressionForType:ContentSuggestionsModuleType::
+                                            kTabResumption];
+  }
   _tabResumptionView = [[TabResumptionView alloc] initWithItem:item];
   _tabResumptionView.delegate = self;
   [_tabResumptionModuleContainer removeFromSuperview];
@@ -974,6 +979,12 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 }
 
 #pragma mark - Private
+
+// Returns whether the Magic Stack has been constructed and has already been
+// populated with modules.
+- (BOOL)hasMagicStackLoaded {
+  return self.viewLoaded && _magicStackRankReceived;
+}
 
 - (void)addUIElement:(UIView*)view withCustomBottomSpacing:(CGFloat)spacing {
   [self.verticalStackView addArrangedSubview:view];
@@ -1186,9 +1197,10 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   for (NSNumber* moduleType in _magicStackModuleOrder) {
     ContentSuggestionsModuleType type =
         (ContentSuggestionsModuleType)[moduleType intValue];
+    MagicStackModuleContainer* moduleContainer;
     switch (type) {
       case ContentSuggestionsModuleType::kTabResumption: {
-        [_magicStack addArrangedSubview:_tabResumptionModuleContainer];
+        moduleContainer = _tabResumptionModuleContainer;
         break;
       }
       case ContentSuggestionsModuleType::kShortcuts: {
@@ -1196,12 +1208,12 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
             initWithContentView:self.shortcutsStackView
                            type:type
                        delegate:self];
-        [_magicStack addArrangedSubview:self.shortcutsModuleContainer];
+        moduleContainer = self.shortcutsModuleContainer;
         break;
       }
       case ContentSuggestionsModuleType::kMostVisited: {
         if (ShouldPutMostVisitedSitesInMagicStack()) {
-          [_magicStack addArrangedSubview:self.mostVisitedModuleContainer];
+          moduleContainer = self.mostVisitedModuleContainer;
         }
         break;
       }
@@ -1211,7 +1223,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                 initWithContentView:_setUpListSyncItemView
                                type:type
                            delegate:self];
-        [_magicStack addArrangedSubview:setUpListSyncModule];
+        moduleContainer = setUpListSyncModule;
         break;
       }
       case ContentSuggestionsModuleType::kSetUpListDefaultBrowser: {
@@ -1220,7 +1232,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                 initWithContentView:_setUpListDefaultBrowserItemView
                                type:type
                            delegate:self];
-        [_magicStack addArrangedSubview:setUpListDefaultBrowserModule];
+        moduleContainer = setUpListDefaultBrowserModule;
         break;
       }
       case ContentSuggestionsModuleType::kSetUpListAutofill: {
@@ -1229,7 +1241,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                 initWithContentView:_setUpListAutofillItemView
                                type:type
                            delegate:self];
-        [_magicStack addArrangedSubview:setUpListAutofillModule];
+        moduleContainer = setUpListAutofillModule;
         break;
       }
       case ContentSuggestionsModuleType::kCompactedSetUpList: {
@@ -1242,7 +1254,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                                type:ContentSuggestionsModuleType::
                                         kCompactedSetUpList
                            delegate:self];
-        [_magicStack addArrangedSubview:setUpListCompactedModule];
+        moduleContainer = setUpListCompactedModule;
         break;
       }
       case ContentSuggestionsModuleType::kSetUpListAllSet: {
@@ -1251,19 +1263,23 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                 initWithContentView:_setUpListAllSetItemView
                                type:type
                            delegate:self];
-        [_magicStack addArrangedSubview:setUpListAllSetModule];
+        moduleContainer = setUpListAllSetModule;
         break;
       }
       case ContentSuggestionsModuleType::kSafetyCheck:
       case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
       case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow: {
         if (IsSafetyCheckMagicStackEnabled()) {
-          [_magicStack addArrangedSubview:self.safetyCheckModuleContainer];
+          moduleContainer = self.safetyCheckModuleContainer;
         }
         break;
       }
       default:
         break;
+    }
+    if (moduleContainer) {
+      [_magicStack addArrangedSubview:moduleContainer];
+      [self logTopModuleImpressionForType:moduleContainer.type];
     }
   }
 }
