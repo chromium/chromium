@@ -5290,7 +5290,9 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
 class ServiceWorkerRaceNetworkRequestBrowserTest
     : public ServiceWorkerBrowserTest {
  public:
-  ServiceWorkerRaceNetworkRequestBrowserTest() {
+  ServiceWorkerRaceNetworkRequestBrowserTest()
+      : https_server_(std::make_unique<net::EmbeddedTestServer>(
+            net::EmbeddedTestServer::TYPE_HTTPS)) {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kServiceWorkerBypassFetchHandler,
           {{"strategy", "optin"},
@@ -5312,6 +5314,11 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
     return RegisterRaceNetowrkRequestServiceWorker(embedded_test_server());
   }
 
+  scoped_refptr<ServiceWorkerVersion>
+  SetupAndRegisterServiceWorkerWithHTTPSServer() {
+    return RegisterRaceNetowrkRequestServiceWorker(https_server());
+  }
+
   EvalJsResult GetInnerText() {
     // This script asks the service worker what fetch events it saw.
     return EvalJs(GetPrimaryMainFrame(), "document.body.innerText;");
@@ -5325,11 +5332,16 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
     return it->second.size();
   }
 
+  net::EmbeddedTestServer* https_server() { return https_server_.get(); }
+
  protected:
   void SetUpOnMainThread() override {
     ServiceWorkerBrowserTest::SetUpOnMainThread();
+    https_server()->ServeFilesFromSourceDirectory("content/test/data");
     RegisterRequestMonitorForRequestCount(embedded_test_server());
+    RegisterRequestMonitorForRequestCount(https_server());
     RegisterRequestHandlerForSlowResponsePage(embedded_test_server());
+    RegisterRequestHandlerForSlowResponsePage(https_server());
   }
 
  private:
@@ -5434,6 +5446,7 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
   std::map<std::string, std::vector<net::test_server::HttpRequest>>
       request_log_;
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
@@ -5460,6 +5473,30 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       NetworkRequest_Wins_MarkedAsSecure) {
+  // Register the ServiceWorker and navigate to the in scope URL.
+  StartServerAndNavigateToSetup();
+  ASSERT_TRUE(https_server()->Start());
+  SetupAndRegisterServiceWorkerWithHTTPSServer();
+
+  // Capture the response head.
+  const GURL test_url = https_server()->GetURL(
+      "/service_worker/mock_response?sw_slow&sw_respond");
+
+  NavigationHandleObserver observer(web_contents(), test_url);
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  EXPECT_TRUE(observer.has_committed());
+
+  // ServiceWorker will respond after the delay, so we expect the response from
+  // the network request initiated by the RaceNetworkRequest mode comes first.
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
+            GetInnerText());
+
+  // The page should be marked as secure.
+  CheckPageIsMarkedSecure(shell(), https_server()->GetCertificate());
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                        NetworkRequest_Wins_Fetch_No_Respond) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
@@ -5473,6 +5510,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
             GetInnerText());
 }
+// TODO(crbug.com/1491332) Add tests for kURLLoadOptionSniffMimeType and
+// kURLLoadOptionSendSSLInfoForCertificateError
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                        NetworkRequest_Wins_NotFound_FetchHandler_Respond) {

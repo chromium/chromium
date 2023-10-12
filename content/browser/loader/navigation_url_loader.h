@@ -114,6 +114,8 @@ class CONTENT_EXPORT NavigationURLLoader {
   // timeout) and will return `false`.
   virtual bool SetNavigationTimeout(base::TimeDelta timeout) = 0;
 
+  static uint32_t GetURLLoaderOptions(bool is_outermost_main_frame);
+
  protected:
   NavigationURLLoader() {}
 };

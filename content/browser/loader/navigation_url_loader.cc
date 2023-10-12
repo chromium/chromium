@@ -85,4 +85,26 @@ void NavigationURLLoader::SetFactoryForTesting(
   g_loader_factory = factory;
 }
 
+// static
+uint32_t NavigationURLLoader::GetURLLoaderOptions(
+    bool is_outermost_main_frame) {
+  uint32_t options = network::mojom::kURLLoadOptionNone;
+
+  // Ensure that Mime sniffing works.
+  options |= network::mojom::kURLLoadOptionSniffMimeType;
+
+  if (is_outermost_main_frame) {
+    // SSLInfo is not needed on subframe or fenced frame responses because users
+    // can inspect only the certificate for the main frame when using the info
+    // bubble.
+    options |= network::mojom::kURLLoadOptionSendSSLInfoWithResponse;
+  }
+
+  // When there's a certificate error for a frame load (regardless of whether
+  // the error caused the connection to fail), SSLInfo is useful for adjusting
+  // security UI accordingly.
+  options |= network::mojom::kURLLoadOptionSendSSLInfoForCertificateError;
+
+  return options;
+}
 }  // namespace content
