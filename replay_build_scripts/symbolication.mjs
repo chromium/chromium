@@ -5,15 +5,14 @@ import * as path from "path";
 import { toNumber, getBackendDir } from "./common.mjs";
 
 export async function readSymbols(file, pdbFile) {
-  const symbols = {};
+  let symbols = {};
   if (process.platform == "win32") {
     if (!pdbFile) {
       throw new Error("Need PDB file to read symbols on windows");
     }
-    const textStart = await getTextSectionAddress(pdbFile);
 
-    const pdbPath = path.join(getBackendDir(), "lib", "llvm-pdbutil.exe");
-    const process = spawn(pdbPath, ["dump", "-symbols", pdbFile]);
+    const pdbPath = path.join(getBackendDir(), "lib", "symextract.exe");
+    const process = spawn(pdbPath, ["read_symbols", pdbFile]);
     process.on("error", (error) => {
       console.error(`spawn error: ${error}`);
     });
@@ -22,22 +21,14 @@ export async function readSymbols(file, pdbFile) {
       input: process.stdout,
       crlfDelay: Infinity,
     });
-    let currentFunction;
+    let allLines = [];
     for await (const line of lines) {
-      if (currentFunction) {
-        const match = /addr = 0001:(\d+),/.exec(line);
-        if (match) {
-          const addr = textStart + +match[1];
-          symbols[addr] = currentFunction;
-        }
-        currentFunction = undefined;
-      } else if (line.includes("S_GPROC32") || line.includes("S_LPROC32")) {
-        const backtick = line.indexOf("`");
-        if (backtick != -1) {
-          currentFunction = line.substring(backtick + 1, line.length - 1);
-        }
-      }
+      allLines.push(line);
     }
+
+    // TODO: this just converts a string to an object, and then
+    // immediately converts it back (in the caller.)  Fix this.
+    symbols = JSON.parse(allLines.join(''));
   } else {
     const nmProcess = spawn("/usr/bin/nm", [file], { maxBuffer: 1e100 });
 
