@@ -385,8 +385,8 @@ TEST_F(SnapshotStorageTest, Purge) {
   std::vector<SnapshotID> liveSnapshotIDs = {test_images_.begin()->first};
 
   // Purge the storage.
-  [storage purgeCacheOlderThan:(base::Time::Now() - base::Hours(1))
-                       keeping:liveSnapshotIDs];
+  [storage purgeImagesOlderThan:(base::Time::Now() - base::Hours(1))
+                        keeping:liveSnapshotIDs];
   FlushRunLoops(storage);
 
   // Check that nothing has been deleted.
@@ -397,7 +397,7 @@ TEST_F(SnapshotStorageTest, Purge) {
   }
 
   // Purge the storage.
-  [storage purgeCacheOlderThan:base::Time::Now() keeping:liveSnapshotIDs];
+  [storage purgeImagesOlderThan:base::Time::Now() keeping:liveSnapshotIDs];
   FlushRunLoops(storage);
 
   // Check that the file have been deleted.

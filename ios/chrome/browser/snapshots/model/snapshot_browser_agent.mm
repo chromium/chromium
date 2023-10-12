@@ -166,7 +166,7 @@ void SnapshotBrowserAgent::PurgeUnusedSnapshots() {
   // Keep snapshots that are less than one minute old, to prevent a concurrency
   // issue if they are created while the purge is running.
   const base::Time one_minute_ago = base::Time::Now() - base::Minutes(1);
-  [snapshot_storage_ purgeCacheOlderThan:one_minute_ago keeping:snapshot_ids];
+  [snapshot_storage_ purgeImagesOlderThan:one_minute_ago keeping:snapshot_ids];
 }
 
 std::vector<SnapshotID> SnapshotBrowserAgent::GetSnapshotIDs() {

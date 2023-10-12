@@ -4,6 +4,7 @@
 
 source_set("model") {
   public = [
+    "image_file_manager.h",
     "snapshot_browser_agent.h",
     "snapshot_generator_delegate.h",
     "snapshot_id.h",
@@ -14,6 +15,7 @@ source_set("model") {
     "snapshot_tab_helper.h",
   ]
   sources = [
+    "image_file_manager.mm",
     "snapshot_browser_agent.mm",
     "snapshot_generator.h",
     "snapshot_generator.mm",

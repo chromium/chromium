@@ -70,8 +70,8 @@ class Time;
 // Purges the storage of snapshots that are older than `date`. The snapshots for
 // `liveSnapshotIDs` will be kept. This will be done asynchronously on a
 // background thread.
-- (void)purgeCacheOlderThan:(base::Time)date
-                    keeping:(const std::vector<SnapshotID>&)liveSnapshotIDs;
+- (void)purgeImagesOlderThan:(base::Time)date
+                     keeping:(const std::vector<SnapshotID>&)liveSnapshotIDs;
 
 // Renames snapshots with names in `oldIDs` to names in `newIDs`. It is a
 // programmatic error if the two array do not have the same length.
