@@ -2134,9 +2134,19 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
                              IDC_CONTENT_CONTEXT_INSPECTELEMENT}));
 }
 
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class ContextMenuFencedFrameTestNoTestingConfig
+    : public ContextMenuFencedFrameTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContextMenuFencedFrameTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+
 // Test that automatic beacons are sent after clicking "Open Link in New Tab"
 // from a contextual menu inside of a fenced frame.
-IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
+IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTestNoTestingConfig,
                        AutomaticBeaconSentAfterContextMenuNavigation) {
   privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations(
       privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
