@@ -766,6 +766,9 @@ class ChromeDriver(object):
   def ResetCooldown(self):
     return self.ExecuteCommand(Command.RESET_COOLDOWN, {})
 
+  def RunBounceTrackingMitigations(self):
+    return self.ExecuteCommand(Command.RUN_BOUNCE_TRACKING_MITIGATIONS, {})
+
   def GetSessionId(self):
     if not hasattr(self, '_session_id'):
       return None

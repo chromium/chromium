@@ -975,6 +975,14 @@ HttpHandler::HttpHandler(
                      WrapToCommand("ResetCooldown",
                                    base::BindRepeating(&ExecuteResetCooldown))),
 
+      // Extensions for Navigational Tracking Mitigations:
+      // https://privacycg.github.io/nav-tracking-mitigations
+      VendorPrefixedCommandMapping(
+          kDelete, "session/:sessionId/storage/run_bounce_tracking_mitigations",
+          WrapToCommand(
+              "RunBounceTrackingMitigations",
+              base::BindRepeating(&ExecuteRunBounceTrackingMitigations))),
+
       // Extensions for Custom Handlers API:
       // https://html.spec.whatwg.org/multipage/system-state.html#rph-automation
       CommandMapping(

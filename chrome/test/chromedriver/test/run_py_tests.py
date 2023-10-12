@@ -262,7 +262,10 @@ _ANDROID_NEGATIVE_FILTER['chrome'] = (
         # These tests are failing on Android
         # https://bugs.chromium.org/p/chromedriver/issues/detail?id=3560
         'ChromeDriverTest.testTakeLargeElementViewportScreenshot',
-        'ChromeDriverTest.testTakeLargeElementFullPageScreenshot'
+        'ChromeDriverTest.testTakeLargeElementFullPageScreenshot',
+        # Android does not support command line switches, which are
+        # currently needed for these tests.
+        'NavTrackingMitigationSpecificTest.testRunBounceTrackingMitigations'
     ]
 )
 _ANDROID_NEGATIVE_FILTER['chrome_stable'] = (
@@ -496,6 +499,13 @@ class ChromeDriverBaseTestWithWebServer(ChromeDriverBaseTest):
   @staticmethod
   def GetHttpUrlForFile(file_path):
     return ChromeDriverBaseTestWithWebServer._http_server.GetUrl() + file_path
+
+  @staticmethod
+  def ReplaceHostName(url, new_host_name):
+    url_components = urllib.parse.urlparse(url)
+    return urllib.parse.urlunparse(
+        url_components._replace(
+            netloc=('%s:%d' % (new_host_name, url_components.port))))
 
 
 class ChromeDriverTestWithCustomCapability(ChromeDriverBaseTestWithWebServer):
@@ -4574,12 +4584,6 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
   for fixable technical reasons related to subdomain matching.
   """
 
-  def ReplaceHostName(self, url, new_host_name):
-    url_components = urllib.parse.urlparse(url)
-    return urllib.parse.urlunparse(
-        url_components._replace(
-            netloc=('%s:%d' % (new_host_name, url_components.port))))
-
   def setUp(self):
     self._driver = self.CreateDriver(chrome_switches=['--site-per-process'])
 
@@ -7014,6 +7018,71 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
     self.assertRaises(chromedriver.NoSuchAlert, self._driver.GetAccounts)
     token = self._driver.ExecuteScript("return getResult()")
     self.assertEqual("token", token)
+
+class NavTrackingMitigationSpecificTest(ChromeDriverBaseTestWithWebServer):
+  def setUp(self):
+    global _VENDOR_ID
+    self._vendor_id = _VENDOR_ID
+
+    self._driver = self.CreateDriver(chrome_switches=[
+        '--enable-features="DIPS:delete/true/'
+            'triggering_action/stateful_bounce"',
+        '--test-third-party-cookie-phaseout',
+        '--host-resolver-rules=MAP * 127.0.0.1'
+    ])
+
+  def testRunBounceTrackingMitigations(self):
+    """Test implementation of bounce tracking mitigations.
+    """
+    initial_url = self.GetHttpUrlForFile('/initial.html')
+    remote_url = self.ReplaceHostName(
+        self.GetHttpUrlForFile('/bounce.html'), 'tracker.test')
+    final_url = self.GetHttpUrlForFile('/final.html')
+
+    self._http_server.SetDataForPath('/initial.html', bytes("""
+        <html>
+        <title>Initial Page</title>
+        <body>
+        <a href='%s' id='remote'>Stateful Bouncer\n</a><br>
+        <a href='%s' id='local'>To Local\n</a>
+        </body>
+        </html>""" % (remote_url, final_url), 'utf-8'))
+
+    def StatefullyBounce(request):
+      return {'Set-Cookie': 'x=y'}, bytes("""
+          <html>
+          <title>Bounce Tracker</title>
+          <body>
+          <script>
+          window.location = '%s';
+          </script>
+          </body>
+          </html>""" % initial_url, 'utf-8')
+    self._http_server.SetCallbackForPath('/bounce.html', StatefullyBounce)
+    self._http_server.SetDataForPath('/final.html',
+                                      bytes('<p>DONE!</p>', 'utf-8'))
+
+    self._driver.Load(initial_url)
+    anchor = self._driver.FindElement('css selector', '#remote')
+    anchor.Click()
+
+    # Waiting to be redirected back to initial_url by the bounce page.
+    self.WaitForCondition(
+        (lambda: 'Initial Page' in self._driver.GetTitle()))
+
+    # A click-started navigation is used to end the active redirect chain.
+    anchor = self._driver.FindElement('css selector', '#local')
+    anchor.Click()
+
+    paragraph = self._driver.FindElement('tag name', 'p')
+    self.assertEqual('DONE!', paragraph.GetText())
+
+    # The DIPSService can take some time to process and record the terminated
+    # redirect chain, but there is not an existing signal exposed to notify
+    # when it has finished. This wait should be sufficient to allow time for it.
+    self.assertTrue(self.WaitForCondition(
+        lambda: "tracker.test" in
+                self._driver.RunBounceTrackingMitigations(), 15))
 
 # 'Z' in the beginning is to make test executed in the end of suite.
 class ZChromeStartRetryCountTest(unittest.TestCase):
