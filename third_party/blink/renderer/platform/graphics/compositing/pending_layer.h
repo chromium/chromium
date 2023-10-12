@@ -198,9 +198,7 @@ class PLATFORM_EXPORT PendingLayer {
 
   void UpdateLayerProperties(cc::LayerSelection&, bool selection_only);
 
-  bool UsesSolidColorLayer() const {
-    return RuntimeEnabledFeatures::SolidColorLayersEnabled() && IsSolidColor();
-  }
+  bool UsesSolidColorLayer() const;
   SkColor4f GetSolidColor() const;
 
   // The rects are in the space of property_tree_state.

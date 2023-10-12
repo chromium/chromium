@@ -620,6 +620,20 @@ void PendingLayer::UpdateSolidColorLayer(PendingLayer* old_pending_layer) {
   cc_layer_->SetIsDrawable(draws_content_);
 }
 
+bool PendingLayer::UsesSolidColorLayer() const {
+  if (!RuntimeEnabledFeatures::SolidColorLayersEnabled() || !IsSolidColor()) {
+    return false;
+  }
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/922899): Additionally, on Mac, we require that the color is
+  // opaque due to the bug. Remove this condition once that bug is fixed.
+  if (GetSolidColor().fA != 1.0f) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_MAC)
+  return true;
+}
+
 SkColor4f PendingLayer::GetSolidColor() const {
   CHECK_NE(solid_color_chunk_index_, kNotFound);
   DCHECK(chunks_[solid_color_chunk_index_].background_color.is_solid_color);
