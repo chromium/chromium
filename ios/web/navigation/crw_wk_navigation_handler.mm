@@ -1023,6 +1023,19 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     return;
   }
 
+  // `webView:didFailNavigation:withError:` may be called when rendering an
+  // office document which should be ignored because the `webView` will already
+  // be displaying its own error. Additionally, in these cases, JavaScript can
+  // not be run on these pages (in order to display our own error message). See
+  // crbug.com/1489167 for more details.
+  if ([error.domain isEqualToString:@"OfficeImportErrorDomain"]) {
+    [self.navigationStates setState:web::WKNavigationState::FINISHED
+                      forNavigation:navigation];
+    self.webStateImpl->RemoveAllWebFrames();
+    _certVerificationErrors->Clear();
+    return;
+  }
+
   [self.navigationStates setState:web::WKNavigationState::FAILED
                     forNavigation:navigation];
 
