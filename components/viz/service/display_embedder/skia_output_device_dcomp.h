@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/frame_data.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/presenter.h"
