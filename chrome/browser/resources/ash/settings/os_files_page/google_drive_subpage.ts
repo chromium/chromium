@@ -563,11 +563,9 @@ export class SettingsGoogleDriveSubpageElement extends
   }
 
   private getListingFilesDialogBody_(): string {
-    return this.listedFiles_ > 0n ?
-        this.i18n(
-            'googleDriveFileSyncListingFilesItemsFoundBody',
-            this.listedFiles_.toLocaleString()) :
-        this.i18n('googleDriveFileSyncListingFilesBody');
+    return this.i18n(
+        'googleDriveFileSyncListingFilesItemsFoundBody',
+        this.listedFiles_.toLocaleString());
   }
 
   /**

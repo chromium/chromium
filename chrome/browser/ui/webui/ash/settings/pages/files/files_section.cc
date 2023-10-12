@@ -191,8 +191,6 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_TURN_OFF_BODY_TEXT},
       {"googleDriveFileSyncListingFilesTitle",
        IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_LISTING_FILES_TITLE_TEXT},
-      {"googleDriveFileSyncListingFilesBody",
-       IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_LISTING_FILES_BODY_TEXT},
       {"googleDriveFileSyncListingFilesItemsFoundBody",
        IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_LISTING_FILES_ITEMS_FOUND_BODY_TEXT},
       {"googleDriveNotEnoughSpaceTitle",
