@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_style_variant.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_text_painter_base.h"
+#include "third_party/blink/renderer/core/paint/text_painter_base.h"
 #include "third_party/blink/renderer/platform/fonts/ng_text_fragment_paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 
@@ -25,7 +25,7 @@ struct NGTextFragmentPaintInfo;
 // Operates on NGPhysicalTextFragments and only paints text and decorations.
 // Border painting etc is handled by the NGTextFragmentPainter class.
 // TODO(layout-dev): Does this distinction make sense?
-class CORE_EXPORT NGTextPainter : public NGTextPainterBase {
+class CORE_EXPORT NGTextPainter : public TextPainterBase {
   STACK_ALLOCATED();
 
  public:
@@ -72,12 +72,12 @@ class CORE_EXPORT NGTextPainter : public NGTextPainterBase {
                 const LineRelativeRect& text_frame_rect,
                 NGInlinePaintContext* inline_context,
                 bool horizontal)
-      : NGTextPainterBase(context,
-                          font,
-                          text_origin,
-                          text_frame_rect,
-                          inline_context,
-                          horizontal),
+      : TextPainterBase(context,
+                        font,
+                        text_origin,
+                        text_frame_rect,
+                        inline_context,
+                        horizontal),
         visual_rect_(visual_rect) {
     DCHECK(inline_context_);
   }

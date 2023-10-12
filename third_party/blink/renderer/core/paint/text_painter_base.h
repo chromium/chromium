@@ -42,9 +42,8 @@ constexpr float kDecorationClipMaxDilation = 13;
 
 }  // anonymous namespace
 
-// Base class for text painting. Has no dependencies on the layout tree and thus
-// provides functionality and definitions that can be shared between both legacy
-// layout and LayoutNG.
+// Base class for text painting. This is the base class of NGTextPainter and
+// NGTextCombinePainter.
 class CORE_EXPORT TextPainterBase {
   STACK_ALLOCATED();
 
@@ -105,6 +104,25 @@ class CORE_EXPORT TextPainterBase {
                                        const TextPaintStyle&,
                                        const cc::PaintFlags* flags = nullptr);
 
+  // We have two functions to paint text decorations, because we should paint
+  // text and decorations in following order:
+  //   1. Paint underline or overline text decorations
+  //   2. Paint text
+  //   3. Paint line through text decoration
+  void PaintUnderOrOverLineDecorations(
+      const NGTextFragmentPaintInfo& fragment_paint_info,
+      const NGTextDecorationOffset& decoration_offset,
+      TextDecorationInfo& decoration_info,
+      TextDecorationLine lines_to_paint,
+      const PaintInfo& paint_info,
+      const TextPaintStyle& text_style,
+      const cc::PaintFlags* flags = nullptr);
+
+  virtual void ClipDecorationsStripe(const NGTextFragmentPaintInfo&,
+                                     float upper,
+                                     float stripe_width,
+                                     float dilation) = 0;
+
   enum PaintInternalStep { kPaintText, kPaintEmphasisMark };
 
   NGInlinePaintContext* inline_context_ = nullptr;
@@ -115,6 +133,31 @@ class CORE_EXPORT TextPainterBase {
   AtomicString emphasis_mark_;
   int emphasis_mark_offset_ = 0;
   const bool horizontal_;
+
+ private:
+  void PaintDecorationUnderOrOverLine(
+      const NGTextFragmentPaintInfo& fragment_paint_info,
+      GraphicsContext& context,
+      TextDecorationInfo& decoration_info,
+      TextDecorationLine line,
+      const cc::PaintFlags* flags = nullptr);
+
+  void PaintUnderOrOverLineDecorationShadows(
+      const NGTextFragmentPaintInfo& fragment_paint_info,
+      const NGTextDecorationOffset& decoration_offset,
+      TextDecorationInfo& decoration_info,
+      TextDecorationLine lines_to_paint,
+      const cc::PaintFlags* flags,
+      const TextPaintStyle& text_style,
+      GraphicsContext& context);
+
+  void PaintUnderOrOverLineDecorations(
+      const NGTextFragmentPaintInfo& fragment_paint_info,
+      const NGTextDecorationOffset& decoration_offset,
+      TextDecorationInfo& decoration_info,
+      TextDecorationLine lines_to_paint,
+      const cc::PaintFlags* flags,
+      GraphicsContext& context);
 };
 
 }  // namespace blink

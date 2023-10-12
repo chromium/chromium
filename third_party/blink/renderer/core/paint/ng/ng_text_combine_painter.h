@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_NG_NG_TEXT_COMBINE_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_NG_NG_TEXT_COMBINE_PAINTER_H_
 
-#include "third_party/blink/renderer/core/paint/ng/ng_text_painter_base.h"
+#include "third_party/blink/renderer/core/paint/text_painter_base.h"
 
 namespace blink {
 
@@ -15,7 +15,7 @@ struct LineRelativeRect;
 
 // The painter for painting text decorations and emphasis marks for
 // LayoutNGTextCombine.
-class NGTextCombinePainter final : public NGTextPainterBase {
+class NGTextCombinePainter final : public TextPainterBase {
  public:
   NGTextCombinePainter(GraphicsContext& context,
                        const ComputedStyle& style,

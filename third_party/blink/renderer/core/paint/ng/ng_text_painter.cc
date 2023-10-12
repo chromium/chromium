@@ -288,7 +288,7 @@ void NGTextPainter::PaintDecorationsExceptLineThrough(
                                          decoration_info, lines_to_paint,
                                          paint_info, text_style);
   } else {
-    NGTextPainterBase::PaintUnderOrOverLineDecorations(
+    TextPainterBase::PaintUnderOrOverLineDecorations(
         fragment_paint_info, decoration_offset, decoration_info, lines_to_paint,
         paint_info, text_style, nullptr);
   }
@@ -509,7 +509,7 @@ void NGTextPainter::PaintSvgDecorationsExceptLineThrough(
       if (SetupPaintForSvgText(state, graphics_context_, style_to_paint,
                                SvgPaintMode::kTextDecoration, *resource_mode,
                                flags)) {
-        NGTextPainterBase::PaintUnderOrOverLineDecorations(
+        TextPainterBase::PaintUnderOrOverLineDecorations(
             fragment_paint_info, decoration_offset, decoration_info,
             lines_to_paint, paint_info, text_style, &flags);
       }
