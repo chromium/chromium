@@ -14,4 +14,8 @@ mojom("mojom") {
     "//url/mojom:url_mojom_gurl",
   ]
   webui_module_path = "chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom"
+
+  # Used by ash/webui/common/resources/bluetooth, which is still using JS +
+  # Closure.
+  use_typescript_sources = false
 }

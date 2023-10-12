@@ -23,6 +23,10 @@ if (is_chromeos_ash) {
 
     webui_module_path =
         "chrome://resources/mojo/chromeos/services/network_health/public/mojom"
+
+    # Used by ash/webui/common/resources/network_health, which is still using
+    # JS + Closure.
+    use_typescript_sources = false
   }
 }
 

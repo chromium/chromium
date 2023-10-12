@@ -15,6 +15,10 @@ mojom("mojom") {
   webui_module_path =
       "chrome://resources/mojo/chromeos/services/network_config/public/mojom"
 
+  # Used by ash/webui/common/resources/network_health, which is still using
+  # JS + Closure.
+  use_typescript_sources = false
+
   public_deps = [
     ":network_types",
     "//mojo/public/mojom/base",
