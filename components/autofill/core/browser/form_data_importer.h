@@ -328,7 +328,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // TODO(crbug.com/1450749): Move to CreditCardSaveManger.
   bool ShouldOfferCreditCardSave(
       const absl::optional<CreditCard>& extracted_credit_card,
-      bool is_credit_card_upload_enabled);
+      bool is_credit_card_upstream_enabled);
 
   // If the `profile`'s country is not empty, complements it with
   // `predicted_country_code`. To give users the opportunity to edit, this is

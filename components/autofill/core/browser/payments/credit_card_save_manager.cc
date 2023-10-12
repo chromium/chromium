@@ -133,28 +133,32 @@ bool CreditCardSaveManager::AttemptToOfferCvcLocalSave(const CreditCard& card) {
   return show_save_prompt_.value_or(false);
 }
 
-bool CreditCardSaveManager::ShouldOfferCvcLocalSave(
+bool CreditCardSaveManager::ShouldOfferCvcSave(
     const CreditCard& card,
-    FormDataImporter::CreditCardImportType credit_card_import_type) {
-  // Only offer CVC local save if CVC storage is enabled.
+    FormDataImporter::CreditCardImportType credit_card_import_type,
+    bool is_credit_card_upload_enabled) {
+  // Only offer CVC save if CVC storage is enabled.
   if (!personal_data_manager_->IsPaymentCvcStorageEnabled()) {
     return false;
   }
 
-  // Only offer CVC local save if the user entered a CVC during checkout.
+  // Only offer CVC save if the user entered a CVC during checkout.
   if (card.cvc().empty()) {
     return false;
   }
 
-  // Only offer CVC local save for local cards.
-  if (credit_card_import_type !=
+  // We will only offer CVC-only save if the card is known to Autofill.
+  CreditCard* existing_credit_card = nullptr;
+  if (credit_card_import_type ==
       FormDataImporter::CreditCardImportType::kLocalCard) {
-    return false;
+    existing_credit_card =
+        personal_data_manager_->GetCreditCardByGUID(card.guid());
+  } else if (credit_card_import_type ==
+                 FormDataImporter::CreditCardImportType::kServerCard &&
+             is_credit_card_upload_enabled) {
+    existing_credit_card = personal_data_manager_->GetCreditCardByInstrumentId(
+        card.instrument_id());
   }
-
-  // Only offer CVC local save if CVC is different than the existing card's CVC.
-  CreditCard* existing_credit_card =
-      personal_data_manager_->GetCreditCardByGUID(card.guid());
   return existing_credit_card && existing_credit_card->cvc() != card.cvc();
 }
 

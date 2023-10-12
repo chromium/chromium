@@ -486,9 +486,14 @@ class MockCreditCardSaveManager : public TestCreditCardSaveManager {
               (const CreditCard& card),
               (override));
   MOCK_METHOD(bool,
-              ShouldOfferCvcLocalSave,
+              ShouldOfferCvcSave,
               (const CreditCard& card,
-               FormDataImporter::CreditCardImportType credit_card_import_type),
+               FormDataImporter::CreditCardImportType credit_card_import_type,
+               bool is_credit_card_upstream_enabled),
+              (override));
+  MOCK_METHOD(void,
+              AttemptToOfferCvcUploadSave,
+              (const CreditCard& card),
               (override));
 };
 
@@ -2587,6 +2592,32 @@ TEST_P(FormDataImporterTest,
               FormDataImporter::CreditCardImportType::kServerCard);
 }
 
+// Ensures that `cvc` is set when a server card is found.
+TEST_P(FormDataImporterTest,
+       ExtractFormData_ExtractCreditCardRecordType_ServerCardWithCvc) {
+  // Add a valid server card.
+  CreditCard server_card(CreditCard::RecordType::kMaskedServerCard, "a123");
+  test::SetCreditCardInfo(&server_card, "John Dillinger",
+                          "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
+  personal_data_manager_->AddFullServerCreditCard(server_card);
+  ASSERT_EQ(1U, personal_data_manager_->GetCreditCards().size());
+
+  // Simulate a form submission with the same card number but different
+  // expiration date.
+  FormData form = CreateFullCreditCardForm("Biggie Smalls",
+                                           "4111 1111 1111 1111", "02", "2999");
+  form.fields.push_back(
+      CreateTestFormField("CVC:", "cvc", "123", FormControlType::kInputText));
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                         nullptr);
+  auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
+      form_structure, /*profile_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true);
+  ASSERT_TRUE(extracted_data.extracted_credit_card);
+  EXPECT_EQ(extracted_data.extracted_credit_card->cvc(), u"123");
+}
+
 // Ensures that `credit_card_import_type_` is set as kNewCard when there is a
 // masked server card with the same last four but different expiration date.
 TEST_P(
@@ -3956,7 +3987,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
   form_data_importer().set_credit_card_import_type_for_testing(
       FormDataImporter::CreditCardImportType::kLocalCard);
 
-  ON_CALL(credit_card_save_manager(), ShouldOfferCvcLocalSave)
+  ON_CALL(credit_card_save_manager(), ShouldOfferCvcSave)
       .WillByDefault(testing::Return(true));
   EXPECT_CALL(credit_card_save_manager(), AttemptToOfferCvcLocalSave);
   form_data_importer().ProcessExtractedCreditCardForTesting(
@@ -3975,7 +4006,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
   form_data_importer().set_credit_card_import_type_for_testing(
       FormDataImporter::CreditCardImportType::kLocalCard);
 
-  ON_CALL(credit_card_save_manager(), ShouldOfferCvcLocalSave)
+  ON_CALL(credit_card_save_manager(), ShouldOfferCvcSave)
       .WillByDefault(testing::Return(false));
   EXPECT_CALL(credit_card_save_manager(), AttemptToOfferCvcLocalSave).Times(0);
   form_data_importer().ProcessExtractedCreditCardForTesting(
@@ -3984,12 +4015,69 @@ TEST_F(FormDataImporterNonParameterizedTest,
       /*is_credit_card_upstream_enabled=*/false);
 }
 
+// Test that in the case where the CreditCardSaveManager denotes we should
+// offer CVC upload save, we attempt to offer it once the form is submitted.
+TEST_F(FormDataImporterNonParameterizedTest,
+       ProcessExtractedCreditCard_UploadCvcSaveOffered) {
+  CreditCard card = test::WithCvc(test::GetMaskedServerCard(), u"123");
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultCreditCardFormStructure();
+  form_data_importer().set_credit_card_import_type_for_testing(
+      FormDataImporter::CreditCardImportType::kServerCard);
+
+  ON_CALL(credit_card_save_manager(), ShouldOfferCvcSave)
+      .WillByDefault(testing::Return(true));
+  EXPECT_CALL(credit_card_save_manager(), AttemptToOfferCvcUploadSave);
+  form_data_importer().ProcessExtractedCreditCardForTesting(
+      *form_structure, card,
+      /*payment_methods_autofill_enabled=*/true,
+      /*is_credit_card_upstream_enabled=*/true);
+}
+
+// Test that in the case where upstream is not enabled, we will not offer CVC
+// upload save.
+TEST_F(FormDataImporterNonParameterizedTest,
+       ProcessExtractedCreditCard_UploadCvcSaveNotOfferedWithUpstreamDisabled) {
+  CreditCard card = test::WithCvc(test::GetMaskedServerCard(), u"123");
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultCreditCardFormStructure();
+  form_data_importer().set_credit_card_import_type_for_testing(
+      FormDataImporter::CreditCardImportType::kServerCard);
+
+  ON_CALL(credit_card_save_manager(), ShouldOfferCvcSave)
+      .WillByDefault(testing::Return(false));
+  EXPECT_CALL(credit_card_save_manager(), AttemptToOfferCvcUploadSave).Times(0);
+  form_data_importer().ProcessExtractedCreditCardForTesting(
+      *form_structure, card,
+      /*payment_methods_autofill_enabled=*/true,
+      /*is_credit_card_upstream_enabled=*/false);
+}
+
+// Test that in the case where the CreditCardSaveManager denotes we should
+// not offer CVC upload save, we will not offer it.
+TEST_F(FormDataImporterNonParameterizedTest,
+       ProcessExtractedCreditCard_UploadCvcSaveNotOffered) {
+  CreditCard card = test::WithCvc(test::GetMaskedServerCard(), u"123");
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultCreditCardFormStructure();
+  form_data_importer().set_credit_card_import_type_for_testing(
+      FormDataImporter::CreditCardImportType::kServerCard);
+
+  ON_CALL(credit_card_save_manager(), ShouldOfferCvcSave)
+      .WillByDefault(testing::Return(false));
+  EXPECT_CALL(credit_card_save_manager(), AttemptToOfferCvcUploadSave).Times(0);
+  form_data_importer().ProcessExtractedCreditCardForTesting(
+      *form_structure, card,
+      /*payment_methods_autofill_enabled=*/true,
+      /*is_credit_card_upstream_enabled=*/true);
+}
+
 TEST_F(FormDataImporterNonParameterizedTest, ShouldOfferCreditCardSave) {
   // Should not offer save for null cards.
   absl::optional<CreditCard> extracted_credit_card;
   EXPECT_FALSE(form_data_importer().ShouldOfferCreditCardSave(
       extracted_credit_card,
-      /*is_credit_card_upload_enabled=*/false));
+      /*is_credit_card_upstream_enabled=*/false));
 
   extracted_credit_card = test::GetCreditCard();
 
@@ -3998,19 +4086,19 @@ TEST_F(FormDataImporterNonParameterizedTest, ShouldOfferCreditCardSave) {
       FormDataImporter::CreditCardImportType::kLocalCard);
   EXPECT_FALSE(form_data_importer().ShouldOfferCreditCardSave(
       extracted_credit_card,
-      /*is_credit_card_upload_enabled=*/false));
+      /*is_credit_card_upstream_enabled=*/false));
 
   // Should offer save for local cards if upstream is enabled.
   EXPECT_TRUE(form_data_importer().ShouldOfferCreditCardSave(
       extracted_credit_card,
-      /*is_credit_card_upload_enabled=*/true));
+      /*is_credit_card_upstream_enabled=*/true));
 
   // Should not offer save for server cards.
   form_data_importer().set_credit_card_import_type_for_testing(
       FormDataImporter::CreditCardImportType::kServerCard);
   EXPECT_FALSE(form_data_importer().ShouldOfferCreditCardSave(
       extracted_credit_card,
-      /*is_credit_card_upload_enabled=*/true));
+      /*is_credit_card_upstream_enabled=*/true));
 
   // Should always offer save for new cards; upload save if it is enabled, local
   // save otherwise.
@@ -4018,10 +4106,10 @@ TEST_F(FormDataImporterNonParameterizedTest, ShouldOfferCreditCardSave) {
       FormDataImporter::CreditCardImportType::kNewCard);
   EXPECT_TRUE(form_data_importer().ShouldOfferCreditCardSave(
       extracted_credit_card,
-      /*is_credit_card_upload_enabled=*/true));
+      /*is_credit_card_upstream_enabled=*/true));
   EXPECT_TRUE(form_data_importer().ShouldOfferCreditCardSave(
       extracted_credit_card,
-      /*is_credit_card_upload_enabled=*/false));
+      /*is_credit_card_upstream_enabled=*/false));
 }
 
 }  // namespace autofill

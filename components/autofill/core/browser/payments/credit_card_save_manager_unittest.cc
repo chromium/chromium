@@ -4849,19 +4849,30 @@ TEST_F(CreditCardSaveManagerTest, ExistingServerCard_DifferentExpiration) {
           .has_same_last_four_as_server_card_but_different_expiration_date);
 }
 
-class SaveCvcTest : public CreditCardSaveManagerTest,
-                    public testing::WithParamInterface<std::tuple<bool, bool>> {
+class SaveCvcTest
+    : public CreditCardSaveManagerTest,
+      public testing::WithParamInterface<
+          std::
+              tuple<bool, bool, FormDataImporter::CreditCardImportType, bool>> {
  public:
   SaveCvcTest() {
     feature_list.InitWithFeatureState(
         features::kAutofillEnableCvcStorageAndFilling,
         IsSaveCvcFeatureEnabled());
+    prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
+                                IsSaveCvcPrefEnabled());
   }
   // This bool indicates if save CVC storage flag is enabled.
   bool IsSaveCvcFeatureEnabled() const { return std::get<0>(GetParam()); }
   // This bool indicates if user has opted-in to the features on the settings
   // page.
   bool IsSaveCvcPrefEnabled() const { return std::get<1>(GetParam()); }
+  // Returns the credit card import type.
+  FormDataImporter::CreditCardImportType CreditCardImportType() const {
+    return std::get<2>(GetParam());
+  }
+  // This bool indicates whether the user has credit card upload enabled.
+  bool IsCreditCardUpstreamEnabled() const { return std::get<3>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList feature_list;
@@ -4896,59 +4907,51 @@ TEST_P(SaveCvcTest, OnDidUploadCard_SaveServerCvc) {
       upload_card_response_details);
 }
 
-// Tests that we should not offer CvcLocalSave if the user entered empty CVC
+// Tests that we should not offer CVC Save if the user entered empty CVC
 // during checkout.
-TEST_P(SaveCvcTest, ShouldNotOfferCvcLocalSaveWithEmptyCvc) {
-  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
-                              IsSaveCvcPrefEnabled());
+TEST_P(SaveCvcTest, ShouldNotOfferCvcSaveWithEmptyCvc) {
   CreditCard card = test::WithCvc(test::GetCreditCard());
   personal_data().AddCreditCard(card);
 
-  // We should not offer CvcLocalSave if the user entered empty CVC during
+  // We should not offer CVC save if the user entered empty CVC during
   // checkout.
   card.set_cvc(u"");
-  EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcLocalSave(
-      card, FormDataImporter::CreditCardImportType::kLocalCard));
+  EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcSave(
+      card, CreditCardImportType(), IsCreditCardUpstreamEnabled()));
 }
 
-// Tests that we should only OfferCvcLocalSave if we have an existing local
-// card that matches the local card in the form.
-TEST_P(SaveCvcTest, ShouldNotOfferCvcLocalSaveWithoutExistingCard) {
-  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
-                              IsSaveCvcPrefEnabled());
-  personal_data().DeleteAllLocalCreditCards();
-  CreditCard card = test::WithCvc(test::GetCreditCard());
+// Tests that we should only offer CVC Save if we have an existing
+// card that matches the card in the form.
+TEST_P(SaveCvcTest, ShouldNotOfferCvcSaveWithoutExistingCard) {
+  personal_data().ClearAllServerData();
+  personal_data().ClearAllLocalData();
+  CreditCard local_card = test::WithCvc(test::GetCreditCard());
+  CreditCard server_card = test::WithCvc(test::GetMaskedServerCard());
 
-  // We should not OfferCvcLocalSave if we don't have an existing local card
-  // that matches the local card in the form.
-  EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcLocalSave(
-      card, FormDataImporter::CreditCardImportType::kLocalCard));
+  // We should not offer CVC save if we don't have an existing card
+  // that matches the card in the form.
+  EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcSave(
+      local_card, FormDataImporter::CreditCardImportType::kLocalCard,
+      IsCreditCardUpstreamEnabled()));
+  EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcSave(
+      server_card, FormDataImporter::CreditCardImportType::kServerCard,
+      IsCreditCardUpstreamEnabled()));
 }
 
-// Tests that we should only OfferCvcLocalSave with local cards.
-TEST_P(SaveCvcTest, ShouldOnlyOfferCvcLocalSaveWithLocalCards) {
-  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
-                              IsSaveCvcPrefEnabled());
-  CreditCard card = test::WithCvc(test::GetMaskedServerCard(), u"123");
-  personal_data().AddServerCreditCard(card);
-  card.set_cvc(u"234");
+// Tests that we should not offer CVC save with same CVC.
+TEST_P(SaveCvcTest, ShouldNotOfferCvcSaveWithSameCvc) {
+  CreditCard local_card = test::WithCvc(test::GetCreditCard(), u"123");
+  personal_data().AddCreditCard(local_card);
+  CreditCard server_card = test::WithCvc(test::GetMaskedServerCard(), u"123");
+  personal_data().AddServerCreditCard(server_card);
 
-  // We should not OfferCvcLocalSave with server cards.
-  EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcLocalSave(
-      card, FormDataImporter::CreditCardImportType::kServerCard));
-}
-
-// Tests that we should not OfferCvcLocalSave with same CVC.
-TEST_P(SaveCvcTest, ShouldNotOfferCvcLocalSaveWithSameCvc) {
-  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
-                              IsSaveCvcPrefEnabled());
-  CreditCard card = test::WithCvc(test::GetCreditCard(), u"123");
-  personal_data().AddCreditCard(card);
-
-  // We should not OfferCvcLocalSave with same CVC.
-  card.set_cvc(u"123");
-  EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcLocalSave(
-      card, FormDataImporter::CreditCardImportType::kLocalCard));
+  // We should not offer CVC save with same CVC.
+  EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcSave(
+      local_card, FormDataImporter::CreditCardImportType::kLocalCard,
+      IsCreditCardUpstreamEnabled()));
+  EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcSave(
+      server_card, FormDataImporter::CreditCardImportType::kServerCard,
+      IsCreditCardUpstreamEnabled()));
 }
 
 // Tests that we should OfferCvcLocalSave with expected input.
@@ -4959,14 +4962,44 @@ TEST_P(SaveCvcTest, ShouldOfferCvcLocalSave) {
   personal_data().AddCreditCard(card);
   card.set_cvc(u"234");
   if (IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled()) {
-    EXPECT_TRUE(credit_card_save_manager_->ShouldOfferCvcLocalSave(
-        card, FormDataImporter::CreditCardImportType::kLocalCard));
+    EXPECT_TRUE(credit_card_save_manager_->ShouldOfferCvcSave(
+        card, FormDataImporter::CreditCardImportType::kLocalCard,
+        IsCreditCardUpstreamEnabled()));
+  } else {
+    EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcSave(
+        card, FormDataImporter::CreditCardImportType::kLocalCard,
+        IsCreditCardUpstreamEnabled()));
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(CreditCardSaveManagerTest,
-                         SaveCvcTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+// Tests that we should OfferCvcUploadSave with expected input.
+TEST_P(SaveCvcTest, ShouldOfferCvcUploadSave) {
+  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
+                              IsSaveCvcPrefEnabled());
+  CreditCard card = test::WithCvc(test::GetMaskedServerCard(), u"123");
+  personal_data().AddServerCreditCard(card);
+  card.set_cvc(u"234");
+  if (IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled() &&
+      IsCreditCardUpstreamEnabled()) {
+    EXPECT_TRUE(credit_card_save_manager_->ShouldOfferCvcSave(
+        card, FormDataImporter::CreditCardImportType::kServerCard,
+        IsCreditCardUpstreamEnabled()));
+  } else {
+    EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcSave(
+        card, FormDataImporter::CreditCardImportType::kServerCard,
+        IsCreditCardUpstreamEnabled()));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    CreditCardSaveManagerTest,
+    SaveCvcTest,
+    testing::Combine(
+        testing::Bool(),
+        testing::Bool(),
+        testing::Values(FormDataImporter::CreditCardImportType::kServerCard,
+                        FormDataImporter::CreditCardImportType::kLocalCard),
+        testing::Bool()));
 
 // Tests that server CVC is not added to AutofillTable during credit card
 // upload save if CVC was empty.

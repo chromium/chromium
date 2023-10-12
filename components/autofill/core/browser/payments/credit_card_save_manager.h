@@ -116,14 +116,17 @@ class CreditCardSaveManager {
   // prompt is shown. `card` is the credit card extracted from the form.
   virtual bool AttemptToOfferCvcLocalSave(const CreditCard& card);
 
-  // Returns true if CVC local save should be offered to the user. `card` is the
-  // credit card extracted from the form. `credit_card_import_type` is the
-  // credit card type extracted from the form.
+  // Returns true if CVC local or upload save should be offered to the user.
+  // `card` is the credit card extracted from the form. It refers to the
+  // CVC-only save. If card is unknown we will offer to save the the card
+  // including it's CVC. `credit_card_import_type` is the credit card type
+  // extracted from the form.
   // TODO(crbug.com/1450749): Update param after resolving duplicate local and
   // server card issue.
-  virtual bool ShouldOfferCvcLocalSave(
+  virtual bool ShouldOfferCvcSave(
       const CreditCard& card,
-      FormDataImporter::CreditCardImportType credit_card_import_type);
+      FormDataImporter::CreditCardImportType credit_card_import_type,
+      bool is_credit_card_upstream_enabled);
 
   // Begins the process to offer upload credit card save to the user if the
   // imported card passes all requirements and Google Payments approves.
@@ -134,7 +137,7 @@ class CreditCardSaveManager {
                                     const bool uploading_local_card);
 
   // Begins the process to offer server CVC save to the user.
-  void AttemptToOfferCvcUploadSave(const CreditCard& card);
+  virtual void AttemptToOfferCvcUploadSave(const CreditCard& card);
 
   // Returns true if all the conditions for enabling the upload of credit card
   // are satisfied.
