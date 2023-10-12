@@ -267,8 +267,6 @@ class NET_EXPORT HostResolverManager
                       handles::NetworkHandle target_network,
                       NetLog* net_log);
 
-  static void SetNetworkListForTesting(NetworkInterfaceList interfaces);
-
  protected:
   // Callback from HaveOnlyLoopbackAddresses probe.
   void SetHaveOnlyLoopbackAddresses(bool result);
@@ -465,9 +463,6 @@ class NET_EXPORT HostResolverManager
 
   // Asynchronously checks if only loopback IPs are available.
   virtual void RunLoopbackProbeJob();
-
-  void MaybeCheckIPv6ReachabilityOverride();
-  void SetIPv6ReachabilityOverride(bool reachable);
 
   // Records the result in cache if cache is present.
   void CacheResult(HostCache* cache,

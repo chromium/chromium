@@ -95,16 +95,6 @@ NET_EXPORT extern const base::FeatureParam<int>
     kAlternativePortForGloballyReachableCheck;
 NET_EXPORT BASE_DECLARE_FEATURE(kUseAlternativePortForGloballyReachableCheck);
 
-enum class IPv6ReachabilityOverride {
-  // Reachable when the system has at least one valid address.
-  kReachable,
-  // Reachable when the system has a unique local address.
-  kUniqueLocalAddressReachable,
-  // Reachable when the system has a publicly routable address.
-  kPubliclyRoutable,
-};
-NET_EXPORT extern const base::FeatureParam<IPv6ReachabilityOverride>
-    kIPv6ReachabilityOverrideParam;
 // If enabled, overrides IPv6 reachability probe results based on the system's
 // IP addresses.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableIPv6ReachabilityOverride);

@@ -502,51 +502,6 @@ int GetPortForGloballyReachableCheck() {
   return features::kAlternativePortForGloballyReachableCheck.Get();
 }
 
-bool IsIPv6AddressReachable(const IPAddress& address) {
-  if (!address.IsIPv6()) {
-    return false;
-  }
-  if (address.IsLoopback()) {
-    return false;
-  }
-  if (address.IsIPv4MappedIPv6()) {
-    return false;
-  }
-
-  switch (features::kIPv6ReachabilityOverrideParam.Get()) {
-    case features::IPv6ReachabilityOverride::kReachable:
-      return true;
-    case features::IPv6ReachabilityOverride::kUniqueLocalAddressReachable:
-      return address.IsUniqueLocalIPv6();
-    case features::IPv6ReachabilityOverride::kPubliclyRoutable:
-      return address.IsPubliclyRoutable();
-  }
-}
-
-bool NetworkInterfaceListHasReachableIPv6Address(
-    const NetworkInterfaceList& interfaces) {
-  for (const auto& interface : interfaces) {
-    if (IsIPv6AddressReachable(interface.address)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool SystemHasReachableIPv6Address() {
-  CHECK(
-      base::FeatureList::IsEnabled(features::kEnableIPv6ReachabilityOverride));
-
-  NetworkInterfaceList interfaces;
-  GetNetworkList(&interfaces, EXCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES);
-  return NetworkInterfaceListHasReachableIPv6Address(interfaces);
-}
-
-absl::optional<NetworkInterfaceList>& NetworkInterfaceListForTesting() {
-  static base::NoDestructor<absl::optional<NetworkInterfaceList>> interfaces;
-  return *interfaces;
-}
-
 }  // namespace
 
 //-----------------------------------------------------------------------------
@@ -2999,6 +2954,8 @@ HostResolverManager::HostResolverManager(
       system_dns_config_notifier_(system_dns_config_notifier),
       target_network_(target_network),
       check_ipv6_on_wifi_(options.check_ipv6_on_wifi),
+      ipv6_reachability_override_(base::FeatureList::IsEnabled(
+          features::kEnableIPv6ReachabilityOverride)),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       https_svcb_options_(
           options.https_svcb_options
@@ -3025,7 +2982,6 @@ HostResolverManager::HostResolverManager(
   if (system_dns_config_notifier_)
     system_dns_config_notifier_->AddObserver(this);
   EnsureSystemHostResolverCallReady();
-  MaybeCheckIPv6ReachabilityOverride();
 
   auto connection_type =
       IsBoundToNetwork()
@@ -3229,12 +3185,6 @@ void HostResolverManager::SetMaxQueuedJobsForTesting(size_t value) {
   DCHECK_EQ(0u, dispatcher_->num_queued_jobs());
   DCHECK_GE(value, 0u);
   max_queued_jobs_ = value;
-}
-
-// static
-void HostResolverManager::SetNetworkListForTesting(
-    NetworkInterfaceList interfaces) {
-  NetworkInterfaceListForTesting() = std::move(interfaces);  // IN-TEST
 }
 
 void HostResolverManager::SetHaveOnlyLoopbackAddresses(bool result) {
@@ -4058,39 +4008,6 @@ void HostResolverManager::RunLoopbackProbeJob() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void HostResolverManager::MaybeCheckIPv6ReachabilityOverride() {
-  if (!base::FeatureList::IsEnabled(
-          features::kEnableIPv6ReachabilityOverride)) {
-    return;
-  }
-
-  // NetworkInterfaceListForTesting() can only be called from the main thread.
-  if (NetworkInterfaceListForTesting().has_value()) {
-    NetworkInterfaceList interfaces =
-        *NetworkInterfaceListForTesting();  // IN-TEST
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&NetworkInterfaceListHasReachableIPv6Address,
-                       interfaces),
-        base::BindOnce(&HostResolverManager::SetIPv6ReachabilityOverride,
-                       weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&SystemHasReachableIPv6Address),
-      base::BindOnce(&HostResolverManager::SetIPv6ReachabilityOverride,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void HostResolverManager::SetIPv6ReachabilityOverride(bool reachable) {
-  CHECK(
-      base::FeatureList::IsEnabled(features::kEnableIPv6ReachabilityOverride));
-  ipv6_reachability_override_ = reachable;
-}
-
 void HostResolverManager::RemoveAllJobs(const ResolveContext* context) {
   for (auto it = jobs_.begin(); it != jobs_.end();) {
     const JobKey& key = it->first;
@@ -4186,7 +4103,6 @@ void HostResolverManager::OnIPAddressChanged() {
     BUILDFLAG(IS_FUCHSIA)
   RunLoopbackProbeJob();
 #endif
-  MaybeCheckIPv6ReachabilityOverride();
   AbortJobsWithoutTargetNetwork(true /* in_progress_only */);
   // `this` may be deleted inside AbortJobsWithoutTargetNetwork().
 }
