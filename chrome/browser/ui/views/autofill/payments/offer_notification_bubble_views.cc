@@ -27,12 +27,14 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
 
 namespace autofill {
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kOfferNotificationBubbleElementId);
 
 OfferNotificationBubbleViews::OfferNotificationBubbleViews(
     views::View* anchor_view,
@@ -46,6 +48,7 @@ OfferNotificationBubbleViews::OfferNotificationBubbleViews(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText));
+  SetProperty(views::kElementIdentifierKey, kOfferNotificationBubbleElementId);
 }
 
 OfferNotificationBubbleViews::~OfferNotificationBubbleViews() {

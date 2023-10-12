@@ -147,6 +147,9 @@ class PageActionIconView : public IconLabelBubbleView {
   // Invoked prior to executing the command.
   virtual void OnExecuting(ExecuteSource execute_source) = 0;
 
+  // Invoked after executing the command.
+  virtual void DidExecute(ExecuteSource execute_source) {}
+
   // Invoked after the icon is pressed.
   virtual void OnPressed(bool activated) {}
 

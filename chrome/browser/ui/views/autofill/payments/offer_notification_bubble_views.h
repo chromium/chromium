@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/views/controls/styled_label.h"
 
 namespace content {
@@ -20,6 +21,8 @@ namespace autofill {
 
 class PromoCodeLabelButton;
 class PromoCodeLabelView;
+
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kOfferNotificationBubbleElementId);
 
 // This class implements the Desktop bubble that displays any eligible offers or
 // rewards linked to the current page domain. This can include card-linked
