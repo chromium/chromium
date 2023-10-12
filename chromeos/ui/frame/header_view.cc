@@ -72,7 +72,6 @@ HeaderView::HeaderView(views::Widget* target_widget,
   caption_button_container_ =
       AddChildView(std::make_unique<chromeos::FrameCaptionButtonContainerView>(
           target_widget_));
-  caption_button_container_->UpdateCaptionButtonState(false /*=animate*/);
 
   frame_header_ = std::make_unique<DefaultFrameHeader>(
       target_widget,

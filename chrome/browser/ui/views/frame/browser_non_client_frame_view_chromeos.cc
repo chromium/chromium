@@ -164,7 +164,6 @@ void BrowserNonClientFrameViewChromeOS::Init() {
   caption_button_container_ =
       AddChildView(std::make_unique<chromeos::FrameCaptionButtonContainerView>(
           frame(), std::move(tab_search_button)));
-  caption_button_container_->UpdateCaptionButtonState(false /*=animate*/);
 
   // Initializing the TabIconView is expensive, so only do it if we need to.
   if (browser_view()->ShouldShowWindowIcon()) {
