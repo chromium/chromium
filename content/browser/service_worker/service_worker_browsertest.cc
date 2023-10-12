@@ -5382,7 +5382,10 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
             return http_response;
           }
 
-          http_response->set_content_type("text/plain");
+          if (!base::Contains(request.GetURL().query(),
+                              "server_unknown_mime_type")) {
+            http_response->set_content_type("text/plain");
+          }
 
           if (base::Contains(request.GetURL().query(), "server_large_data")) {
             // The data pipe buffer size created for the RaceNetworkRequest test
@@ -5497,6 +5500,39 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       NetworkRequest_Wins_MimeTypeSniffed) {
+  // Register the ServiceWorker and navigate to the in scope URL.
+  StartServerAndNavigateToSetup();
+
+  {
+    const GURL test_url = embedded_test_server()->GetURL(
+        "/service_worker/mock_response?sw_slow&sw_respond");
+    NavigationHandleObserver observer1(web_contents(), test_url);
+    NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+    EXPECT_TRUE(observer1.has_committed());
+    // Check MIME type as axpected.
+    EXPECT_EQ(shell()->web_contents()->GetContentsMimeType(), "text/plain");
+  }
+  {
+    // server_unknown_mime_type doesn't content-type from server.
+    const GURL test_url = embedded_test_server()->GetURL(
+        "/service_worker/"
+        "mock_response?sw_slow&sw_respond&server_unknown_mime_type");
+    NavigationHandleObserver observer2(web_contents(), test_url);
+    NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+    EXPECT_TRUE(observer2.has_committed());
+    // RaceNetworkRequset enables kURLLoadOptionSniffMimeType in URLLoader
+    // options, so the mime type is sniffed from the response body.
+    EXPECT_EQ(shell()->web_contents()->GetContentsMimeType(), "text/plain");
+  }
+
+  // ServiceWorker will respond after the delay, so we expect the response from
+  // the network request initiated by the RaceNetworkRequest mode comes first.
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
+            GetInnerText());
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                        NetworkRequest_Wins_Fetch_No_Respond) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
@@ -5510,7 +5546,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
             GetInnerText());
 }
-// TODO(crbug.com/1491332) Add tests for kURLLoadOptionSniffMimeType and
+// TODO(crbug.com/1491332) Add tests for
 // kURLLoadOptionSendSSLInfoForCertificateError
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
