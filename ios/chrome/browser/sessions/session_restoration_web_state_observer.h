@@ -37,6 +37,7 @@ class SessionRestorationWebStateObserver final
   void clear_dirty() { is_dirty_ = false; }
 
   // web::WebStateObserver implementation.
+  void WasShown(web::WebState* web_state) final;
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) final;
   void WebStateRealized(web::WebState* web_state) final;

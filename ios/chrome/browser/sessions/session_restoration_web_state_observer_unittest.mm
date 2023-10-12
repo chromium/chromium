@@ -218,6 +218,23 @@ TEST_F(SessionRestorationWebStateObserverTest, NavigationCommitted_Download) {
 }
 
 // Tests that SessionRestorationWebStateObserver mark the WebState as
+// dirty when the WebState is shown (which updates the last active time).
+TEST_F(SessionRestorationWebStateObserverTest, WasShown) {
+  web_state()->SetIsRealized(true);
+
+  size_t call_count = 0;
+  SessionRestorationWebStateObserver* observer =
+      CreateSessionRestorationWebStateObserver(
+          web_state(), base::BindRepeating(&IncrementCounter, &call_count));
+
+  web_state()->WasShown();
+  web_state()->WasShown();
+
+  EXPECT_TRUE(observer->is_dirty());
+  EXPECT_EQ(call_count, 1u);
+}
+
+// Tests that SessionRestorationWebStateObserver mark the WebState as
 // dirty when a WebFrame becomes available.
 TEST_F(SessionRestorationWebStateObserverTest, WebFrameAvailable) {
   web_state()->SetIsRealized(true);
