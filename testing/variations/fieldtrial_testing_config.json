@@ -17212,6 +17212,22 @@
             ]
         }
     ],
+    "UndecryptablePasswords": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ClearUndecryptablePasswordsInSync",
+                        "SkipUndecryptablePasswords"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnifiedAutoplay": [
         {
             "platforms": [
