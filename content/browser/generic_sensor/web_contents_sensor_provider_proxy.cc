@@ -44,6 +44,38 @@ WebContentsSensorProviderProxy* WebContentsSensorProviderProxy::GetOrCreate(
       web_contents);
 }
 
+void WebContentsSensorProviderProxy::CreateVirtualSensor(
+    SensorType type,
+    device::mojom::VirtualSensorMetadataPtr metadata,
+    device::mojom::SensorProvider::CreateVirtualSensorCallback callback) {
+  EnsureDeviceServiceConnection();
+  sensor_provider_->CreateVirtualSensor(type, std::move(metadata),
+                                        std::move(callback));
+}
+
+void WebContentsSensorProviderProxy::UpdateVirtualSensor(
+    SensorType type,
+    const device::SensorReading& reading,
+    device::mojom::SensorProvider::UpdateVirtualSensorCallback callback) {
+  EnsureDeviceServiceConnection();
+  sensor_provider_->UpdateVirtualSensor(type, reading, std::move(callback));
+}
+
+void WebContentsSensorProviderProxy::RemoveVirtualSensor(
+    SensorType type,
+    device::mojom::SensorProvider::RemoveVirtualSensorCallback callback) {
+  EnsureDeviceServiceConnection();
+  sensor_provider_->RemoveVirtualSensor(type, std::move(callback));
+}
+
+void WebContentsSensorProviderProxy::GetVirtualSensorInformation(
+    SensorType type,
+    device::mojom::SensorProvider::GetVirtualSensorInformationCallback
+        callback) {
+  EnsureDeviceServiceConnection();
+  sensor_provider_->GetVirtualSensorInformation(type, std::move(callback));
+}
+
 // static
 void WebContentsSensorProviderProxy::OverrideSensorProviderBinderForTesting(
     SensorProviderBinder binder) {

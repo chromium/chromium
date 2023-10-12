@@ -46,10 +46,62 @@ enum SensorCreationResult {
   ERROR_NOT_ALLOWED,  // The required permissions are not granted.
 };
 
+enum CreateVirtualSensorResult {
+  kSuccess,
+  kSensorTypeAlreadyOverridden,
+};
+
+enum UpdateVirtualSensorResult {
+  kSuccess,
+  kSensorTypeNotOverridden,
+};
+
+enum GetVirtualSensorInformationError {
+  kSensorTypeNotOverridden,
+};
+
+union GetVirtualSensorInformationResult {
+  VirtualSensorInformation info;
+  GetVirtualSensorInformationError error;
+};
+
+// TODO(crbug.com/657632): Mojo does not allow primitive types to be nullable,
+// so we need to define a few wrapper structs.
+// Optional double field.
+struct NullableDouble {
+  // The value of the double.
+  double value;
+};
+
+// Optional ReportingMode field.
+struct NullableReportingMode {
+  // The value of the enum.
+  ReportingMode value;
+};
+
+struct VirtualSensorMetadata {
+  bool available = true;
+
+  NullableDouble? maximum_frequency;
+  NullableDouble? minimum_frequency;
+
+  // Only used by unit tests.
+  NullableReportingMode? reporting_mode;
+};
+
+struct VirtualSensorInformation {
+  double sampling_frequency;
+};
+
+// Manages Sensor interfaces. This interface is responsible for creating or
+// retrieving a Sensor via GetSensor() and for managing virtual sensors.
 interface SensorProvider {
   // Gets the sensor interface by the given type.
   //
   // |type| type of the sensor.
+  //
+  // If a virtual sensor of given |type| has been created, it will be used
+  // instead of a real, hardware-based one.
   //
   // |result| on success contains SUCCESS, otherwise contains the
   //          SensorCreationResult describing the failure reason.
@@ -57,4 +109,24 @@ interface SensorProvider {
   //               the sensor, contains null on failure.
   GetSensor(SensorType type) => (SensorCreationResult result,
                                  SensorInitParams? init_params);
+
+  // Creates a new virtual sensor of a given |type|, or fails if one already
+  // exists.
+  CreateVirtualSensor(SensorType type, VirtualSensorMetadata metadata) =>
+      (CreateVirtualSensorResult result);
+
+  // Updates readings for a virtual sensor of given |type|, or fails if one has
+  // not been created.
+  UpdateVirtualSensor(SensorType type, SensorReadingRaw reading) =>
+      (UpdateVirtualSensorResult result);
+
+  // Removes a virtual sensor of given |type|, or does nothing if one has not
+  // been created.
+  RemoveVirtualSensor(SensorType type) => ();
+
+  // Retrieves information about a virtual sensor of given |type|. It fails if
+  // one has not been created. If the sensor is not active, all information
+  // will be null or zeroed out.
+  GetVirtualSensorInformation(SensorType type) =>
+      (GetVirtualSensorInformationResult result);
 };

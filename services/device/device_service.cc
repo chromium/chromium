@@ -157,10 +157,10 @@ void DeviceService::AddReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
-void DeviceService::SetPlatformSensorProviderForTesting(
-    std::unique_ptr<PlatformSensorProvider> provider) {
-  DCHECK(!sensor_provider_);
-  sensor_provider_ = std::make_unique<SensorProviderImpl>(std::move(provider));
+void DeviceService::SetSensorProviderImplForTesting(
+    std::unique_ptr<SensorProviderImpl> sensor_provider) {
+  CHECK(!sensor_provider_);
+  sensor_provider_ = std::move(sensor_provider);
 }
 
 // static

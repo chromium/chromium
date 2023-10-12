@@ -70,10 +70,6 @@ void FakePlatformSensor::AddNewReading(const SensorReading& reading) {
   UpdateSharedBufferAndNotifyClients(reading);
 }
 
-void FakePlatformSensor::TriggerError() {
-  NotifySensorError();
-}
-
 FakePlatformSensorProvider::FakePlatformSensorProvider() {
   ON_CALL(*this, DoCreateSensorInternal(_, _, _))
       .WillByDefault(

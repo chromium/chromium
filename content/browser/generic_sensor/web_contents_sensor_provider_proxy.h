@@ -9,6 +9,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 
 namespace content {
@@ -38,6 +39,22 @@ class CONTENT_EXPORT WebContentsSensorProviderProxy final
 
   void GetSensor(device::mojom::SensorType type,
                  device::mojom::SensorProvider::GetSensorCallback callback);
+
+  void CreateVirtualSensor(
+      device::mojom::SensorType type,
+      device::mojom::VirtualSensorMetadataPtr metadata,
+      device::mojom::SensorProvider::CreateVirtualSensorCallback callback);
+  void UpdateVirtualSensor(
+      device::mojom::SensorType type,
+      const device::SensorReading& reading,
+      device::mojom::SensorProvider::UpdateVirtualSensorCallback callback);
+  void RemoveVirtualSensor(
+      device::mojom::SensorType type,
+      device::mojom::SensorProvider::RemoveVirtualSensorCallback callback);
+  void GetVirtualSensorInformation(
+      device::mojom::SensorType type,
+      device::mojom::SensorProvider::GetVirtualSensorInformationCallback
+          callback);
 
   // Allows tests to override how this class binds its backing SensorProvider
   // endpoint.

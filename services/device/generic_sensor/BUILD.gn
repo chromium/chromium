@@ -46,6 +46,10 @@ source_set("generic_sensor") {
     "sensor_impl.h",
     "sensor_provider_impl.cc",
     "sensor_provider_impl.h",
+    "virtual_platform_sensor.cc",
+    "virtual_platform_sensor.h",
+    "virtual_platform_sensor_provider.cc",
+    "virtual_platform_sensor_provider.h",
   ]
 
   deps = [

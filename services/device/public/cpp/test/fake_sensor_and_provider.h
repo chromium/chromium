@@ -68,6 +68,21 @@ class FakeSensorProvider : public mojom::SensorProvider {
 
   // mojom::sensorProvider:
   void GetSensor(mojom::SensorType type, GetSensorCallback callback) override;
+  void CreateVirtualSensor(
+      mojom::SensorType type,
+      mojom::VirtualSensorMetadataPtr metadata,
+      mojom::SensorProvider::CreateVirtualSensorCallback callback) override {}
+  void UpdateVirtualSensor(
+      mojom::SensorType type,
+      const SensorReading& reading,
+      mojom::SensorProvider::UpdateVirtualSensorCallback callback) override {}
+  void RemoveVirtualSensor(
+      mojom::SensorType type,
+      mojom::SensorProvider::RemoveVirtualSensorCallback callback) override {}
+  void GetVirtualSensorInformation(
+      mojom::SensorType type,
+      mojom::SensorProvider::GetVirtualSensorInformationCallback callback)
+      override {}
 
   void Bind(mojo::PendingReceiver<mojom::SensorProvider> receiver);
   bool is_bound() const;

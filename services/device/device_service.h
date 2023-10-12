@@ -81,7 +81,6 @@ class DevicePostureProviderImpl;
 
 class DeviceService;
 class GeolocationManager;
-class PlatformSensorProvider;
 class PowerMonitorMessageBroadcaster;
 class PressureManagerImpl;
 class PublicIpAddressLocationNotifier;
@@ -127,8 +126,8 @@ class DeviceService : public mojom::DeviceService {
 
   void AddReceiver(mojo::PendingReceiver<mojom::DeviceService> receiver);
 
-  void SetPlatformSensorProviderForTesting(
-      std::unique_ptr<PlatformSensorProvider> provider);
+  void SetSensorProviderImplForTesting(
+      std::unique_ptr<SensorProviderImpl> sensor_provider);
 
   // Supports global override of GeolocationContext binding within the service.
   using GeolocationContextBinder = base::RepeatingCallback<void(

@@ -41,6 +41,9 @@ class PlatformSensorProvider {
   // Shared memory region getter.
   base::ReadOnlySharedMemoryRegion CloneSharedMemoryRegion();
 
+  bool has_sensors() const { return !sensor_map_.empty(); }
+  bool has_pending_requests() const { return !requests_map_.empty(); }
+
  protected:
   PlatformSensorProvider();
 
