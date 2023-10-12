@@ -35,11 +35,6 @@ struct CC_PAINT_EXPORT TargetColorParams {
   // luminance (a non-HDR-capable display will have a value of 1).
   float hdr_max_luminance_relative = 1.f;
 
-  static bool EqualIgnoringHdrHeadroom(const TargetColorParams& a,
-                                       const TargetColorParams& b) {
-    return a.color_space == b.color_space &&
-           a.sdr_max_luminance_nits == b.sdr_max_luminance_nits;
-  }
   bool operator==(const TargetColorParams& other) const {
     return color_space == other.color_space &&
            sdr_max_luminance_nits == other.sdr_max_luminance_nits &&

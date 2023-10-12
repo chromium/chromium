@@ -597,7 +597,7 @@ class CC_EXPORT GpuImageDecodeCache
   struct ImageData : public base::RefCountedThreadSafe<ImageData> {
     ImageData(PaintImage::Id paint_image_id,
               DecodedDataMode mode,
-              const TargetColorParams& target_color_params,
+              const gfx::ColorSpace& target_color_space,
               PaintFlags::FilterQuality quality,
               int upload_scale_mip_level,
               bool needs_mips,
@@ -628,7 +628,7 @@ class CC_EXPORT GpuImageDecodeCache
 
     const PaintImage::Id paint_image_id;
     const DecodedDataMode mode;
-    TargetColorParams target_color_params;
+    const gfx::ColorSpace target_color_space;
     PaintFlags::FilterQuality quality;
     int upload_scale_mip_level;
     bool needs_mips = false;
@@ -682,7 +682,7 @@ class CC_EXPORT GpuImageDecodeCache
     PaintImage::FrameKey frame_key;
     int upload_scale_mip_level;
     PaintFlags::FilterQuality filter_quality;
-    TargetColorParams target_color_params;
+    gfx::ColorSpace target_color_space;
   };
   struct InUseCacheKeyHash {
     size_t operator()(const InUseCacheKey&) const;
@@ -826,8 +826,7 @@ class CC_EXPORT GpuImageDecodeCache
       ImageData* image_data,
       sk_sp<SkColorSpace> decoded_target_colorspace,
       const absl::optional<gfx::HDRMetadata>& hdr_metadata,
-      absl::optional<TargetColorParams> target_color_params)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      sk_sp<SkColorSpace> target_color_space) EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void UploadImageIfNecessary_GpuCpu_YUVA(
       const DrawImage& draw_image,
       ImageData* image_data,

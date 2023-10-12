@@ -252,56 +252,6 @@ bool WriteImage(PaintOpWriter& writer,
   return true;
 }
 
-size_t SafeSizeForTargetColorParams(
-    const absl::optional<TargetColorParams>& target_color_params) {
-  // bool for whether or not there are going to be parameters.
-  size_t target_color_params_size = PaintOpWriter::SerializedSize<bool>();
-  if (target_color_params) {
-    // The target color space.
-    target_color_params_size += PaintOpWriter::SerializedSize(
-        target_color_params->color_space.ToSkColorSpace().get());
-    target_color_params_size += PaintOpWriter::SerializedSize(
-        target_color_params->sdr_max_luminance_nits);
-    target_color_params_size += PaintOpWriter::SerializedSize(
-        target_color_params->hdr_max_luminance_relative);
-  }
-  return target_color_params_size;
-}
-
-void WriteTargetColorParams(
-    PaintOpWriter& writer,
-    const absl::optional<TargetColorParams>& target_color_params) {
-  const bool has_target_color_params = !!target_color_params;
-  writer.Write(has_target_color_params);
-  if (target_color_params) {
-    writer.Write(target_color_params->color_space.ToSkColorSpace().get());
-    writer.Write(target_color_params->sdr_max_luminance_nits);
-    writer.Write(target_color_params->hdr_max_luminance_relative);
-  }
-}
-
-bool ReadTargetColorParams(
-    PaintOpReader& reader,
-    absl::optional<TargetColorParams>& target_color_params) {
-  bool has_target_color_params = false;
-  reader.Read(&has_target_color_params);
-  if (!has_target_color_params) {
-    target_color_params = absl::nullopt;
-    return true;
-  }
-
-  target_color_params = TargetColorParams();
-  sk_sp<SkColorSpace> target_color_space;
-  reader.Read(&target_color_space);
-  if (!target_color_space)
-    return false;
-
-  target_color_params->color_space = gfx::ColorSpace(*target_color_space);
-  reader.Read(&target_color_params->sdr_max_luminance_nits);
-  reader.Read(&target_color_params->hdr_max_luminance_relative);
-  return true;
-}
-
 sk_sp<SkImage> ReadImage(
     PaintOpReader& reader,
     GrDirectContext* gr_context,
@@ -527,23 +477,12 @@ ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
     const Image& image,
     bool needs_mips,
     const absl::optional<gfx::HDRMetadata>& hdr_metadata,
-    absl::optional<TargetColorParams> target_color_params)
+    sk_sp<SkColorSpace> target_color_space)
     : needs_mips_(needs_mips),
-      target_color_params_(target_color_params),
+      target_color_space_(target_color_space),
       id_(GetNextId()),
       image_(image),
       hdr_metadata_(hdr_metadata) {
-  ComputeSize();
-}
-
-ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
-    const Image& image,
-    bool needs_mips,
-    absl::optional<TargetColorParams> target_color_params)
-    : needs_mips_(needs_mips),
-      target_color_params_(target_color_params),
-      id_(GetNextId()),
-      image_(image) {
   ComputeSize();
 }
 
@@ -588,7 +527,7 @@ bool ClientImageTransferCacheEntry::Serialize(base::span<uint8_t> data) const {
   if (hdr_metadata_.has_value()) {
     writer.Write(hdr_metadata_.value());
   }
-  WriteTargetColorParams(writer, target_color_params_);
+  writer.Write(target_color_space_.get());
   WriteImage(writer, image_);
 
   if (has_gainmap) {
@@ -610,7 +549,7 @@ void ClientImageTransferCacheEntry::ComputeSize() {
   if (hdr_metadata_.has_value()) {
     safe_size += PaintOpWriter::SerializedSize(hdr_metadata_.value());
   }
-  safe_size += SafeSizeForTargetColorParams(target_color_params_);
+  safe_size += PaintOpWriter::SerializedSize(target_color_space_.get());
   safe_size += SafeSizeForImage(image_);
   if (gainmap_image_) {
     DCHECK(gainmap_info_);
@@ -706,9 +645,12 @@ sk_sp<SkImage> ServiceImageTransferCacheEntry::GetImageWithToneMapApplied(
         image_->isTextureBacked() ? gr_context_ : nullptr,
         image_->isTextureBacked() ? graphite_recorder_ : nullptr);
   } else if (use_tone_curve_) {
+    // Images are always rendered as SDR-relative and the output color space
+    // is SDR itself,
     image = cache.ApplyToneCurve(
-        image_, tone_curve_hdr_metadata_, tone_curve_sdr_max_luminance_nits_,
-        hdr_headroom, image_->isTextureBacked() ? gr_context_ : nullptr,
+        image_, tone_curve_hdr_metadata_,
+        gfx::ColorSpace::kDefaultSDRWhiteLevel, hdr_headroom,
+        image_->isTextureBacked() ? gr_context_ : nullptr,
         image_->isTextureBacked() ? graphite_recorder_ : nullptr);
   }
   if (!image) {
@@ -760,9 +702,10 @@ bool ServiceImageTransferCacheEntry::Deserialize(
     reader.Read(&hdr_metadata_value);
     tone_curve_hdr_metadata_ = hdr_metadata_value;
   }
-  absl::optional<TargetColorParams> target_color_params;
-  ReadTargetColorParams(reader, target_color_params);
-  const bool mip_mapped_for_upload = needs_mips && !target_color_params;
+  sk_sp<SkColorSpace> target_color_space;
+  reader.Read(&target_color_space);
+
+  const bool mip_mapped_for_upload = needs_mips && !target_color_space;
 
   // Deserialize the image.
   image_ = ReadImage(reader, gr_context, graphite_recorder,
@@ -798,20 +741,11 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   }
 
   // Save the tone curve parameters, if they are to be used.
-  use_tone_curve_ = !has_gainmap_ && target_color_params &&
-                    gfx::ColorConversionSkFilterCache::UseToneCurve(image_);
-  if (use_tone_curve_) {
-    tone_curve_sdr_max_luminance_nits_ =
-        target_color_params->sdr_max_luminance_nits;
-  }
+  use_tone_curve_ =
+      !has_gainmap_ && gfx::ColorConversionSkFilterCache::UseToneCurve(image_);
 
   // Perform color conversion (if no tone mapping is needed).
-  if (target_color_params && !NeedsToneMapApplied()) {
-    auto target_color_space = target_color_params->color_space.ToSkColorSpace();
-    if (!target_color_space) {
-      DLOG(ERROR) << "Invalid target color space.";
-      return false;
-    }
+  if (target_color_space && !NeedsToneMapApplied()) {
     if (graphite_recorder_) {
       SkImage::RequiredProperties props{.fMipmapped = needs_mips};
       image_ =

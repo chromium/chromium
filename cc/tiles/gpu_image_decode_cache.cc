@@ -555,24 +555,20 @@ GpuImageDecodeCache::InUseCacheKey::InUseCacheKey(const DrawImage& draw_image,
     : frame_key(draw_image.frame_key()),
       upload_scale_mip_level(mip_level),
       filter_quality(CalculateDesiredFilterQuality(draw_image)),
-      target_color_params(draw_image.target_color_params()) {
-  // TODO(https://crbug.com/1483235): Remove HDR headroom from the cache key,
-  // since it is not used.
-  target_color_params.hdr_max_luminance_relative = 1.f;
-}
+      target_color_space(draw_image.target_color_space()) {}
 
 bool GpuImageDecodeCache::InUseCacheKey::operator==(
     const InUseCacheKey& other) const {
   return frame_key == other.frame_key &&
          upload_scale_mip_level == other.upload_scale_mip_level &&
          filter_quality == other.filter_quality &&
-         target_color_params == other.target_color_params;
+         target_color_space == other.target_color_space;
 }
 
 size_t GpuImageDecodeCache::InUseCacheKeyHash::operator()(
     const InUseCacheKey& cache_key) const {
   return base::HashInts(
-      cache_key.target_color_params.GetHash(),
+      cache_key.target_color_space.GetHash(),
       base::HashInts(
           cache_key.frame_key.hash(),
           base::HashInts(cache_key.upload_scale_mip_level,
@@ -1093,7 +1089,7 @@ GpuImageDecodeCache::ImageInfo::~ImageInfo() = default;
 GpuImageDecodeCache::ImageData::ImageData(
     PaintImage::Id paint_image_id,
     DecodedDataMode mode,
-    const TargetColorParams& target_color_params,
+    const gfx::ColorSpace& target_color_space,
     PaintFlags::FilterQuality quality,
     int upload_scale_mip_level,
     bool needs_mips,
@@ -1103,7 +1099,7 @@ GpuImageDecodeCache::ImageData::ImageData(
     ImageInfo image_info[kAuxImageCount])
     : paint_image_id(paint_image_id),
       mode(mode),
-      target_color_params(target_color_params),
+      target_color_space(target_color_space),
       quality(quality),
       upload_scale_mip_level(upload_scale_mip_level),
       needs_mips(needs_mips),
@@ -2574,51 +2570,44 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
   DCHECK_GT(image_data->decode.ref_count, 0u);
   DCHECK_GT(image_data->upload.ref_count, 0u);
 
+  // Let `target_color_space` be the color space that the image is converted to
+  // for storage in the cache. If it is nullptr then no conversion is performed,
+  // and the decoded color space is used.
   sk_sp<SkColorSpace> target_color_space =
       SupportsColorSpaceConversion() &&
               draw_image.target_color_space().IsValid()
           ? draw_image.target_color_space().ToSkColorSpace()
           : nullptr;
-  // The value of |decoded_target_colorspace| takes into account the fact
-  // that we might need to ignore an embedded image color space if |color_type_|
-  // does not support color space conversions or that color conversion might
-  // have happened at decode time.
-  sk_sp<SkColorSpace> decoded_target_colorspace =
+  // Let `decoded_color_space` be the color space that the decoded image is in.
+  // This takes into account the fact that we might need to ignore an embedded
+  // image color space if `color_type_` does not support color space
+  // conversions or that some color conversion might have happened at decode
+  // time.
+  sk_sp<SkColorSpace> decoded_color_space =
       ColorSpaceForImageDecode(draw_image, image_data->mode);
-  const bool needs_tone_mapping = NeedsToneMapping(
-      decoded_target_colorspace, draw_image.paint_image().HasGainmap());
-  if (target_color_space && decoded_target_colorspace) {
-    if (!needs_tone_mapping &&
-        SkColorSpace::Equals(target_color_space.get(),
-                             decoded_target_colorspace.get())) {
-      target_color_space = nullptr;
-    }
+  if (target_color_space && decoded_color_space &&
+      SkColorSpace::Equals(target_color_space.get(),
+                           decoded_color_space.get())) {
+    target_color_space = nullptr;
   }
-
-  absl::optional<TargetColorParams> target_color_params;
-  if (target_color_space) {
-    target_color_params = draw_image.target_color_params();
-    target_color_params->color_space = gfx::ColorSpace(*target_color_space);
-  }
-  const absl::optional<gfx::HDRMetadata> hdr_metadata =
-      draw_image.paint_image().GetHDRMetadata();
-
   if (image_data->mode == DecodedDataMode::kTransferCache) {
     DCHECK(use_transfer_cache_);
     if (image_data->decode.do_hardware_accelerated_decode()) {
       UploadImageIfNecessary_TransferCache_HardwareDecode(
           draw_image, image_data, target_color_space);
     } else {
-      // Do not color convert YUVA images unless the the color conversion also
-      // performs tone mapping.
-      if (image_data->info.yuva.has_value()) {
-        if (!needs_tone_mapping) {
-          target_color_params = absl::nullopt;
-        }
+      // Do not color convert images that are YUV or need tone mapping.
+      if (image_data->info.yuva.has_value() ||
+          NeedsToneMapping(decoded_color_space,
+                           draw_image.paint_image().HasGainmap())) {
+        target_color_space = nullptr;
       }
+      const absl::optional<gfx::HDRMetadata> hdr_metadata =
+          draw_image.paint_image().GetHDRMetadata();
+
       UploadImageIfNecessary_TransferCache_SoftwareDecode(
-          draw_image, image_data, decoded_target_colorspace, hdr_metadata,
-          target_color_params);
+          draw_image, image_data, decoded_color_space, hdr_metadata,
+          target_color_space);
     }
   } else {
     // Grab a reference to our decoded image. For the kCpu path, we will use
@@ -2629,9 +2618,9 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
         image_data->needs_mips ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
 
     if (image_data->info.yuva.has_value()) {
-      UploadImageIfNecessary_GpuCpu_YUVA(
-          draw_image, image_data, uploaded_image, image_needs_mips,
-          decoded_target_colorspace, target_color_space);
+      UploadImageIfNecessary_GpuCpu_YUVA(draw_image, image_data, uploaded_image,
+                                         image_needs_mips, decoded_color_space,
+                                         target_color_space);
     } else {
       UploadImageIfNecessary_GpuCpu_RGBA(draw_image, image_data, uploaded_image,
                                          image_needs_mips, target_color_space);
@@ -2686,9 +2675,9 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_HardwareDecode(
 void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_SoftwareDecode(
     const DrawImage& draw_image,
     ImageData* image_data,
-    sk_sp<SkColorSpace> decoded_target_colorspace,
+    sk_sp<SkColorSpace> decoded_color_space,
     const absl::optional<gfx::HDRMetadata>& hdr_metadata,
-    absl::optional<TargetColorParams> target_color_params) {
+    sk_sp<SkColorSpace> target_color_space) {
   DCHECK_EQ(image_data->mode, DecodedDataMode::kTransferCache);
   DCHECK(use_transfer_cache_);
   DCHECK(!image_data->decode.do_hardware_accelerated_decode());
@@ -2706,7 +2695,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_SoftwareDecode(
       DCHECK(!info.rgba.has_value());
       image[aux_image_index] = ClientImageTransferCacheEntry::Image(
           image_data->decode.pixmaps(aux_image), info.yuva->yuvaInfo(),
-          decoded_target_colorspace.get());
+          decoded_color_space.get());
     }
     if (info.rgba.has_value()) {
       DCHECK(!info.yuva.has_value());
@@ -2723,7 +2712,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_SoftwareDecode(
                 image_data->needs_mips)
           : ClientImageTransferCacheEntry(image[kAuxImageIndexDefault],
                                           image_data->needs_mips, hdr_metadata,
-                                          target_color_params);
+                                          target_color_space);
   if (!image_entry.IsValid())
     return;
   InsertTransferCacheEntry(image_entry, image_data);
@@ -2734,7 +2723,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_YUVA(
     ImageData* image_data,
     sk_sp<SkImage> uploaded_image,
     skgpu::Mipmapped image_needs_mips,
-    sk_sp<SkColorSpace> decoded_target_colorspace,
+    sk_sp<SkColorSpace> decoded_color_space,
     sk_sp<SkColorSpace> color_space) {
   DCHECK(!use_transfer_cache_);
   DCHECK(image_data->info.yuva.has_value());
@@ -2774,7 +2763,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_YUVA(
         image_data->info.yuva->yuvaInfo().planeConfig(),
         image_data->info.yuva->yuvaInfo().subsampling(),
         image_data->info.yuva->yuvaInfo().yuvColorSpace(), color_space,
-        decoded_target_colorspace);
+        decoded_color_space);
   }
 
   // At-raster may have decoded this while we were unlocked. If so, ignore our
@@ -3008,7 +2997,7 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
 
   return base::WrapRefCounted(new ImageData(
       draw_image.paint_image().stable_id(), mode,
-      draw_image.target_color_params(),
+      draw_image.target_color_space(),
       CalculateDesiredFilterQuality(draw_image), upload_scale_mip_level,
       needs_mips, is_bitmap_backed, can_do_hardware_accelerated_decode,
       do_hardware_accelerated_decode, image_info));
@@ -3341,29 +3330,23 @@ GpuImageDecodeCache::ImageData* GpuImageDecodeCache::GetImageDataForDrawImage(
 // the provided |draw_image|.
 bool GpuImageDecodeCache::IsCompatible(const ImageData* image_data,
                                        const DrawImage& draw_image) const {
-  bool is_scaled = image_data->upload_scale_mip_level != 0;
-  bool scale_is_compatible =
+  const bool is_scaled = image_data->upload_scale_mip_level != 0;
+  const bool scale_is_compatible =
       CalculateUploadScaleMipLevel(draw_image, AuxImage::kDefault) >=
       image_data->upload_scale_mip_level;
-  bool quality_is_compatible =
+  const bool quality_is_compatible =
       CalculateDesiredFilterQuality(draw_image) <= image_data->quality;
-  sk_sp<SkColorSpace> decoded_target_colorspace =
-      ColorSpaceForImageDecode(draw_image, image_data->mode);
-  const bool needs_tone_mapping = NeedsToneMapping(
-      decoded_target_colorspace, draw_image.paint_image().HasGainmap());
-
-  bool color_is_compatible = false;
-  if (!needs_tone_mapping) {
-    color_is_compatible = image_data->target_color_params.color_space ==
-                          draw_image.target_color_space();
-  } else {
-    color_is_compatible = TargetColorParams::EqualIgnoringHdrHeadroom(
-        image_data->target_color_params, draw_image.target_color_params());
+  if (is_scaled && (!scale_is_compatible || !quality_is_compatible)) {
+    return false;
   }
+
+  // This is overly pessimistic. If the image is tone mapped or decoded to
+  // YUV, then the target color space is ignored anyway.
+  const bool color_is_compatible =
+      image_data->target_color_space == draw_image.target_color_space();
   if (!color_is_compatible)
     return false;
-  if (is_scaled && (!scale_is_compatible || !quality_is_compatible))
-    return false;
+
   return true;
 }
 

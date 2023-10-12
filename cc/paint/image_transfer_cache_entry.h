@@ -13,7 +13,6 @@
 #include "base/atomic_sequence_num.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "cc/paint/target_color_params.h"
 #include "cc/paint/transfer_cache_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -21,6 +20,8 @@
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/private/SkGainmapInfo.h"
+#include "ui/gfx/color_space.h"
+#include "ui/gfx/hdr_metadata.h"
 
 class GrDirectContext;
 class SkColorSpace;
@@ -81,12 +82,8 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
   ClientImageTransferCacheEntry(
       const Image& image,
       bool needs_mips,
-      absl::optional<TargetColorParams> target_color_params);
-  ClientImageTransferCacheEntry(
-      const Image& image,
-      bool needs_mips,
-      const absl::optional<gfx::HDRMetadata>& hdr_metadata,
-      absl::optional<TargetColorParams> target_color_params);
+      const absl::optional<gfx::HDRMetadata>& hdr_metadata = absl::nullopt,
+      sk_sp<SkColorSpace> target_color_space = nullptr);
   ClientImageTransferCacheEntry(const Image& image,
                                 const Image& gainmap_image,
                                 const SkGainmapInfo& gainmap_info,
@@ -109,7 +106,7 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
   void ComputeSize();
 
   const bool needs_mips_ = false;
-  absl::optional<TargetColorParams> target_color_params_;
+  sk_sp<SkColorSpace> target_color_space_;
   const uint32_t id_;
   uint32_t size_ = 0;
   static base::AtomicSequenceNumber s_next_id_;
@@ -201,7 +198,6 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
   // HDR tonemapping may be done with a tone curve (for global tone mapping).
   bool use_tone_curve_ = false;
   absl::optional<gfx::HDRMetadata> tone_curve_hdr_metadata_;
-  float tone_curve_sdr_max_luminance_nits_;
 
   // The value of `size_` is computed during deserialization and never updated
   // (even if the size of the image changes due to mipmaps being requested).

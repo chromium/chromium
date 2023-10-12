@@ -111,10 +111,9 @@ ImageProvider::ScopedResult TestOptionsProvider::GetRasterContent(
       SkBitmap::kZeroPixels_AllocFlag);
 
   // Create a transfer cache entry for this image.
-  TargetColorParams target_color_params;
   ClientImageTransferCacheEntry cache_entry(
       ClientImageTransferCacheEntry::Image(&bitmap.pixmap()),
-      false /* needs_mips */, target_color_params);
+      false /* needs_mips */, absl::nullopt);
   const uint32_t data_size = cache_entry.SerializedSize();
   auto data = PaintOpWriter::AllocateAlignedBuffer<uint8_t>(data_size);
   if (!cache_entry.Serialize(base::span<uint8_t>(data.get(), data_size))) {
