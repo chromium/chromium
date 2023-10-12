@@ -34,6 +34,7 @@
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
 #include "base/functional/callback.h"
@@ -563,6 +564,15 @@ bool AppListTestApi::HasAnyWaitingReorderDoneCallback() const {
 
 void AppListTestApi::DisableAppListNudge(bool disable) {
   AppListNudgeController::SetReorderNudgeDisabledForTest(disable);
+}
+
+void AppListTestApi::DisableSearchNotifier(bool disable) {
+  auto* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  ScopedDictPrefUpdate pref_update(prefs,
+                                   ash::prefs::kImageSearchPrivacyNotice);
+  // Accept the notifier to disable it.
+  pref_update->Set("accepted", disable);
 }
 
 void AppListTestApi::SetContinueSectionPrivacyNoticeAccepted() {

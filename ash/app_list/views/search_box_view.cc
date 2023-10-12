@@ -262,6 +262,36 @@ ui::ColorId GetFocusColorId(bool use_jelly_colors) {
 
 }  // namespace
 
+class CheckBoxMenuItemView : public views::MenuItemView {
+ public:
+  CheckBoxMenuItemView(views::MenuItemView* parent,
+                       int command,
+                       AppListViewDelegate* view_delegate)
+      : views::MenuItemView(parent,
+                            command,
+                            views::MenuItemView::Type::kNormal),
+        view_delegate_(view_delegate) {}
+
+  CheckBoxMenuItemView(const CheckBoxMenuItemView&) = delete;
+  CheckBoxMenuItemView& operator=(const CheckBoxMenuItemView&) = delete;
+
+  ~CheckBoxMenuItemView() override = default;
+
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    views::MenuItemView::GetAccessibleNodeData(node_data);
+    // Set the role of the toggleable menu items to checkbox.
+    node_data->role = ax::mojom::Role::kMenuItemCheckBox;
+    node_data->SetCheckedState(
+        view_delegate_->IsCategoryEnabled(
+            static_cast<AppListSearchControlCategory>(GetCommand()))
+            ? ax::mojom::CheckedState::kTrue
+            : ax::mojom::CheckedState::kFalse);
+  }
+
+ private:
+  raw_ptr<AppListViewDelegate> view_delegate_ = nullptr;
+};
+
 class FilterMenuAdapter : public views::MenuModelAdapter {
  public:
   FilterMenuAdapter(ui::SimpleMenuModel* menu_model,
@@ -275,6 +305,33 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
   FilterMenuAdapter& operator=(const FilterMenuAdapter&) = delete;
 
   ~FilterMenuAdapter() override = default;
+
+  // Override AppendMenuItem to use customized MenuItemView.
+  views::MenuItemView* AppendMenuItem(views::MenuItemView* menu,
+                                      ui::MenuModel* model,
+                                      size_t model_index) override {
+    if (!menu->HasSubmenu()) {
+      menu->CreateSubmenu();
+    }
+
+    if (model->GetTypeAt(model_index) == ui::MenuModel::TYPE_TITLE) {
+      return menu->AppendTitle(model->GetLabelAt(model_index));
+    }
+
+    auto menu_item_view = std::make_unique<CheckBoxMenuItemView>(
+        menu, model->GetCommandIdAt(model_index), view_delegate_);
+    menu_item_view->SetTitle(model->GetLabelAt(model_index));
+    menu_item_view->SetIcon(model->GetIconAt(model_index));
+    menu_item_view->SetAccessibleName(model->GetAccessibleNameAt(model_index));
+
+    const ui::ElementIdentifier element_id =
+        model->GetElementIdentifierAt(model_index);
+    if (element_id) {
+      menu_item_view->SetProperty(views::kElementIdentifierKey, element_id);
+    }
+
+    return menu->GetSubmenu()->AddChildView(std::move(menu_item_view));
+  }
 
   // views::MenuDelegate
   bool ShouldExecuteCommandWithoutClosingMenu(int id,

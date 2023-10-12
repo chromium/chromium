@@ -152,6 +152,10 @@ class ASH_EXPORT AppListTestApi {
   // Enables/Disables the app list nudge for testing.
   void DisableAppListNudge(bool disable);
 
+  // Enables/Disables the search notifier which shows the privacy notice in
+  // launcher search for testing.
+  void DisableSearchNotifier(bool disable);
+
   // Marks continue section privacy notice as accepted.
   void SetContinueSectionPrivacyNoticeAccepted();
 
