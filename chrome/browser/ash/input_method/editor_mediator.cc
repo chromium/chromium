@@ -191,10 +191,7 @@ void EditorMediator::ProcessConsentAction(ConsentAction consent_action) {
 }
 
 void EditorMediator::ShowUI() {
-  // TODO: b:301518440: Replace below with the function that is responsible only
-  // for showing ui.
-  HandleTrigger(/*preset_query_id=*/absl::nullopt,
-                /*freeform_text=*/absl::nullopt);
+  mako_bubble_coordinator_.ShowUI();
 }
 
 void EditorMediator::CloseUI() {
@@ -210,15 +207,15 @@ void EditorMediator::HandleTrigger(
     absl::optional<std::string_view> freeform_text) {
   switch (GetEditorMode()) {
     case EditorMode::kRewrite:
-      mako_bubble_coordinator_.ShowEditorUI(profile_, MakoEditorMode::kRewrite,
+      mako_bubble_coordinator_.LoadEditorUI(profile_, MakoEditorMode::kRewrite,
                                             preset_query_id, freeform_text);
       break;
     case EditorMode::kWrite:
-      mako_bubble_coordinator_.ShowEditorUI(profile_, MakoEditorMode::kWrite,
+      mako_bubble_coordinator_.LoadEditorUI(profile_, MakoEditorMode::kWrite,
                                             preset_query_id, freeform_text);
       break;
     case EditorMode::kConsentNeeded:
-      mako_bubble_coordinator_.ShowConsentUI(profile_);
+      mako_bubble_coordinator_.LoadConsentUI(profile_);
       break;
     case EditorMode::kBlocked:
       mako_bubble_coordinator_.CloseUI();

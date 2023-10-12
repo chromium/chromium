@@ -28,11 +28,12 @@ class MakoBubbleCoordinator {
   MakoBubbleCoordinator& operator=(const MakoBubbleCoordinator&) = delete;
   ~MakoBubbleCoordinator();
 
-  void ShowConsentUI(Profile* profile);
-  void ShowEditorUI(Profile* profile,
+  void LoadConsentUI(Profile* profile);
+  void LoadEditorUI(Profile* profile,
                     MakoEditorMode mode,
                     absl::optional<std::string_view> preset_query_id,
                     absl::optional<std::string_view> freeform_text);
+  void ShowUI();
   void CloseUI();
 
   bool IsShowingUI() const;

@@ -118,7 +118,7 @@ MakoBubbleCoordinator::~MakoBubbleCoordinator() {
   CloseUI();
 }
 
-void MakoBubbleCoordinator::ShowConsentUI(Profile* profile) {
+void MakoBubbleCoordinator::LoadConsentUI(Profile* profile) {
   if (!GetTextInputClient()) {
     return;
   }
@@ -133,7 +133,7 @@ void MakoBubbleCoordinator::ShowConsentUI(Profile* profile) {
       ->Show();
 }
 
-void MakoBubbleCoordinator::ShowEditorUI(
+void MakoBubbleCoordinator::LoadEditorUI(
     Profile* profile,
     MakoEditorMode mode,
     absl::optional<std::string_view> preset_query_id,
@@ -164,8 +164,13 @@ void MakoBubbleCoordinator::ShowEditorUI(
   contents_wrapper_->ReloadWebContents();
   views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<MakoRewriteView>(contents_wrapper_.get(),
-                                        caret_bounds_.value()))
-      ->Show();
+                                        caret_bounds_.value()));
+}
+
+void MakoBubbleCoordinator::ShowUI() {
+  if (contents_wrapper_) {
+    contents_wrapper_->ShowUI();
+  }
 }
 
 void MakoBubbleCoordinator::CloseUI() {
