@@ -2375,6 +2375,7 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
   // in |AddChild|.
   container_builder_->PropagateChildAnchors(
       physical_fragment, oof_offset + relative_offset + offset_adjustment);
+  container_builder_->PropagateStickyDescendants(physical_fragment);
   LayoutUnit containing_block_adjustment =
       container_builder_->BlockOffsetAdjustmentForFragmentainer(
           fragmentainer_consumed_block_size_);
