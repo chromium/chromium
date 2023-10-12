@@ -140,6 +140,8 @@ class FakeAccessibilityService
 
   void RequestDarkenScreen(bool darken);
 
+  void RequestOpenSettingsSubpage(const std::string& subpage);
+
   void RequestSetFocusRings(
       std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
       ax::mojom::AssistiveTechnologyType at_type);

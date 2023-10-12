@@ -56,6 +56,11 @@ interface UserInterface {
     // undarken screen.
     DarkenScreen(bool darken);
 
+    // Opens a specified ChromeOS settings subpage. For example, to open a page
+    // with the url 'chrome://settings/manageAccessibility/tts', pass in the
+    // substring 'manageAccessibility/tts'.
+    OpenSettingsSubpage(string subpage);
+
     // Sets the given accessibility focus rings for the given `at_type`
     // or clears them if the list is empty.
     // TODO(b/293348920): Cleanup after migration: pass a map of id to

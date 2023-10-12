@@ -64,6 +64,7 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
 
   // ax::mojom::UserInterface:
   void DarkenScreen(bool darken) override;
+  void OpenSettingsSubpage(const std::string& subpage) override;
   void SetFocusRings(std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
                      ax::mojom::AssistiveTechnologyType at_type) override;
   void SetHighlights(const std::vector<gfx::Rect>& rects,
@@ -85,6 +86,8 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   bool UserInterfaceIsBound() const;
   void SetDarkenScreenCallback(
       base::RepeatingCallback<void(bool darken)> callback);
+  void SetOpenSettingsSubpageCallback(
+      base::RepeatingCallback<void(const std::string& subpage)> callback);
   void SetFocusRingsCallback(base::RepeatingCallback<void()> callback);
   const std::vector<ax::mojom::FocusRingInfoPtr>& GetFocusRingsForType(
       mojom::AssistiveTechnologyType type) const;
@@ -109,6 +112,8 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   mojo::Remote<ax::mojom::TtsUtteranceClient> tts_utterance_client_;
 
   base::RepeatingCallback<void(bool darken)> darken_screen_callback_;
+  base::RepeatingCallback<void(const std::string& subpage)>
+      open_settings_subpage_callback_;
   base::RepeatingCallback<void()> focus_rings_callback_;
   mojo::ReceiverSet<mojom::UserInterface> ux_receivers_;
   std::map<mojom::AssistiveTechnologyType,

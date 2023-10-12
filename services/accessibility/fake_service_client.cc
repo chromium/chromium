@@ -112,6 +112,12 @@ void FakeServiceClient::DarkenScreen(bool darken) {
   }
 }
 
+void FakeServiceClient::OpenSettingsSubpage(const std::string& subpage) {
+  if (open_settings_subpage_callback_) {
+    open_settings_subpage_callback_.Run(subpage);
+  }
+}
+
 void FakeServiceClient::SetFocusRings(
     std::vector<mojom::FocusRingInfoPtr> focus_rings,
     mojom::AssistiveTechnologyType at_type) {
@@ -159,6 +165,11 @@ void FakeServiceClient::SendTtsUtteranceEvent(mojom::TtsEventPtr tts_event) {
 void FakeServiceClient::SetDarkenScreenCallback(
     base::RepeatingCallback<void(bool darken)> callback) {
   darken_screen_callback_ = std::move(callback);
+}
+
+void FakeServiceClient::SetOpenSettingsSubpageCallback(
+    base::RepeatingCallback<void(const std::string& subpage)> callback) {
+  open_settings_subpage_callback_ = std::move(callback);
 }
 
 void FakeServiceClient::SetFocusRingsCallback(

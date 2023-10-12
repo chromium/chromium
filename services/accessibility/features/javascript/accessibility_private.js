@@ -53,6 +53,16 @@ class AtpAccessibilityPrivate {
   }
 
   /**
+   * Opens a specified ChromeOS settings subpage. For example, to open a page
+   * with the url 'chrome://settings/manageAccessibility/tts', pass in the
+   * substring 'manageAccessibility/tts'.
+   * @param {string} subpage
+   */
+  openSettingsSubpage(subpage) {
+    this.userInterfaceRemote_.openSettingsSubpage(subpage);
+  }
+
+  /**
    * Sets the given accessibility focus rings for this extension.
    * @param {!Array<!chrome.accessibilityPrivate.FocusRingInfo>} focusRings
    *     Array of focus rings to draw.

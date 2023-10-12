@@ -439,6 +439,19 @@ TEST_F(AccessibilityPrivateJSApiTest, DarkenScreen) {
   waiter.Run();
 }
 
+TEST_F(AccessibilityPrivateJSApiTest, OpenSettingsSubpage) {
+  base::RunLoop waiter;
+  client_->SetOpenSettingsSubpageCallback(
+      base::BindLambdaForTesting([&waiter](const std::string& subpage) {
+        waiter.Quit();
+        ASSERT_EQ(subpage, "manageAccessibility/tts");
+      }));
+  ExecuteJS(R"JS(
+    chrome.accessibilityPrivate.openSettingsSubpage('manageAccessibility/tts');
+  )JS");
+  waiter.Run();
+}
+
 TEST_F(AccessibilityPrivateJSApiTest, SetFocusRings) {
   base::RunLoop waiter;
   client_->SetFocusRingsCallback(base::BindLambdaForTesting([&waiter, this]() {

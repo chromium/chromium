@@ -26,6 +26,10 @@ void UserInterfaceImpl::DarkenScreen(bool darken) {
   AccessibilityManager::Get()->SetDarkenScreen(darken);
 }
 
+void UserInterfaceImpl::OpenSettingsSubpage(const std::string& subpage) {
+  AccessibilityManager::Get()->OpenSettingsSubpage(subpage);
+}
+
 void UserInterfaceImpl::SetFocusRings(
     std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
     ax::mojom::AssistiveTechnologyType at_type) {

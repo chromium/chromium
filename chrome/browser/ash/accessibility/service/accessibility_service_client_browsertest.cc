@@ -887,6 +887,19 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, DarkenScreen) {
   waiter.Run();
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, OpenSettingsSubpage) {
+  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherUserInterface();
+
+  base::RunLoop waiter;
+  AccessibilityManager::Get()->SetOpenSettingsSubpageObserverForTest(
+      base::BindLambdaForTesting([&waiter]() { waiter.Quit(); }));
+
+  fake_service_->RequestOpenSettingsSubpage("manageAccessibility/tts");
+
+  waiter.Run();
+}
+
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, SetFocusRings) {
   auto client =
       TurnOnAccessibilityService(AssistiveTechnologyType::kSwitchAccess);

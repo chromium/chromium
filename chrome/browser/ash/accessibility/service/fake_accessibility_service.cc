@@ -206,6 +206,13 @@ void FakeAccessibilityService::RequestDarkenScreen(bool darken) {
   }
 }
 
+void FakeAccessibilityService::RequestOpenSettingsSubpage(
+    const std::string& subpage) {
+  for (auto& ux_client : ux_remotes_) {
+    ux_client->OpenSettingsSubpage(subpage);
+  }
+}
+
 void FakeAccessibilityService::RequestSetFocusRings(
     std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
     ax::mojom::AssistiveTechnologyType at_type) {
