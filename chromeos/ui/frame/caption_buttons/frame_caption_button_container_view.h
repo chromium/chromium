@@ -52,6 +52,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   // left-most caption button (in LTR mode).
   FrameCaptionButtonContainerView(
       views::Widget* frame,
+      bool is_close_button_enabled = true,
       std::unique_ptr<views::FrameCaptionButton> custom_button = nullptr);
   FrameCaptionButtonContainerView(const FrameCaptionButtonContainerView&) =
       delete;

@@ -121,7 +121,8 @@ double CapAnimationValue(double value) {
 // to determine if each button should be visible and enabled.
 class DefaultCaptionButtonModel : public CaptionButtonModel {
  public:
-  explicit DefaultCaptionButtonModel(views::Widget* frame) : frame_(frame) {}
+  DefaultCaptionButtonModel(views::Widget* frame, bool is_close_button_enabled)
+      : frame_(frame), is_close_button_enabled_(is_close_button_enabled) {}
   DefaultCaptionButtonModel(const DefaultCaptionButtonModel&) = delete;
   DefaultCaptionButtonModel& operator=(const DefaultCaptionButtonModel&) =
       delete;
@@ -184,21 +185,32 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
     NOTREACHED();
     return false;
   }
-  bool IsEnabled(views::CaptionButtonIcon type) const override { return true; }
+  bool IsEnabled(views::CaptionButtonIcon type) const override {
+    if (type == views::CAPTION_BUTTON_ICON_CLOSE) {
+      return is_close_button_enabled_;
+    }
+    return true;
+  }
   bool InZoomMode() const override { return false; }
 
  private:
   raw_ptr<views::Widget> frame_;
+
+  // Configures whether the close button is enabled.
+  bool is_close_button_enabled_ = true;
 };
 
 }  // namespace
 
 FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
     views::Widget* frame,
+    bool is_close_button_enabled,
     std::unique_ptr<views::FrameCaptionButton> custom_button)
     : views::AnimationDelegateViews(frame->GetRootView()),
       frame_(frame),
-      model_(std::make_unique<DefaultCaptionButtonModel>(frame)) {
+      model_(std::make_unique<DefaultCaptionButtonModel>(
+          frame,
+          is_close_button_enabled)) {
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
@@ -417,6 +429,8 @@ void FrameCaptionButtonContainerView::UpdateCaptionButtonState(bool animate) {
   menu_button_->SetEnabled(model_->IsEnabled(views::CAPTION_BUTTON_ICON_MENU));
   close_button_->SetVisible(
       model_->IsVisible(views::CAPTION_BUTTON_ICON_CLOSE));
+  close_button_->SetEnabled(
+      model_->IsEnabled(views::CAPTION_BUTTON_ICON_CLOSE));
 }
 
 void FrameCaptionButtonContainerView::UpdateButtonsImageAndTooltip() {

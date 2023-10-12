@@ -213,6 +213,9 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // Whether the browser should show the reload button in the toolbar.
   virtual bool HasReloadButton() const;
 
+  // Returns whether prevent close is enabled.
+  bool IsPreventCloseEnabled() const;
+
 #if !BUILDFLAG(IS_CHROMEOS)
   // Whether the browser should show the profile menu button in the toolbar.
   // Not appliccable to ChromeOS, because apps can be installed only for

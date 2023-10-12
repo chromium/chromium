@@ -161,9 +161,13 @@ void BrowserNonClientFrameViewChromeOS::Init() {
     tab_search_bubble_host_ = tab_search_button->tab_search_bubble_host();
   }
 
+  const bool is_close_button_enabled =
+      !(browser->app_controller() &&
+        browser->app_controller()->IsPreventCloseEnabled());
+
   caption_button_container_ =
       AddChildView(std::make_unique<chromeos::FrameCaptionButtonContainerView>(
-          frame(), std::move(tab_search_button)));
+          frame(), is_close_button_enabled, std::move(tab_search_button)));
 
   // Initializing the TabIconView is expensive, so only do it if we need to.
   if (browser_view()->ShouldShowWindowIcon()) {

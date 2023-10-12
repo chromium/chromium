@@ -236,6 +236,34 @@ TEST_F(FrameCaptionButtonContainerViewTest, ShouldShowCloseButtonTrue) {
   EXPECT_TRUE(testApi.close_button()->GetEnabled());
 }
 
+// Test that the close button is disabled when `is_close_button_enabled` is
+// `false`.
+TEST_F(FrameCaptionButtonContainerViewTest, CloseButtonIsDisabled) {
+  FrameCaptionButtonContainerView container(
+      CreateTestWidget(MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED,
+                       CLOSE_BUTTON_VISIBLE),
+      false /*=is_close_button_enabled*/);
+  InitContainer(&container);
+  views::test::RunScheduledLayout(&container);
+  FrameCaptionButtonContainerView::TestApi testApi(&container);
+  EXPECT_TRUE(testApi.close_button()->GetVisible());
+  EXPECT_FALSE(testApi.close_button()->GetEnabled());
+}
+
+// Test that the close button is enabled when `is_close_button_enabled` is
+// `true`.
+TEST_F(FrameCaptionButtonContainerViewTest, CloseButtonIsEnabled) {
+  FrameCaptionButtonContainerView container(
+      CreateTestWidget(MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED,
+                       CLOSE_BUTTON_VISIBLE),
+      true /*=is_close_button_enabled*/);
+  InitContainer(&container);
+  views::test::RunScheduledLayout(&container);
+  FrameCaptionButtonContainerView::TestApi testApi(&container);
+  EXPECT_TRUE(testApi.close_button()->GetVisible());
+  EXPECT_TRUE(testApi.close_button()->GetEnabled());
+}
+
 // Test that the close button is not visible when
 // |ShouldShowCloseButton()| returns false.
 TEST_F(FrameCaptionButtonContainerViewTest, ShouldShowCloseButtonFalse) {

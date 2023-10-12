@@ -609,19 +609,22 @@ TEST_F(NonClientFrameViewAshTest, CustomButtonModel) {
   FrameCaptionButtonContainerView::TestApi test_api(
       header_view->caption_button_container());
 
-  // CLOSE button is always enabled.
-  EXPECT_TRUE(test_api.close_button());
   EXPECT_FALSE(test_api.close_button()->GetVisible());
-  EXPECT_TRUE(test_api.close_button()->GetEnabled());
+  EXPECT_FALSE(test_api.minimize_button()->GetVisible());
+  EXPECT_FALSE(test_api.size_button()->GetVisible());
+  EXPECT_FALSE(test_api.menu_button()->GetVisible());
 
+  // Close button
   model_ptr->SetVisible(views::CAPTION_BUTTON_ICON_CLOSE, true);
   non_client_frame_view->SizeConstraintsChanged();
   widget->LayoutRootViewIfNecessary();
   EXPECT_TRUE(test_api.close_button()->GetVisible());
+  EXPECT_FALSE(test_api.close_button()->GetEnabled());
 
-  EXPECT_FALSE(test_api.minimize_button()->GetVisible());
-  EXPECT_FALSE(test_api.size_button()->GetVisible());
-  EXPECT_FALSE(test_api.menu_button()->GetVisible());
+  model_ptr->SetEnabled(views::CAPTION_BUTTON_ICON_CLOSE, true);
+  non_client_frame_view->SizeConstraintsChanged();
+  widget->LayoutRootViewIfNecessary();
+  EXPECT_TRUE(test_api.close_button()->GetEnabled());
 
   // Back button
   model_ptr->SetVisible(views::CAPTION_BUTTON_ICON_BACK, true);
