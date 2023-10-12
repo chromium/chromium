@@ -221,6 +221,7 @@ class CORE_EXPORT NGPhysicalFragment
   bool IsListMarker() const {
     return IsCSSBox() && layout_object_->IsLayoutNGOutsideListMarker();
   }
+  bool IsRubyBase() const { return layout_object_->IsRubyBase(); }
   bool IsRubyColumn() const { return layout_object_->IsRubyColumn(); }
 
   // Return true if this fragment is for LayoutRubyColumn, LayoutNGRubyText, or

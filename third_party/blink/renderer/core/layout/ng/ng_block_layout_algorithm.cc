@@ -3239,33 +3239,38 @@ void NGBlockLayoutAlgorithm::HandleRubyText(NGBlockNode ruby_text_child) {
   const NGLayoutResult* result =
       ruby_text_child.Layout(builder.ToConstraintSpace(), break_token);
 
-  LayoutUnit ruby_text_box_top;
   const NGPhysicalBoxFragment& ruby_text_fragment =
       To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   const LogicalRect ruby_text_box = ruby_text_fragment.ConvertChildToLogical(
       ruby_text_fragment.ScrollableOverflow(NGPhysicalFragment::kEmHeight));
-  RubyPosition block_start_position = Style().IsFlippedLinesWritingMode()
-                                          ? RubyPosition::kAfter
-                                          : RubyPosition::kBefore;
+
+  // Find the ruby-base fragment.
+  const NGPhysicalBoxFragment* ruby_base_fragment = nullptr;
+  LayoutUnit ruby_base_block_offset;
+  for (const auto& child : container_builder_.Children()) {
+    if (child->IsRubyBase()) {
+      ruby_base_fragment = &To<NGPhysicalBoxFragment>(*child.fragment);
+      ruby_base_block_offset = child.offset.block_offset;
+      break;
+    }
+  }
+
+  LayoutUnit ruby_text_box_top;
+  const RubyPosition block_start_position = Style().IsFlippedLinesWritingMode()
+                                                ? RubyPosition::kAfter
+                                                : RubyPosition::kBefore;
   if (Style().GetRubyPosition() == block_start_position) {
     LayoutUnit last_line_ruby_text_bottom = ruby_text_box.BlockEndOffset();
 
-    // Find a fragment for RubyBase, and get the top of text in it.
+    // Get the top of the text in the ruby-base.
     LayoutUnit first_line_top;
-    for (const auto& child : container_builder_.Children()) {
-      if (const auto* layout_object = child.fragment->GetLayoutObject()) {
-        if (layout_object->IsRubyBase()) {
-          const auto& ruby_base_fragment =
-              To<NGPhysicalBoxFragment>(*child.fragment);
-          first_line_top =
-              ruby_base_fragment
-                  .ConvertChildToLogical(ruby_base_fragment.ScrollableOverflow(
-                      NGPhysicalFragment::kEmHeight))
-                  .offset.block_offset;
-          first_line_top += child.offset.block_offset;
-          break;
-        }
-      }
+    if (ruby_base_fragment) {
+      first_line_top =
+          ruby_base_block_offset +
+          ruby_base_fragment
+              ->ConvertChildToLogical(ruby_base_fragment->ScrollableOverflow(
+                  NGPhysicalFragment::kEmHeight))
+              .offset.block_offset;
     }
     ruby_text_box_top = first_line_top - last_line_ruby_text_bottom;
     const LayoutUnit ruby_text_top =
@@ -3275,33 +3280,26 @@ void NGBlockLayoutAlgorithm::HandleRubyText(NGBlockNode ruby_text_child) {
   } else {
     LayoutUnit first_line_ruby_text_top = ruby_text_box.offset.block_offset;
 
-    // Find a fragment for RubyBase, and get the bottom of text in it.
+    // Get the bottom of the text in the ruby-base.
     LayoutUnit last_line_bottom;
     LayoutUnit base_logical_bottom;
-    for (const auto& child : container_builder_.Children()) {
-      if (const auto* layout_object = child.fragment->GetLayoutObject()) {
-        if (layout_object->IsRubyBase()) {
-          LayoutUnit base_block_size =
-              child.fragment->Size()
-                  .ConvertToLogical(Style().GetWritingMode())
-                  .block_size;
-          const auto& ruby_base_fragment =
-              To<NGPhysicalBoxFragment>(*child.fragment);
-          last_line_bottom =
-              ruby_base_fragment
-                  .ConvertChildToLogical(ruby_base_fragment.ScrollableOverflow(
-                      NGPhysicalFragment::kEmHeight))
-                  .BlockEndOffset();
-          last_line_bottom += child.offset.block_offset;
-          base_logical_bottom = child.offset.block_offset + base_block_size;
-          break;
-        }
-      }
+    if (ruby_base_fragment) {
+      LayoutUnit base_block_size =
+          ruby_base_fragment->Size()
+              .ConvertToLogical(Style().GetWritingMode())
+              .block_size;
+      last_line_bottom =
+          ruby_base_block_offset +
+          ruby_base_fragment
+              ->ConvertChildToLogical(ruby_base_fragment->ScrollableOverflow(
+                  NGPhysicalFragment::kEmHeight))
+              .BlockEndOffset();
+      base_logical_bottom = ruby_base_block_offset + base_block_size;
     }
     ruby_text_box_top = last_line_bottom - first_line_ruby_text_top;
-    LayoutUnit logical_bottom_overflow = ruby_text_box_top +
-                                         ruby_text_box.BlockEndOffset() -
-                                         base_logical_bottom;
+    const LayoutUnit logical_bottom_overflow = ruby_text_box_top +
+                                               ruby_text_box.BlockEndOffset() -
+                                               base_logical_bottom;
     if (logical_bottom_overflow > LayoutUnit())
       container_builder_.SetAnnotationOverflow(logical_bottom_overflow);
   }
