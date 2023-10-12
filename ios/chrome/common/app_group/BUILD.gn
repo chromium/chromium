@@ -24,6 +24,18 @@ source_set("app_group") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "app_group_metrics_unittest.mm" ]
+  deps = [
+    ":app_group",
+    ":main_app",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
 # This target will be included into application extensions and the list
 # of its dependencies must be kept as short as possible.
 source_set("helper") {

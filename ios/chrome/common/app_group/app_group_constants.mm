@@ -75,6 +75,18 @@ NSString* const kSuggestedItems = @"SuggestedItems";
 NSString* const kSuggestedItemsLastModificationDate =
     @"SuggestedItemsLastModificationDate";
 
+NSString* const kOpenExtensionOutcomes = @"ChromeOpenExtensionOutcomes";
+
+NSString* const kOpenExtensionOutcomeSuccess = @"OpenExtensionOutcomeSuccess";
+NSString* const kOpenExtensionOutcomeFailureInvalidURL =
+    @"OpenExtensionOutcomeFailureInvalidURL";
+NSString* const kOpenExtensionOutcomeFailureURLNotFound =
+    @"OpenExtensionOutcomeFailureURLNotFound";
+NSString* const kOpenExtensionOutcomeFailureOpenInNotFound =
+    @"OpenExtensionOutcomeFailureOpenInNotFound";
+NSString* const kOpenExtensionOutcomeFailureUnsupportedScheme =
+    @"OpenExtensionOutcomeFailureUnsupportedScheme";
+
 NSString* ApplicationGroup() {
   return [AppGroupHelper applicationGroup];
 }
@@ -162,6 +174,42 @@ NSURL* CrashpadFolder() {
   NSURL* crashpadURL = [chromeURL URLByAppendingPathComponent:@"Crashpad"
                                                   isDirectory:YES];
   return crashpadURL;
+}
+
+NSString* KeyForOpenExtensionOutcomeType(OpenExtensionOutcome type) {
+  switch (type) {
+    case OpenExtensionOutcome::kSuccess:
+      return kOpenExtensionOutcomeSuccess;
+    case OpenExtensionOutcome::kFailureInvalidURL:
+      return kOpenExtensionOutcomeFailureInvalidURL;
+    case OpenExtensionOutcome::kFailureURLNotFound:
+      return kOpenExtensionOutcomeFailureURLNotFound;
+    case OpenExtensionOutcome::kFailureOpenInNotFound:
+      return kOpenExtensionOutcomeFailureOpenInNotFound;
+    case OpenExtensionOutcome::kFailureUnsupportedScheme:
+      return kOpenExtensionOutcomeFailureUnsupportedScheme;
+    case OpenExtensionOutcome::kInvalid:
+      NOTREACHED_NORETURN();
+  }
+}
+
+OpenExtensionOutcome OutcomeTypeFromKey(NSString* key) {
+  if ([key isEqualToString:kOpenExtensionOutcomeSuccess]) {
+    return OpenExtensionOutcome::kSuccess;
+  }
+  if ([key isEqualToString:kOpenExtensionOutcomeFailureInvalidURL]) {
+    return OpenExtensionOutcome::kFailureInvalidURL;
+  }
+  if ([key isEqualToString:kOpenExtensionOutcomeFailureURLNotFound]) {
+    return OpenExtensionOutcome::kFailureURLNotFound;
+  }
+  if ([key isEqualToString:kOpenExtensionOutcomeFailureOpenInNotFound]) {
+    return OpenExtensionOutcome::kFailureOpenInNotFound;
+  }
+  if ([key isEqualToString:kOpenExtensionOutcomeFailureUnsupportedScheme]) {
+    return OpenExtensionOutcome::kFailureUnsupportedScheme;
+  }
+  return OpenExtensionOutcome::kInvalid;
 }
 
 }  // namespace app_group

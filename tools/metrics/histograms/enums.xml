@@ -56213,6 +56213,15 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2" label="Close Tab"/>
 </enum>
 
+<enum name="IOSOpenExtensionOutcome">
+  <int value="0" label="Open Extension Success"/>
+  <int value="1" label="Open Extension Invalid outcome"/>
+  <int value="2" label="Open Extension Invalid URL"/>
+  <int value="3" label="Open Extension URL not found"/>
+  <int value="4" label="Open Extension Method not found"/>
+  <int value="5" label="Open Extension Unsupported scheme"/>
+</enum>
+
 <enum name="IOSOpenInDownloadResult">
   <int value="0" label="Download Succeeded"/>
   <int value="1" label="Download Canceled">

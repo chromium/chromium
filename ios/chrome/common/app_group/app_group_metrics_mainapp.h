@@ -34,6 +34,9 @@ void EnableMetrics(NSString* client_id,
 // TODO(crbug.com/782685): remove function.
 void DisableMetrics();
 
+// Report the metrics collected from the Open extension.
+void LogOpenExtensionMetrics();
+
 }  // namespace main_app
 }  // namespace app_group
 

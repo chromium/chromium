@@ -9,6 +9,7 @@
 #import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
 #import "base/ios/block_types.h"
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/common/app_group/app_group_command.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -16,6 +17,59 @@
 // Type for completion handler to fetch the components of the share items.
 // `idResponse` type depends on the element beeing fetched.
 using ItemBlock = void (^)(id idResponse, NSError* error);
+
+namespace {
+
+// Logs the new outcome by incrementing the outcome dictionary's values.
+void LogOutcome(app_group::OpenExtensionOutcome outcome_type) {
+  NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
+
+  NSMutableDictionary<NSString*, NSNumber*>*
+      open_extension_outcome_dictionnary = [[shared_defaults
+          dictionaryForKey:app_group::kOpenExtensionOutcomes] mutableCopy];
+
+  if (!open_extension_outcome_dictionnary) {
+    open_extension_outcome_dictionnary = [NSMutableDictionary dictionary];
+  }
+
+  NSString* key_for_outcome_type = KeyForOpenExtensionOutcomeType(outcome_type);
+
+  NSInteger old_value_for_open_in_outcome =
+      open_extension_outcome_dictionnary[key_for_outcome_type].integerValue;
+
+  [open_extension_outcome_dictionnary
+      setValue:@(old_value_for_open_in_outcome + 1)
+        forKey:key_for_outcome_type];
+
+  [shared_defaults setObject:open_extension_outcome_dictionnary
+                      forKey:app_group::kOpenExtensionOutcomes];
+  [shared_defaults synchronize];
+}
+
+// Convert outcome_type to an error type.
+NSError* ErrorForOutcome(app_group::OpenExtensionOutcome outcome_type) {
+  NSInteger error_code = NSURLErrorUnknown;
+  switch (outcome_type) {
+    case app_group::OpenExtensionOutcome::kFailureInvalidURL:
+      error_code = NSURLErrorBadURL;
+      break;
+    case app_group::OpenExtensionOutcome::kFailureURLNotFound:
+      error_code = NSURLErrorBadURL;
+      break;
+    case app_group::OpenExtensionOutcome::kFailureOpenInNotFound:
+      error_code = NSURLErrorUnknown;
+      break;
+    case app_group::OpenExtensionOutcome::kFailureUnsupportedScheme:
+      error_code = NSURLErrorUnsupportedURL;
+      break;
+    default:
+      NOTREACHED_NORETURN();
+  }
+  return [NSError errorWithDomain:NSURLErrorDomain
+                             code:error_code
+                         userInfo:nil];
+}
+}  // namespace
 
 @implementation OpenViewController {
   NSURL* _openInURL;
@@ -40,7 +94,9 @@ using ItemBlock = void (^)(id idResponse, NSError* error);
         ItemBlock URLCompletion = ^(id idURL, NSError* error) {
           NSURL* URL = base::apple::ObjCCast<NSURL>(idURL);
           if (!URL) {
-            [self displayErrorView];
+            // Display the error view when the URL is invalid.
+            [self displayErrorViewForOutcome:app_group::OpenExtensionOutcome::
+                                                 kFailureInvalidURL];
             return;
           }
           dispatch_async(dispatch_get_main_queue(), ^{
@@ -53,9 +109,10 @@ using ItemBlock = void (^)(id idResponse, NSError* error);
       }
     }
   }
-  // Display the error view when no match have been found.
+  // Display the error view when no URL has been found.
   if (!foundMatch) {
-    [self displayErrorView];
+    [self displayErrorViewForOutcome:app_group::OpenExtensionOutcome::
+                                         kFailureURLNotFound];
   }
 }
 
@@ -66,7 +123,8 @@ using ItemBlock = void (^)(id idResponse, NSError* error);
       [[_openInURL scheme] isEqualToString:@"https"]) {
     [self openInChrome];
   } else {
-    [self displayErrorView];
+    [self displayErrorViewForOutcome:app_group::OpenExtensionOutcome::
+                                         kFailureUnsupportedScheme];
   }
 }
 
@@ -75,19 +133,19 @@ using ItemBlock = void (^)(id idResponse, NSError* error);
 
   while ((responder = responder.nextResponder)) {
     if ([responder respondsToSelector:@selector(openURL:)]) {
-      [self prepareCommand:responder];
+      LogOutcome(app_group::OpenExtensionOutcome::kSuccess);
+      [self openInURL:responder];
       [self.extensionContext completeRequestReturningItems:@[ _openInItem ]
                                          completionHandler:nil];
       return;
     }
   }
-  [self.extensionContext
-      cancelRequestWithError:[NSError errorWithDomain:NSURLErrorDomain
-                                                 code:NSURLErrorUnknown
-                                             userInfo:nil]];
+  // Display the error view when Open in is not found
+  [self displayErrorViewForOutcome:app_group::OpenExtensionOutcome::
+                                       kFailureOpenInNotFound];
 }
 
-- (void)prepareCommand:(UIResponder*)responder {
+- (void)openInURL:(UIResponder*)responder {
   AppGroupCommand* command = [[AppGroupCommand alloc]
       initWithSourceApp:app_group::kOpenCommandSourceOpenExtension
          URLOpenerBlock:^(NSURL* openURL) {
@@ -97,14 +155,16 @@ using ItemBlock = void (^)(id idResponse, NSError* error);
   [command executeInApp];
 }
 
-- (void)displayErrorView {
+- (void)displayErrorViewForOutcome:(app_group::OpenExtensionOutcome)outcome {
   __weak OpenViewController* weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
-    [weakSelf displayErrorViewMainThread];
+    [weakSelf displayErrorViewMainThreadForOutcome:outcome];
   });
 }
 
-- (void)displayErrorViewMainThread {
+- (void)displayErrorViewMainThreadForOutcome:
+    (app_group::OpenExtensionOutcome)outcome {
+  LogOutcome(outcome);
   NSString* errorMessage =
       NSLocalizedString(@"IDS_IOS_ERROR_MESSAGE_OPEN_IN_EXTENSION",
                         @"The error message to display to the user.");
@@ -115,18 +175,15 @@ using ItemBlock = void (^)(id idResponse, NSError* error);
       [UIAlertController alertControllerWithTitle:errorMessage
                                           message:[_openInURL absoluteString]
                                    preferredStyle:UIAlertControllerStyleAlert];
+
   __weak __typeof(self) weakSelf = self;
-  UIAlertAction* defaultAction =
-      [UIAlertAction actionWithTitle:okButton
-                               style:UIAlertActionStyleDefault
-                             handler:^(UIAlertAction* action) {
-                               NSError* unsupportedURLError = [NSError
-                                   errorWithDomain:NSURLErrorDomain
-                                              code:NSURLErrorUnsupportedURL
-                                          userInfo:nil];
-                               [weakSelf.extensionContext
-                                   cancelRequestWithError:unsupportedURLError];
-                             }];
+  UIAlertAction* defaultAction = [UIAlertAction
+      actionWithTitle:okButton
+                style:UIAlertActionStyleDefault
+              handler:^(UIAlertAction* action) {
+                NSError* outcomeError = ErrorForOutcome(outcome);
+                [weakSelf.extensionContext cancelRequestWithError:outcomeError];
+              }];
   [alert addAction:defaultAction];
   [self presentViewController:alert animated:YES completion:nil];
 }
