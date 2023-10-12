@@ -183,6 +183,17 @@ TEST_F(PopupRowViewTest, GestureEvents) {
   generator().GestureTapAt(
       row_view().GetContentView().GetBoundsInScreen().CenterPoint());
 }
+
+TEST_F(PopupRowViewTest, NoCrashOnGestureAcceptingWithInvalidatedController) {
+  EXPECT_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck())
+      .WillOnce(Return(true));
+  ShowView(0, /*has_control=*/false);
+
+  EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
+  controller().InvalidateWeakPtrs();
+  generator().GestureTapAt(
+      row_view().GetContentView().GetBoundsInScreen().CenterPoint());
+}
 #endif  // !BUILDFLAG(IS_MAC)
 
 TEST_F(PopupRowViewTest, SetSelectedCellVerifiesArgumentsNoControl) {
@@ -301,6 +312,18 @@ TEST_F(PopupRowViewTest,
       row_view().GetContentView().GetBoundsInScreen().CenterPoint());
   Paint();
   EXPECT_CALL(controller(), AcceptSuggestion(0, _));
+  generator().ClickLeftButton();
+}
+
+TEST_F(PopupRowViewTest, NoCrashOnMouseAcceptingWithInvalidatedController) {
+  EXPECT_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck())
+      .WillOnce(Return(true));
+  ShowView(0, /*has_control=*/false);
+
+  generator().MoveMouseTo(
+      row_view().GetContentView().GetBoundsInScreen().CenterPoint());
+  EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
+  controller().InvalidateWeakPtrs();
   generator().ClickLeftButton();
 }
 

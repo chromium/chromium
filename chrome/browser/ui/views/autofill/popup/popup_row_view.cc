@@ -321,6 +321,10 @@ bool PopupRowView::HandleKeyPressEvent(
 }
 
 void PopupRowView::RunOnAcceptedForEvent(const ui::Event& event) {
+  if (!controller_) {
+    return;
+  }
+
   // Convert the native event timestamp into (an approximation of) time ticks.
   base::TimeTicks time =
       event.HasNativeEvent() &&
