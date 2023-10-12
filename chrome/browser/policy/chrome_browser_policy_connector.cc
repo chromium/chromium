@@ -46,6 +46,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/registry.h"
+#include "chrome/browser/browser_switcher/browser_switcher_policy_migrator.h"
 #include "components/policy/core/common/policy_loader_win.h"
 #elif BUILDFLAG(IS_MAC)
 #include <CoreFoundation/CoreFoundation.h>
@@ -53,26 +54,18 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/policy/core/common/policy_loader_mac.h"
 #include "components/policy/core/common/preferences_mac.h"
-#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
-#include "components/policy/core/common/config_dir_policy_loader.h"
 #elif BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/policy/chrome_browser_cloud_management_controller_android.h"
 #include "components/policy/core/common/android/android_combined_policy_provider.h"
+#elif BUILDFLAG(IS_POSIX)
+#include "components/policy/core/common/config_dir_policy_loader.h"
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/policy/chrome_browser_cloud_management_controller_desktop.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/proxy_policy_provider.h"
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/policy/chrome_browser_cloud_management_controller_android.h"
-#elif !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/policy/chrome_browser_cloud_management_controller_desktop.h"
-#endif
-
-#if BUILDFLAG(IS_WIN)
-#include "chrome/browser/browser_switcher/browser_switcher_policy_migrator.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -84,7 +77,7 @@
 
 namespace policy {
 namespace {
-bool command_line_enabled_for_testing = false;
+bool g_command_line_enabled_for_testing = false;
 }  // namespace
 
 ChromeBrowserPolicyConnector::ChromeBrowserPolicyConnector()
@@ -103,7 +96,7 @@ ChromeBrowserPolicyConnector::ChromeBrowserPolicyConnector()
 #endif
 }
 
-ChromeBrowserPolicyConnector::~ChromeBrowserPolicyConnector() {}
+ChromeBrowserPolicyConnector::~ChromeBrowserPolicyConnector() = default;
 
 void ChromeBrowserPolicyConnector::OnResourceBundleCreated() {
   BrowserPolicyConnectorBase::OnResourceBundleCreated();
@@ -194,20 +187,19 @@ void ChromeBrowserPolicyConnector::SetLocalTestPolicyProviderForTesting(
 
 void ChromeBrowserPolicyConnector::MaybeApplyLocalTestPolicies(
     PrefService* local_state) {
-  std::string policies_to_apply = local_state->GetString(
-      policy::policy_prefs::kLocalTestPoliciesForNextStartup);
+  std::string policies_to_apply =
+      local_state->GetString(policy_prefs::kLocalTestPoliciesForNextStartup);
   if (policies_to_apply.empty()) {
     return;
   }
-  for (policy::ConfigurationPolicyProvider* provider : GetPolicyProviders()) {
+  for (ConfigurationPolicyProvider* provider : GetPolicyProviders()) {
     provider->set_active(false);
   }
-  policy::LocalTestPolicyProvider* local_test_policy_provider =
-      static_cast<policy::LocalTestPolicyProvider*>(local_test_provider_);
+  LocalTestPolicyProvider* local_test_policy_provider =
+      static_cast<LocalTestPolicyProvider*>(local_test_provider_);
   local_test_policy_provider->set_active(true);
   local_test_policy_provider->LoadJsonPolicies(policies_to_apply);
-  local_state->ClearPref(
-      policy::policy_prefs::kLocalTestPoliciesForNextStartup);
+  local_state->ClearPref(policy_prefs::kLocalTestPoliciesForNextStartup);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -225,8 +217,9 @@ void ChromeBrowserPolicyConnector::SetProxyPolicyProviderForTesting(
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool ChromeBrowserPolicyConnector::IsCommandLineSwitchSupported() const {
-  if (command_line_enabled_for_testing)
+  if (g_command_line_enabled_for_testing) {
     return true;
+  }
 
   version_info::Channel channel = chrome::GetChannel();
   return channel != version_info::Channel::STABLE &&
@@ -235,7 +228,7 @@ bool ChromeBrowserPolicyConnector::IsCommandLineSwitchSupported() const {
 
 // static
 void ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting() {
-  command_line_enabled_for_testing = true;
+  g_command_line_enabled_for_testing = true;
 }
 
 base::flat_set<std::string>
@@ -328,7 +321,7 @@ ChromeBrowserPolicyConnector::CreatePlatformProvider() {
   auto loader = std::make_unique<PolicyLoaderMac>(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
-      policy::PolicyLoaderMac::GetManagedPolicyPath(bundle_id),
+      PolicyLoaderMac::GetManagedPolicyPath(bundle_id),
       std::make_unique<MacPreferences>(), bundle_id);
   return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                std::move(loader));
@@ -355,7 +348,7 @@ ChromeBrowserPolicyConnector::CreatePlatformProvider() {
     return nullptr;
   }
 #elif BUILDFLAG(IS_ANDROID)
-  return std::make_unique<policy::android::AndroidCombinedPolicyProvider>(
+  return std::make_unique<android::AndroidCombinedPolicyProvider>(
       GetSchemaRegistry());
 #else
   return nullptr;
@@ -364,8 +357,7 @@ ChromeBrowserPolicyConnector::CreatePlatformProvider() {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 void ChromeBrowserPolicyConnector::MaybeCreateCloudPolicyManager(
-    std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>*
-        providers) {
+    std::vector<std::unique_ptr<ConfigurationPolicyProvider>>* providers) {
   std::unique_ptr<ProxyPolicyProvider> proxy_policy_provider =
       std::make_unique<ProxyPolicyProvider>();
   proxy_policy_provider_ = proxy_policy_provider.get();
