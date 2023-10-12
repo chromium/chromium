@@ -165,6 +165,14 @@ TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigation) {
         kFileURLWithAccess, extension.get(), browser_context());
     EXPECT_THAT(url, base::test::ValueIs(GURL(kFileURLWithAccess)));
   }
+  // Regression test for crbug.com/1487908. Ensure that file URLs are returned
+  // when the call originates from non-extension contexts (e.g. WebUI contexts).
+  {
+    const std::string kFileURL("file:///etc/passwd");
+    auto url = ExtensionTabUtil::PrepareURLForNavigation(
+        kFileURL, /*extension=*/nullptr, browser_context());
+    EXPECT_THAT(url, base::test::ValueIs(GURL(kFileURL)));
+  }
 }
 
 TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigationOnDevtools) {
