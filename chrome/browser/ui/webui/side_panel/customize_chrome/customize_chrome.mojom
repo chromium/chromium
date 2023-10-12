@@ -101,6 +101,7 @@ struct DescriptorB {
 struct Descriptors {
   array<DescriptorA> descriptor_a;
   array<DescriptorB> descriptor_b;
+  array<string> descriptor_c;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.

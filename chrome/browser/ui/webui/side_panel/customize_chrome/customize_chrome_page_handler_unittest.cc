@@ -882,7 +882,8 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
           ],
           "descriptor_b":[
             {"label":"foo","image":"bar.png"}
-          ]
+          ],
+          "descriptor_c":["foo","bar","baz"]
         })");
 
   ASSERT_FALSE(descriptors);
@@ -905,8 +906,14 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
 
   const auto& descriptor_b = descriptors->descriptor_b;
   EXPECT_EQ(1u, descriptor_b.size());
-  EXPECT_EQ(descriptor_b[0]->label, "foo");
-  EXPECT_EQ(descriptor_b[0]->image_path, "bar.png");
+  EXPECT_EQ("foo", descriptor_b[0]->label);
+  EXPECT_EQ("bar.png", descriptor_b[0]->image_path);
+
+  const auto& descriptor_c = descriptors->descriptor_c;
+  EXPECT_EQ(3u, descriptor_c.size());
+  EXPECT_EQ("foo", descriptor_c[0]);
+  EXPECT_EQ("bar", descriptor_c[1]);
+  EXPECT_EQ("baz", descriptor_c[2]);
 }
 
 TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
@@ -931,9 +938,7 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
   handler().GetDescriptors(callback.Get());
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(descriptors);
-  EXPECT_EQ(0u, descriptors->descriptor_a.size());
-  EXPECT_EQ(0u, descriptors->descriptor_b.size());
+  EXPECT_FALSE(descriptors);
 }
 
 TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,

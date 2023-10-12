@@ -270,7 +270,9 @@ void CustomizeChromePageHandler::OnDescriptorsJsonParsed(
       result->GetDict().FindList("descriptor_a");
   const base::Value::List* descriptor_b =
       result->GetDict().FindList("descriptor_b");
-  if (!descriptor_a && !descriptor_b) {
+  const base::Value::List* descriptor_c_labels =
+      result->GetDict().FindList("descriptor_c");
+  if (!descriptor_a || !descriptor_b || !descriptor_c_labels) {
     DVLOG(1) << "Parsing JSON failed: no valid descriptors.";
     std::move(get_descriptors_callback_).Run(nullptr);
     return;
@@ -313,6 +315,13 @@ void CustomizeChromePageHandler::OnDescriptorsJsonParsed(
     }
   }
   mojo_descriptors->descriptor_b = std::move(mojo_descriptor_b_list);
+  std::vector<std::string> mojo_descriptor_c_labels;
+  if (descriptor_c_labels) {
+    for (const auto& label_value : *descriptor_c_labels) {
+      mojo_descriptor_c_labels.push_back(label_value.GetString());
+    }
+  }
+  mojo_descriptors->descriptor_c = std::move(mojo_descriptor_c_labels);
   std::move(get_descriptors_callback_).Run(std::move(mojo_descriptors));
 }
 
