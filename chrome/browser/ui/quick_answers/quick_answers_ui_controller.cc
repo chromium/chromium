@@ -49,7 +49,9 @@ constexpr char kQuickAnswersSettingsUrl[] =
 // Open the specified URL in a new tab with the specified profile
 void OpenUrl(Profile* profile, const GURL& url) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::NewWindowDelegate::GetInstance()->OpenUrl(
+  // We always want to open a link in Lacros browser if LacrosOnly is true.
+  // `GetPrimary` returns a proper delegate depending on the flag.
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
