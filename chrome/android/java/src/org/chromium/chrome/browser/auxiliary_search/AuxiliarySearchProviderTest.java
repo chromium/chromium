@@ -310,4 +310,10 @@ public class AuxiliarySearchProviderTest {
                     }
                 });
     }
+
+    @Test
+    @SmallTest
+    public void testTabToAuxiliarySearchEntry_nullTab() {
+        assertNull(AuxiliarySearchProvider.tabToAuxiliarySearchEntry(null));
+    }
 }

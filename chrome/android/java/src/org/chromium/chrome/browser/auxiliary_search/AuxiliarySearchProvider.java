@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.auxiliary_search;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
@@ -97,7 +98,12 @@ public class AuxiliarySearchProvider {
         });
     }
 
-    private static @Nullable AuxiliarySearchEntry tabToAuxiliarySearchEntry(Tab tab) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static @Nullable AuxiliarySearchEntry tabToAuxiliarySearchEntry(@Nullable Tab tab) {
+        if (tab == null) {
+            return null;
+        }
+
         String title = tab.getTitle();
         GURL url = tab.getUrl();
         if (TextUtils.isEmpty(title) || url == null || !url.isValid()) return null;
