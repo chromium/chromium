@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROME_NOTIFICATION_TYPES_H_
-#define CHROME_BROWSER_CHROME_NOTIFICATION_TYPES_H_
+#ifndef CHROME_BROWSER_AUTH_NOTIFICATION_TYPES_H_
+#define CHROME_BROWSER_AUTH_NOTIFICATION_TYPES_H_
 
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/notification_types.h"
-#include "extensions/buildflags/buildflags.h"
 
 // **
 // ** NOTICE
@@ -24,16 +21,12 @@
 namespace chrome {
 
 enum NotificationType {
-  NOTIFICATION_CHROME_START = content::NOTIFICATION_CONTENT_END,
-
-  // Authentication ----------------------------------------------------------
-
   // This is sent when a login prompt is shown.  The source is the
   // Source<NavigationController> for the tab in which the prompt is shown.
   // Details are a LoginNotificationDetails which provide the LoginHandler
   // that should be given authentication.
   // TODO(https://crbug.com/1174785): Remove.
-  NOTIFICATION_AUTH_NEEDED = NOTIFICATION_CHROME_START,
+  NOTIFICATION_AUTH_NEEDED = content::NOTIFICATION_CONTENT_END,
 
   // This is sent when authentication credentials have been supplied (either
   // by the user or by an automation service), but before we've actually
@@ -52,13 +45,6 @@ enum NotificationType {
   // the LoginHandler that should be cancelled.
   // TODO(https://crbug.com/1174785): Remove.
   NOTIFICATION_AUTH_CANCELLED,
-
-  // Misc --------------------------------------------------------------------
-  // Note:-
-  // Currently only Content and Chrome define and use notifications.
-  // Custom notifications not belonging to Content and Chrome should start
-  // from here.
-  NOTIFICATION_CHROME_END,
 };
 
 }  // namespace chrome
@@ -74,4 +60,4 @@ enum NotificationType {
 // ** Callback patterns.
 // **
 
-#endif  // CHROME_BROWSER_CHROME_NOTIFICATION_TYPES_H_
+#endif  // CHROME_BROWSER_AUTH_NOTIFICATION_TYPES_H_

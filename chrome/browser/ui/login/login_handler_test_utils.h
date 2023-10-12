@@ -7,7 +7,7 @@
 
 #include <list>
 
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/auth_notification_types.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/test/test_utils.h"

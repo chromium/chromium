@@ -24,7 +24,7 @@
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/auth_notification_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
