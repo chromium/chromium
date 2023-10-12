@@ -6,9 +6,13 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 source_set("compose") {
-  sources = []
+  sources = [
+    "type_conversions.cc",
+    "type_conversions.h",
+  ]
 
-  deps = [ ":mojo_bindings" ]
+  public_deps = [ ":mojo_bindings" ]
+  deps = [ "//components/compose/proto:proto" ]
 }
 
 mojom("mojo_bindings") {
