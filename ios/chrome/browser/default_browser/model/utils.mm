@@ -1214,6 +1214,18 @@ void RecordPromoStatsToUMAForAppear(PromoStatistics* promo_stats) {
   RecordPromoStatsToUMAForActionString(promo_stats, kAppearAction);
 }
 
+void RecordPromoDisplayStatsToUMA() {
+  base::UmaHistogramCounts100(
+      "IOS.DefaultBrowserPromo.DaysSinceLastPromoInteraction",
+      NumDaysSincePromoInteraction());
+  base::UmaHistogramCounts100(
+      "IOS.DefaultBrowserPromo.GenericPromoDisplayCount",
+      GenericPromoInteractionCount());
+  base::UmaHistogramCounts100(
+      "IOS.DefaultBrowserPromo.TailoredPromoDisplayCount",
+      TailoredPromoInteractionCount());
+}
+
 void LogBrowserLaunched(bool is_cold_start) {
   if (!IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
     CleanupStorageForTriggerExperiment();

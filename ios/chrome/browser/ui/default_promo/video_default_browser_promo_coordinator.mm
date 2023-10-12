@@ -180,6 +180,9 @@ using base::UserMetricsAction;
 
 // Records that a default browser promo has been shown.
 - (void)recordVideoDefaultBrowserPromoShown {
+  // Record the current state before updating the local storage.
+  RecordPromoDisplayStatsToUMA();
+
   LogFullscreenDefaultBrowserPromoDisplayed();
   RecordAction(UserMetricsAction("IOS.DefaultBrowserVideoPromo.Appear"));
 

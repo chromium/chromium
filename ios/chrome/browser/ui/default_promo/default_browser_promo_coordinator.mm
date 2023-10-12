@@ -137,6 +137,9 @@
 
 // Records that a default browser promo has been shown.
 - (void)recordDefaultBrowserPromoShown {
+  // Record the current state before updating the local storage.
+  RecordPromoDisplayStatsToUMA();
+
   base::RecordAction(
       base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Impression"));
   base::UmaHistogramEnumeration("IOS.DefaultBrowserPromo.Shown",
