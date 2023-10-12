@@ -958,28 +958,6 @@ time_t GetEndTime(const base::Time& end) {
   return end.ToTimeT();
 }
 
-// Returns |s| with |escaper| in front of each of occurrence of a character
-// from |special_chars|. Any occurrence of |escaper| in |s| is doubled. For
-// example, Substitute("hello_world!", "_%", '!'') returns "hello!_world!!".
-std::u16string Substitute(const std::u16string& s,
-                          const std::u16string& special_chars,
-                          const char16_t& escaper) {
-  // Prepend |escaper| to the list of |special_chars|.
-  std::u16string escape_wildcards(special_chars);
-  escape_wildcards.insert(escape_wildcards.begin(), escaper);
-
-  // Prepend the |escaper| just before |special_chars| in |s|.
-  std::u16string result(s);
-  for (char16_t c : escape_wildcards) {
-    for (size_t pos = 0; (pos = result.find(c, pos)) != std::u16string::npos;
-         pos += 2) {
-      result.insert(result.begin() + pos, escaper);
-    }
-  }
-
-  return result;
-}
-
 // This helper function binds the `profile`s properties to the placeholders in
 // `s`, in the order the columns are defined in the header file.
 // Instead of `profile.modification_date()`, `modification_date` is used. This

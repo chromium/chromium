@@ -56,12 +56,14 @@ bool RichAutocompletionEitherNonPrefixEnabled() {
              kRichAutocompletionAutocompleteNonPrefixShortcutProvider.Get();
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Return true if the given match uses a vector icon with a background.
 bool HasVectorIconBackground(const AutocompleteMatch& match) {
   return OmniboxFieldTrial::IsActionsUISimplificationEnabled() &&
          (match.type == AutocompleteMatchType::HISTORY_CLUSTER ||
           match.type == AutocompleteMatchType::PEDAL);
 }
+#endif
 
 }  // namespace
 

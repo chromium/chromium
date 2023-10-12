@@ -108,6 +108,7 @@ struct ManualOverride {
   const std::vector<ServerFieldType> field_types;
 };
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Creates the override specification passed as a parameter to
 // `features::kAutofillOverridePredictions`.
 std::string CreateManualOverridePrediction(
@@ -130,6 +131,7 @@ std::string CreateManualOverridePrediction(
   }
   return base::JoinString(override_specs, "-");
 }
+#endif
 
 // Matches any protobuf `actual` whose serialization is equal to the
 // string-serialization of the protobuf `expected`.
@@ -173,10 +175,12 @@ Matcher<FieldPrediction> EqualsPrediction(ServerFieldType type) {
   return Property("type", &FieldPrediction::type, type);
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 Matcher<FieldPrediction> EqualsPrediction(ServerFieldType type,
                                           FieldPrediction::Source source) {
   return EqualsPrediction(CreateFieldPrediction(type, source));
 }
+#endif
 
 }  // namespace
 

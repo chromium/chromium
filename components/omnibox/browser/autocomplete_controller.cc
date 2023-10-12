@@ -184,18 +184,6 @@ bool ShouldPreserveLastDefaultMatch(bool sync_pass_done,
     return true;
 }
 
-std::u16string GetDomain(const AutocompleteMatch& match) {
-  DCHECK(match.type == AutocompleteMatchType::HISTORY_URL ||
-         match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
-  GURL url = match.type == AutocompleteMatchType::HISTORY_URL
-                 ? match.destination_url
-                 : GURL(match.website_uri);
-  std::u16string url_host;
-  std::u16string url_domain;
-  url_formatter::SplitHost(url, &url_host, &url_domain, nullptr);
-  return url_domain;
-}
-
 }  // namespace
 
 // static

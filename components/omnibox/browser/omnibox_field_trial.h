@@ -576,6 +576,7 @@ extern const base::FeatureParam<bool> kDomainSuggestionsAlternativeScoring;
 struct MLConfig {
   MLConfig();
   MLConfig(const MLConfig&);
+  MLConfig& operator=(const MLConfig& other);
 
   // If true, logs Omnibox URL scoring signals to OmniboxEventProto.
   // Equivalent to omnibox::kLogUrlScoringSignals.

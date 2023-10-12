@@ -383,7 +383,6 @@ public class TabImpl implements Tab {
     }
 
     @Override
-    @CalledByNative
     public int getId() {
         return mId;
     }

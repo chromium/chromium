@@ -98,7 +98,7 @@ class AutofillProfileComparatorTest : public testing::Test {
          autofill::features::kAutofillEnableSupportForBetweenStreets,
          autofill::features::kAutofillEnableSupportForAdminLevel2},
         {});
-  };
+  }
 
   AutofillProfileComparatorTest(const AutofillProfileComparatorTest&) = delete;
   AutofillProfileComparatorTest& operator=(

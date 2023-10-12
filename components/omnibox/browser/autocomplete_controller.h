@@ -208,7 +208,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   OpenTabProvider* open_tab_provider() const { return open_tab_provider_; }
 
   const AutocompleteInput& input() const { return input_; }
-  const AutocompleteResult& result() const { return published_result_; };
+  const AutocompleteResult& result() const { return published_result_; }
   // Groups `published_result_` by search vs URL.
   // See also `AutocompleteResult::GroupSuggestionsBySearchVsURL()`.
   void GroupSuggestionsBySearchVsURL(size_t begin, size_t end);

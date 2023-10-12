@@ -74,7 +74,7 @@ MATCHER_P(EqualToUserProvidedCardDetails, details, "") {
   return details.cardholder_name == arg.cardholder_name &&
          details.expiration_date_month == arg.expiration_date_month &&
          details.expiration_date_year == arg.expiration_date_year;
-};
+}
 
 // Matches a the UploadSaveCardPromptCallback arguments to an
 // UploadCallbackArgs.

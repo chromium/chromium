@@ -108,7 +108,7 @@ class PDFDocumentHelperTest : public content::ContentBrowserTest {
   void SetUpOnMainThread() override {
     content::ContentBrowserTest::SetUpOnMainThread();
 
-    content::NavigateToURL(shell(), GURL("about:blank"));
+    ASSERT_TRUE(content::NavigateToURL(shell(), GURL("about:blank")));
     auto client = std::make_unique<TestPDFDocumentHelperClient>();
     client_ = client.get();
     PDFDocumentHelper::CreateForCurrentDocument(

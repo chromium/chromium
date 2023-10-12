@@ -26,7 +26,7 @@ namespace autofill {
 
 MATCHER_P(HasLegalMessageLineText, text, "A LegalMessageLine that has text.") {
   return base::UTF16ToUTF8(arg.text()) == text;
-};
+}
 
 namespace {
 

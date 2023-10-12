@@ -439,7 +439,7 @@ class MandatoryReauthManagerOptInFlowTest
             [success](base::OnceCallback<void(bool)> callback) {
               std::move(callback).Run(success);
             }));
-  };
+  }
 };
 
 TEST_P(MandatoryReauthManagerOptInFlowTest, OptInSuccess) {

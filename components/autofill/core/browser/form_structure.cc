@@ -221,6 +221,7 @@ void EncodeRandomizedValue(const RandomizedEncoder& encoder,
 //   In that case, use the server prediction instead. In the special case that
 //   the last specified manual override is a pass through, copy all server
 //   predictions.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 std::deque<FieldSuggestion> MergeManualAndServerOverrides(
     std::deque<FieldSuggestion> manual_overrides,
     std::deque<FieldSuggestion> server_overrides) {
@@ -246,6 +247,7 @@ std::deque<FieldSuggestion> MergeManualAndServerOverrides(
 
   return result;
 }
+#endif
 
 void PopulateRandomizedFormMetadata(const RandomizedEncoder& encoder,
                                     const FormStructure& form,

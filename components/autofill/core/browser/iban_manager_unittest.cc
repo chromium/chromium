@@ -404,7 +404,8 @@ TEST_F(IbanManagerTest, Metrics_Suggestions_Allowed) {
   test_field.unique_renderer_id = test::MakeFieldRendererId();
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
   // Simulate request for suggestions.
-  iban_manager_.OnGetSingleFieldSuggestions(
+  // TODO: handle return value.
+  std::ignore = iban_manager_.OnGetSingleFieldSuggestions(
       AutofillSuggestionTriggerSource::kFormControlElementClicked, test_field,
       autofill_client_, suggestions_handler_.GetWeakPtr(), context);
 
@@ -429,7 +430,8 @@ TEST_F(IbanManagerTest, Metrics_Suggestions_Blocked) {
           ShouldBlockSingleFieldSuggestions)
       .WillByDefault(testing::Return(true));
   // Simulate request for suggestions.
-  iban_manager_.OnGetSingleFieldSuggestions(
+  // TODO: handle return value.
+  std::ignore = iban_manager_.OnGetSingleFieldSuggestions(
       AutofillSuggestionTriggerSource::kFormControlElementClicked, test_field,
       autofill_client_, suggestions_handler_.GetWeakPtr(),
       /*context=*/context);
@@ -450,7 +452,8 @@ TEST_F(IbanManagerTest, Metrics_Suggestions_BlocklistNotAccessible) {
   autofill_client_.ResetAutofillOptimizationGuide();
 
   // Simulate request for suggestions.
-  iban_manager_.OnGetSingleFieldSuggestions(
+  // TODO: handle return value.
+  std::ignore = iban_manager_.OnGetSingleFieldSuggestions(
       AutofillSuggestionTriggerSource::kFormControlElementClicked, test_field,
       autofill_client_, suggestions_handler_.GetWeakPtr(),
       /*context=*/context);

@@ -42,7 +42,6 @@ public class AutofillSaveCardBottomSheetBridge {
                 AutofillSaveCardBottomSheetCoordinator::new);
     }
 
-    @CalledByNative
     @VisibleForTesting
     /*package*/ AutofillSaveCardBottomSheetBridge(long nativeAutofillSaveCardBottomSheetBridge,
             WindowAndroid window, TabModel tabModel, CoordinatorFactory coordinatorFactory) {
