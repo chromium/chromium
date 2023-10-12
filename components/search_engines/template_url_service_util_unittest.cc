@@ -6,13 +6,26 @@
 
 #include <memory>
 
+#include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
+#include "components/country_codes/country_codes.h"
+#include "components/search_engines/prepopulated_engines.h"
+#include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/search_engines/util.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/webdata/common/web_database_service.h"
+#include "components/webdata/common/webdata_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -49,6 +62,53 @@ std::unique_ptr<TemplateURL> CreatePrepopulateTemplateURL(
   data->id = id;
   data->created_from_play_api = is_play_api_turl;
   return std::make_unique<TemplateURL>(*data);
+}
+
+// Sets up dependencies and calls `GetSearchProvidersUsingLoadedEngines()`.
+// As with the wrapped function, `template_urls` will be updated with the loaded
+// engines, including the starter pack ones, and `*resource_keyword_version`
+// will be set to the version number for the loaded data or to 0 if no
+// prepopulated engines were loaded.
+void CallGetSearchProvidersUsingLoadedEngines(
+    PrefService* prefs,
+    TemplateURLService::OwnedTemplateURLVector* template_urls,
+    int* resource_keyword_version) {
+  // Setup inspired by `//components/webdata_services/web_data_service_wrapper*`
+
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::MainThreadType::UI};
+  auto task_runner = task_environment.GetMainThreadTaskRunner();
+
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+
+  auto profile_database = base::MakeRefCounted<WebDatabaseService>(
+      scoped_temp_dir.GetPath().Append(kWebDataFilename),
+      /*ui_task_runner=*/task_runner,
+      /*db_task_runner=*/task_runner);
+  profile_database->AddTable(std::make_unique<KeywordTable>());
+  profile_database->LoadDatabase();
+
+  auto keyword_web_data = base::MakeRefCounted<KeywordWebDataService>(
+      profile_database, task_runner);
+  keyword_web_data->Init(base::DoNothing());
+
+  {
+    SearchTermsData search_terms_data;
+    std::set<std::string> removed_keyword_guids;
+    int resource_starter_pack_version = 0;
+
+    GetSearchProvidersUsingLoadedEngines(
+        keyword_web_data.get(), prefs, template_urls,
+        /*default_search_provider=*/nullptr, search_terms_data,
+        resource_keyword_version, &resource_starter_pack_version,
+        &removed_keyword_guids);
+
+    EXPECT_TRUE(removed_keyword_guids.empty());
+  }
+
+  keyword_web_data->ShutdownOnUISequence();
+  profile_database->ShutdownDatabase();
 }
 
 }  // namespace
@@ -181,4 +241,98 @@ TEST(TemplateURLServiceUtilTest, MergeIntoEngineData) {
   EXPECT_FALSE(url_to_update->safe_for_autoreplace);
   EXPECT_EQ(url_to_update->short_name(), u"modified name");
   EXPECT_EQ(url_to_update->keyword(), u"new keyword");
+}
+
+TEST(TemplateURLServiceUtilTest, GetSearchProvidersUsingLoadedEngines) {
+  using TemplateURLPrepopulateData::kCurrentDataVersion;
+
+  sync_preferences::TestingPrefServiceSyncable prefs;
+  size_t starter_pack_engines_count =
+      TemplateURLStarterPackData::GetStarterPackEngines().size();
+
+  // Simulates how the search providers are loaded during Chrome init by calling
+  // `GetSearchProvidersUsingLoadedEngines()`. `prefs` carries the profile prefs
+  // between runs.
+  // Returns a struct with fields (`loaded_engines_count` and `loaded_version`)
+  // that can be verified against expectations.
+  auto simulate_run = [&](bool enable_feature, int mocked_current_version) {
+    base::test::ScopedFeatureList feature_list;
+    if (enable_feature) {
+      feature_list.InitAndEnableFeature(switches::kSearchEngineChoice);
+    } else {
+      feature_list.InitWithFeatures({}, {switches::kSearchEngineChoice,
+                                         switches::kSearchEngineChoiceFre});
+    }
+
+    TemplateURLService::OwnedTemplateURLVector template_urls;
+    int resource_keyword_version = mocked_current_version;
+    CallGetSearchProvidersUsingLoadedEngines(&prefs, &template_urls,
+                                             &resource_keyword_version);
+
+    struct {
+      size_t loaded_engines_count;
+      int loaded_version;
+    } result{
+        template_urls.size() - starter_pack_engines_count,
+        resource_keyword_version,
+    };
+
+    return result;
+  };
+
+  TemplateURLPrepopulateData::RegisterProfilePrefs(prefs.registry());
+  prefs.SetInteger(country_codes::kCountryIDAtInstall,
+                   country_codes::CountryCharsToCountryID('B', 'E'));
+
+  // Users initially have the feature is disabled, we should load the 5 engines.
+  auto result = simulate_run(/*enable_feature=*/false,
+                             /*mocked_current_version=*/0);
+  EXPECT_EQ(result.loaded_engines_count, 5u);
+  EXPECT_EQ(result.loaded_version, kCurrentDataVersion);
+  EXPECT_FALSE(
+      prefs.GetBoolean(prefs::kDefaultSearchProviderKeywordsUseExtendedList));
+
+  // When re-loading with the same configuration, no new load should happen as
+  // the data did not change.
+  result = simulate_run(/*enable_feature=*/false,
+                        /*mocked_current_version=*/kCurrentDataVersion);
+  EXPECT_EQ(result.loaded_engines_count, 0u);
+  EXPECT_EQ(result.loaded_version, 0);
+  EXPECT_FALSE(
+      prefs.GetBoolean(prefs::kDefaultSearchProviderKeywordsUseExtendedList));
+
+  // When loading with the feature this time, the engines should be reloaded.
+  result = simulate_run(/*enable_feature=*/true,
+                        /*mocked_current_version=*/kCurrentDataVersion);
+  EXPECT_EQ(result.loaded_engines_count, 12u);
+  EXPECT_EQ(result.loaded_version, kCurrentDataVersion);
+  EXPECT_TRUE(
+      prefs.GetBoolean(prefs::kDefaultSearchProviderKeywordsUseExtendedList));
+
+  // As for without the feature, no reload when the configuration is the same.
+  result = simulate_run(/*enable_feature=*/true,
+                        /*mocked_current_version=*/kCurrentDataVersion);
+  EXPECT_EQ(result.loaded_engines_count, 0u);
+  EXPECT_EQ(result.loaded_version, 0);
+  EXPECT_TRUE(
+      prefs.GetBoolean(prefs::kDefaultSearchProviderKeywordsUseExtendedList));
+
+  // And when disabling the feature, we should reload the shorter list.
+  result = simulate_run(/*enable_feature=*/false,
+                        /*mocked_current_version=*/kCurrentDataVersion);
+  EXPECT_EQ(result.loaded_engines_count, 5u);
+  EXPECT_EQ(result.loaded_version, kCurrentDataVersion);
+  EXPECT_FALSE(
+      prefs.GetBoolean(prefs::kDefaultSearchProviderKeywordsUseExtendedList));
+
+  // Toggling the feature state with an older prepopulated data version should
+  // not force the data merge. Guards against a small edge cases, for example if
+  // a user has different versions of chrome with different sets of prepopulated
+  // engines running on different computers.
+  result = simulate_run(/*enable_feature=*/true,
+                        /*mocked_current_version=*/kCurrentDataVersion + 1);
+  EXPECT_EQ(result.loaded_engines_count, 0u);
+  EXPECT_EQ(result.loaded_version, 0);
+  EXPECT_FALSE(
+      prefs.GetBoolean(prefs::kDefaultSearchProviderKeywordsUseExtendedList));
 }

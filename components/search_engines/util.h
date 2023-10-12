@@ -163,13 +163,13 @@ void SetDefaultSearchProviderPrefValue(PrefService& prefs,
 // with prepopulated search providers to result in:
 //  * a set of template_urls (search providers). The caller owns the
 //    TemplateURL* returned in template_urls.
-//  * whether there is a new resource keyword version (and the value).
-//    |*new_resource_keyword_version| is set to 0 if no new value. Otherwise,
-//    it is the new value.
+//  * whether the resource keyword data was updated.
+//    `*new_resource_keyword_version` is set to 0 if the data was not updated.
+//    Otherwise, it is the new version number from the prepopulated data.
 // Only pass in a non-NULL value for service if the KeywordWebDataService should
-// be updated. If |removed_keyword_guids| is not NULL, any TemplateURLs removed
+// be updated. If `removed_keyword_guids` is not NULL, any TemplateURLs removed
 // from the keyword table in the KeywordWebDataService will have their Sync
-// GUIDs added to it. |default_search_provider| will be used to prevent removing
+// GUIDs added to it. `default_search_provider` will be used to prevent removing
 // the current user-selected DSE, regardless of changes in prepopulate data.
 void GetSearchProvidersUsingKeywordResult(
     const WDTypedResult& result,

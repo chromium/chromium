@@ -1736,6 +1736,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kSearchProviderOverridesVersion, -1);
   registry->RegisterInt64Pref(
       prefs::kDefaultSearchProviderChoiceScreenRandomShuffleSeed, 0);
+  registry->RegisterBooleanPref(
+      prefs::kDefaultSearchProviderKeywordsUseExtendedList, false);
 }
 
 int GetDataVersion(PrefService* prefs) {
