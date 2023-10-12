@@ -283,10 +283,6 @@ const auto& GetNeverSniffedMimeTypes() {
   return kNeverSniffedMimeTypes;
 }
 
-void LogAction(CrossOriginReadBlocking::Action action) {
-  UMA_HISTOGRAM_ENUMERATION("SiteIsolation.XSD.Browser.Action", action);
-}
-
 }  // namespace
 
 // static
@@ -597,8 +593,6 @@ Decision CrossOriginReadBlocking::CorbResponseAnalyzer::Init(
   http_response_code_ =
       response.headers ? response.headers->response_code() : 0;
 
-  LogAction(Action::kResponseStarted);
-
   // CORB should look directly at the Content-Type header if one has been
   // received from the network. Ignoring |response.mime_type| helps avoid
   // breaking legitimate websites (which might happen more often when blocking
@@ -643,16 +637,6 @@ Decision CrossOriginReadBlocking::CorbResponseAnalyzer::Init(
         corb_protection_logging_needs_sniffing_ &&
         should_block_based_on_headers_ != Decision::kSniffMore;
     mime_type_bucket_ = GetMimeTypeBucket(response);
-    UMA_HISTOGRAM_BOOLEAN("SiteIsolation.CORBProtection.SensitiveResource",
-                          true);
-    if (!corb_protection_logging_needs_sniffing_) {
-      // If we are not going to sniff, then we can and must log everything now.
-      LogSensitiveResponseProtection(
-          BlockingDecisionToProtectionDecision(would_protect_based_on_headers));
-    }
-  } else {
-    UMA_HISTOGRAM_BOOLEAN("SiteIsolation.CORBProtection.SensitiveResource",
-                          false);
   }
   if (needs_sniffing())
     CreateSniffers();
@@ -662,16 +646,8 @@ Decision CrossOriginReadBlocking::CorbResponseAnalyzer::Init(
 
 CrossOriginReadBlocking::CorbResponseAnalyzer::CorbResponseAnalyzer() = default;
 
-CrossOriginReadBlocking::CorbResponseAnalyzer::~CorbResponseAnalyzer() {
-  if (ShouldBlock()) {
-    LogBlockedResponse();
-  } else {
-    // Allowing happens either 1) explicitly, or 2) when sniffing didn't reach a
-    // conclusion after sniffing 1024 (or all) bytes.
-    DCHECK(ShouldAllow() || needs_sniffing());
-    LogAllowedResponse();
-  }
-}
+CrossOriginReadBlocking::CorbResponseAnalyzer::~CorbResponseAnalyzer() =
+    default;
 
 // static
 Decision
@@ -1044,51 +1020,6 @@ Decision CrossOriginReadBlocking::CorbResponseAnalyzer::GetCorbDecision() {
     return Decision::kSniffMore;
 }
 
-void CrossOriginReadBlocking::CorbResponseAnalyzer::LogAllowedResponse() {
-  DCHECK(!has_logged_final_decision_);
-  has_logged_final_decision_ = true;
-
-  if (corb_protection_logging_needs_sniffing_) {
-    LogSensitiveResponseProtection(
-        SniffingDecisionToProtectionDecision(found_blockable_content_));
-  }
-  // Note that if a response is allowed because of hitting EOF or
-  // kMaxBytesToSniff, then |sniffers_| are not emptied and consequently
-  // ShouldAllow doesn't start returning true.  This means that we can't
-  // DCHECK(ShouldAllow()) or DCHECK(sniffers_.empty()) here - the decision to
-  // allow the response could have been made in the
-  // CrossSiteDocumentResourceHandler layer without CrossOriginReadBlocking
-  // realizing that it has hit EOF or kMaxBytesToSniff.
-
-  // Note that the response might be allowed even if ShouldBlock() returns true
-  // - for example to allow responses to requests initiated by content scripts.
-  // This means that we cannot DCHECK(!ShouldBlock()) here.
-
-  LogAction(needs_sniffing() ? Action::kAllowedAfterSniffing
-                             : Action::kAllowedWithoutSniffing);
-}
-
-void CrossOriginReadBlocking::CorbResponseAnalyzer::LogBlockedResponse() {
-  DCHECK(!has_logged_final_decision_);
-  has_logged_final_decision_ = true;
-
-  DCHECK(!ShouldAllow());
-  DCHECK(ShouldBlock());
-  DCHECK(sniffers_.empty());
-
-  if (corb_protection_logging_needs_sniffing_) {
-    LogSensitiveResponseProtection(
-        SniffingDecisionToProtectionDecision(found_blockable_content_));
-  }
-
-  LogAction(needs_sniffing() ? Action::kBlockedAfterSniffing
-                             : Action::kBlockedWithoutSniffing);
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "SiteIsolation.XSD.Browser.Blocked.CanonicalMimeType",
-      canonical_mime_type_);
-}
-
 // static
 bool CrossOriginReadBlocking::CorbResponseAnalyzer::HasNoSniff(
     const mojom::URLResponseHead& response) {
@@ -1103,107 +1034,10 @@ bool CrossOriginReadBlocking::CorbResponseAnalyzer::HasNoSniff(
 // static
 CrossOriginReadBlocking::CorbResponseAnalyzer::CrossOriginProtectionDecision
 CrossOriginReadBlocking::CorbResponseAnalyzer::
-    BlockingDecisionToProtectionDecision(Decision blocking_decision) {
-  switch (blocking_decision) {
-    case Decision::kAllow:
-      return CrossOriginProtectionDecision::kAllow;
-    case Decision::kBlock:
-      return CrossOriginProtectionDecision::kBlock;
-    case Decision::kSniffMore:
-      return CrossOriginProtectionDecision::kNeedToSniffMore;
-  }
-}
-
-// static
-CrossOriginReadBlocking::CorbResponseAnalyzer::CrossOriginProtectionDecision
-CrossOriginReadBlocking::CorbResponseAnalyzer::
     SniffingDecisionToProtectionDecision(bool found_blockable_content) {
   if (found_blockable_content)
     return CrossOriginProtectionDecision::kBlockedAfterSniffing;
   return CrossOriginProtectionDecision::kAllowedAfterSniffing;
-}
-
-void CrossOriginReadBlocking::CorbResponseAnalyzer::
-    LogSensitiveResponseProtection(
-        CrossOriginProtectionDecision protection_decision) const {
-  DCHECK(seems_sensitive_from_cors_heuristic_ ||
-         seems_sensitive_from_cache_heuristic_);
-  if (seems_sensitive_from_cors_heuristic_) {
-    switch (mime_type_bucket_) {
-      case kProtected:
-        UMA_HISTOGRAM_ENUMERATION(
-            "SiteIsolation.CORBProtection.CORSHeuristic.ProtectedMimeType",
-            protection_decision);
-        // We report if a response with a protected MIME type supports range
-        // requests since we want to measure how often making a multipart range
-        // requests would have allowed bypassing CORB.
-        if (protection_decision == CrossOriginProtectionDecision::kBlock) {
-          UMA_HISTOGRAM_BOOLEAN(
-              "SiteIsolation.CORBProtection.CORSHeuristic.ProtectedMimeType."
-              "BlockedWithRangeSupport",
-              supports_range_requests_);
-          UMA_HISTOGRAM_BOOLEAN(
-              "SiteIsolation.CORBProtection.CORSHeuristic.ProtectedMimeType."
-              "BlockedWithoutSniffing.HasNoSniff",
-              has_nosniff_header_);
-        } else if (protection_decision ==
-                   CrossOriginProtectionDecision::kBlockedAfterSniffing) {
-          UMA_HISTOGRAM_BOOLEAN(
-              "SiteIsolation.CORBProtection.CORSHeuristic.ProtectedMimeType."
-              "BlockedAfterSniffingWithRangeSupport",
-              supports_range_requests_);
-        }
-        break;
-      case kPublic:
-        UMA_HISTOGRAM_ENUMERATION(
-            "SiteIsolation.CORBProtection.CORSHeuristic.PublicMimeType",
-            protection_decision);
-        break;
-      case kOther:
-        UMA_HISTOGRAM_ENUMERATION(
-            "SiteIsolation.CORBProtection.CORSHeuristic.OtherMimeType",
-            protection_decision);
-    }
-  }
-  if (seems_sensitive_from_cache_heuristic_) {
-    switch (mime_type_bucket_) {
-      case kProtected:
-        UMA_HISTOGRAM_ENUMERATION(
-            "SiteIsolation.CORBProtection.CacheHeuristic.ProtectedMimeType",
-            protection_decision);
-        if (protection_decision == CrossOriginProtectionDecision::kBlock) {
-          UMA_HISTOGRAM_BOOLEAN(
-              "SiteIsolation.CORBProtection.CacheHeuristic.ProtectedMimeType."
-              "BlockedWithRangeSupport",
-              supports_range_requests_);
-          UMA_HISTOGRAM_BOOLEAN(
-              "SiteIsolation.CORBProtection.CacheHeuristic.ProtectedMimeType."
-              "BlockedWithoutSniffing.HasNoSniff",
-              has_nosniff_header_);
-        } else if (protection_decision ==
-                   CrossOriginProtectionDecision::kBlockedAfterSniffing) {
-          UMA_HISTOGRAM_BOOLEAN(
-              "SiteIsolation.CORBProtection.CacheHeuristic.ProtectedMimeType."
-              "BlockedAfterSniffingWithRangeSupport",
-              supports_range_requests_);
-        }
-        break;
-      case kPublic:
-        UMA_HISTOGRAM_ENUMERATION(
-            "SiteIsolation.CORBProtection.CacheHeuristic.PublicMimeType",
-            protection_decision);
-        break;
-      case kOther:
-        UMA_HISTOGRAM_ENUMERATION(
-            "SiteIsolation.CORBProtection.CacheHeuristic.OtherMimeType",
-            protection_decision);
-    }
-  }
-  // Also log if the server supports range requests, since these may allow
-  // bypassing CORB.
-  UMA_HISTOGRAM_BOOLEAN(
-      "SiteIsolation.CORBProtection.SensitiveWithRangeSupport",
-      supports_range_requests_);
 }
 
 }  // namespace network::corb

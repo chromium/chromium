@@ -1095,17 +1095,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Search.ContextualSearchQuickActions.ResultsSeen"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="CORBProtectionDecision" separator=".">
-  <suffix name="BlockedAfterSniffingWithRangeSupport"
-      label="Here the CORB protection decision was kBlockedAfterSniffing."/>
-  <suffix name="BlockedWithRangeSupport"
-      label="Here the CORB protection decision was kBlock."/>
-  <affected-histogram
-      name="SiteIsolation.CORBProtection.CacheHeuristic.ProtectedMimeType"/>
-  <affected-histogram
-      name="SiteIsolation.CORBProtection.CORSHeuristic.ProtectedMimeType"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="Cras_ClientType" separator=".">
   <suffix name="ARC" label="A client created by ARC++."/>
   <suffix name="ARCVM" label="A client created by ARCVM."/>
@@ -1917,15 +1906,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="ChromeOS.HardwareVerifier.Report"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="HeuristicType" separator="." ordering="prefix,2">
-  <suffix name="CacheHeuristic"
-      label="In this case the response satisfies the Cache heuristic."/>
-  <suffix name="CORSHeuristic"
-      label="In this case the response satisfies the CORS heuristic."/>
-  <affected-histogram
-      name="SiteIsolation.CORBProtection.ProtectedMimeType.BlockedWithoutSniffing.HasNoSniff"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="HiddenWhileFlushing" separator=".">
   <suffix name="HiddenWhileFlushing"
       label="Tab hidden while flushing FCP value."/>
@@ -2353,19 +2333,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="8to16min" label=""/>
   <affected-histogram
       name="Memory.Experimental.Renderer.HighestPrivateMemoryFootprint"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="MimeTypeBucket" separator=".">
-  <suffix name="OtherMimeType"
-      label="A MIME type that doesn't fall into either of the other two
-             categories."/>
-  <suffix name="ProtectedMimeType"
-      label="A MIME type we expect CORB to protect (i.e. JSON, HTML or XML)."/>
-  <suffix name="PublicMimeType"
-      label="A MIME type we consider public (i.e. javascript or an image
-             type)."/>
-  <affected-histogram name="SiteIsolation.CORBProtection.CacheHeuristic"/>
-  <affected-histogram name="SiteIsolation.CORBProtection.CORSHeuristic"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="MixedContentDownloadDownloadSecurity" separator=".">

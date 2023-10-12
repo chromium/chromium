@@ -167,9 +167,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     // into corb::Decision.
     Decision GetCorbDecision();
 
-    void LogAllowedResponse();
-    void LogBlockedResponse();
-
     // Static because this method is called both during the actual decision, and
     // for the CORB protection logging decision.
     static Decision ShouldBlockBasedOnHeaders(
@@ -201,11 +198,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     static MimeTypeBucket GetMimeTypeBucket(
         const network::mojom::URLResponseHead& response);
 
-    // Translates a blocking decision into a protection decision for use by
-    // LogSensitiveResponseProtection.
-    static CrossOriginProtectionDecision BlockingDecisionToProtectionDecision(
-        Decision would_protect_based_on_headers);
-
     // Returns a protection decision (blocked after sniffing or allowed after
     // sniffing) depending on if the sniffers found blockable content.
     static CrossOriginProtectionDecision SniffingDecisionToProtectionDecision(
@@ -215,17 +207,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     // if ShouldBlockBasedOnHeaders returns kSniffMore
     void CreateSniffers();
 
-    // Reports potentially sensitive responses and whether CORB would have
-    // protected them, were they made cross origin. Also reports if the server
-    // supports range requests.
-    void LogSensitiveResponseProtection(
-        CrossOriginProtectionDecision protection_decision) const;
-
     // Outcome of ShouldBlockBasedOnHeaders recorded inside the Create method.
     Decision should_block_based_on_headers_ = Decision::kBlock;
 
-    // The following values store information about the response and are used by
-    // the CORB protection logging in LogSensitiveResponseProtection.
+    // The following values store information about the response.
     bool corb_protection_logging_needs_sniffing_ = false;
     // |mime_type_bucket_| is either kProtected (if it's a type we expect to
     // protect such as HTML), kPublic (for javascript etc.) or kOther.
@@ -258,11 +243,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
 
     // Sniffing results.
     bool found_blockable_content_ = false;
-
-    // Whether the final allow/block decision has been logged to UMA.
-    // (This is only used in DCHECKs that verify that such UMA is only logged
-    // once.)
-    bool has_logged_final_decision_ = false;
   };
 
   // This enum backs a histogram, so do not change the order of entries or

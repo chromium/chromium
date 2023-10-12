@@ -725,95 +725,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="SiteIsolation.CORBProtection.CacheHeuristic"
-    enum="CrossOriginProtectionDecision" expires_after="M83">
-  <owner>krstnmnlsn@chromium.org</owner>
-  <owner>creis@chromium.org</owner>
-  <summary>
-    The blocking decision CORB would have made on the response, if the request
-    was cross-origin. Reported if the response looked sensitive under the cache
-    heuristic (i.e. had Cache-Control: Private and Vary: Origin response
-    headers).
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="SiteIsolation.CORBProtection.CacheHeuristic.ProtectedMimeType"
-    enum="BooleanSupported" expires_after="M83">
-<!-- suffixed with Block*WithRangeSupport -->
-
-  <owner>krstnmnlsn@chromium.org</owner>
-  <owner>creis@chromium.org</owner>
-  <summary>
-    True if the response has an Accept-Ranges header, which indicates the server
-    supports range requests on the resource and could be used to bypass CORB.
-    Only reported if the resource looked sensitive under the Cache heuristic and
-    was a protected MIME type.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SiteIsolation.CORBProtection.CORSHeuristic"
-    enum="CrossOriginProtectionDecision" expires_after="M83">
-  <owner>krstnmnlsn@chromium.org</owner>
-  <owner>creis@chromium.org</owner>
-  <summary>
-    The blocking decision CORB would have made on the response, if the request
-    was cross-origin. Reported if the response looked sensitive under the CORS
-    heuristic (i.e. had the Access-Control-Allow-Origin header with a value
-    other than * or null).
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="SiteIsolation.CORBProtection.CORSHeuristic.ProtectedMimeType"
-    enum="BooleanSupported" expires_after="M83">
-<!-- suffixed with Block*WithRangeSupport -->
-
-  <owner>krstnmnlsn@chromium.org</owner>
-  <owner>creis@chromium.org</owner>
-  <summary>
-    True if the response has an Accept-Ranges header, which indicates the server
-    supports range requests on the resource and could be used to bypass CORB.
-    Only reported if the resource looked sensitive under the CORS heuristic and
-    was a protected MIME type.
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="SiteIsolation.CORBProtection.ProtectedMimeType.BlockedWithoutSniffing.HasNoSniff"
-    enum="BooleanHasNoSniff" expires_after="M83">
-  <owner>krstnmnlsn@chromium.org</owner>
-  <owner>creis@chromium.org</owner>
-  <summary>
-    True if the response has a nosniff header. If the nosniff header is not
-    present, then CORB must have decided to block without sniffing due to a
-    partial response, or because the MIME type was a never sniff type. Only
-    reported on resources CORB would have blocked/protected without sniffing
-    that have a protected MIME type.
-  </summary>
-</histogram>
-
-<histogram name="SiteIsolation.CORBProtection.SensitiveResource"
-    enum="BooleanSensitive" expires_after="M83">
-  <owner>krstnmnlsn@chromium.org</owner>
-  <owner>creis@chromium.org</owner>
-  <summary>
-    True if the resource was found to be sensitive by either the CORS or Cache
-    heuristics. Recorded for every resource CORB sees.
-  </summary>
-</histogram>
-
-<histogram name="SiteIsolation.CORBProtection.SensitiveWithRangeSupport"
-    enum="BooleanSupported" expires_after="M83">
-  <owner>krstnmnlsn@chromium.org</owner>
-  <owner>creis@chromium.org</owner>
-  <summary>
-    True if the response has an Accept-Ranges header, which indicates the server
-    supports range requests on the resource. Only reported if the response
-    looked sensitive under the cache or CORS heuristics.
-  </summary>
-</histogram>
-
 <histogram name="SiteIsolation.IsolatableSandboxedIframes" units="processes"
     expires_after="2024-03-17">
   <owner>wjmaclean@chromium.org</owner>
@@ -1097,28 +1008,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The count of SiteInstances in a single BrowsingInstance. Recorded each UMA
     ping, once per BrowsingInstance.
-  </summary>
-</histogram>
-
-<histogram name="SiteIsolation.XSD.Browser.Action"
-    enum="SiteIsolationResponseAction" expires_after="2020-06-01">
-  <owner>creis@chromium.org</owner>
-  <owner>lukasza@chromium.org</owner>
-  <summary>
-    Various actions related to cross-site document blocking in the browser
-    process, indicating whether the response was blocked from the renderer.
-    Recorded as the response is processed in the network stack.
-  </summary>
-</histogram>
-
-<histogram name="SiteIsolation.XSD.Browser.Blocked.CanonicalMimeType"
-    enum="CorbCanonicalMimeType" expires_after="M81">
-  <owner>creis@chromium.org</owner>
-  <owner>lukasza@chromium.org</owner>
-  <summary>
-    The total count of responses that were blocked by the cross-site document
-    blocking logic in the browser process. Recorded with a canonical MIME type
-    when the response is blocked.
   </summary>
 </histogram>
 

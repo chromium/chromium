@@ -20458,29 +20458,12 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Cache miss"/>
 </enum>
 
-<enum name="CorbCanonicalMimeType">
-  <summary>Coarse MIME type classification for CORB decisions.</summary>
-  <int value="0" label="Html">
-    https://mimesniff.spec.whatwg.org/#html-mime-type.
-  </int>
-  <int value="1" label="Xml">
-    https://mimesniff.spec.whatwg.org/#xml-mime-type, except `image/svg+xml` and
-    `application/dash+xml`.
-  </int>
-  <int value="2" label="Json">
-    https://mimesniff.spec.whatwg.org/#json-mime-type.
-  </int>
-  <int value="3" label="Plain">text/plain</int>
-  <int value="4" label="Others">
-    Other, unrecognized MIME type. Blocked if sniffing finds a JSON security
-    prefix.
-  </int>
-  <int value="5" label="NeverSniffed">
-    Used for content types that are unlikely to be incorrectly applied to
-    images, scripts and other legacy no-cors resources (which consequently don't
-    need any confimation sniffing). For example: `application/pdf`,
-    `application/zip`, etc.
-  </int>
+<enum name="CopyStackEvent">
+  <int value="0" label="Started"/>
+  <int value="1" label="Succeeded"/>
+  <int value="2" label="Sigaction failed"/>
+  <int value="3" label="Tgkill failed"/>
+  <int value="4" label="Wait failed"/>
 </enum>
 
 <enum name="CorbResultVsInitiatorLockCompatibility">
@@ -23314,14 +23297,6 @@ metrics consent we also won't be able to send UMA metrics. -->
       label="Ad Creative Origin Same as Main Frame and Ad Not Throttled"/>
   <int value="3"
       label="Ad Creative Origin Differs from Main Frame and Ad Not Throttled"/>
-</enum>
-
-<enum name="CrossOriginProtectionDecision">
-  <int value="0" label="kAllow"/>
-  <int value="1" label="kBlock"/>
-  <int value="2" label="kNeedToSniffMore"/>
-  <int value="3" label="kAllowedAfterSniffing"/>
-  <int value="4" label="kBlockedAfterSniffing"/>
 </enum>
 
 <enum name="CrossProcessTimeDelta">
@@ -100878,14 +100853,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Plain"/>
   <int value="4" label="Others"/>
   <int value="5" label="NeverSniffed"/>
-</enum>
-
-<enum name="SiteIsolationResponseAction">
-  <int value="0" label="Response started"/>
-  <int value="1" label="Response blocked without sniffing"/>
-  <int value="2" label="Response blocked after sniffing"/>
-  <int value="3" label="Response allowed without sniffing"/>
-  <int value="4" label="Response allowed after sniffing"/>
 </enum>
 
 <enum name="SiteLayout">
