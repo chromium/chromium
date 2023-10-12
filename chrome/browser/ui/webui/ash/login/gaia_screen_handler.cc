@@ -867,8 +867,16 @@ void GaiaScreenHandler::CompleteAuthentication(
   signin_artifacts.cookies->TransferCookiesToUserContext(*user_context);
 
   // Finish the authentication
+  bool confirm_saml_password = signin_artifacts.using_saml &&
+                               !signin_artifacts.password.has_value() &&
+                               !IsSamlUserPasswordless();
+  bool need_password_gaia =
+      !signin_artifacts.using_saml &&
+      signin_artifacts.password.value_or(std::string()).empty() &&
+      !ash::features::AreLocalPasswordsEnabledForConsumers();
   const bool needs_saml_confirm_password =
-      !signin_artifacts.password.has_value() && !IsSamlUserPasswordless();
+      confirm_saml_password || need_password_gaia;
+
   if (needs_saml_confirm_password) {
     auto scraped_saml_passwords =
         signin_artifacts.scraped_saml_passwords.value_or(::login::StringList{});

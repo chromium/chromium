@@ -243,7 +243,8 @@ void AuthSessionAuthenticator::DoCompleteLogin(
   }
   DCHECK(!user_exists || !ephemeral);
   LOGIN_LOG(EVENT) << "Regular user CompleteLogin " << user_exists;
-  bool challenge_response_auth = !context->GetChallengeResponseKeys().empty();
+  const bool challenge_response_auth =
+      !context->GetChallengeResponseKeys().empty();
   const bool has_password = !context->GetKey()->GetSecret().empty();
   std::vector<AuthOperation> steps;
   if (!user_exists) {
@@ -278,7 +279,7 @@ void AuthSessionAuthenticator::DoCompleteLogin(
           base::BindOnce(&AuthFactorEditor::AddContextChallengeResponseKey,
                          auth_factor_editor_->AsWeakPtr()));
     } else {
-      if (!ash::switches::AreEmptyPasswordsAllowedForForTesting()) {
+      if (ash::switches::AreEmptyPasswordsAllowedForForTesting()) {
         // Empty passwords are currently not supported in ChromeOS, and
         // upcoming work on local passwords would significantly change code
         // behavior if empty password is used during initial login.
@@ -287,20 +288,31 @@ void AuthSessionAuthenticator::DoCompleteLogin(
         // If such fix requires non-trivial changes, the following flag
         // can be used as a short-term solution:
         // `--allow-empty-passwords-in-tests`
+        steps.push_back(
+            base::BindOnce(&AuthFactorEditor::AddContextKnowledgeKey,
+                           auth_factor_editor_->AsWeakPtr()));
+        steps.push_back(base::BindOnce(
+            &AuthSessionAuthenticator::RecordFirstAuthFactorAdded,
+            weak_factory_.GetWeakPtr()));
+      } else if (!ash::features::AreLocalPasswordsEnabledForConsumers()) {
         CHECK(has_password)
             << "Empty passwords are not supported during user creation";
+        steps.push_back(
+            base::BindOnce(&AuthFactorEditor::AddContextKnowledgeKey,
+                           auth_factor_editor_->AsWeakPtr()));
+        steps.push_back(base::BindOnce(
+            &AuthSessionAuthenticator::RecordFirstAuthFactorAdded,
+            weak_factory_.GetWeakPtr()));
+      } else {
+        // If Local passwords are enabled, password setup would
+        // happen later in OOBE flow.
       }
-      steps.push_back(base::BindOnce(&AuthFactorEditor::AddContextKnowledgeKey,
-                                     auth_factor_editor_->AsWeakPtr()));
-    }
     // In addition to factors suitable for authentication, fetch a set of
     // supported factor types for new users.
     steps.push_back(
         base::BindOnce(&AuthFactorEditor::GetAuthFactorsConfiguration,
                        auth_factor_editor_->AsWeakPtr()));
-    steps.push_back(
-        base::BindOnce(&AuthSessionAuthenticator::RecordFirstAuthFactorAdded,
-                       weak_factory_.GetWeakPtr()));
+    }       // challenge-response
   } else {  // existing user
     if (!challenge_response_auth) {
       // We are sure that password is correct, so intercept authentication
