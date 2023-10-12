@@ -41,8 +41,9 @@ constexpr gfx::Size kArrowButtonSize(32, 32);
 }  // namespace
 
 EditorMenuTextfieldView::EditorMenuTextfieldView(
+    EditorMenuMode editor_menu_mode,
     EditorMenuViewDelegate* delegate)
-    : delegate_(delegate) {
+    : editor_menu_mode_(editor_menu_mode), delegate_(delegate) {
   CHECK(delegate_);
 }
 
@@ -90,7 +91,10 @@ void EditorMenuTextfieldView::InitLayout() {
   textfield_->set_controller(this);
   textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
   textfield_->SetAccessibleName(kContainerTitle);
-  textfield_->SetPlaceholderText(kContainerTitle);
+  textfield_->SetPlaceholderText(l10n_util::GetStringUTF16(
+      editor_menu_mode_ == EditorMenuMode::kWrite
+          ? IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER
+          : IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER));
   textfield_->SetBackgroundColor(SK_ColorTRANSPARENT);
   textfield_->RemoveHoverEffect();
   textfield_->SetExtraInsets(

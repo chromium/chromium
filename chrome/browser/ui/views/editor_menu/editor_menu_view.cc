@@ -20,8 +20,10 @@
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/views/editor_menu/utils/preset_text_query.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
@@ -49,11 +51,9 @@ namespace chromeos::editor_menu {
 namespace {
 
 constexpr char kWidgetName[] = "EditorMenuViewWidget";
-constexpr char16_t kContainerTitle[] = u"Editor Menu";
 
 constexpr gfx::Insets kTitleContainerInsets = gfx::Insets::TLBR(12, 16, 12, 8);
 
-constexpr char16_t kSettingsTooltipString[] = u"Settings";
 constexpr int kSettingsIconSizeDip = 20;
 
 // Spacing to apply between and around chips.
@@ -66,10 +66,12 @@ constexpr gfx::Insets kTextfieldContainerInsets =
 
 }  // namespace
 
-EditorMenuView::EditorMenuView(const PresetTextQueries& preset_text_queries,
+EditorMenuView::EditorMenuView(EditorMenuMode editor_menu_mode,
+                               const PresetTextQueries& preset_text_queries,
                                const gfx::Rect& anchor_view_bounds,
                                EditorMenuViewDelegate* delegate)
-    : pre_target_handler_(
+    : editor_menu_mode_(editor_menu_mode),
+      pre_target_handler_(
           std::make_unique<PreTargetHandler>(this, CardType::kEditorMenu)),
       delegate_(delegate) {
   CHECK(delegate_);
@@ -80,6 +82,7 @@ EditorMenuView::~EditorMenuView() = default;
 
 // static
 views::UniqueWidgetPtr EditorMenuView::CreateWidget(
+    EditorMenuMode editor_menu_mode,
     const PresetTextQueries& preset_text_queries,
     const gfx::Rect& anchor_view_bounds,
     EditorMenuViewDelegate* delegate) {
@@ -96,7 +99,7 @@ views::UniqueWidgetPtr EditorMenuView::CreateWidget(
       std::make_unique<views::Widget>(std::move(params));
   EditorMenuView* editor_menu_view =
       widget->SetContentsView(std::make_unique<EditorMenuView>(
-          preset_text_queries, anchor_view_bounds, delegate));
+          editor_menu_mode, preset_text_queries, anchor_view_bounds, delegate));
   editor_menu_view->UpdateBounds(anchor_view_bounds);
 
   return widget;
@@ -114,7 +117,10 @@ void EditorMenuView::RequestFocus() {
 
 void EditorMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kDialog;
-  node_data->SetName(kContainerTitle);
+  node_data->SetName(
+      l10n_util::GetStringUTF16(editor_menu_mode_ == EditorMenuMode::kWrite
+                                    ? IDS_EDITOR_MENU_WRITE_CARD_TITLE
+                                    : IDS_EDITOR_MENU_REWRITE_CARD_TITLE));
 }
 
 bool EditorMenuView::AcceleratorPressed(const ui::Accelerator& accelerator) {
@@ -181,8 +187,10 @@ void EditorMenuView::AddTitleContainer() {
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   auto* title = title_container_->AddChildView(std::make_unique<views::Label>(
-      kContainerTitle, views::style::CONTEXT_DIALOG_TITLE,
-      views::style::STYLE_HEADLINE_5));
+      l10n_util::GetStringUTF16(editor_menu_mode_ == EditorMenuMode::kWrite
+                                    ? IDS_EDITOR_MENU_WRITE_CARD_TITLE
+                                    : IDS_EDITOR_MENU_REWRITE_CARD_TITLE),
+      views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_HEADLINE_5));
   title->SetEnabledColorId(ui::kColorSysOnSurface);
 
   auto* badge = title_container_->AddChildView(
@@ -199,7 +207,8 @@ void EditorMenuView::AddTitleContainer() {
       title_container_->AddChildView(std::make_unique<views::ImageButton>(
           base::BindRepeating(&EditorMenuView::OnSettingsButtonPressed,
                               weak_factory_.GetWeakPtr())));
-  settings_button_->SetTooltipText(kSettingsTooltipString);
+  settings_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_EDITOR_MENU_SETTINGS_TOOLTIP));
   settings_button_->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOutlineIcon,
@@ -237,8 +246,8 @@ void EditorMenuView::AddChipsContainer(
 }
 
 void EditorMenuView::AddTextfield() {
-  textfield_ =
-      AddChildView(std::make_unique<EditorMenuTextfieldView>(delegate_));
+  textfield_ = AddChildView(
+      std::make_unique<EditorMenuTextfieldView>(editor_menu_mode_, delegate_));
   textfield_->SetProperty(views::kMarginsKey, kTextfieldContainerInsets);
 }
 

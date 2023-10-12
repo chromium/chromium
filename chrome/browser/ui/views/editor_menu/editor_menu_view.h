@@ -28,12 +28,15 @@ class EditorMenuTextfieldView;
 class EditorMenuViewDelegate;
 class PreTargetHandler;
 
+enum class EditorMenuMode { kWrite = 0, kRewrite };
+
 // A bubble style view to show Editor Menu.
 class EditorMenuView : public views::View, public views::WidgetObserver {
  public:
   METADATA_HEADER(EditorMenuView);
 
-  EditorMenuView(const PresetTextQueries& preset_text_queries,
+  EditorMenuView(EditorMenuMode editor_menu_mode,
+                 const PresetTextQueries& preset_text_queries,
                  const gfx::Rect& anchor_view_bounds,
                  EditorMenuViewDelegate* delegate);
 
@@ -43,6 +46,7 @@ class EditorMenuView : public views::View, public views::WidgetObserver {
   ~EditorMenuView() override;
 
   static views::UniqueWidgetPtr CreateWidget(
+      EditorMenuMode editor_menu_mode,
       const PresetTextQueries& preset_text_queries,
       const gfx::Rect& anchor_view_bounds,
       EditorMenuViewDelegate* delegate);
@@ -78,6 +82,8 @@ class EditorMenuView : public views::View, public views::WidgetObserver {
   void OnChipButtonPressed(const std::string& text_query_id);
 
   void ResetPreTargetHandler();
+
+  EditorMenuMode editor_menu_mode_;
 
   std::unique_ptr<PreTargetHandler> pre_target_handler_;
 

@@ -10,6 +10,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/views/editor_menu/editor_menu_view.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/view.h"
@@ -31,7 +34,8 @@ class EditorMenuTextfieldView : public views::View,
  public:
   METADATA_HEADER(EditorMenuTextfieldView);
 
-  explicit EditorMenuTextfieldView(EditorMenuViewDelegate* delegate);
+  EditorMenuTextfieldView(EditorMenuMode editor_menu_mode,
+                          EditorMenuViewDelegate* delegate);
   EditorMenuTextfieldView(const EditorMenuTextfieldView&) = delete;
   EditorMenuTextfieldView& operator=(const EditorMenuTextfieldView&) = delete;
   ~EditorMenuTextfieldView() override;
@@ -53,6 +57,8 @@ class EditorMenuTextfieldView : public views::View,
  private:
   void InitLayout();
   void OnTextfieldArrowButtonPressed();
+
+  EditorMenuMode editor_menu_mode_;
 
   // `delegate_` outlives `this`.
   raw_ptr<EditorMenuViewDelegate> delegate_ = nullptr;

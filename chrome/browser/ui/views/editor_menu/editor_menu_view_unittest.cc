@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "chrome/browser/ui/views/editor_menu/editor_menu_chip_view.h"
+#include "chrome/browser/ui/views/editor_menu/editor_menu_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view_delegate.h"
 #include "chrome/browser/ui/views/editor_menu/utils/preset_text_query.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -54,7 +55,8 @@ TEST_F(EditorMenuViewTest, CreatesChips) {
       PresetTextQuery("ID2", u"Elaborate", PresetQueryCategory::kElaborate)};
 
   EditorMenuView editor_menu_view =
-      EditorMenuView(queries, gfx::Rect(200, 300, 400, 200), &delegate);
+      EditorMenuView(EditorMenuMode::kRewrite, queries,
+                     gfx::Rect(200, 300, 400, 200), &delegate);
 
   // Chips should be in a single row.
   const auto* chips_container = editor_menu_view.chips_container_for_testing();

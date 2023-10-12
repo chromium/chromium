@@ -178,8 +178,13 @@ void EditorMenuControllerImpl::OnGetEditorPanelContextResult(
     case EditorPanelMode::kBlocked:
       break;
     case EditorPanelMode::kWrite:
+      editor_menu_widget_ = EditorMenuView::CreateWidget(
+          EditorMenuMode::kWrite, PresetTextQueries(), anchor_bounds, this);
+      editor_menu_widget_->ShowInactive();
+      break;
     case EditorPanelMode::kRewrite:
       editor_menu_widget_ = EditorMenuView::CreateWidget(
+          EditorMenuMode::kRewrite,
           GetPresetTextQueries(context->preset_text_queries), anchor_bounds,
           this);
       editor_menu_widget_->ShowInactive();

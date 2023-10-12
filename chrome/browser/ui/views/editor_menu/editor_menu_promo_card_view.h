@@ -71,7 +71,7 @@ class EditorMenuPromoCardView : public views::View,
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::Label> description_ = nullptr;
   raw_ptr<views::MdTextButton> dismiss_button_ = nullptr;
-  raw_ptr<views::MdTextButton> tell_me_more_button_ = nullptr;
+  raw_ptr<views::MdTextButton> try_it_button_ = nullptr;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};

@@ -314,11 +314,36 @@
       </message>
 
       <!-- Editor Menu -->
-      <message name="IDS_EDITOR_MENU_PROMO_CARD_VIEW_DISMISS_BUTTON" desc="Label on the dismiss button in the dialog that is shown to introduce the Editor Menu feature.">
+      <!-- TODO(b/286268215): Finalize these strings and make them translatable. -->
+      <message name="IDS_EDITOR_MENU_PROMO_CARD_TITLE" desc="Title text in the dialog that is shown to introduce the Editor Menu feature." translateable="false">
+        Write faster and with more confidence
+      </message>
+      <message name="IDS_EDITOR_MENU_PROMO_CARD_DESC" desc="Description text in the dialog that is shown to introduce the Editor Menu feature." translateable="false">
+        Use the Editor Menu to create a draft or refine existing work
+      </message>
+      <message name="IDS_EDITOR_MENU_PROMO_CARD_DISMISS_BUTTON" desc="Label on the dismiss button in the dialog that is shown to introduce the Editor Menu feature." translateable="false">
         Dismiss
       </message>
-      <message name="IDS_EDITOR_MENU_PROMO_CARD_VIEW_TELL_ME_MORE_BUTTON" desc="Label on the tell me more button in the dialog that is shown to introduce the Editor Menu feature.">
-        Tell me more
+      <message name="IDS_EDITOR_MENU_PROMO_CARD_TRY_IT_BUTTON" desc="Label on the try it button in the dialog that is shown to introduce the Editor Menu feature." translateable="false">
+        Try it
+      </message>
+      <message name="IDS_EDITOR_MENU_WRITE_CARD_TITLE" desc="Title text in the Editor Menu when shown in write mode." translateable="false">
+        Writing help
+      </message>
+      <message name="IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in write mode." translateable="false">
+        What's your writing goal?
+      </message>
+      <message name="IDS_EDITOR_MENU_REWRITE_CARD_TITLE" desc="Title text in the Editor Menu when shown in rewrite mode." translateable="false">
+        Rewrite
+      </message>
+      <message name="IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in rewrite mode." translateable="false">
+        Custom (e.g. sound more confident)
+      </message>
+      <message name="IDS_EDITOR_MENU_SETTINGS_TOOLTIP" desc="Tooltip text for the settings button in the Editor Menu." translateable="false">
+        Settings
+      </message>
+      <message name="IDS_EDITOR_MENU_EXPERIMENT_BADGE" desc="Label on the badge shown next to the Editor Menu title to indicate that it is an experimental feature." translateable="false">
+        Experiment
       </message>
 
       <!-- Multitask Menu -->

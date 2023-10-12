@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/editor_menu/editor_menu_gradient_badge.h"
 
+#include "chromeos/strings/grit/chromeos_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -23,22 +25,20 @@ namespace chromeos::editor_menu {
 
 namespace {
 
-// TODO(b/301537126): Move this to chromeos_strings.grd after the text is
-// finalised.
-constexpr char16_t kBadgeText[] = u"Experiment";
-
 // TODO(b/302209940): Replace these with color tokens to support dark mode.
 constexpr SkColor kBadgeBackgroundColorStart = SkColorSetRGB(0xB5, 0xC4, 0xFF);
 constexpr SkColor kBadgeBackgroundColorEnd = SkColorSetRGB(0xB3, 0xEF, 0xD4);
 
 }  // namespace
 
-EditorMenuGradientBadge::EditorMenuGradientBadge() = default;
+EditorMenuGradientBadge::EditorMenuGradientBadge()
+    : badge_text_(l10n_util::GetStringUTF16(IDS_EDITOR_MENU_EXPERIMENT_BADGE)) {
+}
 
 EditorMenuGradientBadge::~EditorMenuGradientBadge() = default;
 
 gfx::Size EditorMenuGradientBadge::CalculatePreferredSize() const {
-  return views::BadgePainter::GetBadgeSize(kBadgeText,
+  return views::BadgePainter::GetBadgeSize(badge_text_,
                                            views::Label::GetDefaultFontList());
 }
 
@@ -50,7 +50,7 @@ void EditorMenuGradientBadge::OnPaint(gfx::Canvas* canvas) {
   const gfx::Rect badge_text_bounds(
       gfx::Point(views::BadgePainter::kBadgeInternalPadding,
                  gfx::GetFontCapHeightCenterOffset(primary_font, badge_font)),
-      gfx::GetStringSize(kBadgeText, badge_font));
+      gfx::GetStringSize(badge_text_, badge_font));
 
   // Outset the bounding box for padding.
   gfx::Rect badge_outset_around_text(badge_text_bounds);
@@ -78,7 +78,7 @@ void EditorMenuGradientBadge::OnPaint(gfx::Canvas* canvas) {
   // Draw the badge text.
   const SkColor foreground_color =
       GetColorProvider()->GetColor(ui::kColorBadgeForeground);
-  canvas->DrawStringRect(kBadgeText, badge_font, foreground_color,
+  canvas->DrawStringRect(badge_text_, badge_font, foreground_color,
                          badge_text_bounds);
 }
 

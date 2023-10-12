@@ -42,11 +42,6 @@ namespace chromeos::editor_menu {
 namespace {
 
 constexpr char kWidgetName[] = "EditorMenuPromoCardViewWidget";
-constexpr char16_t kTitleTextPlaceholder[] =
-    u"Editor menu title text placeholder";
-constexpr char16_t kDescriptionTextPlaceholder[] =
-    u"Editor menu description text placeholder text to introduce the editor "
-    u"menu feature";
 
 constexpr int kPromoCardIconSizeDip = 48;
 
@@ -110,7 +105,8 @@ void EditorMenuPromoCardView::RequestFocus() {
 
 void EditorMenuPromoCardView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kDialog;
-  node_data->SetName(kTitleTextPlaceholder);
+  node_data->SetName(
+      l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_TITLE));
 }
 
 void EditorMenuPromoCardView::OnWidgetDestroying(views::Widget* widget) {
@@ -199,8 +195,8 @@ void EditorMenuPromoCardView::InitLayout() {
 
 void EditorMenuPromoCardView::AddTitle(views::View* main_view) {
   title_ = main_view->AddChildView(std::make_unique<views::Label>(
-      kTitleTextPlaceholder, views::style::CONTEXT_DIALOG_TITLE,
-      views::style::STYLE_HEADLINE_5));
+      l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_TITLE),
+      views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_HEADLINE_5));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetMultiLine(true);
   title_->SetEnabledColorId(ui::kColorSysOnSurface);
@@ -208,8 +204,8 @@ void EditorMenuPromoCardView::AddTitle(views::View* main_view) {
 
 void EditorMenuPromoCardView::AddDescription(views::View* main_view) {
   description_ = main_view->AddChildView(std::make_unique<views::Label>(
-      kDescriptionTextPlaceholder, views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::STYLE_BODY_3));
+      l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_DESC),
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_3));
   description_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   description_->SetMultiLine(true);
   description_->SetEnabledColorId(ui::kColorSysOnSurfaceSubtle);
@@ -243,19 +239,18 @@ void EditorMenuPromoCardView::AddButtonBar(views::View* main_view) {
                               weak_factory_.GetWeakPtr(),
                               views::Widget::ClosedReason::kCloseButtonClicked),
           l10n_util::GetStringUTF16(
-              IDS_EDITOR_MENU_PROMO_CARD_VIEW_DISMISS_BUTTON)));
+              IDS_EDITOR_MENU_PROMO_CARD_DISMISS_BUTTON)));
   dismiss_button_->SetStyle(ui::ButtonStyle::kText);
 
-  // Tell me more button.
-  tell_me_more_button_ =
+  // Try it button.
+  try_it_button_ =
       button_bar->AddChildView(std::make_unique<views::MdTextButton>(
           base::BindRepeating(
               &EditorMenuPromoCardView::CloseWidgetWithReason,
               weak_factory_.GetWeakPtr(),
               views::Widget::ClosedReason::kAcceptButtonClicked),
-          l10n_util::GetStringUTF16(
-              IDS_EDITOR_MENU_PROMO_CARD_VIEW_TELL_ME_MORE_BUTTON)));
-  tell_me_more_button_->SetStyle(ui::ButtonStyle::kProminent);
+          l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_TRY_IT_BUTTON)));
+  try_it_button_->SetStyle(ui::ButtonStyle::kProminent);
 }
 
 void EditorMenuPromoCardView::CloseWidgetWithReason(

@@ -24,6 +24,9 @@ class EditorMenuGradientBadge : public views::View {
   // View:
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
+
+ private:
+  const std::u16string badge_text_;
 };
 
 }  // namespace chromeos::editor_menu
