@@ -40,15 +40,4 @@ test(function() {
   });
 }, 'Custom properties with <transform-list> syntax should not be exposed to stable');
 
-test(function() {
-  assert_registration_failed(() => {
-    CSS.registerProperty({
-      name: '--image',
-      syntax: '<image>',
-      initialValue: 'url("a")',
-      inherits: false
-    });
-  });
-}, 'Custom properties with <image> syntax should not be exposed to stable');
-
 </script>
