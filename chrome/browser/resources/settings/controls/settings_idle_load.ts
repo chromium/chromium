@@ -8,7 +8,7 @@
  * loading and rendering of elements that are accessed imperatively. A URL is
  * given that holds the elements to be loaded lazily.
  */
-import {assert} from '//resources/js/assert_ts.js';
+import {assert} from '//resources/js/assert.js';
 import {html, PolymerElement, TemplateInstanceBase, templatize} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';

@@ -13,7 +13,7 @@ import './security_keys_bio_enroll_dialog.js';
 import './security_keys_set_pin_dialog.js';
 import './security_keys_reset_dialog.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

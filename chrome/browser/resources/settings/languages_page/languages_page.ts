@@ -30,7 +30,7 @@ import '../settings_vars.css.js';
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {isWindows} from 'chrome://resources/js/platform.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';

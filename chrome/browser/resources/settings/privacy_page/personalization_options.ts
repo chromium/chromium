@@ -24,7 +24,7 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 import {CrLinkRowElement} from '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from '//resources/js/assert_ts.js';
+import {assert} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
