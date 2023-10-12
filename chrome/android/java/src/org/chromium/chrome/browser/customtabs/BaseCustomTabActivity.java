@@ -461,6 +461,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         BrowserServicesIntentDataProvider intentDataProvider = getIntentDataProvider();
         if (intentDataProvider != null && intentDataProvider.shouldAnimateOnFinish()) {
             mShouldOverridePackage = true;
+            // |mShouldOverridePackage| is used in #getPackageName for |overridePendingTransition|
+            // to pick up the client package name regardless of custom tabs connection.
             overridePendingTransition(intentDataProvider.getAnimationEnterRes(),
                     intentDataProvider.getAnimationExitRes());
             mShouldOverridePackage = false;
