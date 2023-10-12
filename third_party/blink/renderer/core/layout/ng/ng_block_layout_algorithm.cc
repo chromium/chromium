@@ -1524,10 +1524,11 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
                           !child_margin_got_separated &&
                           child_determined_bfc_offset;
   NGBfcOffset child_bfc_offset;
+  NGBoxStrut resolved_margins;
   const NGLayoutResult* layout_result = LayoutNewFormattingContext(
       child, child_break_token, child_data,
       {child_origin_line_offset, child_bfc_offset_estimate}, abort_if_cleared,
-      &child_bfc_offset);
+      &child_bfc_offset, &resolved_margins);
 
   if (!layout_result) {
     DCHECK(abort_if_cleared);
@@ -1572,7 +1573,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
     layout_result = LayoutNewFormattingContext(
         child, child_break_token, child_data,
         {child_origin_line_offset, child_bfc_offset_estimate},
-        /* abort_if_cleared */ false, &child_bfc_offset);
+        /* abort_if_cleared */ false, &child_bfc_offset, &resolved_margins);
   }
 
   if (ConstraintSpace().HasBlockFragmentation()) {
@@ -1604,11 +1605,11 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
                                      previous_inflow_position))
     return NGLayoutResult::kBfcBlockOffsetResolved;
 
-  PropagateBaselineFromBlockChild(physical_fragment, child_data.margins,
+  PropagateBaselineFromBlockChild(physical_fragment, resolved_margins,
                                   logical_offset.block_offset);
 
   container_builder_.AddResult(*layout_result, logical_offset,
-                               child_data.margins);
+                               resolved_margins);
 
   *previous_inflow_position = ComputeInflowPosition(
       *previous_inflow_position, child, child_data,
@@ -1631,7 +1632,8 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
     const NGInflowChildData& child_data,
     NGBfcOffset origin_offset,
     bool abort_if_cleared,
-    NGBfcOffset* out_child_bfc_offset) {
+    NGBfcOffset* out_child_bfc_offset,
+    NGBoxStrut* out_resolved_margins) {
   const auto& style = Style();
   const auto& child_style = child.Style();
   const TextDirection direction = ConstraintSpace().Direction();
@@ -1745,6 +1747,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
     // Now find the fragment's (final) position calculating the auto margins.
     NGBoxStrut auto_margins = child_data.margins;
     LayoutUnit text_align_offset;
+    bool has_auto_margins = false;
     if (child.IsListMarker()) {
       // Deal with marker's margin. It happens only when marker needs to occupy
       // the whole line.
@@ -1768,6 +1771,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
     } else {
       if (child_style.MarginStartUsing(style).IsAuto() ||
           child_style.MarginEndUsing(style).IsAuto()) {
+        has_auto_margins = true;
         ResolveInlineAutoMargins(child_style, style,
                                  child_available_inline_size,
                                  fragment.InlineSize(), &auto_margins);
@@ -1786,7 +1790,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
     // difference.
     NGBfcOffset child_bfc_offset = {LayoutUnit(),
                                     opportunity.rect.BlockStartOffset()};
-    if (ConstraintSpace().Direction() == TextDirection::kLtr) {
+    if (direction == TextDirection::kLtr) {
       LayoutUnit auto_margin_line_left =
           auto_margins.LineLeft(direction) - line_left_margin;
       child_bfc_offset.line_offset =
@@ -1814,7 +1818,28 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
         fragment.InlineSize() > opportunity.rect.InlineSize())
       continue;
 
+    // auto-margins are "fun". To ensure round tripping from getComputedStyle
+    // the used values are relative to the content-box edge, rather than the
+    // opportunity edge.
+    NGBoxStrut resolved_margins = child_data.margins;
+    if (has_auto_margins) {
+      LayoutUnit inline_offset =
+          LogicalFromBfcLineOffset(child_bfc_offset.line_offset,
+                                   container_builder_.BfcLineOffset(),
+                                   fragment.InlineSize(),
+                                   container_builder_.InlineSize(), direction) -
+          BorderScrollbarPadding().inline_start;
+      if (child_style.MarginStartUsing(style).IsAuto()) {
+        resolved_margins.inline_start = inline_offset;
+      }
+      if (child_style.MarginEndUsing(style).IsAuto()) {
+        resolved_margins.inline_end = ChildAvailableSize().inline_size -
+                                      inline_offset - fragment.InlineSize();
+      }
+    }
+
     *out_child_bfc_offset = child_bfc_offset;
+    *out_resolved_margins = resolved_margins;
     return layout_result;
   }
 

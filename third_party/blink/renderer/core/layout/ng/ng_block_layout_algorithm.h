@@ -199,7 +199,8 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
       const NGInflowChildData&,
       NGBfcOffset origin_offset,
       bool abort_if_cleared,
-      NGBfcOffset* out_child_bfc_offset);
+      NGBfcOffset* out_child_bfc_offset,
+      NGBoxStrut* out_resolved_margins);
 
   // Handle an in-flow child.
   // Returns false if we need to abort layout, because a previously unknown BFC
