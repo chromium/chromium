@@ -95,7 +95,4 @@ export class FakeLanguageHelper implements LanguageHelper {
   getCurrentInputMethod(): Promise<string> {
     return Promise.resolve(FIRST_PARTY_INPUT_METHOD_ID_PREFIX + 'xkb:us::eng');
   }
-  getImeLanguagePackStatus(): chrome.inputMethodPrivate.LanguagePackStatus {
-    return chrome.inputMethodPrivate.LanguagePackStatus.UNKNOWN;
-  }
 }
