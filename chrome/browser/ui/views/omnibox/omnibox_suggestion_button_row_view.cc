@@ -335,9 +335,11 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
   }
 
   if (OmniboxFieldTrial::IsActionsUISimplificationEnabled() && first_button) {
+    // Apply a left margin of 4px (rather than zero) in order to make room for
+    // the focus ring that gets rendered around action chips.
     first_button->SetProperty(
         views::kMarginsKey,
-        gfx::Insets::TLBR(0, 0, 0,
+        gfx::Insets::TLBR(0, 4, 0,
                           ChromeLayoutProvider::Get()->GetDistanceMetric(
                               views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
   }

@@ -451,7 +451,7 @@ gfx::Insets OmniboxMatchCellView::GetInsets() const {
         DISTANCE_OMNIBOX_TWO_LINE_CELL_VERTICAL_PADDING);
   }
   const int right_margin = OmniboxFieldTrial::IsActionsUISimplificationEnabled()
-                               ? 11
+                               ? 7
                                : OmniboxMatchCellView::kMarginRight;
   return gfx::Insets::TLBR(vertical_margin, OmniboxMatchCellView::kMarginLeft,
                            vertical_margin, right_margin);
