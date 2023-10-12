@@ -10,9 +10,6 @@ assert(is_chromeos_ash)
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
-    ":cr_camera",
-    ":cr_picture_list",
-    ":cr_picture_pane",
     ":png",
     ":webcam_utils",
   ]
@@ -22,28 +19,4 @@ js_library("png") {
 }
 
 js_library("webcam_utils") {
-}
-
-js_library("cr_picture_types") {
-}
-
-js_library("cr_picture_pane") {
-  deps = [
-    ":cr_camera",
-    ":cr_picture_types",
-    ":png",
-  ]
-}
-
-js_library("cr_camera") {
-  deps = [ ":webcam_utils" ]
-}
-
-js_library("cr_picture_list") {
-  deps = [
-    ":cr_picture_types",
-    ":png",
-    "//ash/webui/common/resources:assert",
-    "//third_party/polymer/v3_0/components-chromium/iron-selector:iron-selector",
-  ]
 }
