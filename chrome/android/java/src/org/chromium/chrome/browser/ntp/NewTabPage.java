@@ -514,7 +514,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 mFeedSurfaceProvider.getTouchEnabledDelegate(), mFeedSurfaceProvider.getUiConfig(),
                 lifecycleDispatcher, uma, mTab.isIncognito(), windowAndroid,
                 mIsNtpAsHomeSurfaceEnabled, mIsSurfacePolishEnabled,
-                mIsSurfacePolishOmniboxColorEnabled);
+                mIsSurfacePolishOmniboxColorEnabled, mIsTablet);
 
         // If new NewTabPage is created via back operations, re-show the single Tab card with the
         // previously tracked Tab.
