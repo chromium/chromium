@@ -97,6 +97,8 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
       chrome::mojom::ImageFormat image_format,
       int32_t quality,
       RequestImageForContextNodeCallback callback) override;
+  void RequestBitmapForContextNode(
+      RequestBitmapForContextNodeCallback callback) override;
   void RequestReloadImageForContextNode() override;
 #if BUILDFLAG(IS_ANDROID)
   void SetCCTClientHeader(const std::string& header) override;

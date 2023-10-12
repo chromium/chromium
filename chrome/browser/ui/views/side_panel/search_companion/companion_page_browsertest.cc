@@ -1726,8 +1726,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
       src_url,
       /*is_image_translate=*/false,
       /*additional_query_params_modified=*/"", thumbnail_data, original_size,
-      downscaled_size,
-      /*image_extension=*/"", content_type);
+      downscaled_size, content_type);
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
 
   WaitForCompanionToBeLoaded();
@@ -1781,8 +1780,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
       src_url,
       /*is_image_translate=*/true,
       /*additional_query_params_modified=*/"", thumbnail_data, original_size,
-      downscaled_size,
-      /*image_extension=*/"", content_type);
+      downscaled_size, content_type);
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
 
   WaitForCompanionToBeLoaded();

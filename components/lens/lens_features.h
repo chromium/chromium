@@ -102,15 +102,6 @@ extern const base::FeatureParam<bool> kDismissLoadingStateOnPrimaryPageChanged;
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<bool> kEnableFullscreenSearch;
 
-// Enables encoding to WebP for image search queries.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kUseWebpInImageSearch;
-
-// Value in range 0-100 that dictates the encoding quality for image search
-// lossy formats, with 100 being the best quality.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<int> kEncodingQualityImageSearch;
-
 // Enables encoding to WebP for region search queries. This param takes
 // precedence over kUseJpegInRegionSearch.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -121,10 +112,15 @@ extern const base::FeatureParam<bool> kUseWebpInRegionSearch;
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<bool> kUseJpegInRegionSearch;
 
-// Value in range 0-100 that dictates the encoding quality for region search
-// lossy formats, with 100 being the best quality.
+// Value in range 0-100 that dictates the encoding quality for jpeg
+// format.
 COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<int> kEncodingQualityRegionSearch;
+extern const base::FeatureParam<int> kEncodingQualityJpeg;
+
+// Value in range 0-100 that dictates the encoding quality for webp
+// format.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<int> kEncodingQualityWebp;
 
 // The URL to send pings for Lens Standalone.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -226,9 +222,13 @@ extern bool UseLensContextMenuItemAlternateText();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsWebpForImageSearchEnabled();
 
-// Get the encoding quality for image search queries.
+// Get the encoding quality for jpeg search queries.
 COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetImageSearchEncodingQuality();
+extern int GetEncodingQualityJpeg();
+
+// Get the encoding quality for webp search queries.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetEncodingQualityWebp();
 
 // Returns whether to use WebP encoding for region search queries.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -237,10 +237,6 @@ extern bool IsWebpForRegionSearchEnabled();
 // Returns whether to use JPEG encoding for region search queries.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsJpegForRegionSearchEnabled();
-
-// Get the encoding quality for region search queries.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetRegionSearchEncodingQuality();
 
 // Returns whether to enable the context menu in the Lens side panel.
 COMPONENT_EXPORT(LENS_FEATURES)

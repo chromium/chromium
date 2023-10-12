@@ -510,6 +510,20 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
                           image_extension, std::move(latency_logs));
 }
 
+void ChromeRenderFrameObserver::RequestBitmapForContextNode(
+    RequestBitmapForContextNodeCallback callback) {
+  WebNode context_node = render_frame()->GetWebFrame()->ContextMenuImageNode();
+  SkBitmap image;
+  if (context_node.IsNull() || !context_node.IsElementNode()) {
+    std::move(callback).Run(image);
+    return;
+  }
+
+  WebElement web_element = context_node.To<WebElement>();
+  image = web_element.ImageContents();
+  std::move(callback).Run(image);
+}
+
 void ChromeRenderFrameObserver::RequestReloadImageForContextNode() {
   WebLocalFrame* frame = render_frame()->GetWebFrame();
   // TODO(dglazkov): This code is clearly in the wrong place. Need

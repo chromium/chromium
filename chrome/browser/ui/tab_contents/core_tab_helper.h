@@ -23,9 +23,18 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
+class SkBitmap;
+
 namespace content {
 struct OpenURLParams;
 }
+
+using DownscaleAndEncodeBitmapCallback = base::OnceCallback<void(
+    const std::vector<unsigned char>& thumbnail_data,
+    const std::string& content_type,
+    const gfx::Size& original_size,
+    const gfx::Size& downscaled_size,
+    const std::vector<lens::mojom::LatencyLogPtr> log_data)>;
 
 // Per-tab class to handle functionality that is core to the operation of tabs.
 class CoreTabHelper : public content::WebContentsObserver,
@@ -50,6 +59,16 @@ class CoreTabHelper : public content::WebContentsObserver,
   static lens::mojom::ImageFormat EncodeImageIntoSearchArgs(
       const gfx::Image& image,
       TemplateURLRef::SearchTermsArgs& search_args);
+
+  // Downscales and encodes the image and sets the content type for the result
+  // image. The resulting format will be jpeg if the image was opaque and webp
+  // otherwise. Returns the vector of image bytes. Public for testing.
+  static void DownscaleAndEncodeBitmap(
+      const SkBitmap& bitmap,
+      int thumbnail_min_area,
+      int thumbnail_max_width,
+      int thumbnail_max_height,
+      DownscaleAndEncodeBitmapCallback callback);
 
   // Open the Lens standalone experience for the image that triggered the
   // context menu. If the google lens supports opening requests in side panel,
@@ -114,19 +133,29 @@ class CoreTabHelper : public content::WebContentsObserver,
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  void DoSearchByImage(
+  // Asynchronously downscales and encodes the image from the context node
+  // before issuing an image search request for the image.
+  void DoSearchByImageWithBitmap(
       mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
           chrome_render_frame,
       const GURL& src_url,
       const std::string& additional_query_params,
       bool use_side_panel,
       bool is_image_translate,
-      const std::string& thumbnail_content_type,
-      const std::vector<uint8_t>& thumbnail_data,
-      const gfx::Size& original_size,
-      const gfx::Size& downscaled_size,
-      const std::string& image_extension,
-      const std::vector<lens::mojom::LatencyLogPtr> latency_logs);
+      int thumbnail_min_area,
+      int thumbnail_max_width,
+      int thumbnail_max_height,
+      const SkBitmap& bitmap);
+
+  void DoSearchByImage(const GURL& src_url,
+                       const std::string& additional_query_params,
+                       bool use_side_panel,
+                       bool is_image_translate,
+                       const std::vector<unsigned char>& thumbnail_data,
+                       const std::string& content_type,
+                       const gfx::Size& original_size,
+                       const gfx::Size& downscaled_size,
+                       const std::vector<lens::mojom::LatencyLogPtr> log_data);
 
   // Wrapper method for fetching template URL service.
   TemplateURLService* GetTemplateURLService();
@@ -162,7 +191,7 @@ class CoreTabHelper : public content::WebContentsObserver,
   // search args.
   void SearchByImageImpl(content::RenderFrameHost* render_frame_host,
                          const GURL& src_url,
-                         int thumbnail_min_size,
+                         int thumbnail_min_area,
                          int thumbnail_max_width,
                          int thumbnail_max_height,
                          const std::string& additional_query_params,

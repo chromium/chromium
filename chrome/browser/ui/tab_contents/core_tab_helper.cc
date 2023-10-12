@@ -13,6 +13,9 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,6 +38,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/common/translate_constants.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
@@ -48,6 +52,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/load_states.h"
 #include "net/http/http_request_headers.h"
+#include "skia/ext/image_operations.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -113,17 +118,17 @@ std::vector<unsigned char> CoreTabHelper::EncodeImage(
     std::string& content_type,
     lens::mojom::ImageFormat& image_format) {
   std::vector<unsigned char> data;
+  // TODO(crbug/1486044): Encode off the main thread.
   if (lens::features::IsWebpForRegionSearchEnabled() &&
       gfx::WebpCodec::Encode(image.AsBitmap(),
-                             lens::features::GetRegionSearchEncodingQuality(),
-                             &data)) {
+                             lens::features::GetEncodingQualityWebp(), &data)) {
     content_type = "image/webp";
     image_format = lens::mojom::ImageFormat::WEBP;
     return data;
   } else if (lens::features::IsJpegForRegionSearchEnabled() &&
-             gfx::JPEGCodec::Encode(
-                 image.AsBitmap(),
-                 lens::features::GetRegionSearchEncodingQuality(), &data)) {
+             gfx::JPEGCodec::Encode(image.AsBitmap(),
+                                    lens::features::GetEncodingQualityJpeg(),
+                                    &data)) {
     content_type = "image/jpeg";
     image_format = lens::mojom::ImageFormat::JPEG;
     return data;
@@ -138,6 +143,81 @@ std::vector<unsigned char> CoreTabHelper::EncodeImage(
   image_format = lens::mojom::ImageFormat::PNG;
   data.assign(image_bytes_begin, image_bytes_end);
   return data;
+}
+
+void CoreTabHelper::DownscaleAndEncodeBitmap(
+    const SkBitmap& bitmap,
+    int thumbnail_min_area,
+    int thumbnail_max_width,
+    int thumbnail_max_height,
+    DownscaleAndEncodeBitmapCallback callback) {
+  gfx::Size original_size;
+  std::string content_type;
+  gfx::Size downscaled_size;
+  std::vector<lens::mojom::LatencyLogPtr> log_data;
+  std::vector<unsigned char> thumbnail_data;
+  if (bitmap.isNull()) {
+    return std::move(callback).Run(thumbnail_data, content_type, original_size,
+                                   downscaled_size, std::move(log_data));
+  }
+
+  original_size = gfx::Size(bitmap.width(), bitmap.height());
+  gfx::SizeF scaled_size = gfx::SizeF(original_size);
+  bool needs_downscale = false;
+
+  if (original_size.GetArea() > thumbnail_min_area) {
+    if (scaled_size.width() > thumbnail_max_width) {
+      needs_downscale = true;
+      scaled_size.Scale(thumbnail_max_width / scaled_size.width());
+    }
+
+    if (scaled_size.height() > thumbnail_max_height) {
+      needs_downscale = true;
+      scaled_size.Scale(thumbnail_max_height / scaled_size.height());
+    }
+  }
+
+  SkBitmap thumbnail;
+  if (needs_downscale) {
+    log_data.push_back(lens::mojom::LatencyLog::New(
+        lens::mojom::Phase::DOWNSCALE_START, original_size, gfx::Size(),
+        lens::mojom::ImageFormat::ORIGINAL, base::Time::Now()));
+    thumbnail = skia::ImageOperations::Resize(
+        bitmap, skia::ImageOperations::RESIZE_GOOD,
+        static_cast<int>(scaled_size.width()),
+        static_cast<int>(scaled_size.height()));
+    downscaled_size = gfx::Size(thumbnail.width(), thumbnail.height());
+    log_data.push_back(lens::mojom::LatencyLog::New(
+        lens::mojom::Phase::DOWNSCALE_END, original_size, downscaled_size,
+        lens::mojom::ImageFormat::ORIGINAL, base::Time::Now()));
+  } else {
+    thumbnail = std::move(bitmap);
+    downscaled_size = gfx::Size(original_size);
+  }
+
+  lens::mojom::ImageFormat encode_target_format;
+  std::vector<unsigned char> encoded_data;
+  log_data.push_back(lens::mojom::LatencyLog::New(
+      lens::mojom::Phase::ENCODE_START, original_size, downscaled_size,
+      lens::mojom::ImageFormat::ORIGINAL, base::Time::Now()));
+  if (thumbnail.isOpaque() &&
+      gfx::JPEGCodec::Encode(
+          thumbnail, lens::features::GetEncodingQualityJpeg(), &encoded_data)) {
+    thumbnail_data.swap(encoded_data);
+    content_type = "image/jpeg";
+    encode_target_format = lens::mojom::ImageFormat::JPEG;
+  } else if (gfx::WebpCodec::Encode(thumbnail,
+                                    lens::features::GetEncodingQualityWebp(),
+                                    &encoded_data)) {
+    thumbnail_data.swap(encoded_data);
+    content_type = "image/webp";
+    encode_target_format = lens::mojom::ImageFormat::WEBP;
+  }
+  log_data.push_back(lens::mojom::LatencyLog::New(
+      lens::mojom::Phase::ENCODE_END, original_size, downscaled_size,
+      encode_target_format, base::Time::Now()));
+  return std::move(callback).Run(thumbnail_data, content_type, original_size,
+                                 downscaled_size, std::move(log_data));
 }
 
 lens::mojom::ImageFormat CoreTabHelper::EncodeImageIntoSearchArgs(
@@ -293,8 +373,7 @@ void CoreTabHelper::SearchByImageImpl(
     companion_helper->ShowCompanionSidePanelForImage(
         /*src_url=*/GURL(), /*is_image_translate=*/false,
         additional_query_params_modified, encoded_image_bytes,
-        image_original_size, image.Size(),
-        /*image_extension=*/std::string(), content_type);
+        image_original_size, image.Size(), content_type);
     return;
   }
 #endif
@@ -321,7 +400,7 @@ void CoreTabHelper::SearchByImageImpl(
 void CoreTabHelper::SearchByImageImpl(
     content::RenderFrameHost* render_frame_host,
     const GURL& src_url,
-    int thumbnail_min_size,
+    int thumbnail_min_area,
     int thumbnail_max_width,
     int thumbnail_max_height,
     const std::string& additional_query_params,
@@ -333,18 +412,11 @@ void CoreTabHelper::SearchByImageImpl(
   // Bind the InterfacePtr into the callback so that it's kept alive until
   // there's either a connection error or a response.
   auto* thumbnail_capturer_proxy = chrome_render_frame.get();
-  thumbnail_capturer_proxy->RequestImageForContextNode(
-      thumbnail_min_size, gfx::Size(thumbnail_max_width, thumbnail_max_height),
-      lens::features::IsWebpForImageSearchEnabled()
-          ? chrome::mojom::ImageFormat::WEBP
-          : chrome::mojom::ImageFormat::JPEG,
-      lens::features::GetImageSearchEncodingQuality(),
-      base::BindOnce(
-          &CoreTabHelper::DoSearchByImage, weak_factory_.GetWeakPtr(),
-          std::move(chrome_render_frame), src_url, additional_query_params,
-          use_side_panel, is_image_translate,
-          lens::features::IsWebpForImageSearchEnabled() ? "image/webp"
-                                                        : "image/jpeg"));
+  thumbnail_capturer_proxy->RequestBitmapForContextNode(base::BindOnce(
+      &CoreTabHelper::DoSearchByImageWithBitmap, weak_factory_.GetWeakPtr(),
+      std::move(chrome_render_frame), src_url, additional_query_params,
+      use_side_panel, is_image_translate, thumbnail_min_area,
+      thumbnail_max_width, thumbnail_max_height));
 }
 
 std::unique_ptr<content::WebContents> CoreTabHelper::SwapWebContents(
@@ -527,23 +599,40 @@ void CoreTabHelper::DidFinishNavigation(
   }
 }
 
-// Handles the image thumbnail for the context node, composes a image search
-// request based on the received thumbnail and opens the request in a new tab.
-void CoreTabHelper::DoSearchByImage(
+void CoreTabHelper::DoSearchByImageWithBitmap(
     mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
         chrome_render_frame,
     const GURL& src_url,
     const std::string& additional_query_params,
     bool use_side_panel,
     bool is_image_translate,
-    const std::string& thumbnail_content_type,
-    const std::vector<uint8_t>& thumbnail_data,
+    int thumbnail_min_area,
+    int thumbnail_max_width,
+    int thumbnail_max_height,
+    const SkBitmap& bitmap) {
+  base::ThreadPool::PostTask(base::BindOnce(
+      &CoreTabHelper::DownscaleAndEncodeBitmap, bitmap, thumbnail_min_area,
+      thumbnail_max_width, thumbnail_max_height,
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         base::BindOnce(&CoreTabHelper::DoSearchByImage,
+                                        weak_factory_.GetWeakPtr(), src_url,
+                                        additional_query_params, use_side_panel,
+                                        is_image_translate))));
+}
+
+void CoreTabHelper::DoSearchByImage(
+    const GURL& src_url,
+    const std::string& additional_query_params,
+    bool use_side_panel,
+    bool is_image_translate,
+    const std::vector<unsigned char>& thumbnail_data,
+    const std::string& content_type,
     const gfx::Size& original_size,
     const gfx::Size& downscaled_size,
-    const std::string& image_extension,
     const std::vector<lens::mojom::LatencyLogPtr> log_data) {
-  if (thumbnail_data.empty())
+  if (thumbnail_data.empty()) {
     return;
+  }
 
   TemplateURLService* template_url_service = GetTemplateURLService();
   const TemplateURL* const default_provider =
@@ -563,8 +652,7 @@ void CoreTabHelper::DoSearchByImage(
   if (companion_helper && IsImageSearchSupportedForCompanion()) {
     companion_helper->ShowCompanionSidePanelForImage(
         src_url, is_image_translate, additional_query_params_modified,
-        thumbnail_data, original_size, downscaled_size, image_extension,
-        thumbnail_content_type);
+        thumbnail_data, original_size, downscaled_size, content_type);
     return;
   }
 #endif
@@ -579,7 +667,7 @@ void CoreTabHelper::DoSearchByImage(
 
   search_args.image_thumbnail_content.assign(thumbnail_data.begin(),
                                              thumbnail_data.end());
-  search_args.image_thumbnail_content_type = thumbnail_content_type;
+  search_args.image_thumbnail_content_type = content_type;
   search_args.image_url = src_url;
   search_args.image_original_size = original_size;
   search_args.additional_query_params = additional_query_params_modified;

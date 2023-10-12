@@ -6,6 +6,7 @@ module chrome.mojom;
 
 import "components/lens/lens_metadata.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "skia/public/mojom/bitmap.mojom";
 import "third_party/blink/public/mojom/window_features/window_features.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -29,6 +30,9 @@ interface ChromeRenderFrame {
   // Reloads the image selected by the most recently opened context menu
   // (if there indeed is an image at that location).
   RequestReloadImageForContextNode();
+
+  // Requests the bitmap selected by the most recently opened context menu.
+  RequestBitmapForContextNode() => (skia.mojom.BitmapN32? bitmap);
 
   // Requests an encoded image selected by the most recently opened context
   // menu. The encoding format is specified as a parameter. If no image is
