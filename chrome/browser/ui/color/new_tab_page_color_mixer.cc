@@ -442,7 +442,7 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned)) {
     if (dark_mode) {
-      mixer[kColorNewTabPageModuleBackground] = {kColorNewTabPageBackground};
+      mixer[kColorNewTabPageModuleBackground] = {gfx::kGoogleGrey800};
     } else {
       mixer[kColorNewTabPageModuleBackground] = {gfx::kGoogleGrey100};
     }
