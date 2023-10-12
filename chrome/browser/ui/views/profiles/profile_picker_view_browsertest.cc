@@ -78,6 +78,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_deletion_observer.h"
+#include "chrome/test/base/profile_destruction_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -2018,6 +2019,58 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                          ->GetProfileAttributesStorage()
                          .GetProfileAttributesWithPath(profile_path));
   EXPECT_TRUE(ProfilePicker::IsOpen());
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, DeleteProfile) {
+  // Create a second profile.
+  base::FilePath other_path = CreateNewProfileWithoutBrowser();
+  Profile* profile =
+      g_browser_process->profile_manager()->GetProfileByPath(other_path);
+  ASSERT_TRUE(profile);
+  // Open the picker.
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+  WaitForLoadStop(GURL("chrome://profile-picker"));
+  ProfilePickerHandler* handler = profile_picker_handler();
+
+  // Simulate profile deletion from the picker.
+  ProfileDestructionWaiter waiter(profile);
+  base::Value::List args;
+  args.Append(base::FilePathToValue(other_path));
+  handler->HandleGetProfileStatistics(args);
+  handler->HandleRemoveProfile(args);
+  waiter.Wait();
+}
+
+// Regression test for https://crbug.com/1488267
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       DeleteProfileFromOwnTab) {
+  // Create a new profile and browser. This is required on Lacros because the
+  // main profile cannot be deleted.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath other_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  Profile& other_profile =
+      profiles::testing::CreateProfileSync(profile_manager, other_path);
+  Browser* other_browser = CreateBrowser(&other_profile);
+
+  // Open the picker in a tab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      other_browser, GURL(chrome::kChromeUIProfilePickerUrl)));
+  content::WebContents* contents =
+      other_browser->tab_strip_model()->GetActiveWebContents();
+  ProfilePickerHandler* handler = contents->GetWebUI()
+                                      ->GetController()
+                                      ->GetAs<ProfilePickerUI>()
+                                      ->GetProfilePickerHandlerForTesting();
+
+  // Simulate profile deletion from the picker.
+  ProfileDestructionWaiter waiter(&other_profile);
+  base::Value::List args;
+  args.Append(base::FilePathToValue(other_profile.GetPath()));
+  handler->HandleGetProfileStatistics(args);
+  handler->HandleRemoveProfile(args);
+  waiter.Wait();
 }
 
 class ProfilePickerEnterpriseCreationFlowBrowserTest
