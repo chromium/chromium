@@ -176,9 +176,7 @@ class PasswordsMediatorTest : public BlockCleanupTest {
 
   FakePasswordsConsumer* consumer() { return consumer_; }
 
-  feature_engagement::test::MockTracker* mockTracker() {
-    return mock_tracker_;
-  };
+  feature_engagement::test::MockTracker* mockTracker() { return mock_tracker_; }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
