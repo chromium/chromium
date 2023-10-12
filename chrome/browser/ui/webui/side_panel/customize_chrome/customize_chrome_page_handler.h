@@ -115,19 +115,19 @@ class CustomizeChromePageHandler
       GetWallpaperSearchResultsCallback callback) override;
 
  private:
-  void LogEvent(NTPLoggingEventType event);
-
   void OnDescriptorsRetrieved(std::unique_ptr<std::string> response_body);
   void OnDescriptorsJsonParsed(data_decoder::DataDecoder::ValueOrError result);
   void WallpaperSearchCallback(
       SearchWallpaperCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult result);
-  void OnGotWallpaperSearchResults(
+  void OnWallpaperSearchResultsRetrieved(
       GetWallpaperSearchResultsCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult result);
   void OnWallpaperSearchResultsDecoded(
       GetWallpaperSearchResultsCallback callback,
       std::vector<SkBitmap> bitmaps);
+
+  void LogEvent(NTPLoggingEventType event);
 
   bool IsCustomLinksEnabled() const;
   bool IsShortcutsVisible() const;
