@@ -12,12 +12,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.Settings;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.FileAccessPermissionHelper;
 import org.chromium.ui.base.WindowAndroid;
@@ -61,7 +61,8 @@ public class SaveBitmapDelegate {
             return;
         }
 
-        boolean needPermissionRequestButBlocked = !BuildInfo.isAtLeastT()
+        boolean needPermissionRequestButBlocked =
+                (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
                 && !mWindowAndroid.hasPermission(permission.WRITE_EXTERNAL_STORAGE)
                 && !mWindowAndroid.canRequestPermission(permission.WRITE_EXTERNAL_STORAGE);
         if (needPermissionRequestButBlocked) {

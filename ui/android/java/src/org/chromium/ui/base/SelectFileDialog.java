@@ -28,7 +28,6 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
@@ -339,7 +338,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             // READ_MEDIA_VIDEO were required. To make matters more interesting, a native Android
             // Media Picker was also introduced at the same time, but it functions without requiring
             // Chrome to request any permission.
-            if (BuildInfo.isAtLeastT()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 if (!preferAndroidMediaPicker()) {
                     if (!window.hasPermission(Manifest.permission.READ_MEDIA_IMAGES)
                             && shouldShowImageTypes()) {
@@ -1417,17 +1416,17 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     }
 
     private static boolean preferAndroidMediaPickerViaGetContent() {
-        return BuildInfo.isAtLeastT() && sPhotoPickerDelegate != null
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && sPhotoPickerDelegate != null
                 && sPhotoPickerDelegate.launchViaActionGetContent();
     }
 
     private static boolean preferAndroidMediaPickerViaPickImage() {
-        return BuildInfo.isAtLeastT() && sPhotoPickerDelegate != null
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && sPhotoPickerDelegate != null
                 && sPhotoPickerDelegate.launchViaActionPickImages();
     }
 
     private static boolean preferAndroidMediaPickerViaPickImagePlus() {
-        return BuildInfo.isAtLeastT() && sPhotoPickerDelegate != null
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && sPhotoPickerDelegate != null
                 && sPhotoPickerDelegate.launchViaActionPickImagesPlus();
     }
 

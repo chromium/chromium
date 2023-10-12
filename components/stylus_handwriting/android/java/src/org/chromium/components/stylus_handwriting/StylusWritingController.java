@@ -5,11 +5,11 @@
 package org.chromium.components.stylus_handwriting;
 
 import android.content.Context;
+import android.os.Build;
 import android.view.PointerIcon;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.content_public.browser.StylusWritingHandler;
 import org.chromium.content_public.browser.WebContents;
 
@@ -65,7 +65,8 @@ public class StylusWritingController {
 
         // The check for Android T is already in isEnabled but we are adding it here too to make
         // lint happy.
-        if (BuildInfo.isAtLeastT() && AndroidStylusWritingHandler.isEnabled(mContext)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && AndroidStylusWritingHandler.isEnabled(mContext)) {
             if (mAndroidHandler == null) {
                 mAndroidHandler = new AndroidStylusWritingHandler(mContext);
             }

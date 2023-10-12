@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.os.Build;
 import android.os.Process;
 import android.text.DynamicLayout;
 import android.text.Layout.Alignment;
@@ -17,7 +18,6 @@ import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
 import android.view.View;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.FileAccessPermissionHelper;
@@ -122,7 +122,7 @@ class QrCodeShareMediator {
 
     /** Returns whether we need to explicitly request a storage permission. */
     private Boolean requiresAdditionalStoragePermission() {
-        return !BuildInfo.isAtLeastT();
+        return (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU);
     }
 
     /** Returns whether the user has granted storage permissions. */

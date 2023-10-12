@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import android.os.Build;
+
 import androidx.annotation.NonNull;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.chrome.browser.browserservices.InstalledWebappRegistrar;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
@@ -63,7 +64,7 @@ public class WebApkActivityCoordinator implements DestroyObserver {
 
         mWebApkUpdateManager.get().updateIfNeeded(storage, mIntentDataProvider);
 
-        if (!BuildInfo.isAtLeastT()) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             return;
         }
 

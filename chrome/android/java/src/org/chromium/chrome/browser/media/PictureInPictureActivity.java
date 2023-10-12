@@ -31,7 +31,6 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.MathUtils;
@@ -430,7 +429,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     static LaunchIntoPipHelper sLaunchIntoPipHelper = new LaunchIntoPipHelper() {
         @Override
         public Bundle build(final Context activityContext, final Rect bounds) {
-            if (!BuildInfo.isAtLeastT()) return null;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return null;
 
             Bundle optionsBundle = null;
             final Rational aspectRatio = new Rational(bounds.width(), bounds.height());

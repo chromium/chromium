@@ -9,7 +9,6 @@ import android.os.Build;
 
 import androidx.core.app.NotificationManagerCompat;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -86,7 +85,7 @@ public class PermissionUtil {
             case ContentSettingsType.AR:
                 return Arrays.copyOf(CAMERA_PERMISSIONS, CAMERA_PERMISSIONS.length);
             case ContentSettingsType.NOTIFICATIONS:
-                if (BuildInfo.isAtLeastT()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     return Arrays.copyOf(NOTIFICATION_PERMISSIONS_POST_T,
                             NOTIFICATION_PERMISSIONS_POST_T.length);
                 }

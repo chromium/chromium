@@ -48,7 +48,6 @@ import androidx.fragment.app.Fragment;
 import androidx.webkit.WebViewClientCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
@@ -87,7 +86,7 @@ public class WebViewBrowserFragment extends Fragment {
         sPermissions = new HashMap<>();
         sPermissions.put(RESOURCE_GEO, Manifest.permission.ACCESS_FINE_LOCATION);
         sPermissions.put(RESOURCE_FILE_URL, Manifest.permission.READ_EXTERNAL_STORAGE);
-        if (BuildInfo.isAtLeastT()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             sPermissions.put(RESOURCE_IMAGES_URL, Manifest.permission.READ_MEDIA_IMAGES);
             sPermissions.put(RESOURCE_VIDEO_URL, Manifest.permission.READ_MEDIA_VIDEO);
         }
