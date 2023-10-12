@@ -9807,14 +9807,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kNetworkServiceInProcess)},
 #endif
 
-    {"broker-file-operations-on-disk-cache-in-network-service",
-     flag_descriptions::kBrokerFileOperationsOnDiskCacheInNetworkServiceName,
-     flag_descriptions::
-         kBrokerFileOperationsOnDiskCacheInNetworkServiceDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         features::kBrokerFileOperationsOnDiskCacheInNetworkService)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"enable-commerce-hint-android",
      flag_descriptions::kCommerceHintAndroidName,
