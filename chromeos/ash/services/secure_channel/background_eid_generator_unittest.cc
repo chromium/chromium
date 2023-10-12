@@ -39,9 +39,6 @@ const std::string kSecondSeed = "secondSeed";
 const std::string kThirdSeed = "thirdSeed";
 const std::string kFourthSeed = "fourthSeed";
 
-const std::string kDeviceId1 = "deviceId1";
-const std::string kDeviceId2 = "deviceId2";
-
 cryptauth::BeaconSeed CreateBeaconSeed(const std::string& data,
                                        const int64_t start_timestamp_ms,
                                        const int64_t end_timestamp_ms) {
@@ -231,8 +228,8 @@ TEST_F(SecureChannelBackgroundEidGeneratorTest,
 
 // Test the case where the account has other devices, but their beacon seeds
 // don't match the incoming advertisement. |beacon_seeds_[0]| corresponds to
-// |kDeviceId1|. Since |kDeviceId1| is not present in the device ids passed to
-// IdentifyRemoteDeviceByAdvertisement(), no match is
+// |test_remote_devices_[1]|. Since |test_remote_devices_[1]| is not present in
+// the device ids passed to IdentifyRemoteDeviceByAdvertisement(), no match is
 // expected to be found.
 TEST_F(SecureChannelBackgroundEidGeneratorTest,
        IdentifyRemoteDeviceByAdvertisement_NoMatchingRemoteDevices) {
