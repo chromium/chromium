@@ -470,8 +470,7 @@ void ReadAnythingAppController::Distill() {
 
   model_.set_requires_distillation(false);
 
-  ui::AXSerializableTree* tree =
-      model_.GetTreeFromId(model_.active_tree_id()).get();
+  ui::AXSerializableTree* tree = model_.GetTreeFromId(model_.active_tree_id());
   std::unique_ptr<ui::AXTreeSource<const ui::AXNode*>> tree_source(
       tree->CreateTreeSource());
   ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>
@@ -526,10 +525,8 @@ void ReadAnythingAppController::OnAXTreeDistilled(
 
   // AXNode's language code is BCP 47. Only the base language is needed to
   // record the metric.
-  std::string language = model_.GetTreeFromId(model_.active_tree_id())
-                             .get()
-                             ->root()
-                             ->GetLanguage();
+  std::string language =
+      model_.GetTreeFromId(model_.active_tree_id())->root()->GetLanguage();
   if (!language.empty()) {
     base::UmaHistogramSparse(
         string_constants::kLanguageHistogramName,
@@ -701,8 +698,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
-  ui::AXSerializableTree* tree =
-      model_.GetTreeFromId(model_.active_tree_id()).get();
+  ui::AXSerializableTree* tree = model_.GetTreeFromId(model_.active_tree_id());
   DCHECK(tree->root());
   return tree->root()->id();
 }

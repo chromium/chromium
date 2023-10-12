@@ -12,6 +12,7 @@
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_selection.h"
+#include "ui/accessibility/ax_tree_manager.h"
 
 namespace ui {
 class AXNode;
@@ -136,8 +137,7 @@ class ReadAnythingAppModel {
   // clears their selection or selects content inside the distilled content.
   void ComputeDisplayNodeIdsForDistilledTree();
 
-  const std::unique_ptr<ui::AXSerializableTree>& GetTreeFromId(
-      ui::AXTreeID tree_id) const;
+  ui::AXSerializableTree* GetTreeFromId(ui::AXTreeID tree_id) const;
   void AddTree(ui::AXTreeID tree_id,
                std::unique_ptr<ui::AXSerializableTree> tree);
 
@@ -156,7 +156,7 @@ class ReadAnythingAppModel {
   std::map<ui::AXTreeID, std::vector<ui::AXTreeUpdate>>&
   GetPendingUpdatesForTesting();
 
-  std::map<ui::AXTreeID, std::unique_ptr<ui::AXSerializableTree>>*
+  std::map<ui::AXTreeID, std::unique_ptr<ui::AXTreeManager>>*
   GetTreesForTesting();
 
   void EraseTreeForTesting(ui::AXTreeID tree_id);
@@ -195,8 +195,8 @@ class ReadAnythingAppModel {
   ui::AXNode* GetParentForSelection(ui::AXNode* node);
 
   // State.
-  // AXTrees of web contents in the browser’s tab strip.
-  std::map<ui::AXTreeID, std::unique_ptr<ui::AXSerializableTree>> trees_;
+  // Store AXTrees of web contents in the browser's tab strip as AXTreeManagers.
+  std::map<ui::AXTreeID, std::unique_ptr<ui::AXTreeManager>> tree_managers_;
 
   // The AXTreeID of the currently active web contents.
   ui::AXTreeID active_tree_id_ = ui::AXTreeIDUnknown();

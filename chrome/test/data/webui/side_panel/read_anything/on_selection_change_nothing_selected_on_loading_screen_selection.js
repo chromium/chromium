@@ -16,11 +16,18 @@
       document.querySelector('read-anything-app').shadowRoot;
   const emptyState = readAnythingApp.getElementById('empty-state-container');
 
-  let selectionChanged = false;
-  chrome.readingMode.onSelectionChange =
-      (_anchorNodeId, _anchorOffset, _focusNodeId, _focusOffset) => {
-        selectionChanged = true;
-      };
+  let result = true;
+  const assertEquals = (actual, expected) => {
+    const isEqual = actual === expected;
+    if (!isEqual) {
+      console.error(
+          'Expected: ' + JSON.stringify(expected) + ', ' +
+          'Actual: ' + JSON.stringify(actual));
+    }
+    result = result && isEqual;
+    return isEqual;
+  };
+
 
   const range = new Range();
   range.setStartBefore(emptyState);
@@ -31,7 +38,14 @@
 
   return new Promise(resolve => {
     setTimeout(() => {
-      resolve(!selectionChanged);
+      const retrieved_selection = readAnythingApp.getSelection();
+      assertEquals(retrieved_selection.rangeCount, 0);
+      assertEquals(retrieved_selection.anchorNode, null);
+      assertEquals(retrieved_selection.focusNode, null);
+      assertEquals(retrieved_selection.anchorOffset, 0);
+      assertEquals(retrieved_selection.anchorOffset, 0);
+      assertEquals(retrieved_selection.focusOffset, 0);
+      resolve(result);
     }, 1000);
   });
 })();

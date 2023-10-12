@@ -308,26 +308,29 @@ bool ReadAnythingAppModel::SelectionInsideDisplayNodes() {
          base::Contains(display_node_ids_, end_node_id_);
 }
 
-const std::unique_ptr<ui::AXSerializableTree>&
-ReadAnythingAppModel::GetTreeFromId(ui::AXTreeID tree_id) const {
+ui::AXSerializableTree* ReadAnythingAppModel::GetTreeFromId(
+    ui::AXTreeID tree_id) const {
   DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
   DCHECK(ContainsTree(tree_id));
-  return trees_.at(tree_id);
+  return static_cast<ui::AXSerializableTree*>(
+      tree_managers_.at(tree_id)->ax_tree());
 }
 
 bool ReadAnythingAppModel::ContainsTree(ui::AXTreeID tree_id) const {
-  return base::Contains(trees_, tree_id);
+  return base::Contains(tree_managers_, tree_id);
 }
 
 void ReadAnythingAppModel::AddTree(
     ui::AXTreeID tree_id,
     std::unique_ptr<ui::AXSerializableTree> tree) {
   DCHECK(!ContainsTree(tree_id));
-  trees_[tree_id] = std::move(tree);
+  std::unique_ptr<ui::AXTreeManager> manager =
+      std::make_unique<ui::AXTreeManager>(std::move(tree));
+  tree_managers_[tree_id] = std::move(manager);
 }
 
 void ReadAnythingAppModel::EraseTree(ui::AXTreeID tree_id) {
-  trees_.erase(tree_id);
+  tree_managers_.erase(tree_id);
 
   // Ensure any pending updates associated with the erased tree are removed.
   pending_updates_map_.erase(tree_id);
@@ -366,8 +369,8 @@ void ReadAnythingAppModel::UnserializeUpdates(
     return;
   }
   DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
-  DCHECK(base::Contains(trees_, tree_id));
-  ui::AXSerializableTree* tree = trees_[tree_id].get();
+  DCHECK(base::Contains(tree_managers_, tree_id));
+  ui::AXSerializableTree* tree = GetTreeFromId(tree_id);
   CHECK(tree);
   // Try to merge updates. If the updates are mergeable, MergeAXTreeUpdates will
   // return true and merge_updates_out will contain the updates. Otherwise, if
@@ -426,7 +429,8 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
 void ReadAnythingAppModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
   // OnAXTreeDestroyed is called whenever the AXActionHandler in the browser
   // learns that an AXTree was destroyed. This could be from any tab, not just
-  // the active one; therefore many tree_ids will not be found in trees_.
+  // the active one; therefore many tree_ids will not be found in
+  // tree_managers_.
   if (!ContainsTree(tree_id)) {
     return;
   }
@@ -453,7 +457,7 @@ void ReadAnythingAppModel::SetActiveUkmSourceId(ukm::SourceId source_id) {
 }
 
 ui::AXNode* ReadAnythingAppModel::GetAXNode(ui::AXNodeID ax_node_id) const {
-  ui::AXSerializableTree* tree = GetTreeFromId(active_tree_id_).get();
+  ui::AXSerializableTree* tree = GetTreeFromId(active_tree_id_);
   return tree->GetFromId(ax_node_id);
 }
 
@@ -514,9 +518,9 @@ ReadAnythingAppModel::GetPendingUpdatesForTesting() {
   return pending_updates_map_;
 }
 
-std::map<ui::AXTreeID, std::unique_ptr<ui::AXSerializableTree>>*
+std::map<ui::AXTreeID, std::unique_ptr<ui::AXTreeManager>>*
 ReadAnythingAppModel::GetTreesForTesting() {
-  return &trees_;
+  return &tree_managers_;
 }
 
 void ReadAnythingAppModel::EraseTreeForTesting(ui::AXTreeID tree_id) {

@@ -1442,15 +1442,11 @@ TEST_F(ReadAnythingAppControllerTest, Selection_IgnoredNode) {
   AccessibilityEventReceived({update_2});
   OnAXTreeDistilled({});
 
-  // We want to check that no crash occurs in this case. These node ids and
-  // offset are incorrect, they should be 2, 3, 0, and 5 (5 is the length of the
-  // world "Hello"). But because we don't have an AXTreeManager in the test,
-  // AXSelection::ToUnignoredSelection() exits early without calculating the
-  // actual ignored selection.
-  EXPECT_EQ(2, StartNodeId());
-  EXPECT_EQ(4, EndNodeId());
-  EXPECT_EQ(0, StartOffset());
-  EXPECT_EQ(0, EndOffset());
+  EXPECT_EQ(0, StartNodeId());
+  EXPECT_EQ(0, EndNodeId());
+  EXPECT_EQ(-1, StartOffset());
+  EXPECT_EQ(-1, EndOffset());
+  EXPECT_EQ(false, HasSelection());
 }
 
 TEST_F(ReadAnythingAppControllerTest, Selection_IsCollapsed) {
