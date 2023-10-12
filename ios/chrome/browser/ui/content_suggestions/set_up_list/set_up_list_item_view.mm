@@ -295,6 +295,10 @@ struct ViewConfig {
   } else {
     label.textColor = [UIColor colorNamed:kTextPrimaryColor];
   }
+  [label
+      setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
+                                      forAxis:UILayoutConstraintAxisVertical];
+
   return label;
 }
 
@@ -311,6 +315,10 @@ struct ViewConfig {
   if (_complete) {
     label.attributedText = Strikethrough(label.text);
   }
+  [label
+      setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
+                                      forAxis:UILayoutConstraintAxisVertical];
+
   return label;
 }
 
