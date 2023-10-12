@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PERIPHERAL_DATA_ACCESS_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PERIPHERAL_DATA_ACCESS_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PRIVACY_PERIPHERAL_DATA_ACCESS_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PRIVACY_PERIPHERAL_DATA_ACCESS_HANDLER_H_
 
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
@@ -52,4 +52,4 @@ class PeripheralDataAccessHandler : public ::settings::SettingsPageUIHandler {
 
 }  // namespace ash::settings
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PERIPHERAL_DATA_ACCESS_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PRIVACY_PERIPHERAL_DATA_ACCESS_HANDLER_H_
