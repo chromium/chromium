@@ -101,7 +101,7 @@ StyleContainmentScope* FindCommonAncestor(StyleContainmentScope* scope1,
   if (!scope2) {
     return scope1;
   }
-  HeapVector<StyleContainmentScope*> ancestors1, ancestors2;
+  HeapVector<Member<StyleContainmentScope>> ancestors1, ancestors2;
   for (StyleContainmentScope* it = scope1; it; it = it->Parent()) {
     if (it == scope2) {
       return scope2;

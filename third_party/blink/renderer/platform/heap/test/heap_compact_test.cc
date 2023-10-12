@@ -57,7 +57,7 @@ using IntDeque = blink::HeapDeque<blink::Member<IntWrapper>>;
 using IntMap = blink::HeapHashMap<blink::Member<IntWrapper>, int>;
 // TODO(sof): decide if this ought to be a global trait specialization.
 // (i.e., for HeapHash*<T>.)
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(IntMap)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(IntVector)
 
 namespace blink {
 
@@ -104,37 +104,45 @@ TEST_F(HeapCompactTest, CompactHashMap) {
     EXPECT_EQ(k.key->Value(), 100 - k.value);
 }
 
-TEST_F(HeapCompactTest, CompactVectorPartHashMap) {
+TEST_F(HeapCompactTest, CompactVectorOfVector) {
   ClearOutOldGarbage();
 
-  using IntMapVector = HeapVector<IntMap>;
+  using IntVectorVector = HeapVector<IntVector>;
 
-  Persistent<IntMapVector> int_map_vector =
-      MakeGarbageCollected<IntMapVector>();
+  Persistent<IntVectorVector> int_vector_vector =
+      MakeGarbageCollected<IntVectorVector>();
   for (size_t i = 0; i < 10; ++i) {
-    IntMap map;
+    IntVector vector;
     for (wtf_size_t j = 0; j < 10; ++j) {
       IntWrapper* val = IntWrapper::Create(j);
-      map.insert(val, 10 - j);
+      vector.push_back(val);
     }
-    int_map_vector->push_back(map);
+    int_vector_vector->push_back(vector);
   }
 
-  EXPECT_EQ(10u, int_map_vector->size());
-  for (auto map : *int_map_vector) {
-    EXPECT_EQ(10u, map.size());
-    for (auto k : map) {
-      EXPECT_EQ(k.key->Value(), 10 - k.value);
+  EXPECT_EQ(10u, int_vector_vector->size());
+  {
+    int i = 0;
+    for (auto vector : *int_vector_vector) {
+      EXPECT_EQ(10u, vector.size());
+      for (auto item : vector) {
+        EXPECT_EQ(item->Value(), i % 10);
+        i++;
+      }
     }
   }
 
   PerformHeapCompaction();
 
-  EXPECT_EQ(10u, int_map_vector->size());
-  for (auto map : *int_map_vector) {
-    EXPECT_EQ(10u, map.size());
-    for (auto k : map) {
-      EXPECT_EQ(k.key->Value(), 10 - k.value);
+  {
+    int i = 0;
+    EXPECT_EQ(10u, int_vector_vector->size());
+    for (auto vector : *int_vector_vector) {
+      EXPECT_EQ(10u, vector.size());
+      for (auto item : vector) {
+        EXPECT_EQ(item->Value(), i % 10);
+        i++;
+      }
     }
   }
 }

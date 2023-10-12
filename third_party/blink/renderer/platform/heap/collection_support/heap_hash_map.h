@@ -36,6 +36,11 @@ class HeapHashMap final
   }
 
  private:
+  template <typename T>
+  static constexpr bool IsValidNonTraceableType() {
+    return !WTF::IsTraceable<T>::value && !WTF::IsPointerToGced<T>::value;
+  }
+
   static constexpr void CheckType() {
     static_assert(std::is_trivially_destructible<HeapHashMap>::value,
                   "HeapHashMap must be trivially destructible.");
@@ -44,12 +49,12 @@ class HeapHashMap final
         "For hash maps without traceable elements, use HashMap<> "
         "instead of HeapHashMap<>.");
     static_assert(WTF::IsMemberOrWeakMemberType<KeyArg>::value ||
-                      !WTF::IsTraceable<KeyArg>::value,
+                      IsValidNonTraceableType<KeyArg>(),
                   "HeapHashMap supports only Member, WeakMember and "
                   "non-traceable types as keys.");
     static_assert(
         WTF::IsMemberOrWeakMemberType<MappedArg>::value ||
-            !WTF::IsTraceable<MappedArg>::value ||
+            IsValidNonTraceableType<MappedArg>() ||
             WTF::IsSubclassOfTemplate<MappedArg, v8::TracedReference>::value,
         "HeapHashMap supports only Member, WeakMember, "
         "TraceWrapperV8Reference and "

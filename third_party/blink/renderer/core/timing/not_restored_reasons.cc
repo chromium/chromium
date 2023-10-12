@@ -8,13 +8,14 @@
 
 namespace blink {
 
-NotRestoredReasons::NotRestoredReasons(String prevented,
-                                       String src,
-                                       String id,
-                                       String name,
-                                       String url,
-                                       Vector<String>* reasons,
-                                       HeapVector<NotRestoredReasons>* children)
+NotRestoredReasons::NotRestoredReasons(
+    String prevented,
+    String src,
+    String id,
+    String name,
+    String url,
+    Vector<String>* reasons,
+    HeapVector<Member<NotRestoredReasons>>* children)
     : prevented_(prevented), src_(src), id_(id), name_(name), url_(url) {
   if (reasons) {
     for (auto reason : *reasons) {
@@ -22,7 +23,7 @@ NotRestoredReasons::NotRestoredReasons(String prevented,
     }
   }
   if (children) {
-    for (NotRestoredReasons& child : *children) {
+    for (auto& child : *children) {
       children_.push_back(child);
     }
   }

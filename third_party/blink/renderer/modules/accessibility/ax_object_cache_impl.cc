@@ -4415,7 +4415,7 @@ bool AXObjectCacheImpl::SerializeEntireTree(size_t max_node_count,
   // or a partial accessibility tree. AXTreeSerializer is stateful, but the
   // first time you serialize from a brand-new tree you're guaranteed to get a
   // complete tree.
-  ui::AXTreeSerializer<AXObject*, HeapVector<AXObject*>> serializer(
+  ui::AXTreeSerializer<AXObject*, HeapVector<Member<AXObject>>> serializer(
       tree_source);
 
   if (max_node_count)

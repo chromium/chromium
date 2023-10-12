@@ -335,7 +335,7 @@ NotRestoredReasons* PerformanceNavigationTiming::BuildNotRestoredReasons(
   }
   String url;
   Vector<String> reasons;
-  HeapVector<NotRestoredReasons> children;
+  HeapVector<Member<NotRestoredReasons>> children;
   if (nrr->same_origin_details) {
     url = nrr->same_origin_details->url;
     for (const auto& reason : nrr->same_origin_details->reasons) {
@@ -345,7 +345,7 @@ NotRestoredReasons* PerformanceNavigationTiming::BuildNotRestoredReasons(
       NotRestoredReasons* nrr_child = BuildNotRestoredReasons(child);
       // Reasons in children vector should never be null.
       CHECK(nrr_child);
-      children.push_back(*nrr_child);
+      children.push_back(nrr_child);
     }
   }
 

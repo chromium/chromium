@@ -23,7 +23,7 @@ class CORE_EXPORT NotRestoredReasons : public ScriptWrappable {
                               String name,
                               String url,
                               Vector<String>* reasons,
-                              HeapVector<NotRestoredReasons>* children);
+                              HeapVector<Member<NotRestoredReasons>>* children);
 
   NotRestoredReasons(const NotRestoredReasons&);
 

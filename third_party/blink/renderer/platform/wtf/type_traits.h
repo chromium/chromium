@@ -215,6 +215,24 @@ struct IsStackAllocatedType<T,
                             std::void_t<typename T::IsStackAllocatedTypeMarker>>
     : std::true_type {};
 
+template <typename T>
+struct IsPointerToGced {
+ private:
+  typedef char YesType;
+  struct NoType {
+    char padding[8];
+  };
+
+  template <typename X,
+            typename = std::enable_if_t<WTF::IsGarbageCollectedType<X>::value>>
+  static YesType SubclassCheck(X**);
+  static NoType SubclassCheck(...);
+  static T* t_;
+
+ public:
+  static const bool value = sizeof(SubclassCheck(t_)) == sizeof(YesType);
+};
+
 }  // namespace WTF
 
 using WTF::IsGarbageCollectedType;

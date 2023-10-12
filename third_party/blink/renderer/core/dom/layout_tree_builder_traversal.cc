@@ -377,8 +377,8 @@ int LayoutTreeBuilderTraversal::ComparePreorderTreePosition(const Node& node1,
   if (node1 == node2) {
     return 0;
   }
-  HeapVector<const Node*> ancestors1;
-  HeapVector<const Node*> ancestors2;
+  HeapVector<Member<const Node>> ancestors1;
+  HeapVector<Member<const Node>> ancestors2;
   for (const Node* anc1 = &node1; anc1; anc1 = Parent(*anc1)) {
     ancestors1.emplace_back(anc1);
   }

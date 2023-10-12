@@ -284,7 +284,7 @@ SelectorStatisticsRuleMap& GetSelectorStatisticsRuleMap() {
 void AggregateRulePerfData(
     const TreeScope* tree_scope_containing_rule,
     const StyleEngine& style_engine,
-    const HeapVector<RulePerfDataPerRequest>& rules_statistics) {
+    const Vector<RulePerfDataPerRequest>& rules_statistics) {
   SelectorStatisticsRuleMap& map = GetSelectorStatisticsRuleMap();
   for (const auto& rule_stats : rules_statistics) {
     const RuleData* rule = rule_stats.rule;

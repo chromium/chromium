@@ -24,7 +24,7 @@ class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
   using BaseVector = Vector<T, inlineCapacity, HeapAllocator>;
 
  public:
-  HeapVector() = default;
+  HeapVector() { CheckType(); }
 
   explicit HeapVector(wtf_size_t size) : BaseVector(size) { CheckType(); }
 
@@ -105,16 +105,19 @@ class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
     static_assert(
         std::is_trivially_destructible<HeapVector>::value || inlineCapacity,
         "HeapVector must be trivially destructible.");
-    static_assert(WTF::IsTraceable<T>::value,
-                  "For vectors without traceable elements, use Vector<> "
-                  "instead of HeapVector<>.");
     static_assert(!WTF::IsWeak<T>::value,
                   "Weak types are not allowed in HeapVector.");
     static_assert(
         !WTF::IsGarbageCollectedType<T>::value || IsHeapVector<T>::value,
         "GCed types should not be inlined in a HeapVector.");
-    static_assert(WTF::IsTraceableInCollectionTrait<VectorTraits<T>>::value,
-                  "Type must be traceable in collection");
+    static_assert(!WTF::IsPointerToGced<T>::value,
+                  "Don't use raw pointers or reference to garbage collected "
+                  "types in HeapVector. Use Member<> instead.");
+
+    // HeapVector may hold non-traceable types. This is useful for vectors held
+    // by garbage collected objects such that the vectors' backing stores are
+    // accounted as memory held by the GC. HeapVectors of non-traceable types
+    // should only be used as fields of garbage collected objects.
   }
 };
 
