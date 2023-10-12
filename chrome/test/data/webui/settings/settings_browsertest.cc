@@ -587,6 +587,12 @@ IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, TrackingProtectionSettings) {
           "runMochaSuite('TrackingProtectionSettings')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest,
+                       TrackingProtectionSettingsRollbackNotice) {
+  RunTest("settings/cookies_page_test.js",
+          "runMochaSuite('TrackingProtectionSettingsRollbackNotice')");
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 using SettingsLanguagePageTest = SettingsBrowserTest;
 

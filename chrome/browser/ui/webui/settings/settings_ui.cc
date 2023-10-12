@@ -24,6 +24,7 @@
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -488,6 +489,13 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "is3pcdCookieSettingsRedesignEnabled",
       TrackingProtectionSettingsFactory::GetForProfile(profile)
           ->IsTrackingProtection3pcdEnabled());
+  auto* onboarding_service =
+      TrackingProtectionOnboardingFactory::GetForProfile(profile);
+  html_source->AddBoolean(
+      "showTrackingProtectionSettingsRollbackNotice",
+      onboarding_service && onboarding_service->IsOffboarded() &&
+          base::FeatureList::IsEnabled(
+              privacy_sandbox::kTrackingProtectionSettingsPageRollbackNotice));
 
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());

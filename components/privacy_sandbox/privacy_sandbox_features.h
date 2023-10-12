@@ -169,6 +169,10 @@ BASE_DECLARE_FEATURE(kPrivacySandboxProactiveTopicsBlocking);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionOnboardingForceEligibility);
 
+// Enables showing the rollback notice for Tracking Protection in settings.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kTrackingProtectionSettingsPageRollbackNotice);
+
 #if BUILDFLAG(IS_ANDROID)
 // Forces Tracking Protection Onboarding notice to be shown on all kind of pages
 // (not only the ones with secure connection).

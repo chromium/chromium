@@ -74,6 +74,7 @@ suite('CookiesPageTest', function() {
     assertFalse(isChildVisible(page, '#blockExceptionsList'));
 
     assertFalse(isChildVisible(page, '#clearOnExit'));
+    assertFalse(isChildVisible(page, '#rollbackNotice'));
 
     assertTrue(isChildVisible(page, '#doNotTrack'));
     // TODO(b/296212999): Remove after b/296212999 is launched.
@@ -859,5 +860,30 @@ suite('TrackingProtectionSettings', function() {
     assertEquals(
         page.getPref('tracking_protection.block_all_3pc_toggle_enabled.value'),
         true);
+  });
+});
+
+suite('TrackingProtectionSettingsRollbackNotice', function() {
+  let page: SettingsCookiesPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      showTrackingProtectionSettingsRollbackNotice: true,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-cookies-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    flush();
+  });
+
+  test('RollbackNoticeDisplayed', function() {
+    assertTrue(isChildVisible(page, '#rollbackNotice'));
   });
 });

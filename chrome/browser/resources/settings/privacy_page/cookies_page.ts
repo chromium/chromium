@@ -140,6 +140,12 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         value: () =>
             loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled'),
       },
+
+      showTrackingProtectionRollbackNotice_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean(
+            'showTrackingProtectionSettingsRollbackNotice'),
+      },
     };
   }
 
