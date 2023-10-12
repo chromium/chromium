@@ -797,60 +797,6 @@ MigrationToOSCrypt MigrateToOSCryptTheOldWay(IsAccountStore is_account_store,
   return MigrationToOSCrypt::kSuccess;
 }
 
-MigrationToOSCrypt MigrateToOSCryptWithSingleQuery(
-    IsAccountStore is_account_store,
-    sql::Database* db) {
-  // Obtain all passwords from the keychain.
-  std::unordered_map<std::string, std::u16string> key_password_pairs;
-  OSStatus retrieval_status = GetAllPasswordsFromKeychain(&key_password_pairs);
-  if (retrieval_status != errSecSuccess) {
-    LogKeychainError(is_account_store, retrieval_status);
-    return MigrationToOSCrypt::kFailedToDecryptFromKeychain;
-  }
-
-  sql::Statement get_passwords_statement(
-      db->GetUniqueStatement("SELECT id, password_value FROM logins"));
-
-  int deleted_passwords = 0, migrated_passwords = 0;
-  // Update each password_value with the new BLOB.
-  while (get_passwords_statement.Step()) {
-    int id = get_passwords_statement.ColumnInt(0);
-    std::string keychain_identifier = get_passwords_statement.ColumnString(1);
-    // If keychain_identifier is empty it means blocked or federated form.
-    // Simply skip this entry.
-    if (keychain_identifier.empty()) {
-      continue;
-    }
-
-    auto password_iterator = key_password_pairs.find(keychain_identifier);
-    // Password no longer exists in the keychain, meaning it's lost forever.
-    // In this case delete the entry from the database and continue with
-    // migration.
-    if (password_iterator == key_password_pairs.end()) {
-      if (!DeletePassword(db, id)) {
-        return MigrationToOSCrypt::kFailedToDelete;
-      }
-      deleted_passwords++;
-      continue;
-    }
-
-    // Encrypt password using OSCrypt.
-    std::string encrypted_password;
-    if (LoginDatabase::EncryptedString(password_iterator->second,
-                                       &encrypted_password) !=
-        LoginDatabase::ENCRYPTION_RESULT_SUCCESS) {
-      return MigrationToOSCrypt::kFailedToEncrypt;
-    }
-    // Updated password_value in the database.
-    if (!UpdatePassword(db, id, encrypted_password)) {
-      return MigrationToOSCrypt::kFailedToUpdate;
-    }
-    migrated_passwords++;
-  }
-  LogMigratedDeletedStats(is_account_store, deleted_passwords,
-                          migrated_passwords);
-  return MigrationToOSCrypt::kSuccess;
-}
 #endif
 
 // Call this after having called InitializeBuilders(), to migrate the database
@@ -981,13 +927,7 @@ bool MigrateDatabase(unsigned current_version,
       return false;
     }
 
-    MigrationToOSCrypt status;
-    if (base::FeatureList::IsEnabled(
-            features::kOneReadLoginDatabaseMigration)) {
-      status = MigrateToOSCryptWithSingleQuery(is_account_store, db);
-    } else {
-      status = MigrateToOSCryptTheOldWay(is_account_store, db);
-    }
+    MigrationToOSCrypt status = MigrateToOSCryptTheOldWay(is_account_store, db);
     std::move(record_completion_metrics).Run(status);
 
     if (status != MigrationToOSCrypt::kSuccess) {
