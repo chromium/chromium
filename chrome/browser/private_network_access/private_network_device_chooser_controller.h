@@ -14,7 +14,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/private_network_access/chrome_private_network_device_chooser.h"
 #include "components/permissions/chooser_controller.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "third_party/blink/public/mojom/private_network_device/private_network_device.mojom.h"
@@ -24,16 +23,22 @@ namespace content {
 class RenderFrameHost;
 }
 
+class PrivateNetworkDevicePermissionContext;
+
 // PrivateNetworkDeviceChooserController creates a chooser for Private Network
 // Device.
 class PrivateNetworkDeviceChooserController
     : public permissions::ChooserController {
  public:
+  using DoneCallback = base::OnceCallback<void(
+      PrivateNetworkDevicePermissionContext* permission_context,
+      const url::Origin&,
+      const blink::mojom::PrivateNetworkDevice&,
+      bool)>;
   PrivateNetworkDeviceChooserController(
       content::RenderFrameHost* render_frame_host,
       blink::mojom::PrivateNetworkDevicePtr device,
-      network::mojom::URLLoaderNetworkServiceObserver::
-          OnPrivateNetworkAccessPermissionRequiredCallback callback);
+      DoneCallback callback);
 
   PrivateNetworkDeviceChooserController(
       const PrivateNetworkDeviceChooserController&) = delete;
@@ -55,15 +60,16 @@ class PrivateNetworkDeviceChooserController
   void Close() override;
 
   void ReplaceDeviceForTesting(blink::mojom::PrivateNetworkDevicePtr device);
+  void RunCallback(bool permission_granted);
 
  private:
   bool DisplayDevice(const blink::mojom::PrivateNetworkDevice& device) const;
 
   url::Origin origin_;
 
+  base::WeakPtr<PrivateNetworkDevicePermissionContext> permission_context_;
   blink::mojom::PrivateNetworkDevicePtr device_;
-  network::mojom::URLLoaderNetworkServiceObserver::
-      OnPrivateNetworkAccessPermissionRequiredCallback callback_;
+  DoneCallback callback_;
 
   base::WeakPtrFactory<PrivateNetworkDeviceChooserController> weak_factory_{
       this};

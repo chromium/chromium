@@ -32,9 +32,9 @@ class ChromePrivateNetworkDeviceChooserDesktop
       content::RenderFrameHost* render_frame_host,
       std::unique_ptr<PrivateNetworkDeviceChooserController> controller);
 
-  void ShowChooser(
-      content::RenderFrameHost* render_frame_host,
-      std::unique_ptr<PrivateNetworkDeviceChooserController> controller);
+  void ShowChooser(content::RenderFrameHost* render_frame_host,
+                   std::unique_ptr<PrivateNetworkDeviceChooserController>
+                       controller) override;
 
  private:
   base::ScopedClosureRunner closure_runner_;

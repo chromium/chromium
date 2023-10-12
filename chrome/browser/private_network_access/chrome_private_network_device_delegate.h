@@ -18,8 +18,11 @@
 #include "third_party/blink/public/mojom/private_network_device/private_network_device.mojom.h"
 
 namespace content {
+class BrowserContext;
 class RenderFrameHost;
 }  // namespace content
+
+class PrivateNetworkDevicePermissionContext;
 
 // Interface to support Private Network permission APIs.
 class ChromePrivateNetworkDeviceDelegate
@@ -44,11 +47,26 @@ class ChromePrivateNetworkDeviceDelegate
       network::mojom::URLLoaderNetworkServiceObserver::
           OnPrivateNetworkAccessPermissionRequiredCallback callback) override;
 
- private:
+  bool HasDevicePermission(content::RenderFrameHost& frame,
+                           const blink::mojom::PrivateNetworkDevice& device);
+
+  std::unique_ptr<ChromePrivateNetworkDeviceChooser> RunChooser(
+      content::RenderFrameHost& frame,
+      blink::mojom::PrivateNetworkDevicePtr device,
+      network::mojom::URLLoaderNetworkServiceObserver::
+          OnPrivateNetworkAccessPermissionRequiredCallback callback);
+
   void HandlePrivateNetworkDeviceChooserResult(
       network::mojom::URLLoaderNetworkServiceObserver::
           OnPrivateNetworkAccessPermissionRequiredCallback callback,
+      PrivateNetworkDevicePermissionContext* permission_context,
+      const url::Origin& origin,
+      const blink::mojom::PrivateNetworkDevice& device,
       bool permission_granted);
+
+ private:
+  PrivateNetworkDevicePermissionContext* GetPermissionContext(
+      content::BrowserContext* browser_context);
 
   // The currently-displayed private network device chooser prompt, if any.
   //

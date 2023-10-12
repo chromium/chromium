@@ -45,7 +45,7 @@ class PrivateNetworkDeviceChooserControllerTest
     private_network_device_chooser_controller_ =
         std::make_unique<PrivateNetworkDeviceChooserController>(
             main_rfh(), blink::mojom::PrivateNetworkDevice::New(),
-            base::OnceCallback<void(bool)>());
+            PrivateNetworkDeviceChooserController::DoneCallback());
     mock_chooser_view_ =
         std::make_unique<NiceMock<permissions::MockChooserControllerView>>();
     private_network_device_chooser_controller_->set_view(

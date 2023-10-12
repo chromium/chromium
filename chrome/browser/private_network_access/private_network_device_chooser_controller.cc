@@ -13,6 +13,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/chooser_controller/title_util.h"
 #include "chrome/browser/net/referrer.h"
+#include "chrome/browser/private_network_access/private_network_device_permission_context.h"
+#include "chrome/browser/private_network_access/private_network_device_permission_context_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -30,8 +32,7 @@ using content::WebContents;
 PrivateNetworkDeviceChooserController::PrivateNetworkDeviceChooserController(
     content::RenderFrameHost* render_frame_host,
     blink::mojom::PrivateNetworkDevicePtr device,
-    network::mojom::URLLoaderNetworkServiceObserver::
-        OnPrivateNetworkAccessPermissionRequiredCallback callback)
+    DoneCallback callback)
     : ChooserController(
           CreateChooserTitle(render_frame_host,
                              IDS_PRIVATE_NETWORK_DEVICE_CHOOSER_PROMPT_ORIGIN)),
@@ -39,6 +40,12 @@ PrivateNetworkDeviceChooserController::PrivateNetworkDeviceChooserController(
       callback_(std::move(callback)) {
   RenderFrameHost* main_frame = render_frame_host->GetMainFrame();
   origin_ = main_frame->GetLastCommittedOrigin();
+  Profile* profile =
+      Profile::FromBrowserContext(main_frame->GetBrowserContext());
+  permission_context_ =
+      PrivateNetworkDevicePermissionContextFactory::GetForProfile(profile)
+          ->AsWeakPtr();
+  DCHECK(permission_context_);
 }
 
 PrivateNetworkDeviceChooserController::
@@ -46,7 +53,7 @@ PrivateNetworkDeviceChooserController::
   if (callback_.is_null()) {
     return;
   }
-  std::move(callback_).Run(false);
+  RunCallback(false);
 }
 
 std::u16string PrivateNetworkDeviceChooserController::GetOkButtonLabel() const {
@@ -80,7 +87,7 @@ std::u16string PrivateNetworkDeviceChooserController::GetOption(
 
 void PrivateNetworkDeviceChooserController::Select(
     const std::vector<size_t>& indices) {
-  std::move(callback_).Run(true);
+  RunCallback(true);
 }
 
 void PrivateNetworkDeviceChooserController::ReplaceDeviceForTesting(
@@ -94,9 +101,15 @@ void PrivateNetworkDeviceChooserController::ReplaceDeviceForTesting(
 void PrivateNetworkDeviceChooserController::OpenHelpCenterUrl() const {}
 
 void PrivateNetworkDeviceChooserController::Cancel() {
-  std::move(callback_).Run(false);
+  RunCallback(false);
 }
 
 void PrivateNetworkDeviceChooserController::Close() {
-  std::move(callback_).Run(false);
+  RunCallback(false);
+}
+
+void PrivateNetworkDeviceChooserController::RunCallback(
+    bool permission_granted) {
+  std::move(callback_).Run(permission_context_.get(), origin_, *device_,
+                           permission_granted);
 }
