@@ -533,6 +533,23 @@ using base::UserMetricsAction;
   self.viewController = nil;
 }
 
+- (void)adjustPopupSize {
+  if (self.overflowMenuMediator) {
+    UIViewController* menu = self.baseViewController.presentedViewController;
+    UIPopoverPresentationController* popoverPresentationController =
+        menu.popoverPresentationController;
+
+    LayoutGuideCenter* layoutGuideCenter =
+        LayoutGuideCenterForBrowser(self.browser);
+    UILayoutGuide* layoutGuide =
+        [layoutGuideCenter makeLayoutGuideNamed:kToolsMenuGuide];
+    [self.baseViewController.view addLayoutGuide:layoutGuide];
+
+    // Re-anchor the popover if necessary, when the parent view's size changes.
+    popoverPresentationController.sourceRect = layoutGuide.layoutFrame;
+  }
+}
+
 #pragma mark - OverflowMenuCustomizationCommands
 
 - (void)showMenuCustomization {

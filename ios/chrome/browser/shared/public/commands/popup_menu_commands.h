@@ -14,6 +14,8 @@
 - (void)showToolsMenuPopup;
 // Dismisses the currently presented popup.
 - (void)dismissPopupMenuAnimated:(BOOL)animated;
+// Adjusts the popup's size when the containing view's size changes.
+- (void)adjustPopupSize;
 
 @end
 

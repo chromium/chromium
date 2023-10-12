@@ -111,28 +111,6 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 
 #pragma mark - Tools Menu
 
-// Tests that rotating the device will automatically dismiss the tools menu.
-- (void)testDismissToolsMenuOnDeviceRotation {
-  // TODO(crbug.com/652465): Enable the test for iPad when rotation bug is
-  // fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled for iPad due to device rotation bug.");
-  }
-
-  [ChromeEarlGreyUI openToolsMenu];
-
-  // Expect that the tools menu has appeared.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
-                                error:nil];
-
-  // Expect that the tools menu has disappeared.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuView()]
-      assertWithMatcher:grey_nil()];
-}
-
 // Tests that the menu is opened and closed correctly, whatever the current
 // device type is.
 - (void)testOpenAndCloseToolsMenu {

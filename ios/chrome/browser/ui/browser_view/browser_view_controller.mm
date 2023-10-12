@@ -57,6 +57,7 @@
 #import "ios/chrome/browser/ui/main_content/main_content_ui_state.h"
 #import "ios/chrome/browser/ui/main_content/web_scroll_view_main_content_ui_forwarder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
 #import "ios/chrome/browser/ui/side_swipe/swipe_view.h"
@@ -1105,7 +1106,12 @@ enum HeaderBehaviour {
   if (_isShutdown)
     return;
 
-  [self dismissPopups];
+  // TODO(crbug.com/522721): Support size changes for all popups and modal
+  // dialogs.
+  [self.helpHandler hideAllHelpBubbles];
+  if (!IsNewOverflowMenuEnabled()) {
+    [self.popupMenuCommandsHandler dismissPopupMenuAnimated:NO];
+  }
 
   __weak BrowserViewController* weakSelf = self;
 
@@ -1135,6 +1141,8 @@ enum HeaderBehaviour {
   if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
     self.fullscreenController->ResizeHorizontalViewport();
   }
+
+  [self.popupMenuCommandsHandler adjustPopupSize];
 }
 
 - (void)completedTransition {
@@ -1664,11 +1672,8 @@ enum HeaderBehaviour {
   self.broadcasting = self.active && self.viewVisible;
 }
 
-// Dismisses popups and modal dialogs that are displayed above the BVC upon size
-// changes (e.g. rotation, resizing,…) or when the accessibility escape gesture
-// is performed.
-// TODO(crbug.com/522721): Support size changes for all popups and modal
-// dialogs.
+// Dismisses popups and modal dialogs that are displayed above the BVC when the
+// accessibility escape gesture is performed.
 - (void)dismissPopups {
   // The dispatcher may not be fully connected during shutdown, so selectors may
   // be unrecognized.

@@ -32,8 +32,7 @@ class WebState;
 - (void)initiateNewTabForegroundAnimationForWebState:(web::WebState*)webState;
 
 // Tells the consumer to dismiss popups and modal dialogs that are displayed
-// above the BVC upon size changes (e.g. rotation, resizing,…) or when the
-// accessibility escape gesture is performed.
+// above the BVC.
 - (void)prepareForNewTabAnimation;
 
 // Tells the consumer to make any required view changes when a `webState` is
