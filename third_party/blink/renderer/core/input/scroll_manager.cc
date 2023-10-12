@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
-#include "third_party/blink/renderer/core/page/scrolling/scroll_state.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -80,17 +79,6 @@ AutoscrollController* ScrollManager::GetAutoscrollController() const {
   return nullptr;
 }
 
-ScrollPropagationDirection ScrollManager::ComputePropagationDirection(
-    const ScrollState& scroll_state) {
-  if (scroll_state.deltaXHint() == 0 && scroll_state.deltaYHint() != 0)
-    return ScrollPropagationDirection::kVertical;
-  if (scroll_state.deltaXHint() != 0 && scroll_state.deltaYHint() == 0)
-    return ScrollPropagationDirection::kHorizontal;
-  if (scroll_state.deltaXHint() != 0 && scroll_state.deltaYHint() != 0)
-    return ScrollPropagationDirection::kBoth;
-  return ScrollPropagationDirection::kNone;
-}
-
 bool ScrollManager::CanPropagate(const LayoutBox* layout_box,
                                  ScrollPropagationDirection direction) {
   ScrollableArea* scrollable_area = layout_box->GetScrollableArea();
@@ -121,7 +109,6 @@ bool ScrollManager::CanPropagate(const LayoutBox* layout_box,
 }
 
 void ScrollManager::RecomputeScrollChain(const Node& start_node,
-                                         const ScrollState& scroll_state,
                                          Deque<DOMNodeId>& scroll_chain,
                                          bool is_autoscroll) {
   DCHECK(scroll_chain.empty());
@@ -139,14 +126,7 @@ void ScrollManager::RecomputeScrollChain(const Node& start_node,
     if (autoscrollable) {
       Node* cur_node = autoscrollable->GetNode();
       LayoutObject* layout_object = cur_node->GetLayoutObject();
-      while (layout_object &&
-             !CanScroll(scroll_state, *cur_node, is_autoscroll)) {
-        ScrollPropagationDirection direction =
-            ComputePropagationDirection(scroll_state);
-
-        if (!CanPropagate(cur_node->GetLayoutBox(), direction))
-          break;
-
+      while (layout_object && !CanScroll(*cur_node, is_autoscroll)) {
         if (!layout_object->Parent() &&
             layout_object->GetNode() == layout_object->GetDocument() &&
             layout_object->GetDocument().LocalOwner()) {
@@ -173,24 +153,12 @@ void ScrollManager::RecomputeScrollChain(const Node& start_node,
       Node* cur_node = cur_box->GetNode();
 
       if (cur_node) {
-        if (CanScroll(scroll_state, *cur_node, /* for_autoscroll */ false))
+        if (CanScroll(*cur_node, /* for_autoscroll */ false)) {
           scroll_chain.push_front(cur_node->GetDomNodeId());
+        }
 
         if (cur_node->IsEffectiveRootScroller())
           break;
-
-        ScrollPropagationDirection direction =
-            ComputePropagationDirection(scroll_state);
-        if (!CanPropagate(cur_node->GetLayoutBox(), direction)) {
-          // We should add the first node with non-auto overscroll-behavior to
-          // the scroll chain regardlessly, as it's the only node we can latch
-          // to.
-          if (scroll_chain.empty() ||
-              scroll_chain.front() != cur_node->GetDomNodeId()) {
-            scroll_chain.push_front(cur_node->GetDomNodeId());
-          }
-          break;
-        }
       }
 
       cur_box = cur_box->ContainingBlock();
@@ -198,9 +166,7 @@ void ScrollManager::RecomputeScrollChain(const Node& start_node,
   }
 }
 
-bool ScrollManager::CanScroll(const ScrollState& scroll_state,
-                              const Node& current_node,
-                              bool for_autoscroll) {
+bool ScrollManager::CanScroll(const Node& current_node, bool for_autoscroll) {
   LayoutBox* scrolling_box = current_node.GetLayoutBox();
   if (auto* element = DynamicTo<Element>(current_node))
     scrolling_box = element->GetLayoutBoxForScrolling();
@@ -229,36 +195,7 @@ bool ScrollManager::CanScroll(const ScrollState& scroll_state,
     return true;
   }
 
-  ScrollableArea* scrollable_area = scrolling_box->GetScrollableArea();
-
-  if (!scrollable_area)
-    return false;
-
-  double delta_x = scroll_state.isBeginning() ? scroll_state.deltaXHint()
-                                              : scroll_state.deltaX();
-  double delta_y = scroll_state.isBeginning() ? scroll_state.deltaYHint()
-                                              : scroll_state.deltaY();
-  if (!delta_x && !delta_y)
-    return true;
-
-  if (!scrollable_area->UserInputScrollable(kHorizontalScrollbar))
-    delta_x = 0;
-  if (!scrollable_area->UserInputScrollable(kVerticalScrollbar))
-    delta_y = 0;
-
-  if (scroll_state.deltaGranularity() ==
-      static_cast<double>(ui::ScrollGranularity::kScrollByPercentage)) {
-    delta_x *= scrollable_area->ScrollStep(
-        ui::ScrollGranularity::kScrollByPercentage, kHorizontalScrollbar);
-    delta_y *= scrollable_area->ScrollStep(
-        ui::ScrollGranularity::kScrollByPercentage, kVerticalScrollbar);
-  }
-
-  ScrollOffset current_offset = scrollable_area->GetScrollOffset();
-  ScrollOffset target_offset = current_offset + ScrollOffset(delta_x, delta_y);
-  ScrollOffset clamped_offset =
-      scrollable_area->ClampScrollOffset(target_offset);
-  return clamped_offset != current_offset;
+  return scrolling_box->GetScrollableArea() != nullptr;
 }
 
 bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
@@ -286,11 +223,7 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
   document.UpdateStyleAndLayout(DocumentUpdateReason::kScroll);
 
   Deque<DOMNodeId> scroll_chain;
-  std::unique_ptr<ScrollStateData> scroll_state_data =
-      std::make_unique<ScrollStateData>();
-  auto* scroll_state =
-      MakeGarbageCollected<ScrollState>(std::move(scroll_state_data));
-  RecomputeScrollChain(*node, *scroll_state, scroll_chain,
+  RecomputeScrollChain(*node, scroll_chain,
                        /* is_autoscroll */ false);
 
   while (!scroll_chain.empty()) {

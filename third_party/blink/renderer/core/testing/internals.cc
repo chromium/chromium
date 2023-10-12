@@ -132,7 +132,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/print_context.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
-#include "third_party/blink/renderer/core/page/scrolling/scroll_state.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/page/touch_adjustment.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
@@ -3614,15 +3613,6 @@ void Internals::forceLoseCanvasContext(OffscreenCanvas* offscreencanvas,
 
 void Internals::disableCanvasAcceleration(HTMLCanvasElement* canvas) {
   canvas->DisableAcceleration();
-}
-
-void Internals::setScrollChain(ScrollState* scroll_state,
-                               const HeapVector<Member<Element>>& elements,
-                               ExceptionState&) {
-  Deque<DOMNodeId> scroll_chain;
-  for (wtf_size_t i = 0; i < elements.size(); ++i)
-    scroll_chain.push_back(elements[i].Get()->GetDomNodeId());
-  scroll_state->SetScrollChain(scroll_chain);
 }
 
 String Internals::selectedHTMLForClipboard() {

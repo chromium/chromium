@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
-#include "third_party/blink/renderer/core/page/scrolling/scroll_state.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
@@ -29,7 +28,6 @@ class LocalFrame;
 class PaintLayer;
 class PaintLayerScrollableArea;
 class Scrollbar;
-class ScrollState;
 class WebGestureEvent;
 
 // Scroll directions used to check whether propagation is possible in a given
@@ -106,8 +104,6 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager> {
   // scroll direction.
   static bool CanPropagate(const LayoutBox* layout_box,
                            ScrollPropagationDirection direction);
-  static ScrollPropagationDirection ComputePropagationDirection(
-      const ScrollState&);
 
  private:
   Node* NodeTargetForScrollableAreaElementId(
@@ -116,12 +112,9 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager> {
   bool HandleScrollGestureOnResizer(Node*, const WebGestureEvent&);
 
   void RecomputeScrollChain(const Node& start_node,
-                            const ScrollState&,
                             Deque<DOMNodeId>& scroll_chain,
                             bool is_autoscroll);
-  bool CanScroll(const ScrollState&,
-                 const Node& current_node,
-                 bool for_autoscroll);
+  bool CanScroll(const Node& current_node, bool for_autoscroll);
 
   // NOTE: If adding a new field to this class please ensure that it is
   // cleared in |ScrollManager::clear()|.

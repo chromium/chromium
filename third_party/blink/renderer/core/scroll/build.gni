@@ -21,7 +21,6 @@ blink_core_sources_scroll = [
   "scroll_snapshot_client.h",
   "scroll_start_targets.cc",
   "scroll_start_targets.h",
-  "scroll_state_data.h",
   "scroll_types.h",
   "scrollable_area.cc",
   "scrollable_area.h",
