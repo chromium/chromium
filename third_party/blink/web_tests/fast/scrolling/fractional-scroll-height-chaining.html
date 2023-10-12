@@ -3,36 +3,57 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script src="../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
 <style>
 
 #scroller {
-    background-color: #ccc;
-    margin-top: 20px;
-    overflow: scroll;
+  background-color: #ccc;
+  margin-top: 20px;
+  overflow: scroll;
 }
 
 #fracheight {
-    height: 1200.3px;
+  height: 1200.3px;
 }
 
 </style>
-<div id="scroller" onmousewheel="">
+<div id="scroller">
   <div id="fracheight"></div>
 </div>
 
 <script>
+function accumulateWheelScrollDelta() {
+  return new Promise((resolve, reject) => {
+    let scrollAmount = 0;
+    const scrollendListener = () => {
+      if (!scrollAmount) {
+        reject('Expected wheel scroll');
+      } else {
+        resolve(scrollAmount);
+      }
+    };
+    const wheelListener = (event) => {
+      scrollAmount += event.deltaY;
+    };
+    document.addEventListener('scrollend', scrollendListener);
+    document.addEventListener('wheel', wheelListener);
+  });
+}
+
 promise_test(async () => {
     await waitForCompositorCommit();
-    var scroller_element = document.getElementById("scroller");
-    var scroller_center = pointInElement(scroller_element, 50, 50);
-    await mouseClickOn(50, 50);
-    await wheelTick(0, 1, scroller_center);
-    await waitForAnimationEndTimeBased(() => { return window.scrollY });
-
-    const pixelsToScrollY = pixelsPerTick();
-    const { y: expectedScrollY } = calculateExpectedScroll(
-      document.scrollingElement, 0, pixelsToScrollY
-    );
-    assert_approx_equals(window.scrollY, expectedScrollY, 0.001);
+    const scroller = document.getElementById("scroller");
+    const center = pointInElement(scroller, 50, 50);
+    // Scroll 1 tick. The actual scroll amount may differ if percent-based
+    // scrolling is enabled.
+    const adjustedPixelsPerTick = calculateExpectedScroll(
+      document.scrollingElement, 0, pixelsPerTick()).y;
+    const scrollAccumulator = accumulateWheelScrollDelta();
+    await wheelScroll(center.x, center.y, 0, adjustedPixelsPerTick);
+    const scrollDelta = await scrollAccumulator;
+    assert_approx_equals(window.scrollY, scrollDelta, 0.01);
+    assert_approx_equals(window.scrollY, adjustedPixelsPerTick, 0.01);
 }, "Verify that wheel scrolls chain correctly from a fractional-height scroller to its parent.");
 </script>
