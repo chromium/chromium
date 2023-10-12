@@ -513,7 +513,6 @@ GCMDriverDesktop::GCMDriverDesktop(
     const scoped_refptr<base::SequencedTaskRunner>& io_thread,
     const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner)
     : GCMDriver(store_path, blocking_task_runner),
-      signed_in_(false),
       gcm_started_(false),
       connected_(false),
       account_mapper_(new GCMAccountMapper(this)),
@@ -597,14 +596,6 @@ void GCMDriverDesktop::Shutdown() {
   GCMDriver::Shutdown();
 
   io_thread_->DeleteSoon(FROM_HERE, io_worker_.release());
-}
-
-void GCMDriverDesktop::OnSignedIn() {
-  signed_in_ = true;
-}
-
-void GCMDriverDesktop::OnSignedOut() {
-  signed_in_ = false;
 }
 
 void GCMDriverDesktop::AddAppHandler(const std::string& app_id,
@@ -1257,8 +1248,6 @@ void GCMDriverDesktop::GCMClientReady(
     const std::vector<AccountMapping>& account_mappings,
     const base::Time& last_token_fetch_time) {
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
-
-  UMA_HISTOGRAM_BOOLEAN("GCM.UserSignedIn", signed_in_);
 
   gcm_started_ = true;
 

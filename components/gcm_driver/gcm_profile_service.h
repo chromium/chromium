@@ -38,6 +38,7 @@ class SharedURLLoaderFactory;
 
 namespace gcm {
 
+class GCMAccountTracker;
 class GCMClientFactory;
 class GCMDriver;
 
@@ -92,9 +93,7 @@ class GCMProfileService : public KeyedService {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  // Used for both account tracker and GCM.UserSignedIn UMA.
-  class IdentityObserver;
-  std::unique_ptr<IdentityObserver> identity_observer_;
+  std::unique_ptr<GCMAccountTracker> gcm_account_tracker_;
 #endif
 
   GetProxyResolvingFactoryCallback get_socket_factory_callback_;

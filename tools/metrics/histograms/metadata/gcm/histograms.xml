@@ -209,13 +209,6 @@ chromium-metrics-reviews@google.com.
   <summary>Status code of the outcome of a GCM unregistration request.</summary>
 </histogram>
 
-<histogram name="GCM.UserSignedIn" enum="Boolean" expires_after="2021-03-28">
-  <owner>jianli@chromium.org</owner>
-  <summary>
-    Indicates whether the user was signed in when GCM started up.
-  </summary>
-</histogram>
-
 <histogram name="GCM.WebPushReceived.DeviceState" enum="WebPushDeviceState"
     expires_after="2022-01-02">
   <owner>knollr@chromium.org</owner>
