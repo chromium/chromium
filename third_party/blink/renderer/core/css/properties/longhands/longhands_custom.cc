@@ -3715,11 +3715,11 @@ const CSSValue* ForcedColorAdjust::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.ForcedColorAdjust());
 }
 
-const CSSValue* FormSizing::CSSValueFromComputedStyleInternal(
+const CSSValue* FieldSizing::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool) const {
-  return CSSIdentifierValue::Create(style.FormSizing());
+  return CSSIdentifierValue::Create(style.FieldSizing());
 }
 
 void InternalVisitedColor::ApplyInitial(StyleResolverState& state) const {

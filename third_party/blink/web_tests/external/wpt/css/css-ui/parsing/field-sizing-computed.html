@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<title>CSS UI: parsing form-sizing with valid values</title>
+<title>CSS UI: getComputedStyle().fieldSizing</title>
 <link rel="help" href="https://github.com/w3c/csswg-drafts/pull/9251">
 <link rel="author" title="Kent Tamura" href="mailto:tkent@chromium.org">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/css/support/parsing-testcommon.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
 <body>
+<div id="target"></div>
 <script>
-test_valid_value('form-sizing', 'fixed');
-test_valid_value('form-sizing', 'content');
+test_computed_value('field-sizing', 'fixed');
+test_computed_value('field-sizing', 'content');
 </script>
 </body>

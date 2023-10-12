@@ -4,7 +4,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <style>
 .disable-default {
-  form-sizing: content;
+  field-sizing: content;
 }
 
 .small-placeholder {
@@ -25,6 +25,7 @@
 <div id="container"></div>
 <script>
 const DISABLE = 'class="disable-default"';
+const LONG_VALUE = '12345678901234567890.123';
 const LONG_TEXT = 'The quick brown fox jumps over the lazy dog.';
 
 function addElements(source) {
@@ -46,28 +47,22 @@ function addTwoElements(source1, source2) {
   };
 }
 
-['text', 'search', 'tel', 'url', 'email', 'password'].forEach(type => {
+['number'].forEach(type => {
   test(() => {
     let pair = addElements(`<input type=${type}>`);
     // A text <input> has approximately 20ch width by default.
-    // A text <input> with form-sizing:content must be shorter than the default.
+    // A text <input> with field-sizing:content must be shorter than the default.
     assert_less_than(pair.content.offsetWidth, pair.fixed.offsetWidth);
     assert_equals(pair.content.offsetHeight, pair.fixed.offsetHeight);
 
     pair = addTwoElements(`<input type=${type} ${DISABLE}>`,
-                          `<input type=${type} ${DISABLE} value="foo">`);
+                          `<input type=${type} ${DISABLE} value="123">`);
     assert_less_than(pair.e1.offsetWidth, pair.e2.offsetWidth);
     assert_equals(pair.e1.offsetHeight, pair.e2.offsetHeight);
   }, `${type}: Empty value`);
 
   test(() => {
-    let pair = addElements(`<input type=${type} size="10">`);
-    assert_less_than(pair.content.offsetWidth, pair.fixed.offsetWidth);
-    assert_equals(pair.content.offsetHeight, pair.fixed.offsetHeight);
-  }, `${type}: Empty value with a size atttribute`);
-
-  test(() => {
-    let pair = addElements(`<input type=${type} value="${LONG_TEXT}">`);
+    let pair = addElements(`<input type=${type} value="${LONG_VALUE}">`);
     assert_greater_than(pair.content.offsetWidth, pair.fixed.offsetWidth);
     pair = addElements(`<input type=${type} placeholder="${LONG_TEXT}">`);
     assert_greater_than(pair.content.offsetWidth, pair.fixed.offsetWidth);
@@ -78,7 +73,7 @@ function addTwoElements(source1, source2) {
     assert_equals(pair.content.offsetWidth, pair.fixed.offsetWidth);
     assert_equals(pair.content.offsetHeight, pair.fixed.offsetHeight);
 
-    pair = addElements(`<input type=${type} style="width:20ch; height:2lh" value="${LONG_TEXT}">`);
+    pair = addElements(`<input type=${type} style="width:20ch; height:2lh" value="${LONG_VALUE}">`);
     assert_equals(pair.content.offsetWidth, pair.fixed.offsetWidth);
     assert_equals(pair.content.offsetHeight, pair.fixed.offsetHeight);
 
@@ -92,7 +87,7 @@ function addTwoElements(source1, source2) {
     assert_equals(pair.content.offsetWidth, pair.fixed.offsetWidth);
     assert_equals(pair.content.offsetHeight, pair.fixed.offsetHeight);
 
-    pair = addElements(`<input type=${type} style="width:20ch" value="${LONG_TEXT}">`);
+    pair = addElements(`<input type=${type} style="width:20ch" value="${LONG_VALUE}">`);
     assert_equals(pair.content.offsetWidth, pair.fixed.offsetWidth);
     assert_equals(pair.content.offsetHeight, pair.fixed.offsetHeight);
 
@@ -106,7 +101,7 @@ function addTwoElements(source1, source2) {
     assert_less_than(pair.content.offsetWidth, pair.fixed.offsetWidth);
     assert_equals(pair.content.offsetHeight, pair.fixed.offsetHeight);
 
-    pair = addElements(`<input type=${type} style="height:2lh" value="${LONG_TEXT}">`);
+    pair = addElements(`<input type=${type} style="height:2lh" value="${LONG_VALUE}">`);
     assert_greater_than(pair.content.offsetWidth, pair.fixed.offsetWidth);
     assert_equals(pair.content.offsetHeight, pair.fixed.offsetHeight);
 
@@ -147,7 +142,7 @@ function addTwoElements(source1, source2) {
      element.classList.add('disable-default');
      assert_less_than(element.offsetWidth, w);
      assert_equals(element.offsetHeight, h);
-  }, `${type}: Update form-sizing property dynamically`);
+  }, `${type}: Update field-sizing property dynamically`);
 
 });
 </script>

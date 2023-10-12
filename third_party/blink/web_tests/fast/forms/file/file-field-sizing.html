@@ -3,7 +3,7 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="resources/file-drag-common.js"></script>
 
-<input id="target" type=file style="form-sizing:content">
+<input id="target" type=file style="field-sizing:content">
 <input id="reference" type=file>
 
 <script>
@@ -16,5 +16,5 @@ test(() => {
 
   target.removeAttribute('style');
   assert_equals(target.offsetWidth, document.querySelector('#reference').offsetWidth);
-}, 'form-sizing: The width of a file upload control depends on its label');
+}, 'field-sizing: The width of a file upload control depends on its label');
 </script>

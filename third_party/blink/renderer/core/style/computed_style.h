@@ -2497,9 +2497,9 @@ class ComputedStyle final : public ComputedStyleBase {
             OverflowClipMargin()->GetMargin() != LayoutUnit());
   }
 
-  // Form-sizing utility function
+  // Field-sizing utility function
   bool ApplyControlFixedSize() const {
-    return FormSizing() == EFormSizing::kFixed;
+    return FieldSizing() == EFieldSizing::kFixed;
   }
 
  private:

@@ -875,6 +875,11 @@
       status: "experimental",
     },
     {
+      // crbug.com/1447058
+      name: "CssFieldSizing",
+      status: "experimental",
+    },
+    {
       // Don't allow new line as preceding character for ::first-letter.
       // See crbug.com/1477217
       name: "CSSFirstLetterNoNewLineAsPrecedingChar",
@@ -896,11 +901,6 @@
       name: "CSSFontSizeAdjust",
       status: "experimental",
       base_feature: "none",
-    },
-    {
-      // crbug.com/1447058
-      name: "CssFormSizing",
-      status: "experimental",
     },
     {
       name: "CSSGridTemplatePropertyInterpolation",

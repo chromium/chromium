@@ -1462,14 +1462,14 @@
       computable: false,
     },
     {
-      name: "form-sizing",
+      name: "field-sizing",
       field_group: "visual",
       field_template: "keyword",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       keywords: ["fixed", "content"],
       default_value: "fixed",
       typedom_types: ["Keyword"],
-      runtime_flag: "CssFormSizing",
+      runtime_flag: "CssFieldSizing",
     },
     {
       name: "-webkit-locale",
