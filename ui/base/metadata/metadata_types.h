@@ -91,6 +91,7 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
   const std::vector<MemberMetaDataBase*>& members() const { return members_; }
   const std::string& file() const { return file_; }
   const int& line() const { return line_; }
+  const std::string& GetUniqueName() const;
   void AddMemberData(std::unique_ptr<MemberMetaDataBase> member_data);
 
   // Lookup the member data entry for a member of this class with a given name.
@@ -161,6 +162,7 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
 
  private:
   std::string type_name_;
+  mutable std::string unique_name_;
   std::vector<MemberMetaDataBase*> members_;
   raw_ptr<ClassMetaData> parent_class_meta_data_ = nullptr;
   std::string file_;

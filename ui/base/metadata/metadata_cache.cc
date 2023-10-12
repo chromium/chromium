@@ -23,8 +23,8 @@ MetaDataCache* MetaDataCache::GetInstance() {
 
 void MetaDataCache::AddClassMetaData(
     std::unique_ptr<ClassMetaData> class_data) {
-  DCHECK(!base::Contains(class_data_cache_, class_data->type_name(),
-                         &ClassMetaData::type_name));
+  DCHECK(!base::Contains(class_data_cache_, class_data->GetUniqueName(),
+                         &ClassMetaData::GetUniqueName));
   class_data_cache_.push_back(class_data.release());
 }
 
