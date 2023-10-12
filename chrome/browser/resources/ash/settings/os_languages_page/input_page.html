@@ -164,7 +164,8 @@
           </div>
         </div>
         <template is="dom-if"
-            if="[[shouldShowSpinner_(item, languagePacksInSettingsEnabled_)]]">
+            if="[[shouldShowSpinner_(item, languagePacksInSettingsEnabled_,
+                  languages.inputMethods.imeLanguagePackStatus.*)]]">
           <paper-spinner-lite alt="TO BE TRANSLATED: Loading" active>
           </paper-spinner-lite>
         </template>
