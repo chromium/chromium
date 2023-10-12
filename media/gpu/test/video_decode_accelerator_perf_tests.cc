@@ -6,6 +6,7 @@
 #include <numeric>
 #include <vector>
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
@@ -472,10 +473,12 @@ int main(int argc, char** argv) {
   base::CommandLine::SwitchMap switches = cmd_line->GetSwitches();
   for (base::CommandLine::SwitchMap::const_iterator it = switches.begin();
        it != switches.end(); ++it) {
-    if (it->first.find("gtest_") == 0 ||               // Handled by GoogleTest
-        it->first == "ozone-platform" ||               // Handled by Chrome
-        it->first == "use-gl" ||                       // Handled by Chrome
-        it->first == "v" || it->first == "vmodule") {  // Handled by Chrome
+    if (it->first.find("gtest_") == 0 ||  // Handled by GoogleTest
+        it->first == "ozone-platform" ||  // Handled by Chrome
+        it->first == "use-gl" ||          // Handled by Chrome
+                                          // Options below handled by Chrome
+        it->first == "v" || it->first == "vmodule" ||
+        it->first == "enable-features" || it->first == "disable-features") {
       continue;
     }
 
@@ -519,6 +522,20 @@ int main(int argc, char** argv) {
   // Add the command line flag for HEVC testing which will be checked by the
   // video decoder to allow clear HEVC decoding.
   cmd_line->AppendSwitch("enable-clear-hevc-for-testing");
+
+#if BUILDFLAG(USE_V4L2_CODEC)
+  std::unique_ptr<base::FeatureList> feature_list =
+      std::make_unique<base::FeatureList>();
+  feature_list->InitializeFromCommandLine(
+      cmd_line->GetSwitchValueASCII(switches::kEnableFeatures),
+      cmd_line->GetSwitchValueASCII(switches::kDisableFeatures));
+  if (feature_list->IsFeatureOverridden("V4L2FlatStatelessVideoDecoder")) {
+    enabled_features.push_back(media::kV4L2FlatStatelessVideoDecoder);
+  }
+  if (feature_list->IsFeatureOverridden("V4L2FlatStatefulVideoDecoder")) {
+    enabled_features.push_back(media::kV4L2FlatStatefulVideoDecoder);
+  }
+#endif
 
   // Set up our test environment.
   media::test::VideoPlayerTestEnvironment* test_environment =
