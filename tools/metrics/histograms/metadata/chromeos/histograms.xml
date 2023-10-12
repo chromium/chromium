@@ -312,6 +312,16 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Camera.ConcurrentAccess" enum="Boolean"
+    expires_after="2024-03-01">
+  <owner>dorahkim@google.com</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records when attempting to access a camera, whether Ash and Lacros are
+    accessing the same camera or not.
+  </summary>
+</histogram>
+
 <histogram base="true"
     name="ChromeOS.Camera.ConfigureStreams.Output.Resolution" units="pixels"
     expires_after="2024-02-04">

@@ -78,6 +78,10 @@ class DeviceFactoryImpl : public DeviceFactory {
 
   void OnClientConnectionErrorOrClose(const std::string& device_id);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void RecordCollision();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   const std::unique_ptr<media::VideoCaptureSystem> capture_system_;
   std::map<std::string, std::unique_ptr<DeviceMediaToMojoAdapter>>
       active_devices_by_id_;
@@ -86,6 +90,7 @@ class DeviceFactoryImpl : public DeviceFactory {
   const media::MojoMjpegDecodeAcceleratorFactoryCB
       jpeg_decoder_factory_callback_;
   scoped_refptr<base::SequencedTaskRunner> jpeg_decoder_task_runner_;
+  base::DelayTimer collision_delay_timer_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   bool has_called_get_device_infos_;
