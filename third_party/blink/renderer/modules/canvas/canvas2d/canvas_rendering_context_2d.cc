@@ -175,7 +175,7 @@ void CanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
     Host()->DiscardResourceProvider();
   }
 
-  if (canvas() && canvas()->IsVisible()) {
+  if (canvas() && canvas()->IsPageVisible()) {
     dispatch_context_lost_event_timer_.StartOneShot(base::TimeDelta(),
                                                     FROM_HERE);
   } else {
