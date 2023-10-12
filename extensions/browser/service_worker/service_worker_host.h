@@ -9,11 +9,17 @@
 #include <unordered_set>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/permissions_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/mojom/service_worker.mojom.h"
 #include "extensions/common/mojom/service_worker_host.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom.h"
 
 class GURL;
 
@@ -33,6 +39,9 @@ class ExtensionFunctionDispatcher;
 // This class is the host of service worker execution context for extension
 // in the renderer process. Lives on the UI thread.
 class ServiceWorkerHost : public base::SupportsUserData::Data,
+#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+                          public PermissionsManager::Observer,
+#endif
                           public mojom::ServiceWorkerHost {
  public:
   explicit ServiceWorkerHost(content::RenderProcessHost* render_process_host);
@@ -66,10 +75,24 @@ class ServiceWorkerHost : public base::SupportsUserData::Data,
   void RequestWorker(mojom::RequestParamsPtr params) override;
   void WorkerResponseAck(const base::Uuid& request_uuid) override;
 
+#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  // PermissionManager::Observer overrides.
+  void OnExtensionPermissionsUpdated(
+      const Extension& extension,
+      const PermissionSet& permissions,
+      PermissionsManager::UpdateReason reason) override;
+#endif
+
  private:
   // Returns the browser context associated with the render process this
   // `ServiceWorkerHost` belongs to.
   content::BrowserContext* GetBrowserContext();
+
+#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  mojom::ServiceWorker* GetServiceWorker();
+#endif
+
+  void RemoteDisconnected();
 
   // This is safe because ServiceWorkerHost is tied to the life time of
   // RenderProcessHost.
@@ -78,6 +101,15 @@ class ServiceWorkerHost : public base::SupportsUserData::Data,
   std::unique_ptr<ExtensionFunctionDispatcher> dispatcher_;
 
   mojo::AssociatedReceiver<mojom::ServiceWorkerHost> receiver_{this};
+#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  mojo::AssociatedRemote<mojom::ServiceWorker> remote_;
+  int64_t service_worker_version_id_ =
+      blink::mojom::kInvalidServiceWorkerVersionId;
+  ExtensionId extension_id_;
+
+  base::ScopedObservation<PermissionsManager, PermissionsManager::Observer>
+      permissions_observer_{this};
+#endif
 };
 
 }  // namespace extensions

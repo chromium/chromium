@@ -8,11 +8,13 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/automation_registry.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/event_router.mojom.h"
+#include "extensions/common/mojom/service_worker.mojom.h"
 #include "extensions/common/mojom/service_worker_host.mojom.h"
 #include "extensions/renderer/v8_schema_registry.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -27,7 +29,8 @@ class ScriptContext;
 // TODO(lazyboy): Also put worker ScriptContexts in this.
 class ServiceWorkerData
 #if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-    : public mojom::EventDispatcher
+    : public mojom::EventDispatcher,
+      public mojom::ServiceWorker
 #endif
 {
  public:
@@ -70,12 +73,19 @@ class ServiceWorkerData
   mojom::EventRouter* GetEventRouter();
   mojom::RendererAutomationRegistry* GetAutomationRegistry();
 
+  // mojom::ServiceWorker overrides:
+  void UpdatePermissions(PermissionSet active_permissions,
+                         PermissionSet withheld_permissions) override;
+
   // mojom::EventDispatcher overrides:
   void DispatchEvent(mojom::DispatchEventParamsPtr params,
                      base::Value::List event_args) override;
 #endif
 
  private:
+  void OnServiceWorkerRequest(
+      mojo::PendingAssociatedReceiver<mojom::ServiceWorker> receiver);
+
   blink::WebServiceWorkerContextProxy* proxy_;
   const int64_t service_worker_version_id_;
   const base::UnguessableToken activation_sequence_;
@@ -90,7 +100,10 @@ class ServiceWorkerData
   mojo::AssociatedRemote<mojom::EventRouter> event_router_remote_;
   mojo::AssociatedRemote<mojom::RendererAutomationRegistry>
       renderer_automation_registry_remote_;
+  mojo::AssociatedReceiver<mojom::ServiceWorker> receiver_{this};
 #endif
+
+  base::WeakPtrFactory<ServiceWorkerData> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

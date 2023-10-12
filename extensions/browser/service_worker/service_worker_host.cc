@@ -13,10 +13,13 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/service_worker_task_queue.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/permissions/permissions_data.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace extensions {
 
@@ -54,7 +57,16 @@ void ServiceWorkerHost::BindReceiver(
   }
 
   service_worker_host->receiver_.Bind(std::move(receiver));
-  service_worker_host->receiver_.reset_on_disconnect();
+  service_worker_host->receiver_.set_disconnect_handler(
+      base::BindOnce(&ServiceWorkerHost::RemoteDisconnected,
+                     base::Unretained(service_worker_host)));
+}
+
+void ServiceWorkerHost::RemoteDisconnected() {
+  receiver_.reset();
+#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  permissions_observer_.Reset();
+#endif
 }
 
 void ServiceWorkerHost::DidInitializeServiceWorkerContext(
@@ -85,6 +97,11 @@ void ServiceWorkerHost::DidInitializeServiceWorkerContext(
     // running in a given process.
     return;
   }
+#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  service_worker_version_id_ = service_worker_version_id;
+  extension_id_ = extension_id;
+  permissions_observer_.Observe(PermissionsManager::Get(browser_context));
+#endif
 
   ServiceWorkerTaskQueue::Get(browser_context)
       ->DidInitializeServiceWorkerContext(render_process_id, extension_id,
@@ -144,7 +161,9 @@ void ServiceWorkerHost::DidStopServiceWorkerContext(
   }
   CHECK(service_worker_scope.SchemeIs(kExtensionScheme) &&
         extension_id == service_worker_scope.host_piece());
-
+  CHECK(!extension_id.empty());
+  CHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId,
+           service_worker_version_id);
   ServiceWorkerTaskQueue::Get(browser_context)
       ->DidStopServiceWorkerContext(
           render_process_id, extension_id, activation_token,
@@ -173,5 +192,40 @@ void ServiceWorkerHost::WorkerResponseAck(const base::Uuid& request_uuid) {
 content::BrowserContext* ServiceWorkerHost::GetBrowserContext() {
   return render_process_host_->GetBrowserContext();
 }
+
+#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+mojom::ServiceWorker* ServiceWorkerHost::GetServiceWorker() {
+  if (!remote_.is_bound()) {
+    content::ServiceWorkerContext* context =
+        util::GetServiceWorkerContextForExtensionId(extension_id_,
+                                                    GetBrowserContext());
+    CHECK(context);
+    context->GetRemoteAssociatedInterfaces(service_worker_version_id_)
+        .GetInterface(&remote_);
+  }
+  return remote_.get();
+}
+
+void ServiceWorkerHost::OnExtensionPermissionsUpdated(
+    const Extension& extension,
+    const PermissionSet& permissions,
+    PermissionsManager::UpdateReason reason) {
+  if (extension.id() != extension_id_) {
+    return;
+  }
+  content::ServiceWorkerContext* context =
+      util::GetServiceWorkerContextForExtensionId(extension_id_,
+                                                  GetBrowserContext());
+  CHECK(context);
+  if (!context->IsLiveRunningServiceWorker(service_worker_version_id_)) {
+    return;
+  }
+
+  const PermissionsData* permissions_data = extension.permissions_data();
+  GetServiceWorker()->UpdatePermissions(
+      std::move(*permissions_data->active_permissions().Clone()),
+      std::move(*permissions_data->withheld_permissions().Clone()));
+}
+#endif
 
 }  // namespace extensions
