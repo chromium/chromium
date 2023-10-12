@@ -1197,6 +1197,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method mul
 [Worker]     method neg
 [Worker]     method pad
+[Worker]     method pow
 [Worker]     method prelu
 [Worker]     method reduceMean
 [Worker]     method reduceSum

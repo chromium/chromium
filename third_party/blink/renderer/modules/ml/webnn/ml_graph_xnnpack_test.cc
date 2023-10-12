@@ -316,6 +316,23 @@ void CheckExternalValues(const MLGraphXnnpack* xnnpack_graph,
   }
 }
 
+// Add an unit test to validate the value of exponent for pow operator.
+TEST_P(MLGraphXnnpackTest, PowTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* input0 =
+      BuildInput(builder, "input0", {1, 2, 2, 1},
+                 V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+  auto* input1 = BuildConstant(builder, {1}, V8MLOperandType::Enum::kFloat32,
+                               Vector<float>({3.0}), scope.GetExceptionState());
+  auto* output = BuildElementWiseBinary(
+      scope, builder, ElementWiseBinaryKind::kPow, input0, input1);
+  auto [graph, exception] = BuildGraph(scope, builder, {{"output", output}});
+  ASSERT_EQ(graph, nullptr);
+  EXPECT_EQ(exception->message(),
+            "The value of scalar operand b must be 2 or 0.5 for pow.");
+}
+
 TEST_P(MLGraphXnnpackTest, InvokeXnnpackRuntimeTest) {
   V8TestingScope scope;
   auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());

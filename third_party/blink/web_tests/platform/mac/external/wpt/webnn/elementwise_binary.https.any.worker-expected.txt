@@ -54,15 +54,15 @@ FAIL min float32 broadcast 1D to 4D / sync Failed to execute 'buildSync' on 'MLG
 FAIL min float32 broadcast 2D to 4D / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 FAIL min float32 broadcast 3D to 4D / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 FAIL min float32 broadcast 4D to 4D / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL pow float32 1D base tensor and 1D integer exponent tensor / sync builder[operationName] is not a function
-FAIL pow float32 2D base tensor and 2D integer exponent tensor / sync builder[operationName] is not a function
-FAIL pow float32 3D base tensor and 3D integer exponent tensor / sync builder[operationName] is not a function
-FAIL pow float32 4D base tensor and 4D integer exponent tensor / sync builder[operationName] is not a function
-FAIL pow float32 5D base tensor and 5D integer exponent tensor / sync builder[operationName] is not a function
-FAIL pow (square) float32 4D base tensor and broadcastable 1D integer exponent tensor / sync builder[operationName] is not a function
-FAIL pow (sqrt) float32 4D positive base tensor and broadcastable 1D integer exponent tensor / sync builder[operationName] is not a function
-FAIL pow float32 4D base tensor and broadcastable 2D integer exponent tensor / sync builder[operationName] is not a function
-FAIL pow float32 4D base tensor and broadcastable 3D integer exponent tensor / sync builder[operationName] is not a function
+FAIL pow float32 1D base tensor and 1D integer exponent tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL pow float32 2D base tensor and 2D integer exponent tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL pow float32 3D base tensor and 3D integer exponent tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL pow float32 4D base tensor and 4D integer exponent tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL pow float32 5D base tensor and 5D integer exponent tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL pow (square) float32 4D base tensor and broadcastable 1D integer exponent tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL pow (sqrt) float32 4D positive base tensor and broadcastable 1D integer exponent tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL pow float32 4D base tensor and broadcastable 2D integer exponent tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL pow float32 4D base tensor and broadcastable 3D integer exponent tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 FAIL add float32 1D tensors / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL add float32 2D tensors / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL add float32 3D tensors / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
@@ -117,14 +117,14 @@ FAIL min float32 broadcast 1D to 4D / async promise_test: Unhandled rejection wi
 FAIL min float32 broadcast 2D to 4D / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL min float32 broadcast 3D to 4D / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL min float32 broadcast 4D to 4D / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL pow float32 1D base tensor and 1D integer exponent tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL pow float32 2D base tensor and 2D integer exponent tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL pow float32 3D base tensor and 3D integer exponent tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL pow float32 4D base tensor and 4D integer exponent tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL pow float32 5D base tensor and 5D integer exponent tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL pow (square) float32 4D base tensor and broadcastable 1D integer exponent tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL pow (sqrt) float32 4D positive base tensor and broadcastable 1D integer exponent tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL pow float32 4D base tensor and broadcastable 2D integer exponent tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL pow float32 4D base tensor and broadcastable 3D integer exponent tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 1D base tensor and 1D integer exponent tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL pow float32 2D base tensor and 2D integer exponent tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL pow float32 3D base tensor and 3D integer exponent tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL pow float32 4D base tensor and 4D integer exponent tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL pow float32 5D base tensor and 5D integer exponent tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL pow (square) float32 4D base tensor and broadcastable 1D integer exponent tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL pow (sqrt) float32 4D positive base tensor and broadcastable 1D integer exponent tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL pow float32 4D base tensor and broadcastable 2D integer exponent tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL pow float32 4D base tensor and broadcastable 3D integer exponent tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 Harness: the test ran to completion.
 

@@ -471,6 +471,7 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     case MLOperator::OperatorKind::kDiv:
     case MLOperator::OperatorKind::kMin:
     case MLOperator::OperatorKind::kMax:
+    case MLOperator::OperatorKind::kPow:
       return CreateElementWiseBinaryOperator(operand_to_id_map, op);
     case MLOperator::OperatorKind::kAveragePool2d:
     case MLOperator::OperatorKind::kMaxPool2d:

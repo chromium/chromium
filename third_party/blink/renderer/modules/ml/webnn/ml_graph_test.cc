@@ -202,6 +202,64 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
 }
 
 template <typename T>
+struct PowTester {
+  OperandInfo<T> lhs;
+  OperandInfo<T> rhs;
+  Vector<T> expected;
+
+  void Test(MLGraphTest& helper, V8TestingScope& scope) {
+    // Build the graph.
+    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* lhs_operand = BuildInput(builder, "lhs", lhs.dimensions, lhs.type,
+                                   scope.GetExceptionState());
+    auto* rhs_operand = BuildConstant(builder, rhs.dimensions, rhs.type,
+                                      rhs.values, scope.GetExceptionState());
+    auto* output_operand = BuildElementWiseBinary(
+        scope, builder, ElementWiseBinaryKind::kPow, lhs_operand, rhs_operand);
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    // Compute the graph.
+    MLNamedArrayBufferViews inputs(
+        {{"lhs", CreateArrayBufferViewForOperand(lhs_operand, lhs.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper.ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
+    EXPECT_EQ(results, expected);
+  }
+};
+
+TEST_P(MLGraphTest, PowTest) {
+  V8TestingScope scope;
+  {
+    // Test element-wise pow operator with exponent = 2.
+    PowTester<float>{.lhs = {.type = V8MLOperandType::Enum::kFloat32,
+                             .dimensions = {1, 2, 2, 1},
+                             .values = {1.0, 2.0, 3.0, 4.0}},
+                     .rhs = {.type = V8MLOperandType::Enum::kFloat32,
+                             .dimensions = {1},
+                             .values = {2.0}},
+                     .expected = {1.0, 4.0, 9.0, 16.0}}
+        .Test(*this, scope);
+  }
+  {
+    // Test element-wise pow operator with exponent = 0.5.
+    PowTester<float>{.lhs = {.type = V8MLOperandType::Enum::kFloat32,
+                             .dimensions = {1, 2, 2, 1},
+                             .values = {1.0, 4.0, 9.0, 16.0}},
+                     .rhs = {.type = V8MLOperandType::Enum::kFloat32,
+                             .dimensions = {1},
+                             .values = {0.5}},
+                     .expected = {1.0, 2.0, 3.0, 4.0}}
+        .Test(*this, scope);
+  }
+}
+
+template <typename T>
 struct ElementWiseUnaryTester {
   ElementWiseUnaryKind kind;
   OperandInfo<T> input;

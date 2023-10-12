@@ -5628,6 +5628,7 @@ interface MLGraphBuilder
     method mul
     method neg
     method pad
+    method pow
     method prelu
     method reduceMean
     method reduceSum

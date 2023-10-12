@@ -59,7 +59,7 @@ MLOperand* BuildLeakyRelu(
     const MLOperand* input,
     const MLLeakyReluOptions* options = MLLeakyReluOptions::Create());
 
-enum class ElementWiseBinaryKind { kAdd, kSub, kMul, kDiv, kMin, kMax };
+enum class ElementWiseBinaryKind { kAdd, kSub, kMul, kDiv, kMin, kMax, kPow };
 
 MLOperand* BuildElementWiseBinary(V8TestingScope& scope,
                                   MLGraphBuilder* builder,

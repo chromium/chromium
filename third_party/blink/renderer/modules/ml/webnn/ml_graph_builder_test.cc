@@ -2825,6 +2825,9 @@ MLOperand* BuildElementWiseBinary(V8TestingScope& scope,
     case ElementWiseBinaryKind::kMax:
       output = builder->max(a, b, scope.GetExceptionState());
       break;
+    case ElementWiseBinaryKind::kPow:
+      output = builder->pow(a, b, scope.GetExceptionState());
+      break;
   }
   EXPECT_NE(output, nullptr);
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
@@ -2849,6 +2852,9 @@ MLOperand* BuildElementWiseBinary(V8TestingScope& scope,
       break;
     case ElementWiseBinaryKind::kMax:
       EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kMax);
+      break;
+    case ElementWiseBinaryKind::kPow:
+      EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kPow);
       break;
   }
   EXPECT_EQ(op->IsConnected(), true);

@@ -1067,6 +1067,7 @@ BUILD_ELEMENTWISE_BINARY_OP(mul, kMul)
 BUILD_ELEMENTWISE_BINARY_OP(div, kDiv)
 BUILD_ELEMENTWISE_BINARY_OP(min, kMin)
 BUILD_ELEMENTWISE_BINARY_OP(max, kMax)
+BUILD_ELEMENTWISE_BINARY_OP(pow, kPow)
 
 #define BUILD_ELEMENTWISE_UNARY_OP(op, op_kind)                           \
   MLOperand* MLGraphBuilder::op(const MLOperand* input,                   \

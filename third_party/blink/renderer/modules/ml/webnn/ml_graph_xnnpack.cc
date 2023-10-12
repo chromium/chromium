@@ -986,6 +986,57 @@ xnn_status DefineXnnNodeForElementWiseBinary(
           xnn_define_minimum2(subgraph, lhs_id, rhs_id, output_id, flags));
       break;
     }
+    // Currently, XNNPACK doesn't support the generic pow operator.
+    // The implementation of pow only supports two special cases,
+    // square and square root, by xnn_define_square and xnn_define_square_root.
+    // TODO(crbug.com/1273291): Once the sqrt operator is supported by WebNN
+    // spec, we will map that to XNNPACK square root directly. And there is a
+    // proposal in WG to support dedicated square root operator -
+    // https://github.com/webmachinelearning/webnn/issues/438.
+    case MLOperator::OperatorKind::kPow: {
+      const auto* operand_a = binary->Inputs()[0].Get();
+      CHECK(operand_a);
+      const auto* operand_b = binary->Inputs()[1].Get();
+      CHECK(operand_b);
+      if (operand_b->Kind() != MLOperand::OperandKind::kConstant) {
+        error_message = "Operand b should be defined as a constant for pow.";
+        return xnn_status_unsupported_parameter;
+      }
+      // A scalar can be represented by empty dimensions which is still under WG
+      // discussion. An issue has been filed to track it -
+      // https://github.com/webmachinelearning/webnn/issues/390.
+      if (operand_b->Dimensions().size() != 1 ||
+          operand_b->Dimensions()[0] != 1) {
+        error_message = "Pow only supports scalar operand b.";
+        return xnn_status_unsupported_parameter;
+      }
+
+      // Currently, XNNPACK only supports fp32 input type for square and
+      // square_root operators.
+      if (operand_a->Type() != V8MLOperandType::Enum::kFloat32) {
+        error_message = "Pow only supports float32 operands.";
+        return xnn_status_unsupported_parameter;
+      }
+      CHECK_EQ(operand_b->Type(), V8MLOperandType::Enum::kFloat32);
+
+      const auto* array_buffer_view = operand_b->ArrayBufferView();
+      CHECK(array_buffer_view);
+      CHECK(!array_buffer_view->IsDetached());
+      CHECK_EQ(array_buffer_view->byteLength(), 4U);
+      float exp = static_cast<float*>(array_buffer_view->BaseAddress())[0];
+      if (fabs(exp - 2.0f) <= std::numeric_limits<float>::epsilon()) {
+        XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+            xnn_define_square(subgraph, lhs_id, output_id, flags));
+      } else if (fabs(exp - 0.5f) <= std::numeric_limits<float>::epsilon()) {
+        XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+            xnn_define_square_root(subgraph, lhs_id, output_id, flags));
+      } else {
+        error_message =
+            "The value of scalar operand b must be 2 or 0.5 for pow.";
+        return xnn_status_unsupported_parameter;
+      }
+      break;
+    }
     default:
       NOTREACHED();
   }
@@ -1731,7 +1782,8 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
     case MLOperator::OperatorKind::kMul:
     case MLOperator::OperatorKind::kDiv:
     case MLOperator::OperatorKind::kMax:
-    case MLOperator::OperatorKind::kMin: {
+    case MLOperator::OperatorKind::kMin:
+    case MLOperator::OperatorKind::kPow: {
       XNN_CHECK_STATUS(DefineXnnNodeForElementWiseBinary(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
