@@ -3339,15 +3339,7 @@ void LayoutObject::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
   if (!container)
     return;
 
-  PhysicalOffset container_offset =
-      OffsetFromContainer(container, mode & kIgnoreScrollOffset);
-
-  // TODO(smcgruer): This is inefficient. Instead we should avoid including
-  // offsetForInFlowPosition in offsetFromContainer when ignoring sticky.
-  if (mode & kIgnoreStickyOffset && IsStickyPositioned()) {
-    container_offset -= To<LayoutBoxModelObject>(this)->StickyPositionOffset();
-  }
-
+  PhysicalOffset container_offset = OffsetFromContainer(container, mode);
   if (IsLayoutFlowThread()) {
     // So far the point has been in flow thread coordinates (i.e. as if
     // everything in the fragmentation context lived in one tall single column).
@@ -3587,18 +3579,18 @@ bool LayoutObject::OffsetForContainerDependsOnPoint(
 
 PhysicalOffset LayoutObject::OffsetFromContainer(
     const LayoutObject* o,
-    bool ignore_scroll_offset) const {
+    MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
-  return OffsetFromContainerInternal(o, ignore_scroll_offset);
+  return OffsetFromContainerInternal(o, mode);
 }
 
 PhysicalOffset LayoutObject::OffsetFromContainerInternal(
     const LayoutObject* o,
-    bool ignore_scroll_offset) const {
+    MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   DCHECK_EQ(o, Container());
   return o->IsScrollContainer()
-             ? OffsetFromScrollableContainer(o, ignore_scroll_offset)
+             ? OffsetFromScrollableContainer(o, mode & kIgnoreScrollOffset)
              : PhysicalOffset();
 }
 

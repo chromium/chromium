@@ -813,17 +813,19 @@ bool LayoutInline::MapToVisualRectInAncestorSpaceInternal(
 
 PhysicalOffset LayoutInline::OffsetFromContainerInternal(
     const LayoutObject* container,
-    bool ignore_scroll_offset) const {
+    MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   DCHECK_EQ(container, Container());
 
   PhysicalOffset offset;
-  if (IsStickyPositioned()) {
+  if (IsStickyPositioned() && !(mode & kIgnoreStickyOffset)) {
     offset += StickyPositionOffset();
   }
 
-  if (container->IsScrollContainer())
-    offset += OffsetFromScrollableContainer(container, ignore_scroll_offset);
+  if (container->IsScrollContainer()) {
+    offset +=
+        OffsetFromScrollableContainer(container, mode & kIgnoreScrollOffset);
+  }
 
   return offset;
 }

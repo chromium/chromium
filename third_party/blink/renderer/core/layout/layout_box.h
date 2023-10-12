@@ -1432,7 +1432,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   PhysicalOffset OffsetFromContainerInternal(
       const LayoutObject*,
-      bool ignore_scroll_offset) const override;
+      MapCoordinatesFlags mode) const override;
 
   // For atomic inlines, returns its resolved direction in text flow. Not to be
   // confused with the CSS property 'direction'.

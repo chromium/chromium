@@ -2495,7 +2495,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // Return the offset from the container() layoutObject (excluding transforms
   // and multicol).
   PhysicalOffset OffsetFromContainer(const LayoutObject*,
-                                     bool ignore_scroll_offset = false) const;
+                                     MapCoordinatesFlags = 0) const;
   // Return the offset from an object from the ancestor. The ancestor need
   // not be on the containing block chain of |this|. Note that this function
   // cannot be used when there are transforms between this object and the
@@ -3623,7 +3623,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   virtual PhysicalOffset OffsetFromContainerInternal(
       const LayoutObject*,
-      bool ignore_scroll_offset) const;
+      MapCoordinatesFlags mode) const;
   PhysicalOffset OffsetFromScrollableContainer(const LayoutObject*,
                                                bool ignore_scroll_offset) const;
 

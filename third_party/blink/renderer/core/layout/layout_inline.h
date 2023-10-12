@@ -233,7 +233,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   PhysicalOffset OffsetFromContainerInternal(
       const LayoutObject*,
-      bool ignore_scroll_offset) const final;
+      MapCoordinatesFlags mode) const final;
 
  private:
   bool AbsoluteTransformDependsOnPoint(const LayoutObject& object) const;

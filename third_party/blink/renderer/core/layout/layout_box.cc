@@ -2574,19 +2574,18 @@ LayoutUnit LayoutBox::ContainingBlockLogicalWidthForContent() const {
 
 PhysicalOffset LayoutBox::OffsetFromContainerInternal(
     const LayoutObject* o,
-    bool ignore_scroll_offset) const {
+    MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   DCHECK_EQ(o, Container());
 
-  PhysicalOffset offset;
-  offset += PhysicalLocation();
+  PhysicalOffset offset = PhysicalLocation();
 
-  if (IsStickyPositioned()) {
+  if (IsStickyPositioned() && !(mode & kIgnoreStickyOffset)) {
     offset += StickyPositionOffset();
   }
 
   if (o->IsScrollContainer())
-    offset += OffsetFromScrollableContainer(o, ignore_scroll_offset);
+    offset += OffsetFromScrollableContainer(o, mode & kIgnoreScrollOffset);
 
   if (NeedsAnchorPositionScrollAdjustment()) {
     offset += AnchorPositionScrollTranslationOffset();
