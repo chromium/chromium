@@ -6,7 +6,6 @@
 
 #include <array>
 
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
@@ -27,16 +26,6 @@
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 
 namespace ash::quick_start {
-
-namespace {
-
-// TODO(b/280308144): Delete this switch once the host device handles the
-// NotifySourceOfUpdate message. This is used to manually test forced update
-// before Android implements the NotifySourceOfUpdate ack response.
-constexpr char kQuickStartTestForcedUpdateSwitch[] =
-    "quick-start-test-forced-update";
-
-}  // namespace
 
 Connection::Factory::~Factory() = default;
 
@@ -122,15 +111,6 @@ void Connection::RequestWifiCredentials(
 }
 
 void Connection::NotifySourceOfUpdate(NotifySourceOfUpdateCallback callback) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kQuickStartTestForcedUpdateSwitch)) {
-    HandleNotifySourceOfUpdateResponse(
-        std::move(callback),
-        mojom::NotifySourceOfUpdateResponse::New(/*ack_received=*/true),
-        /*error=*/absl::nullopt);
-    return;
-  }
-
   SessionContext::SharedSecret secondary_shared_secret =
       session_context_.secondary_shared_secret();
   SendMessageAndReadResponse(

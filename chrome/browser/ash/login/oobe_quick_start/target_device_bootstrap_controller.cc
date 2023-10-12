@@ -234,8 +234,7 @@ void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
     bool ack_successful) {
   CHECK(authenticated_connection_);
 
-  if (ack_successful || base::CommandLine::ForCurrentProcess()->HasSwitch(
-                            kQuickStartTestForcedUpdateSwitch)) {
+  if (ack_successful) {
     QS_LOG(INFO) << "Update ack sucessfully received. Preparing to resume "
                     "Quick Start after the update.";
     PrefService* prefs = g_browser_process->local_state();
