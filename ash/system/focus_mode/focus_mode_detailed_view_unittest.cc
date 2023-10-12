@@ -67,6 +67,12 @@ class FocusModeDetailedViewTest : public AshTestBase {
     widget_->SetContentsView(std::move(focus_mode_detailed_view));
   }
 
+  void SetInactiveSessionDuration(SystemTextfield* timer_textfield) {
+    DCHECK(!FocusModeController::Get()->in_focus_session());
+    focus_mode_detailed_view_->SetInactiveSessionDuration(base::Minutes(
+        focus_mode_util::GetTimerTextfieldInputInMinutes(timer_textfield)));
+  }
+
   views::Label* GetToggleRowLabel() {
     return focus_mode_detailed_view_->toggle_view_->text_label();
   }
@@ -91,11 +97,11 @@ class FocusModeDetailedViewTest : public AshTestBase {
   }
 
   IconButton* GetTimerSettingIncrementButton() {
-    return views::AsViewClass<IconButton>(GetTimerSettingView()->children()[3]);
+    return focus_mode_detailed_view_->timer_increment_button_;
   }
 
   IconButton* GetTimerSettingDecrementButton() {
-    return views::AsViewClass<IconButton>(GetTimerSettingView()->children()[2]);
+    return focus_mode_detailed_view_->timer_decrement_button_;
   }
 
   Switch* GetDoNotDisturbToggleButton() {
@@ -268,10 +274,16 @@ TEST_F(FocusModeDetailedViewTest, TimerSettingViewTextfield) {
 // - 300, we will not increment further.
 TEST_F(FocusModeDetailedViewTest, TimerSettingViewIncrements) {
   SystemTextfield* timer_textfield = GetTimerSettingTextfield();
+  IconButton* decrement_button = GetTimerSettingDecrementButton();
   IconButton* increment_button = GetTimerSettingIncrementButton();
 
   // Check incrementing 1 through 5.
   timer_textfield->SetText(u"1");
+  SetInactiveSessionDuration(timer_textfield);
+
+  // The `decrement_button` will be disabled only when setting the duration to
+  // the minimum duration.
+  EXPECT_FALSE(decrement_button->GetEnabled());
   LeftClickOn(increment_button);
   int expected_next_value = 2;
   for (int i = 0; i < 3; i++) {
@@ -281,6 +293,7 @@ TEST_F(FocusModeDetailedViewTest, TimerSettingViewIncrements) {
     expected_next_value += 1;
     LeftClickOn(increment_button);
   }
+  EXPECT_TRUE(decrement_button->GetEnabled());
 
   // Increment 5 to 10.
   EXPECT_EQ(u"5", timer_textfield->GetText());
@@ -333,11 +346,18 @@ TEST_F(FocusModeDetailedViewTest, TimerSettingViewIncrements) {
 TEST_F(FocusModeDetailedViewTest, TimerSettingViewDecrements) {
   SystemTextfield* timer_textfield = GetTimerSettingTextfield();
   IconButton* decrement_button = GetTimerSettingDecrementButton();
+  IconButton* increment_button = GetTimerSettingIncrementButton();
 
   // Decrement 300 to 285.
   timer_textfield->SetText(u"300");
+  SetInactiveSessionDuration(timer_textfield);
+
+  // The `increment_button` will be disabled only when setting the duration to
+  // the maximum duration.
+  EXPECT_FALSE(increment_button->GetEnabled());
   LeftClickOn(decrement_button);
   EXPECT_EQ(u"285", timer_textfield->GetText());
+  EXPECT_TRUE(increment_button->GetEnabled());
 
   // Try decrementing 299 to 285, and then continue decrementing to 60.
   timer_textfield->SetText(u"299");
