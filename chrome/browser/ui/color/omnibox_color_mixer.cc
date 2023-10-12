@@ -35,6 +35,8 @@ void ApplyGM3OmniboxTextColor(ui::ColorMixer& mixer,
 
   mixer[kColorOmniboxText] = {ui::kColorSysOnSurface};
   mixer[kColorOmniboxTextDimmed] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorOmniboxSelectionBackground] = {ui::kColorSysStateTextHighlight};
+  mixer[kColorOmniboxSelectionForeground] = {ui::kColorSysStateOnTextHighlight};
 
   // In high-contrast mode, text colors have selected variants. This is because
   // the selected suggestion has a high-contrast background, so when the
@@ -187,6 +189,12 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
       ui::SelectBasedOnDarkInput(kColorToolbarBackgroundSubtleEmphasis,
                                  gfx::kGoogleGrey100, kColorOmniboxResultsUrl);
   mixer[kColorOmniboxKeywordSeparator] = {kColorOmniboxText};
+
+  // Omnibox highlight colors.
+  mixer[kColorOmniboxSelectionBackground] = {
+      ui::kColorTextfieldSelectionBackground};
+  mixer[kColorOmniboxSelectionForeground] = {
+      ui::kColorTextfieldSelectionForeground};
 
   // Bubble outline colors.
   mixer[kColorOmniboxBubbleOutline] = ui::SelectBasedOnDarkInput(

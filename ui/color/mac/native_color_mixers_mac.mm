@@ -121,8 +121,14 @@ void AddNativeUiColorMixer(ColorProvider* provider,
     }
 
     if (!features::IsChromeRefresh2023() || !key.user_color.has_value()) {
-      mixer[kColorTextSelectionBackground] = {
-          skia::NSSystemColorToSkColor(NSColor.selectedTextBackgroundColor)};
+      const SkColor system_highlight_color =
+          skia::NSSystemColorToSkColor(NSColor.selectedTextBackgroundColor);
+      mixer[kColorTextSelectionBackground] = {system_highlight_color};
+
+      // TODO(crbug.com/1491308): Address accessibility for mac highlight
+      // colors.
+      mixer[kColorSysStateTextHighlight] = {system_highlight_color};
+      mixer[kColorSysStateOnTextHighlight] = {kColorSysOnSurface};
     }
 
     if (!properties.high_contrast) {

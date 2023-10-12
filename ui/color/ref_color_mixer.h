@@ -13,6 +13,7 @@ class ColorProvider;
 
 // Adds a color mixer to `provider` that provides the reference color tokens for
 // Google Material 3.
+COMPONENT_EXPORT(COLOR)
 void AddRefColorMixer(ColorProvider* provider, const ColorProviderKey& key);
 
 }  // namespace ui

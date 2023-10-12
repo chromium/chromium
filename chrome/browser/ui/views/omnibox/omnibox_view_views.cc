@@ -624,6 +624,10 @@ void OmniboxViewViews::OnThemeChanged() {
 
   set_placeholder_text_color(GetColorProvider()->GetColor(
       gm3_text_color_enabled ? kColorOmniboxText : kColorOmniboxTextDimmed));
+  SetSelectionBackgroundColor(
+      GetColorProvider()->GetColor(kColorOmniboxSelectionBackground));
+  SetSelectionTextColor(
+      GetColorProvider()->GetColor(kColorOmniboxSelectionForeground));
 
   EmphasizeURLComponents();
 }
