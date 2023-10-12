@@ -4,6 +4,7 @@
 
 #include "media/audio/ios/audio_session_manager_ios.h"
 
+#import <AVFAudio/AVFAudio.h>
 #import <AVFoundation/AVFoundation.h>
 #import <Foundation/Foundation.h>
 
@@ -15,7 +16,8 @@ AudioSessionManagerIOS::AudioSessionManagerIOS() {
   AVAudioSession* audio_session = [AVAudioSession sharedInstance];
 
   NSError* error = nil;
-  auto options = AVAudioSessionCategoryOptionAllowBluetooth |
+  auto options = AVAudioSessionCategoryOptionDefaultToSpeaker |
+                 AVAudioSessionCategoryOptionAllowBluetooth |
                  AVAudioSessionCategoryOptionAllowBluetoothA2DP |
                  AVAudioSessionCategoryOptionMixWithOthers;
   [audio_session setCategory:AVAudioSessionCategoryPlayAndRecord
@@ -37,12 +39,34 @@ AudioSessionManagerIOS::AudioSessionManagerIOS() {
     }
   }
 
-  // Find the desired microphone
-  for (AVAudioSessionDataSourceDescription* source in builtInMic.dataSources) {
-    if ([source.orientation isEqual:AVAudioSessionOrientationFront]) {
-      [builtInMic setPreferredDataSource:source error:nil];
-      [audio_session setPreferredInput:builtInMic error:nil];
-      break;
+  [audio_session setPreferredInput:builtInMic error:nil];
+
+  AVAudioSessionPortDescription* preferredInput =
+      [audio_session preferredInput];
+  if (preferredInput != nil) {
+    NSArray<AVAudioSessionDataSourceDescription*>* dataSources =
+        audio_session.preferredInput.dataSources;
+    AVAudioSessionDataSourceDescription* newDataSource = nil;
+    for (AVAudioSessionDataSourceDescription* dataSource in dataSources) {
+      if ([dataSource.orientation isEqual:AVAudioSessionOrientationFront]) {
+        newDataSource = dataSource;
+        break;
+      }
+    }
+
+    if (newDataSource != nil) {
+      NSArray<NSString*>* supportedPolarPatterns =
+          newDataSource.supportedPolarPatterns;
+      if (supportedPolarPatterns != nil) {
+        BOOL hasStereo = [supportedPolarPatterns
+            containsObject:AVAudioSessionPolarPatternStereo];
+        if (hasStereo) {
+          [newDataSource
+              setPreferredPolarPattern:AVAudioSessionPolarPatternStereo
+                                 error:nil];
+        }
+      }
+      [preferredInput setPreferredDataSource:newDataSource error:nil];
     }
   }
 
@@ -113,6 +137,34 @@ std::string AudioSessionManagerIOS::GetDefaultInputDeviceID() {
   return base::SysNSStringToUTF8([currentInput portName]);
 }
 
+int AudioSessionManagerIOS::HardwareSampleRate() {
+  AVAudioSession* audio_session = [AVAudioSession sharedInstance];
+  return static_cast<int>(audio_session.sampleRate);
+}
+
+float AudioSessionManagerIOS::GetInputGain() {
+  AVAudioSession* audio_session = [AVAudioSession sharedInstance];
+  return audio_session.inputGain;
+}
+
+bool AudioSessionManagerIOS::SetInputGain(float volume) {
+  AVAudioSession* audio_session = [AVAudioSession sharedInstance];
+  if ([audio_session isInputGainSettable] == YES) {
+    BOOL success = [audio_session setInputGain:volume error:nil];
+    return success;
+  }
+  return false;
+}
+
+bool AudioSessionManagerIOS::IsInputMuted() {
+  if (@available(iOS 17.0, *)) {
+    AVAudioApplication* audio_application = [AVAudioApplication sharedInstance];
+    return audio_application.isInputMuted;
+  }
+  return false;
+}
+
+// private
 void AudioSessionManagerIOS::GetAudioInputDeviceInfo(
     media::AudioDeviceNames* device_names) {
   AVAudioSession* audio_session = [AVAudioSession sharedInstance];
@@ -147,11 +199,6 @@ void AudioSessionManagerIOS::GetAudioOutputDeviceInfo(
     // counting here since the default device has been abstracted out before.
     device_names->push_front(media::AudioDeviceName::CreateDefault());
   }
-}
-
-int AudioSessionManagerIOS::HardwareSampleRate() {
-  AVAudioSession* audio_session = [AVAudioSession sharedInstance];
-  return static_cast<int>(audio_session.sampleRate);
 }
 
 }  // namespace media

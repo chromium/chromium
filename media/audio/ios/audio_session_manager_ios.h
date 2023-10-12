@@ -24,6 +24,11 @@ class AudioSessionManagerIOS {
   std::string GetDefaultInputDeviceID();
   int HardwareSampleRate();
 
+  // Gain
+  float GetInputGain();
+  bool SetInputGain(float volume);
+  bool IsInputMuted();
+
  private:
   void GetAudioInputDeviceInfo(media::AudioDeviceNames* device_names);
   void GetAudioOutputDeviceInfo(media::AudioDeviceNames* device_names);

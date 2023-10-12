@@ -145,6 +145,19 @@ bool AudioManagerIOS::MaybeChangeBufferSize(AudioDeviceID device_id,
   return true;
 }
 
+float AudioManagerIOS::GetInputGain() {
+  return audio_session_manager_->GetInputGain();
+}
+
+bool AudioManagerIOS::SetInputGain(float volume) {
+  return audio_session_manager_->SetInputGain(volume);
+}
+
+bool AudioManagerIOS::IsInputMuted() {
+  return audio_session_manager_->IsInputMuted();
+}
+
+// private
 AudioParameters AudioManagerIOS::GetPreferredOutputStreamParameters(
     const std::string& output_device_id,
     const AudioParameters& input_params) {

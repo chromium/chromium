@@ -78,6 +78,11 @@ class MEDIA_EXPORT AudioManagerIOS : public AudioManagerBase,
                              AudioUnitElement element,
                              size_t desired_buffer_size) override;
 
+  // Gain
+  float GetInputGain();
+  bool SetInputGain(float volume);
+  bool IsInputMuted();
+
  protected:
   AudioParameters GetPreferredOutputStreamParameters(
       const std::string& output_device_id,

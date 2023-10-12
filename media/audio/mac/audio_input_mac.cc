@@ -168,17 +168,34 @@ double PCMQueueInAudioInputStream::GetMaxVolume() {
 }
 
 void PCMQueueInAudioInputStream::SetVolume(double volume) {
+#if BUILDFLAG(IS_MAC)
   NOTIMPLEMENTED();
+#else
+  auto* manager = static_cast<AudioManagerIOS*>(client_);
+  if (manager) {
+    manager->SetInputGain(volume);
+  }
+#endif
 }
 
 double PCMQueueInAudioInputStream::GetVolume() {
+#if BUILDFLAG(IS_MAC)
   NOTIMPLEMENTED();
   return 1.0;
+#else
+  auto* manager = static_cast<AudioManagerIOS*>(client_);
+  return manager ? manager->GetInputGain() : 1.0;
+#endif
 }
 
 bool PCMQueueInAudioInputStream::IsMuted() {
+#if BUILDFLAG(IS_MAC)
   NOTIMPLEMENTED();
   return false;
+#else
+  auto* manager = static_cast<AudioManagerIOS*>(client_);
+  return manager ? manager->IsInputMuted() : false;
+#endif
 }
 
 bool PCMQueueInAudioInputStream::SetAutomaticGainControl(bool enabled) {
