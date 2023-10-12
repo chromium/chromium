@@ -735,7 +735,14 @@ void SharedContextState::PurgeMemory(
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
       // With critical pressure, purge as much as possible.
       sk_surface_cache_.Clear();
-      gr_context_->freeGpuResources();
+      {
+        absl::optional<raster::GrShaderCache::ScopedCacheUse> cache_use;
+        // ScopedCacheUse is to avoid the empty/invalid client id DCHECKS caused
+        // while accessing GrShaderCache. Note that since the actual client_id
+        // here does not matter, we are using gpu::kDisplayCompositorClientId.
+        UseShaderCache(cache_use, kDisplayCompositorClientId);
+        gr_context_->freeGpuResources();
+      }
       UpdateSkiaOwnedMemorySize();
       scratch_deserialization_buffer_.resize(0u);
       scratch_deserialization_buffer_.shrink_to_fit();
