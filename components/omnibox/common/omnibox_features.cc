@@ -323,11 +323,6 @@ BASE_FEATURE(kOmniboxActionsUISimplification,
              "OmniboxActionsUISimplification",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Feature used to enable URL suggestions for inputs that may contain typos.
-BASE_FEATURE(kOmniboxFuzzyUrlSuggestions,
-             "OmniboxFuzzyUrlSuggestions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature used to synchronize the toolbar's and status bar's color.
 BASE_FEATURE(kOmniboxMatchToolbarAndStatusBarColor,
              "OmniboxMatchToolbarAndStatusBarColor",

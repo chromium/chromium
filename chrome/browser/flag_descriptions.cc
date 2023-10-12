@@ -2317,10 +2317,6 @@ const char kOmniboxDomainSuggestionsDescription[] =
     "If enabled, history URL suggestions from hosts visited often bypass the "
     "per provider limit.";
 
-const char kOmniboxFuzzyUrlSuggestionsName[] = "Omnibox Fuzzy URL Suggestions";
-const char kOmniboxFuzzyUrlSuggestionsDescription[] =
-    "Enables URL suggestions for inputs that may contain typos.";
-
 const char kOmniboxGM3SteadyStateBackgroundColorName[] =
     "Omnibox Steady State Background Color";
 const char kOmniboxGM3SteadyStateBackgroundColorDescription[] =

@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
@@ -139,13 +140,6 @@ std::u16string ReduceInputTextForMatching(const std::u16string& input) {
   return remaining;
 }
 
-// Indicates whether to deactivate fuzzy processing due to device performance
-// and memory constraints. This prevents loading, updating, and fuzzy search.
-bool ShouldBypassForLowEndDevice() {
-  return OmniboxFieldTrial::kFuzzyUrlSuggestionsLowEndBypass.Get() &&
-         base::SysInfo::IsLowEndDevice();
-}
-
 }  // namespace
 
 namespace fuzzy {
@@ -243,8 +237,6 @@ void Node::Clear() {
 bool Node::FindCorrections(const std::u16string& text,
                            ToleranceSchedule tolerance_schedule,
                            std::vector<Correction>& corrections) const {
-  const bool enable_transpose =
-      OmniboxFieldTrial::kFuzzyUrlSuggestionsTranspose.Get();
   DCHECK(corrections.empty());
   DCHECK(tolerance_schedule.limit <= Correction::kMaxEdits);
 
@@ -378,7 +370,7 @@ bool Node::FindCorrections(const std::u16string& text,
 
         // Transpose. Look ahead cost can be balanced by faster
         // advancement through input text resulting in shorter search.
-        if (enable_transpose && text.size() > step.index + 1 &&
+        if (text.size() > step.index + 1 &&
             text[step.index + 1] == entry.first) {
           const auto it = entry.second->next.find(step_text_char);
           if (it != entry.second->next.end()) {
@@ -471,23 +463,25 @@ void HistoryFuzzyProvider::RecordOpenMatchMetrics(
 
 HistoryFuzzyProvider::HistoryFuzzyProvider(AutocompleteProviderClient* client)
     : HistoryProvider(AutocompleteProvider::TYPE_HISTORY_FUZZY, client) {
-  // Cache tunable parameters so they don't need to be looked up when
-  // running search and calculating penalties.
-  min_input_length_ =
-      OmniboxFieldTrial::kFuzzyUrlSuggestionsMinInputLength.Get();
-  penalty_low_ = OmniboxFieldTrial::kFuzzyUrlSuggestionsPenaltyLow.Get();
-  penalty_high_ = OmniboxFieldTrial::kFuzzyUrlSuggestionsPenaltyHigh.Get();
-  penalty_taper_length_ =
-      OmniboxFieldTrial::kFuzzyUrlSuggestionsPenaltyTaperLength.Get();
-  counterfactual_ = OmniboxFieldTrial::kFuzzyUrlSuggestionsCounterfactual.Get();
-
-  if (ShouldBypassForLowEndDevice()) {
-    // Note, this early return will prevent loading from database, which saves
-    // memory and prevents this provider from working to find fuzzy matches.
-    // See also the early return in `Start` below; `urls_loaded_event_` never
-    // signals because the signaling task is never run.
-    return;
-  }
+  // Set up tunable parameters. These can be used to affect fuzzy matching
+  // behavior and performance. Note, we use different `min_input_length_` values
+  // depending on desktop versus mobile platforms, determined by experiment.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  min_input_length_ = 5;
+#else
+  min_input_length_ = 3;
+#endif
+  // These initial penalty values produce good results for most inputs:
+  // Using 10% reasonably took a 1334 relevance match down to 1200,
+  // but was harmful to HQP suggestions: as soon as a '.' was
+  // appended, a bunch of ~800 navsuggest results overtook a better
+  // HQP result that was bumped down to ~770. Using 5% lets this
+  // result compete in the navsuggest range.
+  penalty_low_ = 5;
+  penalty_high_ = 5;
+  // The default value of zero means "no taper", and only the lowest penalty
+  // will be applied.
+  penalty_taper_length_ = 0;
 
   // In tests, history service is null and doesn't need to be observed.
   if (client->GetHistoryService()) {
@@ -500,10 +494,6 @@ HistoryFuzzyProvider::HistoryFuzzyProvider(AutocompleteProviderClient* client)
                            weak_ptr_factory_.GetWeakPtr())),
         &task_tracker_);
   }
-}
-
-void HistoryFuzzyProvider::SetCounterfactualRelevanceHint(int relevance_hint) {
-  counterfactual_relevance_hint_ = relevance_hint;
 }
 
 void HistoryFuzzyProvider::Start(const AutocompleteInput& input,
@@ -532,30 +522,6 @@ void HistoryFuzzyProvider::Start(const AutocompleteInput& input,
     DoAutocomplete();
     for (AutocompleteMatch& match : matches_) {
       match.provider = this;
-    }
-  }
-
-  if (!matches_.empty()) {
-    // This will likely produce some false positives, but the likelihood
-    // is reduced by only triggering when one of the matches exceeds
-    // the relevance hint, an estimated cutoff value at which we expect fuzzy
-    // matches could persist after sorting and culling the full match set.
-    const bool met_threshold = std::any_of(
-        matches_.begin(), matches_.end(), [=](const AutocompleteMatch& match) {
-          return match.relevance > counterfactual_relevance_hint_;
-        });
-    if (met_threshold) {
-      client()->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
-          metrics::OmniboxEventProto_Feature_FUZZY_URL_SUGGESTIONS);
-    }
-
-    // When in the counterfactual group, we do all the work of finding fuzzy
-    // matches, but do not provide the benefit. To reduce risk of unintended
-    // consequences downstream (for example showing fewer suggestions than
-    // normal), the matches are cleared here instead of at end of result
-    // processing pipeline so they won't interact or dedupe with other matches.
-    if (counterfactual_) {
-      matches_.clear();
     }
   }
 }
@@ -719,9 +685,6 @@ void HistoryFuzzyProvider::OnURLVisited(
     history::HistoryService* history_service,
     const history::URLRow& url_row,
     const history::VisitRow& new_visit) {
-  if (ShouldBypassForLowEndDevice()) {
-    return;
-  }
   if (root_.TerminalCount() <
       std::min(OmniboxFieldTrial::MaxNumHQPUrlsIndexedAtStartup(),
                kMaxTerminalCount)) {
@@ -732,9 +695,6 @@ void HistoryFuzzyProvider::OnURLVisited(
 void HistoryFuzzyProvider::OnURLsDeleted(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
-  if (ShouldBypassForLowEndDevice()) {
-    return;
-  }
   // Note, this implementation is conservative in terms of user privacy; it
   // deletes hosts from the trie if any URL with the given host is deleted.
   if (deletion_info.IsAllHistory()) {

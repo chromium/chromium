@@ -6096,11 +6096,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-fuzzy-url-suggestions",
-    "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "omnibox-gm3-steady-state-background-color",
     "owners": [ "khalidpeer", "manukh", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120

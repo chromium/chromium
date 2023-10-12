@@ -1337,9 +1337,6 @@ extern const char kOmniboxActionsUISimplificationDescription[];
 extern const char kOmniboxDomainSuggestionsName[];
 extern const char kOmniboxDomainSuggestionsDescription[];
 
-extern const char kOmniboxFuzzyUrlSuggestionsName[];
-extern const char kOmniboxFuzzyUrlSuggestionsDescription[];
-
 extern const char kOmniboxGM3SteadyStateBackgroundColorName[];
 extern const char kOmniboxGM3SteadyStateBackgroundColorDescription[];
 

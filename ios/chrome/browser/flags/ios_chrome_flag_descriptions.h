@@ -615,10 +615,6 @@ extern const char kNTPViewHierarchyRepairDescription[];
 extern const char kOmniboxFocusTriggersSRPZeroSuggestName[];
 extern const char kOmniboxFocusTriggersSRPZeroSuggestDescription[];
 
-// Title and description for fuzzy URL suggestions feature.
-extern const char kOmniboxFuzzyUrlSuggestionsName[];
-extern const char kOmniboxFuzzyUrlSuggestionsDescription[];
-
 // Title and description for the flag to enable Omnibox HTTPS upgrades for
 // schemeless navigations.
 extern const char kOmniboxHttpsUpgradesName[];

@@ -456,13 +456,6 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   // arithmetic mean.
   base::TimeTicks start_time = base::TimeTicks::Now();
 
-  // Keep a max-heap of negative relevances to quickly estimate a relevance
-  // cutoff that can be used to improve counterfactual triggering.
-  // Prevent memory churn by starting with full size heap, ready for
-  // first change to be pushed without reallocation.
-  std::vector<int> relevances(internal_result_.GetDynamicMaxMatches() + 1, 0);
-  relevances.pop_back();
-
   for (const auto& provider : providers_) {
     // Starter Pack engines in keyword mode only run a subset of the providers,
     // so call `ShouldRunProvider()` to determine which ones should run.
@@ -471,19 +464,7 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
     }
 
     base::TimeTicks provider_start_time = base::TimeTicks::Now();
-    if (history_fuzzy_provider_) {
-      history_fuzzy_provider_->SetCounterfactualRelevanceHint(
-          -relevances.front());
-    }
     provider->Start(input_, minimal_changes);
-
-    for (const AutocompleteMatch& match : provider->matches()) {
-      relevances.push_back(-match.relevance);
-      std::push_heap(relevances.begin(), relevances.end());
-      std::pop_heap(relevances.begin(), relevances.end());
-      relevances.pop_back();
-      DCHECK(std::is_heap(relevances.begin(), relevances.end()));
-    }
 
     // `UmaHistogramTimes()` uses 1ms - 10s buckets, whereas this uses 1ms - 5s
     // buckets.
