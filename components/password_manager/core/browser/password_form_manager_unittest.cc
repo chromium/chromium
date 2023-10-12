@@ -2791,6 +2791,97 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowWithPrefilledUsername) {
   Mock::VerifyAndClearExpectations(&mock_autofill_download_manager_);
 }
 
+// Tests that if prefilled username inside the password form has a matching
+// value with a field found outside of the password form the vote will be sent
+// correctly. In this test case, there is an intermediary field between them.
+TEST_P(PasswordFormManagerTest,
+       UsernameFirstFlowWithIntermediaryFieldsAndPrefilledUsername) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing,
+                            features::kUsernameFirstFlowWithIntermediateValues,
+                            features::kUsernameFirstFlowStoreSeveralValues},
+      /*disabled_features=*/{});
+
+  CreateFormManager(submitted_form_);
+  fetcher_->NotifyFetchCompleted();
+
+  // Create possible username data.
+  PossibleUsernameData possible_username_data(
+      saved_match_.signon_realm, kSingleUsernameFieldRendererId,
+      submitted_form_.fields[kUsernameFieldIndex].value, base::Time::Now(),
+      /*driver_id=*/0,
+      /*autocomplete_attribute_has_username=*/false, /*is_likely_otp=*/false);
+
+  // Server has no predictions for the single username form.
+  // `possible_username_data.form_predictions` is required to be set correctly
+  // with field signature, form signature, and field renderer id to be able to
+  // send single username votes.
+  auto server_prediction = MakeSingleUsernamePredictions();
+  server_prediction.fields[0].type = autofill::NO_SERVER_DATA;
+  possible_username_data.form_predictions = server_prediction;
+
+  // Create more recent data.
+  const std::u16string possible_username_otp = u"not_username_value";
+  PossibleUsernameData possible_username_data_otp(
+      saved_match_.signon_realm, autofill::FieldRendererId(103u),
+      possible_username_otp, base::Time::Now(),
+      /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+
+  base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+      possible_usernames = MakePossibleUsernamesCache(
+          {possible_username_data_otp, possible_username_data});
+
+  ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
+                                               &possible_usernames));
+
+  // Check that uploads for both single username and sign-up form happen.
+  testing::InSequence in_sequence;
+
+  // Upload username first flow vote on the single username form.
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(mock_autofill_download_manager_,
+              StartUploadRequest(SignatureIs(kSingleUsernameFormSignature),
+                                 false, ServerFieldTypeSet{SINGLE_USERNAME}, _,
+                                 true, nullptr, /*observer=*/IsNull()));
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Upload username first flow vote on the sign-up form.
+  autofill::AutofillUploadContents::SingleUsernameData
+      expected_single_username_data;
+  expected_single_username_data.set_username_form_signature(
+      kSingleUsernameFormSignature.value());
+  expected_single_username_data.set_username_field_signature(
+      kSingleUsernameFieldSignature.value());
+  expected_single_username_data.set_value_type(
+      autofill::AutofillUploadContents::VALUE_WITH_NO_WHITESPACE);
+  expected_single_username_data.set_prompt_edit(
+      autofill::AutofillUploadContents::NOT_EDITED_POSITIVE);
+  EXPECT_CALL(
+      mock_autofill_download_manager_,
+      StartUploadRequest(
+          AllOf(SignatureIs(CalculateFormSignature(submitted_form_)),
+                UploadedSingleUsernameDataIs({expected_single_username_data})),
+          _, _, _, _, _, /*observer=*/IsNull()));
+
+  // Simulate showing the prompt and saving the suggested value.
+  form_manager_->SaveSuggestedUsernameValueToVotesUploader();
+
+  base::HistogramTester histogram_tester;
+
+  form_manager_->Save();
+
+#if !BUILDFLAG(IS_ANDROID)
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SingleUsername.PasswordFormHadUsernameField", 1, 1);
+#else
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SingleUsername.PasswordFormHadUsernameField", 0);
+#endif
+  Mock::VerifyAndClearExpectations(&mock_autofill_download_manager_);
+}
+
 // Tests that a negative vote is sent when a single username candidate is
 // populated in a prompt, but then is removed by the user in the prompt.
 TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
@@ -2980,16 +3071,14 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameServerPredictions) {
   }
 }
 
-// Tests that the most recent possible username is used, even if there
-// is a `SINGLE_USERNAME` server prediction for a less recent possible username
-// in Username First Flow.
-// TODO: crbug.com/1470586 - Update the test once server predictions are
-// prioritized.
-TEST_P(PasswordFormManagerTest, PossibleUsernamesPrioritizeMostRecent) {
+// Tests that the possible username with server prediction is picked as a
+// username in password save prompt, even if there is a field that was more
+// recently typed by the user as a possible username in Username First Flow.
+TEST_P(PasswordFormManagerTest, PossibleUsernamesPrioritizeServerPrediction) {
   const std::u16string possible_username_with_prediction =
       u"possible_username_with_prediction";
   PossibleUsernameData possible_username_data_with_prediction(
-      saved_match_.signon_realm, autofill::FieldRendererId(102u),
+      saved_match_.signon_realm, kSingleUsernameFieldRendererId,
       possible_username_with_prediction, base::Time::Now(),
       /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/false);
@@ -3009,16 +3098,17 @@ TEST_P(PasswordFormManagerTest, PossibleUsernamesPrioritizeMostRecent) {
   // The most recent username doesn't have a prediction, while the least recent
   // has.
   base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
-      possible_usernames = MakePossibleUsernamesCache(
-          {possible_username_data_with_prediction,
-           possible_username_data_without_prediction});
+      possible_usernames =
+          MakePossibleUsernamesCache({possible_username_data_without_prediction,
+                                      possible_username_data_with_prediction});
 
   CreateFormManager(observed_form_only_password_fields_);
   fetcher_->NotifyFetchCompleted();
 
-  ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
+  EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                &possible_usernames));
-  EXPECT_TRUE(form_manager_->GetPendingCredentials().username_value.empty());
+  EXPECT_EQ(possible_username_with_prediction,
+            form_manager_->GetPendingCredentials().username_value);
 }
 
 // Tests that boolean representing autocomplete = "username" is taken into

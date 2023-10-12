@@ -10,6 +10,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/lru_cache.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
@@ -28,6 +29,7 @@
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
+#include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/password_change_success_tracker_impl.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -178,52 +180,36 @@ GivePriorityToUsernameFoundOutsideOfForm(
           PasswordFormHadMatchingUsername(false)};
 }
 
-// Finds best username candidate that is outside of the form. Priority is given
-// to the most recently updated fields. Right now, this function checks if there
-// is an override among possible usernames. Otherwise, returns the most recently
-// modified field not in password form.
-// TODO: crbug.com/1470586 - Add search for the most recent field with
-// `SINGLE_USERNAME` prediction. Add search for candidate that has the same
-// value as username inside the form. Search for candidate with HTML attribute
-// autocomplete="username". Skip OTP fields.
+// Finds best username candidate that is outside of the form. This is done
+// according to priorities listed in `UsernameFoundOutsideOfFormType`.
+// If there are more than one field in the same category, pick the one that is
+// more recently modified by the user.
 UsernameFoundOutsideOfForm FindBestPossibleUsernameCandidate(
     const base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>&
         possible_usernames,
     const PasswordForm& form) {
-  // Check priority of the most recent element modified by user.
-  auto [priority, password_form_had_matching_username] =
-      GivePriorityToUsernameFoundOutsideOfForm(
-          possible_usernames.begin()->second, form);
-  UsernameFoundOutsideOfForm result = {priority,
-                                       password_form_had_matching_username,
-                                       possible_usernames.begin()->second};
-
-  // Search for better candidate among less recently modified fields.
+  std::optional<UsernameFoundOutsideOfForm> result = std::nullopt;
+  // Search for a candidate among all recently user modified fields.
   // If `kUsernameFirstFlowWithIntermediateValues` feature is off, the last
   // user-typed is always picked.
   // If `kUsernameFirstFlowWithIntermediateValues` feature is on, look for
   // other field in cache that has a higher priority.
-  // TODO(crbug.com/1470586): Reuse
-  // `GivePriorityToUsernameFoundOutsideOfForm()`.
   for (auto [field_identifier, candidate_username] : possible_usernames) {
-    // The override has higher priority than server prediction. If password form
-    // has server prediction, only override found outside of the password form
-    // can be used instead of it.
     // Reassign the best candidate if new candidate has higher priority.
     // Priorities are numbered so that the lowest has priority 0.
-    if (candidate_username.HasSingleUsernameOverride() &&
-        result.priority <
-            UsernameFoundOutsideOfFormType::kSingleUsernameOverride &&
-        base::FeatureList::IsEnabled(
-            password_manager::features::
-                kUsernameFirstFlowWithIntermediateValues)) {
-      result = {UsernameFoundOutsideOfFormType::kSingleUsernameOverride,
-                FormMatchesUsername(form, candidate_username.value),
+    auto [priority, password_form_had_matching_username] =
+        GivePriorityToUsernameFoundOutsideOfForm(candidate_username, form);
+    if (!result.has_value() ||
+        (priority > result.value().priority &&
+         (base::FeatureList::IsEnabled(
+             password_manager::features::
+                 kUsernameFirstFlowWithIntermediateValues)))) {
+      result = {priority, password_form_had_matching_username,
                 candidate_username};
-      return result;
     }
   }
-  return result;
+  CHECK(result.has_value());
+  return result.value();
 }
 
 void SetUsernameValueFromOutsideOfForm(const std::u16string& value,
@@ -913,11 +899,18 @@ bool PasswordFormManager::ProvisionallySave(
     // username form.
     // 3) There is a username field outside of the password form that is a
     // server override.
+    // 4) Username field outside of the password form has a server prediction,
+    // while username in the password form was found using client-side
+    // heuristics.
     if (IsPasswordFormWithoutUsername(
             parsed_submitted_form_.get()) ||                      // Case (1).
         possible_username.password_form_had_matching_username ||  // Case (2).
         possible_username.priority ==                             // Case (3).
-            UsernameFoundOutsideOfFormType::kSingleUsernameOverride) {
+            UsernameFoundOutsideOfFormType::kSingleUsernameOverride ||
+        (possible_username.priority ==  // Case (4).
+             UsernameFoundOutsideOfFormType::kSingleUsernamePrediction &&
+         username_detection_method !=
+             FormDataParser::UsernameDetectionMethod::kServerSidePrediction)) {
       HandleUsernameFirstFlow(possible_username);
     }
   }
@@ -1312,10 +1305,11 @@ void PasswordFormManager::UpdateFormManagerWithFormChanges(
 void PasswordFormManager::HandleUsernameFirstFlow(
     const UsernameFoundOutsideOfForm& possible_username) {
   if (IsPossibleSingleUsernameAvailable(possible_username.data)) {
-    // Suggest the possible username value in a prompt in two cases:
-    // (1) If the server confirmed it is a single username field (either server
-    // prediction or server override).
-    // (2) If the field has autocomplete = "username" attribute (used only if
+    // Suggest the possible username value in a prompt in three cases:
+    // (1) If single username field is a server override.
+    // (2) If the server prediction tells that it is a single username field and
+    // there is no `USERNAME` server prediction inside the password form.
+    // (3) If the field has autocomplete = "username" attribute (used only if
     // there are no server predictions, which lets us override the attribute).
     // Otherwise, |possible_username| is used only for voting.
     if (possible_username.priority ==
