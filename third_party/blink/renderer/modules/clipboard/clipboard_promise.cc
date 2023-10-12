@@ -242,7 +242,7 @@ void ClipboardPromise::HandleRead(ClipboardUnsanitizedFormats* formats) {
     if (unsanitized_formats.size() > 1) {
       script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
-          "Support to read multiple unsanitized formats is not implemented."));
+          "Reading multiple unsanitized formats is not supported."));
       return;
     }
     if (unsanitized_formats[0] != kMimeTypeTextHTML) {
