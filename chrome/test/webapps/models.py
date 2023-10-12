@@ -5,6 +5,7 @@
 """Classes used to process the Web App testing framework data.
 """
 
+import collections
 from enum import Enum
 from enum import unique
 import os
@@ -112,7 +113,6 @@ class Action:
               resolved at parse time.
         base_name: If the action has arguments, this is the base action name
                    before the argument was concatenated, resulting in the name.
-        id: Short name of the action, used during test naming.
         cpp_method: Resolved method to call in C++ to execute this action. This
                     includes any arguments.
         type: The type of the action (see ActionType).
@@ -124,15 +124,16 @@ class Action:
                                     supported.
     """
 
-    def __init__(self, name: str, base_name: str, id: str, cpp_method: str,
-                 type: ActionType, full_coverage_platforms: Set[TestPlatform],
+    def __init__(self, name: str, base_name: str, shortened_base_name: str,
+                 cpp_method: str, type: ActionType,
+                 full_coverage_platforms: Set[TestPlatform],
                  partial_coverage_platforms: Set[TestPlatform]):
         assert name is not None
         assert base_name is not None
         assert type is not None
         self.name: str = name
         self.base_name: str = base_name
-        self.id: str = id
+        self.shortened_base_name: str = shortened_base_name
         self.cpp_method: str = cpp_method
         self.type: ActionType = type
         self.output_actions: List[Action] = []
@@ -161,7 +162,7 @@ class Action:
     def __str__(self):
         return (f"Action[{self.name}, "
                 f"base_name: {self.base_name}, "
-                f"id: {self.id}, "
+                f"shortened_base_name: {self.shortened_base_name}, "
                 f"type: {self.type}, "
                 f"output_actions: "
                 f"{[a.name for a in self.output_actions]}, "
@@ -237,7 +238,7 @@ class CoverageTest:
     def __init__(self, actions: List[Action], platforms: Set[TestPlatform]):
         assert actions is not None
         assert platforms is not None
-        self.id: TestId = "_".join([a.id for a in actions])
+        self.id: TestId = "_".join([a.name for a in actions])
         self.actions: List[Action] = actions
         self.platforms: Set[TestPlatform] = platforms
 
@@ -254,8 +255,22 @@ class CoverageTest:
                            for action in self.actions])
         fixture = f"{test_partition.test_fixture}"
         return (f"IN_PROC_BROWSER_TEST_F("
-                f"{fixture}, {CoverageTest.TEST_ID_PREFIX}{self.id}) {{\n"
-                f"{body}\n}}")
+                f"{fixture}, "
+                f"{CoverageTest.TEST_ID_PREFIX}{self.generate_test_name()}) "
+                f"{{\n{body}\n}}")
+
+    def generate_test_name(self):
+        state_change_list = []
+        for a in self.actions:
+            if "check" not in a.name:
+                action_name = (a.shortened_base_name
+                               if a.shortened_base_name else a.base_name)
+                action = a.name.replace(a.base_name, action_name)
+                action_list = action.split("_")
+                state_change = "".join(a[0].upper() + a[1:]
+                                       for a in action_list)
+                state_change_list.append(state_change)
+        return "_".join(state_change_list)
 
     def __str__(self):
         return (f"CoverageTest[id: {self.id}, "
@@ -308,8 +323,11 @@ class TestPartitionDescription:
                              (self.test_file_prefix + suffix + ".cc")))
 
 
-TestIdsByPlatform = Dict[TestPlatform, Set[TestId]]
-TestIdsByPlatformSet = Dict[FrozenSet[TestPlatform], Set[TestId]]
+TestIdTestNameTuple = collections.namedtuple("TestIdTestNameTuple",
+                                             "test_id, test_name")
+TestIdsTestNamesByPlatform = Dict[TestPlatform, Set[TestIdTestNameTuple]]
+TestIdsTestNamesByPlatformSet = Dict[FrozenSet[TestPlatform],
+                                     Set[TestIdTestNameTuple]]
 CoverageTestsByPlatformSet = Dict[FrozenSet[TestPlatform], List[CoverageTest]]
 CoverageTestsByPlatform = Dict[TestPlatform, List[CoverageTest]]
 EnumsByType = Dict[str, ArgEnum]
