@@ -411,6 +411,27 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
   return GreyImage(image);
 }
 
+// Returns true if the flag for grey optimization is enabled.
+bool IsGreySnapshotOptimizationEnabled() {
+  if (base::FeatureList::IsEnabled(kGreySnapshotOptimization)) {
+    return true;
+  }
+  return false;
+}
+
+// Returns true if the flag for grey optimization is enabled and the
+// optimization level is highest, no grey snapshot images in in-memory cache and
+// disk.
+bool IsGreySnapshotOptimizationNoCacheEnabled() {
+  if (IsGreySnapshotOptimizationEnabled()) {
+    if (kGreySnapshotOptimizationLevelParam.Get() ==
+        GreySnapshotOptimizationLevel::kDoNotStoreToDiskAndCache) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // anonymous namespace
 
 @implementation SnapshotStorage {
@@ -625,6 +646,7 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
     // Copy the grey scale version, if available.
     auto iterator = _greyImageDictionary.find(snapshotID);
     if (iterator != _greyImageDictionary.end()) {
+      DCHECK(!IsGreySnapshotOptimizationNoCacheEnabled());
       destinationStorage->_greyImageDictionary.insert(
           std::make_pair(snapshotID, iterator->second));
     }
@@ -673,6 +695,7 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
 // `_mostRecentGreyBlock` if `_mostRecentGreySnapshotID` matches `snapshotID`.
 - (void)saveGreyImage:(UIImage*)greyImage forSnapshotID:(SnapshotID)snapshotID {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  CHECK(!IsGreySnapshotOptimizationNoCacheEnabled());
   if (greyImage) {
     _greyImageDictionary.insert(std::make_pair(snapshotID, greyImage));
   }
@@ -685,6 +708,7 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
 // Load uncached snapshot image and convert image to grey.
 - (void)loadGreyImageAsync:(SnapshotID)snapshotID {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  CHECK(!IsGreySnapshotOptimizationNoCacheEnabled());
   // Don't call -retrieveImageForSnapshotID here because it caches the colored
   // image, which we don't need for the grey image cache. But if the image is
   // already in the cache, use it.
@@ -706,6 +730,12 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
 
 - (void)createGreyCache:(const std::vector<SnapshotID>&)snapshotIDs {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (IsGreySnapshotOptimizationNoCacheEnabled()) {
+    // Do not create cache for grey images. A grey image will be generated
+    // in-flight from a color image when it's retrieved.
+    return;
+  }
+
   _greyImageDictionary.clear();
   for (SnapshotID snapshotID : snapshotIDs) {
     [self loadGreyImageAsync:snapshotID];
@@ -733,6 +763,7 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
 
   auto iterator = _greyImageDictionary.find(snapshotID);
   if (iterator != _greyImageDictionary.end()) {
+    CHECK(!IsGreySnapshotOptimizationNoCacheEnabled());
     callback(iterator->second);
     return;
   }
@@ -742,7 +773,7 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kGreySnapshotOptimization)) {
+  if (IsGreySnapshotOptimizationEnabled()) {
     // There are no grey images stored in disk, so use color snapshots instead.
     UIImage* colorImage = [_lruCache objectForKey:snapshotID];
     _taskRunner->PostTaskAndReplyWithResult(
@@ -793,7 +824,7 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kGreySnapshotOptimization)) {
+  if (IsGreySnapshotOptimizationEnabled()) {
     // Do not save grey images into disk when the feature is enabled.
     return;
   }

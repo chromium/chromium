@@ -816,7 +816,9 @@ class SnapshotStorageWithoutStoringGreySnapshotsTest
     : public SnapshotStorageTest {
  public:
   SnapshotStorageWithoutStoringGreySnapshotsTest() {
-    scoped_feature_list_.InitAndEnableFeature(kGreySnapshotOptimization);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kGreySnapshotOptimization,
+        {{"level", "do-not-store-to-disk-and-cache"}});
   }
 
  private:

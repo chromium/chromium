@@ -7,3 +7,16 @@
 BASE_FEATURE(kGreySnapshotOptimization,
              "GreySnapshotOptimization",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<GreySnapshotOptimizationLevel>::Option
+    kGreySnapshotOptimizationLevelOptions[] = {
+        {GreySnapshotOptimizationLevel::kDoNotStoreToDisk,
+         "do-not-store-to-disk"},
+        {GreySnapshotOptimizationLevel::kDoNotStoreToDiskAndCache,
+         "do-not-store-to-disk-and-cache"}};
+
+constexpr base::FeatureParam<GreySnapshotOptimizationLevel>
+    kGreySnapshotOptimizationLevelParam{
+        &kGreySnapshotOptimization, "level",
+        GreySnapshotOptimizationLevel::kDoNotStoreToDisk,
+        &kGreySnapshotOptimizationLevelOptions};
