@@ -17,33 +17,23 @@
 #include <vector>
 
 #ifdef CARDBOARD_USE_CUSTOM_GL_BINDINGS
-
-#include "ui/gl/gl_bindings.h"
-
+#include "opengl_es2_custom_bindings.h"
 #else
-
 #ifdef __ANDROID__
 #include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
-#endif // __ANDROID__
-
-#endif // CARDBOARD_USE_CUSTOM_GL_BINDINGS
-
+#endif
 #ifdef __APPLE__
 #include <OpenGLES/ES2/gl.h>
 #endif
+#ifdef __ANDROID__
+#include <GLES2/gl2ext.h>
+#endif
+#endif  // CARDBOARD_USE_CUSTOM_GL_BINDINGS
 #include "distortion_renderer.h"
 #include "third_party/cardboard/src/sdk/include/cardboard.h"
 #include "third_party/cardboard/src/sdk/util/is_arg_null.h"
 #include "third_party/cardboard/src/sdk/util/is_initialized.h"
 #include "third_party/cardboard/src/sdk/util/logging.h"
-
-
-#ifdef CARDBOARD_USE_CUSTOM_GL_BINDINGS
-#define glBindFramebuffer glBindFramebufferEXT
-#define glDeleteBuffers glDeleteBuffersARB
-#define glGenBuffers glGenBuffersARB
-#endif // CARDBOARD_USE_CUSTOM_GL_BINDINGS
 
 namespace {
 

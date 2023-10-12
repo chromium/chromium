@@ -69,6 +69,7 @@ android_library("cardboard_java") {
 
 static_library("cardboard") {
   sources = [
+    "config/opengl_es2_custom_bindings.h",
     "src/sdk/device_params/android/device_params.cc",
     "src/sdk/device_params/android/device_params.h",
     "src/sdk/distortion_mesh.cc",
@@ -129,9 +130,15 @@ static_library("cardboard") {
     "src/sdk/util/vector.h",
     "src/sdk/util/vectorutils.cc",
     "src/sdk/util/vectorutils.h",
+
+    # TODO(b/299595377): Remove override once changes have been upstreamed.
     "src_overrides/sdk/cardboard.cc",
     "src_overrides/sdk/jni_utils/android/jni_utils.cc",
+
+    # TODO(b/299595377): Remove override once changes have been upstreamed.
     "src_overrides/sdk/qrcode/android/qr_code.cc",
+
+    # TODO(b/299595377): Remove override once changes have been upstreamed.
     "src_overrides/sdk/rendering/opengl_es2_distortion_renderer.cc",
   ]
 
@@ -143,7 +150,10 @@ static_library("cardboard") {
 
   defines = [ "CARDBOARD_USE_CUSTOM_GL_BINDINGS" ]
 
-  include_dirs = [ "src/sdk" ]
+  include_dirs = [
+    "config",
+    "src/sdk",
+  ]
 
   libs = [
     "android",
