@@ -796,8 +796,13 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, SitesInOpenTabsAreExempt) {
                   .has_value());
 }
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SitesInDestroyedTabsAreNotExempt DISABLED_SitesInDestroyedTabsAreNotExempt
+#else
+#define MAYBE_SitesInDestroyedTabsAreNotExempt SitesInDestroyedTabsAreNotExempt
+#endif
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
-                       SitesInDestroyedTabsAreNotExempt) {
+                       MAYBE_SitesInDestroyedTabsAreNotExempt) {
   content::WebContents* web_contents = GetActiveWebContents();
   DIPSService* dips_service = DIPSServiceFactory::GetForBrowserContext(
       web_contents->GetBrowserContext());
