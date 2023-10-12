@@ -19,13 +19,16 @@ namespace blink {
 
 // The following two classes represent a view transition state necessary for a
 // cross-document same-origin view transition. See
-// third_party/blink/public/common/frame/view_transition_state.h for more
+// third_party/blink/public/mojom/frame/view_transition_state.mojom for more
 // comments.
 struct BLINK_COMMON_EXPORT ViewTransitionElement {
  private:
+  // IMPORTANT:
   // This is private + friends, because it is not meant to be used anywhere
   // outside of ViewTransition feature implementation. Do not add friends unless
-  // it is necessary for view transitions.
+  // it is necessary for view transitions. Data stored here comes from an
+  // untrusthworthy renderer process and should not be parsed or used by the
+  // browser process or in the renderer process for non-ViewTransition purposes.
   friend class ViewTransitionStyleTracker;
   friend struct mojo::StructTraits<blink::mojom::ViewTransitionElementDataView,
                                    ViewTransitionElement>;
@@ -48,9 +51,12 @@ struct BLINK_COMMON_EXPORT ViewTransitionState {
   bool HasElements() const { return !elements.empty(); }
 
  private:
+  // IMPORTANT:
   // This is private + friends, because it is not meant to be used anywhere
   // outside of ViewTransition feature implementation. Do not add friends unless
-  // it is necessary for view transitions.
+  // it is necessary for view transitions. Data stored here comes from an
+  // untrusthworthy renderer process and should not be parsed or used by the
+  // browser process or in the renderer process for non-ViewTransition purposes.
   friend class ViewTransitionStyleTracker;
   friend class ViewTransition;
   friend struct mojo::StructTraits<blink::mojom::ViewTransitionStateDataView,
