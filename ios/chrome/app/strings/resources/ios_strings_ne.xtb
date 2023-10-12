@@ -169,6 +169,7 @@
 <translation id="1847795903283049083">तपाईं आफ्ना बुकमार्क, पछि पढ्न सेभ गरिएका वेबपेजको सूची वा पासवर्ड म्यानेजरमा गएर पनि यी सामग्री हेर्न तथा व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
 <translation id="1870148520156231997">पासवर्ड देखाउनुहोस्</translation>
 <translation id="1872096359983322073">टर्च</translation>
+<translation id="1876851015978093044">यो सामग्री देखाइन्छ</translation>
 <translation id="1882901927376062252">{count,plural, =1{यो बुकमार्क तपाईंको Google खाता ({email}) मा सेभ गरिएको छ}other{{count} वटा बुकमार्क तपाईंको Google खाता ({email}) मा सेभ गरिएका छन्}}</translation>
 <translation id="1883255238294161206">संक्षिप्त सूची</translation>
 <translation id="1890237935065108104">यो सेटिङ उपलब्ध छैन।</translation>
@@ -282,6 +283,7 @@
 <translation id="2482878487686419369">सूचनाहरू</translation>
 <translation id="2484459871750294497">यो सुविधा अन गर्न के गर्नु पर्छ?</translation>
 <translation id="2496626742194544812">पहिलो ट्याबमा जानुहोस्</translation>
+<translation id="2499505845365628575">तपाई <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> मा गई आफ्ना सबै ब्राउजिङ हिस्ट्री भेट्टाउन सक्नुहुन्छ।</translation>
 <translation id="2500374554657206846">पासवर्ड सुरक्षित गर्ने विकल्पहरू</translation>
 <translation id="2511117522375201202">तपाईंको सुरक्षा जोखिममा पार्न सक्ने ह्याक वा चोरी भएका <ph name="NUMBER_OF_PASSWORDS" /> वटा पासवर्ड छन्।</translation>
 <translation id="2523363575747517183">यो वेबसाइटले बारम्बार अर्को एप खोल्ने प्रयास गर्दैछ।</translation>
@@ -1112,6 +1114,7 @@
 <translation id="6785453220513215166">क्रयास रिपोर्ट पठाउँदै ...</translation>
 <translation id="6790502149545262384">चाँडै नै, तपाईंले नयाँ ट्याब खोल्दा <ph name="CHANNEL_NAME" /> का समाचारहरू देखाइने छन्।</translation>
 <translation id="6797885426782475225">आवाज मार्फत खोजी</translation>
+<translation id="6800349425672670802">तपाईं ट्याब स्विचरमा गई आफ्ना सबै खुला ट्याबहरू हेर्न तथा प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="6807889908376551050">सबै देखाउनुहोस्...</translation>
 <translation id="681368974849482173">वस्तु सिर्जना गरियो</translation>
 <translation id="6822587385560699678">यो सेटिङ अन हुँदा पासवर्डहरू <ph name="ACCOUNT" /> मा सेभ गरिन्छन्। यो सेटिङ अफ हुँदा पासवर्डहरू यो डिभाइसमा मात्र सेभ गरिन्छन्।</translation>
@@ -1206,6 +1209,7 @@
 <translation id="7367530036083223701">पासवर्ड म्यानेजर विजेट प्रयोग गरेर होम स्क्रिनबाट सजिलैसँग आफ्ना पासवर्डहरू एक्सेस गर्नुहोस्।</translation>
 <translation id="7380220816562673297">तपाईं अहिले पारिवारिक सदस्यहरूसँग पासवर्डहरू मात्र सेयर गर्न सक्नुहुन्छ। बढीमा ६ जना सदस्य समावेश गरेर <ph name="BEGIN_LINK" />पारिवारिक समूह<ph name="END_LINK" /> बनाउनुहोस् र Google का विभिन्न सेवाहरूमा उपलब्ध आफ्ना उत्पादन तथा सदस्यताबाट अझ बढी लाभ उठाउनुहोस्।</translation>
 <translation id="7383797227493018512">अध्ययन सूची</translation>
+<translation id="7396331865858820922">पासवर्ड सेयर गरिएन</translation>
 <translation id="7398893703713203428">लिंक सिर्जना गर्नुहोस्</translation>
 <translation id="7399802613464275309">सुरक्षा जाँच</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1226,6 +1230,7 @@
 <translation id="7488874549363591659">डेलिभर गरियो</translation>
 <translation id="7491131399623468277">सेटिङमा जानुहोस्…</translation>
 <translation id="7492574581995589075">तपाईंको सङ्गठनले तपाईंको Google खातामा Chrome को डेटा प्रयोग गर्ने र सेभ गर्ने सुविधा अफ गरेको छ। नयाँ बुकमार्क, पासवर्ड र अन्य कुराहरू यो डिभाइसमा मात्र सेभ गरिने छन्।</translation>
+<translation id="749854780843431406">तपाईं <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" /> बटन थिचेर नयाँ ट्याब खोल्न सक्नुहुन्छ।</translation>
 <translation id="750149195207506638">बुकमार्कहरू लुकाइएका छन्</translation>
 <translation id="750228856503700085">अपडेट उपलब्ध छैनन्</translation>
 <translation id="750493650310597496">0 चयन गरियो</translation>
@@ -1286,6 +1291,7 @@
 <translation id="778855399387580014">Chrome को नयाँ ट्याबमा खोज सुरु गर्नुहोस्।</translation>
 <translation id="7791543448312431591">थप्नुहोस्</translation>
 <translation id="7807060072011926525">Google ले प्रदान गरेको</translation>
+<translation id="7812377703891978671">तपाईं <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> चयन गरी आफ्नो सबै ब्राउजिङ हिस्ट्री हेर्न तथा प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="78146569776629510">डाउनलोड गरिएका सामग्रीहरू</translation>
 <translation id="7839985698273989086">अफलाइन पृष्ठ</translation>
 <translation id="7840771868269352570">तपाईंले चयन गर्नुभएका वस्तुहरू हटाइने छन्।</translation>
@@ -1433,6 +1439,7 @@
 <translation id="8560253818350321773">बारम्बार प्रयोग गरिएका वस्तुहरू सुरुमा देखाउनुहोस्।</translation>
 <translation id="8588404856427128947">निष्क्रिय</translation>
 <translation id="8591976964826315682">इन्कोग्निटो मोडमा तेस्रो पक्षीय कुकीलाई रोक लगाइयोस्</translation>
+<translation id="8593565399399144771">तपाईं यहाँ नयाँ ट्याब खोल्न सक्नुहुन्छ।</translation>
 <translation id="8605219856220328675">ट्याब बन्द गर्नुहोस्।</translation>
 <translation id="8613883225817609844">"हालसालैका ट्याबहरू" लुकाइयोस्</translation>
 <translation id="8620640915598389714">सम्पादन गर्नुहोस्</translation>

@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">Unesite e-adresu koja nije prazna vrijednost.</translation>
 <translation id="1758486001363313524">Drugo...</translation>
 <translation id="1787192514241997742">ukupno vrijeme: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Dopusti pristup kameri</translation>
 <translation id="1822429046913737220">prijepodne/poslijepodne</translation>
 <translation id="1832974991323546415">reproduciraj na udaljenom uređaju</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">trenutačni korak</translation>
 <translation id="3321030238473337787">Brzina reprodukcije</translation>
 <translation id="3329013043687509092">Zasićenje</translation>
+<translation id="3377518164566272702">Dopusti pristup mikrofonu i kameri</translation>
 <translation id="3450233048674729344">Vrijednost mora biti <ph name="MAXIMUM" /> ili manja.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Zatvori sliku u slici</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">Reproducira se u načinu slika u slici</translation>
 <translation id="4748357248530471599">prebacite urez na zaslonu u cijeli zaslon</translation>
 <translation id="4763480195061959176">videozapis</translation>
+<translation id="4792862212177489858">Dijeli lokaciju</translation>
 <translation id="4812940957355064477">Unesite broj.</translation>
 <translation id="4912200001568447310">trenutačna stavka</translation>
 <translation id="4915360478455618802">Prikaži alat za odabir vremena</translation>
@@ -179,6 +182,7 @@
 <translation id="9132465097189459683">Drugo...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, počevši od <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Slika u slici</translation>
+<translation id="918430632320614861">Dopusti pristup mikrofonu</translation>
 <translation id="945780513535800434">Djelomično označeno</translation>
 <translation id="954003015749068518">pokretanje načina slika u slici</translation>
 </translationbundle>

@@ -329,6 +329,7 @@
 <translation id="3619115746895587757">Kaputxinoa</translation>
 <translation id="3619593063686672873">Ez dago azkenaldiko bideorik</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="CONNECTION_STATUS" />). Administratzaileak kudeatua. Xehetasunak.</translation>
+<translation id="36451918667380448">Sare mugikorraren hornitzailea blokeatuta dago. Laguntza jasotzeko, jarri hornitzailearekin harremanetan.</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementu mugitu dira.</translation>
 <translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> fitxategi hautatu dira</translation>
 <translation id="3685122418104378273">Datu-konexioa erabiltzean, Google Drive sinkronizazioa modu lehenetsian desaktibatuta dago.</translation>

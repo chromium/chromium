@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">비어 있지 않은 이메일 주소를 입력해 주세요.</translation>
 <translation id="1758486001363313524">다른 일자...</translation>
 <translation id="1787192514241997742">총 시간: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">카메라 허용</translation>
 <translation id="1822429046913737220">오전/오후</translation>
 <translation id="1832974991323546415">원격 기기에서 재생</translation>
 <translation id="1921819250265091946">일</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">현재 단계</translation>
 <translation id="3321030238473337787">재생 속도</translation>
 <translation id="3329013043687509092">채도</translation>
+<translation id="3377518164566272702">마이크 및 카메라 허용</translation>
 <translation id="3450233048674729344">값은 <ph name="MAXIMUM" /> 이하여야 합니다.</translation>
 <translation id="3732799496749320381">월</translation>
 <translation id="3754210790023674521">PIP 모드 종료</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">PIP 모드에서 재생</translation>
 <translation id="4748357248530471599">디스플레이 컷아웃을 전체화면으로 전환</translation>
 <translation id="4763480195061959176">동영상</translation>
+<translation id="4792862212177489858">위치 공유</translation>
 <translation id="4812940957355064477">숫자를 입력하세요.</translation>
 <translation id="4912200001568447310">현재 항목</translation>
 <translation id="4915360478455618802">시간 선택도구 표시</translation>
@@ -179,6 +182,7 @@
 <translation id="9132465097189459683">다른 달...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />(<ph name="WEEK_START_DATE" />에 시작)</translation>
 <translation id="916607977885256133">PIP 모드</translation>
+<translation id="918430632320614861">마이크 허용</translation>
 <translation id="945780513535800434">일부만 선택됨</translation>
 <translation id="954003015749068518">PIP 모드 시작</translation>
 </translationbundle>

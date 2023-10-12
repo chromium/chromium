@@ -195,7 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">開啟藍牙即可探索附近的裝置</translation>
 <translation id="2346474577291266260">非常好 (<ph name="SIGNAL_STRENGTH" />)</translation>
-<translation id="2358070305000735383">「<ph name="DESCRIPTION" />」的編輯對話方塊已開啟。</translation>
+<translation id="2358070305000735383"><ph name="DESCRIPTION" />嘅編輯對話框打開咗。</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2364498172489649528">已通過</translation>
 <translation id="2367335866686097760">對應緊個制</translation>
@@ -484,6 +484,7 @@
 <translation id="4793756956024303490">壓縮演算法</translation>
 <translation id="4794140124556169553">執行 CPU 測試可能會影響系統效能</translation>
 <translation id="4798078634453489142">需要先移除一個 APN，才能新增 APN</translation>
+<translation id="479989351350248267">搜尋</translation>
 <translation id="4800589996161293643">Chromebook 社群</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">取消咗列印工作 <ph name="DOCUMENT_TITLE" /></translation>
@@ -793,6 +794,7 @@
 <translation id="7103252855940681301">裝置 <ph name="INDEX" /> (總共 <ph name="COUNT" /> 個)，名稱為 <ph name="NAME" />。</translation>
 <translation id="7107255225945990211">選擇 <ph name="PRODUCT_NAME" /> 獨家藝術圖片</translation>
 <translation id="7108668606237948702">Enter 鍵</translation>
+<translation id="7119389851461848805">電源</translation>
 <translation id="7130438335435247835">存取點名稱 (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{域名伺服器}other{域名伺服器}}</translation>
 <translation id="7135814714616751706">搜尋捷徑</translation>
@@ -950,6 +952,7 @@
 <translation id="8336739000755212683">變更裝置的帳戶圖片</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> 或 <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">列印工作</translation>
+<translation id="8349826889576450703">啟動器</translation>
 <translation id="8351855506390808906">對應緊接觸點</translation>
 <translation id="8352772353338965963">新增可多重登入的帳戶。這些帳戶的使用者不需提供密碼即可存取所有已登入的帳戶。因此，建議您只讓信任的帳戶使用這項功能。</translation>
 <translation id="8364946094152050673">域名伺服器空白</translation>
@@ -1046,6 +1049,7 @@
 <translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{系統已自動啟動「<ph name="APP_NAME_1" />」}other{系統已自動啟動 # 個應用程式}}</translation>
 <translation id="8998289560386111590">此功能無法在您的裝置上使用</translation>
 <translation id="9003704114456258138">頻率</translation>
+<translation id="901834265349196618">電郵</translation>
 <translation id="9024331582947483881">全螢幕</translation>
 <translation id="9025198690966128418">作為個人裝置</translation>
 <translation id="902638246363752736">鍵盤設定</translation>
@@ -1086,6 +1090,7 @@
 <translation id="945522503751344254">提供意見反映</translation>
 <translation id="952992212772159698">未啟用</translation>
 <translation id="960719561871045870">流動網絡供應商代碼</translation>
+<translation id="966787709310836684">選單</translation>
 <translation id="979450713603643090">淺粉紅色</translation>
 <translation id="982713511914535780">執行放電測試</translation>
 <translation id="987264212798334818">一般</translation>

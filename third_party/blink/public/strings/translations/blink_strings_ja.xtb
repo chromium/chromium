@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">メール アドレスを入力してください。</translation>
 <translation id="1758486001363313524">その他...</translation>
 <translation id="1787192514241997742">合計時間: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">カメラを許可</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">リモート デバイスで再生</translation>
 <translation id="1921819250265091946">日</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">現在のステップ</translation>
 <translation id="3321030238473337787">再生速度</translation>
 <translation id="3329013043687509092">彩度</translation>
+<translation id="3377518164566272702">マイクとカメラを許可</translation>
 <translation id="3450233048674729344">値は <ph name="MAXIMUM" /> 以下にする必要があります。</translation>
 <translation id="3732799496749320381">月</translation>
 <translation id="3754210790023674521">ピクチャー イン ピクチャーを終了</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">ピクチャー イン ピクチャーを再生しています</translation>
 <translation id="4748357248530471599">ディスプレイ カットアウトに合わせた全画面表示に切り替えます</translation>
 <translation id="4763480195061959176">動画</translation>
+<translation id="4792862212177489858">位置情報を共有</translation>
 <translation id="4812940957355064477">数字を入力してください。</translation>
 <translation id="4912200001568447310">現在のアイテム</translation>
 <translation id="4915360478455618802">時間選択ツールを表示します</translation>
@@ -179,6 +182,7 @@
 <translation id="9132465097189459683">その他...</translation>
 <translation id="9155987714137265666"><ph name="WEEK_START_DATE" /> から始まる <ph name="WEEK" /></translation>
 <translation id="916607977885256133">ピクチャー イン ピクチャー</translation>
+<translation id="918430632320614861">マイクを許可</translation>
 <translation id="945780513535800434">一部オン</translation>
 <translation id="954003015749068518">ピクチャー イン ピクチャーを開始します</translation>
 </translationbundle>

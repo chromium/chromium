@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Անջատել</translation>
 <translation id="1044891598689252897">Կայքերը կաշխատեն սովորական ռեժիմով</translation>
 <translation id="1073417869336441572">Օգնեք մեզ բարելավել Chrome-ը։ Պատմեք մեզ, թե ինչու եք թույլատրել երրորդ կողմի քուքիները։ <ph name="BEGIN_LINK" />Կարծիք հայտնել<ph name="END_LINK" /></translation>
-<translation id="1124090076051167250">Կջնջվեն բոլոր տվյալներն ու քուքիները (<ph name="DATASIZE" />), որոնք հիմնական էկրանին են պահվել կայքերի և հավելվածի կողմից։</translation>
 <translation id="1178581264944972037">Դադար</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
 <translation id="1201402288615127009">Հաջորդը</translation>
@@ -33,7 +32,6 @@
 <translation id="1647582022260550163">Իսկապե՞ս ուզում եք վերակայել թույլտվությունները և մաքրել քուքիներն ու մյուս տվյալները։</translation>
 <translation id="1660204651932907780">Թույլ տալ կայքերին նվագարկել ձայն (խորհուրդ է տրվում)</translation>
 <translation id="1677097821151855053">Քուքիները և կայքի այլ տվյալներ օգտագործվում են ձեզ հիշելու համար։ Դա անհրաժեշտ է, որպեսզի, օրինակ, դուք կարողանաք հաշիվ մտնել կամ ձեզ անհատականացված գովազդ ցուցադրվի։ Բոլոր կայքերի քուքիները կարող եք կառավարել <ph name="BEGIN_LINK" />Քուքիների կարգավորումներ<ph name="END_LINK" /> բաժնում։</translation>
-<translation id="1688867105868176567">Ջնջե՞լ կայքի տվյալները</translation>
 <translation id="169515064810179024">Արգելել կայքերին օգտագործել շարժման տվիչները</translation>
 <translation id="1717218214683051432">Շարժման տվիչներ</translation>
 <translation id="1743802530341753419">Հարցնել նախքան կայքերին որևէ սարքի միանալ թույլատրելը (խորհուրդ է տրվում)</translation>
@@ -247,7 +245,6 @@
 <translation id="5335288049665977812">Թույլ տալ կայքերին գործարկել JavaScript-ը (խորհուրդ է տրվում)</translation>
 <translation id="534295439873310000">NFC սարքեր</translation>
 <translation id="5344522958567249764">Գովազդի գաղտնիության կառավարում</translation>
-<translation id="5354152178998424783">Կայքերի պահած <ph name="DATASIZE" /> ծավալով տվյալներն ու քուքիները կջնջվեն։</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ու ևս 1)}one{(ու ևս #)}other{(ու ևս #)}}</translation>
 <translation id="5403592356182871684">Անուններ</translation>
 <translation id="5412236728747081950">Այս կայքը Chrome-ից ստանում է ձեզ հետաքրքրող թեմաների մասին տվյալներ՝ ավելի համապատասխան գովազդ ցուցադրելու համար</translation>
@@ -268,12 +265,10 @@
 <translation id="5690795753582697420">Տեսախցիկն անջատված է Android-ի կարգավորումներում</translation>
 <translation id="5700761515355162635">Երրորդ կողմի քուքիները թույլատրված են</translation>
 <translation id="5706552988683188916">Քուքիները և <ph name="WEBSITE" /> կայքի այլ տվյալները կջնջվեն</translation>
-<translation id="5719847187258001597">Կջնջվեն բոլոր տվյալներն ու քուքիները, որոնք հիմնական էկրանին են պահվել <ph name="ORIGIN" /> կայքի և դրա հավելվածի կողմից։</translation>
 <translation id="5723967018671998714">Երրորդ կողմի քուքիներն արգելափակվում են ինկոգնիտո ռեժիմում</translation>
 <translation id="5740126560802162366">Կայքերը կարող են տվյալները պահել ձեր սարքում</translation>
 <translation id="5771720122942595109">Արգելափակված է՝ «<ph name="PERMISSION_1" />»</translation>
 <translation id="5804241973901381774">Թույլտվություններ</translation>
-<translation id="5810805850857689118">Կջնջվեն բոլոր տվյալներն ու քուքիները, որոնք պահվել են <ph name="ORIGIN" /> կայքերի խմբում և դրա ենթակայքերում</translation>
 <translation id="5860033963881614850">Անջատ.</translation>
 <translation id="5876056640971328065">Դադարեցնել</translation>
 <translation id="5884085660368669834">Թույլտվությունների փոփոխում</translation>
@@ -323,7 +318,6 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ԳԲ</translation>
 <translation id="6612358246767739896">Պաշտպանված բովանդակություն</translation>
 <translation id="662080504995468778">Մնալ կայքում</translation>
-<translation id="6643016212128521049">Մաքրել</translation>
 <translation id="6653342741369270081">Լիաէկրան ռեժիմից դուրս գալու համար սեղմեք «Հետ» կոճակը։</translation>
 <translation id="6689172468748959065">Պրոֆիլի լուսանկարներ</translation>
 <translation id="6697925417670533197">Ընթացիկ ներբեռնումներ</translation>
@@ -358,6 +352,7 @@
 <translation id="7260727271532453612">Թույլատրված են՝ «<ph name="PERMISSION_1" />» և «<ph name="PERMISSION_2" />»</translation>
 <translation id="7302486331832100261">Դուք սովորաբար արգելափակում եք ծանուցումները։ Թույլատրելու համար սեղմեք «Մանրամասներ»։</translation>
 <translation id="7366415735885268578">Ավելացրեք կայք</translation>
+<translation id="7368695150573390554">Անցանց ռեժիմում պահված բոլոր տվյալները կջնջվեն</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> տիրույթի կարգավորումներ</translation>
 <translation id="7406113532070524618">Այս կարգավորումն աշխատում է առանց ձեզ նույնականացնելու կամ կայքերին թույլատրելու տեսնել ձեր այցելությունների պատմությունը, թեև կայքերը կարող են փոքր քանակությամբ տեղեկություններ փոխանցել որպես հաստատման գործընթացի մաս</translation>
 <translation id="7423098979219808738">Նախ հարցնել</translation>
@@ -430,7 +425,6 @@
 <translation id="8514955299594277296">Չթույլատրել կայքերին տվյալներ պահել ձեր սարքում (խորհուրդ չի տրվում)</translation>
 <translation id="851751545965956758">Արգելել կայքերին միանալ սարքերին</translation>
 <translation id="8525306231823319788">Լիաէկրան</translation>
-<translation id="8528440122773422556">Կջնջվեն բոլոր տվյալներն ու քուքիները, որոնք հիմնական էկրանին են պահվել <ph name="ORIGIN" /> կայքերի խմբի կամ դրա հավելվածի կողմից</translation>
 <translation id="8541410041357371550">Այս կայքը Chrome-ից ստանում է գովազդի թեմաների մասին տվյալներ՝ ձեզ ավելի համապատասխան գովազդ ցուցադրելու համար</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Քուքիները թույլատրված են <ph name="FPS_OWNER" /> տիրույթի <ph name="FPS_MEMBERS_COUNT" /> կայքի համար}one{Քուքիները թույլատրված են <ph name="FPS_OWNER" /> տիրույթի <ph name="FPS_MEMBERS_COUNT" /> կայքի համար}other{Քուքիները թույլատրված են <ph name="FPS_OWNER" /> տիրույթի <ph name="FPS_MEMBERS_COUNT" /> կայքի համար}}</translation>
 <translation id="857943718398505171">Թույլատրված է (հանձնարարելի)</translation>
@@ -443,7 +437,6 @@
 <translation id="8725066075913043281">Փորձել կրկին</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{Թույլատրված են 1 կայքի քուքիները}one{Թույլատրված են # կայքի քուքիները}other{Թույլատրված են # կայքի քուքիները}}</translation>
-<translation id="8737217482364735741">Կջնջվեն <ph name="ORIGIN" /> կայքի պահած բոլոր տվյալներն ու քուքիները։</translation>
 <translation id="8751914237388039244">Ընտրեք պատկեր</translation>
 <translation id="8800034312320686233">Կայքը չի՞ աշխատում</translation>
 <translation id="8801436777607969138">Արգելափակել JavaScript-ը նշված կայքի համար:</translation>
@@ -471,7 +464,6 @@
 <translation id="913657688200966289">Միացնել <ph name="APP_NAME" />-ի թույլտվությունները <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="9138217887606523162">Ընթացիկ մասշտաբը <ph name="ZOOM_LEVEL" />%% է</translation>
 <translation id="9162462602695099906">Այս էջը վտանգավոր է</translation>
-<translation id="9201023452444595544">Անցանց ռեժիմում պահված բոլոր տվյալները կջնջվեն</translation>
 <translation id="930525582205581608">Հեռացնե՞լ այս կայքը</translation>
 <translation id="947156494302904893">Կայքերը, որոնք այցելում եք, կարող են ստուգել՝ արդյոք դուք իրական օգտատեր եք, թե՝ ռոբոտ</translation>
 <translation id="967624055006145463">Պահված տվյալներ</translation>

@@ -143,6 +143,7 @@
 <translation id="1264309058268477500">ఆల్టర్నేట్</translation>
 <translation id="1264974993859112054">క్రీడలు</translation>
 <translation id="1266469291454105242">పరికర అన్‌లాక్</translation>
+<translation id="126728463333482584">ట్రాకింగ్ నుండి రక్షణను ముందుగా ఎక్స్‌పీరియన్స్ చేసే వారిలో మీరు ఒకరు, మీరు బ్రౌజ్ చేస్తున్నప్పుడు థర్డ్-పార్టీ కుక్కీలను ఉపయోగించి మిమ్మల్ని ట్రాక్ చేయకుండా ఈ ఫీచర్ సైట్‌లను పరిమితం చేస్తుంది.</translation>
 <translation id="1268480293435976622">ఎన్వలప్ చైనీస్ #7</translation>
 <translation id="1269516672602708785">Google Sitesలో కొత్త సైట్‌ను త్వరగా క్రియేట్ చేయండి</translation>
 <translation id="1270328905573953738">మూవింగ్ &amp; రీలొకేషన్</translation>
@@ -687,6 +688,7 @@
 <translation id="2361263712565360498">275 x 395 మి.మీ.</translation>
 <translation id="236340516568226369">టోగుల్ మెనూ పరిమాణాన్ని మార్చండి</translation>
 <translation id="2365355378251437925"><ph name="FIELD" />‌ను ఎంటర్ చేయండి</translation>
+<translation id="2365382709349300355">పాలసీ కారణంగా 1 ఫైల్ బ్లాక్ చేయబడింది</translation>
 <translation id="2365508935344991784">అవుట్‌డోర్ ఫర్నిచర్</translation>
 <translation id="2366689192918515749">మాంసం &amp; సీఫుడ్</translation>
 <translation id="2367567093518048410">స్థాయి</translation>
@@ -1886,6 +1888,7 @@
 <translation id="4873616204573862158">కళ్లజోళ్లు</translation>
 <translation id="4876188919622883022">సరళీకృత వీక్షణ</translation>
 <translation id="4876305945144899064">వినియోగదారు పేరు లేదు</translation>
+<translation id="4876327226315760474">దీనర్థం, సైట్ ఫీచర్‌లు ఆశించినట్టుగా పని చేయాలి, కానీ మీకు బ్రౌజింగ్ రక్షణ తక్కువగా ఉండవచ్చు.</translation>
 <translation id="4877047577339061095">ఇంటిలో స్టోరేజ్ &amp; షెల్ఫ్‌లు</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{ఏవీ లేవు}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> శోధన</translation>
@@ -2408,6 +2411,7 @@
 <translation id="5967867314010545767">హిస్టరీ నుండి తీసివేయండి</translation>
 <translation id="5968022600320704045">సెర్చ్ ఫలితాలు ఏవీ లేవు</translation>
 <translation id="5969199813874624822">ధరను సేవ్ చేసి, ట్రాక్ చేయండి</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">సిక్స్త్ రోల్</translation>
 <translation id="5975083100439434680">దూరంగా జూమ్ చేయి</translation>
 <translation id="5979084224081478209">పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
@@ -2514,6 +2518,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="61877208875190028">మహిళల దుస్తులు</translation>
 <translation id="6194209731893739467">మీరు ట్రాక్ చేసిన అన్ని ప్రోడక్ట్‌లను ఇక్కడ చూడండి</translation>
+<translation id="6195163219142236913">థర్డ్-పార్టీ కుక్కీలు పరిమితం చేయబడ్డాయి</translation>
 <translation id="6195371403461054755">భూగర్భశాస్త్రం</translation>
 <translation id="6196640612572343990">థర్డ్ పార్టీ కుక్కీలను బ్లాక్ చేయండి</translation>
 <translation id="6197648101609735209">89 x 89 మి.మీ.</translation>
@@ -2898,6 +2903,7 @@
 <translation id="6965382102122355670">సరే</translation>
 <translation id="6965978654500191972">పరికరం</translation>
 <translation id="696703987787944103">పర్సెప్చువల్</translation>
+<translation id="6967851206780867018">కంటెంట్ కారణంగా 1 ఫైల్ బ్లాక్ చేయబడింది</translation>
 <translation id="6970885655016700774">ఫ్యాబ్రిక్ (ఆర్కైవల్)</translation>
 <translation id="6971439137020188025">Slidesలో త్వరగా కొత్త Google ప్రెజెంటేషన్‌ను క్రియేట్ చేయండి</translation>
 <translation id="6972629891077993081">HID పరికరాలు</translation>
@@ -2950,6 +2956,7 @@
 <translation id="70705239631109039">మీ కనెక్షన్ పూర్తిగా సురక్షితమైనది కాదు</translation>
 <translation id="7075452647191940183">రిక్వెస్ట్‌ చాలా పెద్దదిగా ఉంది</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">మరింత గోప్యంగా బ్రౌజ్ చేయండి</translation>
 <translation id="7079718277001814089">ఈ సైట్‌లో మాల్వేర్ ఉంది</translation>
 <translation id="7081308185095828845">మీ పరికరంలో ఈ ఫీచర్ అందుబాటులో లేదు</translation>
 <translation id="7083258188081898530">ట్రే 9</translation>

@@ -194,6 +194,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">近くのデバイスを検出するには Bluetooth をオンにしてください</translation>
 <translation id="2346474577291266260">非常に強い（<ph name="SIGNAL_STRENGTH" />）</translation>
+<translation id="2358070305000735383">「<ph name="DESCRIPTION" />」の編集ダイアログが開いています。</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2364498172489649528">成功</translation>
 <translation id="2367335866686097760">キーマッピングのキー</translation>
@@ -482,6 +483,7 @@
 <translation id="4793756956024303490">圧縮アルゴリズム</translation>
 <translation id="4794140124556169553">CPU のテストを行うと、システムのパフォーマンスに響することがあります</translation>
 <translation id="4798078634453489142">新しい APN を追加するには、APN を削除してください</translation>
+<translation id="479989351350248267">検索</translation>
 <translation id="4800589996161293643">Chromebook コミュニティ</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">キャンセルされた印刷ジョブ <ph name="DOCUMENT_TITLE" /></translation>
@@ -790,6 +792,7 @@
 <translation id="7103252855940681301">デバイス <ph name="INDEX" />/<ph name="COUNT" />、名前: <ph name="NAME" />。</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> 限定のアートワークを選択します</translation>
 <translation id="7108668606237948702">Enter</translation>
+<translation id="7119389851461848805">電源</translation>
 <translation id="7130438335435247835">アクセス ポイント名（APN）</translation>
 <translation id="7134436342991564651">{0,plural, =1{ネームサーバー}other{ネームサーバー}}</translation>
 <translation id="7135814714616751706">ショートカットの検索</translation>
@@ -947,6 +950,7 @@
 <translation id="8336739000755212683">デバイスのアカウント画像を変更</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> または <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">印刷ジョブ</translation>
+<translation id="8349826889576450703">ランチャー</translation>
 <translation id="8351855506390808906">キーマッピングのタッチポイント</translation>
 <translation id="8352772353338965963">マルチログインにアカウントを追加します。ログインしているすべてのアカウントにパスワードなしでアクセスできるようになるため、この機能は信頼できるアカウントでのみ使用してください。</translation>
 <translation id="8364946094152050673">ネームサーバーが空です</translation>
@@ -1020,6 +1024,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">デバイスの種類はタブレットです。</translation>
 <translation id="8881098542468797602">テストが成功しました</translation>
+<translation id="8892443466059986410">ショートカットの編集をキャンセル</translation>
 <translation id="8898840733695078011">電波強度</translation>
 <translation id="8909114361904403025">上矢印</translation>
 <translation id="8910721771319628100">デフォルトのネットワークの応答時間がしきい値を超えています</translation>
@@ -1042,6 +1047,7 @@
 <translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> が自動的に開始されました}other{# 個のアプリが自動的に開始されました}}</translation>
 <translation id="8998289560386111590">お使いのデバイスではご利用いただけません</translation>
 <translation id="9003704114456258138">周波数</translation>
+<translation id="901834265349196618">メール</translation>
 <translation id="9024331582947483881">全画面表示</translation>
 <translation id="9025198690966128418">個人用デバイスとして使用</translation>
 <translation id="902638246363752736">キーボードの設定</translation>
@@ -1082,6 +1088,7 @@
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="952992212772159698">無効</translation>
 <translation id="960719561871045870">事業者コード</translation>
+<translation id="966787709310836684">メニュー</translation>
 <translation id="979450713603643090">ライトピンク</translation>
 <translation id="982713511914535780">放電テストを実行</translation>
 <translation id="987264212798334818">全般</translation>

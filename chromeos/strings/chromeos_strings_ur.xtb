@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">قریبی آلات دریافت کرنے کیلئے بلوٹوتھ آن کریں</translation>
 <translation id="2346474577291266260">عمدہ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383"><ph name="DESCRIPTION" /> کے لیے ترمیم کا ڈائیلاگ کھلا ہے۔</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2364498172489649528">پاس ہو گیا</translation>
 <translation id="2367335866686097760">کلید کی نقشہ سازی کی کلید</translation>
@@ -483,6 +484,7 @@
 <translation id="4793756956024303490">کمپریشن الگورتھم</translation>
 <translation id="4794140124556169553">‏CPU ٹیسٹ چلانے سے آپ کے سسٹم کی کارکردگی متاثر ہو سکتی ہے</translation>
 <translation id="4798078634453489142">‏نیا APN شامل کرنے کے لیے ایک APN ہٹائیں</translation>
+<translation id="479989351350248267">تلاش کریں</translation>
 <translation id="4800589996161293643">‏Chromebook کمیونٹی</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> پرنٹ جاب منسوخ کر دی گئی</translation>
@@ -792,6 +794,7 @@
 <translation id="7103252855940681301"><ph name="INDEX" /> میں <ph name="NAME" /> نام کے <ph name="COUNT" /> آلے ہے۔</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> خصوصی آرٹ ورک منتخب کریں</translation>
 <translation id="7108668606237948702">انٹر</translation>
+<translation id="7119389851461848805">طاقت</translation>
 <translation id="7130438335435247835">‏رسائی کی جگہ کا نام (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{نام سرور}other{نام سرورز}}</translation>
 <translation id="7135814714616751706">شارٹ کٹس تلاش کریں</translation>
@@ -949,6 +952,7 @@
 <translation id="8336739000755212683">آلے کے اکاؤنٹ کی تصویر تبدیل کریں</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> یا <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">پرنٹ جابز</translation>
+<translation id="8349826889576450703">لانچر</translation>
 <translation id="8351855506390808906">کلید کی نقشہ سازی کا ٹچ پوائنٹ</translation>
 <translation id="8352772353338965963">متعدد سائن ان میں ایک اکاؤنٹ شامل کریں۔ سبھی سائن ان کردہ اکاؤنٹس تک پاس ورڈ کے بغیر رسائی کی جا سکتی ہے لہذا یہ خصوصیت صرف بھروسہ مند اکاؤنٹس کے ساتھ استعمال کی جانی چاہیے۔</translation>
 <translation id="8364946094152050673">نام سرورز خالی ہیں</translation>
@@ -1022,6 +1026,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">آلہ ایک ٹیبلیٹ ہے۔</translation>
 <translation id="8881098542468797602">ٹیسٹ کامیاب ہو گیا</translation>
+<translation id="8892443466059986410">شارٹ کٹ ترمیم کو منسوخ کریں</translation>
 <translation id="8898840733695078011">سگنل کی مضبوطی</translation>
 <translation id="8909114361904403025">اوپر کی طرف تیر کا نشان</translation>
 <translation id="8910721771319628100">تاخیر کی حد کے اوپر ڈیفالٹ نیٹ ورک</translation>
@@ -1044,6 +1049,7 @@
 <translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> خودکار طور پر شروع ہو گیا}other{# ایپس خودکار طور پر شروع ہو گئیں}}</translation>
 <translation id="8998289560386111590">آپ کے آلے پر دستیاب نہیں ہے</translation>
 <translation id="9003704114456258138">فریکوئنسی</translation>
+<translation id="901834265349196618">ای میل</translation>
 <translation id="9024331582947483881">پوری اسکرین</translation>
 <translation id="9025198690966128418">ذاتی آلے کے طور پر استعمال کریں</translation>
 <translation id="902638246363752736">کی بورڈ کی ترتیبات</translation>
@@ -1084,6 +1090,7 @@
 <translation id="945522503751344254">تاثرات بھیجیں</translation>
 <translation id="952992212772159698">فعال نہیں ہے</translation>
 <translation id="960719561871045870">آپریٹر کوڈ</translation>
+<translation id="966787709310836684">مینیو</translation>
 <translation id="979450713603643090">ہلکا گلابی</translation>
 <translation id="982713511914535780">ڈسچارج ٹیسٹ چلائیں</translation>
 <translation id="987264212798334818">عمومی</translation>

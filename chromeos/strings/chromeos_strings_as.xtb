@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ওচৰ-পাজৰৰ ডিভাইচসমূহ চাবলৈ ব্লুটুথ অন কৰক</translation>
 <translation id="2346474577291266260">উত্তম (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383"><ph name="DESCRIPTION" />ৰ বাবে সম্পাদনাৰ ডায়লগ খোলা আছে।</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
 <translation id="2364498172489649528">পাছ কৰিছে</translation>
 <translation id="2367335866686097760">কীমেপিং কী</translation>
@@ -483,6 +484,7 @@
 <translation id="4793756956024303490">সংকোচনৰ এলগ’ৰিডম</translation>
 <translation id="4794140124556169553">CPUৰ পৰীক্ষা চলালে আপোনাৰ ছিষ্টেমৰ পাৰদৰ্শিতাত প্ৰভাৱ পৰিব পাৰে</translation>
 <translation id="4798078634453489142">এটা নতুন এপিএন যোগ দিবলৈ এটা এপিএন আঁতৰাওক</translation>
+<translation id="479989351350248267">সন্ধান কৰক</translation>
 <translation id="4800589996161293643">Chromebook সম্প্ৰদায়</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">বাতিল কৰা প্ৰিণ্টিঙৰ কাৰ্য <ph name="DOCUMENT_TITLE" /></translation>
@@ -832,6 +834,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7388959671917308825">বিল্ট-ইন টাচ্চপেড</translation>
 <translation id="7397270852490618635">পাতল ৰঙৰ থীম অফ কৰক</translation>
+<translation id="7401543881546089382">শ্বৰ্টকাট মচক</translation>
 <translation id="741244894080940828">ৰূপান্তৰণ</translation>
 <translation id="7415801143053185905">HTTPৰ অতি উচ্চ বিলম্বতা</translation>
 <translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{আপোনাৰ প্ৰশাসকে প্ৰতিবাৰ আপুনি লগইন কৰাৰ সময়ত <ph name="APP_NAME_1" /> স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰিবলৈ ছেট কৰিছে।}=2{আপোনাৰ প্ৰশাসকে প্ৰতিবাৰ আপুনি লগইন কৰাৰ সময়ত <ph name="APP_NAME_1" /> আৰু <ph name="APP_NAME_2" /> স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰিবলৈ ছেট কৰিছে।}=3{আপোনাৰ প্ৰশাসকে প্ৰতিবাৰ আপুনি লগইন কৰাৰ সময়ত <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> আৰু <ph name="APP_NAME_3" /> স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰিবলৈ ছেট কৰিছে।}one{আপোনাৰ প্ৰশাসকে প্ৰতিবাৰ আপুনি লগইন কৰাৰ সময়ত <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> আৰু # টা অন্য এপ্ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰিবলৈ ছেট কৰিছে।}other{আপোনাৰ প্ৰশাসকে প্ৰতিবাৰ আপুনি লগইন কৰাৰ সময়ত <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> আৰু # টা অন্য এপ্ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰিবলৈ ছেট কৰিছে।}}</translation>
@@ -948,6 +951,7 @@
 <translation id="8336739000755212683">ডিভাইচ একাউণ্টৰ প্ৰতিচ্ছবি সলনি কৰক</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> অথবা <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">প্ৰিণ্টিঙৰ কামসমূহ</translation>
+<translation id="8349826889576450703">লঞ্চাৰ</translation>
 <translation id="8351855506390808906">কীমেপিং টাচ্চ পইণ্ট</translation>
 <translation id="8352772353338965963">একাধিক ছাইন-ইন কৰিবলৈ এটা একাউণ্ট যোগ কৰক। ছাইন ইন কৰি থোৱা সকলো একাউণ্ট পাছৱৰ্ড অবিহনেই এক্সেছ কৰিব পাৰি, সেয়েহে এই সুবিধাটো কেৱল বিশ্বাসযোগ্য একাউণ্টৰ সৈতেহে ব্যৱহাৰ কৰা উচিত।</translation>
 <translation id="8364946094152050673">ড’মেইনৰ নাম থকা ছাৰ্ভাৰসমূহ খালী</translation>
@@ -1021,6 +1025,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ডিভাইচটো এটা টেবলেট।</translation>
 <translation id="8881098542468797602">পৰীক্ষা সফল হৈছে</translation>
+<translation id="8892443466059986410">শ্বৰ্টকাট সম্পাদনা বাতিল কৰক</translation>
 <translation id="8898840733695078011">ছিগনেলৰ ক্ষমতা</translation>
 <translation id="8909114361904403025">ওপৰলৈ নিৰ্দেশ কৰা কাঁড় চিহ্ন</translation>
 <translation id="8910721771319628100">ডিফ’ল্ট নেটৱৰ্ক বিলম্বতাৰ সীমাৰ ওপৰত আছে</translation>
@@ -1043,6 +1048,7 @@
 <translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰা হৈছে}one{# টা এপ্ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰা হৈছে}other{# টা এপ্ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰা হৈছে}}</translation>
 <translation id="8998289560386111590">আপোনাৰ ডিভাইচত উপলব্ধ নহয়</translation>
 <translation id="9003704114456258138">ফ্ৰিকুৱেন্সী</translation>
+<translation id="901834265349196618">ইমেইল</translation>
 <translation id="9024331582947483881">সম্পূৰ্ণ স্ক্ৰীন</translation>
 <translation id="9025198690966128418">এটা ব্যক্তিগত ডিভাইচ হিচাপে ব্যৱহাৰ কৰক</translation>
 <translation id="902638246363752736">কীব’ৰ্ডৰ ছেটিং</translation>
@@ -1083,6 +1089,7 @@
 <translation id="945522503751344254">মতামত পঠিয়াওক</translation>
 <translation id="952992212772159698">সক্ৰিয় কৰা হোৱা নাই</translation>
 <translation id="960719561871045870">অপাৰেটৰ ক’ড</translation>
+<translation id="966787709310836684">মেনু</translation>
 <translation id="979450713603643090">পাতল গুলপীয়া</translation>
 <translation id="982713511914535780">ডিচচাৰ্জ পৰীক্ষা চলাওক</translation>
 <translation id="987264212798334818">সাধাৰণ</translation>

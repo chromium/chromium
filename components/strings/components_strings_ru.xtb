@@ -143,6 +143,7 @@
 <translation id="1264309058268477500">Другой</translation>
 <translation id="1264974993859112054">Спорт</translation>
 <translation id="1266469291454105242">Разблокировка устройства</translation>
+<translation id="126728463333482584">Теперь вам доступна функция "Защита от слежения". Она позволяет ограничивать для сайтов возможность использовать сторонние файлы cookie для отслеживания ваших действий в интернете.</translation>
 <translation id="1268480293435976622">Конверт Chinese 7</translation>
 <translation id="1269516672602708785">Быстро создать сайт в Google Сайтах</translation>
 <translation id="1270328905573953738">Переезды</translation>
@@ -328,6 +329,7 @@
 <translation id="1615402009686901181">Администратор запретил запись экрана, когда видны конфиденциальные данные.</translation>
 <translation id="1617276713587758852">Кроссоверы</translation>
 <translation id="1618571384971354160">Буксировка и техническая помощь на дороге</translation>
+<translation id="1619007254056372606">Управлять данными сайтов на устройстве</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622571349153632031">Вегетарианская кухня</translation>
 <translation id="162285686621567578">Этот сайт заблокирован одним из родителей.</translation>
@@ -691,6 +693,7 @@
 <translation id="2361263712565360498">275 x 395 мм</translation>
 <translation id="236340516568226369">Меню изменения размера</translation>
 <translation id="2365355378251437925">Заполните поле "<ph name="FIELD" />".</translation>
+<translation id="2365382709349300355">1 файл заблокирован из-за ограничений, связанных с политикой</translation>
 <translation id="2365508935344991784">Уличная мебель</translation>
 <translation id="2366689192918515749">Мясо и морепродукты</translation>
 <translation id="2367567093518048410">Уровень</translation>
@@ -1239,6 +1242,7 @@
 <translation id="3552297013052089404">Шрифт без засечек</translation>
 <translation id="3558573058928565255">До дня</translation>
 <translation id="355995771319966853">Отменить автозаполнение</translation>
+<translation id="3560408312959371419">Параметры Защиты от слежения и управление данными сайтов на устройстве</translation>
 <translation id="3560824484345057728">Открыть список связанных сайтов</translation>
 <translation id="3566021033012934673">Подключение не защищено</translation>
 <translation id="3566336457819493938">215 x 315 мм</translation>
@@ -2411,6 +2415,7 @@
 <translation id="5967867314010545767">Удалить из истории</translation>
 <translation id="5968022600320704045">Ничего не найдено.</translation>
 <translation id="5969199813874624822">Сохранить и включить отслеживание цены</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Шестой рулон</translation>
 <translation id="5975083100439434680">Уменьшить</translation>
 <translation id="5979084224081478209">Проверить пароли</translation>
@@ -2902,6 +2907,7 @@
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6965978654500191972">Устройство</translation>
 <translation id="696703987787944103">Перцепционный</translation>
+<translation id="6967851206780867018">1 файл заблокирован из-за его содержания</translation>
 <translation id="6970885655016700774">Ткань (архивная)</translation>
 <translation id="6971439137020188025">Быстро создать презентацию Google</translation>
 <translation id="6972629891077993081">Устройства HID</translation>
@@ -2954,6 +2960,7 @@
 <translation id="70705239631109039">Подключение к сайту небезопасно</translation>
 <translation id="7075452647191940183">Запрос слишком велик.</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">Улучшенная защита данных в интернете</translation>
 <translation id="7079718277001814089">Этот сайт содержит вредоносное ПО</translation>
 <translation id="7081308185095828845">Функция недоступна на вашем устройстве</translation>
 <translation id="7083258188081898530">Лоток 9</translation>
@@ -3882,6 +3889,7 @@
 <translation id="893332455753468063">Добавьте имя</translation>
 <translation id="8942355029279167844">Ваш администратор разрешил приложению "<ph name="APP_NAME" />" собирать диагностические данные для улучшения продукта. Более подробные сведения приведены на странице <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Лаймовый</translation>
+<translation id="8944485226638699751">Ограничены</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Закон и право</translation>
 <translation id="8954252855949068147">Одежда и аксессуары</translation>

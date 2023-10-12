@@ -194,6 +194,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> डीपीआई</translation>
 <translation id="2338501278241028356">आस-पास के डिवाइस खोजने के लिए ब्लूटूथ चालू करें</translation>
 <translation id="2346474577291266260">सिग्नल बहुत अच्छा है (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383"><ph name="DESCRIPTION" /> के लिए, बदलाव करने का डायलॉग बॉक्स खुला है.</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2364498172489649528">जांच में पास</translation>
 <translation id="2367335866686097760">कीमैपिंग बटन</translation>
@@ -213,6 +214,7 @@
 <translation id="2505327257735685095">मौजूदा वॉलपेपर रीफ़्रेश करें</translation>
 <translation id="2512979179176933762">विंडो दिखाएं</translation>
 <translation id="2513396635448525189">लॉगिन इमेज बदलें</translation>
+<translation id="2515109918609218604">शॉर्टकट उपलब्ध नहीं है. फ़ंक्शन और खोज बटनों का इस्तेमाल किए बिना, नया शॉर्टकट दबाएं.</translation>
 <translation id="2517472476991765520">स्कैन करें</translation>
 <translation id="2521835766824839541">पिछला ट्रैक</translation>
 <translation id="2526590354069164005">डेस्कटॉप</translation>
@@ -481,6 +483,7 @@
 <translation id="4793756956024303490">कंप्रेस करने का एल्गोरिदम</translation>
 <translation id="4794140124556169553">सीपीयू की जांच करने से सिस्टम की परफ़ॉर्मेंस पर असर पड़ सकता है</translation>
 <translation id="4798078634453489142">नया एपीएन जोड़ने के लिए, कोई पुराना एपीएन हटाएं</translation>
+<translation id="479989351350248267">search</translation>
 <translation id="4800589996161293643">Chromebook समुदाय</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> के प्रिंट का काम बंद किया गया</translation>
@@ -789,6 +792,7 @@
 <translation id="7103252855940681301"><ph name="COUNT" /> में से <ph name="INDEX" /> डिवाइस, जिसका नाम <ph name="NAME" /> है.</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> के लिए खास आर्टवर्क चुनें</translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7119389851461848805">पावर</translation>
 <translation id="7130438335435247835">ऐक्सेस पॉइंट नेम (एपीएन)</translation>
 <translation id="7134436342991564651">{0,plural, =1{नाम सर्वर}one{नाम सर्वर}other{नाम सर्वर}}</translation>
 <translation id="7135814714616751706">शॉर्टकट खोजें</translation>
@@ -946,6 +950,7 @@
 <translation id="8336739000755212683">डिवाइस खाते की इमेज बदलें</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> या <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">प्रिंट जॉब</translation>
+<translation id="8349826889576450703">लॉन्चर</translation>
 <translation id="8351855506390808906">कीमैपिंग टच पॉइंट</translation>
 <translation id="8352772353338965963">एक से ज़्यादा साइन-इन के लिए कोई खाता जोड़ें. सभी साइन इन किए गए खातों को पासवर्ड के बिना एक्सेस किया जा सकता है, इसलिए इस सुविधा का इस्तेमाल सिर्फ़ विश्वसनीय खातों के साथ किया जाना चाहिए.</translation>
 <translation id="8364946094152050673">ये नाम सर्वर खाली हैं</translation>
@@ -1019,6 +1024,7 @@
 <translation id="8868741746785112895">GUID (ग्लोबली यूनीक आइडेंटिफ़ायर)</translation>
 <translation id="8876270629542503161">डिवाइस एक टैबलेट है.</translation>
 <translation id="8881098542468797602">टेस्ट सफल रहा</translation>
+<translation id="8892443466059986410">शॉर्टकट में बदलाव करना रद्द करें</translation>
 <translation id="8898840733695078011">सिग्‍नल शक्ति</translation>
 <translation id="8909114361904403025">अप ऐरो</translation>
 <translation id="8910721771319628100">डिफ़ॉल्ट नेटवर्क, इंतज़ार की समयसीमा से ऊपर है</translation>
@@ -1041,6 +1047,7 @@
 <translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ऐप्लिकेशन अपने-आप चालू हो गया था}one{# ऐप्लिकेशन अपने-आप चालू हो गया था}other{# ऐप्लिकेशन अपने-आप चालू हो गए थे}}</translation>
 <translation id="8998289560386111590">यह मोड आपके डिवाइस पर उपलब्ध नहीं है</translation>
 <translation id="9003704114456258138">आवृत्ति</translation>
+<translation id="901834265349196618">ईमेल</translation>
 <translation id="9024331582947483881">फ़ुल स्क्रीन</translation>
 <translation id="9025198690966128418">निजी डिवाइस के तौर पर इस्तेमाल करें</translation>
 <translation id="902638246363752736">कीबोर्ड सेटिंग</translation>
@@ -1081,6 +1088,7 @@
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>
 <translation id="952992212772159698">सक्रिय नहीं किया गया</translation>
 <translation id="960719561871045870">ऑपरेटर कोड</translation>
+<translation id="966787709310836684">मेन्यू</translation>
 <translation id="979450713603643090">हल्का गुलाबी</translation>
 <translation id="982713511914535780">डिस्चार्ज टेस्ट चलाएं</translation>
 <translation id="987264212798334818">सामान्य</translation>

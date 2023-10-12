@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">Sisestage mittetühi e-posti aadress.</translation>
 <translation id="1758486001363313524">Muu ...</translation>
 <translation id="1787192514241997742">aeg kokku: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Luba kaamera</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">kaugseadmes esitamine</translation>
 <translation id="1921819250265091946">pp</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">praegune toiming</translation>
 <translation id="3321030238473337787">Esituskiirus</translation>
 <translation id="3329013043687509092">Küllastus</translation>
+<translation id="3377518164566272702">Luba mikrofon ja kaamera</translation>
 <translation id="3450233048674729344">Väärtus peab olema väiksem või võrdne <ph name="MAXIMUM" />-ga.</translation>
 <translation id="3732799496749320381">kk</translation>
 <translation id="3754210790023674521">Välju režiimist Pilt pildis</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">Režiimis Pilt pildis mängimine</translation>
 <translation id="4748357248530471599">ekraani väljalõike täisekraanrežiimi sisse-/väljalülitamine</translation>
 <translation id="4763480195061959176">video</translation>
+<translation id="4792862212177489858">Jaga asukohta</translation>
 <translation id="4812940957355064477">Sisestage arv.</translation>
 <translation id="4912200001568447310">praegune üksus</translation>
 <translation id="4915360478455618802">Kuva kellaaja valija</translation>
@@ -179,6 +182,7 @@
 <translation id="9132465097189459683">Muu ...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" /> alates kuupäevast <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Pilt pildis</translation>
+<translation id="918430632320614861">Luba mikrofon</translation>
 <translation id="945780513535800434">Osaliselt märgitud</translation>
 <translation id="954003015749068518">aktiveeri režiim Pilt pildis</translation>
 </translationbundle>

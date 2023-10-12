@@ -119,6 +119,7 @@
 <translation id="1768959921651994223">Doğrulama növü</translation>
 <translation id="1776228893584526149">Divar kağızı çaları</translation>
 <translation id="1782199038061388045">tərcümə</translation>
+<translation id="1788485524395674731">Bu tətbiqi administrator idarə edir</translation>
 <translation id="1792647875738159689">Skanlama ləğv edilir</translation>
 <translation id="1801418420130173017">Qaranlıq temanı deaktiv edin</translation>
 <translation id="1807246157184219062">Yüngül</translation>
@@ -482,6 +483,7 @@
 <translation id="4793756956024303490">Sıxılma alqoritmi</translation>
 <translation id="4794140124556169553">CPU testi etmək sistem performansınıza təsir göstərə bilər</translation>
 <translation id="4798078634453489142">Yeni APN əlavə etmək üçün APN-i silin</translation>
+<translation id="479989351350248267">axtarın</translation>
 <translation id="4800589996161293643">Chromebook icması</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> çap işi ləğv edilib</translation>
@@ -625,6 +627,7 @@
 <translation id="584953448295717128">APN avtomatik aşkarlanıb.</translation>
 <translation id="5849570051105887917">Əsas səhifə provayder kodu</translation>
 <translation id="5859603669299126575">İncəsənət qalereyası albomu</translation>
+<translation id="5859969039821714932">Qısayol əlçatan deyil. <ph name="KEY" /> olmadan yeni qısayol üzərinə basın.</translation>
 <translation id="5860033963881614850">Deaktiv</translation>
 <translation id="5860491529813859533">Aktiv edin</translation>
 <translation id="5876385649737594562">Seçim etmək üçün aktiv edin</translation>
@@ -790,6 +793,7 @@
 <translation id="7103252855940681301"><ph name="NAME" /> adlı cihaz <ph name="INDEX" />/<ph name="COUNT" />.</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> üçün eksklüziv illüstrasiya seçin</translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7119389851461848805">qidalanma</translation>
 <translation id="7130438335435247835">Giriş nöqtəsi adı (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ad serveri}other{Ad serverləri}}</translation>
 <translation id="7135814714616751706">Qısayol axtarın</translation>
@@ -947,6 +951,7 @@
 <translation id="8336739000755212683">Cihazın hesab şəklini dəyişin</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> və ya <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Çap işləri</translation>
+<translation id="8349826889576450703">başladıcı</translation>
 <translation id="8351855506390808906">Düymə uyğunlaşdırması - toxunuş nöqtəsi</translation>
 <translation id="8352772353338965963">Çoxsaylı giriş üçün hesab əlavə edin. Bu hesablara parolsuz daxil olmaq olar, ona görə də bu funksiya yalnız güvənilən hesablar ilə işlədilməlidir.</translation>
 <translation id="8364946094152050673">Boş ad serverləri</translation>
@@ -1042,6 +1047,7 @@
 <translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> avtomatik başladıldı}other{# tətbiq avtomatik başladıldı}}</translation>
 <translation id="8998289560386111590">Cihazınızda əlçatan deyil</translation>
 <translation id="9003704114456258138">Tezlik</translation>
+<translation id="901834265349196618">e-poçt</translation>
 <translation id="9024331582947483881">Tam ekran</translation>
 <translation id="9025198690966128418">Şəxsi cihaz kimi istifadə edin</translation>
 <translation id="902638246363752736">Klaviatura ayarları</translation>
@@ -1082,6 +1088,7 @@
 <translation id="945522503751344254">Geri əlaqə göndərin</translation>
 <translation id="952992212772159698">Aktiv edilməyib</translation>
 <translation id="960719561871045870">Operator kodu</translation>
+<translation id="966787709310836684">menyu</translation>
 <translation id="979450713603643090">Açıq-çəhrayı</translation>
 <translation id="982713511914535780">Deşarj testi icra edin</translation>
 <translation id="987264212798334818">Ümumi</translation>

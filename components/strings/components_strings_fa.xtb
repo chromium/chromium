@@ -143,6 +143,7 @@
 <translation id="1264309058268477500">جایگزین</translation>
 <translation id="1264974993859112054">ورزش</translation>
 <translation id="1266469291454105242">باز کردن قفل دستگاه</translation>
+<translation id="126728463333482584">شما یکی از اولین افرادی هستید که «محافظت دربرابر ردیابی» را تجربه می‌کند. این ویژگی استفاده از کوکی‌های شخص ثالث را برای سایت‌ها محدود می‌کند تا سایت‌ها شما را هنگام مرور کردن ردیابی نکنند.</translation>
 <translation id="1268480293435976622">پاکت چینی شماره ۷</translation>
 <translation id="1269516672602708785">‏ایجاد سریع سایت جدید در Google Sites</translation>
 <translation id="1270328905573953738">اسباب‌کشی و نقل مکان</translation>
@@ -692,6 +693,7 @@
 <translation id="2361263712565360498">۳۹۵ × ۲۷۵ میلی‌متر</translation>
 <translation id="236340516568226369">منوی فعال/غیرفعال کردن دکمه‌های تغییر اندازه</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> را وارد کنید</translation>
+<translation id="2365382709349300355">‫۱ فایل به‌دلیل خط‌مشی مسدود شد</translation>
 <translation id="2365508935344991784">مبلمان فضای باز</translation>
 <translation id="2366689192918515749">گوشت و غذاهای دریایی</translation>
 <translation id="2367567093518048410">سطح</translation>
@@ -2414,6 +2416,7 @@
 <translation id="5967867314010545767">حذف از سابقه</translation>
 <translation id="5968022600320704045">بدون نتیجه جستجو</translation>
 <translation id="5969199813874624822">ذخیره و پیگیری قیمت</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">سینی ششم</translation>
 <translation id="5975083100439434680">دورنمایی کردن</translation>
 <translation id="5979084224081478209">بررسی گذرواژه‌ها</translation>
@@ -2905,6 +2908,7 @@
 <translation id="6965382102122355670">تأیید</translation>
 <translation id="6965978654500191972">دستگاه</translation>
 <translation id="696703987787944103">حسی</translation>
+<translation id="6967851206780867018">‫۱ فایل به‌دلیل محتوا مسدود شد</translation>
 <translation id="6970885655016700774">پارچه (آرشیوی)</translation>
 <translation id="6971439137020188025">‏ایجاد سریع ارائه جدید در «اسلایدنگار Google»</translation>
 <translation id="6972629891077993081">‏دستگاه‌های HID</translation>
@@ -2957,6 +2961,7 @@
 <translation id="70705239631109039">اتصال شما کاملاً ایمن نیست</translation>
 <translation id="7075452647191940183">درخواست خیلی بزرگ است</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">هنگام مرور، حریم خصوصی‌تان بیشتر حفظ می‌شود</translation>
 <translation id="7079718277001814089">این سایت حاوی بدافزار است</translation>
 <translation id="7081308185095828845">این ویژگی در دستگاهتان دردسترس نیست.</translation>
 <translation id="7083258188081898530">سینی ۹</translation>

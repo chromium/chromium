@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">開啟 Chromium 分頁方格。</translation>
 <translation id="1617663976202781617">來自 Chromium Sync 的資料</translation>
 <translation id="1647558790457890304">Chromium 設定</translation>
+<translation id="164952285225495380">Chromium 已追蹤了這個包裹。</translation>
 <translation id="1722370509450468186">密碼會儲存至你的帳戶 (<ph name="EMAIL" />)。</translation>
 <translation id="1736662517232558588">已清除 Chromium 資料</translation>
 <translation id="1791845338122684020">開啟 Chromium 歷史記錄頁面。</translation>
@@ -119,7 +120,6 @@
 <translation id="5688047395118852662">這張資訊卡會建議你如何充分運用 Chromium 的各項功能。</translation>
 <translation id="5700709190537129682">Chromium 無法檢查你的密碼</translation>
 <translation id="5777187867430702742">Chromium 頁面</translation>
-<translation id="584303319228224680">透過 Chromium 自動追蹤包裹</translation>
 <translation id="5889847953983052353">開啟時：
 <ph name="BEGIN_INDENT" /> • 可協助 Chromium 為使用者提供更優質的服務體驗。<ph name="END_INDENT" />
 
@@ -140,6 +140,7 @@
 1. 開啟「設定」
 2. 輕觸 [預設瀏覽器 App]
 3. 選取 [Chromium]</translation>
+<translation id="6197255575340902638">如果隱藏「<ph name="MODULE_NAME" />」，Chromium 將不會再自動追蹤之後的包裹，而且會刪除先前的所有包裹追蹤資料。</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
 <translation id="6324041800010509197">開啟 Chromium 的分頁方格</translation>

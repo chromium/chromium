@@ -483,6 +483,7 @@
 <translation id="4793756956024303490">Algoritmus kompresie</translation>
 <translation id="4794140124556169553">Spustenie testu procesora môže ovplyvniť výkon systému</translation>
 <translation id="4798078634453489142">Ak chcete pridať nový názov prístupového bodu, odstráňte jeden existujúci</translation>
+<translation id="479989351350248267">search</translation>
 <translation id="4800589996161293643">Komunita pre Chromebooky</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Bola zrušená tlačová úloha <ph name="DOCUMENT_TITLE" /></translation>
@@ -792,6 +793,7 @@
 <translation id="7103252855940681301"><ph name="INDEX" />. zariadenie z <ph name="COUNT" /> s názvom <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Vybrať exkluzívny plagát pre <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7119389851461848805">napájanie</translation>
 <translation id="7130438335435247835">Názov prístupového bodu (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Menný server}few{Menné servery}many{Name servers}other{Menné servery}}</translation>
 <translation id="7135814714616751706">Hľadajte skratky</translation>
@@ -949,6 +951,7 @@
 <translation id="8336739000755212683">Zmeniť obrázok účtu zariadenia</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> alebo <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Tlačové úlohy</translation>
+<translation id="8349826889576450703">spúšťač</translation>
 <translation id="8351855506390808906">Priradený dotykový bod</translation>
 <translation id="8352772353338965963">Pridanie účtu pre viacnásobné prihlásenie. Ku všetkým prihláseným účtom môžete pristupovať bez hesla, takže táto funkcia by mala byť použitá iba s dôveryhodnými účtami.</translation>
 <translation id="8364946094152050673">Prázdne DNS servery</translation>
@@ -1044,6 +1047,7 @@
 <translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{Aplikácia <ph name="APP_NAME_1" /> bola spustená automaticky}few{# aplikácie boli spustené automaticky}many{# apps were started automatically}other{# aplikácií bolo spustených automaticky}}</translation>
 <translation id="8998289560386111590">V zariadení nie je k dispozícii</translation>
 <translation id="9003704114456258138">Frekvencia</translation>
+<translation id="901834265349196618">e-mail</translation>
 <translation id="9024331582947483881">celá obrazovka</translation>
 <translation id="9025198690966128418">Používať ako osobné zariadenie</translation>
 <translation id="902638246363752736">Nastavenia klávesnice</translation>
@@ -1084,6 +1088,7 @@
 <translation id="945522503751344254">Odoslať spätnú väzbu</translation>
 <translation id="952992212772159698">Neaktivované</translation>
 <translation id="960719561871045870">Kód operátora</translation>
+<translation id="966787709310836684">ponuka</translation>
 <translation id="979450713603643090">Svetloružová</translation>
 <translation id="982713511914535780">Spustiť test vybíjania</translation>
 <translation id="987264212798334818">Všeobecné</translation>

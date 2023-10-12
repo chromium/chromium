@@ -143,6 +143,7 @@
 <translation id="1264309058268477500">पर्यायी</translation>
 <translation id="1264974993859112054">क्रीडा</translation>
 <translation id="1266469291454105242">डिव्हाइस अनलॉक</translation>
+<translation id="126728463333482584">तुम्ही ब्राउझ करताना तुम्हाला ट्रॅक करण्यासाठी तृतीय पक्ष कुकी वापरण्यापासून साइटला मर्यादित करणाऱ्या ट्रॅकिंगपासून संरक्षण याचा सर्वप्रथम अनुभव घेणाऱ्यांपैकी एक आहात.</translation>
 <translation id="1268480293435976622">एन्व्हलप चायनीज #७</translation>
 <translation id="1269516672602708785">Google Sites मध्ये नवीन साइट झटपट तयार करा</translation>
 <translation id="1270328905573953738">स्थलांतर आणि पुनर्वसन</translation>
@@ -328,6 +329,7 @@
 <translation id="1615402009686901181">गोपनीय आशय दृश्यमान असेल तेव्हा अ‍ॅडमिनिस्ट्रेटर धोरण स्‍क्रीन कॅप्‍चर बंद करते</translation>
 <translation id="1617276713587758852">क्रॉसओव्हर</translation>
 <translation id="1618571384971354160">टोइंग आणि गाडी चालवताना आलेल्या समस्येबाबत साहाय्य</translation>
+<translation id="1619007254056372606">डिव्‍हाइसवरील साइट डेटा व्यवस्थापित करणे</translation>
 <translation id="1620510694547887537">कॅमेरा</translation>
 <translation id="1622571349153632031">शाकाहारी पाकशैली</translation>
 <translation id="162285686621567578">ही वेबसाइट तुमच्या पालकांनी ब्लॉक केली आहे.</translation>
@@ -691,6 +693,7 @@
 <translation id="2361263712565360498">२७५ x ३९५ मिमी</translation>
 <translation id="236340516568226369">आकार बदलण्याच्या टॉगलचा मेनू</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> एंटर करा</translation>
+<translation id="2365382709349300355">धोरणामुळे १ फाइल ब्लॉक केली गेली आहे</translation>
 <translation id="2365508935344991784">आउटडोअर फर्निचर</translation>
 <translation id="2366689192918515749">मटण आणि सीफूड</translation>
 <translation id="2367567093518048410">दर्जा</translation>
@@ -1239,6 +1242,7 @@
 <translation id="3552297013052089404">Sans-Serif फॉंट</translation>
 <translation id="3558573058928565255">दिवसापर्यंत</translation>
 <translation id="355995771319966853">ऑटोफिल पहिल्यासारखे करा</translation>
+<translation id="3560408312959371419">ट्रॅकिंगपासून संरक्षण आणि डिव्‍हाइसवरील साइट डेटा यासाठीचे पर्याय</translation>
 <translation id="3560824484345057728">संबंधित साइट पहा</translation>
 <translation id="3566021033012934673">तुमचे कनेक्शन खाजगी नाही</translation>
 <translation id="3566336457819493938">२१५ x ३१५ मिमी</translation>
@@ -1888,6 +1892,7 @@
 <translation id="4873616204573862158">आयवेअर</translation>
 <translation id="4876188919622883022">सिंप्लिफाइड व्ह्यू</translation>
 <translation id="4876305945144899064">वापरकर्ता नाव नाही</translation>
+<translation id="4876327226315760474">याचा अर्थ असा आहे की, वैशिष्‍ट्ये अपेक्षेनुसार काम करतील पण तुम्हाला ब्राउझिंग संरक्षण कमी असू शकते.</translation>
 <translation id="4877047577339061095">घरगुती स्टोरेज आणि शेल्व्हिंग</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{काहीही नाही}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> शोधा</translation>
@@ -2410,6 +2415,7 @@
 <translation id="5967867314010545767">इतिहासातून काढून टाका</translation>
 <translation id="5968022600320704045">कोणतेही शोध परिणाम नाहीत</translation>
 <translation id="5969199813874624822">किंमत सेव्ह करून तिचा माग ठेवा</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">सहावा रोल</translation>
 <translation id="5975083100439434680">झूम कमी करा</translation>
 <translation id="5979084224081478209">पासवर्ड तपासा</translation>
@@ -2517,6 +2523,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="61877208875190028">महिलांचे कपडे</translation>
 <translation id="6194209731893739467">तुमची सर्व माग ठेवलेली उत्पादने येथे पहा</translation>
+<translation id="6195163219142236913">तृतीय पक्ष कुकी मर्यादित आहेत</translation>
 <translation id="6195371403461054755">भूशास्त्र</translation>
 <translation id="6196640612572343990">तृतीय पक्ष कुकी ब्लॉक करा</translation>
 <translation id="6197648101609735209">८९ x ८९ मिमी</translation>
@@ -2901,6 +2908,7 @@
 <translation id="6965382102122355670">ठीक आहे</translation>
 <translation id="6965978654500191972">डिव्हाइस</translation>
 <translation id="696703987787944103">पर्सेप्चुअल</translation>
+<translation id="6967851206780867018">आशयामुळे १ फाइल ब्लॉक केली गेली आहे</translation>
 <translation id="6970885655016700774">फॅब्रिक (आर्कायव्हल)</translation>
 <translation id="6971439137020188025">Slides मध्ये नवीन Google प्रेझेंटेशन झटपट तयार करा</translation>
 <translation id="6972629891077993081">HID डिव्हाइस</translation>
@@ -2953,6 +2961,7 @@
 <translation id="70705239631109039">तुमचे कनेक्शन पूर्णपणे सुरक्षित नाही</translation>
 <translation id="7075452647191940183">विनंती खूपच मोठी आहे</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">आणखी गोपनीयतेसह ब्राउझ करा</translation>
 <translation id="7079718277001814089">या साइटमध्ये मालवेअर आहे</translation>
 <translation id="7081308185095828845">हे वैशिष्ट्य तुमच्या डिव्हाइसवर उपलब्ध नाही</translation>
 <translation id="7083258188081898530">ट्रे ९</translation>
@@ -3881,6 +3890,7 @@
 <translation id="893332455753468063">नाव जोडा</translation>
 <translation id="8942355029279167844">तुमच्या अ‍ॅडमिनिस्ट्रेटरने <ph name="APP_NAME" /> ला उत्पादन वापरण्याचा अनुभव सुधारित करण्यासाठी निदान डेटा गोळा करण्याची अनुमती दिली आहे. अधिक माहितीसाठी <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> पहा.</translation>
 <translation id="8943282376843390568">लिंबू</translation>
+<translation id="8944485226638699751">मर्यादित</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">कायदा आणि सरकार</translation>
 <translation id="8954252855949068147">पोशाख</translation>

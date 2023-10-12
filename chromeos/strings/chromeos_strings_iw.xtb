@@ -213,6 +213,7 @@
 <translation id="2505327257735685095">רענון של תמונת הטפט</translation>
 <translation id="2512979179176933762">הצגת החלונות</translation>
 <translation id="2513396635448525189">תמונת המשתמש המחובר</translation>
+<translation id="2515109918609218604">קיצור הדרך לא זמין. צריך להקיש על מקש קיצור חדש בלי להשתמש במקשי הפונקציות והחיפוש.</translation>
 <translation id="2517472476991765520">סריקה</translation>
 <translation id="2521835766824839541">הטראק הקודם</translation>
 <translation id="2526590354069164005">שולחן עבודה</translation>
@@ -481,6 +482,7 @@
 <translation id="4793756956024303490">האלגוריתם לדחיסת נתונים</translation>
 <translation id="4794140124556169553">‏הרצת בדיקה של יחידת עיבוד מרכזית (CPU) עלולה להשפיע על ביצועי המערכת</translation>
 <translation id="4798078634453489142">‏יש להסיר APN כדי להוסיף APN חדש</translation>
+<translation id="479989351350248267">Search</translation>
 <translation id="4800589996161293643">‏הקהילה של Chromebook</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">משימת ההדפסה <ph name="DOCUMENT_TITLE" /> בוטלה</translation>
@@ -789,6 +791,7 @@
 <translation id="7103252855940681301">מכשיר <ph name="INDEX" /> מתוך <ph name="COUNT" /> בשם <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">בחירת יצירות אומנות בלעדיות ב-<ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">הזנת מפתח</translation>
+<translation id="7119389851461848805">הפעלה</translation>
 <translation id="7130438335435247835">‏שם נקודת גישה (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{שרת שמות}one{שרתי שמות}two{שרתי שמות}other{שרתי שמות}}</translation>
 <translation id="7135814714616751706">חיפוש מקשי קיצור</translation>
@@ -946,6 +949,7 @@
 <translation id="8336739000755212683">שינוי תמונת החשבון במכשיר</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> או <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">משימות הדפסה</translation>
+<translation id="8349826889576450703">מרכז האפליקציות</translation>
 <translation id="8351855506390808906">נקודת מגע למיפוי מקשים</translation>
 <translation id="8352772353338965963">יש להוסיף חשבון לכניסה עם מספר חשבונות. כל החשבונות שאליהם נכנסת נגישים ללא סיסמה, לכן יש להשתמש בתכונה זו עם חשבונות אמינים בלבד.</translation>
 <translation id="8364946094152050673">שרתי שמות ריקים</translation>
@@ -1041,6 +1045,7 @@
 <translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{האפליקציה <ph name="APP_NAME_1" /> הופעלה אוטומטית}one{# אפליקציות הופעלו באופן אוטומטי}two{# אפליקציות הופעלו באופן אוטומטי}other{# אפליקציות הופעלו באופן אוטומטי}}</translation>
 <translation id="8998289560386111590">לא זמין במכשיר שלך</translation>
 <translation id="9003704114456258138">תדר</translation>
+<translation id="901834265349196618">אימייל</translation>
 <translation id="9024331582947483881">מסך מלא</translation>
 <translation id="9025198690966128418">שימוש בתור מכשיר אישי</translation>
 <translation id="902638246363752736">הגדרות מקלדת</translation>
@@ -1081,6 +1086,7 @@
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="952992212772159698">לא פעיל</translation>
 <translation id="960719561871045870">קוד ספק</translation>
+<translation id="966787709310836684">תפריט</translation>
 <translation id="979450713603643090">ורוד בהיר</translation>
 <translation id="982713511914535780">הפעלת בדיקה של פריקת הסוללה</translation>
 <translation id="987264212798334818">כללי</translation>

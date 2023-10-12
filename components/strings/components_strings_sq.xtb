@@ -143,6 +143,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1264309058268477500">Alternative</translation>
 <translation id="1264974993859112054">Sport</translation>
 <translation id="1266469291454105242">Shkyçja e pajisjes</translation>
+<translation id="126728463333482584">Je një ndër të parët që provon "Mbrojtjen nga gjurmimi", gjë që i kufizon sajtet që të mos përdorin kukit e palëve të treta për të të gjurmuar kur ti shfleton.</translation>
 <translation id="1268480293435976622">Zarf kinez nr. 7</translation>
 <translation id="1269516672602708785">Krijo shpejt një sajt të ri te Google Sites</translation>
 <translation id="1270328905573953738">Shërbime për zhvendosje dhe shpërngulje</translation>
@@ -692,6 +693,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Ndrysho përmasat e menysë së aktivizimit/çaktivizimit</translation>
 <translation id="2365355378251437925">Fut <ph name="FIELD" /></translation>
+<translation id="2365382709349300355">1 skedar është bllokuar për shkak të politikës</translation>
 <translation id="2365508935344991784">Mobilie për ambiente të jashtme</translation>
 <translation id="2366689192918515749">Mish dhe prodhime deti</translation>
 <translation id="2367567093518048410">Niveli</translation>
@@ -1891,6 +1893,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4873616204573862158">Syze</translation>
 <translation id="4876188919622883022">Pamja e thjeshtuar</translation>
 <translation id="4876305945144899064">Nuk ka emër përdoruesi</translation>
+<translation id="4876327226315760474">Kjo do të thotë që veçoritë e sajtit duhet të funksionojnë siç pritet, por mund të kesh më pak mbrojtje gjatë shfletimit.</translation>
 <translation id="4877047577339061095">Artikuj organizimi dhe magazinimi</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Asnjë}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Kërko për <ph name="TEXT" /></translation>
@@ -2413,6 +2416,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5967867314010545767">Hiqe nga historiku</translation>
 <translation id="5968022600320704045">Asnjë rezultat kërkimi</translation>
 <translation id="5969199813874624822">Gjej dhe gjurmo çmimet</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Ruli i gjashtë</translation>
 <translation id="5975083100439434680">Zvogëlo</translation>
 <translation id="5979084224081478209">Kontrollo fjalëkalimet</translation>
@@ -2518,6 +2522,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="61877208875190028">Veshjet për gra</translation>
 <translation id="6194209731893739467">Shiko të gjitha produktet e tua të monitoruara këtu</translation>
+<translation id="6195163219142236913">Kukit e palëve të treta janë të kufizuara</translation>
 <translation id="6195371403461054755">Gjeologjia</translation>
 <translation id="6196640612572343990">Blloko kukit e palëve të treta</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
@@ -2902,6 +2907,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6965978654500191972">Pajisja</translation>
 <translation id="696703987787944103">Perceptues</translation>
+<translation id="6967851206780867018">1 skedar është bllokuar për shkak të përmbajtjes</translation>
 <translation id="6970885655016700774">Pëlhurë (arkivore)</translation>
 <translation id="6971439137020188025">Krijo shpejt një prezantim të ri të Google në Slides</translation>
 <translation id="6972629891077993081">Pajisjet HID</translation>
@@ -2954,6 +2960,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="70705239631109039">Lidhja jote nuk është plotësisht e sigurt</translation>
 <translation id="7075452647191940183">Kërkesa është tepër e madhe</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">Shfleto me më shumë privatësi</translation>
 <translation id="7079718277001814089">Ky sajt përmban softuerë keqdashës</translation>
 <translation id="7081308185095828845">Kjo veçori nuk ofrohet në pajisjen tënde</translation>
 <translation id="7083258188081898530">Tabakaja 9</translation>

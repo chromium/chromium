@@ -143,6 +143,7 @@
 <translation id="1264309058268477500">备用</translation>
 <translation id="1264974993859112054">体育</translation>
 <translation id="1266469291454105242">设备解锁</translation>
+<translation id="126728463333482584">您是率先体验“跟踪保护”功能的用户之一，该功能可限制网站使用第三方 Cookie 来跟踪您的浏览活动。</translation>
 <translation id="1268480293435976622">中式 #7 信封</translation>
 <translation id="1269516672602708785">在 Google 协作平台中快速创建新网站</translation>
 <translation id="1270328905573953738">搬迁</translation>
@@ -692,6 +693,7 @@
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">“调整大小”切换菜单</translation>
 <translation id="2365355378251437925">请输入<ph name="FIELD" /></translation>
+<translation id="2365382709349300355">由于政策原因，1 个文件已被屏蔽</translation>
 <translation id="2365508935344991784">户外家具</translation>
 <translation id="2366689192918515749">肉类与海鲜</translation>
 <translation id="2367567093518048410">级别</translation>
@@ -2410,6 +2412,7 @@
 <translation id="5967867314010545767">从历史记录中移除</translation>
 <translation id="5968022600320704045">无搜索结果</translation>
 <translation id="5969199813874624822">保存并跟踪价格</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">第 6 卷</translation>
 <translation id="5975083100439434680">缩小</translation>
 <translation id="5979084224081478209">检查密码</translation>
@@ -2900,6 +2903,7 @@
 <translation id="6965382102122355670">确定</translation>
 <translation id="6965978654500191972">设备</translation>
 <translation id="696703987787944103">可感知</translation>
+<translation id="6967851206780867018">由于内容原因，1 个文件已被屏蔽</translation>
 <translation id="6970885655016700774">织物（存档用）</translation>
 <translation id="6971439137020188025">在 Google 幻灯片中快速创建新的 Google 演示文稿</translation>
 <translation id="6972629891077993081">HID 设备</translation>
@@ -2952,6 +2956,7 @@
 <translation id="70705239631109039">您的连接存在安全隐患</translation>
 <translation id="7075452647191940183">请求过大</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">在网上浏览时，隐私更有保障</translation>
 <translation id="7079718277001814089">此网站包含恶意软件</translation>
 <translation id="7081308185095828845">您的设备无法使用此功能</translation>
 <translation id="7083258188081898530">纸匣 9</translation>

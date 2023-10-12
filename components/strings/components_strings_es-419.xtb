@@ -328,6 +328,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1615402009686901181">La política del administrador inhabilita la captura de pantalla cuando hay contenido confidencial a la vista.</translation>
 <translation id="1617276713587758852">Vehículos mixtos</translation>
 <translation id="1618571384971354160">Asistencia en ruta y remolque de automóviles</translation>
+<translation id="1619007254056372606">Administrar los datos de sitios integrados en el dispositivo</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1622571349153632031">Cocina vegetariana</translation>
 <translation id="162285686621567578">Tu madre o padre bloqueó este sitio web.</translation>
@@ -1241,6 +1242,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3552297013052089404">Fuente Sans Serif</translation>
 <translation id="3558573058928565255">Hora del día</translation>
 <translation id="355995771319966853">Deshacer la acción de Autocompletar</translation>
+<translation id="3560408312959371419">Opciones para las protecciones contra seguimiento y los datos de sitios integrados en el dispositivo</translation>
 <translation id="3560824484345057728">Ver sitios relacionados</translation>
 <translation id="3566021033012934673">La conexión no es privada</translation>
 <translation id="3566336457819493938">215 × 315 mm</translation>
@@ -1890,6 +1892,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4873616204573862158">Lentes y accesorios</translation>
 <translation id="4876188919622883022">Vista simplificada</translation>
 <translation id="4876305945144899064">Sin nombre de usuario</translation>
+<translation id="4876327226315760474">Esto significa que las funciones de los sitios deberían poder usarse como se espera, pero es posible que tengas menos protección de navegación.</translation>
 <translation id="4877047577339061095">Almacenamiento y estanterías para el hogar</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Ninguna}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Búsqueda de <ph name="TEXT" /></translation>
@@ -2518,6 +2521,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="61877208875190028">Ropa femenina</translation>
 <translation id="6194209731893739467">Encuentra todos tus productos con seguimiento aquí</translation>
+<translation id="6195163219142236913">Se limitaron las cookies de terceros</translation>
 <translation id="6195371403461054755">Geología</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6197648101609735209">89 × 89 mm</translation>
@@ -3883,6 +3887,7 @@ Detalles adicionales:
 <translation id="893332455753468063">Agregar nombre</translation>
 <translation id="8942355029279167844">El administrador permitió que <ph name="APP_NAME" /> recopile datos de diagnóstico para mejorar la experiencia del producto. Para obtener más información, consulta <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Verde lima</translation>
+<translation id="8944485226638699751">Limitadas</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Derecho y administración gubernamental</translation>
 <translation id="8954252855949068147">Ropa</translation>

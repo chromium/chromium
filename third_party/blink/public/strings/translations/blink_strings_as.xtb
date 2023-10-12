@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">অনুগ্ৰহ কৰি খালী নোহোৱা ইমেইল ঠিকনা দিয়ক৷</translation>
 <translation id="1758486001363313524">অন্য...</translation>
 <translation id="1787192514241997742">মুঠ সময়: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">কেমেৰাৰ অনুমতি দিয়ক</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">ৰিম’ট ডিভাইচত প্লে’ কৰক</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">বৰ্তমানৰ পদক্ষেপ</translation>
 <translation id="3321030238473337787">প্লে’বেকৰ গতিবেগ</translation>
 <translation id="3329013043687509092">সংপৃক্তি</translation>
+<translation id="3377518164566272702">মাইক্ৰ’ফ’ন আৰু কেমেৰাৰ অনুমতি দিয়ক</translation>
 <translation id="3450233048674729344">মান <ph name="MAXIMUM" />ৰ সমান বা ইয়াতকৈ ডাঙৰ হ’বই লাগিব।</translation>
 <translation id="3732799496749320381">মি.মি.</translation>
 <translation id="3754210790023674521">চিত্ৰৰ ভিতৰত চিত্ৰ ম’ডৰ পৰা বাহিৰ হওক</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">চিত্ৰৰ ভিতৰত চিত্ৰ ম'ড-ত প্লে 'কৰি থকা হৈছে</translation>
 <translation id="4748357248530471599">ডিছপ্লে' কাট আউটৰ সম্পূর্ণ স্ক্ৰীন টগ’ল কৰক</translation>
 <translation id="4763480195061959176">ভিডিঅ’</translation>
+<translation id="4792862212177489858">অৱস্থান শ্বেয়াৰ কৰক</translation>
 <translation id="4812940957355064477">অনুগ্রহ কৰি ফ’ন কোনো নম্বৰ দিয়ক।</translation>
 <translation id="4912200001568447310">বৰ্তমানৰ বস্তু</translation>
 <translation id="4915360478455618802">সময় বাছনিকৰ্তাক দেখুৱাওক</translation>
@@ -179,6 +182,7 @@
 <translation id="9132465097189459683">অন্য...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" />ৰ পৰা</translation>
 <translation id="916607977885256133">চিত্ৰৰ ভিতৰত চিত্ৰ</translation>
+<translation id="918430632320614861">মাইক্ৰ’ফ’নৰ অনুমতি দিয়ক</translation>
 <translation id="945780513535800434">আংশিকভাৱে পৰীক্ষা কৰা হৈছে</translation>
 <translation id="954003015749068518">চিত্ৰৰ ভিতৰত চিত্ৰ আৰম্ভ কৰক</translation>
 </translationbundle>

@@ -483,6 +483,7 @@
 <translation id="4793756956024303490">Algorithm cywasgu</translation>
 <translation id="4794140124556169553">Gall cynnal arbrawf CPU effeithio ar berfformiad eich system</translation>
 <translation id="4798078634453489142">Tynnu APN er mwyn ychwanegu APN newydd</translation>
+<translation id="479989351350248267">chwilio</translation>
 <translation id="4800589996161293643">Cymuned Chromebook</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Wedi canslo'r dasg argraffu <ph name="DOCUMENT_TITLE" /></translation>
@@ -948,6 +949,7 @@
 <translation id="8336739000755212683">Newid llun cyfrif y ddyfais</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> neu <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Ffeiliau i'w hargraffu</translation>
+<translation id="8349826889576450703">lansiwr</translation>
 <translation id="8351855506390808906">Pwynt cyffwrdd mapio allweddi</translation>
 <translation id="8352772353338965963">Ychwanegu cyfrif at fewngofnodi o sawl cyfrif. Gellir cael mynediad at bob cyfrif sydd wedi'i fewngofnodi heb gyfrinair, felly dim ond gyda chyfrifon dibynadwy y dylid defnyddio'r nodwedd hon.</translation>
 <translation id="8364946094152050673">Gweinyddion enw gwag</translation>
@@ -1043,6 +1045,7 @@
 <translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{Dechreuwyd <ph name="APP_NAME_1" /> yn awtomatig}zero{Dechreuwyd # apiau yn awtomatig}two{Dechreuwyd # ap yn awtomatig}few{Dechreuwyd # ap yn awtomatig}many{Dechreuwyd # ap yn awtomatig}other{Dechreuwyd # ap yn awtomatig}}</translation>
 <translation id="8998289560386111590">Dim ar gael ar eich dyfais</translation>
 <translation id="9003704114456258138">Amlder</translation>
+<translation id="901834265349196618">e-bost</translation>
 <translation id="9024331582947483881">sgrîn lawn</translation>
 <translation id="9025198690966128418">Defnyddio fel dyfais bersonol</translation>
 <translation id="902638246363752736">Gosodiadau bysellfwrdd</translation>
@@ -1083,6 +1086,7 @@
 <translation id="945522503751344254">Danfon adborth</translation>
 <translation id="952992212772159698">Heb ei weithredu</translation>
 <translation id="960719561871045870">Cod gweithredwr</translation>
+<translation id="966787709310836684">dewislen</translation>
 <translation id="979450713603643090">Pinc golau</translation>
 <translation id="982713511914535780">Rhedeg prawf Dadwefru</translation>
 <translation id="987264212798334818">Cyffredinol</translation>

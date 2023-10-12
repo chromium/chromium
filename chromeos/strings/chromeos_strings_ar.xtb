@@ -483,6 +483,7 @@
 <translation id="4793756956024303490">خوارزمية الضغط</translation>
 <translation id="4794140124556169553">‏إنّ إجراء اختبار لوحدة المعالجة المركزية (CPU) قد يؤثر في أداء نظامك.</translation>
 <translation id="4798078634453489142">‏يجب إزالة اسم نقطة الوصول (APN) لإضافة APN جديد</translation>
+<translation id="479989351350248267">بحث</translation>
 <translation id="4800589996161293643">‏منتدى Chromebook</translation>
 <translation id="4803391892369051319">‫IPv4</translation>
 <translation id="4808449224298348341">تم إلغاء مهمة الطباعة للمستند <ph name="DOCUMENT_TITLE" />.</translation>
@@ -792,6 +793,7 @@
 <translation id="7103252855940681301">الجهاز <ph name="INDEX" /> من إجمالي <ph name="COUNT" /> اسمه <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">اختيار عمل فني حصري مِن <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">إدخال</translation>
+<translation id="7119389851461848805">الطاقة</translation>
 <translation id="7130438335435247835">‏اسم نقطة الوصول (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{خادم أسماء واحد}zero{خوادم الأسماء}two{خادما أسماء}few{خوادم الأسماء}many{خوادم الأسماء}other{خوادم الأسماء}}</translation>
 <translation id="7135814714616751706">البحث في الاختصارات</translation>
@@ -949,6 +951,7 @@
 <translation id="8336739000755212683">تغيير صورة حساب الجهاز</translation>
 <translation id="8347126826554447157">‫<ph name="SHORCTCUT1" /> أو <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">مهام الطباعة</translation>
+<translation id="8349826889576450703">launcher</translation>
 <translation id="8351855506390808906">نقطة لمس تحديد المفاتيح</translation>
 <translation id="8352772353338965963">يمكنك إضافة حساب إلى الدخول المتعدد. يمكن الدخول إلى جميع الحسابات التي تم تسجيل الدخول إليها بدون كلمة مرور، لذا فإن هذه الميزة لا يجب استخدامها إلا مع الحسابات الموثوق بها.</translation>
 <translation id="8364946094152050673">خادم الأسماء فارغ.</translation>
@@ -1044,6 +1047,7 @@
 <translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{تم بدء تشغيل "<ph name="APP_NAME_1" />" تلقائيًا}zero{تم بدء تشغيل # تطبيق تلقائيًا}two{تم بدء تشغيل تطبيقَين تلقائيًا}few{تم بدء تشغيل # تطبيقات تلقائيًا}many{تم بدء تشغيل # تطبيقًا تلقائيًا}other{تم بدء تشغيل # تطبيق تلقائيًا}}</translation>
 <translation id="8998289560386111590">الوضع غير متاح على جهازك.</translation>
 <translation id="9003704114456258138">التردد</translation>
+<translation id="901834265349196618">بريد إلكتروني</translation>
 <translation id="9024331582947483881">ملء الشاشة</translation>
 <translation id="9025198690966128418">الاستخدام كجهاز شخصي</translation>
 <translation id="902638246363752736">إعدادات لوحة المفاتيح</translation>
@@ -1084,6 +1088,7 @@
 <translation id="945522503751344254">إرسال ملاحظات</translation>
 <translation id="952992212772159698">غير نشطة</translation>
 <translation id="960719561871045870">رمز مشغل شبكة الجوال</translation>
+<translation id="966787709310836684">القائمة</translation>
 <translation id="979450713603643090">وردي فاتح</translation>
 <translation id="982713511914535780">تشغيل اختبار تفريغ شحن البطارية</translation>
 <translation id="987264212798334818">عام</translation>

@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">Vnesite e-poštni naslov (polje ne sme biti prazno).</translation>
 <translation id="1758486001363313524">Drugo ...</translation>
 <translation id="1787192514241997742">skupni čas: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Dovoli uporabo fotoaparata</translation>
 <translation id="1822429046913737220">Dopoldne/popoldne</translation>
 <translation id="1832974991323546415">predvajanje v oddaljeni napravi</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">trenutni korak</translation>
 <translation id="3321030238473337787">Hitrost predvajanja</translation>
 <translation id="3329013043687509092">Nasičenost</translation>
+<translation id="3377518164566272702">Dovoli uporabo mikrofona in fotoaparata</translation>
 <translation id="3450233048674729344">Vrednost mora biti manjša od <ph name="MAXIMUM" /> ali enaka.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Zapri način slike v sliki</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">Predvajanje v načinu slike v sliki</translation>
 <translation id="4748357248530471599">preklop celozaslonskega načina na zarezo zaslona</translation>
 <translation id="4763480195061959176">video</translation>
+<translation id="4792862212177489858">Objavi lokacijo</translation>
 <translation id="4812940957355064477">Vnesite številko.</translation>
 <translation id="4912200001568447310">trenutni element</translation>
 <translation id="4915360478455618802">Prikaz izbirnika ure</translation>
@@ -179,6 +182,7 @@
 <translation id="9132465097189459683">Drugo ...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, začne se <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Slika v sliki</translation>
+<translation id="918430632320614861">Dovoli uporabo mikrofona</translation>
 <translation id="945780513535800434">Delno označeno</translation>
 <translation id="954003015749068518">odpiranje načina slike v sliki</translation>
 </translationbundle>

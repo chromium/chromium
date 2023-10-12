@@ -332,6 +332,7 @@
 <translation id="1615402009686901181">Ըստ ադմինիստրատորի սահմանած կանոնի՝ էկրանի տեսագրման հնարավորությունն անջատվում է, երբ գաղտնի բովանդակություն է տեսանելի</translation>
 <translation id="1617276713587758852">Քրոսովերներ</translation>
 <translation id="1618571384971354160">Քարշակ մեքենաների ծառայություններ և ճանապարհային օգնություն</translation>
+<translation id="1619007254056372606">Կառավարել սարքում կայքերի տվյալները</translation>
 <translation id="1620510694547887537">Տեսախցիկ</translation>
 <translation id="1622571349153632031">Բուսակերական խոհանոց</translation>
 <translation id="162285686621567578">Այս կայքն արգելափակվել է ձեր ծնողի կողմից։</translation>
@@ -1246,6 +1247,7 @@
 <translation id="3552297013052089404">Sans-serif տառատեսակ</translation>
 <translation id="3558573058928565255">Ցերեկ</translation>
 <translation id="355995771319966853">Հետարկել ինքնալրացումը</translation>
+<translation id="3560408312959371419">Հետագծումից պաշտպանության պարամետրեր և սարքում կայքերի տվյալների կառավարում</translation>
 <translation id="3560824484345057728">Տեսնել առնչվող կայքերը</translation>
 <translation id="3566021033012934673">Ձեր կապակցումը պաշտպանված չէ</translation>
 <translation id="3566336457819493938">215 x 315 մմ</translation>
@@ -3894,6 +3896,7 @@
 <translation id="893332455753468063">Ավելացրեք անունը</translation>
 <translation id="8942355029279167844">Ձեր ադմինիստրատորը թույլատրել է <ph name="APP_NAME" /> հավելվածին հավաքել դիագնոստիկ տվյալներ՝ ծառայության որակը բարելավելու նպատակով։ Լրացուցիչ տեղեկությունների համար անցեք <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> էջ։</translation>
 <translation id="8943282376843390568">Լայմ</translation>
+<translation id="8944485226638699751">Սահմանափակված են</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Օրենք և կառավարություն</translation>
 <translation id="8954252855949068147">Հագուստ և կոշիկ</translation>

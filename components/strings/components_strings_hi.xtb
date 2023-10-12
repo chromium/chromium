@@ -142,6 +142,7 @@
 <translation id="1264309058268477500">वैकल्पिक ट्रे</translation>
 <translation id="1264974993859112054">खेल-कूद</translation>
 <translation id="1266469291454105242">डिवाइस को अनलॉक करने की सुविधा</translation>
+<translation id="126728463333482584">आप ट्रैकिंग सुरक्षा की सुविधा का अनुभव पाने वाले सबसे पहले लोगों में शामिल हैं. इस सुविधा का इस्तेमाल करने पर, ब्राउज़ करने के दौरान आपको ट्रैक करने के लिए, साइटें तीसरे पक्ष की कुकी का इस्तेमाल नहीं कर सकतीं.</translation>
 <translation id="1268480293435976622">चाइनीज़ #7 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="1269516672602708785">Google Sites में जल्दी से नई साइट बनाएं</translation>
 <translation id="1270328905573953738">सामान इधर-उधर ले जाने और जगहें बदलने की सेवाएं</translation>
@@ -689,6 +690,7 @@
 <translation id="2361263712565360498">275 x 395 मि॰मी॰</translation>
 <translation id="236340516568226369">टॉगल मेन्यू का साइज़ बदलें</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> डालें</translation>
+<translation id="2365382709349300355">नीति की वजह से 1 फ़ाइल ब्लॉक की गई</translation>
 <translation id="2365508935344991784">आउटडोर फ़र्नीचर</translation>
 <translation id="2366689192918515749">मांस और सी-फ़ूड</translation>
 <translation id="2367567093518048410">स्तर</translation>
@@ -1885,6 +1887,7 @@
 <translation id="4873616204573862158">चश्मे और सनग्लास</translation>
 <translation id="4876188919622883022">सरल बनाया गया व्यू</translation>
 <translation id="4876305945144899064">कोई उपयोगकर्ता नाम नहीं</translation>
+<translation id="4876327226315760474">इसका मतलब है कि साइट की सुविधाएं उम्मीद के मुताबिक काम करेंगी, लेकिन हो सकता है कि आपको ब्राउज़िंग के लिए कम सुरक्षा मिले.</translation>
 <translation id="4877047577339061095">घर का स्टोरेज और शेल्फ़</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{कोई नहीं}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> खोज</translation>
@@ -2407,6 +2410,7 @@
 <translation id="5967867314010545767">इतिहास से हटाएं</translation>
 <translation id="5968022600320704045">खोज का कोई नतीजा नहीं मिला</translation>
 <translation id="5969199813874624822">कीमत सेव करके उसे ट्रैक करें</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">छठा रोल</translation>
 <translation id="5975083100439434680">ज़ूम आउट</translation>
 <translation id="5979084224081478209">पासवर्ड जांचें</translation>
@@ -2513,6 +2517,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="61877208875190028">महिलाओं के कपड़े</translation>
 <translation id="6194209731893739467">ट्रैक किए गए अपने सभी प्रॉडक्ट यहां देखें</translation>
+<translation id="6195163219142236913">तीसरे पक्ष की कुकी सीमित हैं</translation>
 <translation id="6195371403461054755">जियोलॉजी</translation>
 <translation id="6196640612572343990">तीसरे पक्ष की कुकी ब्लॉक करें</translation>
 <translation id="6197648101609735209">89 x 89 मि॰मी॰</translation>
@@ -2896,6 +2901,7 @@
 <translation id="6965382102122355670">ठीक है</translation>
 <translation id="6965978654500191972">डिवाइस</translation>
 <translation id="696703987787944103">पर्सेप्चुअल</translation>
+<translation id="6967851206780867018">कॉन्टेंट की वजह से 1 फ़ाइल ब्लॉक की गई</translation>
 <translation id="6970885655016700774">फ़ैब्रिक (आर्काइवल)</translation>
 <translation id="6971439137020188025">Slides में जल्दी से नई Google प्रज़ेंटेशन बनाएं</translation>
 <translation id="6972629891077993081">एचआईडी डिवाइस</translation>
@@ -2948,6 +2954,7 @@
 <translation id="70705239631109039">आपका कनेक्शन पूरी तरह सुरक्षित नहीं है</translation>
 <translation id="7075452647191940183">अनुरोध में बहुत ज़्यादा डेटा भेजा गया है</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">ज़्यादा निजता के साथ ब्राउज़ करें</translation>
 <translation id="7079718277001814089">इस साइट में मैलवेयर है</translation>
 <translation id="7081308185095828845">यह सुविधा आपके डिवाइस पर उपलब्ध नहीं है</translation>
 <translation id="7083258188081898530">ट्रे 9</translation>

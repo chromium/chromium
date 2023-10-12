@@ -143,6 +143,7 @@
 <translation id="1264309058268477500">Розныя</translation>
 <translation id="1264974993859112054">Спорт</translation>
 <translation id="1266469291454105242">Разблакіроўка прылады</translation>
+<translation id="126728463333482584">Цяпер вам даступная абарона ад адсочвання. Гэта функцыя абмяжоўвае выкарыстанне сайтамі старонніх файлаў cookie для адсочвання вашых дзеянняў у інтэрнэце.</translation>
 <translation id="1268480293435976622">Канверт Chinese № 7</translation>
 <translation id="1269516672602708785">Хутка стварыць новы сайт з дапамогай Google Сайтаў</translation>
 <translation id="1270328905573953738">Пераезд і перавозка</translation>
@@ -328,6 +329,7 @@
 <translation id="1615402009686901181">Палітыка, зададзеная адміністратарам, адключае здыманне экрана, калі на ім паказваецца прыватнае змесціва</translation>
 <translation id="1617276713587758852">Красоверы</translation>
 <translation id="1618571384971354160">Буксіроўка і тэхнічная дапамога на дарозе</translation>
+<translation id="1619007254056372606">Кіраваць данымі сайтаў на прыладзе</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622571349153632031">Вегетарыянская кухня</translation>
 <translation id="162285686621567578">Гэты вэб-сайт заблакіраваны адным з тваіх бацькоў.</translation>
@@ -691,6 +693,7 @@
 <translation id="2361263712565360498">275 x 395 мм</translation>
 <translation id="236340516568226369">Меню змянення памеру</translation>
 <translation id="2365355378251437925">Увядзіце даныя ў поле "<ph name="FIELD" />"</translation>
+<translation id="2365382709349300355">1 файл заблакіраваны з-за парушэння правіл</translation>
 <translation id="2365508935344991784">Садовая мэбля</translation>
 <translation id="2366689192918515749">Мяса і морапрадукты</translation>
 <translation id="2367567093518048410">Узровень</translation>
@@ -1239,6 +1242,7 @@
 <translation id="3552297013052089404">Шрыфт без засечак</translation>
 <translation id="3558573058928565255">Светлы час дня</translation>
 <translation id="355995771319966853">Адрабіць аўтазапаўненне</translation>
+<translation id="3560408312959371419">Параметры для абароны ад адсочвання і даных сайтаў на прыладзе</translation>
 <translation id="3560824484345057728">Паказаць спіс звязаных сайтаў</translation>
 <translation id="3566021033012934673">Падключэнне не з'яўляецца прыватным</translation>
 <translation id="3566336457819493938">215 x 315 мм</translation>
@@ -2411,6 +2415,7 @@
 <translation id="5967867314010545767">Выдаліць з гісторыі</translation>
 <translation id="5968022600320704045">Няма вынікаў пошуку</translation>
 <translation id="5969199813874624822">Захаваць і ўключыць адсочванне цаны</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Шосты рулон</translation>
 <translation id="5975083100439434680">Паменшыць</translation>
 <translation id="5979084224081478209">Праверыць паролі</translation>
@@ -2902,6 +2907,7 @@
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6965978654500191972">Прылада</translation>
 <translation id="696703987787944103">Перцэпцыйны</translation>
+<translation id="6967851206780867018">1 файл заблакіраваны з-за яго змесціва</translation>
 <translation id="6970885655016700774">Тканіна архіўнай якасці</translation>
 <translation id="6971439137020188025">Хутка стварыць новую прэзентацыю Google у праграме "Прэзентацыі"</translation>
 <translation id="6972629891077993081">Прылады HID</translation>
@@ -2954,6 +2960,7 @@
 <translation id="70705239631109039">Ваша падключэнне не цалкам бяспечнае</translation>
 <translation id="7075452647191940183">Запыт занадта вялікі</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">Палепшаная абарона прыватнасці ў інтэрнэце</translation>
 <translation id="7079718277001814089">Гэты сайт змяшчае шкоднае ПЗ</translation>
 <translation id="7081308185095828845">На жаль, гэта функцыя на прыладзе недаступная</translation>
 <translation id="7083258188081898530">Латок 9</translation>
@@ -3883,6 +3890,7 @@
 <translation id="893332455753468063">Дадаць імя</translation>
 <translation id="8942355029279167844">Адміністратар дазволіў праграме "<ph name="APP_NAME" />" збіраць даныя дыягностыкі дзеля ўдасканалення работы прадукту. Дадатковая інфармацыя – па спасылцы <ph name="BEGIN_LINK" /> https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Лайм</translation>
+<translation id="8944485226638699751">Абмежаваны</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Закон і ўрад</translation>
 <translation id="8954252855949068147">Адзенне і аксесуары</translation>

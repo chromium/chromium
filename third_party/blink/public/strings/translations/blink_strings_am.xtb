@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">እባክዎ ባዶ ያልሆነ የኢሜይል አድራሻ ያስገቡ።</translation>
 <translation id="1758486001363313524">ሌላ...</translation>
 <translation id="1787192514241997742">ጠቅላላ ጊዜ፦ <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">ካሜራ ፍቀድ</translation>
 <translation id="1822429046913737220">ጥዋት/ከሰዓት</translation>
 <translation id="1832974991323546415">በርቀት መሣሪያ ላይ አጫውት</translation>
 <translation id="1921819250265091946">ቀቀ</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">የአሁኑ ደረጃ</translation>
 <translation id="3321030238473337787">የመልሶ ማጫወት ፍጥነት</translation>
 <translation id="3329013043687509092">የቀለም ሙሌት</translation>
+<translation id="3377518164566272702">ማይክሮፎን እና ካሜራ ፍቀድ</translation>
 <translation id="3450233048674729344">ዋጋ ከ<ph name="MAXIMUM" /> የሚያንስ ወይም ከእሱ እኩል መሆን አለበት።</translation>
 <translation id="3732799496749320381">ሚሜ</translation>
 <translation id="3754210790023674521">ከሥዕል-ውስጥ-ሥዕል ውጣ</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">በሥዕል-ውስጥ-ሥዕልን በማጫወት ላይ</translation>
 <translation id="4748357248530471599">የተቆረጠው የማሳያ ክፍል ሙሉ ማያ ገጽን ይቀያይሩ</translation>
 <translation id="4763480195061959176">ቪዲዮ</translation>
+<translation id="4792862212177489858">አካባቢ አጋራ</translation>
 <translation id="4812940957355064477">እባክዎ ቁጥር ያስገቡ።</translation>
 <translation id="4912200001568447310">የአሁን ንጥል</translation>
 <translation id="4915360478455618802">ሰዓት መራጭን አሳይ</translation>
@@ -179,6 +182,7 @@
 <translation id="9132465097189459683">ሌላ...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />፣ የሚጀምረው በ<ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">በሥዕል ላይ ሥዕል</translation>
+<translation id="918430632320614861">ማይክሮፎን ፍቀድ</translation>
 <translation id="945780513535800434">በከፊል ምልክት ተደርጎበታል</translation>
 <translation id="954003015749068518">ወደ ሥዕል-ውስጥ-ሥዕል ይግቡ</translation>
 </translationbundle>

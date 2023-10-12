@@ -169,6 +169,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="1847795903283049083">Tamén podes ver e xestionar estes elementos nos marcadores, na lista de lectura ou no xestor de contrasinais.</translation>
 <translation id="1870148520156231997">Mostrar contrasinal</translation>
 <translation id="1872096359983322073">Lanterna</translation>
+<translation id="1876851015978093044">Mostra este elemento</translation>
 <translation id="1882901927376062252">{count,plural, =1{Gardouse o marcador na túa Conta de Google ({email})}other{Gardáronse {count} marcadores na túa Conta de Google ({email})}}</translation>
 <translation id="1883255238294161206">Contraer lista</translation>
 <translation id="1890237935065108104">Esta opción de configuración non está dispoñible.</translation>
@@ -282,6 +283,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2482878487686419369">Notificacións</translation>
 <translation id="2484459871750294497">Como podo activar esta función?</translation>
 <translation id="2496626742194544812">Ir á primeira pestana</translation>
+<translation id="2499505845365628575">Podes atopar todo o historial de navegación en <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2500374554657206846">Opcións para gardar contrasinais</translation>
 <translation id="2511117522375201202">Tes <ph name="NUMBER_OF_PASSWORDS" /> contrasinais vulnerados que poderían poñer en perigo a túa seguranza.</translation>
 <translation id="2523363575747517183">Este sitio web está tentando abrir outra aplicación.</translation>
@@ -1112,6 +1114,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6785453220513215166">Enviando informe de erros...</translation>
 <translation id="6790502149545262384">Dentro de pouco verás as historias de <ph name="CHANNEL_NAME" /> cando abras unha pestana nova.</translation>
 <translation id="6797885426782475225">Busca por voz</translation>
+<translation id="6800349425672670802">Podes acceder todas as pestanas abertas desde o selector de pestanas.</translation>
 <translation id="6807889908376551050">Mostrar todas...</translation>
 <translation id="681368974849482173">Creouse o elemento</translation>
 <translation id="6822587385560699678">Cando a opción estea activada, os contrasinais gardaranse en <ph name="ACCOUNT" />. Se está desactivada, gardaranse só neste dispositivo.</translation>
@@ -1206,6 +1209,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7367530036083223701">Accede de maneira segura aos teus contrasinais desde a pantalla de inicio grazas ao widget do xestor de contrasinais.</translation>
 <translation id="7380220816562673297">Polo de agora, só podes compartir contrasinais cos membros da familia. <ph name="BEGIN_LINK" />Crea un grupo familiar<ph name="END_LINK" /> cun máximo de 6 membros para tirardes proveito dos teus produtos e subscricións de Google.</translation>
 <translation id="7383797227493018512">Lista de lectura</translation>
+<translation id="7396331865858820922">Non se compartiu o contrasinal</translation>
 <translation id="7398893703713203428">Crear ligazón</translation>
 <translation id="7399802613464275309">Revisión de seguranza</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1226,6 +1230,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7488874549363591659">Entregado</translation>
 <translation id="7491131399623468277">Ir á configuración…</translation>
 <translation id="7492574581995589075">A túa organización desactivou a opción de usar e gardar os datos de Chrome na túa Conta de Google. Os marcadores, contrasinais e demais datos que engadas gardaranse só neste dispositivo.</translation>
+<translation id="749854780843431406">Podes abrir unha nova pestana co botón <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="750149195207506638">Os marcadores están ocultos</translation>
 <translation id="750228856503700085">Non hai actualizacións dispoñibles</translation>
 <translation id="750493650310597496">0 seleccionados</translation>
@@ -1286,6 +1291,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="778855399387580014">Inicia unha busca nunha nova pestana de Chrome.</translation>
 <translation id="7791543448312431591">Engadir</translation>
 <translation id="7807060072011926525">Ofrecido por Google</translation>
+<translation id="7812377703891978671">Para acceder a todo o historial de navegación, selecciona <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Descargas</translation>
 <translation id="7839985698273989086">Páxina sen conexión</translation>
 <translation id="7840771868269352570">Quitaranse os elementos seleccionados.</translation>
@@ -1433,6 +1439,7 @@ Os teus datos encriptáronse coa túa frase de acceso o <ph name="TIME" />. Intr
 <translation id="8560253818350321773">Móstranse primeiro os elementos usados con máis frecuencia.</translation>
 <translation id="8588404856427128947">Desactivada</translation>
 <translation id="8591976964826315682">Bloquear cookies de terceiros no modo de incógnito</translation>
+<translation id="8593565399399144771">Podes abrir unha pestana nova aquí.</translation>
 <translation id="8605219856220328675">Pechar pestana.</translation>
 <translation id="8613883225817609844">Ocultar Pestanas recentes</translation>
 <translation id="8620640915598389714">Editar</translation>

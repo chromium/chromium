@@ -328,6 +328,7 @@
 <translation id="1615402009686901181">কোনও গোপনীয় কন্টেন্ট দেখা গেলে অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী স্ক্রিন ক্যাপচার করার সুবিধা বন্ধ করে দেওয়া হয়</translation>
 <translation id="1617276713587758852">ক্রসওভার</translation>
 <translation id="1618571384971354160">টোয়িং ও রাস্তায় সহায়তা</translation>
+<translation id="1619007254056372606">অন-ডিভাইস সাইট ডেটা ম্যানেজ করুন</translation>
 <translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1622571349153632031">ভেজিটেরিয়ান রান্না</translation>
 <translation id="162285686621567578">আপনার অভিভাবক এই ওয়েবসাইটটি ব্লক করে দিয়েছেন।</translation>
@@ -1241,6 +1242,7 @@
 <translation id="3552297013052089404">Sans-Serif ফন্ট</translation>
 <translation id="3558573058928565255">দিনের সময়</translation>
 <translation id="355995771319966853">অটোফিল আগের অবস্থায় ফিরিয়ে আনুন</translation>
+<translation id="3560408312959371419">ডিভাইসে ট্র্যাকিং সুরক্ষা এবং অন-ডিভাইস সাইট ডেটা বিকল্প</translation>
 <translation id="3560824484345057728">সম্পর্কিত সাইট দেখুন</translation>
 <translation id="3566021033012934673">আপনার সংযোগ ব্যক্তিগত নয়</translation>
 <translation id="3566336457819493938">২১৫ x ৩১৫ মিমি</translation>
@@ -1890,6 +1892,7 @@
 <translation id="4873616204573862158">চশমা</translation>
 <translation id="4876188919622883022">সরলীকৃত ভিউ</translation>
 <translation id="4876305945144899064">কোনও ব্যবহারকারীর নাম নেই</translation>
+<translation id="4876327226315760474">এর অর্থ হল, প্রত্যাশা অনুযায়ী সাইট ফিচার কাজ করছে কিন্তু ব্রাউজিং সংক্রান্ত সুরক্ষা আপনার আপ-টু-ডেট নেই।</translation>
 <translation id="4877047577339061095">বাড়িতে স্টোরেজ ও শেলফ তৈরি</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{একটিও নয়}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> সার্চ</translation>
@@ -2517,6 +2520,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="61877208875190028">মহিলাদের পোশাক</translation>
 <translation id="6194209731893739467">এখানে আপনার সবকটি ট্র্যাক করা প্রোডাক্ট দেখুন</translation>
+<translation id="6195163219142236913">থার্ড-পার্টি কুকি সীমিত করা হয়েছে</translation>
 <translation id="6195371403461054755">জিওলজি</translation>
 <translation id="6196640612572343990">তৃতীয় পক্ষের কুকিজ অবরুদ্ধ করুন</translation>
 <translation id="6197648101609735209">৮৯ x ৮৯ মিমি</translation>
@@ -3881,6 +3885,7 @@
 <translation id="893332455753468063">নাম যোগ করুন</translation>
 <translation id="8942355029279167844">আপনার অ্যাডমিন প্রোডাক্ট ব্যবহারের অভিজ্ঞতাকে আরও উন্নত করার লক্ষ্যে <ph name="APP_NAME" />-কে ডায়াগনস্টিক ডেটা সংগ্রহ করার অনুমতি দিয়েছে। আরও তথ্যের জন্য, <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> লিঙ্কে গিয়ে দেখুন।</translation>
 <translation id="8943282376843390568">লাইম</translation>
+<translation id="8944485226638699751">সীমিত</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">আইন ও সরকার</translation>
 <translation id="8954252855949068147">পোশাক</translation>

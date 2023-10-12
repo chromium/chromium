@@ -169,6 +169,7 @@
 <translation id="1847795903283049083">നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകളിലോ വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിലോ Password Manager-ലോ ഈ ഇനങ്ങൾ കാണാനും നിയന്ത്രിക്കാനുമാകും.</translation>
 <translation id="1870148520156231997">പാസ്‌വേഡ് വെളിപ്പെടുത്തുക</translation>
 <translation id="1872096359983322073">ടോർച്ച്</translation>
+<translation id="1876851015978093044">ഈ ഇനം കാണിക്കുന്നു</translation>
 <translation id="1882901927376062252">{count,plural, =1{{email} എന്ന നിങ്ങളുടെ Google Account-ൽ ബുക്ക്‌മാർക്ക് സംരക്ഷിച്ചു}other{{email} എന്ന നിങ്ങളുടെ Google Account-ൽ {count} ബുക്ക്‌മാർക്കുകൾ സംരക്ഷിച്ചു}}</translation>
 <translation id="1883255238294161206">ലിസ്റ്റ് ചുരുക്കുക</translation>
 <translation id="1890237935065108104">ഈ ക്രമീകരണം ലഭ്യമല്ല.</translation>
@@ -282,6 +283,7 @@
 <translation id="2482878487686419369">അറിയിപ്പുകൾ</translation>
 <translation id="2484459871750294497">ഈ ഫീച്ചർ എനിക്ക് എങ്ങനെ പ്രവർത്തനക്ഷമമാക്കാം?</translation>
 <translation id="2496626742194544812">ആദ്യ ടാബിലേക്ക് പോകുക</translation>
+<translation id="2499505845365628575"><ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> എന്നതിൽ നിന്ന് നിങ്ങളുടെ എല്ലാ ബ്രൗസിംഗ് ചരിത്രവും കണ്ടെത്താനാകും.</translation>
 <translation id="2500374554657206846">പാസ്‌വേഡ് സംരക്ഷിക്കാനുള്ള ഓപ്‌ഷനുകൾ</translation>
 <translation id="2511117522375201202">നിങ്ങളുടെ സുരക്ഷിതത്വം അപകടത്തിലാക്കിയേക്കാവുന്ന തരത്തിൽ, നിങ്ങൾക്ക് അപഹരിക്കപ്പെട്ട <ph name="NUMBER_OF_PASSWORDS" /> പാസ്‌വേഡുകളുണ്ട്.</translation>
 <translation id="2523363575747517183">മറ്റൊരു ആപ്പ് തുറക്കാൻ ഈ വെബ്‌സൈറ്റ് ആവർത്തിച്ച് ശ്രമിക്കുന്നു.</translation>
@@ -1112,6 +1114,7 @@
 <translation id="6785453220513215166">ക്രാഷ് റിപ്പോർട്ട് അയയ്‌ക്കുന്നു...</translation>
 <translation id="6790502149545262384">ഉടൻ തന്നെ, പുതിയൊരു ടാബ് തുറക്കുമ്പോൾ <ph name="CHANNEL_NAME" /> എന്നതിൽ നിന്നുള്ള സ്റ്റോറികൾ നിങ്ങൾക്ക് കാണാനാകും.</translation>
 <translation id="6797885426782475225">ശബ്ദ തിരയൽ</translation>
+<translation id="6800349425672670802">ടാബ് സ്വിച്ചറിൽ നിന്ന് നിങ്ങൾക്ക് തുറന്നിരിക്കുന്ന എല്ലാ ടാബുകളും ആക്സസ് ചെയ്യാൻ കഴിയും.</translation>
 <translation id="6807889908376551050">എല്ലാം കാണിക്കുക...</translation>
 <translation id="681368974849482173">ഇനം സൃഷ്‌ടിച്ചു</translation>
 <translation id="6822587385560699678">ഓണായിരിക്കുമ്പോൾ, <ph name="ACCOUNT" /> -ൽ പാസ്‌വേഡുകൾ സംരക്ഷിക്കും. ഓഫായിരിക്കുമ്പോൾ, ഈ ഉപകരണത്തിൽ മാത്രമേ പാസ്‌വേഡുകൾ സംരക്ഷിക്കൂ.</translation>
@@ -1206,6 +1209,7 @@
 <translation id="7367530036083223701">Password Manager വിജറ്റ് ഉപയോഗിച്ച് ഹോം സ്‌ക്രീനിൽ നിന്ന് നിങ്ങളുടെ പാസ്‌വേഡുകൾ സുരക്ഷിതമായി ആക്‌സസ് ചെയ്യുക.</translation>
 <translation id="7380220816562673297">ഇപ്പോൾ നിങ്ങൾക്ക്, കുടുംബാംഗങ്ങളുമായി മാത്രമേ പാസ്‌വേഡുകൾ പങ്കിടാനാകൂ. 6 അംഗങ്ങൾ വരെയുള്ള <ph name="BEGIN_LINK" />ഒരു കുടുംബ ഗ്രൂപ്പ് സൃഷ്‌ടിച്ച്<ph name="END_LINK" /> Google-ൽ ഉടനീളമുള്ള നിങ്ങളുടെ ഉൽപ്പന്നങ്ങളും സബ്‌സ്‌ക്രിപ്‌ഷനുകളും കൂടുതൽ പ്രയോജനപ്പെടുത്തുക.</translation>
 <translation id="7383797227493018512">വായനാ ലിസ്‌റ്റ്</translation>
+<translation id="7396331865858820922">പാസ്‌വേഡ് പങ്കിട്ടില്ല</translation>
 <translation id="7398893703713203428">ലിങ്ക് സൃഷ്ടിക്കുക</translation>
 <translation id="7399802613464275309">സുരക്ഷാ പരിശോധന</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1226,6 +1230,7 @@
 <translation id="7488874549363591659">ഡെലിവർ ചെയ്‌തു</translation>
 <translation id="7491131399623468277">ക്രമീകരണത്തിലേക്ക് പോകുക…</translation>
 <translation id="7492574581995589075">നിങ്ങളുടെ Google Account-ൽ Chrome ഡാറ്റ ഉപയോഗിക്കാനും സംരക്ഷിക്കാനുമുള്ള ശേഷി നിങ്ങളുടെ ഓർഗനൈസേഷൻ ഓഫാക്കി. പുതിയ ബുക്ക്‌മാർക്കുകളും പാസ്‌വേഡുകളും മറ്റും ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിക്കൂ.</translation>
+<translation id="749854780843431406"><ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" /> ബട്ടണിൽ നിന്ന് നിങ്ങൾക്ക് ഒരു പുതിയ ടാബ് തുറക്കാം.</translation>
 <translation id="750149195207506638">ബുക്ക്‌മാർക്കുകൾ മറച്ചിരിക്കുന്നു</translation>
 <translation id="750228856503700085">അപ്ഡേറ്റുകൾ ലഭ്യമല്ല</translation>
 <translation id="750493650310597496">0 തിരഞ്ഞെടുത്തു</translation>
@@ -1286,6 +1291,7 @@
 <translation id="778855399387580014">പുതിയ Chrome ടാബിൽ തിരയൽ ആരംഭിക്കുക.</translation>
 <translation id="7791543448312431591">ചേര്‍ക്കൂ</translation>
 <translation id="7807060072011926525">Google നൽകുന്നത്</translation>
+<translation id="7812377703891978671"><ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> തിരഞ്ഞെടുക്കുന്നതിലൂടെ നിങ്ങളുടെ എല്ലാ ബ്രൗസിംഗ് ചരിത്രവും ആക്‌സസ് ചെയ്യാൻ കഴിയും.</translation>
 <translation id="78146569776629510">ഡൗൺലോഡുകൾ</translation>
 <translation id="7839985698273989086">പേജ് ഓഫ്‌ലൈനാണ്</translation>
 <translation id="7840771868269352570">നിങ്ങൾ തിരഞ്ഞെടുത്ത ഇനങ്ങൾ നീക്കം ചെയ്യപ്പെടും.</translation>
@@ -1433,6 +1439,7 @@
 <translation id="8560253818350321773">ഇടയ്ക്കിടെ ഉപയോഗിക്കുന്ന ഇനങ്ങൾ ആദ്യം കാണിക്കുക.</translation>
 <translation id="8588404856427128947">ഓഫാണ്</translation>
 <translation id="8591976964826315682">അദൃശ്യ മോഡിൽ മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുക</translation>
+<translation id="8593565399399144771">നിങ്ങൾക്ക് ഇവിടെ ഒരു പുതിയ ടാബ് തുറക്കാം.</translation>
 <translation id="8605219856220328675">ടാബ് അടയ്‌ക്കുക.</translation>
 <translation id="8613883225817609844">'അടുത്തിടെയുള്ള ടാബുകൾ' മറയ്ക്കുക</translation>
 <translation id="8620640915598389714">എഡിറ്റ് ചെയ്യുക</translation>

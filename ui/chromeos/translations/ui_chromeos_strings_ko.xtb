@@ -329,6 +329,7 @@
 <translation id="3619115746895587757">카푸치노</translation>
 <translation id="3619593063686672873">최근 동영상 없음</translation>
 <translation id="3634507049637220048">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, 관리자가 관리함, 세부정보</translation>
+<translation id="36451918667380448">모바일 네트워크 제공업체가 잠겨 있습니다. 제공업체에 문의하여 지원을 받으세요.</translation>
 <translation id="3645233063072417428">항목 <ph name="NUMBER_OF_ITEMS" />개를 이동했습니다.</translation>
 <translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" />개의 파일이 선택됨</translation>
 <translation id="3685122418104378273">모바일 데이터를 사용할 때는 Google Drive 동기화가 기본적으로 사용 중지됩니다.</translation>

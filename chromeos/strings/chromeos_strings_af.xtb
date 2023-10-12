@@ -119,6 +119,7 @@
 <translation id="1768959921651994223">Stawingstipe</translation>
 <translation id="1776228893584526149">Muurpapierkleur</translation>
 <translation id="1782199038061388045">vertaling</translation>
+<translation id="1788485524395674731">Jou administrateur bestuur hierdie app</translation>
 <translation id="1792647875738159689">Kanselleer skandering</translation>
 <translation id="1801418420130173017">Deaktiveer donkertema</translation>
 <translation id="1807246157184219062">Lig</translation>
@@ -482,6 +483,7 @@
 <translation id="4793756956024303490">Saampersingalgoritme</translation>
 <translation id="4794140124556169553">As jy 'n CPU-toets doen, kan dit jou stelselwerkverrigting affekteer</translation>
 <translation id="4798078634453489142">Verwyder ’n APN om ’n nuwe APN by te voeg</translation>
+<translation id="479989351350248267">deursoek</translation>
 <translation id="4800589996161293643">Chromebook-gemeenskap</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Gekanselleerde druktaak <ph name="DOCUMENT_TITLE" /></translation>
@@ -625,6 +627,7 @@
 <translation id="584953448295717128">APN is outomaties gekies.</translation>
 <translation id="5849570051105887917">Tuisverskafferkode</translation>
 <translation id="5859603669299126575">Kunsgalery-album</translation>
+<translation id="5859969039821714932">Kortpad nie beskikbaar nie. Druk ’n nuwe kortpad sonder <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Af</translation>
 <translation id="5860491529813859533">Skakel aan</translation>
 <translation id="5876385649737594562">Skakel aan om opsies te kies</translation>
@@ -790,6 +793,7 @@
 <translation id="7103252855940681301">Toestel <ph name="INDEX" /> van <ph name="COUNT" /> genaamd <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Kies <ph name="PRODUCT_NAME" />-eksklusiewe kunswerk</translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7119389851461848805">krag</translation>
 <translation id="7130438335435247835">Toegangspuntnaam (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Naambediener}other{Naambedieners}}</translation>
 <translation id="7135814714616751706">Soek kortpaaie</translation>
@@ -947,6 +951,7 @@
 <translation id="8336739000755212683">Verander toestelrekeningprent</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> of <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Druktake</translation>
+<translation id="8349826889576450703">lanseerder</translation>
 <translation id="8351855506390808906">Sleutelkarteringraakpunt</translation>
 <translation id="8352772353338965963">Voeg 'n rekening by meervuldige aanmelding. Daar kan sonder 'n wagwoord by alle aangemelde rekeninge ingegaan word, en daarom moet hierdie kenmerk net met vertroude rekeninge gebruik word.</translation>
 <translation id="8364946094152050673">Leë naambedieners</translation>
@@ -1042,6 +1047,7 @@
 <translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> is outomaties begin}other{# apps is outomaties begin}}</translation>
 <translation id="8998289560386111590">Nie op jou toestel beskikbaar nie</translation>
 <translation id="9003704114456258138">Frekwensie</translation>
+<translation id="901834265349196618">e-pos</translation>
 <translation id="9024331582947483881">volskerm</translation>
 <translation id="9025198690966128418">Gebruik as ’n persoonlike toestel</translation>
 <translation id="902638246363752736">Sleutelbordinstellings</translation>
@@ -1082,6 +1088,7 @@
 <translation id="945522503751344254">Stuur terugvoer</translation>
 <translation id="952992212772159698">Nie geaktiveer nie</translation>
 <translation id="960719561871045870">Diensverskafferkode</translation>
+<translation id="966787709310836684">kieslys</translation>
 <translation id="979450713603643090">Ligpienk</translation>
 <translation id="982713511914535780">Laat loop ontlaaitoets</translation>
 <translation id="987264212798334818">Algemeen</translation>

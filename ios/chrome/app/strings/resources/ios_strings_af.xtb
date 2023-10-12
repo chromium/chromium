@@ -169,6 +169,7 @@
 <translation id="1847795903283049083">Jy kan ook hierdie items in jou boekmerke, Leeslys of wagwoordbestuurder bekyk en bestuur.</translation>
 <translation id="1870148520156231997">Wys wagwoord</translation>
 <translation id="1872096359983322073">Flits</translation>
+<translation id="1876851015978093044">Wys hierdie item</translation>
 <translation id="1882901927376062252">{count,plural, =1{Boekmerk is in jou Google-rekening, {email}, gestoor}other{{count} boekmerke is in jou Google-rekening, {email}, gestoor}}</translation>
 <translation id="1883255238294161206">Vou lys in</translation>
 <translation id="1890237935065108104">Hierdie instelling is nie beskikbaar nie.</translation>
@@ -282,6 +283,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="2482878487686419369">Kennisgewings</translation>
 <translation id="2484459871750294497">Hoe aktiveer ek hierdie kenmerk?</translation>
 <translation id="2496626742194544812">Gaan na eerste oortjie</translation>
+<translation id="2499505845365628575">Jy kan al jou blaaigeskiedenis vanaf die <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> vind.</translation>
 <translation id="2500374554657206846">Opsies om wagwoord te stoor</translation>
 <translation id="2511117522375201202">Jy het <ph name="NUMBER_OF_PASSWORDS" /> gekompromitteerde wagwoorde wat jou sekuriteit in gevaar kan stel.</translation>
 <translation id="2523363575747517183">Hierdie webwerf probeer herhaaldelik 'n ander program oopmaak.</translation>
@@ -1112,6 +1114,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="6785453220513215166">Stuur tans omvalverslag …</translation>
 <translation id="6790502149545262384">Jy sal binnekort stories van <ph name="CHANNEL_NAME" /> af sien wanneer jy ’n nuwe oortjie oopmaak.</translation>
 <translation id="6797885426782475225">Stemsoektog</translation>
+<translation id="6800349425672670802">Jy kan vanaf die Oortjiewisselaar toegang tot al jou oop oortjies kry.</translation>
 <translation id="6807889908376551050">Wys alles …</translation>
 <translation id="681368974849482173">Item is geskep</translation>
 <translation id="6822587385560699678">Indien dit aan is, word wagwoorde in <ph name="ACCOUNT" /> gestoor. Indien dit af is, word wagwoorde net op hierdie toestel gestoor.</translation>
@@ -1206,6 +1209,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7367530036083223701">Kry met die Wagwoordbestuurderlegstuk veilige toegang tot jou wagwoorde vanaf die tuisskerm.</translation>
 <translation id="7380220816562673297">Vir eers kan jy wagwoorde slegs met gesinslede deel. <ph name="BEGIN_LINK" />Create ’n gesinsgroep<ph name="END_LINK" /> met tot 6 lede en kry meer uit jou produkte en intekeninge oral op Google.</translation>
 <translation id="7383797227493018512">Leeslys</translation>
+<translation id="7396331865858820922">Wagwoord is nie gedeel nie</translation>
 <translation id="7398893703713203428">Skep skakel</translation>
 <translation id="7399802613464275309">Veiligheidskontrole</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1226,6 +1230,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7488874549363591659">Afgelewer</translation>
 <translation id="7491131399623468277">Gaan na Instellings …</translation>
 <translation id="7492574581995589075">Jou organisasie het die vermoë afgeskakel om Chrome-data in jou Google-rekening te gebruik en te stoor. Nuwe boekmerke, wagwoorde en meer sal slegs op hierdie toestel gestoor word.</translation>
+<translation id="749854780843431406">Jy kan ’n nuwe oortjie vanaf die <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />-knoppie oopmaak.</translation>
 <translation id="750149195207506638">Boekmerke word versteek</translation>
 <translation id="750228856503700085">Opdaterings is nie beskikbaar nie</translation>
 <translation id="750493650310597496">0 gekies</translation>
@@ -1286,6 +1291,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="778855399387580014">Begin 'n soektog in 'n nuwe Chrome-oortjie.</translation>
 <translation id="7791543448312431591">Voeg by</translation>
 <translation id="7807060072011926525">Verskaf deur Google</translation>
+<translation id="7812377703891978671">Jy kan toegang tot al jou blaaigeskiedenis kry deur <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> te kies.</translation>
 <translation id="78146569776629510">Aflaaie</translation>
 <translation id="7839985698273989086">Vanlyn bladsy</translation>
 <translation id="7840771868269352570">Die items wat jy gekies het, sal verwyder word.</translation>
@@ -1433,6 +1439,7 @@ Jou data is op <ph name="TIME" /> met jou wagfrase geënkripteer. Voer dit in om
 <translation id="8560253818350321773">Wys gereeld gebruikte items eerste.</translation>
 <translation id="8588404856427128947">Af</translation>
 <translation id="8591976964826315682">Blokkeer derdepartywebkoekies in incognito</translation>
+<translation id="8593565399399144771">Jy kan ’n nuwe oortjie hier oopmaak.</translation>
 <translation id="8605219856220328675">Maak oortjie toe.</translation>
 <translation id="8613883225817609844">Versteek onlangse oortjies</translation>
 <translation id="8620640915598389714">Redigeer</translation>

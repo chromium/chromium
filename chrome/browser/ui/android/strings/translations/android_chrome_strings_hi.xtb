@@ -359,6 +359,7 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> पेज नहीं पढ़ा गया}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> पेज नहीं पढ़ा गया}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> पेज नहीं पढ़े गए}}</translation>
 <translation id="2961210776189273067">टाइटल</translation>
 <translation id="296370266220139811">टाइप करने का समय बचाएं</translation>
+<translation id="2977350910003566746">पिछली बार खोले जाने के समय के हिसाब से, क्रम में लगाया जा रहा है</translation>
 <translation id="297771753501244313">पिछली बार खोलने की तारीख से क्रम में लगाएं</translation>
 <translation id="2979025552038692506">चयनित गुप्त टैब</translation>
 <translation id="2979639724566107830">नई विंडो में खोलें</translation>
@@ -399,6 +400,7 @@
 <translation id="3123734510202723619">एलान</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome का होम पेज</translation>
+<translation id="3158667104057012316">मैन्युअल तरीके से, क्रम में लगाया जा रहा है</translation>
 <translation id="3166827708714933426">टैब और विंडो शॉर्टकट</translation>
 <translation id="316694332262407393">Chrome पहले से चल रहा है.</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" /> के लिए, मोबाइल साइट का अनुरोध किया जा सकता है</translation>
@@ -525,7 +527,9 @@
 <translation id="3892148308691398805">टेक्स्ट कॉपी करें</translation>
 <translation id="3894427358181296146">फ़ोल्डर जोड़ें</translation>
 <translation id="3899682235662194879">सभी गुप्त टैब बंद करें</translation>
+<translation id="3902562446536395999">A से Z के क्रम में लगाया जा रहा है</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> को अपडेट करें</translation>
+<translation id="3911609878849982353">Z से A के क्रम में लगाया जा रहा है</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> चालू है</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">मेरा डेटा संयोजित करें</translation>
@@ -561,6 +565,7 @@
 <translation id="4084682180776658562">बुकमार्क</translation>
 <translation id="4084712963632273211">प्रकाशक: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Google की ओर से डिलीवर किया गया<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">इस टैबलेट का इस्तेमाल, उस डिवाइस पर साइन इन करने के लिए किया जा सकता है जिस पर यह क्यूआर कोड दिख रहा है.</translation>
+<translation id="4092709865241032354">इस साइट के लिए अपना उपयोगकर्ता नाम जोड़ें, ताकि Google Password Manager साइन इन करने के लिए आपके क्रेडेंशियल सेव कर सके</translation>
 <translation id="4095146165863963773">ऐप्लिकेशन डेटा मिटाएं?</translation>
 <translation id="4095425503313512126">ज़्यादा तेज़ी से खोजा और ब्राउज़ किया जा सकता है</translation>
 <translation id="4096227151372679484">बुकमार्क सेव फ़्लो के फ़ोल्डर, आधी स्क्रीन पर खुले हैं</translation>
@@ -934,6 +939,7 @@
 <translation id="6000203700195075278">फिर से फ़ॉलो करें</translation>
 <translation id="6002122790816966947">आपके डिवाइस</translation>
 <translation id="6011308810877101166">खोज से जुड़े सुझावों को बेहतर बनाएं</translation>
+<translation id="6013305291643746595">पुराने से नए के क्रम में लगाया जा रहा है</translation>
 <translation id="6026538407078977628">बड़ा करके फ़ुल स्क्रीन पर दिखाएं</translation>
 <translation id="6030719887161080597">विज्ञापन की परफ़ॉर्मेंस मापने के लिए, साइटों की इस्तेमाल की गई जानकारी मैनेज करें</translation>
 <translation id="6039379616847168523">सीधे अगले टैब पर जाएं</translation>
@@ -1376,6 +1382,7 @@
 <translation id="8110024788458304985">Chrome की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने में मदद करें</translation>
 <translation id="8110087112193408731">'डिजिटल वेलबीइंग' में अपनी Chrome गतिविधि दिखाना चाहते हैं?</translation>
 <translation id="8118117428362942925">अगर आपको मदद चाहिए, तो अपने माता-पिता (<ph name="PARENT_NAME" />) से पूछें</translation>
+<translation id="8122623268651408616">नए से पुराने के क्रम में लगाया जा रहा है</translation>
 <translation id="8127542551745560481">होम पेज में बदलाव करें</translation>
 <translation id="8130309322784422030">हो सकता है कि आपकी सेव की गई, साइन इन से जुड़ी जानकारी पुरानी हो</translation>
 <translation id="813082847718468539">साइट जानकारी देखें</translation>

@@ -119,6 +119,7 @@
 <translation id="1768959921651994223">Tipo de autenticación</translation>
 <translation id="1776228893584526149">Ton do fondo de pantalla</translation>
 <translation id="1782199038061388045">tradución</translation>
+<translation id="1788485524395674731">A persoa administradora xestiona esta aplicación</translation>
 <translation id="1792647875738159689">Cancelando escaneamento</translation>
 <translation id="1801418420130173017">Desactivar tema escuro</translation>
 <translation id="1807246157184219062">Claro</translation>
@@ -213,6 +214,7 @@
 <translation id="2505327257735685095">Actualizar imaxe de fondo de pantalla actual</translation>
 <translation id="2512979179176933762">mostrar as ventás</translation>
 <translation id="2513396635448525189">Imaxe de inicio de sesión</translation>
+<translation id="2515109918609218604">O atallo non está dispoñible. Preme un novo sen usar as teclas de función e busca.</translation>
 <translation id="2517472476991765520">Buscar</translation>
 <translation id="2521835766824839541">pista anterior</translation>
 <translation id="2526590354069164005">Ordenador</translation>
@@ -481,6 +483,7 @@
 <translation id="4793756956024303490">Algoritmo de compresión</translation>
 <translation id="4794140124556169553">A execución de probas de CPU pódelle afectar ao rendemento do sistema</translation>
 <translation id="4798078634453489142">Quita un APN para engadir un novo</translation>
+<translation id="479989351350248267">search</translation>
 <translation id="4800589996161293643">Comunidade de Chromebook</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Cancelouse o traballo de impresión <ph name="DOCUMENT_TITLE" /></translation>
@@ -624,6 +627,7 @@
 <translation id="584953448295717128">O APN detéctase automaticamente.</translation>
 <translation id="5849570051105887917">Código do fornecedor de orixe</translation>
 <translation id="5859603669299126575">Álbum da galería de arte</translation>
+<translation id="5859969039821714932">O atallo non está dispoñible. Preme un novo sen a tecla <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Non</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5876385649737594562">Actívao para seleccionar as opcións</translation>
@@ -789,6 +793,7 @@
 <translation id="7103252855940681301">Dispositivo <ph name="INDEX" /> de <ph name="COUNT" />. Nome: <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Escoller o material gráfico exclusivo de <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">intro</translation>
+<translation id="7119389851461848805">alimentación</translation>
 <translation id="7130438335435247835">Nome do punto de acceso (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7135814714616751706">Busca atallos</translation>
@@ -946,6 +951,7 @@
 <translation id="8336739000755212683">Cambiar imaxe da conta do dispositivo</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> ou <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Traballos de impresión</translation>
+<translation id="8349826889576450703">menú de aplicacións</translation>
 <translation id="8351855506390808906">Punto táctil de asignación de teclas</translation>
 <translation id="8352772353338965963">Engade unha conta ao inicio de sesión múltiple. É posible acceder a todas as contas en que iniciaches sesión sen necesidade de inserir un contrasinal, polo que esta función só se debe utilizar coas contas de confianza.</translation>
 <translation id="8364946094152050673">Os servidores de nomes están baleiros</translation>
@@ -1041,6 +1047,7 @@
 <translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> arrancou automaticamente}other{# aplicacións arrancaron automaticamente}}</translation>
 <translation id="8998289560386111590">Non está dispoñible no teu dispositivo</translation>
 <translation id="9003704114456258138">Frecuencia</translation>
+<translation id="901834265349196618">correo electrónico</translation>
 <translation id="9024331582947483881">pantalla completa</translation>
 <translation id="9025198690966128418">Utilizar como dispositivo persoal</translation>
 <translation id="902638246363752736">Configuración do teclado</translation>
@@ -1081,6 +1088,7 @@
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="952992212772159698">Non activado</translation>
 <translation id="960719561871045870">Código do operador</translation>
+<translation id="966787709310836684">menú</translation>
 <translation id="979450713603643090">Rosa claro</translation>
 <translation id="982713511914535780">Realizar proba de descarga</translation>
 <translation id="987264212798334818">Xeral</translation>

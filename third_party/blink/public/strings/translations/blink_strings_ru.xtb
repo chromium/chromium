@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">Введите адрес электронной почты.</translation>
 <translation id="1758486001363313524">Другое…</translation>
 <translation id="1787192514241997742">общее время: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Разрешить доступ к камере</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">воспроизвести на удаленном устройстве</translation>
 <translation id="1921819250265091946">дд</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">текущий этап</translation>
 <translation id="3321030238473337787">Скорость воспроизведения</translation>
 <translation id="3329013043687509092">Насыщенность</translation>
+<translation id="3377518164566272702">Разрешить доступ к микрофону и камере</translation>
 <translation id="3450233048674729344">Значение должно быть меньше или равно <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">мм</translation>
 <translation id="3754210790023674521">Выйти из режима "Картинка в картинке"</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">Воспроизведение в режиме "Картинка в картинке"</translation>
 <translation id="4748357248530471599">Переключить вырезанную область на полный экран</translation>
 <translation id="4763480195061959176">видео</translation>
+<translation id="4792862212177489858">Разрешить доступ к геоданным</translation>
 <translation id="4812940957355064477">Введите число.</translation>
 <translation id="4912200001568447310">текущий объект</translation>
 <translation id="4915360478455618802">Показать окно выбора времени</translation>
@@ -179,6 +182,7 @@
 <translation id="9132465097189459683">Другое…</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, начинается <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Картинка в картинке</translation>
+<translation id="918430632320614861">Разрешить доступ к микрофону</translation>
 <translation id="945780513535800434">Выбраны не все пункты</translation>
 <translation id="954003015749068518">включить режим "Картинка в картинке"</translation>
 </translationbundle>

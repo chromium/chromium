@@ -119,6 +119,7 @@
 <translation id="1768959921651994223">Tekshiruv turi</translation>
 <translation id="1776228893584526149">Fon rasmi tusi</translation>
 <translation id="1782199038061388045">tarjima</translation>
+<translation id="1788485524395674731">Bu ilova administrator tomonidan boshqariladi</translation>
 <translation id="1792647875738159689">Skanerlash bekor qilinmoqda</translation>
 <translation id="1801418420130173017">Tungi mavzuni faolsizlantirish</translation>
 <translation id="1807246157184219062">Yorqin</translation>
@@ -213,6 +214,7 @@
 <translation id="2505327257735685095">Joriy fon rasmini yangilash</translation>
 <translation id="2512979179176933762">oynalarni koʻrsatish</translation>
 <translation id="2513396635448525189">Kirish ekranidagi rasm</translation>
+<translation id="2515109918609218604">Tezkor tugma ishlamayapti. Qidiruv va funksiya tugmachalarini bosmasdan qayta urinib koʻring.</translation>
 <translation id="2517472476991765520">Qidiruv</translation>
 <translation id="2521835766824839541">avvalgi trek</translation>
 <translation id="2526590354069164005">Ish soli</translation>
@@ -481,6 +483,7 @@
 <translation id="4793756956024303490">Arxivlash algoritmi</translation>
 <translation id="4794140124556169553">Protsessorni tekshirish (CPU test) tizim unumdorligiga taʼsir qilishi mumkin</translation>
 <translation id="4798078634453489142">Yangi kirish nuqtasini qoʻshish uchun mavjudlaridan birini oʻchiring</translation>
+<translation id="479989351350248267">qidiruv</translation>
 <translation id="4800589996161293643">Chromebook hamjamiyati</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Chop etilishi bekor qilindi: <ph name="DOCUMENT_TITLE" /></translation>
@@ -624,6 +627,7 @@
 <translation id="584953448295717128">APN avtomatik aniqlandi.</translation>
 <translation id="5849570051105887917">Mahalliy ta’minotchi kodi</translation>
 <translation id="5859603669299126575">Fotogalereya albomi</translation>
+<translation id="5859969039821714932">Tezkor tugma ishlamayapti. <ph name="KEY" />siz yangi buyruq tugmasini bosing.</translation>
 <translation id="5860033963881614850">O‘chiq</translation>
 <translation id="5860491529813859533">Yoqish</translation>
 <translation id="5876385649737594562">Variantlarni tanlash uchun yoqing</translation>
@@ -789,6 +793,7 @@
 <translation id="7103252855940681301"><ph name="NAME" /> nomli qurilma (<ph name="INDEX" />/<ph name="COUNT" />).</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> ekskluziv tasvirlarini tanlang</translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7119389851461848805">quvvat tugmasi</translation>
 <translation id="7130438335435247835">Ulanish nuqtasi nomi (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nom serveri}other{Nom serverlari}}</translation>
 <translation id="7135814714616751706">Tezkor tugmalar qidiruvi</translation>
@@ -946,6 +951,7 @@
 <translation id="8336739000755212683">Qurilmadagi hisob rasmini almashtirish</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> yoki <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Chop etish vazifalari</translation>
+<translation id="8349826889576450703">launcher</translation>
 <translation id="8351855506390808906">Tugma tayinlash: teginish nuqtasi</translation>
 <translation id="8352772353338965963">Bir nechta hisobga kirish tizimiga hisob qo‘shish. Kirish bajarilgan hisoblarni ko‘rish uchun parol so‘ralmaydi, shuning uchun bu funksiyadan faqat ishonchli hisoblarda foydalanish kerak.</translation>
 <translation id="8364946094152050673">Nom serverlari kiritilmagan</translation>
@@ -1041,6 +1047,7 @@
 <translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> avtomatik ishga tushirildi}other{# ta ilova avtomatik ishga tushirildi}}</translation>
 <translation id="8998289560386111590">Qurilmangizda ishlamaydi.</translation>
 <translation id="9003704114456258138">Chastotasi</translation>
+<translation id="901834265349196618">e-pochta</translation>
 <translation id="9024331582947483881">butun ekran</translation>
 <translation id="9025198690966128418">Shaxsiy qurilma sifatida foydalaning</translation>
 <translation id="902638246363752736">Klaviatura sozlamalari</translation>
@@ -1081,6 +1088,7 @@
 <translation id="945522503751344254">Fikr-mulohaza</translation>
 <translation id="952992212772159698">Faollashtirilmagan</translation>
 <translation id="960719561871045870">Operator kodi</translation>
+<translation id="966787709310836684">menyu</translation>
 <translation id="979450713603643090">Och pushti</translation>
 <translation id="982713511914535780">Quvvatsizlanishini tekshirish</translation>
 <translation id="987264212798334818">Umumiy</translation>

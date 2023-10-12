@@ -481,6 +481,7 @@
 <translation id="4793756956024303490">Algorithme de compression</translation>
 <translation id="4794140124556169553">Effectuer un test de processeur peut avoir un impact sur les performances de votre système</translation>
 <translation id="4798078634453489142">Retirer un nom de point d'accès pour en ajouter un nouveau</translation>
+<translation id="479989351350248267">chercher</translation>
 <translation id="4800589996161293643">Communauté Chromebook</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Tâche d'impression annulée : <ph name="DOCUMENT_TITLE" /></translation>
@@ -789,6 +790,7 @@
 <translation id="7103252855940681301">Appareil <ph name="INDEX" /> de <ph name="COUNT" /> nommé <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Choisir parmi les illustrations exclusives à <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">Entrée</translation>
+<translation id="7119389851461848805">marche</translation>
 <translation id="7130438335435247835">Nom du point d'accès (NPA)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serveur de noms}one{Serveur de noms}other{Serveurs de noms}}</translation>
 <translation id="7135814714616751706">Recherchez des raccourcis</translation>
@@ -946,6 +948,7 @@
 <translation id="8336739000755212683">Changer l'image du compte sur l'appareil</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> ou <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Tâches d'impression</translation>
+<translation id="8349826889576450703">lanceur d'applications</translation>
 <translation id="8351855506390808906">Point de contact d'affectation des touches</translation>
 <translation id="8352772353338965963">Ajouter un compte à la connexion multicompte. Tous les comptes connectés sont accessibles sans mot de passe. Nous vous recommandons donc de n'utiliser cette fonctionnalité qu'avec des comptes fiables.</translation>
 <translation id="8364946094152050673">Le champ des serveurs de nom est vide</translation>
@@ -1041,6 +1044,7 @@
 <translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> a démarré automatiquement}one{# application a démarré automatiquement}other{# applications ont démarré automatiquement}}</translation>
 <translation id="8998289560386111590">Non accessible sur votre appareil</translation>
 <translation id="9003704114456258138">Fréquence</translation>
+<translation id="901834265349196618">courriel</translation>
 <translation id="9024331582947483881">plein écran</translation>
 <translation id="9025198690966128418">Utiliser comme un appareil personnel</translation>
 <translation id="902638246363752736">Paramètres du clavier</translation>
@@ -1081,6 +1085,7 @@
 <translation id="945522503751344254">Envoyer un commentaire à Google</translation>
 <translation id="952992212772159698">Désactivé</translation>
 <translation id="960719561871045870">Code de l'opérateur</translation>
+<translation id="966787709310836684">menu</translation>
 <translation id="979450713603643090">Rose clair</translation>
 <translation id="982713511914535780">Exécuter le test de décharge</translation>
 <translation id="987264212798334818">Généralités</translation>

@@ -143,6 +143,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1264309058268477500">Nadomestni</translation>
 <translation id="1264974993859112054">Šport</translation>
 <translation id="1266469291454105242">Odklepanje naprave</translation>
+<translation id="126728463333482584">Ste eden prvih uporabnikov zaščite pred sledenjem, ki spletnim mestom omejuje uporabo piškotkov tretjih oseb za sledenje med brskanjem.</translation>
 <translation id="1268480293435976622">Kitajska kuverta št. 7</translation>
 <translation id="1269516672602708785">Hitro ustvarjanje novega spletnega mesta v Google Spletnih mestih</translation>
 <translation id="1270328905573953738">Selitve</translation>
@@ -692,6 +693,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Povečanje velikosti menija za preklop</translation>
 <translation id="2365355378251437925">Izpolnite polje <ph name="FIELD" /></translation>
+<translation id="2365382709349300355">1 datoteka je bila blokirana zaradi pravilnika</translation>
 <translation id="2365508935344991784">Vrtno pohištvo</translation>
 <translation id="2366689192918515749">Meso in morska hrana</translation>
 <translation id="2367567093518048410">Raven</translation>
@@ -2414,6 +2416,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5967867314010545767">Odstrani iz zgodovine</translation>
 <translation id="5968022600320704045">Ni rezultatov iskanja</translation>
 <translation id="5969199813874624822">Shranite in spremljajte ceno</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Kolut 6</translation>
 <translation id="5975083100439434680">Pomanjšaj</translation>
 <translation id="5979084224081478209">Preveri gesla</translation>
@@ -2905,6 +2908,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6965382102122355670">V redu</translation>
 <translation id="6965978654500191972">Naprava</translation>
 <translation id="696703987787944103">Zaznavno</translation>
+<translation id="6967851206780867018">1 datoteka je bila blokirana zaradi vsebine</translation>
 <translation id="6970885655016700774">Fabric (Archival)</translation>
 <translation id="6971439137020188025">Hitro ustvarjanje nove Googlove predstavitve v Predstavitvah</translation>
 <translation id="6972629891077993081">Naprave HID</translation>
@@ -2957,6 +2961,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="70705239631109039">Povezava ni v celoti varna</translation>
 <translation id="7075452647191940183">Zahteva je prevelika</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">Bolj zasebno brskanje</translation>
 <translation id="7079718277001814089">To spletno mesto vsebuje zlonamerno programsko opremo</translation>
 <translation id="7081308185095828845">Ta funkcija ni na voljo v vaši napravi</translation>
 <translation id="7083258188081898530">Pladenj 9</translation>

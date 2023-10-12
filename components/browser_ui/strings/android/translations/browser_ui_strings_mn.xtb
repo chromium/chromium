@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Унтраа</translation>
 <translation id="1044891598689252897">Сайтууд хэвийн ажиллана</translation>
 <translation id="1073417869336441572">Та гуравдагч талын күүкинүүдийг яагаад зөвшөөрсөн талаараа бидэнд хэлснээр Chrome-г сайжруулахад туслаарай. <ph name="BEGIN_LINK" />Санал хүсэлт илгээх<ph name="END_LINK" /></translation>
-<translation id="1124090076051167250">Энэ нь сайт эсвэл таны Үндсэн нүүрэн дээрх аппуудаас хадгалсан <ph name="DATASIZE" /> өгөгдөл болон күүкиг арилгана.</translation>
 <translation id="1178581264944972037">Түр зогсоох</translation>
 <translation id="1181037720776840403">Хасах</translation>
 <translation id="1201402288615127009">Дараагийнх</translation>
@@ -33,7 +32,6 @@
 <translation id="1647582022260550163">Та зөвшөөрлийг шинэчлэх, күүки болон сайтын өгөгдлийг арилгахдаа итгэлтэй байна уу?</translation>
 <translation id="1660204651932907780">Сайтуудад дуу тоглуулахыг зөвшөөрөх (санал болгосон)</translation>
 <translation id="1677097821151855053">Күүки болон сайтын бусад өгөгдлийг таныг нэвтрүүлэх эсвэл зарыг хувийн болгох зэргээр таныг санахад ашигладаг. Бүх сайтын күүкийг удирдахын тулд <ph name="BEGIN_LINK" />Тохиргоог<ph name="END_LINK" /> харна уу.</translation>
-<translation id="1688867105868176567">Сайтын өгөгдлийг устгах уу?</translation>
 <translation id="169515064810179024">Сайтуудыг хөдөлгөөн мэдрэгчид хандахыг хориглох</translation>
 <translation id="1717218214683051432">Хөдөлгөөн мэдрэгч</translation>
 <translation id="1743802530341753419">Сайтуудыг төхөөрөмжид холбогдохыг зөвшөөрөхөөс өмнө асуух (санал болгосон)</translation>
@@ -247,7 +245,6 @@
 <translation id="5335288049665977812">Сайтад JavaScript-г ажиллуулахыг зөвшөөрөх (санал болгосон)</translation>
 <translation id="534295439873310000">NFC төхөөрөмжүүд</translation>
 <translation id="5344522958567249764">Зарын нууцлалыг удирдах</translation>
-<translation id="5354152178998424783">Энэ нь сайтаас хадгалсан <ph name="DATASIZE" /> өгөгдөл болон күүкиг арилгана.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(бусад + 1)}other{(бусад + #)}}</translation>
 <translation id="5403592356182871684">Нэр</translation>
 <translation id="5412236728747081950">Энэ сайт танд илүү хамааралтай зар харуулахын тулд таны сонирхлуудыг Chrome-с авдаг</translation>
@@ -268,12 +265,10 @@
 <translation id="5690795753582697420">Камерыг Android тохиргоо хэсэгт унтраасан байна</translation>
 <translation id="5700761515355162635">Гуравдагч талын күүкинүүдийг зөвшөөрсөн</translation>
 <translation id="5706552988683188916">Энэ нь <ph name="WEBSITE" />-н күүки болон сайтын бусад өгөгдлийг устгана</translation>
-<translation id="5719847187258001597">Энэ нь <ph name="ORIGIN" /> эсвэл таны Үндсэн нүүрэн дээрх үүний аппаас хадгалсан бүх өгөгдөл болон күүкиг арилгана.</translation>
 <translation id="5723967018671998714">Гуравдагч талын күүкиг нууцлалтай горимд блоклодог</translation>
 <translation id="5740126560802162366">Сайтууд таны төхөөрөмж дээр өгөгдөл хадгалах боломжтой</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />-г блоклосон</translation>
 <translation id="5804241973901381774">Зөвшөөрлүүд</translation>
-<translation id="5810805850857689118">Энэ үйлдэл <ph name="ORIGIN" />-н бүх өгөгдөл, күүки болон үүний доорх бүх сайтыг арилгана</translation>
 <translation id="5860033963881614850">Идэвхгүй байна</translation>
 <translation id="5876056640971328065">Видеог түр зогсоох</translation>
 <translation id="5884085660368669834">Сайтын сонголт</translation>
@@ -323,7 +318,6 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Хамгаалагдсан агуулга</translation>
 <translation id="662080504995468778">Үлдэх</translation>
-<translation id="6643016212128521049">Цэвэрлэх</translation>
 <translation id="6653342741369270081">Бүтэн дэлгэцийн горимоос гарахын тулд буцах товчлуурыг дарна уу.</translation>
 <translation id="6689172468748959065">Профайл зураг</translation>
 <translation id="6697925417670533197">Идэвхтэй татаж авсан файл</translation>
@@ -358,6 +352,7 @@
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> болон <ph name="PERMISSION_2" />-г зөвшөөрсөн</translation>
 <translation id="7302486331832100261">Та ихэвчлэн мэдэгдлийг хориглодог. Зөвшөөрөхийн тулд Дэлгэрэнгүй мэдээлэл дээр товшино уу.</translation>
 <translation id="7366415735885268578">Сайт нэмэх</translation>
+<translation id="7368695150573390554">Аливаа офлайн өгөгдлийг устгана</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" />-н тохиргоо</translation>
 <translation id="7406113532070524618">Энэ тохиргоо таныг тодорхойлолгүйгээр эсвэл сайтуудад таны хөтчийн түүхийг харахыг зөвшөөрөлгүйгээр ажилладаг ч сайтууд баталгаажуулалтын нэг хэсэг байдлаар бага хэмжээний мэдээлэл хуваалцах боломжтой</translation>
 <translation id="7423098979219808738">Эхлээд асуу</translation>
@@ -430,7 +425,6 @@
 <translation id="8514955299594277296">Сайтуудад таны төхөөрөмж дээр өгөгдөл хадгалахыг бүү зөвшөөр (санал болгодоггүй)</translation>
 <translation id="851751545965956758">Сайтуудыг төхөөрөмжүүдэд холбогдохыг нь блоклох</translation>
 <translation id="8525306231823319788">Бүтэн дэлгэц</translation>
-<translation id="8528440122773422556">Энэ үйлдэл <ph name="ORIGIN" />-н доорх бүх сайтын эсвэл таны Үндсэн нүүрэн дээрх аппынх нь хадгалсан бүх өгөгдөл, күүкиг арилгана</translation>
 <translation id="8541410041357371550">Энэ сайт танд илүү хамааралтай зар харуулахын тулд таны зарын сэдвүүдийг Chrome-с авдаг</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" />-н <ph name="FPS_MEMBERS_COUNT" /> сайтад күүкиг зөвшөөрсөн}other{<ph name="FPS_OWNER" />-н <ph name="FPS_MEMBERS_COUNT" /> сайтад күүкиг зөвшөөрсөн}}</translation>
 <translation id="857943718398505171">Зөвшөөрөгдсөн (санал болгосон)</translation>
@@ -443,7 +437,6 @@
 <translation id="8725066075913043281">Дахин оролдож үзнэ үү.</translation>
 <translation id="8730621377337864115">хийсэн</translation>
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 сайтад зөвшөөрсөн}other{# сайтад зөвшөөрсөн}}</translation>
-<translation id="8737217482364735741">Энэ нь <ph name="ORIGIN" />-н хадгалсан бүх өгөгдөл болон күүкиг устгах болно.</translation>
 <translation id="8751914237388039244">Зураг сонгох</translation>
 <translation id="8800034312320686233">Сайт ажиллахгүй байна уу?</translation>
 <translation id="8801436777607969138">Зарим сайт дээр JavaScript-г блоклоно уу.</translation>
@@ -471,7 +464,6 @@
 <translation id="913657688200966289"><ph name="APP_NAME" />-н зөвшөөрлийг <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" />-нд асаана уу.</translation>
 <translation id="9138217887606523162">Одоогийн томруулалт <ph name="ZOOM_LEVEL" /> %% байна</translation>
 <translation id="9162462602695099906">Энэ хуудас аюултай байна</translation>
-<translation id="9201023452444595544">Офлайн аливаа өгөгдлийг устгах болно</translation>
 <translation id="930525582205581608">Энэ сайтыг мартах уу?</translation>
 <translation id="947156494302904893">Сайтууд таныг жинхэнэ хүн бөгөөд бот биш болохыг баталгаажуулах боломжтой</translation>
 <translation id="967624055006145463">Хадгалсан өгөгдөл</translation>

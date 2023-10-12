@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">停用</translation>
 <translation id="1044891598689252897">網站將正常運作</translation>
 <translation id="1073417869336441572">請說明你允許使用第三方 Cookie 的原因，協助我們改善 Chrome。<ph name="BEGIN_LINK" />傳送意見<ph name="END_LINK" /></translation>
-<translation id="1124090076051167250">此操作會清除 <ph name="DATASIZE" /> 主畫面上各個網站或應用程式儲存的資料和 Cookie。</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1201402288615127009">下一個</translation>
@@ -33,7 +32,6 @@
 <translation id="1647582022260550163">確定要重設權限，並清除 Cookie 和網站資料嗎？</translation>
 <translation id="1660204651932907780">允許網站播放音效 (建議)</translation>
 <translation id="1677097821151855053">系統會使用 Cookie 和其他網站資料記住您的身分，例如登入帳戶或個人化廣告。如要管理所有網站的 Cookie，請參閱「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」。</translation>
-<translation id="1688867105868176567">要清除網站資料嗎？</translation>
 <translation id="169515064810179024">禁止網站存取動作感應器</translation>
 <translation id="1717218214683051432">動作感應器</translation>
 <translation id="1743802530341753419">允許網站連接裝置前先詢問您 (建議)</translation>
@@ -247,7 +245,6 @@
 <translation id="5335288049665977812">允許網站執行 JavaScript (建議)</translation>
 <translation id="534295439873310000">NFC 裝置</translation>
 <translation id="5344522958567249764">管理廣告私隱權</translation>
-<translation id="5354152178998424783">此操作會清除網站儲存的資料和 Cookie (共 <ph name="DATASIZE" />)。</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(還有 1 個)}other{(還有 # 個)}}</translation>
 <translation id="5403592356182871684">名稱</translation>
 <translation id="5412236728747081950">此網站會從 Chrome 取得您的喜好，為您顯示更相關的廣告</translation>
@@ -261,6 +258,7 @@
 <translation id="5545693483061321551">網站不能使用 Cookie 查看您在其他網站的瀏覽活動，例如放送個人化廣告。部分網站的功能可能會無法正常運作。</translation>
 <translation id="5553374991681107062">最新</translation>
 <translation id="5556459405103347317">重新載入</translation>
+<translation id="5591840828808741583">已封鎖「<ph name="SITE_NAME" />」</translation>
 <translation id="5649053991847567735">自動下載</translation>
 <translation id="5668404140385795438">覆寫網站禁止放大的要求</translation>
 <translation id="5677928146339483299">已封鎖</translation>
@@ -268,12 +266,10 @@
 <translation id="5690795753582697420">相機已在 Android 設定中關閉</translation>
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
 <translation id="5706552988683188916">此操作會刪除 <ph name="WEBSITE" /> 的 Cookie 和其他網站資料</translation>
-<translation id="5719847187258001597">此操作會清除主畫面上 <ph name="ORIGIN" /> 或其應用程式儲存的所有資料和 Cookie。</translation>
 <translation id="5723967018671998714">已封鎖無痕模式中的第三方 Cookie</translation>
 <translation id="5740126560802162366">網站可在裝置上儲存資料</translation>
 <translation id="5771720122942595109">已封鎖「<ph name="PERMISSION_1" />」</translation>
 <translation id="5804241973901381774">權限</translation>
-<translation id="5810805850857689118">此操作將清除 <ph name="ORIGIN" /> 及其所有子網站的各項資料和 Cookie</translation>
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5876056640971328065">暫停影片</translation>
 <translation id="5884085660368669834">網站偏好設定</translation>
@@ -323,7 +319,6 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">受保護內容</translation>
 <translation id="662080504995468778">不離開</translation>
-<translation id="6643016212128521049">清除</translation>
 <translation id="6653342741369270081">按下返回按鈕即可退出全螢幕。</translation>
 <translation id="6689172468748959065">個人檔案相片</translation>
 <translation id="6697925417670533197">正在下載的項目</translation>
@@ -358,6 +353,7 @@
 <translation id="7260727271532453612">已允許「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」</translation>
 <translation id="7302486331832100261">您通常會封鎖通知。如要允許，請輕按 [詳情]。</translation>
 <translation id="7366415735885268578">新增網站</translation>
+<translation id="7368695150573390554">系統將刪除所有離線資料</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> 的設定</translation>
 <translation id="7406113532070524618">此設定運作時不需識別您的身份或允許網站查看您的瀏覽記錄，不過網站可在驗證過程中分享少量資料</translation>
 <translation id="7423098979219808738">事先詢問</translation>
@@ -430,7 +426,6 @@
 <translation id="8514955299594277296">不允許網站在裝置上儲存資料 (不建議)</translation>
 <translation id="851751545965956758">禁止網站連接裝置</translation>
 <translation id="8525306231823319788">全螢幕</translation>
-<translation id="8528440122773422556">此操作將清除由 <ph name="ORIGIN" /> 底下所有網站或其應用程式在主畫面儲存的所有資料和 Cookie</translation>
 <translation id="8541410041357371550">此網站會從 Chrome 中取得您的廣告主題，向您顯示更相關的廣告</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{已允許 <ph name="FPS_MEMBERS_COUNT" /> 個 <ph name="FPS_OWNER" /> 網站使用 Cookie}other{已允許 <ph name="FPS_MEMBERS_COUNT" /> 個 <ph name="FPS_OWNER" /> 網站使用 Cookie}}</translation>
 <translation id="857943718398505171">允許 (建議)</translation>
@@ -443,7 +438,6 @@
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{已允許 1 個網站}other{已允許 # 個網站}}</translation>
-<translation id="8737217482364735741">此操作會清除 <ph name="ORIGIN" /> 儲存的所有資料和 Cookie。</translation>
 <translation id="8751914237388039244">選取圖片</translation>
 <translation id="8800034312320686233">網站無法正常運作嗎？</translation>
 <translation id="8801436777607969138">封鎖特定網站執行 JavaScript。</translation>
@@ -462,6 +456,7 @@
 <translation id="8959122750345127698">無法存取瀏覽網址：<ph name="URL" /></translation>
 <translation id="8986362086234534611">清除</translation>
 <translation id="8990043154272859344">您將會從所有網站登出</translation>
+<translation id="9011903857143958461">已允許「<ph name="SITE_NAME" />」</translation>
 <translation id="9019902583201351841">由您的家長管理</translation>
 <translation id="9039697262778250930">您可能會登出這些網站</translation>
 <translation id="9074739597929991885">藍牙</translation>
@@ -471,7 +466,6 @@
 <translation id="913657688200966289">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中為 <ph name="APP_NAME" /> 啟用這些權限。</translation>
 <translation id="9138217887606523162">宜家嘅縮放率係 <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">此頁面不安全</translation>
-<translation id="9201023452444595544">所有離線資料將會被清除</translation>
 <translation id="930525582205581608">要清除此網站的資料嗎？</translation>
 <translation id="947156494302904893">您瀏覽的網站可驗證您是真人，而不是機器人</translation>
 <translation id="967624055006145463">已儲存的資料</translation>

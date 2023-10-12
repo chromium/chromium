@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Включете Bluetooth, за да бъдат открити устройствата в близост</translation>
 <translation id="2346474577291266260">Отлична (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383">Отворен е диалогов прозорец за редактиране на <ph name="DESCRIPTION" />.</translation>
 <translation id="2359808026110333948">Напред</translation>
 <translation id="2364498172489649528">Премината</translation>
 <translation id="2367335866686097760">Клавиш за задаване на функции за клавишите</translation>
@@ -214,6 +215,7 @@
 <translation id="2505327257735685095">Опресняване на текущото изображение на тапета</translation>
 <translation id="2512979179176933762">показване на прозорците</translation>
 <translation id="2513396635448525189">Изображение при влизане в профила</translation>
+<translation id="2515109918609218604">Клавишната комбинация не е налице. Натиснете друга, без да използвате функционалните клавиши и клавиша „търсене“.</translation>
 <translation id="2517472476991765520">Сканиране</translation>
 <translation id="2521835766824839541">предишен запис</translation>
 <translation id="2526590354069164005">Работен плот</translation>
@@ -482,6 +484,7 @@
 <translation id="4793756956024303490">Алгоритъм за компресиране</translation>
 <translation id="4794140124556169553">Провеждането на тест за процесора може да повлияе на производителността на системата ви</translation>
 <translation id="4798078634453489142">Премахнете име на точка за достъп (APN), за да добавите ново</translation>
+<translation id="479989351350248267">search</translation>
 <translation id="4800589996161293643">Общността на Chromebook</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Заданието за отпечатване на <ph name="DOCUMENT_TITLE" /> е анулирано</translation>
@@ -791,6 +794,7 @@
 <translation id="7103252855940681301">Устройство <ph name="INDEX" /> от <ph name="COUNT" /> на име <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Изберете специални произведения за <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7119389851461848805">захранване</translation>
 <translation id="7130438335435247835">Име на точката за достъп (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сървър за имена}other{Сървъри за имена}}</translation>
 <translation id="7135814714616751706">Търсете комбинации</translation>
@@ -948,6 +952,7 @@
 <translation id="8336739000755212683">Промяна на изображението за профила на устройството</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> или <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Задания за отпечатване</translation>
+<translation id="8349826889576450703">стартов панел</translation>
 <translation id="8351855506390808906">Точка на докосване за задаване на функции за клавишите</translation>
 <translation id="8352772353338965963">Добавете профил към функцията за централизиран вход. Всички профили, в които влезете чрез нея, ще бъдат достъпни без парола, така че трябва да използвате тази функция само с надеждни профили.</translation>
 <translation id="8364946094152050673">Не са посочени сървъри за имена</translation>
@@ -1021,6 +1026,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Устройството е таблет.</translation>
 <translation id="8881098542468797602">Тестът бе успешен</translation>
+<translation id="8892443466059986410">Анулиране на редактирането на прекия път</translation>
 <translation id="8898840733695078011">Сила на сигнала</translation>
 <translation id="8909114361904403025">стрелка за нагоре</translation>
 <translation id="8910721771319628100">Забавянето на основната мрежа е над прага</translation>
@@ -1043,6 +1049,7 @@
 <translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{Приложението <ph name="APP_NAME_1" /> бе стартирано автоматично}other{# приложения бяха стартирани автоматично}}</translation>
 <translation id="8998289560386111590">Не е налице на устройството ви</translation>
 <translation id="9003704114456258138">Честота</translation>
+<translation id="901834265349196618">имейл</translation>
 <translation id="9024331582947483881">цял екран</translation>
 <translation id="9025198690966128418">Използване като лично устройство</translation>
 <translation id="902638246363752736">Настройки на клавиатурата</translation>
@@ -1083,6 +1090,7 @@
 <translation id="945522503751344254">Изпращане на отзиви</translation>
 <translation id="952992212772159698">Не е активиран</translation>
 <translation id="960719561871045870">Код на оператора</translation>
+<translation id="966787709310836684">меню</translation>
 <translation id="979450713603643090">Светлорозов</translation>
 <translation id="982713511914535780">Тестване на разреждането</translation>
 <translation id="987264212798334818">Общи</translation>

@@ -169,6 +169,7 @@
 <translation id="1847795903283049083">Вы таксама можаце праглядаць гэтыя даныя і кіраваць імі ў закладках, спісе на прагляд і ў менеджары пароляў.</translation>
 <translation id="1870148520156231997">Паказаць пароль</translation>
 <translation id="1872096359983322073">Ліхтарык</translation>
+<translation id="1876851015978093044">Паказвае гэты прадмет</translation>
 <translation id="1882901927376062252">{count,plural, =1{Закладка захавана ў вашым Уліковым запісе Google ({email})}one{{count} закладка захавана ў вашым Уліковым запісе Google ({email})}few{{count} закладкі захаваны ў вашым Уліковым запісе Google ({email})}many{{count} закладак захавана ў вашым Уліковым запісе Google ({email})}other{{count} закладкі захаваны ў вашым Уліковым запісе Google ({email})}}</translation>
 <translation id="1883255238294161206">Згарнуць спіс</translation>
 <translation id="1890237935065108104">Гэта налада недаступная.</translation>
@@ -282,6 +283,7 @@
 <translation id="2482878487686419369">Апавяшчэнні</translation>
 <translation id="2484459871750294497">Як уключыць гэту функцыю?</translation>
 <translation id="2496626742194544812">Перайсці на першую ўкладку</translation>
+<translation id="2499505845365628575">Знайсці ўсю гісторыю прагляду сайтаў можна ў раздзеле "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
 <translation id="2500374554657206846">Варыянты захавання пароля</translation>
 <translation id="2511117522375201202">У вас ёсць раскрытыя паролі (<ph name="NUMBER_OF_PASSWORDS" />), што можа паставіць пад пагрозу бяспеку.</translation>
 <translation id="2523363575747517183">Гэты сайт сістэматычна спрабуе адкрыць іншую праграму.</translation>
@@ -1112,6 +1114,7 @@
 <translation id="6785453220513215166">Адпраўка справаздачы аб збоях...</translation>
 <translation id="6790502149545262384">Неўзабаве пры адкрыцці новай укладкі вы будзеце бачыць гісторыі з сайта "<ph name="CHANNEL_NAME" />".</translation>
 <translation id="6797885426782475225">Галасавы пошук</translation>
+<translation id="6800349425672670802">Доступ да адкрытых укладак можна атрымаць з дапамогай Пераключальніка ўкладак.</translation>
 <translation id="6807889908376551050">Паказаць усе...</translation>
 <translation id="681368974849482173">Элемент створаны</translation>
 <translation id="6822587385560699678">Калі гэты параметр уключаны, паролі захоўваюцца ва ўліковым запісе <ph name="ACCOUNT" />, а калі выключаны, захоўваюцца толькі на гэтай прыладзе.</translation>
@@ -1206,6 +1209,7 @@
 <translation id="7367530036083223701">Для бяспечнага доступу да сваіх пароляў з галоўнага экрана выкарыстоўвайце віджэт "Менеджар пароляў".</translation>
 <translation id="7380220816562673297">Цяпер вы можаце абагульваць паролі толькі з удзельнікамі сямейнай групы. <ph name="BEGIN_LINK" />Стварыце сямейную групу<ph name="END_LINK" /> (да 6 удзельнікаў) і карыстайцеся дадатковымі магчымасцямі прадуктаў і падпісак Google.</translation>
 <translation id="7383797227493018512">Спіс для чытання</translation>
+<translation id="7396331865858820922">Пароль не быў абагулены</translation>
 <translation id="7398893703713203428">Стварыць спасылку</translation>
 <translation id="7399802613464275309">Праверка бяспекі</translation>
 <translation id="7400418766976504921">URL-адрас</translation>
@@ -1226,6 +1230,7 @@
 <translation id="7488874549363591659">Дастаўлена</translation>
 <translation id="7491131399623468277">Перайсці ў Settings…</translation>
 <translation id="7492574581995589075">Ваша арганізацыя адключыла магчымасць выкарыстання і захавання даных Chrome ва Уліковым запісе Google. Новыя закладкі, паролі і іншыя даныя будуць захоўвацца толькі на гэтай прыладзе.</translation>
+<translation id="749854780843431406">Адкрыць новую ўкладку можна з дапамогай кнопкі "<ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
 <translation id="750149195207506638">Закладкі схаваны</translation>
 <translation id="750228856503700085">Абнаўленні недаступныя</translation>
 <translation id="750493650310597496">Выбрана: 0</translation>
@@ -1286,6 +1291,7 @@
 <translation id="778855399387580014">Пачаць пошук у новай укладцы Chrome.</translation>
 <translation id="7791543448312431591">Дадаць</translation>
 <translation id="7807060072011926525">Ад кампаніі Google</translation>
+<translation id="7812377703891978671">Атрымаць доступ да ўсёй гісторыі прагляду сайтаў можна, выбраўшы пункт "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
 <translation id="78146569776629510">Спампоўкі</translation>
 <translation id="7839985698273989086">Пазасеткавая старонка</translation>
 <translation id="7840771868269352570">Выбраныя элементы будуць выдалены.</translation>
@@ -1433,6 +1439,7 @@
 <translation id="8560253818350321773">Спачатку паказваць элементы, якія часта выкарыстоўваюцца.</translation>
 <translation id="8588404856427128947">Выключаны</translation>
 <translation id="8591976964826315682">Блакіраваць староннія файлы cookie у рэжыме інкогніта</translation>
+<translation id="8593565399399144771">Тут вы можаце адкрыць новую ўкладку.</translation>
 <translation id="8605219856220328675">Закрыць укладку.</translation>
 <translation id="8613883225817609844">Схаваць пункт "Нядаўнія ўкладкі"</translation>
 <translation id="8620640915598389714">Змяніць</translation>

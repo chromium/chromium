@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">Моля, въведете имейл адрес.</translation>
 <translation id="1758486001363313524">Други...</translation>
 <translation id="1787192514241997742">общо време: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Разрешаване на камерата</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">възпроизвеждане на отдалечено устройство</translation>
 <translation id="1921819250265091946">дд</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">текуща стъпка</translation>
 <translation id="3321030238473337787">Скорост на възпроизвеждане</translation>
 <translation id="3329013043687509092">Насищане</translation>
+<translation id="3377518164566272702">Разрешаване на микрофона и камерата</translation>
 <translation id="3450233048674729344">Стойността трябва да е по-малка или равна на <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">мм</translation>
 <translation id="3754210790023674521">Изход от „Картина в картината“</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">Възпроизвежда се в режим „Картина в картината“</translation>
 <translation id="4748357248530471599">превключване между прорез на екрана и цял екран</translation>
 <translation id="4763480195061959176">видео</translation>
+<translation id="4792862212177489858">Споделяне на местоположението</translation>
 <translation id="4812940957355064477">Моля, въведете номер.</translation>
 <translation id="4912200001568447310">текущ елемент</translation>
 <translation id="4915360478455618802">Показване на инструмента за избор на час</translation>
@@ -179,6 +182,7 @@
 <translation id="9132465097189459683">Други...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" /> – започва от <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Картина в картината</translation>
+<translation id="918430632320614861">Разрешаване на микрофона</translation>
 <translation id="945780513535800434">Частично отметнато</translation>
 <translation id="954003015749068518">вход в режима „Картина в картината“</translation>
 </translationbundle>

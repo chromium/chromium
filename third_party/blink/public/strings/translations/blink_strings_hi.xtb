@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">कृपया गैर-खाली ईमेल पता डालें.</translation>
 <translation id="1758486001363313524">अन्य...</translation>
 <translation id="1787192514241997742">कुल समय: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">कैमरा ऐक्सेस करने की अनुमति दें</translation>
 <translation id="1822429046913737220">पूर्वाह्न/अपराह्न</translation>
 <translation id="1832974991323546415">दूरस्थ डिवाइस पर चलाएं</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">मौजूदा चरण</translation>
 <translation id="3321030238473337787">वीडियो चलाने की रफ़्तार</translation>
 <translation id="3329013043687509092">संतृप्तता</translation>
+<translation id="3377518164566272702">माइक्रोफ़ोन और कैमरा ऐक्सेस करने की अनुमति दें</translation>
 <translation id="3450233048674729344">मान <ph name="MAXIMUM" /> से कम या इसके बराबर होना चाहिए.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">'पिक्चर में पिक्चर' सुविधा से बाहर निकलें</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">वीडियो को 'पिक्चर में पिक्चर' सुविधा में चलाया जा रहा है</translation>
 <translation id="4748357248530471599">डिसप्ले कटआउट फ़ुलस्क्रीन टॉगल करें</translation>
 <translation id="4763480195061959176">वीडियो</translation>
+<translation id="4792862212177489858">जगह की जानकारी शेयर करें</translation>
 <translation id="4812940957355064477">कृपया कोई संख्या डालें.</translation>
 <translation id="4912200001568447310">मौजूदा आइटम</translation>
 <translation id="4915360478455618802">समय चुनने वाला टूल दिखाएं</translation>
@@ -179,6 +182,7 @@
 <translation id="9132465097189459683">अन्य...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" /> से प्रारंभ हो रहा है</translation>
 <translation id="916607977885256133">पिक्चर में पिक्चर</translation>
+<translation id="918430632320614861">माइक्रोफ़ोन ऐक्सेस करने की अनुमति दें</translation>
 <translation id="945780513535800434">कुछ विकल्प चुने गए</translation>
 <translation id="954003015749068518">पिक्चर में पिक्चर चालू करें</translation>
 </translationbundle>

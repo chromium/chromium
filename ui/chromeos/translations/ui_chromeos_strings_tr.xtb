@@ -329,6 +329,7 @@
 <translation id="3619115746895587757">Kapuçino</translation>
 <translation id="3619593063686672873">Yakın tarihli video yok</translation>
 <translation id="3634507049637220048">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Yöneticiniz tarafından yönetiliyor, Ayrıntılar</translation>
+<translation id="36451918667380448">Mobil ağ sağlayıcı kilitli. Destek almak için sağlayıcınızla iletişime geçin.</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> öğe taşındı.</translation>
 <translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> dosya seçildi</translation>
 <translation id="3685122418104378273">Mobil veriler kullanılırken Google Drive senkronizasyonu varsayılan olarak devre dışıdır.</translation>

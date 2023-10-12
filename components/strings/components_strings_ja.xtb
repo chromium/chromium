@@ -142,6 +142,7 @@
 <translation id="1264309058268477500">代替</translation>
 <translation id="1264974993859112054">スポーツ</translation>
 <translation id="1266469291454105242">デバイスのロック解除</translation>
+<translation id="126728463333482584">トラッキング保護機能をいち早くお試しいただけます。この機能により、ブラウジング中のユーザーをトラッキングできないようサイトに対してサードパーティ Cookie の使用が制限されます。</translation>
 <translation id="1268480293435976622">中国 #7 封筒</translation>
 <translation id="1269516672602708785">Google サイトで新しいサイトをすばやく作成します</translation>
 <translation id="1270328905573953738">引越し、移転</translation>
@@ -688,6 +689,7 @@
 <translation id="2361263712565360498">275x395 mm</translation>
 <translation id="236340516568226369">切り替えメニューのサイズ変更</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> を入力してください</translation>
+<translation id="2365382709349300355">ポリシーにより 1 個のファイルがブロックされました</translation>
 <translation id="2365508935344991784">屋外家具</translation>
 <translation id="2366689192918515749">肉、魚介類</translation>
 <translation id="2367567093518048410">レベル</translation>
@@ -2408,6 +2410,7 @@
 <translation id="5967867314010545767">履歴から削除</translation>
 <translation id="5968022600320704045">検索結果はありません</translation>
 <translation id="5969199813874624822">保存して価格をトラッキング</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">ロール 6</translation>
 <translation id="5975083100439434680">縮小する</translation>
 <translation id="5979084224081478209">パスワードを確認</translation>
@@ -2898,6 +2901,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">デバイス</translation>
 <translation id="696703987787944103">知覚的</translation>
+<translation id="6967851206780867018">コンテンツが原因で 1 個のファイルがブロックされました</translation>
 <translation id="6970885655016700774">布（アーカイバル）</translation>
 <translation id="6971439137020188025">スライドで新しい Google プレゼンテーションをすばやく作成します</translation>
 <translation id="6972629891077993081">HID デバイス</translation>
@@ -2950,6 +2954,7 @@
 <translation id="70705239631109039">接続は完全には保護されていません</translation>
 <translation id="7075452647191940183">リクエストが大きすぎます</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">よりプライバシーに配慮したブラウジング</translation>
 <translation id="7079718277001814089">このサイトには不正なソフトウェアが含まれています</translation>
 <translation id="7081308185095828845">この機能はお使いのデバイスではご利用いただけません</translation>
 <translation id="7083258188081898530">トレイ 9</translation>

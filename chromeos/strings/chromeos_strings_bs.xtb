@@ -119,7 +119,7 @@
 <translation id="1768959921651994223">Vrsta autentifikacije</translation>
 <translation id="1776228893584526149">Ton pozadinske slike</translation>
 <translation id="1782199038061388045">prijevod</translation>
-<translation id="1788485524395674731">Tom aplikacijom upravlja vaš administrator</translation>
+<translation id="1788485524395674731">Ovom aplikacijom upravlja vaš administrator</translation>
 <translation id="1792647875738159689">Otkazivanje skeniranja</translation>
 <translation id="1801418420130173017">Onemogući tamnu temu</translation>
 <translation id="1807246157184219062">Svijetli</translation>
@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da otkrijete uređaje u blizini</translation>
 <translation id="2346474577291266260">Odlično (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383">Otvoren je dijaloški okvir za izmjenu za stavku <ph name="DESCRIPTION" />.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2364498172489649528">Uspješno</translation>
 <translation id="2367335866686097760">Tipka za mapiranje tipki</translation>
@@ -483,6 +484,7 @@
 <translation id="4793756956024303490">Algoritam kompresije</translation>
 <translation id="4794140124556169553">Pokretanje testa CPU-a može uticati na performanse sistema</translation>
 <translation id="4798078634453489142">Uklonite APN da dodate novi APN</translation>
+<translation id="479989351350248267">pretraži</translation>
 <translation id="4800589996161293643">Chromebook zajednica</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Zadatak za štampanje dokumenta <ph name="DOCUMENT_TITLE" /> je otkazan</translation>
@@ -626,7 +628,7 @@
 <translation id="584953448295717128">APN je automatski otkriven.</translation>
 <translation id="5849570051105887917">Kôd domaćeg mobilnog operatera</translation>
 <translation id="5859603669299126575">Album umjetničke galerije</translation>
-<translation id="5859969039821714932">Prečac nije dostupan. Pritisnite novi prečac bez tipke <ph name="KEY" />.</translation>
+<translation id="5859969039821714932">Prečica nije dostupna. Pritisnite novu prečicu bez tipke <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Isklj.</translation>
 <translation id="5860491529813859533">Uključi</translation>
 <translation id="5876385649737594562">Uključite da odaberete opcije</translation>
@@ -792,6 +794,7 @@
 <translation id="7103252855940681301">Uređaj <ph name="INDEX" /> od <ph name="COUNT" /> pod nazivom <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Odaberite ekskluzivnu ilustraciju koju nudi <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7119389851461848805">uključivanje/isključivanje</translation>
 <translation id="7130438335435247835">Naziv pristupne tačke (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Postavite naziv servera}one{Postavite naziv servera}few{Postavite naziv servera}other{Postavite naziv servera}}</translation>
 <translation id="7135814714616751706">Pretražite prečice</translation>
@@ -949,6 +952,7 @@
 <translation id="8336739000755212683">Promijenite sliku računa uređaja</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> ili <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Zadaci štampanja</translation>
+<translation id="8349826889576450703">pokretač</translation>
 <translation id="8351855506390808906">Tačka dodira za mapiranje tipki</translation>
 <translation id="8352772353338965963">Dodajte račun za višestruku prijavu. Svim računima na kojima je izvršena prijava je moguće pristupiti bez lozinke. Ovu funkciju treba koristiti isključivo s pouzdanim računima.</translation>
 <translation id="8364946094152050673">Prazni serveri naziva</translation>
@@ -1022,6 +1026,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Uređaj je tablet.</translation>
 <translation id="8881098542468797602">Test je uspješan</translation>
+<translation id="8892443466059986410">Otkazivanje izmjene prečice</translation>
 <translation id="8898840733695078011">Jačina signala</translation>
 <translation id="8909114361904403025">strelica nagore</translation>
 <translation id="8910721771319628100">Zadana mreža je iznad praga latentnosti</translation>
@@ -1044,6 +1049,7 @@
 <translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> je automatski pokrenuta}one{# aplikacija je automatski pokrenuta}few{# aplikacije su automatski pokrenute}other{# applicacija je automatski pokrenuto}}</translation>
 <translation id="8998289560386111590">Nije dostupno na vašem uređaju</translation>
 <translation id="9003704114456258138">Frekvencija</translation>
+<translation id="901834265349196618">e-pošta</translation>
 <translation id="9024331582947483881">prikaz preko cijelog ekrana</translation>
 <translation id="9025198690966128418">Koristi kao lični uređaj</translation>
 <translation id="902638246363752736">Postavke tastature</translation>
@@ -1084,6 +1090,7 @@
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
 <translation id="952992212772159698">Nije aktivirano</translation>
 <translation id="960719561871045870">Kôd operatera</translation>
+<translation id="966787709310836684">meni</translation>
 <translation id="979450713603643090">Svijetloružičasto</translation>
 <translation id="982713511914535780">Pokreni test pražnjenja</translation>
 <translation id="987264212798334818">Opće</translation>

@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Исклучи</translation>
 <translation id="1044891598689252897">Сајтовите ќе работат нормално</translation>
 <translation id="1073417869336441572">Помогнете ни да го подобриме Chrome така што ќе ни кажете зошто дозволивте колачиња од трети страни. <ph name="BEGIN_LINK" />Испратете повратни информации<ph name="END_LINK" /></translation>
-<translation id="1124090076051167250">Овa ќе ги избрише податоците и колачињата (<ph name="DATASIZE" />) складирани од сајтови или апликации на почетниот екран.</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Отстрани</translation>
 <translation id="1201402288615127009">Следно</translation>
@@ -33,7 +32,6 @@
 <translation id="1647582022260550163">Дали сигурно сакате да ги ресетирате дозволите и да ги избришете колачињата и податоците од сајтот?</translation>
 <translation id="1660204651932907780">Дозволи сајтовите да пуштаат звук (се препорачува)</translation>
 <translation id="1677097821151855053">Колачињата и другите сајтови се користат за да ве запомнат, на пр., за најавување или за персонализирање реклами. За да управувате со колачињата за сите сајтови, погледнете ги <ph name="BEGIN_LINK" />Поставките<ph name="END_LINK" />.</translation>
-<translation id="1688867105868176567">Дали да се исчистат сите податоци?</translation>
 <translation id="169515064810179024">Блокирајте го пристапот до сензорите за движење за сајтовите</translation>
 <translation id="1717218214683051432">Сензори за движење</translation>
 <translation id="1743802530341753419">Прашај пред да дозволиш сајтовите да се поврзуваат со уред (се препорачува)</translation>
@@ -247,7 +245,6 @@
 <translation id="5335288049665977812">Дозволи сајтовите да извршуваат JavaScript (се препорачува)</translation>
 <translation id="534295439873310000">NFC-уреди</translation>
 <translation id="5344522958567249764">Управувајте со приватноста за реклами</translation>
-<translation id="5354152178998424783">Ова ќе избрише <ph name="DATASIZE" /> податоци и колачиња складирани од сајтовите.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и уште 1)}one{(и уште #)}other{(и уште #)}}</translation>
 <translation id="5403592356182871684">Имиња</translation>
 <translation id="5412236728747081950">Сајтов ги добива вашите интереси од Chrome за да ви прикажува порелевантни реклами</translation>
@@ -268,12 +265,10 @@
 <translation id="5690795753582697420">Камерата е исклучена во поставките за Android</translation>
 <translation id="5700761515355162635">Колачињата од трети страни се дозволени</translation>
 <translation id="5706552988683188916">Ова ги брише колачињата и другите податоците од сајтот за <ph name="WEBSITE" /></translation>
-<translation id="5719847187258001597">Ова ќе ги избрише сите податоци и колачиња складирани од сајтот <ph name="ORIGIN" /> или од неговата апликација на почетниот екран.</translation>
 <translation id="5723967018671998714">Колачињата од трети страни се блокирани во режим инкогнито</translation>
 <translation id="5740126560802162366">Сајтовите може да зачуваат податоци на вашиот уред</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> е блокирана</translation>
 <translation id="5804241973901381774">Дозволи</translation>
-<translation id="5810805850857689118">Дејствово ќе ги избрише сите податоци и колачиња за сајтот <ph name="ORIGIN" /> и сите сајтови под него</translation>
 <translation id="5860033963881614850">Исклучено</translation>
 <translation id="5876056640971328065">Паузирајте го видеото</translation>
 <translation id="5884085660368669834">Поставки за сајтот</translation>
@@ -323,7 +318,6 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Заштитена содржина</translation>
 <translation id="662080504995468778">Остани</translation>
-<translation id="6643016212128521049">Исчисти</translation>
 <translation id="6653342741369270081">Притиснете го копчето за назад за да излезете од цел екран.</translation>
 <translation id="6689172468748959065">Фотографии на профилот</translation>
 <translation id="6697925417670533197">Активни преземања</translation>
@@ -358,6 +352,7 @@
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /> се одобрени.</translation>
 <translation id="7302486331832100261">Вообичаено ги блокирате известувањата. За да ги дозволите, допрете „Детали“.</translation>
 <translation id="7366415735885268578">Додајте сајт</translation>
+<translation id="7368695150573390554">Ќе се избришат сите офлајн податоци</translation>
 <translation id="7383715096023715447">Поставки за <ph name="DOMAIN" /></translation>
 <translation id="7406113532070524618">Поставкава функционира без да ве идентификува или да дозволи сајтовите да ја гледаат вашата историја на прелистувањето, иако сајтовите може да споделат мала количина податоци како дел од процесот на потврда</translation>
 <translation id="7423098979219808738">Прво прашај</translation>
@@ -430,7 +425,6 @@
 <translation id="8514955299594277296">Не дозволувајте сајтовите да зачувуваат податоци на вашиот уред (не се препорачува)</translation>
 <translation id="851751545965956758">Блокирај ги сајтовите од поврзување со уреди</translation>
 <translation id="8525306231823319788">Цел екран</translation>
-<translation id="8528440122773422556">Дејствово ќе ги избрише сите податоци и колачиња што ги складирале сите сајтови под сајтот <ph name="ORIGIN" /> или неговата апликација на вашиот почетен екран</translation>
 <translation id="8541410041357371550">Сајтов ги добива вашите теми за реклами од Chrome за да ви прикажува порелевантни реклами</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Колачињата се дозволени за <ph name="FPS_MEMBERS_COUNT" /> сајт на <ph name="FPS_OWNER" />}one{Колачињата се дозволени за <ph name="FPS_MEMBERS_COUNT" /> сајт на <ph name="FPS_OWNER" />}other{Колачињата се дозволени за <ph name="FPS_MEMBERS_COUNT" /> сајтови на <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Дозволено (препорачано)</translation>
@@ -443,7 +437,6 @@
 <translation id="8725066075913043281">Обидете се повторно</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{Дозволен е 1 сајт}one{Дозволени се # сајт}other{Дозволени се # сајтови}}</translation>
-<translation id="8737217482364735741">Ова ќе ги избрише сите податоци и колачиња складирани од сајтот <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Изберете слика</translation>
 <translation id="8800034312320686233">Дали сајтот не работи?</translation>
 <translation id="8801436777607969138">Блокирај JavaScript за одреден сајт.</translation>
@@ -471,7 +464,6 @@
 <translation id="913657688200966289">Вклучете ги дозволите за <ph name="APP_NAME" /> во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Тековното зумирање е <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Страницава е опасна</translation>
-<translation id="9201023452444595544">Сите офлајн податоци ќе се избришат</translation>
 <translation id="930525582205581608">Да се заборави сајтов?</translation>
 <translation id="947156494302904893">Сајтовите што ги отворате може да потврдат дека сте вистинска личност, а не бот</translation>
 <translation id="967624055006145463">Складирани податоци</translation>

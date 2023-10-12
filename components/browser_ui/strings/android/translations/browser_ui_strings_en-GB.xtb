@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Turn off</translation>
 <translation id="1044891598689252897">Sites will work normally</translation>
 <translation id="1073417869336441572">Help us improve Chrome by telling us why you allowed third-party cookies. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
-<translation id="1124090076051167250">This will clear <ph name="DATASIZE" /> of data and cookies stored by sites or by apps on your home screen.</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1201402288615127009">Next</translation>
@@ -33,7 +32,6 @@
 <translation id="1647582022260550163">Are you sure that you want to reset permissions, and clear cookies and site data?</translation>
 <translation id="1660204651932907780">Allow sites to play sound (recommended)</translation>
 <translation id="1677097821151855053">Cookies and other site data are used to remember you, for example, to sign you in or to personalise ads. To manage cookies for all sites, see <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
-<translation id="1688867105868176567">Clear site data?</translation>
 <translation id="169515064810179024">Block sites from accessing motion sensors</translation>
 <translation id="1717218214683051432">Motion sensors</translation>
 <translation id="1743802530341753419">Ask before allowing sites to connect to a device (recommended)</translation>
@@ -247,7 +245,6 @@
 <translation id="5335288049665977812">Allow sites to run JavaScript (recommended)</translation>
 <translation id="534295439873310000">NFC devices</translation>
 <translation id="5344522958567249764">Manage ads privacy</translation>
-<translation id="5354152178998424783">This will clear <ph name="DATASIZE" /> of data and cookies stored by sites.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 more)}other{(+ # more)}}</translation>
 <translation id="5403592356182871684">Names</translation>
 <translation id="5412236728747081950">This site gets your interests from Chrome to show you more relevant ads</translation>
@@ -268,12 +265,10 @@
 <translation id="5690795753582697420">Camera is turned off in Android settings</translation>
 <translation id="5700761515355162635">Third-party cookies allowed</translation>
 <translation id="5706552988683188916">This deletes cookies and other site data for <ph name="WEBSITE" /></translation>
-<translation id="5719847187258001597">This will clear all data and cookies stored by <ph name="ORIGIN" /> or by its app on your home screen.</translation>
 <translation id="5723967018671998714">Third-party cookies are blocked in Incognito mode</translation>
 <translation id="5740126560802162366">Sites can save data on your device</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blocked</translation>
 <translation id="5804241973901381774">Permissions</translation>
-<translation id="5810805850857689118">This action will clear all data and cookies for <ph name="ORIGIN" /> and all sites under it</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5876056640971328065">Pause video</translation>
 <translation id="5884085660368669834">Site preference</translation>
@@ -323,7 +318,6 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Protected content</translation>
 <translation id="662080504995468778">Stay</translation>
-<translation id="6643016212128521049">Clear</translation>
 <translation id="6653342741369270081">Press the back button to exit full screen.</translation>
 <translation id="6689172468748959065">Profile photos</translation>
 <translation id="6697925417670533197">Active downloads</translation>
@@ -358,6 +352,7 @@
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> and <ph name="PERMISSION_2" /> allowed</translation>
 <translation id="7302486331832100261">You usually block notifications. To allow, tap Details.</translation>
 <translation id="7366415735885268578">Add a site</translation>
+<translation id="7368695150573390554">Any offline data will be deleted</translation>
 <translation id="7383715096023715447">Settings for <ph name="DOMAIN" /></translation>
 <translation id="7406113532070524618">This setting works without identifying you or allowing sites to see your browsing history, though sites can share a small amount of info as part of the verification</translation>
 <translation id="7423098979219808738">Ask first</translation>
@@ -430,7 +425,6 @@
 <translation id="8514955299594277296">Don't allow sites to save data on your device (not recommended)</translation>
 <translation id="851751545965956758">Block sites from connecting to devices</translation>
 <translation id="8525306231823319788">Full screen</translation>
-<translation id="8528440122773422556">This action will clear all data and cookies stored by all sites under <ph name="ORIGIN" /> or by its app on your Home screen</translation>
 <translation id="8541410041357371550">This site gets your ad topics from Chrome to show you more relevant ads</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookies allowed for <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> site}other{Cookies allowed for <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sites}}</translation>
 <translation id="857943718398505171">Allowed (recommended)</translation>
@@ -443,7 +437,6 @@
 <translation id="8725066075913043281">Try again</translation>
 <translation id="8730621377337864115">Done</translation>
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 site allowed}other{# sites allowed}}</translation>
-<translation id="8737217482364735741">This will clear all data and cookies stored by <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Select an image</translation>
 <translation id="8800034312320686233">Site not working?</translation>
 <translation id="8801436777607969138">Block JavaScript for a specific site.</translation>
@@ -471,7 +464,6 @@
 <translation id="913657688200966289">Turn on permissions for <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Current zoom is <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">This page is dangerous</translation>
-<translation id="9201023452444595544">Any offline data will be cleared</translation>
 <translation id="930525582205581608">Forget this site?</translation>
 <translation id="947156494302904893">Sites that you visit can verify that you're a real person and not a bot</translation>
 <translation id="967624055006145463">Data stored</translation>

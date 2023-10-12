@@ -328,6 +328,7 @@
 <translation id="1615402009686901181">तपाईंको स्क्रिनमा गोप्य सामग्री देखिएका बेला एड्मिनले तोक्नुभएको नीतिअनुसार स्क्रिन क्याप्चर गर्ने सुविधा अफ गरिन्छ</translation>
 <translation id="1617276713587758852">क्रसओभर गाडीहरू</translation>
 <translation id="1618571384971354160">सडकमा बिग्रिएका सवारी साधन तान्ने र मद्दत गर्ने सेवा</translation>
+<translation id="1619007254056372606">डिभाइसमा रहेका साइट डेटा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1620510694547887537">क्यामेरा</translation>
 <translation id="1622571349153632031">शाकाहारी भोजन</translation>
 <translation id="162285686621567578">तपाईंका अभिभावकले यो वेबसाइट ब्लक गर्नुभएको छ।</translation>
@@ -1237,6 +1238,7 @@
 <translation id="3552297013052089404">Sans Serif फन्ट</translation>
 <translation id="3558573058928565255">दिउँसो</translation>
 <translation id="355995771319966853">स्वतः भर्ने कार्य अन्डू गर्नुहोस्</translation>
+<translation id="3560408312959371419">ट्र्याकिङ सुरक्षा तथा डिभाइसमै सेभ गरिएका साइट डेटासम्बन्धी विकल्पहरू</translation>
 <translation id="3560824484345057728">सम्बन्धित साइटहरू हेर्नुहोस्</translation>
 <translation id="3566021033012934673">तपाईंको जडान निजी होइन</translation>
 <translation id="3566336457819493938">२१५ x ३१५ मिलिमिटर</translation>
@@ -3881,6 +3883,7 @@
 <translation id="893332455753468063">नाम थप्नुहोस्</translation>
 <translation id="8942355029279167844">तपाईंका एड्मिनले <ph name="APP_NAME" /> एप सुधार्ने प्रयोजनका लागि यो एपलाई निदानसम्बन्धी डेटा सङ्कलन गर्ने अनुमति दिनुभएको छ। थप जानकारीका लागि <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> मा जानुहोस्।</translation>
 <translation id="8943282376843390568">हल्का पहेँलो</translation>
+<translation id="8944485226638699751">सीमित</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">कानुन तथा सरकार</translation>
 <translation id="8954252855949068147">लत्ताकपडा</translation>

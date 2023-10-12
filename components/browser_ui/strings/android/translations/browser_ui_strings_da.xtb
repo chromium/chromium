@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Deaktiver</translation>
 <translation id="1044891598689252897">Websites fungerer som normalt</translation>
 <translation id="1073417869336441572">Hjælp os med at forbedre Chrome ved at fortælle os, hvorfor du har tilladt tredjepartscookies. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
-<translation id="1124090076051167250">Dette rydder <ph name="DATASIZE" /> data og cookies, som er gemt af websites eller apps på din startskærm.</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1201402288615127009">Næste</translation>
@@ -33,7 +32,6 @@
 <translation id="1647582022260550163">Er du sikker på, at du vil nulstille tilladelser og rydde cookies og websitedata?</translation>
 <translation id="1660204651932907780">Tillad, at websites afspiller lyd (anbefales)</translation>
 <translation id="1677097821151855053">Cookies og andre websitedata bruges til at huske dig, f.eks. for at logge dig ind eller give dig personligt tilpassede annoncer. Gå til <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" /> for at administrere cookies for alle websites.</translation>
-<translation id="1688867105868176567">Ville du rydde websitets data?</translation>
 <translation id="169515064810179024">Bloker adgang til bevægelsessensorer på websites</translation>
 <translation id="1717218214683051432">Bevægelsessensorer</translation>
 <translation id="1743802530341753419">Spørg, før websites opretter forbindelse til en enhed (anbefales)</translation>
@@ -247,7 +245,6 @@
 <translation id="5335288049665977812">Tillad, at websites kører JavaScript (anbefales)</translation>
 <translation id="534295439873310000">NFC-enheder</translation>
 <translation id="5344522958567249764">Administrer privatliv ved annoncering</translation>
-<translation id="5354152178998424783">Dette rydder <ph name="DATASIZE" /> data og cookies, som er gemt af websites.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 anden)}one{(+ # anden)}other{(+ # andre)}}</translation>
 <translation id="5403592356182871684">Navne</translation>
 <translation id="5412236728747081950">Dette website henter dine interesser fra Chrome og bruger dem til at vise dig mere relevante annoncer</translation>
@@ -268,12 +265,10 @@
 <translation id="5690795753582697420">Kameraet er deaktiveret i Android-indstillingerne</translation>
 <translation id="5700761515355162635">Tredjepartscookies er tilladt</translation>
 <translation id="5706552988683188916">Denne handling sletter cookies og andre websitedata for <ph name="WEBSITE" /></translation>
-<translation id="5719847187258001597">Dette rydder alle data og cookies, som er gemt af <ph name="ORIGIN" /> eller de tilhørende apps på din startskærm.</translation>
 <translation id="5723967018671998714">Tredjepartscookies er blokeret i inkognitotilstand</translation>
 <translation id="5740126560802162366">Websites kan gemme data på din enhed</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blev blokeret</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
-<translation id="5810805850857689118">Denne handling rydder alle data og cookies for <ph name="ORIGIN" /> og alle websites i denne gruppe</translation>
 <translation id="5860033963881614850">Fra</translation>
 <translation id="5876056640971328065">Sæt video på pause</translation>
 <translation id="5884085660368669834">Websitepræference</translation>
@@ -323,7 +318,6 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beskyttet indhold</translation>
 <translation id="662080504995468778">Bliv her</translation>
-<translation id="6643016212128521049">Ryd</translation>
 <translation id="6653342741369270081">Tryk på knappen Tilbage for at afslutte fuld skærm.</translation>
 <translation id="6689172468748959065">Profilbilleder</translation>
 <translation id="6697925417670533197">Aktive downloads</translation>
@@ -358,6 +352,7 @@
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> blev tilladt</translation>
 <translation id="7302486331832100261">Du blokerer som regel notifikationer. Tryk på Info for at give tilladelse.</translation>
 <translation id="7366415735885268578">Tilføj et website</translation>
+<translation id="7368695150573390554">Alle offlinedata slettes</translation>
 <translation id="7383715096023715447">Indstillinger for <ph name="DOMAIN" /></translation>
 <translation id="7406113532070524618">Denne indstilling fungerer uden at identificere dig eller give websites tilladelse til at se din browserhistorik, men websites kan dele en lille mængde oplysninger som en del af verificeringen</translation>
 <translation id="7423098979219808738">Spørg først</translation>
@@ -430,7 +425,6 @@
 <translation id="8514955299594277296">Tillad ikke, at websites gemmer data på din enhed (anbefales ikke)</translation>
 <translation id="851751545965956758">Bloker websites fra at oprette forbindelse til enheder</translation>
 <translation id="8525306231823319788">Fuld skærm</translation>
-<translation id="8528440122773422556">Denne handling rydder alle data og cookies, som er gemt af alle websites i gruppen <ph name="ORIGIN" /> eller den tilhørende app på din startskærm</translation>
 <translation id="8541410041357371550">Dette website henter dine annonceemner fra Chrome for at vise dig mere relevante annoncer</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookies er tilladt for <ph name="FPS_MEMBERS_COUNT" /> website tilhørende <ph name="FPS_OWNER" />}one{Cookies er tilladt for <ph name="FPS_MEMBERS_COUNT" /> website tilhørende <ph name="FPS_OWNER" />}other{Cookies er tilladt for <ph name="FPS_MEMBERS_COUNT" /> websites tilhørende <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Tilladt (anbefales)</translation>
@@ -443,7 +437,6 @@
 <translation id="8725066075913043281">Forsøg igen</translation>
 <translation id="8730621377337864115">Udfør</translation>
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 website er tilladt}one{# website er tilladt}other{# websites er tilladt}}</translation>
-<translation id="8737217482364735741">Dette rydder alle data og cookies, der er gemt af <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Vælg et billede</translation>
 <translation id="8800034312320686233">Fungerer websitet ikke?</translation>
 <translation id="8801436777607969138">Bloker JavaScript for et bestemt website.</translation>
@@ -471,7 +464,6 @@
 <translation id="913657688200966289">Aktivér tilladelser for <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Det aktuelle zoomniveau er <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Denne side er farlig</translation>
-<translation id="9201023452444595544">Alle offlinedata ryddes</translation>
 <translation id="930525582205581608">Vil du glemme dette website?</translation>
 <translation id="947156494302904893">Websites, du besøger, kan verificere, at du er en rigtig person og ikke en bot</translation>
 <translation id="967624055006145463">Lagrede data</translation>

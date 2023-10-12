@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">Бош эмес электрондук почта дарегин киргизиңиз.</translation>
 <translation id="1758486001363313524">Башка…</translation>
 <translation id="1787192514241997742">жалпы убакыт: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Камераны колдонууга уруксат берүү</translation>
 <translation id="1822429046913737220">күндүзгү-түнкү</translation>
 <translation id="1832974991323546415">алыскы түзмөктө ойнотуу</translation>
 <translation id="1921819250265091946">кк</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">учурдагы кадам</translation>
 <translation id="3321030238473337787">Ойнотуу ылдамдыгы</translation>
 <translation id="3329013043687509092">Каныктыруу</translation>
+<translation id="3377518164566272702">Микрофон менен камераны колдонууга уруксат берүү</translation>
 <translation id="3450233048674729344">Маани <ph name="MAXIMUM" /> кичирээк же барабар болушу керек.</translation>
 <translation id="3732799496749320381">аа</translation>
 <translation id="3754210790023674521">Сүрөт ичиндеги сүрөт режиминен чыгуу</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">Сүрөт ичиндеги сүрөт режиминде ойнотулууда</translation>
 <translation id="4748357248530471599">кесилген аймактан толук экранга которулуу</translation>
 <translation id="4763480195061959176">видео</translation>
+<translation id="4792862212177489858">Кайда жүргөнүмдү көрсөтүү</translation>
 <translation id="4812940957355064477">Номер киргизиңиз.</translation>
 <translation id="4912200001568447310">учурдагы элемент</translation>
 <translation id="4915360478455618802">Убакыт тандагычты көрсөтүү</translation>
@@ -179,6 +182,7 @@
 <translation id="9132465097189459683">Башка…</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" /> күнү башталат</translation>
 <translation id="916607977885256133">Сүрөт ичиндеги сүрөт</translation>
+<translation id="918430632320614861">Микрофонду колдонууга уруксат берүү</translation>
 <translation id="945780513535800434">Бир пункт тандалды</translation>
 <translation id="954003015749068518">сүрөт ичиндеги сүрөт режимине кирүү</translation>
 </translationbundle>

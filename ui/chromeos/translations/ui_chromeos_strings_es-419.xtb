@@ -329,6 +329,7 @@
 <translation id="3619115746895587757">Capuchino</translation>
 <translation id="3619593063686672873">No hay videos recientes.</translation>
 <translation id="3634507049637220048">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, administrada por tu administrador, detalles</translation>
+<translation id="36451918667380448">El operador de red móvil está bloqueado. Comunícate con tu operador para obtener asistencia.</translation>
 <translation id="3645233063072417428">Se movieron <ph name="NUMBER_OF_ITEMS" /> elementos.</translation>
 <translation id="3658269352872031728">Se seleccionaron <ph name="SELECTED_FILE_COUNT" /> archivos</translation>
 <translation id="3685122418104378273">La sincronización con Google Drive está inhabilitada de manera predeterminada cuando se usan los datos móviles.</translation>

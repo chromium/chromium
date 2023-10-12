@@ -328,6 +328,7 @@
 <translation id="1615402009686901181">ரகசியமான உள்ளடக்கம் காட்டப்படுவதால் திரையைப் படமெடுப்பதை நிர்வாகக் கொள்கை முடக்கிவிட்டது</translation>
 <translation id="1617276713587758852">கிராஸ்ஓவர் வாகனங்கள்</translation>
 <translation id="1618571384971354160">வாகனத்தை இழுத்துச் செல்லுதல் &amp; சாலையோர உதவிச் சேவைகள்</translation>
+<translation id="1619007254056372606">சாதனத்தில் உள்ள தளத் தரவை நிர்வகித்தல்</translation>
 <translation id="1620510694547887537">கேமரா</translation>
 <translation id="1622571349153632031">சைவ உணவுவகை</translation>
 <translation id="162285686621567578">இந்த இணையதளத்தை உங்கள் பெற்றோர் தடுத்துள்ளார்.</translation>
@@ -1236,6 +1237,7 @@
 <translation id="3552297013052089404">Sans-serif எழுத்துரு</translation>
 <translation id="3558573058928565255">பகல் நேரம்</translation>
 <translation id="355995771319966853">தானாக நிரப்பப்பட்டதை நீக்கு</translation>
+<translation id="3560408312959371419">பாதுகாப்புகளையும் சாதனத்தில் உள்ள தளத் தரவையும் கண்காணிப்பதற்கான விருப்பங்கள்</translation>
 <translation id="3560824484345057728">தொடர்புடைய தளங்களைக் காட்டு</translation>
 <translation id="3566021033012934673">உங்கள் இணைப்பு தனிப்பட்டது அல்ல</translation>
 <translation id="3566336457819493938">215 x 315 மிமீ</translation>
@@ -1885,6 +1887,7 @@
 <translation id="4873616204573862158">கண்ணாடிகள்</translation>
 <translation id="4876188919622883022">எளிதாக்கப்பட்ட காட்சி</translation>
 <translation id="4876305945144899064">பயனர்பெயர் இல்லை</translation>
+<translation id="4876327226315760474">அதாவது எதிர்பார்த்தபடி தளத்தின் அம்சங்கள் செயல்படும். ஆனால், உலாவும்போது பாதுகாப்பு குறைவாக இருக்கக்கூடும்.</translation>
 <translation id="4877047577339061095">வீட்டுச் சேமிப்பகம் &amp; அலமாரிகள்</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{எதுவுமில்லை}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">'<ph name="TEXT" />’ குறித்த தேடல்</translation>
@@ -2512,6 +2515,7 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="61877208875190028">பெண்களுக்கான ஆடை</translation>
 <translation id="6194209731893739467">நீங்கள் கண்காணிக்கும் தயாரிப்புகள் இங்கே காட்டப்படும்</translation>
+<translation id="6195163219142236913">மூன்றாம் தரப்புக் குக்கீகள் வரம்பிடப்பட்டுள்ளன</translation>
 <translation id="6195371403461054755">புவியியல்</translation>
 <translation id="6196640612572343990">மூன்றாம் தரப்புக் குக்கீகளைத் தடு</translation>
 <translation id="6197648101609735209">89 x 89 மிமீ</translation>
@@ -3876,6 +3880,7 @@
 <translation id="893332455753468063">பெயரைச் சேர்க்கவும்</translation>
 <translation id="8942355029279167844">தயாரிப்பு அனுபவத்தை மேம்படுத்துவதற்காகப் பகுப்பாய்வுத் தரவைச் சேகரிக்க, <ph name="APP_NAME" /> ஆப்ஸுக்கு உங்கள் நிர்வாகி அனுமதி வழங்கியுள்ளார். கூடுதல் தகவல்களுக்கு <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> என்ற தளத்திற்குச் செல்லவும்.</translation>
 <translation id="8943282376843390568">சுண்ணாம்பு நிறம்</translation>
+<translation id="8944485226638699751">வரம்பிற்குட்பட்டது</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">சட்டம் &amp; அரசாங்கம்</translation>
 <translation id="8954252855949068147">ஆடை அணிகலன்கள்</translation>

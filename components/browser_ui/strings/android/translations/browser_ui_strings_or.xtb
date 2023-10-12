@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1044891598689252897">ସାଇଟଗୁଡ଼ିକ ସାଧାରଣ ଭାବେ କାମ କରିବ</translation>
 <translation id="1073417869336441572">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ଆପଣ କାହିଁକି ଅନୁମତି ଦେଇଛନ୍ତି ତାହା କହି Chromeକୁ ଉନ୍ନତ କରିବାରେ ଆମକୁ ସାହାଯ୍ୟ କରନ୍ତୁ। <ph name="BEGIN_LINK" />ମତାମତ ପଠାନ୍ତୁ<ph name="END_LINK" /></translation>
-<translation id="1124090076051167250">ଆପଣଙ୍କ ମୂଳ ସ୍କ୍ରିନରେ ସାଇଟ୍ କିମ୍ବା ଆପଗୁଡ଼ିକ ଦ୍ୱାରା ଷ୍ଟୋର୍ କରାଯାଇଥିବା <ph name="DATASIZE" /> ଡାଟା ଏବଂ କୁକୀଗୁଡ଼ିକୁ ଏହା ଖାଲି କରିଦେବ।</translation>
 <translation id="1178581264944972037">ବିରତି</translation>
 <translation id="1181037720776840403">କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="1201402288615127009">ପରବର୍ତ୍ତୀ</translation>
@@ -33,7 +32,6 @@
 <translation id="1647582022260550163">ଆପଣ ଅନୁମତିଗୁଡ଼ିକ ରିସେଟ୍ କରିବାକୁ ଏବଂ କୁକୀ ଓ ସାଇଟ୍ ଡାଟା ଖାଲି କରିବାକୁ ଚାହୁଁଥିବା ସୁନିଶ୍ଚିତ କି?</translation>
 <translation id="1660204651932907780">ସାଉଣ୍ଡ ଚାଲୁ କରିବାକୁ ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ (ସୁପାରିଶ୍ କରାଯାଇଛି)</translation>
 <translation id="1677097821151855053">ଆପଣଙ୍କୁ ସାଇନ୍ ଇନ୍ କରିବା କିମ୍ବା ବିଜ୍ଞାପନଗୁଡ଼ିକୁ ବ୍ୟକ୍ତିଗତକୃତ କରିବା ପରି, ଆପଣଙ୍କ ସୂଚନା ମନେରଖିବା ପାଇଁ କୁକୀ ଏବଂ ଅନ୍ୟ ସାଇଟ୍ ଡାଟା ବ୍ୟବହାର କରାଯାଇଥାଏ। ସମସ୍ତ ସାଇଟ୍ ପାଇଁ କୁକୀଗୁଡ଼ିକ ପରିଚାଳନା କରିବାକୁ, <ph name="BEGIN_LINK" />ସେଟିଂସ୍<ph name="END_LINK" /> ଦେଖନ୍ତୁ।</translation>
-<translation id="1688867105868176567">ସାଇଟ୍‍ ଡାଟା ଖାଲି କରିବେ?</translation>
 <translation id="169515064810179024">ମୋସନ୍ ସେନ୍ସର୍ ଆକ୍ସେସ୍ କରିବାରୁ ସାଇଟ୍‍ଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="1717218214683051432">ମୋସନ୍ ସେନ୍ସର୍</translation>
 <translation id="1743802530341753419">ଗୋଟିଏ ଡିଭାଇସ୍ ସହ ସଂଯୋଗ କରିବାକୁ ଅନୁମତି ଦେବା ପୂର୍ବରୁ ପଚାରନ୍ତୁ (ସୁପାରିଶକୃତ)</translation>
@@ -247,7 +245,6 @@
 <translation id="5335288049665977812">ସାଇଟ୍‌ଗୁଡ଼ିକୁ JavaScript ଚଲାଇବା ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="534295439873310000">NFC ଡିଭାଇସ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="5344522958567249764">ବିଜ୍ଞାପନ ଗୋପନୀୟତା ପରିଚାଳନା କରନ୍ତୁ</translation>
-<translation id="5354152178998424783">ଏହା ସାଇଟଗୁଡ଼ିକ ଦ୍ୱାରା ଷ୍ଟୋର୍ କରାଯାଇଥିବା <ph name="DATASIZE" /> ଡାଟା ଏବଂ କୁକୀଗୁଡ଼ିକୁ ଖାଲି କରିଦେବ।</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1ଟି ଅଧିକ)}other{(+ #ଟି ଅଧିକ)}}</translation>
 <translation id="5403592356182871684">ନାମଗୁଡ଼ିକ</translation>
 <translation id="5412236728747081950">ଆପଣଙ୍କୁ ଅଧିକ ପ୍ରାସଙ୍ଗିକ ବିଜ୍ଞାପନ ଦେଖାଇବା ପାଇଁ ଏହି ସାଇଟ Chromeରୁ ଆପଣଙ୍କର ରୁଚିଗୁଡ଼ିକ ପାଇଥାଏ</translation>
@@ -268,12 +265,10 @@
 <translation id="5690795753582697420">Android ସେଟିଂସରେ କ୍ୟାମେରା ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="5700761515355162635">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="5706552988683188916">ଏହା <ph name="WEBSITE" /> ପାଇଁ କୁକୀ ଏବଂ ଅନ୍ୟ ସାଇଟ ଡାଟାକୁ ଡିଲିଟ କରେ</translation>
-<translation id="5719847187258001597">ଆପଣଙ୍କ ମୂଳ ସ୍କ୍ରିନରେ <ph name="ORIGIN" /> କିମ୍ବା ଏହାର ଆପଗୁଡ଼ିକ ଦ୍ୱାରା ଷ୍ଟୋର୍ କରାଯାଇଥିବା ଡାଟା ଏବଂ କୁକୀଗୁଡ଼ିକୁ ଏହା ଖାଲି କରିଦେବ।</translation>
 <translation id="5723967018671998714">ଇନକଗ୍ନିଟୋ ମୋଡରେ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="5740126560802162366">ସାଇଟଗୁଡ଼ିକ ଆପଣଙ୍କ ଡିଭାଇସରେ ଡାଟା ସେଭ କରିପାରେ</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="5804241973901381774">ଅନୁମତିଗୁଡ଼ିକ</translation>
-<translation id="5810805850857689118">ଏହି କାର୍ଯ୍ୟ <ph name="ORIGIN" /> ଏବଂ ଏହା ଅଧୀନରେ ଥିବା ସବୁ ସାଇଟ ପାଇଁ ସମସ୍ତ ଡାଟା ଓ କୁକୀକୁ ଖାଲି କରିଦେବ</translation>
 <translation id="5860033963881614850">ବନ୍ଦ ଅଛି</translation>
 <translation id="5876056640971328065">ଭିଡିଓ ବିରତ କରନ୍ତୁ</translation>
 <translation id="5884085660368669834">ସାଇଟ ପସନ୍ଦଗୁଡ଼ିକ</translation>
@@ -323,7 +318,6 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁ</translation>
 <translation id="662080504995468778">ରୁହନ୍ତୁ</translation>
-<translation id="6643016212128521049">ଖାଲି କରନ୍ତୁ</translation>
 <translation id="6653342741369270081">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରୁ ବାହାରି ଯିବା ପାଇଁ 'ପଛକୁ ଯାଆନ୍ତୁ' ବଟନ ଦବାନ୍ତୁ।</translation>
 <translation id="6689172468748959065">ପ୍ରୋଫାଇଲ୍ ଫଟୋ</translation>
 <translation id="6697925417670533197">ସକ୍ରିୟ ଡାଉନଲୋଡଗୁଡ଼ିକ</translation>
@@ -358,6 +352,7 @@
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> ଏବଂ <ph name="PERMISSION_2" />ର ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="7302486331832100261">ଆପଣ ସାଧାରଣତଃ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତି। ଅନୁମତି ଦେବା ପାଇଁ, ବିବରଣୀରେ ଟାପ୍ କରନ୍ତୁ।</translation>
 <translation id="7366415735885268578">ଏକ ସାଇଟ୍ ଯୋଗକରନ୍ତୁ</translation>
+<translation id="7368695150573390554">ଯେ କୌଣସି ଅଫଲାଇନ ଡାଟା ଡିଲିଟ ହୋଇଯିବ</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> ପାଇଁ ସେଟିଂସ</translation>
 <translation id="7406113532070524618">ଏହି ସେଟିଂ ଆପଣଙ୍କୁ ଚିହ୍ନଟ ନକରି କିମ୍ବା ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ ଦେଖିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ନ ଦେଇ କାର୍ଯ୍ୟ କରେ, ଯଦିଓ ସାଇଟଗୁଡ଼ିକ ଯାଞ୍ଚକରଣର ଏକ ଅଂଶ ଭାବରେ ସୂଚନାର କିଛି ଅଂଶ ସେୟାର କରିପାରିବ</translation>
 <translation id="7423098979219808738">ପ୍ରଥମେ ପଚାରନ୍ତୁ</translation>
@@ -430,7 +425,6 @@
 <translation id="8514955299594277296">ଆପଣଙ୍କ ଡିଭାଇସରେ ଡାଟା ସେଭ କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ (ସୁପାରିଶ କରାଯାଇନାହିଁ)</translation>
 <translation id="851751545965956758">ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଡିଭାଇସ୍‌ଗୁଡ଼ିକ ସହିତ ସଂଯୋଗ ହେବାରୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="8525306231823319788">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌</translation>
-<translation id="8528440122773422556">ଏହି କାର୍ଯ୍ୟ <ph name="ORIGIN" /> ଅଧୀନରେ ଥିବା ସବୁ ସାଇଟ କିମ୍ବା ଆପଣଙ୍କ ହୋମ ସ୍କ୍ରିନରେ ଏହାର ଆପ ଦ୍ୱାରା ଷ୍ଟୋର କରାଯାଇଥିବା ସମସ୍ତ ଡାଟା ଓ କୁକୀକୁ ଖାଲି କରିଦେବ</translation>
 <translation id="8541410041357371550">ଆପଣଙ୍କୁ ଅଧିକ ପ୍ରାସଙ୍ଗିକ ବିଜ୍ଞାପନ ଦେଖାଇବା ପାଇଁ ଏହି ସାଇଟ Chromeରୁ ଆପଣଙ୍କ ବିଜ୍ଞାପନ ବିଷୟଗୁଡ଼ିକ ପାଇଥାଏ</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" />ଟି <ph name="FPS_OWNER" /> ସାଇଟ ପାଇଁ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି}other{<ph name="FPS_MEMBERS_COUNT" />ଟି <ph name="FPS_OWNER" /> ସାଇଟ ପାଇଁ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି}}</translation>
 <translation id="857943718398505171">ଅନୁମୋଦିତ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
@@ -443,7 +437,6 @@
 <translation id="8725066075913043281">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="8730621377337864115">ସମାପ୍ତ ହୋଇଛି</translation>
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1ଟି ସାଇଟକୁ ଅନୁମତି ଦିଆଯାଇଛି}other{#ଟି ସାଇଟକୁ ଅନୁମତି ଦିଆଯାଇଛି}}</translation>
-<translation id="8737217482364735741">ଏହା <ph name="ORIGIN" /> ଦ୍ୱାରା ଷ୍ଟୋର୍ କରାଯାଇଥିବା ସମସ୍ତ ଡାଟା ଏବଂ କୁକୀକୁ ଖାଲି କରିଦେବ।</translation>
 <translation id="8751914237388039244">ଗୋଟିଏ ଛବି ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8800034312320686233">ସାଇଟ୍ କାମ କରୁନାହିଁ କି?</translation>
 <translation id="8801436777607969138">ଏକ ନିର୍ଦ୍ଧିଷ୍ଟ ସାଇଟ୍‌ ପାଇଁ JavaScript ଅବରୋଧ କରନ୍ତୁ।</translation>
@@ -471,7 +464,6 @@
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ସେଟିଂସ<ph name="END_LINK" />ରେ <ph name="APP_NAME" /> ପାଇଁ ଅନୁମତି ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="9138217887606523162">ବର୍ତ୍ତମାନର ଜୁମ ହେଉଛି <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">ଏହି ପୃଷ୍ଠାଟି ବିପଦଜନକ ଅଟେ</translation>
-<translation id="9201023452444595544">ଯେ କୌଣସି ଅଫ୍‍ଲାଇନ୍ ଡାଟା ଖାଲି କରାଯିବ</translation>
 <translation id="930525582205581608">ଏହି ସାଇଟ୍ ସମ୍ବନ୍ଧିତ ଡାଟା ଖାଲି କରିବେ କି?</translation>
 <translation id="947156494302904893">ଆପଣ ଜଣେ ପ୍ରକୃତ ବ୍ୟକ୍ତି ଏବଂ ଏକ ବୋଟ ନୁହଁନ୍ତି ବୋଲି ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟ ଯାଞ୍ଚ କରିପାରିବ</translation>
 <translation id="967624055006145463">ଡାଟା ଷ୍ଟୋର୍ କରାଯାଇଛି</translation>

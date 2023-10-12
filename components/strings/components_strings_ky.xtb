@@ -143,6 +143,7 @@
 <translation id="1264309058268477500">Кошумча</translation>
 <translation id="1264974993859112054">Спорт</translation>
 <translation id="1266469291454105242">Түзмөктүн кулпусун ачуу</translation>
+<translation id="126728463333482584">Көз салуудан коргоо функциясын биринчилерден болуп колдоносуз. Ал серептөө учурунда сайттардын үчүнчү тараптын cookie файлдарын колдонуп, аракеттериңизге көз салуусун чектейт.</translation>
 <translation id="1268480293435976622">Конверт Кытайча #7</translation>
 <translation id="1269516672602708785">Google Сайттарда жаңы сайтты тез түзүңүз</translation>
 <translation id="1270328905573953738">Көчүү жана көчүрүү</translation>
@@ -692,6 +693,7 @@
 <translation id="2361263712565360498">275 x 395 мм.</translation>
 <translation id="236340516568226369">Өчүрүү/күйгүзүү менюсунун өлчөмүн өзгөртүү</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> киргизүү</translation>
+<translation id="2365382709349300355">Эрежеден улам 1 файл бөгөттөлдү</translation>
 <translation id="2365508935344991784">Сырткы эмерек</translation>
 <translation id="2366689192918515749">Эт жана деңиз азыктары</translation>
 <translation id="2367567093518048410">Деңгээли</translation>
@@ -2413,6 +2415,7 @@
 <translation id="5967867314010545767">Таржымалдан алып салуу</translation>
 <translation id="5968022600320704045">Эч нерсе табылган жок</translation>
 <translation id="5969199813874624822">Сактап, баасына көз салуу</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Алтынчы барабан</translation>
 <translation id="5975083100439434680">Кичирейтүү</translation>
 <translation id="5979084224081478209">Сырсөздөрдү текшерүү</translation>
@@ -2904,6 +2907,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Түзмөк</translation>
 <translation id="696703987787944103">Кабыл алуучу</translation>
+<translation id="6967851206780867018">Контенттен улам 1 файл бөгөттөлдү</translation>
 <translation id="6970885655016700774">Кездеме (архив)</translation>
 <translation id="6971439137020188025">Slides кызматында жаңы Google презентациясын тез түзүү</translation>
 <translation id="6972629891077993081">HID түзмөктөрү</translation>
@@ -2956,6 +2960,7 @@
 <translation id="70705239631109039">Туташуу толугу менен коопсуз эмес</translation>
 <translation id="7075452647191940183">Сурамдын көлөмү өтө чоң</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">Купуялыкты көбүрөөк коргоо менен серептөө</translation>
 <translation id="7079718277001814089">Бул сайтта кесепеттүү программа бар</translation>
 <translation id="7081308185095828845">Бул функция түзмөгүңүздө иштебейт</translation>
 <translation id="7083258188081898530">9-түпкүч</translation>
