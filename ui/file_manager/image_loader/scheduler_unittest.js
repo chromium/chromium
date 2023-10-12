@@ -5,7 +5,7 @@
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {ImageRequestTask} from './image_request_task.js';
-import {Scheduler} from './scheduler.js';
+import {MAXIMUM_IN_PARALLEL, Scheduler} from './scheduler.js';
 
 
 /**
@@ -94,13 +94,13 @@ export function testNewTasksMovedAndRunInPriorityOrder() {
 export function testParallelTasks() {
   const scheduler = new Scheduler();
   const taskList = [];
-  for (let i = 0; i <= Scheduler.MAXIMUM_IN_PARALLEL; ++i) {
+  for (let i = 0; i <= MAXIMUM_IN_PARALLEL; ++i) {
     taskList.push(newTask(`task-${i}`, 0));
     scheduler.add(/** @type {!ImageRequestTask} */ (taskList[i]));
   }
   scheduler.start();
-  for (let i = 0; i < Scheduler.MAXIMUM_IN_PARALLEL; ++i) {
+  for (let i = 0; i < MAXIMUM_IN_PARALLEL; ++i) {
     assertEquals(i + 1, taskList[i].runTime, `task ${i} did not run`);
   }
-  assertEquals(0, taskList[Scheduler.MAXIMUM_IN_PARALLEL].runTime);
+  assertEquals(0, taskList[MAXIMUM_IN_PARALLEL].runTime);
 }
