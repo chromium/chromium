@@ -208,7 +208,10 @@ void MagnifierSurfaceControl::SetReadbackOrigin(JNIEnv* env,
   }
   readback_origin_x_ = x;
   readback_origin_y_ = y;
+  UpdateLayers();
+}
 
+void MagnifierSurfaceControl::UpdateLayers() {
   RenderWidgetHostViewAndroid* rwhva =
       static_cast<RenderWidgetHostViewAndroid*>(
           web_contents_->GetRenderWidgetHostView());
@@ -227,11 +230,15 @@ void MagnifierSurfaceControl::SetReadbackOrigin(JNIEnv* env,
   surface_layer_->SetBounds(surface_layer->bounds());
   surface_layer_->SetOldestAcceptableFallback(
       surface_layer->oldest_acceptable_fallback().value_or(viz::SurfaceId()));
-  surface_layer_->SetSurfaceId(surface_layer->surface_id(),
+  surface_layer_->SetSurfaceId(rwhva->GetCurrentSurfaceId(),
                                cc::DeadlinePolicy::UseExistingDeadline());
 
   surface_layer_->SetPosition(
       gfx::PointF(-readback_origin_x_, -readback_origin_y_));
+}
+
+void MagnifierSurfaceControl::ChildLocalSurfaceIdChanged(JNIEnv* env) {
+  UpdateLayers();
 }
 
 void MagnifierSurfaceControl::CreateDisplayAndFrameSink() {

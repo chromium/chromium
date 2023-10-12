@@ -96,6 +96,12 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
         return mViewCallback.getReadbackView() != null;
     }
 
+    @Override
+    public void childLocalSurfaceIdChanged() {
+        if (mNativeMagnifierSurfaceControl == 0) return;
+        MagnifierSurfaceControlJni.get().childLocalSurfaceIdChanged(mNativeMagnifierSurfaceControl);
+    }
+
     private void createNativeIfNeeded() {
         if (mNativeMagnifierSurfaceControl != 0) return;
         if (getView() == null) return;
@@ -168,5 +174,7 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
                 int bottomShadowHeight, int bottomShadowWidthReduction);
         void destroy(long magnifierSurfaceControl);
         void setReadbackOrigin(long nativeMagnifierSurfaceControl, float x, float y);
+
+        void childLocalSurfaceIdChanged(long nativeMagnifierSurfaceControl);
     }
 }

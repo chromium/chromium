@@ -47,6 +47,7 @@ class MagnifierSurfaceControl : public viz::HostDisplayClient,
   ~MagnifierSurfaceControl() override;
 
   void SetReadbackOrigin(JNIEnv* env, jfloat x, jfloat y);
+  void ChildLocalSurfaceIdChanged(JNIEnv* env);
 
   // viz::mojom::DisplayClient implementation:
   void DidCompleteSwapWithSize(const gfx::Size& pixel_size) override {}
@@ -71,6 +72,7 @@ class MagnifierSurfaceControl : public viz::HostDisplayClient,
 
  private:
   void CreateDisplayAndFrameSink();
+  void UpdateLayers();
 
   const raw_ptr<WebContentsImpl> web_contents_;
   const gpu::SurfaceHandle surface_handle_;

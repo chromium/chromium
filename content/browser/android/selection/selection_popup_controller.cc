@@ -278,4 +278,14 @@ void SelectionPopupController::RestoreSelectionPopupsIfNecessary() {
   Java_SelectionPopupControllerImpl_restoreSelectionPopupsIfNecessary(env, obj);
 }
 
+void SelectionPopupController::ChildLocalSurfaceIdChanged() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_obj_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+
+  Java_SelectionPopupControllerImpl_childLocalSurfaceIdChanged(env, obj);
+}
+
 }  // namespace content

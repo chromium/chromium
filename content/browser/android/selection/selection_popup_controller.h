@@ -56,6 +56,7 @@ class SelectionPopupController : public RenderWidgetHostConnector {
   void OnSelectAroundCaretAck(blink::mojom::SelectAroundCaretResultPtr result);
   void HidePopupsAndPreserveSelection();
   void RestoreSelectionPopupsIfNecessary();
+  void ChildLocalSurfaceIdChanged();
   std::unique_ptr<ui::TouchHandleDrawable> CreateTouchHandleDrawable(
       gfx::NativeView parent_native_view,
       cc::slim::Layer* parent_layer);

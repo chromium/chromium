@@ -22,4 +22,7 @@ public interface MagnifierWrapper {
      * To check if this MagnifierWrapper is available to show.
      */
     public boolean isAvailable();
+
+    /** Only implemented on MagnifierSurfaceControl. */
+    public void childLocalSurfaceIdChanged();
 }

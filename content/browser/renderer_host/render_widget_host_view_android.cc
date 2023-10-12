@@ -697,6 +697,10 @@ RenderWidgetHostViewAndroid::SubscribeToSurfaceIdChanges(
 
 void RenderWidgetHostViewAndroid::OnSurfaceIdChanged() {
   surface_id_changed_callbacks_.Notify(GetCurrentSurfaceId());
+
+  if (selection_popup_controller_) {
+    selection_popup_controller_->ChildLocalSurfaceIdChanged();
+  }
 }
 
 void RenderWidgetHostViewAndroid::InitAsChild(gfx::NativeView parent_view) {

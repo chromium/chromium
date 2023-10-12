@@ -1521,6 +1521,13 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         }
     }
 
+    @CalledByNative
+    private void childLocalSurfaceIdChanged() {
+        if (mMagnifierAnimator != null) {
+            mMagnifierAnimator.childLocalSurfaceIdChanged();
+        }
+    }
+
     // All coordinates are in DIP.
     @VisibleForTesting
     @CalledByNative

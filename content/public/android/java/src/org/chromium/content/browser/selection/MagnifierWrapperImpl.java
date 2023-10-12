@@ -50,4 +50,9 @@ public class MagnifierWrapperImpl implements MagnifierWrapper {
     public boolean isAvailable() {
         return mCallback.getReadbackView() != null;
     }
+
+    @Override
+    public void childLocalSurfaceIdChanged() {
+        // Intentional not implemented.
+    }
 }

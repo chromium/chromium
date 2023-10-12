@@ -93,6 +93,10 @@ public class MagnifierAnimator {
         mMagnifierIsShowing = false;
     }
 
+    public void childLocalSurfaceIdChanged() {
+        mMagnifier.childLocalSurfaceIdChanged();
+    }
+
     /* package */ ValueAnimator getValueAnimatorForTesting() {
         return mAnimator;
     }
