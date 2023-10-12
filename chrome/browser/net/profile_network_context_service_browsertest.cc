@@ -98,6 +98,12 @@ class ProfileNetworkContextServiceBrowsertest : public InProcessBrowserTest {
 
   ~ProfileNetworkContextServiceBrowsertest() override = default;
 
+  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+
   void SetUpOnMainThread() override {
     EXPECT_TRUE(embedded_test_server()->Start());
     loader_factory_ = browser()
