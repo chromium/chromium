@@ -777,7 +777,7 @@ class FileManagerPrivateApiDlpTest : public FileManagerPrivateApiTest {
     mock_rules_manager_ = nullptr;
     fpnm_ = nullptr;
     FileManagerPrivateApiTest::TearDownOnMainThread();
-  };
+  }
 
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {

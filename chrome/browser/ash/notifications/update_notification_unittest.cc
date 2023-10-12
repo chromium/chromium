@@ -46,7 +46,7 @@ class UpdateNotificationTest : public testing::Test,
   bool IsUpdateNotificationEnabled() const { return GetParam(); }
 
   void SetUp() override {
-    user_data_dir_.CreateUniqueTempDir();
+    ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
     auto profile_manager_unique =
         std::make_unique<FakeProfileManager>(user_data_dir_.GetPath());
     fake_profile_manager_ = profile_manager_unique.get();

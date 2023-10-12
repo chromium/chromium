@@ -2125,7 +2125,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerDictationKeyboardImprovementsTest,
   utils.EnableDictation(
       /*profile=*/AccessibilityManager::Get()->profile(),
       /*navigate_to_url=*/base::BindLambdaForTesting([this](const GURL& url) {
-        ui_test_utils::NavigateToURL(browser(), url);
+        ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
       }));
 
   // If Dictation is already enabled, then pressing the Dictation key should

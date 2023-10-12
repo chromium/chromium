@@ -318,12 +318,6 @@ ArcAppIconDescriptor GetAppListIconDescriptor(
       scale_factor);
 }
 
-ArcAppIconDescriptor GetAppListIconDescriptor(
-    int dip_size,
-    ui::ResourceScaleFactor scale_factor) {
-  return ArcAppIconDescriptor(dip_size, scale_factor);
-}
-
 bool IsIconCreated(Profile* profile,
                    ArcAppListPrefs* prefs,
                    const std::string& app_id,

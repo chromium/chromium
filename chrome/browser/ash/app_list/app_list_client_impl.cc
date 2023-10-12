@@ -82,16 +82,6 @@ bool IsSessionActive() {
          session_manager::SessionState::ACTIVE;
 }
 
-bool CanBeHandledAsSystemUrl(const GURL& sanitized_url,
-                             ui::PageTransition transition) {
-  if (!PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_TYPED) &&
-      !PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_GENERATED)) {
-    return false;
-  }
-  return ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(
-      sanitized_url);
-}
-
 // IDs passed to ActivateItem are always of the form "<app id>". But app search
 // results can have IDs either like "<app id>" or "chrome-extension://<app
 // id>/". Since we cannot tell from the ID alone which is correct, try both and

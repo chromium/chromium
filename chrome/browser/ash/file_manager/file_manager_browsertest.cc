@@ -215,7 +215,7 @@ class QuickOfficeBrowserTestBase : public InProcessBrowserTest {
     service->component_loader()->AddDefaultComponentExtensions(false);
 
     embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
-    embedded_test_server()->Start();
+    ASSERT_TRUE(embedded_test_server()->Start());
 
     InProcessBrowserTest::SetUpOnMainThread();
   }

@@ -454,7 +454,8 @@ TEST_F(WizardControllerTest, DemoModeOobeFlowEndsOnGaiaScreenAndCompletesOobe) {
 
   PerformUserAction(kActionStartSetup);
 
-  enrollment_signal.Wait();
+  // TODO: handle return value.
+  std::ignore = enrollment_signal.Wait();
 
   ASSERT_TRUE(AwaitScreen(kGaiaSigninScreen));
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
@@ -542,7 +543,7 @@ TEST_F(WizardControllerAfterRollbackTest, ImportNetworkConfigAfterRollback) {
 
   wizard_controller_->Init(ash::OOBE_SCREEN_UNKNOWN);
 
-  config_imported.Wait();
+  ASSERT_TRUE(config_imported.Wait());
 
   auto* imported_config = rollback_network_config_->imported_config();
   ASSERT_TRUE(imported_config != nullptr);

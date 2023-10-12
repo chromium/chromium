@@ -13,7 +13,7 @@ namespace crosapi {
 
 class FakeScreenAIDownloader : public screen_ai::ScreenAIDownloaderChromeOS {
  public:
-  void SetLastUsageTime() override{};
+  void SetLastUsageTime() override {}
   void DownloadComponentInternal() override {
     // The passed file path is not used and just indicates that the component
     // exists.

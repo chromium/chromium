@@ -191,7 +191,7 @@ class ConsumerUpdateScreenTest : public OobeBaseTest {
   }
 
   raw_ptr<ConsumerUpdateScreen> consumer_update_screen_ = nullptr;
-  ;
+
   raw_ptr<VersionUpdater> version_updater_ = nullptr;
   raw_ptr<ErrorScreen> error_screen_ = nullptr;
 

@@ -47,7 +47,7 @@
 
 namespace context {
 class BrowserContext;
-};
+}
 
 namespace ash::shimless_rma {
 

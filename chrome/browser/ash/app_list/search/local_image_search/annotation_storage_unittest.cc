@@ -349,7 +349,7 @@ TEST_F(AnnotationStorageTest, SchemaMigration) {
         return current_version_number;
       }));
 
-  sql_database->Initialize();
+  ASSERT_TRUE(sql_database->Initialize());
   task_environment_.RunUntilIdle();
   sql_database->Close();
 

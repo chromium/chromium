@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <codecvt>
-
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -927,13 +925,12 @@ class FileTransferConnectorFilesAppBrowserTest
 
     // Verify the displayed blocked files shown in the dialog.
     std::vector<std::string> displayed_files;
-    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
     for (const auto* row_view : view->children()) {
       const views::Label* label =
           static_cast<const views::Label*>(row_view->GetViewByID(
               policy::PolicyDialogBase::kConfidentialRowTitleViewId));
       if (label) {
-        displayed_files.push_back(converter.to_bytes(label->GetText()));
+        displayed_files.push_back(base::UTF16ToUTF8(label->GetText()));
       }
     }
     EXPECT_THAT(displayed_files,
@@ -968,13 +965,12 @@ class FileTransferConnectorFilesAppBrowserTest
 
     // Verify the displayed blocked files shown in the dialog.
     std::vector<std::string> displayed_files;
-    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
     for (const auto* row_view : view->children()) {
       const views::Label* label =
           static_cast<const views::Label*>(row_view->GetViewByID(
               policy::PolicyDialogBase::kConfidentialRowTitleViewId));
       if (label) {
-        displayed_files.push_back(converter.to_bytes(label->GetText()));
+        displayed_files.push_back(base::UTF16ToUTF8(label->GetText()));
       }
     }
     EXPECT_THAT(displayed_files,

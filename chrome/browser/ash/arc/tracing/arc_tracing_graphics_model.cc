@@ -42,8 +42,6 @@ constexpr char kCustomTracePrefix[] = "customTrace";
 
 constexpr char kUnknownActivity[] = "unknown";
 
-constexpr char kArgumentBufferId[] = "buffer_id";
-
 constexpr char kKeyActivity[] = "activity";
 constexpr char kKeyBuffers[] = "buffers";
 constexpr char kKeyChrome[] = "chrome";
@@ -64,8 +62,6 @@ constexpr char kQueueBufferQuery[] = "android:queueBuffer";
 constexpr char kFrameDisplayedQuery[] =
     "benchmark,viz," TRACE_DISABLED_BY_DEFAULT(
         "display.framedisplayed") ":Display::FrameDisplayed";
-
-constexpr ssize_t kInvalidBufferIndex = -1;
 
 // Helper factory class that produces graphic buffer events from the giving
 // |ArcTracingEvent| generic events. Each |ArcTracingEvent| may produce graphics
@@ -165,11 +161,6 @@ class BufferGraphicsEventMapper {
   MappingRules rules_;
 };
 
-BufferGraphicsEventMapper& GetEventMapper() {
-  static base::NoDestructor<BufferGraphicsEventMapper> instance;
-  return *instance;
-}
-
 // Maps particular buffer to its events.
 using BufferToEvents =
     std::map<std::string, ArcTracingGraphicsModel::BufferEvents>;
@@ -211,40 +202,6 @@ void DetermineHierarchy(std::vector<const ArcTracingEvent*>* route,
   route->pop_back();
 }
 
-// Extracts the activity name from the buffer id by discarding the buffer id
-// and view index. For example, activity name for buffer id
-// "com.android.vending/com.android.vending.AssetBrowserActivity#0: 2"
-// is "com.android.vending/com.android.vending.AssetBrowserActivity".
-// If the activity cannot be extracted then default |kUnknownActivity| is
-// returned.
-std::string GetActivityFromBufferName(const std::string& android_buffer_name) {
-  const size_t position = android_buffer_name.find('#');
-  if (position == std::string::npos)
-    return kUnknownActivity;
-  return android_buffer_name.substr(0, position);
-}
-
-// Processes exo events Surface::Attach and Buffer::ReleaseContents. Each event
-// has argument buffer_id that identifies graphics buffer on Chrome side.
-// buffer_id is just row pointer to internal class.
-void ProcessChromeEvents(const ArcTracingModel& common_model,
-                         const std::string& query,
-                         BufferToEvents* buffer_to_events) {
-  const ArcTracingModel::TracingEventPtrs chrome_events =
-      common_model.Select(query);
-  for (const ArcTracingEvent* event : chrome_events) {
-    const std::string buffer_id = event->GetArgAsString(
-        kArgumentBufferId, std::string() /* default_value */);
-    if (buffer_id.empty()) {
-      LOG(ERROR) << "Failed to get buffer id from event: " << event->ToString();
-      continue;
-    }
-    ArcTracingGraphicsModel::BufferEvents& graphics_events =
-        (*buffer_to_events)[buffer_id];
-    GetEventMapper().Produce(*event, &graphics_events);
-  }
-}
-
 void ScanForCustomEvents(
     const ArcTracingEvent* event,
     ArcTracingGraphicsModel::BufferEvents* out_custom_events) {
@@ -267,44 +224,6 @@ ArcTracingGraphicsModel::BufferEvents GetCustomEvents(
   for (const ArcTracingEvent* root : common_model.GetRoots())
     ScanForCustomEvents(root, &custom_events);
   return custom_events;
-}
-
-// Helper that finds a event of particular type in the list of events |events|
-// starting from the index |start_index|. Returns |kInvalidBufferIndex| if event
-// cannot be found.
-ssize_t FindEvent(const ArcTracingGraphicsModel::BufferEvents& events,
-                  BufferEventType type,
-                  size_t start_index) {
-  for (size_t i = start_index; i < events.size(); ++i) {
-    if (events[i].type == type)
-      return i;
-  }
-  return kInvalidBufferIndex;
-}
-
-// Helper that performs bisection search of event of type |type| in the ordered
-// list of events |events|. Found event should have timestamp not later than
-// |timestamp|. Returns |kInvalidBufferIndex| in case event is not found.
-ssize_t FindNotLaterThan(const ArcTracingGraphicsModel::BufferEvents& events,
-                         BufferEventType type,
-                         uint64_t timestamp) {
-  if (events.empty() || events[0].timestamp > timestamp)
-    return kInvalidBufferIndex;
-
-  size_t min_range = 0;
-  size_t result = events.size() - 1;
-  while (events[result].timestamp > timestamp) {
-    const size_t next = (result + min_range + 1) / 2;
-    if (events[next].timestamp <= timestamp)
-      min_range = next;
-    else
-      result = next - 1;
-  }
-  for (ssize_t i = result; i >= 0; --i) {
-    if (events[i].type == type)
-      return i;
-  }
-  return kInvalidBufferIndex;
 }
 
 // Adds jank events into |ArcTracingGraphicsModel::EventsContainer|.

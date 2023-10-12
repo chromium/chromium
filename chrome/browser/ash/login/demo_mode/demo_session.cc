@@ -128,11 +128,6 @@ std::string GetSwitchOrDefault(const base::StringPiece& switch_string,
   return default_value;
 }
 
-std::string GetHighlightsAppId() {
-  return GetSwitchOrDefault(switches::kDemoModeHighlightsApp,
-                            extension_misc::kHighlightsAppId);
-}
-
 // If the current locale is not the default one, ensure it is reverted to the
 // default when demo session restarts (i.e. user-selected locale is only allowed
 // to be used for a single session).

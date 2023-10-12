@@ -199,7 +199,7 @@ class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
             chromeos::features::kIWAForTelemetryExtensionAPI,
         },
         {});
-    testing_profile_manager_.SetUp();
+    ASSERT_TRUE(testing_profile_manager_.SetUp());
     TestingProfile* profile = testing_profile_manager_.CreateTestingProfile(
         kShimlessRmaAppBrowserContextBaseName);
 
