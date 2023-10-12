@@ -6396,18 +6396,18 @@
   },
   {
     "name": "optimization-guide-debug-logs",
-    "owners": [ "rajendrant", "robertogden", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 120
+    "owners": [ "rajendrant", "sophiechang", "chrome-intelligence-core@google.com" ],
+    "expiry_milestone": 125
   },
   {
     "name": "optimization-guide-install-wide-model-store",
     "owners": [ "rajendrant", "sophiechang", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "optimization-guide-push-notifications",
-    "owners": [ "robertogden", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 120
+    "owners": [ "sophiechang", "chrome-intelligence-core@google.com" ],
+    "expiry_milestone": 125
   },
   {
     "name": "orca-key",
