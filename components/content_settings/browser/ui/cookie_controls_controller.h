@@ -61,9 +61,8 @@ class CookieControlsController
   // Returns whether first-party cookies are blocked.
   bool FirstPartyCookiesBlocked();
 
-  // Returns whether, due to calls to OnCookingEnabledForSite(), the cookie
-  // blocking setting for the current site is different than what it was when
-  // the page was loaded.
+  // Returns whether the cookie blocking setting for the current site is
+  // different than what it was when last reset.
   bool HasCookieBlockingChangedForSite();
 
   // Returns the current breakage confidence level.
