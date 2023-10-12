@@ -5,6 +5,7 @@
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {SpHeading} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
@@ -34,11 +35,13 @@ export class WallpaperSearchElement extends PolymerElement {
 
   static get properties() {
     return {
+      emptyContainers_: Object,
       query_: String,
       results_: Object,
     };
   }
 
+  private emptyContainers_: number[];
   private query_: string;
   private results_: string[];
 
@@ -54,6 +57,8 @@ export class WallpaperSearchElement extends PolymerElement {
     const {results} = await CustomizeChromeApiProxy.getInstance()
                           .handler.getWallpaperSearchResults(this.query_);
     this.results_ = results;
+    this.emptyContainers_ = Array.from(
+        {length: results.length > 0 ? 6 - results.length : 0}, () => 0);
     this.$.queryInput.invalid = !results.length;
     this.$.queryInput.errorMessage = 'Error';
   }
