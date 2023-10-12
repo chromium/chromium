@@ -780,6 +780,10 @@ void PictureInPictureBrowserFrameView::AddedToWidget() {
   show_close_button_animation_.SetContainer(animation_container);
   hide_close_button_animation_.SetContainer(animation_container);
 
+  // TODO(https://crbug.com/1475419): Don't force dark mode once we support a
+  // light mode window.
+  GetWidget()->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
+
   // If the AutoPiP setting overlay is set, show the permission settings bubble.
   if (auto_pip_setting_overlay_) {
     auto_pip_setting_overlay_->ShowBubble(GetWidget()->GetNativeView());
