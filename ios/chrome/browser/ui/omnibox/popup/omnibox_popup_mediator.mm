@@ -394,14 +394,13 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
                        const image_fetcher::RequestMetadata& metadata) {
         NSData* data = [NSData dataWithBytes:image_data.data()
                                       length:image_data.size()];
-        if (data) {
-          UIImage* image = [UIImage imageWithData:data
-                                            scale:[UIScreen mainScreen].scale];
+
+        UIImage* image = [UIImage imageWithData:data
+                                          scale:[UIScreen mainScreen].scale];
+        if (image) {
           [weakCachedImages setObject:image forKey:URL];
-          completion(image);
-        } else {
-          completion(nil);
         }
+        completion(image);
       });
 
   _imageFetcher->FetchImageData(imageURL, std::move(callback),
