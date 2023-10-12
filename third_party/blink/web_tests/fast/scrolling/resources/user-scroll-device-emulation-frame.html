@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+    <style>
+      body {
+        margin: 0px;
+      }
+      .space {
+        height: 1000px;
+        width: 1000px;
+      }
+      .scroller {
+        height:500px;
+        width: 500px;
+        position: relative;
+        overflow-y: scroll;
+        overflow-x: hidden;
+      }
+      #topbox {
+        border: solid 1px blue;
+      }
+      #bottombox {
+        border:solid 1px black;
+        position: absolute;
+        top: 500px;
+      }
+      #overlay {
+        pointer-events: none;
+        position: absolute;
+        height: 1100px;
+        width: 500px;
+        top: 0px;
+        background: rgba(0, 0, 0, 0.5);
+      }
+    </style>
+    <div id="topbox" class="scroller"><div class="space"></div></div>
+    <div id="bottombox" class="scroller"><div class="space"></div></div>
+    <div id="overlay"></div>
+  </body>
+</html>

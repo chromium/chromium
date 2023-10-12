@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+    <script src="../../resources/gesture-util.js"></script>
+    <script src="../../resources/testdriver.js"></script>
+    <script src="../../resources/testdriver-actions.js"></script>
+    <script src="../../resources/testdriver-vendor.js"></script>
+    <style>
+       body {
+        margin: 0px;
+       }
+        iframe {
+          width: 1000px;
+          height: 1000px;
+        }
+    </style>
+    <script>
+      function runTest() {
+        if (!window.internals) {
+          return;
+        }
+
+        const scale = .50;
+        internals.setDeviceEmulationScale(scale);
+
+        const frame = document.getElementById("frame");
+        const frame_document = frame.contentDocument;
+        promise_test(async (t) => {
+          const bottombox = frame_document.getElementById("bottombox");
+          const topbox = frame_document.getElementById("topbox");
+
+          const scrollend_promise = new Promise((resolve) => {
+            bottombox.addEventListener("scrollend", resolve);
+          });
+          const cursor_x = bottombox.offsetLeft + bottombox.offsetWidth / 2;
+          const cursor_y = bottombox.offsetTop + bottombox.offsetHeight / 2;
+          await new test_driver.Actions()
+          .scroll(cursor_x * scale,  cursor_y * scale, 0, 100)
+          .send();
+
+          await scrollend_promise;
+          assert_equals(bottombox.scrollTop, 100, "bottom box scrolled.");
+          assert_equals(topbox.scrollTop, 0, "top box did not scroll.");
+        }, "composited scroll hit test accounts for device emulation scale " +
+        "factor");
+      }
+    </script>
+  </head>
+  <body>
+    <iframe onload="runTest()" id="frame" src="resources/user-scroll-device-emulation-frame.html"></iframe>
+  </body>
+</html>

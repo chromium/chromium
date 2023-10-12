@@ -3723,7 +3723,10 @@ bool WebFrameWidgetImpl::IsProvisional() {
 
 cc::ElementId WebFrameWidgetImpl::GetScrollableContainerIdAt(
     const gfx::PointF& point) {
-  return HitTestResultAt(point).GetScrollableContainerId();
+  gfx::PointF hit_test_point = point;
+  LocalFrameView* view = LocalRootImpl()->GetFrameView();
+  hit_test_point.Scale(1 / view->InputEventsScaleFactor());
+  return HitTestResultForRootFramePos(hit_test_point).GetScrollableContainer();
 }
 
 bool WebFrameWidgetImpl::ShouldHandleImeEvents() {
