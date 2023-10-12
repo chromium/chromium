@@ -12,4 +12,8 @@ found in the LICENSE file.
     <item type="dimen" name="dialog_fixed_width_minor">70%</item>
     <item type="dimen" name="dialog_fixed_height_major">60%</item>
     <item type="dimen" name="dialog_fixed_height_minor">90%</item>
+    <item type="dimen" name="dialog_fixed_width_major_automotive">50%</item>
+    <item type="dimen" name="dialog_fixed_width_minor_automotive">70%</item>
+    <item type="dimen" name="dialog_fixed_height_major_automotive">70%</item>
+    <item type="dimen" name="dialog_fixed_height_minor_automotive">90%</item>
 </resources>

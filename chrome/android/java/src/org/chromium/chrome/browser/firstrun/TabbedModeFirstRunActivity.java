@@ -85,10 +85,19 @@ public class TabbedModeFirstRunActivity extends FirstRunActivity {
             // system DialogWhenLarge theme.
             // Note that we don't care about the return values, because onMeasure() handles null
             // constraints (and they will be null when the device is not considered "large").
-            safeGetResourceValue(R.dimen.dialog_fixed_width_minor, mFixedWidthMinor);
-            safeGetResourceValue(R.dimen.dialog_fixed_width_major, mFixedWidthMajor);
-            safeGetResourceValue(R.dimen.dialog_fixed_height_minor, mFixedHeightMinor);
-            safeGetResourceValue(R.dimen.dialog_fixed_height_major, mFixedHeightMajor);
+            if (BuildInfo.getInstance().isAutomotive) {
+                safeGetResourceValue(R.dimen.dialog_fixed_width_minor_automotive, mFixedWidthMinor);
+                safeGetResourceValue(R.dimen.dialog_fixed_width_major_automotive, mFixedWidthMajor);
+                safeGetResourceValue(
+                        R.dimen.dialog_fixed_height_minor_automotive, mFixedHeightMinor);
+                safeGetResourceValue(
+                        R.dimen.dialog_fixed_height_major_automotive, mFixedHeightMajor);
+            } else {
+                safeGetResourceValue(R.dimen.dialog_fixed_width_minor, mFixedWidthMinor);
+                safeGetResourceValue(R.dimen.dialog_fixed_width_major, mFixedWidthMajor);
+                safeGetResourceValue(R.dimen.dialog_fixed_height_minor, mFixedHeightMinor);
+                safeGetResourceValue(R.dimen.dialog_fixed_height_major, mFixedHeightMajor);
+            }
         }
 
         @Override
