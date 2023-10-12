@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.tasks.tab_management.TabGridThumbnailView;
+import org.chromium.chrome.browser.tasks.tab_management.TabThumbnailView;
 import org.chromium.chrome.start_surface.R;
 
 /** View of the tab on the single tab tab switcher. */
@@ -25,8 +25,7 @@ class SingleTabView extends LinearLayout {
     private final Context mContext;
     private ImageView mFavicon;
     private TextView mTitle;
-    @Nullable
-    private TabGridThumbnailView mTabThumbnail;
+    @Nullable private TabThumbnailView mTabThumbnail;
     @Nullable
     private TextView mUrl;
 

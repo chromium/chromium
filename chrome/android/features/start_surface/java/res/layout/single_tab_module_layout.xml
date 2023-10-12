@@ -44,7 +44,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:background="@drawable/single_tab_thumbnail_background">
 
-      <org.chromium.chrome.browser.tasks.tab_management.TabGridThumbnailView
+      <org.chromium.chrome.browser.tasks.tab_management.TabThumbnailView
           android:id="@+id/tab_thumbnail"
           android:layout_width="@dimen/single_tab_module_tab_thumbnail_size"
           android:layout_height="@dimen/single_tab_module_tab_thumbnail_size"

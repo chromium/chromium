@@ -609,29 +609,33 @@ public class TabUiTestHelper {
 
     public static void waitForThumbnailsToFetch(RecyclerView recyclerView) {
         assertTrue(recyclerView instanceof TabListRecyclerView);
-        CriteriaHelper.pollUiThread(() -> {
-            boolean allFetched = true;
-            int i = 0;
-            LinearLayoutManager layoutManager =
-                    (LinearLayoutManager) recyclerView.getLayoutManager();
-            for (i = layoutManager.findFirstVisibleItemPosition();
-                    i <= layoutManager.findLastVisibleItemPosition(); i++) {
-                View v = layoutManager.findViewByPosition(i);
-                TabGridThumbnailView thumbnail = v.findViewById(R.id.tab_thumbnail);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    boolean allFetched = true;
+                    int i = 0;
+                    LinearLayoutManager layoutManager =
+                            (LinearLayoutManager) recyclerView.getLayoutManager();
+                    for (i = layoutManager.findFirstVisibleItemPosition();
+                            i <= layoutManager.findLastVisibleItemPosition();
+                            i++) {
+                        View v = layoutManager.findViewByPosition(i);
+                        TabThumbnailView thumbnail = v.findViewById(R.id.tab_thumbnail);
 
-                // Some items may not be cards or may not have thumbnails.
-                if (thumbnail == null) continue;
+                        // Some items may not be cards or may not have thumbnails.
+                        if (thumbnail == null) continue;
 
-                if (thumbnail.isPlaceholder()
-                        || !(thumbnail.getDrawable() instanceof BitmapDrawable)
-                        || ((BitmapDrawable) thumbnail.getDrawable()).getBitmap() == null) {
-                    allFetched = false;
-                    break;
-                }
-            }
-            Criteria.checkThat("The thumbnail for card at position " + i + " is missing.",
-                    allFetched, is(true));
-        });
+                        if (thumbnail.isPlaceholder()
+                                || !(thumbnail.getDrawable() instanceof BitmapDrawable)
+                                || ((BitmapDrawable) thumbnail.getDrawable()).getBitmap() == null) {
+                            allFetched = false;
+                            break;
+                        }
+                    }
+                    Criteria.checkThat(
+                            "The thumbnail for card at position " + i + " is missing.",
+                            allFetched,
+                            is(true));
+                });
     }
 
     public static void checkThumbnailsExist(Tab tab) {

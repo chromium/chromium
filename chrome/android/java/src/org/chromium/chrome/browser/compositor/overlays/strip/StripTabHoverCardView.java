@@ -25,8 +25,8 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.tab_management.TabGridThumbnailView;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
+import org.chromium.chrome.browser.tasks.tab_management.TabThumbnailView;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.LocalizationUtils;
@@ -39,7 +39,7 @@ public class StripTabHoverCardView extends LinearLayout {
 
     private TextView mTitleView;
     private TextView mUrlView;
-    private TabGridThumbnailView mThumbnailView;
+    private TabThumbnailView mThumbnailView;
     private TabModelSelector mTabModelSelector;
     private TabModelSelectorObserver mTabModelSelectorObserver;
     private TabContentManager mTabContentManager;

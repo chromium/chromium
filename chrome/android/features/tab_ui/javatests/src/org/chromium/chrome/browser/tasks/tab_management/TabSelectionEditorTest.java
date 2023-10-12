@@ -126,7 +126,7 @@ public class TabSelectionEditorTest {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER)
                     .setRevision(8)
-                    .setDescription("TabGridThumbnailView update.")
+                    .setDescription("TabThumbnailView update.")
                     .build();
 
     @Mock

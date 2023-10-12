@@ -51,12 +51,12 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Render tests for the UI elements of the {@link TabGridThumbnailView}.
+ * Render tests for the UI elements of the {@link TabThumbnailView}.
  */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
-public class TabGridThumbnailViewRenderTest {
+public class TabThumbnailViewRenderTest {
     @ParameterAnnotations.ClassParameter
     public static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
@@ -80,10 +80,10 @@ public class TabGridThumbnailViewRenderTest {
 
     private FrameLayout mContentView;
     private ViewGroup mTabCard;
-    private TabGridThumbnailView mTabGridThumbnailView;
+    private TabThumbnailView mTabThumbnailView;
     private Bitmap mBitmap;
 
-    public TabGridThumbnailViewRenderTest(boolean nightModeEnabled) {
+    public TabThumbnailViewRenderTest(boolean nightModeEnabled) {
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
@@ -102,7 +102,7 @@ public class TabGridThumbnailViewRenderTest {
             mTabCard.setVisibility(View.VISIBLE);
             mContentView.addView(mTabCard);
 
-            mTabGridThumbnailView = mContentView.findViewById(R.id.tab_thumbnail);
+            mTabThumbnailView = mContentView.findViewById(R.id.tab_thumbnail);
 
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -128,8 +128,8 @@ public class TabGridThumbnailViewRenderTest {
     }
 
     private Bitmap createBitmapFourColor() {
-        final int width = mTabGridThumbnailView.getMeasuredWidth();
-        final int height = mTabGridThumbnailView.getMeasuredHeight();
+        final int width = mTabThumbnailView.getMeasuredWidth();
+        final int height = mTabThumbnailView.getMeasuredHeight();
 
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
@@ -165,37 +165,37 @@ public class TabGridThumbnailViewRenderTest {
     public void testPlaceholderDrawable() throws IOException, InterruptedException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             updateColor(/*isIncognito=*/true, /*isSelected=*/false);
-            mTabGridThumbnailView.setImageDrawable(null);
+            mTabThumbnailView.setImageDrawable(null);
         });
         mRenderTestRule.render(mTabCard, "placeholder_incognito_without_thumbnail_deselected");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             updateColor(/*isIncognito=*/false, /*isSelected=*/false);
-            mTabGridThumbnailView.setImageDrawable(null);
+            mTabThumbnailView.setImageDrawable(null);
         });
         mRenderTestRule.render(mTabCard, "placeholder_without_thumbnail_deselected");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTabGridThumbnailView.setImageBitmap(mBitmap);
-            mTabGridThumbnailView.setImageMatrix(new Matrix());
+            mTabThumbnailView.setImageBitmap(mBitmap);
+            mTabThumbnailView.setImageMatrix(new Matrix());
         });
         mRenderTestRule.render(mTabCard, "placeholder_with_thumbnail_deselected");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             updateColor(/*isIncognito=*/false, /*isSelected=*/true);
-            mTabGridThumbnailView.setImageDrawable(null);
+            mTabThumbnailView.setImageDrawable(null);
         });
         mRenderTestRule.render(mTabCard, "placeholder_without_thumbnail_selected");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTabGridThumbnailView.setImageBitmap(mBitmap);
-            mTabGridThumbnailView.setImageMatrix(new Matrix());
+            mTabThumbnailView.setImageBitmap(mBitmap);
+            mTabThumbnailView.setImageMatrix(new Matrix());
         });
         mRenderTestRule.render(mTabCard, "placeholder_with_thumbnail_selected");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             updateColor(/*isIncognito=*/true, /*isSelected=*/true);
-            mTabGridThumbnailView.setImageDrawable(null);
+            mTabThumbnailView.setImageDrawable(null);
         });
         mRenderTestRule.render(mTabCard, "placeholder_incognito_without_thumbnail_selected");
     }
@@ -209,37 +209,37 @@ public class TabGridThumbnailViewRenderTest {
     testNoPlaceholderDrawable() throws IOException, InterruptedException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             updateColor(/*isIncognito=*/true, /*isSelected=*/false);
-            mTabGridThumbnailView.setImageDrawable(null);
+            mTabThumbnailView.setImageDrawable(null);
         });
         mRenderTestRule.render(mTabCard, "no_placeholder_incognito_without_thumbnail_deselected");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             updateColor(/*isIncognito=*/false, /*isSelected=*/false);
-            mTabGridThumbnailView.setImageDrawable(null);
+            mTabThumbnailView.setImageDrawable(null);
         });
         mRenderTestRule.render(mTabCard, "no_placeholder_without_thumbnail_deselected");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTabGridThumbnailView.setImageBitmap(mBitmap);
-            mTabGridThumbnailView.setImageMatrix(new Matrix());
+            mTabThumbnailView.setImageBitmap(mBitmap);
+            mTabThumbnailView.setImageMatrix(new Matrix());
         });
         mRenderTestRule.render(mTabCard, "no_placeholder_with_thumbnail_deselected");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             updateColor(/*isIncognito=*/false, /*isSelected=*/true);
-            mTabGridThumbnailView.setImageDrawable(null);
+            mTabThumbnailView.setImageDrawable(null);
         });
         mRenderTestRule.render(mTabCard, "no_placeholder_without_thumbnail_selected");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTabGridThumbnailView.setImageBitmap(mBitmap);
-            mTabGridThumbnailView.setImageMatrix(new Matrix());
+            mTabThumbnailView.setImageBitmap(mBitmap);
+            mTabThumbnailView.setImageMatrix(new Matrix());
         });
         mRenderTestRule.render(mTabCard, "no_placeholder_with_thumbnail_selected");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             updateColor(/*isIncognito=*/true, /*isSelected=*/true);
-            mTabGridThumbnailView.setImageDrawable(null);
+            mTabThumbnailView.setImageDrawable(null);
         });
         mRenderTestRule.render(mTabCard, "no_placeholder_incognito_without_thumbnail_selected");
     }
@@ -251,6 +251,6 @@ public class TabGridThumbnailViewRenderTest {
                 cardView.getContext(), isIncognito, isSelected);
         ViewCompat.setBackgroundTintList(cardView, ColorStateList.valueOf(backgroundColor));
 
-        mTabGridThumbnailView.updateThumbnailPlaceholder(isIncognito, isSelected);
+        mTabThumbnailView.updateThumbnailPlaceholder(isIncognito, isSelected);
     }
 }

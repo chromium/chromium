@@ -258,8 +258,7 @@ class TabGridViewBinder {
     }
 
     private static void updateThumbnail(ViewLookupCachingFrameLayout view, PropertyModel model) {
-        TabGridThumbnailView thumbnail =
-                (TabGridThumbnailView) view.fastFindViewById(R.id.tab_thumbnail);
+        TabThumbnailView thumbnail = (TabThumbnailView) view.fastFindViewById(R.id.tab_thumbnail);
 
         // To GC on hide set a background color and remove the thumbnail.
         final boolean isSelected = model.get(TabProperties.IS_SELECTED);
@@ -344,8 +343,8 @@ class TabGridViewBinder {
             ViewLookupCachingFrameLayout rootView, boolean isIncognito, boolean isSelected) {
         View cardView = rootView.fastFindViewById(R.id.card_view);
         TextView titleView = (TextView) rootView.fastFindViewById(R.id.tab_title);
-        TabGridThumbnailView thumbnail =
-                (TabGridThumbnailView) rootView.fastFindViewById(R.id.tab_thumbnail);
+        TabThumbnailView thumbnail =
+                (TabThumbnailView) rootView.fastFindViewById(R.id.tab_thumbnail);
         ChromeImageView backgroundView =
                 (ChromeImageView) rootView.fastFindViewById(R.id.background_view);
 

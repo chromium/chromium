@@ -53,8 +53,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.TabGridThumbnailView;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
+import org.chromium.chrome.browser.tasks.tab_management.TabThumbnailView;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -90,7 +90,7 @@ public class StripTabHoverCardViewUnitTest {
     private static final float STRIP_STACK_HEIGHT = 500.f;
 
     private StripTabHoverCardView mTabHoverCardView;
-    private TabGridThumbnailView mThumbnailView;
+    private TabThumbnailView mThumbnailView;
     private TextView mTitleView;
     private TextView mUrlView;
     private Context mContext;

@@ -47,7 +47,7 @@ found in the LICENSE file.
                 android:ellipsize="none"
                 android:singleLine="true"
                 android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"/>
-            <org.chromium.chrome.browser.tasks.tab_management.TabGridThumbnailView
+            <org.chromium.chrome.browser.tasks.tab_management.TabThumbnailView
                 android:id="@+id/tab_thumbnail"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

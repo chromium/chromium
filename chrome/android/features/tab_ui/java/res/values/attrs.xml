@@ -11,7 +11,7 @@ found in the LICENSE file.
         <attr name="elevationTileBase" format="dimension" />
     </declare-styleable>
 
-    <declare-styleable name="TabGridThumbnailView">
+    <declare-styleable name="TabThumbnailView">
         <attr name="cornerRadiusTopStart" format="dimension" />
         <attr name="cornerRadiusTopEnd" format="dimension" />
         <attr name="cornerRadiusBottomStart" format="dimension" />

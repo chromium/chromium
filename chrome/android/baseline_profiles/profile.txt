@@ -6171,8 +6171,8 @@ Lorg/chromium/chrome/browser/tasks/tab_management/TabGridItemTouchHelperCallback
 Lorg/chromium/chrome/browser/tasks/tab_management/TabGridPanelProperties;
 Lorg/chromium/chrome/browser/tasks/tab_management/TabGridPanelViewBinder$ViewHolder;
 HSPLorg/chromium/chrome/browser/tasks/tab_management/TabGridPanelViewBinder$ViewHolder;-><init>(Lorg/chromium/chrome/browser/tasks/tab_management/TabGroupUiToolbarView;Landroidx/recyclerview/widget/RecyclerView;Lorg/chromium/chrome/browser/tasks/tab_management/TabGridDialogView;)V
-Lorg/chromium/chrome/browser/tasks/tab_management/TabGridThumbnailView;
-HSPLorg/chromium/chrome/browser/tasks/tab_management/TabGridThumbnailView;-><init>(Landroid/content/Context;Landroid/util/AttributeSet;)V
+Lorg/chromium/chrome/browser/tasks/tab_management/TabThumbnailView;
+HSPLorg/chromium/chrome/browser/tasks/tab_management/TabThumbnailView;-><init>(Landroid/content/Context;Landroid/util/AttributeSet;)V
 Lorg/chromium/chrome/browser/tasks/tab_management/TabGroupUi;
 Lorg/chromium/chrome/browser/tasks/tab_management/TabGroupUiCoordinator;
 HSPLorg/chromium/chrome/browser/tasks/tab_management/TabGroupUiCoordinator;-><init>(Landroidx/appcompat/app/AppCompatActivity;Landroid/view/ViewGroup;Lorg/chromium/chrome/browser/tabmodel/IncognitoStateProvider;Lorg/chromium/components/browser_ui/widget/scrim/ScrimCoordinator;Lorg/chromium/base/supplier/ObservableSupplier;Lorg/chromium/components/browser_ui/bottomsheet/BottomSheetController;Lorg/chromium/chrome/browser/init/ActivityLifecycleDispatcherImpl;Lorg/chromium/base/supplier/Supplier;Lorg/chromium/chrome/browser/tabmodel/TabModelSelector;Lorg/chromium/chrome/browser/compositor/layouts/content/TabContentManager;Lorg/chromium/chrome/browser/compositor/CompositorViewHolder;Lorg/chromium/chrome/browser/toolbar/ToolbarManager$$ExternalSyntheticLambda14;Lorg/chromium/chrome/browser/tabmodel/TabCreatorManager;Lorg/chromium/base/supplier/Supplier;Lorg/chromium/base/supplier/OneshotSupplier;)V

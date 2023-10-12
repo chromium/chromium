@@ -37,7 +37,7 @@ import org.chromium.chrome.tab_ui.R;
  * * ShapeableImageView - however, this is inconsistent for hardware/software based draws.
  * * RoundedCornerImageView - however, this doesn't handle non-Bitmap Drawables well.
  */
-public class TabGridThumbnailView extends ImageView {
+public class TabThumbnailView extends ImageView {
     private static final boolean SUPPORTS_ANTI_ALIAS_CLIP =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
 
@@ -48,7 +48,7 @@ public class TabGridThumbnailView extends ImageView {
     private static Integer sVerticalOffsetPx;
 
     /**
-     * To prevent {@link TabGridThumbnailView#updateImage()} from running during inflation.
+     * To prevent {@link TabThumbnailView#updateImage()} from running during inflation.
      */
     private boolean mInitialized;
 
@@ -77,11 +77,11 @@ public class TabGridThumbnailView extends ImageView {
     // Realistically this will be set once and never again.
     private float[] mRadii;
 
-    public TabGridThumbnailView(Context context, AttributeSet attrs) {
+    public TabThumbnailView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public TabGridThumbnailView(Context context, AttributeSet attrs, int defStyle) {
+    public TabThumbnailView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
         if (sVerticalOffsetPx == null) {
@@ -98,15 +98,15 @@ public class TabGridThumbnailView extends ImageView {
         mBackgroundDrawable = new GradientDrawable();
 
         TypedArray a =
-                getContext().obtainStyledAttributes(attrs, R.styleable.TabGridThumbnailView, 0, 0);
+                getContext().obtainStyledAttributes(attrs, R.styleable.TabThumbnailView, 0, 0);
         int radiusTopStart =
-                a.getDimensionPixelSize(R.styleable.TabGridThumbnailView_cornerRadiusTopStart, 0);
+                a.getDimensionPixelSize(R.styleable.TabThumbnailView_cornerRadiusTopStart, 0);
         int radiusTopEnd =
-                a.getDimensionPixelSize(R.styleable.TabGridThumbnailView_cornerRadiusTopEnd, 0);
+                a.getDimensionPixelSize(R.styleable.TabThumbnailView_cornerRadiusTopEnd, 0);
         int radiusBottomStart = a.getDimensionPixelSize(
-                R.styleable.TabGridThumbnailView_cornerRadiusBottomStart, 0);
+                R.styleable.TabThumbnailView_cornerRadiusBottomStart, 0);
         int radiusBottomEnd =
-                a.getDimensionPixelSize(R.styleable.TabGridThumbnailView_cornerRadiusBottomEnd, 0);
+                a.getDimensionPixelSize(R.styleable.TabThumbnailView_cornerRadiusBottomEnd, 0);
         a.recycle();
 
         setRoundedCorners(radiusTopStart, radiusTopEnd, radiusBottomStart, radiusBottomEnd);

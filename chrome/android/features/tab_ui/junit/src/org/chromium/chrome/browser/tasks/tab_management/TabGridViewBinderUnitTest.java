@@ -57,8 +57,7 @@ public final class TabGridViewBinderUnitTest {
     private ViewLookupCachingFrameLayout mViewGroup;
     @Mock
     private TabListMediator.ThumbnailFetcher mFetcher;
-    @Mock
-    private TabGridThumbnailView mThumbnailView;
+    @Mock private TabThumbnailView mThumbnailView;
     @Mock
     private ImageView mFaviconView;
     @Captor

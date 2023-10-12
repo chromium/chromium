@@ -36,7 +36,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
-import org.chromium.chrome.browser.tasks.tab_management.TabGridThumbnailView;
+import org.chromium.chrome.browser.tasks.tab_management.TabThumbnailView;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
@@ -328,7 +328,7 @@ public class TabUtilsUnitTest {
         int mockImageSize = 100;
         int mockTargetSize = 50;
 
-        TabGridThumbnailView thumbnailView = Mockito.mock(TabGridThumbnailView.class);
+        TabThumbnailView thumbnailView = Mockito.mock(TabThumbnailView.class);
         Bitmap bitmap = Bitmap.createBitmap(mockImageSize, mockImageSize, Bitmap.Config.ARGB_8888);
         bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
         TabUtils.setBitmapAndUpdateImageMatrix(
@@ -346,7 +346,7 @@ public class TabUtilsUnitTest {
         int mockImageSize = 100;
         int mockTargetSize = 50;
 
-        TabGridThumbnailView thumbnailView = Mockito.mock(TabGridThumbnailView.class);
+        TabThumbnailView thumbnailView = Mockito.mock(TabThumbnailView.class);
         Bitmap bitmap = Bitmap.createBitmap(mockImageSize, mockImageSize, Bitmap.Config.ARGB_8888);
         bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
         TabUtils.setBitmapAndUpdateImageMatrix(
