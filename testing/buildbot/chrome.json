@@ -1190,6 +1190,7 @@
       },
       {
         "autotest_name": "tast.chrome-from-gcs",
+        "ci_only": true,
         "cros_board": "brya",
         "cros_img": "brya-release/R120-15642.0.0",
         "dut_pool": "chrome",
@@ -1205,6 +1206,7 @@
       },
       {
         "autotest_name": "tast.chrome-from-gcs",
+        "ci_only": true,
         "cros_board": "brya",
         "cros_img": "brya-release/R120-15642.0.0",
         "dut_pool": "chrome",
@@ -1418,6 +1420,7 @@
       },
       {
         "autotest_name": "tast.chrome-from-gcs",
+        "ci_only": true,
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-release/R120-15642.0.0",
         "experiment_percentage": 100,
@@ -1432,6 +1435,7 @@
       },
       {
         "autotest_name": "tast.chrome-from-gcs",
+        "ci_only": true,
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-release/R120-15642.0.0",
         "experiment_percentage": 100,
@@ -1581,6 +1585,7 @@
       },
       {
         "autotest_name": "tast.chrome-from-gcs",
+        "ci_only": true,
         "cros_board": "volteer",
         "cros_img": "volteer-release/R120-15642.0.0",
         "experiment_percentage": 100,
@@ -1595,6 +1600,7 @@
       },
       {
         "autotest_name": "tast.chrome-from-gcs",
+        "ci_only": true,
         "cros_board": "volteer",
         "cros_img": "volteer-release/R120-15642.0.0",
         "experiment_percentage": 100,

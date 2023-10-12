@@ -705,6 +705,7 @@ targets.legacy_basic_suite(
             # put the stub string here.
             tast_expr = "STUB_STRING_TO_RUN_TAST_TESTS",
             test_level_retries = 2,
+            ci_only = True,
             timeout_sec = 7200,
             experiment_percentage = 100,
             shards = 3,
@@ -723,6 +724,7 @@ targets.legacy_basic_suite(
             # put the stub string here.
             tast_expr = "STUB_STRING_TO_RUN_TAST_TESTS",
             test_level_retries = 1,
+            ci_only = True,
             timeout_sec = 7200,
             experiment_percentage = 100,
             shards = 2,
