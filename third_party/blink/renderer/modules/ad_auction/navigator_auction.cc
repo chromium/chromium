@@ -95,10 +95,13 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
     explicit AuctionHandleFunction(AuctionHandle* auction_handle);
 
     void Trace(Visitor* visitor) const override;
+    ScriptValue Call(ScriptState* script_state, ScriptValue value) final;
 
     AuctionHandle* auction_handle() { return auction_handle_.Get(); }
 
    private:
+    virtual ScriptValue CallImpl(ScriptState* script_state,
+                                 ScriptValue value) = 0;
     Member<AuctionHandle> auction_handle_;
   };
 
@@ -111,7 +114,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
                  const String& seller_name,
                  const char* field_name);
 
-    ScriptValue Call(ScriptState* script_state, ScriptValue value) override;
+    ScriptValue CallImpl(ScriptState* script_state, ScriptValue value) override;
 
    private:
     const mojom::blink::AuctionAdConfigAuctionIdPtr auction_id_;
@@ -127,7 +130,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
         mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
         const String& seller_name);
 
-    ScriptValue Call(ScriptState* script_state, ScriptValue value) override;
+    ScriptValue CallImpl(ScriptState* script_state, ScriptValue value) override;
 
    private:
     const mojom::blink::AuctionAdConfigAuctionIdPtr auction_id_;
@@ -143,7 +146,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
                           mojom::blink::AuctionAdConfigBuyerTimeoutField field,
                           const String& seller_name);
 
-    ScriptValue Call(ScriptState* script_state, ScriptValue value) override;
+    ScriptValue CallImpl(ScriptState* script_state, ScriptValue value) override;
 
    private:
     const mojom::blink::AuctionAdConfigAuctionIdPtr auction_id_;
@@ -158,7 +161,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
         mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
         const String& seller_name);
 
-    ScriptValue Call(ScriptState* script_state, ScriptValue value) override;
+    ScriptValue CallImpl(ScriptState* script_state, ScriptValue value) override;
 
    private:
     const mojom::blink::AuctionAdConfigAuctionIdPtr auction_id_;
@@ -175,7 +178,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
         const absl::optional<Vector<scoped_refptr<const SecurityOrigin>>>&
             interest_group_buyers);
 
-    ScriptValue Call(ScriptState* script_state, ScriptValue value) override;
+    ScriptValue CallImpl(ScriptState* script_state, ScriptValue value) override;
 
    private:
     const mojom::blink::AuctionAdConfigAuctionIdPtr auction_id_;
@@ -193,7 +196,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
         mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
         const String& seller_name);
 
-    ScriptValue Call(ScriptState* script_state, ScriptValue value) override;
+    ScriptValue CallImpl(ScriptState* script_state, ScriptValue value) override;
 
    private:
     const mojom::blink::AuctionAdConfigAuctionIdPtr auction_id_;
@@ -206,7 +209,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
                            mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
                            const String& seller_name);
 
-    ScriptValue Call(ScriptState* script_state, ScriptValue value) override;
+    ScriptValue CallImpl(ScriptState* script_state, ScriptValue value) override;
 
    private:
     const mojom::blink::AuctionAdConfigAuctionIdPtr auction_id_;
@@ -219,7 +222,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
                            mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
                            const String& seller_name);
 
-    ScriptValue Call(ScriptState* script_state, ScriptValue value) override;
+    ScriptValue CallImpl(ScriptState* script_state, ScriptValue value) override;
 
    private:
     const mojom::blink::AuctionAdConfigAuctionIdPtr auction_id_;
@@ -230,14 +233,14 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
    public:
     ResolveToConfigResolved(AuctionHandle* auction_handle);
 
-    ScriptValue Call(ScriptState* script_state, ScriptValue value) override;
+    ScriptValue CallImpl(ScriptState* script_state, ScriptValue value) override;
   };
 
   class Rejected : public AuctionHandleFunction {
    public:
     explicit Rejected(AuctionHandle* auction_handle);
 
-    ScriptValue Call(ScriptState*, ScriptValue) override;
+    ScriptValue CallImpl(ScriptState*, ScriptValue) override;
   };
 
   AuctionHandle(ExecutionContext* context,
@@ -2501,6 +2504,20 @@ void NavigatorAuction::AuctionHandle::AuctionHandleFunction::Trace(
   Callable::Trace(visitor);
 }
 
+ScriptValue NavigatorAuction::AuctionHandle::AuctionHandleFunction::Call(
+    ScriptState* script_state,
+    ScriptValue value) {
+  // We can end up here when the global associated with our `NavigatorAuction`
+  // is detached, at which point the normal thing to do would be not to do any
+  // work inside that frame, which includes Promise stuff (and associated type
+  // conversions). On top of it, `auction_handle_` will be null/unbound at that
+  // point, and most of our implementations need it to do something useful.
+  if (!script_state->ContextIsValid()) {
+    return ScriptValue();
+  }
+  return CallImpl(script_state, value);
+}
+
 NavigatorAuction::AuctionHandle::JsonResolved::JsonResolved(
     AuctionHandle* auction_handle,
     mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
@@ -2513,7 +2530,7 @@ NavigatorAuction::AuctionHandle::JsonResolved::JsonResolved(
       seller_name_(seller_name),
       field_name_(field_name) {}
 
-ScriptValue NavigatorAuction::AuctionHandle::JsonResolved::Call(
+ScriptValue NavigatorAuction::AuctionHandle::JsonResolved::CallImpl(
     ScriptState* script_state,
     ScriptValue value) {
   ExceptionState exception_state(script_state->GetIsolate(),
@@ -2555,7 +2572,7 @@ NavigatorAuction::AuctionHandle::PerBuyerSignalsResolved::
       auction_id_(std::move(auction_id)),
       seller_name_(seller_name) {}
 
-ScriptValue NavigatorAuction::AuctionHandle::PerBuyerSignalsResolved::Call(
+ScriptValue NavigatorAuction::AuctionHandle::PerBuyerSignalsResolved::CallImpl(
     ScriptState* script_state,
     ScriptValue value) {
   ExceptionState exception_state(script_state->GetIsolate(),
@@ -2591,7 +2608,7 @@ NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved::BuyerTimeoutsResolved(
       field_(field),
       seller_name_(seller_name) {}
 
-ScriptValue NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved::Call(
+ScriptValue NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved::CallImpl(
     ScriptState* script_state,
     ScriptValue value) {
   ExceptionState exception_state(script_state->GetIsolate(),
@@ -2629,7 +2646,7 @@ NavigatorAuction::AuctionHandle::BuyerCurrenciesResolved::
       auction_id_(std::move(auction_id)),
       seller_name_(seller_name) {}
 
-ScriptValue NavigatorAuction::AuctionHandle::BuyerCurrenciesResolved::Call(
+ScriptValue NavigatorAuction::AuctionHandle::BuyerCurrenciesResolved::CallImpl(
     ScriptState* script_state,
     ScriptValue value) {
   ExceptionState exception_state(script_state->GetIsolate(),
@@ -2673,7 +2690,7 @@ NavigatorAuction::AuctionHandle::DirectFromSellerSignalsResolved::
       interest_group_buyers_(interest_group_buyers) {}
 
 ScriptValue
-NavigatorAuction::AuctionHandle::DirectFromSellerSignalsResolved::Call(
+NavigatorAuction::AuctionHandle::DirectFromSellerSignalsResolved::CallImpl(
     ScriptState* script_state,
     ScriptValue value) {
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -2714,8 +2731,9 @@ NavigatorAuction::AuctionHandle::DirectFromSellerSignalsHeaderAdSlotResolved::
       seller_name_(seller_name) {}
 
 ScriptValue NavigatorAuction::AuctionHandle::
-    DirectFromSellerSignalsHeaderAdSlotResolved::Call(ScriptState* script_state,
-                                                      ScriptValue value) {
+    DirectFromSellerSignalsHeaderAdSlotResolved::CallImpl(
+        ScriptState* script_state,
+        ScriptValue value) {
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context) {
     return ScriptValue();
@@ -2754,7 +2772,7 @@ NavigatorAuction::AuctionHandle::ServerResponseResolved::ServerResponseResolved(
       auction_id_(std::move(auction_id)),
       seller_name_(seller_name) {}
 
-ScriptValue NavigatorAuction::AuctionHandle::ServerResponseResolved::Call(
+ScriptValue NavigatorAuction::AuctionHandle::ServerResponseResolved::CallImpl(
     ScriptState* script_state,
     ScriptValue value) {
   ExceptionState exception_state(script_state->GetIsolate(),
@@ -2783,7 +2801,7 @@ NavigatorAuction::AuctionHandle::AdditionalBidsResolved::AdditionalBidsResolved(
       auction_id_(std::move(auction_id)),
       seller_name_(seller_name) {}
 
-ScriptValue NavigatorAuction::AuctionHandle::AdditionalBidsResolved::Call(
+ScriptValue NavigatorAuction::AuctionHandle::AdditionalBidsResolved::CallImpl(
     ScriptState* script_state,
     ScriptValue value) {
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -2799,7 +2817,8 @@ ScriptValue NavigatorAuction::AuctionHandle::AdditionalBidsResolved::Call(
 NavigatorAuction::AuctionHandle::ResolveToConfigResolved::
     ResolveToConfigResolved(AuctionHandle* auction_handle)
     : AuctionHandleFunction(auction_handle) {}
-ScriptValue NavigatorAuction::AuctionHandle::ResolveToConfigResolved::Call(
+
+ScriptValue NavigatorAuction::AuctionHandle::ResolveToConfigResolved::CallImpl(
     ScriptState* script_state,
     ScriptValue value) {
   v8::Local<v8::Value> v8_value = value.V8Value();
@@ -2824,8 +2843,8 @@ NavigatorAuction::AuctionHandle::Rejected::Rejected(
     AuctionHandle* auction_handle)
     : AuctionHandleFunction(auction_handle) {}
 
-ScriptValue NavigatorAuction::AuctionHandle::Rejected::Call(ScriptState*,
-                                                            ScriptValue) {
+ScriptValue NavigatorAuction::AuctionHandle::Rejected::CallImpl(ScriptState*,
+                                                                ScriptValue) {
   // Abort the auction if any input promise rejects
   auction_handle()->Abort();
   return ScriptValue();

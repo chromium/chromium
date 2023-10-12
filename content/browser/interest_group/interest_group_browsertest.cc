@@ -18747,6 +18747,61 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, NotificationOrder) {
        {TestInterestGroupObserver::kLeave, test_origin, "cars"}});
 }
 
+// Make sure we don't crash when cross-frame promise resolution tries to notify
+// an auction in a detached frame.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DetachedFramePromiseResolve) {
+  constexpr char kTestOrigin[] = "a.test";
+  GURL test_url = https_server_->GetURL(kTestOrigin, "/page_with_iframe.html");
+  GURL ad_url = https_server_->GetURL(kTestOrigin, "/echo?render_cars");
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/url::Origin::Create(test_url),
+                    /*name=*/"cars")
+                    .SetBiddingUrl(https_server_->GetURL(
+                        kTestOrigin, "/interest_group/bidding_logic.js"))
+                    .SetAds(/*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}})
+                    .Build()));
+  FrameTreeNode* parent =
+      FrameTreeNode::From(web_contents()->GetPrimaryMainFrame());
+  ASSERT_GT(parent->child_count(), 0u);
+  RenderFrameHost* iframe = parent->child_at(0)->current_frame_host();
+
+  const char kFrameScriptTemplate[] = R"(
+    let auctionSignalsPromise = new Promise((resolve, reject) => {
+     window.resolveFunc = () => {
+       resolve({a: "foo"});
+     }
+    });
+
+    const auctionConfig = {
+      seller: $1,
+      decisionLogicUrl: $2,
+      interestGroupBuyers: [$1],
+      auctionSignals: auctionSignalsPromise
+    }
+    navigator.runAdAuction(auctionConfig);
+    "ok";
+  )";
+
+  const char kTopLevelScript[] = R"(
+    let frame = document.getElementById("test_iframe");
+    let resolveFn = frame.contentWindow.resolveFunc;
+    frame.remove();
+    resolveFn();
+  )";
+
+  EXPECT_EQ(
+      "ok",
+      EvalJs(iframe,
+             JsReplace(kFrameScriptTemplate, url::Origin::Create(test_url),
+                       https_server_->GetURL(
+                           kTestOrigin, "/interest_group/decision_logic.js"))));
+  EXPECT_EQ(nullptr, EvalJs(shell(), kTopLevelScript));
+}
+
 }  // namespace
 
 }  // namespace content
