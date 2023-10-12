@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.util.DisplayMetrics;
 import android.view.ContextThemeWrapper;
@@ -19,6 +20,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.asynclayoutinflater.appcompat.AsyncAppCompatFactory;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -42,6 +44,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.LayoutInflaterUtils;
+import org.chromium.ui.display.DisplayUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -327,8 +330,21 @@ public class WarmupManager {
             int toolbarId) {
         ThreadUtils.assertOnUiThread();
         if (mMainView != null && mToolbarContainerId == toolbarContainerId) return;
-        mMainView = inflateViewHierarchy(baseContext, toolbarContainerId, toolbarId);
+
+        Context context = applyContextOverrides(baseContext);
+        mMainView = inflateViewHierarchy(context, toolbarContainerId, toolbarId);
         mToolbarContainerId = toolbarContainerId;
+    }
+
+    @VisibleForTesting
+    static Context applyContextOverrides(Context baseContext) {
+        // Scale up the UI for the base Context on automotive
+        if (BuildInfo.getInstance().isAutomotive) {
+            Configuration config = new Configuration();
+            DisplayUtil.scaleUpConfigurationForAutomotive(baseContext, config);
+            return baseContext.createConfigurationContext(config);
+        }
+        return baseContext;
     }
 
     /**

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import android.content.Context;
 
@@ -32,6 +33,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.WarmupManager.SpareTabFinalStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -56,6 +58,8 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.ui.display.DisplayUtil;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -563,5 +567,37 @@ public class WarmupManagerTest {
 
         // RenderFrame should be created when the CREATE_NEW_TAB_INITIALIZE_RENDERER is enabled.
         Assert.assertTrue(webContents.getMainFrame().isRenderFrameLive());
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    public void testApplyContextOverridesOnNonAutomotive() {
+        Context baseContext = mContext.getApplicationContext();
+        Context updatedContext = WarmupManager.applyContextOverrides(baseContext);
+
+        assertEquals(
+                "The updated context should be the same as the original context.",
+                baseContext,
+                updatedContext);
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_AUTO})
+    public void testApplyContextOverridesOnAutomotive() {
+        Context baseContext = mContext.getApplicationContext();
+        Context updatedContext = WarmupManager.applyContextOverrides(baseContext);
+
+        assertNotEquals(
+                "The updated context should be different from the original context.",
+                baseContext,
+                updatedContext);
+        assertEquals(
+                "The updated context should have a scaled up densityDpi",
+                (int)
+                        (baseContext.getResources().getDisplayMetrics().densityDpi
+                                * DisplayUtil.getUiScalingFactorForAutomotive()),
+                updatedContext.getResources().getDisplayMetrics().densityDpi);
     }
 }
