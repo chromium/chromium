@@ -962,6 +962,11 @@ class PrefServiceSyncableChromeOsTest : public testing::Test {
         pref_notifier_(new PrefNotifierImpl),
         user_prefs_(base::MakeRefCounted<TestingPrefStore>()),
         standalone_browser_prefs_(base::MakeRefCounted<TestingPrefStore>()),
+        managed_prefs_(base::MakeRefCounted<TestingPrefStore>()),
+        supervised_user_prefs_(base::MakeRefCounted<TestingPrefStore>()),
+        extension_prefs_(base::MakeRefCounted<TestingPrefStore>()),
+        command_line_prefs_(base::MakeRefCounted<TestingPrefStore>()),
+        recommended_prefs_(base::MakeRefCounted<TestingPrefStore>()),
         client_(base::MakeRefCounted<TestPrefModelAssociatorClient>()) {}
 
   void CreatePrefService() {
@@ -983,9 +988,10 @@ class PrefServiceSyncableChromeOsTest : public testing::Test {
     prefs_ = std::make_unique<PrefServiceSyncable>(
         std::unique_ptr<PrefNotifierImpl>(pref_notifier_),
         std::make_unique<PrefValueStore>(
-            new TestingPrefStore, new TestingPrefStore, new TestingPrefStore,
-            new TestingPrefStore, new TestingPrefStore, user_prefs_.get(),
-            standalone_browser_prefs_.get(), pref_registry_->defaults().get(),
+            managed_prefs_.get(), supervised_user_prefs_.get(),
+            extension_prefs_.get(), standalone_browser_prefs_.get(),
+            command_line_prefs_.get(), user_prefs_.get(),
+            recommended_prefs_.get(), pref_registry_->defaults().get(),
             pref_notifier_),
         user_prefs_, standalone_browser_prefs_, pref_registry_, client_,
         /*read_error_callback=*/base::DoNothing(),
@@ -1038,6 +1044,11 @@ class PrefServiceSyncableChromeOsTest : public testing::Test {
       pref_notifier_;  // Owned by |prefs_|.
   scoped_refptr<TestingPrefStore> user_prefs_;
   scoped_refptr<TestingPrefStore> standalone_browser_prefs_;
+  scoped_refptr<TestingPrefStore> managed_prefs_;
+  scoped_refptr<TestingPrefStore> supervised_user_prefs_;
+  scoped_refptr<TestingPrefStore> extension_prefs_;
+  scoped_refptr<TestingPrefStore> command_line_prefs_;
+  scoped_refptr<TestingPrefStore> recommended_prefs_;
   scoped_refptr<TestPrefModelAssociatorClient> client_;
   std::unique_ptr<PrefServiceSyncable> prefs_;
 };
@@ -1292,6 +1303,51 @@ TEST_F(PrefServiceSyncableChromeOsTest, SyncedPrefObserver_EmptyCloud) {
   EXPECT_EQ(0, observer.sync_started_count_);
 
   prefs_->RemoveSyncedPrefObserver(kOsPrefName, &observer);
+}
+
+TEST_F(PrefServiceSyncableChromeOsTest,
+       StandaloneBrowserPrefsNotLeakedInIncognito) {
+  CreatePrefService();
+
+  prefs_->SetStandaloneBrowserPref(kOsPrefName, base::Value("test_value"));
+
+  scoped_refptr<TestingPrefStore> incognito_extension_pref_store =
+      base::MakeRefCounted<TestingPrefStore>();
+
+  std::unique_ptr<PrefServiceSyncable> incognito_prefs =
+      prefs_->CreateIncognitoPrefService(incognito_extension_pref_store.get(),
+                                         /*persistent_pref_names=*/{});
+
+  // Verify that the primary profile has the `kOsPrefName` pref set.
+  {
+    const PrefService::Preference* main_profile_pref =
+        prefs_->FindPreference(kOsPrefName);
+    ASSERT_TRUE(main_profile_pref);
+    EXPECT_TRUE(main_profile_pref->IsStandaloneBrowserControlled());
+    EXPECT_EQ(*main_profile_pref->GetValue(), base::Value("test_value"));
+  }
+
+  // Verify that the incognito profile does not have the `kOsPrefName` pref set.
+  {
+    const PrefService::Preference* incognito_pref =
+        incognito_prefs->FindPreference(kOsPrefName);
+    ASSERT_TRUE(incognito_pref);
+    EXPECT_FALSE(incognito_pref->IsStandaloneBrowserControlled());
+    EXPECT_EQ(*incognito_pref->GetValue(), base::Value(""));
+  }
+
+  // Ensure this does not crash if it's accidentally called.
+  incognito_prefs->SetStandaloneBrowserPref(kOsPrefName,
+                                            base::Value("test_value"));
+  // Verify that standalone browser settings cannot be configured by the
+  // Incognito profile.
+  {
+    const PrefService::Preference* incognito_pref =
+        incognito_prefs->FindPreference(kOsPrefName);
+    ASSERT_TRUE(incognito_pref);
+    EXPECT_FALSE(incognito_pref->IsStandaloneBrowserControlled());
+    EXPECT_EQ(*incognito_pref->GetValue(), base::Value(""));
+  }
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
