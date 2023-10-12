@@ -15,6 +15,11 @@
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
 #import "ios/web/public/web_state.h"
 
+using PaymentsSuggestionBottomSheetExitReason::kDismissal;
+using PaymentsSuggestionBottomSheetExitReason::kShowPaymentDetails;
+using PaymentsSuggestionBottomSheetExitReason::kShowPaymentMethods;
+using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
+
 @interface PaymentsSuggestionBottomSheetCoordinator () {
   // Information regarding the triggering form for this bottom sheet.
   autofill::FormActivityParams _params;
@@ -101,6 +106,7 @@
 
 - (void)displayPaymentMethods {
   _dismissing = YES;
+  [self.mediator logExitReason:kShowPaymentMethods];
   __weak __typeof(self) weakSelf = self;
   [self.baseViewController.presentedViewController
       dismissViewControllerAnimated:NO
@@ -118,6 +124,7 @@
   autofill::CreditCard* creditCard =
       [self.mediator creditCardForIdentifier:creditCardIdentifier];
   if (creditCard) {
+    [self.mediator logExitReason:kShowPaymentDetails];
     __weak __typeof(self) weakSelf = self;
     [self.baseViewController.presentedViewController
         dismissViewControllerAnimated:NO
@@ -132,6 +139,7 @@
 
 - (void)primaryButtonTapped:(NSString*)backendIdentifier {
   _dismissing = YES;
+  [self.mediator logExitReason:kUsePaymentsSuggestion];
   __weak __typeof(self) weakSelf = self;
   [self.viewController
       dismissViewControllerAnimated:NO
@@ -152,6 +160,7 @@
     return;
   }
 
+  [self.mediator logExitReason:kDismissal];
   [self.mediator disconnect];
   [_browserCoordinatorCommandsHandler dismissPaymentSuggestions];
 }
