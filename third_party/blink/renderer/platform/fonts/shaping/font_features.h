@@ -43,8 +43,13 @@ class PLATFORM_EXPORT FontFeatures {
   }
   void Shrink(wtf_size_t size) { features_.Shrink(size); }
 
+  using FeatureArray = Vector<hb_feature_t, 6>;
+  using const_iterator = FeatureArray::const_iterator;
+  const_iterator begin() const { return features_.begin(); }
+  const_iterator end() const { return features_.end(); }
+
  private:
-  Vector<hb_feature_t, 6> features_;
+  FeatureArray features_;
 };
 
 }  // namespace blink

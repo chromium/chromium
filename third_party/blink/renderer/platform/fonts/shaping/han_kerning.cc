@@ -16,6 +16,23 @@ namespace blink {
 
 namespace {
 
+HashSet<uint32_t> ExclusiveFeatures() {
+  // https://learn.microsoft.com/en-us/typography/opentype/spec/features_ae#chws
+  // https://learn.microsoft.com/en-us/typography/opentype/spec/features_uz#vchw
+  return HashSet<uint32_t>{
+      HB_TAG('h', 'a', 'l', 't'), HB_TAG('h', 'w', 'i', 'd'),
+      HB_TAG('p', 'a', 'l', 't'), HB_TAG('p', 'w', 'i', 'd'),
+      HB_TAG('q', 'w', 'i', 'd'), HB_TAG('t', 'w', 'i', 'd'),
+      HB_TAG('v', 'a', 'l', 't'), HB_TAG('v', 'h', 'a', 'l'),
+      HB_TAG('v', 'p', 'a', 'l'),
+  };
+}
+
+bool IsExclusiveFeature(uint32_t tag) {
+  DEFINE_STATIC_LOCAL(HashSet<uint32_t>, tags, (ExclusiveFeatures()));
+  return tags.Contains(tag);
+}
+
 // Get `CharType` from the glyph bounding box.
 HanKerning::CharType GetType(const SkRect& bound,
                              float em,
@@ -149,15 +166,20 @@ void HanKerning::Compute(const String& text,
                          Options options,
                          FontFeatures* features) {
   DCHECK(!features_);
-  if (UNLIKELY(font_description.GetTextSpacingTrim() !=
-               TextSpacingTrim::kSpaceFirst)) {
-    return;
-  }
   const LayoutLocale& locale = font_description.LocaleOrDefault();
   const FontData& font_data =
       font.HanKerningData(locale, options.is_horizontal);
   if (!font_data.has_alternate_spacing) {
     return;
+  }
+  if (UNLIKELY(font_description.GetTextSpacingTrim() !=
+               TextSpacingTrim::kSpaceFirst)) {
+    return;
+  }
+  for (const hb_feature_t& feature : *features) {
+    if (feature.value && IsExclusiveFeature(feature.tag)) {
+      return;
+    }
   }
 
   // Compute for the first character.
