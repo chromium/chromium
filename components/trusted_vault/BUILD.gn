@@ -14,6 +14,7 @@ static_library("trusted_vault") {
     "//base",
     "//components/keyed_service/core",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (!is_android) {
     sources += [
