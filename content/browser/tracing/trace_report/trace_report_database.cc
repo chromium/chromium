@@ -229,6 +229,30 @@ bool TraceReportDatabase::UploadComplete(const base::Token& uuid,
   return update_local_trace.Run();
 }
 
+bool TraceReportDatabase::UploadSkipped(const base::Token& uuid,
+                                        SkipUploadReason skip_reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!is_initialized()) {
+    return false;
+  }
+
+  sql::Statement update_local_trace(
+      database_.GetCachedStatement(SQL_FROM_HERE,
+                                   R"sql(UPDATE local_traces
+                                   SET state=?, skip_reason=?
+                                   WHERE uuid=?)sql"));
+
+  CHECK(update_local_trace.is_valid());
+
+  update_local_trace.BindInt(0,
+                             static_cast<int>(ReportUploadState::kNotUploaded));
+  update_local_trace.BindInt(1, static_cast<int>(skip_reason));
+  update_local_trace.BindString(2, uuid.ToString());
+
+  return update_local_trace.Run();
+}
+
 absl::optional<std::string> TraceReportDatabase::GetTraceContent(
     const base::Token& uuid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -350,6 +374,28 @@ bool TraceReportDatabase::DeleteTracesOlderThan(base::TimeDelta days_old) {
   return delete_traces_older_than.Run();
 }
 
+bool TraceReportDatabase::AllPendingUploadSkipped(
+    SkipUploadReason skip_reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_initialized()) {
+    return false;
+  }
+
+  sql::Statement statement(
+      database_.GetCachedStatement(SQL_FROM_HERE,
+                                   R"sql(UPDATE local_traces
+                                   SET state=?, skip_reason=?
+                                   WHERE state=?)sql"));
+
+  statement.BindInt(0, static_cast<int>(ReportUploadState::kNotUploaded));
+  statement.BindInt(1, static_cast<int>(skip_reason));
+  statement.BindInt(2, static_cast<int>(ReportUploadState::kPending));
+
+  CHECK(statement.is_valid());
+
+  return statement.Run();
+}
+
 bool TraceReportDatabase::EnsureTableCreated() {
   DCHECK(database_.is_open());
 
@@ -438,9 +484,11 @@ absl::optional<size_t> TraceReportDatabase::UploadCountSince(
   sql::Statement statement(database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
       SELECT COUNT(uuid) FROM local_traces
       WHERE scenario_name = ? AND creation_time > ?
+      AND skip_reason=?
     )sql"));
   statement.BindString(0, scenario_name);
   statement.BindTime(1, since);
+  statement.BindInt(2, static_cast<int>(SkipUploadReason::kNoSkip));
   CHECK(statement.is_valid());
 
   while (statement.Step()) {

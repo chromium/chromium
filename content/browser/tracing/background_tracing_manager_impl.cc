@@ -86,6 +86,9 @@ void OpenDatabaseOnDatabaseTaskRunner(
   absl::optional<NewTraceReport> report_to_upload;
   if (base::FeatureList::IsEnabled(kBackgroundTracingDatabase)) {
     report_to_upload = database->GetNextReportPendingUpload();
+  } else {
+    // Traces pending upload from previous sessions have timed out.
+    database->AllPendingUploadSkipped(SkipUploadReason::kUploadTimedOut);
   }
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(on_database_created),
@@ -657,6 +660,14 @@ void BackgroundTracingManagerImpl::GetTraceToUpload(
     std::move(receive_callback)
         .Run(std::move(trace_report_to_upload_->trace_content),
              std::move(trace_report_to_upload_->system_profile));
+    database_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](TraceReportDatabase* trace_database, const base::Token& uuid) {
+              trace_database->UploadComplete(uuid, base::Time::Now());
+            },
+            base::Unretained(trace_database_.get()),
+            trace_report_to_upload_->uuid));
     OnFinalizeComplete(absl::nullopt, true);
     return;
   }

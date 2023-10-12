@@ -25,6 +25,7 @@ enum SkipUploadReason {
   kSizeLimitExceeded = 1,
   kNotAnonymized = 2,
   kScenarioQuotaExceeded = 3,
+  kUploadTimedOut = 4,
 };
 
 // Information about a single trace to display

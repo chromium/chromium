@@ -52,6 +52,8 @@ EnumTraits<SkipUploadReason, content::SkipUploadReason>::ToMojom(
       return SkipUploadReason::kNotAnonymized;
     case content::SkipUploadReason::kScenarioQuotaExceeded:
       return SkipUploadReason::kScenarioQuotaExceeded;
+    case content::SkipUploadReason::kUploadTimedOut:
+      return SkipUploadReason::kUploadTimedOut;
   }
 }
 
@@ -71,7 +73,11 @@ bool EnumTraits<SkipUploadReason, content::SkipUploadReason>::FromMojom(
     case SkipUploadReason::kScenarioQuotaExceeded:
       *output = content::SkipUploadReason::kScenarioQuotaExceeded;
       return true;
+    case SkipUploadReason::kUploadTimedOut:
+      *output = content::SkipUploadReason::kUploadTimedOut;
+      return true;
   }
+  return false;
 }
 
 }  // namespace mojo

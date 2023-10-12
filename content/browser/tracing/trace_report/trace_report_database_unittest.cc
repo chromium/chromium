@@ -179,6 +179,24 @@ TEST_F(TraceReportDatabaseTest, DeleteTracesOlderThan) {
   EXPECT_EQ(trace_report_.GetAllReports().size(), 5u);
 }
 
+TEST_F(TraceReportDatabaseTest, AllPendingUploadSkipped) {
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
+
+  ASSERT_TRUE(trace_report_.AddTrace(MakeNewTraceReport()));
+  ASSERT_TRUE(trace_report_.AddTrace(MakeNewTraceReport()));
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 2u);
+
+  ASSERT_TRUE(
+      trace_report_.AllPendingUploadSkipped(SkipUploadReason::kUploadTimedOut));
+
+  auto all_traces = trace_report_.GetAllReports();
+  EXPECT_EQ(all_traces.size(), 2u);
+  EXPECT_EQ(all_traces[0].upload_state, ReportUploadState::kNotUploaded);
+  EXPECT_EQ(all_traces[0].skip_reason, SkipUploadReason::kUploadTimedOut);
+  EXPECT_EQ(all_traces[1].upload_state, ReportUploadState::kNotUploaded);
+  EXPECT_EQ(all_traces[1].skip_reason, SkipUploadReason::kUploadTimedOut);
+}
+
 TEST_F(TraceReportDatabaseTest, UserRequestedUpload) {
   EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 
@@ -232,6 +250,25 @@ TEST_F(TraceReportDatabaseTest, UploadComplete) {
   EXPECT_EQ(all_traces[0].upload_time, uploaded_time);
 
   EXPECT_FALSE(trace_report_.GetTraceContent(report_uuid));
+}
+
+TEST_F(TraceReportDatabaseTest, UploadSkipped) {
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
+
+  // Create Report for the local traces database.
+  NewTraceReport new_report = MakeNewTraceReport();
+  const auto report_uuid = new_report.uuid;
+
+  ASSERT_TRUE(trace_report_.AddTrace(new_report));
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 1u);
+
+  ASSERT_TRUE(trace_report_.UploadSkipped(report_uuid,
+                                          SkipUploadReason::kUploadTimedOut));
+
+  auto all_traces = trace_report_.GetAllReports();
+  EXPECT_EQ(all_traces.size(), 1u);
+  EXPECT_EQ(all_traces[0].upload_state, ReportUploadState::kNotUploaded);
+  EXPECT_EQ(all_traces[0].skip_reason, SkipUploadReason::kUploadTimedOut);
 }
 
 TEST_F(TraceReportDatabaseTest, GetNextReportPendingUpload) {

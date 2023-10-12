@@ -32,6 +32,7 @@ enum class SkipUploadReason {
   kSizeLimitExceeded = 1,
   kNotAnonymized = 2,
   kScenarioQuotaExceeded = 3,
+  kUploadTimedOut = 4,
 };
 
 // BaseTraceReport contains common data used to create and display a trace
@@ -133,9 +134,12 @@ class CONTENT_EXPORT TraceReportDatabase {
   // Delete all traces older than |age| from today.
   bool DeleteTracesOlderThan(const base::TimeDelta age);
 
+  // Mark all reports that are pending upload as skipped with `skip_reason`.
+  bool AllPendingUploadSkipped(SkipUploadReason skip_reason);
+
   bool UserRequestedUpload(const base::Token& uuid);
   bool UploadComplete(const base::Token& uuid, base::Time time);
-  bool UploadSkipped(const base::Token& uuid);
+  bool UploadSkipped(const base::Token& uuid, SkipUploadReason skip_reason);
 
   // Returns the serialized trace content string if any.
   absl::optional<std::string> GetTraceContent(const base::Token& uuid);
