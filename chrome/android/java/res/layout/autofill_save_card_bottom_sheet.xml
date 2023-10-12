@@ -17,7 +17,8 @@ found in the LICENSE file.
       android:layout_height="wrap_content"
       android:layout_gravity="center_horizontal"
       android:layout_marginTop="@dimen/autofill_bottom_sheet_drag_handlebar_spacing_top"
-      android:src="@drawable/drag_handlebar" />
+      android:src="@drawable/drag_handlebar"
+      app:tint="@macro/drag_handlebar_color" />
 
   <ScrollView
       android:id="@+id/autofill_save_card_scroll_view"
