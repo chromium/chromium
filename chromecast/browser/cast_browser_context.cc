@@ -29,19 +29,8 @@ namespace {
 const void* const kDownloadManagerDelegateKey = &kDownloadManagerDelegateKey;
 }  // namespace
 
-class CastBrowserContext::CastResourceContext
-    : public content::ResourceContext {
- public:
-  CastResourceContext() {}
-
-  CastResourceContext(const CastResourceContext&) = delete;
-  CastResourceContext& operator=(const CastResourceContext&) = delete;
-
-  ~CastResourceContext() override {}
-};
-
 CastBrowserContext::CastBrowserContext()
-    : resource_context_(new CastResourceContext) {
+    : resource_context_(new content::ResourceContext()) {
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kRegular);
   InitWhileIOAllowed();

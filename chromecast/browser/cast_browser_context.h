@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/resource_context.h"
 
 namespace chromecast {
 namespace shell {
@@ -52,14 +53,12 @@ class CastBrowserContext final : public content::BrowserContext {
   GetReduceAcceptLanguageControllerDelegate() override;
 
  private:
-  class CastResourceContext;
-
   // Performs initialization of the CastBrowserContext while IO is still
   // allowed on the current thread.
   void InitWhileIOAllowed();
 
   base::FilePath path_;
-  std::unique_ptr<CastResourceContext> resource_context_;
+  std::unique_ptr<content::ResourceContext> resource_context_;
   std::unique_ptr<content::PermissionControllerDelegate> permission_manager_;
   std::unique_ptr<SimpleFactoryKey> simple_factory_key_;
 };
