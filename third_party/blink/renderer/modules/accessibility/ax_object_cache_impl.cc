@@ -1834,8 +1834,7 @@ void AXObjectCacheImpl::RemoveSubtreeWhenSafe(Node* node, bool remove_root) {
 
 void AXObjectCacheImpl::RemoveSubtreeWithFlatTraversal(const Node* node,
                                                        bool remove_root,
-                                                       bool notify_parent,
-                                                       bool only_layout) {
+                                                       bool notify_parent) {
   DCHECK(node);
   // Previously used DCHECK(AXObject::CanSafelyUseFlatTreeTraversalNow()) but
   // failed because document had pending slot assignment in
@@ -1853,7 +1852,7 @@ void AXObjectCacheImpl::RemoveSubtreeWithFlatTraversal(const Node* node,
          child_node;
          child_node = LayoutTreeBuilderTraversal::NextSibling(*child_node)) {
       RemoveSubtreeWithFlatTraversal(child_node, /* remove_root */ true,
-                                     /* notify_parent */ false, only_layout);
+                                     /* notify_parent */ false);
     }
   }
 
@@ -1875,7 +1874,7 @@ void AXObjectCacheImpl::RemoveSubtreeWithFlatTraversal(const Node* node,
       DCHECK(ax_included_child->GetNode() != node);
       RemoveSubtreeWithFlatTraversal(ax_included_child->GetNode(),
                                      /* remove_root */ true,
-                                     /* notify_parent */ false, only_layout);
+                                     /* notify_parent */ false);
     } else {
       RemoveIncludedSubtree(ax_included_child, /* remove_root */ true);
     }
@@ -1887,9 +1886,7 @@ void AXObjectCacheImpl::RemoveSubtreeWithFlatTraversal(const Node* node,
   AXObject* parent_to_notify =
       notify_parent ? object->CachedParentObject() : nullptr;
   if (remove_root) {
-    if (!only_layout || IsA<AXLayoutObject>(object)) {
-      Remove(object, /* notify_parent */ false);
-    }
+    Remove(object, /* notify_parent */ false);
   }
   if (parent_to_notify) {
     if (processing_deferred_events_) {
@@ -2275,17 +2272,11 @@ void AXObjectCacheImpl::SubtreeIsAttached(Node* node) {
     return;
   }
 
-  // If we're removing layout from a subtree, we only need to remove
-  // AXLayoutObjects. This helps avoid duplicate menu hide events,  e.g.
-  // in DumpAccessibilityEventsTest.AccessibilityEventsMenubarShowHideMenus.
-  bool only_layout = IsA<AXLayoutObject>(obj) && !node->GetLayoutObject();
-
   // Note that technically we do not need to remove the root node for a
   // display-locking (content-visibility) change, since it is only the
   // descendants that gain or lose their objects, but its easier to be
   // consistent here.
-  RemoveSubtreeWithFlatTraversal(node, /* remove_root */ true,
-                                 /* notify_parent */ true, only_layout);
+  RemoveSubtreeWithFlatTraversal(node);
 }
 
 void AXObjectCacheImpl::NodeIsAttached(Node* node) {
@@ -2317,8 +2308,7 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
     if (AXObject* obj = SafeGet(node); obj && !IsA<AXLayoutObject>(obj)) {
       // Had a previous AXObject, but wasn't an AXLayoutObject, even though
       // there is a layout object available.
-      RemoveSubtreeWithFlatTraversal(node, /* remove_root */ true,
-                                     /* notify_parent */ true);
+      RemoveSubtreeWithFlatTraversal(node);
       return;
     }
   }
