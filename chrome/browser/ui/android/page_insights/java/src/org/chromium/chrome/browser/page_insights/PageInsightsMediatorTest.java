@@ -228,7 +228,7 @@ public class PageInsightsMediatorTest {
 
     @Test
     @MediumTest
-    public void testAutoTrigger_doesNotTriggerImmediately() throws Exception {
+    public void testAutoTrigger_doesNotTriggerImmediately() {
         createMediator(SHORT_TRIGGER_DELAY_MS);
         mMediator.onLoadStopped(mTab, true);
         mBrowserControlsStateProviderObserver.getValue().onControlsOffsetChanged(0, 70, 0, 0, true);
@@ -238,7 +238,7 @@ public class PageInsightsMediatorTest {
 
     @Test
     @MediumTest
-    public void testAutoTrigger_notEnoughDuration_doesNotTrigger() throws Exception {
+    public void testAutoTrigger_notEnoughDuration_doesNotTrigger() {
         createMediator(SHORT_TRIGGER_DELAY_MS);
         mMediator.onLoadStopped(mTab, true);
         mShadowLooper.idleFor(250, TimeUnit.MILLISECONDS);
@@ -249,7 +249,7 @@ public class PageInsightsMediatorTest {
 
     @Test
     @MediumTest
-    public void testAutoTrigger_enoughDuration_showsBottomSheet() throws Exception {
+    public void testAutoTrigger_enoughDuration_showsBottomSheet() {
         createMediator(SHORT_TRIGGER_DELAY_MS);
         View feedView = new View(ContextUtils.getApplicationContext());
         when(mSurfaceRenderer.render(eq(TEST_FEED_ELEMENTS_OUTPUT), any())).thenReturn(feedView);
@@ -404,7 +404,7 @@ public class PageInsightsMediatorTest {
 
     @Test
     @MediumTest
-    public void actionHandler_navigateToPageInsightsPage_childPageOpened() throws Exception {
+    public void actionHandler_navigateToPageInsightsPage_childPageOpened() {
         createMediator();
         View childView = new View(ContextUtils.getApplicationContext());
         when(mSurfaceRenderer.render(
@@ -438,7 +438,7 @@ public class PageInsightsMediatorTest {
 
     @Test
     @MediumTest
-    public void actionHandler_openUrl_opensUrl() throws Exception {
+    public void actionHandler_openUrl_opensUrl() {
         createMediator();
         when(mSurfaceRenderer.render(
                      eq(TEST_FEED_ELEMENTS_OUTPUT), mSurfaceRendererContextValues.capture()))
@@ -456,7 +456,7 @@ public class PageInsightsMediatorTest {
 
     @Test
     @MediumTest
-    public void actionHandler_share_shares() throws Exception {
+    public void actionHandler_share_shares() {
         createMediator();
         when(mSurfaceRenderer.render(
                      eq(TEST_FEED_ELEMENTS_OUTPUT), mSurfaceRendererContextValues.capture()))
@@ -476,7 +476,7 @@ public class PageInsightsMediatorTest {
 
     @Test
     @MediumTest
-    public void setupAutoTriggerForDelayedInstantation_beforeTabLoading() throws Exception {
+    public void setupAutoTriggerForDelayedInstantation_beforeTabLoading() {
         createMediator();
         verify(mMockTabProvider).addObserver(mTabObserver.capture());
 
@@ -494,7 +494,7 @@ public class PageInsightsMediatorTest {
 
     @Test
     @MediumTest
-    public void setupAutoTriggerForDelayedInstantation_afterTabLoading() throws Exception {
+    public void setupAutoTriggerForDelayedInstantation_afterTabLoading() {
         // PIH was instantiated 20 seconds after tab loading completes.
         long timeAfterLoading = 20 * DateUtils.SECOND_IN_MILLIS;
         Supplier<Long> fakeTimer = Mockito.mock(Supplier.class);
@@ -684,6 +684,91 @@ public class PageInsightsMediatorTest {
 
         // DISMISS_PEEK is recorded
         mMediator.onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.SWIPE);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void
+            navigateToPageInsightsPage_childPageOpened_recordsHistogram_userInteractsWithChildPage() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "CustomTabs.PageInsights.Event",
+                                PageInsightsEvent.USER_INVOKES_PIH,
+                                PageInsightsEvent.TAP_XSURFACE_VIEW_CHILD_PAGE)
+                        .build();
+
+        createMediator();
+        View childView = new View(ContextUtils.getApplicationContext());
+        when(mSurfaceRenderer.render(
+                        eq(TEST_FEED_ELEMENTS_OUTPUT), mSurfaceRendererContextValues.capture()))
+                .thenReturn(new View(ContextUtils.getApplicationContext()));
+        when(mSurfaceRenderer.render(eq(TEST_CHILD_ELEMENTS_OUTPUT), any())).thenReturn(childView);
+        mMediator.launch();
+
+        ((PageInsightsActionsHandler)
+                        mSurfaceRendererContextValues
+                                .getValue()
+                                .get(PageInsightsActionsHandler.KEY))
+                .navigateToPageInsightsPage(1);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void
+            navigateToPageInsightsPage_openUrl_recordsHistogram_userInteractsWithSurfaceElement() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "CustomTabs.PageInsights.Event",
+                                PageInsightsEvent.USER_INVOKES_PIH,
+                                PageInsightsEvent.TAP_XSURFACE_VIEW_URL)
+                        .build();
+
+        createMediator();
+        when(mSurfaceRenderer.render(
+                        eq(TEST_FEED_ELEMENTS_OUTPUT), mSurfaceRendererContextValues.capture()))
+                .thenReturn(new View(ContextUtils.getApplicationContext()));
+        mMediator.launch();
+
+        String url = "https://www.realwebsite.com/";
+        ((PageInsightsActionsHandler)
+                        mSurfaceRendererContextValues
+                                .getValue()
+                                .get(PageInsightsActionsHandler.KEY))
+                .openUrl(url, /* doesRequestSpecifySameSession= */ false);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void navigateToPageInsightsPage_share_recordsHistogram_userInteractsWithShare() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "CustomTabs.PageInsights.Event",
+                                PageInsightsEvent.USER_INVOKES_PIH,
+                                PageInsightsEvent.TAP_XSURFACE_VIEW_SHARE)
+                        .build();
+
+        createMediator();
+        when(mSurfaceRenderer.render(
+                        eq(TEST_FEED_ELEMENTS_OUTPUT), mSurfaceRendererContextValues.capture()))
+                .thenReturn(new View(ContextUtils.getApplicationContext()));
+        mMediator.launch();
+
+        String url = "https://www.realwebsite.com/";
+        String title = "Real Website TM";
+        ((PageInsightsActionsHandler)
+                        mSurfaceRendererContextValues
+                                .getValue()
+                                .get(PageInsightsActionsHandler.KEY))
+                .share(url, title);
 
         histogramWatcher.assertExpected();
     }

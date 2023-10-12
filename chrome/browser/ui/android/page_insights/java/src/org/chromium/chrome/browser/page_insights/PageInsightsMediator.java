@@ -129,10 +129,18 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({PageInsightsEvent.USER_INVOKES_PIH, PageInsightsEvent.AUTO_PEEK_TRIGGERED,
-            PageInsightsEvent.STATE_PEEK, PageInsightsEvent.STATE_EXPANDED,
-            PageInsightsEvent.DISMISS_PEEK, PageInsightsEvent.DISMISS_EXPANDED,
-            PageInsightsEvent.TAP_XSURFACE_VIEW, PageInsightsEvent.COUNT})
+    @IntDef({
+        PageInsightsEvent.USER_INVOKES_PIH,
+        PageInsightsEvent.AUTO_PEEK_TRIGGERED,
+        PageInsightsEvent.STATE_PEEK,
+        PageInsightsEvent.STATE_EXPANDED,
+        PageInsightsEvent.DISMISS_PEEK,
+        PageInsightsEvent.DISMISS_EXPANDED,
+        PageInsightsEvent.TAP_XSURFACE_VIEW_URL,
+        PageInsightsEvent.TAP_XSURFACE_VIEW_SHARE,
+        PageInsightsEvent.TAP_XSURFACE_VIEW_CHILD_PAGE,
+        PageInsightsEvent.COUNT
+    })
     @interface PageInsightsEvent {
         int USER_INVOKES_PIH = 0;
         int AUTO_PEEK_TRIGGERED = 1;
@@ -140,10 +148,13 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         int STATE_EXPANDED = 3;
         int DISMISS_PEEK = 4;
         int DISMISS_EXPANDED = 5;
-        // User interacts with a xSurface in PIH
-        int TAP_XSURFACE_VIEW = 6;
-        // Number of elements in the enum
-        int COUNT = 7;
+        // User interacts with a xSurface card with URL in PIH
+        int TAP_XSURFACE_VIEW_URL = 6;
+        // User interacts with a xSurface share functionality in PIH
+        int TAP_XSURFACE_VIEW_SHARE = 7;
+        // User interacts with a xSurface child page in PIH
+        int TAP_XSURFACE_VIEW_CHILD_PAGE = 8;
+        int COUNT = 9;
     }
 
     private static void logPageInsightsEvent(@PageInsightsEvent int event) {
@@ -209,8 +220,12 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mIsPageInsightsHubEnabled = isPageInsightsHubEnabled;
         mPageInsightsDataLoader = new PageInsightsDataLoader();
         mSurfaceRendererContextValues =
-                PageInsightsActionHandlerImpl.createContextValues(new PageInsightsActionHandlerImpl(
-                        tabObservable, shareDelegateSupplier, this::changeToChildPage));
+                PageInsightsActionHandlerImpl.createContextValues(
+                        new PageInsightsActionHandlerImpl(
+                                tabObservable,
+                                shareDelegateSupplier,
+                                this::changeToChildPage,
+                                PageInsightsMediator::logPageInsightsEvent));
         mAutoTriggerDelayMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END,
                 DEFAULT_TRIGGER_DELAY_MS);

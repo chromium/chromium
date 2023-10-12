@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.page_insights;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.page_insights.PageInsightsMediator.PageInsightsEvent;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
@@ -20,6 +21,7 @@ class PageInsightsActionHandlerImpl implements PageInsightsActionsHandler {
     private final Supplier<Tab> mTabSupplier;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final ChildPageNavigator mChildPageNavigator;
+    private final PageInsightsEventLogger mPageInsightsEventLogger;
 
     static interface ChildPageNavigator {
         void navigateToChildPage(int pageId);
@@ -33,21 +35,27 @@ class PageInsightsActionHandlerImpl implements PageInsightsActionsHandler {
         return contextValues;
     }
 
-    PageInsightsActionHandlerImpl(Supplier<Tab> tabSupplier,
-            Supplier<ShareDelegate> shareDelegateSupplier, ChildPageNavigator childPageNavigator) {
+    PageInsightsActionHandlerImpl(
+            Supplier<Tab> tabSupplier,
+            Supplier<ShareDelegate> shareDelegateSupplier,
+            ChildPageNavigator childPageNavigator,
+            PageInsightsEventLogger pageInsightsEventLogger) {
         mTabSupplier = tabSupplier;
         mShareDelegateSupplier = shareDelegateSupplier;
         mChildPageNavigator = childPageNavigator;
+        mPageInsightsEventLogger = pageInsightsEventLogger;
     }
 
     @Override
     public void openUrl(String url, boolean doesRequestSpecifySameSession) {
         // TODO(b/286003870): Consider opening a new CCT if doesRequestSpecifySameSession is false.
+        mPageInsightsEventLogger.log(PageInsightsEvent.TAP_XSURFACE_VIEW_URL);
         mTabSupplier.get().loadUrl(new LoadUrlParams(url));
     }
 
     @Override
     public void share(String url, String title) {
+        mPageInsightsEventLogger.log(PageInsightsEvent.TAP_XSURFACE_VIEW_SHARE);
         mShareDelegateSupplier.get().share(
                 new ShareParams.Builder(mTabSupplier.get().getWindowAndroid(), title, url).build(),
                 new ChromeShareExtras.Builder().build(), ShareOrigin.PAGE_INSIGHTS);
@@ -55,6 +63,12 @@ class PageInsightsActionHandlerImpl implements PageInsightsActionsHandler {
 
     @Override
     public void navigateToPageInsightsPage(int pageId) {
+        mPageInsightsEventLogger.log(PageInsightsEvent.TAP_XSURFACE_VIEW_CHILD_PAGE);
         mChildPageNavigator.navigateToChildPage(pageId);
+    }
+
+    interface PageInsightsEventLogger {
+
+        void log(@PageInsightsEvent int event);
     }
 }
