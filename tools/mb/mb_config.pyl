@@ -547,9 +547,6 @@
     },
 
     'chromium.goma': {
-      'Chromium Android ARM 32-bit Goma RBE Staging': 'android_release_bot_minimal_symbols',
-      # TODO(b/167942918): re-enable java goma?
-
       'Chromium Linux Goma RBE Staging': 'release_bot',
       'Chromium Linux Goma RBE Staging (dbg)': 'debug_bot',
 
@@ -572,9 +569,6 @@
       'Win Builder (dbg) Goma RBE Canary': 'gpu_tests_debug_bot_x86_no_symbols',
       'Win Builder Goma RBE ATS Canary': 'gpu_tests_release_bot_x86_minimal_symbols',
       'Win Builder Goma RBE Canary': 'gpu_tests_release_bot_x86_minimal_symbols',
-
-      'android-archive-dbg-goma-rbe-ats-canary': 'android_without_codecs_debug_bot',
-      'android-archive-dbg-goma-rbe-canary': 'android_without_codecs_debug_bot',
 
       'chromeos-amd64-generic-rel-goma-rbe-canary': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_goma',
 
@@ -1807,10 +1801,6 @@
       'official_optimize_reclient_trybot', 'android_without_codecs', 'full_symbols',
     ],
 
-    'android_release_bot_minimal_symbols': [
-      'android', 'release_bot', 'minimal_symbols', 'strip_debug_info',
-    ],
-
     'android_release_bot_minimal_symbols_arm64_fastbuild_webview_trichrome_reclient': [
       'android', 'release_bot_reclient', 'minimal_symbols', 'arm64',
       'strip_debug_info', 'android_fastbuild', 'webview_trichrome',
@@ -1961,10 +1951,6 @@
 
     'android_webview_google_debug_static_bot_arm64_reclient': [
       'android', 'debug_static_bot_reclient', 'arm64', 'webview_google',
-    ],
-
-    'android_without_codecs_debug_bot': [
-      'android_without_codecs', 'debug_bot',
     ],
 
     'android_without_codecs_debug_bot_reclient': [

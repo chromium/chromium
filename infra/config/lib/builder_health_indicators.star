@@ -936,7 +936,6 @@ _exempted_from_contact_builders = {
         "runner",
     ],
     "goma": [
-        "Chromium Android ARM 32-bit Goma RBE Staging",
         "Chromium Linux Goma RBE Staging (dbg)",
         "Chromium Linux Goma RBE Staging",
         "Chromium Mac Goma RBE Staging (dbg)",
@@ -950,8 +949,6 @@ _exempted_from_contact_builders = {
         "Win Builder (dbg) Goma RBE Canary",
         "Win Builder Goma RBE ATS Canary",
         "Win Builder Goma RBE Canary",
-        "android-archive-dbg-goma-rbe-ats-canary",
-        "android-archive-dbg-goma-rbe-canary",
         "chromeos-amd64-generic-rel-goma-rbe-canary",
         "chromeos-amd64-generic-rel-goma-rbe-staging",
         "ios-device-goma-rbe-canary-clobber",

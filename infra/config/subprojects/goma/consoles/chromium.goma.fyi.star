@@ -28,15 +28,6 @@ luci.console_view(
             category = "rbe|cros|rel",
         ),
         luci.console_view_entry(
-            builder = "goma/android-archive-dbg-goma-rbe-canary",
-            category = "rbe|android|dbg",
-        ),
-        luci.console_view_entry(
-            builder = "goma/android-archive-dbg-goma-rbe-ats-canary",
-            category = "rbe|android|dbg",
-            short_name = "ats",
-        ),
-        luci.console_view_entry(
             builder = "goma/mac-archive-rel-goma-rbe-canary",
             category = "rbe|mac|rel",
             short_name = "clb",

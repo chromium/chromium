@@ -560,11 +560,6 @@ targets.script(
     ],
 )
 
-targets.compile_target(
-    name = "chromedriver_webview_shell_apk",
-    label = "//chrome/test/chromedriver/test/webview_shell:chromedriver_webview_shell_apk",
-)
-
 targets.windowed_test_launcher(
     name = "chromeos_integration_tests",
     label = "//chrome/test:chromeos_integration_tests",
