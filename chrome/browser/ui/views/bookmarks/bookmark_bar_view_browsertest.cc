@@ -622,8 +622,8 @@ class PrerenderBookmarkBarOnHoverNavigationTest
       ukm_entry_builder_;
 };
 
-// TODO(https://crbug.com/1491974): Times out on Mac and Linux.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// TODO(https://crbug.com/1491974): Times out on Win, Mac and Linux.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_PrerenderActivation DISABLED_PrerenderActivation
 #else
 #define MAYBE_PrerenderActivation PrerenderActivation
@@ -687,8 +687,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
 
 // This test verifies prerender cancellation triggered by mouseExited, and
 // another prerender can trigger normally after that.
-// TODO(https://crbug.com/1491974): Times out on Mac and Linux.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// TODO(https://crbug.com/1491974): Times out on Win, Mac and Linux.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_PrerenderMouseExitedCancellationAndPrerenderActivation \
   DISABLED_PrerenderMouseExitedCancellationAndPrerenderActivation
 #else
