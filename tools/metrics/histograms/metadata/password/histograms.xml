@@ -3233,7 +3233,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.Settings.Export.Event"
-    enum="PasswordExportEvent" expires_after="2023-11-19">
+    enum="PasswordExportEvent" expires_after="M125">
   <owner>ioanap@chromium.org</owner>
   <owner>atsvirchkova@google.com</owner>
   <summary>
@@ -3244,7 +3244,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.Settings.Export.Result2"
-    enum="HistogramExportResult" expires_after="2024-02-19">
+    enum="HistogramExportResult" expires_after="M125">
   <owner>ioanap@chromium.org</owner>
   <owner>atsvirchkova@google.com</owner>
   <summary>
