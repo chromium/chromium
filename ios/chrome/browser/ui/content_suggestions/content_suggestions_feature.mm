@@ -34,6 +34,9 @@ const char kReducedSpaceParam[] = "ReducedNTPTopSpace";
 
 const char kHideIrrelevantModulesParam[] = "HideIrrelevantModules";
 
+const char kSetUpListCompactedTimeThresholdDays[] =
+    "SetUpListCompactedTimeThresholdDays";
+
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 const char kDiscoverFeedIsNativeUIEnabled[] = "DiscoverFeedIsNativeUIEnabled";
@@ -90,4 +93,9 @@ bool ShouldHideShortcuts() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kHideContentSuggestionsTiles, kHideContentSuggestionsTilesParamShortcuts,
       false);
+}
+
+int TimeUntilShowingCompactedSetUpList() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kMagicStack, kSetUpListCompactedTimeThresholdDays, 3);
 }
