@@ -245,8 +245,8 @@ class HeadlessModeInputSelectFileDialogTest
   bool select_file_dialog_has_run_ = false;
 };
 
-// TODO(crbug.com/1459246): flaky on Mac builders.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1459246): flaky on Mac and Linux builders.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_InputSelectFileDialog DISABLED_InputSelectFileDialog
 #else
 #define MAYBE_InputSelectFileDialog InputSelectFileDialog
