@@ -325,67 +325,93 @@ void SetUsageStats(UpdaterScope scope,
   }
 }
 
-#define SWITCH_ENTRY(error_code)     \
-  case static_cast<int>(error_code): \
-    return #error_code
+std::wstring GetTextForDownloadError(int error) {
+#define DOWNLOAD_SWITCH_ENTRY(error_code) \
+  case static_cast<int>(error_code):      \
+    return GetLocalizedStringF(IDS_GENERIC_DOWNLOAD_ERROR_BASE, L#error_code)
 
-// TODO(crbug.com/1422075): localize the text for all the `GetTextForXXXError`
-// functions below.
-std::string GetTextForDownloadError(int error) {
   switch (error) {
-    SWITCH_ENTRY(update_client::CrxDownloaderError::NO_URL);
-    SWITCH_ENTRY(update_client::CrxDownloaderError::NO_HASH);
-    SWITCH_ENTRY(update_client::CrxDownloaderError::BAD_HASH);
-    SWITCH_ENTRY(update_client::CrxDownloaderError::BITS_TOO_MANY_JOBS);
-    SWITCH_ENTRY(update_client::CrxDownloaderError::GENERIC_ERROR);
+    DOWNLOAD_SWITCH_ENTRY(update_client::CrxDownloaderError::NO_URL);
+    DOWNLOAD_SWITCH_ENTRY(update_client::CrxDownloaderError::NO_HASH);
+    DOWNLOAD_SWITCH_ENTRY(
+        update_client::CrxDownloaderError::BITS_TOO_MANY_JOBS);
+    DOWNLOAD_SWITCH_ENTRY(update_client::CrxDownloaderError::GENERIC_ERROR);
+
+    case static_cast<int>(update_client::CrxDownloaderError::BAD_HASH):
+      return GetLocalizedString(IDS_DOWNLOAD_HASH_MISMATCH_BASE);
+
     default:
-      return "";
+      return GetLocalizedStringF(IDS_GENERIC_DOWNLOAD_ERROR_BASE,
+                                 GetTextForSystemError(error));
   }
+#undef DOWNLOAD_SWITCH_ENTRY
 }
 
-std::string GetTextForUnpackError(int error) {
+std::wstring GetTextForUnpackError(int error) {
+#define UNPACK_SWITCH_ENTRY(error_code) \
+  case static_cast<int>(error_code):    \
+    return GetLocalizedStringF(IDS_GENERIC_UNPACK_ERROR_BASE, L#error_code)
+#define UNPACK_CACHING_SWITCH_ENTRY(error_code) \
+  case static_cast<int>(error_code):            \
+    return GetLocalizedStringF(IDS_UNPACK_CACHING_ERROR_BASE, L#error_code)
+
   switch (error) {
-    SWITCH_ENTRY(update_client::UnpackerError::kInvalidParams);
-    SWITCH_ENTRY(update_client::UnpackerError::kInvalidFile);
-    SWITCH_ENTRY(update_client::UnpackerError::kUnzipPathError);
-    SWITCH_ENTRY(update_client::UnpackerError::kUnzipFailed);
-    SWITCH_ENTRY(update_client::UnpackerError::kBadManifest);
-    SWITCH_ENTRY(update_client::UnpackerError::kBadExtension);
-    SWITCH_ENTRY(update_client::UnpackerError::kIoError);
-    SWITCH_ENTRY(update_client::UnpackerError::kDeltaVerificationFailure);
-    SWITCH_ENTRY(update_client::UnpackerError::kDeltaBadCommands);
-    SWITCH_ENTRY(update_client::UnpackerError::kDeltaUnsupportedCommand);
-    SWITCH_ENTRY(update_client::UnpackerError::kDeltaOperationFailure);
-    SWITCH_ENTRY(update_client::UnpackerError::kDeltaPatchProcessFailure);
-    SWITCH_ENTRY(update_client::UnpackerError::kDeltaMissingExistingFile);
-    SWITCH_ENTRY(update_client::UnpackerError::kPuffinMissingPreviousCrx);
-    SWITCH_ENTRY(update_client::UnpackerError::kFailedToAddToCache);
-    SWITCH_ENTRY(update_client::UnpackerError::kFailedToCreateCacheDir);
-    SWITCH_ENTRY(update_client::UnpackerError::kCrxCacheNotProvided);
+    UNPACK_SWITCH_ENTRY(update_client::UnpackerError::kInvalidParams);
+    UNPACK_SWITCH_ENTRY(update_client::UnpackerError::kInvalidFile);
+    UNPACK_SWITCH_ENTRY(update_client::UnpackerError::kUnzipPathError);
+    UNPACK_SWITCH_ENTRY(update_client::UnpackerError::kUnzipFailed);
+    UNPACK_SWITCH_ENTRY(update_client::UnpackerError::kBadManifest);
+    UNPACK_SWITCH_ENTRY(update_client::UnpackerError::kBadExtension);
+    UNPACK_SWITCH_ENTRY(update_client::UnpackerError::kIoError);
+    UNPACK_SWITCH_ENTRY(
+        update_client::UnpackerError::kDeltaVerificationFailure);
+    UNPACK_SWITCH_ENTRY(update_client::UnpackerError::kDeltaBadCommands);
+    UNPACK_SWITCH_ENTRY(update_client::UnpackerError::kDeltaUnsupportedCommand);
+    UNPACK_SWITCH_ENTRY(update_client::UnpackerError::kDeltaOperationFailure);
+    UNPACK_SWITCH_ENTRY(
+        update_client::UnpackerError::kDeltaPatchProcessFailure);
+    UNPACK_SWITCH_ENTRY(
+        update_client::UnpackerError::kDeltaMissingExistingFile);
+    UNPACK_SWITCH_ENTRY(
+        update_client::UnpackerError::kPuffinMissingPreviousCrx);
+    UNPACK_SWITCH_ENTRY(update_client::UnpackerError::kCrxCacheNotProvided);
+
+    UNPACK_CACHING_SWITCH_ENTRY(
+        update_client::UnpackerError::kFailedToAddToCache);
+    UNPACK_CACHING_SWITCH_ENTRY(
+        update_client::UnpackerError::kFailedToCreateCacheDir);
+
     default:
-      return "";
+      return GetLocalizedStringF(IDS_GENERIC_UNPACK_ERROR_BASE,
+                                 GetTextForSystemError(error));
   }
+#undef UNPACK_SWITCH_ENTRY
+#undef UNPACK_CACHING_SWITCH_ENTRY
 }
 
-std::string GetTextForServiceError(int error) {
-  switch (error) {
-    SWITCH_ENTRY(update_client::ServiceError::SERVICE_WAIT_FAILED);
-    SWITCH_ENTRY(update_client::ServiceError::UPDATE_DISABLED);
-    SWITCH_ENTRY(update_client::ServiceError::CANCELLED);
-    SWITCH_ENTRY(update_client::ServiceError::CHECK_FOR_UPDATE_ONLY);
-    default:
-      return "";
-  }
-}
-#undef SWITCH_ENTRY
+std::wstring GetTextForServiceError(int error) {
+#define SERVICE_SWITCH_ENTRY(error_code) \
+  case static_cast<int>(error_code):     \
+    return GetLocalizedStringF(IDS_GENERIC_SERVICE_ERROR_BASE, L#error_code)
 
-std::string GetTextForUpdateCheckError(int error) {
+  switch (error) {
+    SERVICE_SWITCH_ENTRY(update_client::ServiceError::SERVICE_WAIT_FAILED);
+    SERVICE_SWITCH_ENTRY(update_client::ServiceError::UPDATE_DISABLED);
+    SERVICE_SWITCH_ENTRY(update_client::ServiceError::CANCELLED);
+    SERVICE_SWITCH_ENTRY(update_client::ServiceError::CHECK_FOR_UPDATE_ONLY);
+    default:
+      return GetLocalizedStringF(IDS_GENERIC_SERVICE_ERROR_BASE,
+                                 GetTextForSystemError(error));
+  }
+#undef SERVICE_SWITCH_ENTRY
+}
+
+std::wstring GetTextForUpdateCheckError(int error) {
 #define UPDATE_CHECK_SWITCH_ENTRY(error_code)                       \
   case static_cast<int>(error_code):                                \
     return GetLocalizedStringF(IDS_GENERIC_UPDATE_CHECK_ERROR_BASE, \
                                L#error_code)
 
-  return base::WideToUTF8([&]() {
     switch (error) {
       UPDATE_CHECK_SWITCH_ENTRY(
           update_client::ProtocolError::RESPONSE_NOT_TRUSTED);
@@ -426,11 +452,10 @@ std::string GetTextForUpdateCheckError(int error) {
       default:
         return GetLocalizedStringF(
             IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
-            base::UTF8ToWide(error >= 400 && error < 600
-                                 ? base::StringPrintf("HTTP %d", error)
-                                 : GetTextForSystemError(error)));
+            error >= 400 && error < 600
+                ? base::ASCIIToWide(base::StringPrintf("HTTP %d", error))
+                : GetTextForSystemError(error));
     }
-  }());
 #undef UPDATE_CHECK_SWITCH_ENTRY
 }
 
@@ -1043,30 +1068,32 @@ void AppInstallControllerImpl::DoCancel() {
   if (update_state.state != UpdateService::UpdateState::State::kNoUpdate) {
     app_info.app_id = base::ASCIIToUTF16(update_state.app_id);
     app_info.error_code = update_state.error_code;
-    app_info.completion_message = base::UTF8ToUTF16([&]() {
+    app_info.completion_message = [&]() -> std::u16string {
       if (!update_state.installer_text.empty()) {
-        return update_state.installer_text;
+        return base::UTF8ToUTF16(update_state.installer_text);
       }
       if (!app_info.error_code) {
-        return std::string();
+        return {};
       }
-      switch (update_state.error_category) {
-        case UpdateService::ErrorCategory::kInstall:
-          return GetTextForSystemError(app_info.error_code);
-        case UpdateService::ErrorCategory::kDownload:
-          return GetTextForDownloadError(app_info.error_code);
-        case UpdateService::ErrorCategory::kUnpack:
-          return GetTextForUnpackError(app_info.error_code);
-        case UpdateService::ErrorCategory::kService:
-          return GetTextForServiceError(app_info.error_code);
-        case UpdateService::ErrorCategory::kUpdateCheck:
-          return GetTextForUpdateCheckError(app_info.error_code);
-        default:
-          LOG(ERROR) << "Unknown error category: "
-                     << update_state.error_category;
-          return std::string();
-      }
-    }());
+      return base::WideToUTF16([&]() -> std::wstring {
+        switch (update_state.error_category) {
+          case UpdateService::ErrorCategory::kInstall:
+            return GetTextForSystemError(app_info.error_code);
+          case UpdateService::ErrorCategory::kDownload:
+            return GetTextForDownloadError(app_info.error_code);
+          case UpdateService::ErrorCategory::kUnpack:
+            return GetTextForUnpackError(app_info.error_code);
+          case UpdateService::ErrorCategory::kService:
+            return GetTextForServiceError(app_info.error_code);
+          case UpdateService::ErrorCategory::kUpdateCheck:
+            return GetTextForUpdateCheckError(app_info.error_code);
+          default:
+            LOG(ERROR) << "Unknown error category: "
+                       << update_state.error_category;
+            return {};
+        }
+      }());
+    }();
     app_info.extra_code1 = update_state.extra_code1;
     app_info.post_install_launch_command_line =
         base::SysUTF8ToWide(update_state.installer_cmd_line);

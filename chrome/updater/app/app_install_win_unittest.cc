@@ -32,92 +32,149 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(std::vector<AppInstallWinHandleInstallResultTestCase>{
         {UpdateService::ErrorCategory::kDownload,
          static_cast<int>(update_client::CrxDownloaderError::NO_URL),
-         u"update_client::CrxDownloaderError::NO_URL"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_DOWNLOAD_ERROR_BASE,
+             L"update_client::CrxDownloaderError::NO_URL"))},
         {UpdateService::ErrorCategory::kDownload,
          static_cast<int>(update_client::CrxDownloaderError::NO_HASH),
-         u"update_client::CrxDownloaderError::NO_HASH"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_DOWNLOAD_ERROR_BASE,
+             L"update_client::CrxDownloaderError::NO_HASH"))},
         {UpdateService::ErrorCategory::kDownload,
          static_cast<int>(update_client::CrxDownloaderError::BAD_HASH),
-         u"update_client::CrxDownloaderError::BAD_HASH"},
+         base::WideToUTF16(
+             GetLocalizedString(IDS_DOWNLOAD_HASH_MISMATCH_BASE))},
         {UpdateService::ErrorCategory::kDownload,
          static_cast<int>(
              update_client::CrxDownloaderError::BITS_TOO_MANY_JOBS),
-         u"update_client::CrxDownloaderError::BITS_TOO_MANY_JOBS"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_DOWNLOAD_ERROR_BASE,
+             L"update_client::CrxDownloaderError::BITS_TOO_MANY_JOBS"))},
         {UpdateService::ErrorCategory::kDownload,
          static_cast<int>(update_client::CrxDownloaderError::GENERIC_ERROR),
-         u"update_client::CrxDownloaderError::GENERIC_ERROR"},
-        {UpdateService::ErrorCategory::kDownload, 0xFFFF, u""},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_DOWNLOAD_ERROR_BASE,
+             L"update_client::CrxDownloaderError::GENERIC_ERROR"))},
+        {UpdateService::ErrorCategory::kDownload, 0xFFFF,
+         base::WideToUTF16(GetLocalizedStringF(IDS_GENERIC_DOWNLOAD_ERROR_BASE,
+                                               L"0xffff"))},
         {UpdateService::ErrorCategory::kUnpack,
          static_cast<int>(update_client::UnpackerError::kInvalidParams),
-         u"update_client::UnpackerError::kInvalidParams"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UNPACK_ERROR_BASE,
+             L"update_client::UnpackerError::kInvalidParams"))},
         {UpdateService::ErrorCategory::kUnpack,
          static_cast<int>(update_client::UnpackerError::kInvalidFile),
-         u"update_client::UnpackerError::kInvalidFile"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UNPACK_ERROR_BASE,
+             L"update_client::UnpackerError::kInvalidFile"))},
         {UpdateService::ErrorCategory::kUnpack,
          static_cast<int>(update_client::UnpackerError::kUnzipPathError),
-         u"update_client::UnpackerError::kUnzipPathError"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UNPACK_ERROR_BASE,
+             L"update_client::UnpackerError::kUnzipPathError"))},
         {UpdateService::ErrorCategory::kUnpack,
          static_cast<int>(update_client::UnpackerError::kUnzipFailed),
-         u"update_client::UnpackerError::kUnzipFailed"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UNPACK_ERROR_BASE,
+             L"update_client::UnpackerError::kUnzipFailed"))},
         {UpdateService::ErrorCategory::kUnpack,
          static_cast<int>(update_client::UnpackerError::kBadManifest),
-         u"update_client::UnpackerError::kBadManifest"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UNPACK_ERROR_BASE,
+             L"update_client::UnpackerError::kBadManifest"))},
         {UpdateService::ErrorCategory::kUnpack,
          static_cast<int>(update_client::UnpackerError::kBadExtension),
-         u"update_client::UnpackerError::kBadExtension"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UNPACK_ERROR_BASE,
+             L"update_client::UnpackerError::kBadExtension"))},
         {UpdateService::ErrorCategory::kUnpack,
          static_cast<int>(update_client::UnpackerError::kIoError),
-         u"update_client::UnpackerError::kIoError"},
+         base::WideToUTF16(
+             GetLocalizedStringF(IDS_GENERIC_UNPACK_ERROR_BASE,
+                                 L"update_client::UnpackerError::kIoError"))},
         {UpdateService::ErrorCategory::kUnpack,
          static_cast<int>(
              update_client::UnpackerError::kDeltaVerificationFailure),
-         u"update_client::UnpackerError::kDeltaVerificationFailure"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UNPACK_ERROR_BASE,
+             L"update_client::UnpackerError::kDeltaVerificationFailure"))},
         {UpdateService::ErrorCategory::kUnpack,
          static_cast<int>(update_client::UnpackerError::kDeltaBadCommands),
-         u"update_client::UnpackerError::kDeltaBadCommands"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UNPACK_ERROR_BASE,
+             L"update_client::UnpackerError::kDeltaBadCommands"))},
         {UpdateService::ErrorCategory::kUnpack,
          static_cast<int>(
              update_client::UnpackerError::kDeltaUnsupportedCommand),
-         u"update_client::UnpackerError::kDeltaUnsupportedCommand"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UNPACK_ERROR_BASE,
+             L"update_client::UnpackerError::kDeltaUnsupportedCommand"))},
         {UpdateService::ErrorCategory::kUnpack,
          static_cast<int>(update_client::UnpackerError::kDeltaOperationFailure),
-         u"update_client::UnpackerError::kDeltaOperationFailure"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UNPACK_ERROR_BASE,
+             L"update_client::UnpackerError::kDeltaOperationFailure"))},
         {UpdateService::ErrorCategory::kUnpack,
          static_cast<int>(
              update_client::UnpackerError::kDeltaPatchProcessFailure),
-         u"update_client::UnpackerError::kDeltaPatchProcessFailure"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UNPACK_ERROR_BASE,
+             L"update_client::UnpackerError::kDeltaPatchProcessFailure"))},
         {UpdateService::ErrorCategory::kUnpack,
          static_cast<int>(
              update_client::UnpackerError::kDeltaMissingExistingFile),
-         u"update_client::UnpackerError::kDeltaMissingExistingFile"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UNPACK_ERROR_BASE,
+             L"update_client::UnpackerError::kDeltaMissingExistingFile"))},
         {UpdateService::ErrorCategory::kUnpack,
          static_cast<int>(
              update_client::UnpackerError::kPuffinMissingPreviousCrx),
-         u"update_client::UnpackerError::kPuffinMissingPreviousCrx"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UNPACK_ERROR_BASE,
+             L"update_client::UnpackerError::kPuffinMissingPreviousCrx"))},
         {UpdateService::ErrorCategory::kUnpack,
          static_cast<int>(update_client::UnpackerError::kFailedToAddToCache),
-         u"update_client::UnpackerError::kFailedToAddToCache"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_UNPACK_CACHING_ERROR_BASE,
+             L"update_client::UnpackerError::kFailedToAddToCache"))},
         {UpdateService::ErrorCategory::kUnpack,
          static_cast<int>(
              update_client::UnpackerError::kFailedToCreateCacheDir),
-         u"update_client::UnpackerError::kFailedToCreateCacheDir"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_UNPACK_CACHING_ERROR_BASE,
+             L"update_client::UnpackerError::kFailedToCreateCacheDir"))},
         {UpdateService::ErrorCategory::kUnpack,
          static_cast<int>(update_client::UnpackerError::kCrxCacheNotProvided),
-         u"update_client::UnpackerError::kCrxCacheNotProvided"},
-        {UpdateService::ErrorCategory::kUnpack, 0xFFFF, u""},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_UNPACK_ERROR_BASE,
+             L"update_client::UnpackerError::kCrxCacheNotProvided"))},
+        {UpdateService::ErrorCategory::kUnpack, 0xFFFF,
+         base::WideToUTF16(GetLocalizedStringF(IDS_GENERIC_UNPACK_ERROR_BASE,
+                                               L"0xffff"))},
         {UpdateService::ErrorCategory::kService,
          static_cast<int>(update_client::ServiceError::SERVICE_WAIT_FAILED),
-         u"update_client::ServiceError::SERVICE_WAIT_FAILED"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_SERVICE_ERROR_BASE,
+             L"update_client::ServiceError::SERVICE_WAIT_FAILED"))},
         {UpdateService::ErrorCategory::kService,
          static_cast<int>(update_client::ServiceError::UPDATE_DISABLED),
-         u"update_client::ServiceError::UPDATE_DISABLED"},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_SERVICE_ERROR_BASE,
+             L"update_client::ServiceError::UPDATE_DISABLED"))},
         {UpdateService::ErrorCategory::kService,
          static_cast<int>(update_client::ServiceError::CANCELLED),
-         u"update_client::ServiceError::CANCELLED"},
+         base::WideToUTF16(
+             GetLocalizedStringF(IDS_GENERIC_SERVICE_ERROR_BASE,
+                                 L"update_client::ServiceError::CANCELLED"))},
         {UpdateService::ErrorCategory::kService,
          static_cast<int>(update_client::ServiceError::CHECK_FOR_UPDATE_ONLY),
-         u"update_client::ServiceError::CHECK_FOR_UPDATE_ONLY"},
-        {UpdateService::ErrorCategory::kService, 0xFFFF, u""},
+         base::WideToUTF16(GetLocalizedStringF(
+             IDS_GENERIC_SERVICE_ERROR_BASE,
+             L"update_client::ServiceError::CHECK_FOR_UPDATE_ONLY"))},
+        {UpdateService::ErrorCategory::kService, 0xFFFF,
+         base::WideToUTF16(GetLocalizedStringF(IDS_GENERIC_SERVICE_ERROR_BASE,
+                                               L"0xffff"))},
         {UpdateService::ErrorCategory::kUpdateCheck,
          static_cast<int>(update_client::ProtocolError::RESPONSE_NOT_TRUSTED),
          base::WideToUTF16(GetLocalizedStringF(

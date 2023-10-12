@@ -447,8 +447,9 @@ Installer::Result MakeInstallerResult(
               ? 0
               : kErrorApplicationInstallerFailed;
       result.installer_text =
-          outcome.installer_text ? *outcome.installer_text
-                                 : GetTextForSystemError(result.original_error);
+          outcome.installer_text
+              ? *outcome.installer_text
+              : base::WideToUTF8(GetTextForSystemError(result.original_error));
       CHECK_NE(result.original_error, 0);
       break;
   }

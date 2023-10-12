@@ -1880,6 +1880,32 @@ Permissions you've already given to websites and apps may apply to this account.
                  desc="Error message displayed in the main dialog when the update client returns an error in the update check.">
           Update check error: <ph name="UPDATE_CHECK_ERROR">$1<ex>error-internal</ex></ph>.
         </message>
+
+        <!--Download errors.-->
+        <message name="IDS_DOWNLOAD_HASH_MISMATCH"
+                 desc="Error message displayed in the main dialog when the downloaded file fails hash verification.">
+          The downloaded file failed verification.
+        </message>
+        <message name="IDS_GENERIC_DOWNLOAD_ERROR"
+                 desc="Error message displayed in the main dialog when the update client returns an error while downloading.">
+          Download error: <ph name="DOWNLOAD_ERROR">$1<ex>error-internal</ex></ph>.
+        </message>
+
+        <!--Unpack errors.-->
+        <message name="IDS_UNPACK_CACHING_ERROR"
+                 desc="Error message displayed in the main dialog when the update client fails to cache the installer.">
+          Failed to cache the downloaded installer. Error: <ph name="UNPACK_CACHING_ERROR_CODE">$1<ex>0x80070005</ex></ph>.
+        </message>
+        <message name="IDS_GENERIC_UNPACK_ERROR"
+                 desc="Error message displayed in the main dialog when the update client returns an error while unpacking.">
+          Unpack error: <ph name="UNPACK_ERROR">$1<ex>error-internal</ex></ph>.
+        </message>
+
+        <!--Service errors.-->
+        <message name="IDS_GENERIC_SERVICE_ERROR"
+                 desc="Error message displayed in the main dialog for runtime errors that occur in the update client service.">
+          Service error: <ph name="SERVICE_ERROR">$1<ex>error-internal</ex></ph>.
+        </message>
       </if>
       <!-- High Efficiency Chip strings -->
       <if expr="not is_android">

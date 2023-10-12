@@ -1072,7 +1072,7 @@ absl::optional<std::wstring> GetRegKeyContents(const std::wstring& reg_key) {
   return base::ASCIIToWide(output);
 }
 
-std::string GetTextForSystemError(int error) {
+std::wstring GetTextForSystemError(int error) {
   if (static_cast<HRESULT>(error & 0xFFFF0000) ==
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_WIN32, 0)) {
     error = HRESULT_CODE(error);
@@ -1095,8 +1095,9 @@ std::string GetTextForSystemError(int error) {
       reinterpret_cast<wchar_t*>(&system_allocated_buffer), 0, nullptr);
   base::win::ScopedLocalAllocTyped<wchar_t> free_buffer(
       system_allocated_buffer);
-  return chars_written > 0 ? base::WideToUTF8(system_allocated_buffer)
-                           : base::StringPrintf("%#x", error);
+  return chars_written > 0
+             ? system_allocated_buffer
+             : base::ASCIIToWide(base::StringPrintf("%#x", error));
 }
 
 }  // namespace updater
