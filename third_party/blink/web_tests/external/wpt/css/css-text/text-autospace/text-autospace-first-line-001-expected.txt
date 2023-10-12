@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL text-autospace-first-line-001 assert_array_equals: expected property 1 to be 90 but got 80 (expected array [80, 90, 80, 90, 80, 40, 45, 40, 45, 40] got [80, 80, 80, 80, 80, 40, 40, 40, 40, 40])
-Harness: the test ran to completion.
-

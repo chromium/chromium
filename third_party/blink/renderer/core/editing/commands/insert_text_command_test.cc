@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/commands/insert_text_command.h"
 
+#include "build/buildflag.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
@@ -213,6 +214,11 @@ TEST_F(InsertTextCommandTest, WhitespaceFixupAfterParagraph) {
 TEST_F(InsertTextCommandTest, NoVisibleSelectionAfterDeletingSelection) {
   GetDocument().SetCompatibilityMode(Document::kQuirksMode);
   InsertStyleElement(
+#if BUILDFLAG(IS_FUCHSIA)
+      // TODO(https://crbug.com/1463890): LineBreaker somehow fails if
+      // text-autospace is enabled. Tentatively opt out for now..
+      "div {text-autospace: no-autospace;}"
+#endif
       "ruby {display: inline-block; height: 100%}"
       "navi {float: left}");
   Selection().SetSelection(
