@@ -16331,7 +16331,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter;../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
           "--ash-chrome-path-override=../../lacros_version_skew_tests_v118.0.5993.60/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
@@ -16363,7 +16363,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter;../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
           "--ash-chrome-path-override=../../lacros_version_skew_tests_v120.0.6063.0/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
@@ -16395,7 +16395,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter;../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
           "--ash-chrome-path-override=../../lacros_version_skew_tests_v119.0.6045.16/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
@@ -16427,7 +16427,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter;../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
           "--ash-chrome-path-override=../../lacros_version_skew_tests_v117.0.5938.157/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
@@ -16501,7 +16501,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter;../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
           "--ash-chrome-path-override=../../lacros_version_skew_tests_v118.0.5993.60/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
@@ -16533,7 +16533,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter;../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
           "--ash-chrome-path-override=../../lacros_version_skew_tests_v120.0.6063.0/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
@@ -16565,7 +16565,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter;../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
           "--ash-chrome-path-override=../../lacros_version_skew_tests_v119.0.6045.16/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
@@ -16597,7 +16597,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter;../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
           "--ash-chrome-path-override=../../lacros_version_skew_tests_v117.0.5938.157/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",

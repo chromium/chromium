@@ -4997,7 +4997,7 @@ targets.legacy_basic_suite(
     tests = {
         "lacros_chrome_browsertests_run_in_series": targets.legacy_test_config(
             args = [
-                "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
+                "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter;../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
             ],
             swarming = targets.swarming(
                 shards = 2,
@@ -5012,7 +5012,7 @@ targets.legacy_basic_suite(
         "interactive_ui_tests": targets.legacy_test_config(
             test = "interactive_ui_tests",
             args = [
-                "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
+                "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter;../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
             ],
             swarming = targets.swarming(
                 shards = 3,
