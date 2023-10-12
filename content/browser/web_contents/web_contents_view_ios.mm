@@ -154,7 +154,7 @@ DropData* WebContentsViewIOS::GetDropData() const {
   return nullptr;
 }
 
-void WebContentsViewIOS::CancelDragDropForPortalActivation() {
+void WebContentsViewIOS::TransferDragSecurityInfo(WebContentsView* view) {
   NOTIMPLEMENTED();
 }
 
