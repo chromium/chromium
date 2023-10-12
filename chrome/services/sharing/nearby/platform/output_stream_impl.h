@@ -69,7 +69,7 @@ class OutputStreamImpl : public OutputStream {
   std::unique_ptr<ByteArray> pending_write_buffer_;
   uint32_t pending_write_buffer_pos_ = 0;
   bool write_success_ = false;
-  absl::optional<base::WaitableEvent> write_waitable_event_;
+  base::WaitableEvent write_waitable_event_;
 };
 
 }  // namespace chrome
