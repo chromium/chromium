@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -63,7 +64,7 @@ bool IbanSaveManager::AttemptToOfferIbanLocalSave(
 bool IbanSaveManager::ShouldOfferLocalSave(const Iban& iban_import_candidate) {
   // Only offer to save new IBANs. Users can go to the payment methods settings
   // page to update existing IBANs if desired.
-  return std::ranges::none_of(
+  return base::ranges::none_of(
       personal_data_manager_->GetLocalIbans(), [&](const auto& iban) {
         return iban->value() == iban_import_candidate.value();
       });
