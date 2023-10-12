@@ -64,16 +64,13 @@ class ExtensionEnableFlowTestSupervised
 
   ExtensionEnableFlowTestSupervised()
       : TestParentPermissionDialogViewObserver(this) {
-    feature_list_.InitWithFeatureStates(
-        {// Enable extensions for supervised users in Desktop platforms.
-         {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
-          true},
-         {supervised_user::
-              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
-          true},
-         // This UI is only used in V1 extensions approvals flow, so to test it
-         // V2 flow needs to be disabled.
-         {supervised_user::kLocalExtensionApprovalsV2, false}});
+    feature_list_.InitWithFeatures(
+        // Enable extensions for supervised users in Desktop platforms.
+        /*enabled_features=*/
+        {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
+         supervised_user::
+             kEnableExtensionsPermissionsForSupervisedUsersOnDesktop},
+        /*disabled_features=*/{});
   }
 
   ExtensionEnableFlowTestSupervised(const ExtensionEnableFlowTestSupervised&) =

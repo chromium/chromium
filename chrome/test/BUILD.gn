@@ -4085,9 +4085,12 @@ if (!is_android) {
         "../browser/supervised_user/supervised_user_url_filter_browsertest.cc",
         "../browser/ui/views/extensions/extension_install_dialog_view_supervised_browsertest.cc",
       ]
-      if (enable_extensions) {
+
+      # Extension approvals tests for Desktop platforms only.
+      # ChromeOS has a different platform-specific approval flow.
+      if (enable_extensions && (is_win || is_mac || is_linux)) {
         sources += [
-          "../browser/supervised_user/supervised_user_extension_browsertest.cc",
+          "../browser/supervised_user/linux_mac_windows/supervised_user_extension_browsertest.cc",
           "../browser/ui/views/supervised_user/extension_install_blocked_by_parent_dialog_browsertest.cc",
           "../browser/ui/views/supervised_user/parent_permission_dialog_view_browsertest.cc",
           "../browser/ui/views/supervised_user/parent_permission_extension_flow_view_browsertest.cc",

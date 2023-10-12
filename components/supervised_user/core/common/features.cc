@@ -44,12 +44,6 @@ BASE_FEATURE(kUseBuiltInRetryingMechanismForListFamilyMembers,
              "UseBuiltInRetryingMechanismForListFamilyMembers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the new local extension approvals experience, which requests approval
-// through a platform-specific Parent Access Widget. Available on ChromeOS.
-BASE_FEATURE(kLocalExtensionApprovalsV2,
-             "LocalExtensionApprovalsV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsGoogleBrandedBuild() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return true;
@@ -124,10 +118,6 @@ constexpr base::FeatureParam<std::string> kManagedByParentUiMoreInfoUrl{
 BASE_FEATURE(kCustomWebSignInInterceptForSupervisedUsers,
              "CustomWebSignInInterceptForSupervisedUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsLocalExtensionApprovalsV2Enabled() {
-  return base::FeatureList::IsEnabled(kLocalExtensionApprovalsV2);
-}
 
 bool IsChildAccountSupervisionEnabled() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)

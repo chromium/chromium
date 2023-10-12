@@ -29,8 +29,6 @@ BASE_DECLARE_FEATURE(kClearingCookiesKeepsSupervisedUsersSignedIn);
 // is enabled
 bool CanDisplayFirstTimeInterstitialBanner();
 
-BASE_DECLARE_FEATURE(kLocalExtensionApprovalsV2);
-
 // Experiments to enable proto fetchers
 BASE_DECLARE_FEATURE(kEnableProtoApiForClassifyUrl);
 
@@ -59,9 +57,6 @@ bool IsProtoApiForClassifyUrlEnabled();
 // Decides whether to use built-in configurable mechanism, instead of manually
 // programmed.
 bool IsRetryMechanismForListFamilyMembersEnabled();
-
-// Returns whether the new local extension approval experience is enabled.
-bool IsLocalExtensionApprovalsV2Enabled();
 
 // Returns true if child account supervision features should be enabled for this
 // client.
