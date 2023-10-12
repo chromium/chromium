@@ -59,7 +59,9 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
 
   virtual bool LowLatencyEnabled() const { return false; }
 
-  CanvasResourceProvider* ResourceProvider() const;
+  CanvasResourceProvider* ResourceProvider() const {
+    return resource_provider_.get();
+  }
 
   // TODO(junov): remove "virtual" when refactoring is complete.
   virtual void FlushRecording(FlushReason reason);

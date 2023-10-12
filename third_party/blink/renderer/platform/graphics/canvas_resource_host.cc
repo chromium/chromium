@@ -29,10 +29,6 @@ CanvasResourceHost::~CanvasResourceHost() {
   ResetLayer();
 }
 
-CanvasResourceProvider* CanvasResourceHost::ResourceProvider() const {
-  return resource_provider_.get();
-}
-
 std::unique_ptr<CanvasResourceProvider>
 CanvasResourceHost::ReplaceResourceProvider(
     std::unique_ptr<CanvasResourceProvider> new_resource_provider) {
