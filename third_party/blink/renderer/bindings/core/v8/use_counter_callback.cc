@@ -354,6 +354,9 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kSourceMappingUrlMagicCommentAtSign:
       blink_feature = WebFeature::kSourceMappingUrlMagicCommentAtSign;
       break;
+    case v8::Isolate::kTemporalObject:
+      blink_feature = WebFeature::kV8TemporalObject;
+      break;
     default:
       // This can happen if V8 has added counters that this version of Blink
       // does not know about. It's harmless.

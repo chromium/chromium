@@ -4018,6 +4018,7 @@ enum WebFeature {
   kHTMLDetailsElementNameAttributeClosesSelf = 4678,
   kHTMLDetailsElementNameAttributeClosesOther = 4679,
   kCSSSubgridLayout = 4680,
+  kV8TemporalObject = 4681,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
