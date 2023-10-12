@@ -35,8 +35,7 @@ namespace apps {
 // An infobar delegate asking if the user wants to enable link capturing for
 // the given application. This is only created when the app doesn't have link
 // capturing already enabled.
-// Note: This implementation is only used for non-CrOS platforms. See
-// SupportedLinksInfoBarDelegate for the infobar used for CrOS.
+// Note: This InfoBar is only used on non-CrOS platforms.
 class EnableLinkCapturingInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   EnableLinkCapturingInfoBarDelegate(

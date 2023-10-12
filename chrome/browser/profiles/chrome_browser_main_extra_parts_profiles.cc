@@ -297,7 +297,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/apps/intent_helper/supported_links_infobar_prefs_service_factory.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_download_observer_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -554,9 +553,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   apps::StandaloneBrowserExtensionAppsFactoryForApp::GetInstance();
   apps::StandaloneBrowserExtensionAppsFactoryForExtension::GetInstance();
   apps::SubscriberCrosapiFactory::GetInstance();
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
-  apps::SupportedLinksInfoBarPrefsServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   apps::WebAppsCrosapiFactory::GetInstance();

@@ -310,7 +310,6 @@
 #endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/apps/intent_helper/supported_links_infobar_prefs_service.h"
 #include "chrome/browser/chromeos/extensions/echo_private/echo_private_api.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api_prefs.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_impl.h"
@@ -940,6 +939,11 @@ const char kLastSuccessfulDomainPref[] = "android_sms.last_successful_domain";
 const char kShouldAttemptReenable[] = "android_sms.should_attempt_reenable";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 10/2023.
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr char kSupportedLinksAppPrefsKey[] = "supported_links_infobar.apps";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1319,6 +1323,11 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kShouldAttemptReenable, true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterTimePref(kDownloadLastCompleteTime, base::Time());
+
+// Deprecated 10/2023.
+#if BUILDFLAG(IS_CHROMEOS)
+  registry->RegisterDictionaryPref(kSupportedLinksAppPrefsKey);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -1805,7 +1814,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
-  apps::SupportedLinksInfoBarPrefsService::RegisterProfilePrefs(registry);
   extensions::login_api::RegisterProfilePrefs(registry);
   extensions::platform_keys::RegisterProfilePrefs(registry);
   certificate_manager::CertificatesHandler::RegisterProfilePrefs(registry);
@@ -2479,6 +2487,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kLastSuccessfulDomainPref);
   profile_prefs->ClearPref(kShouldAttemptReenable);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Added 10/2023.
+#if BUILDFLAG(IS_CHROMEOS)
+  profile_prefs->ClearPref(kSupportedLinksAppPrefsKey);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

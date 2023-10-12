@@ -54480,7 +54480,8 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="106" label="AUTOFILL_ADDRESS_PROFILE_INFOBAR_DELEGATE_IOS"/>
   <int value="107" label="ADD_TO_READING_LIST_IOS"/>
   <int value="108" label="IOS_PERMISSIONS_INFOBAR_DELEGATE"/>
-  <int value="109" label="SUPPORTED_LINKS_INFOBAR_DELEGATE_CHROMEOS"/>
+  <int value="109"
+      label="SUPPORTED_LINKS_INFOBAR_DELEGATE_CHROMEOS (Obsolete)"/>
   <int value="110"
       label="AUTOFILL_VIRTUAL_CARD_ENROLLMENT_INFOBAR_DELEGATE_MOBILE"/>
   <int value="111" label="TAILORED_SECURITY_SERVICE_INFOBAR_DELEGATE"/>

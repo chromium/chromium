@@ -8,7 +8,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/intent_helper/intent_chip_display_prefs.h"
-#include "chrome/browser/apps/intent_helper/supported_links_infobar_delegate.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
@@ -89,11 +88,6 @@ void LaunchAppFromIntentPickerChromeOs(content::WebContents* web_contents,
 
   if (app_type == PickerEntryType::kWeb) {
     web_app::ReparentWebContentsIntoAppBrowser(web_contents, launch_name);
-
-    if (features::LinkCapturingInfoBarEnabled()) {
-      SupportedLinksInfoBarDelegate::MaybeShowSupportedLinksInfoBar(
-          web_contents, launch_name);
-    }
   } else {
     auto* proxy = AppServiceProxyFactory::GetForProfile(profile);
 

@@ -44,10 +44,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "components/infobars/content/content_infobar_manager.h"
-#include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobar_delegate.h"
-#include "components/services/app_service/public/cpp/features.h"
 #endif
 
 class IntentChipButtonBrowserTest
@@ -314,30 +310,6 @@ class IntentChipWithInfoBarBrowserTest : public IntentChipButtonBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-IN_PROC_BROWSER_TEST_F(IntentChipWithInfoBarBrowserTest,
-                       ShowsInfoBarOnAppOpen) {
-  const GURL in_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-
-  DoAndWaitForIntentPickerIconUpdate([this, in_scope_url] {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
-  });
-  EXPECT_TRUE(GetIntentChip()->GetVisible());
-
-  Browser* app_browser = ClickIntentChip(/*wait_for_browser=*/true);
-
-  // Clicking the chip should open the app without showing the intent picker
-  // bubble.
-  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser,
-                                                         test_web_app_id()));
-  auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
-      app_browser->tab_strip_model()->GetActiveWebContents());
-  ASSERT_EQ(infobar_manager->infobar_count(), 1u);
-  ASSERT_EQ(
-      infobar_manager->infobar_at(0)->delegate()->GetIdentifier(),
-      infobars::InfoBarDelegate::SUPPORTED_LINKS_INFOBAR_DELEGATE_CHROMEOS);
-}
 
 // TODO(crbug.com/1313274): Fix test flakiness on Lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
