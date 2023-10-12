@@ -4,7 +4,7 @@
 
 package org.chromium.base;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
 /**
  * A simple single-argument callback to handle the result of a computation.

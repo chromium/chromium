@@ -8,7 +8,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 

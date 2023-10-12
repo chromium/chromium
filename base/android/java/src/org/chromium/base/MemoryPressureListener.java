@@ -7,8 +7,9 @@ package org.chromium.base;
 import android.app.Activity;
 import android.content.ComponentCallbacks2;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.memory.MemoryPressureCallback;
 
 /**

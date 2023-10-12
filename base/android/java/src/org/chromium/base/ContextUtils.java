@@ -20,7 +20,8 @@ import android.preference.PreferenceManager;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.build.BuildConfig;

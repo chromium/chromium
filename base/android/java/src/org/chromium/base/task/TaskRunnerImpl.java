@@ -9,9 +9,10 @@ import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.TraceEvent;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;

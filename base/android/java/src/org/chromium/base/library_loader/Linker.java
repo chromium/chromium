@@ -14,9 +14,10 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.AccessedByNative;
+
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
-import org.chromium.base.annotations.AccessedByNative;
 import org.chromium.base.metrics.RecordHistogram;
 
 import java.lang.annotation.Retention;

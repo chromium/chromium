@@ -22,7 +22,8 @@ import androidx.annotation.RequiresApi;
 import dalvik.system.BaseDexClassLoader;
 import dalvik.system.PathClassLoader;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.BuildConfig;

@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 package org.chromium.base.test.task;
-import org.chromium.base.annotations.NativeMethods;
+
+import org.jni_zero.NativeMethods;
 
 /** Helpers that allow base::ThreadPoolInstance to be initialized or shutdown for testing. */
 public class ThreadPoolTestHelpers {

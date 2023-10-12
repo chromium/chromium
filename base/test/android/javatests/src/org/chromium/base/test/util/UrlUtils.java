@@ -4,11 +4,11 @@
 
 package org.chromium.base.test.util;
 
+import org.jni_zero.CalledByNative;
 import org.junit.Assert;
 
 import org.chromium.base.PathUtils;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.annotations.CalledByNative;
 
 /**
  * Collection of URL utilities.

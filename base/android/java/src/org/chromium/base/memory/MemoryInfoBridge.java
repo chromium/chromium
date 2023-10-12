@@ -11,8 +11,9 @@ import android.os.Process;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
 
 /**
  * Allows calling ActivityManager#getProcessMemoryInfo() from native.

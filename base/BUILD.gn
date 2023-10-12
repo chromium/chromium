@@ -4531,13 +4531,13 @@ if (is_android) {
       ":base_java",
       ":base_java_test_support",
       ":base_java_test_support_uncommon",
-      "//base:jni_java",
       "//base/test:test_support_java",
       "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_test_monitor_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//third_party/junit:junit",
       "//third_party/mockito:mockito_java",
     ]
@@ -4595,9 +4595,9 @@ if (is_android) {
 
     deps = [
       ":base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//third_party/junit:junit",
     ]
   }
@@ -4607,7 +4607,6 @@ if (is_android) {
 
     deps = [
       ":base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//third_party/accessibility_test_framework:accessibility_test_framework_java",
       "//third_party/android_deps:espresso_java",
@@ -4621,6 +4620,7 @@ if (is_android) {
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
       "//third_party/hamcrest:hamcrest_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//third_party/junit",
     ]
 
@@ -4717,10 +4717,10 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_test_monitor_java",
       "//third_party/hamcrest:hamcrest_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//third_party/junit:junit",
     ]
 
@@ -4848,13 +4848,13 @@ if (is_android) {
       ":base_java_test_support_uncommon",
       ":base_junit_test_support",
       ":base_shared_preferences_java",
-      "//base:jni_java",
       "//base/test:test_support_java",
       "//third_party/android_deps:guava_android_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_test_core_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 
@@ -4888,8 +4888,8 @@ if (is_android) {
     srcjar_deps = [ ":base_profiler_test_support_jni" ]
 
     deps = [
-      "//base:jni_java",
       "//build/android:build_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 
@@ -4898,7 +4898,7 @@ if (is_android) {
 
     deps = [
       ":base_java",
-      "//base:jni_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
 
     sources = [

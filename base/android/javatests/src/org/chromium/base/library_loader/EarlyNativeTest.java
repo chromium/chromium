@@ -6,15 +6,15 @@ package org.chromium.base.library_loader;
 
 import androidx.test.filters.SmallTest;
 
+import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeLibraryLoadedStatus;
+import org.jni_zero.NativeMethods;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;

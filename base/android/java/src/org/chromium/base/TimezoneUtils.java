@@ -6,8 +6,8 @@ package org.chromium.base;
 
 import android.os.StrictMode;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
 import java.util.TimeZone;
 

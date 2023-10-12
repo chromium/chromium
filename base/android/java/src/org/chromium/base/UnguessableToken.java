@@ -9,7 +9,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
 /**
  * This class mirrors unguessable_token.h .  Since tokens are passed by value,

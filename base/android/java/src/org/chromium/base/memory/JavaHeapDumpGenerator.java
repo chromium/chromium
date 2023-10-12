@@ -6,10 +6,12 @@ package org.chromium.base.memory;
 
 import android.os.Debug;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.Log;
-import org.chromium.base.annotations.CalledByNative;
 
 import java.io.IOException;
+
 /**
  * Enables the generation of hprof files from heap dumps.
  */

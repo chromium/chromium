@@ -8,7 +8,7 @@ import android.os.Handler;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.JNINamespace;
 
 /**
  * Implementation of the abstract class {@link SingleThreadTaskRunner}. Before native initialization

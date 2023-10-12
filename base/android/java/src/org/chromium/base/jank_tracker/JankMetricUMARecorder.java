@@ -4,8 +4,8 @@
 
 package org.chromium.base.jank_tracker;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
 /**
  * Sends Android jank metrics to native to be recorded using UMA.

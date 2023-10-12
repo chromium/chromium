@@ -17,8 +17,9 @@ import android.telephony.TelephonyManager;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForP;
 
