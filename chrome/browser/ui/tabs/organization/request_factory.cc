@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/tabs/organization/request_factory.h"
 
-#include <codecvt>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -13,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,16 +25,6 @@
 #include "content/public/browser/web_contents.h"
 
 namespace {
-
-std::string SerializeU16String(const std::u16string& string) {
-  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
-  return convert.to_bytes(string);
-}
-
-std::u16string DeserializeString(const std::string& string) {
-  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
-  return convert.from_bytes(string);
-}
 
 void OnTabOrganizationModelExecutionResult(
     TabOrganizationRequest::BackendCompletionCallback on_completion,
@@ -60,7 +50,7 @@ void OnTabOrganizationModelExecutionResult(
     for (const auto& tab : tab_organization.tabs()) {
       response_tab_ids.emplace_back(tab.tab_id());
     }
-    organizations.emplace_back(DeserializeString(tab_organization.label()),
+    organizations.emplace_back(base::UTF8ToUTF16(tab_organization.label()),
                                std::move(response_tab_ids));
   }
 
@@ -96,7 +86,7 @@ void PerformTabOrganizationExecution(
 
     auto* tab = tab_organization_request.add_tabs();
     tab->set_tab_id(tab_data->tab_id());
-    tab->set_title(SerializeU16String(tab_data->web_contents()->GetTitle()));
+    tab->set_title(base::UTF16ToUTF8(tab_data->web_contents()->GetTitle()));
     tab->set_url(tab_data->original_url().spec());
   }
 
