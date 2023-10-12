@@ -189,43 +189,60 @@ gfx::Rect PaintedScrollbarLayerImpl::GetEnclosingVisibleRectInTargetSpace()
 gfx::Rect PaintedScrollbarLayerImpl::ComputeThumbQuadRect() const {
   gfx::Rect thumb_rect = ScrollbarLayerImplBase::ComputeThumbQuadRect();
 
-  // Position composited Fluent scrollbar thumb in the center of the track.
   if (IsFluentScrollbarEnabled()) {
-    const int track_thickness =
-        orientation() == ScrollbarOrientation::kHorizontal
-            ? track_rect_.height()
-            : track_rect_.width();
-    const int thumb_offset =
-        static_cast<int>((track_thickness - ThumbThickness()) / 2.0f);
-
-    if (orientation() == ScrollbarOrientation::kHorizontal) {
-      thumb_rect.Offset(0, thumb_offset);
-    } else {
-      thumb_rect.Offset(
-          is_left_side_vertical_scrollbar() ? -thumb_offset : thumb_offset, 0);
-    }
+    thumb_rect = CenterFluentScrollbarThumb(thumb_rect);
   }
 
   return thumb_rect;
 }
 
 gfx::Rect PaintedScrollbarLayerImpl::ComputeHitTestableThumbQuadRect() const {
-  if (!IsFluentScrollbarEnabled())
-    return ScrollbarLayerImplBase::ComputeHitTestableThumbQuadRect();
+  if (IsFluentScrollbarEnabled()) {
+    return ExpandFluentScrollbarThumb(ComputeThumbQuadRect());
+  }
+  return ScrollbarLayerImplBase::ComputeHitTestableThumbQuadRect();
+}
 
-  // Expand the scrollbar thumb's hit testable rect to be able to capture
-  // the thumb across the entire width of the track rect.
-  gfx::Rect thumb_rect = ComputeThumbQuadRect();
+gfx::Rect PaintedScrollbarLayerImpl::ComputeHitTestableExpandedThumbQuadRect()
+    const {
+  CHECK(is_overlay_scrollbar());
+  if (IsFluentOverlayScrollbarEnabled()) {
+    return ExpandFluentScrollbarThumb(CenterFluentScrollbarThumb(
+        ScrollbarLayerImplBase::ComputeHitTestableExpandedThumbQuadRect()));
+  }
+  return ScrollbarLayerImplBase::ComputeHitTestableExpandedThumbQuadRect();
+}
+
+gfx::Rect PaintedScrollbarLayerImpl::CenterFluentScrollbarThumb(
+    gfx::Rect thumb_rect) const {
+  CHECK(IsFluentScrollbarEnabled() || IsFluentOverlayScrollbarEnabled());
+  const int track_thickness = orientation() == ScrollbarOrientation::kHorizontal
+                                  ? track_rect_.height()
+                                  : track_rect_.width();
+  const int thumb_offset =
+      static_cast<int>((track_thickness - ThumbThickness()) / 2.0f);
+
+  if (orientation() == ScrollbarOrientation::kHorizontal) {
+    thumb_rect.Offset(0, thumb_offset);
+  } else {
+    thumb_rect.Offset(
+        is_left_side_vertical_scrollbar() ? -thumb_offset : thumb_offset, 0);
+  }
+  return thumb_rect;
+}
+
+gfx::Rect PaintedScrollbarLayerImpl::ExpandFluentScrollbarThumb(
+    gfx::Rect thumb_rect) const {
+  CHECK(IsFluentScrollbarEnabled() || IsFluentOverlayScrollbarEnabled());
   const gfx::Rect back_track_rect = BackTrackRect();
   if (orientation() == ScrollbarOrientation::kHorizontal) {
     thumb_rect.set_y(back_track_rect.y());
     thumb_rect.set_height(back_track_rect.height());
     return thumb_rect;
-  } else {
-    thumb_rect.set_x(back_track_rect.x());
-    thumb_rect.set_width(back_track_rect.width());
-    return thumb_rect;
   }
+  thumb_rect.set_x(back_track_rect.x());
+  thumb_rect.set_width(back_track_rect.width());
+  return thumb_rect;
 }
 
 void PaintedScrollbarLayerImpl::SetJumpOnTrackClick(bool jump_on_track_click) {

@@ -250,7 +250,8 @@ gfx::Rect ScrollbarLayerImplBase::ComputeThumbQuadRectWithThumbThicknessScale(
   return gfx::ToEnclosingRect(thumb_rect);
 }
 
-gfx::Rect ScrollbarLayerImplBase::ComputeExpandedThumbQuadRect() const {
+gfx::Rect ScrollbarLayerImplBase::ComputeHitTestableExpandedThumbQuadRect()
+    const {
   DCHECK(is_overlay_scrollbar());
   return ComputeThumbQuadRectWithThumbThicknessScale(1.f);
 }

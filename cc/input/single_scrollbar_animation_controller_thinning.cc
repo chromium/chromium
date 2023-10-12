@@ -22,7 +22,8 @@ float DistanceToScrollbarPart(const gfx::PointF& device_viewport_point,
                               const ScrollbarPart part) {
   gfx::RectF rect;
   if (part == ScrollbarPart::kThumb) {
-    rect = gfx::RectF(gfx::Rect(scrollbar.ComputeExpandedThumbQuadRect()));
+    rect = gfx::RectF(
+        gfx::Rect(scrollbar.ComputeHitTestableExpandedThumbQuadRect()));
   } else {
     rect = gfx::RectF(gfx::Rect(scrollbar.bounds()));
   }

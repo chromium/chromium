@@ -912,6 +912,7 @@ class FluentOverlayScrollbarLayerTreeHostImplTest
   void SetUp() override {
     LayerTreeSettings settings = DefaultSettings();
     settings.enable_fluent_overlay_scrollbar = true;
+    settings.enable_fluent_scrollbar = true;
     settings.scrollbar_animator = LayerTreeSettings::AURA_OVERLAY;
     settings.scrollbar_fade_delay = base::Milliseconds(500);
     settings.scrollbar_fade_duration = base::Milliseconds(300);
