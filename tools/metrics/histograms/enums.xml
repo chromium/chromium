@@ -80112,6 +80112,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="HEADER"/>
   <int value="7" label="TILE_NAVSUGGEST"/>
   <int value="8" label="PEDAL_SUGGESTION"/>
+  <int value="9" label="DIVIDER_LINE"/>
+  <int value="10" label="QUERY_TILES"/>
 </enum>
 
 <enum name="OmniboxSuggestRequests">

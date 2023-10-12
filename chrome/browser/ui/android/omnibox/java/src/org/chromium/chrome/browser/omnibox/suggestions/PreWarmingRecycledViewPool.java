@@ -72,6 +72,7 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
         setMaxRecycledViews(OmniboxSuggestionUiType.TILE_NAVSUGGEST, 1);
         setMaxRecycledViews(OmniboxSuggestionUiType.PEDAL_SUGGESTION, 3);
         setMaxRecycledViews(OmniboxSuggestionUiType.DIVIDER_LINE, 1);
+        setMaxRecycledViews(OmniboxSuggestionUiType.QUERY_TILES, 1);
     }
 
     public void destroy() {

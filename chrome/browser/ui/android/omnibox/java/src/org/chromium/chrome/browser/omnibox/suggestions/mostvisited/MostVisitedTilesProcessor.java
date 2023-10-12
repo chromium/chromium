@@ -38,7 +38,6 @@ import java.util.List;
  * SuggestionProcessor for Most Visited URL tiles.
  */
 public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
-    private final @NonNull Context mContext;
     private final @NonNull SuggestionHost mSuggestionHost;
     private final @Nullable OmniboxImageSupplier mImageSupplier;
     private final int mMinCarouselItemViewHeight;
@@ -53,7 +52,6 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     public MostVisitedTilesProcessor(@NonNull Context context, @NonNull SuggestionHost host,
             @Nullable OmniboxImageSupplier imageSupplier) {
         super(context);
-        mContext = context;
         mSuggestionHost = host;
         mImageSupplier = imageSupplier;
         mMinCarouselItemViewHeight =

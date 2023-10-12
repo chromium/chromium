@@ -261,6 +261,12 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             OmniboxSuggestionUiType.DIVIDER_LINE,
             parent -> new DividerLineView(parent.getContext()),
             DividerLineViewBinder::bind);
+
+        adapter.registerType(
+                OmniboxSuggestionUiType.QUERY_TILES,
+                BaseCarouselSuggestionItemViewBuilder::createView,
+                BaseCarouselSuggestionViewBinder::bind);
+
         // clang-format on
         return adapter;
     }
