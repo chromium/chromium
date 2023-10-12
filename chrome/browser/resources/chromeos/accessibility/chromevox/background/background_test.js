@@ -3863,13 +3863,7 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
-// TODO(https://crbug.com/1491964): Failing on Linux ChromeOS bots.
-GEN('#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)');
-GEN('#define MAYBE_NewWindowWebSpeech DISABLED_NewWindowWebSpeech');
-GEN('#else');
-GEN('#define MAYBE_NewWindowWebSpeech NewWindowWebSpeech');
-GEN('#endif');
-TEST_F('ChromeVoxBackgroundTest', 'MAYBE_NewWindowWebSpeech', function() {
+TEST_F('ChromeVoxBackgroundTest', 'NewWindowWebSpeech', function() {
   this.newCallback(async () => {
     const speech = [];
     let onSpeech;
@@ -3880,11 +3874,11 @@ TEST_F('ChromeVoxBackgroundTest', 'MAYBE_NewWindowWebSpeech', function() {
       }
     };
 
-    chrome.runtime.openOptionsPage();
+    this.runWithLoadedTree('<h1>ChromeVox Rocks</h1><p>We love ChromeVox</p>');
 
     await new Promise(resolve => {
       onSpeech = textString => {
-        if (textString === 'ChromeVox Options') {
+        if (textString === 'ChromeVox Rocks') {
           resolve();
         }
       };
@@ -3898,8 +3892,8 @@ TEST_F('ChromeVoxBackgroundTest', 'MAYBE_NewWindowWebSpeech', function() {
 
     // Check to ensure there are no duplicate announcements.
     assertEquals(
-        speech.indexOf('ChromeVox Options'),
-        speech.lastIndexOf('ChromeVox Options'));
+        speech.indexOf('ChromeVox Rocks'),
+        speech.lastIndexOf('ChromeVox Rocks'));
 
     // Ensure there are no announcements about the Tab role.
     assertTrue(speech.every(text => {
