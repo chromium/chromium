@@ -34,7 +34,13 @@ TEST_F(CannedDatabaseHelperTest, Empty) {
   ASSERT_TRUE(helper->empty());
 }
 
-TEST_F(CannedDatabaseHelperTest, Delete) {
+// Flaky on Android: https://crbug.com/1492127
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Delete DISABLED_Delete
+#else
+#define MAYBE_Delete Delete
+#endif
+TEST_F(CannedDatabaseHelperTest, MAYBE_Delete) {
   content::TestBrowserContext browser_context;
 
   const GURL origin1("http://host1:9000");
