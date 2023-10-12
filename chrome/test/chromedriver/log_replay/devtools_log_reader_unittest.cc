@@ -23,7 +23,7 @@ const char kReadableTimestampPathWin[] = "testReadableTimestampWindows.log";
 
 base::FilePath GetLogFileFromLiteral(const char literal[]) {
   base::FilePath root_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &root_dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_dir));
   for (int i = 0; i < 5; i++)
     root_dir = root_dir.AppendASCII(kTestDataPath[i]);
   base::FilePath result = root_dir.AppendASCII(literal);

@@ -16,8 +16,9 @@ bool GetTestDataPath(const std::string& component,
                      const std::string& filename,
                      base::FilePath* data_dir) {
   base::FilePath path;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &path))
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path)) {
     return false;
+  }
   path = path.Append(FILE_PATH_LITERAL("chromeos"));
   path = path.Append(FILE_PATH_LITERAL("test"));
   path = path.Append(FILE_PATH_LITERAL("data"));

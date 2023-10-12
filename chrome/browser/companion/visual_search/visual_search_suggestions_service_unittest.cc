@@ -26,7 +26,7 @@ namespace {
 
 base::FilePath model_file_path() {
   base::FilePath source_root_dir;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
   return source_root_dir.AppendASCII("chrome")
       .AppendASCII("test")
       .AppendASCII("data")
@@ -99,7 +99,7 @@ TEST_F(VisualSearchSuggestionsServiceTest,
 
 TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated_InvalidModelFile) {
   base::FilePath source_root_dir;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
   std::unique_ptr<optimization_guide::ModelInfo> invalid_model_info_ =
       optimization_guide::TestModelInfoBuilder()
           .SetModelFilePath(source_root_dir.AppendASCII("chrome")

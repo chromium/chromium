@@ -97,7 +97,7 @@ void HeadlessModeProtocolBrowserTest::OnLoadEventFired(
     const base::Value::Dict& params) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath src_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir));
   base::FilePath test_path =
       src_dir.Append(kTestsScriptRoot).AppendASCII(script_name_);
   std::string script;
@@ -156,7 +156,7 @@ void HeadlessModeProtocolBrowserTest::ProcessTestResult(
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath src_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir));
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir));
   base::FilePath expectation_path =
       src_dir.Append(kTestsScriptRoot)
           .AppendASCII(script_name_.substr(0, script_name_.length() - 3) +

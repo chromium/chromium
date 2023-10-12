@@ -405,7 +405,7 @@ class PictureInPicturePixelComparisonBrowserTest
 
   base::FilePath GetFilePath(base::FilePath::StringPieceType relative_path) {
     base::FilePath base_dir;
-    CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &base_dir));
+    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &base_dir));
     // The path relative to <chromium src> for pixel test data.
     const base::FilePath::StringPieceType kTestDataPath =
         FILE_PATH_LITERAL("chrome/test/data/media/picture-in-picture/");

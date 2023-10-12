@@ -20,7 +20,7 @@ namespace {
 
 base::FilePath GetGoldensPath() {
   base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
 
   return path.Append(
       FILE_PATH_LITERAL("chrome/browser/ash/child_accounts/"

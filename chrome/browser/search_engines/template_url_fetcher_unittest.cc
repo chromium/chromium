@@ -32,8 +32,9 @@ namespace {
 constexpr int32_t kRequestID = 10;
 
 bool GetTestFilePath(const std::string& file_name, base::FilePath* path) {
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, path))
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, path)) {
     return false;
+  }
   *path = path->AppendASCII("components")
               .AppendASCII("test")
               .AppendASCII("data")

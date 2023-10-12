@@ -619,7 +619,7 @@ bool WebPageReplayServerWrapper::Start(
     const base::FilePath& capture_file_path) {
   std::vector<std::string> args;
   base::FilePath src_dir;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir)) {
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir)) {
     ADD_FAILURE() << "Failed to extract the Chromium source directory!";
     return false;
   }
@@ -727,7 +727,7 @@ bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
 
   base::LaunchOptions options = base::LaunchOptionsForTest();
   base::FilePath exe_dir;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &exe_dir)) {
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &exe_dir)) {
     ADD_FAILURE() << "Failed to extract the Chromium source directory!";
     return false;
   }
@@ -768,7 +768,7 @@ bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
   // The custom cert and key files are different from those of the official
   // WPR releases. The custom files are made to work on iOS.
   base::FilePath src_dir;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir)) {
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir)) {
     ADD_FAILURE() << "Failed to extract the Chromium source directory!";
     return false;
   }

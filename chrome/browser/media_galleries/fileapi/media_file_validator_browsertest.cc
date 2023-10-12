@@ -69,8 +69,9 @@ void HandleCheckFileResult(int64_t expected_size,
 
 base::FilePath GetMediaTestDir() {
   base::FilePath test_file;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &test_file))
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_file)) {
     return base::FilePath();
+  }
   return test_file.AppendASCII("media").AppendASCII("test").AppendASCII("data");
 }
 

@@ -217,7 +217,8 @@ class DlpScopedFileAccessDelegateBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     base::FilePath test_data_path;
-    EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_path));
+    EXPECT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_path));
     embedded_test_server()->ServeFilesFromDirectory(
         test_data_path.AppendASCII("chrome/test/data/dlp"));
     host_resolver()->AddRule("*", "127.0.0.1");

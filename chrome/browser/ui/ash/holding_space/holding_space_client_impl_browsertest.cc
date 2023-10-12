@@ -58,7 +58,8 @@ std::unique_ptr<HoldingSpaceImage> CreateTestHoldingSpaceImage(
 // downloads directory, and returns the path to the copy.
 base::FilePath TestFile(Profile* profile, const std::string& relative_path) {
   base::FilePath source_root;
-  EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root));
+  EXPECT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root));
   const base::FilePath source_file =
       source_root.AppendASCII(kTestDataDir).AppendASCII(relative_path);
 

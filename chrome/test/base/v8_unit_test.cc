@@ -187,7 +187,8 @@ void V8UnitTest::InitPathsAndLibraries() {
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_GEN_TEST_DATA,
                                      &g_gen_test_data_directory));
 
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &g_src_root));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &g_src_root));
 }
 
 void V8UnitTest::SetUp() {

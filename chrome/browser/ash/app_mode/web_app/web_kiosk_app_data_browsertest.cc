@@ -47,7 +47,7 @@ const char kStartUrl[] = "https://example.com/start";
 
 base::FilePath GetFullPathToImage(bool valid) {
   base::FilePath test_data_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
   return test_data_dir.Append(valid ? kIconPath : kIconBadPath);
 }
 

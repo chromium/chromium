@@ -25,7 +25,7 @@ bool GetTestDataPath(const std::string& filename, base::FilePath* result_path) {
   base::ScopedAllowBlockingForTesting allow_io;
 
   base::FilePath path;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &path)) {
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path)) {
     LOG(FATAL) << "Failed to get the path to root for " << filename;
     return false;
   }

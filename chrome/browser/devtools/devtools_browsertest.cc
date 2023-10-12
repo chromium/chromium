@@ -1784,7 +1784,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   LoadExtension("can_inspect_url");
   std::string file_url =
       net::FilePathToFileURL(
-          base::PathService::CheckedGet(base::DIR_SOURCE_ROOT)
+          base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
               .AppendASCII("content/test/data/devtools/navigation.html"))
           .spec();
   RunTest("waitForTestResultsAsMessage",
@@ -1974,7 +1974,7 @@ class DevToolsExtensionFileAccessTest : public DevToolsExtensionTest {
 
     std::string file_url =
         net::FilePathToFileURL(
-            base::PathService::CheckedGet(base::DIR_SOURCE_ROOT)
+            base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
                 .AppendASCII("content/test/data/devtools/navigation.html"))
             .spec();
 
@@ -2930,7 +2930,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestOpenInNewTabFilter) {
 
 IN_PROC_BROWSER_TEST_F(DevToolsTest, LoadNetworkResourceForFrontend) {
   std::string file_url =
-      "file://" + base::PathService::CheckedGet(base::DIR_SOURCE_ROOT)
+      "file://" + base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
                       .AppendASCII("content/test/data/devtools/navigation.html")
                       .NormalizePathSeparatorsTo('/')
                       .AsUTF8Unsafe();

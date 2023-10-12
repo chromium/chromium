@@ -33,7 +33,7 @@ class PreloadingModelKeyedServiceTest : public InProcessBrowserTest {
         {});
 
     base::FilePath source_root_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
 
     base::FilePath model_file_path =
         source_root_dir.AppendASCII("chrome")

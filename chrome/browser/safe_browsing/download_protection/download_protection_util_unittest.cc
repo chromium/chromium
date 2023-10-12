@@ -23,7 +23,8 @@ TEST(DownloadProtectionUtilTest, GetCertificateAllowlistStrings) {
   // about this.
 
   base::FilePath source_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_path));
   base::FilePath testdata_path = source_path.AppendASCII("chrome")
                                      .AppendASCII("test")
                                      .AppendASCII("data")

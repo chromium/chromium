@@ -178,7 +178,7 @@ void PPAPITestBase::SetUpOnMainThread() {
 GURL PPAPITestBase::GetTestFileUrl(const std::string& test_case) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath test_path;
-  EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_path));
+  EXPECT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_path));
   test_path = test_path.Append(FILE_PATH_LITERAL("ppapi"));
   test_path = test_path.Append(FILE_PATH_LITERAL("tests"));
   test_path = test_path.Append(FILE_PATH_LITERAL("test_case.html"));

@@ -29,7 +29,7 @@ class NotificationsCustomBindingsBrowserTest : public InProcessBrowserTest {
 
   virtual void RunTest(const std::string& trigger) {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root_);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_root_);
     content::WebContents* web_contents =
         chrome_test_utils::GetActiveWebContents(this);
     LoadLibrary(

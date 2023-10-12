@@ -159,7 +159,7 @@ class ClientSideDetectionServiceTest
 
   void ReadModelAndTfLiteFiles() {
     base::FilePath model_file_path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &model_file_path);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &model_file_path);
     model_file_path = model_file_path.AppendASCII("components")
                           .AppendASCII("test")
                           .AppendASCII("data")
@@ -167,7 +167,8 @@ class ClientSideDetectionServiceTest
                           .AppendASCII("client_model.pb");
 
     base::FilePath additional_files_path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &additional_files_path);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT,
+                           &additional_files_path);
     additional_files_path = additional_files_path.AppendASCII("components")
                                 .AppendASCII("test")
                                 .AppendASCII("data")

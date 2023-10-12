@@ -58,7 +58,7 @@ class Delegate {
 
 base::FilePath GetTestFilePath() {
   base::FilePath file_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
   file_path = file_path.AppendASCII("net");
   file_path = file_path.AppendASCII("data");
   file_path = file_path.AppendASCII("url_request_unittest");

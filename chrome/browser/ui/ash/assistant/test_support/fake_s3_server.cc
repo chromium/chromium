@@ -48,7 +48,7 @@ base::FilePath GetExecutableDir() {
 
 base::FilePath GetSourceDir() {
   base::FilePath result;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &result);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &result);
   return result;
 }
 

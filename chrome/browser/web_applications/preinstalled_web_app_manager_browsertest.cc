@@ -95,7 +95,7 @@ base::FilePath GetDataFilePath(const base::FilePath& relative_path,
   base::ScopedAllowBlockingForTesting allow_io;
 
   base::FilePath root_path;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path));
   base::FilePath path = root_path.Append(relative_path);
   *path_exists = base::PathExists(path);
   return path;
@@ -234,7 +234,8 @@ class PreinstalledWebAppManagerBrowserTestBase
     SetPreinstalledWebAppConfigDirForTesting(&test_config_dir);
 
     base::FilePath source_root_dir;
-    CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir));
+    CHECK(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir));
     base::FilePath test_icon_path =
         source_root_dir.Append(GetChromeTestDataDir())
             .AppendASCII("web_apps/blue-192.png");

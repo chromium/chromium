@@ -532,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, MediaMetadata) {
 
   // Get source media/test/data directory path.
   base::FilePath root_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &root_dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_dir));
   const base::FilePath media_test_data_dir =
       root_dir.AppendASCII("media").AppendASCII("test").AppendASCII("data");
 

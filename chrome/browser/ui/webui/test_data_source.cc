@@ -123,7 +123,7 @@ void TestDataSource::ReadFile(
   auto it = custom_paths_.find(url.path());
   if (it != custom_paths_.end()) {
     base::FilePath src_root;
-    CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root));
+    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_root));
     base::FilePath file_path =
         src_root.AppendASCII(it->second).NormalizePathSeparators();
     CHECK(base::ReadFileToString(file_path, &content))

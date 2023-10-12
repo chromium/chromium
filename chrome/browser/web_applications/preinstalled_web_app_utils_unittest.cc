@@ -52,7 +52,8 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
     testing::Test::SetUp();
 
     base::FilePath source_root_dir;
-    CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir));
+    CHECK(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir));
     file_utils_ = TestFileUtils::Create({
         {base::FilePath(FILE_PATH_LITERAL("test_dir/icon.png")),
          source_root_dir.AppendASCII("chrome/test/data/web_apps/blue-192.png")},

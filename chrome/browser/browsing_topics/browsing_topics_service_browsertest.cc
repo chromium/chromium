@@ -343,7 +343,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsAnnotationGoldenDataBrowserTest,
   category_params->set_min_normalized_weight_within_top_n(0.1);
   page_topics_model_metadata.SerializeToString(any_metadata.mutable_value());
   base::FilePath source_root_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir));
   base::FilePath model_file_path = source_root_dir.AppendASCII("chrome")
                                        .AppendASCII("test")
                                        .AppendASCII("data")

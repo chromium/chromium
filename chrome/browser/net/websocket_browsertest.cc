@@ -93,7 +93,7 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
 
   void NavigateToPath(const std::string& relative) {
     base::FilePath path;
-    EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &path));
+    EXPECT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
     path =
         path.Append(net::GetWebSocketTestDataDirectory()).AppendASCII(relative);
     GURL url(std::string("file://") + path.MaybeAsASCII());
