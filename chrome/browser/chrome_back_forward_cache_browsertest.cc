@@ -739,8 +739,14 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+// Flaky on Mac: crbug.com/1492026
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded DISABLED_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded
+#else
+#define MAYBE_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded
+#endif
 IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
-                       DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded) {
+                       MAYBE_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded) {
   const auto tag = GetParam();
 
   // Navigate to A.
@@ -796,8 +802,14 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 }
 
+// Flaky on Mac: crbug.com/1492026
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf DISABLED_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf
+#else
+#define MAYBE_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf
+#endif
 IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
-                       DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf) {
+                       MAYBE_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf) {
   const auto tag = GetParam();
   const auto page_with_html = base::StringPrintf(
       "/back_forward_cache/page_with_%s_html.html", tag.c_str());
