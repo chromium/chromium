@@ -3935,7 +3935,7 @@
 <translation id="4085298594534903246">‏JavaScript נחסם בדף זה.</translation>
 <translation id="4085566053793776107">התאמה אישית של העיצובים</translation>
 <translation id="4085620044235559093">בחירת אפליקציה לפתיחת קבצים של <ph name="FILE_TYPE" /></translation>
-<translation id="4086041296339853919">‏אין הרשאה לאתרים להשתמש במכשירי ה-MIDI שלך</translation>
+<translation id="4086041296339853919">‏אתרים לא יכולים להשתמש במכשירי ה-MIDI שלך</translation>
 <translation id="4087089424473531098">ההרחבה נוצרה על ידי:
 
 <ph name="EXTENSION_FILE" /></translation>

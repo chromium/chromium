@@ -1223,7 +1223,7 @@
 <translation id="1941410638996203291">Время начала: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Версия: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">Показать привязку клавиш</translation>
-<translation id="1942128823046546853">Просмотр и изменение ваших данных на всех сайтах.</translation>
+<translation id="1942128823046546853">Просмотр и изменение ваших данных на всех сайтах</translation>
 <translation id="1944528062465413897">Код Bluetooth-подключения:</translation>
 <translation id="1944535645109964458">Ключи доступа не найдены</translation>
 <translation id="1944921356641260203">Найдено обновление</translation>
@@ -4254,7 +4254,7 @@
 <translation id="4363771538994847871">Нет устройств для трансляции. Нужна помощь?</translation>
 <translation id="4364327530094270451">Дыня</translation>
 <translation id="4364567974334641491">Приложение "<ph name="APP_NAME" />" предоставило доступ к окну.</translation>
-<translation id="4364830672918311045">Показывать уведомления</translation>
+<translation id="4364830672918311045">Показ уведомлений</translation>
 <translation id="4366138410738374926">Запущена печать</translation>
 <translation id="4367513928820380646">Посмотреть отозванные разрешения</translation>
 <translation id="4367971618859387374">Отображаемое имя</translation>
@@ -9112,7 +9112,7 @@
 <translation id="8321837372750396788">Этим устройством <ph name="DEVICE_TYPE" /> будет управлять <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Доступ к вашему микрофону для этой страницы заблокирован.</translation>
 <translation id="8323167517179506834">Введите URL</translation>
-<translation id="8323317289166663449">Просмотр и изменение ваших данных на компьютере и всех сайтах.</translation>
+<translation id="8323317289166663449">Просмотр и изменение ваших данных на компьютере и всех сайтах</translation>
 <translation id="8324158725704657629">Больше не спрашивать</translation>
 <translation id="8324784016256120271">Сайты могут использовать файлы cookie, чтобы отслеживать ваши действия в браузере, например, для показа персонализированной рекламы.</translation>
 <translation id="8325413836429495820">Запретить сайтам просматривать буфер обмена</translation>

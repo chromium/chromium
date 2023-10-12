@@ -56,6 +56,7 @@
 <translation id="1264156759663453185">所選文字太多，不適用部分翻譯。</translation>
 <translation id="1265739287306757398">操作說明</translation>
 <translation id="1272079795634619415">停止</translation>
+<translation id="1273416271143914096">{count,plural, =1{{count} 個密碼}other{{count} 個密碼}}</translation>
 <translation id="1275718070701477396">已選取</translation>
 <translation id="1279024913354609713">不允許</translation>
 <translation id="1281818060020671000">管理資料</translation>
@@ -189,6 +190,7 @@
 <translation id="1987779152850321833">完成下列建議動作，充分運用 Chrome 的各項功能。</translation>
 <translation id="1989112275319619282">瀏覽</translation>
 <translation id="1990820278544963435">尋找</translation>
+<translation id="1991153180045413119">已分享密碼</translation>
 <translation id="1992055602764528852">你登入後，就能存取在其他裝置上開啟的分頁。</translation>
 <translation id="199425419756152024">查看密碼</translation>
 <translation id="2008357574463816229">如果忘記通關密語或想要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
@@ -232,6 +234,7 @@
 <translation id="2268044343513325586">修正搜尋</translation>
 <translation id="2269277877025820298">查看更多內容</translation>
 <translation id="2273327106802955778">[更多] 選單</translation>
+<translation id="2274800392139890332">取消追蹤這個包裹</translation>
 <translation id="2275480389219976105">找到地址</translation>
 <translation id="2286505070150039482">醒目顯示的文字</translation>
 <translation id="2287614783861766820">{count,plural, =1{這個地址將從這部裝置中刪除。}other{這些地址將從這部裝置中刪除。}}</translation>
@@ -240,6 +243,7 @@
 <translation id="2299218006564889602">系統會先在裝置上將密碼加密，再儲存至 Google 密碼管理員。</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">變更網站上的密碼</translation>
+<translation id="2310154074101836012">編輯輪轉介面</translation>
 <translation id="2316709634732130529">使用建議的密碼</translation>
 <translation id="2320166752086256636">隱藏鍵盤</translation>
 <translation id="2351097562818989364">您的翻譯設定已重設。</translation>
@@ -524,6 +528,7 @@
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803696231112616155">針對這個網站提供翻譯選項</translation>
 <translation id="3810973564298564668">管理</translation>
+<translation id="3818045793209708987">已停止追蹤這個包裹</translation>
 <translation id="3818293389945649617">尋找下一個相符的項目</translation>
 <translation id="3819183753496523827">你已經離線，請檢查網際網路連線，然後再試一次。</translation>
 <translation id="3832419617903252251">系統只會將密碼儲存在這部裝置上</translation>
@@ -562,6 +567,7 @@
 <translation id="4018310736049373830">管理活動</translation>
 <translation id="4038354071007134711">這個裝置上沒有能開啟此檔案的應用程式。</translation>
 <translation id="4042870976416480368">在網頁中查找</translation>
+<translation id="4043294777772912240">現在起，當<ph name="USERNAME" />透過 Google 密碼管理工具登入 <ph name="WEBSITE" /> 時，就能直接使用你的使用者名稱和密碼。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">反白標示頁面上的某個部分，然後建立可以直接連結的網址，輕鬆與其他人分享頁面上的內容。</translation>
 <translation id="4045648459118332842">輕觸一下即可在任何應用程式中取得已儲存的密碼</translation>
 <translation id="4049507953662678203">請確定您已連上網路，然後再試一次。</translation>
@@ -605,6 +611,7 @@
 <translation id="4286718549648564014">地址已移至你的帳戶 <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">搜尋</translation>
 <translation id="4302248187517737842">沒有使用者名稱 ••••••••</translation>
+<translation id="4302415908542657649">正在分享密碼</translation>
 <translation id="4304713468139749426">密碼管理工具</translation>
 <translation id="430793432425771671">同步處理所有資料</translation>
 <translation id="4309403553630140242">輕觸兩下即可查看更多資訊</translation>
@@ -640,6 +647,7 @@
 <translation id="4508750114462689118">關閉登入提示</translation>
 <translation id="4514889972748124117">建議高強度密碼...</translation>
 <translation id="4520798012560649652">進一步瞭解無痕模式</translation>
+<translation id="452503091941773389">{count,plural, =1{{count} 個書籤}other{{count} 個書籤}}</translation>
 <translation id="452750746583162491">查看已同步處理的資料</translation>
 <translation id="4527660062930312477">你的帳戶是受管理帳戶</translation>
 <translation id="4536418791685807335">請嘗試重新登入。</translation>
@@ -659,6 +667,7 @@
 <translation id="4619615317237390068">在其他裝置上開啟的分頁</translation>
 <translation id="4620246317052452550">你看過的網頁</translation>
 <translation id="4620888520263267479">顯示連結預覽</translation>
+<translation id="4622477750832577849">啟用追蹤功能</translation>
 <translation id="4630540211544979320">翻譯網頁</translation>
 <translation id="4631335160486397366">有 <ph name="COUNT" /> 組重複使用的密碼</translation>
 <translation id="4634124774493850572">使用密碼</translation>
@@ -808,6 +817,7 @@
 <translation id="54401264925851789">網頁安全性資訊</translation>
 <translation id="5443952882982198570">信用卡</translation>
 <translation id="5444892875087332195">書籤</translation>
+<translation id="5454211924362324495">如果不希望他人使用你的密碼，請<ph name="BEGIN_LINK" />前往 <ph name="WEBSITE" /> 變更密碼<ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">開啟離線版本</translation>
 <translation id="5475069061743940393">包裹追蹤</translation>
 <translation id="5478327362747197944">按一下網頁上的日期，即可直接建立日曆活動。</translation>
@@ -1154,6 +1164,7 @@
 <translation id="7154343200458623869">完成工作。</translation>
 <translation id="7161230316646448869">同步你在所有裝置上的密碼、歷史記錄和其他設定</translation>
 <translation id="7162168282402939716">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕分頁</translation>
+<translation id="7168959436351276050">如果隱藏這張資訊卡，系統將移除所有包裹追蹤資料</translation>
 <translation id="7172852049901402487">確保密碼安全，避免發生安全性問題</translation>
 <translation id="7173114856073700355">開啟設定</translation>
 <translation id="7189598951263744875">分享...</translation>
