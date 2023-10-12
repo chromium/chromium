@@ -357,9 +357,8 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kContentEditable)));
 
-// TODO(https://crbug.com/1490612): Tests are very flaky.
 INSTANTIATE_TEST_SUITE_P(
-    DISABLED_OnDeviceTextArea,
+    OnDeviceTextArea,
     DictationTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kOnDevice,
                                  EditableType::kTextArea)));

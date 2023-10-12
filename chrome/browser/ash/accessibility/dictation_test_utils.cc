@@ -217,7 +217,9 @@ void DictationTestUtils::SendFinalResultAndWaitForEditableValue(
     const std::string& result,
     const std::string& value) {
   SendFinalResultAndWait(result);
-  automation_test_utils_->WaitForValueChangedEvent();
+  if (speech_recognition_type_ == speech::SpeechRecognitionType::kNetwork) {
+    automation_test_utils_->WaitForValueChangedEvent();
+  }
   WaitForEditableValue(value);
 }
 
