@@ -2672,11 +2672,11 @@ component("i18n") {
   defines = [ "BASE_I18N_IMPLEMENTATION" ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   public_deps = [
+    ":base",
     "//third_party/ced",
     "//third_party/icu",
   ]
   deps = [
-    ":base",
     "//base/third_party/dynamic_annotations",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
