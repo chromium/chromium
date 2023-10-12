@@ -10,9 +10,12 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/parental_handoff_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chromeos/ash/components/quick_start/logging.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
@@ -31,6 +34,20 @@ absl::optional<QuickStartController::EntryPoint> EntryPointFromScreen(
     return QuickStartController::EntryPoint::GAIA_SCREEN;
   }
   return absl::nullopt;
+}
+
+quick_start_metrics::ScreenName ScreenNameFromOobeScreenId(
+    OobeScreenId screen_id) {
+  //  TODO(b/298042953): Check Screen IDs for Unicorn account setup flow.
+  if (screen_id == ConsumerUpdateScreenView::kScreenId) {
+    //  TODO(b/298042953): Update Screen ID when the new OOBE Checking for
+    //  update and determining device configuration screen is added.
+    return quick_start_metrics::ScreenName::
+        kCheckingForUpdateAndDeterminingDeviceConfiguration;
+  } else if (screen_id == UserCreationView::kScreenId) {
+    return quick_start_metrics::ScreenName::kChooseChromebookSetup;
+  }
+  return quick_start_metrics::ScreenName::kOther;
 }
 
 }  // namespace
@@ -135,6 +152,8 @@ void QuickStartController::OnStatusChanged(
   using Step = TargetDeviceBootstrapController::Step;
   using ErrorCode = TargetDeviceBootstrapController::ErrorCode;
 
+  // TODO(b/298042953): Emit ScreenOpened metrics when automatically resuming
+  // after an update.
   switch (status.step) {
     case Step::ADVERTISING_WITH_QR_CODE: {
       controller_state_ = ControllerState::ADVERTISING;
@@ -211,9 +230,13 @@ void QuickStartController::OnCurrentScreenChanged(OobeScreenId previous_screen,
   current_screen_ = current_screen;
   previous_screen_ = previous_screen;
 
-  // Just switched into the quick start screen.
   if (current_screen_ == QuickStartScreenHandler::kScreenId) {
+    // Just switched into the quick start screen. The ScreenOpened metrics on
+    // the Quick Start screen are recorded from OnStatusChanged().
     HandleTransitionToQuickStartScreen();
+  } else if (IsSetupOngoing()) {
+    quick_start_metrics::RecordScreenOpened(
+        ScreenNameFromOobeScreenId(current_screen));
   }
 }
 

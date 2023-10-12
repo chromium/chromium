@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/multidevice_setup/oobe_completion_tracker_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/multidevice_setup_screen_handler.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
@@ -121,6 +122,8 @@ bool MultiDeviceSetupScreen::MaybeSkip(WizardContext& context) {
   const std::string& phone_instance_id = context.quick_start_phone_instance_id;
   if (!phone_instance_id.empty()) {
     setup_client_->SetQuickStartPhoneInstanceID(phone_instance_id);
+    quick_start::quick_start_metrics::RecordScreenOpened(
+        quick_start::quick_start_metrics::ScreenName::kUnifiedSetup);
   }
 
   // Do not skip if potential host exists but none is set yet.
