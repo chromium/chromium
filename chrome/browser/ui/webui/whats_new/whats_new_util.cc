@@ -47,8 +47,9 @@ const char kChromeWhatsNewURLShort[] = "google.com/chrome/whats-new/";
 const char kChromeWhatsNewRefreshURL[] =
     "https://www.google.com/chrome/whats-new/m117";
 
+bool is_minimum_refresh_version = CHROME_VERSION_MAJOR >= 117;
 bool is_refresh_version =
-    CHROME_VERSION_MAJOR >= 117 && CHROME_VERSION_MAJOR <= 119;
+    CHROME_VERSION_MAJOR == 117 || CHROME_VERSION_MAJOR == 118;
 
 bool g_is_remote_content_disabled = false;
 
@@ -56,12 +57,17 @@ void DisableRemoteContentForTests() {
   g_is_remote_content_disabled = true;
 }
 
+bool IsMinimumRefreshVersion() {
+  return is_minimum_refresh_version;
+}
+
 bool IsRefreshVersion() {
   return is_refresh_version;
 }
 
 void SetChromeVersionForTests(int chrome_version) {
-  is_refresh_version = chrome_version >= 117 && chrome_version <= 119;
+  is_minimum_refresh_version = chrome_version >= 117;
+  is_refresh_version = chrome_version == 117 || chrome_version == 118;
 }
 
 void LogStartupType(StartupType type) {
@@ -79,11 +85,6 @@ bool HasShownRefreshWhatsNew(PrefService* local_state) {
 bool ShouldShowRefresh(PrefService* local_state) {
   // Check pref to see if user has seen refresh page.
   if (HasShownRefreshWhatsNew(local_state)) {
-    return false;
-  }
-
-  // Only show refresh page on milestone versions 117-119.
-  if (!IsRefreshVersion()) {
     return false;
   }
 
@@ -119,8 +120,20 @@ bool ShouldShowForState(PrefService* local_state,
     return false;
   }
 
-  if (ShouldShowRefresh(local_state)) {
+  // Prevent showing the refresh page before 117, even if the refresh
+  // flag is enabled.
+  if (IsMinimumRefreshVersion() && ShouldShowRefresh(local_state)) {
     return true;
+  }
+
+  // These releases are dedicated to the refresh page which is served on
+  // the milestone 117 URL. Avoid ever showing content on 117/118
+  // milestone upgrades by returning early.
+  if (IsRefreshVersion()) {
+    if (HasShownRefreshWhatsNew(local_state)) {
+      LogStartupType(StartupType::kAlreadyShown);
+    }
+    return false;
   }
 
   int last_version = local_state->GetInteger(prefs::kLastWhatsNewVersion);
@@ -163,22 +176,19 @@ GURL GetWebUIStartupURL() {
 
 namespace {
 
+void AddWhatsNewTab(Browser* browser) {
+  chrome::AddTabAt(browser, GetWebUIStartupURL(), 0, true);
+  browser->tab_strip_model()->ActivateTabAt(
+      browser->tab_strip_model()->IndexOfFirstNonPinnedTab());
+}
+
 class WhatsNewFetcher : public BrowserListObserver {
  public:
-  explicit WhatsNewFetcher(Browser* browser) : browser_(browser) {
+  explicit WhatsNewFetcher(
+      Browser* browser,
+      absl::optional<const GURL> override_url = absl::nullopt)
+      : browser_(browser) {
     BrowserList::AddObserver(this);
-
-    PrefService* local_state = g_browser_process->local_state();
-    GURL server_url;
-    if (ShouldShowRefresh(local_state)) {
-      server_url = GetServerURLForRefresh();
-      startup_url_ =
-          net::AppendQueryParameter(GetWebUIStartupURL(), "refresh", "true");
-    } else {
-      server_url = GetServerURL(false);
-      startup_url_ = GetWebUIStartupURL();
-    }
-
     if (IsRemoteContentDisabled()) {
       // Don't fetch network content if this is the case, just pretend the tab
       // was retrieved successfully. Do so asynchronously to simulate the
@@ -219,7 +229,8 @@ class WhatsNewFetcher : public BrowserListObserver {
     auto request = std::make_unique<network::ResourceRequest>();
     // Don't allow redirects when checking if the page is valid for the current
     // milestone.
-    request->url = server_url;
+    request->url =
+        override_url.has_value() ? override_url.value() : GetServerURL(false);
     simple_loader_ = network::SimpleURLLoader::Create(std::move(request),
                                                       traffic_annotation);
     // base::Unretained is safe here because only OnResponseLoaded deletes
@@ -254,12 +265,6 @@ class WhatsNewFetcher : public BrowserListObserver {
   }
 
  private:
-  void AddWhatsNewTab(Browser* browser) {
-    chrome::AddTabAt(browser, startup_url_, 0, true);
-    browser->tab_strip_model()->ActivateTabAt(
-        browser->tab_strip_model()->IndexOfFirstNonPinnedTab());
-  }
-
   static void LogLoadEvent(LoadEvent event) {
     base::UmaHistogramEnumeration("WhatsNew.LoadEvent", event);
   }
@@ -297,7 +302,6 @@ class WhatsNewFetcher : public BrowserListObserver {
 
     LogLoadEvent(success ? LoadEvent::kLoadSuccess
                          : LoadEvent::kLoadFailAndDoNotShow);
-
     if (success)
       AddWhatsNewTab(browser_);
     delete this;
@@ -306,21 +310,22 @@ class WhatsNewFetcher : public BrowserListObserver {
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
   raw_ptr<Browser> browser_;
   bool browser_closed_or_inactive_ = false;
-  GURL startup_url_;
 };
 
 }  // namespace
 
 void StartWhatsNewFetch(Browser* browser) {
-  new WhatsNewFetcher(browser);
-
   PrefService* local_state = g_browser_process->local_state();
-  if (ShouldShowRefresh(local_state)) {
+  // Check whether to override the default Whats's New URL
+  if (IsMinimumRefreshVersion() && ShouldShowRefresh(local_state)) {
     // Set pref to indicate that the refresh page should not attempt to
     // display again. ShouldShowRefresh should not be called after this
     // boolean is set to true.
     local_state->SetBoolean(prefs::kHasShownRefreshWhatsNew, true);
+    new WhatsNewFetcher(browser, GetServerURLForRefresh());
+    return;
   }
+  new WhatsNewFetcher(browser);
 }
 
 }  // namespace whats_new
