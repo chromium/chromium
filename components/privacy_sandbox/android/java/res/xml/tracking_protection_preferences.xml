@@ -20,8 +20,8 @@ found in the LICENSE file.
         app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="bullet_point_two"
         android:title="@string/privacy_sandbox_tracking_protection_bullet_two_title"
-        android:summary="@string/privacy_sandbox_tracking_protection_bullet_two_description"
         android:icon="@drawable/ic_domain_verification_24dp"
         app:allowDividerBelow="false" />
 

@@ -171,9 +171,11 @@ public class PrivacySettings
         syncAndServicesLink.setSummary(buildSyncAndServicesLink());
 
         Preference thirdPartyCookies = findPreference(PREF_THIRD_PARTY_COOKIES);
+        Preference doNotTrackPref = findPreference(PREF_DO_NOT_TRACK);
 
         if (showTrackingProtectionUI()) {
             if (thirdPartyCookies != null) thirdPartyCookies.setVisible(false);
+            if (doNotTrackPref != null) doNotTrackPref.setVisible(false);
             Preference trackingProtection = findPreference(PREF_TRACKING_PROTECTION);
             trackingProtection.setVisible(true);
         } else if (thirdPartyCookies != null) {

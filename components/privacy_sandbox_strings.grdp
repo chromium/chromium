@@ -2194,7 +2194,7 @@
     Most sites should work as expected
   </message>
   <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_BULLET_TWO_DESCRIPTION" desc="" translateable="false" formatter_data="android_java">
-    If a site isn’t working, you can try giving it temporary permission to use third-party cookies. Learn more
+    If a site isn’t working, you can try giving it temporary permission to use third-party cookies. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
   </message>
   <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_ADVANCED_CATEGORY" desc="" translateable="false" formatter_data="android_java">
     Advanced
@@ -2203,7 +2203,7 @@
     Block all third-party cookies
   </message>
   <message name="IDS_TRACKING_PROTECTION_BLOCK_COOKIES_TOGGLE_SUMMARY" desc="" translateable="false" formatter_data="android_java">
-    Features on some sites may not work. Learn more
+    Features on some sites may not work
   </message>
   <message name="IDS_TRACKING_PROTECTION_DNT_TOGGLE_TITLE" desc="" translateable="false" formatter_data="android_java">
     Send a “Do Not Track” request with your browsing traffic

@@ -282,9 +282,10 @@ public class PrivacySettingsFragmentTest {
     public void testTrackingProtectionWithSandboxV4() throws IOException {
         setShowTrackingProtection(true);
         mSettingsActivityTestRule.startSettingsActivity();
-        // Verify that the Tracking Protection row is shown and 3PC is not.
+        // Verify that the Tracking Protection row is shown and 3PC/DNT is not.
         onView(withText(R.string.tracking_protection_title)).check(matches(isDisplayed()));
         onView(withText(R.string.third_party_cookies_link_row_label)).check(doesNotExist());
+        onView(withText(R.string.do_not_track_title)).check(doesNotExist());
     }
 
     @Test

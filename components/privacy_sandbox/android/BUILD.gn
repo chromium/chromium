@@ -30,6 +30,26 @@ android_library("java") {
   ]
 }
 
+android_library("javatests") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/components/privacy_sandbox/TrackingProtectionSettingsTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:jni_java",
+    "//components/browser_ui/settings/android:test_support_java",
+    "//components/browser_ui/site_settings/android:java",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}
+
 android_resources("java_resources") {
   sources = [ "java/res/xml/tracking_protection_preferences.xml" ]
   deps = [

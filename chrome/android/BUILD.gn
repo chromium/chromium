@@ -1799,6 +1799,7 @@ if (current_toolchain == default_toolchain) {
       "//components/policy/android:policy_java_test_support",
       "//components/power_bookmarks/core:proto_java",
       "//components/prefs/android:java",
+      "//components/privacy_sandbox/android:javatests",
       "//components/profile_metrics:browser_profile_type_enum_java",
       "//components/query_tiles:java",
       "//components/query_tiles:test_support_java",

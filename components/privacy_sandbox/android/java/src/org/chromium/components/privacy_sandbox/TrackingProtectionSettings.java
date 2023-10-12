@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.preference.Preference;
@@ -30,6 +31,8 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
@@ -43,6 +46,7 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     // Must match keys in tracking_protection_preferences.xml.
     private static final String PREF_BLOCK_ALL_TOGGLE = "block_all_3pcd_toggle";
     private static final String PREF_DNT_TOGGLE = "dnt_toggle";
+    private static final String PREF_BULLET_TWO = "bullet_point_two";
     private static final String ALLOWED_GROUP = "allowed_group";
     public static final String ADD_EXCEPTION_KEY = "add_exception";
 
@@ -58,6 +62,14 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.tracking_protection_preferences);
         getActivity().setTitle(R.string.privacy_sandbox_tracking_protection_title);
+
+        // Format the Learn More link in the second bullet point.
+        TextMessagePreference bulletTwo = (TextMessagePreference) findPreference(PREF_BULLET_TWO);
+        bulletTwo.setSummary(SpanApplier.applySpans(
+                getResources().getString(
+                        R.string.privacy_sandbox_tracking_protection_bullet_two_description),
+                new SpanApplier.SpanInfo("<link>", "</link>",
+                        new NoUnderlineClickableSpan(getContext(), this::onLearnMoreClicked))));
 
         ChromeSwitchPreference blockAll3PCookiesSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_BLOCK_ALL_TOGGLE);
@@ -185,5 +197,9 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
         // Configure the preference group.
         allowedGroup.setTitle(spannable);
         allowedGroup.setExpanded(mAllowListExpanded);
+    }
+
+    private void onLearnMoreClicked(View view) {
+        // TODO(b/295926938): Implement.
     }
 }
