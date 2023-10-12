@@ -81,7 +81,7 @@ class WebFileHandlersFileLaunchBrowserTest
   }
 
  protected:
-  // Install the file path as am extension that's installed by default.
+  // Install the file path as an extension that's installed by default.
   const extensions::Extension* WriteToDirAndLoadDefaultInstalledExtension(
       const std::string& manifest) {
     WriteToExtensionDir(manifest);
@@ -461,6 +461,7 @@ class WebFileHandlersFileLaunchBrowserTest
     return intent;
   }
 
+  // Set channel to the provided argument and clear extension features.
   void SetChannelAndResetFeatureList(version_info::Channel channel) {
     extensions::SetCurrentChannel(channel);
     feature_list_.Reset();
@@ -556,7 +557,6 @@ class WebFileHandlersFileLaunchOnStableChannelBrowserTest
     : public WebFileHandlersFileLaunchBrowserTest {
  public:
   WebFileHandlersFileLaunchOnStableChannelBrowserTest() {
-    // Set channel and extension features.
     SetChannelAndResetFeatureList(version_info::Channel::STABLE);
   }
 };
@@ -585,6 +585,8 @@ IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchOnStableChannelBrowserTest,
 
   // Web File Handlers are supported.
   ASSERT_TRUE(extensions::WebFileHandlers::SupportsWebFileHandlers(*extension));
+  ASSERT_TRUE(
+      extensions::WebFileHandlers::CanBypassPermissionDialog(*extension));
 
   // Reopen the file and ensure that it's available in `launchParams`.
   LaunchExtensionAndCatchResult(*extension);
