@@ -12,6 +12,7 @@
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/login/login_utils.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "base/command_line.h"
@@ -73,8 +74,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL
@@ -517,36 +516,6 @@ void UserSelectionScreen::SetTpmLockedState(bool is_locked,
   }
 }
 
-// static
-UserAvatar UserSelectionScreen::BuildAshUserAvatarForUser(
-    const user_manager::User& user) {
-  UserAvatar avatar;
-  avatar.image = user.GetImage();
-  if (avatar.image.isNull()) {
-    avatar.image = *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-        IDR_LOGIN_DEFAULT_USER);
-  }
-
-  // TODO(jdufault): Unify image handling between this code and
-  // user_image_source::GetUserImageInternal.
-  auto load_image_from_resource = [&avatar](int resource_id) {
-    auto& rb = ui::ResourceBundle::GetSharedInstance();
-    base::StringPiece avatar_data = rb.GetRawDataResourceForScale(
-        resource_id, rb.GetMaxResourceScaleFactor());
-    avatar.bytes.assign(avatar_data.begin(), avatar_data.end());
-  };
-
-  if (user.has_image_bytes()) {
-    avatar.bytes.assign(
-        user.image_bytes()->front(),
-        user.image_bytes()->front() + user.image_bytes()->size());
-  } else if (user.image_is_stub()) {
-    load_image_from_resource(IDR_LOGIN_DEFAULT_USER);
-  }
-
-  return avatar;
-}
-
 void UserSelectionScreen::SetView(UserBoardView* view) {
   view_ = view;
 }
@@ -848,7 +817,7 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     user_info.basic_user_info.display_name =
         base::UTF16ToUTF8(user->GetDisplayName());
     user_info.basic_user_info.display_email = user->display_email();
-    user_info.basic_user_info.avatar = BuildAshUserAvatarForUser(*user);
+    user_info.basic_user_info.avatar = ash::BuildAshUserAvatarForUser(*user);
     user_info.auth_type = initial_auth_type;
     user_info.is_signed_in = user->is_logged_in();
     user_info.is_device_owner = is_owner;

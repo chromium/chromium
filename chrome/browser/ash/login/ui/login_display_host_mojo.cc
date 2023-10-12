@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
+#include "ash/public/cpp/login/login_utils.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -157,8 +158,7 @@ void ShowOwnerPod(const AccountId& owner) {
   user_info.basic_user_info.display_name =
       base::UTF16ToUTF8(device_owner->GetDisplayName());
   user_info.basic_user_info.display_email = device_owner->display_email();
-  user_info.basic_user_info.avatar =
-      UserSelectionScreen::BuildAshUserAvatarForUser(*device_owner);
+  user_info.basic_user_info.avatar = BuildAshUserAvatarForUser(*device_owner);
   user_info.auth_type = proximity_auth::mojom::AuthType::OFFLINE_PASSWORD;
   user_info.is_signed_in = device_owner->is_logged_in();
   user_info.is_device_owner = true;

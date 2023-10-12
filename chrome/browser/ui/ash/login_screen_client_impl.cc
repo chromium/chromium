@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
+#include "ash/public/cpp/login/login_utils.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/ash/login/login_auth_recorder.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
-#include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
@@ -387,8 +387,7 @@ views::Widget* LoginScreenClientImpl::GetLoginWindowWidget() {
 
 void LoginScreenClientImpl::OnUserImageChanged(const user_manager::User& user) {
   ash::LoginScreen::Get()->GetModel()->SetAvatarForUser(
-      user.GetAccountId(),
-      ash::UserSelectionScreen::BuildAshUserAvatarForUser(user));
+      user.GetAccountId(), ash::BuildAshUserAvatarForUser(user));
 }
 
 void LoginScreenClientImpl::OnParentAccessValidation(

@@ -200,6 +200,8 @@ component("cpp") {
     "locale_update_controller.h",
     "lock_screen_widget_factory.cc",
     "lock_screen_widget_factory.h",
+    "login/login_utils.cc",
+    "login/login_utils.h",
     "login_accelerators.cc",
     "login_accelerators.h",
     "login_screen.cc",
@@ -479,6 +481,8 @@ component("cpp") {
     "//components/version_info:channel",
     "//ui/base/ime/ash",
     "//ui/base/ime/ash:ime_types",
+    "//ui/chromeos/resources:resources",
+    "//ui/chromeos/resources:resources_grit",
     "//ui/gfx",
   ]
 

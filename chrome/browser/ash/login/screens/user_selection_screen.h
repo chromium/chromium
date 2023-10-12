@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/session/user_info.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -98,9 +97,6 @@ class UserSelectionScreen
 
   // UserOnlineSigninNotifier::Observer
   void OnOnlineSigninEnforced(const AccountId& account_id) override;
-
-  // Builds a `UserAvatar` instance which contains the current image for `user`.
-  static UserAvatar BuildAshUserAvatarForUser(const user_manager::User& user);
 
   std::vector<LoginUserInfo> UpdateAndReturnUserListForAsh();
   void SetUsersLoaded(bool loaded);
