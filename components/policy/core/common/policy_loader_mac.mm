@@ -47,19 +47,19 @@ bool ShouldHonorPolicies() {
 PolicyLoaderMac::PolicyLoaderMac(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const base::FilePath& managed_policy_path,
-    MacPreferences* preferences)
+    std::unique_ptr<MacPreferences> preferences)
     : PolicyLoaderMac(task_runner,
                       managed_policy_path,
-                      preferences,
+                      std::move(preferences),
                       kCFPreferencesCurrentApplication) {}
 
 PolicyLoaderMac::PolicyLoaderMac(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const base::FilePath& managed_policy_path,
-    MacPreferences* preferences,
+    std::unique_ptr<MacPreferences> preferences,
     CFStringRef application_id)
     : AsyncPolicyLoader(task_runner, /*periodic_updates=*/true),
-      preferences_(preferences),
+      preferences_(std::move(preferences)),
       managed_policy_path_(managed_policy_path),
       application_id_(CFStringCreateCopy(kCFAllocatorDefault, application_id)) {
 }
