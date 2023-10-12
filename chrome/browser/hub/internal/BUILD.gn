@@ -5,8 +5,8 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
+  resources_package = "org.chromium.chrome.browser.hub"
   visibility = [ "//chrome/android:*" ]
-
   sources = [
     "android/java/src/org/chromium/chrome/browser/hub/DelegateButtonData.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubCoordinator.java",
@@ -25,8 +25,8 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/PaneManagerImpl.java",
     "android/java/src/org/chromium/chrome/browser/hub/ResourceButtonData.java",
   ]
-
   deps = [
+    ":java_resources",
     "//base:base_java",
     "//chrome/browser/hub:java",
     "//components/browser_ui/widget/android:java",
@@ -37,17 +37,22 @@ android_library("java") {
   ]
 }
 
+android_resources("java_resources") {
+  sources = [ "android/res/layout/hub_layout.xml" ]
+}
+
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.hub"
   sources = [
     "android/java/src/org/chromium/chrome/browser/hub/DelegateButtonDataUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubCoordinatorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubManagerImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneManagerImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/ResourceButtonDataUnitTest.java",
   ]
-
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",

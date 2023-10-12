@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.hub;
 
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.FrameLayout;
 
 /**
@@ -13,6 +16,9 @@ import android.widget.FrameLayout;
  */
 public class HubCoordinator {
     private final FrameLayout mContainerView;
+    private final View mMainHubParent;
+    private final HubToolbarCoordinator mHubToolbarCoordinator;
+    private final HubPaneHostCoordinator mHubPaneHostCoordinator;
 
     /**
      * Creates the {@link HubCoordinator}.
@@ -20,8 +26,22 @@ public class HubCoordinator {
      * @param containerView The view to attach the Hub to.
      */
     public HubCoordinator(FrameLayout containerView) {
+        Context context = containerView.getContext();
         mContainerView = containerView;
+        mMainHubParent = LayoutInflater.from(context).inflate(R.layout.hub_layout, null);
+        mContainerView.addView(mMainHubParent);
+
+        HubToolbarView hubToolbarView = mContainerView.findViewById(R.id.hub_toolbar);
+        mHubToolbarCoordinator = new HubToolbarCoordinator(hubToolbarView);
+
+        HubPaneHostView hubPaneHostView = mContainerView.findViewById(R.id.hub_pane_host);
+        mHubPaneHostCoordinator = new HubPaneHostCoordinator(hubPaneHostView);
     }
 
-    public void destroy() {}
+    /** Removes the hub from the layout tree and cleans up resources. */
+    public void destroy() {
+        mContainerView.removeView(mMainHubParent);
+        mHubToolbarCoordinator.destroy();
+        mHubPaneHostCoordinator.destroy();
+    }
 }
