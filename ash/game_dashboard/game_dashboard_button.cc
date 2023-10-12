@@ -17,8 +17,11 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -42,6 +45,29 @@ constexpr gfx::RoundedCornersF kRoundedCornerRadius =
 constexpr gfx::Insets kButtonBorderInsets = gfx::Insets::TLBR(0, 12, 0, 8);
 constexpr gfx::Insets kGamepadIconMargins = gfx::Insets::TLBR(0, 0, 0, 8);
 constexpr gfx::Insets kDropdownArrowMargins = gfx::Insets::TLBR(0, 6, 0, 0);
+
+// 30% opacity for disabled state.
+constexpr SkAlpha kAlphaForDisabled =
+    base::saturated_cast<SkAlpha>(std::numeric_limits<SkAlpha>::max() * 0.3);
+
+ui::ColorId GetBackgroundEnabledColorId(bool is_recording) {
+  return is_recording ? cros_tokens::kCrosSysSystemNegativeContainer
+                      : cros_tokens::kCrosSysHighlightShape;
+}
+
+ui::ColorId GetIconAndLabelEnabledColorId(bool is_recording) {
+  return is_recording ? cros_tokens::kCrosSysSystemOnNegativeContainer
+                      : cros_tokens::kCrosSysOnPrimaryContainer;
+}
+
+SkColor GetColor(ui::ColorProvider* color_provider,
+                 ui::ColorId color_id,
+                 bool is_enabled) {
+  DCHECK(color_provider);
+
+  SkColor color = color_provider->GetColor(color_id);
+  return is_enabled ? color : SkColorSetA(color, kAlphaForDisabled);
+}
 
 }  // namespace
 
@@ -68,8 +94,6 @@ GameDashboardButton::GameDashboardButton(PressedCallback callback)
   // Add the dropdown icon view.
   dropdown_icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   dropdown_icon_view_->SetProperty(views::kMarginsKey, kDropdownArrowMargins);
-
-  UpdateViews();
 }
 
 GameDashboardButton::~GameDashboardButton() = default;
@@ -103,40 +127,60 @@ void GameDashboardButton::UpdateRecordingDuration(
       IDS_ASH_GAME_DASHBOARD_GAME_DASHBOARD_BUTTON_RECORDING, duration));
 }
 
+void GameDashboardButton::AddedToWidget() {
+  views::Button::AddedToWidget();
+  UpdateViews();
+}
+
 void GameDashboardButton::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
+}
+
+void GameDashboardButton::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  // No need to update the theme before this view is added to the widget.
+  if (GetWidget()) {
+    UpdateViews();
+  }
+}
+
+void GameDashboardButton::StateChanged(ButtonState old_state) {
+  UpdateViews();
 }
 
 void GameDashboardButton::UpdateDropDownArrow() {
   DCHECK(dropdown_icon_view_);
   const gfx::VectorIcon& dropdown_icon =
       toggled_ ? kGdDropUpArrowIcon : kGdDropDownArrowIcon;
-  const auto icon_color = is_recording_
-                              ? cros_tokens::kCrosSysSystemOnNegativeContainer
-                              : cros_tokens::kCrosSysOnPrimaryContainer;
+  const SkColor icon_color =
+      GetColor(GetColorProvider(), GetIconAndLabelEnabledColorId(is_recording_),
+               GetEnabled());
   dropdown_icon_view_->SetImage(
       ui::ImageModel::FromVectorIcon(dropdown_icon, icon_color, kIconHeight));
 }
 
 void GameDashboardButton::UpdateViews() {
-  ui::ColorId container_color;
-  ui::ColorId icon_and_label_color;
-  if (is_recording_) {
-    container_color = cros_tokens::kCrosSysSystemNegativeContainer;
-    icon_and_label_color = cros_tokens::kCrosSysSystemOnNegativeContainer;
-    // Don't update `title_view_` because it will be updated by
-    // `UpdateRecordingDuration()`.
-  } else {
-    container_color = cros_tokens::kCrosSysHighlightShape;
-    icon_and_label_color = cros_tokens::kCrosSysOnPrimaryContainer;
+  DCHECK(GetWidget());
+
+  // Don't update `title_view_` because it will be updated by
+  // `UpdateRecordingDuration()`.
+  if (!is_recording_) {
     SetTitle(l10n_util::GetStringUTF16(
         IDS_ASH_GAME_DASHBOARD_GAME_DASHBOARD_BUTTON_TITLE));
   }
 
-  SetBackground(views::CreateThemedSolidBackground(container_color));
+  auto* color_provider = GetColorProvider();
+  DCHECK(color_provider);
+
+  const bool enabled = GetEnabled();
+  SetBackground(views::CreateSolidBackground(GetColor(
+      color_provider, GetBackgroundEnabledColorId(is_recording_), enabled)));
+
+  const SkColor icon_and_label_color = GetColor(
+      color_provider, GetIconAndLabelEnabledColorId(is_recording_), enabled);
   gamepad_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
       chromeos::kGameDashboardGamepadIcon, icon_and_label_color, kIconHeight));
-  title_view_->SetEnabledColorId(icon_and_label_color);
+  title_view_->SetEnabledColor(icon_and_label_color);
   UpdateDropDownArrow();
 }
 

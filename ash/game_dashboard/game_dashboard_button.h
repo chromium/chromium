@@ -68,7 +68,12 @@ class GameDashboardButton : public views::Button {
   void UpdateRecordingDuration(const std::u16string& duration);
 
   // views::View:
+  void AddedToWidget() override;
   void ChildPreferredSizeChanged(views::View* child) override;
+  void OnThemeChanged() override;
+
+  // views::Button:
+  void StateChanged(ButtonState old_state) override;
 
  private:
   friend class GameDashboardContextTestApi;
@@ -83,7 +88,7 @@ class GameDashboardButton : public views::Button {
   // Updates all the views in the button. If `is_recording_` is true, the
   // UI is updated to show the 'Recording' button, indicating that there's an
   // active video recording session. Otherwise, it will show the 'Default'
-  // button.
+  // button. Make sure this is called after this view is added to a widget.
   void UpdateViews();
 
   // Sets the `title_view` and the tooltip text to `title_text`.

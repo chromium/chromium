@@ -294,11 +294,13 @@ void GameDashboardContext::CreateAndAddGameDashboardButtonWidget() {
   auto game_dashboard_button = std::make_unique<GameDashboardButton>(
       base::BindRepeating(&GameDashboardContext::OnGameDashboardButtonPressed,
                           weak_ptr_factory_.GetWeakPtr()));
-  game_dashboard_button->AddObserver(this);
   DCHECK(!game_dashboard_button_);
   game_dashboard_button_ = game_dashboard_button.get();
   game_dashboard_button_widget_ = CreateTransientChildWidget(
       game_window_, "GameDashboardButton", std::move(game_dashboard_button));
+  // Add observer after `game_dashboard_button_widget_` is created because the
+  // observation is to update `game_dashboard_button_widget_` bounds.
+  game_dashboard_button_->AddObserver(this);
   game_dashboard_button_input_monitor_ =
       std::make_unique<GameDashboardButtonInputMonitor>(this);
   game_dashboard_button_widget_->GetContentsView()->AddPreTargetHandler(
