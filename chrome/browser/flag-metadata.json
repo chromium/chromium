@@ -274,7 +274,7 @@
   {
     "name": "arc-enable-virtio-blk-for-data",
     "owners": [ "niwa" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "arc-external-storage-access",
@@ -284,7 +284,7 @@
   {
     "name": "arc-file-picker-experiment",
     "owners": [ "youkichihosoi", "niwa" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "arc-game-mode",
