@@ -1296,8 +1296,18 @@ bool AppListItemView::OnKeyPressed(const ui::KeyEvent& event) {
 
 void AppListItemView::OnMouseReleased(const ui::MouseEvent& event) {
   auto weak_this = weak_ptr_factory_.GetWeakPtr();
-  // Triggers the button's click handler callback, which might delete `this`.
-  Button::OnMouseReleased(event);
+  // Reset all states if we are already dragging, and avoid triggering a button
+  // mouse release event.
+  if (ui_state_ == UI_STATE_DRAGGING &&
+      drag_state_ == DragState::kInitialized) {
+    SetMouseDragging(false);
+    drag_state_ = DragState::kNone;
+    return;
+  } else {
+    // Triggers the button's click handler callback, which might delete `this`.
+    Button::OnMouseReleased(event);
+  }
+
   if (!weak_this) {
     return;
   }
