@@ -9,9 +9,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_source.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/input/native_web_keyboard_event.h"

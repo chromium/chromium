@@ -17,8 +17,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"

@@ -27,8 +27,6 @@
 #include "content/public/browser/bluetooth_chooser.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/gpu_data_manager_observer.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents_observer.h"

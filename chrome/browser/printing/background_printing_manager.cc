@@ -11,8 +11,6 @@
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 

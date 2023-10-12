@@ -31,8 +31,6 @@
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/gpu_data_manager.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/allowlist_state.h"
 #include "extensions/browser/api/management/management_api.h"

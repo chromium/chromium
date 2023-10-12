@@ -33,7 +33,6 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"

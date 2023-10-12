@@ -43,7 +43,6 @@
 #include "components/infobars/core/infobar.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/child_process_security_policy.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"

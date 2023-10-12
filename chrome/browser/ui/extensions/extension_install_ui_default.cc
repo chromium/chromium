@@ -37,7 +37,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #else
 #include "chrome/common/url_constants.h"
-#include "content/public/browser/notification_service.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

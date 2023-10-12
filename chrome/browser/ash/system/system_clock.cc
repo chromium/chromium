@@ -20,7 +20,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/notification_service.h"
 
 namespace ash {
 namespace system {

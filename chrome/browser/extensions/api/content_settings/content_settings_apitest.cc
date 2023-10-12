@@ -33,7 +33,6 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_manager.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/webplugininfo.h"
 #include "content/public/test/browser_test.h"

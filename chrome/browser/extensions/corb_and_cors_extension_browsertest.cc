@@ -42,7 +42,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/console_message.h"
 #include "content/public/browser/network_service_util.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"

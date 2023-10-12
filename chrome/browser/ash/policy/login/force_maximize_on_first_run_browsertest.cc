@@ -19,7 +19,6 @@
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "ui/display/manager/display_manager.h"

@@ -12,7 +12,6 @@
 #include "chrome/browser/task_manager/providers/task_provider.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 
 namespace task_manager {
 

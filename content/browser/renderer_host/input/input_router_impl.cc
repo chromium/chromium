@@ -19,8 +19,6 @@
 #include "content/browser/renderer_host/input/input_router_client.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/input/web_touch_event_traits.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/input_event_ack_state.h"
 #include "ipc/ipc_sender.h"

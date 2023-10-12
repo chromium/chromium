@@ -17,7 +17,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/grit/generated_resources.h"
-#include "content/public/browser/notification_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace extensions {

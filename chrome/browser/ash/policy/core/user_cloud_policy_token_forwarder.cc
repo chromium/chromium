@@ -18,7 +18,6 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
-#include "content/public/browser/notification_source.h"
 #include "google_apis/gaia/gaia_constants.h"
 
 namespace policy {

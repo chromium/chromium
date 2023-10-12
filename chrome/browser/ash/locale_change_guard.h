@@ -19,9 +19,6 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_types.h"
 
 class Profile;
 

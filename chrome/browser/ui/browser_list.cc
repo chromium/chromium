@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "content/public/browser/notification_service.h"
 
 using base::UserMetricsAction;
 using content::WebContents;

@@ -27,7 +27,6 @@
 #include "components/user_manager/known_user.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_details.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::attestation {

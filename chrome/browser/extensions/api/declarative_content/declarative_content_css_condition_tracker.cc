@@ -14,8 +14,6 @@
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/api/declarative/declarative_constants.h"

@@ -4,8 +4,6 @@
 
 #include "content/public/test/mock_notification_observer.h"
 
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_source.h"
 
 namespace content {
 
