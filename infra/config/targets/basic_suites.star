@@ -4962,7 +4962,7 @@ targets.legacy_basic_suite(
                 "--test-launcher-filter-file=../../testing/buildbot/filters/accessibility-linux.browser_tests.filter",
             ],
             swarming = targets.swarming(
-                shards = 8,
+                shards = 20,
             ),
         ),
         "content_browsertests": targets.legacy_test_config(

@@ -523,6 +523,9 @@
         'args': [
           '--flag-specific=force-renderer-accessibility',
         ],
+        'swarming': {
+          'shards': 20,
+        },
       },
       'linux-blink-wpt-reset-rel': {
         'args': [

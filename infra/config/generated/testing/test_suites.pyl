@@ -4220,7 +4220,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/accessibility-linux.browser_tests.filter',
         ],
         'swarming': {
-          'shards': 8,
+          'shards': 20,
         },
       },
       'content_browsertests': {
