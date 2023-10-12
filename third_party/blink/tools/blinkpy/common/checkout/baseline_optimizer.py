@@ -217,14 +217,13 @@ class BaselineOptimizer:
         # Group ports to write less verbose output.
         skipped_ports_by_test = collections.defaultdict(list)
         for port in self._ports:
-            if self._skips_test(port, nonvirtual_test):
-                skipped_ports_by_test[nonvirtual_test].append(port)
-                continue
             search_path = self._baseline_search_path(port)
             nonvirtual_locations = [
                 self.location(path) for path in search_path
             ]
-            yield nonvirtual_locations
+            if not self._skips_test(port, nonvirtual_test):
+                skipped_ports_by_test[nonvirtual_test].append(port)
+                yield nonvirtual_locations
             for virtual_test in virtual_tests:
                 if self._skips_test(port, virtual_test):
                     skipped_ports_by_test[virtual_test].append(port)

@@ -141,33 +141,37 @@ class BaselineOptimizerTest(BaselineTest):
                              directory_to_new_results,
                              baseline_dirname='',
                              suffix='txt',
-                             options=None):
+                             options=None,
+                             virtual_suites=None):
         test_name = 'mock-test.html'
         baseline_name = 'mock-test-expected.' + suffix
+        virtual_suites = virtual_suites or [{
+            'prefix':
+            'gpu',
+            'platforms': ['Linux', 'Mac', 'Win'],
+            'bases': [
+                'webexposed',
+                'fast/canvas',
+                'slow/canvas/mock-test.html',
+                'virtual/virtual_empty_bases/',
+            ],
+            'args': ['--foo'],
+        }, {
+            'prefix':
+            'virtual_empty_bases',
+            'platforms': ['Linux', 'Mac', 'Win'],
+            'bases': [],
+            'args': ['--foo'],
+        }, {
+            'prefix':
+            'stable',
+            'platforms': ['Linux', 'Mac', 'Win'],
+            'bases': ['webexposed'],
+            'args': ['--stable-release-mode'],
+        }]
         self.fs.write_text_file(
             self.finder.path_from_web_tests('VirtualTestSuites'),
-            json.dumps([{
-                'prefix':
-                'gpu',
-                'platforms': ['Linux', 'Mac', 'Win'],
-                'bases': [
-                    'webexposed',
-                    'fast/canvas',
-                    'slow/canvas/mock-test.html',
-                    'virtual/virtual_empty_bases/',
-                ],
-                'args': ['--foo'],
-            }, {
-                'prefix': 'virtual_empty_bases',
-                'platforms': ['Linux', 'Mac', 'Win'],
-                'bases': [],
-                'args': ['--foo'],
-            }, {
-                'prefix': 'stable',
-                'platforms': ['Linux', 'Mac', 'Win'],
-                'bases': ['webexposed'],
-                'args': ['--stable-release-mode'],
-            }]))
+            json.dumps(virtual_suites))
         self.fs.write_text_file(
             self.finder.path_from_web_tests('FlagSpecificConfig'),
             '[{"name": "highdpi", "args": ["--force-device-scale-factor=1.5"]}]'
@@ -536,6 +540,37 @@ class BaselineOptimizerTest(BaselineTest):
                 'platform/win/virtual/gpu/fast/canvas': None,
             },
             baseline_dirname='virtual/gpu/fast/canvas')
+
+    def test_exclusive_virtual_roots(self):
+        virtual_suites = [{
+            'prefix': 'gpu',
+            'platforms': ['Linux', 'Mac', 'Win'],
+            'bases': ['fast/canvas'],
+            'exclusive_tests': ['fast/canvas'],
+            'args': ['--foo'],
+        }, {
+            'prefix': 'not-gpu',
+            'platforms': ['Linux', 'Mac', 'Win'],
+            'bases': ['fast/canvas'],
+            'exclusive_tests': 'ALL',
+            'args': ['--bar'],
+        }]
+        self._assert_optimization(
+            {
+                'fast/canvas': '1',
+                'platform/mac/virtual/gpu/fast/canvas': '1',
+                'platform/win/virtual/gpu/fast/canvas': '1',
+                'platform/mac/virtual/not-gpu/fast/canvas': '1',
+                'platform/win/virtual/not-gpu/fast/canvas': '1',
+            }, {
+                'fast/canvas': '1',
+                'platform/mac/virtual/gpu/fast/canvas': None,
+                'platform/win/virtual/gpu/fast/canvas': None,
+                'platform/mac/virtual/not-gpu/fast/canvas': None,
+                'platform/win/virtual/not-gpu/fast/canvas': None,
+            },
+            baseline_dirname='fast/canvas',
+            virtual_suites=virtual_suites)
 
     def test_all_pass_testharness_at_root(self):
         self._assert_optimization({'': ALL_PASS_TESTHARNESS_RESULT},
