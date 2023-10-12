@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.A
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.Avatar;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
-import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
@@ -328,11 +327,14 @@ public class AccountSelectionControllerTest {
         // Do not let test inputs be ignored.
         mMediator.setComponentShowTime(-1000);
         assertFalse(mMediator.wasDismissed());
-        assertNotNull(mModel.get(ItemProperties.CONTINUE_BUTTON)
-                              .get(ContinueButtonProperties.ON_CLICK_LISTENER));
+        assertNotNull(
+                mModel.get(ItemProperties.CONTINUE_BUTTON)
+                        .get(ContinueButtonProperties.PROPERTIES)
+                        .mOnClickListener);
 
         mModel.get(ItemProperties.CONTINUE_BUTTON)
-                .get(ContinueButtonProperties.ON_CLICK_LISTENER)
+                .get(ContinueButtonProperties.PROPERTIES)
+                .mOnClickListener
                 .onResult(ANA);
         verify(mMockDelegate).onAccountSelected(TEST_CONFIG_URL, ANA);
         assertFalse(mMediator.wasDismissed());
@@ -529,13 +531,16 @@ public class AccountSelectionControllerTest {
                     mModel.get(ItemProperties.IDP_SIGNIN).get(IdpSignInProperties.IDP_FOR_DISPLAY);
             assertEquals("Incorrect provider ETLD+1", TEST_ETLD_PLUS_ONE_2, idpEtldPlusOne);
 
-            assertNotNull(mModel.get(ItemProperties.CONTINUE_BUTTON)
-                                  .get(ContinueButtonProperties.ON_CLICK_LISTENER));
+            assertNotNull(
+                    mModel.get(ItemProperties.CONTINUE_BUTTON)
+                            .get(ContinueButtonProperties.PROPERTIES)
+                            .mOnClickListener);
 
             // Do not let test inputs be ignored.
             mMediator.setComponentShowTime(-1000);
             mModel.get(ItemProperties.CONTINUE_BUTTON)
-                    .get(ContinueButtonProperties.ON_CLICK_LISTENER)
+                    .get(ContinueButtonProperties.PROPERTIES)
+                    .mOnClickListener
                     .onResult(null);
             verify(mMockDelegate, times(++count)).onSignInToIdp();
         }
@@ -552,7 +557,7 @@ public class AccountSelectionControllerTest {
             assertEquals(0, mSheetAccountItems.size());
             assertEquals(HeaderType.SIGN_IN_ERROR, mModel.get(ItemProperties.HEADER).get(TYPE));
 
-            // For error dialog without an error URL, we expect header + error text + got it button
+            // For error dialog, we expect header + error text + got it button
             assertEquals(3, countAllItems());
             assertTrue(containsItemOfType(mModel, ItemProperties.ERROR_TEXT));
 
@@ -564,15 +569,21 @@ public class AccountSelectionControllerTest {
                     errorProperties.mTopFrameForDisplay);
             assertEquals("Incorrect token error", TOKEN_ERROR_EMPTY_URL, errorProperties.mError);
 
-            assertNotNull(mModel.get(ItemProperties.GOT_IT_BUTTON)
-                                  .get(ErrorButtonProperties.ON_CLICK_LISTENER));
-            assertNull(mModel.get(ItemProperties.MORE_DETAILS_BUTTON));
+            assertNotNull(
+                    mModel.get(ItemProperties.CONTINUE_BUTTON)
+                            .get(ContinueButtonProperties.PROPERTIES)
+                            .mOnClickListener);
+            assertNull(
+                    mModel.get(ItemProperties.ERROR_TEXT)
+                            .get(ErrorProperties.PROPERTIES)
+                            .mMoreDetailsClickRunnable);
 
             // Do not let test inputs be ignored.
             mMediator.setComponentShowTime(-1000);
-            mModel.get(ItemProperties.GOT_IT_BUTTON)
-                    .get(ErrorButtonProperties.ON_CLICK_LISTENER)
-                    .run();
+            mModel.get(ItemProperties.CONTINUE_BUTTON)
+                    .get(ContinueButtonProperties.PROPERTIES)
+                    .mOnClickListener
+                    .onResult(ANA);
             verify(mMockDelegate, times(++count))
                     .onDismissed(IdentityRequestDialogDismissReason.GOT_IT_BUTTON);
             assertTrue(mMediator.wasDismissed());
@@ -590,9 +601,8 @@ public class AccountSelectionControllerTest {
             assertEquals(0, mSheetAccountItems.size());
             assertEquals(HeaderType.SIGN_IN_ERROR, mModel.get(ItemProperties.HEADER).get(TYPE));
 
-            // For error dialog with an error URL, we expect header + error text + got it button +
-            // more details button
-            assertEquals(4, countAllItems());
+            // For error dialog, we expect header + error text + got it button
+            assertEquals(3, countAllItems());
             assertTrue(containsItemOfType(mModel, ItemProperties.ERROR_TEXT));
 
             ErrorProperties.Properties errorProperties =
@@ -603,15 +613,20 @@ public class AccountSelectionControllerTest {
                     errorProperties.mTopFrameForDisplay);
             assertEquals("Incorrect token error", TOKEN_ERROR, errorProperties.mError);
 
-            assertNotNull(mModel.get(ItemProperties.GOT_IT_BUTTON)
-                                  .get(ErrorButtonProperties.ON_CLICK_LISTENER));
-            assertNotNull(mModel.get(ItemProperties.MORE_DETAILS_BUTTON)
-                                  .get(ErrorButtonProperties.ON_CLICK_LISTENER));
+            assertNotNull(
+                    mModel.get(ItemProperties.CONTINUE_BUTTON)
+                            .get(ContinueButtonProperties.PROPERTIES)
+                            .mOnClickListener);
+            assertNotNull(
+                    mModel.get(ItemProperties.ERROR_TEXT)
+                            .get(ErrorProperties.PROPERTIES)
+                            .mMoreDetailsClickRunnable);
 
             // Do not let test inputs be ignored.
             mMediator.setComponentShowTime(-1000);
-            mModel.get(ItemProperties.MORE_DETAILS_BUTTON)
-                    .get(ErrorButtonProperties.ON_CLICK_LISTENER)
+            mModel.get(ItemProperties.ERROR_TEXT)
+                    .get(ErrorProperties.PROPERTIES)
+                    .mMoreDetailsClickRunnable
                     .run();
             verify(mMockDelegate, times(++count)).onMoreDetails();
             verify(mMockDelegate, times(count))

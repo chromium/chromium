@@ -80,6 +80,14 @@ public class AccountSelectionViewTest {
     private static final GURL TEST_ERROR_URL = JUnitTestGURLs.URL_1;
     private static final GURL TEST_EMPTY_ERROR_URL = new GURL("");
 
+    // Android chrome strings may have link tags which needs to be removed before comparing with the
+    // actual text on the dialog.
+    private static final String LINK_TAG_REGEX = "<[^>]*>";
+
+    private static final IdentityProviderMetadata TEST_IDP_METADATA =
+            new IdentityProviderMetadata(
+                    Color.BLUE, Color.GREEN, "https://icon-url.example", TEST_CONFIG_URL);
+
     private class RpContext {
         public String mValue;
         public int mTitleId;
@@ -150,9 +158,13 @@ public class AccountSelectionViewTest {
                         + mResources.getString(R.string.signin_error_dialog_try_other_ways_prompt,
                                 TEST_RP_ETLD_PLUS_ONE);
             }
-            return initialDescription + " "
-                    + mResources.getString(R.string.signin_error_dialog_more_details_prompt,
-                            TEST_IDP_ETLD_PLUS_ONE);
+            return initialDescription
+                    + " "
+                    + mResources
+                            .getString(
+                                    R.string.signin_error_dialog_more_details_prompt,
+                                    TEST_IDP_ETLD_PLUS_ONE)
+                            .replaceAll(LINK_TAG_REGEX, "");
         }
     }
 
@@ -307,7 +319,9 @@ public class AccountSelectionViewTest {
                                 .build()));
         ShadowLooper.shadowMainLooper().idle();
 
-        mModel.set(ItemProperties.CONTINUE_BUTTON, buildContinueButton(ANA, null));
+        mModel.set(
+                ItemProperties.CONTINUE_BUTTON,
+                buildContinueButton(ANA, TEST_IDP_METADATA, HeaderType.SIGN_IN));
         assertEquals(View.VISIBLE, mContentView.getVisibility());
 
         assertNotNull(getAccounts().getChildAt(0));
@@ -329,7 +343,7 @@ public class AccountSelectionViewTest {
         assertTrue(consent.isShown());
         String expectedSharingConsentText =
                 mResources.getString(R.string.account_selection_data_sharing_consent, "idp.org");
-        expectedSharingConsentText = expectedSharingConsentText.replaceAll("<[^>]*>", "");
+        expectedSharingConsentText = expectedSharingConsentText.replaceAll(LINK_TAG_REGEX, "");
         // We use toString() here because otherwise getText() returns a
         // Spanned, which is not equal to the string we get from the resources.
         assertEquals("Incorrect data sharing consent text", expectedSharingConsentText,
@@ -349,7 +363,9 @@ public class AccountSelectionViewTest {
         IdentityProviderMetadata idpMetadata = new IdentityProviderMetadata(expectedTextColor,
                 /*brandBackgroundColor*/ Color.GREEN, "https://icon-url.example", TEST_CONFIG_URL);
 
-        mModel.set(ItemProperties.CONTINUE_BUTTON, buildContinueButton(ANA, idpMetadata));
+        mModel.set(
+                ItemProperties.CONTINUE_BUTTON,
+                buildContinueButton(ANA, idpMetadata, HeaderType.SIGN_IN));
 
         assertEquals(View.VISIBLE, mContentView.getVisibility());
 
@@ -419,7 +435,9 @@ public class AccountSelectionViewTest {
         assertEquals("Incorrect IDP sign in mismatch body dialog text", expectedText,
                 idpSignin.getText().toString());
 
-        mModel.set(ItemProperties.CONTINUE_BUTTON, buildContinueButton(null, null));
+        mModel.set(
+                ItemProperties.CONTINUE_BUTTON,
+                buildContinueButton(null, TEST_IDP_METADATA, HeaderType.SIGN_IN_TO_IDP_STATIC));
         ButtonCompat continueButton =
                 mContentView.findViewById(R.id.account_selection_continue_btn);
         assertTrue(continueButton.isShown());
@@ -498,16 +516,17 @@ public class AccountSelectionViewTest {
     }
 
     private PropertyModel buildContinueButton(
-            Account account, IdentityProviderMetadata idpMetadata) {
-        PropertyModel.Builder modelBuilder =
-                new PropertyModel.Builder(ContinueButtonProperties.ALL_KEYS)
-                        .with(ContinueButtonProperties.ACCOUNT, account)
-                        .with(ContinueButtonProperties.ON_CLICK_LISTENER, mAccountCallback);
-        if (idpMetadata != null) {
-            modelBuilder.with(ContinueButtonProperties.IDP_METADATA, idpMetadata);
-        }
-
-        return modelBuilder.build();
+            Account account,
+            IdentityProviderMetadata idpMetadata,
+            HeaderProperties.HeaderType headerType) {
+        ContinueButtonProperties.Properties properties = new ContinueButtonProperties.Properties();
+        properties.mAccount = account;
+        properties.mIdpMetadata = idpMetadata;
+        properties.mOnClickListener = mAccountCallback;
+        properties.mHeaderType = headerType;
+        return new PropertyModel.Builder(ContinueButtonProperties.ALL_KEYS)
+                .with(ContinueButtonProperties.PROPERTIES, properties)
+                .build();
     }
 
     private PropertyModel buildDataSharingConsentItem(String idpEtldPlusOne) {

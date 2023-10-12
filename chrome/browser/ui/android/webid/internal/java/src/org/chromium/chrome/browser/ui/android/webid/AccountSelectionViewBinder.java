@@ -235,9 +235,14 @@ class AccountSelectionViewBinder {
 
     private static class ErrorText {
         final String mSummary;
-        final String mDescription;
+        final SpannableString mDescription;
 
         ErrorText(String summary, String description) {
+            mSummary = summary;
+            mDescription = new SpannableString(description);
+        }
+
+        ErrorText(String summary, SpannableString description) {
             mSummary = summary;
             mDescription = description;
         }
@@ -308,7 +313,16 @@ class AccountSelectionViewBinder {
         description += " "
                 + String.format(context.getString(
                         R.string.signin_error_dialog_more_details_prompt, idpForDisplay));
-        return new ErrorText(summary, description);
+
+        SpanApplier.SpanInfo moreDetailsSpan =
+                new SpanApplier.SpanInfo(
+                        "<link_more_details>",
+                        "</link_more_details>",
+                        new NoUnderlineClickableSpan(
+                                context,
+                                (View clickedView) -> properties.mMoreDetailsClickRunnable.run()));
+
+        return new ErrorText(summary, SpanApplier.applySpans(description, moreDetailsSpan));
     }
 
     /**
@@ -343,11 +357,13 @@ class AccountSelectionViewBinder {
     static void bindContinueButtonView(PropertyModel model, View view, PropertyKey key) {
         Context context = view.getContext();
         ButtonCompat button = view.findViewById(R.id.account_selection_continue_btn);
-        if (key == ContinueButtonProperties.IDP_METADATA) {
-            if (!ColorUtils.inNightMode(context)) {
-                IdentityProviderMetadata idpMetadata =
-                        model.get(ContinueButtonProperties.IDP_METADATA);
 
+        if (key == ContinueButtonProperties.PROPERTIES) {
+            ContinueButtonProperties.Properties properties =
+                    model.get(ContinueButtonProperties.PROPERTIES);
+
+            IdentityProviderMetadata idpMetadata = properties.mIdpMetadata;
+            if (!ColorUtils.inNightMode(context)) {
                 Integer backgroundColor = idpMetadata.getBrandBackgroundColor();
                 if (backgroundColor != null) {
                     button.setButtonColor(ColorStateList.valueOf(backgroundColor));
@@ -363,10 +379,25 @@ class AccountSelectionViewBinder {
                     button.setTextColor(textColor);
                 }
             }
-        } else if (key == ContinueButtonProperties.ACCOUNT) {
+
+            Account account = properties.mAccount;
+            button.setOnClickListener(
+                    clickedView -> {
+                        properties.mOnClickListener.onResult(account);
+                    });
+
             String btnText;
-            Account account = model.get(ContinueButtonProperties.ACCOUNT);
-            if (account != null) {
+            HeaderProperties.HeaderType headerType = properties.mHeaderType;
+            if (headerType == HeaderProperties.HeaderType.SIGN_IN_TO_IDP_STATIC) {
+                btnText =
+                        String.format(
+                                context.getString(
+                                        R.string.idp_signin_status_mismatch_dialog_continue));
+            } else if (headerType == HeaderProperties.HeaderType.SIGN_IN_ERROR) {
+                btnText =
+                        String.format(
+                                context.getString(R.string.signin_error_dialog_got_it_button));
+            } else {
                 // Prefers to use given name if it is provided otherwise falls back to using the
                 // name.
                 String givenName = account.getGivenName();
@@ -374,17 +405,10 @@ class AccountSelectionViewBinder {
                         givenName != null && !givenName.isEmpty() ? givenName : account.getName();
                 btnText = String.format(
                         context.getString(R.string.account_selection_continue), displayedName);
-            } else {
-                btnText = String.format(
-                        context.getString(R.string.idp_signin_status_mismatch_dialog_continue));
             }
+
             assert btnText != null;
             button.setText(btnText);
-        } else if (key == ContinueButtonProperties.ON_CLICK_LISTENER) {
-            button.setOnClickListener(clickedView -> {
-                Account account = model.get(ContinueButtonProperties.ACCOUNT);
-                model.get(ContinueButtonProperties.ON_CLICK_LISTENER).onResult(account);
-            });
         } else {
             assert false : "Unhandled update to property:" + key;
         }
@@ -424,31 +448,6 @@ class AccountSelectionViewBinder {
     }
 
     /**
-     * Called whenever the got it button on the error dialog is bound to this view.
-     * @param model The model containing the data for the view.
-     * @param view The view to be bound.
-     * @param key The key of the property to be bound.
-     */
-    @SuppressWarnings("checkstyle:SetTextColorAndSetTextSizeCheck")
-    static void bindGotItButtonView(PropertyModel model, View view, PropertyKey key) {
-        ButtonCompat button = view.findViewById(R.id.got_it_btn);
-        bindErrorButtonView(model, view, key, button, R.string.signin_error_dialog_got_it_button);
-    }
-
-    /**
-     * Called whenever the more details button on the error dialog is bound to this view.
-     * @param model The model containing the data for the view.
-     * @param view The view to be bound.
-     * @param key The key of the property to be bound.
-     */
-    @SuppressWarnings("checkstyle:SetTextColorAndSetTextSizeCheck")
-    static void bindMoreDetailsButtonView(PropertyModel model, View view, PropertyKey key) {
-        ButtonCompat button = view.findViewById(R.id.more_details_btn);
-        bindErrorButtonView(
-                model, view, key, button, R.string.signin_error_dialog_more_details_button);
-    }
-
-    /**
      * Called whenever non-account views are bound to the bottom sheet.
      * @param model The model containing the data for the view.
      * @param view The view to be bound.
@@ -473,12 +472,6 @@ class AccountSelectionViewBinder {
         } else if (key == ItemProperties.ERROR_TEXT) {
             itemView = view.findViewById(R.id.error_text);
             itemBinder = AccountSelectionViewBinder::bindErrorTextView;
-        } else if (key == ItemProperties.GOT_IT_BUTTON) {
-            itemView = view.findViewById(R.id.got_it_btn);
-            itemBinder = AccountSelectionViewBinder::bindGotItButtonView;
-        } else if (key == ItemProperties.MORE_DETAILS_BUTTON) {
-            itemView = view.findViewById(R.id.more_details_btn);
-            itemBinder = AccountSelectionViewBinder::bindMoreDetailsButtonView;
         } else {
             assert false : "Unhandled update to property:" + key;
             return;
