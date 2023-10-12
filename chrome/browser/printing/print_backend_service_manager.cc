@@ -642,11 +642,9 @@ PrintBackendServiceManager::GetRemoteIdForPrinterName(
       return iter->second;
     }
 
-    // No remote yet for this printer so make one.  RemoteId is only used within
-    // browse process management code, so a simple incrementing sequence is
-    // sufficient.
-    static uint32_t id_sequence = 0;
-    return remote_id_map_.insert({printer_name, RemoteId(++id_sequence)})
+    // No remote yet for this printer so make one.
+    return remote_id_map_
+        .insert({printer_name, RemoteId(++remote_id_sequence_)})
         .first->second;
   }
 #endif
@@ -810,16 +808,13 @@ PrintBackendServiceManager::GetService(const RemoteId& remote_id,
     // On the first print that will try to use sandboxed service, make note that
     // so far no drivers have been discovered to require fallback beyond any
     // predetermined known cases.
-    static bool first_sandboxed_print = true;
-    if (first_sandboxed_print) {
-      first_sandboxed_print = false;
+    if (first_sandboxed_print_) {
+      first_sandboxed_print_ = false;
       base::UmaHistogramBoolean(
           kPrintBackendRequiresElevatedPrivilegeHistogramName,
           /*sample=*/false);
     }
-  }
 
-  if (sandboxed) {
     return GetServiceFromBundle(remote_id, client_type, /*sandboxed=*/true,
                                 sandboxed_remotes_bundles_);
   }
