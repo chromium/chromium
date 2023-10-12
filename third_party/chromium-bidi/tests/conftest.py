@@ -22,6 +22,15 @@ import pytest_asyncio
 import websockets
 from test_helpers import (execute_command, get_tree, goto_url,
                           read_JSON_message, wait_for_event, wait_for_events)
+from tools.local_http_server import LocalHttpServer
+
+
+@pytest_asyncio.fixture
+def local_server(httpserver) -> LocalHttpServer:
+    """ Returns an instance of a LocalHttpServer. It can be used for testing
+    HTTP requests locally.
+    """
+    return LocalHttpServer(httpserver)
 
 
 @pytest_asyncio.fixture

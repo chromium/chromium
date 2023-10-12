@@ -32,6 +32,7 @@ repos:
         exclude: '.browser'
       - id: name-tests-test
         args: [--pytest-test-first]
+        exclude: tests/tools/.*
       - id: requirements-txt-fixer
       - id: trailing-whitespace
   - repo: https://github.com/compilerla/conventional-pre-commit
