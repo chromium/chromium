@@ -716,13 +716,7 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, PopupSize) {
 #endif
 }
 
-// TODO(crbug.com/1489123): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_PopupResize DISABLED_PopupResize
-#else
-#define MAYBE_PopupResize PopupResize
-#endif
-IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, MAYBE_PopupResize) {
+IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, PopupResize) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
   GrantWindowManagementPermission();
   ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
