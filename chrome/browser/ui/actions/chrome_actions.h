@@ -11,6 +11,8 @@ class ActionManager;
 
 // Called during browser startup. Default command actions are created/
 // initialized here.
-void InitializeActions(actions::ActionManager* manager);
+void InitializeChromeActions(actions::ActionManager* manager);
+
+void InitializeActionIdStringMapping();
 
 #endif  // CHROME_BROWSER_UI_ACTIONS_CHROME_ACTIONS_H_

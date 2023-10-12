@@ -110,9 +110,6 @@
   E(kActionGroupTargetTab, IDC_GROUP_TARGET_TAB) \
   E(kActionDuplicateTargetTab, IDC_DUPLICATE_TARGET_TAB) \
   /* Clipboard commands */ \
-  E(kActionCut, IDC_CUT) \
-  E(kActionCopy, IDC_COPY) \
-  E(kActionPaste, IDC_PASTE) \
   E(kActionEditMenu, IDC_EDIT_MENU) \
   /* Find-in-page */ \
   E(kActionFind, IDC_FIND) \
@@ -359,22 +356,6 @@
     IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS) \
   E(kActionContentContextPartialTranslate, \
     IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE) \
-  /* Side Panel items */ \
-  E(kActionSidePanelShowAboutThisSite) \
-  E(kActionSidePanelShowAssistant) \
-  E(kActionSidePanelShowBookmarks, IDC_SHOW_BOOKMARK_SIDE_PANEL) \
-  E(kActionSidePanelShowCustomizeChrome) \
-  E(kActionSidePanelShowFeed) \
-  E(kActionSidePanelShowHistoryCluster) \
-  E(kActionSidePanelShowLens) \
-  E(kActionSidePanelShowPerformance) \
-  /* Read Anything renamed to Reading Mode. */ \
-  E(kActionSidePanelShowReadAnything, IDC_SHOW_READING_MODE_SIDE_PANEL) \
-  E(kActionSidePanelShowReadingList, IDC_READING_LIST_MENU_SHOW_UI) \
-  E(kActionSidePanelShowSearchCompanion, IDC_SHOW_SEARCH_COMPANION) \
-  E(kActionSidePanelShowShoppingInsights) \
-  E(kActionSidePanelShowSideSearch) \
-  E(kActionSidePanelShowUserNote) \
   /* Frame items. */ \
   E(kActionContentContextReloadFrame, IDC_CONTENT_CONTEXT_RELOADFRAME) \
   E(kActionContentContextViewFrameSource, IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE) \
@@ -565,6 +546,26 @@
 #define CHROME_GOOGLE_BRANDED_ACTION_IDS
 #endif // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+// TODO(crbug.com/1491976): Adding temporarily to unblock the side panel team.
+// Should be reinserted into CHROME_COMMON_ACTION_IDS when general solution to
+// add action id mappings is implemented.
+#define SIDE_PANEL_ACTION_IDS \
+  /* Side Panel items */ \
+  E(kActionSidePanelShowAboutThisSite) \
+  E(kActionSidePanelShowAssistant) \
+  E(kActionSidePanelShowBookmarks, IDC_SHOW_BOOKMARK_SIDE_PANEL) \
+  E(kActionSidePanelShowCustomizeChrome) \
+  E(kActionSidePanelShowFeed) \
+  E(kActionSidePanelShowHistoryCluster) \
+  E(kActionSidePanelShowLens) \
+  E(kActionSidePanelShowPerformance) \
+  E(kActionSidePanelShowReadAnything) \
+  E(kActionSidePanelShowReadingList, IDC_READING_LIST_MENU_SHOW_UI) \
+  E(kActionSidePanelShowSearchCompanion, IDC_SHOW_SEARCH_COMPANION) \
+  E(kActionSidePanelShowShoppingInsights) \
+  E(kActionSidePanelShowSideSearch) \
+  E(kActionSidePanelShowUserNote) \
+
 #define CHROME_ACTION_IDS \
     CHROME_COMMON_ACTION_IDS \
     CHROME_PLATFORM_SPECIFIC_ACTION_IDS \
@@ -576,6 +577,7 @@ enum ChromeActionIds : actions::ActionId {
   kChromeActionsStart = actions::kActionsEnd,
 
   CHROME_ACTION_IDS
+  SIDE_PANEL_ACTION_IDS
 
   kChromeActionsEnd,
 };

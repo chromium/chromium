@@ -37,3 +37,16 @@ if (!is_ios && !is_android) {
     ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "chrome_actions_unittest.cc" ]
+
+  deps = [
+    ":actions",
+    ":actions_headers",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

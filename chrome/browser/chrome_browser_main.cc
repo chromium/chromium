@@ -95,6 +95,7 @@
 #include "chrome/browser/tracing/trace_event_system_stats_monitor.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
+#include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/color/chrome_color_mixers.h"
 #include "chrome/browser/ui/javascript_dialogs/chrome_javascript_app_modal_dialog_view_factory.h"
 #include "chrome/browser/ui/profiles/profile_error_dialog.h"
@@ -810,6 +811,8 @@ void ChromeBrowserMainParts::ToolkitInitialized() {
       base::BindRepeating(color::AddComponentsColorMixers));
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(AddChromeColorMixers));
+
+  InitializeActionIdStringMapping();
 }
 
 void ChromeBrowserMainParts::PreCreateMainMessageLoop() {

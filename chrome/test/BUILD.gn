@@ -8007,6 +8007,7 @@ test("unit_tests") {
       "//chrome/browser/resources/new_tab_page_instant:resources_grit",
       "//chrome/browser/share/core/crow:crow_configuration_unittest",
       "//chrome/browser/support_tool:support_tool_proto",
+      "//chrome/browser/ui/actions:unit_tests",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/color:mixers",
       "//chrome/browser/ui/webui/discards:mojo_bindings",

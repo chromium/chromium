@@ -569,7 +569,7 @@ absl::optional<std::string> ActionManager::ActionIdToString(
     const ActionId action_id) {
   auto iter = GetActionIdToStringMap().find(action_id);
   if (iter != GetActionIdToStringMap().end()) {
-    return iter->second;
+    return std::string(iter->second);
   }
   return absl::nullopt;
 }
@@ -620,7 +620,7 @@ void ActionManager::MergeMaps(base::flat_map<T, U>& map1,
 
 // static
 void ActionManager::AddActionIdToStringMappings(ActionIdToStringMap map) {
-  MergeMaps<ActionId, std::string>(GetActionIdToStringMap(), map);
+  MergeMaps(GetActionIdToStringMap(), map);
 }
 
 // static
