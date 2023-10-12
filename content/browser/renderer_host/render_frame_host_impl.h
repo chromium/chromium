@@ -2230,6 +2230,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   bool has_unload_handler() const { return has_unload_handler_; }
 
+  // See member declaration for details.
   bool has_committed_any_navigation() const {
     return has_committed_any_navigation_;
   }
@@ -4545,6 +4546,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // navigation or not. Starts off false and is set to true for the lifetime of
   // the RenderFrame when the first CommitNavigation message is sent to the
   // RenderFrame. It is reset after a renderer process crash.
+  //
+  // Note that some use cases may still consider a RenderFrameHost used after a
+  // crash, in which case is_initial_empty_document() may be a more relevant
+  // check. Also, unlike is_initial_empty_document(), this field does not
+  // change if this frame is modified via document.open().
   bool has_committed_any_navigation_ = false;
   bool must_be_replaced_ = false;
 

@@ -49,6 +49,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_ui_browsertest_util.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -259,6 +260,60 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
   EXPECT_EQ(initial_rfh.get(), shell()->web_contents()->GetPrimaryMainFrame());
   ASSERT_TRUE(initial_rfh);
   EXPECT_FALSE(initial_rfh->GetProcess()->IsUnused());
+}
+
+// Check that navigating to a WebUI page from a crashed about:blank page will
+// work correctly, properly granting WebUI bindings and avoiding the reuse of
+// the initial SiteInstance and process.
+IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, NavigateFromCrashedAboutBlank) {
+  WebContents* web_contents = shell()->web_contents();
+  scoped_refptr<SiteInstance> orig_site_instance(
+      web_contents->GetSiteInstance());
+  EXPECT_FALSE(
+      static_cast<SiteInstanceImpl*>(orig_site_instance.get())->HasSite());
+  RenderFrameHostImplWrapper initial_rfh(web_contents->GetPrimaryMainFrame());
+  EXPECT_TRUE(initial_rfh->GetProcess()->IsUnused());
+  EXPECT_TRUE(initial_rfh->is_initial_empty_document());
+  EXPECT_FALSE(initial_rfh->has_committed_any_navigation());
+
+  // Explicitly navigate to about:blank.  Note that this stays in the initial
+  // RenderFrameHost but resets is_initial_empty_document() to false.
+  ASSERT_TRUE(NavigateToURL(web_contents, GURL(url::kAboutBlankURL)));
+  ASSERT_TRUE(initial_rfh.get());
+  EXPECT_FALSE(initial_rfh->is_initial_empty_document());
+  EXPECT_TRUE(initial_rfh->has_committed_any_navigation());
+  EXPECT_TRUE(initial_rfh->GetProcess()->IsUnused());
+
+  // Crash the initial process.  Note that this resets
+  // has_committed_any_navigation(), but is_initial_empty_document() is still
+  // false.
+  RenderProcessHostWatcher crash_observer(
+      initial_rfh->GetProcess(),
+      RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  EXPECT_TRUE(initial_rfh->GetProcess()->Shutdown(0));
+  crash_observer.Wait();
+  EXPECT_FALSE(initial_rfh->is_initial_empty_document());
+  EXPECT_FALSE(initial_rfh->has_committed_any_navigation());
+
+  // Navigate from the crashed blank page to a WebUI URL.
+  const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
+  EXPECT_TRUE(WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
+      web_contents->GetBrowserContext(), web_ui_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, web_ui_url));
+
+  // The explicit about:blank commit should prevent subsequent WebUI
+  // navigations from reusing the current RenderFrameHost, as it's no longer
+  // the initial one. Crashing the about:blank page shouldn't affect this, so
+  // the WebUI navigation should end up in a fresh SiteInstance and process.
+  EXPECT_NE(orig_site_instance, web_contents->GetSiteInstance());
+  EXPECT_NE(orig_site_instance->GetProcess(),
+            web_contents->GetPrimaryMainFrame()->GetProcess());
+
+  // Check that the resulting WebUI page has bindings, and its process is
+  // marked as used.
+  EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
+  EXPECT_FALSE(web_contents->GetPrimaryMainFrame()->GetProcess()->IsUnused());
 }
 
 // Check that when over the process limit, a WebUI navigation in one tab does

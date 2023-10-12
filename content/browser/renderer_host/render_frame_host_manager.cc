@@ -2319,7 +2319,7 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
       bool starts_from_initial_rfh =
           render_frame_host_->GetProcess()->IsUnused() &&
           !current_instance->HasSite() &&
-          !render_frame_host_->has_committed_any_navigation();
+          render_frame_host_->is_initial_empty_document();
       if (!starts_from_initial_rfh ||
           !base::FeatureList::IsEnabled(
               features::kReuseInitialRenderFrameHostForWebUI)) {
