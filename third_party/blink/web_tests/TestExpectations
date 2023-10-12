@@ -6792,3 +6792,7 @@ crbug.com/1491468 [ Linux ] virtual/popover-hint-disabled/external/wpt/html/sema
 
 # Gardener 2023-10-11
 crbug.com/1491918 [ Mac ] fast/scrolling/scroll-animation-on-by-default.html [ Failure Pass ]
+
+# Gardener 2023-10-12
+crbug.com/1491587 [ Mac10.15 ] external/wpt/selection/contenteditable/modifying-selection-with-non-primary-mouse-button.tentative.html?middle [ Failure ]
+crbug.com/1491587 [ Mac10.15 ] external/wpt/selection/contenteditable/modifying-selection-with-non-primary-mouse-button.tentative.html?secondary [ Failure ]
