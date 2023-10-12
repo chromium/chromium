@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -183,19 +184,21 @@ class AutocompleteResultTest : public testing::Test {
 
   void TearDown() override { task_environment_.RunUntilIdle(); }
 
-  // Configures |match| from |data|.
-  void PopulateAutocompleteMatch(const TestData& data,
-                                 AutocompleteMatch* match);
+  // Converts `TestData` to `AutocompleteMatch`.
+  AutocompleteMatch PopulateAutocompleteMatch(const TestData& data);
 
   // Adds |count| AutocompleteMatches to |matches|.
   void PopulateAutocompleteMatches(const TestData* data,
                                    size_t count,
                                    ACMatches* matches);
+  ACMatches PopulateAutocompleteMatches(const std::vector<TestData>& data);
 
   // Asserts that |result| has |expected_count| matches matching |expected|.
   void AssertResultMatches(const AutocompleteResult& result,
                            const TestData* expected,
                            size_t expected_count);
+  void AssertResultMatches(const AutocompleteResult& result,
+                           const std::vector<TestData>& expected);
 
   void AssertMatch(AutocompleteMatch match,
                    const TestData& expected_match_data,
@@ -245,31 +248,37 @@ class AutocompleteResultTest : public testing::Test {
   std::vector<scoped_refptr<FakeAutocompleteProvider>> mock_provider_list_;
 };
 
-void AutocompleteResultTest::PopulateAutocompleteMatch(
-    const TestData& data,
-    AutocompleteMatch* match) {
-  match->provider = GetProvider(data.provider_id);
-  match->type = data.type;
-  match->fill_into_edit = base::NumberToString16(data.url_id);
+AutocompleteMatch AutocompleteResultTest::PopulateAutocompleteMatch(
+    const TestData& data) {
+  AutocompleteMatch match;
+  match.provider = GetProvider(data.provider_id);
+  match.type = data.type;
+  match.fill_into_edit = base::NumberToString16(data.url_id);
   std::string url_id(1, data.url_id + 'a');
-  match->destination_url = GURL("http://" + url_id);
-  match->relevance = data.relevance;
-  match->allowed_to_be_default_match = data.allowed_to_be_default_match;
-  match->duplicate_matches = data.duplicate_matches;
+  match.destination_url = GURL("http://" + url_id);
+  match.relevance = data.relevance;
+  match.allowed_to_be_default_match = data.allowed_to_be_default_match;
+  match.duplicate_matches = data.duplicate_matches;
   if (data.suggestion_group_id.has_value()) {
-    match->suggestion_group_id = data.suggestion_group_id.value();
+    match.suggestion_group_id = data.suggestion_group_id.value();
   }
-  match->inline_autocompletion = base::UTF8ToUTF16(data.inline_autocompletion);
+  match.inline_autocompletion = base::UTF8ToUTF16(data.inline_autocompletion);
+  return match;
 }
 
 void AutocompleteResultTest::PopulateAutocompleteMatches(const TestData* data,
                                                          size_t count,
                                                          ACMatches* matches) {
-  for (size_t i = 0; i < count; ++i) {
-    AutocompleteMatch match;
-    PopulateAutocompleteMatch(data[i], &match);
-    matches->push_back(match);
-  }
+  for (size_t i = 0; i < count; ++i)
+    matches->push_back(PopulateAutocompleteMatch(data[i]));
+}
+
+ACMatches AutocompleteResultTest::PopulateAutocompleteMatches(
+    const std::vector<TestData>& data) {
+  ACMatches matches;
+  for (const auto& d : data)
+    matches.push_back(PopulateAutocompleteMatch(d));
+  return matches;
 }
 
 void AutocompleteResultTest::AssertResultMatches(
@@ -281,11 +290,19 @@ void AutocompleteResultTest::AssertResultMatches(
     AssertMatch(*(result.begin() + i), expected[i], i);
 }
 
+void AutocompleteResultTest::AssertResultMatches(
+    const AutocompleteResult& result,
+    const std::vector<TestData>& expected) {
+  ASSERT_EQ(result.size(), expected.size());
+  for (size_t i = 0; i < expected.size(); ++i)
+    AssertMatch(*(result.begin() + i), expected[i], i);
+}
+
 void AutocompleteResultTest::AssertMatch(AutocompleteMatch match,
                                          const TestData& expected_match_data,
                                          int i) {
-  AutocompleteMatch expected_match;
-  PopulateAutocompleteMatch(expected_match_data, &expected_match);
+  AutocompleteMatch expected_match =
+      PopulateAutocompleteMatch(expected_match_data);
   EXPECT_EQ(expected_match.provider, match.provider) << i;
   EXPECT_EQ(expected_match.type, match.type) << i;
   EXPECT_EQ(expected_match.relevance, match.relevance) << i;
@@ -1145,46 +1162,101 @@ TEST_F(AutocompleteResultTest, SortAndCullWithDemotionsByType) {
   }
 }
 
-// Test SortAndCull promoting a lower-scoring match to keep the default match
-// stable during the asynchronous pass.
 TEST_F(AutocompleteResultTest, SortAndCullWithPreserveDefaultMatch) {
-  TestData last[] = {
-      {0, 1, 500, true},
-      {1, 1, 400, true},
+  auto test = [&](const std::vector<TestData>& last,
+                  const std::vector<TestData>& current,
+                  const std::vector<TestData>& expected) {
+    AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+
+    ACMatches last_matches = PopulateAutocompleteMatches(last);
+    AutocompleteResult last_result;
+    last_result.AppendMatches(last_matches);
+    last_result.SortAndCull(input, template_url_service_.get(),
+                            triggered_feature_service());
+
+    ACMatches current_matches = PopulateAutocompleteMatches(current);
+    AutocompleteResult current_result;
+    current_result.AppendMatches(current_matches);
+
+    // Run SortAndCull, but try to keep the first entry of last_matches on top.
+    current_result.SortAndCull(input, template_url_service_.get(),
+                               triggered_feature_service(),
+                               *last_result.match_at(0));
+
+    AssertResultMatches(current_result, expected);
   };
-  // Same as |last|, but with the scores swapped.
-  TestData current[] = {
-      {1, 1, 500, true},
-      {0, 1, 400, true},
-  };
 
-  AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
-                          TestSchemeClassifier());
-
-  ACMatches last_matches;
-  PopulateAutocompleteMatches(last, std::size(last), &last_matches);
-  AutocompleteResult last_result;
-  last_result.AppendMatches(last_matches);
-  last_result.SortAndCull(input, template_url_service_.get(),
-                          triggered_feature_service());
-
-  ACMatches current_matches;
-  PopulateAutocompleteMatches(current, std::size(current), &current_matches);
-  AutocompleteResult current_result;
-  current_result.AppendMatches(current_matches);
-
-  // Run SortAndCull, but try to keep the first entry of last_matches on top.
-  current_result.SortAndCull(input, template_url_service_.get(),
-                             triggered_feature_service(),
-                             *last_result.match_at(0));
-
-  // Assert that the lower scoring match has been promoted to the top to keep
-  // the default match stable.
-  TestData result[] = {
-      {0, 1, 400, true},
-      {1, 1, 500, true},
-  };
-  AssertResultMatches(current_result, result, std::size(result));
+  {
+    SCOPED_TRACE("Lower scored default is preserved.");
+    std::vector<TestData> last = {
+        {0, 1, 500, true},
+        {1, 1, 400, true},
+    };
+    std::vector<TestData> current = {
+        {1, 1, 500, true},
+        {0, 1, 400, true},
+    };
+    std::vector<TestData> expected = {
+        {0, 1, 400, true},
+        {1, 1, 500, true},
+    };
+    test(last, current, expected);
+  }
+  {
+    SCOPED_TRACE("Don't preserve a default that no longer matches.");
+    std::vector<TestData> last = {
+        {0, 1, 500, true},
+    };
+    std::vector<TestData> current = {
+        {1, 1, 100, true},
+    };
+    std::vector<TestData> expected = {
+        {1, 1, 100, true},
+    };
+    test(last, current, expected);
+  }
+  {
+    SCOPED_TRACE(
+        "Previous default does not replace a higher scored "
+        "URL_WHAT_YOU_TYPED.");
+    std::vector<TestData> last = {
+        {0, 1, 500, true, {}, AutocompleteMatchType::HISTORY_URL},
+        {1, 1, 400, true, {}, AutocompleteMatchType::HISTORY_URL},
+    };
+    std::vector<TestData> current = {
+        {0, 1, 500, true, {}, AutocompleteMatchType::HISTORY_URL},
+        {1, 1, 400, true, {}, AutocompleteMatchType::HISTORY_URL},
+        {2, 1, 600, true, {}, AutocompleteMatchType::URL_WHAT_YOU_TYPED},
+    };
+    std::vector<TestData> expected = {
+        {2, 1, 600, true, {}, AutocompleteMatchType::URL_WHAT_YOU_TYPED},
+        {0, 1, 500, true, {}, AutocompleteMatchType::HISTORY_URL},
+        {1, 1, 400, true, {}, AutocompleteMatchType::HISTORY_URL},
+    };
+    test(last, current, expected);
+  }
+  {
+    SCOPED_TRACE(
+        "Previous default does replace a lower scored URL_WHAT_YOU_TYPED.");
+    std::vector<TestData> last = {
+        {0, 1, 500, true, {}, AutocompleteMatchType::HISTORY_URL},
+        {1, 1, 400, true, {}, AutocompleteMatchType::HISTORY_URL},
+    };
+    std::vector<TestData> current = {
+        {0, 1, 500, true, {}, AutocompleteMatchType::HISTORY_URL},
+        {1, 1, 400, true, {}, AutocompleteMatchType::HISTORY_URL},
+        {2, 1, 300, true, {}, AutocompleteMatchType::URL_WHAT_YOU_TYPED},
+        {3, 1, 600, true, {}, AutocompleteMatchType::HISTORY_URL},
+    };
+    std::vector<TestData> expected = {
+        {0, 1, 500, true, {}, AutocompleteMatchType::HISTORY_URL},
+        {3, 1, 600, true, {}, AutocompleteMatchType::HISTORY_URL},
+        {1, 1, 400, true, {}, AutocompleteMatchType::HISTORY_URL},
+        {2, 1, 300, true, {}, AutocompleteMatchType::URL_WHAT_YOU_TYPED},
+    };
+    test(last, current, expected);
+  }
 }
 
 // Verify the fix to https://crbug.com/1340548.
