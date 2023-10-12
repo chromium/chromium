@@ -11034,6 +11034,13 @@ const FeatureEntry kFeatureEntries[] = {
                                     "AndroidHub")},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN)
+    {"enable-web-app-system-media-controls-win",
+     flag_descriptions::kWebAppSystemMediaControlsWinName,
+     flag_descriptions::kWebAppSystemMediaControlsWinDescription, kOsWin,
+     FEATURE_VALUE_TYPE(webapps::features::kWebAppSystemMediaControlsWin)},
+#endif  // BUILDFLAG(IS_WIN)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

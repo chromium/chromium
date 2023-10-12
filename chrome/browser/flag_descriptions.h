@@ -2900,6 +2900,9 @@ extern const char kWebAppSyncGeneratedIconRetroactiveFixDescription[];
 extern const char kWebAppSyncGeneratedIconUpdateFixName[];
 extern const char kWebAppSyncGeneratedIconUpdateFixDescription[];
 
+extern const char kWebAppSystemMediaControlsWinName[];
+extern const char kWebAppSystemMediaControlsWinDescription[];
+
 extern const char kWebAuthenticationNewPasskeyUIName[];
 extern const char kWebAuthenticationNewPasskeyUIDescription[];
 

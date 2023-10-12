@@ -61992,6 +61992,7 @@ from previous Chrome versions.
   <int value="-1535694535" label="PageInfoPerformanceHints:enabled"/>
   <int value="-1535608870" label="JourneysLabel:enabled"/>
   <int value="-1534970225" label="FilesArchivemount:disabled"/>
+  <int value="-1534613092" label="WebAppSystemMediaControlsWin:disabled"/>
   <int value="-1533450851" label="EnablePerDeskZOrder:enabled"/>
   <int value="-1533258008" label="CalculateNativeWinOcclusion:enabled"/>
   <int value="-1532720464" label="WellKnownChangePassword:enabled"/>
@@ -63963,6 +63964,7 @@ from previous Chrome versions.
   <int value="-577982497" label="CupsPrintersUiOverhaul:enabled"/>
   <int value="-577503348" label="GridTabSwitcherForTablets:disabled"/>
   <int value="-576759065" label="HoldingSpaceInProgressAnimationV2:disabled"/>
+  <int value="-576656013" label="WebAppSystemMediaControlsWin:enabled"/>
   <int value="-576475188" label="BorealisForceDoubleScale:disabled"/>
   <int value="-575081438"
       label="OmniboxMostVisitedTilesFadingOnTablet:disabled"/>

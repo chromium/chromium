@@ -4980,6 +4980,11 @@ const char kWebAppSyncGeneratedIconUpdateFixDescription[] =
     "during a manifest update if the icons were generated, indictative of"
     "network errors during the sync install.";
 
+const char kWebAppSystemMediaControlsWinName[] =
+    "Web App System Media Controls on Windows";
+const char kWebAppSystemMediaControlsWinDescription[] =
+    "Enable instanced system media controls for web apps";
+
 const char kWebAuthenticationNewPasskeyUIName[] = "Enable new passkey UI";
 const char kWebAuthenticationNewPasskeyUIDescription[] =
     "Enable the new passkey UI that emphasizes individual passkeys instead of "
