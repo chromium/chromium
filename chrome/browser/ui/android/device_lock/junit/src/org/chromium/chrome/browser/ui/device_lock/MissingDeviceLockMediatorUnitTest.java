@@ -17,7 +17,6 @@ import static org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockProper
 import static org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockProperties.ON_CREATE_DEVICE_LOCK_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockProperties.REMOVE_ALL_LOCAL_DATA_CHECKED;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
 import android.content.Intent;
@@ -37,10 +36,8 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Unit tests for the {@link DeviceLockMediator}.*/
 @RunWith(BaseRobolectricTestRunner.class)
@@ -48,14 +45,9 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 public class MissingDeviceLockMediatorUnitTest {
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
-    @Rule
-    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Mock
     public Activity mActivity;
-    @Mock
-    public Account mAccount;
     @Mock
     private PackageManager mPackageManager;
 
