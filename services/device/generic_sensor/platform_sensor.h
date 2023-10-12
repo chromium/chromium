@@ -133,6 +133,8 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
 
   base::ObserverList<Client, true>::Unchecked clients_;
 
+  base::WeakPtr<PlatformSensor> AsWeakPtr();
+
  private:
   friend class base::RefCountedThreadSafe<PlatformSensor>;
 

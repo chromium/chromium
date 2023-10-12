@@ -285,4 +285,8 @@ bool PlatformSensor::IsSignificantlyDifferent(const SensorReading& lhs,
   return false;
 }
 
+base::WeakPtr<PlatformSensor> PlatformSensor::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace device

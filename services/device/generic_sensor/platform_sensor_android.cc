@@ -96,9 +96,14 @@ bool PlatformSensorAndroid::CheckSensorConfiguration(
 void PlatformSensorAndroid::NotifyPlatformSensorError(
     JNIEnv*,
     const JavaRef<jobject>& caller) {
+  // This function may be called from Java while this object's destructor is
+  // being invoked, however we know that to reach this point we must be before
+  // the completion of the call to Java_PlatformSensor_sensorDestroyed(). This
+  // means that the WeakPtrFactory is still valid. The WeakPtr will detect
+  // completion of the destructor.
   PostTaskToMainSequence(
       FROM_HERE,
-      base::BindOnce(&PlatformSensorAndroid::NotifySensorError, this));
+      base::BindOnce(&PlatformSensorAndroid::NotifySensorError, AsWeakPtr()));
 }
 
 void PlatformSensorAndroid::UpdatePlatformSensorReading(
@@ -117,6 +122,13 @@ void PlatformSensorAndroid::UpdatePlatformSensorReading(
   reading.raw.values[3] = value4;
 
   UpdateSharedBufferAndNotifyClients(reading);
+}
+
+void PlatformSensorAndroid::SimulateSensorEventFromJavaForTesting(
+    base::android::ScopedJavaGlobalRef<jobject> j_object_,
+    jint reading_values_length) {
+  Java_PlatformSensor_simulateSensorEventForTesting(  // IN-TEST
+      AttachCurrentThread(), j_object_, reading_values_length);
 }
 
 }  // namespace device
