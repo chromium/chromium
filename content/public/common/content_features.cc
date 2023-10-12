@@ -1164,9 +1164,10 @@ BASE_FEATURE(kWebAssemblyTrapHandler,
 BASE_FEATURE(kWebBluetooth, "WebBluetooth", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether Web Bluetooth should use the new permissions backend. The
-// new permissions backend uses ChooserContextBase, which is used by other
-// device APIs, such as WebUSB. When enabled, WebBluetoothWatchAdvertisements
-// and WebBluetoothGetDevices blink features are also enabled.
+// new permissions backend uses ObjectPermissionContextBase, which is used by
+// other device APIs, such as WebUSB. When enabled,
+// WebBluetoothWatchAdvertisements and WebBluetoothGetDevices blink features are
+// also enabled.
 BASE_FEATURE(kWebBluetoothNewPermissionsBackend,
              "WebBluetoothNewPermissionsBackend",
              base::FEATURE_DISABLED_BY_DEFAULT);
