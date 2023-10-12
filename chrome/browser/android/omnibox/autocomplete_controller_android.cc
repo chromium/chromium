@@ -117,7 +117,6 @@ AutocompleteControllerAndroid::AutocompleteControllerAndroid(
     std::unique_ptr<ChromeAutocompleteProviderClient> client)
     : profile_{profile},
       java_controller_{env, jcontroller.obj()},
-      provider_client_{client.get()},
       autocomplete_controller_{std::make_unique<AutocompleteController>(
           std::move(client),
           AutocompleteClassifier::DefaultOmniboxProviders())} {

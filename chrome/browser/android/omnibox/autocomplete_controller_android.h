@@ -134,11 +134,6 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
   // Guaranteed to be non-null.
   const base::android::ScopedJavaGlobalRef<jobject> java_controller_;
 
-  // Associated AutocompleteProviderClient.
-  // Guaranteed to be non-null.
-  const raw_ptr<ChromeAutocompleteProviderClient, DanglingUntriaged>
-      provider_client_;
-
   // AutocompleteController associated with this client. As this is directly
   // associated with the |provider_client_| and indirectly with |profile_|
   // there is exactly one instance per class.
