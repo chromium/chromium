@@ -8,6 +8,7 @@
 #include <cmath>
 #include <utility>
 
+#include "base/allocator/dispatcher/tls.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "base/compiler_specific.h"
@@ -37,6 +38,22 @@ namespace base {
 constexpr uint32_t kMaxStackEntries = 256;
 
 namespace {
+
+struct ThreadLocalData {
+  const char* thread_name = nullptr;
+};
+
+ThreadLocalData* GetThreadLocalData() {
+#if USE_LOCAL_TLS_EMULATION()
+  static base::NoDestructor<
+      base::allocator::dispatcher::ThreadLocalStorage<ThreadLocalData>>
+      thread_local_data("sampling_heap_profiler");
+  return thread_local_data->GetThreadLocalData();
+#else
+  static thread_local ThreadLocalData thread_local_data;
+  return &thread_local_data;
+#endif
+}
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 BASE_FEATURE(kAvoidFramePointers,
@@ -82,12 +99,13 @@ const char* GetAndLeakThreadName() {
 }
 
 const char* UpdateAndGetThreadName(const char* name) {
-  static thread_local const char* thread_name;
+  ThreadLocalData* const thread_local_data = GetThreadLocalData();
   if (name)
-    thread_name = name;
-  if (!thread_name)
-    thread_name = GetAndLeakThreadName();
-  return thread_name;
+    thread_local_data->thread_name = name;
+  if (!thread_local_data->thread_name) {
+    thread_local_data->thread_name = GetAndLeakThreadName();
+  }
+  return thread_local_data->thread_name;
 }
 
 // Checks whether unwinding from this function works.
@@ -304,6 +322,7 @@ std::vector<const char*> SamplingHeapProfiler::GetStrings() {
 
 // static
 void SamplingHeapProfiler::Init() {
+  GetThreadLocalData();
   PoissonAllocationSampler::Init();
 }
 
