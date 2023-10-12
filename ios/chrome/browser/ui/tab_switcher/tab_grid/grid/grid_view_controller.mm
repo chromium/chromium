@@ -247,6 +247,8 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
       };
   collectionView.dataSource = self.diffableDataSource;
 
+  [self reloadCollectionViewData];
+
   // UICollectionViewDropPlaceholder uses a GridCell and needs the class to be
   // registered.
   [collectionView registerClass:[GridCell class]
