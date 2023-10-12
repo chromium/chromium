@@ -9,7 +9,7 @@
 namespace variations {
 
 uint32_t HashName(base::StringPiece name) {
-  return base::HashName(name);
+  return base::HashFieldTrialName(name);
 }
 
 }  // namespace variations

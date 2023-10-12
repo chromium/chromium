@@ -31,7 +31,7 @@ void LogInvalidValue(const Feature& feature,
                      const std::string& value_as_string,
                      const std::string& default_value_as_string) {
   UmaHistogramSparse("Variations.FieldTriamParamsLogInvalidValue",
-                     static_cast<int>(base::HashName(
+                     static_cast<int>(base::HashFieldTrialName(
                          FeatureList::GetFieldTrial(feature)->trial_name())));
   // To anyone noticing these crash dumps in the wild, these parameters come
   // from server-side experiment configuration. If you're seeing an increase it

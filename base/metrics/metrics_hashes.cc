@@ -50,7 +50,7 @@ uint32_t HashMetricNameAs32Bits(base::StringPiece name) {
   return DigestToUInt32(digest);
 }
 
-uint32_t HashName(base::StringPiece name) {
+uint32_t HashFieldTrialName(base::StringPiece name) {
   // SHA-1 is designed to produce a uniformly random spread in its output space,
   // even for nearly-identical inputs.
   unsigned char sha1_hash[base::kSHA1Length];
