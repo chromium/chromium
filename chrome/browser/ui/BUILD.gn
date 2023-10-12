@@ -3814,6 +3814,7 @@ static_library("ui") {
     deps += [
       "//chrome/app:generated_resources",
       "//chrome/browser/chromeos",
+      "//chrome/browser/chromeos/cros_apps",
       "//chrome/browser/metrics/structured:features",
       "//chrome/browser/ui/views/editor_menu",
       "//chromeos/components/kiosk",
@@ -3850,7 +3851,6 @@ static_library("ui") {
       "webui/signin/profile_picker_lacros_sign_in_provider.h",
     ]
     deps += [
-      "//chrome/browser/lacros/cros_apps",
       "//chrome/browser/policy:onc",
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",

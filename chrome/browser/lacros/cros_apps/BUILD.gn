@@ -6,46 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_lacros)
 
-source_set("cros_apps") {
-  sources = [
-    "cros_apps_tab_helper.cc",
-    "cros_apps_tab_helper.h",
-  ]
-
-  deps = [
-    "//chromeos/constants:constants",
-    "//content/public/browser",
-    "//content/public/common",
-  ]
-}
-
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "cros_apps_test_utils.cc",
-    "cros_apps_test_utils.h",
-  ]
-
-  public_deps = [ "//content/test:test_support" ]
-}
-
-source_set("browser_tests") {
-  testonly = true
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-  sources = [ "cros_apps_tab_helper_browsertest.cc" ]
-
-  deps = [
-    ":test_support",
-    "//chrome/test:test_support",
-    "//chromeos/constants",
-  ]
-}
-
 group("all_browser_tests") {
   testonly = true
-  deps = [
-    "//chrome/browser/lacros/cros_apps:browser_tests",
-    "//chrome/browser/lacros/cros_apps/api:browser_tests",
-  ]
+  deps = [ "//chrome/browser/lacros/cros_apps/api/diagnostics:browser_tests" ]
 }

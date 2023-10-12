@@ -2959,6 +2959,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/chromeos",
         "//chrome/browser/chromeos:test_support",
+        "//chrome/browser/chromeos/cros_apps:all_browser_tests",
         "//chrome/browser/web_applications/app_service",
         "//chromeos/constants",
         "//chromeos/dbus/dlp:dlp",

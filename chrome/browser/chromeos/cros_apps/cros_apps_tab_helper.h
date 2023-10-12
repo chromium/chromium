@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_LACROS_CROS_APPS_CROS_APPS_TAB_HELPER_H_
-#define CHROME_BROWSER_LACROS_CROS_APPS_CROS_APPS_TAB_HELPER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_CROS_APPS_CROS_APPS_TAB_HELPER_H_
+#define CHROME_BROWSER_CHROMEOS_CROS_APPS_CROS_APPS_TAB_HELPER_H_
 
 #include "base/types/pass_key.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -37,4 +37,4 @@ class CrosAppsTabHelper
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-#endif  // CHROME_BROWSER_LACROS_CROS_APPS_CROS_APPS_TAB_HELPER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_CROS_APPS_CROS_APPS_TAB_HELPER_H_

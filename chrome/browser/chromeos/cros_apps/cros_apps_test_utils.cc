@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lacros/cros_apps/cros_apps_test_utils.h"
+#include "chrome/browser/chromeos/cros_apps/cros_apps_test_utils.h"
 
 #include "base/strings/stringprintf.h"
 
