@@ -5,9 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Console from 'devtools/panels/console/console.js';
+
 (async function() {
   TestRunner.addResult(`Tests that removed Elements logged in the Console are properly formatted.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   TestRunner.addResult(`Adding element`);
@@ -18,7 +19,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
     document.body.appendChild(el);
     undefined;
   `);
-  const nodePromise = TestRunner.addSnifferPromise(Console.ConsoleViewMessage.prototype, 'formattedParameterAsNodeForTest');
+  const nodePromise = TestRunner.addSnifferPromise(Console.ConsoleViewMessage.ConsoleViewMessage.prototype, 'formattedParameterAsNodeForTest');
   TestRunner.evaluateInPagePromise(`console.log(el)`);
   await nodePromise;
   await ConsoleTestRunner.waitForPendingViewportUpdates();

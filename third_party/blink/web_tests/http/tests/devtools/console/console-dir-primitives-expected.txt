@@ -1,15 +1,15 @@
 Tests that console dir makes messages expandable only when necessary.
 
-Message text: console-dir-primitives.js:16 true
+Message text: console-dir-primitives.js:17 true
 Message is not expandable
 
-Message text: console-dir-primitives.js:17 Boolean
+Message text: console-dir-primitives.js:18 Boolean
 Message is expandable
 
-Message text: console-dir-primitives.js:19 foo
+Message text: console-dir-primitives.js:20 foo
 Message is not expandable
 
-Message text: console-dir-primitives.js:20 String
+Message text: console-dir-primitives.js:21 String
 Message is expandable
 
 

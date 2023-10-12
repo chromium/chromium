@@ -7,7 +7,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 (async function() {
   TestRunner.addResult(
       `Verifies that the main page request repeated by a service worker appears in the network log.`);
-  await TestRunner.loadLegacyModule('console');
 
   await ApplicationTestRunner.resetState();
   await TestRunner.showPanel('network');

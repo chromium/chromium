@@ -10,7 +10,6 @@ import * as Elements from 'devtools/panels/elements/elements.js';
 
 (async function() {
   TestRunner.addResult(`This test verifies that template's content DocumentFragment is accessible from DevTools.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <p id="description"></p>

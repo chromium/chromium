@@ -11,11 +11,9 @@ import * as Application from 'devtools/panels/application/application.js';
 
 (async function() {
   TestRunner.addResult(`Validate IndexeddbModel clearForStorageKey\n`);
-  await TestRunner.loadLegacyModule('console');
   // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('resources');
 
   const model = TestRunner.mainTarget.model(Resources.IndexedDBModel);

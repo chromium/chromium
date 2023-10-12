@@ -8,7 +8,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests responses in network tab for two XHRs sent without any delay between them. Bug 91630\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('network');
 
   function initArgs(method, url, async, payload) {

@@ -1,29 +1,29 @@
 Tests that console logging dumps properly styled messages.
 
-console-format-style.js:17 Blue!.
+console-format-style.js:16 Blue!.
 Styled text #0: contain: paint; display: inline-block; max-width: 100%; color: blue;
-console-format-style.js:18 Blue! Red!
+console-format-style.js:17 Blue! Red!
 Styled text #0: contain: paint; display: inline-block; max-width: 100%; color: blue;
 Styled text #1: contain: paint; display: inline-block; max-width: 100%; color: red;
-console-format-style.js:19 Blue!Red!
+console-format-style.js:18 Blue!Red!
 Styled text #0: contain: paint; display: inline-block; max-width: 100%; color: blue;
 Styled text #1: NO STYLES DEFINED
 Styled text #2: contain: paint; display: inline-block; max-width: 100%; color: blue;
 Styled text #3: contain: paint; display: inline-block; max-width: 100%; color: red;
-console-format-style.js:20 www.google.com
+console-format-style.js:19 www.google.com
 Styled text #0: contain: paint; display: inline-block; max-width: 100%; color: blue;
+Styled text #1: NO STYLES DEFINED
+console-format-style.js:20 www.google.com
+onload @ console-format-style.js:20
+(anonymous) @ console-format-style.js:24
+Styled text #0: contain: paint; display: inline-block; max-width: 100%; color: blue; background: blue;
 Styled text #1: NO STYLES DEFINED
 console-format-style.js:21 www.google.com
 onload @ console-format-style.js:21
-(anonymous) @ console-format-style.js:25
+(anonymous) @ console-format-style.js:24
 Styled text #0: contain: paint; display: inline-block; max-width: 100%; color: blue; background: blue;
 Styled text #1: NO STYLES DEFINED
-console-format-style.js:22 www.google.com
-onload @ console-format-style.js:22
-(anonymous) @ console-format-style.js:25
-Styled text #0: contain: paint; display: inline-block; max-width: 100%; color: blue; background: blue;
-Styled text #1: NO STYLES DEFINED
-console-format-style.js:23 12345678
+console-format-style.js:22 12345678
 Styled text #0: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-black);
 Styled text #1: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-red);
 Styled text #2: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-darkgray);
@@ -32,7 +32,7 @@ Styled text #4: contain: paint; display: inline-block; max-width: 100%; color: v
 Styled text #5: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-lightred); background-color: var(--console-color-red);
 Styled text #6: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-lightred); background-color: var(--console-color-darkgray);
 Styled text #7: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-lightred); background-color: var(--console-color-lightred);
-console-format-style.js:24 11.1a22.2b33.3
+console-format-style.js:23 11.1a22.2b33.3
 Styled text #0: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-black);
 Styled text #1: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-red);
 Styled text #2: contain: paint; display: inline-block; max-width: 100%; color: var(--console-color-darkgray);

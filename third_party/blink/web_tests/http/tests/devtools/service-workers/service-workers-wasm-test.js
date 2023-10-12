@@ -10,7 +10,6 @@ import * as TimelineModel from 'devtools/models/timeline_model/timeline_model.js
 
 (async function() {
   TestRunner.addResult(`Tests V8 code cache for WebAssembly resources using Service Workers.\n`);
-  await TestRunner.loadLegacyModule('console');
 
   await ApplicationTestRunner.resetState();
   SDK.multitargetNetworkManager.clearBrowserCache();

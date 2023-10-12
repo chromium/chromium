@@ -5,10 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Console from 'devtools/panels/console/console.js';
+
 (async function() {
   TestRunner.addResult(`Tests that console can filter messages by source.\n`);
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   await TestRunner.addScriptTag('resources/log-source.js');
   await TestRunner.evaluateInPagePromise(`
@@ -24,16 +25,16 @@ import {ConsoleTestRunner} from 'console_test_runner';
     console.warn("abc warn");
     console.warn("def warn");
   `);
-  var consoleView = Console.ConsoleView.instance();
+  var consoleView = Console.ConsoleView.ConsoleView.instance();
   consoleView.setImmediatelyFilterMessagesForTest();
   if (consoleView.isSidebarOpen)
     consoleView.splitWidget.showHideSidebarButton.element.click();
 
   async function dumpVisibleMessages() {
-    var menuText = Console.ConsoleView.instance().filter.levelMenuButton.text;
+    var menuText = Console.ConsoleView.ConsoleView.instance().filter.levelMenuButton.text;
     TestRunner.addResult('Level menu: ' + menuText);
 
-    var messages = Console.ConsoleView.instance().visibleViewMessages;
+    var messages = Console.ConsoleView.ConsoleView.instance().visibleViewMessages;
     for (var i = 0; i < messages.length; i++) {
       // Ordering is important here, as accessing the element the first time around
       // triggers live location creation and updates which we need to await properly.
@@ -46,9 +47,9 @@ import {ConsoleTestRunner} from 'console_test_runner';
   var testSuite = [
     function dumpLevels(next) {
       TestRunner.addResult('All levels');
-      TestRunner.addObject(Console.ConsoleFilter.allLevelsFilterValue());
+      TestRunner.addObject(Console.ConsoleFilter.ConsoleFilter.allLevelsFilterValue());
       TestRunner.addResult('Default levels');
-      TestRunner.addObject(Console.ConsoleFilter.defaultLevelsFilterValue());
+      TestRunner.addObject(Console.ConsoleFilter.ConsoleFilter.defaultLevelsFilterValue());
       next();
     },
 
@@ -58,45 +59,45 @@ import {ConsoleTestRunner} from 'console_test_runner';
     },
 
     function allLevels(next) {
-      Console.ConsoleViewFilter.levelFilterSetting().set(Console.ConsoleFilter.allLevelsFilterValue());
+      Console.ConsoleView.ConsoleViewFilter.levelFilterSetting().set(Console.ConsoleFilter.ConsoleFilter.allLevelsFilterValue());
       dumpVisibleMessages().then(next);
     },
 
     function defaultLevels(next) {
-      Console.ConsoleViewFilter.levelFilterSetting().set(Console.ConsoleFilter.defaultLevelsFilterValue());
+      Console.ConsoleView.ConsoleViewFilter.levelFilterSetting().set(Console.ConsoleFilter.ConsoleFilter.defaultLevelsFilterValue());
       dumpVisibleMessages().then(next);
     },
 
     function verbose(next) {
-      Console.ConsoleViewFilter.levelFilterSetting().set({ verbose: true });
+      Console.ConsoleView.ConsoleViewFilter.levelFilterSetting().set({ verbose: true });
       dumpVisibleMessages().then(next);
     },
 
     function info(next) {
-      Console.ConsoleViewFilter.levelFilterSetting().set({ info: true });
+      Console.ConsoleView.ConsoleViewFilter.levelFilterSetting().set({ info: true });
       dumpVisibleMessages().then(next);
     },
 
     function warningsAndErrors(next) {
-      Console.ConsoleViewFilter.levelFilterSetting().set({ warning: true, error: true });
+      Console.ConsoleView.ConsoleViewFilter.levelFilterSetting().set({ warning: true, error: true });
       dumpVisibleMessages().then(next);
     },
 
     function abcMessagePlain(next) {
-      Console.ConsoleViewFilter.levelFilterSetting().set({ verbose: true });
-      Console.ConsoleView.instance().filter.textFilterUI.setValue('abc');
-      Console.ConsoleView.instance().filter.onFilterChanged();
+      Console.ConsoleView.ConsoleViewFilter.levelFilterSetting().set({ verbose: true });
+      Console.ConsoleView.ConsoleView.instance().filter.textFilterUI.setValue('abc');
+      Console.ConsoleView.ConsoleView.instance().filter.onFilterChanged();
       dumpVisibleMessages().then(next);
     },
 
     function abcMessageRegex(next) {
-      Console.ConsoleView.instance().filter.textFilterUI.setValue('/ab[a-z]/');
-      Console.ConsoleView.instance().filter.onFilterChanged();
+      Console.ConsoleView.ConsoleView.instance().filter.textFilterUI.setValue('/ab[a-z]/');
+      Console.ConsoleView.ConsoleView.instance().filter.onFilterChanged();
       dumpVisibleMessages().then(next);
     },
 
     function abcMessageRegexWarning(next) {
-      Console.ConsoleViewFilter.levelFilterSetting().set({ warning: true });
+      Console.ConsoleView.ConsoleViewFilter.levelFilterSetting().set({ warning: true });
       dumpVisibleMessages().then(next);
     }
   ];

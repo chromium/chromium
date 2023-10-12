@@ -9,7 +9,6 @@ import * as Common from 'devtools/core/common/common.js';
 
 (async function() {
   TestRunner.addResult(`Tests that the console can preserve log messages across cross-process navigations.`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   await TestRunner.navigatePromise('http://devtools.oopif.test:8000/devtools/console/resources/log-message.html')
   Common.Settings.settingForTest('preserveConsoleLog').set(true);

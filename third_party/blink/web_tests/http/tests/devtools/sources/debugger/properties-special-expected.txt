@@ -1,17 +1,17 @@
 Tests how debugger presents special properties of closures, bound functions and object wrappers.
-properties-special.js:14 Boolean
+properties-special.js:13 Boolean
     [[Prototype]]: Boolean
     [[PrimitiveValue]]: true
-properties-special.js:15 ƒ anonymous(a,b)
+properties-special.js:14 ƒ anonymous(a,b)
     arguments: null
     caller: null
     length: 2
     name: ""
     prototype: {constructor: ƒ}
-    [[FunctionLocation]]: properties-special.js:15
+    [[FunctionLocation]]: properties-special.js:14
     [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
-properties-special.js:16 ƒ bound ()
+properties-special.js:15 ƒ bound ()
     length: 1
     name: "bound "
     arguments: (...)
@@ -20,13 +20,13 @@ properties-special.js:16 ƒ bound ()
     [[TargetFunction]]: ƒ (a,b)
     [[BoundThis]]: Object
     [[BoundArgs]]: Array(1)
-properties-special.js:17 ƒ* anonymous()
+properties-special.js:16 ƒ* anonymous()
     length: 0
     name: ""
     prototype: Generator {}
     arguments: (...)
     caller: (...)
-    [[FunctionLocation]]: properties-special.js:17
+    [[FunctionLocation]]: properties-special.js:16
     [[IsGenerator]]: true
     [[Prototype]]: GeneratorFunction
     [[Scopes]]: Scopes[1]

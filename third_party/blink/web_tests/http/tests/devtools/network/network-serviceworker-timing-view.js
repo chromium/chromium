@@ -12,7 +12,6 @@ import * as Network from 'devtools/panels/network/network.js';
 (async function() {
     'use strict';
     TestRunner.addResult(`Tests that serviceworker timings are displayed correctly.\n`);
-    await TestRunner.loadLegacyModule('console');
     await TestRunner.showPanel('network');
 
     await TestRunner.reloadPagePromise();

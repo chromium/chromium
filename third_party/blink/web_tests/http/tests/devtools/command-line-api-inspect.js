@@ -11,7 +11,6 @@ import * as Elements from 'devtools/panels/elements/elements.js';
 
 (async function() {
   TestRunner.addResult(`Tests that inspect() command line api works.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.loadHTML(`
       <p id="p1">
       </p>

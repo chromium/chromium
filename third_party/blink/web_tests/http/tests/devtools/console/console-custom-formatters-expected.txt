@@ -1,9 +1,9 @@
 Tests that console logging dumps properly when there are multiple custom formatters on the page
 
-console-custom-formatters.js:123 Header formatted by 1 aBody formatted by 1 a
-console-custom-formatters.js:124 Header formatted by 2 bBody formatted by 2 b
-console-custom-formatters.js:125 Header formatted by 1 cBody formatted by 1 c
-console-custom-formatters.js:126 Formatter with config Header info: additional infobodyinfo: additional info
-console-custom-formatters.js:127 Formatter with config Formatter with config Formatter with config Formatter with config Formatter with config Formatter with config Formatter with config Formatter with config Formatter with config Formatter with config Object
+console-custom-formatters.js:124 Header formatted by 1 aBody formatted by 1 a
+console-custom-formatters.js:125 Header formatted by 2 bBody formatted by 2 b
+console-custom-formatters.js:126 Header formatted by 1 cBody formatted by 1 c
+console-custom-formatters.js:127 Formatter with config Header info: additional infobodyinfo: additional info
+console-custom-formatters.js:128 Formatter with config Formatter with config Formatter with config Formatter with config Formatter with config Formatter with config Formatter with config Formatter with config Formatter with config Formatter with config Object
 Custom Formatter Failed: Uncaught Too deep hierarchy of inlined custom previews
 

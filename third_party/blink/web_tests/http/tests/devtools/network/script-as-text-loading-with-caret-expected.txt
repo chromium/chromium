@@ -1,7 +1,7 @@
 Tests console message when script is loaded with incorrect text/html mime type and the URL contains the '^' character.
 
 Message count: 1
-script-as-text-loading-with-caret.js:18 GET http://127.0.0.1:8000/devtools/network/resources/this-is-a-weird?querystring=with^carats^like^these^because^who^doesnt^love^strange^characters^in^urls net::ERR_ABORTED 404 (Not Found)
-loadScript @ script-as-text-loading-with-caret.js:18
-(anonymous) @ script-as-text-loading-with-caret.js:22
+script-as-text-loading-with-caret.js:17 GET http://127.0.0.1:8000/devtools/network/resources/this-is-a-weird?querystring=with^carats^like^these^because^who^doesnt^love^strange^characters^in^urls net::ERR_ABORTED 404 (Not Found)
+loadScript @ script-as-text-loading-with-caret.js:17
+(anonymous) @ script-as-text-loading-with-caret.js:21
 

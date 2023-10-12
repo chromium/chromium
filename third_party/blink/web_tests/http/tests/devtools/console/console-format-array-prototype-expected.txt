@@ -2,35 +2,35 @@ Tests that console logging dumps array values defined on Array.prototype[].
 
 a0
 []
-console-format-array-prototype.js:17 []
+console-format-array-prototype.js:16 []
 a1
 [empty]
-console-format-array-prototype.js:17 [empty]
+console-format-array-prototype.js:16 [empty]
 a2
 (5) [empty × 5]
-console-format-array-prototype.js:17 (5) [empty × 5]
+console-format-array-prototype.js:16 (5) [empty × 5]
 a3
 (3) [empty, 2, 3]
-console-format-array-prototype.js:17 (3) [empty, 2, 3]
+console-format-array-prototype.js:16 (3) [empty, 2, 3]
 a4
 (15) [empty × 15]
-console-format-array-prototype.js:17 (15) [empty × 15]
+console-format-array-prototype.js:16 (15) [empty × 15]
 a5
 (15) [empty × 8, 8, empty × 6]
-console-format-array-prototype.js:17 (15) [empty × 8, 8, empty × 6]
+console-format-array-prototype.js:16 (15) [empty × 8, 8, empty × 6]
 a6
 (15) [0, empty × 9, 10, empty × 4]
-console-format-array-prototype.js:17 (15) [0, empty × 9, 10, empty × 4]
+console-format-array-prototype.js:16 (15) [0, empty × 9, 10, empty × 4]
 a7
 (15) [3: 4, index0: 0, index1: 1, index2: 2, index3: 3, index4: 4, …]
-console-format-array-prototype.js:17 (15) [3: 4, index0: 0, index1: 1, index2: 2, index3: 3, index4: 4, …]
+console-format-array-prototype.js:16 (15) [3: 4, index0: 0, index1: 1, index2: 2, index3: 3, index4: 4, …]
 a8
 (10) [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-console-format-array-prototype.js:17 (10) [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+console-format-array-prototype.js:16 (10) [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 a9
 (11) [empty, 1, 2, 3, 4, empty, 6, 7, 8, 9, empty, foo: 'bar']
-console-format-array-prototype.js:17 (11) [empty, 1, 2, 3, 4, empty, 6, 7, 8, 9, empty, foo: 'bar']
+console-format-array-prototype.js:16 (11) [empty, 1, 2, 3, 4, empty, 6, 7, 8, 9, empty, foo: 'bar']
 a10
 Array {}
-console-format-array-prototype.js:17 Array {}
+console-format-array-prototype.js:16 Array {}
 

@@ -10,7 +10,6 @@ import * as Network from 'devtools/panels/network/network.js';
 
 (async function() {
   TestRunner.addResult(`Verifies that network request response view generates a view if no mime type is set.`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('network');
 
   SDK.multitargetNetworkManager.setBlockingEnabled(true);

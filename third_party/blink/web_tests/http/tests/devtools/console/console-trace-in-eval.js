@@ -8,7 +8,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that when console.trace is called in eval'ed script ending with //# sourceURL=url it will dump a stack trace that will have the url as the script source. Bug 47252.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       function evalSource()

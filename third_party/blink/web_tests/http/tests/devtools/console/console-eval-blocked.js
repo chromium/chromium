@@ -9,7 +9,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
   TestRunner.addResult(
       `Tests that evaluation in console still works even if script evals are prohibited by Content-Security-Policy. Bug 60800.\n`);
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   ConsoleTestRunner.evaluateInConsole('1+2', step1);

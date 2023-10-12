@@ -6,10 +6,10 @@ import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Console from 'devtools/panels/console/console.js';
 
 (async function() {
   TestRunner.addResult(`Tests that the console works correctly with portals`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   await TestRunner.navigatePromise('resources/append-predecessor-host.html');
@@ -34,7 +34,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     },
 
     async function testContextSelector(next) {
-      const selector = Console.ConsoleView.instance().consoleContextSelector;
+      const selector = Console.ConsoleView.ConsoleView.instance().consoleContextSelector;
       TestRunner.assertEquals(selector.items.length, 2);
       const executionContext = selector.items.at(1);
       TestRunner.assertEquals(selector.titleFor(executionContext), 'append-predecessor.html');

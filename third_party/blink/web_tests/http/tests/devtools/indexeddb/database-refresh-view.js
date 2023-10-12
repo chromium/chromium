@@ -11,7 +11,6 @@ import * as Application from 'devtools/panels/application/application.js';
 
 (async function() {
   TestRunner.addResult(`Tests refreshing the database information and data views.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.navigatePromise('http://127.0.0.1:8000/devtools/indexeddb/resources/without-indexed-db.html');
   await ApplicationTestRunner.setupIndexedDBHelpers();
 
@@ -19,7 +18,6 @@ import * as Application from 'devtools/panels/application/application.js';
   // previous tests.
   await ApplicationTestRunner.resetState();
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('resources');
 
   var databaseName = 'testDatabase';

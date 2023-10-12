@@ -7,5 +7,5 @@ Method: POST
 Status: 200 OK
 Has raw request headers: true
 Has raw response headers: true
-ping-response.js:16 Beacon sent: true
+ping-response.js:15 Beacon sent: true
 

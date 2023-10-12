@@ -5,9 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Console from 'devtools/panels/console/console.js';
+
 (async function() {
     TestRunner.addResult(`Verifies viewport's visible and active message ranges.\n`);
-    await TestRunner.loadLegacyModule('console');
     await TestRunner.showPanel('console');
     await TestRunner.evaluateInPagePromise(`
         function addNormalMessages(count)
@@ -32,7 +33,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
       `);
 
     ConsoleTestRunner.fixConsoleViewportDimensions(600, 200);
-    var consoleView = Console.ConsoleView.instance();
+    var consoleView = Console.ConsoleView.ConsoleView.instance();
     var viewport = consoleView.viewport;
 
     function logMessages(count, type) {
@@ -79,13 +80,13 @@ Actual visible range: ${first} to ${last}, Total: ${count}`);
 
     TestRunner.runTestSuite([
       async function testEmptyViewport(next) {
-        Console.ConsoleView.clearConsole();
+        Console.ConsoleView.ConsoleView.clearConsole();
         dumpVisibleIndices();
         next();
       },
 
       async function testFirstLastVisibleIndices(next) {
-        Console.ConsoleView.clearConsole();
+        Console.ConsoleView.ConsoleView.clearConsole();
         await logMessages(100, 'Normal');
 
         forceItemAndDump(0, true);
@@ -103,7 +104,7 @@ Actual visible range: ${first} to ${last}, Total: ${count}`);
       },
 
       async function testMultilineMessages(next) {
-        Console.ConsoleView.clearConsole();
+        Console.ConsoleView.ConsoleView.clearConsole();
         await logMessages(100, 'Multiline');
 
         forceItemAndDump(0, true);
@@ -121,7 +122,7 @@ Actual visible range: ${first} to ${last}, Total: ${count}`);
       },
 
       async function testSlightlyBiggerMessages(next) {
-        Console.ConsoleView.clearConsole();
+        Console.ConsoleView.ConsoleView.clearConsole();
         await logMessages(100, 'SlightlyBigger');
 
         forceItemAndDump(0, true);

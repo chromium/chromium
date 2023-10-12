@@ -11,11 +11,9 @@ import * as Application from 'devtools/panels/application/application.js';
 
 (async function() {
   TestRunner.addResult(`Tests that cookies are properly shown after oopif refresh`);
-  await TestRunner.loadLegacyModule('console');
   // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.loadModule('cookie_table');
   await TestRunner.showPanel('console');
   await TestRunner.showPanel('resources');

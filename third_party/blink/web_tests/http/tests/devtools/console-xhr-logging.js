@@ -9,8 +9,8 @@ import {NetworkTestRunner} from 'network_test_runner';
 import * as Common from 'devtools/core/common/common.js';
 
 (async function() {
-  TestRunner.addResult(`Tests that XMLHttpRequest Logging works when Enabled and doesn't show logs when Disabled.\n`);
-  await TestRunner.loadLegacyModule('console');
+  // This await is necessary for evaluateInPagePromise to produce accurate line numbers.
+  await TestRunner.addResult(`Tests that XMLHttpRequest Logging works when Enabled and doesn't show logs when Disabled.\n`);
   await TestRunner.evaluateInPagePromise(`
       function requestHelper(method, url)
       {

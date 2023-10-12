@@ -7,7 +7,6 @@ import {ApplicationTestRunner} from 'application_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests that deleted databases do not get recreated.\n`);
-  await TestRunner.loadLegacyModule('console');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 

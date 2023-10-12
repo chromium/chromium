@@ -11,7 +11,6 @@ import * as Sources from 'devtools/panels/sources/sources.js';
 (async function() {
   TestRunner.addResult(
       `Tests that scripts for dynamically added script elements are shown in sources panel if loaded with inspector open.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function appendDynamicScriptElement(src, content)

@@ -5,10 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Console from 'devtools/panels/console/console.js';
+
 (async function() {
   TestRunner.addResult(`Tests that clicks on console.group target the appropriate element.\n`);
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -16,7 +17,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
     console.log("Message inside group");
     console.groupEnd();
   `);
-  const messagesElement = Console.ConsoleView.instance().messagesElement;
+  const messagesElement = Console.ConsoleView.ConsoleView.instance().messagesElement;
 
   TestRunner.addResult(`\nBefore`);
   await ConsoleTestRunner.dumpConsoleMessages();

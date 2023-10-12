@@ -7,10 +7,10 @@ import {ConsoleTestRunner} from 'console_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as Console from 'devtools/panels/console/console.js';
 
 (async function() {
   TestRunner.addResult(`Tests script snippet model.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.loadLegacyModule('snippets');
 
   await TestRunner.showPanel('sources');
@@ -122,7 +122,7 @@ doesNothing;
       await ConsoleTestRunner.dumpConsoleMessages();
 
       const functionPromise = TestRunner.addSnifferPromise(
-          Console.ConsoleViewMessage.prototype,
+          Console.ConsoleViewMessage.ConsoleViewMessage.prototype,
           'formattedParameterAsFunctionForTest');
       TestRunner.addResult('Run Snippet2..');
       Snippets.evaluateScriptSnippet(uiSourceCode2);

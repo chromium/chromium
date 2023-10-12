@@ -12,7 +12,6 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 
 (async function() {
   TestRunner.addResult(`Tests static content provider search.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('sources');
 
   await TestRunner.addIframe('resources/search.html');

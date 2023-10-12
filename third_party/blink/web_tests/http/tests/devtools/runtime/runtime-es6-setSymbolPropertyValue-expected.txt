@@ -2,17 +2,17 @@ Tests editing Symbol properties.
 
 
 Running: testSetUp
-runtime-es6-setSymbolPropertyValue.js:18 ===== Initial =====
-runtime-es6-setSymbolPropertyValue.js:19 2
-runtime-es6-setSymbolPropertyValue.js:20 
+runtime-es6-setSymbolPropertyValue.js:20 ===== Initial =====
+runtime-es6-setSymbolPropertyValue.js:21 2
+runtime-es6-setSymbolPropertyValue.js:22 
 
 Running: testSetSymbolPropertyValue
-runtime-es6-setSymbolPropertyValue.js:18 ===== Set property =====
-runtime-es6-setSymbolPropertyValue.js:19 3
-runtime-es6-setSymbolPropertyValue.js:20 
+runtime-es6-setSymbolPropertyValue.js:20 ===== Set property =====
+runtime-es6-setSymbolPropertyValue.js:21 3
+runtime-es6-setSymbolPropertyValue.js:22 
 
 Running: testDeleteSymbolProperty
-runtime-es6-setSymbolPropertyValue.js:18 ===== Delete property =====
-runtime-es6-setSymbolPropertyValue.js:19 undefined
-runtime-es6-setSymbolPropertyValue.js:20 
+runtime-es6-setSymbolPropertyValue.js:20 ===== Delete property =====
+runtime-es6-setSymbolPropertyValue.js:21 undefined
+runtime-es6-setSymbolPropertyValue.js:22 
 

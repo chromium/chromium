@@ -8,7 +8,6 @@ import {ApplicationTestRunner} from 'application_test_runner';
 
 (async function() {
   TestRunner.addResult(`Test that computing the initiator graph works for service worker request.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('network');
 
   NetworkTestRunner.recordNetwork();

@@ -5,10 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Console from 'devtools/panels/console/console.js';
+
 (async function() {
   TestRunner.addResult(`Tests that console logging dumps proxy properly.\n`);
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     window.accessedGet = false;
@@ -35,7 +36,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   TestRunner.evaluateInPage('testFunction()');
 
   async function dumpMessages() {
-    var consoleView = Console.ConsoleView.instance();
+    var consoleView = Console.ConsoleView.ConsoleView.instance();
     consoleView.viewport.invalidate();
     var element = consoleView.visibleViewMessages[0].contentElement();
 
@@ -49,7 +50,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   }
 
   async function dumpExpandedConsoleMessages() {
-    var element = Console.ConsoleView.instance().visibleViewMessages[0].contentElement();
+    var element = Console.ConsoleView.ConsoleView.instance().visibleViewMessages[0].contentElement();
     dumpNoteVisible(element, 'info-note');
 
     await ConsoleTestRunner.dumpConsoleMessages();

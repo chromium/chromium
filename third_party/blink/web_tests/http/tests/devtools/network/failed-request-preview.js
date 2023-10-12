@@ -8,7 +8,6 @@ import {NetworkTestRunner} from 'network_test_runner';
 
 (async function() {
   TestRunner.addResult(`Verifies that network request previews don't have src set when the request fails`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('network');
 
   SDK.multitargetNetworkManager.setBlockingEnabled(true);

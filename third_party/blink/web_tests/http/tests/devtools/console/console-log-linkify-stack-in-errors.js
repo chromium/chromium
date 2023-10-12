@@ -8,7 +8,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 (async function() {
   TestRunner.addResult(
       `Test that console.log(new Error().stack) would linkify links in stacks for sourceUrls and sourceMaps Bug 424001.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   await TestRunner.addScriptTag('resources/stack-with-sourceUrl.js');
   await TestRunner.addScriptTag('resources/stack-with-sourceMap.js');

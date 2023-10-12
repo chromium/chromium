@@ -8,7 +8,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that ignored document.write() called from an external asynchronously loaded script is reported to console as a warning\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.evaluateInPagePromise(`
       function loadExternalScript()
       {

@@ -5,10 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Console from 'devtools/panels/console/console.js';
+
 (async function() {
   TestRunner.addResult(`Tests that console copies tree outline messages properly.\n`);
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -20,7 +21,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   `);
 
   ConsoleTestRunner.fixConsoleViewportDimensions(600, 200);
-  var consoleView = Console.ConsoleView.instance();
+  var consoleView = Console.ConsoleView.ConsoleView.instance();
   var viewport = consoleView.viewport;
 
   TestRunner.runTestSuite([async function testSelectAll(next) {

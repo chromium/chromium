@@ -5,10 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Console from 'devtools/panels/console/console.js';
+
 (async function() {
   TestRunner.addResult('Tests that console logging dumps large arrays properly.\n');
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -66,7 +67,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   `);
 
   ObjectUI.ArrayGroupingTreeElement.bucketThreshold = 20;
-  var messages = Console.ConsoleView.instance().visibleViewMessages;
+  var messages = Console.ConsoleView.ConsoleView.instance().visibleViewMessages;
   var sections = [];
 
   for (var i = 0; i < messages.length; ++i) {

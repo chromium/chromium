@@ -5,10 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Console from 'devtools/panels/console/console.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that console shows messages only from specific context when show target checkbox is checked.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       console.log("message from page!");
@@ -17,12 +18,12 @@ import {ConsoleTestRunner} from 'console_test_runner';
     name: 'myIFrame'
   });
 
-  var filterByExecutionContextSetting = Console.ConsoleView.instance().filter.filterByExecutionContextSetting;
-  Console.ConsoleView.instance().setImmediatelyFilterMessagesForTest();
+  var filterByExecutionContextSetting = Console.ConsoleView.ConsoleView.instance().filter.filterByExecutionContextSetting;
+  Console.ConsoleView.ConsoleView.instance().setImmediatelyFilterMessagesForTest();
 
   //we can't use usual ConsoleTestRunner.dumpConsoleMessages(), because it dumps url of message and it flakes in case of iframe
   function dumpVisibleConsoleMessageText() {
-    var messageViews = Console.ConsoleView.instance().visibleViewMessages;
+    var messageViews = Console.ConsoleView.ConsoleView.instance().visibleViewMessages;
     for (var i = 0; i < messageViews.length; ++i) {
       TestRunner.addResult(messageViews[i].consoleMessage().messageText);
     }

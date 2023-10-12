@@ -8,7 +8,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 (async function test() {
   TestRunner.addResult('Checks stepInto fetch');
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('sources');
 
   await SourcesTestRunner.startDebuggerTestPromise();

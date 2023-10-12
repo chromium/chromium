@@ -10,7 +10,6 @@ import * as Network from 'devtools/panels/network/network.js';
 
 (async function() {
   TestRunner.addResult(`Tests search in network requests\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('network');
 
   function initArgs(method, url, async, payload) {

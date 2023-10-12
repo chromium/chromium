@@ -3,62 +3,62 @@ Test that console.log(new Error().stack) would linkify links in stacks for sourc
 foob.js:5 Error: Some test
     at namedFunction (foob.js:5:17)
     at foob.js:8:1
-console-log-linkify-…ack-in-errors.js:18 Error: line
+console-log-linkify-…ack-in-errors.js:17 Error: line
 break
-    at forStack (console-log-linkify-…-in-errors.js:18:23)
-    at console-log-linkify-…k-in-errors.js:21:7
-console-log-linkify-…ack-in-errors.js:37 Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
-    at domError (console-log-linkify-…-in-errors.js:35:29)
-    at console-log-linkify-…k-in-errors.js:41:7
-console-log-linkify-…ack-in-errors.js:48 Error: some error
-    at logError (console-log-linkify-…-in-errors.js:46:21)
-    at console-log-linkify-…k-in-errors.js:52:7
-console-log-linkify-…ack-in-errors.js:54 Error message without stacks http://www.chromium.org/
-console-log-linkify-…ack-in-errors.js:56 Error valid stack #2
+    at forStack (console-log-linkify-…-in-errors.js:17:23)
+    at console-log-linkify-…k-in-errors.js:20:7
+console-log-linkify-…ack-in-errors.js:36 Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
+    at domError (console-log-linkify-…-in-errors.js:34:29)
+    at console-log-linkify-…k-in-errors.js:40:7
+console-log-linkify-…ack-in-errors.js:47 Error: some error
+    at logError (console-log-linkify-…-in-errors.js:45:21)
+    at console-log-linkify-…k-in-errors.js:51:7
+console-log-linkify-…ack-in-errors.js:53 Error message without stacks http://www.chromium.org/
+console-log-linkify-…ack-in-errors.js:55 Error valid stack #2
     at www.chromium.org/boo.js:40:70
     at foo(www.chromium.org/foo.js:10:50)
-console-log-linkify-…ack-in-errors.js:57 Error valid stack #3
+console-log-linkify-…ack-in-errors.js:56 Error valid stack #3
     at www.chromium.org/foo.js:40
-console-log-linkify-…ack-in-errors.js:58 Error: MyError
+console-log-linkify-…ack-in-errors.js:57 Error: MyError
     at throwError (www.chromium.org/foo.js:40)
     at eval (eval at <anonymous> (www.chromium.org/foo.js:42:1), <anonymous>:1:1)
     at www.chromium.org/foo.js:239
-console-log-linkify-…ack-in-errors.js:27 ReferenceError: valid stack
-    at stack2 (console-log-linkify-…-in-errors.js:27:27)
-    at stack1 (console-log-linkify-…-in-errors.js:29:11)
+console-log-linkify-…ack-in-errors.js:26 ReferenceError: valid stack
+    at stack2 (console-log-linkify-…-in-errors.js:26:27)
+    at stack1 (console-log-linkify-…-in-errors.js:28:11)
+    at console-log-linkify-…k-in-errors.js:59:7
+console-log-linkify-…ack-in-errors.js:26 EvalError: valid stack
+    at stack2 (console-log-linkify-…-in-errors.js:26:27)
+    at stack1 (console-log-linkify-…-in-errors.js:28:11)
     at console-log-linkify-…k-in-errors.js:60:7
-console-log-linkify-…ack-in-errors.js:27 EvalError: valid stack
-    at stack2 (console-log-linkify-…-in-errors.js:27:27)
-    at stack1 (console-log-linkify-…-in-errors.js:29:11)
+console-log-linkify-…ack-in-errors.js:26 SyntaxError: valid stack
+    at stack2 (console-log-linkify-…-in-errors.js:26:27)
+    at stack1 (console-log-linkify-…-in-errors.js:28:11)
     at console-log-linkify-…k-in-errors.js:61:7
-console-log-linkify-…ack-in-errors.js:27 SyntaxError: valid stack
-    at stack2 (console-log-linkify-…-in-errors.js:27:27)
-    at stack1 (console-log-linkify-…-in-errors.js:29:11)
+console-log-linkify-…ack-in-errors.js:26 RangeError: valid stack
+    at stack2 (console-log-linkify-…-in-errors.js:26:27)
+    at stack1 (console-log-linkify-…-in-errors.js:28:11)
     at console-log-linkify-…k-in-errors.js:62:7
-console-log-linkify-…ack-in-errors.js:27 RangeError: valid stack
-    at stack2 (console-log-linkify-…-in-errors.js:27:27)
-    at stack1 (console-log-linkify-…-in-errors.js:29:11)
+console-log-linkify-…ack-in-errors.js:26 TypeError: valid stack
+    at stack2 (console-log-linkify-…-in-errors.js:26:27)
+    at stack1 (console-log-linkify-…-in-errors.js:28:11)
     at console-log-linkify-…k-in-errors.js:63:7
-console-log-linkify-…ack-in-errors.js:27 TypeError: valid stack
-    at stack2 (console-log-linkify-…-in-errors.js:27:27)
-    at stack1 (console-log-linkify-…-in-errors.js:29:11)
+console-log-linkify-…ack-in-errors.js:26 URIError: valid stack
+    at stack2 (console-log-linkify-…-in-errors.js:26:27)
+    at stack1 (console-log-linkify-…-in-errors.js:28:11)
     at console-log-linkify-…k-in-errors.js:64:7
-console-log-linkify-…ack-in-errors.js:27 URIError: valid stack
-    at stack2 (console-log-linkify-…-in-errors.js:27:27)
-    at stack1 (console-log-linkify-…-in-errors.js:29:11)
-    at console-log-linkify-…k-in-errors.js:65:7
-console-log-linkify-…ack-in-errors.js:67 Error broken stack
+console-log-linkify-…ack-in-errors.js:66 Error broken stack
     at function_name(foob.js foob.js:30:1)
  at foob.js:40:70
-console-log-linkify-…ack-in-errors.js:68 Error broken stack #2
+console-log-linkify-…ack-in-errors.js:67 Error broken stack #2
     at function_name(foob.js:20:30
-console-log-linkify-…ack-in-errors.js:69 Error broken stack #3
+console-log-linkify-…ack-in-errors.js:68 Error broken stack #3
     at function_name(foob:20.js:30   bla
-console-log-linkify-…ack-in-errors.js:70 Error broken stack #4
+console-log-linkify-…ack-in-errors.js:69 Error broken stack #4
     at function_name)foob.js:20:30(
-console-log-linkify-…ack-in-errors.js:71 Error broken stack #5
+console-log-linkify-…ack-in-errors.js:70 Error broken stack #5
     at function_name foob.js:20:30)
-console-log-linkify-…ack-in-errors.js:72 Error broken stack #6
+console-log-linkify-…ack-in-errors.js:71 Error broken stack #6
     at foob.js foob.js:40:70
 stack-with-sourceMap.coffee:2 Error
     at window.letsFailWithStack (stack-with-sourceMap.coffee:2:18)

@@ -7,7 +7,6 @@ import {ApplicationTestRunner} from 'application_test_runner';
 
 (async function() {
   TestRunner.addResult(`Verify DOM storage with OOPIFs`);
-  await TestRunner.loadLegacyModule('console');
   // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
   await TestRunner.navigatePromise('resources/page.html');

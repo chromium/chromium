@@ -9,7 +9,6 @@ import * as Common from 'devtools/core/common/common.js';
 
 (async function() {
   TestRunner.addResult(`Tests that console preserves log on oopif navigation`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   Common.Settings.settingForTest('preserveConsoleLog').set(false);

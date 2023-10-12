@@ -9,7 +9,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Verify that iframe's main resource is reported only once.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('resources');
   await TestRunner.evaluateInPageAsync(`
       (function createIframe() {

@@ -7,10 +7,10 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as UI from 'devtools/ui/legacy/legacy.js';
 import * as Sources from 'devtools/panels/sources/sources.js';
+import * as Console from 'devtools/panels/console/console.js';
 
 (async function() {
   TestRunner.addResult(`Tests that "Show Function Definition" jumps to the correct location.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function jumpToMe()
@@ -44,14 +44,14 @@ import * as Sources from 'devtools/panels/sources/sources.js';
 
     function testDumpFunctionDefinition(next) {
       TestRunner.addSniffer(ObjectUI.ObjectPropertiesSection, 'formatObjectAsFunction', onConsoleMessagesReceived);
-      var consoleView = Console.ConsoleView.instance();
+      var consoleView = Console.ConsoleView.ConsoleView.instance();
       consoleView.prompt.appendCommand('jumpToMe', true);
 
       function onConsoleMessagesReceived() {
         TestRunner.deprecatedRunAfterPendingDispatches(function() {
           var messages = [];
           ConsoleTestRunner.disableConsoleViewport();
-          var viewMessages = Console.ConsoleView.instance().visibleViewMessages;
+          var viewMessages = Console.ConsoleView.ConsoleView.instance().visibleViewMessages;
           for (var i = 0; i < viewMessages.length; ++i) {
             var uiMessage = viewMessages[i];
             var element = uiMessage.contentElement();

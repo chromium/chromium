@@ -10,7 +10,6 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 (async function() {
   TestRunner.addResult(`Tests that console correctly finds suggestions in complicated cases.\n`);
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`

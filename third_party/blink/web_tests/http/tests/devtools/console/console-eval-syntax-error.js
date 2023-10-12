@@ -9,7 +9,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
   TestRunner.addResult(
       `Tests that evaluating an expression with a syntax error in the console won't crash the browser. Bug 61194.\n`);
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   ConsoleTestRunner.evaluateInConsole('foo().', step1);

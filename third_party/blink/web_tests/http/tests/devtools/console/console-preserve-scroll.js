@@ -6,10 +6,10 @@ import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Console from 'devtools/panels/console/console.js';
 
 (async function() {
   TestRunner.addResult(`Tests that console preserves scroll position when switching away.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   // Do not use ConsoleTestRunner.fixConsoleViewportDimensions because fixing the height will affect
   // tests that may cause scrolling while the console moves into/out of the drawer.
@@ -21,7 +21,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   `);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(100);
 
-  var consoleView = Console.ConsoleView.instance();
+  var consoleView = Console.ConsoleView.ConsoleView.instance();
   var viewport = consoleView.viewport;
   viewport.setStickToBottom(false);
   // Avoid flakiness by ensuring that messages in visibleViewMessages are in DOM.

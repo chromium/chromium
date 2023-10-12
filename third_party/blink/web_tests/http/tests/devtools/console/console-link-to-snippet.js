@@ -9,11 +9,11 @@ import {ConsoleTestRunner} from 'console_test_runner';
 import * as Common from 'devtools/core/common/common.js';
 import * as SourcesModule from 'devtools/panels/sources/sources.js';
 import * as Persistence from 'devtools/models/persistence/persistence.js';
+import * as Console from 'devtools/panels/console/console.js';
 
 (async function() {
   TestRunner.addResult(`Test that link to snippet works.\n`);
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   TestRunner.addSniffer(
@@ -23,7 +23,7 @@ import * as Persistence from 'devtools/models/persistence/persistence.js';
     function testConsoleLogAndReturnMessageLocation(next) {
       ConsoleTestRunner.waitUntilNthMessageReceivedPromise(2)
         .then(() => ConsoleTestRunner.dumpConsoleMessages())
-        .then(() => Console.ConsoleView.clearConsole())
+        .then(() => Console.ConsoleView.ConsoleView.clearConsole())
         .then(() => next());
 
       createSnippetPromise('console.log(239);42')
@@ -35,7 +35,7 @@ import * as Persistence from 'devtools/models/persistence/persistence.js';
     function testSnippetSyntaxError(next) {
       ConsoleTestRunner.waitUntilNthMessageReceivedPromise(1)
         .then(() => ConsoleTestRunner.dumpConsoleMessages())
-        .then(() => Console.ConsoleView.clearConsole())
+        .then(() => Console.ConsoleView.ConsoleView.clearConsole())
         .then(() => next());
 
       createSnippetPromise('\n }')
@@ -47,7 +47,7 @@ import * as Persistence from 'devtools/models/persistence/persistence.js';
     function testConsoleErrorHighlight(next) {
       ConsoleTestRunner.waitUntilNthMessageReceivedPromise(4)
         .then(() => ConsoleTestRunner.dumpConsoleMessages())
-        .then(() => Console.ConsoleView.clearConsole())
+        .then(() => Console.ConsoleView.ConsoleView.clearConsole())
         .then(() => next());
 
       createSnippetPromise(`

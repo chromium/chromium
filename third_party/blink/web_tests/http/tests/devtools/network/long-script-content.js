@@ -9,7 +9,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests long script content is correctly shown in source panel after page reload.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('sources');
   await TestRunner.showPanel('network');
   await TestRunner.navigatePromise('resources/long-script-page.html');

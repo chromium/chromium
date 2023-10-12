@@ -7,11 +7,11 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as BindingsModule from 'devtools/models/bindings/bindings.js';
+import * as Console from 'devtools/panels/console/console.js';
 
 (async function() {
   TestRunner.addResult(`Test that console.log() would linkify its location in respect with ignore-listing.\n`);
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     function foo()
@@ -58,7 +58,7 @@ import * as BindingsModule from 'devtools/models/bindings/bindings.js';
   }
 
   async function dumpConsoleMessageURLs() {
-    var messages = Console.ConsoleView.instance().visibleViewMessages;
+    var messages = Console.ConsoleView.ConsoleView.instance().visibleViewMessages;
     for (var i = 0; i < messages.length; ++i) {
       // Ordering is important here. Retrieveing the message element the first time triggers
       // live location creation and updates, which we need to await for correct locations.

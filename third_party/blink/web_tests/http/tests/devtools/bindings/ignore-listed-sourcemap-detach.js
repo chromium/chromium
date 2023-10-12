@@ -10,7 +10,6 @@ import * as Common from 'devtools/core/common/common.js';
 import * as BindingsModule from 'devtools/models/bindings/bindings.js';
 
 (async function() {
-  await TestRunner.loadLegacyModule('console');
   TestRunner.addResult(`Tests that ignore-listed sourcemaps properly detach on reload crbug.com/888688`);
   var content =
     `console.log(1);

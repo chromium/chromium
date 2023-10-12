@@ -2,13 +2,13 @@ Tests that clicks on console.group target the appropriate element.
 
 
 Before
-console-group-click.js:15 group with object {x: 1}
+console-group-click.js:16 group with object {x: 1}
 
 Click on the group
-console-group-click.js:15 group with object {x: 1}
-console-group-click.js:16 Message inside group
+console-group-click.js:16 group with object {x: 1}
+console-group-click.js:17 Message inside group
 
 Click on the object
-console-group-click.js:15 group with object {x: 1}x: 1[[Prototype]]: Object
-console-group-click.js:16 Message inside group
+console-group-click.js:16 group with object {x: 1}x: 1[[Prototype]]: Object
+console-group-click.js:17 Message inside group
 

@@ -4,7 +4,6 @@ import {ApplicationTestRunner} from 'application_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that User-Agent override works for requests from Service Workers.\n`);
-  await TestRunner.loadLegacyModule('console');
   await ApplicationTestRunner.resetState();
   await TestRunner.showPanel('resources');
 

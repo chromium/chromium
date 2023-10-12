@@ -6,8 +6,8 @@ import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 (async function() {
-  TestRunner.addResult(`Tests WebInspector.RemoveObject.setPropertyValue implementation.\n`);
-  await TestRunner.loadLegacyModule('console');
+  // This await is necessary for evaluateInPagePromise to produce accurate line numbers.
+  await TestRunner.addResult(`Tests WebInspector.RemoveObject.setPropertyValue implementation.\n`);
   await TestRunner.evaluateInPagePromise(`
       var object1 = { foo: 1 };
       var object2 = { bar: 2 };

@@ -1,9 +1,9 @@
 Tests that console is cleared upon clear() eval in console.
 
 === Before clear ===
-console-command-clear.js:17 one
-console-command-clear.js:18 two
-console-command-clear.js:19 three
+console-command-clear.js:16 one
+console-command-clear.js:17 two
+console-command-clear.js:18 three
 === After clear ===
 VM:1 Console was cleared
 

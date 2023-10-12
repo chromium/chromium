@@ -5,9 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Console from 'devtools/panels/console/console.js';
+
 (async function() {
-  TestRunner.addResult(`Tests editing Symbol properties.\n`);
-  await TestRunner.loadLegacyModule('console');
+  // This await is necessary for evaluateInPagePromise to produce accurate line numbers.
+  await TestRunner.addResult(`Tests editing Symbol properties.\n`);
   await TestRunner.evaluateInPagePromise(`
       var object1 = { foo: 1 };
       var symbol1 = Symbol("a");
@@ -25,7 +27,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
   async function dumpAndClearConsoleMessages() {
     await ConsoleTestRunner.dumpConsoleMessages();
-    Console.ConsoleView.clearConsole();
+    Console.ConsoleView.ConsoleView.clearConsole();
   }
 
   TestRunner.runTestSuite([

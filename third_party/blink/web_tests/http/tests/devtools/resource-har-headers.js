@@ -12,7 +12,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 (async function() {
   'use strict';
   TestRunner.addResult(`Tests the nondeterministic bits of HAR conversion via the magic of hard-coded values.\n`);
-  await TestRunner.loadLegacyModule('console');
 
   function visibleNewlines(s) {
     return s.replace(/\r/, '\\r').replace(/\n/, '\\n');

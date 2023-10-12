@@ -11,7 +11,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 (async function() {
   TestRunner.addResult(
       `Tests that inline scripts and document.write scripts get different uiSourceCodes with different URLs.`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise('resources/dynamic-script-tag.html');
 

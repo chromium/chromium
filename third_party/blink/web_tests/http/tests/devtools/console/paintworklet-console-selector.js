@@ -8,10 +8,10 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as Console from 'devtools/panels/console/console.js';
 
 (async function() {
   TestRunner.addResult(`Tests console execution context selector for paintworklet.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   await TestRunner.loadHTML(`
     <script id="code" type="text/worklet">
@@ -28,7 +28,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
   await new Promise(f => SourcesTestRunner.startDebuggerTest(f, true));
   await TestRunner.evaluateInPageAsync('setup()');
 
-  var consoleView = Console.ConsoleView.instance();
+  var consoleView = Console.ConsoleView.ConsoleView.instance();
   var selector = consoleView.consoleContextSelector;
   TestRunner.addResult('Console context selector:');
   for (var executionContext of selector._items) {

@@ -1,106 +1,106 @@
 Tests that console logging different types of functions correctly.
 
-console-functions.js:30 ƒ simple() {}
-console-functions.js:31 ƒ simple()
+console-functions.js:29 ƒ simple() {}
+console-functions.js:30 ƒ simple()
     arguments: null
     caller: null
     length: 0
     name: "simple"
     prototype: {constructor: ƒ}
-    [[FunctionLocation]]: console-functions.js:16
+    [[FunctionLocation]]: console-functions.js:15
     [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
-console-functions.js:30 async ƒ asyncSimple() {}
-console-functions.js:31 async ƒ asyncSimple()
+console-functions.js:29 async ƒ asyncSimple() {}
+console-functions.js:30 async ƒ asyncSimple()
     length: 0
     name: "asyncSimple"
     arguments: (...)
     caller: (...)
-    [[FunctionLocation]]: console-functions.js:17
+    [[FunctionLocation]]: console-functions.js:16
     [[Prototype]]: AsyncFunction
     [[Scopes]]: Scopes[1]
-console-functions.js:30 ƒ* genSimple() {}
-console-functions.js:31 ƒ* genSimple()
+console-functions.js:29 ƒ* genSimple() {}
+console-functions.js:30 ƒ* genSimple()
     length: 0
     name: "genSimple"
     prototype: Generator {}
     arguments: (...)
     caller: (...)
-    [[FunctionLocation]]: console-functions.js:18
+    [[FunctionLocation]]: console-functions.js:17
     [[IsGenerator]]: true
     [[Prototype]]: GeneratorFunction
     [[Scopes]]: Scopes[1]
-console-functions.js:30 ƒ (){}
-console-functions.js:31 ƒ anonymous()
+console-functions.js:29 ƒ (){}
+console-functions.js:30 ƒ anonymous()
     arguments: null
     caller: null
     length: 0
     name: ""
     prototype: {constructor: ƒ}
-    [[FunctionLocation]]: console-functions.js:19
+    [[FunctionLocation]]: console-functions.js:18
     [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
-console-functions.js:30 ƒ (x, y){}
-console-functions.js:31 ƒ anonymous(x, y)
+console-functions.js:29 ƒ (x, y){}
+console-functions.js:30 ƒ anonymous(x, y)
     arguments: null
     caller: null
     length: 2
     name: ""
     prototype: {constructor: ƒ}
-    [[FunctionLocation]]: console-functions.js:20
+    [[FunctionLocation]]: console-functions.js:19
     [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
-console-functions.js:30 ƒ namedArgs(x) {}
-console-functions.js:31 ƒ namedArgs(x)
+console-functions.js:29 ƒ namedArgs(x) {}
+console-functions.js:30 ƒ namedArgs(x)
     arguments: null
     caller: null
     length: 1
     name: "namedArgs"
     prototype: {constructor: ƒ}
-    [[FunctionLocation]]: console-functions.js:21
+    [[FunctionLocation]]: console-functions.js:20
     [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
-console-functions.js:30 ƒ namedArgs2(x, y) {}
-console-functions.js:31 ƒ namedArgs2(x, y)
+console-functions.js:29 ƒ namedArgs2(x, y) {}
+console-functions.js:30 ƒ namedArgs2(x, y)
     arguments: null
     caller: null
     length: 2
     name: "namedArgs2"
     prototype: {constructor: ƒ}
-    [[FunctionLocation]]: console-functions.js:22
+    [[FunctionLocation]]: console-functions.js:21
     [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
-console-functions.js:30 ƒ ({}) {}
-console-functions.js:31 ƒ anonymous({})
+console-functions.js:29 ƒ ({}) {}
+console-functions.js:30 ƒ anonymous({})
     arguments: null
     caller: null
     length: 1
     name: ""
     prototype: {constructor: ƒ}
-    [[FunctionLocation]]: console-functions.js:23
+    [[FunctionLocation]]: console-functions.js:22
     [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
-console-functions.js:30 ƒ *    whitespace   (  x  )    {   }
-console-functions.js:31 ƒ *    whitespace(  x  )
+console-functions.js:29 ƒ *    whitespace   (  x  )    {   }
+console-functions.js:30 ƒ *    whitespace(  x  )
     length: 1
     name: "whitespace"
     prototype: Generator {}
     arguments: (...)
     caller: (...)
-    [[FunctionLocation]]: console-functions.js:24
+    [[FunctionLocation]]: console-functions.js:23
     [[IsGenerator]]: true
     [[Prototype]]: GeneratorFunction
     [[Scopes]]: Scopes[1]
-console-functions.js:30 async ƒ whitespace2   (  x  ,  y  ,  z  )    {   }
-console-functions.js:31 async ƒ whitespace2(  x  ,  y  ,  z  )
+console-functions.js:29 async ƒ whitespace2   (  x  ,  y  ,  z  )    {   }
+console-functions.js:30 async ƒ whitespace2(  x  ,  y  ,  z  )
     length: 3
     name: "whitespace2"
     arguments: (...)
     caller: (...)
-    [[FunctionLocation]]: console-functions.js:25
+    [[FunctionLocation]]: console-functions.js:24
     [[Prototype]]: AsyncFunction
     [[Scopes]]: Scopes[1]
-console-functions.js:34 {func0: ƒ, func1: ƒ, func2: ƒ, func3: ƒ, func4: ƒ, …}
+console-functions.js:33 {func0: ƒ, func1: ƒ, func2: ƒ, func3: ƒ, func4: ƒ, …}
     func0: ƒ simple()
     func1: async ƒ asyncSimple()
     func2: ƒ* genSimple()
@@ -112,7 +112,7 @@ console-functions.js:34 {func0: ƒ, func1: ƒ, func2: ƒ, func3: ƒ, func4: ƒ,�
     func8: ƒ *    whitespace(  x  )
     func9: async ƒ whitespace2(  x  ,  y  ,  z  )
     [[Prototype]]: Object
-console-functions.js:35 Object
+console-functions.js:34 Object
     func0: ƒ simple()
     func1: async ƒ asyncSimple()
     func2: ƒ* genSimple()

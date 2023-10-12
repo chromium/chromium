@@ -9,7 +9,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that debugger will stop on "debugger" statement in a function that was added to the inspected page via evaluation in Web Inspector console.`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('sources');
   var scriptToEvaluate = 'function testFunction() {\n' +
       '    debugger;\n' +

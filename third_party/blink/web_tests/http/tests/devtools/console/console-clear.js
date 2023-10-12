@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Console from 'devtools/panels/console/console.js';
+
 (async function() {
   TestRunner.addResult("Tests that console is cleared upon requestClearMessages call.\n");
 
@@ -18,7 +20,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   TestRunner.addResult("=== Before clear ===");
   await ConsoleTestRunner.dumpConsoleMessages();
 
-  Console.ConsoleView.clearConsole();
+  Console.ConsoleView.ConsoleView.clearConsole();
   TestRunner.deprecatedRunAfterPendingDispatches(callback);
   async function callback() {
     TestRunner.addResult("=== After clear ===");

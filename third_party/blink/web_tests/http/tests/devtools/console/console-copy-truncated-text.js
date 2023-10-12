@@ -5,10 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Console from 'devtools/panels/console/console.js';
+
 (async function() {
   TestRunner.addResult(`Tests that console copies truncated text in messages properly.\n`);
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   var longUrl = 'www.' + 'z123456789'.repeat(15) + '.com';
@@ -30,8 +31,8 @@ import {ConsoleTestRunner} from 'console_test_runner';
     `;
 
   var expectedMessageCount = 8;
-  var consoleView = Console.ConsoleView.instance();
-  var viewport = Console.ConsoleView.instance().viewport;
+  var consoleView = Console.ConsoleView.ConsoleView.instance();
+  var viewport = Console.ConsoleView.ConsoleView.instance().viewport;
   var maxLength;
   var halfMaxLength;
   var secondLongUrlIndexInMixedUrl;

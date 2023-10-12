@@ -7,7 +7,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 (async function() {
   TestRunner.addResult(`Test device orientation\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.addScriptTag('/resources/testharness.js');
   await TestRunner.evaluateInPagePromise(`
       var sensorProvider = null;

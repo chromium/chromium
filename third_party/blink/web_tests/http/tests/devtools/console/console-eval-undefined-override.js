@@ -9,7 +9,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
   TestRunner.addResult(
       `Tests that evaluating something in console won't crash the browser if undefined value is overriden. The test passes if it doesn't crash. Bug 64155.\n`);
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   ConsoleTestRunner.evaluateInConsole('var x = {a:1}; x.self = x; undefined = x;', step1);

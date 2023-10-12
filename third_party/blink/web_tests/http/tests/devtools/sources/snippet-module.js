@@ -9,11 +9,11 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import * as Common from 'devtools/core/common/common.js';
 import * as SourcesModule from 'devtools/panels/sources/sources.js';
 import * as Persistence from 'devtools/models/persistence/persistence.js';
+import * as Console from 'devtools/panels/console/console.js';
 
 (async function() {
   TestRunner.addResult(
       'Verifies that modules can be loaded via import() in snippets\n');
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('sources');
 
   const sourceCode = `
@@ -37,6 +37,6 @@ import * as Persistence from 'devtools/models/persistence/persistence.js';
 
   await ConsoleTestRunner.waitUntilNthMessageReceivedPromise(2);
   await ConsoleTestRunner.dumpConsoleMessages();
-  Console.ConsoleView.clearConsole();
+  Console.ConsoleView.ConsoleView.clearConsole();
   TestRunner.completeTest();
 })();

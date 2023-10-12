@@ -10,12 +10,12 @@ Running: setUpOrientationSensor
 Running: secondOrientationOverride
 
 Running: clearOverride
-device-orientation-success.js:33 alpha: 1.1 beta: 2.2 gamma: 3.3
-device-orientation-success.js:33 alpha: 20 beta: 30 gamma: 40
+device-orientation-success.js:32 alpha: 1.1 beta: 2.2 gamma: 3.3
+device-orientation-success.js:32 alpha: 20 beta: 30 gamma: 40
 inspected-page.html:1 A reload is required so that the existing AbsoluteOrientationSensor and RelativeOrientationSensor objects on this page use the overridden values that have been provided. Close the inspector and reload again to return to the normal behavior.
-device-orientation-success.js:33 alpha: 90 beta: 0 gamma: 0
-device-orientation-success.js:40 quaternion: 0.000000,0.000000,0.707107,0.707107
-device-orientation-success.js:33 alpha: 1.1 beta: 2.2 gamma: 3.3
+device-orientation-success.js:32 alpha: 90 beta: 0 gamma: 0
+device-orientation-success.js:39 quaternion: 0.000000,0.000000,0.707107,0.707107
+device-orientation-success.js:32 alpha: 1.1 beta: 2.2 gamma: 3.3
 
 Running: reloadPageAndOverride
 Page reloaded.

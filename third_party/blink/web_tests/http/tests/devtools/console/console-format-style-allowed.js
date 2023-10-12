@@ -10,7 +10,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
     `Tests that console logging dumps properly styled messages, and that the whole message gets the same style, regardless of multiple %c settings.\n`
   );
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     console.log('%cColors are awesome.', 'color: blue;');

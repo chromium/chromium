@@ -1,19 +1,19 @@
 Tests that console logging detects external arrays as arrays.
 
-console-external-array.js:17 Int8Array(10) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, buffer: ArrayBuffer(10), byteLength: 10, byteOffset: 0, length: 10, Symbol(Symbol.toStringTag): 'Int8Array']
-console-external-array.js:18 Int16Array(10) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, buffer: ArrayBuffer(20), byteLength: 20, byteOffset: 0, length: 10, Symbol(Symbol.toStringTag): 'Int16Array']
-console-external-array.js:19 Int32Array(10) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, buffer: ArrayBuffer(40), byteLength: 40, byteOffset: 0, length: 10, Symbol(Symbol.toStringTag): 'Int32Array']
-console-external-array.js:20 Uint8Array(10) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, buffer: ArrayBuffer(10), byteLength: 10, byteOffset: 0, length: 10, Symbol(Symbol.toStringTag): 'Uint8Array']
-console-external-array.js:21 Uint16Array(10) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, buffer: ArrayBuffer(20), byteLength: 20, byteOffset: 0, length: 10, Symbol(Symbol.toStringTag): 'Uint16Array']
-console-external-array.js:22 Uint32Array(10) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, buffer: ArrayBuffer(40), byteLength: 40, byteOffset: 0, length: 10, Symbol(Symbol.toStringTag): 'Uint32Array']
-console-external-array.js:23 Float32Array(10) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, buffer: ArrayBuffer(40), byteLength: 40, byteOffset: 0, length: 10, Symbol(Symbol.toStringTag): 'Float32Array']
-console-external-array.js:24 Float64Array(10) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, buffer: ArrayBuffer(80), byteLength: 80, byteOffset: 0, length: 10, Symbol(Symbol.toStringTag): 'Float64Array']
-console-external-array.js:26 Int8Array(10)
-console-external-array.js:27 Int16Array(10)
-console-external-array.js:28 Int32Array(10)
-console-external-array.js:29 Uint8Array(10)
-console-external-array.js:30 Uint16Array(10)
-console-external-array.js:31 Uint32Array(10)
-console-external-array.js:32 Float32Array(10)
-console-external-array.js:33 Float64Array(10)
+console-external-array.js:16 Int8Array(10) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, buffer: ArrayBuffer(10), byteLength: 10, byteOffset: 0, length: 10, Symbol(Symbol.toStringTag): 'Int8Array']
+console-external-array.js:17 Int16Array(10) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, buffer: ArrayBuffer(20), byteLength: 20, byteOffset: 0, length: 10, Symbol(Symbol.toStringTag): 'Int16Array']
+console-external-array.js:18 Int32Array(10) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, buffer: ArrayBuffer(40), byteLength: 40, byteOffset: 0, length: 10, Symbol(Symbol.toStringTag): 'Int32Array']
+console-external-array.js:19 Uint8Array(10) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, buffer: ArrayBuffer(10), byteLength: 10, byteOffset: 0, length: 10, Symbol(Symbol.toStringTag): 'Uint8Array']
+console-external-array.js:20 Uint16Array(10) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, buffer: ArrayBuffer(20), byteLength: 20, byteOffset: 0, length: 10, Symbol(Symbol.toStringTag): 'Uint16Array']
+console-external-array.js:21 Uint32Array(10) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, buffer: ArrayBuffer(40), byteLength: 40, byteOffset: 0, length: 10, Symbol(Symbol.toStringTag): 'Uint32Array']
+console-external-array.js:22 Float32Array(10) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, buffer: ArrayBuffer(40), byteLength: 40, byteOffset: 0, length: 10, Symbol(Symbol.toStringTag): 'Float32Array']
+console-external-array.js:23 Float64Array(10) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, buffer: ArrayBuffer(80), byteLength: 80, byteOffset: 0, length: 10, Symbol(Symbol.toStringTag): 'Float64Array']
+console-external-array.js:25 Int8Array(10)
+console-external-array.js:26 Int16Array(10)
+console-external-array.js:27 Int32Array(10)
+console-external-array.js:28 Uint8Array(10)
+console-external-array.js:29 Uint16Array(10)
+console-external-array.js:30 Uint32Array(10)
+console-external-array.js:31 Float32Array(10)
+console-external-array.js:32 Float64Array(10)
 

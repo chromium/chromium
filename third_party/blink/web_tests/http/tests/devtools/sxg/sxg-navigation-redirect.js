@@ -7,7 +7,6 @@ import {NetworkTestRunner} from 'network_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 (async function() {
   TestRunner.addResult('Tests the signed exchange information are available when the navigation succeeded after redirect.\n');
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('network');
   NetworkTestRunner.networkLog().reset();
   const url =

@@ -9,7 +9,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that an error loading a source-map-referred file will display an error message in the source panel.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('./resources/sourcemap-src-not-loaded.js');
 

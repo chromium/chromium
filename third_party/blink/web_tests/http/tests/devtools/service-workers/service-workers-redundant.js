@@ -10,11 +10,9 @@ import * as Application from 'devtools/panels/application/application.js';
 
 (async function() {
   TestRunner.addResult(`ServiceWorkers must be shown correctly even if there is a redundant worker.\n`);
-  await TestRunner.loadLegacyModule('console');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('resources');
 
   const scriptURL = 'http://127.0.0.1:8000/devtools/service-workers/resources/changing-worker.php';
