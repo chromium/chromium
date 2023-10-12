@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 5
+// Next MinVersion: 6
 
 module ash.orca.mojom;
 
@@ -141,6 +141,12 @@ interface EditorClient {
 
   // Open a URL in a new browser window.
   [MinVersion=4] OpenUrlInNewWindow@8(url.mojom.Url url);
+
+  // Sends a request to show UI.
+  [MinVersion=5] ShowUI@9();
+
+  // Sends a request to close UI.
+  [MinVersion=5] CloseUI@10();
 };
 
 // Used by the UI to bootstrap the connection with the service.
@@ -172,6 +178,12 @@ interface TextActuator {
 
   // Open a URL in a new browser window.
   [MinVersion=4] OpenUrlInNewWindow@3(url.mojom.Url url);
+
+  // Orders the UI to open.
+  [MinVersion=5] ShowUI@4();
+
+  // Orders the UI to close.
+  [MinVersion=5] CloseUI@5();
 };
 
 // An interface that can respond to text query requests with responses.

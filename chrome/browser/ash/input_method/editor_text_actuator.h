@@ -23,6 +23,8 @@ class EditorTextActuator : public orca::mojom::TextActuator {
     virtual ~Delegate() = default;
     virtual void OnTextInserted() = 0;
     virtual void ProcessConsentAction(ConsentAction consent_action) = 0;
+    virtual void ShowUI() = 0;
+    virtual void CloseUI() = 0;
   };
 
   EditorTextActuator(
@@ -35,6 +37,8 @@ class EditorTextActuator : public orca::mojom::TextActuator {
   void ApproveConsent() override;
   void DeclineConsent() override;
   void OpenUrlInNewWindow(const GURL& url) override;
+  void ShowUI() override;
+  void CloseUI() override;
 
   void OnFocus(int context_id);
   void OnBlur();

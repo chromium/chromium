@@ -49,6 +49,14 @@ void EditorTextActuator::OpenUrlInNewWindow(const GURL& url) {
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
+void EditorTextActuator::ShowUI() {
+  delegate_->ShowUI();
+}
+
+void EditorTextActuator::CloseUI() {
+  delegate_->CloseUI();
+}
+
 void EditorTextActuator::OnFocus(int context_id) {
   inserter_.OnFocus(context_id);
 }
@@ -56,4 +64,5 @@ void EditorTextActuator::OnFocus(int context_id) {
 void EditorTextActuator::OnBlur() {
   inserter_.OnBlur();
 }
+
 }  // namespace ash::input_method

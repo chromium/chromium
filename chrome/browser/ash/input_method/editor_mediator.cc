@@ -190,6 +190,17 @@ void EditorMediator::ProcessConsentAction(ConsentAction consent_action) {
                 /*freeform_text=*/absl::nullopt);
 }
 
+void EditorMediator::ShowUI() {
+  // TODO: b:301518440: Replace below with the function that is responsible only
+  // for showing ui.
+  HandleTrigger(/*preset_query_id=*/absl::nullopt,
+                /*freeform_text=*/absl::nullopt);
+}
+
+void EditorMediator::CloseUI() {
+  mako_bubble_coordinator_.CloseUI();
+}
+
 void EditorMediator::OnPromoCardDeclined() {
   consent_store_->ProcessPromoCardAction(PromoCardAction::kDeclined);
 }

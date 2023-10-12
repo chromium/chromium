@@ -84,6 +84,8 @@ class EditorMediator
   // EditorTextActuator::Delegate overrides
   void OnTextInserted() override;
   void ProcessConsentAction(ConsentAction consent_action) override;
+  void ShowUI() override;
+  void CloseUI() override;
 
   // Checks if the feature should be visible.
   bool IsAllowedForUse();
