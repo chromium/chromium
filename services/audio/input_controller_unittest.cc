@@ -61,7 +61,9 @@ enum class DecreaseFifoSizeSetting {
   kDecreasedTo0,
 };
 
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 const std::string kFifoSizeParameter = "fifo_size";
+#endif
 
 }  // namespace
 

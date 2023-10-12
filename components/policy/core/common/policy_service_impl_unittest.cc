@@ -43,9 +43,15 @@ const char kDiffLevelPolicy[] = "chrome-diff-level-and-scope";
 const std::string kUrl1 = "example.com";
 const std::string kUrl2 = "gmail.com";
 const std::string kUrl3 = "google.com";
+
+#if !BUILDFLAG(IS_IOS)
 const std::string kUrl4 = "youtube.com";
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 const std::string kAffiliationId1 = "abc";
 const std::string kAffiliationId2 = "def";
+#endif
 
 // Helper to compare the arguments to an EXPECT_CALL of OnPolicyUpdated() with
 // their expected values.
