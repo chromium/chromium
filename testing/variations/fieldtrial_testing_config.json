@@ -8032,6 +8032,24 @@
             ]
         }
     ],
+    "HideIncognitoMediaMetadata": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HideIncognitoMediaMetadata"
+                    ]
+                }
+            ]
+        }
+    ],
     "HideTabOnTabSwitcher": [
         {
             "platforms": [
