@@ -115,12 +115,11 @@ void ChromeBrowserPolicyConnector::Init(
   if (PolicyLogger::GetInstance()->IsPolicyLoggingEnabled()) {
     PolicyLogger::GetInstance()->EnableLogDeletion();
   }
-  std::unique_ptr<DeviceManagementService::Configuration> configuration(
-      new DeviceManagementServiceConfiguration(GetDeviceManagementUrl(),
-                                               GetRealtimeReportingUrl(),
-                                               GetEncryptedReportingUrl()));
-  std::unique_ptr<DeviceManagementService> device_management_service(
-      new DeviceManagementService(std::move(configuration)));
+  auto configuration = std::make_unique<DeviceManagementServiceConfiguration>(
+      GetDeviceManagementUrl(), GetRealtimeReportingUrl(),
+      GetEncryptedReportingUrl());
+  auto device_management_service =
+      std::make_unique<DeviceManagementService>(std::move(configuration));
   device_management_service->ScheduleInitialization(
       kServiceInitializationStartupDelay);
 
@@ -346,10 +345,10 @@ ChromeBrowserPolicyConnector::CreatePlatformProvider() {
       return nullptr;
     }
 #endif
-    std::unique_ptr<AsyncPolicyLoader> loader(new ConfigDirPolicyLoader(
+    auto loader = std::make_unique<ConfigDirPolicyLoader>(
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
-        config_dir_path, POLICY_SCOPE_MACHINE));
+        config_dir_path, POLICY_SCOPE_MACHINE);
     return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                  std::move(loader));
   } else {
