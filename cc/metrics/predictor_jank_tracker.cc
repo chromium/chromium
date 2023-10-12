@@ -9,6 +9,9 @@
 #include <utility>
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 
 namespace cc {
 namespace {
@@ -63,7 +66,8 @@ PredictorJankTracker::~PredictorJankTracker() = default;
 void PredictorJankTracker::ReportLatestScrollDelta(
     float next_delta,
     base::TimeTicks next_presentation_ts,
-    base::TimeDelta vsync_interval) {
+    base::TimeDelta vsync_interval,
+    absl::optional<EventMetrics::TraceId> trace_id) {
   total_frames_++;
   float d1 = frame_data_.prev_delta_;
   float d2 = frame_data_.cur_delta_;
@@ -72,7 +76,7 @@ void PredictorJankTracker::ReportLatestScrollDelta(
   // Verify no scrolling direction change as we can't compare
   // frames if the user changed their scrolling direction.
   if (!VerifyFramesSameDirection(d1, d2, d3)) {
-    StoreLatestFrameData(next_delta, next_presentation_ts);
+    StoreLatestFrameData(next_delta, next_presentation_ts, trace_id);
     return;
   }
 
@@ -99,25 +103,61 @@ void PredictorJankTracker::ReportLatestScrollDelta(
       ContainsMissedVSync(next_presentation_ts, vsync_interval);
 
   if (frame_janky_lower >= janky_threshold) {
-    ReportJankyFrame(frame_janky_lower - janky_threshold,
-                     contains_missed_vsyncs, slow_scroll);
+    ReportJankyFrame(next_delta, frame_janky_lower - janky_threshold,
+                     contains_missed_vsyncs, slow_scroll, trace_id);
   }
   if (frame_janky_upper >= janky_threshold) {
-    ReportJankyFrame(frame_janky_upper - janky_threshold,
-                     contains_missed_vsyncs, slow_scroll);
+    ReportJankyFrame(next_delta, frame_janky_upper - janky_threshold,
+                     contains_missed_vsyncs, slow_scroll, trace_id);
   }
 
   if (total_frames_ >= 50) {
     ReportJankyFramePercentage();
   }
 
-  StoreLatestFrameData(next_delta, next_presentation_ts);
+  StoreLatestFrameData(next_delta, next_presentation_ts, trace_id);
 }
 
-void PredictorJankTracker::ReportJankyFrame(float janky_value,
-                                            bool contains_missed_vsyncs,
-                                            bool slow_scroll) {
+void PredictorJankTracker::ReportJankyFrame(
+    float next_delta,
+    float janky_value,
+    bool contains_missed_vsyncs,
+    bool slow_scroll,
+    absl::optional<EventMetrics::TraceId> trace_id) {
   janky_frames_++;
+  TRACE_EVENT_INSTANT(
+      "input.scrolling", "PredictorJankTracker::ReportJankyFrame",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* scroll_data = event->set_scroll_predictor_metrics();
+        {
+          // prev data.
+          auto* values = scroll_data->set_prev_event_frame_value();
+          if (frame_data_.prev_trace_id_) {
+            values->set_event_trace_id(frame_data_.prev_trace_id_->value());
+          }
+          values->set_delta_value(frame_data_.prev_delta_);
+        }
+        {
+          // cur data.
+          auto* values = scroll_data->set_cur_event_frame_value();
+          if (frame_data_.cur_trace_id_) {
+            values->set_event_trace_id(frame_data_.cur_trace_id_->value());
+          }
+          values->set_delta_value(frame_data_.cur_delta_);
+        }
+        {
+          // next data.
+          auto* values = scroll_data->set_next_event_frame_value();
+          if (trace_id) {
+            values->set_event_trace_id(trace_id->value());
+          }
+          values->set_delta_value(next_delta);
+        }
+        scroll_data->set_janky_value(janky_value);
+        scroll_data->set_has_missed_vsyncs(contains_missed_vsyncs);
+        scroll_data->set_is_slow_scroll(slow_scroll);
+      });
   if (contains_missed_vsyncs && slow_scroll) {
     UMA_HISTOGRAM_CUSTOM_COUNTS(
         "Event.Jank.ScrollUpdate.SlowScroll.MissedVsync."
@@ -159,9 +199,12 @@ bool PredictorJankTracker::ContainsMissedVSync(
 
 void PredictorJankTracker::StoreLatestFrameData(
     float delta,
-    base::TimeTicks presentation_ts) {
+    base::TimeTicks presentation_ts,
+    absl::optional<EventMetrics::TraceId> trace_id) {
   frame_data_.prev_delta_ = frame_data_.cur_delta_;
+  frame_data_.prev_trace_id_ = frame_data_.cur_trace_id_;
   frame_data_.cur_delta_ = delta;
+  frame_data_.cur_trace_id_ = trace_id;
   frame_data_.prev_presentation_ts_ = frame_data_.cur_presentation_ts_;
   frame_data_.cur_presentation_ts_ = presentation_ts;
 }

@@ -1424,9 +1424,32 @@ message LibunwindstackUnwinder {
   optional int32 num_frames = 2;
 };
 
+message ScrollPredictorMetrics {
+  message EventFrameValue {
+    optional int64 event_trace_id = 1;
+    optional float delta_value = 2;
+  };
+  // Data from the previous, current, and next frame used to determine the
+  // values below as according to the metric doc:
+  // http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY.
+  optional EventFrameValue prev_event_frame_value = 1;
+  optional EventFrameValue cur_event_frame_value = 2;
+  optional EventFrameValue next_event_frame_value = 3;
+  // This is the amount of delta processed in this frame that was above the
+  // janky threshold (as defined by
+  // http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY)
+  optional float janky_value = 4;
+  // True if we are also missing frames (so multiple frames are being presented
+  // at once).
+  optional bool has_missed_vsyncs = 5;
+  // True if we're moving less than the slow scroll threshold as defined by the
+  // doc above.
+  optional bool is_slow_scroll = 6;
+};
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1055
+  // Next ID: 1056
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -1542,5 +1565,7 @@ message ChromeTrackEvent {
     optional CrasUnified chromeos_cras_unified = 1053;
 
     optional LibunwindstackUnwinder libunwindstack_unwinder = 1054;
+
+    optional ScrollPredictorMetrics scroll_predictor_metrics = 1055;
   }
 }

@@ -1481,7 +1481,8 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
   const auto end_timestamp = viz_breakdown_.presentation_feedback.timestamp;
   if (global_trackers_.predictor_jank_tracker) {
     global_trackers_.predictor_jank_tracker->ReportLatestScrollDelta(
-        total_predicted_delta, end_timestamp, args_.interval);
+        total_predicted_delta, end_timestamp, args_.interval,
+        earliest_event->AsScrollUpdate()->trace_id());
   }
   if (global_trackers_.scroll_jank_dropped_frame_tracker) {
     global_trackers_.scroll_jank_dropped_frame_tracker
@@ -1827,7 +1828,6 @@ void CompositorFrameReporter::DiscardOldPartialUpdateReporters() {
                 [](const base::WeakPtr<CompositorFrameReporter>& reporter) {
     return !reporter;
   });
-
 }
 
 base::WeakPtr<CompositorFrameReporter> CompositorFrameReporter::GetWeakPtr() {
