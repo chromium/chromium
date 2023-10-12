@@ -98,6 +98,7 @@
 #include "services/network/http_server_properties_pref_delegate.h"
 #include "services/network/ignore_errors_cert_verifier.h"
 #include "services/network/ip_protection_config_cache_impl.h"
+#include "services/network/ip_protection_token_cache_manager_impl.h"
 #include "services/network/is_browser_initiated.h"
 #include "services/network/net_log_exporter.h"
 #include "services/network/network_service.h"
@@ -2008,31 +2009,34 @@ void NetworkContext::VerifyIpProtectionConfigGetterForTesting(
   // initialized.
   CHECK(proxy_delegate_);
 
-  auto* ipp_config_cache_impl = static_cast<IpProtectionConfigCacheImpl*>(
-      proxy_delegate_->GetIpProtectionConfigCache());
-  CHECK(ipp_config_cache_impl);
+  auto* ipp_config_cache = proxy_delegate_->GetIpProtectionConfigCache();
+  CHECK(ipp_config_cache);
+  auto* ipp_token_cache_manager_impl =
+      static_cast<IpProtectionTokenCacheManagerImpl*>(
+          ipp_config_cache
+              ->GetIpProtectionTokenCacheManagerForTesting());  // IN-TEST
+  CHECK(ipp_token_cache_manager_impl);
 
   // If active cache management is enabled (the default), disable it and do a
   // one-time reset of the state. Since the browser process will be driving this
   // test, this makes it easier to reason about the state of
-  // `ipp_config_cache_impl` (for instance, if the browser process sends less
+  // `ipp_config_cache` (for instance, if the browser process sends less
   // than the requested number of tokens, the network service won't immediately
   // request more).
-  if (ipp_config_cache_impl->IsCacheManagementEnabledForTesting()) {
-    ipp_config_cache_impl->DisableCacheManagementForTesting(  // IN-TEST
+  if (ipp_token_cache_manager_impl->IsCacheManagementEnabledForTesting()) {
+    ipp_token_cache_manager_impl->DisableCacheManagementForTesting(  // IN-TEST
         base::BindOnce(
             [](base::WeakPtr<NetworkContext> weak_ptr,
                VerifyIpProtectionConfigGetterForTestingCallback callback) {
-              // If this callback is called then `ipp_config_cache_impl` is
+              // If this callback is called then `ipp_config_cache` is
               // still alive, which means that this `NetworkContext` is alive as
               // well.
               CHECK(weak_ptr);
-              auto* ipp_config_cache_impl =
-                  static_cast<IpProtectionConfigCacheImpl*>(
-                      weak_ptr->proxy_delegate_->GetIpProtectionConfigCache());
-              ipp_config_cache_impl->InvalidateTryAgainAfterTime();
-              while (ipp_config_cache_impl->IsAuthTokenAvailable()) {
-                ipp_config_cache_impl->GetAuthToken();
+              auto* ipp_config_cache =
+                  weak_ptr->proxy_delegate_->GetIpProtectionConfigCache();
+              ipp_config_cache->InvalidateTryAgainAfterTime();
+              while (ipp_config_cache->IsAuthTokenAvailable()) {
+                ipp_config_cache->GetAuthToken();
               }
               // Call `PostTask()` instead of invoking the Verify method again
               // directly so that if `DisableCacheManagementForTesting()` needed
@@ -2051,34 +2055,38 @@ void NetworkContext::VerifyIpProtectionConfigGetterForTesting(
 
   // If there is a cooldown in effect, then don't send any tokens and instead
   // send back the try again after time.
-  // TODO(awillia): This will actually be used in a follow-up CL.
   base::Time try_auth_tokens_after =
-      ipp_config_cache_impl
+      ipp_token_cache_manager_impl
           ->try_get_auth_tokens_after_for_testing();  // IN-TEST
   if (!try_auth_tokens_after.is_null()) {
     std::move(callback).Run(nullptr, try_auth_tokens_after);
     return;
   }
 
-  ipp_config_cache_impl->SetOnTryGetAuthTokensCompletedForTesting(  // IN-TEST
-      base::BindOnce(&NetworkContext::OnIpProtectionConfigAvailableForTesting,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-  ipp_config_cache_impl->CallTryGetAuthTokensForTesting();  // IN-TEST
+  ipp_token_cache_manager_impl
+      ->SetOnTryGetAuthTokensCompletedForTesting(  // IN-TEST
+          base::BindOnce(
+              &NetworkContext::OnIpProtectionConfigAvailableForTesting,
+              weak_factory_.GetWeakPtr(), std::move(callback)));
+  ipp_token_cache_manager_impl->CallTryGetAuthTokensForTesting();  // IN-TEST
 }
 
 void NetworkContext::OnIpProtectionConfigAvailableForTesting(
     VerifyIpProtectionConfigGetterForTestingCallback callback) {
-  auto* ipp_config_cache_impl = static_cast<IpProtectionConfigCacheImpl*>(
-      proxy_delegate_->GetIpProtectionConfigCache());
+  auto* ipp_config_cache = proxy_delegate_->GetIpProtectionConfigCache();
+  auto* ipp_token_cache_manager_impl =
+      static_cast<IpProtectionTokenCacheManagerImpl*>(
+          ipp_config_cache
+              ->GetIpProtectionTokenCacheManagerForTesting());  // IN-TEST
 
   absl::optional<network::mojom::BlindSignedAuthTokenPtr> result =
-      ipp_config_cache_impl->GetAuthToken();
+      ipp_config_cache->GetAuthToken();
   if (result.has_value()) {
     std::move(callback).Run(std::move(result).value(), absl::nullopt);
     return;
   }
   base::Time try_auth_tokens_after =
-      ipp_config_cache_impl
+      ipp_token_cache_manager_impl
           ->try_get_auth_tokens_after_for_testing();  // IN-TEST
   std::move(callback).Run(nullptr, try_auth_tokens_after);
 }

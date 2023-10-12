@@ -13,10 +13,10 @@ namespace network {
 
 IpProtectionProxyListManagerImpl::IpProtectionProxyListManagerImpl(
     mojo::Remote<network::mojom::IpProtectionConfigGetter>* config_getter,
-    bool disable_background_tasks_for_testing)
+    bool disable_proxy_refreshing_for_testing)
     : config_getter_(config_getter),
       disable_proxy_refreshing_for_testing_(
-          disable_background_tasks_for_testing) {
+          disable_proxy_refreshing_for_testing) {
   if (!disable_proxy_refreshing_for_testing_) {
     // Refresh the proxy list immediately.
     RefreshProxyList();

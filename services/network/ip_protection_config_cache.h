@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "services/network/ip_protection_proxy_list_manager.h"
+#include "services/network/ip_protection_token_cache_manager.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -23,9 +24,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCache {
  public:
   virtual ~IpProtectionConfigCache() = default;
 
-  // Initializes the proxy list for the cache.
-
-  // TODO(ciaramcmullin): Update comment when token caches are refactored out.
+  // Initializes the proxy list and token managers for the cache.
   virtual void SetUp() = 0;
 
   // Check whether tokens are available.
@@ -44,6 +43,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCache {
   // Invalidate any previous instruction that token requests should not be
   // made until after a specified time.
   virtual void InvalidateTryAgainAfterTime() = 0;
+
+  // Set the token cache manager for the cache.
+  virtual void SetIpProtectionTokenCacheManagerForTesting(
+      std::unique_ptr<IpProtectionTokenCacheManager>
+          ipp_token_cache_manager) = 0;
+
+  // Fetch the token cache manager.
+  virtual IpProtectionTokenCacheManager*
+  GetIpProtectionTokenCacheManagerForTesting() = 0;
 
   // Set the proxy list manager for the cache.
   virtual void SetIpProtectionProxyListManagerForTesting(

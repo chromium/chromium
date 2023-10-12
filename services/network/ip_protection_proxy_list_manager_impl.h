@@ -23,7 +23,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
  public:
   explicit IpProtectionProxyListManagerImpl(
       mojo::Remote<network::mojom::IpProtectionConfigGetter>* config_getter,
-      bool disable_background_tasks_for_testing = false);
+      bool disable_proxy_refreshing_for_testing = false);
   ~IpProtectionProxyListManagerImpl() override;
 
   // IpProtectionProxyListManager implementation.

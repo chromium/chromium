@@ -21,6 +21,7 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/ip_protection_proxy_list_manager.h"
+#include "services/network/ip_protection_token_cache_manager.h"
 #include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,6 +56,17 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
 
   void SetIpProtectionProxyListManagerForTesting(
       std::unique_ptr<IpProtectionProxyListManager> ipp_proxy_list_manager)
+      override {
+    NOTREACHED_NORETURN();
+  }
+
+  IpProtectionTokenCacheManager* GetIpProtectionTokenCacheManagerForTesting()
+      override {
+    NOTREACHED_NORETURN();
+  }
+
+  void SetIpProtectionTokenCacheManagerForTesting(
+      std::unique_ptr<IpProtectionTokenCacheManager> ipp_token_cache_manager)
       override {
     NOTREACHED_NORETURN();
   }
