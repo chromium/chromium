@@ -17,26 +17,42 @@ class TabStripViewController: UIViewController, TabStripConsumer {
   // The CollectionView used to display the items.
   private let collectionView: UICollectionView
   // The DataSource for this collection view.
-  private let diffableDataSource: UICollectionViewDiffableDataSource<Section, TabSwitcherItem>
+  private var diffableDataSource: UICollectionViewDiffableDataSource<Section, TabSwitcherItem>?
+  private var tabCellRegistration: UICollectionView.CellRegistration<TabStripCell, TabSwitcherItem>?
 
   weak var mutator: TabStripMutator?
 
   init() {
     layout = TabStripLayout()
     collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+    super.init(nibName: nil, bundle: nil)
+
+    createRegistrations()
     diffableDataSource = UICollectionViewDiffableDataSource<Section, TabSwitcherItem>(
       collectionView: collectionView
     ) {
       (collectionView: UICollectionView, indexPath: IndexPath, itemIdentifier: TabSwitcherItem)
         -> UICollectionViewCell? in
-      return nil
+      return self.getCell(
+        collectionView: collectionView, indexPath: indexPath, itemIdentifier: itemIdentifier)
     }
     layout.dataSource = diffableDataSource
-    super.init(nibName: nil, bundle: nil)
   }
 
   required init?(coder: NSCoder) {
     fatalError("init(coder:) is not supported")
+  }
+
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    collectionView.translatesAutoresizingMaskIntoConstraints = false
+    self.view.addSubview(collectionView)
+    NSLayoutConstraint.activate([
+      self.view.leadingAnchor.constraint(equalTo: collectionView.leadingAnchor),
+      self.view.trailingAnchor.constraint(equalTo: collectionView.trailingAnchor),
+      self.view.topAnchor.constraint(equalTo: collectionView.topAnchor),
+      self.view.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor),
+    ])
   }
 
   // MARK: - TabStripConsumer
@@ -48,7 +64,9 @@ class TabStripViewController: UIViewController, TabStripConsumer {
     var snapshot = NSDiffableDataSourceSnapshot<Section, TabSwitcherItem>()
     snapshot.appendSections([.tabs])
     snapshot.appendItems(items, toSection: .tabs)
-    diffableDataSource.apply(snapshot)
+    diffableDataSource?.apply(snapshot)
+
+    // TODO(crbug.com/1490555): Handle the selected item.
   }
 
   func reloadItem(_ item: TabSwitcherItem?) {
@@ -59,8 +77,38 @@ class TabStripViewController: UIViewController, TabStripConsumer {
     guard let item = item else {
       return
     }
+    guard let diffableDataSource = diffableDataSource else {
+      return
+    }
     let indexPath = diffableDataSource.indexPath(for: item)
     collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
   }
 
+  // MARK: - Private
+
+  /// Creates the registrations of the different cells used in the collection view.
+  func createRegistrations() {
+    tabCellRegistration = UICollectionView.CellRegistration<TabStripCell, TabSwitcherItem> {
+      (cell, indexPath, item) in
+      cell.titleLabel.text = item.title
+    }
+  }
+
+  /// Retuns the cell to be used in the collection view.
+  func getCell(
+    collectionView: UICollectionView, indexPath: IndexPath, itemIdentifier: TabSwitcherItem
+  ) -> UICollectionViewCell? {
+    let sectionIdentifier = diffableDataSource?.sectionIdentifier(for: indexPath.section)
+    guard let sectionIdentifier = sectionIdentifier, let tabCellRegistration = tabCellRegistration
+    else {
+      return nil
+    }
+    switch sectionIdentifier {
+    case .tabs:
+      return collectionView.dequeueConfiguredReusableCell(
+        using: tabCellRegistration,
+        for: indexPath,
+        item: itemIdentifier)
+    }
+  }
 }
