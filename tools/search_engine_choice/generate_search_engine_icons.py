@@ -102,7 +102,7 @@ def delete_files_in_directory(directory_path):
     print('Error occurred while deleting files in ' + directory_path)
 
 
-def get_largest_icon_index_and_size(icon_path):
+def get_largest_icon_index_and_size(icon_path, name):
   """Fetches the index and size of largest icon in the .ico file.
 
   Some .ico files contain more than 1 icon. The function finds the largest icon
@@ -127,7 +127,7 @@ def get_largest_icon_index_and_size(icon_path):
     # The image size is the integer before the 'x' character.
     sizes = image_dimensions.split('x')
     if sizes[0] != sizes[1]:
-      print('Warning: Icon %s is not square' % icon_path)
+      print('Warning: Icon for %s is not square' % name)
     image_size = int(sizes[0])
     if image_size > max_image_size:
       max_image_size = image_size
@@ -141,9 +141,9 @@ def create_icons_from_json_file():
 
   Reads the json file and downloads the icons that are referenced in the
   "favicon_url" section of the search_engine.
-  Scales those icons to 24x24 and 48x48 formats and converts them to PNG
-  format. After finishing the previous step, the function moves the icons to
-  their corresponding directories.
+  Scales those icons down to 48x48 size and converts them to PNG format. After
+  finishing the previous step, the function moves the icons to the destination
+  directory and runs png optimization.
   The function filters the search engines based on the search engines that are
   used in `template_url_prepopulate_data.cc` so that icons that are never used
   don't get downloaded.
@@ -156,14 +156,12 @@ def create_icons_from_json_file():
   """
   print('Creating icons from json file...')
   prepopulated_engines_file_path = '../search_engines/prepopulated_engines.json'
-  default_100_path = './default_100_percent/search_engine_choice/'
-  default_200_path = './default_200_percent/search_engine_choice/'
-  icon_sizes = [24, 48]
+  image_destination_path = './default_100_percent/search_engine_choice/'
+  icon_sizes = [48]
   favicon_hash_to_icon_name = {}
 
   # Delete the previously added search engine icons
-  delete_files_in_directory(default_100_path)
-  delete_files_in_directory(default_200_path)
+  delete_files_in_directory(image_destination_path)
 
   with open(prepopulated_engines_file_path, 'r',
             encoding='utf-8') as engines_json:
@@ -205,23 +203,21 @@ def create_icons_from_json_file():
           os.remove('original.ico')
           continue
 
-        (largest_index,
-         largest_size) = get_largest_icon_index_and_size('original.ico')
+        (largest_index, largest_size) = get_largest_icon_index_and_size(
+            'original.ico', icon_name)
 
         # Using ImageMagick command line interface, scale the icons, convert
         # them to PNG format and move them to their corresponding folders.
         last_size = 0
-        for icon_size in icon_sizes:
+        for desired_size in icon_sizes:
           if largest_size >= last_size:
+            last_size = desired_size
+            desired_size = min(desired_size, largest_size)
             os.system('convert original.ico[' + str(largest_index) +
-                      '] -thumbnail ' + str(icon_size) + 'x' + str(icon_size) +
-                      ' ' + icon_name + '.png')
-            icon_destination = default_100_path
-            if icon_size == 48:
-              icon_destination = default_200_path
+                      '] -thumbnail ' + str(desired_size) + 'x' +
+                      str(desired_size) + ' ' + icon_name + '.png')
 
-            shutil.move(icon_name + '.png', icon_destination)
-            last_size = icon_size
+            shutil.move(icon_name + '.png', image_destination_path)
 
         engine_keyword_to_icon_name[search_engine_keyword] = icon_name
         favicon_hash_to_icon_name[icon_hash] = icon_name
@@ -236,8 +232,8 @@ def create_icons_from_json_file():
         # default icon in that case.
         engine_keyword_to_icon_name[search_engine_keyword] = ''
         continue
-  os.system('../../tools/resources/optimize-png-files.sh ' + default_100_path)
-  os.system('../../tools/resources/optimize-png-files.sh ' + default_200_path)
+  os.system('../../tools/resources/optimize-png-files.sh ' +
+            image_destination_path)
 
 
 def generate_icon_resource_code():
