@@ -21,7 +21,7 @@ static_library("color_internals") {
 
   deps = [
     "//ash/webui/color_internals/mojom",
-    "//ash/webui/resources:color_internals_resources",
+    "//ash/webui/color_internals/resources:resources",
     "//content/public/browser",
     "//ui/webui",
   ]

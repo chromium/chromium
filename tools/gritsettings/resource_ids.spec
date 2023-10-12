@@ -728,7 +728,7 @@
   "ash/webui/camera_app_ui/resources/strings/camera_strings.grd": {
     "messages": [5280],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/color_internals/resources/ash_color_internals_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/color_internals/resources/resources.grd": {
     "META": {"sizes": {"includes": [20],}},
     "includes": [5300],
   },

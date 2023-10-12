@@ -60,11 +60,6 @@ ash_generated_grit("os_feedback_untrusted_resources") {
   deps = [ "//ash/webui/os_feedback_ui/untrusted_resources:build_grd" ]
 }
 
-ash_generated_grit("color_internals_resources") {
-  source = "$root_gen_dir/ash/webui/color_internals/resources/ash_color_internals_resources.grd"
-  deps = [ "//ash/webui/color_internals/resources:build_grd" ]
-}
-
 ash_generated_grit("shortcut_customization_app_resources") {
   shortcut_customization_app_gen_dir =
       "$root_gen_dir/ash/webui/shortcut_customization_ui/resources"
