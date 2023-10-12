@@ -16,7 +16,6 @@ CredentialStorage::CredentialStorage(
 
 CredentialStorage::~CredentialStorage() = default;
 
-// TODO(b/287333989): Implement.
 void CredentialStorage::SaveCredentials(
     absl::string_view manager_app_id,
     absl::string_view account_name,
@@ -31,8 +30,18 @@ void CredentialStorage::SaveCredentials(
         ash::nearby::presence::proto::LocalCredentialToMojom(local_credential));
   }
 
+  std::vector<ash::nearby::presence::mojom::SharedCredentialPtr>
+      shared_credentials_mojom;
+  for (const auto& shared_credential : public_credentials) {
+    shared_credentials_mojom.push_back(
+        ash::nearby::presence::proto::SharedCredentialToMojom(
+            shared_credential));
+  }
+
   nearby_presence_credential_storage_->SaveCredentials(
-      std::move(local_credentials_mojom),
+      std::move(local_credentials_mojom), std::move(shared_credentials_mojom),
+      ash::nearby::presence::proto::PublicCredentialTypeToMojom(
+          public_credential_type),
       base::BindOnce(&CredentialStorage::OnCredentialsSaved,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/nearby/presence/credential_storage/nearby_presence_credential_storage.h"
 
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -20,6 +21,15 @@ const base::FilePath::CharType kRemotePublicCredentialDatabaseName[] =
     FILE_PATH_LITERAL("NearbyPresenceRemotePublicCredentialDatabase");
 const base::FilePath::CharType kPrivateCredentialDatabaseName[] =
     FILE_PATH_LITERAL("NearbyPresencePrivateCredentialDatabase");
+
+// When saving credentials, |delete_key_filter| is always set to true, since
+// |entries_to_save| are not deleted if they match |delete_key_filter|. This
+// avoids duplicating new keys in memory to be saved.
+const leveldb_proto::KeyFilter& DeleteKeyFilter() {
+  static const base::NoDestructor<leveldb_proto::KeyFilter> filter(
+      base::BindRepeating([](const std::string& key) { return true; }));
+  return *filter;
+}
 
 }  // namespace
 
@@ -90,7 +100,66 @@ void NearbyPresenceCredentialStorage::Initialize(
 
 void NearbyPresenceCredentialStorage::SaveCredentials(
     std::vector<mojom::LocalCredentialPtr> local_credentials,
-    SaveCredentialsCallback on_save_credential_callback) {
+    std::vector<mojom::SharedCredentialPtr> shared_credentials,
+    mojom::PublicCredentialType public_credential_type,
+    SaveCredentialsCallback on_credentials_fully_saved_callback) {
+  CHECK(on_credentials_fully_saved_callback);
+
+  auto credential_pairs_to_save = std::make_unique<std::vector<
+      std::pair<std::string, ::nearby::internal::SharedCredential>>>();
+  for (const auto& shared_credential : shared_credentials) {
+    auto shared_credential_proto =
+        proto::SharedCredentialFromMojom(shared_credential.get());
+
+    credential_pairs_to_save->emplace_back(std::make_pair(
+        shared_credential_proto.secret_id(), shared_credential_proto));
+  }
+
+  switch (public_credential_type) {
+    case (mojom::PublicCredentialType::kLocalPublicCredential):
+      // In the chain of callbacks, attempt to first save public credentials.
+      // If successful, then attempt to save private credentials in a
+      // follow-up callback. Iff both operations are successful,
+      // 'on_credentials_fully_saved_callback' will return kOk.
+      local_public_db_->UpdateEntriesWithRemoveFilter(
+          /*entries_to_save=*/std::move(credential_pairs_to_save),
+          /*delete_key_filter=*/DeleteKeyFilter(),
+          base::BindOnce(
+              &NearbyPresenceCredentialStorage::OnLocalPublicCredentialsSaved,
+              weak_ptr_factory_.GetWeakPtr(), std::move(local_credentials),
+              std::move(on_credentials_fully_saved_callback)));
+      break;
+    case (mojom::PublicCredentialType::kRemotePublicCredential):
+      // When remote public credentials are updated, the private credentials
+      // provided are empty. To preserve the existing private credentials, do
+      // not update the private credential database.
+      remote_public_db_->UpdateEntriesWithRemoveFilter(
+          /*entries_to_save=*/std::move(credential_pairs_to_save),
+          /*delete_key_filter=*/DeleteKeyFilter(),
+          base::BindOnce(
+              &NearbyPresenceCredentialStorage::OnRemotePublicCredentialsSaved,
+              weak_ptr_factory_.GetWeakPtr(),
+              std::move(on_credentials_fully_saved_callback)));
+      break;
+  }
+}
+
+void NearbyPresenceCredentialStorage::OnLocalPublicCredentialsSaved(
+    std::vector<mojom::LocalCredentialPtr> local_credentials,
+    SaveCredentialsCallback on_credentials_fully_saved_callback,
+    bool success) {
+  CHECK(on_credentials_fully_saved_callback);
+
+  // If local public credentials failed to save, skip saving the
+  // private credentials.
+  if (!success) {
+    // TODO(b/287334363): Emit a failure metric.
+    LOG(ERROR) << __func__ << ": failed to save local public credentials";
+    std::move(on_credentials_fully_saved_callback)
+        .Run(mojo_base::mojom::AbslStatusCode::kAborted);
+    return;
+  }
+
   std::vector<::nearby::internal::LocalCredential> proto_local_credentials;
   for (const auto& local_credential : local_credentials) {
     proto_local_credentials.push_back(
@@ -104,22 +173,33 @@ void NearbyPresenceCredentialStorage::SaveCredentials(
         std::make_pair(local_credential.secret_id(), local_credential));
   }
 
-  // |delete_key_filter| is always set to true, since |entries_to_save| are not
-  // deleted if they match |delete_key_filter|. This avoids duplicating new keys
-  // in memory to be saved.
-  const leveldb_proto::KeyFilter clearAllFilter =
-      base::BindRepeating([](const std::string& key) { return true; });
-
   private_db_->UpdateEntriesWithRemoveFilter(
-      std::move(credential_pairs_to_save), clearAllFilter,
+      /*entries_to_save=*/std::move(credential_pairs_to_save),
+      /*delete_key_filter=*/DeleteKeyFilter(),
       base::BindOnce(
           &NearbyPresenceCredentialStorage::OnPrivateCredentialsSaved,
           weak_ptr_factory_.GetWeakPtr(),
-          std::move(on_save_credential_callback)));
+          std::move(on_credentials_fully_saved_callback)));
+}
+
+void NearbyPresenceCredentialStorage::OnRemotePublicCredentialsSaved(
+    SaveCredentialsCallback on_credentials_fully_saved_callback,
+    bool success) {
+  mojo_base::mojom::AbslStatusCode save_status;
+  if (success) {
+    save_status = mojo_base::mojom::AbslStatusCode::kOk;
+  } else {
+    // TODO(b/287334363): Emit failure metric for remote public credential save.
+    LOG(ERROR) << __func__ << ": failed to save remote public credentials";
+    save_status = mojo_base::mojom::AbslStatusCode::kAborted;
+  }
+
+  CHECK(on_credentials_fully_saved_callback);
+  std::move(on_credentials_fully_saved_callback).Run(save_status);
 }
 
 void NearbyPresenceCredentialStorage::OnPrivateCredentialsSaved(
-    SaveCredentialsCallback on_save_credential_callback,
+    SaveCredentialsCallback on_credentials_fully_saved_callback,
     bool success) {
   mojo_base::mojom::AbslStatusCode save_status;
   if (success) {
@@ -127,12 +207,11 @@ void NearbyPresenceCredentialStorage::OnPrivateCredentialsSaved(
   } else {
     // TODO(b/287334363): Emit a failure metric.
     LOG(ERROR) << __func__ << ": failed to save private credentials";
-    save_status = mojo_base::mojom::AbslStatusCode::kUnknown;
+    save_status = mojo_base::mojom::AbslStatusCode::kAborted;
   }
 
-  // TODO(b/287334195): Attempt to save public credentials if private
-  // credentials were successfully saved.
-  std::move(on_save_credential_callback).Run(save_status);
+  CHECK(on_credentials_fully_saved_callback);
+  std::move(on_credentials_fully_saved_callback).Run(save_status);
 }
 
 void NearbyPresenceCredentialStorage::OnPrivateDatabaseInitialized(
