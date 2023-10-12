@@ -14,7 +14,7 @@
  * change if the page is re-opened later.
  */
 
-import {assert} from './assert_ts.js';
+import {assert} from './assert.js';
 
 interface LoadTimeDataRaw {
   [key: string]: any;

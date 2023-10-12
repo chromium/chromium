@@ -4,7 +4,7 @@
 
 import {TimeDelta} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import {assert} from '../assert_ts.js';
+import {assert} from '../assert.js';
 
 import {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
 

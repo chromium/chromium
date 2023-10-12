@@ -4,7 +4,7 @@
 
 import {Destination, DestinationOrigin, PrintPreviewLinkContainerElement} from 'chrome://print/print_preview.js';
 // <if expr="is_macosx">
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 // </if>
 import {isWindows} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

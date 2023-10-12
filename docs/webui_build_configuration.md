@@ -159,7 +159,7 @@ preprocessed, if necessary. It also means that e.g. HTML or image files
 shouldn't be passed to ts_library.
 
 All files that aren't imported with an absolute path (e.g.
-`import {assert} from 'chrome://resources/js/assert_ts.js'; `) need to exist
+`import {assert} from 'chrome://resources/js/assert.js'; `) need to exist
 inside the TypeScript root directory, at the expected location. For example,
 if foo.ts in the top level directory contains the import statement
 `import {Baz} from './bar/baz.js';`, then the folder structure when ts_library

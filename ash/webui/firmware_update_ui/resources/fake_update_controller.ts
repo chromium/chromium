@@ -4,7 +4,7 @@
 
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {fakeFirmwareUpdates, fakeInstallationProgress, fakeInstallationProgressFailure} from './fake_data.js';
 import {FirmwareUpdate, InstallationProgress, UpdateProgressObserverRemote, UpdateProviderInterface, UpdateState} from './firmware_update.mojom-webui.js';

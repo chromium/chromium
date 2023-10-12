@@ -5,7 +5,7 @@
 import 'chrome://metrics-internals/app.js';
 
 import {MetricsInternalsAppElement} from 'chrome://metrics-internals/app.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {getTableRowAsStringArray} from './utils.js';

@@ -4,7 +4,7 @@
 
 import {App, OptionalBool, PageCallbackRouter, PageHandlerInterface, PageRemote, Permission, RunOnOsLoginMode, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 export class FakePageHandler implements PageHandlerInterface {

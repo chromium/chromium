@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from './assert_ts.js';
+import {assert} from './assert.js';
 
 const WRAPPER_CSS_CLASS: string = 'search-highlight-wrapper';
 
