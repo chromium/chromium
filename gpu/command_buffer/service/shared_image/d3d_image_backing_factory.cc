@@ -100,8 +100,10 @@ D3DImageBackingFactory::D3DImageBackingFactory(
     scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager)
     : SharedImageBackingFactory(kSupportedUsage),
       d3d11_device_(std::move(d3d11_device)),
-      dxgi_shared_handle_manager_(std::move(dxgi_shared_handle_manager)) {
-  DCHECK(d3d11_device_);
+      dxgi_shared_handle_manager_(std::move(dxgi_shared_handle_manager)),
+      angle_d3d11_device_(gl::QueryD3D11DeviceObjectFromANGLE()) {
+  CHECK(d3d11_device_);
+  CHECK(angle_d3d11_device_);
 }
 
 D3DImageBackingFactory::~D3DImageBackingFactory() = default;
@@ -352,11 +354,15 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
       }
     }
   }
-  if (is_shm_gmb) {
-    // D3D doesn't support mappable+default YUV textures.
-    if (format.is_single_plane() && UseMapOnDefaultTextures()) {
-      desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
-    }
+  // D3D doesn't support mappable+default shared resource or YUV textures.
+  const bool has_webgpu_usage = usage & SHARED_IMAGE_USAGE_WEBGPU;
+  const bool has_gl_usage = usage & SHARED_IMAGE_USAGE_GLES2;
+  const bool needs_shared_handle =
+      has_webgpu_usage ||
+      (has_gl_usage && (d3d11_device_ != angle_d3d11_device_));
+  if (is_shm_gmb && format.is_single_plane() && !needs_shared_handle &&
+      UseMapOnDefaultTextures()) {
+    desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
   } else {
     desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_NTHANDLE |
                      (gfx::D3DSharedFence::IsSupported(d3d11_device_.Get())
@@ -375,8 +381,8 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   d3d11_texture->SetPrivateData(WKPDID_D3DDebugObjectName, debug_label.length(),
                                 debug_label.c_str());
 
-  if (is_shm_gmb) {
-    // Early return before creating DXGI keyed mutex.
+  if (!(desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_NTHANDLE)) {
+    // Early return before creating D3D shared handle resources.
     return D3DImageBacking::Create(
         mailbox, format, size, color_space, surface_origin, alpha_type, usage,
         std::move(d3d11_texture), nullptr, texture_target);
