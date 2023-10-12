@@ -173,7 +173,7 @@ class CONTENT_EXPORT ContentIndexDatabase {
   void BlockOrigin(const url::Origin& origin);
   void UnblockOrigin(const url::Origin& origin);
 
-  raw_ptr<ContentIndexProvider, AcrossTasksDanglingUntriaged> provider_;
+  raw_ptr<ContentIndexProvider> provider_;
 
   // A map from origins to how many times it's been blocked.
   base::flat_map<url::Origin, int> blocked_origins_;

@@ -67,6 +67,8 @@ TEST(StoragePartitionImplMapTest, AppCacheCleanup) {
     appcache_path = partition->GetPath().Append(kAppCacheDirname);
 
     task_environment.RunUntilIdle();
+
+    partition->OnBrowserContextWillBeDestroyed();
   }
 
   // Create an AppCache directory that would have existed.
@@ -84,6 +86,8 @@ TEST(StoragePartitionImplMapTest, AppCacheCleanup) {
     // Verify that creating this partition deletes any AppCache directory it may
     // have had.
     EXPECT_FALSE(base::PathExists(appcache_path));
+
+    partition->OnBrowserContextWillBeDestroyed();
   }
 }
 

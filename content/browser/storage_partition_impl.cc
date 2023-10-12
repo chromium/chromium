@@ -16,6 +16,7 @@
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -1260,6 +1261,9 @@ StoragePartitionImpl::StoragePartitionImpl(
       deletion_helpers_running_(0) {}
 
 StoragePartitionImpl::~StoragePartitionImpl() {
+#if DCHECK_IS_ON()
+  DCHECK(on_browser_context_will_be_destroyed_called_);
+#endif
   browser_context_ = nullptr;
 
   if (url_loader_factory_getter_) {
@@ -1277,10 +1281,6 @@ StoragePartitionImpl::~StoragePartitionImpl() {
     database_tracker_ptr->task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&storage::DatabaseTracker::Shutdown,
                                   std::move(database_tracker)));
-  }
-
-  if (GetFileSystemAccessManager()) {
-    GetFileSystemAccessManager()->Shutdown();
   }
 
   if (GetFileSystemContext()) {
@@ -1307,12 +1307,23 @@ StoragePartitionImpl::~StoragePartitionImpl() {
     GetBackgroundFetchContext()->Shutdown();
   }
 
-  if (GetContentIndexContext()) {
-    GetContentIndexContext()->Shutdown();
-  }
-
   if (GetGeneratedCodeCacheContext()) {
     GetGeneratedCodeCacheContext()->Shutdown();
+  }
+}
+
+void StoragePartitionImpl::OnBrowserContextWillBeDestroyed() {
+#if DCHECK_IS_ON()
+  on_browser_context_will_be_destroyed_called_ = true;
+#endif
+  // These hold raw pointers to objects that are about to be destroyed, before
+  // this object is destroyed. Shut them down now to avoid dangling pointers.
+  if (GetFileSystemAccessManager()) {
+    GetFileSystemAccessManager()->Shutdown();
+  }
+
+  if (GetContentIndexContext()) {
+    GetContentIndexContext()->Shutdown();
   }
 }
 

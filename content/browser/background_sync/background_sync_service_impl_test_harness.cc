@@ -125,6 +125,8 @@ void BackgroundSyncServiceImplTestHarness::TearDown() {
   background_sync_test_util::SetIgnoreNetworkChanges(false);
 
   mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+
+  storage_partition_impl_->OnBrowserContextWillBeDestroyed();
 }
 
 // SetUp helper methods

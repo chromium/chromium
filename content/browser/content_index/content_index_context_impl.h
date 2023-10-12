@@ -58,7 +58,7 @@ class ContentIndexContextImpl
 
   ~ContentIndexContextImpl() override;
 
-  raw_ptr<ContentIndexProvider, AcrossTasksDanglingUntriaged> provider_;
+  raw_ptr<ContentIndexProvider> provider_;
   ContentIndexDatabase content_index_database_;
 };
 

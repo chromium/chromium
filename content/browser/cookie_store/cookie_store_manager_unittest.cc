@@ -442,6 +442,8 @@ class CookieStoreManagerTest
     worker_test_helper_->ShutdownContext();
     task_environment_.RunUntilIdle();
 
+    storage_partition_impl_->OnBrowserContextWillBeDestroyed();
+
     // Smart pointers are reset manually in destruction order because this is
     // called by ResetServiceWorkerContext().
     example_service_.reset();

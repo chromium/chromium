@@ -1741,6 +1741,7 @@ class ServiceWorkerUpdateJobTest : public ServiceWorkerJobTest {
 
   void TearDown() override {
     // These need to be cleared before `helper_` to avoid dangling pointers.
+    storage_partition_impl_->OnBrowserContextWillBeDestroyed();
     storage_partition_impl_.reset();
     update_helper_ = nullptr;
 

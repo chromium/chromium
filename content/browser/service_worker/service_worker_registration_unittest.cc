@@ -183,6 +183,10 @@ class ServiceWorkerRegistrationTest : public testing::Test {
         storage_partition_impl_.get());
   }
 
+  void TearDown() override {
+    storage_partition_impl_->OnBrowserContextWillBeDestroyed();
+  }
+
   ServiceWorkerContextCore* context() { return helper_->context(); }
   ServiceWorkerRegistry* registry() { return helper_->context()->registry(); }
 

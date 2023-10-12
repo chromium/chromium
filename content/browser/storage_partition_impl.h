@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/dcheck_is_on.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -461,6 +462,9 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   storage::QuotaManagerProxy* GetQuotaManagerProxy();
 
+  // Called by BrowserContextImpl prior to destruction.
+  void OnBrowserContextWillBeDestroyed();
+
   class URLLoaderNetworkContext {
    public:
     enum class Type {
@@ -568,7 +572,9 @@ class CONTENT_EXPORT StoragePartitionImpl
   // of distinguishing different in-memory partitions, but nothing is persisted
   // on to disk.
   //
-  // Initialize() must be called on the StoragePartitionImpl before using it.
+  // Initialize() must be called on the StoragePartitionImpl before using it,
+  // and OnBrowserContextWillBeDestroyed() must be called on it prior to
+  // `context` being destroyed.
   static std::unique_ptr<StoragePartitionImpl> Create(
       BrowserContext* context,
       const StoragePartitionConfig& config,
@@ -794,6 +800,10 @@ class CONTENT_EXPORT StoragePartitionImpl
       url_loader_network_observers_;
 
   int next_pending_trust_token_issuance_callback_key_ = 0;
+
+#if DCHECK_IS_ON()
+  bool on_browser_context_will_be_destroyed_called_ = false;
+#endif
 
   base::WeakPtrFactory<StoragePartitionImpl> weak_factory_{this};
 };

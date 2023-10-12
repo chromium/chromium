@@ -18,6 +18,7 @@
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
 #include "content/browser/speech/tts_controller_impl.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/storage_partition_impl_map.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -46,6 +47,11 @@ void ShutdownServiceWorkerContext(StoragePartition* partition) {
 
 void ShutdownSharedWorkerContext(StoragePartition* partition) {
   partition->GetSharedWorkerService()->Shutdown();
+}
+
+void NotifyContextWillBeDestroyed(StoragePartition* partition) {
+  static_cast<StoragePartitionImpl*>(partition)
+      ->OnBrowserContextWillBeDestroyed();
 }
 
 void RegisterMediaLearningTask(
@@ -139,6 +145,9 @@ void BrowserContextImpl::NotifyWillBeDestroyed() {
       base::BindRepeating(ShutdownServiceWorkerContext));
   self_->ForEachLoadedStoragePartition(
       base::BindRepeating(ShutdownSharedWorkerContext));
+
+  self_->ForEachLoadedStoragePartition(
+      base::BindRepeating(NotifyContextWillBeDestroyed));
 
   // Also forcibly release keep alive refcounts on RenderProcessHosts, to ensure
   // they destruct before the BrowserContext does.
