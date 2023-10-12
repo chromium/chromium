@@ -8,6 +8,7 @@
 
 #include "base/notreached.h"
 #include "chrome/browser/apps/app_discovery_service/almanac_fetcher.h"
+#include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/apps/app_discovery_service/game_fetcher.h"
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_app_fetcher.h"
 #include "ui/gfx/image/image_skia.h"
@@ -52,6 +53,11 @@ void AppFetcherManager::GetApps(ResultType result_type,
       recommended_arc_app_fetcher_->GetApps(std::move(callback));
       return;
     case ResultType::kGameSearchCatalog:
+      if (base::FeatureList::IsEnabled(kAlmanacGameMigration)) {
+        DCHECK(almanac_fetcher_);
+        almanac_fetcher_->GetApps(std::move(callback));
+        return;
+      }
       DCHECK(game_fetcher_);
       game_fetcher_->GetApps(std::move(callback));
       return;
@@ -71,6 +77,10 @@ base::CallbackListSubscription AppFetcherManager::RegisterForAppUpdates(
       DCHECK(g_test_fetcher_);
       return g_test_fetcher_->RegisterForAppUpdates(std::move(callback));
     case ResultType::kGameSearchCatalog:
+      if (base::FeatureList::IsEnabled(kAlmanacGameMigration)) {
+        DCHECK(almanac_fetcher_);
+        return almanac_fetcher_->RegisterForAppUpdates(std::move(callback));
+      }
       DCHECK(game_fetcher_);
       return game_fetcher_->RegisterForAppUpdates(std::move(callback));
   }
@@ -92,6 +102,12 @@ void AppFetcherManager::GetIcon(const std::string& app_id,
                               DiscoveryError::kErrorRequestFailed);
       return;
     case ResultType::kGameSearchCatalog:
+      if (base::FeatureList::IsEnabled(kAlmanacGameMigration)) {
+        DCHECK(almanac_fetcher_);
+        almanac_fetcher_->GetIcon(app_id, size_hint_in_dip,
+                                  std::move(callback));
+        return;
+      }
       DCHECK(game_fetcher_);
       game_fetcher_->GetIcon(app_id, size_hint_in_dip, std::move(callback));
       return;
