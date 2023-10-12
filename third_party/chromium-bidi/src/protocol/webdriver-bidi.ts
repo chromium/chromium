@@ -516,6 +516,7 @@ export namespace BrowsingContext {
   export type SetViewportParameters = {
     context: BrowsingContext.BrowsingContext;
     viewport: BrowsingContext.Viewport | null;
+    devicePixelRatio?: number | null;
   };
 }
 export namespace BrowsingContext {

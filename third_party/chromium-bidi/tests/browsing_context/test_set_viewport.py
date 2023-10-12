@@ -29,7 +29,8 @@ async def test_set_viewport(websocket, context_id, html):
                 "viewport": {
                     "width": 300,
                     "height": 300,
-                }
+                },
+                "devicePixelRatio": None
             }
         })
 
@@ -52,6 +53,39 @@ async def test_set_viewport(websocket, context_id, html):
     }], ["height", {
         "type": "number",
         "value": 300
+    }]] == result["result"]["value"]
+
+
+@pytest.mark.asyncio
+async def test_set_viewport_dpr(websocket, context_id, html):
+    await goto_url(websocket, context_id, html())
+
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.setViewport",
+            "params": {
+                "context": context_id,
+                "viewport": None,
+                "devicePixelRatio": 4,
+            }
+        })
+
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "({'devicePixelRatio': window.devicePixelRatio})",
+                "target": {
+                    "context": context_id
+                },
+                "resultOwnership": "none",
+                "awaitPromise": True
+            }
+        })
+
+    assert [["devicePixelRatio", {
+        "type": "number",
+        "value": 4
     }]] == result["result"]["value"]
 
 
@@ -85,6 +119,7 @@ async def test_set_viewport_unsupported(websocket, context_id, html, width,
                     "viewport": {
                         "width": width,
                         "height": height,
-                    }
+                    },
+                    "devicePixelRatio": None
                 }
             })

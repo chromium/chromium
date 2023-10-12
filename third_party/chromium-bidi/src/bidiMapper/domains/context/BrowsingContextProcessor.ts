@@ -185,7 +185,7 @@ export class BrowsingContextProcessor {
         'Emulating viewport is only supported on the top-level context'
       );
     }
-    await context.setViewport(params.viewport);
+    await context.setViewport(params.viewport, params.devicePixelRatio);
     return {};
   }
 

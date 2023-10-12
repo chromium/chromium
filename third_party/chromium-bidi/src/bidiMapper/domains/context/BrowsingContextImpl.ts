@@ -678,8 +678,11 @@ export class BrowsingContextImpl {
     };
   }
 
-  async setViewport(viewport: BrowsingContext.Viewport | null) {
-    if (viewport === null) {
+  async setViewport(
+    viewport: BrowsingContext.Viewport | null,
+    devicePixelRatio?: number | null
+  ) {
+    if (viewport === null && devicePixelRatio === null) {
       await this.#cdpTarget.cdpClient.sendCommand(
         'Emulation.clearDeviceMetricsOverride'
       );
@@ -688,9 +691,9 @@ export class BrowsingContextImpl {
         await this.#cdpTarget.cdpClient.sendCommand(
           'Emulation.setDeviceMetricsOverride',
           {
-            width: viewport.width,
-            height: viewport.height,
-            deviceScaleFactor: 0,
+            width: viewport ? viewport.width : 0,
+            height: viewport ? viewport.height : 0,
+            deviceScaleFactor: devicePixelRatio ? devicePixelRatio : 0,
             mobile: false,
             dontSetVisibleSize: true,
           }

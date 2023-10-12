@@ -616,6 +616,7 @@ export namespace BrowsingContext {
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
       viewport: z.union([BrowsingContext.ViewportSchema, z.null()]),
+      devicePixelRatio: z.union([z.number().gt(0), z.null()]).optional(),
     })
   );
 }
