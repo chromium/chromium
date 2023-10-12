@@ -77986,6 +77986,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="171" label="Multi Capture On Login"/>
   <int value="172" label="Floating Workspace"/>
   <int value="173" label="Scalable IPH"/>
+  <int value="174" label="After Update Notification"/>
+  <int value="175" label="Sub Apps Uninstall"/>
+  <int value="176" label="Network Carrier Unlock"/>
 </enum>
 
 <enum name="NotificationDatabaseStatus">
