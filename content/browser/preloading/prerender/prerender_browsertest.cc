@@ -11755,14 +11755,18 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
   NavigationControllerImpl& controller = web_contents_impl()->GetController();
   ASSERT_TRUE(controller.CanGoBack());
   TestNavigationObserver back_observer(web_contents_impl());
+  InputEventAckWaiter mouse_down_waiter(
+      web_contents_impl()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+      blink::WebInputEvent::Type::kMouseDown);
   const gfx::Point click_location(50, 50);
   SimulateMouseEvent(web_contents_impl(),
                      blink::WebInputEvent::Type::kMouseDown,
                      blink::WebMouseEvent::Button::kBack, click_location);
-  WaitForHttpCacheQueryCompletion(web_contents_impl());
   // The mouse up triggers the navigation. We wait until after the cache query
   // to send the mouse up to ensure the navigation happens after the browser
   // decides whether to prerender.
+  mouse_down_waiter.Wait();
+  WaitForHttpCacheQueryCompletion(web_contents_impl());
   SimulateMouseEvent(web_contents_impl(), blink::WebInputEvent::Type::kMouseUp,
                      blink::WebMouseEvent::Button::kBack, click_location);
   back_observer.Wait();
