@@ -3864,7 +3864,7 @@ AX_TEST_F(
     });
 
 // TODO(https://crbug.com/1491964): Failing on Linux ChromeOS bots.
-GEN('#if BUILDFLAG(IS_LINUX)');
+GEN('#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)');
 GEN('#define MAYBE_NewWindowWebSpeech DISABLED_NewWindowWebSpeech');
 GEN('#else');
 GEN('#define MAYBE_NewWindowWebSpeech NewWindowWebSpeech');
