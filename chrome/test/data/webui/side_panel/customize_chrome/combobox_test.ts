@@ -104,4 +104,40 @@ suite('ComboboxTest', () => {
     assertFalse(isVisible(combobox.$.dropdown));
     assertEquals(null, combobox.querySelector('[highlighted]'));
   });
+
+  test('SelectsItem', async () => {
+    const groupA = addGroup();
+    const optionA1 = addOption(groupA);
+    optionA1.innerText = 'I am option 1';
+    const optionA2 = addOption(groupA);
+    optionA2.innerText = 'I am option 2';
+    await flushTasks();
+
+    // Open dropdown, click on first option to select it.
+    combobox.$.input.click();
+    optionA1.dispatchEvent(new Event('click', {composed: true, bubbles: true}));
+    assertTrue(optionA1.hasAttribute('selected'));
+    assertFalse(isVisible(combobox.$.dropdown));
+    assertTrue(combobox.$.input.textContent!.includes('I am option 1'));
+
+    // Open the dropdown back and arrow key to next option and select it.
+    combobox.$.input.click();
+    combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
+    assertFalse(optionA2.hasAttribute('selected'));
+    combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    assertTrue(optionA2.hasAttribute('selected'));
+    assertFalse(optionA1.hasAttribute('selected'));
+    assertTrue(combobox.$.input.textContent!.includes('I am option 2'));
+    assertFalse(isVisible(combobox.$.dropdown));
+
+    // Pressing Enter or clicking on an unselectable item should not select it.
+    combobox.$.input.click();
+    combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'Home'}));
+    combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    assertFalse(groupA.hasAttribute('selected'));
+    groupA.dispatchEvent(new Event('click', {composed: true, bubbles: true}));
+    assertFalse(groupA.hasAttribute('selected'));
+    assertTrue(optionA2.hasAttribute('selected'));
+    assertTrue(isVisible(combobox.$.dropdown));
+  });
 });

@@ -12,6 +12,9 @@ import {getTemplate} from './customize_chrome_combobox.html.js';
 /* Selector for keyboard focusable items in the dropdown. */
 const HIGHLIGHTABLE_ITEMS_SELECTOR = '[role=group], [role=option]';
 
+/* Selector for selectable options in the dropdown. */
+const SELECTABLE_ITEMS_SELECTOR = '[role=option]';
+
 export interface CustomizeChromeCombobox {
   $: {
     input: HTMLDivElement,
@@ -37,6 +40,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
         observer: 'onExpandedChange_',
       },
       label: String,
+      selectedElement_: Object,
     };
   }
 
@@ -45,6 +49,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
   private highlightedElement_: HTMLElement|null = null;
   label: string;
   private domObserver_: MutationObserver|null = null;
+  private selectedElement_: HTMLElement|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -66,6 +71,14 @@ export class CustomizeChromeCombobox extends PolymerElement {
     this.domObserver_ = null;
   }
 
+  private getInputLabel_(): string {
+    if (this.selectedElement_) {
+      return this.selectedElement_.textContent!;
+    }
+
+    return this.label;
+  }
+
   private highlightElement_(element: HTMLElement|null) {
     if (this.highlightedElement_) {
       this.highlightedElement_.removeAttribute('highlighted');
@@ -83,8 +96,29 @@ export class CustomizeChromeCombobox extends PolymerElement {
         this.querySelectorAll<HTMLElement>(HIGHLIGHTABLE_ITEMS_SELECTOR));
   }
 
+  private onDropdownClick_(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const selectableTarget =
+        event.composedPath().find(
+            target => target instanceof HTMLElement &&
+                target.matches(SELECTABLE_ITEMS_SELECTOR)) as HTMLElement;
+    if (!selectableTarget) {
+      return;
+    }
+    this.selectItem_(selectableTarget);
+    this.expanded_ = false;
+  }
+
+  private onDropdownPointerdown_(e: PointerEvent) {
+    /* Prevent the dropdown from gaining focus on pointerdown. The input should
+     * always be the focused element. */
+    e.preventDefault();
+  }
+
   private onExpandedChange_() {
-    this.highlightElement_(null);
+    this.highlightElement_(this.selectedElement_);
   }
 
   private onInputClick_() {
@@ -138,6 +172,15 @@ export class CustomizeChromeCombobox extends PolymerElement {
       return;
     }
 
+    if (e.key === 'Enter' || e.key === 'Space') {
+      e.preventDefault();
+      e.stopPropagation();
+      if (this.selectItem_(this.highlightedElement_)) {
+        this.expanded_ = false;
+      }
+      return;
+    }
+
     if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) {
       return;
     }
@@ -170,6 +213,24 @@ export class CustomizeChromeCombobox extends PolymerElement {
     }
 
     this.highlightElement_(this.highlightableElements_[index]!);
+  }
+
+  private selectItem_(item: HTMLElement|null): boolean {
+    if (!item) {
+      return false;
+    }
+
+    if (!item.matches(SELECTABLE_ITEMS_SELECTOR)) {
+      return false;
+    }
+
+    if (this.selectedElement_) {
+      this.selectedElement_.removeAttribute('selected');
+    }
+
+    item.toggleAttribute('selected', true);
+    this.selectedElement_ = item;
+    return true;
   }
 }
 

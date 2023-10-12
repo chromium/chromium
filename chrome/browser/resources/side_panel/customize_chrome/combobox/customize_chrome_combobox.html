@@ -30,8 +30,9 @@
     aria-haspopup="listbox"
     on-click="onInputClick_"
     on-focusout="onInputFocusout_">
-  [[label]]
+  [[getInputLabel_(label, selectedElement_)]]
 </button>
-<div id="dropdown" role="listbox">
+<div id="dropdown" role="listbox" on-click="onDropdownClick_"
+    on-pointerdown="onDropdownPointerdown_">
   <slot></slot>
 </div>
