@@ -820,7 +820,7 @@
   {
     "name": "biometric-reauth-password-filling",
     "owners": [ "ioanap", "izuzic@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "blink-extension",
