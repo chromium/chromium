@@ -56,12 +56,7 @@ bool AreUnwindPrerequisitesAvailable(
     version_info::Channel channel,
     UnwindPrerequisitesDelegate* prerequites_delegate = nullptr);
 
-#if BUILDFLAG(IS_ANDROID)
-base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory(
-    bool is_java_name_hashing_enabled);
-#else
 base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory();
-#endif  // BUILDFLAG(IS_ANDROID)
 
 base::StackSamplingProfiler::UnwindersFactory
 CreateLibunwindstackUnwinderFactory();

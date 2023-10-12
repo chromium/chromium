@@ -60,10 +60,6 @@ class ThreadProfilerConfiguration {
   void AppendCommandLineSwitchForChildProcess(
       base::CommandLine* command_line) const;
 
-#if BUILDFLAG(IS_ANDROID)
-  bool IsJavaNameHashingEnabled() const;
-#endif  // BUILDFLAG(IS_ANDROID)
-
  private:
   friend base::NoDestructor<ThreadProfilerConfiguration>;
 
@@ -80,13 +76,6 @@ class ThreadProfilerConfiguration {
     // Enabled within the experiment (and paired with equal-sized
     // kProfileDisabled group).
     kProfileControl,
-
-#if BUILDFLAG(IS_ANDROID)
-    // Enabled within the experiment (and paired with equal-sized
-    // kProfileDisabled and kProfileControl groups). Java names will be
-    // hashed within this group.
-    kProfileEnabledWithJavaNameHashing,
-#endif  // BUILDFLAG(IS_ANDROID)
 
     // Enabled outside of the experiment.
     kProfileEnabled,

@@ -253,12 +253,7 @@ ThreadProfiler::ThreadProfiler(
               process_, thread,
               CallStackProfileParams::Trigger::kProcessStartup),
           work_id_recorder_.get()),
-#if BUILDFLAG(IS_ANDROID)
-      CreateCoreUnwindersFactory(
-          ThreadProfilerConfiguration::Get()->IsJavaNameHashingEnabled()),
-#else
       CreateCoreUnwindersFactory(),
-#endif  // BUILDFLAG(IS_ANDROID)
       GetApplyPerSampleMetadataCallback(process_));
 
   startup_profiler_->Start();
@@ -327,12 +322,7 @@ void ThreadProfiler::StartPeriodicSamplingCollection() {
           base::BindOnce(&ThreadProfiler::OnPeriodicCollectionCompleted,
                          owning_thread_task_runner_,
                          weak_factory_.GetWeakPtr())),
-#if BUILDFLAG(IS_ANDROID)
-      CreateCoreUnwindersFactory(
-          ThreadProfilerConfiguration::Get()->IsJavaNameHashingEnabled()),
-#else
       CreateCoreUnwindersFactory(),
-#endif  // BUILDFLAG(IS_ANDROID)
       GetApplyPerSampleMetadataCallback(process_));
   if (aux_unwinder_factory_)
     periodic_profiler_->AddAuxUnwinder(aux_unwinder_factory_.Run());

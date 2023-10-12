@@ -112,12 +112,6 @@ bool ThreadProfilerConfiguration::GetSyntheticFieldTrial(
       *group_name = "Control";
       break;
 
-#if BUILDFLAG(IS_ANDROID)
-    case kProfileEnabledWithJavaNameHashing:
-      *group_name = "EnabledWithJavaNameHashing";
-      break;
-#endif  // BUILDFLAG(IS_ANDROID)
-
     case kProfileEnabled:
       *group_name = "Enabled";
       break;
@@ -157,13 +151,6 @@ void ThreadProfilerConfiguration::AppendCommandLineSwitchForChildProcess(
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
-bool ThreadProfilerConfiguration::IsJavaNameHashingEnabled() const {
-  const auto& config = absl::get<BrowserProcessConfiguration>(configuration_);
-  return config.variation_group == kProfileEnabledWithJavaNameHashing;
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 ThreadProfilerConfiguration::ThreadProfilerConfiguration()
     : platform_configuration_(ThreadProfilerPlatformConfiguration::Create(
           IsBrowserTestModeEnabled())),
@@ -176,12 +163,8 @@ bool ThreadProfilerConfiguration::EnableForVariationGroup(
     absl::optional<VariationGroup> variation_group) {
   // Enable if assigned to a variation group, and the group is one of the groups
   // that are to be enabled.
-  return variation_group.has_value() &&
-         (*variation_group == kProfileEnabled ||
-#if BUILDFLAG(IS_ANDROID)
-          *variation_group == kProfileEnabledWithJavaNameHashing ||
-#endif  // BUILDFLAG(IS_ANDROID)
-          *variation_group == kProfileControl);
+  return variation_group.has_value() && (*variation_group == kProfileEnabled ||
+                                         *variation_group == kProfileControl);
 }
 
 // static
@@ -244,17 +227,6 @@ ThreadProfilerConfiguration::GenerateBrowserProcessConfiguration(
   const absl::optional<metrics::CallStackProfileParams::Process>
       process_type_to_sample = platform_configuration.ChooseEnabledProcess();
 
-#if BUILDFLAG(IS_ANDROID)
-  CHECK_EQ(0, relative_populations.experiment % 3);
-  return {ChooseVariationGroup({
-              {kProfileEnabled, relative_populations.enabled},
-              {kProfileControl, relative_populations.experiment / 3},
-              {kProfileEnabledWithJavaNameHashing,
-               relative_populations.experiment / 3},
-              {kProfileDisabled, relative_populations.experiment / 3},
-          }),
-          process_type_to_sample};
-#else
   CHECK_EQ(0, relative_populations.experiment % 2);
   return {ChooseVariationGroup({
               {kProfileEnabled, relative_populations.enabled},
@@ -262,7 +234,6 @@ ThreadProfilerConfiguration::GenerateBrowserProcessConfiguration(
               {kProfileDisabled, relative_populations.experiment / 2},
           }),
           process_type_to_sample};
-#endif
 }
 
 // static
