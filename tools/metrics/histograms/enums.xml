@@ -49933,6 +49933,17 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="Presentation API"/>
 </enum>
 
+<enum name="GmsShortVersionCode">
+  <summary>
+    Special buckets for the cases when GMS Core version can't be obtained or is
+    invalid, otherwise it would be the version numbers in YYWWV format where
+    23401 would mean 2023y40w stable release.
+  </summary>
+  <int value="0" label="GMS Core is not installed"/>
+  <int value="1" label="GMS Core version can't be parsed"/>
+  <int value="2" label="GMS Core version is out of valid range"/>
+</enum>
+
 <enum name="GoogleCaptchaEvent">
   <int value="0" label="Google CAPTCHA shown"/>
   <int value="1" label="Google CAPTCHA solved"/>

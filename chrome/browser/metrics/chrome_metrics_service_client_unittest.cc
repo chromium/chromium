@@ -215,8 +215,8 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
 
 #if BUILDFLAG(IS_ANDROID)
   // AndroidMetricsProvider, ChromeAndroidMetricsProvider,
-  // and PageLoadMetricsProvider.
-  expected_providers += 3;
+  // PageLoadMetricsProvider, GmsMetricsProvider.
+  expected_providers += 4;
 #else
   // performance_manager::MetricsProvider
   expected_providers += 1;

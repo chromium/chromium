@@ -3502,6 +3502,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.PlayServices.ShortVersion" enum="GmsShortVersionCode"
+    expires_after="2024-06-01">
+  <owner>twellington@chromium.org</owner>
+  <owner>tedchoc@chromium.org</owner>
+  <summary>
+    The short version code for Google Play Services in a format YYWWV, where YY
+    is year, WW is week and V is version (0 for beta releases and 1 for stable
+    release). This metric is logged with every UMA upload. 0 is recorded when
+    GMS Core is not installed, 1 when GMS Core version can't be parsed and 2
+    when GMS Core version doesn't fit into defined range.
+  </summary>
+</histogram>
+
 <histogram name="Android.PlayServices.Version" units="versioncode"
     expires_after="2024-03-17">
   <owner>twellington@chromium.org</owner>

@@ -128,6 +128,7 @@
 #include "chrome/browser/metrics/chrome_android_metrics_provider.h"
 #include "chrome/browser/metrics/page_load_metrics_provider.h"
 #include "components/metrics/android_metrics_provider.h"
+#include "components/metrics/gms_metrics_provider.h"
 #else
 #include "chrome/browser/metrics/browser_activity_watcher.h"
 #include "chrome/browser/performance_manager/metrics/metrics_provider_desktop.h"
@@ -874,6 +875,8 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<ChromeAndroidMetricsProvider>(local_state));
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<PageLoadMetricsProvider>());
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<metrics::GmsMetricsProvider>());
 #else
   metrics_service_->RegisterMetricsProvider(base::WrapUnique(
       new performance_manager::MetricsProviderDesktop(local_state)));

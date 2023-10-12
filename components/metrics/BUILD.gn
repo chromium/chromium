@@ -245,6 +245,8 @@ if (!is_cronet_build || is_ios) {
         "android_metrics_provider.cc",
         "android_metrics_provider.h",
         "drive_metrics_provider_android.cc",
+        "gms_metrics_provider.cc",
+        "gms_metrics_provider.h",
       ]
       deps += [ ":jni_headers" ]
     } else {
@@ -610,7 +612,10 @@ if (!is_cronet_build) {
     }
 
     if (is_android) {
-      sources += [ "android_metrics_provider_unittest.cc" ]
+      sources += [
+        "android_metrics_provider_unittest.cc",
+        "gms_metrics_provider_unittest.cc",
+      ]
     }
 
     if (use_blink) {
