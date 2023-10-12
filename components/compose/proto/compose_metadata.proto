@@ -1,0 +1,41 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package compose_proto;
+
+option optimize_for = LITE_RUNTIME;
+
+enum ComposeTone {
+  COMPOSE_UNSPECIFIED_TONE = 0;
+  COMPOSE_FORMAL = 1;
+  COMPOSE_INFORMAL = 2;
+}
+enum ComposeLength {
+  COMPOSE_UNSPECIFIED_LENGTH = 0;
+  COMPOSE_SHORTER = 1;
+  COMPOSE_LONGER = 2;
+}
+message ComposeRequest {
+  string user_input = 2;
+  ComposePageMetadata page_metadata = 3;
+  ComposeTone tone = 4;
+  ComposeLength length = 5;
+  repeated ComposePriorResponse previous_responses = 6;
+}
+message ComposeResponse {
+  string output = 1;
+}
+message ComposePriorResponse {
+  string response_text = 1;
+  ComposeTone tone = 2;
+  ComposeLength length = 3;
+  bool regenerate_requested_since = 4;
+}
+message ComposePageMetadata {
+  string page_url = 1;
+  string page_title = 2;
+  string page_inner_text = 3;
+}

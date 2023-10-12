@@ -15,7 +15,7 @@
 #include "chrome/common/compose/compose.mojom.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/compose/core/browser/compose_features.h"
-#include "components/compose/proto/compose.pb.h"
+#include "components/compose/proto/compose_metadata.pb.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
