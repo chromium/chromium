@@ -299,6 +299,10 @@ std::unique_ptr<PrefService> CreateLocalState() {
   return pref_service_factory.Create(pref_registry);
 }
 
+bool AreIsolatedWebAppsEnabled() {
+  return base::FeatureList::IsEnabled(features::kIsolatedWebApps);
+}
+
 }  // namespace
 
 std::string GetShellLanguage() {
@@ -397,6 +401,11 @@ bool ShellContentBrowserClient::IsHandledURL(const GURL& url) {
   return false;
 }
 
+bool ShellContentBrowserClient::AreIsolatedWebAppsEnabled(
+    BrowserContext* browser_context) {
+  return ::content::AreIsolatedWebAppsEnabled();
+}
+
 void ShellContentBrowserClient::AppendExtraCommandLineSwitches(
     base::CommandLine* command_line,
     int child_process_id) {
@@ -429,6 +438,12 @@ void ShellContentBrowserClient::AppendExtraCommandLineSwitches(
     }
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+  if (command_line->GetSwitchValueASCII(switches::kProcessType) ==
+          switches::kRendererProcess &&
+      ::content::AreIsolatedWebAppsEnabled()) {
+    command_line->AppendSwitch(switches::kEnableIsolatedWebAppsInRenderer);
+  }
 }
 
 device::GeolocationManager* ShellContentBrowserClient::GetGeolocationManager() {

@@ -29,6 +29,7 @@
 #include "chrome/grit/os_settings_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -508,7 +509,7 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   // check.
   html_source->AddBoolean(
       "showManageIsolatedWebAppsRow",
-      base::FeatureList::IsEnabled(::features::kIsolatedWebApps));
+      content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile()));
   html_source->AddString(
       "isolatedWebAppsDescription",
       l10n_util::GetStringFUTF16(
