@@ -1395,6 +1395,9 @@ std::string QuicTestPacketMaker::GenerateHttp3SettingsData() {
       quic::kDefaultQpackMaxDynamicTableCapacity;
   settings.values[quic::SETTINGS_QPACK_BLOCKED_STREAMS] =
       quic::kDefaultMaximumBlockedStreams;
+  if (FLAGS_quic_reloadable_flag_quic_enable_h3_datagrams) {
+    settings.values[quic::SETTINGS_H3_DATAGRAM] = 1;
+  }
   // Greased setting.
   settings.values[0x40] = 20;
   return quic::HttpEncoder::SerializeSettingsFrame(settings);
