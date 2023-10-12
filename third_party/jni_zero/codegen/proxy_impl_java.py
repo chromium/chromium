@@ -21,7 +21,7 @@ def Generate(jni_obj, *, gen_jni_class, script_name):
 //
 package {jni_obj.java_class.class_without_prefix.package_with_dots};
 
-import org.chromium.build.annotations.CheckDiscard;
+import org.jni_zero.CheckDiscard;
 import org.jni_zero.JniStaticTestMocker;
 import org.jni_zero.NativeLibraryLoadedStatus;
 import {gen_jni_class.full_name_with_dots};

@@ -23,6 +23,7 @@ if (enable_java_templates && is_android) {
       "java/src/org/jni_zero/CalledByNative.java",
       "java/src/org/jni_zero/CalledByNativeForTesting.java",
       "java/src/org/jni_zero/CalledByNativeUnchecked.java",
+      "java/src/org/jni_zero/CheckDiscard.java",
       "java/src/org/jni_zero/JNINamespace.java",
       "java/src/org/jni_zero/JniStaticTestMocker.java",
       "java/src/org/jni_zero/NativeClassQualifiedName.java",

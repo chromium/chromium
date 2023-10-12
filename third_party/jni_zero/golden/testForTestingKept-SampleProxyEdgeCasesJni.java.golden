@@ -3,7 +3,7 @@
 //
 package org.jni_zero.samples;
 
-import org.chromium.build.annotations.CheckDiscard;
+import org.jni_zero.CheckDiscard;
 import org.jni_zero.JniStaticTestMocker;
 import org.jni_zero.NativeLibraryLoadedStatus;
 import org.jni_zero.GEN_JNI;

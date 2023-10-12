@@ -2807,7 +2807,10 @@ if (enable_java_templates && is_android) {
               (!defined(testonly) || !testonly) &&
               # Injected JaCoCo code causes -checkdiscards to fail.
               !use_jacoco_coverage) {
-            proguard_configs = [ "//build/android/dcheck_is_off.flags" ]
+            proguard_configs = [
+              "//build/android/dcheck_is_off.flags",
+              "//third_party/jni_zero/checkdiscard_proguard.flags",
+            ]
           }
         } else {
           if (_min_sdk_version >= default_min_sdk_version) {
@@ -4740,7 +4743,10 @@ if (enable_java_templates && is_android) {
             (!defined(testonly) || !testonly) &&
             # Injected JaCoCo code causes -checkdiscards to fail.
             !use_jacoco_coverage) {
-          proguard_configs = [ "//build/android/dcheck_is_off.flags" ]
+          proguard_configs = [
+            "//build/android/dcheck_is_off.flags",
+            "//third_party/jni_zero/checkdiscard_proguard.flags",
+          ]
         }
       }
     }

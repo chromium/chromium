@@ -60,6 +60,20 @@
 # Referenced by androidx.preference.PreferenceInflater.
 -keep public class androidx.preference.SwitchPreference {}
 
+# File: ../../third_party/jni_zero/checkdiscard_proguard.flags
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Chromium only applies this check when ENABLE_DCHECK=false.
+
+-checkdiscard @org.jni_zero.CheckDiscard class ** {
+  *;
+}
+-checkdiscard class ** {
+  @org.jni_zero.CheckDiscard *;
+}
+
 # File: ../../build/android/chromium_annotations.flags
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
