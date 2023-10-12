@@ -56,9 +56,12 @@
     void stop();
     [CrossOrigin, CallWith=Isolate] void focus();
     [CrossOrigin] void blur();
+
+    // Additional Windowing Controls (AWC)
     [RuntimeEnabled=DesktopPWAsAdditionalWindowingControls, RaisesException] void maximize();
     [RuntimeEnabled=DesktopPWAsAdditionalWindowingControls, RaisesException] void minimize();
     [RuntimeEnabled=DesktopPWAsAdditionalWindowingControls, RaisesException] void restore();
+    [RuntimeEnabled=DesktopPWAsAdditionalWindowingControls, RaisesException] void setResizable(boolean resizable);
 
     // other browsing contexts
     [Replaceable, CrossOrigin, CachedAccessor=kWindowProxy] readonly attribute Window frames;

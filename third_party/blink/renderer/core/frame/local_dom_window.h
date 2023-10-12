@@ -540,6 +540,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void maximize(ExceptionState&);
   void minimize(ExceptionState&);
   void restore(ExceptionState&);
+  void setResizable(bool resizable, ExceptionState&);
 
  protected:
   // EventTarget overrides.
@@ -572,6 +573,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void SetIsPictureInPictureWindow();
 
   bool CanUseWindowingControls(ExceptionState& exception_state);
+  bool CanUseMinMaxRestoreWindowingControls(ExceptionState& exception_state);
 
   // Return the viewport size including scrollbars.
   gfx::Size GetViewportSize() const;

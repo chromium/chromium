@@ -7306,6 +7306,9 @@ class TestAccessInitialDocumentLocalFrameHost
                      SetWindowRectCallback callback) override {
     std::move(callback).Run();
   }
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  void SetResizable(bool resizable) override {}
+#endif
   void DidFirstVisuallyNonEmptyPaint() override {}
   void DidAccessInitialMainDocument() override {
     ++did_access_initial_main_document_;

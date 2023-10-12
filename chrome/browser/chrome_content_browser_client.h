@@ -272,6 +272,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const absl::optional<url::Origin>& top_frame_origin,
       const GURL& script_url,
       content::BrowserContext* context) override;
+  void SetCanResizeFromWebAPI(content::Page* page,
+                              absl::optional<bool> can_resize) override;
+  bool GetCanResize(content::Page* page) override;
   bool MayDeleteServiceWorkerRegistration(
       const GURL& scope,
       content::BrowserContext* browser_context) override;

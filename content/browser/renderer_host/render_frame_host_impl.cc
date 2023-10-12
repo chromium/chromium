@@ -6672,7 +6672,6 @@ void RenderFrameHostImpl::FullscreenStateChanged(
   delegate_->FullscreenStateChanged(this, is_fullscreen, std::move(options));
 }
 
-#if defined(USE_AURA)
 bool RenderFrameHostImpl::CanUseWindowingControls(
     base::StringPiece js_api_name) {
   if (!base::FeatureList::IsEnabled(
@@ -6702,6 +6701,7 @@ bool RenderFrameHostImpl::CanUseWindowingControls(
   return true;
 }
 
+#if defined(USE_AURA)
 void RenderFrameHostImpl::Maximize() {
   if (!CanUseWindowingControls("window.maximize")) {
     return;
@@ -6724,6 +6724,15 @@ void RenderFrameHostImpl::Restore() {
   }
 
   delegate_->Restore();
+}
+#endif
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+void RenderFrameHostImpl::SetResizable(bool resizable) {
+  if (!CanUseWindowingControls("window.setResizable")) {
+    return;
+  }
+  GetContentClient()->browser()->SetCanResizeFromWebAPI(&GetPage(), resizable);
 }
 #endif
 

@@ -2496,6 +2496,24 @@ bool LocalDOMWindow::CanUseWindowingControls(ExceptionState& exception_state) {
     return false;
   }
 
+// Additional windowing controls (AWC) is a desktop-only feature.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  exception_state.ThrowDOMException(
+      DOMExceptionCode::kNotSupportedError,
+      "API is only supported on Desktop platforms. This excludes mobile "
+      "platforms.");
+  return false;
+#else
+  return true;
+#endif
+}
+
+bool LocalDOMWindow::CanUseMinMaxRestoreWindowingControls(
+    ExceptionState& exception_state) {
+  if (!CanUseWindowingControls(exception_state)) {
+    return false;
+  }
+
 #if !defined(USE_AURA)
   // TODO(crbug.com/1466851): Make the APIs also work on Mac.
   exception_state.ThrowDOMException(
@@ -2509,7 +2527,7 @@ bool LocalDOMWindow::CanUseWindowingControls(ExceptionState& exception_state) {
 }
 
 void LocalDOMWindow::maximize(ExceptionState& exception_state) {
-  if (!CanUseWindowingControls(exception_state)) {
+  if (!CanUseMinMaxRestoreWindowingControls(exception_state)) {
     return;
   }
 
@@ -2526,7 +2544,7 @@ void LocalDOMWindow::maximize(ExceptionState& exception_state) {
 }
 
 void LocalDOMWindow::minimize(ExceptionState& exception_state) {
-  if (!CanUseWindowingControls(exception_state)) {
+  if (!CanUseMinMaxRestoreWindowingControls(exception_state)) {
     return;
   }
 
@@ -2543,7 +2561,7 @@ void LocalDOMWindow::minimize(ExceptionState& exception_state) {
 }
 
 void LocalDOMWindow::restore(ExceptionState& exception_state) {
-  if (!CanUseWindowingControls(exception_state)) {
+  if (!CanUseMinMaxRestoreWindowingControls(exception_state)) {
     return;
   }
 
@@ -2553,6 +2571,18 @@ void LocalDOMWindow::restore(ExceptionState& exception_state) {
 
 #if defined(USE_AURA)
   GetFrame()->GetLocalFrameHostRemote().Restore();
+#endif
+}
+
+void LocalDOMWindow::setResizable(bool resizable,
+                                  ExceptionState& exception_state) {
+  if (!CanUseWindowingControls(exception_state)) {
+    return;
+  }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  ChromeClient& chrome_client = GetFrame()->GetChromeClient();
+  chrome_client.SetResizable(resizable, *GetFrame());
 #endif
 }
 

@@ -217,6 +217,13 @@ void ChromeClientImpl::SetWindowRect(const gfx::Rect& requested_rect,
                                                   adjusted_rect);
 }
 
+void ChromeClientImpl::SetResizable(bool resizable, LocalFrame& frame) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  DCHECK(web_view_);
+  web_view_->SetResizable(resizable);
+#endif
+}
+
 gfx::Rect ChromeClientImpl::RootWindowRect(LocalFrame& frame) {
   // The WindowRect() for each WebFrameWidget will be the same rect of the top
   // level window.

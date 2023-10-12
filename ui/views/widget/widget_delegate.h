@@ -155,7 +155,7 @@ class VIEWS_EXPORT WidgetDelegate
   virtual DialogDelegate* AsDialogDelegate();
 
   // Returns true if the window can be resized.
-  bool CanResize() const;
+  virtual bool CanResize() const;
 
   // Returns true if the window can go into fullscreen.
   virtual bool CanFullscreen() const;

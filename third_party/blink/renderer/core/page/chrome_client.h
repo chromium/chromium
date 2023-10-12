@@ -140,6 +140,8 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual void SetWindowRect(const gfx::Rect&, LocalFrame&) = 0;
 
+  virtual void SetResizable(bool resizable, LocalFrame&) = 0;
+
   // For non-composited WebViews that exist to contribute to a "parent" WebView
   // painting. This informs the client of the area that needs to be redrawn.
   virtual void InvalidateContainer() = 0;

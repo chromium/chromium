@@ -12651,6 +12651,7 @@ namespace console
     method scrollBy
     method scrollTo
     method setInterval
+    method setResizable
     method setTimeout
     method showDirectoryPicker
     method showOpenFilePicker

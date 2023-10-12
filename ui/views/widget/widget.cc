@@ -1330,10 +1330,17 @@ ui::GestureConsumer* Widget::GetGestureConsumer() {
 }
 
 void Widget::OnSizeConstraintsChanged() {
-  if (native_widget_)
+  if (native_widget_) {
     native_widget_->OnSizeConstraintsChanged();
-  if (non_client_view_)
+  }
+
+  if (non_client_view_) {
     non_client_view_->SizeConstraintsChanged();
+  }
+
+  for (WidgetObserver& observer : observers_) {
+    observer.OnWidgetSizeConstraintsChanged(this);
+  }
 }
 
 void Widget::OnOwnerClosing() {}

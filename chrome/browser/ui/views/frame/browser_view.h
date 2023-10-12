@@ -448,6 +448,10 @@ class BrowserView : public BrowserWindow,
 
   void UpdateWebAppStatusIconsVisiblity();
 
+  // Setter and getter for the `window.setResizable(bool)` state.
+  void SetCanResizeFromWebAPI(absl::optional<bool> can_resize);
+  absl::optional<bool> GetCanResizeFromWebAPI() const;
+
   // BrowserWindow:
   void Show() override;
   void ShowInactive() override;
@@ -667,6 +671,9 @@ class BrowserView : public BrowserWindow,
                                   ui::Accelerator* accelerator) const override;
 
   // views::WidgetDelegate:
+  bool CanResize() const override;
+  bool CanFullscreen() const override;
+  bool CanMaximize() const override;
   bool CanActivate() const override;
   std::u16string GetWindowTitle() const override;
   std::u16string GetAccessibleWindowTitle() const override;
@@ -707,6 +714,7 @@ class BrowserView : public BrowserWindow,
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
+  void OnWidgetSizeConstraintsChanged(views::Widget* widget) override;
 
   // views::ClientView:
   views::CloseRequestResult OnWindowCloseRequested() override;
@@ -977,10 +985,6 @@ class BrowserView : public BrowserWindow,
   void MaybeShowReadingListInSidePanelIPH();
 
   void UpdateWindowControlsOverlayEnabled();
-
-  // Sends widget's `can_resize` to blink to update `resizable` CSS @media
-  // feature.
-  void UpdateResizable();
 
   // Updates the visibility of the Window Controls Overlay toggle button.
   void UpdateWindowControlsOverlayToggleVisible();
@@ -1268,6 +1272,9 @@ class BrowserView : public BrowserWindow,
   bool window_management_permission_granted_ = false;
   absl::optional<content::PermissionController::SubscriptionId>
       window_management_subscription_id_;
+
+  // Keeps track of the resizability set by `window.setResizable(bool)` API.
+  absl::optional<bool> can_resize_from_web_api_;
 
   base::CallbackListSubscription paint_as_active_subscription_;
 

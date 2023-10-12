@@ -222,6 +222,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -916,7 +917,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
     UpdateBorderlessModeEnabled();
   }
 
-  UpdateResizable();
+  // Initialize Blink's 'resizable' CSS @media feature state.
+  OnWidgetSizeConstraintsChanged(GetWidget());
 
   // TabStrip takes ownership of the controller.
   auto tabstrip_controller = std::make_unique<BrowserTabStripController>(
@@ -1625,7 +1627,8 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     old_contents->StoreFocus();
   }
 
-  UpdateResizable();
+  // window.setResizable API should never be called from multi-tab browser.
+  CHECK(!can_resize_from_web_api_);
 
   // If |contents_container_| already has the correct WebContents, we can save
   // some work.  This also prevents extra events from being reported by the
@@ -2169,20 +2172,6 @@ bool BrowserView::IsWindowControlsOverlayEnabled() const {
   return window_controls_overlay_enabled_;
 }
 
-// TODO(laurila, crbug.com/1466855): Now this is only called when `BrowserView`
-// is initialized / tab changed and that's not enough. This should also be
-// called every time `WidgetDelegate::SetCanResize` is called.
-void BrowserView::UpdateResizable() {
-  // Additional windowing controls (AWC) is a desktop-only feature.
-#if !BUILDFLAG(IS_ANDROID)
-  content::WebContents* web_contents = GetActiveWebContents();
-  if (!web_contents) {
-    return;
-  }
-  web_contents->UpdateResizable(CanResize());
-#endif
-}
-
 void BrowserView::UpdateWindowControlsOverlayEnabled() {
   UpdateWindowControlsOverlayToggleVisible();
 
@@ -2525,6 +2514,50 @@ void BrowserView::OnWidgetVisibilityChanged(views::Widget* widget,
   if (base::FeatureList::IsEnabled(
           features::kStopLoadingAnimationForHiddenWindow)) {
     UpdateLoadingAnimations(visible);
+  }
+}
+
+absl::optional<bool> BrowserView::GetCanResizeFromWebAPI() const {
+  // TODO(laurila, crbug.com/1466855): Use PageUserData instead.
+  return can_resize_from_web_api_;
+}
+
+void BrowserView::SetCanResizeFromWebAPI(absl::optional<bool> can_resize) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  if (!web_contents || !web_contents->GetPrimaryMainFrame()) {
+    return;
+  }
+
+  // Setting it absl::nullopt should never be blocked.
+  if (can_resize.has_value() && !GetIsWebAppType()) {
+    web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        base::StringPrintf("window.setResizable blocked due to being called "
+                           "from something else than a web app."));
+    return;
+  }
+
+  // TODO(laurila, crbug.com/1466855): Use PageUserData instead.
+  if (can_resize == can_resize_from_web_api_) {
+    return;
+  }
+
+  can_resize_from_web_api_ = can_resize;
+  if (GetWidget()) {
+    GetWidget()->OnSizeConstraintsChanged();
+  }
+}
+
+void BrowserView::OnWidgetSizeConstraintsChanged(views::Widget* widget) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  if (!web_contents || !web_contents->GetPrimaryMainFrame()) {
+    return;
+  }
+  // This will update `resizable` @media feature value in renderer whenever the
+  // widget's resizability has changed.
+  if (content::RenderWidgetHost* render_widget_host =
+          web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost()) {
+    render_widget_host->SynchronizeVisualProperties();
   }
 }
 
@@ -3250,6 +3283,20 @@ bool BrowserView::GetAcceleratorForCommandId(
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, views::WidgetDelegate implementation:
+
+bool BrowserView::CanResize() const {
+  return WidgetDelegate::CanResize() && GetCanResizeFromWebAPI().value_or(true);
+}
+
+bool BrowserView::CanFullscreen() const {
+  return WidgetDelegate::CanFullscreen() &&
+         GetCanResizeFromWebAPI().value_or(true);
+}
+
+bool BrowserView::CanMaximize() const {
+  return WidgetDelegate::CanMaximize() &&
+         GetCanResizeFromWebAPI().value_or(true);
+}
 
 bool BrowserView::CanActivate() const {
   javascript_dialogs::AppModalDialogQueue* queue =

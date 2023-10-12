@@ -55,6 +55,8 @@ class VIEWS_EXPORT WidgetObserver : public base::CheckedObserver {
 
   virtual void OnWidgetThemeChanged(Widget* widget) {}
 
+  virtual void OnWidgetSizeConstraintsChanged(Widget* widget) {}
+
  protected:
   ~WidgetObserver() override = default;
 };

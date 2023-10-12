@@ -50,6 +50,11 @@ class WebAppFrameToolbarTestHelper {
       std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
       const GURL& start_url);
 
+  GURL LoadTestPageWithDataAndGetURL(
+      net::test_server::EmbeddedTestServer* embedded_test_server,
+      base::ScopedTempDir* temp_dir,
+      base::StringPiece test_html);
+
   GURL LoadWindowControlsOverlayTestPageWithDataAndGetURL(
       net::test_server::EmbeddedTestServer* embedded_test_server,
       base::ScopedTempDir* temp_dir);
@@ -101,11 +106,6 @@ class WebAppFrameToolbarTestHelper {
   raw_ptr<views::View, AcrossTasksDanglingUntriaged> root_view_ = nullptr;
   raw_ptr<WebAppFrameToolbarView, AcrossTasksDanglingUntriaged>
       web_app_frame_toolbar_ = nullptr;
-
-  GURL LoadTestPageWithDataAndGetURL(
-      net::test_server::EmbeddedTestServer* embedded_test_server,
-      base::ScopedTempDir* temp_dir,
-      base::StringPiece test_html);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_FRAME_TOOLBAR_TEST_HELPER_H_

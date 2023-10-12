@@ -57,6 +57,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_view_host.h"
@@ -89,6 +90,10 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
+#endif
+
+#if defined(USE_AURA)
+#include "ui/aura/client/aura_constants.h"
 #endif
 
 namespace {
@@ -1660,3 +1665,121 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   ASSERT_TRUE(EvalJs(web_contents, match_media_standalone).ExtractBool());
   ASSERT_EQ(blue, EvalJs(web_contents, get_background_color));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
+    : public WebAppFrameToolbarBrowserTest {
+ public:
+  WebAppFrameToolbarBrowserTest_AdditionalWindowingControls() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kDesktopPWAsAdditionalWindowingControls);
+  }
+
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    embedded_test_server()->ServeFilesFromDirectory(temp_dir_.GetPath());
+    ASSERT_TRUE(embedded_test_server()->Start());
+    WebAppFrameToolbarBrowserTest::SetUp();
+  }
+
+  webapps::AppId InstallAndLaunchWebApp() {
+    DCHECK(https_server()->Start());
+
+    GURL start_url = helper()->LoadTestPageWithDataAndGetURL(
+        embedded_test_server(), &temp_dir_, "");
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+    web_app_info->start_url = start_url;
+    web_app_info->scope = start_url.GetWithoutFilename();
+    web_app_info->title = std::move(u"Test app");
+    web_app_info->display_mode = web_app::DisplayMode::kStandalone;
+    web_app_info->user_display_mode =
+        web_app::mojom::UserDisplayMode::kStandalone;
+
+    return helper()->InstallAndLaunchCustomWebApp(
+        browser(), std::move(web_app_info), start_url);
+  }
+
+  void SetResizableAndWait(content::WebContents* web_contents,
+                           bool resizable,
+                           bool expected) {
+    auto set_resizable_script =
+        content::JsReplace("window.setResizable($1)", resizable);
+    EXPECT_TRUE(ExecJs(web_contents, set_resizable_script));
+    content::WaitForLoadStop(web_contents);
+
+    auto MatchMediaMatches = [&web_contents, &expected]() {
+      auto match_media_script = content::JsReplace(
+          "window.matchMedia('(resizable: $1)').matches", expected);
+      return EvalJs(web_contents, match_media_script).ExtractBool();
+    };
+
+    while (!MatchMediaMatches()) {
+      base::RunLoop run_loop;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+      run_loop.Run();
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::ScopedTempDir temp_dir_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    WindowSetResizableMatches) {
+  InstallAndLaunchWebApp();
+  auto* web_contents = helper()->browser_view()->GetActiveWebContents();
+
+  // TODO(laurila): Refactor to use GrantWindowManagementPermission when it
+  // doesn't require `element_id` as an input anymore.
+  permissions::PermissionRequestManager::FromWebContents(web_contents)
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::ACCEPT_ALL);
+  EXPECT_TRUE(ExecJs(web_contents, "window.getScreenDetails();"));
+  content::WaitForLoadStop(web_contents);
+
+  auto CheckCanResize = [&](bool browser_view_can_resize_expected,
+                            absl::optional<bool> web_api_can_resize_expected) {
+    EXPECT_EQ(helper()->browser_view()->CanResize(),
+              browser_view_can_resize_expected);
+    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(),
+              web_api_can_resize_expected);
+
+#if defined(USE_AURA)
+    EXPECT_EQ(helper()->browser_view()->GetNativeWindow()->GetProperty(
+                  aura::client::kResizeBehaviorKey) &
+                  aura::client::kResizeBehaviorCanResize,
+              browser_view_can_resize_expected);
+#endif
+  };
+
+  // This will be the default value.
+  helper()->browser_view()->SetCanResize(true);
+
+  // Defaults to `absl::nullopt` -> Returns "fallback".
+  CheckCanResize(true, absl::nullopt);
+
+  // Explicitly set to false -> Returns false.
+  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
+  CheckCanResize(false, false);
+
+  // Explicitly set to true -> Returns true.
+  SetResizableAndWait(web_contents, /*resizable=*/true, /*expected=*/true);
+  CheckCanResize(true, true);
+
+  // `window.setResizable()` API can only alter the resizability of
+  // `BrowserView` which `can_resize` is true. If it's false, then
+  // `SetCanResizeFromWebAPI` cannot override it.
+  helper()->browser_view()->SetCanResize(false);
+  helper()->browser_view()->SetCanResizeFromWebAPI(absl::nullopt);
+  CheckCanResize(false, absl::nullopt);
+
+  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
+  CheckCanResize(false, false);
+
+  SetResizableAndWait(web_contents, /*resizable=*/true, /*expected=*/false);
+  CheckCanResize(false, true);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)

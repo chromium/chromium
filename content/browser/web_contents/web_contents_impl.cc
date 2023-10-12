@@ -3872,26 +3872,8 @@ ui::WindowShowState WebContentsImpl::GetWindowShowState() {
 }
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 bool WebContentsImpl::GetResizable() {
-  return resizable_;
-}
-#endif
-
-void WebContentsImpl::UpdateResizable(bool resizable) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  return;
-#else
-  if (resizable_ == resizable) {
-    return;
-  }
-
-  resizable_ = resizable;
-  if (RenderWidgetHost* render_widget_host =
-          GetPrimaryMainFrame()->GetRenderWidgetHost()) {
-    render_widget_host->SynchronizeVisualProperties();
-  }
-#endif
+  return GetContentClient()->browser()->GetCanResize(&GetPrimaryPage());
 }
 
 void WebContentsImpl::FullscreenFrameSetUpdated() {
@@ -6186,6 +6168,15 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
     if (!entry->GetTitle().empty()) {
       NotifyTitleUpdateForEntry(entry);
     }
+  }
+
+  // TODO(laurila, crbug.com/1466855): Either reset or restore the settings
+  // based on if the page we're navigating to has an existing can_resize value.
+  // Until then any navigation resets the modified `resizable` value.
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      navigation_handle->HasCommitted()) {
+    GetContentClient()->browser()->SetCanResizeFromWebAPI(&GetPrimaryPage(),
+                                                          absl::nullopt);
   }
 }
 

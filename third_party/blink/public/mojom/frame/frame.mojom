@@ -1268,4 +1268,9 @@ interface LocalMainFrameHost {
   // document of a main frame. After this, it is no longer safe to show a
   // pending navigation's URL, because a URL spoof is possible.
   DidAccessInitialMainDocument();
+
+  // Set the browser window to resizable or not. Link to I2P:
+  // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
+  [EnableIfNot=is_android_or_ios]
+  SetResizable(bool resizable);
 };

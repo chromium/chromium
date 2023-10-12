@@ -2524,6 +2524,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
                      SetWindowRectCallback callback) override;
   void DidFirstVisuallyNonEmptyPaint() override;
   void DidAccessInitialMainDocument() override;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  void SetResizable(bool resizable) override;
+#endif
 
   void ReportNoBinderForInterface(const std::string& error);
 
@@ -4101,9 +4104,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::vector<RenderFrameHostImpl*> GetAncestorChainForStorageKeyCalculation(
       const url::Origin& new_rfh_origin);
 
-#if defined(USE_AURA)
   bool CanUseWindowingControls(base::StringPiece js_api_name);
-#endif
 
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
