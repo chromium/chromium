@@ -884,8 +884,8 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {
   if (base::FeatureList::IsEnabled(device::kWebAuthnFilterGooglePasskeys) &&
       dialog_model()->relying_party_id() == kGoogleRpId &&
-      std::ranges::any_of(data.recognized_credentials,
-                          IsCredentialFromPlatformAuthenticator)) {
+      base::ranges::any_of(data.recognized_credentials,
+                           IsCredentialFromPlatformAuthenticator)) {
     // Regrettably, Chrome will create webauthn credentials for things other
     // than authentication (e.g. credit card autofill auth) under the rp id
     // "google.com". To differentiate those credentials from actual passkeys you
