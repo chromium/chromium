@@ -603,6 +603,9 @@ void Preferences::RegisterProfilePrefs(
                                 false);
 
   registry->RegisterBooleanPref(::prefs::kHasEverRevokedMetricsConsent, true);
+
+  registry->RegisterBooleanPref(prefs::kShowHumanPresenceSensorScreenEnabled,
+                                true);
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {

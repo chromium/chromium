@@ -1198,6 +1198,11 @@ inline constexpr char kTouchscreenEnabled[] = "events.touch_screen.enabled";
 inline constexpr char kShowTouchpadScrollScreenEnabled[] =
     "ash.touchpad_scroll_screen_oobe_enabled";
 
+// Boolean value indicating that the human presence sesnsor screen should be
+// shown to the user during oobe.
+inline constexpr char kShowHumanPresenceSensorScreenEnabled[] =
+    "ash.human_presence_sensor_scren_oobe_enabled";
+
 // Boolean value indicating that the Display size screen should be
 // shown to the user during the first sign-in.
 inline constexpr char kShowDisplaySizeScreenEnabled[] =

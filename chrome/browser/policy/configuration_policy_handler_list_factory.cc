@@ -1544,6 +1544,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDeviceExtendedFkeysModifier,
     ash::prefs::kExtendedFkeysModifier,
     base::Value::Type::INTEGER },
+  { key::kShowHumanPresenceSensorScreenEnabled,
+    ash::prefs::kShowHumanPresenceSensorScreenEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

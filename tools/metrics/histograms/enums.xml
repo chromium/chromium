@@ -33918,6 +33918,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1166" label="DeviceExtendedFkeysModifier"/>
   <int value="1167" label="UnaffiliatedDeviceArcAllowed"/>
   <int value="1168" label="RelatedWebsiteSetsOverrides"/>
+  <int value="1169" label="ShowHumanPresenceSensorScreenEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
