@@ -19,7 +19,6 @@ namespace password_manager {
 class PasswordFormManagerForUI;
 struct PasswordForm;
 struct CredentialUIEntry;
-struct CredentialFacet;
 
 // For Web credentials the returned origin is suitable for security display and
 // is stripped off common prefixes like "m.", "mobile." or "www.".
@@ -31,13 +30,6 @@ std::string GetShownOrigin(const CredentialUIEntry& credential);
 // Returns URL the full origin of the |credential|. For Android credential the
 // link pints to affiliated website or to the Play Store if missing.
 GURL GetShownUrl(const CredentialUIEntry& credential);
-
-// Equivalent to |GetShownOrigin(CredentialUIEntry)| but works with
-// |CredentialFacet|.
-std::string GetShownOrigin(const CredentialFacet& facet);
-
-// Equivalent to |GetShownUrl| but works with |CredentialFacet|.
-GURL GetShownUrl(const CredentialFacet& facet);
 
 // Returns a string suitable for security display to the user (just like
 // |FormatUrlForSecurityDisplay| with OMIT_HTTP_AND_HTTPS) based on origin of

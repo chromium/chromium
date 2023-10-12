@@ -6,54 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/affiliation/affiliation_utils.h"
-#import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
-
-namespace {
-
-// Helper function that computes the websites displayed to the user
-// corresponding to a group of facets.
-NSArray<NSString*>* GetWebsitesFromFacets(
-    std::vector<password_manager::CredentialFacet> facets) {
-  NSInteger websiteCount = facets.size();
-  NSMutableArray<NSString*>* websites =
-      [NSMutableArray arrayWithCapacity:websiteCount];
-
-  for (const auto& facet : facets) {
-    NSString* website;
-    auto facetURI = password_manager::FacetURI::FromPotentiallyInvalidSpec(
-        facet.signon_realm);
-    // Android facets: use Application Name or package name as fallback.
-    if (facetURI.IsValidAndroidFacetURI()) {
-      if (!facet.display_name.empty()) {
-        website = base::SysUTF8ToNSString(facet.display_name);
-      } else {
-        website = base::SysUTF8ToNSString(facetURI.android_package_name());
-      }
-    } else {
-      // Web facets: use the URL.
-      website =
-          base::SysUTF8ToNSString(password_manager::GetShownUrl(facet).spec());
-    }
-    [websites addObject:website];
-  }
-
-  return websites;
-}
-
-// Helper function that computes the origins corresponding to a group of facets.
-NSSet<NSString*>* GetOriginsFromCredential(
-    const password_manager::CredentialUIEntry& credential) {
-  NSMutableSet<NSString*>* origins = [NSMutableSet set];
-  for (const auto& facet : credential.facets) {
-    [origins addObject:base::SysUTF8ToNSString(
-                           password_manager::GetShownOrigin(facet))];
-  }
-  return origins;
-}
-
-}  // namespace
 
 @implementation PasswordDetails
 
@@ -65,8 +18,22 @@ NSSet<NSString*>* GetOriginsFromCredential(
         stringWithUTF8String:credential.GetFirstSignonRealm().c_str()];
     _changePasswordURL = credential.GetChangePasswordURL();
 
-    _origins = [GetOriginsFromCredential(credential) allObjects];
-    _websites = GetWebsitesFromFacets(credential.facets);
+    std::vector<password_manager::CredentialUIEntry::DomainInfo> domain_infos =
+        credential.GetAffiliatedDomains();
+    NSMutableSet<NSString*>* origins = [NSMutableSet set];
+    NSInteger websiteCount = domain_infos.size();
+    NSMutableArray<NSString*>* websites =
+        [NSMutableArray arrayWithCapacity:websiteCount];
+    for (const auto& domain_info : domain_infos) {
+      [origins addObject:base::SysUTF8ToNSString(domain_info.name)];
+      if (password_manager::IsValidAndroidFacetURI(domain_info.signon_realm)) {
+        [websites addObject:base::SysUTF8ToNSString(domain_info.name)];
+      } else {
+        [websites addObject:base::SysUTF8ToNSString(domain_info.url.spec())];
+      }
+    }
+    _websites = websites;
+    _origins = [origins allObjects];
 
     if (!credential.blocked_by_user) {
       _username = base::SysUTF16ToNSString(credential.username);

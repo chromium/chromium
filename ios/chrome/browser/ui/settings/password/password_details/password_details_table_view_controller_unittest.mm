@@ -777,7 +777,7 @@ TEST_F(PasswordDetailsTableViewControllerTest,
   EXPECT_EQ(1, NumberOfSections());
   EXPECT_EQ(5, NumberOfItemsInSection(0));
 
-  CheckStackedDetailsCellDetails(@[ @"com.example.my.app" ], 0, 0);
+  CheckStackedDetailsCellDetails(@[ @"app.my.example.com" ], 0, 0);
   CheckEditCellText(@"test@egmail.com", 0, 1);
   CheckEditCellText(kMaskedPassword, 0, 2);
   CheckEditCellMultiLineText(@"note", 0, 3);
@@ -799,7 +799,7 @@ TEST_F(PasswordDetailsTableViewControllerTest,
   EXPECT_EQ(1, NumberOfSections());
   EXPECT_EQ(6, NumberOfItemsInSection(0));
 
-  CheckStackedDetailsCellDetails(@[ @"com.example.my.app" ], 0, 0);
+  CheckStackedDetailsCellDetails(@[ @"app.my.example.com" ], 0, 0);
   CheckEditCellText(@"test@egmail.com", 0, 1);
   CheckEditCellText(kMaskedPassword, 0, 2);
   CheckEditCellMultiLineText(@"note", 0, 3);

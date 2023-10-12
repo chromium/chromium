@@ -54,12 +54,6 @@ GURL GetShownURL(const FacetURI& facet_uri, const GURL& url) {
 
 }  // namespace
 
-std::string GetShownOrigin(const CredentialFacet& facet) {
-  auto facet_uri = password_manager::FacetURI::FromPotentiallyInvalidSpec(
-      facet.signon_realm);
-  return GetShownOrigin(facet_uri, facet.display_name, facet.url);
-}
-
 std::string GetShownOrigin(const CredentialUIEntry& credential) {
   FacetURI facet_uri =
       FacetURI::FromPotentiallyInvalidSpec(credential.GetFirstSignonRealm());
@@ -71,11 +65,6 @@ GURL GetShownUrl(const CredentialUIEntry& credential) {
   FacetURI facet_uri =
       FacetURI::FromPotentiallyInvalidSpec(credential.GetFirstSignonRealm());
   return GetShownURL(facet_uri, credential.GetURL());
-}
-
-GURL GetShownUrl(const CredentialFacet& facet) {
-  FacetURI facet_uri = FacetURI::FromPotentiallyInvalidSpec(facet.signon_realm);
-  return GetShownURL(facet_uri, facet.url);
 }
 
 std::string GetShownOrigin(const url::Origin& origin) {
