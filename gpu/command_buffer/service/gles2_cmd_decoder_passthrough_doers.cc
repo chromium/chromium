@@ -5193,7 +5193,7 @@ error::Error GLES2DecoderPassthroughImpl::DoTexImage2DSharedImageCHROMIUM(
   // `client_texture_id` did not necessarily map to `texture->service_id()`.
   // Update any such binding so that `texture->service_id()` (which
   // `texture_client_id` now maps to) is bound.
-  UpdateTextureBinding(texture->target(), texture_client_id, nullptr);
+  UpdateTextureBinding(texture->target(), texture_client_id, texture.get());
 
   return error::kNoError;
 }
