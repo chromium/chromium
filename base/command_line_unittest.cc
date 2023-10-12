@@ -34,12 +34,15 @@
 
 namespace base {
 
+#if BUILDFLAG(IS_WIN)
 // To test Windows quoting behavior, we use a string that has some backslashes
 // and quotes.
 // Consider the command-line argument: q\"bs1\bs2\\bs3q\\\"
 // Here it is with C-style escapes.
 static const CommandLine::StringType kTrickyQuoted =
     FILE_PATH_LITERAL("q\\\"bs1\\bs2\\\\bs3q\\\\\\\"");
+#endif
+
 // It should be parsed by Windows as: q"bs1\bs2\\bs3q\"
 // Here that is with C-style escapes.
 static const CommandLine::StringType kTricky =

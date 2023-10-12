@@ -23,7 +23,6 @@ namespace leveldb_proto {
 namespace {
 
 const std::string kDefaultClientName = "client";
-const std::string kDefaultClientName2 = "client_2";
 
 // Example struct defined by clients that can be used instead of protos.
 struct ClientStruct {

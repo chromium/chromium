@@ -53,7 +53,6 @@ const std::string kExpectedStopTrackingPostData =
 const std::string kTestTrackingUrl = "www.foo.com";
 const std::string kTestTrackingId = "xyz";
 const std::string kTestSourcePageDomain = "www.abc.com";
-const std::string kDeleteHttpMethod = "DELETE";
 
 std::vector<commerce::ParcelIdentifier> GetTestParcelIdentifiers() {
   commerce::ParcelIdentifier identifier;

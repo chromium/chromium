@@ -195,7 +195,6 @@ namespace test_default {
 #include "net/http/transport_security_state_static_unittest_default.h"
 }
 
-const std::u16string kChrome(u"chrome");
 const std::u16string kSecret(u"secret");
 const std::u16string kUser(u"user");
 

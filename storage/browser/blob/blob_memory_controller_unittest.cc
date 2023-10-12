@@ -27,7 +27,6 @@ using base::TestSimpleTaskRunner;
 using ItemState = ShareableBlobDataItem::State;
 using QuotaAllocationTask = BlobMemoryController::QuotaAllocationTask;
 
-const std::string kBlobStorageDirectory = "blob_storage";
 const size_t kTestBlobStorageIPCThresholdBytes = 20;
 const size_t kTestBlobStorageMaxSharedMemoryBytes = 50;
 const size_t kTestBlobStorageMaxBlobMemorySize = 500;

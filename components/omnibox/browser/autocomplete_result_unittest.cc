@@ -70,17 +70,6 @@ struct AutocompleteMatchTestData {
   AutocompleteMatch::Type type;
 };
 
-const AutocompleteMatchTestData kVerbatimMatches[] = {
-    {"http://search-what-you-typed/",
-     AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED},
-    {"http://url-what-you-typed/", AutocompleteMatchType::URL_WHAT_YOU_TYPED},
-};
-
-const AutocompleteMatchTestData kNonVerbatimMatches[] = {
-    {"http://search-history/", AutocompleteMatchType::SEARCH_HISTORY},
-    {"http://history-title/", AutocompleteMatchType::HISTORY_TITLE},
-};
-
 // Adds |count| AutocompleteMatches to |matches|.
 template <typename T>
 void PopulateAutocompleteMatchesFromTestData(const T* data,
