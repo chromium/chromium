@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/user_education/capture_mode_tour/capture_mode_tour_controller.h"
 #include "ash/user_education/holding_space_tour/holding_space_tour_controller.h"
+#include "ash/user_education/holding_space_tour/holding_space_tour_prefs.h"
 #include "ash/user_education/user_education_delegate.h"
 #include "ash/user_education/user_education_feature_controller.h"
 #include "ash/user_education/user_education_util.h"
@@ -60,6 +61,7 @@ UserEducationController* UserEducationController::Get() {
 // static
 void UserEducationController::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
+  holding_space_tour_prefs::RegisterProfilePrefs(registry);
   welcome_tour_prefs::RegisterProfilePrefs(registry);
 }
 
