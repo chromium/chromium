@@ -74,6 +74,12 @@ class ASH_EXPORT CalendarEventListView
   // `CalendarEventListItemView`. Owned by `CalendarEventListView`.
   const raw_ptr<views::View, ExperimentalAsh> content_view_;
 
+  // The current or the next event in the event list view.
+  raw_ptr<views::View> current_or_next_event_view_ = nullptr;
+
+  // The index of the current or the next event in the event list view.
+  int current_or_next_event_index_ = 0;
+
   // views::View:
   void OnThemeChanged() override;
 

@@ -237,6 +237,7 @@ CalendarEventListItemViewJelly::CalendarEventListItemViewJelly(
   } else {
     formatted_time_text =
         event_date_formatter_util::GetFormattedInterval(start_time, end_time);
+    is_current_or_next_event_ = end_time >= base::Time::NowFromSystemTime();
   }
   const auto tooltip_text = l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_EVENT_ENTRY_TOOL_TIP, base::UTF8ToUTF16(event.summary()),

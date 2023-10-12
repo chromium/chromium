@@ -213,6 +213,44 @@ void CalendarEventListView::Layout() {
   if (gradient_helper_) {
     gradient_helper_->UpdateGradientMask();
   }
+
+  if (!features::IsCalendarJellyEnabled()) {
+    return;
+  }
+
+  const absl::optional<base::Time> selected_date =
+      calendar_view_controller_->selected_date();
+
+  // If the selected date is not today, do not auto scroll and reset the
+  // `scroll_view_` position. Otherwise the previous position will be preserved.
+  if (!calendar_utils::IsToday(selected_date.value())) {
+    scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(), 0);
+    return;
+  }
+
+  // Scrolls to the top of `current_or_next_event_view_`. Ignores the multi-day
+  // events on the top if exists.
+  if (current_or_next_event_view_) {
+    auto* multi_day_events_container =
+        GetViewByID(kEventListMultiDayEventsContainer);
+
+    scroll_view_->ScrollToPosition(
+        scroll_view_->vertical_scroll_bar(),
+        (multi_day_events_container
+             ? multi_day_events_container->GetPreferredSize().height() +
+                   kEventListViewBetweenChildSpacingJelly
+             : 0) +
+            (current_or_next_event_view_->GetPreferredSize().height() +
+             kChildEventListBetweenChildSpacing) *
+                current_or_next_event_index_);
+  } else {
+    // If there's no current or next event because there's no single-day event
+    // for today or all events have passed, scroll to the end of the list if
+    // selected date is today.
+    scroll_view_->ScrollToPosition(
+        scroll_view_->vertical_scroll_bar(),
+        scroll_view_->GetVisibleRect().bottom() + kContentInsetsJelly.bottom());
+  }
 }
 
 void CalendarEventListView::RequestCloseButtonFocus() {
@@ -247,23 +285,33 @@ std::unique_ptr<views::View> CalendarEventListView::CreateChildEventListView(
   for (SingleDayEventList::iterator it = events.begin(); it != events.end();
        ++it) {
     const int event_index = std::distance(events.begin(), it) + 1;
-    container->AddChildView(std::make_unique<CalendarEventListItemViewJelly>(
-        /*calendar_view_controller=*/calendar_view_controller_,
-        /*selected_date_params=*/
-        SelectedDateParams{
-            calendar_view_controller_->selected_date().value(),
-            calendar_view_controller_->selected_date_midnight(),
-            calendar_view_controller_->selected_date_midnight_utc()}, /*event=*/
-        *it,
-        /*ui_params=*/
-        UIParams{/*round_top_corners=*/it == events.begin(),
-                 /*round_bottom_corners=*/it->id() == events.rbegin()->id(),
-                 /*is_up_next_event_list_item=*/false,
-                 /*show_event_list_dot=*/true,
-                 /*fixed_width=*/0},
-        /*event_list_item_index=*/
-        EventListItemIndex{/*item_index=*/event_index,
-                           /*total_count_of_events=*/events_size}));
+    auto* event_list_item_view = container->AddChildView(
+        std::make_unique<CalendarEventListItemViewJelly>(
+            /*calendar_view_controller=*/calendar_view_controller_,
+            /*selected_date_params=*/
+            SelectedDateParams{
+                calendar_view_controller_->selected_date().value(),
+                calendar_view_controller_->selected_date_midnight(),
+                calendar_view_controller_
+                    ->selected_date_midnight_utc()}, /*event=*/
+            *it,
+            /*ui_params=*/
+            UIParams{/*round_top_corners=*/it == events.begin(),
+                     /*round_bottom_corners=*/it->id() == events.rbegin()->id(),
+                     /*is_up_next_event_list_item=*/false,
+                     /*show_event_list_dot=*/true,
+                     /*fixed_width=*/0},
+            /*event_list_item_index=*/
+            EventListItemIndex{/*item_index=*/event_index,
+                               /*total_count_of_events=*/events_size}));
+
+    // The `current_or_next_event_view_` is the first event that is not an
+    // all-day or multi-day event, and is the ongoing or the following event.
+    if (!current_or_next_event_view_ &&
+        event_list_item_view->is_current_or_next_event()) {
+      current_or_next_event_view_ = event_list_item_view;
+      current_or_next_event_index_ = event_index - 1;
+    }
   }
 
   return container;
@@ -271,6 +319,11 @@ std::unique_ptr<views::View> CalendarEventListView::CreateChildEventListView(
 
 void CalendarEventListView::UpdateListItems() {
   content_view_->RemoveAllChildViews();
+
+  // Resets `current_or_next_event_view_` and `current_or_next_event_index_`
+  // since the `event_list_view_` has been updated.
+  current_or_next_event_view_ = nullptr;
+  current_or_next_event_index_ = 0;
 
   if (features::IsCalendarJellyEnabled()) {
     const auto [multi_day_events, all_other_events] =

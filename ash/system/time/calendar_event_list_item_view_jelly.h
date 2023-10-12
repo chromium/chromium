@@ -88,6 +88,8 @@ class ASH_EXPORT CalendarEventListItemViewJelly : public views::Button {
 
   void OnJoinMeetingButtonPressed(const ui::Event& event);
 
+  bool is_current_or_next_event() const { return is_current_or_next_event_; }
+
  private:
   friend class CalendarViewEventListViewTest;
 
@@ -101,6 +103,10 @@ class ASH_EXPORT CalendarEventListItemViewJelly : public views::Button {
   const GURL event_url_;
 
   const GURL video_conference_url_;
+
+  // Whether this item which is not an all-day or multi-day event is the current
+  // or next event. Used for auto scroll in the `CalendarEventListView`.
+  bool is_current_or_next_event_ = false;
 
   base::WeakPtrFactory<CalendarEventListItemViewJelly> weak_ptr_factory_{this};
 };
