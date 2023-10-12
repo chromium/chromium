@@ -156,6 +156,16 @@ class BluetoothNotificationControllerTest : public AshTestBase {
 TEST_F(BluetoothNotificationControllerTest, DiscoverableToast) {
   VerifyDiscoverableToastVisibility(/*visible=*/false);
 
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+
+  ShowDiscoverableToast(notification_controller_.get());
+
+  VerifyDiscoverableToastVisibility(/*visible=*/false);
+
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+
   ShowDiscoverableToast(notification_controller_.get());
 
   VerifyDiscoverableToastVisibility(/*visible=*/true);
