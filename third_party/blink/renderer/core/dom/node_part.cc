@@ -20,9 +20,15 @@ NodePart* NodePart::Create(PartRootUnion* root_union,
       *PartRoot::GetPartRootFromUnion(root_union), *node, init);
 }
 
-NodePart::NodePart(PartRoot& root, Node& node, const Vector<String> metadata)
+NodePart::NodePart(PartRoot& root,
+                   Node& node,
+                   bool add_to_parts_list,
+                   const Vector<String> metadata)
     : Part(root, metadata), node_(node) {
   node.AddDOMPart(*this);
+  if (add_to_parts_list) {
+    root.AddPart(*this);
+  }
 }
 
 void NodePart::disconnect() {

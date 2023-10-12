@@ -36,6 +36,7 @@ ChildNodePart::ChildNodePart(PartRoot& root,
   if (previous_sibling != next_sibling) {
     next_sibling.AddDOMPart(*this);
   }
+  root.AddPart(*this);
 }
 
 void ChildNodePart::disconnect() {

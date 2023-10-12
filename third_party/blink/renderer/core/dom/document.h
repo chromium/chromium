@@ -1595,7 +1595,8 @@ class CORE_EXPORT Document : public ContainerNode,
   CSSToggleInference& EnsureCSSToggleInference();
 
   // https://crbug.com/1453291
-  // The DOM Parts API: https://github.com/tbondwilkinson/dom-parts.
+  // The DOM Parts API:
+  // https://github.com/WICG/webcomponents/blob/gh-pages/proposals/DOM-Parts.md.
   DocumentPartRoot& getPartRoot();
   DocumentPartRoot& EnsureDocumentPartRoot();
   bool DOMPartsInUse() const { return document_part_root_; }

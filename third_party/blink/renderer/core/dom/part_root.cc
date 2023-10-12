@@ -150,6 +150,9 @@ HeapVector<Member<Part>>& PartRoot::RebuildPartsList() {
         if (!part->IsValid()) {
           continue;
         }
+        if (!part->IncludeInPartsList()) {
+          continue;
+        }
         if (PartRoot* part_root = part->GetAsPartRoot()) {
           // Skip the PartRoot itself.
           if (part_root == this) {

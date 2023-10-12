@@ -14,11 +14,6 @@
 
 namespace blink {
 
-Part::Part(PartRoot& root, const Vector<String> metadata)
-    : root_(root), metadata_(metadata) {
-  root.AddPart(*this);
-}
-
 // When disconnecting a Node/Part, if the root() is the DocumentPartRoot,
 // then we disconnect the Part from the PartRoot so that it can be attached
 // to the new PartRoot when reconnected. For any Part type except a
