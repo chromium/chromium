@@ -458,12 +458,12 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   // Check password manager visit metric.
   NSError* error = [MetricsAppInterface expectTotalCount:count
                                             forHistogram:histogram];
-  GREYAssertNil(error, @"Unexpected Password Manager Vistit histogram count");
+  GREYAssertNil(error, @"Unexpected Password Manager Visit histogram count");
 
   error = [MetricsAppInterface expectCount:count
                                  forBucket:YES
                               forHistogram:histogram];
-  GREYAssertNil(error, @"Unexpected Password Manager Vistit histogram count");
+  GREYAssertNil(error, @"Unexpected Password Manager Visit histogram count");
 }
 
 // Verifies that the elements of the Password Manager widget promo are as
@@ -1579,6 +1579,7 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   // Toggle the "Save Passwords" control off and back on and check the
   // preferences.
   constexpr BOOL kExpectedState[] = {YES, NO};
+  int count = 0;
   for (BOOL expected_initial_state : kExpectedState) {
     [[EarlGrey selectElementWithMatcher:
                    chrome_test_util::TableViewSwitchCell(
@@ -1589,6 +1590,25 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
     GREYAssertEqual(expected_final_state,
                     [PasswordSettingsAppInterface isCredentialsServiceEnabled],
                     @"State of the UI toggle differs from real preferences.");
+    count++;
+    // Verify histogram total count.
+    GREYAssertNil(
+        [MetricsAppInterface
+            expectTotalCount:count
+                forHistogram:
+                    @"PasswordManager.Settings.ToggleOfferToSavePasswords"],
+        @"Unexpected password settings toggle offer to save passwords switch "
+        @"histogram count");
+
+    // Verify histogram value and specific bucket count.
+    GREYAssertNil(
+        [MetricsAppInterface
+             expectCount:1
+               forBucket:expected_final_state
+            forHistogram:
+                @"PasswordManager.Settings.ToggleOfferToSavePasswords"],
+        @"Unexpected histogram error for password settings toggle offer to "
+        @"save passwords switch");
   }
 
   // "Done" to close settings submenu.

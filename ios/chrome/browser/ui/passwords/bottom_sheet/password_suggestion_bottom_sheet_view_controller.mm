@@ -142,6 +142,10 @@
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  base::UmaHistogramBoolean(
+      "IOS.PasswordBottomSheet.UsernameTapped.MinimizedState",
+      _tableViewIsMinimized);
+
   if (_suggestions.count <= 1) {
     return;
   }
@@ -315,7 +319,13 @@
 
 // Notifies the delegate that a password suggestion was selected by the user.
 - (void)didSelectSuggestion {
-  [self.delegate didSelectSuggestion:[self selectedRow]];
+  NSInteger index = [self selectedRow];
+  [self.delegate didSelectSuggestion:index];
+
+  if (_suggestions.count > 1) {
+    base::UmaHistogramCounts100("PasswordManager.TouchToFill.CredentialIndex",
+                                (int)index);
+  }
 }
 
 // Returns whether the provided index path points to the last row of the table

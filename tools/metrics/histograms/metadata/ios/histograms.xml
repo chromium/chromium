@@ -1968,6 +1968,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PasswordBottomSheet.UsernameTapped.MinimizedState"
+    enum="Boolean" expires_after="2024-04-26">
+  <owner>sugoi@chromium.org</owner>
+  <owner>veronguyen@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records whether the password cell in the password bottom sheet was minimized
+    when the user tapped on it.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PasswordManager.BulkSavePasswordsInAccountCount"
     units="passwords" expires_after="2024-01-28">
   <owner>nicolasmacbeth@google.com</owner>
