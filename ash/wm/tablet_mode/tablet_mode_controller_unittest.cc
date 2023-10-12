@@ -173,6 +173,10 @@ class TabletModeControllerTest : public AshTestBase {
 
   bool IsTabletModeStarted() const { return test_api_->IsTabletModeStarted(); }
 
+  bool IsInPhysicalTabletState() const {
+    return test_api_->IsInPhysicalTabletState();
+  }
+
   // Attaches a SimpleTestTickClock to the TabletModeController with a non
   // null value initial value.
   void AttachTickClockForTest() {
@@ -666,6 +670,31 @@ TEST_F(TabletModeControllerTest, NoTabletModeWithDisabledInternalDisplay) {
   // Tablet mode signal should also be ignored.
   SetTabletMode(true);
   EXPECT_FALSE(IsTabletModeStarted());
+  EXPECT_FALSE(AreEventsBlocked());
+}
+
+// Tests that tablet mode change events are fired while in unified desktop mode.
+TEST_F(TabletModeControllerTest,
+       TabletModeChangeEventsFiredInUnifiedDesktopMode) {
+  UpdateDisplay("300x200, 300x200");
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+  ASSERT_FALSE(IsTabletModeStarted());
+
+  // Turn on unified desktop mode.
+  display_manager()->SetUnifiedDesktopEnabled(true);
+  ASSERT_TRUE(display_manager()->IsInUnifiedMode());
+
+  // Opening the lid to 270 degrees should start tablet mode.
+  OpenLidToAngle(270.0f);
+  EXPECT_TRUE(IsTabletModeStarted());
+  EXPECT_TRUE(IsInPhysicalTabletState());
+  EXPECT_TRUE(AreEventsBlocked());
+
+  // Opening the lid to 30 degrees should stop tablet mode.
+  OpenLidToAngle(30.0f);
+  EXPECT_FALSE(IsTabletModeStarted());
+  EXPECT_FALSE(IsInPhysicalTabletState());
   EXPECT_FALSE(AreEventsBlocked());
 }
 
