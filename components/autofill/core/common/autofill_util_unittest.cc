@@ -142,6 +142,26 @@ INSTANTIATE_TEST_SUITE_P(
         LowercaseAndTokenizeAttributeStringCase{"foO    baR bAz",
                                                 {"foo", "bar", "baz"}}));
 
+TEST(LevenshteinDistanceTest, IsWithinLevenshteinDistance) {
+  // Checks if the Levenshtein distance between `a` and `b` is exactly `k`, by
+  // checking that it is <= `k` but not <= `k-1`.
+  auto has_levenshtein_distance = [](std::u16string_view a,
+                                     std::u16string_view b, size_t k) {
+    return IsWithinLevenshteinDistance(a, b, k) &&
+           (k == 0 || !IsWithinLevenshteinDistance(a, b, k - 1));
+  };
+
+  EXPECT_TRUE(has_levenshtein_distance(u"aa", u"aa", 0));
+  EXPECT_TRUE(has_levenshtein_distance(u"a", u"aa", 1));
+  EXPECT_TRUE(has_levenshtein_distance(u"ab", u"aa", 1));
+  EXPECT_TRUE(has_levenshtein_distance(u"aba", u"aa", 1));
+  EXPECT_TRUE(has_levenshtein_distance(u"", u"12", 2));
+  EXPECT_TRUE(has_levenshtein_distance(u"street", u"str.", 3));
+  EXPECT_TRUE(has_levenshtein_distance(u"asdf", u"fdsa", 4));
+  EXPECT_TRUE(has_levenshtein_distance(std::u16string(100, 'a'),
+                                       std::u16string(200, 'a'), 100));
+}
+
 TEST(StripAuthAndParamsTest, StripsAll) {
   GURL url = GURL("https://login:password@example.com/login/?param=value#ref");
   EXPECT_EQ(GURL("https://example.com/login/"), StripAuthAndParams(url));

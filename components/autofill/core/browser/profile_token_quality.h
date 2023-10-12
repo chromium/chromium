@@ -166,11 +166,6 @@ class ProfileTokenQuality {
   // Resets all observations for the `type`.
   void ResetObservationsForStoredType(ServerFieldType type);
 
-  // Returns true if `a` and `b` are within Levenshtein distance `k`.
-  static bool IsWithinLevenshteinDistanceForTesting(std::u16string_view a,
-                                                    std::u16string_view b,
-                                                    size_t k);
-
   void disable_randomization_for_testing() {
     diable_randomization_for_testing_ = true;
   }

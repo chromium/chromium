@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
+#include "components/autofill/core/common/autofill_util.h"
 
 namespace autofill {
 
@@ -70,71 +71,6 @@ ServerFieldType GetStoredTypeOf(ServerFieldType type) {
   auto* it = kStoredTypeOf.find(type);
   CHECK_NE(it, kStoredTypeOf.end());
   return it->second;
-}
-
-// Returns true if `a` and `b` differ by Levenshtein distance of at most `k`.
-// Edits, inserts and removes each count as one step.
-// Runs in O(|a| * k) time and O(k) memory.
-bool IsWithinLevenshteinDistance(std::u16string_view a,
-                                 std::u16string_view b,
-                                 size_t k) {
-  // If the string's lengths differ by more than `k`, so does their
-  // Levenshtein distance.
-  if (a.size() + k < b.size() || a.size() > b.size() + k) {
-    return false;
-  }
-  // The classical Levenshtein distance DP defines dp[i][j] as the edit distance
-  // of a[:i] and b[:j]. To make this more efficient, one can define dp[i][d] as
-  // the edit-distance of a[:i] and b[:i + d]. Intuitively, d represents the
-  // delta between j and i in the former dp. Since the edit-distance is
-  // restricted by `k`, abs(d) can be bounded by `k`.
-  // Since dp[i][d] only depends on values from dp[i-1], it is not necessary to
-  // store the entire 2D table. Instead, this code just stores the d-dimension,
-  // which represents "the edit-distance with the current prefix of the string,
-  // for a given delta d".
-  // Since d is between `-k` and `k`, the implementation shifts the d-index by
-  // `k`, bringing it in range [0, `2*k`]
-
-  // The algorithm only cares if the Levenshtein distance is at most `k`. Thus,
-  // any unreachable states and states in which the edit-distance is certainly
-  // larger than `k` can be set to any value larger than `k`, without affecting
-  // the result.
-  const size_t kInfinity = k + 1;
-  std::vector<size_t> dp(2 * k + 1, kInfinity);
-  // Initially, `dp[d]` represents the Levenshtein distance of the empty prefix
-  // of `a` and the j = d - k characters of `b`. Their edit distance is j, since
-  // j removals are required. States with negative d are not reachable, since
-  // that corresponds to a negative index into `b`.
-  std::iota(dp.begin() + k, dp.end(), 0);
-  for (size_t i = 0; i < a.size(); i++) {
-    // Right now, `dp` represents the Levenshtein distance when considering the
-    // first `i` characters (up to index `i-1`) of `a`. After the next loop,
-    // `dp` will represent the Levenshtein distance when considering the first
-    // `i+1` characters.
-    for (size_t d = 0; d <= 2 * k; d++) {
-      if (i + d < k || i + d >= b.size() + k) {
-        // `j = i + d - k` is out of range of `b`.
-        dp[d] = kInfinity;
-        continue;
-      }
-      const size_t j = i + d - k;
-      // If `a[i] == `b[j]` the Levenshtein distance for `d` remained the same.
-      if (a[i] != b[j]) {
-        // (i, j) -> (i-1, j-1), `d` stays the same.
-        const size_t replace = dp[d];
-        // (i, j) -> (i-1, j), `d` increases by 1.
-        // If the distance between `i` and `j` becomes larger than `k`, their
-        // edit distance is at least `k + 1`. Same in the `insert` case.
-        const size_t remove = d != 2 * k ? dp[d + 1] : kInfinity;
-        // (i, j) -> (i, j-1), `d` decreases by 1. Since `i` stays the same,
-        // this is intentionally using the dp value updated in the previous
-        // iteration.
-        const size_t insert = d != 0 ? dp[d - 1] : kInfinity;
-        dp[d] = 1 + std::min({replace, remove, insert});
-      }
-    }
-  }
-  return dp[b.size() + k - a.size()] <= k;
 }
 
 // Computes the `ObservationType` if a field of the given `type` was autofilled
@@ -298,14 +234,6 @@ ProfileTokenQuality::GetObservationTypesForFieldType(
     }
   }
   return types;
-}
-
-// static
-bool ProfileTokenQuality::IsWithinLevenshteinDistanceForTesting(
-    std::u16string_view a,
-    std::u16string_view b,
-    size_t k) {
-  return IsWithinLevenshteinDistance(a, b, k);
 }
 
 void ProfileTokenQuality::AddObservation(ServerFieldType type,
