@@ -209,6 +209,13 @@ symbolset("line_downtrend") {
   ]
 }
 
+symbolset("line_uptrend") {
+  sources = [
+    "line_uptrend.symbolset/Contents.json",
+    "line_uptrend.symbolset/line.uptrend.cr.svg",
+  ]
+}
+
 symbolset("shield") {
   sources = [
     "shield.symbolset/Contents.json",

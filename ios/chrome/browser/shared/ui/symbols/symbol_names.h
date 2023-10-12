@@ -50,6 +50,7 @@ extern NSString* const kMulticolorPasswordSymbol;
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
 extern NSString* const kCameraLensSymbol;
 extern NSString* const kDownTrendSymbol;
+extern NSString* const kUpTrendSymbol;
 extern NSString* const kShieldSymbol;
 extern NSString* const kCloudSlashSymbol;
 extern NSString* const kCloudAndArrowUpSymbol;

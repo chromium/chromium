@@ -42,6 +42,7 @@ NSString* const kMulticolorPasswordSymbol = @"multicolor_password";
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
 NSString* const kCameraLensSymbol = @"camera_lens";
 NSString* const kDownTrendSymbol = @"line_downtrend";
+NSString* const kUpTrendSymbol = @"line_uptrend";
 NSString* const kIncognitoCircleFilliOS14Symbol =
     @"incognito_circle_fill_ios14";
 NSString* const kShieldSymbol = @"shield";

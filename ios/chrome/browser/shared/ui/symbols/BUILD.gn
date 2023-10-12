@@ -77,6 +77,7 @@ source_set("symbols") {
     "//ios/chrome/browser/shared/ui/symbols/resources:legacy_cloud_and_arrow_up",
     "//ios/chrome/browser/shared/ui/symbols/resources:legacy_cloud_slash",
     "//ios/chrome/browser/shared/ui/symbols/resources:line_downtrend",
+    "//ios/chrome/browser/shared/ui/symbols/resources:line_uptrend",
     "//ios/chrome/browser/shared/ui/symbols/resources:location",
     "//ios/chrome/browser/shared/ui/symbols/resources:location.fill",
     "//ios/chrome/browser/shared/ui/symbols/resources:multicolor_chromeball",
