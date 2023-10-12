@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
 import android.print.PrintManager;
@@ -44,6 +45,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Locale;
 import java.util.concurrent.Executors;
 
 /**
@@ -59,6 +63,15 @@ public class WebViewBrowserActivity extends AppCompatActivity {
     private boolean mEnableTracing;
     private boolean mIsStoppingTracing;
     private WebView mWebView;
+
+    // This set of models will always bypass strict mode.
+    // Google pre-release hardware models do not belong here.
+    private static final HashSet<String> STRICT_MODE_BYPASS_MODELS =
+            new HashSet<>(
+                    Arrays.asList(
+                            "humuhumu titan" // See https://crbug.com/1090841#c76
+                            ));
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +86,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                 R.id.container);
         assert mFragment != null;
         mFragment.setActivityResultRegistry(getActivityResultRegistry());
+        enableStrictMode();
     }
 
     @Override
@@ -127,6 +141,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                     break;
             }
         }
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             boolean checked =
                     AppCompatDelegate.MODE_NIGHT_YES == AppCompatDelegate.getDefaultNightMode();
@@ -297,6 +312,45 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             Toast.makeText(this, "No DevTools in " + currentWebViewPackageName, Toast.LENGTH_LONG)
                     .show();
         }
+    }
+
+    /**
+     * Enables StrictMode to catch as much as reasonable. This selectively disables some StrictMode
+     * policies for some devices, as some manufacturers modify the Android framework in such a way
+     * as to unavoidably violate StrictMode (ex. the platform code which opens the 3-dots menu is
+     * not controlled by WebView or by WebView shell browser).
+     */
+    private static void enableStrictMode() {
+        String manufacturer = Build.MANUFACTURER.toLowerCase(Locale.US);
+        String model = Build.MODEL.toLowerCase(Locale.US);
+
+        StrictMode.ThreadPolicy.Builder threadPolicyBuilder =
+                new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().penaltyDeath();
+
+        if (!manufacturer.equalsIgnoreCase("google") || STRICT_MODE_BYPASS_MODELS.contains(model)) {
+            threadPolicyBuilder.permitDiskReads();
+            threadPolicyBuilder.permitDiskWrites();
+        }
+
+        StrictMode.setThreadPolicy(threadPolicyBuilder.build());
+
+        // Omissions:
+        // * detectCleartextNetwork() to permit testing http:// URLs
+        // * detectFileUriExposure() to permit testing file:// URLs
+        // * detectLeakedClosableObjects() because of drag and drop (https://crbug.com/1090841#c40)
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // WebViewBrowserActivity will have two instances when switching night mode back and
+            // forth for the 3rd times. Don't know the reason, this probably needs the investigation
+            // to rule out WebView holding the instance. (crbug.com/1348615)
+            builder = builder.detectActivityLeaks();
+        }
+        StrictMode.setVmPolicy(
+                builder.detectLeakedRegistrationObjects()
+                        .detectLeakedSqlLiteObjects()
+                        .penaltyLog()
+                        .penaltyDeath()
+                        .build());
     }
 
     private class TracingLogger extends FileOutputStream {
