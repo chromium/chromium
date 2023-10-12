@@ -4002,7 +4002,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4181841719683918333">Keeled</translation>
 <translation id="4182339886482390129">Täiustatud ohutu sirvimine kaitseb teid paremini ohtlike veebisaitide, allalaadimiste ja laienduste eest</translation>
 <translation id="4184803915913850597">HID-seade (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="4186749321808907788"><ph name="QUERY_NAME" /> – Otsing otsingumootoriga <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
+<translation id="4186749321808907788"><ph name="QUERY_NAME" /> – otsing teenusega <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="4187424053537113647">Rakenduse <ph name="APP_NAME" /> seadistamine …</translation>
 <translation id="4190492351494485814">Esialgse seadistuse jaoks peate looma internetiühenduse, et faile oleks võimalik Chromebookiga sünkroonida</translation>
 <translation id="4190828427319282529">Klaviatuuri fookusega esiletõstmine</translation>
@@ -5125,7 +5125,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5136343472380336530">Veenduge, et mõlemad seadmed oleksid avatud, lähestikku ja Bluetooth oleks sisse lülitatud. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Kustuta see üksus</translation>
 <translation id="5138227688689900538">Kuva vähem</translation>
-<translation id="5139112070765735680"><ph name="QUERY_NAME" />, otsing teenusega <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
+<translation id="5139112070765735680"><ph name="QUERY_NAME" /> – otsing teenusega <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Sisestage turvavõtme PIN-kood. Kui te PIN-koodi ei tea, peate turvavõtme lähtestama.</translation>
 <translation id="5139955368427980650">&amp;Ava</translation>
 <translation id="5141421572306659464">Peamine konto</translation>

@@ -599,7 +599,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1477654881618305065">Organizacija vam ne dozvoljava deljenje ovog sadržaja. Ako vam treba pomoć, obratite se administratoru.</translation>
 <translation id="1478340334823509079">Detalji: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Instalacija nije omogućena</translation>
-<translation id="1480571698637441426">Da biste dobijali personalizovane odgovore kada postavljate pitanja, dozvolite Pomoćniku da pristupa snimku sadržaja ekrana. To može da obuhvata i informacije o pesmama ili video snimcima koji se puštaju.</translation>
+<translation id="1480571698637441426">Da biste dobijali personalizovane odgovore kada postavljate pitanja, dozvolite Pomoćniku da pristupa snimku sadržaja ekrana. To može da obuhvata i informacije o pesmama ili videima koji se puštaju.</translation>
 <translation id="1480663089572535854">Možete da se vratite da promenite dodelu za Izaberi. Uvek možete da isključite automatsko skeniranje u Podešavanjima.</translation>
 <translation id="1481537595330271162">Greška pri menjanju veličine diska</translation>
 <translation id="1482626744466814421">Obeleži ovu karticu...</translation>
@@ -1867,7 +1867,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2450849356604136918">Nema aktivnih prikaza</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="245322989586167203">Sajtovi se obično povezuju sa serijskim portovima za potrebe funkcija za prenos podataka, na primer, pri podešavanju mreže</translation>
-<translation id="2453706416476934374">Da bi <ph name="SUPERVISED_USER_NAME" /> dobijao/la personalizovane odgovore kad postavlja pitanja, dozvolite Pomoćniku da pristupa snimku sadržaja ekrana deteta <ph name="SUPERVISED_USER_NAME" />. To može da obuhvata i informacije o pesmama ili video snimcima koji se puštaju.</translation>
+<translation id="2453706416476934374">Da bi <ph name="SUPERVISED_USER_NAME" /> dobijao/la personalizovane odgovore kad postavlja pitanja, dozvolite Pomoćniku da pristupa snimku sadržaja ekrana deteta <ph name="SUPERVISED_USER_NAME" />. To može da obuhvata i informacije o pesmama ili videima koji se puštaju.</translation>
 <translation id="2453860139492968684">Završi</translation>
 <translation id="2454206500483040640">Izdeljeno</translation>
 <translation id="2454247629720664989">Ključna reč</translation>
@@ -6656,7 +6656,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6434325376267409267">Da biste koristili aplikaciju <ph name="APP_NAME" />, morate da ažurirate uređaj.</translation>
 <translation id="6435339218366409950">Odaberite jezik na koji želite da se prevodi titl</translation>
 <translation id="6436164536244065364">Prikaži u Veb prodavnici</translation>
-<translation id="6436610005579237680">Da biste dobijali personalizovane odgovore, omogućite Google pomoćniku da pristupa snimku sadržaja ekrana kada postavljate pitanja. Pomoćnik može da koristi i informacije o pesmama ili video snimcima koji se puštaju.</translation>
+<translation id="6436610005579237680">Da biste dobijali personalizovane odgovore, omogućite Google pomoćniku da pristupa snimku sadržaja ekrana kada postavljate pitanja. Pomoćnik može da koristi i informacije o pesmama ili videima koji se puštaju.</translation>
 <translation id="6436778875248895551">Administrator je blokirao dodatak <ph name="EXTENSION_NAME" /></translation>
 <translation id="6438234780621650381">Resetujte podešavanja</translation>
 <translation id="6438475350605608554">Već uvozite lozinke na drugoj kartici</translation>
