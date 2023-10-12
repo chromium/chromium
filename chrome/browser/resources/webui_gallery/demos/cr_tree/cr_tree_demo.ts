@@ -7,7 +7,7 @@ import '//resources/cr_elements/cr_tree/cr_tree_item.js';
 
 import {CrTreeElement} from '//resources/cr_elements/cr_tree/cr_tree.js';
 import {CrTreeItemElement} from '//resources/cr_elements/cr_tree/cr_tree_item.js';
-import {assert} from '//resources/js/assert_ts.js';
+import {assert} from '//resources/js/assert.js';
 import {CustomElement} from '//resources/js/custom_element.js';
 
 import {getTemplate} from './cr_tree_demo.html.js';

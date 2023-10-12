@@ -9,7 +9,7 @@
  * Served from chrome://bluetooth-internals/.
  */
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from './object_fieldset.html.js';

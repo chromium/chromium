@@ -9,7 +9,7 @@ import './strings.m.js';
 import './item.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';

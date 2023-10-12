@@ -4,7 +4,7 @@
 
 import './strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {isTabElement, TabElement} from './tab.js';

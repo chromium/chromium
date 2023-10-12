@@ -7,7 +7,7 @@
  *     chrome://bluetooth-internals/.
  */
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 /**
  * Enum of connection status for a device.

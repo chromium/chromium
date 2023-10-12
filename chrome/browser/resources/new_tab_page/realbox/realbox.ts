@@ -9,7 +9,7 @@ import {AutocompleteMatch, AutocompleteResult, NavigationPredictor, PageCallback
 import {RealboxBrowserProxy} from 'chrome://resources/cr_components/omnibox/realbox_browser_proxy.js';
 import {RealboxDropdownElement} from 'chrome://resources/cr_components/omnibox/realbox_dropdown.js';
 import {RealboxIconElement} from 'chrome://resources/cr_components/omnibox/realbox_icon.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

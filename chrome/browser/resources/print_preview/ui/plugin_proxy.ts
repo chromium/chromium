@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {pdfCreateOutOfProcessPlugin, PdfPlugin} from 'chrome://print/pdf/pdf_scripting_api.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 export type ViewportChangedCallback =
     (pageX: number, pageY: number, pageWidth: number, viewportWidth: number,

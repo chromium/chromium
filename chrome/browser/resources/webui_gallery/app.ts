@@ -10,7 +10,7 @@ import '//resources/polymer/v3_0/iron-location/iron-location.js';
 
 import {ColorChangeUpdater, COLORS_CSS_SELECTOR} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {CrMenuSelector} from '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
-import {assert} from '//resources/js/assert_ts.js';
+import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';

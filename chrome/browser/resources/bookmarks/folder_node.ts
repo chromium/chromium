@@ -10,7 +10,7 @@ import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import './shared_style.css.js';
 import './strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {isRTL} from 'chrome://resources/js/util_ts.js';
 import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

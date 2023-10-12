@@ -14,7 +14,7 @@ import './profile_picker_shared.css.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 // clang-format off
 // <if expr="chromeos_lacros">
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';

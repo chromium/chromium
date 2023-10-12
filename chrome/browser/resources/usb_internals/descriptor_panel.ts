@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
 
 import {CrTreeElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 import {CrTreeItemElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {UsbControlTransferParams, UsbControlTransferRecipient, UsbControlTransferType, UsbDeviceInterface, UsbTransferStatus} from './usb_device.mojom-webui.js';
 

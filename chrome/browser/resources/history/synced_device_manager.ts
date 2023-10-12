@@ -14,7 +14,7 @@ import './strings.m.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {FocusGrid} from 'chrome://resources/js/focus_grid.js';
 import {FocusRow} from 'chrome://resources/js/focus_row.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

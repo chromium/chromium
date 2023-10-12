@@ -17,7 +17,7 @@ import '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrDrawerElement} from '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';

@@ -5,7 +5,7 @@
 import '//resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
 import {CrTabBoxElement} from '//resources/cr_elements/cr_tab_box/cr_tab_box.js';
-import {assert} from '//resources/js/assert_ts.js';
+import {assert} from '//resources/js/assert.js';
 import {CustomElement} from '//resources/js/custom_element.js';
 
 import {getTemplate} from './cr_tab_box_demo.html.js';

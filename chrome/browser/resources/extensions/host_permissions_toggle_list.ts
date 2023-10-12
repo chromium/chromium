@@ -11,7 +11,7 @@ import './toggle_row.js';
 import './shared_style.css.js';
 import './strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './host_permissions_toggle_list.html.js';
