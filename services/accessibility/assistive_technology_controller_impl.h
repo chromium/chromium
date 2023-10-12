@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -36,8 +37,9 @@ class AssistiveTechnologyControllerImpl
       const AssistiveTechnologyControllerImpl&) = delete;
 
   // Called by the AccessibilityServiceCros.
-  void Bind(mojo::PendingReceiver<mojom::AssistiveTechnologyController>
-                at_controller_receiver);
+  void Bind(
+      mojo::PendingAssociatedReceiver<mojom::AssistiveTechnologyController>
+          at_controller_receiver);
   void BindAccessibilityServiceClient(
       mojo::PendingRemote<mojom::AccessibilityServiceClient>
           accessibility_client_remote);
@@ -81,8 +83,8 @@ class AssistiveTechnologyControllerImpl
   bool v8_initialized_ = false;
 
   // This class is a receiver for mojom::AssistiveTechnologyController.
-  mojo::Receiver<mojom::AssistiveTechnologyController> at_controller_receiver_{
-      this};
+  mojo::AssociatedReceiver<mojom::AssistiveTechnologyController>
+      at_controller_receiver_{this};
 
   // The remote to the Accessibility Service Client in the OS.
   mojo::Remote<mojom::AccessibilityServiceClient>

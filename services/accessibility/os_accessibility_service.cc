@@ -27,7 +27,7 @@ void OSAccessibilityService::BindAccessibilityServiceClient(
 }
 
 void OSAccessibilityService::BindAssistiveTechnologyController(
-    mojo::PendingReceiver<mojom::AssistiveTechnologyController>
+    mojo::PendingAssociatedReceiver<mojom::AssistiveTechnologyController>
         at_at_controller_receiver,
     const std::vector<mojom::AssistiveTechnologyType>& enabled_features) {
   at_controller_->Bind(std::move(at_at_controller_receiver));

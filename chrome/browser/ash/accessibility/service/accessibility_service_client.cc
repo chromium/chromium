@@ -162,7 +162,7 @@ void AccessibilityServiceClient::LaunchAccessibilityServiceAndBind() {
   router->BindAccessibilityServiceClient(
       service_client_.BindNewPipeAndPassRemote());
   router->BindAssistiveTechnologyController(
-      at_controller_.BindNewPipeAndPassReceiver(), enabled_features_);
+      at_controller_.BindNewEndpointAndPassReceiver(), enabled_features_);
   // Create agent host for all enabled features.
   for (auto& type : enabled_features_) {
     CreateDevToolsAgentHost(type);

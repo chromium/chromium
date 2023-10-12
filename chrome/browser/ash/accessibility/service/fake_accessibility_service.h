@@ -41,7 +41,7 @@ class FakeAccessibilityService
       mojo::PendingRemote<ax::mojom::AccessibilityServiceClient>
           accessibility_service_client) override;
   void BindAssistiveTechnologyController(
-      mojo::PendingReceiver<ax::mojom::AssistiveTechnologyController>
+      mojo::PendingAssociatedReceiver<ax::mojom::AssistiveTechnologyController>
           at_controller_receiver,
       const std::vector<ax::mojom::AssistiveTechnologyType>& enabled_features)
       override;
@@ -180,7 +180,7 @@ class FakeAccessibilityService
   mojo::RemoteSet<ax::mojom::Tts> tts_remotes_;
   mojo::RemoteSet<ax::mojom::UserInterface> ux_remotes_;
 
-  mojo::ReceiverSet<ax::mojom::AssistiveTechnologyController>
+  mojo::AssociatedReceiverSet<ax::mojom::AssistiveTechnologyController>
       at_controller_receivers_;
   mojo::Remote<ax::mojom::AccessibilityServiceClient>
       accessibility_service_client_remote_;

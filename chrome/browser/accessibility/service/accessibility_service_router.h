@@ -26,7 +26,7 @@ class AccessibilityServiceRouter : public KeyedService {
           accessibility_service_client);
 
   virtual void BindAssistiveTechnologyController(
-      mojo::PendingReceiver<mojom::AssistiveTechnologyController>
+      mojo::PendingAssociatedReceiver<mojom::AssistiveTechnologyController>
           at_controller_receiver,
       const std::vector<mojom::AssistiveTechnologyType>& enabled_features);
 

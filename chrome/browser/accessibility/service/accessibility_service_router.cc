@@ -25,7 +25,7 @@ void AccessibilityServiceRouter::BindAccessibilityServiceClient(
 }
 
 void AccessibilityServiceRouter::BindAssistiveTechnologyController(
-    mojo::PendingReceiver<mojom::AssistiveTechnologyController>
+    mojo::PendingAssociatedReceiver<mojom::AssistiveTechnologyController>
         at_controller_receiver,
     const std::vector<mojom::AssistiveTechnologyType>& enabled_features) {
   LaunchIfNotRunning();

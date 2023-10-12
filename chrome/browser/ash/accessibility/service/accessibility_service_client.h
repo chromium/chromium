@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -88,8 +89,11 @@ class AccessibilityServiceClient
 
   raw_ptr<content::BrowserContext, ExperimentalAsh> profile_ = nullptr;
 
-  // Here is the remote to the AT Controller, used to toggle features.
-  mojo::Remote<ax::mojom::AssistiveTechnologyController> at_controller_;
+  // Here is the remote to the AT Controller, used to toggle features. The mojo
+  // pipe is associated with the accessibility service mojo pipe when it is
+  // passed via `BindAssistiveTechnologyController`.
+  mojo::AssociatedRemote<ax::mojom::AssistiveTechnologyController>
+      at_controller_;
 
   // This class receives mojom requests from the service via the interface
   // AccessibilityServiceClient.

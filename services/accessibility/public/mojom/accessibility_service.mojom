@@ -45,7 +45,7 @@ interface AccessibilityService {
   // not in this list are assumed disabled.
   [EnableIf=supports_os_accessibility_service]
   BindAssistiveTechnologyController(
-    pending_receiver<AssistiveTechnologyController> at_controller,
+    pending_associated_receiver<AssistiveTechnologyController> at_controller,
     array<AssistiveTechnologyType> enabled_features);
 
   // Establishes a debugger connection to the specific AT. The remote is held by

@@ -54,7 +54,7 @@ void FakeAccessibilityService::BindAnotherUserInterface() {
 }
 
 void FakeAccessibilityService::BindAssistiveTechnologyController(
-    mojo::PendingReceiver<ax::mojom::AssistiveTechnologyController>
+    mojo::PendingAssociatedReceiver<ax::mojom::AssistiveTechnologyController>
         at_controller_receiver,
     const std::vector<ax::mojom::AssistiveTechnologyType>& enabled_features) {
   at_controller_receivers_.Add(this, std::move(at_controller_receiver));

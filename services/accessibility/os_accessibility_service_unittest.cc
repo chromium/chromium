@@ -36,14 +36,14 @@ class FakeAssistiveTechnologyController {
   void BindAssistiveTechnologyController(
       const std::vector<mojom::AssistiveTechnologyType>& enabled_features) {
     service_->BindAssistiveTechnologyController(
-        at_controller_.BindNewPipeAndPassReceiver(), enabled_features);
+        at_controller_.BindNewEndpointAndPassReceiver(), enabled_features);
   }
 
   bool IsBound() { return at_controller_.is_bound(); }
 
  private:
   raw_ptr<mojom::AccessibilityService, ExperimentalAsh> service_;
-  mojo::Remote<mojom::AssistiveTechnologyController> at_controller_;
+  mojo::AssociatedRemote<mojom::AssistiveTechnologyController> at_controller_;
 };
 
 }  // namespace

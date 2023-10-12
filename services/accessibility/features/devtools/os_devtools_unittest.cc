@@ -157,7 +157,7 @@ class FakeAccessibilityService : public mojom::AccessibilityService {
           accessibility_client_remote) override {}
 
   void BindAssistiveTechnologyController(
-      mojo::PendingReceiver<mojom::AssistiveTechnologyController>
+      mojo::PendingAssociatedReceiver<mojom::AssistiveTechnologyController>
           at_at_controller_receiver,
       const std::vector<mojom::AssistiveTechnologyType>& enabled_features)
       override {}
