@@ -34,8 +34,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_crx_util.h"
@@ -376,10 +374,6 @@ void DownloadHistory::LoadHistoryDownloads(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(notifier_.GetManager());
 
-  base::UmaHistogramCounts1000("Download.LoadHistoryDownloads.DownloadRows",
-                               rows.size());
-  SCOPED_UMA_HISTOGRAM_TIMER("Download.LoadHistoryDownloadsTime");
-
   std::map<std::string, int> file_name_count;
   CountFilePathOccurences(rows, &file_name_count);
 
@@ -407,9 +401,6 @@ void DownloadHistory::LoadHistoryDownloads(
           notifier_.GetManager()->GetStoragePartitionConfigForSiteUrl(
               row.site_url);
     } else {
-      SCOPED_UMA_HISTOGRAM_TIMER(
-          "Download.LoadHistoryDownloads."
-          "DeserializeStoragePartitionConfigTime");
       storage_partition_config =
           notifier_.GetManager()
               ->SerializedEmbedderDownloadDataToStoragePartitionConfig(
@@ -453,8 +444,6 @@ void DownloadHistory::LoadHistoryDownloads(
     bool should_update_observers = false;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     if (!row.by_ext_id.empty() && !row.by_ext_name.empty()) {
-      SCOPED_UMA_HISTOGRAM_TIMER(
-          "Download.LoadHistoryDownloads.AddExtensionInfoAndNotifyTime");
       new extensions::DownloadedByExtension(item, row.by_ext_id,
                                             row.by_ext_name);
       should_update_observers = true;
@@ -479,12 +468,8 @@ void DownloadHistory::LoadHistoryDownloads(
       content::DownloadManager::DOWNLOAD_INITIALIZATION_DEPENDENCY_HISTORY_DB);
 
   initial_history_query_complete_ = true;
-  {
-    SCOPED_UMA_HISTOGRAM_TIMER(
-        "Download.LoadHistoryDownloads.NotifyObserversTime");
-    for (Observer& observer : observers_) {
-      observer.OnHistoryQueryComplete();
-    }
+  for (Observer& observer : observers_) {
+    observer.OnHistoryQueryComplete();
   }
 }
 
