@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/api/runtime/runtime_api_delegate.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/events/lazy_event_dispatch_util.h"
@@ -158,8 +157,6 @@ class RuntimeAPI : public BrowserContextKeyedAPI,
   std::unique_ptr<RuntimeAPIDelegate> delegate_;
 
   raw_ptr<content::BrowserContext> browser_context_;
-
-  content::NotificationRegistrar registrar_;
 
   // Listen to extension notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

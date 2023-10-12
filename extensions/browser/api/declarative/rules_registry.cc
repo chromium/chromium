@@ -17,8 +17,6 @@
 #include "base/values.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_source.h"
 #include "extensions/browser/api/declarative/rules_cache_delegate.h"
 #include "extensions/browser/extension_error.h"
 #include "extensions/browser/extension_prefs.h"

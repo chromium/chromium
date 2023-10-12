@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "content/public/browser/ax_event_notification_details.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/common/api/automation_internal.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_messages.h"

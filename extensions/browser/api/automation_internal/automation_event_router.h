@@ -183,7 +183,6 @@ class AutomationEventRouter
   void BindAutomation(
       mojo::PendingAssociatedRemote<ax::mojom::Automation> automation) override;
 
-  content::NotificationRegistrar registrar_;
   std::vector<std::unique_ptr<AutomationListener>> listeners_;
 
   std::map<WorkerId, base::Uuid> keepalive_request_uuid_for_worker_;
