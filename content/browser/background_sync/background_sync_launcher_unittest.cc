@@ -132,7 +132,13 @@ class BackgroundSyncLauncherTest : public testing::Test {
 
 // Tests that we pick the correct wake up delta for the one-shot Background
 // Sync wake up task, across all storage partitions.
-TEST_F(BackgroundSyncLauncherTest, CorrectSoonestWakeupDeltaIsPicked) {
+// Flaky on Android: https://crbug.com/1492118
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_CorrectSoonestWakeupDeltaIsPicked DISABLED_CorrectSoonestWakeupDeltaIsPicked
+#else
+#define MAYBE_CorrectSoonestWakeupDeltaIsPicked CorrectSoonestWakeupDeltaIsPicked
+#endif
+TEST_F(BackgroundSyncLauncherTest, MAYBE_CorrectSoonestWakeupDeltaIsPicked) {
   std::vector<GURL> urls = {GURL(kUrl_1), GURL(kUrl_2)};
 
   // Add two storage partitions. Verify that we set the soonest wake up delta
