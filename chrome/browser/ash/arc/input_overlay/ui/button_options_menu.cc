@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -294,5 +295,8 @@ void ButtonOptionsMenu::OnActionNewStateRemoved(const Action& action) {
     action_edit_->RemoveNewState();
   }
 }
+
+BEGIN_METADATA(ButtonOptionsMenu, views::View)
+END_METADATA
 
 }  // namespace arc::input_overlay

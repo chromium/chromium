@@ -236,9 +236,13 @@ class DisplayOverlayController : public ui::EventHandler,
 
   void AddInputMappingWidget();
   void RemoveInputMappingWidget();
+  InputMappingView* GetInputMapping();
 
   void AddEditingListWidget();
   void RemoveEditingListWidget();
+  EditingList* GetEditingList();
+
+  ButtonOptionsMenu* GetButtonOptionsMenu();
 
   // `widget` bounds is in screen coordinate. `bounds_in_root_window` is the
   // window bounds in root window. Convert `bounds_in_root_window` in screen

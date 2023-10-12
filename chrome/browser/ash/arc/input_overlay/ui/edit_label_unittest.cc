@@ -130,11 +130,7 @@ class EditLabelTest : public OverlayViewTestBase {
   // Returns `ButtonOptionsMenu` if there is one shown. Otherwise, return
   // nullptr;
   ButtonOptionsMenu* GetButtonOptionsMenu() {
-    auto* menu_widget = controller_->button_options_widget_.get();
-    if (!menu_widget) {
-      return nullptr;
-    }
-    return static_cast<ButtonOptionsMenu*>(menu_widget->GetContentsView());
+    return controller_->GetButtonOptionsMenu();
   }
 
   ActionViewListItem* GetActionViewListItem(Action* action) {

@@ -35,6 +35,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/transient_window_manager.h"
 #include "ui/wm/core/window_util.h"
@@ -490,9 +491,9 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
           input_mapping_widget_->ShowInactive();
         }
 
-        auto* input_mapping_view = static_cast<InputMappingView*>(
-            input_mapping_widget_->GetContentsView());
-        input_mapping_view->SetDisplayMode(mode);
+        if (auto* input_mapping = GetInputMapping()) {
+          input_mapping->SetDisplayMode(mode);
+        }
         auto* input_mapping_window = input_mapping_widget_->GetNativeWindow();
         input_mapping_window->SetEventTargetingPolicy(
             aura::EventTargetingPolicy::kNone);
@@ -513,9 +514,9 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       // to show up in `kEdit` mode.
       input_mapping_widget_->ShowInactive();
 
-      auto* input_mapping_view = static_cast<InputMappingView*>(
-          input_mapping_widget_->GetContentsView());
-      input_mapping_view->SetDisplayMode(mode);
+      if (auto* input_mapping = GetInputMapping()) {
+        input_mapping->SetDisplayMode(mode);
+      }
       auto* input_mapping_window = input_mapping_widget_->GetNativeWindow();
       input_mapping_window->SetEventTargetingPolicy(
           aura::EventTargetingPolicy::kTargetAndDescendants);
@@ -681,9 +682,8 @@ void DisplayOverlayController::AddButtonOptionsMenuWidget(Action* action) {
   }
 
   if (button_options_widget_) {
-    auto* menu = static_cast<ButtonOptionsMenu*>(
-        button_options_widget_->GetContentsView());
-    if (menu->action() == action) {
+    auto* menu = GetButtonOptionsMenu();
+    if (menu && menu->action() == action) {
       return;
     }
     RemoveButtonOptionsMenuWidget();
@@ -702,11 +702,11 @@ void DisplayOverlayController::AddButtonOptionsMenuWidget(Action* action) {
 void DisplayOverlayController::RemoveButtonOptionsMenuWidget() {
   if (button_options_widget_) {
     // Check if related action is already deleted.
-    auto* menu_action = static_cast<ButtonOptionsMenu*>(
-                            button_options_widget_->GetContentsView())
-                            ->action();
-    if (IsActiveAction(menu_action)) {
-      RemoveActionNewState(menu_action);
+    if (auto* menu = GetButtonOptionsMenu()) {
+      auto* menu_action = menu->action();
+      if (IsActiveAction(menu_action)) {
+        RemoveActionNewState(menu_action);
+      }
     }
 
     button_options_widget_->Close();
@@ -730,10 +730,9 @@ void DisplayOverlayController::SetButtonOptionsMenuWidgetVisibility(
   }
 
   if (is_visible) {
-    UpdateButtonOptionsMenuWidgetBounds(
-        static_cast<ButtonOptionsMenu*>(
-            button_options_widget_->GetContentsView())
-            ->action());
+    if (auto* menu = GetButtonOptionsMenu()) {
+      UpdateButtonOptionsMenuWidgetBounds(menu->action());
+    }
     button_options_widget_->ShowInactive();
   } else {
     button_options_widget_->Hide();
@@ -812,8 +811,9 @@ void DisplayOverlayController::MayShowEduNudgeForEditingTip() {
     return;
   }
   DCHECK(editing_list_widget_);
-  static_cast<EditingList*>(editing_list_widget_->GetContentsView())
-      ->ShowEduNudgeForEditingTip();
+  if (auto* editing_list = GetEditingList()) {
+    editing_list->ShowEduNudgeForEditingTip();
+  }
 }
 
 void DisplayOverlayController::UpdateButtonOptionsMenuWidgetBounds(
@@ -822,15 +822,16 @@ void DisplayOverlayController::UpdateButtonOptionsMenuWidgetBounds(
     return;
   }
 
-  auto* menu =
-      static_cast<ArrowContainer*>(button_options_widget_->GetContentsView());
-  UpdateWidgetBoundsInRootWindow(
-      button_options_widget_.get(),
-      gfx::Rect(action->action_view()->CalculateAttachViewPositionInRootWindow(
-                    CalculateAvailableBounds(
-                        touch_injector_->window()->GetRootWindow()),
-                    touch_injector_->content_bounds().origin(), menu),
-                menu->GetPreferredSize()));
+  if (auto* menu = GetButtonOptionsMenu()) {
+    UpdateWidgetBoundsInRootWindow(
+        button_options_widget_.get(),
+        gfx::Rect(
+            action->action_view()->CalculateAttachViewPositionInRootWindow(
+                CalculateAvailableBounds(
+                    touch_injector_->window()->GetRootWindow()),
+                touch_injector_->content_bounds().origin(), menu),
+            menu->GetPreferredSize()));
+  }
 }
 
 void DisplayOverlayController::UpdateInputMappingWidgetBounds() {
@@ -850,8 +851,9 @@ void DisplayOverlayController::UpdateEditingListWidgetBounds() {
     return;
   }
 
-  static_cast<EditingList*>(editing_list_widget_->GetContentsView())
-      ->UpdateWidget();
+  if (auto* editing_list = GetEditingList()) {
+    editing_list->UpdateWidget();
+  }
 }
 
 void DisplayOverlayController::UpdateWidgetBoundsInRootWindow(
@@ -1134,6 +1136,15 @@ void DisplayOverlayController::RemoveInputMappingWidget() {
   }
 }
 
+InputMappingView* DisplayOverlayController::GetInputMapping() {
+  if (!input_mapping_widget_) {
+    return nullptr;
+  }
+
+  return views::AsViewClass<InputMappingView>(
+      input_mapping_widget_->GetContentsView());
+}
+
 void DisplayOverlayController::AddEditingListWidget() {
   if (editing_list_widget_) {
     return;
@@ -1159,6 +1170,24 @@ void DisplayOverlayController::RemoveEditingListWidget() {
                           /*turn_on=*/false);
     UpdateEventRewriteCapability();
   }
+}
+
+EditingList* DisplayOverlayController::GetEditingList() {
+  if (!editing_list_widget_) {
+    return nullptr;
+  }
+
+  return views::AsViewClass<EditingList>(
+      editing_list_widget_->GetContentsView());
+}
+
+ButtonOptionsMenu* DisplayOverlayController::GetButtonOptionsMenu() {
+  if (!button_options_widget_) {
+    return nullptr;
+  }
+
+  return views::AsViewClass<ButtonOptionsMenu>(
+      button_options_widget_->GetContentsView());
 }
 
 void DisplayOverlayController::UpdateEventRewriteCapability() {

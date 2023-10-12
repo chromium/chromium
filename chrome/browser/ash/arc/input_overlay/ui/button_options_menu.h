@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/arc/input_overlay/touch_injector_observer.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_edit_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/arrow_container.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 class IconButton;
@@ -43,6 +44,7 @@ class DisplayOverlayController;
 // +----------------------------------+
 class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
  public:
+  METADATA_HEADER(ButtonOptionsMenu);
   ButtonOptionsMenu(DisplayOverlayController* controller, Action* action);
   ButtonOptionsMenu(const ButtonOptionsMenu&) = delete;
   ButtonOptionsMenu& operator=(const ButtonOptionsMenu&) = delete;

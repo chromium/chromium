@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/background.h"
 
 namespace arc::input_overlay {
@@ -220,4 +221,8 @@ void InputMappingView::OnContentBoundsSizeChanged() {
     static_cast<ActionView*>(child)->OnContentBoundsSizeChanged();
   }
 }
+
+BEGIN_METADATA(InputMappingView, views::View)
+END_METADATA
+
 }  // namespace arc::input_overlay

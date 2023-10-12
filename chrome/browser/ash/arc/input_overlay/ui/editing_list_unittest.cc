@@ -76,8 +76,7 @@ class EditingListTest : public OverlayViewTestBase {
   void MouseDragEditingListBy(int x, int y) {
     auto* event_generator = GetEventGenerator();
     event_generator->MoveMouseTo(
-        static_cast<EditingList*>(GetEditingListWidget()->GetContentsView())
-            ->editing_header_label_->GetBoundsInScreen()
+        editing_list_->editing_header_label_->GetBoundsInScreen()
             .CenterPoint());
     event_generator->PressLeftButton();
     event_generator->MoveMouseBy(x, y);
@@ -103,8 +102,7 @@ class EditingListTest : public OverlayViewTestBase {
     auto* event_generator = GetEventGenerator();
 
     event_generator->PressTouch(
-        static_cast<EditingList*>(GetEditingListWidget()->GetContentsView())
-            ->editing_header_label_->GetBoundsInScreen()
+        editing_list_->editing_header_label_->GetBoundsInScreen()
             .CenterPoint());
     event_generator->MoveTouchBy(x, y);
     event_generator->ReleaseTouch();
@@ -143,19 +141,18 @@ class EditingListTest : public OverlayViewTestBase {
   }
 
   void PressDoneButtonOnButtonOptionsMenu() {
-    auto* menu = controller_->button_options_widget_.get();
-    if (!menu) {
-      return;
+    auto* menu = controller_->GetButtonOptionsMenu();
+    if (menu) {
+      LeftClickOn(menu->done_button_);
     }
-
-    LeftClickOn(
-        static_cast<ButtonOptionsMenu*>(menu->GetContentsView())->done_button_);
   }
 
   Action* GetButtonOptionsAction() {
-    return static_cast<ButtonOptionsMenu*>(
-               controller_->button_options_widget_->GetContentsView())
-        ->action();
+    auto* menu = controller_->GetButtonOptionsMenu();
+    if (!menu) {
+      return nullptr;
+    }
+    return menu->action();
   }
 
   views::Widget* GetEducationNudge(views::Widget* widget) {

@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/grit/component_extension_resources.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -445,5 +446,8 @@ void EditingList::OnActionNewStateRemoved(const Action& action) {
     }
   }
 }
+
+BEGIN_METADATA(EditingList, views::View)
+END_METADATA
 
 }  // namespace arc::input_overlay
