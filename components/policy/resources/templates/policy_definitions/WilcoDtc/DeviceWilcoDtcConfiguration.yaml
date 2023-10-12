@@ -12,7 +12,6 @@ features:
   per_profile: false
 max_size: 1000000
 owners:
-- lamzin@google.com
 - bkersting@google.com
 - kerker@chromium.org
 - chungsheng@google.com

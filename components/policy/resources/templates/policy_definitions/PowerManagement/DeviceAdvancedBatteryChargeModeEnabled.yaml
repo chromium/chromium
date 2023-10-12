@@ -18,7 +18,6 @@ items:
 - caption: Disable advanced battery charge mode
   value: false
 owners:
-- lamzin@google.com
 - bkersting@google.com
 - kerker@chromium.org
 - chungsheng@google.com
