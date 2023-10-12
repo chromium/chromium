@@ -31,6 +31,16 @@ bool ShouldHideNotification(Profile* profile,
   if (route.is_connecting()) {
     return true;
   }
+  // If the user changes the pref to show all Cast sessions, they won't be shown
+  // until `OnRoutesUpdated()` is called again.
+  // TODO(crbug.com/726823): Ash currently considers Lacros routes non-local
+  // and hides them if the pref is set to false.
+  if (!route.is_local() &&
+      !profile->GetPrefs()->GetBoolean(
+          media_router::prefs::
+              kMediaRouterShowCastSessionsStartedByOtherDevices)) {
+    return true;
+  }
   std::unique_ptr<media_router::CastMediaSource> source =
       media_router::CastMediaSource::FromMediaSource(route.media_source());
   if (media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
@@ -99,16 +109,10 @@ std::set<std::string>
 CastMediaNotificationProducer::GetActiveControllableItemIds() const {
   std::set<std::string> ids;
   for (const auto& item : items_) {
-    if (!item.second.is_active())
+    if (!item.second.is_active()) {
       continue;
-
-    // The non-local Cast session filter should not be put in
-    // |ShouldHideNotification()| because it's used to determine if an item
-    // should be created. It's possible that users later change the pref to
-    // show all Cast sessions.
-    // TODO(crbug.com/726823): Ash currently considers Lacros routes non-local
-    // and hides them if the pref is set to false.
-    if (!this->profile_->GetPrefs()->GetBoolean(
+    }
+    if (!profile_->GetPrefs()->GetBoolean(
             media_router::prefs::
                 kMediaRouterShowCastSessionsStartedByOtherDevices) &&
         !item.second.route_is_local()) {

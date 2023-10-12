@@ -155,6 +155,7 @@ TEST_F(CastMediaNotificationProducerTest, RoutesWithoutNotifications) {
        remote_streaming_route});
   EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(CastMediaNotificationProducerTest, NonLocalRoutesWithoutNotifications) {
   MediaRoute non_local_route = CreateRoute("non-local-route");
@@ -162,14 +163,27 @@ TEST_F(CastMediaNotificationProducerTest, NonLocalRoutesWithoutNotifications) {
   sync_preferences::TestingPrefServiceSyncable* pref_service =
       profile()->GetTestingPrefService();
 
+  EXPECT_CALL(item_manager_, ShowItem).Times(0);
+  pref_service->SetBoolean(
+      media_router::prefs::kMediaRouterShowCastSessionsStartedByOtherDevices,
+      false);
   notification_producer_->OnRoutesUpdated({non_local_route});
+  testing::Mock::VerifyAndClearExpectations(&item_manager_);
+
+  // When the pref changes to show the non-local route, it is shown the next
+  // time `OnRoutesUpdated()` is called.
+  EXPECT_CALL(item_manager_, ShowItem).Times(1);
+  pref_service->SetBoolean(
+      media_router::prefs::kMediaRouterShowCastSessionsStartedByOtherDevices,
+      true);
+  notification_producer_->OnRoutesUpdated({non_local_route});
+  testing::Mock::VerifyAndClearExpectations(&item_manager_);
   EXPECT_EQ(1u, notification_producer_->GetActiveItemCount());
 
-  // There is no need to call |OnRouteUpdated()| here because this is a
+  // There is no need to call `OnRouteUpdated()` here because this is a
   // client-side change.
   pref_service->SetBoolean(
       media_router::prefs::kMediaRouterShowCastSessionsStartedByOtherDevices,
       false);
   EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
