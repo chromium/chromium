@@ -99,7 +99,8 @@ ScriptPromise ReadableStreamDefaultReader::read(
   }
 
   // 2. Let promise be a new promise.
-  auto* promise = MakeGarbageCollected<StreamPromiseResolver>(script_state);
+  auto* promise = MakeGarbageCollected<StreamPromiseResolver>(script_state,
+                                                              exception_state);
 
   // 3. Let readRequest be a new read request with the following items:
   //    chunk steps, given chunk

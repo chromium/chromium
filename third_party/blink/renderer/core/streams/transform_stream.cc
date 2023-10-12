@@ -224,8 +224,8 @@ TransformStream* TransformStream::Create(
   auto* stream = MakeGarbageCollected<TransformStream>();
 
   // 8. Let startPromise be a new promise.
-  auto* start_promise =
-      MakeGarbageCollected<StreamPromiseResolver>(script_state);
+  auto* start_promise = MakeGarbageCollected<StreamPromiseResolver>(
+      script_state, exception_state);
 
   // 9. Perform ! InitializeTransformStream(stream, startPromise,
   //    writableHighWaterMark, writableSizeAlgorithm, readableHighWaterMark,
@@ -724,8 +724,8 @@ void TransformStream::InitInternal(ScriptState* script_state,
   }
 
   // 15. Let startPromise be a new promise.
-  auto* start_promise =
-      MakeGarbageCollected<StreamPromiseResolver>(script_state);
+  auto* start_promise = MakeGarbageCollected<StreamPromiseResolver>(
+      script_state, exception_state);
 
   // 16. Perform ! InitializeTransformStream(this, startPromise,
   //     writableHighWaterMark, writableSizeAlgorithm, readableHighWaterMark,
@@ -824,7 +824,8 @@ void TransformStream::Initialize(ScriptState* script_state,
   DCHECK(stream->had_backpressure_);
   DCHECK(!stream->backpressure_change_promise_);
   stream->backpressure_change_promise_ =
-      MakeGarbageCollected<StreamPromiseResolver>(script_state);
+      MakeGarbageCollected<StreamPromiseResolver>(script_state,
+                                                  exception_state);
 
   // 11. Set stream.[[transformStreamController]] to undefined.
   // (This is set by the constructor; just verify the value here).

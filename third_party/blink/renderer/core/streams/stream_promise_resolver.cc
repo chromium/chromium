@@ -7,6 +7,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -50,6 +52,15 @@ StreamPromiseResolver::StreamPromiseResolver(ScriptState* script_state) {
   }
 }
 
+StreamPromiseResolver::StreamPromiseResolver(
+    ScriptState* script_state,
+    const ExceptionState& exception_state)
+    : StreamPromiseResolver(script_state) {
+  class_like_name_ = exception_state.GetContext().GetClassName();
+  property_like_name_ = exception_state.GetContext().GetPropertyName();
+  script_url_ = GetCurrentScriptUrl(script_state->GetIsolate());
+}
+
 void StreamPromiseResolver::Resolve(ScriptState* script_state,
                                     v8::Local<v8::Value> value) {
   if (resolver_.IsEmpty()) {
@@ -58,6 +69,13 @@ void StreamPromiseResolver::Resolve(ScriptState* script_state,
   if (is_settled_) {
     return;
   }
+
+  probe::WillHandlePromise(
+      ToExecutionContext(script_state), script_state,
+      /*resolving=*/true, class_like_name_,
+      property_like_name_.IsNull() ? String("resolve") : property_like_name_,
+      script_url_);
+
   is_settled_ = true;
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::MicrotasksScope microtasks_scope(
@@ -82,6 +100,14 @@ void StreamPromiseResolver::Reject(ScriptState* script_state,
   if (is_settled_) {
     return;
   }
+
+  // TODO(crbug.com/1491706): this is speculative, unclear in which scenarios
+  // this would be invoked.
+  probe::WillHandlePromise(
+      ToExecutionContext(script_state), script_state,
+      /*resolving=*/false, class_like_name_,
+      property_like_name_.IsNull() ? String("reject") : property_like_name_,
+      script_url_);
   is_settled_ = true;
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::MicrotasksScope microtasks_scope(

@@ -74,8 +74,8 @@ WritableStreamDefaultWriter::WritableStreamDefaultWriter(
       //         a new promise.
       if (!WritableStream::CloseQueuedOrInFlight(stream) &&
           stream->HasBackpressure()) {
-        ready_promise_ =
-            MakeGarbageCollected<StreamPromiseResolver>(script_state);
+        ready_promise_ = MakeGarbageCollected<StreamPromiseResolver>(
+            script_state, exception_state);
       } else {
         //      b. Otherwise, set this.[[readyPromise]] to a promise resolved
         //         with undefined.
@@ -83,8 +83,8 @@ WritableStreamDefaultWriter::WritableStreamDefaultWriter(
             StreamPromiseResolver::CreateResolvedWithUndefined(script_state);
       }
       //      c. Set this.[[closedPromise]] to a new promise.
-      closed_promise_ =
-          MakeGarbageCollected<StreamPromiseResolver>(script_state);
+      closed_promise_ = MakeGarbageCollected<StreamPromiseResolver>(
+          script_state, exception_state);
       break;
     }
 
@@ -99,8 +99,8 @@ WritableStreamDefaultWriter::WritableStreamDefaultWriter(
       ready_promise_->MarkAsHandled(isolate);
 
       //      c. Set this.[[closedPromise]] to a new promise.
-      closed_promise_ =
-          MakeGarbageCollected<StreamPromiseResolver>(script_state);
+      closed_promise_ = MakeGarbageCollected<StreamPromiseResolver>(
+          script_state, exception_state);
       break;
     }
 

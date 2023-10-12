@@ -130,7 +130,8 @@ ScriptPromise ReadableStreamBYOBReader::read(ScriptState* script_state,
   }
 
   // 5. Let promise be a new promise.
-  auto* promise = MakeGarbageCollected<StreamPromiseResolver>(script_state);
+  auto* promise = MakeGarbageCollected<StreamPromiseResolver>(script_state,
+                                                              exception_state);
 
   // 6. Let readIntoRequest be a new read-into request with the following items:
   //    chunk steps, given chunk
