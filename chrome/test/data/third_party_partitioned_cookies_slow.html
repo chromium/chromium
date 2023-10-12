@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <title>cross-site iframes with partitioned cookies</title>
+    <script>
+      function setCookie() {
+        document.cookie = 'name=Good;';
+        console.log("onload");
+      }
+    </script>
+  </head>
+<body onload="setCookie();">
+<!-- This only works if the CrossSiteRedirector is running on the embedded test
+     server, and the host_resolver is set up to handle b.test and c.test. -->
+<iframe src="/cross-site/b.test/partitioned_cookie.html" id="frame1"></iframe>
+<iframe src="/cross-site/c.test/mixed_with_partitioned_cookie.html" id="frame2"></iframe>
+<iframe src="/cross-site/d.test/set_cookie_header.html" id="frame3"></iframe>
+<!-- The frame below will never finish loading.  Requires that EmbeddedTestServer
+     is started with default handlers. -->
+<iframe src="/hung-after-headers" />
+</body></html>

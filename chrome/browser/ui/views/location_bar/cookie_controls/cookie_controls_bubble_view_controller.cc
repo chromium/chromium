@@ -23,6 +23,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "cookie_controls_bubble_view_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/vector_icons.h"
@@ -90,8 +91,20 @@ void CookieControlsBubbleViewController::OnUserClosedContentView() {
   web_contents_->GetController().SetNeedsReload();
   web_contents_->GetController().LoadIfNecessary();
 
+  SwitchToReloadingView();
+}
+
+void CookieControlsBubbleViewController::SwitchToReloadingView() {
   bubble_view_->SwitchToReloadingView();
   bubble_view_->GetReloadingView()->RequestFocus();
+
+  // Set a timeout for how long the reloading view is shown for.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &CookieControlsBubbleViewController::OnReloadingViewTimeout,
+          weak_factory_.GetWeakPtr()),
+      content_settings::features::kUserBypassUIReloadBubbleTimeout.Get());
 }
 
 void CookieControlsBubbleViewController::OnFaviconFetched(
@@ -218,8 +231,23 @@ void CookieControlsBubbleViewController::OnBreakageConfidenceLevelChanged(
 
 void CookieControlsBubbleViewController::
     OnFinishedPageReloadWithChangedSettings() {
+  // TODO: Log a UserMetricsAction here to count completed page reloads once we
+  // have confidence that this callback is properly scoped.  See
+  // https://crrev.com/c/4925330 for context.
   controller_observation_.Reset();
   bubble_view_->CloseWidget();
+  // View destruction is call asynchronously from the bubble being closed, so we
+  // invalidate the weak pointers here to avoid callbacks happening after
+  // the bubble is closed and before this class is destroyed.
+  weak_factory_.InvalidateWeakPtrs();
+}
+
+void CookieControlsBubbleViewController::OnReloadingViewTimeout() {
+  base::RecordAction(
+      base::UserMetricsAction("CookieControls.Bubble.ReloadingTimeout"));
+  controller_observation_.Reset();
+  bubble_view_->CloseWidget();
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 void CookieControlsBubbleViewController::SetCallbacks() {

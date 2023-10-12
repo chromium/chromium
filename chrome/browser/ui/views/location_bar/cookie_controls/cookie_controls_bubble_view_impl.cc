@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_impl.h"
 
 #include <string>
+#include "base/metrics/user_metrics.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -79,6 +80,8 @@ void CookieControlsBubbleViewImpl::UpdateFaviconImage(const gfx::Image& image,
 }
 
 void CookieControlsBubbleViewImpl::SwitchToReloadingView() {
+  base::RecordAction(
+      base::UserMetricsAction("CookieControls.Bubble.ReloadingShown"));
   GetReloadingView()->SetVisible(true);
   GetContentView()->SetVisible(false);
   SizeToContents();

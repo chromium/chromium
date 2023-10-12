@@ -7785,6 +7785,18 @@ should be able to be added at any place in this file.
   <description>The cookie controls UI was opened.</description>
 </action>
 
+<action name="CookieControls.Bubble.ReloadingShown">
+  <owner>kmg@google.com</owner>
+  <owner>fmacintosh@google.com</owner>
+  <description>The reloading bubble is shown.</description>
+</action>
+
+<action name="CookieControls.Bubble.ReloadingTimeout">
+  <owner>kmg@google.com</owner>
+  <owner>fmacintosh@google.com</owner>
+  <description>The reloading bubble closed after a timeout.</description>
+</action>
+
 <action name="CookieControls.Bubble.SendFeedback">
   <owner>boujane@google.com</owner>
   <owner>sauski@google.com</owner>

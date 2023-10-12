@@ -70,6 +70,9 @@ const base::FeatureParam<int> kUserBypassUIReloadCount{&kUserBypassUI,
 const base::FeatureParam<base::TimeDelta> kUserBypassUIReloadTime{
     &kUserBypassUI, "reload-time", base::Seconds(30)};
 
+const base::FeatureParam<base::TimeDelta> kUserBypassUIReloadBubbleTimeout{
+    &kUserBypassUI, "reload-bubble-timeout", base::Seconds(5)};
+
 BASE_FEATURE(kUserBypassFeedback,
              "UserBypassFeedback",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -42,6 +42,9 @@ const char kUMABubbleAllowThirdPartyCookies[] =
 const char kUMABubbleBlockThirdPartyCookies[] =
     "CookieControls.Bubble.BlockThirdPartyCookies";
 const char kUMABubbleSendFeedback[] = "CookieControls.Bubble.SendFeedback";
+const char kUMABubbleReloadingShown[] = "CookieControls.Bubble.ReloadingShown";
+const char kUMABubbleReloadingTimeout[] =
+    "CookieControls.Bubble.ReloadingTimeout";
 }  // namespace
 
 class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
@@ -57,7 +60,7 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
     iph_feature_list_.InitAndEnableFeatures(EnabledFeatures(),
                                             DisabledFeatures());
     https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-    https_server()->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    https_server()->AddDefaultHandlers(GetChromeTestDataDir());
 
     set_open_about_blank_on_browser_launch(true);
     ASSERT_TRUE(https_server()->InitializeAndListen());
@@ -179,9 +182,17 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
   content_settings::CookieSettings* cookie_settings() {
     return CookieSettingsFactory::GetForProfile(browser()->profile()).get();
   }
-  GURL third_party_cookie_page_url() {
-    return https_server()->GetURL("a.test",
-                                  "/third_party_partitioned_cookies.html");
+
+  // If slow is set to true will return a URL for a page that never finishes
+  // loading.
+  GURL third_party_cookie_page_url(bool slow = false) {
+    if (slow) {
+      return https_server()->GetURL(
+          "a.test", "/third_party_partitioned_cookies_slow.html");
+    } else {
+      return https_server()->GetURL("a.test",
+                                    "/third_party_partitioned_cookies.html");
+    }
   }
 
   static base::Time GetReferenceTime() {
@@ -441,6 +452,36 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, ReloadView) {
       WaitForHide(CookieControlsBubbleView::kCookieControlsBubble));
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleAllowThirdPartyCookies), 1);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleBlockThirdPartyCookies), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingShown), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, ReloadViewTimeout) {
+  // Test that opening the bubble, then closing it after making a change,
+  // results in the reload view being displayed and then timing out.
+  //
+  // The page loaded in this test will never finish loading, so the timeout
+  // must be configured shorter than the test timeout.
+  BlockThirdPartyCookies();
+  RunTestSequence(
+      /*context(),*/ InstrumentTab(kWebContentsElementId),
+      EnterText(kOmniboxElementId,
+                base::UTF8ToUTF16(
+                    "https://" +
+                    third_party_cookie_page_url(/*slow=*/true).GetContent())),
+      Confirm(kOmniboxElementId),
+      InAnyContext(WaitForShow(kCookieControlsIconElementId)),
+      PressButton(kCookieControlsIconElementId),
+      InAnyContext(WaitForShow(CookieControlsBubbleView::kContentView)),
+      PressButton(CookieControlsContentView::kToggleButton),
+      PressButton(kLocationIconElementId),
+      InAnyContext(WaitForShow(CookieControlsBubbleView::kReloadingView)),
+      WaitForHide(CookieControlsBubbleView::kCookieControlsBubble));
+
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleAllowThirdPartyCookies), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleBlockThirdPartyCookies), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 1);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingShown), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
@@ -484,6 +525,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
       PressButton(kLocationIconElementId),
       EnsureNotPresent(CookieControlsBubbleView::kReloadingView),
       WaitForHide(CookieControlsBubbleView::kCookieControlsBubble));
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
@@ -527,6 +569,8 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
       PressButton(kLocationIconElementId),
       InAnyContext(WaitForShow(CookieControlsBubbleView::kReloadingView)),
       WaitForHide(CookieControlsBubbleView::kCookieControlsBubble));
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingShown), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
@@ -571,6 +615,8 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
       PressButton(kLocationIconElementId),
       EnsureNotPresent(CookieControlsBubbleView::kReloadingView),
       WaitForHide(CookieControlsBubbleView::kCookieControlsBubble));
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingShown), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, NoReloadView) {
@@ -590,4 +636,6 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, NoReloadView) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleAllowThirdPartyCookies), 1);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleBlockThirdPartyCookies), 1);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleSendFeedback), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingShown), 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 0);
 }
