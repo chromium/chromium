@@ -2639,15 +2639,11 @@ void NGOutOfFlowLayoutPart::ReplaceFragment(
         // multicol container. Instead, it will propagate up to the context in
         // which the spanner is laid out. Thus, continue searching past the
         // nearest multicol container for the OOF in question.
-        if (is_inside_spanner) {
-          is_inside_spanner = false;
-          continue;
+        if (!is_inside_spanner) {
+          break;
         }
-        break;
       }
-      if (containing_block->IsColumnSpanAll()) {
-        is_inside_spanner = true;
-      }
+      is_inside_spanner = containing_block->IsColumnSpanAll();
     } while (containing_block->MightBeInsideFragmentationContext());
 
     DCHECK(containing_block->IsFragmentationContextRoot());
