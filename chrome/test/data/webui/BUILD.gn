@@ -264,6 +264,7 @@ if (include_js2gtest_tests && is_chromeos_ash) {
       "chromeos/cloud_upload/file_handler_page_browsertest.js",
       "chromeos/cloud_upload/move_confirmation_page_browsertest.js",
       "chromeos/edu_coexistence/edu_coexistence_browsertest.js",
+      "chromeos/edu_coexistence/edu_coexistence_with_arc_restrictions_browsertest.js",
       "chromeos/emoji_picker/emoji_picker_browsertest.js",
       "chromeos/gaia_action_buttons/gaia_action_buttons_browsertest.js",
       "chromeos/internet_config_dialog_browsertest.js",

@@ -4,11 +4,6 @@
 
 import {TestBrowserProxy} from 'chrome://webui-test/chromeos/test_browser_proxy.js';
 
-/** @return {!Array<string>} */
-export function getFakeAccountsList() {
-  return ['test@gmail.com', 'test2@gmail.com', 'test3@gmail.com'];
-}
-
 /** @implements {EduCoexistenceBrowserProxy} */
 export class TestEduCoexistenceBrowserProxy extends TestBrowserProxy {
   constructor() {
@@ -61,7 +56,8 @@ export class TestEduCoexistenceBrowserProxy extends TestBrowserProxy {
   /** @override */
   getAccounts() {
     this.methodCalled('getAccounts');
-    return Promise.resolve(getFakeAccountsList());
+    return Promise.resolve(
+      ['test@gmail.com', 'test2@gmail.com', 'test3@gmail.com']);
   }
 
   /** @override */

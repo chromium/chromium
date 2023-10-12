@@ -4,23 +4,15 @@
 
 import {EduCoexistenceBrowserProxyImpl} from 'chrome://chrome-signin/edu_coexistence_browser_proxy.js';
 import {EduCoexistenceController} from 'chrome://chrome-signin/edu_coexistence_controller.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
-import {TestEduCoexistenceBrowserProxy} from './edu_coexistence_test_util.js';
-
-window.edu_coexistence_controller_tests = {};
-edu_coexistence_controller_tests.suiteName = 'EduCoexistenceControllerTest';
+import {TestEduCoexistenceBrowserProxy} from './edu_coexistence_test_browser_proxy.js';
 
 const FAKE_NOW_MILLISECONDS = 100000;
 const FAKE_SIGNIN_TIME_MILLISECONDS = 50000;
 
-/** @enum {string} */
-edu_coexistence_controller_tests.TestNames = {
-  GetSigninTimeDelta: 'Get the correct time delta',
-};
-
-suite(edu_coexistence_controller_tests.suiteName, function() {
+suite('EduCoexistenceControllerTest', function() {
   let appComponent;
   let testBrowserProxy;
   let eduCoexistenceController;
@@ -56,8 +48,7 @@ suite(edu_coexistence_controller_tests.suiteName, function() {
   });
 
   test(
-      assert(edu_coexistence_controller_tests.TestNames.GetSigninTimeDelta),
-      function() {
+      'GetSigninTimeDelta', function() {
         // Fake Date.now()
         const realDateNow = Date.now;
         Date.now = () => {

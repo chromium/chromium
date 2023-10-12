@@ -5,23 +5,12 @@
 import 'chrome://chrome-signin/edu_coexistence_ui.js';
 
 import {EduCoexistenceBrowserProxyImpl} from 'chrome://chrome-signin/edu_coexistence_browser_proxy.js';
-import {AuthMode, AuthParams} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {getFakeAccountsList, TestEduCoexistenceBrowserProxy} from './edu_coexistence_test_util.js';
+import {TestEduCoexistenceBrowserProxy} from './edu_coexistence_test_browser_proxy.js';
 
-window.edu_coexistence_ui_tests = {};
-edu_coexistence_ui_tests.suiteName = 'EduCoexistenceUiTest';
-
-/** @enum {string} */
-edu_coexistence_ui_tests.TestNames = {
-  DisableGaiaBackButtonAfterClick: 'Disable Gaia Back Button after Click',
-};
-
-suite(edu_coexistence_ui_tests.suiteName, function() {
+suite('EduCoexistenceUiTest', function() {
   let coexistenceUi;
   let testBrowserProxy;
   let webview;
@@ -56,9 +45,7 @@ suite(edu_coexistence_ui_tests.suiteName, function() {
   });
 
   test(
-      assert(
-          edu_coexistence_ui_tests.TestNames.DisableGaiaBackButtonAfterClick),
-      function() {
+      'DisableGaiaBackButtonAfterClick', function() {
         // Fake out the relevant webview methods.
         let backCalled = false;
         webview.back = (success) => {
