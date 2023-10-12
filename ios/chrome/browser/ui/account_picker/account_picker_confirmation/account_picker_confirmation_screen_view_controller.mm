@@ -28,11 +28,21 @@ namespace {
 constexpr CGFloat kContentMargin = 16.;
 // Space between elements in `_contentView`.
 constexpr CGFloat kContentSpacing = 16.;
-// Extra top padding between the navigation bar of the scroll view and the
-// top edge of the scroll view.
-constexpr CGFloat kExtraNavBarTopPadding = 3.;
 // Vertical insets of primary button.
 constexpr CGFloat kPrimaryButtonVerticalInsets = 15.5;
+
+// Returns font to use for the navigation bar title.
+UIFont* GetNavigationBarTitleFont() {
+  UITraitCollection* large_trait_collection =
+      [UITraitCollection traitCollectionWithPreferredContentSizeCategory:
+                             UIContentSizeCategoryLarge];
+  UIFontDescriptor* font_descriptor = [UIFontDescriptor
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleBody
+             compatibleWithTraitCollection:large_trait_collection];
+  UIFont* font = [UIFont systemFontOfSize:font_descriptor.pointSize
+                                   weight:UIFontWeightBold];
+  return [[UIFontMetrics defaultMetrics] scaledFontForFont:font];
+}
 
 // Returns the width and height of a single pixel in point.
 CGFloat GetPixelLength() {
@@ -118,60 +128,29 @@ CGFloat GetPixelLength() {
   // Set the navigation title in the left bar button item to have left
   // alignment.
   UILabel* titleLabel = [[UILabel alloc] init];
-  titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  titleLabel.adjustsFontForContentSizeCategory = YES;
+  titleLabel.font = GetNavigationBarTitleFont();
   titleLabel.text = _configuration.titleText;
   titleLabel.textAlignment = NSTextAlignmentLeft;
   titleLabel.adjustsFontSizeToFitWidth = YES;
   titleLabel.minimumScaleFactor = 0.1;
 
-  UIButton* cancelButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  [cancelButton setTitle:l10n_util::GetNSString(IDS_CANCEL)
-                forState:UIControlStateNormal];
-  cancelButton.titleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  [cancelButton addTarget:self
-                   action:@selector(cancelButtonAction:)
-         forControlEvents:UIControlEventTouchUpInside];
-  cancelButton.accessibilityIdentifier =
-      kAccountPickerCancelButtonAccessibilityIdentifier;
-  // Put titleLabel and cancelButton each in a wrapper UIView so we can adjust
-  // their top padding.
-  UIView* titleLabelWrapper = [[UIView alloc] init];
-  UIView* cancelButtonWrapper = [[UIView alloc] init];
-  [titleLabelWrapper addSubview:titleLabel];
-  [cancelButtonWrapper addSubview:cancelButton];
-  titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  cancelButton.translatesAutoresizingMaskIntoConstraints = NO;
-
-  // Fix the positions of titleLabel and cancelButton relative to their
-  // wrappers.
-  [NSLayoutConstraint activateConstraints:@[
-    [titleLabel.topAnchor constraintEqualToAnchor:titleLabelWrapper.topAnchor
-                                         constant:kExtraNavBarTopPadding],
-    [titleLabel.bottomAnchor
-        constraintEqualToAnchor:titleLabelWrapper.bottomAnchor],
-    [titleLabel.leadingAnchor
-        constraintEqualToAnchor:titleLabelWrapper.leadingAnchor],
-    [titleLabel.trailingAnchor
-        constraintEqualToAnchor:titleLabelWrapper.trailingAnchor],
-    [cancelButton.topAnchor
-        constraintEqualToAnchor:cancelButtonWrapper.topAnchor
-                       constant:kExtraNavBarTopPadding],
-    [cancelButton.bottomAnchor
-        constraintEqualToAnchor:cancelButtonWrapper.bottomAnchor],
-    [cancelButton.leadingAnchor
-        constraintEqualToAnchor:cancelButtonWrapper.leadingAnchor],
-    [cancelButton.trailingAnchor
-        constraintEqualToAnchor:cancelButtonWrapper.trailingAnchor]
-  ]];
-
-  // Add the wrappers to the navigation bar.
+  // Add the title label to the navigation bar.
   UIBarButtonItem* leftItem =
-      [[UIBarButtonItem alloc] initWithCustomView:titleLabelWrapper];
-  UIBarButtonItem* rightItem =
-      [[UIBarButtonItem alloc] initWithCustomView:cancelButtonWrapper];
+      [[UIBarButtonItem alloc] initWithCustomView:titleLabel];
   self.navigationItem.leftBarButtonItem = leftItem;
-  self.navigationItem.rightBarButtonItem = rightItem;
+  self.navigationController.navigationBar.minimumContentSizeCategory =
+      UIContentSizeCategoryLarge;
+  self.navigationController.navigationBar.maximumContentSizeCategory =
+      UIContentSizeCategoryExtraExtraLarge;
+  // Create the skip button.
+  UIBarButtonItem* cancelButtonItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                           target:self
+                           action:@selector(cancelButtonAction:)];
+  cancelButtonItem.accessibilityIdentifier =
+      kAccountPickerCancelButtonAccessibilityIdentifier;
+  self.navigationItem.rightBarButtonItem = cancelButtonItem;
 
   // Replace the controller view by the scroll view.
   UIScrollView* scrollView = [[UIScrollView alloc] init];
@@ -214,6 +193,7 @@ CGFloat GetPixelLength() {
   NSString* bodyText = _configuration.bodyText;
   if (bodyText) {
     UILabel* label = [[UILabel alloc] init];
+    label.adjustsFontForContentSizeCategory = YES;
     label.text = bodyText;
     label.textColor = [UIColor colorNamed:kGrey700Color];
     label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
