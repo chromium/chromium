@@ -4,16 +4,14 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import android.view.View;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Responsible for hosting properties of BookmarkToolbar views. */
+/** Responsible for binding properties to BookmarkToolbar views. */
 class BookmarkToolbarViewBinder {
     /** Binds the given property to the given model for the given view. */
-    public static void bind(PropertyModel model, View view, PropertyKey key) {
-        BookmarkToolbar bookmarkToolbar = (BookmarkToolbar) view;
+    public static void bind(PropertyModel model, BookmarkToolbar bookmarkToolbar, PropertyKey key) {
         if (key == BookmarkToolbarProperties.BOOKMARK_MODEL) {
             bookmarkToolbar.setBookmarkModel(model.get(BookmarkToolbarProperties.BOOKMARK_MODEL));
         } else if (key == BookmarkToolbarProperties.BOOKMARK_OPENER) {
