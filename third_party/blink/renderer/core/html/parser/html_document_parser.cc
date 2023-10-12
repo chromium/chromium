@@ -35,6 +35,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/optional_util.h"
+#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -188,51 +189,63 @@ bool IsPreloadScanningEnabled(Document* document) {
          document->GetSettings()->GetDoHtmlPreloadScanning();
 }
 
+MIRACLE_PARAMETER_FOR_TIME_DELTA(GetDefaultParserBudget,
+                                 features::kTimedHTMLParserBudget,
+                                 "default-parser-budget",
+                                 base::Milliseconds(10))
+
+// These constants were chosen using experiment data from the field to
+// optimize Core Web Vitals metrics: https://web.dev/vitals/#core-web-vitals
+// Experiments were run on both Android and desktop to determine the values
+// that gave the best aggregate CWV pass rate.
+constexpr int kNumYieldsWithDefaultBudgetDefaultValue =
+#if BUILDFLAG(IS_ANDROID)
+    2
+#else
+    6
+#endif
+    ;
+
+MIRACLE_PARAMETER_FOR_INT(GetNumYieldsWithDefaultBudget,
+                          features::kTimedHTMLParserBudget,
+                          "num-yields-with-default-budget",
+                          kNumYieldsWithDefaultBudgetDefaultValue)
+
+// These constants were chosen using experiment data from the field to
+// optimize Core Web Vitals metrics: https://web.dev/vitals/#core-web-vitals
+// Experiments were run on both Android and desktop to determine the values
+// that gave the best aggregate CWV pass rate.
+constexpr base::TimeDelta kLongParserBudgetDefaultValue =
+#if BUILDFLAG(IS_ANDROID)
+    base::Milliseconds(50)
+#else
+    base::Milliseconds(500)
+#endif
+    ;
+
+MIRACLE_PARAMETER_FOR_TIME_DELTA(GetLongParserBudget,
+                                 features::kTimedHTMLParserBudget,
+                                 "long-parser-budget",
+                                 kLongParserBudgetDefaultValue)
+
 base::TimeDelta GetDefaultTimedBudget() {
-  static const base::FeatureParam<base::TimeDelta> kDefaultParserBudgetParam{
-      &features::kTimedHTMLParserBudget, "default-parser-budget",
-      base::Milliseconds(10)};
   // Cache the value to avoid parsing the param string more than once.
   static const base::TimeDelta kDefaultParserBudgetValue =
-      kDefaultParserBudgetParam.Get();
+      GetDefaultParserBudget();
   return kDefaultParserBudgetValue;
 }
 
 base::TimeDelta GetTimedBudget(int times_yielded) {
-  static const base::FeatureParam<int> kNumYieldsWithDefaultBudgetParam {
-    &features::kTimedHTMLParserBudget, "num-yields-with-default-budget",
-    // These constants were chosen using experiment data from the field to
-    // optimize Core Web Vitals metrics: https://web.dev/vitals/#core-web-vitals
-    // Experiments were run on both Android and desktop to determine the values
-    // that gave the best aggregate CWV pass rate.
-#if BUILDFLAG(IS_ANDROID)
-        2
-#else
-        6
-#endif
-  };
   // Cache the value to avoid parsing the param string more than once.
   static const int kNumYieldsWithDefaultBudgetValue =
-      kNumYieldsWithDefaultBudgetParam.Get();
+      GetNumYieldsWithDefaultBudget();
 
-  static const base::FeatureParam<base::TimeDelta> kLongParserBudgetParam {
-    &features::kTimedHTMLParserBudget, "long-parser-budget",
-    // These constants were chosen using experiment data from the field to
-    // optimize Core Web Vitals metrics: https://web.dev/vitals/#core-web-vitals
-    // Experiments were run on both Android and desktop to determine the values
-    // that gave the best aggregate CWV pass rate.
-#if BUILDFLAG(IS_ANDROID)
-        base::Milliseconds(50)
-#else
-        base::Milliseconds(500)
-#endif
-  };
   // Cache the value to avoid parsing the param string more than once.
-  static const base::TimeDelta kLongParserBudgetValue =
-      kLongParserBudgetParam.Get();
+  static const base::TimeDelta kLongParserBudgetValue = GetLongParserBudget();
 
-  if (times_yielded <= kNumYieldsWithDefaultBudgetValue)
+  if (times_yielded <= kNumYieldsWithDefaultBudgetValue) {
     return GetDefaultTimedBudget();
+  }
   return kLongParserBudgetValue;
 }
 

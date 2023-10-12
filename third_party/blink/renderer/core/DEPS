@@ -57,6 +57,7 @@ include_rules = [
     "+cc/trees/target_property.h",
     "+cc/trees/ukm_manager.h",
     "+components/attribution_reporting/features.h",
+    "+components/miracle_parameter",
     "+components/performance_manager/public/mojom/coordination_unit.mojom-blink.h",
     "+components/performance_manager/public/mojom/web_memory.mojom-blink.h",
     "+gpu/config/gpu_feature_info.h",
