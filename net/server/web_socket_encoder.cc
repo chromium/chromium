@@ -340,6 +340,13 @@ void WebSocketEncoder::EncodeTextFrame(base::StringPiece frame,
     EncodeFrameHybi17(frame, masking_key, false, op_code, output);
 }
 
+void WebSocketEncoder::EncodeCloseFrame(base::StringPiece frame,
+                                        int masking_key,
+                                        std::string* output) {
+  constexpr auto op_code = WebSocketFrameHeader::OpCodeEnum::kOpCodeClose;
+  EncodeFrameHybi17(frame, masking_key, false, op_code, output);
+}
+
 void WebSocketEncoder::EncodePongFrame(base::StringPiece frame,
                                        int masking_key,
                                        std::string* output) {

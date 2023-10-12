@@ -121,8 +121,27 @@ WebSocket::ParseResult WebSocket::Read(std::string* message) {
   int bytes_consumed = 0;
   result = encoder_->DecodeFrame(frame, &bytes_consumed, message);
   read_buf->DidConsume(bytes_consumed);
-  if (result == FRAME_CLOSE)
+
+  if (result == FRAME_CLOSE) {
+    // The current websocket implementation does not initiate the Close
+    // handshake before closing the connection.
+    // Therefore the received Close frame most likely belongs to the client that
+    // initiated the Closing handshake.
+    // According to https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.1
+    // if an endpoint receives a Close frame and did not previously send a
+    // Close frame, the endpoint MUST send a Close frame in response.
+    // It also MAY provide the close reason listed in
+    // https://datatracker.ietf.org/doc/html/rfc6455#section-7.4.1.
+    // As the closure was initiated by the client the "normal closure" status
+    // code is appropriate.
+    std::string code = "\x03\xe8";  // code = 1000;
+    std::string encoded;
+    encoder_->EncodeCloseFrame(code, 0, &encoded);
+    server_->SendRaw(connection_->id(), encoded, *traffic_annotation_);
+
     closed_ = true;
+  }
+
   if (result == FRAME_PING) {
     if (!traffic_annotation_)
       return FRAME_ERROR;
