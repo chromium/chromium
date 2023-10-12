@@ -23,6 +23,7 @@ import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_hos
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeTypes} from '../../components/oobe_types.js';
 import {addSubmitListener} from '../../login_ui_tools.js';
 
 
@@ -33,6 +34,7 @@ import {addSubmitListener} from '../../login_ui_tools.js';
 const LocalPasswordSetupState = {
   PASSWORD: 'password',
   PROGRESS: 'progress',
+  DONE: 'done',
 };
 
 /**
@@ -51,6 +53,9 @@ const LocalPasswordSetupBase = mixinBehaviors(
     ],
     PolymerElement);
 
+/**
+ * @polymer
+ */
 class LocalPasswordSetup extends LocalPasswordSetupBase {
   static get is() {
     return 'local-password-setup-element';
@@ -76,6 +81,10 @@ class LocalPasswordSetup extends LocalPasswordSetupBase {
     this.backButtonVisible_ = true;
   }
 
+  get EXTERNAL_API() {
+    return ['showLocalPasswordSetupSuccess', 'showLocalPasswordSetupFailure'];
+  }
+
   defaultUIStep() {
     return LocalPasswordSetupState.PASSWORD;
   }
@@ -96,11 +105,19 @@ class LocalPasswordSetup extends LocalPasswordSetupBase {
 
   /**
    * Event handler that is invoked just before the screen is shown.
-   * @param {Object} data Screen init payload
    */
   onBeforeShow(data) {
     this.reset_();
     this.backButtonVisible_ = data['showBackButton'];
+  }
+
+  showLocalPasswordSetupSuccess() {
+    this.setUIStep(LocalPasswordSetupState.DONE);
+  }
+
+  showLocalPasswordSetupFailure() {
+    // TODO(b/304963851): Show setup failed message, likely allowing user to
+    // retry.
   }
 
   reset_() {
@@ -117,6 +134,10 @@ class LocalPasswordSetup extends LocalPasswordSetupBase {
   onSubmit_() {
     this.setUIStep(LocalPasswordSetupState.PROGRESS);
     this.userActed(['inputPassword', this.$.passwordInput.value]);
+  }
+
+  onDoneClicked_() {
+    this.userActed(['done']);
   }
 }
 

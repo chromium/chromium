@@ -25,6 +25,7 @@ namespace {
 
 constexpr const char kUserActionInputPassword[] = "inputPassword";
 constexpr const char kUserActionBack[] = "back";
+constexpr const char kUserActionDone[] = "done";
 
 }  // namespace
 
@@ -81,6 +82,9 @@ void LocalPasswordSetupScreen::OnUserAction(const base::Value::List& args) {
   } else if (action_id == kUserActionBack) {
     exit_callback_.Run(Result::kBack);
     return;
+  } else if (action_id == kUserActionDone) {
+    exit_callback_.Run(Result::kDone);
+    return;
   }
   BaseScreen::OnUserAction(args);
 }
@@ -88,15 +92,14 @@ void LocalPasswordSetupScreen::OnUserAction(const base::Value::List& args) {
 void LocalPasswordSetupScreen::OnSetLocalPassword(
     auth::mojom::ConfigureResult result) {
   if (result != auth::mojom::ConfigureResult::kSuccess) {
+    view_->ShowLocalPasswordSetupFailure();
     LOG(ERROR) << "Failed to set local password, error id= "
                << static_cast<int>(result);
     exit_callback_.Run(Result::kDone);
     crash_reporter::DumpWithoutCrashing();
-    // TODO(b/291808449): Show setup failed message, likely allowing user to
-    // retry.
     return;
   }
-  exit_callback_.Run(Result::kDone);
+  view_->ShowLocalPasswordSetupSuccess();
 }
 
 std::string LocalPasswordSetupScreen::GetToken() const {

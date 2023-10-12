@@ -23,6 +23,8 @@ class LocalPasswordSetupView
   LocalPasswordSetupView& operator=(const LocalPasswordSetupView&) = delete;
 
   virtual void Show(bool can_go_back) = 0;
+  virtual void ShowLocalPasswordSetupSuccess() = 0;
+  virtual void ShowLocalPasswordSetupFailure() = 0;
 };
 
 // A class that handles WebUI hooks in Gaia screen.
@@ -41,6 +43,8 @@ class LocalPasswordSetupHandler : public BaseScreenHandler,
 
   // LocalPasswordSetupView:
   void Show(bool can_go_back) override;
+  void ShowLocalPasswordSetupSuccess() override;
+  void ShowLocalPasswordSetupFailure() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(::login::LocalizedValuesBuilder* builder) final;

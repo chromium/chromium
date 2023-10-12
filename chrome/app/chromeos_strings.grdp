@@ -1686,6 +1686,12 @@
   <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_TITLE" desc="Title local password setup dialog.">
     Set <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password
   </message>
+  <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_DONE_TITLE" desc="Title local password setup done dialog.">
+    Your password is set
+  </message>
+  <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_DONE_SUBTITLE" desc="Subitle local password setup done dialog.">
+    You can use this password to sign in to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
+  </message>
   <message name="IDS_LOGIN_MANUAL_PASSWORD_TITLE" desc="Title for the manual password setting dialog.">
     Please create a password to protect your local data.
   </message>

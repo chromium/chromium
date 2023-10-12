@@ -22,8 +22,14 @@ void LocalPasswordSetupHandler::Show(bool can_go_back) {
 
 void LocalPasswordSetupHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
+  const std::u16string device_name = ui::GetChromeOSDeviceName();
+
   builder->AddF("localPasswordSetupTitle", IDS_LOGIN_LOCAL_PASSWORD_SETUP_TITLE,
-                ui::GetChromeOSDeviceName());
+                device_name);
+  builder->AddF("localPasswordSetupDoneSubtitle",
+                IDS_LOGIN_LOCAL_PASSWORD_SETUP_DONE_SUBTITLE, device_name);
+  builder->Add("localPasswordSetupDoneTitle",
+               IDS_LOGIN_LOCAL_PASSWORD_SETUP_DONE_TITLE);
   builder->Add("passwordInputPlaceholderText",
                IDS_LOGIN_MANUAL_PASSWORD_INPUT_LABEL);
   builder->Add("confirmPasswordInputPlaceholderText",
@@ -37,6 +43,14 @@ void LocalPasswordSetupHandler::DeclareLocalizedValues(
                IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_MIN_CHARS_HINT);
   builder->Add("setLocalPasswordNoMatchError",
                IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_NO_MATCH_ERROR);
+}
+
+void LocalPasswordSetupHandler::ShowLocalPasswordSetupSuccess() {
+  CallExternalAPI("showLocalPasswordSetupSuccess");
+}
+
+void LocalPasswordSetupHandler::ShowLocalPasswordSetupFailure() {
+  CallExternalAPI("showLocalPasswordSetupFailure");
 }
 
 }  // namespace ash
