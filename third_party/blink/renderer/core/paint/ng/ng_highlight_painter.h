@@ -91,7 +91,6 @@ class CORE_EXPORT NGHighlightPainter {
 
     void PaintSelectedText(NGTextPainter& text_painter,
                            const NGTextFragmentPaintInfo&,
-                           unsigned length,
                            const TextPaintStyle& text_style,
                            DOMNodeId node_id,
                            const AutoDarkMode& auto_dark_mode);
@@ -99,7 +98,6 @@ class CORE_EXPORT NGHighlightPainter {
     void PaintSuppressingTextProperWhereSelected(
         NGTextPainter& text_painter,
         const NGTextFragmentPaintInfo&,
-        unsigned length,
         const TextPaintStyle& text_style,
         DOMNodeId node_id,
         const AutoDarkMode& auto_dark_mode);

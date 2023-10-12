@@ -84,7 +84,6 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
   ~NGTextPainter() = default;
 
   void Paint(const NGTextFragmentPaintInfo& fragment_paint_info,
-             unsigned truncation_point,
              const TextPaintStyle&,
              DOMNodeId,
              const AutoDarkMode& auto_dark_mode,
@@ -93,7 +92,6 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
   void PaintSelectedText(const NGTextFragmentPaintInfo& fragment_paint_info,
                          unsigned selection_start,
                          unsigned selection_end,
-                         unsigned truncation_point,
                          const TextPaintStyle& text_style,
                          const TextPaintStyle& selection_style,
                          const LineRelativeRect& selection_rect,
@@ -135,12 +133,6 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
   void PaintInternalFragment(const NGTextFragmentPaintInfo&,
                              DOMNodeId node_id,
                              const AutoDarkMode& auto_dark_mode);
-
-  template <PaintInternalStep step>
-  void PaintInternal(const NGTextFragmentPaintInfo&,
-                     unsigned truncation_point,
-                     DOMNodeId node_id,
-                     const AutoDarkMode& auto_dark_mode);
 
   void PaintSvgTextFragment(const NGTextFragmentPaintInfo&,
                             DOMNodeId node_id,

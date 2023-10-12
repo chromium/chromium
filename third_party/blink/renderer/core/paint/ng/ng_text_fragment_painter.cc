@@ -509,22 +509,22 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
       // Fast path: just paint the text, including its decorations.
       decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
       decoration_painter.PaintExceptLineThrough(fragment_paint_info);
-      text_painter.Paint(fragment_paint_info, fragment_paint_info.Length(),
-                         text_style, node_id, auto_dark_mode);
+      text_painter.Paint(fragment_paint_info, text_style, node_id,
+                         auto_dark_mode);
       decoration_painter.PaintOnlyLineThrough();
       break;
     case NGHighlightPainter::kFastSpellingGrammar:
       decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
       decoration_painter.PaintExceptLineThrough(fragment_paint_info);
-      text_painter.Paint(fragment_paint_info, fragment_paint_info.Length(),
-                         text_style, node_id, auto_dark_mode);
+      text_painter.Paint(fragment_paint_info, text_style, node_id,
+                         auto_dark_mode);
       decoration_painter.PaintOnlyLineThrough();
       highlight_painter.FastPaintSpellingGrammarDecorations();
       break;
     case NGHighlightPainter::kFastSelection:
       highlight_painter.Selection()->PaintSuppressingTextProperWhereSelected(
-          text_painter, fragment_paint_info, fragment_paint_info.Length(),
-          text_style, node_id, auto_dark_mode);
+          text_painter, fragment_paint_info, text_style, node_id,
+          auto_dark_mode);
       break;
     case NGHighlightPainter::kOverlay:
       // Slow path: paint suppressing text proper where highlighted, then
@@ -538,8 +538,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
       decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
       decoration_painter.PaintExceptLineThrough(fragment_paint_info);
       highlight_painter.Selection()->PaintSuppressingTextProperWhereSelected(
-          text_painter, fragment_paint_info, fragment_paint_info.Length(),
-          text_style, node_id, auto_dark_mode);
+          text_painter, fragment_paint_info, text_style, node_id,
+          auto_dark_mode);
       decoration_painter.PaintOnlyLineThrough();
       break;
     case NGHighlightPainter::kSelectionOnly:
@@ -567,16 +567,16 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     switch (highlight_case) {
       case NGHighlightPainter::kFastSelection:
         highlight_painter.Selection()->PaintSelectedText(
-            text_painter, fragment_paint_info, fragment_paint_info.Length(),
-            text_style, node_id, auto_dark_mode);
+            text_painter, fragment_paint_info, text_style, node_id,
+            auto_dark_mode);
         break;
       case NGHighlightPainter::kSelectionOnly:
       case NGHighlightPainter::kOldSelection:
         decoration_painter.Begin(NGTextDecorationPainter::kSelection);
         decoration_painter.PaintExceptLineThrough(fragment_paint_info);
         highlight_painter.Selection()->PaintSelectedText(
-            text_painter, fragment_paint_info, fragment_paint_info.Length(),
-            text_style, node_id, auto_dark_mode);
+            text_painter, fragment_paint_info, text_style, node_id,
+            auto_dark_mode);
         decoration_painter.PaintOnlyLineThrough();
         break;
       case NGHighlightPainter::kOverlay:

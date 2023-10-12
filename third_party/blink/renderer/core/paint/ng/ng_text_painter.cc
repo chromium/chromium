@@ -175,23 +175,26 @@ bool SetupPaintForSvgText(const NGTextPainter::SvgTextPaintState& state,
 }  // namespace
 
 void NGTextPainter::Paint(const NGTextFragmentPaintInfo& fragment_paint_info,
-                          unsigned length,
                           const TextPaintStyle& text_style,
                           DOMNodeId node_id,
                           const AutoDarkMode& auto_dark_mode,
                           ShadowMode shadow_mode) {
+  // TODO(layout-dev): We shouldn't be creating text fragments without text.
+  if (!fragment_paint_info.shape_result) {
+    return;
+  }
   GraphicsContextStateSaver state_saver(graphics_context_, false);
   UpdateGraphicsContext(graphics_context_, text_style, state_saver,
                         shadow_mode);
   // TODO(layout-dev): Handle combine text here or elsewhere.
-  PaintInternal<kPaintText>(fragment_paint_info, length, node_id,
-                            auto_dark_mode);
+  PaintInternalFragment<kPaintText>(fragment_paint_info, node_id,
+                                    auto_dark_mode);
 
   if (!emphasis_mark_.empty()) {
     if (text_style.emphasis_mark_color != text_style.fill_color)
       graphics_context_.SetFillColor(text_style.emphasis_mark_color);
-    PaintInternal<kPaintEmphasisMark>(fragment_paint_info, length, node_id,
-                                      auto_dark_mode);
+    PaintInternalFragment<kPaintEmphasisMark>(fragment_paint_info, node_id,
+                                              auto_dark_mode);
   }
 }
 
@@ -203,7 +206,6 @@ void NGTextPainter::PaintSelectedText(
     const NGTextFragmentPaintInfo& fragment_paint_info,
     unsigned selection_start,
     unsigned selection_end,
-    unsigned length,
     const TextPaintStyle& text_style,
     const TextPaintStyle& selection_style,
     const LineRelativeRect& selection_rect,
@@ -229,7 +231,7 @@ void NGTextPainter::PaintSelectedText(
     absl::optional<base::AutoReset<bool>> is_painting_selection_reset;
     if (NGTextPainter::SvgTextPaintState* state = GetSvgState())
       is_painting_selection_reset.emplace(&state->is_painting_selection_, true);
-    Paint(fragment_paint_info.Slice(selection_start, selection_end), length,
+    Paint(fragment_paint_info.Slice(selection_start, selection_end),
           selection_style, node_id, auto_dark_mode);
     return;
   }
@@ -247,8 +249,8 @@ void NGTextPainter::PaintSelectedText(
   {
     GraphicsContextStateSaver state_saver(graphics_context_);
     graphics_context_.ClipOut(float_selection_rect);
-    Paint(fragment_paint_info.Slice(selection_start, selection_end), length,
-          text_style, node_id, auto_dark_mode, kTextProperOnly);
+    Paint(fragment_paint_info.Slice(selection_start, selection_end), text_style,
+          node_id, auto_dark_mode, kTextProperOnly);
   }
   // Then draw the glyphs inside the selection area, with the selection style.
   {
@@ -257,7 +259,7 @@ void NGTextPainter::PaintSelectedText(
       is_painting_selection_reset.emplace(&state->is_painting_selection_, true);
     GraphicsContextStateSaver state_saver(graphics_context_);
     graphics_context_.Clip(float_selection_rect);
-    Paint(fragment_paint_info.Slice(selection_start, selection_end), length,
+    Paint(fragment_paint_info.Slice(selection_start, selection_end),
           selection_style, node_id, auto_dark_mode);
   }
 }
@@ -354,30 +356,6 @@ void NGTextPainter::PaintInternalFragment(
 
     if (!font_.ShouldSkipDrawing())
       PaintTimingDetector::NotifyTextPaint(visual_rect_);
-  }
-}
-
-template <NGTextPainter::PaintInternalStep Step>
-void NGTextPainter::PaintInternal(
-    const NGTextFragmentPaintInfo& fragment_paint_info,
-    unsigned truncation_point,
-    DOMNodeId node_id,
-    const AutoDarkMode& auto_dark_mode) {
-  // TODO(layout-dev): We shouldn't be creating text fragments without text.
-  if (!fragment_paint_info.shape_result)
-    return;
-
-  if (fragment_paint_info.from <= fragment_paint_info.to) {
-    PaintInternalFragment<Step>(fragment_paint_info, node_id, auto_dark_mode);
-  } else {
-    if (fragment_paint_info.to > 0) {
-      PaintInternalFragment<Step>(fragment_paint_info, node_id, auto_dark_mode);
-    }
-    if (fragment_paint_info.from < truncation_point) {
-      PaintInternalFragment<Step>(
-          fragment_paint_info.WithEndOffset(truncation_point), node_id,
-          auto_dark_mode);
-    }
   }
 }
 
