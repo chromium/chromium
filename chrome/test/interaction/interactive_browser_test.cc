@@ -45,29 +45,6 @@ namespace {
 constexpr ui::InteractionSequence::ContextMode kDefaultWebContentsContextMode =
     ui::InteractionSequence::ContextMode::kAny;
 
-std::string DescribeStateChange(
-    const WebContentsInteractionTestUtil::StateChange& state_change) {
-  std::ostringstream oss;
-  oss << "StateChange{ ";
-  switch (state_change.type) {
-    case WebContentsInteractionTestUtil::StateChange::Type::kDoesNotExist:
-      oss << "does not exist: " << state_change.where << " }";
-      break;
-    case WebContentsInteractionTestUtil::StateChange::Type::kExists:
-      oss << "exists: " << state_change.where << " }";
-      break;
-    case WebContentsInteractionTestUtil::StateChange::Type::
-        kExistsAndConditionTrue:
-      oss << "exists: " << state_change.where << " and condition true:\n"
-          << state_change.test_function << "\n}";
-      break;
-    case WebContentsInteractionTestUtil::StateChange::Type::kConditionTrue:
-      oss << "condition true:\n" << state_change.test_function << "\n}";
-      break;
-  }
-  return oss.str();
-}
-
 // Matcher that determines whether a particular value is truthy.
 class IsTruthyMatcher : public testing::MatcherInterface<const base::Value&> {
  public:
@@ -377,14 +354,16 @@ InteractiveBrowserTestApi::WaitForStateChange(
   ui::CustomElementEventType event_type =
       expect_timeout ? state_change.timeout_event : state_change.event;
   CHECK(event_type);
-  const auto desc = base::StringPrintf(
-      "WaitForStateChange( %s, %s )", DescribeStateChange(state_change).c_str(),
-      expect_timeout ? "true" : "false");
+  std::ostringstream desc;
+  desc << "WaitForStateChange( " << state_change << ", "
+       << (expect_timeout ? "true" : "false") << " )";
+  const bool fail_on_close = !state_change.continue_across_navigation;
   return Steps(
       std::move(StepBuilder()
-                    .SetDescription(base::StrCat({desc, ": Queue Event"}))
+                    .SetDescription(base::StrCat({desc.str(), ": Queue Event"}))
                     .SetElementID(webcontents_id)
                     .SetContext(kDefaultWebContentsContextMode)
+                    .SetMustRemainVisible(fail_on_close)
                     .SetStartCallback(base::BindOnce(
                         [](StateChange state_change, ui::TrackedElement* el) {
                           el->AsA<TrackedElementWebContents>()
@@ -392,13 +371,15 @@ InteractiveBrowserTestApi::WaitForStateChange(
                               ->SendEventOnStateChange(state_change);
                         },
                         state_change))),
-      std::move(StepBuilder()
-                    .SetDescription(base::StrCat({desc, ": Wait For Event"}))
-                    .SetElementID(webcontents_id)
-                    .SetContext(
-                        ui::InteractionSequence::ContextMode::kFromPreviousStep)
-                    .SetType(ui::InteractionSequence::StepType::kCustomEvent,
-                             event_type)));
+      std::move(
+          StepBuilder()
+              .SetDescription(base::StrCat({desc.str(), ": Wait For Event"}))
+              .SetElementID(webcontents_id)
+              .SetContext(
+                  ui::InteractionSequence::ContextMode::kFromPreviousStep)
+              .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                       event_type)
+              .SetMustBeVisibleAtStart(fail_on_close)));
 }
 
 // static

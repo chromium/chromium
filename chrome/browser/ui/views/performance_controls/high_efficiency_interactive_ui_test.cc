@@ -228,7 +228,6 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
   StateChange video_is_playing;
   video_is_playing.event = kVideoIsPlaying;
   video_is_playing.where = video;
-  video_is_playing.type = StateChange::Type::kConditionTrue;
   video_is_playing.test_function = kMediaIsPlaying;
 
   RunTestSequence(

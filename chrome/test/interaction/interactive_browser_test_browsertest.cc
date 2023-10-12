@@ -13,6 +13,7 @@
 #include "chrome/test/base/test_switches.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "url/gurl.h"
@@ -509,6 +510,53 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, ScrollIntoView) {
                   ScrollIntoView(kTabId, kText),
                   CheckJsResultAt(kTabId, kLink, kElementIsInViewport, false),
                   CheckJsResultAt(kTabId, kText, kElementIsInViewport, true));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
+                       WaitForStateChangeAcrossNavigation) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFoundElementEvent);
+  const GURL url1 = embedded_test_server()->GetURL(kDocumentWithLinks);
+  const GURL url2 = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+
+  StateChange state_change;
+  state_change.type = StateChange::Type::kExists;
+  state_change.where = {"#select"};
+  state_change.continue_across_navigation = true;
+  state_change.event = kFoundElementEvent;
+
+  RunTestSequence(
+      InstrumentTab(kTabId),
+      // This is needed to prevent subsequent navigation from causing the
+      // previous step to fail due to the element immediately losing visibility.
+      FlushEvents(),
+      InParallel(Steps(NavigateWebContents(kTabId, url1),
+                       NavigateWebContents(kTabId, url2)),
+                 WaitForStateChange(kTabId, state_change)));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
+                       WaitForStateChangeWithConditionAcrossNavigation) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFoundElementEvent);
+  const GURL url1 = embedded_test_server()->GetURL(kDocumentWithLinks);
+  const GURL url2 = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+
+  StateChange state_change;
+  state_change.type = StateChange::Type::kExistsAndConditionTrue;
+  state_change.where = {"#select option[selected]"};
+  state_change.test_function = "(el) => (el.innerText === 'Apple')";
+  state_change.continue_across_navigation = true;
+  state_change.event = kFoundElementEvent;
+
+  RunTestSequence(
+      InstrumentTab(kTabId),
+      // This is needed to prevent subsequent navigation from causing the
+      // previous step to fail due to the element immediately losing visibility.
+      FlushEvents(),
+      InParallel(Steps(NavigateWebContents(kTabId, url1),
+                       NavigateWebContents(kTabId, url2)),
+                 WaitForStateChange(kTabId, state_change)));
 }
 
 // Parameter for WebUI coverage tests.
