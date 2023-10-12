@@ -11,6 +11,11 @@ option optimize_for = LITE_RUNTIME;
 
 package ip_protection;
 
+message GetProxyConfigRequest {
+  // Descriptor of which service is calling this endpoint, eg. chromeipblinding.
+  string service_type = 1;
+}
+
 message GetProxyConfigResponse {
   // Hostnames for the first proxy hop. Ordered based on preference for use.
   repeated string first_hop_hostnames = 1;

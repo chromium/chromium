@@ -13,6 +13,7 @@
 #include "google_apis/google_api_keys.h"
 #include "net/base/features.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -83,12 +84,13 @@ constexpr net::NetworkTrafficAnnotationTag kGetProxyConfigTrafficAnnotation =
     )");
 
 const char kGoogApiKeyHeader[] = "X-Goog-Api-Key";
-}  // namespace
+const char kChromeIpBlinding[] = "chromeipblinding";
 
-// The maximum size of the IpProtectionRequests - 256 KB (in practice these
+// The maximum size of the IP Protection requests - 256 KB (in practice these
 // should be much smaller than this).
 const int kIpProtectionRequestMaxBodySize = 256 * 1024;
 const char kProtobufContentType[] = "application/x-protobuf";
+}  // namespace
 
 IpProtectionConfigHttp::IpProtectionConfigHttp(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
@@ -135,15 +137,13 @@ void IpProtectionConfigHttp::DoRequest(
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,
       base::StrCat({"Bearer ", authorization_header}));
-  resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
-                                      kProtobufContentType);
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       kProtobufContentType);
 
   std::unique_ptr<network::SimpleURLLoader> url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        kGetTokenTrafficAnnotation);
-  url_loader->AttachStringForUpload(body);
+  url_loader->AttachStringForUpload(body, kProtobufContentType);
   auto* url_loader_ptr = url_loader.get();
   url_loader_ptr->DownloadToString(
       url_loader_factory_.get(),
@@ -190,23 +190,25 @@ void IpProtectionConfigHttp::GetProxyConfig(GetProxyConfigCallback callback) {
     return;
   }
 
+  ip_protection::GetProxyConfigRequest get_proxy_config_request;
+  get_proxy_config_request.set_service_type(kChromeIpBlinding);
+
+  std::string body;
+  get_proxy_config_request.SerializeToString(&body);
+
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = std::move(request_url);
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->headers.SetHeader(kGoogApiKeyHeader,
                                       google_apis::GetAPIKey());
-  // Although this request has an empty request-body, it must still have the
-  // protobuf content-type, or else the API server will ignore the `Accept`
-  // header and respond with JSON.
-  resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
-                                      kProtobufContentType);
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       kProtobufContentType);
 
   std::unique_ptr<network::SimpleURLLoader> url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        kGetProxyConfigTrafficAnnotation);
+  url_loader->AttachStringForUpload(body, kProtobufContentType);
   auto* url_loader_ptr = url_loader.get();
   url_loader_ptr->DownloadToString(
       url_loader_factory_.get(),
