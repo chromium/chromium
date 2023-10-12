@@ -74,7 +74,6 @@
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
 #include "third_party/blink/renderer/core/page/scoped_browsing_context_group_pauser.h"
 #include "third_party/blink/renderer/core/page/scoped_page_pauser.h"
-#include "third_party/blink/renderer/core/page/scrolling/overscroll_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
@@ -213,9 +212,6 @@ Page::Page(base::PassKey<Page>,
       global_root_scroller_controller_(
           MakeGarbageCollected<TopDocumentRootScrollerController>(*this)),
       visual_viewport_(MakeGarbageCollected<VisualViewport>(*this)),
-      overscroll_controller_(
-          MakeGarbageCollected<OverscrollController>(GetVisualViewport(),
-                                                     GetChromeClient())),
       link_highlight_(MakeGarbageCollected<LinkHighlight>(*this)),
       plugin_data_(nullptr),
       // TODO(pdr): Initialize |validation_message_client_| lazily.
@@ -329,14 +325,6 @@ VisualViewport& Page::GetVisualViewport() {
 
 const VisualViewport& Page::GetVisualViewport() const {
   return *visual_viewport_;
-}
-
-OverscrollController& Page::GetOverscrollController() {
-  return *overscroll_controller_;
-}
-
-const OverscrollController& Page::GetOverscrollController() const {
-  return *overscroll_controller_;
 }
 
 LinkHighlight& Page::GetLinkHighlight() {
@@ -957,7 +945,6 @@ void Page::Trace(Visitor* visitor) const {
   visitor->Trace(console_message_storage_);
   visitor->Trace(global_root_scroller_controller_);
   visitor->Trace(visual_viewport_);
-  visitor->Trace(overscroll_controller_);
   visitor->Trace(link_highlight_);
   visitor->Trace(spatial_navigation_controller_);
   visitor->Trace(main_frame_);

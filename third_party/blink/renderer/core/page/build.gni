@@ -70,8 +70,6 @@ blink_core_sources_page = [
   "scrolling/element_fragment_anchor.h",
   "scrolling/fragment_anchor.cc",
   "scrolling/fragment_anchor.h",
-  "scrolling/overscroll_controller.cc",
-  "scrolling/overscroll_controller.h",
   "scrolling/root_scroller_controller.cc",
   "scrolling/root_scroller_controller.h",
   "scrolling/scroll_state.cc",

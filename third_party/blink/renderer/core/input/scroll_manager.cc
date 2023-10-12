@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/page/scrolling/overscroll_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/scroll_state.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
@@ -50,7 +49,7 @@ void ScrollManager::Clear() {
   scrollbar_handling_scroll_gesture_ = nullptr;
   resize_scrollable_area_ = nullptr;
   offset_from_resize_corner_ = {};
-  ClearGestureScrollState();
+  scroll_gesture_handling_node_ = nullptr;
 }
 
 void ScrollManager::Trace(Visitor* visitor) const {
@@ -58,16 +57,6 @@ void ScrollManager::Trace(Visitor* visitor) const {
   visitor->Trace(scroll_gesture_handling_node_);
   visitor->Trace(scrollbar_handling_scroll_gesture_);
   visitor->Trace(resize_scrollable_area_);
-}
-
-void ScrollManager::ClearGestureScrollState() {
-  scroll_gesture_handling_node_ = nullptr;
-
-  if (Page* page = frame_->GetPage()) {
-    bool reset_x = true;
-    bool reset_y = true;
-    page->GetOverscrollController().ResetAccumulated(reset_x, reset_y);
-  }
 }
 
 void ScrollManager::StopAutoscroll() {
@@ -456,7 +445,6 @@ WebInputEventResult ScrollManager::HandleGestureScrollEvent(
       return WebInputEventResult::kNotHandled;
     }
 
-    ClearGestureScrollState();
     scroll_gesture_handling_node_ = event_target;
   }
 

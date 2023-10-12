@@ -81,7 +81,6 @@ class LinkHighlight;
 class LocalFrame;
 class LocalFrameView;
 class MediaFeatureOverrides;
-class OverscrollController;
 class PageAnimator;
 struct PageScaleConstraints;
 class PageScaleConstraintsSet;
@@ -257,9 +256,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   const VisualViewport& GetVisualViewport() const;
 
   LinkHighlight& GetLinkHighlight();
-
-  OverscrollController& GetOverscrollController();
-  const OverscrollController& GetOverscrollController() const;
 
   void SetTabKeyCyclesThroughElements(bool b) {
     tab_key_cycles_through_elements_ = b;
@@ -514,7 +510,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   const Member<TopDocumentRootScrollerController>
       global_root_scroller_controller_;
   const Member<VisualViewport> visual_viewport_;
-  const Member<OverscrollController> overscroll_controller_;
   const Member<LinkHighlight> link_highlight_;
   Member<SpatialNavigationController> spatial_navigation_controller_;
 

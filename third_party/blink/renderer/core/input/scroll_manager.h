@@ -113,8 +113,6 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager> {
   Node* NodeTargetForScrollableAreaElementId(
       CompositorElementId scrollable_area_element_id) const;
 
-  void ClearGestureScrollState();
-
   bool HandleScrollGestureOnResizer(Node*, const WebGestureEvent&);
 
   void RecomputeScrollChain(const Node& start_node,
