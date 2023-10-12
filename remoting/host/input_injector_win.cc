@@ -386,8 +386,6 @@ void InputInjectorWin::Core::HandleKey(const KeyEvent& event) {
 
   int scancode =
       ui::KeycodeConverter::UsbKeycodeToNativeKeycode(event.usb_keycode());
-  VLOG(3) << "Converting USB keycode: " << std::hex << event.usb_keycode()
-          << " to scancode: " << scancode << std::dec;
 
   // Ignore events which can't be mapped.
   if (scancode == ui::KeycodeConverter::InvalidNativeKeycode()) {
@@ -418,6 +416,7 @@ void InputInjectorWin::Core::HandleKey(const KeyEvent& event) {
   }
 
   uint32_t flags = KEYEVENTF_SCANCODE | (event.pressed() ? 0 : KEYEVENTF_KEYUP);
+  VLOG(3) << "Injecting key " << (event.pressed() ? "down" : "up") << " event.";
   SendKeyboardInput(flags, scancode, 0);
 }
 

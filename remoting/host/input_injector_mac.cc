@@ -53,6 +53,7 @@ void CreateAndPostKeyEvent(int keycode,
           eventRef, unicode.size(),
           reinterpret_cast<const UniChar*>(unicode.data()));
     }
+    VLOG(3) << "Injecting key " << (pressed ? "down" : "up") << " event.";
     CGEventPost(kCGSessionEventTap, eventRef);
   }
 }
@@ -255,9 +256,6 @@ void InputInjectorMac::Core::InjectKeyEvent(const KeyEvent& event) {
 
   int keycode =
       ui::KeycodeConverter::UsbKeycodeToNativeKeycode(event.usb_keycode());
-
-  VLOG(3) << "Converting USB keycode: " << std::hex << event.usb_keycode()
-          << " to keycode: " << keycode << std::dec;
 
   // If we couldn't determine the Mac virtual key code then ignore the event.
   if (keycode == ui::KeycodeConverter::InvalidNativeKeycode()) {

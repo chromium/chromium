@@ -323,7 +323,7 @@ void InputInjectorWayland::Core::InjectKeyEventHelper(const KeyEvent& event) {
 
   // Ignore events which can't be mapped.
   if (keycode == ui::KeycodeConverter::InvalidNativeKeycode()) {
-    LOG(ERROR) << __func__ << " : Invalid key code: " << keycode;
+    LOG(ERROR) << __func__ << " : Invalid key code";
     return;
   }
 
