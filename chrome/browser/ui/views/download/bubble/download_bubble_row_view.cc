@@ -97,17 +97,17 @@ constexpr int kProgressBarHeight = 3;
 constexpr int kNumColumns = 5;
 
 // A stub subclass of Button that has no visuals.
-class TransparentButton : public views::Button {
+class DownloadBubbleTransparentButton : public views::Button {
  public:
-  METADATA_HEADER(TransparentButton);
+  METADATA_HEADER(DownloadBubbleTransparentButton);
 
-  explicit TransparentButton(PressedCallback callback,
-                             DownloadBubbleRowView* row_view)
+  explicit DownloadBubbleTransparentButton(PressedCallback callback,
+                                           DownloadBubbleRowView* row_view)
       : Button(callback), row_view_(row_view) {
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
     SetInstallFocusRingOnFocus(false);
   }
-  ~TransparentButton() override = default;
+  ~DownloadBubbleTransparentButton() override = default;
 
   // Forward dragging and capture loss events, since this class doesn't have
   // enough context to handle them. Let the `DownloadBubbleRowView` manage
@@ -135,7 +135,7 @@ class TransparentButton : public views::Button {
   raw_ptr<DownloadBubbleRowView> row_view_;
 };
 
-BEGIN_METADATA(TransparentButton, Button)
+BEGIN_METADATA(DownloadBubbleTransparentButton, Button)
 END_METADATA
 }  // namespace
 
@@ -398,10 +398,11 @@ DownloadBubbleRowView::DownloadBubbleRowView(
 
   layout->SetChildViewIgnoredByLayout(inkdrop_container_, true);
 
-  transparent_button_ = AddChildView(std::make_unique<TransparentButton>(
-      base::BindRepeating(&DownloadBubbleRowView::OnMainButtonPressed,
-                          base::Unretained(this)),
-      this));
+  transparent_button_ =
+      AddChildView(std::make_unique<DownloadBubbleTransparentButton>(
+          base::BindRepeating(&DownloadBubbleRowView::OnMainButtonPressed,
+                              base::Unretained(this)),
+          this));
   transparent_button_->set_context_menu_controller(this);
   transparent_button_->SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON);
   layout->SetChildViewIgnoredByLayout(transparent_button_, true);
@@ -1074,7 +1075,7 @@ void DownloadBubbleRowView::OnDownloadStateChanged(
 
 void DownloadBubbleRowView::SimulateMainButtonClickForTesting(
     const ui::Event& event) {
-  static_cast<TransparentButton*>(transparent_button_)
+  static_cast<DownloadBubbleTransparentButton*>(transparent_button_)
       ->NotifyClickForTesting(event);  // IN-TEST
 }
 
