@@ -48,11 +48,7 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
     virtual void OnCommit(const std::string& committer_invalidator_client_id,
                           syncer::ModelTypeSet committed_model_types) = 0;
 
-    // Called when a page URL is committed to server-side history. This can
-    // happen either via the HISTORY data type, or (while HISTORY is not yet
-    // rolled out) via SESSIONS when the user has enabled "history sync" in the
-    // settings UI (which is detected by verifying if TYPED_URLS is an enabled
-    // type, as part of the commit request).
+    // Called when a page URL is committed to ModelType::HISTORY.
     virtual void OnHistoryCommit(const std::string& url) = 0;
   };
 
