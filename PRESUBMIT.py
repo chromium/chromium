@@ -1736,6 +1736,23 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         '^ui/base/glib/scoped_gsignal.h',
       ),
     ),
+    BanRule(
+      pattern = r'features::kIsolatedWebApps',
+      explanation = (
+        'Do not use `features::kIsolatedWebApps` directly to guard Isolated ',
+        'Web App code. ',
+        'Use `content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled()` in ',
+        'the browser process or check the `kEnableIsolatedWebAppsInRenderer` ',
+        'command line flag in the renderer process.',
+      ),
+      treat_as_error = True,
+      excluded_paths = _TEST_CODE_EXCLUDED_PATHS + (
+        '^chrome/browser/about_flags.cc',
+        '^chrome/browser/chrome_content_browser_client.cc',
+        '^chrome/browser/ui/startup/bad_flags_prompt.cc',
+        '^content/shell/browser/shell_content_browser_client.cc'
+      )
+    ),
 )
 
 _BANNED_MOJOM_PATTERNS : Sequence[BanRule] = (
