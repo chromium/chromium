@@ -6587,7 +6587,7 @@
   {
     "name": "password-generation-bottom-sheet",
     "owners": ["atsvirchkova@google.com", "ioanap"],
-    "expiry_milestone": 120
+    "expiry_milestone": 123
   },
   {
     "name": "password-generation-experiment",
