@@ -233,7 +233,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     [self showSetUpListWithItems:_savedSetUpListItems];
   }
   if (self.shortcutsViews) {
-    self.shortcutsStackView = [self createShortcutsStackView];
     if (!IsMagicStackEnabled()) {
       [self addUIElement:self.shortcutsStackView
           withCustomBottomSpacing:kMostVisitedBottomMargin];
@@ -427,9 +426,18 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         [[ContentSuggestionsShortcutTileView alloc] initWithConfiguration:item];
     [self.shortcutsViews addObject:view];
   }
-  if (IsMagicStackEnabled() && [self hasMagicStackLoaded]) {
-    [self
-        logTopModuleImpressionForType:ContentSuggestionsModuleType::kShortcuts];
+
+  self.shortcutsStackView = [self createShortcutsStackView];
+  if (IsMagicStackEnabled()) {
+    self.shortcutsModuleContainer = [[MagicStackModuleContainer alloc]
+        initWithContentView:self.shortcutsStackView
+                       type:ContentSuggestionsModuleType::kShortcuts
+                   delegate:self];
+    if ([self hasMagicStackLoaded]) {
+      [self insertModuleIntoMagicStack:self.shortcutsModuleContainer];
+      [self logTopModuleImpressionForType:ContentSuggestionsModuleType::
+                                              kShortcuts];
+    }
   }
 }
 
@@ -1204,10 +1212,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         break;
       }
       case ContentSuggestionsModuleType::kShortcuts: {
-        self.shortcutsModuleContainer = [[MagicStackModuleContainer alloc]
-            initWithContentView:self.shortcutsStackView
-                           type:type
-                       delegate:self];
         moduleContainer = self.shortcutsModuleContainer;
         break;
       }
