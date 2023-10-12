@@ -16,12 +16,19 @@ BASE_DECLARE_FEATURE(kDeviceTrustConnectorEnabled);
 // enabled or not.
 BASE_DECLARE_FEATURE(kUserDTCInlineFlowEnabled);
 
+// Controls whether the key rotation flow, triggered by a remote command, is
+// enabled or not.
+BASE_DECLARE_FEATURE(kDTCKeyRotationEnabled);
+
 // Return true if the device trust connector Finch feature is enabled.
 bool IsDeviceTrustConnectorFeatureEnabled();
 
 // Return true if the device trust connector user inline flow Finch feature is
 // enabled.
 bool IsUserInlineFlowFeatureEnabled();
+
+// Return true if the key rotation flow is enabled.
+bool IsKeyRotationEnabled();
 
 }  // namespace enterprise_connectors
 
