@@ -38,6 +38,9 @@ const GroupConfigMap& BuildDefaultGroups() {
                          ? GroupConfig_RenderType_HORIZONTAL
                          : GroupConfig_RenderType_DEFAULT_VERTICAL)},
 
+        {GROUP_MOBILE_QUERY_TILES,
+          CreateGroup(SECTION_MOBILE_QUERY_TILES,
+              GroupConfig_RenderType_HORIZONTAL)},
         // clang-format on
     };
   }

@@ -107,10 +107,11 @@ void ZpsSection::InitFromMatches(ACMatches& matches) {
 
 AndroidNTPZpsSection::AndroidNTPZpsSection(
     omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(20,
+    : ZpsSection(30,
                  {
                      {1, omnibox::GROUP_MOBILE_CLIPBOARD},
                      {15, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                     {10, omnibox::GROUP_MOBILE_QUERY_TILES},
                      {5, omnibox::GROUP_TRENDS},
                  },
                  group_configs) {}
