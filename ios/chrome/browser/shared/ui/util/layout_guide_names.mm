@@ -20,3 +20,4 @@ GuideName* const kDiscoverFeedHeaderMenuGuide = @"kDiscoverFeedHeaderMenuGuide";
 GuideName* const kTabGridBottomToolbarGuide = @"kTabGridBottomToolbarGuide";
 GuideName* const kAutofillFirstSuggestionGuide =
     @"kAutofillFirstSuggestionGuide";
+GuideName* const kLensKeyboardButtonGuide = @"kLensKeyboardButtonGuide";

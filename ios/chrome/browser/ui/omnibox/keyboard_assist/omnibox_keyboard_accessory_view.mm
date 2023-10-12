@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/lens/lens_availability.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views.h"
@@ -20,6 +21,14 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
+
+namespace {
+
+// Delay between the time the view is shown, and the time the Lens button iph
+// should be shown.
+constexpr base::TimeDelta kLensButtonIPHDelay = base::Seconds(1);
+
+}  // namespace
 
 @interface OmniboxKeyboardAccessoryView () <SearchEngineObserving>
 
@@ -54,7 +63,8 @@
                        delegate:(id<OmniboxAssistiveKeyboardDelegate>)delegate
                     pasteTarget:(id<UIPasteConfigurationSupporting>)pasteTarget
              templateURLService:(TemplateURLService*)templateURLService
-                      textField:(UITextField*)textField {
+                      textField:(UITextField*)textField
+                bubblePresenter:(BubblePresenter*)bubblePresenter {
   self = [super initWithFrame:CGRectZero
                inputViewStyle:UIInputViewStyleKeyboard];
   if (self) {
@@ -65,6 +75,7 @@
     self.translatesAutoresizingMaskIntoConstraints = NO;
     self.allowsSelfSizing = YES;
     self.templateURLService = templateURLService;
+    self.bubblePresenter = bubblePresenter;
     [self addSubviews];
   }
   return self;
@@ -236,6 +247,16 @@
   lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
       LensEntrypoint::Keyboard,
       [self isGoogleSearchEngine:self.templateURLService]);
+
+  UIButton* lensButton = _delegate.lensButton;
+  if (lensButton) {
+    __weak __typeof(self) weakSelf = self;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(^{
+          [weakSelf.bubblePresenter presentLensKeyboardTipBubble];
+        }),
+        kLensButtonIPHDelay);
+  }
 }
 
 #pragma mark - Setters

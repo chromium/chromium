@@ -74,6 +74,8 @@
     BubbleViewControllerPresenter* whatsNewBubblePresenter;
 @property(nonatomic, strong) BubbleViewControllerPresenter*
     priceNotificationsWhileBrowsingBubbleTipPresenter;
+@property(nonatomic, strong)
+    BubbleViewControllerPresenter* lensKeyboardPresenter;
 @property(nonatomic, assign) WebStateList* webStateList;
 @property(nonatomic, assign) feature_engagement::Tracker* engagementTracker;
 @property(nonatomic, assign) HostContentSettingsMap* settingsMap;
@@ -147,6 +149,7 @@
   [self.followWhileBrowsingBubbleTipPresenter dismissAnimated:NO];
   [self.priceNotificationsWhileBrowsingBubbleTipPresenter dismissAnimated:NO];
   [self.whatsNewBubblePresenter dismissAnimated:NO];
+  [self.lensKeyboardPresenter dismissAnimated:NO];
   [self.defaultPageModeTipBubblePresenter dismissAnimated:NO];
 }
 
@@ -297,6 +300,32 @@
     return;
 
   self.priceNotificationsWhileBrowsingBubbleTipPresenter = presenter;
+}
+
+- (void)presentLensKeyboardTipBubble {
+  if (![self canPresentBubbleWithCheckTabScrolledToTop:NO]) {
+    return;
+  }
+
+  BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
+  NSString* text = l10n_util::GetNSString(IDS_IOS_LENS_KEYBOARD_IPH_TEXT);
+  CGPoint lensButtonAnchor = [self anchorPointToGuide:kLensKeyboardButtonGuide
+                                            direction:arrowDirection];
+
+  BubbleViewControllerPresenter* presenter = [self
+      presentBubbleForFeature:feature_engagement::kIPHiOSLensKeyboardFeature
+                    direction:arrowDirection
+                    alignment:BubbleAlignmentTopOrLeading
+                         text:text
+        voiceOverAnnouncement:text
+                  anchorPoint:lensButtonAnchor
+                presentAction:nil
+                dismissAction:nil];
+  if (!presenter) {
+    return;
+  }
+
+  self.lensKeyboardPresenter = presenter;
 }
 
 #pragma mark - Private

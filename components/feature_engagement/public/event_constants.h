@@ -197,6 +197,9 @@ extern const char kShareToolbarItemUsed[];
 // eligible to be displayed.
 extern const char kDefaultBrowserVideoPromoConditionsMet[];
 
+// The user has triggered the Lens button in the Omnibox keyboard.
+extern const char kLensButtonKeyboardUsed[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 class WebLocationBar;
+@class BubblePresenter;
 @protocol EditViewAnimatee;
 @class OmniboxPopupCoordinator;
 @class OmniboxTextFieldIOS;
@@ -30,6 +31,9 @@ class WebLocationBar;
 
 /// Positioner for the popup. Has to be configured before calling `start`.
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate> presenterDelegate;
+
+// Bubble presenter for displaying IPH bubbles relating to the omnibox.
+@property(nonatomic, strong) BubblePresenter* bubblePresenter;
 
 // The view controller managed by this coordinator. The parent of this
 // coordinator is expected to add it to the responder chain.

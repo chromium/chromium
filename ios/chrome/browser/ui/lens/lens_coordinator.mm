@@ -5,10 +5,14 @@
 #import "ios/chrome/browser/ui/lens/lens_coordinator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/lens/lens_metrics.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -70,6 +74,9 @@ using lens::CameraOpenEntryPoint;
 // TemplateURL used to get the search engine.
 @property(nonatomic, assign) TemplateURLService* templateURLService;
 
+// Feature Engagement Tracker used to handle promo events.
+@property(nonatomic, assign) feature_engagement::Tracker* tracker;
+
 @end
 
 @implementation LensCoordinator {
@@ -121,8 +128,13 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
       base::ScopedObservation<web::WebState, web::WebStateObserver>>(
       _webStateObserverBridge.get());
 
-  self.templateURLService = ios::TemplateURLServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  ChromeBrowserState* browserState = browser->GetBrowserState();
+  DCHECK(browserState);
+
+  self.templateURLService =
+      ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
+  self.tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
   self.loadingWebState = nil;
   self.lensWebPageLoadTriggeredFromInputSelection = NO;
   self.transitionAnimator = [[LensModalAnimator alloc] init];
@@ -140,6 +152,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   self.transitionAnimator = nil;
   self.lensWebPageLoadTriggeredFromInputSelection = NO;
   self.templateURLService = nil;
+  self.tracker = nil;
 
   _webStateListObservation.reset();
   _webStateObservation.reset();
@@ -190,6 +203,15 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   configuration.isIncognito = isIncognito;
   configuration.ssoService = GetApplicationContext()->GetSSOService();
   configuration.entrypoint = entrypoint;
+
+  // Mark IPHs as completed.
+  if (entrypoint == LensEntrypoint::Keyboard) {
+    feature_engagement::Tracker* featureTracker = self.tracker;
+    DCHECK(featureTracker);
+    featureTracker->NotifyEvent(
+        feature_engagement::events::kLensButtonKeyboardUsed);
+    featureTracker->Dismissed(feature_engagement::kIPHiOSLensKeyboardFeature);
+  }
 
   if (!isIncognito) {
     AuthenticationService* authenticationService =

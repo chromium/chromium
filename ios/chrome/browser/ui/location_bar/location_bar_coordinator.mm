@@ -192,6 +192,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   self.omniboxCoordinator =
       [[OmniboxCoordinator alloc] initWithBaseViewController:nil
                                                      browser:self.browser];
+  self.omniboxCoordinator.bubblePresenter = self.bubblePresenter;
   self.omniboxCoordinator.locationBar = _locationBar.get();
   self.omniboxCoordinator.presenterDelegate = self.popupPresenterDelegate;
   [self.omniboxCoordinator start];

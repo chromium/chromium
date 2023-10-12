@@ -1743,6 +1743,26 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHiOSLensKeyboardFeature.name == feature->name) {
+    // A config that allows a user education bubble to be shown for the Lens
+    // button in the omnibox keyboard. Will be shown up to 3 times, but
+    // opening Lens from the keyboard will prevent the bubble from appearing
+    // again.
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger =
+        EventConfig("lens_keyboard_feature_trigger", Comparator(LESS_THAN, 3),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config->used = EventConfig("lens_keyboard_used", Comparator(EQUAL, 0),
+                               feature_engagement::kMaxStoragePeriod,
+                               feature_engagement::kMaxStoragePeriod);
+    return config;
+  }
+
   // iOS Promo Configs are split out into a separate file, so check that too.
   if (absl::optional<FeatureConfig> ios_promo_feature_config =
           GetClientSideiOSPromoFeatureConfig(feature)) {

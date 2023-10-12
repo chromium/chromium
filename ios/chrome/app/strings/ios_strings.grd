@@ -1768,6 +1768,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_KEYBOARD_VOICE_SEARCH" desc="Title for the Voice Search keyboard shortcut in the discoverability." meaning="Used as a command title in the iPad command menu.">
         Voice Search
       </message>
+      <message name="IDS_IOS_LENS_KEYBOARD_IPH_TEXT" desc="Text the IPH for the Lens button in the keyboard.">
+        You can search images and what you see.
+      </message>
       <message name="IDS_IOS_MAGIC_STACK_SEE_MORE" desc="The See More button in Magic Stack modules to show a detailed view. [Length: 10em]">
         See More
       </message>

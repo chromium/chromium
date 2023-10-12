@@ -80,6 +80,10 @@ class DeviceSwitcherResultDispatcher;
 // the item on the current website.
 - (void)presentPriceNotificationsWhileBrowsingTipBubble;
 
+// Presents a help bubble to inform the user that they can tap the Lens
+// button in the omnibox keyboard to search with their camera.
+- (void)presentLensKeyboardTipBubble;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_PRESENTER_H_

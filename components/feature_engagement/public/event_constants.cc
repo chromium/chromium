@@ -107,6 +107,7 @@ const char kHistoryOnOverflowMenuUsed[] = "history_on_overflow_menu_used";
 const char kShareToolbarItemUsed[] = "share_toolbar_item_used";
 const char kDefaultBrowserVideoPromoConditionsMet[] =
     "default_browser_video_promo_conditions_met";
+const char kLensButtonKeyboardUsed[] = "lens_keyboard_used";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

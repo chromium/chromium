@@ -52,5 +52,8 @@ extern GuideName* const kDiscoverFeedHeaderMenuGuide;
 extern GuideName* const kTabGridBottomToolbarGuide;
 // A guide that is constrained to match the frame of the first Autofill result.
 extern GuideName* const kAutofillFirstSuggestionGuide;
+// A guide that is constrained to match the frame of the Lens button in the
+// omnibox keyboard accessory view.
+extern GuideName* const kLensKeyboardButtonGuide;
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_LAYOUT_GUIDE_NAMES_H_
