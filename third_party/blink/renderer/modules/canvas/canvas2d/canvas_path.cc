@@ -46,7 +46,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
-float const kErrorRange = 0.01;
 
 void CanvasPath::closePath() {
   if (UNLIKELY(IsEmpty())) {
@@ -504,17 +503,6 @@ void CanvasPath::ellipse(double double_x,
   CanonicalizeAngle(&start_angle, &end_angle);
   float adjusted_end_angle =
       AdjustEndAngle(start_angle, end_angle, anticlockwise);
-
-  // If the ellipse has a radius of zero and it's closed, this path should be
-  // ignored from drawing.
-  if (!path_.HasCurrentPoint() ||
-      (path_.HasCurrentPoint() && path_.CurrentPoint().x() == x &&
-       path_.CurrentPoint().y() == y)) {
-    if (!radius_x && !radius_y &&
-        abs(adjusted_end_angle - start_angle - kTwoPiFloat) <= kErrorRange) {
-      return;
-    }
-  }
   if (UNLIKELY(!radius_x || !radius_y || start_angle == adjusted_end_angle)) {
     // The ellipse is empty but we still need to draw the connecting line to
     // start point.
