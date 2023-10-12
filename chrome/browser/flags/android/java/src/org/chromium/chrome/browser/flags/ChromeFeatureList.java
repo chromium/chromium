@@ -431,8 +431,10 @@ public abstract class ChromeFeatureList {
     public static final String SHARE_SHEET_MIGRATION_ANDROID = "ShareSheetMigrationAndroid";
     public static final String SEND_TAB_TO_SELF_V2 = "SendTabToSelfV2";
     public static final String SHOPPING_LIST = "ShoppingList";
-    public static final String SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID = "ShowScrollableMVTOnNTPAndroid";
     public static final String SHOW_NTP_AT_STARTUP_ANDROID = "ShowNtpAtStartupAndroid";
+    public static final String SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID = "ShowScrollableMVTOnNTPAndroid";
+    public static final String SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID =
+            "ShowScrollableMVTOnNtpPhoneAndroid";
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =
             "SmartSuggestionForLargeDownloads";
     public static final String SPARE_TAB = "SpareTab";

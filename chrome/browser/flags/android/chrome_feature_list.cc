@@ -306,6 +306,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSearchEnginesPromoV3,
     &kShowNtpAtStartupAndroid,
     &kShowScrollableMVTOnNTPAndroid,
+    &kShowScrollableMVTOnNtpPhoneAndroid,
     &kFeedPositionAndroid,
     &kSearchResumptionModuleAndroid,
     &kScrollToTLDOptimization,
@@ -1011,6 +1012,10 @@ BASE_FEATURE(kShowNtpAtStartupAndroid,
 
 BASE_FEATURE(kShowScrollableMVTOnNTPAndroid,
              "ShowScrollableMVTOnNTPAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kShowScrollableMVTOnNtpPhoneAndroid,
+             "ShowScrollableMVTOnNtpPhoneAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShareSheetCustomActionsPolish,

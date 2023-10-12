@@ -214,6 +214,8 @@ public class FeedV2NewTabPageTest {
         FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
         testValuesOverride.addFeatureFlagOverride(
                 ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, mEnableScrollableMVT);
+        testValuesOverride.addFeatureFlagOverride(
+                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID, mEnableScrollableMVT);
         FeatureList.setTestValues(testValuesOverride);
 
         mActivityTestRule.startMainActivityWithURL("about:blank");

@@ -222,7 +222,8 @@ public final class ReturnToChromeUtil {
                     interval = TimeUtils.elapsedRealtimeMillis() - mLastBackPressMsSupplier.get();
                 }
                 String msg =
-                        "tab %s; control tab %s; back press state %s; layout %s; isFromSS: %s; interval %s";
+                        "tab %s; control tab %s; back press state %s; layout %s; isFromSS: %s;"
+                                + " interval %s";
                 boolean isFromSS = tab != null && isTabFromStartSurface(tab);
                 assert false : String.format(msg, tab, controlTab, tab != null && tab.canGoBack(),
                                        layoutType, isFromSS, interval);
@@ -944,22 +945,23 @@ public final class ReturnToChromeUtil {
     }
 
     public static boolean isScrollableMvtEnabled(Context context) {
-        boolean isScrollableMvtEnabled =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID);
         boolean isSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
             // On phones, parameter SURFACE_POLISH_SCROLLABLE_MVT is checked when feature flag
-            // surface polish is enabled; otherwise, feature flag SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID
+            // surface polish is enabled; otherwise, feature flag
+            // SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID
             // is checked.
-            return isSurfacePolishEnabled
-                    ? StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.getValue()
-                    : isScrollableMvtEnabled;
+            return (isSurfacePolishEnabled
+                            && StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.getValue())
+                    || ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID);
         }
         // On tablets, only show the scrollable MV tiles on NTP if feature flag surface polish is
         // enabled.
         return isSurfacePolishEnabled
                 ? true
-                : isScrollableMvtEnabled && ChromeFeatureList.sStartSurfaceOnTablet.isEnabled();
+                : ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)
+                        && ChromeFeatureList.sStartSurfaceOnTablet.isEnabled();
     }
 
     /**

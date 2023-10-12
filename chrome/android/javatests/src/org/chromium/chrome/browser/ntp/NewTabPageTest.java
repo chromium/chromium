@@ -218,6 +218,8 @@ public class NewTabPageTest {
         FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
         testValuesOverride.addFeatureFlagOverride(
                 ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, isScrollableMVTEnabled);
+        testValuesOverride.addFeatureFlagOverride(
+                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID, isScrollableMVTEnabled);
         FeatureList.setTestValues(testValuesOverride);
     }
 
@@ -880,12 +882,11 @@ public class NewTabPageTest {
                 + " is not recorded correctly when click on the menu button.");
     }
 
-    /**
-     * Test show and click on the single tab card on the {@link NewTabPage} in the tablet.
-     */
+    /** Test show and click on the single tab card on the {@link NewTabPage} in the tablet. */
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
+    @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID})
     public void testSingleTabCardShowAndClick() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         mActivityTestRule.loadUrl(TEST_URL);
@@ -1077,10 +1078,11 @@ public class NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH + "<Study,",
-            ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
-    @CommandLineFlags.
-    Add({"force-fieldtrials=Study/Group", SURFACE_POLISH_PARAMS + "scrollable_mvt/true"})
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH + "<Study,"})
+    @CommandLineFlags.Add({
+        "force-fieldtrials=Study/Group",
+        SURFACE_POLISH_PARAMS + "scrollable_mvt/true"
+    })
     // clang-format off
     public void test1RowMvtOnNtpAfterPolish() {
         // clang-format on
