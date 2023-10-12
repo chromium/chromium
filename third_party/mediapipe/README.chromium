@@ -2,7 +2,7 @@ Name: MediaPipe
 Short Name: mediapipe
 URL: https://github.com/google/mediapipe
 Version: 6915a79e288afec408edc4bc3f851613200efb8f
-Date: 2023/09/29
+Date: 2023-09-29
 License: Apache 2.0
 License File: LICENSE
 Security Critical: Yes
@@ -118,3 +118,9 @@ Here's the set of functions that were added to the generated file:
                                        &(const_cast<AnyLite*>(this)->value_));
     return any_metadata.Is<T>();
   }
+
+* dont-use-dedicated-context-for-some-calculators.patch - temporary patch that
+is only needed when unit-testing with GPU support (not yet official). Will be
+removed after MediaPipe w/ GPU is taught how to use Chromium's GL thread and
+GL context instead of creating its own.
+TODO(https://crbug.com/1492217): remove this patch once it is no longer needed.

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//third_party/flatbuffers/flatbuffer.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/tflite/features.gni")
@@ -9,6 +10,13 @@ import("//third_party/tflite/tflite_target.gni")
 
 declare_args() {
   mediapipe_build_with_gpu_support = false
+}
+
+# Generate a buildflag header for compile-time checking of MediaPipe GPU support.
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags =
+      [ "MEDIAPIPE_BUILD_WITH_GPU_SUPPORT=$mediapipe_build_with_gpu_support" ]
 }
 
 action("stamp_metadata_parser_version") {
@@ -422,19 +430,9 @@ tflite_static_library("mediapipe_core") {
     sources += [ "src/mediapipe/util/resource_util_apple.cc" ]
     cflags = [ "-ObjC++" ]
   } else if (is_android) {
-    sources += [
-      "src/mediapipe/java/com/google/mediapipe/framework/jni/jni_util.cc",
-      "src/mediapipe/java/com/google/mediapipe/framework/jni/jni_util.h",
-      "src/mediapipe/util/android/asset_manager_util.cc",
-      "src/mediapipe/util/android/asset_manager_util.h",
-      "src/mediapipe/util/android/file/base/file.cc",
-      "src/mediapipe/util/android/file/base/file.h",
-      "src/mediapipe/util/android/file/base/filesystem.cc",
-      "src/mediapipe/util/android/file/base/filesystem.h",
-      "src/mediapipe/util/android/file/base/helpers.cc",
-      "src/mediapipe/util/android/file/base/helpers.h",
-      "src/mediapipe/util/resource_util_android.cc",
-    ]
+    # This is by design - our Windows no-op implementation works for Android
+    # too, and in general we don't need this functionality.
+    sources += [ "src/mediapipe/util/resource_util_windows.cc" ]
   } else {
     sources += [ "src/mediapipe/util/resource_util_default.cc" ]
   }
@@ -633,6 +631,7 @@ tflite_static_library("mediapipe_tasks") {
 
 tflite_group("mediapipe") {
   public_deps = [
+    ":buildflags",
     ":mediapipe_flatbuffer_schema",
     ":mediapipe_proto",
   ]
