@@ -1055,7 +1055,7 @@ void PaintCanvasVideoRenderer::Paint(
     VideoTransformation video_transformation,
     viz::RasterContextProvider* raster_context_provider) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (flags.getAlpha() == 0) {
+  if (flags.isFullyTransparent()) {
     return;
   }
 
@@ -1168,8 +1168,7 @@ void PaintCanvasVideoRenderer::Paint(
   // This if is a special handling of video for SkiaPaintcanvas backend, where
   // the video does not need any transform and it is enough to draw the frame
   // directly into the skia canvas
-  if (!need_transform && video_frame->IsMappable() &&
-      flags.getAlpha() == SK_AlphaOPAQUE &&
+  if (!need_transform && video_frame->IsMappable() && flags.isOpaque() &&
       flags.getBlendMode() == SkBlendMode::kSrc &&
       flags.getFilterQuality() == cc::PaintFlags::FilterQuality::kLow &&
       (pixels = canvas->accessTopLayerPixels(&info, &row_bytes, &origin)) &&

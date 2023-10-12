@@ -328,7 +328,7 @@ TEST(PaintOpBufferTest, SaveDrawRestoreFail_BadFlags) {
   EXPECT_EQ(1, canvas.save_count_);
   EXPECT_EQ(1, canvas.restore_count_);
   EXPECT_EQ(rect, canvas.draw_rect_);
-  EXPECT_EQ(draw_flags.getAlpha(), canvas.paint_.getAlpha());
+  EXPECT_EQ(draw_flags.getAlphaf(), canvas.paint_.getAlphaf());
 }
 
 // Same as above, but the save layer itself appears to be a noop.
@@ -381,7 +381,7 @@ TEST(PaintOpBufferTest, SaveDrawRestoreFail_TooManyOps) {
   EXPECT_EQ(1, canvas.save_count_);
   EXPECT_EQ(1, canvas.restore_count_);
   EXPECT_EQ(rect, canvas.draw_rect_);
-  EXPECT_EQ(draw_flags.getAlpha(), canvas.paint_.getAlpha());
+  EXPECT_EQ(draw_flags.getAlphaf(), canvas.paint_.getAlphaf());
 }
 
 // Verify that the save draw restore code works with a single op
@@ -2172,8 +2172,8 @@ TEST_P(PaintOpSerializationTest, UsesOverridenFlags) {
                                    options_provider.deserialize_options());
     ASSERT_TRUE(written);
     ASSERT_TRUE(written->IsPaintOpWithFlags());
-    EXPECT_EQ(static_cast<const PaintOpWithFlags*>(written)->flags.getAlpha(),
-              override_flags.getAlpha());
+    EXPECT_EQ(static_cast<const PaintOpWithFlags*>(written)->flags.getAlphaf(),
+              override_flags.getAlphaf());
     written->DestroyThis();
     written = nullptr;
   }

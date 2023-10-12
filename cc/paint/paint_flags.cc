@@ -98,7 +98,7 @@ bool PaintFlags::nothingToDraw() const {
     case SkBlendMode::kDstOut:
     case SkBlendMode::kDstOver:
     case SkBlendMode::kPlus:
-      if (getAlpha() == 0) {
+      if (isFullyTransparent()) {
         return !color_filter_ && !image_filter_;
       }
       break;

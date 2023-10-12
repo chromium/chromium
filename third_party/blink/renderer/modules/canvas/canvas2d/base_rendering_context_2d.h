@@ -814,10 +814,11 @@ ALWAYS_INLINE void BaseRenderingContext2D::CheckOverdraw(
   if (overdraw_op == OverdrawOp::kDrawImage) {  // static branch
     if (UNLIKELY(flags->getBlendMode() != SkBlendMode::kSrcOver) ||
         UNLIKELY(flags->getLooper()) || UNLIKELY(flags->getImageFilter()) ||
-        UNLIKELY(flags->getMaskFilter()) ||
-        UNLIKELY(flags->getAlpha() < 0xFF) ||
-        UNLIKELY(image_type == CanvasRenderingContext2DState::kNonOpaqueImage))
+        UNLIKELY(flags->getMaskFilter()) || UNLIKELY(!flags->isOpaque()) ||
+        UNLIKELY(image_type ==
+                 CanvasRenderingContext2DState::kNonOpaqueImage)) {
       return;
+    }
   }
 
   if (overdraw_op == OverdrawOp::kClearRect ||

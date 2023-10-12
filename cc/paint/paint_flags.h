@@ -48,10 +48,9 @@ class CC_PAINT_EXPORT PaintFlags {
     color_ = SkColor4f::FromColor(color);
   }
   ALWAYS_INLINE void setColor(SkColor4f color) { color_ = color; }
-  ALWAYS_INLINE uint8_t getAlpha() const {
-    return SkColorGetA(color_.toSkColor());
-  }
   ALWAYS_INLINE float getAlphaf() const { return color_.fA; }
+  ALWAYS_INLINE bool isFullyTransparent() const { return color_.fA == 0.0f; }
+  ALWAYS_INLINE bool isOpaque() const { return color_.fA >= 1.0f; }
   template <class F, class = std::enable_if_t<std::is_same_v<F, float>>>
   ALWAYS_INLINE void setAlphaf(F a) {
     color_.fA = a;

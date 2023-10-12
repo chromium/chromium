@@ -201,7 +201,7 @@ void FrameCenterButton::DrawIconContents(gfx::Canvas* canvas,
                     text_->GetStringSize().height());
       text_->SetDisplayRect(text_bounds);
       text_->SetColor(
-          SkColorSetA(GetButtonColor(GetBackgroundColor()), flags.getAlpha()));
+          SkColorSetA(GetButtonColor(GetBackgroundColor()), flags.getAlphaf()));
       text_->Draw(canvas);
       offset += text_bounds.width();
     }
@@ -247,7 +247,7 @@ void FrameCenterButton::DrawIconContents(gfx::Canvas* canvas,
         text_->GetStringSize().height());
     text_->SetDisplayRect(text_bounds);
     text_->SetColor(
-        SkColorSetA(GetButtonColor(GetBackgroundColor()), flags.getAlpha()));
+        SkColorSetA(GetButtonColor(GetBackgroundColor()), flags.getAlphaf()));
     text_->Draw(canvas);
     current_offset += text_bounds.width() + kMarginBetweenContents;
   }

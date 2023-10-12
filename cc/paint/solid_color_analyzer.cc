@@ -194,10 +194,11 @@ void CheckIfSolidShape(const SkCanvas& canvas,
 
   bool does_cover_canvas = IsFullQuad(canvas, shape);
   SkBlendMode blendmode = flags.getBlendMode();
-  if (does_cover_canvas && ActsLikeClear(blendmode, flags.getColor4f().fA))
+  if (does_cover_canvas && ActsLikeClear(blendmode, flags.getColor4f().fA)) {
     *is_transparent = true;
-  else if (flags.getAlpha() != 0 || blendmode != SkBlendMode::kSrc)
+  } else if (!flags.isFullyTransparent() || blendmode != SkBlendMode::kSrc) {
     *is_transparent = false;
+  }
 
   if (does_cover_canvas && IsSolidColorPaint(flags)) {
     CalculateSolidColor(flags.getColor4f() /* src_color */,
