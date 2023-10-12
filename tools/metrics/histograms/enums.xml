@@ -67367,6 +67367,7 @@ from previous Chrome versions.
   <int value="1096477444" label="AssistantVoiceMatch:enabled"/>
   <int value="1097935876" label="CrostiniShowMicSetting:enabled"/>
   <int value="1097981222" label="OneGoogleBarModalOverlays:disabled"/>
+  <int value="1098461149" label="AppToAppLinkCapturing:disabled"/>
   <int value="1098610349" label="UseHDRTransferFunction:disabled"/>
   <int value="1098823967" label="ash-enable-window-cycle-ui"/>
   <int value="1100048827" label="BluetoothWbsDogfood:enabled"/>
@@ -68896,6 +68897,7 @@ from previous Chrome versions.
   <int value="1831777433" label="query-tiles-rank-tiles"/>
   <int value="1831835753" label="MaterialDesignIncognitoNTP:enabled"/>
   <int value="1832552562" label="EnableVirtualKeyboardUkm:enabled"/>
+  <int value="1832889721" label="AppToAppLinkCapturing:enabled"/>
   <int value="1833124619" label="PhoneHubNudge:enabled"/>
   <int value="1833340282" label="SmartSuggestionForLargeDownloads:enabled"/>
   <int value="1833845461" label="OverviewDeskNavigation:disabled"/>
@@ -69066,6 +69068,7 @@ from previous Chrome versions.
   <int value="1910240042" label="enable-experimental-fullscreen-exit-ui"/>
   <int value="1910562940" label="SharedHighlightingRefinedBlocklist:disabled"/>
   <int value="1911002680" label="TFLiteLanguageDetectionEnabled:enabled"/>
+  <int value="1911558169" label="AppToAppLinkCapturingWorkspaceApps:enabled"/>
   <int value="1911623289" label="OmniboxFocusTriggersSRPZeroSuggest:disabled"/>
   <int value="1913263516" label="OculusVR:enabled"/>
   <int value="1913298816" label="OverlayScrollbar:enabled"/>
@@ -69344,6 +69347,7 @@ from previous Chrome versions.
   <int value="2043141918" label="DnsOverHttps:enabled"/>
   <int value="2043321329" label="OfflinePagesPrefetchingUI:disabled"/>
   <int value="2043794900" label="CommercePriceTracking:enabled"/>
+  <int value="2043970520" label="AppToAppLinkCapturingWorkspaceApps:disabled"/>
   <int value="2044243615"
       label="AccessibilitySelectToSpeakContextMenuOption:disabled"/>
   <int value="2044623453" label="DeferredShaping:disabled"/>

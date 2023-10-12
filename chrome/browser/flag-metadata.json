@@ -247,6 +247,16 @@
     "expiry_milestone": 120
   },
   {
+    "name": "app-to-app-link-capturing",
+    "owners": [ "tsergeant", "chromeos-apps-foundation-team@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
+    "name": "app-to-app-link-capturing-workspace-apps",
+    "owners": [ "tsergeant", "chromeos-apps-foundation-team@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "arc-aaudio-mmap-low-latency",
     "owners": [ "pteerapong", "chromeos-audio@google.com" ],
     "expiry_milestone": 125

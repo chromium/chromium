@@ -7183,6 +7183,19 @@ const char kGetAllScreensMediaDescription[] =
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)
+
+const char kAppToAppLinkCapturingName[] = "App-to-app link capturing";
+const char kAppToAppLinkCapturingDescription[] =
+    "Enables link capturing from one app to another, even when the target app "
+    "does not have link capturing enabled in settings";
+
+const char kAppToAppLinkCapturingWorkspaceAppsName[] =
+    "App-to-app link capturing for Workspace apps";
+const char kAppToAppLinkCapturingWorkspaceAppsDescription[] =
+    "Enables link capturing from one app to another, even when the target app "
+    "does not have link capturing enabled in settings. Only applies if the "
+    "target app is a Workspace app (Google Drive/Docs/Sheets/Slides).";
+
 const char kCrosWebAppInstallDialogName[] = "Web app install dialog";
 const char kCrosWebAppInstallDialogDescription[] =
     "Enables a more detailed, OS-level dialog for web app installs";

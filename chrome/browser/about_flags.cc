@@ -31,6 +31,7 @@
 #include "cc/base/features.h"
 #include "cc/base/switches.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/companion/core/features.h"
@@ -340,7 +341,6 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
@@ -11032,6 +11032,17 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebAppSystemMediaControlsWinDescription, kOsWin,
      FEATURE_VALUE_TYPE(webapps::features::kWebAppSystemMediaControlsWin)},
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_CHROMEOS)
+    {"app-to-app-link-capturing", flag_descriptions::kAppToAppLinkCapturingName,
+     flag_descriptions::kAppToAppLinkCapturingDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(apps::features::kAppToAppLinkCapturing)},
+
+    {"app-to-app-link-capturing-workspace-apps",
+     flag_descriptions::kAppToAppLinkCapturingWorkspaceAppsName,
+     flag_descriptions::kAppToAppLinkCapturingWorkspaceAppsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(apps::features::kAppToAppLinkCapturingWorkspaceApps)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

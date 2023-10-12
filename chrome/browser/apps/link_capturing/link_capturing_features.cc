@@ -28,6 +28,16 @@ BASE_FEATURE(kDesktopPWAsLinkCapturing,
              "DesktopPWAsLinkCapturing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kAppToAppLinkCapturing,
+             "AppToAppLinkCapturing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAppToAppLinkCapturingWorkspaceApps,
+             "AppToAppLinkCapturingWorkspaceApps",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 bool LinkCapturingUiUpdateEnabled() {
   return base::FeatureList::IsEnabled(kLinkCapturingUiUpdate);
 }
