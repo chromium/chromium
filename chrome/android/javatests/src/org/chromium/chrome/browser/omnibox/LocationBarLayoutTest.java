@@ -380,4 +380,22 @@ public class LocationBarLayoutTest {
                             ((MarginLayoutParams) urlBar.getLayoutParams()).getMarginStart());
                 });
     }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.AVOID_RELAYOUT_DURING_FOCUS_ANIMATION)
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
+    public void testTabletUrlBarTranslation_revampEnabled_avoidRelayoutDisabled() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LocationBarLayout locationBar = getLocationBar();
+                    View urlBar = getUrlBar();
+
+                    urlBar.requestFocus();
+                    // Setting focus percent shouldn't crash.
+                    locationBar.setUrlFocusChangePercent(MathUtils.EPSILON);
+                    locationBar.setUrlFocusChangePercent(0.5f);
+                });
+    }
 }

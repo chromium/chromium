@@ -385,7 +385,9 @@ public class LocationBarLayout extends FrameLayout {
             return;
         }
 
-        if (OmniboxFeatures.shouldAvoidRelayoutDuringFocusAnimation()) {
+        // The tablet UI doesn't have status view spacer elements so must use translation.
+        if (OmniboxFeatures.shouldAvoidRelayoutDuringFocusAnimation()
+                || mStatusViewLeftSpace == null) {
             mStatusCoordinator.setTranslationX(MathUtils.flipSignIf(
                     OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(getContext()) * percent,
                     getLayoutDirection() == LAYOUT_DIRECTION_RTL));
@@ -407,7 +409,9 @@ public class LocationBarLayout extends FrameLayout {
      * @param percent The animation progress percent.
      */
     protected void setStatusViewRightSpacePercent(float percent) {
-        if (OmniboxFeatures.shouldAvoidRelayoutDuringFocusAnimation()) {
+        // The tablet UI doesn't have status view spacer elements so must use translation.
+        if (OmniboxFeatures.shouldAvoidRelayoutDuringFocusAnimation()
+                || mStatusViewRightSpace == null) {
             // If the url bar is laid out at its smaller, focused width, translate back towards
             // start to compensate for the increased start margin set in #updateLayoutParams. The
             // magnitude of the compensation decreases as % increases and is 0 at full focus %.
