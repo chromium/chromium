@@ -442,13 +442,8 @@ class AnchorElementPreloaderLimitedBrowserTest
 };
 
 // TODO(crbug.com/1383953): Re-enable this test
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_LimitExceeded DISABLED_LimitExceeded
-#else
-#define MAYBE_LimitExceeded LimitExceeded
-#endif
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderLimitedBrowserTest,
-                       MAYBE_LimitExceeded) {
+                       DISABLED_LimitExceeded) {
   const GURL& url = GetTestURL("/many_anchors.html");
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
