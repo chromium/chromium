@@ -166,6 +166,11 @@ extern const char kSpotlightDonateNewIntentsDescription[];
 extern const char kBreakpadNoDelayInitialUploadName[];
 extern const char kBreakpadNoDelayInitialUploadDescription[];
 
+// Title and description for the flag to enable deletion of undecryptable
+// passwords from Sync.
+extern const char kClearUndecryptablePasswordsOnSyncName[];
+extern const char kClearUndecryptablePasswordsOnSyncDescription[];
+
 // Title and description for the flag to enable the content notifications
 // feature.
 extern const char kContentPushNotificationsName[];
@@ -826,6 +831,11 @@ extern const char kShowAutofillTypePredictionsDescription[];
 // Tab Grid button.
 extern const char kShowInactiveTabsCountName[];
 extern const char kShowInactiveTabsCountDescription[];
+
+// Title and description for the flag to enable ignoring undecryptable passwords
+// in the password storage.
+extern const char kSkipUndecryptablePasswordsName[];
+extern const char kSkipUndecryptablePasswordsDescription[];
 
 // Title and description for the flag to add the Price Tracking destination
 // (with Smart Sorting) to the new overflow menu.

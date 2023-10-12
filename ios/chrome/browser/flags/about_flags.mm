@@ -47,6 +47,7 @@
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/optimization_guide_switches.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/payments/core/features.h"
 #import "components/policy/core/common/features.h"
@@ -1543,6 +1544,18 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"enable-feed-containment", flag_descriptions::kEnableFeedContainmentName,
      flag_descriptions::kEnableFeedContainmentDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableFeedContainment)},
+    {"delete-undecryptable-passwords",
+     flag_descriptions::kClearUndecryptablePasswordsOnSyncName,
+     flag_descriptions::kClearUndecryptablePasswordsOnSyncDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kClearUndecryptablePasswordsOnSync)},
+    {"ignore-undecryptable-passwords",
+     flag_descriptions::kSkipUndecryptablePasswordsName,
+     flag_descriptions::kSkipUndecryptablePasswordsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kSkipUndecryptablePasswords)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
