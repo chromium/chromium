@@ -447,10 +447,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
     devtools_accepted_stream_types_ = types;
   }
 
-  const absl::optional<String>& GetDevToolsId() const { return devtools_id_; }
-  void SetDevToolsId(const absl::optional<String>& devtools_id) {
-    devtools_id_ = devtools_id;
-  }
+  const String& GetDevToolsId() const { return devtools_id_; }
+  void SetDevToolsId(const String devtools_id) { devtools_id_ = devtools_id; }
 
   void SetRequestedWithHeader(const String& value) {
     requested_with_header_ = value;
@@ -692,7 +690,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool is_automatic_upgrade_ = false;
 
   absl::optional<base::UnguessableToken> devtools_token_;
-  absl::optional<String> devtools_id_;
+  String devtools_id_;
   String requested_with_header_;
   String client_data_header_;
   String purpose_header_;

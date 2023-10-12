@@ -406,7 +406,7 @@ bool MixedContentChecker::ShouldBlockFetch(
     const KURL& url_before_redirects,
     ResourceRequest::RedirectStatus redirect_status,
     const KURL& url,
-    base::optional_ref<const String> devtools_id,
+    const String& devtools_id,
     ReportingDisposition reporting_disposition,
     mojom::blink::ContentSecurityNotifier& notifier) {
   Frame* mixed_frame = InWhichFrameIsContentMixed(frame, url);
@@ -691,7 +691,7 @@ bool MixedContentChecker::IsWebSocketAllowed(
       mojom::blink::RequestContextType::FETCH, frame,
       allowed ? MixedContentResolutionStatus::kMixedContentWarning
               : MixedContentResolutionStatus::kMixedContentBlocked,
-      absl::optional<String>());
+      String());
   return allowed;
 }
 
@@ -766,8 +766,7 @@ bool MixedContentChecker::IsMixedFormAction(
       MainResourceUrlForFrame(mixed_frame), url,
 
       mojom::blink::RequestContextType::FORM, frame,
-      MixedContentResolutionStatus::kMixedContentWarning,
-      absl::optional<String>());
+      MixedContentResolutionStatus::kMixedContentWarning, String());
 
   return true;
 }
@@ -857,7 +856,7 @@ void MixedContentChecker::MixedContentFound(
       main_resource_url, mixed_content_url, request_context, frame,
       was_allowed ? MixedContentResolutionStatus::kMixedContentWarning
                   : MixedContentResolutionStatus::kMixedContentBlocked,
-      absl::optional<String>());
+      String());
   // Reports to the CSP policy.
   ContentSecurityPolicy* policy =
       frame->DomWindow()->GetContentSecurityPolicy();

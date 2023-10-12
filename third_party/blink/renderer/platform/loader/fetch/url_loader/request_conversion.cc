@@ -357,8 +357,8 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   if (base::UnguessableToken window_id = src.GetFetchWindowId())
     dest->fetch_window_id = absl::make_optional(window_id);
 
-  if (src.GetDevToolsId().has_value()) {
-    dest->devtools_request_id = src.GetDevToolsId().value().Ascii();
+  if (!src.GetDevToolsId().IsNull()) {
+    dest->devtools_request_id = src.GetDevToolsId().Ascii();
   }
 
   if (src.GetDevToolsStackId().has_value()) {

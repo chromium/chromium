@@ -847,7 +847,7 @@ bool HTMLPlugInElement::AllowedToLoadObject(const KURL& url,
              frame, mojom::blink::RequestContextType::OBJECT,
              network::mojom::blink::IPAddressSpace::kUnknown, url,
              ResourceRequest::RedirectStatus::kNoRedirect, url,
-             /* devtools_id= */ absl::nullopt, ReportingDisposition::kReport,
+             /* devtools_id= */ String(), ReportingDisposition::kReport,
              GetDocument().Loader()->GetContentSecurityNotifier());
 }
 

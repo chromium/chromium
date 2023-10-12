@@ -135,7 +135,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info,
       const KURL& url,
       ReportingDisposition reporting_disposition,
-      base::optional_ref<const String> devtools_id) const = 0;
+      const String& devtools_id) const = 0;
   virtual bool ShouldBlockFetchAsCredentialedSubresource(const ResourceRequest&,
                                                          const KURL&) const = 0;
   virtual const KURL& Url() const = 0;

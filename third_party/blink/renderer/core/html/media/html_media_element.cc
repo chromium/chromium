@@ -2081,7 +2081,7 @@ void HTMLMediaElement::SetReadyState(ReadyState state) {
           current_src_after_redirects_ == current_src_for_check
               ? ResourceRequest::RedirectStatus::kNoRedirect
               : ResourceRequest::RedirectStatus::kFollowedRedirect,
-          current_src_after_redirects_, /* devtools_id= */ absl::nullopt,
+          current_src_after_redirects_, /* devtools_id= */ String(),
           ReportingDisposition::kReport,
           GetDocument().Loader()->GetContentSecurityNotifier());
     }

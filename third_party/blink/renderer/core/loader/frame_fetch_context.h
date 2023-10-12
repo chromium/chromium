@@ -182,7 +182,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
       base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info,
       const KURL& url,
       ReportingDisposition reporting_disposition,
-      base::optional_ref<const String> devtools_id) const override;
+      const String& devtools_id) const override;
   bool ShouldBlockFetchAsCredentialedSubresource(const ResourceRequest&,
                                                  const KURL&) const override;
 

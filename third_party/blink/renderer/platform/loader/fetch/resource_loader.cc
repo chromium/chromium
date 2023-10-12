@@ -981,7 +981,7 @@ bool ResourceLoader::WillFollowRedirect(
     return false;
   }
 
-  has_devtools_request_id = new_request->GetDevToolsId().has_value();
+  has_devtools_request_id = !new_request->GetDevToolsId().IsNull();
   return true;
 }
 

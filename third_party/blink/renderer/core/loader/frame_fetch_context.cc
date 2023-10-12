@@ -656,7 +656,7 @@ bool FrameFetchContext::ShouldBlockFetchByMixedContentCheck(
     base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info,
     const KURL& url,
     ReportingDisposition reporting_disposition,
-    base::optional_ref<const String> devtools_id) const {
+    const String& devtools_id) const {
   if (GetResourceFetcherProperties().IsDetached()) {
     // TODO(yhirano): Implement the detached case.
     return false;

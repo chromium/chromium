@@ -146,7 +146,7 @@ bool WorkerFetchContext::ShouldBlockFetchByMixedContentCheck(
     base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info,
     const KURL& url,
     ReportingDisposition reporting_disposition,
-    base::optional_ref<const String> devtools_id) const {
+    const String& devtools_id) const {
   RedirectStatus redirect_status = redirect_info.has_value()
                                        ? RedirectStatus::kFollowedRedirect
                                        : RedirectStatus::kNoRedirect;
