@@ -63,6 +63,9 @@ namespace {
 // The default interval after which to adjust OOM scores.
 constexpr base::TimeDelta kAdjustmentInterval = base::Seconds(10);
 
+// The minimum interval between ReportProcesses.
+constexpr base::TimeDelta kPidsReportMinimalInterval = base::Seconds(3);
+
 // When switching to a new tab the tab's renderer's OOM score needs to be
 // updated to reflect its front-most status and protect it from discard.
 // However, doing this immediately might slow down tab switch time, so wait
@@ -249,6 +252,8 @@ TabManagerDelegate::TabManagerDelegate(
     : tab_manager_(tab_manager),
       focused_process_(new FocusedProcess()),
       mem_stat_(mem_stat) {
+  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CREATED,
+                 content::NotificationService::AllBrowserContextsAndSources());
   registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
                  content::NotificationService::AllBrowserContextsAndSources());
   registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
@@ -283,6 +288,8 @@ void TabManagerDelegate::OnBrowserSetLastActive(Browser* browser) {
   base::ProcessHandle pid =
       contents->GetPrimaryMainFrame()->GetProcess()->GetProcess().Handle();
   AdjustFocusedTabScore(pid);
+
+  ListProcessesThrottled();
 }
 
 void TabManagerDelegate::OnWindowActivated(
@@ -415,8 +422,14 @@ void TabManagerDelegate::Observe(int type,
                                  const content::NotificationSource& source,
                                  const content::NotificationDetails& details) {
   switch (type) {
+    case content::NOTIFICATION_RENDERER_PROCESS_CREATED:
+      ListProcessesThrottled();
+      break;
     case content::NOTIFICATION_RENDERER_PROCESS_CLOSED:
     case content::NOTIFICATION_RENDERER_PROCESS_TERMINATED: {
+      // Calling ListProcessesThrottled in this case may cause crash in the
+      // browser shutdown process. When a renderer process is terminated,
+      // resourced would not count its memory usage.
       content::RenderProcessHost* host =
           content::Source<content::RenderProcessHost>(source).ptr();
       oom_score_map_.erase(host->GetProcess().Handle());
@@ -430,6 +443,7 @@ void TabManagerDelegate::Observe(int type,
                 .ptr()
                 ->GetProcess();
         AdjustFocusedTabScore(render_host->GetProcess().Handle());
+        ListProcessesThrottled();
       }
       // Do not handle the "else" case when it changes to invisible because
       // 1. The behavior is a bit awkward in that when switching from tab A to
@@ -820,6 +834,55 @@ void TabManagerDelegate::DistributeOomScoreInRange(
   if (oom_scores_to_change.size()) {
     GetDebugDaemonClient()->SetOomScoreAdj(oom_scores_to_change,
                                            base::BindOnce(&OnSetOomScoreAdj));
+  }
+}
+
+void TabManagerDelegate::ListProcessesThrottled() {
+  if (base::TimeTicks::Now() - last_pids_report_ > kPidsReportMinimalInterval) {
+    ListProcesses();
+  }
+}
+
+void TabManagerDelegate::ListProcesses() {
+  if (g_browser_process->IsShuttingDown()) {
+    return;
+  }
+
+  last_pids_report_ = base::TimeTicks::Now();
+
+  std::vector<ash::ResourcedClient::Process> processes;
+  for (LifecycleUnit* lifecycle_unit : GetLifecycleUnits()) {
+    base::ProcessHandle pid = lifecycle_unit->GetProcessHandle();
+    // lifecycle_units contains entries for already-discarded tabs. If the pid
+    // is zero, we don't need to report it.
+    if (pid == base::kNullProcessHandle) {
+      continue;
+    }
+
+    DecisionDetails decision_details;
+    bool is_protected = false;
+    bool is_visible = false;
+    if (!lifecycle_unit->CanDiscard(
+            ::mojom::LifecycleUnitDiscardReason::EXTERNAL, &decision_details)) {
+      if (!decision_details.reasons().empty() &&
+          decision_details.FailureReason() ==
+              DecisionFailureReason::LIVE_STATE_VISIBLE) {
+        is_visible = true;
+      }
+      is_protected = true;
+    }
+    processes.emplace_back(pid, is_protected, is_visible);
+  }
+
+  ReportProcesses(processes);
+}
+
+void TabManagerDelegate::ReportProcesses(
+    const std::vector<ash::ResourcedClient::Process>& processes) {
+  ash::ResourcedClient* client = ash::ResourcedClient::Get();
+  if (client) {
+    client->ReportBrowserProcesses(ash::ResourcedClient::Component::kAsh,
+                                   processes);
   }
 }
 

@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
+#include "base/process/process_handle.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 
 #include <cstdint>
@@ -136,6 +137,18 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
 
   virtual void ReportBackgroundProcesses(Component component,
                                          const std::vector<int32_t>& pids) = 0;
+
+  struct Process {
+    Process(base::ProcessHandle pid, bool is_protected, bool is_visible)
+        : pid(pid), is_protected(is_protected), is_visible(is_visible) {}
+    base::ProcessHandle pid;
+    bool is_protected;
+    bool is_visible;
+  };
+
+  virtual void ReportBrowserProcesses(
+      Component component,
+      const std::vector<Process>& processes) = 0;
 
   // Adds an observer to the observer list to listen on memory pressure events.
   virtual void AddObserver(Observer* observer) = 0;

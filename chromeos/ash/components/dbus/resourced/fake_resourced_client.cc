@@ -55,6 +55,18 @@ void FakeResourcedClient::ReportBackgroundProcesses(
   }
 }
 
+void FakeResourcedClient::ReportBrowserProcesses(
+    Component component,
+    const std::vector<Process>& processes) {
+  if (component == ResourcedClient::Component::kAsh) {
+    ash_browser_processes_ = processes;
+  } else if (component == ResourcedClient::Component::kLacros) {
+    lacros_browser_processes_ = processes;
+  } else {
+    NOTREACHED();
+  }
+}
+
 void FakeResourcedClient::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

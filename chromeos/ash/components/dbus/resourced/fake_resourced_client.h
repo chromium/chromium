@@ -32,6 +32,9 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
   void ReportBackgroundProcesses(Component component,
                                  const std::vector<int32_t>& pids) override;
 
+  void ReportBrowserProcesses(Component component,
+                              const std::vector<Process>& processes) override;
+
   void set_total_system_memory(uint64_t mem_kb) {
     total_system_memory_kb_ = mem_kb;
   }
@@ -85,6 +88,8 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
 
   std::vector<int32_t> ash_background_pids_;
   std::vector<int32_t> lacros_background_pids_;
+  std::vector<Process> ash_browser_processes_;
+  std::vector<Process> lacros_browser_processes_;
 
   base::ObserverList<Observer> observers_;
   base::ObserverList<ArcVmObserver> arcvm_observers_;

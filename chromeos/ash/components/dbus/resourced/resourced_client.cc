@@ -76,6 +76,9 @@ class ResourcedClientImpl : public ResourcedClient {
   void ReportBackgroundProcesses(Component component,
                                  const std::vector<int32_t>& pids) override;
 
+  void ReportBrowserProcesses(Component component,
+                              const std::vector<Process>& processes) override;
+
   void AddObserver(Observer* observer) override;
 
   void RemoveObserver(Observer* observer) override;
@@ -380,6 +383,38 @@ void ResourcedClientImpl::ReportBackgroundProcesses(
     LOG(ERROR) << "Error serializing "
                << resource_manager::kReportBackgroundProcessesMethod
                << " request";
+    return;
+  }
+
+  proxy_->CallMethod(&method_call, kResourcedDBusTimeoutMilliseconds,
+                     base::DoNothing());
+}
+
+void ResourcedClientImpl::ReportBrowserProcesses(
+    Component component,
+    const std::vector<Process>& processes) {
+  resource_manager::ReportBrowserProcesses request;
+
+  if (component == ResourcedClient::Component::kAsh) {
+    request.set_browser_type(resource_manager::BrowserType::ASH);
+  } else if (component == ResourcedClient::Component::kLacros) {
+    request.set_browser_type(resource_manager::BrowserType::LACROS);
+  } else {
+    NOTREACHED();
+  }
+
+  for (auto it = processes.begin(); it != processes.end(); ++it) {
+    auto* process = request.add_processes();
+    process->set_pid(it->pid);
+    process->set_protected_(it->is_protected);
+    process->set_visible(it->is_visible);
+  }
+
+  dbus::MethodCall method_call(resource_manager::kResourceManagerInterface,
+                               resource_manager::kReportBrowserProcessesMethod);
+  if (!dbus::MessageWriter(&method_call).AppendProtoAsArrayOfBytes(request)) {
+    LOG(ERROR) << "Error serializing "
+               << resource_manager::kReportBrowserProcessesMethod << " request";
     return;
   }
 
