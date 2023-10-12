@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -15,6 +16,18 @@
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+
+class TrackingProtectionSettingsMetricsBrowserTest
+    : public InProcessBrowserTest {
+ protected:
+  base::HistogramTester histogram_tester_;
+};
+
+IN_PROC_BROWSER_TEST_F(TrackingProtectionSettingsMetricsBrowserTest,
+                       RecordsMetricsOnStartup) {
+  histogram_tester_.ExpectUniqueSample("Settings.TrackingProtection.Enabled",
+                                       false, 1);
+}
 
 class TrackingProtectionSettingsForEnterpriseBrowserTest
     : public InProcessBrowserTest,
@@ -39,11 +52,6 @@ class TrackingProtectionSettingsForEnterpriseBrowserTest
                  policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
       policy_provider_.UpdateChromePolicy(policy);
     }
-  }
-
-  privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings() {
-    return TrackingProtectionSettingsFactory::GetForProfile(
-        browser()->profile());
   }
 
  protected:

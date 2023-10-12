@@ -1092,6 +1092,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.TrackingProtection.BlockAllThirdParty" enum="Boolean"
+    expires_after="2024-09-30">
+  <owner>fmacintosh@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the state of the pref that represents whether the user has chosen to
+    block all third-party cookies on the Tracking Protection settings page.
+    Logged on startup.
+  </summary>
+</histogram>
+
+<histogram name="Settings.TrackingProtection.Enabled" enum="BooleanEnabled"
+    expires_after="2024-09-30">
+  <owner>fmacintosh@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the state of the pref that represents whether the user has the new
+    Tracking Protection prefs and UX. Logged on startup.
+  </summary>
+</histogram>
+
 <histogram name="Settings.TrackingProtection.Redirect" enum="BooleanRedirected"
     expires_after="2024-12-30">
   <owner>fmacintosh@google.com</owner>

@@ -4,10 +4,14 @@
 
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 
 TrackingProtectionSettingsFactory*
@@ -39,6 +43,23 @@ std::unique_ptr<KeyedService>
 TrackingProtectionSettingsFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
+
+  bool should_record_metrics = profile->IsRegularProfile();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  should_record_metrics =
+      should_record_metrics && ash::ProfileHelper::IsUserProfile(profile);
+#endif
+  if (should_record_metrics) {
+    if (profile->GetPrefs()->GetBoolean(
+            prefs::kTrackingProtection3pcdEnabled)) {
+      base::UmaHistogramBoolean("Settings.TrackingProtection.Enabled", true);
+      base::UmaHistogramBoolean(
+          "Settings.TrackingProtection.BlockAllThirdParty",
+          profile->GetPrefs()->GetBoolean(prefs::kBlockAll3pcToggleEnabled));
+    } else {
+      base::UmaHistogramBoolean("Settings.TrackingProtection.Enabled", false);
+    }
+  }
 
   return std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
       profile->GetPrefs(),
