@@ -47,17 +47,6 @@ std::unique_ptr<WebEngineNetLogObserver> CreateNetLogObserver() {
 
 }  // namespace
 
-class WebEngineBrowserContext::ResourceContext
-    : public content::ResourceContext {
- public:
-  ResourceContext() = default;
-
-  ResourceContext(const ResourceContext&) = delete;
-  ResourceContext& operator=(const ResourceContext&) = delete;
-
-  ~ResourceContext() override = default;
-};
-
 // static
 std::unique_ptr<WebEngineBrowserContext>
 WebEngineBrowserContext::CreatePersistent(
@@ -206,7 +195,7 @@ WebEngineBrowserContext::WebEngineBrowserContext(
     : data_dir_path_(std::move(data_directory)),
       net_log_observer_(CreateNetLogObserver()),
       simple_factory_key_(GetPath(), IsOffTheRecord()),
-      resource_context_(std::make_unique<ResourceContext>()),
+      resource_context_(std::make_unique<content::ResourceContext>()),
       client_hints_delegate_(network_quality_tracker,
                              IsJavaScriptAllowedCallback(),
                              AreThirdPartyCookiesBlockedCallback(),

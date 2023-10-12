@@ -64,9 +64,6 @@ class WebEngineBrowserContext final : public content::BrowserContext {
   GetReduceAcceptLanguageControllerDelegate() override;
 
  private:
-  // Contains URLRequestContextGetter required for resource loading.
-  class ResourceContext;
-
   explicit WebEngineBrowserContext(
       base::FilePath data_dir_path,
       network::NetworkQualityTracker* network_quality_tracker);
@@ -76,7 +73,7 @@ class WebEngineBrowserContext final : public content::BrowserContext {
   const std::unique_ptr<WebEngineNetLogObserver> net_log_observer_;
   SimpleFactoryKey simple_factory_key_;
   WebEnginePermissionDelegate permission_delegate_;
-  std::unique_ptr<ResourceContext> resource_context_;
+  std::unique_ptr<content::ResourceContext> resource_context_;
   client_hints::InMemoryClientHintsControllerDelegate client_hints_delegate_;
 };
 
