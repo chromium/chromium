@@ -67,7 +67,8 @@ ImageServiceConsentHelper::ImageServiceConsentHelper(
 ImageServiceConsentHelper::~ImageServiceConsentHelper() = default;
 
 void ImageServiceConsentHelper::EnqueueRequest(
-    base::OnceCallback<void(PageImageServiceConsentStatus)> callback) {
+    base::OnceCallback<void(PageImageServiceConsentStatus)> callback,
+    mojom::ClientId client_id) {
   base::UmaHistogramBoolean("PageImageService.ConsentStatusRequestCount", true);
   if (consent_throttle_) {
     consent_throttle_->EnqueueRequest(
@@ -83,7 +84,7 @@ void ImageServiceConsentHelper::EnqueueRequest(
     return;
   }
 
-  enqueued_request_callbacks_.emplace_back(std::move(callback));
+  enqueued_request_callbacks_.emplace_back(std::move(callback), client_id);
   if (!request_processing_timer_.IsRunning()) {
     request_processing_timer_.Start(
         FROM_HERE, timeout_duration_,
@@ -102,8 +103,8 @@ void ImageServiceConsentHelper::OnStateChanged(
     return;
   }
 
-  for (auto& request_callback : enqueued_request_callbacks_) {
-    std::move(request_callback)
+  for (auto& request_callback_with_client_id : enqueued_request_callbacks_) {
+    std::move(request_callback_with_client_id.first)
         .Run(*consent_status ? PageImageServiceConsentStatus::kSuccess
                              : PageImageServiceConsentStatus::kFailure);
   }
@@ -136,12 +137,19 @@ absl::optional<bool> ImageServiceConsentHelper::GetConsentStatus() {
 }
 
 void ImageServiceConsentHelper::OnTimeoutExpired() {
-  for (auto& request_callback : enqueued_request_callbacks_) {
+  for (auto& request_callback_with_client_id : enqueued_request_callbacks_) {
     // Report consent status on timeout for each request to compare against the
     // number of all requests.
     base::UmaHistogramEnumeration("PageImageService.ConsentStatusOnTimeout",
                                   ConsentStatusToUmaStatus(GetConsentStatus()));
-    std::move(request_callback).Run(PageImageServiceConsentStatus::kTimedOut);
+    sync_service_->RecordReasonIfWaitingForUpdates(
+        model_type_, kConsentTimeoutReasonHistogramName);
+    sync_service_->RecordReasonIfWaitingForUpdates(
+        model_type_,
+        std::string(kConsentTimeoutReasonHistogramName) + "." +
+            ClientIdToString(request_callback_with_client_id.second));
+    std::move(request_callback_with_client_id.first)
+        .Run(PageImageServiceConsentStatus::kTimedOut);
   }
   enqueued_request_callbacks_.clear();
 }

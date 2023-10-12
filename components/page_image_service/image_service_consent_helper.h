@@ -5,12 +5,14 @@
 #ifndef COMPONENTS_PAGE_IMAGE_SERVICE_IMAGE_SERVICE_CONSENT_HELPER_H_
 #define COMPONENTS_PAGE_IMAGE_SERVICE_IMAGE_SERVICE_CONSENT_HELPER_H_
 
+#include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/sync_service_observer.h"
 
@@ -42,7 +44,8 @@ class ImageServiceConsentHelper : public syncer::SyncServiceObserver {
   // method calls `callback` synchronously with the result. If not, it will hold
   // the request up until the timeout for the consent helper to initialize.
   void EnqueueRequest(
-      base::OnceCallback<void(PageImageServiceConsentStatus)> callback);
+      base::OnceCallback<void(PageImageServiceConsentStatus)> callback,
+      mojom::ClientId client_id);
 
  private:
   // Returns whether it is appropriate to fetch images for synced entities of
@@ -64,7 +67,8 @@ class ImageServiceConsentHelper : public syncer::SyncServiceObserver {
 
   // Requests waiting for the consent throttle to initialize. Requests are
   // stored in the queue in order of their arrival.
-  std::vector<base::OnceCallback<void(PageImageServiceConsentStatus)>>
+  std::vector<std::pair<base::OnceCallback<void(PageImageServiceConsentStatus)>,
+                        mojom::ClientId>>
       enqueued_request_callbacks_;
 
   // Consent throttle to be used if sync service is not being directly observed.

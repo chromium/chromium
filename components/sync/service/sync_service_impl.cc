@@ -175,12 +175,9 @@ base::TimeDelta GetDeferredInitDelay() {
 void LogWaitingForUpdatesReasonIfNeeded(
     DownloadStatusWaitingForUpdatesReason reason,
     ModelType type,
-    bool record_waiting_for_updates_metrics) {
-  if (record_waiting_for_updates_metrics) {
-    base::UmaHistogramEnumeration(
-        std::string("Sync.ModelTypeWaitingForUpdatesTimeoutReason.") +
-            ModelTypeToHistogramSuffix(type),
-        reason);
+    const std::string& waiting_for_updates_histogram_name) {
+  if (!waiting_for_updates_histogram_name.empty()) {
+    base::UmaHistogramEnumeration(waiting_for_updates_histogram_name, reason);
   }
 }
 
@@ -620,9 +617,12 @@ void SyncServiceImpl::Shutdown() {
   auth_manager_.reset();
 }
 
-void SyncServiceImpl::RecordReasonIfWaitingForUpdates(ModelType type) {
+void SyncServiceImpl::RecordReasonIfWaitingForUpdates(
+    ModelType type,
+    const std::string& histogram_name) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Ignore the actual returned status.
-  GetDownloadStatusForImpl(type, /*record_waiting_for_updates_metrics=*/true);
+  GetDownloadStatusForImpl(type, histogram_name);
 }
 
 void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
@@ -1965,13 +1965,14 @@ void SyncServiceImpl::GetAllNodesForDebugging(
 SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusFor(
     ModelType type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetDownloadStatusForImpl(type,
-                                  /*record_waiting_for_updates_metrics=*/false);
+  return GetDownloadStatusForImpl(
+      type,
+      /*waiting_for_updates_histogram_name=*/std::string());
 }
 
 SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
     ModelType type,
-    bool record_waiting_for_updates_metrics) const {
+    const std::string& waiting_for_updates_histogram_name) const {
   // Download status doesn't make sense for non-real data types.
   CHECK(IsRealDataType(type));
 
@@ -1984,7 +1985,7 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
       // GetDisableReasons() won't be empty until then.
       LogWaitingForUpdatesReasonIfNeeded(
           DownloadStatusWaitingForUpdatesReason::kRefreshTokensNotLoaded, type,
-          record_waiting_for_updates_metrics);
+          waiting_for_updates_histogram_name);
       return ModelTypeDownloadStatus::kWaitingForUpdates;
     }
 
@@ -2007,7 +2008,7 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
     DVLOG(1) << "Waiting for the sync engine to be fully initialized";
     LogWaitingForUpdatesReasonIfNeeded(
         DownloadStatusWaitingForUpdatesReason::kSyncEngineNotInitialized, type,
-        record_waiting_for_updates_metrics);
+        waiting_for_updates_histogram_name);
     return ModelTypeDownloadStatus::kWaitingForUpdates;
   }
   CHECK(engine_);
@@ -2021,7 +2022,7 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
     DVLOG(1) << "Data type is not active yet";
     LogWaitingForUpdatesReasonIfNeeded(
         DownloadStatusWaitingForUpdatesReason::kDataTypeNotActive, type,
-        record_waiting_for_updates_metrics);
+        waiting_for_updates_histogram_name);
     return ModelTypeDownloadStatus::kWaitingForUpdates;
   }
 
@@ -2029,7 +2030,7 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
     DVLOG(1) << "Waiting for invalidations to be initialized";
     LogWaitingForUpdatesReasonIfNeeded(
         DownloadStatusWaitingForUpdatesReason::kInvalidationsNotInitialized,
-        type, record_waiting_for_updates_metrics);
+        type, waiting_for_updates_histogram_name);
     return ModelTypeDownloadStatus::kWaitingForUpdates;
   }
 
@@ -2040,7 +2041,7 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
              << ModelTypeToDebugString(type);
     LogWaitingForUpdatesReasonIfNeeded(
         DownloadStatusWaitingForUpdatesReason::kIncomingInvalidation, type,
-        record_waiting_for_updates_metrics);
+        waiting_for_updates_histogram_name);
     return ModelTypeDownloadStatus::kWaitingForUpdates;
   }
 
@@ -2048,7 +2049,7 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
     DVLOG(1) << "Waiting for updates due an upcoming poll request";
     LogWaitingForUpdatesReasonIfNeeded(
         DownloadStatusWaitingForUpdatesReason::kPollRequestScheduled, type,
-        record_waiting_for_updates_metrics);
+        waiting_for_updates_histogram_name);
     return ModelTypeDownloadStatus::kWaitingForUpdates;
   }
 
@@ -2365,7 +2366,9 @@ void SyncServiceImpl::DownloadStatusRecorder::OnTimeout() {
     // Ignore kError state for the purpose of the histogram. This is required to
     // filter out cases when data types are not running, e.g. due to transport
     // mode or because there is no signed-in user.
-    sync_service_->RecordReasonIfWaitingForUpdates(type);
+    sync_service_->RecordReasonIfWaitingForUpdates(
+        type, std::string("Sync.ModelTypeWaitingForUpdatesTimeoutReason.") +
+                  ModelTypeToHistogramSuffix(type));
   }
 
   // Delete current object after all the histograms are recorded.

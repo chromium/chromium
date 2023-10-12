@@ -18,6 +18,8 @@ constexpr char kBackendOptimizationGuideResultHistogramName[] =
 constexpr char kBackendSuggestResultHistogramName[] =
     "PageImageService.Backend.Suggest.Result";
 constexpr char kConsentStatusHistogramName[] = "PageImageService.ConsentStatus";
+constexpr char kConsentTimeoutReasonHistogramName[] =
+    "PageImageService.ConsentTimeoutReason";
 
 // Used in UMA. Must not be renumbered, and must be kept in sync with enums.xml.
 enum class PageImageServiceBackend {

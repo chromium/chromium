@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "components/page_image_service/features.h"
 #include "components/page_image_service/metrics_util.h"
+#include "components/page_image_service/mojom/page_image_service.mojom-shared.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,8 +44,10 @@ class ImageServiceConsentHelperTest : public testing::Test {
 
   PageImageServiceConsentStatus GetResultSynchronously() {
     PageImageServiceConsentStatus out_result;
-    consent_helper_->EnqueueRequest(base::BindLambdaForTesting(
-        [&](PageImageServiceConsentStatus result) { out_result = result; }));
+    consent_helper_->EnqueueRequest(
+        base::BindLambdaForTesting(
+            [&](PageImageServiceConsentStatus result) { out_result = result; }),
+        mojom::ClientId::Bookmarks);
     return out_result;
   }
 
@@ -84,7 +87,8 @@ TEST_F(ImageServiceConsentHelperTest, ExpireOldRequests) {
   consent_helper()->EnqueueRequest(
       base::BindLambdaForTesting([&](PageImageServiceConsentStatus result) {
         results.push_back(result);
-      }));
+      }),
+      mojom::ClientId::Bookmarks);
 
   EXPECT_TRUE(results.empty()) << "Callback should not be run immediately.";
   FastForwardBy(base::Seconds(3));
@@ -94,7 +98,8 @@ TEST_F(ImageServiceConsentHelperTest, ExpireOldRequests) {
   consent_helper()->EnqueueRequest(
       base::BindLambdaForTesting([&](PageImageServiceConsentStatus result) {
         results.push_back(result);
-      }));
+      }),
+      mojom::ClientId::Bookmarks);
 
   FastForwardBy(base::Seconds(10));
   ASSERT_EQ(results.size(), 2U) << "Both callbacks should expire as false.";
@@ -106,7 +111,8 @@ TEST_F(ImageServiceConsentHelperTest, ExpireOldRequests) {
   consent_helper()->EnqueueRequest(
       base::BindLambdaForTesting([&](PageImageServiceConsentStatus result) {
         results.push_back(result);
-      }));
+      }),
+      mojom::ClientId::Bookmarks);
   EXPECT_EQ(results.size(), 2U) << "Callback should not be run immediately.";
   FastForwardBy(base::Seconds(3));
   EXPECT_EQ(results.size(), 2U);
@@ -124,13 +130,15 @@ TEST_F(ImageServiceConsentHelperTest, InitializationFulfillsAllQueuedRequests) {
   consent_helper()->EnqueueRequest(
       base::BindLambdaForTesting([&](PageImageServiceConsentStatus result) {
         results.push_back(result);
-      }));
+      }),
+      mojom::ClientId::Bookmarks);
   ASSERT_TRUE(results.empty());
   FastForwardBy(base::Seconds(2));
   consent_helper()->EnqueueRequest(
       base::BindLambdaForTesting([&](PageImageServiceConsentStatus result) {
         results.push_back(result);
-      }));
+      }),
+      mojom::ClientId::Bookmarks);
   ASSERT_TRUE(results.empty()) << "Still nothing should be run yet.";
 
   SetDownloadStatusAndFireNotification(
@@ -149,7 +157,8 @@ TEST_F(ImageServiceConsentHelperTest, InitializationDisabledCase) {
   consent_helper()->EnqueueRequest(
       base::BindLambdaForTesting([&](PageImageServiceConsentStatus result) {
         results.push_back(result);
-      }));
+      }),
+      mojom::ClientId::Bookmarks);
   ASSERT_TRUE(results.empty());
 
   SetDownloadStatusAndFireNotification(

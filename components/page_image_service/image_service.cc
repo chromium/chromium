@@ -223,13 +223,15 @@ void ImageService::GetConsentToFetchImage(
     case mojom::ClientId::Journeys:
     case mojom::ClientId::JourneysSidePanel:
     case mojom::ClientId::NtpQuests: {
-      return history_consent_helper_->EnqueueRequest(std::move(callback));
+      return history_consent_helper_->EnqueueRequest(std::move(callback),
+                                                     client_id);
     }
     case mojom::ClientId::NtpRealbox:
       // TODO(b/244507194): Figure out consent story for NTP realbox case.
       return std::move(callback).Run(PageImageServiceConsentStatus::kFailure);
     case mojom::ClientId::Bookmarks: {
-      return bookmarks_consent_helper_->EnqueueRequest(std::move(callback));
+      return bookmarks_consent_helper_->EnqueueRequest(std::move(callback),
+                                                       client_id);
     }
   }
 }

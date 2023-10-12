@@ -126,6 +126,9 @@ class TestSyncService : public SyncService {
   void GetAllNodesForDebugging(
       base::OnceCallback<void(base::Value::List)> callback) override;
   ModelTypeDownloadStatus GetDownloadStatusFor(ModelType type) const override;
+  void RecordReasonIfWaitingForUpdates(
+      ModelType type,
+      const std::string& histogram_name) const override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
   void GetTypesWithUnsyncedData(
       base::OnceCallback<void(ModelTypeSet)> cb) const override;

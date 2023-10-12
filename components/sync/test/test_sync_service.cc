@@ -337,6 +337,10 @@ SyncService::ModelTypeDownloadStatus TestSyncService::GetDownloadStatusFor(
   return ModelTypeDownloadStatus::kUpToDate;
 }
 
+void TestSyncService::RecordReasonIfWaitingForUpdates(
+    ModelType type,
+    const std::string& histogram_name) const {}
+
 void TestSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
 
 bool TestSyncService::IsSyncFeatureConsideredRequested() const {
