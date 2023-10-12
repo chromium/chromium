@@ -5201,6 +5201,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Session.EnterPictureInPicture"
+    enum="MediaSessionEnterPictureInPictureType" expires_after="2024-04-30">
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when EnterPictureInPicture or EnterAutoPictureInPicture is called
+    on a MediaSessionImpl. Records why picture-in-picture was triggered (whether
+    it was for the default handler or a website-provided one, and whether the
+    trigger was manual or automatic).
+  </summary>
+</histogram>
+
 <histogram name="Media.Session.Play" enum="MediaSessionActionSource"
     expires_after="2024-03-03">
   <owner>steimel@chromium.org</owner>

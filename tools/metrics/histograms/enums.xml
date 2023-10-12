@@ -72172,6 +72172,12 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Headset Unplugged"/>
 </enum>
 
+<enum name="MediaSessionEnterPictureInPictureType">
+  <int value="0" label="Default Handler"/>
+  <int value="1" label="Registered Manual"/>
+  <int value="2" label="Registered Automatic"/>
+</enum>
+
 <enum name="MediaSessionSuspendedSource">
   <int value="0" label="System Transient"/>
   <int value="1" label="System Permanent"/>

@@ -1201,6 +1201,8 @@ void MediaSessionImpl::EnterPictureInPicture() {
           media_session::mojom::MediaSessionAction::kEnterPictureInPicture)) {
     DidReceiveAction(
         media_session::mojom::MediaSessionAction::kEnterPictureInPicture);
+    uma_helper_.RecordEnterPictureInPicture(
+        MediaSessionUmaHelper::EnterPictureInPictureType::kRegisteredManual);
     return;
   }
 
@@ -1208,6 +1210,8 @@ void MediaSessionImpl::EnterPictureInPicture() {
   DCHECK_EQ(normal_players_.size(), 1u);
   normal_players_.begin()->first.observer->OnEnterPictureInPicture(
       normal_players_.begin()->first.player_id);
+  uma_helper_.RecordEnterPictureInPicture(
+      MediaSessionUmaHelper::EnterPictureInPictureType::kDefaultHandler);
 }
 
 void MediaSessionImpl::ExitPictureInPicture() {
@@ -1226,6 +1230,8 @@ void MediaSessionImpl::EnterAutoPictureInPicture() {
 
   DidReceiveAction(
       media_session::mojom::MediaSessionAction::kEnterPictureInPicture);
+  uma_helper_.RecordEnterPictureInPicture(
+      MediaSessionUmaHelper::EnterPictureInPictureType::kRegisteredAutomatic);
 }
 
 void MediaSessionImpl::SetAudioSinkId(const absl::optional<std::string>& id) {
