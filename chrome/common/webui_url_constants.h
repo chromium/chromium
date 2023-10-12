@@ -399,6 +399,8 @@ bool IsSystemWebUIHost(base::StringPiece host);
 
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kChromeUIAppDisabledHost[];
+extern const char kChromeUIDlpInternalsHost[];
+extern const char kChromeUIDlpInternalsURL[];
 extern const char kChromeUIGpuURL[];
 extern const char kChromeUIHistogramsURL[];
 extern const char kChromeUIKerberosInBrowserHost[];

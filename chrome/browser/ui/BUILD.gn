@@ -744,6 +744,8 @@ static_library("ui") {
 
   if (is_chromeos) {
     sources += [
+      "webui/dlp_internals/dlp_internals_ui.cc",
+      "webui/dlp_internals/dlp_internals_ui.h",
       "webui/trusted_vault/trusted_vault_dialog_delegate.cc",
       "webui/trusted_vault/trusted_vault_dialog_delegate.h",
     ]

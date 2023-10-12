@@ -201,9 +201,10 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/webui/dlp_internals/dlp_internals_ui.h"
 #include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
 #include "url/url_util.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"  // nogncheck
@@ -831,6 +832,11 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIWebAppSettingsHost)
     return &NewWebUI<WebAppSettingsUI>;
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
+  if (url.host_piece() == chrome::kChromeUIDlpInternalsHost) {
+    return &NewWebUI<policy::DlpInternalsUI>;
+  }
+#endif
   if (IsAboutUI(url))
     return &NewWebUI<AboutUI>;
 
@@ -1127,6 +1133,7 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(chrome::kChromeUIComponentsUrl),
     GURL(chrome::kChromeUICreditsURL),
     GURL(chrome::kChromeUIDeviceLogUrl),
+    GURL(chrome::kChromeUIDlpInternalsURL),
     GURL(chrome::kChromeUIExtensionsInternalsURL),
     GURL(chrome::kChromeUIExtensionsURL),
     GURL(chrome::kChromeUIFlagsURL),

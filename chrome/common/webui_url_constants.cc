@@ -481,6 +481,8 @@ bool IsSystemWebUIHost(base::StringPiece host) {
 #if BUILDFLAG(IS_CHROMEOS)
 const char kChromeUIAppDisabledHost[] = "app-disabled";
 const char kChromeUIAppDisabledURL[] = "chrome://app-disabled";
+const char kChromeUIDlpInternalsHost[] = "dlp-internals";
+const char kChromeUIDlpInternalsURL[] = "chrome://dlp-internals";
 const char kChromeUIGpuURL[] = "chrome://gpu";
 const char kChromeUIHistogramsURL[] = "chrome://histograms";
 const char kChromeUIKerberosInBrowserHost[] = "kerberos-in-browser";
@@ -832,6 +834,9 @@ const char* const kChromeHostURLs[] = {
 #if BUILDFLAG(PLATFORM_CFM)
     kCfmNetworkSettingsHost,
 #endif  // BUILDFLAG(PLATFORM_CFM)
+#if BUILDFLAG(IS_CHROMEOS)
+    kChromeUIDlpInternalsHost,
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 const size_t kNumberOfChromeHostURLs = std::size(kChromeHostURLs);
 
