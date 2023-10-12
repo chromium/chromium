@@ -25,27 +25,20 @@ TEST_F(SingleTopicInvalidationSetTest, InsertionAndOrdering) {
   SingleTopicInvalidationSet l1;
   SingleTopicInvalidationSet l2;
 
-  Invalidation inv0 = Invalidation::InitUnknownVersion(kTopic);
   Invalidation inv1 = Invalidation::Init(kTopic, 1, "one");
   Invalidation inv2 = Invalidation::Init(kTopic, 5, "five");
 
-  l1.Insert(inv0);
   l1.Insert(inv1);
   l1.Insert(inv2);
 
-  l2.Insert(inv1);
   l2.Insert(inv2);
-  l2.Insert(inv0);
+  l2.Insert(inv1);
 
-  ASSERT_EQ(3U, l1.GetSize());
-  ASSERT_EQ(3U, l2.GetSize());
+  ASSERT_EQ(2U, l1.GetSize());
+  ASSERT_EQ(2U, l2.GetSize());
 
   auto it1 = l1.begin();
   auto it2 = l2.begin();
-  EXPECT_THAT(inv0, Eq(*it1));
-  EXPECT_THAT(inv0, Eq(*it2));
-  it1++;
-  it2++;
   EXPECT_THAT(inv1, Eq(*it1));
   EXPECT_THAT(inv1, Eq(*it2));
   it1++;
@@ -58,20 +51,5 @@ TEST_F(SingleTopicInvalidationSetTest, InsertionAndOrdering) {
   EXPECT_TRUE(it2 == l2.end());
 }
 
-TEST_F(SingleTopicInvalidationSetTest, StartWithUnknownVersion) {
-  SingleTopicInvalidationSet list;
-  EXPECT_FALSE(list.StartsWithUnknownVersion());
-
-  list.Insert(Invalidation::Init(kTopic, 1, "one"));
-  EXPECT_FALSE(list.StartsWithUnknownVersion());
-
-  list.Insert(Invalidation::InitUnknownVersion(kTopic));
-  EXPECT_TRUE(list.StartsWithUnknownVersion());
-
-  list.Clear();
-  EXPECT_FALSE(list.StartsWithUnknownVersion());
-}
-
 }  // namespace
-
 }  // namespace invalidation

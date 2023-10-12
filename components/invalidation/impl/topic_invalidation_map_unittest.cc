@@ -19,15 +19,16 @@ class TopicInvalidationMapTest : public testing::Test {
   TopicInvalidationMapTest()
       : kTopicOne("one"),
         kTopicTwo("two"),
-        kInv1(Invalidation::Init(kTopicOne, 10, "ten")) {
+        kInv1(Invalidation::Init(kTopicOne, 10, "ten")),
+        kInv2(Invalidation::Init(kTopicTwo, 20, "twenty")) {
     set1_.insert(kTopicOne);
     set2_.insert(kTopicTwo);
     all_set_.insert(kTopicOne);
     all_set_.insert(kTopicTwo);
 
     one_invalidation_.Insert(kInv1);
-    invalidate_all_.Insert(Invalidation::InitUnknownVersion(kTopicOne));
-    invalidate_all_.Insert(Invalidation::InitUnknownVersion(kTopicTwo));
+    invalidate_all_.Insert(kInv1);
+    invalidate_all_.Insert(kInv2);
   }
 
   ~TopicInvalidationMapTest() override = default;
@@ -36,6 +37,7 @@ class TopicInvalidationMapTest : public testing::Test {
   const Topic kTopicOne;
   const Topic kTopicTwo;
   const Invalidation kInv1;
+  const Invalidation kInv2;
 
   TopicSet set1_;
   TopicSet set2_;
@@ -61,7 +63,7 @@ TEST_F(TopicInvalidationMapTest, Equality) {
   one_invalidation_2.Insert(kInv1);
   EXPECT_EQ(one_invalidation_, one_invalidation_2);
 
-  EXPECT_FALSE(empty_ == invalidate_all_);
+  EXPECT_NE(empty_, invalidate_all_);
 }
 
 TEST_F(TopicInvalidationMapTest, GetTopics) {

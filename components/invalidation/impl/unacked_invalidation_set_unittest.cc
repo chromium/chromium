@@ -55,18 +55,21 @@ TEST_F(UnackedInvalidationSetTest, OneInvalidation) {
   EXPECT_EQ(*set.begin(), inv1);
 }
 
-// Test that repeated unknown version invalidations are squashed together.
+// Test that repeated invalidations are squashed together.
 TEST_F(UnackedInvalidationSetTest, UnknownVersions) {
   Invalidation inv1 = Invalidation::Init(kTopic, 10, "payload");
-  Invalidation inv2 = Invalidation::InitUnknownVersion(kTopic);
-  Invalidation inv3 = Invalidation::InitUnknownVersion(kTopic);
+  Invalidation inv2 = Invalidation::Init(kTopic, 10, "payload");
+  Invalidation inv3 = Invalidation::Init(kTopic, 20, "payload");
+  Invalidation inv4 = Invalidation::Init(kTopic, 20, "payload");
   unacked_invalidations_.Add(inv1);
   unacked_invalidations_.Add(inv2);
   unacked_invalidations_.Add(inv3);
+  unacked_invalidations_.Add(inv4);
 
   SingleTopicInvalidationSet set = GetStoredInvalidations();
   ASSERT_EQ(2U, set.GetSize());
-  EXPECT_TRUE(set.begin()->is_unknown_version());
+  EXPECT_EQ(*set.begin(), inv1);
+  EXPECT_EQ(*set.rbegin(), inv3);
 }
 
 // Tests that no truncation occurs while we're under the limit.
@@ -128,7 +131,7 @@ TEST_F(UnackedInvalidationSetTest, Acknowledge) {
   // are supposed to be unaffected by this operation will be unaffected.
 
   Invalidation inv1 = Invalidation::Init(kTopic, 10, "payload");
-  Invalidation inv2 = Invalidation::InitUnknownVersion(kTopic);
+  Invalidation inv2 = Invalidation::Init(kTopic, 20, "payload");
   AckHandle inv1_handle = inv1.ack_handle();
 
   unacked_invalidations_.Add(inv1);
@@ -138,7 +141,7 @@ TEST_F(UnackedInvalidationSetTest, Acknowledge) {
 
   SingleTopicInvalidationSet set = GetStoredInvalidations();
   EXPECT_EQ(1U, set.GetSize());
-  EXPECT_TRUE(set.StartsWithUnknownVersion());
+  EXPECT_EQ(*set.begin(), inv2);
 }
 
 }  // namespace

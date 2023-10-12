@@ -69,14 +69,8 @@ InvalidationEqMatcher::InvalidationEqMatcher(const Invalidation& expected)
 bool InvalidationEqMatcher::MatchAndExplain(
     const Invalidation& actual,
     MatchResultListener* listener) const {
-  if (expected_.topic() != actual.topic())
-    return false;
-  if (expected_.is_unknown_version() && actual.is_unknown_version())
-    return true;
-  if (expected_.is_unknown_version() != actual.is_unknown_version())
-    return false;
-  // Neither is unknown version.
-  return expected_.payload() == actual.payload() &&
+  return expected_.topic() == actual.topic() &&
+         expected_.payload() == actual.payload() &&
          expected_.version() == actual.version();
 }
 

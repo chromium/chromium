@@ -38,11 +38,6 @@ class INVALIDATION_EXPORT SingleTopicInvalidationSet {
   void Clear();
   void Erase(const_iterator it);
 
-  // Returns true if this list contains an unknown version.
-  //
-  // Unknown version invalidations always end up at the start of the list,
-  // because they have the lowest possible value in the sort ordering.
-  bool StartsWithUnknownVersion() const;
   size_t GetSize() const;
   bool IsEmpty() const;
   bool operator==(const SingleTopicInvalidationSet& other) const;

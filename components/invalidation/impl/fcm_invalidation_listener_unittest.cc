@@ -77,16 +77,6 @@ class FakeDelegate : public FCMInvalidationListener::Delegate {
     }
   }
 
-  bool IsUnknownVersion(const Topic& topic) const {
-    auto it = invalidations_.find(topic);
-    if (it == invalidations_.end()) {
-      ADD_FAILURE() << "No invalidations for topic " << topic;
-      return false;
-    } else {
-      return it->second.back().is_unknown_version();
-    }
-  }
-
   InvalidatorState GetInvalidatorState() const { return state_; }
 
   // FCMInvalidationListener::Delegate implementation.
@@ -173,10 +163,6 @@ class FCMInvalidationListenerTest : public testing::Test {
     return fake_delegate_.GetVersion(topic);
   }
 
-  bool IsUnknownVersion(const Topic& topic) const {
-    return fake_delegate_.IsUnknownVersion(topic);
-  }
-
   InvalidatorState GetInvalidatorState() {
     return fake_delegate_.GetInvalidatorState();
   }
@@ -228,7 +214,6 @@ TEST_F(FCMInvalidationListenerTest, InvalidateNoPayload) {
   FireInvalidate(topic, kVersion1, std::string());
 
   ASSERT_EQ(1U, GetInvalidationCount(topic));
-  ASSERT_FALSE(IsUnknownVersion(topic));
   EXPECT_EQ(kVersion1, GetVersion(topic));
   EXPECT_EQ("", GetPayload(topic));
 }
@@ -242,7 +227,6 @@ TEST_F(FCMInvalidationListenerTest, InvalidateEmptyPayload) {
   FireInvalidate(topic, kVersion1, std::string());
 
   ASSERT_EQ(1U, GetInvalidationCount(topic));
-  ASSERT_FALSE(IsUnknownVersion(topic));
   EXPECT_EQ(kVersion1, GetVersion(topic));
   EXPECT_EQ("", GetPayload(topic));
 }
@@ -255,7 +239,6 @@ TEST_F(FCMInvalidationListenerTest, InvalidateWithPayload) {
   FireInvalidate(topic, kVersion1, kPayload1);
 
   ASSERT_EQ(1U, GetInvalidationCount(topic));
-  ASSERT_FALSE(IsUnknownVersion(topic));
   EXPECT_EQ(kVersion1, GetVersion(topic));
   EXPECT_EQ(kPayload1, GetPayload(topic));
 }
@@ -269,7 +252,6 @@ TEST_F(FCMInvalidationListenerTest, ManyInvalidations_NoDrop) {
     FireInvalidate(topic, i, kPayload1);
   }
   ASSERT_EQ(static_cast<size_t>(kRepeatCount), GetInvalidationCount(topic));
-  ASSERT_FALSE(IsUnknownVersion(topic));
   EXPECT_EQ(kPayload1, GetPayload(topic));
   EXPECT_EQ(initial_version + kRepeatCount - 1, GetVersion(topic));
 }
@@ -292,7 +274,6 @@ TEST_F(FCMInvalidationListenerTest, InvalidateBeforeRegistration_Simple) {
   listener_.UpdateInterestedTopics(topics);
 
   ASSERT_EQ(1U, GetInvalidationCount(topic));
-  ASSERT_FALSE(IsUnknownVersion(topic));
   EXPECT_EQ(kVersion1, GetVersion(topic));
   EXPECT_EQ(kPayload1, GetPayload(topic));
 }
@@ -329,14 +310,12 @@ TEST_F(FCMInvalidationListenerTest, InvalidateVersion) {
   FireInvalidate(topic, kVersion2, kPayload2);
 
   ASSERT_EQ(1U, GetInvalidationCount(topic));
-  ASSERT_FALSE(IsUnknownVersion(topic));
   EXPECT_EQ(kVersion2, GetVersion(topic));
   EXPECT_EQ(kPayload2, GetPayload(topic));
 
   FireInvalidate(topic, kVersion1, kPayload1);
 
   ASSERT_EQ(2U, GetInvalidationCount(topic));
-  ASSERT_FALSE(IsUnknownVersion(topic));
 
   EXPECT_EQ(kVersion1, GetVersion(topic));
   EXPECT_EQ(kPayload1, GetPayload(topic));
@@ -346,7 +325,6 @@ TEST_F(FCMInvalidationListenerTest, InvalidateVersion) {
 TEST_F(FCMInvalidationListenerTest, InvalidateMultipleIds) {
   FireInvalidate(kBookmarksTopic_, 3, std::string());
   ASSERT_EQ(1U, GetInvalidationCount(kBookmarksTopic_));
-  ASSERT_FALSE(IsUnknownVersion(kBookmarksTopic_));
   EXPECT_EQ(3, GetVersion(kBookmarksTopic_));
   EXPECT_EQ("", GetPayload(kBookmarksTopic_));
 
