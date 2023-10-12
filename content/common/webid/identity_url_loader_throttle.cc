@@ -5,8 +5,10 @@
 #include "content/common/webid/identity_url_loader_throttle.h"
 
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
@@ -55,7 +57,17 @@ IdentityUrlLoaderThrottle::IdentityUrlLoaderThrottle(SetIdpStatusCallback cb)
 
 IdentityUrlLoaderThrottle::~IdentityUrlLoaderThrottle() = default;
 
-void IdentityUrlLoaderThrottle::DetachFromCurrentSequence() {}
+void IdentityUrlLoaderThrottle::DetachFromCurrentSequence() {
+  set_idp_status_cb_ = base::BindRepeating(
+      [](scoped_refptr<base::SequencedTaskRunner> task_runner,
+         SetIdpStatusCallback original_cb, const url::Origin& origin,
+         blink::mojom::IdpSigninStatus status) {
+        task_runner->PostTask(
+            FROM_HERE, base::BindOnce(std::move(original_cb), origin, status));
+      },
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      std::move(set_idp_status_cb_));
+}
 
 void IdentityUrlLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
