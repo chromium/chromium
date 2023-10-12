@@ -94,7 +94,8 @@ class TargetDeviceConnectionBroker {
     // AuthenticatedConnection caller.
     virtual base::Value::Dict GetPrepareForUpdateInfo() = 0;
 
-    // Retrieve CryptAuth ID from BootstrapConfigurations response.
+    // Retrieve Instance ID (CryptAuth device ID) from BootstrapConfigurations
+    // response.
     std::string get_phone_instance_id() { return phone_instance_id_; }
 
    protected:

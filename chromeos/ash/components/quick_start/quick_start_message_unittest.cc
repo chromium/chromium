@@ -52,7 +52,6 @@ TEST_F(QuickStartMessageTest, ReadMessageSucceedsForNonBase64Message) {
   ASSERT_NE(result.value(), nullptr);
   ASSERT_EQ(*result.value()
                  ->GetPayload()
-                 ->FindDict(kBootstrapConfigurationsPayloadKey)
                  ->FindString("key"),
             "value");
 }

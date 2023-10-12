@@ -269,7 +269,7 @@ void Connection::ParseBootstrapConfigurationsResponse(
   if (!bootstrap_configurations) {
     return;
   }
-  phone_instance_id_ = bootstrap_configurations->cryptauth_device_id;
+  phone_instance_id_ = bootstrap_configurations->instance_id;
 }
 
 void Connection::SendMessageAndReadResponse(

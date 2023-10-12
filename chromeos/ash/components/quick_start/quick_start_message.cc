@@ -89,13 +89,13 @@ QuickStartMessage::ReadMessage(std::vector<uint8_t> data) {
   base::Value::Dict* payload;
   std::string* encoded_json_payload;
 
-  if ((message.FindDict(kBootstrapConfigurationsPayloadKey))) {
+  if ((payload = message.FindDict(kBootstrapConfigurationsPayloadKey))) {
     // BootstrapConfigurations needs to have a higher precedence than
     // QuickStartPayload since a BootstrapConfigurations message may also
     // contain a QuickStartPayload.
     return std::make_unique<QuickStartMessage>(
         ash::quick_start::QuickStartMessageType::kBootstrapConfigurations,
-        message.Clone());
+        payload->Clone());
   } else if ((encoded_json_payload =
                   message.FindString(kQuickStartPayloadKey))) {
     std::string json_payload;

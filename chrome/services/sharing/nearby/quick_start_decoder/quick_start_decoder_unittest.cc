@@ -30,8 +30,8 @@ constexpr char kCredentialIdKey[] = "id";
 constexpr char kEntitiyIdMapKey[] = "id";
 constexpr char kBootstrapConfigurationsKey[] = "bootstrapConfigurations";
 constexpr char kDeviceDetailsKey[] = "deviceDetails";
-constexpr char kCryptauthDeviceIdKey[] = "cryptauthDeviceId";
-constexpr char kExampleCryptauthDeviceId[] = "helloworld";
+constexpr char kInstanceIdKey[] = "instanceId";
+constexpr char kExampleInstanceId[] = "helloworld";
 constexpr char kFidoMessageKey[] = "fidoMessage";
 constexpr uint8_t kSuccess = 0x00;
 
@@ -390,17 +390,18 @@ TEST_F(QuickStartDecoderTest,
   DoDecodeBootstrapConfigurations(ConvertMessageToBytes(&message),
                                   future.GetCallback());
   EXPECT_FALSE(future.Get<0>().is_null());
-  EXPECT_EQ(future.Get<0>()->cryptauth_device_id, "");
+  EXPECT_EQ(future.Get<0>()->instance_id, "");
   EXPECT_EQ(future.Get<1>(), absl::nullopt);
 }
 
 TEST_F(QuickStartDecoderTest,
        DecodeBootstrapConfigurations_EmptyDeviceDetails) {
-  base::Value::Dict device_details;
+  base::Value::Dict bootstrap_configurations;
+  bootstrap_configurations.Set(kDeviceDetailsKey, base::Value::Dict());
 
   QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
-  message.GetPayload()->Set(kBootstrapConfigurationsKey, base::Value::Dict());
-  message.GetPayload()->Set(kDeviceDetailsKey, std::move(device_details));
+  message.GetPayload()->Set(kBootstrapConfigurationsKey,
+                            std::move(bootstrap_configurations));
 
   base::test::TestFuture<
       ::ash::quick_start::mojom::BootstrapConfigurationsPtr,
@@ -411,18 +412,19 @@ TEST_F(QuickStartDecoderTest,
                                   future.GetCallback());
 
   EXPECT_FALSE(future.Get<0>().is_null());
-  EXPECT_EQ(future.Get<0>()->cryptauth_device_id, "");
+  EXPECT_EQ(future.Get<0>()->instance_id, "");
   EXPECT_EQ(future.Get<1>(), absl::nullopt);
 }
 
-TEST_F(QuickStartDecoderTest,
-       DecodeBootstrapConfigurations_EmptyCryptauthDeviceId) {
+TEST_F(QuickStartDecoderTest, DecodeBootstrapConfigurations_EmptyInstanceId) {
   base::Value::Dict device_details;
-  device_details.Set(kCryptauthDeviceIdKey, "");
+  device_details.Set(kInstanceIdKey, "");
+  base::Value::Dict bootstrap_configurations;
+  bootstrap_configurations.Set(kDeviceDetailsKey, std::move(device_details));
 
   QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
-  message.GetPayload()->Set(kBootstrapConfigurationsKey, base::Value::Dict());
-  message.GetPayload()->Set(kDeviceDetailsKey, std::move(device_details));
+  message.GetPayload()->Set(kBootstrapConfigurationsKey,
+                            std::move(bootstrap_configurations));
 
   base::test::TestFuture<
       ::ash::quick_start::mojom::BootstrapConfigurationsPtr,
@@ -433,18 +435,20 @@ TEST_F(QuickStartDecoderTest,
                                   future.GetCallback());
 
   EXPECT_FALSE(future.Get<0>().is_null());
-  EXPECT_EQ(future.Get<0>()->cryptauth_device_id, "");
+  EXPECT_EQ(future.Get<0>()->instance_id, "");
   EXPECT_EQ(future.Get<1>(), absl::nullopt);
 }
 
 TEST_F(QuickStartDecoderTest,
        DecodeBootstrapConfigurations_ValidBootstrapConfigurations) {
   base::Value::Dict device_details;
-  device_details.Set(kCryptauthDeviceIdKey, kExampleCryptauthDeviceId);
+  device_details.Set(kInstanceIdKey, kExampleInstanceId);
+  base::Value::Dict bootstrap_configurations;
+  bootstrap_configurations.Set(kDeviceDetailsKey, std::move(device_details));
 
   QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
-  message.GetPayload()->Set(kBootstrapConfigurationsKey, base::Value::Dict());
-  message.GetPayload()->Set(kDeviceDetailsKey, std::move(device_details));
+  message.GetPayload()->Set(kBootstrapConfigurationsKey,
+                            std::move(bootstrap_configurations));
 
   base::test::TestFuture<
       ::ash::quick_start::mojom::BootstrapConfigurationsPtr,
@@ -454,7 +458,7 @@ TEST_F(QuickStartDecoderTest,
   DoDecodeBootstrapConfigurations(ConvertMessageToBytes(&message),
                                   future.GetCallback());
   EXPECT_FALSE(future.Get<0>().is_null());
-  EXPECT_EQ(future.Get<0>()->cryptauth_device_id, kExampleCryptauthDeviceId);
+  EXPECT_EQ(future.Get<0>()->instance_id, kExampleInstanceId);
   EXPECT_EQ(future.Get<1>(), absl::nullopt);
 }
 

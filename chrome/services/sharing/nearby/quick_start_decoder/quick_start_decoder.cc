@@ -34,7 +34,7 @@ constexpr int kExpectedResponseSize = 2;
 constexpr char kCredentialIdKey[] = "id";
 constexpr char kEntitiyIdMapKey[] = "id";
 constexpr char kDeviceDetailsKey[] = "deviceDetails";
-constexpr char kCryptauthDeviceIdKey[] = "cryptauthDeviceId";
+constexpr char kInstanceIdKey[] = "instanceId";
 constexpr uint8_t kCtapDeviceResponseSuccess = 0x00;
 constexpr int kCborDecoderNoError = 0;
 constexpr char kFidoMessageKey[] = "fidoMessage";
@@ -637,18 +637,18 @@ QuickStartDecoder::DecodeBootstrapConfigurations(
     LOG(WARNING)
         << "DeviceDetails cannot be found within BootstrapConfigurations.";
     return mojom::QuickStartMessage::NewBootstrapConfigurations(
-        mojom::BootstrapConfigurations::New(/*cryptauth_device_id=*/""));
+        mojom::BootstrapConfigurations::New(/*instance_id=*/""));
   }
-  const std::string* cryptauth_device_id_ptr =
-      device_details->FindString(kCryptauthDeviceIdKey);
-  if (!cryptauth_device_id_ptr) {
-    LOG(WARNING)
-        << "CryptauthDeviceId for the Android Device could not be found.";
+
+  const std::string* instance_id_ptr =
+      device_details->FindString(kInstanceIdKey);
+  if (!instance_id_ptr) {
+    LOG(WARNING) << "InstanceId for the Android Device could not be found.";
     return mojom::QuickStartMessage::NewBootstrapConfigurations(
-        mojom::BootstrapConfigurations::New(/*cryptauth_device_id=*/""));
+        mojom::BootstrapConfigurations::New(/*instance_id=*/""));
   }
   return mojom::QuickStartMessage::NewBootstrapConfigurations(
-      mojom::BootstrapConfigurations::New(*cryptauth_device_id_ptr));
+      mojom::BootstrapConfigurations::New(*instance_id_ptr));
 }
 
 }  // namespace ash::quick_start
