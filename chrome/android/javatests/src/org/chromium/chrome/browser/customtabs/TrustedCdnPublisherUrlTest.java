@@ -247,7 +247,6 @@ public class TrustedCdnPublisherUrlTest {
     @SmallTest
     @Feature({"UiCatalogue"})
     @OverrideTrustedCdn
-    @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testNavigateAway() throws Exception {
         runTrustedCdnPublisherUrlTest("https://example.com/test", "com.example.test", "example.com",
                 R.drawable.omnibox_https_valid);
