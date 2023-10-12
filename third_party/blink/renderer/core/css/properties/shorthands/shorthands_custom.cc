@@ -3917,6 +3917,113 @@ const CSSValue* TextEmphasis::CSSValueFromComputedStyleInternal(
       textEmphasisShorthand(), style, layout_object, allow_visited_style);
 }
 
+bool TextSpacing::ParseShorthand(
+    bool important,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  const CSSParserTokenRange original_range = range;
+  CSSValue* autospace = nullptr;
+  CSSValue* spacing_trim = nullptr;
+
+  // The `text-spacing` shorthand doesn't lean directly on the longhand's
+  // grammar, instead uses the `autospace` and `spacing-trim` productions.
+  // https://drafts.csswg.org/css-text-4/#text-spacing-property
+  //
+  // Try `normal | none` first.
+  if (const CSSIdentifierValue* ident =
+          css_parsing_utils::ConsumeIdent<CSSValueID::kNone,
+                                          CSSValueID::kNormal>(range);
+      ident && range.AtEnd()) {
+    switch (ident->GetValueID()) {
+      case CSSValueID::kNone:
+        autospace = CSSIdentifierValue::Create(CSSValueID::kNoAutospace);
+        spacing_trim = CSSIdentifierValue::Create(CSSValueID::kSpaceAll);
+        break;
+      case CSSValueID::kNormal:
+        autospace = CSSIdentifierValue::Create(CSSValueID::kNormal);
+        spacing_trim = CSSIdentifierValue::Create(CSSValueID::kSpaceFirst);
+        break;
+      default:
+        NOTREACHED_NORETURN();
+    }
+  }
+
+  // Try `<autospace> || <spacing-trim>`.
+  if (!autospace) {
+    range = original_range;
+
+    while (!range.AtEnd()) {
+      if (!autospace &&
+          (autospace = css_parsing_utils::ConsumeAutospace(range))) {
+        continue;
+      }
+      if (!spacing_trim &&
+          (spacing_trim = css_parsing_utils::ConsumeSpacingTrim(range))) {
+        continue;
+      }
+      return false;
+    }
+    if (!autospace && !spacing_trim) {
+      return false;
+    }
+    if (!autospace) {
+      autospace = CSSIdentifierValue::Create(CSSValueID::kNormal);
+    }
+    if (!spacing_trim) {
+      spacing_trim = CSSIdentifierValue::Create(CSSValueID::kSpaceFirst);
+    }
+  }
+
+  CHECK(autospace);
+  AddProperty(CSSPropertyID::kTextAutospace, CSSPropertyID::kTextSpacing,
+              *autospace, important,
+              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  CHECK(spacing_trim);
+  AddProperty(CSSPropertyID::kTextSpacingTrim, CSSPropertyID::kTextSpacing,
+              *spacing_trim, important,
+              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  return true;
+}
+
+const CSSValue* TextSpacing::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) const {
+  const ETextAutospace autospace = style.TextAutospace();
+  const TextSpacingTrim spacing_trim =
+      style.GetFontDescription().GetTextSpacingTrim();
+  if (autospace == ComputedStyleInitialValues::InitialTextAutospace() &&
+      spacing_trim == FontBuilder::InitialTextSpacingTrim()) {
+    return CSSIdentifierValue::Create(CSSValueID::kNormal);
+  }
+  if (autospace == ETextAutospace::kNoAutospace &&
+      spacing_trim == TextSpacingTrim::kSpaceAll) {
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+
+  const CSSValue* autospace_value =
+      autospace == ComputedStyleInitialValues::InitialTextAutospace()
+          ? nullptr
+          : CSSIdentifierValue::Create(autospace);
+  const CSSValue* spacing_trim_value =
+      spacing_trim == FontBuilder::InitialTextSpacingTrim()
+          ? nullptr
+          : CSSIdentifierValue::Create(spacing_trim);
+  if (!autospace_value) {
+    CHECK(spacing_trim_value);
+    return spacing_trim_value;
+  }
+  if (!spacing_trim_value) {
+    return autospace_value;
+  }
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*autospace_value);
+  list->Append(*spacing_trim_value);
+  return list;
+}
+
 bool WebkitTextStroke::ParseShorthand(
     bool important,
     CSSParserTokenRange& range,

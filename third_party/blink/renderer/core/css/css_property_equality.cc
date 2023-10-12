@@ -1226,6 +1226,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kScrollTimeline:
     case CSSPropertyID::kTextDecoration:
     case CSSPropertyID::kTextEmphasis:
+    case CSSPropertyID::kTextSpacing:
     case CSSPropertyID::kToggle:
     case CSSPropertyID::kTransition:
     case CSSPropertyID::kViewTimeline:

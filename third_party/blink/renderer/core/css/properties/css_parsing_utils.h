@@ -525,6 +525,13 @@ bool ConsumeRadii(CSSValue* horizontal_radii[4],
 
 CSSValue* ConsumeTextDecorationLine(CSSParserTokenRange&);
 
+// Consume the `autospace` production.
+// https://drafts.csswg.org/css-text-4/#typedef-autospace
+CSSValue* ConsumeAutospace(CSSParserTokenRange&);
+// Consume the `spacing-trim` production.
+// https://drafts.csswg.org/css-text-4/#typedef-spacing-trim
+CSSValue* ConsumeSpacingTrim(CSSParserTokenRange&);
+
 CSSValue* ConsumeToggleGroup(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumeToggleSpecifier(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumeToggleTrigger(CSSParserTokenRange&, const CSSParserContext&);

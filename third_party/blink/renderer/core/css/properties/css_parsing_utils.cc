@@ -6604,6 +6604,20 @@ CSSValue* ConsumeTextDecorationLine(CSSParserTokenRange& range) {
   return list;
 }
 
+// Consume the `autospace` production.
+// https://drafts.csswg.org/css-text-4/#typedef-autospace
+CSSValue* ConsumeAutospace(CSSParserTokenRange& range) {
+  // Currently, only `no-autospace` is supported.
+  return ConsumeIdent<CSSValueID::kNoAutospace>(range);
+}
+
+// Consume the `spacing-trim` production.
+// https://drafts.csswg.org/css-text-4/#typedef-spacing-trim
+CSSValue* ConsumeSpacingTrim(CSSParserTokenRange& range) {
+  // Currently, only `space-first` and `space-all` are supported.
+  return ConsumeIdent<CSSValueID::kSpaceFirst, CSSValueID::kSpaceAll>(range);
+}
+
 CSSValue* ConsumeToggleGroup(CSSParserTokenRange& range,
                              const CSSParserContext& context) {
   if (range.Peek().Id() == CSSValueID::kNone) {

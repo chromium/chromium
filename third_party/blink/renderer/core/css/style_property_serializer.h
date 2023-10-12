@@ -84,6 +84,7 @@ class CORE_EXPORT StylePropertySerializer {
                                           StringBuilder& result) const;
   String OffsetValue() const;
   String TextDecorationValue() const;
+  String TextSpacingValue() const;
   String BackgroundRepeatPropertyValue() const;
   String ContainIntrinsicSizeValue() const;
   String WhiteSpaceValue() const;

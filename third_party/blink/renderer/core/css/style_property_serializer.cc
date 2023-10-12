@@ -635,6 +635,8 @@ String StylePropertySerializer::SerializeShorthand(
       return GetLayeredShorthandValue(webkitAlternativeMaskShorthand());
     case CSSPropertyID::kTextEmphasis:
       return GetShorthandValue(textEmphasisShorthand());
+    case CSSPropertyID::kTextSpacing:
+      return TextSpacingValue();
     case CSSPropertyID::kWebkitTextStroke:
       return GetShorthandValue(webkitTextStrokeShorthand());
     case CSSPropertyID::kMarker: {
@@ -2381,6 +2383,42 @@ bool StylePropertySerializer::IsValidToggleShorthand(
     }
   }
   return true;
+}
+
+String StylePropertySerializer::TextSpacingValue() const {
+  const auto* autospace_value = DynamicTo<CSSIdentifierValue>(
+      property_set_.GetPropertyCSSValue(GetCSSPropertyTextAutospace()));
+  DCHECK(autospace_value);
+  const auto* spacing_trim_value = DynamicTo<CSSIdentifierValue>(
+      property_set_.GetPropertyCSSValue(GetCSSPropertyTextSpacingTrim()));
+  DCHECK(spacing_trim_value);
+
+  // Check if longhands are one of pre-defined keywords.
+  const CSSValueID autospace_id = autospace_value->GetValueID();
+  const CSSValueID spacing_trim_id = spacing_trim_value->GetValueID();
+  if (autospace_id == CSSValueID::kNormal &&
+      spacing_trim_id == CSSValueID::kSpaceFirst) {
+    return getValueName(CSSValueID::kNormal);
+  }
+  if (autospace_id == CSSValueID::kNoAutospace &&
+      spacing_trim_id == CSSValueID::kSpaceAll) {
+    return getValueName(CSSValueID::kNone);
+  }
+
+  // Otherwise build a multi-value list.
+  StringBuilder result;
+  if (autospace_id != CSSValueID::kNormal) {
+    result.Append(getValueName(autospace_id));
+  }
+  if (spacing_trim_id != CSSValueID::kSpaceFirst) {
+    if (!result.empty()) {
+      result.Append(kSpaceCharacter);
+    }
+    result.Append(getValueName(spacing_trim_id));
+  }
+  // When all longhands are initial values, it should be `normal`.
+  DCHECK(!result.empty());
+  return result.ToString();
 }
 
 String StylePropertySerializer::WhiteSpaceValue() const {

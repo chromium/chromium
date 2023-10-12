@@ -901,6 +901,9 @@
     ],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
+      "external/wpt/css/css-text/parsing/text-spacing-computed.html",
+      "external/wpt/css/css-text/parsing/text-spacing-invalid.html",
+      "external/wpt/css/css-text/parsing/text-spacing-valid.html",
       "external/wpt/css/css-text/parsing/text-spacing-trim-computed.html",
       "external/wpt/css/css-text/parsing/text-spacing-trim-invalid.html",
       "external/wpt/css/css-text/parsing/text-spacing-trim-valid.html",

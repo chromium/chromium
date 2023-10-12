@@ -5093,6 +5093,12 @@
       typedom_types: ["Keyword", "Percentage"],
     },
     {
+      name: "text-spacing",
+      longhands: ["text-autospace", "text-spacing-trim"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSTextSpacingTrim",
+    },
+    {
       name: "text-spacing-trim",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       inherited: true,
