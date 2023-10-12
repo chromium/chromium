@@ -216,8 +216,9 @@ bool BubbleFrameView::GetClientMask(const gfx::Size& size, SkPath* path) const {
   const gfx::RoundedCornersF corner_radii = GetClientCornerRadii();
 
   // If corner radii are all zero we do not need to apply a mask.
-  if (corner_radii.IsEmpty())
+  if (corner_radii.IsEmpty()) {
     return false;
+  }
 
   // Format is upper-left x, upper-left y, upper-right x, and so forth,
   // clockwise around the boundary.
@@ -230,10 +231,12 @@ bool BubbleFrameView::GetClientMask(const gfx::Size& size, SkPath* path) const {
 }
 
 int BubbleFrameView::NonClientHitTest(const gfx::Point& point) {
-  if (!bounds().Contains(point))
+  if (!bounds().Contains(point)) {
     return HTNOWHERE;
-  if (hit_test_transparent_)
+  }
+  if (hit_test_transparent_) {
     return HTTRANSPARENT;
+  }
 #if !BUILDFLAG(IS_WIN)
   // Windows will automatically create a tooltip for the button based on
   // the HTCLOSE or the HTMINBUTTON
@@ -250,8 +253,9 @@ int BubbleFrameView::NonClientHitTest(const gfx::Point& point) {
   if (bubble_border_->shadow() != BubbleBorder::NO_SHADOW)
     round_contents_bounds.Outset(BubbleBorder::kBorderThicknessDip);
   gfx::RectF rectf_point(point.x(), point.y(), 1, 1);
-  if (!round_contents_bounds.Contains(rectf_point))
+  if (!round_contents_bounds.Contains(rectf_point)) {
     return HTTRANSPARENT;
+  }
 
   if (point.y() < title_container_->bounds().bottom()) {
     auto* dialog_delegate = GetWidget()->widget_delegate()->AsDialogDelegate();
@@ -352,12 +356,14 @@ void BubbleFrameView::SetTitleView(std::unique_ptr<View> title_view) {
 }
 
 void BubbleFrameView::UpdateSubtitle() {
-  if (!subtitle_)
+  if (!subtitle_) {
     return;
+  }
   views::BubbleDialogDelegate* const bubble_delegate =
       GetWidget()->widget_delegate()->AsBubbleDialogDelegate();
-  if (!bubble_delegate)
+  if (!bubble_delegate) {
     return;
+  }
   // Subtitle anchors and margins rely heavily on Title being visible.
   subtitle_->SetVisible(!bubble_delegate->GetSubtitle().empty() &&
                         default_title_->GetVisible());
@@ -368,8 +374,9 @@ void BubbleFrameView::UpdateSubtitle() {
 void BubbleFrameView::UpdateMainImage() {
   views::BubbleDialogDelegate* const bubble_delegate =
       GetWidget()->widget_delegate()->AsBubbleDialogDelegate();
-  if (!bubble_delegate)
+  if (!bubble_delegate) {
     return;
+  }
   const ui::ImageModel& model = bubble_delegate->GetMainImage();
   if (model.IsEmpty()) {
     main_image_->SetVisible(false);
@@ -377,28 +384,50 @@ void BubbleFrameView::UpdateMainImage() {
     // This max increase is the difference between the 448 and 320 snapping
     // points in ChromeLayoutProvider, but they are not publicly visible in that
     // API. We set the size of the main image so that the dialog increases in
-    // size exactly one snapping point. At the point of writing this means that
-    // we are using a 112x112px image.
+    // size exactly one snapping point.
     // Ideally this would be handled inside the ImageView, but we do cropping
     // and scaling outside (through ScaleAspectRatioAndCropCenter). We should
     // consider moving that functionality into ImageView or ImageModel without
     // having to specify an external size before painting.
     constexpr int kMainImageDialogWidthIncrease = 128;
-    constexpr int kBorderInsets = 16;
-    constexpr int kMainImageDimension =
-        kMainImageDialogWidthIncrease - kBorderInsets;
+    constexpr int kBorderMargin = 16;
     constexpr int kBorderStrokeThickness = 1;
+
+    // Under CR2023, use the `title_margins_` for the outer margins between the
+    // content and the visible frame border. `border_insets` is the space
+    // outside the visible border mask that incorporates the rounded corners.
+    // This will ensure that the *perceived* margin will be what is expected
+    // since the origin for the view is outside the visible border.
+    // For pre-CR2023, there should be no visual change.
+    const int border_margin_left =
+        features::IsChromeRefresh2023() ? title_margins_.left() : kBorderMargin;
+    const int border_margin_top =
+        features::IsChromeRefresh2023() ? title_margins_.top() : kBorderMargin;
+    const gfx::Insets border_insets = GetBorder()->GetInsets();
+    const int main_image_dimension = kMainImageDialogWidthIncrease -
+                                     border_insets.left() - border_margin_left -
+                                     kBorderStrokeThickness;
+    const int image_inset_left =
+        features::IsChromeRefresh2023()
+            ? border_insets.left() + border_margin_left
+            : border_margin_left - kBorderStrokeThickness;
+    const int image_inset_top =
+        features::IsChromeRefresh2023()
+            ? border_insets.top() + border_margin_top
+            : border_margin_top - kBorderStrokeThickness;
+    const gfx::Insets image_insets =
+        gfx::Insets::TLBR(image_inset_top, image_inset_left, border_margin_top,
+                          border_margin_left);
 
     const int border_radius = LayoutProvider::Get()->GetCornerRadiusMetric(
         Emphasis::kHigh, gfx::Size());
     main_image_->SetImage(
         gfx::ImageSkiaOperations::CreateCroppedCenteredRoundRectImage(
-            gfx::Size(kMainImageDimension, kMainImageDimension),
+            gfx::Size(main_image_dimension, main_image_dimension),
             border_radius - 2 * kBorderStrokeThickness,
             model.GetImage().AsImageSkia()));
     main_image_->SetBorder(views::CreateRoundedRectBorder(
-        kBorderStrokeThickness, border_radius,
-        gfx::Insets(kBorderInsets - kBorderStrokeThickness),
+        kBorderStrokeThickness, border_radius, image_insets,
         GetColorProvider()
             ? GetColorProvider()->GetColor(ui::kColorBubbleBorder)
             : gfx::kPlaceholderColor));
@@ -411,13 +440,15 @@ void BubbleFrameView::SetProgress(absl::optional<double> progress) {
   bool visible = progress.has_value();
   progress_indicator_->SetVisible(visible);
   progress_indicator_->GetViewAccessibility().OverrideIsIgnored(!visible);
-  if (progress)
+  if (progress) {
     progress_indicator_->SetValue(progress.value());
+  }
 }
 
 absl::optional<double> BubbleFrameView::GetProgress() const {
-  if (progress_indicator_->GetVisible())
+  if (progress_indicator_->GetVisible()) {
     return progress_indicator_->GetValue();
+  }
   return absl::nullopt;
 }
 
@@ -447,8 +478,9 @@ gfx::Size BubbleFrameView::GetMaximumSize() const {
   // Allow BubbleFrameView dialogs to be resizable on Mac.
   if (GetWidget()->widget_delegate()->CanResize()) {
     gfx::Size client_size = GetWidget()->client_view()->GetMaximumSize();
-    if (client_size.IsEmpty())
+    if (client_size.IsEmpty()) {
       return client_size;
+    }
     return GetWindowBoundsForClientBounds(gfx::Rect(client_size)).size();
   }
 #endif  // BUILDFLAG(IS_MAC)
@@ -579,14 +611,16 @@ void BubbleFrameView::OnThemeChanged() {
 
 void BubbleFrameView::ViewHierarchyChanged(
     const ViewHierarchyChangedDetails& details) {
-  if (details.is_add && details.child == this)
+  if (details.is_add && details.child == this) {
     UpdateClientLayerCornerRadius();
+  }
 
   // We need to update the client view's corner radius whenever the header or
   // footer are added/removed from the bubble frame so that the client view
   // sits flush with both.
-  if (details.parent == this)
+  if (details.parent == this) {
     UpdateClientLayerCornerRadius();
+  }
 
   if (!details.is_add && details.parent == footnote_container_ &&
       footnote_container_->children().size() == 1 &&
@@ -647,8 +681,9 @@ void BubbleFrameView::SetHeaderView(std::unique_ptr<View> view) {
     header_view_ = nullptr;
   }
 
-  if (view)
+  if (view) {
     header_view_ = AddChildViewAt(std::move(view), 0);
+  }
 
   InvalidateLayout();
 }
@@ -666,8 +701,9 @@ void BubbleFrameView::SetFootnoteView(std::unique_ptr<View> view) {
 }
 
 View* BubbleFrameView::GetFootnoteView() const {
-  if (!footnote_container_)
+  if (!footnote_container_) {
     return nullptr;
+  }
 
   DCHECK_EQ(1u, footnote_container_->children().size());
   return footnote_container_->children()[0];
@@ -879,8 +915,9 @@ void BubbleFrameView::MirrorArrowIfOutOfBounds(
     const gfx::Rect& anchor_rect,
     const gfx::Size& client_size,
     const gfx::Rect& available_bounds) {
-  if (available_bounds.IsEmpty())
+  if (available_bounds.IsEmpty()) {
     return;
+  }
   // Check if the bounds don't fit in the available bounds.
   gfx::Rect window_bounds(bubble_border_->GetBounds(anchor_rect, client_size));
   if (GetOverflowLength(available_bounds, window_bounds, vertical) > 0) {
@@ -1026,8 +1063,9 @@ gfx::Insets BubbleFrameView::GetTitleLabelInsetsFromFrame() const {
                          ? content_bounds.right() - button_area_bounds.x()
                          : 0;
 
-  if (!HasTitle())
+  if (!HasTitle()) {
     return gfx::Insets::TLBR(header_height, 0, 0, insets_right);
+  }
 
   insets_right = std::max(insets_right, title_margins_.right());
   const gfx::Size title_icon_pref_size = title_icon_->GetPreferredSize();
@@ -1086,8 +1124,9 @@ void BubbleFrameView::UpdateClientLayerCornerRadius() {
 }
 
 int BubbleFrameView::GetMainImageLeftInsets() const {
-  if (!main_image_->GetVisible())
+  if (!main_image_->GetVisible()) {
     return 0;
+  }
   return main_image_->GetPreferredSize().width() -
          main_image_->GetBorder()->GetInsets().right();
 }
