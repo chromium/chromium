@@ -1,0 +1,16 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+package compose_proto;
+
+message ComposeRequest {
+  string input = 1;
+}
+
+message ComposeResponse {
+  string output = 1;
+}

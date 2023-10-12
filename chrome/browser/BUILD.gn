@@ -7947,7 +7947,7 @@ static_library("browser") {
     ]
 
     deps += [
-      "//chrome/common/compose",
+      "//chrome/common/compose:mojo_bindings",
       "//components/autofill/core/common",
       "//components/compose/core/browser",
       "//components/compose/proto",

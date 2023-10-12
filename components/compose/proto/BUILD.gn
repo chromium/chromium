@@ -6,5 +6,5 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
   proto_in_dir = "//"
-  sources = [ "compose_metadata.proto" ]
+  sources = [ "compose.proto" ]
 }

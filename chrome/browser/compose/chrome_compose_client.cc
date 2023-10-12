@@ -13,10 +13,9 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/common/compose/type_conversions.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
-#include "components/compose/proto/compose_metadata.pb.h"
+#include "components/compose/proto/compose.pb.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -52,9 +51,7 @@ void ChromeComposeClient::Compose(compose::mojom::StyleModifiersPtr style,
   auto* model_executor = GetModelExecutor();
   DCHECK(model_executor) << "Unable to acquire model executor.";
   compose_proto::ComposeRequest request;
-  request.set_user_input(input);
-  request.set_tone(ComposeTone(style->tone));
-  request.set_length(ComposeLength(style->length));
+  request.set_input(input);
   model_executor->ExecuteModel(
       optimization_guide::proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_1,
