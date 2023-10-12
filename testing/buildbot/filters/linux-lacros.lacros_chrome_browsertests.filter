@@ -3,5 +3,5 @@
 # linux-lacros.lacros_chrome_browsertests.skew.filter.
 
 # TODO(crbug.com/1477409) flaky.
--InputMethodLacrosBrowserTest.ConfirmCompositionWith*
--InputMethodLacrosBrowserTest.DeleteSurroundingText*
+-*InputMethodLacrosBrowserTest.ConfirmCompositionWith*
+-*InputMethodLacrosBrowserTest.DeleteSurroundingText*
