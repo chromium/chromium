@@ -100,6 +100,62 @@ size_t CalculateRequiredCountsBytes(size_t bucket_count) {
   return bucket_count * kBytesPerBucket;
 }
 
+void MergeSamplesToExistingHistogram(
+    HistogramBase* existing,
+    const HistogramBase* histogram,
+    std::unique_ptr<HistogramSamples> samples) {
+#if !BUILDFLAG(IS_NACL)
+  // If the passed |histogram| does not match with |existing| (i.e. the one
+  // registered with the global StatisticsRecorder) due to not being the same
+  // type of histogram or due to specifying different buckets, then unexpected
+  // things may happen further down the line. This may be indicative that a
+  // child process is emitting a histogram with different parameters than the
+  // browser process, for example.
+  // TODO(crbug/1432981): Remove this. Used to investigate failures when merging
+  // histograms from an allocator to the global StatisticsRecorder.
+  bool histograms_match = true;
+  HistogramType existing_type = existing->GetHistogramType();
+  if (histogram->GetHistogramType() != existing_type) {
+    // Different histogram types.
+    histograms_match = false;
+  } else if (existing_type == HistogramType::HISTOGRAM ||
+             existing_type == HistogramType::LINEAR_HISTOGRAM ||
+             existing_type == HistogramType::BOOLEAN_HISTOGRAM ||
+             existing_type == HistogramType::CUSTOM_HISTOGRAM) {
+    // Only numeric histograms make use of BucketRanges.
+    const BucketRanges* existing_buckets =
+        static_cast<const Histogram*>(existing)->bucket_ranges();
+    const BucketRanges* histogram_buckets =
+        static_cast<const Histogram*>(histogram)->bucket_ranges();
+    // DCHECK because HasValidChecksum() recomputes the checksum which can be
+    // expensive to do in a loop.
+    DCHECK(existing_buckets->HasValidChecksum() &&
+           histogram_buckets->HasValidChecksum());
+
+    if (existing_buckets->checksum() != histogram_buckets->checksum()) {
+      // Different buckets.
+      histograms_match = false;
+    }
+  }
+
+  if (!histograms_match) {
+    // If the histograms do not match, then the call to AddSamples() below might
+    // trigger a NOTREACHED(). Include the histogram name here for debugging
+    // purposes. This is not done in GetOrCreateStatisticsRecorderHistogram()
+    // directly, since that could incorrectly create crash reports for enum
+    // histograms that have newly appended entries (different bucket max and
+    // count).
+    SCOPED_CRASH_KEY_STRING256("PersistentHistogramAllocator", "histogram",
+                               existing->histogram_name());
+    existing->AddSamples(*samples);
+    return;
+  }
+#endif  // !BUILDFLAG(IS_NACL)
+
+  // Merge the delta from the passed object to the one in the SR.
+  existing->AddSamples(*samples);
+}
+
 }  // namespace
 
 PersistentSparseHistogramDataManager::PersistentSparseHistogramDataManager(
@@ -462,8 +518,7 @@ void PersistentHistogramAllocator::MergeHistogramDeltaToStatisticsRecorder(
     return;
   }
 
-  // Merge the delta from the passed object to the one in the SR.
-  existing->AddSamples(*samples);
+  MergeSamplesToExistingHistogram(existing, histogram, std::move(samples));
 }
 
 void PersistentHistogramAllocator::MergeHistogramFinalDeltaToStatisticsRecorder(
@@ -485,8 +540,7 @@ void PersistentHistogramAllocator::MergeHistogramFinalDeltaToStatisticsRecorder(
     return;
   }
 
-  // Merge the delta from the passed object to the one in the SR.
-  existing->AddSamples(*samples);
+  MergeSamplesToExistingHistogram(existing, histogram, std::move(samples));
 }
 
 std::unique_ptr<PersistentSampleMapRecords>
@@ -660,47 +714,6 @@ PersistentHistogramAllocator::GetOrCreateStatisticsRecorderHistogram(
   HistogramBase* existing =
       StatisticsRecorder::FindHistogram(histogram->histogram_name());
   if (existing) {
-#if !BUILDFLAG(IS_NACL)
-    // If the passed |histogram| does not match the one registered with the
-    // global StatisticsRecorder (e.g. not same type of histogram, or they
-    // specify different buckets), then unexpected things may happen further
-    // down the line. This may be indicative that a child process is emitting a
-    // histogram with different parameters than the browser process, for
-    // example.
-    // TODO(crbug/1432981): Remove this. Used to investigate failures when
-    // merging histograms from an allocator to the global StatisticsRecorder.
-    bool histograms_match = true;
-    HistogramType existing_type = existing->GetHistogramType();
-    if (histogram->GetHistogramType() != existing_type) {
-      // Different histogram types.
-      histograms_match = false;
-    } else if (existing_type == HistogramType::HISTOGRAM ||
-               existing_type == HistogramType::LINEAR_HISTOGRAM ||
-               existing_type == HistogramType::BOOLEAN_HISTOGRAM ||
-               existing_type == HistogramType::CUSTOM_HISTOGRAM) {
-      // Only numeric histograms make use of BucketRanges.
-      const BucketRanges* existing_buckets =
-          static_cast<const Histogram*>(existing)->bucket_ranges();
-      const BucketRanges* histogram_buckets =
-          static_cast<const Histogram*>(histogram)->bucket_ranges();
-      // DCHECK because HasValidChecksum() recomputes the checksum which can be
-      // expensive to do in a loop.
-      DCHECK(existing_buckets->HasValidChecksum() &&
-             histogram_buckets->HasValidChecksum());
-
-      if (existing_buckets->checksum() != histogram_buckets->checksum()) {
-        // Different buckets.
-        histograms_match = false;
-      }
-    }
-
-    if (!histograms_match) {
-      SCOPED_CRASH_KEY_STRING256("PersistentHistogramAllocator", "histogram",
-                                 existing->histogram_name());
-      NOTREACHED();
-    }
-#endif  // !BUILDFLAG(IS_NACL)
-
     return existing;
   }
 
