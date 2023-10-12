@@ -41,6 +41,38 @@ using ::ash::cros_healthd::mojom::CrashUploadInfo;
 using ::ash::cros_healthd::mojom::EventCategoryEnum;
 using ::ash::cros_healthd::mojom::EventInfo;
 
+// RAII class to interrupt after event is observed.
+class ScopedInterruptedAfterEventObserved {
+ public:
+  // `observer` must remain alive when this object destructs.
+  explicit ScopedInterruptedAfterEventObserved(
+      FatalCrashEventsObserver& observer)
+      : observer_(&observer) {
+    FatalCrashEventsObserver::TestEnvironment::SetInterruptedAfterEventObserved(
+        *observer_, /*interrupted_after_event_observed=*/true);
+  }
+
+  virtual ~ScopedInterruptedAfterEventObserved() {
+    FatalCrashEventsObserver::TestEnvironment::SetInterruptedAfterEventObserved(
+        *observer_, /*interrupted_after_event_observed=*/false);
+  }
+
+  ScopedInterruptedAfterEventObserved(
+      const ScopedInterruptedAfterEventObserved&) = delete;
+  ScopedInterruptedAfterEventObserved& operator=(
+      const ScopedInterruptedAfterEventObserved&) = delete;
+
+  // The move constructor and assignment are currently unused, but there's
+  // no reason to not support them as they are standard in scoped classes.
+  ScopedInterruptedAfterEventObserved(ScopedInterruptedAfterEventObserved&&) =
+      default;
+  ScopedInterruptedAfterEventObserved& operator=(
+      ScopedInterruptedAfterEventObserved&&) = default;
+
+ private:
+  raw_ptr<FatalCrashEventsObserver> observer_;
+};
+
 // Base class for testing `FatalCrashEventsObserver`. `NoSessionAshTestBase` is
 // needed here because the observer uses `ash::Shell()` to obtain the user
 // session type.
@@ -653,16 +685,16 @@ TEST_F(FatalCrashEventsObserverReportedLocalIdsTest,
   base::test::TestFuture<MetricData> result_metric_data;
   auto fatal_crash_events_observer =
       CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
-  // Simulate the thread is interrupted after event observed callback is called.
-  fatal_crash_test_environment_.SetInterruptedAfterEventObserved(
-      *fatal_crash_events_observer, /*interrupted_after_event_observed=*/true);
-  CreateFatalCrashEvent(
-      /*local_id=*/kLocalId, /*capture_time=*/kCaptureTime,
-      *fatal_crash_events_observer, &result_metric_data);
 
-  // Now back to what production code does (no interruption).
-  fatal_crash_test_environment_.SetInterruptedAfterEventObserved(
-      *fatal_crash_events_observer, /*interrupted_after_event_observed=*/false);
+  {
+    // Simulate the thread is interrupted after event observed callback is
+    // called.
+    ScopedInterruptedAfterEventObserved scoped_interruption(
+        *fatal_crash_events_observer);
+    CreateFatalCrashEvent(
+        /*local_id=*/kLocalId, /*capture_time=*/kCaptureTime,
+        *fatal_crash_events_observer, &result_metric_data);
+  }
 
   // Always reload to simulate what happens practically, e.g., ash crashes.
   fatal_crash_events_observer =
@@ -693,15 +725,15 @@ TEST_F(FatalCrashEventsObserverReportedLocalIdsTest,
                         *fatal_crash_events_observer, &result_metric_data,
                         /*is_uploaded=*/false);
 
-  // Simulate the thread is interrupted after event observed callback is called.
-  fatal_crash_test_environment_.SetInterruptedAfterEventObserved(
-      *fatal_crash_events_observer, /*interrupted_after_event_observed=*/true);
-  CreateFatalCrashEvent(/*local_id=*/kLocalId, /*capture_time=*/kCaptureTime,
-                        *fatal_crash_events_observer, &result_metric_data,
-                        /*is_uploaded=*/true);
-  // Back to normal.
-  fatal_crash_test_environment_.SetInterruptedAfterEventObserved(
-      *fatal_crash_events_observer, /*interrupted_after_event_observed=*/false);
+  {
+    // Simulate the thread is interrupted after event observed callback is
+    // called.
+    ScopedInterruptedAfterEventObserved scoped_interruption(
+        *fatal_crash_events_observer);
+    CreateFatalCrashEvent(/*local_id=*/kLocalId, /*capture_time=*/kCaptureTime,
+                          *fatal_crash_events_observer, &result_metric_data,
+                          /*is_uploaded=*/true);
+  }
 
   // Reload.
   fatal_crash_events_observer =
@@ -1112,17 +1144,18 @@ TEST_P(FatalCrashEventsObserverUploadedCrashTest,
   auto fatal_crash_events_observer =
       CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
 
-  // If required by the test, simulate the thread is interrupted after event
-  // observed callback is called.
-  fatal_crash_test_environment_.SetInterruptedAfterEventObserved(
-      *fatal_crash_events_observer, interrupt_after_event_observed());
+  {
+    // Simulate the thread is interrupted after event observed callback is
+    // called, if required by the test params.
+    auto scoped_interruption =
+        interrupt_after_event_observed()
+            ? std::make_unique<ScopedInterruptedAfterEventObserved>(
+                  *fatal_crash_events_observer)
+            : nullptr;
 
-  CreateFatalCrashEvent(kCrashReportId, kCreationTime, kOffset,
-                        *fatal_crash_events_observer, &result_metric_data);
-
-  // Now back to what production code does (no interruption).
-  fatal_crash_test_environment_.SetInterruptedAfterEventObserved(
-      *fatal_crash_events_observer, /*interrupted_after_event_observed=*/false);
+    CreateFatalCrashEvent(kCrashReportId, kCreationTime, kOffset,
+                          *fatal_crash_events_observer, &result_metric_data);
+  }
 
   if (reload()) {
     fatal_crash_events_observer =

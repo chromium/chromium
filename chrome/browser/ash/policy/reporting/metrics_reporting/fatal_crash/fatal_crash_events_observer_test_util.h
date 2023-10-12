@@ -43,7 +43,6 @@ class FatalCrashEventsObserver::TestEnvironment {
 
   // Sets whether to continue postprocessing after event observed callback is
   // called.
-  // TODO(b/266018440): Create a scoped class to set and unset.
   static void SetInterruptedAfterEventObserved(
       FatalCrashEventsObserver& observer,
       bool interrupted_after_event_observed);
