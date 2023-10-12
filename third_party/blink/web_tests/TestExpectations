@@ -6745,7 +6745,7 @@ crbug.com/1485427 [ Mac ] external/wpt/performance-timeline/not-restored-reasons
 crbug.com/1485427 [ Win ] external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-fetch.tentative.window.html [ Failure Pass ]
 
 crbug.com/1489489 [ Mac ] virtual/main-threaded-percent-based-scrolling/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.html [ Failure ]
-crbug.com/1489489 [ Mac ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.html [ Failure ]
+crbug.com/1489489 [ Mac ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.html [ Failure Timeout ]
 
 # Gardener 2023-09-21
 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/initial-empty-document/window-open-204-fragment.html [ Failure ]
