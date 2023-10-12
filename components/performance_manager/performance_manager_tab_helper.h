@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom-forward.h"
 #include "components/performance_manager/web_contents_proxy_impl.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -24,7 +25,6 @@
 namespace performance_manager {
 
 class FrameNodeImpl;
-class PageNodeImpl;
 
 // This tab helper maintains a page node, and its associated tree of frame nodes
 // in the performance manager graph. It also sources a smattering of attributes
@@ -145,18 +145,6 @@ class PerformanceManagerTabHelper
     // The actual page node.
     std::unique_ptr<PageNodeImpl> page_node;
 
-    // The frame tree node ID of the main frame of this PageNode. This is the
-    // primary sort key for the PageNode, as it remains constant over its
-    // lifetime.  It allows an abitrary RFH to be mapped to the appropriate
-    // page via RFH::GetMainFrame()->GetFrameTreeNodeId().
-    // TODO(crbug.com/1211368): This is not true under MPArch, because the
-    // frame tree node ID of a prerendered RFH changes when it's activated.
-    // (Also, until PM's MPArch support is finished, the "main" FrameNode for a
-    // PageNode can change.) Fortunately `main_frame_tree_node_id` is currently
-    // only used as a DCHECK that pages are not added twice to the `pages_`
-    // set. Make `pages_` a simple list, or a set keyed on something else.
-    int main_frame_tree_node_id = 0;
-
     // The UKM source ID for this page.
     ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
 
@@ -176,24 +164,36 @@ class PerformanceManagerTabHelper
     int64_t last_new_doc_navigation_id = 0;
   };
 
-  // A transparent comparator for PageData. These are keyed by FrameTreeNodeId,
-  // which is unique per Page.
+  // A transparent comparator for PageData. These are keyed by
+  // PageNodeImpl::PageToken.
   struct PageDataComparator {
     using is_transparent = void;
 
     bool operator()(const std::unique_ptr<PageData>& pd1,
                     const std::unique_ptr<PageData>& pd2) const {
-      return pd1->main_frame_tree_node_id < pd2->main_frame_tree_node_id;
+      if (pd1->page_node && pd2->page_node) {
+        return pd1->page_node->page_token() < pd2->page_node->page_token();
+      }
+      // pd1 < pd2 if pd1 has a null PageNode and pd2 does not.
+      return pd2->page_node != nullptr;
     }
 
     bool operator()(const std::unique_ptr<PageData>& pd1,
-                    int main_frame_tree_node_id2) const {
-      return pd1->main_frame_tree_node_id < main_frame_tree_node_id2;
+                    const PageNodeImpl::PageToken& page_token2) const {
+      if (!pd1->page_node) {
+        // page_token2 is never null so a null PageNode is lower.
+        return true;
+      }
+      return pd1->page_node->page_token() < page_token2;
     }
 
-    bool operator()(int main_frame_tree_node_id1,
+    bool operator()(const PageNodeImpl::PageToken& page_token1,
                     const std::unique_ptr<PageData>& pd2) const {
-      return main_frame_tree_node_id1 < pd2->main_frame_tree_node_id;
+      if (!pd2->page_node) {
+        // page_token1 is never null so it can't be lower than a null PageNode.
+        return false;
+      }
+      return page_token1 < pd2->page_node->page_token();
     }
   };
 

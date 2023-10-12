@@ -114,7 +114,6 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
       PageNode::PageState::kActive);
   content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
   DCHECK(main_rfh);
-  page->main_frame_tree_node_id = main_rfh->GetFrameTreeNodeId();
   primary_page_ = page.get();
   auto result = pages_.insert(std::move(page));
   DCHECK(result.second);

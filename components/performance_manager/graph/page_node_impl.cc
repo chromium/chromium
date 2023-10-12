@@ -269,7 +269,8 @@ FrameNodeImpl* PageNodeImpl::embedder_frame_node() const {
 
 resource_attribution::PageContext PageNodeImpl::resource_context() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resource_context_;
+  // Re-use the PageToken as the ResourceContext token.
+  return resource_attribution::PageContext(page_token_.value());
 }
 
 PageNodeImpl::EmbeddingType PageNodeImpl::embedding_type() const {
