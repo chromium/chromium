@@ -7,8 +7,8 @@
 #include "base/system/sys_info.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/chromeos/cros_apps/api/test/cros_apps_apitest.h"
 #include "chrome/browser/chromeos/telemetry/fake_probe_service.h"
-#include "chrome/browser/lacros/cros_apps/api/cros_apps_api_browsertest_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -19,9 +19,9 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class CrosAppsDiagnosticsApiBrowserTest : public CrosAppsApiBrowserTestBase {
+class CrosAppsDiagnosticsApiTest : public CrosAppsApiTest {
  public:
-  CrosAppsDiagnosticsApiBrowserTest() : CrosAppsApiBrowserTestBase() {
+  CrosAppsDiagnosticsApiTest() : CrosAppsApiTest() {
     scoped_feature_list_.InitAndEnableFeature(
         chromeos::features::kBlinkExtensionDiagnostics);
   }
@@ -40,7 +40,7 @@ class CrosAppsDiagnosticsApiBrowserTest : public CrosAppsApiBrowserTestBase {
   std::unique_ptr<chromeos::FakeProbeService> fake_probe_service_;
 };
 
-IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiBrowserTest, DiagnosticsExists) {
+IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiTest, DiagnosticsExists) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiBrowserTest, DiagnosticsExists) {
                       "typeof window.chromeos.diagnostics !== 'undefined';"));
 }
 
-IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiBrowserTest, GetCpuInfo_Success) {
+IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiTest, GetCpuInfo_Success) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiBrowserTest, GetCpuInfo_Success) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiTest,
                        GetCpuInfo_Error_TelemetryProbeServiceUnavailable) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiBrowserTest,
           .error);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiTest,
                        GetCpuInfo_Error_CpuTelemetryInfoUnavailable) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiBrowserTest,
           .error);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiTest,
                        GetNetworkInterfaces) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

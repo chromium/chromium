@@ -13,8 +13,8 @@
 // Tests for content and blink mechanism that controls API exposure.
 //
 // This test directly controls Blink RuntimeFeatureState thus doesn't use
-// CrosAppsApiBrowserTestBase (which enables CrosApps flags to control feature
-// exposure based on feature control rules).
+// CrosAppsApiTest (which enables CrosApps flags to control feature exposure
+// based on feature control rules).
 class CrosAppsBlinkRuntimeFeatureBrowserTest
     : public InProcessBrowserTest,
       private content::WebContentsObserver {

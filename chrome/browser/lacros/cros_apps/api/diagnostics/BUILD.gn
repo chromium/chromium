@@ -22,14 +22,15 @@ source_set("diagnostics") {
 source_set("browser_tests") {
   testonly = true
 
-  sources = [ "cros_apps_diagnostics_api_browsertest.cc" ]
+  sources = [ "cros_apps_diagnostics_apitest.cc" ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
+    "//chrome/browser/chromeos/cros_apps/api/test:apitest_support",
     "//chrome/browser/chromeos/telemetry:test_support",
-    "//chrome/browser/lacros/cros_apps/api:test_support",
     "//chrome/browser/ui",
+    "//chromeos/constants",
     "//chromeos/lacros",
     "//content/test:test_support",
     "//testing/gtest",
