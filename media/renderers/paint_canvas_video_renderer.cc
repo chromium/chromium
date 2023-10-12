@@ -1653,14 +1653,19 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTextureViaSharedImage(
       raster_context_provider, static_cast<GLenum>(internal_format), type);
 
   // Create a SharedImage to associate with `texture`.
+  uint32_t usage =
+      gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER;
+  if (raster_context_provider->ContextCapabilities().supports_oop_raster) {
+    usage |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+  }
+
   gpu::MailboxHolder destination_holder;
   destination_holder.texture_target = target;
   destination_holder.mailbox = sii->CreateSharedImage(
       shared_image_format, video_frame->visible_rect().size(),
       GetVideoFrameRGBColorSpacePreferringSRGB(video_frame.get()),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2, "PaintCanvasVideoRenderer_DirectUpload",
-      gpu::kNullSurfaceHandle);
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+      "PaintCanvasVideoRenderer_DirectUpload", gpu::kNullSurfaceHandle);
 
   // Copy the VideoFrame's textures to the SI.
   destination_holder.sync_token = sii->GenUnverifiedSyncToken();
