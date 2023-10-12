@@ -4,10 +4,54 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_open_metrics.h"
 
+#include <string>
+
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 
 namespace ash::cloud_upload {
+
+// Stringify the `MetricState` enum.
+std::ostream& operator<<(std::ostream& os, MetricState metric_state) {
+  switch (metric_state) {
+    case MetricState::kCorrectlyNotLogged:
+      return os << "Correctly not logged";
+    case MetricState::kCorrectlyLogged:
+      return os << "Correctly logged";
+    case MetricState::kIncorrectlyNotLogged:
+      return os << "Incorrectly not logged";
+    case MetricState::kIncorrectlyLogged:
+      return os << "Incorrectly logged";
+    case MetricState::kIncorrectlyLoggedMultipleTimes:
+      return os << "Incorrectly logged multiple times";
+    case MetricState::kWrongValueLogged:
+      return os << "Wrong value logged";
+  }
+}
+
+// Stringify enums (`MetricType`) that are not the `MetricState`.
+template <
+    typename MetricType,
+    class = std::enable_if<std::is_enum<MetricType>::value &&
+                           !std::is_same<MetricType, MetricState>::value>::type>
+std::ostream& operator<<(std::ostream& os, const MetricType& value) {
+  return os << static_cast<std::underlying_type<MetricType>::type>(value);
+}
+
+// Print debug information about this metric.
+template <typename MetricType>
+std::ostream& operator<<(std::ostream& os,
+                         const CloudOpenMetrics::Metric<MetricType>& metric) {
+  os << metric.metric_name;
+  os << ": ";
+  os << metric.state;
+  if (metric.state != MetricState::kCorrectlyNotLogged &&
+      metric.state != MetricState::kIncorrectlyNotLogged) {
+    os << " as ";
+    os << metric.value;
+  }
+  return os;
+}
 
 CloudOpenMetrics::CloudOpenMetrics(CloudProvider cloud_provider)
     : cloud_provider_(cloud_provider),
@@ -55,11 +99,15 @@ void CloudOpenMetrics::LogSourceVolume(OfficeFilesSourceVolume value) {
 }
 
 void CloudOpenMetrics::LogTaskResult(OfficeTaskResult value) {
-  task_result_.Log(value);
+  if (!task_result_.Log(value)) {
+    HandleInconsistency();
+  }
 }
 
 void CloudOpenMetrics::LogTransferRequired(OfficeFilesTransferRequired value) {
-  transfer_required_.Log(value);
+  if (!transfer_required_.Log(value)) {
+    HandleInconsistency();
+  }
 }
 
 void CloudOpenMetrics::LogUploadResult(OfficeFilesUploadResult value) {
@@ -75,35 +123,46 @@ base::WeakPtr<CloudOpenMetrics> CloudOpenMetrics::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-template <class MetricType>
-CloudOpenMetrics::Metric<MetricType>::Metric(std::string metric_name)
-    : metric_name_(metric_name) {}
+void CloudOpenMetrics::PrintMetrics() {
+  LOG(WARNING) << "Metrics: " << std::endl
+               << task_result_ << std::endl
+               << transfer_required_;
+}
 
-template <class MetricType>
-void CloudOpenMetrics::Metric<MetricType>::Log(MetricType value) {
-  LogMetric(value);
-  if (state_ == MetricState::kCorrectlyNotLogged) {
-    state_ = MetricState::kCorrectlyLogged;
-  } else {
-    state_ = MetricState::kIncorrectlyLoggedMultipleTimes;
-    LOG(ERROR) << metric_name_ << " being logged with "
-               << static_cast<std::underlying_type<MetricType>::type>(value)
-               << " when it was already logged with "
-               << static_cast<std::underlying_type<MetricType>::type>(value_);
-  }
-  value_ = value;
+void CloudOpenMetrics::HandleInconsistency() {
+  PrintMetrics();
 }
 
 template <class MetricType>
-void CloudOpenMetrics::Metric<MetricType>::LogMetric(MetricType value) {
-  base::UmaHistogramEnumeration(metric_name_, value);
+CloudOpenMetrics::Metric<MetricType>::Metric(std::string metric_name_to_set)
+    : metric_name(metric_name_to_set) {}
+
+template <class MetricType>
+bool CloudOpenMetrics::Metric<MetricType>::Log(MetricType new_value) {
+  LogMetric(new_value);
+  bool result = true;
+  if (state == MetricState::kCorrectlyNotLogged) {
+    state = MetricState::kCorrectlyLogged;
+  } else {
+    state = MetricState::kIncorrectlyLoggedMultipleTimes;
+    LOG(ERROR) << metric_name << " being logged with " << new_value
+               << " when it was already logged with " << value;
+    result = false;
+  }
+  value = new_value;
+  return result;
+}
+
+template <class MetricType>
+void CloudOpenMetrics::Metric<MetricType>::LogMetric(MetricType new_value) {
+  base::UmaHistogramEnumeration(metric_name, new_value);
 }
 
 // Handle a value of type base::File::Error differently.
 template <>
 void CloudOpenMetrics::Metric<base::File::Error>::LogMetric(
-    base::File::Error value) {
-  base::UmaHistogramExactLinear(metric_name_, -value,
+    base::File::Error new_value) {
+  base::UmaHistogramExactLinear(metric_name, -new_value,
                                 -base::File::FILE_ERROR_MAX);
 }
 

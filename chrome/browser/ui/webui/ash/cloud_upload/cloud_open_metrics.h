@@ -10,6 +10,21 @@
 
 namespace ash::cloud_upload {
 
+enum class MetricState {
+  // Not logged and it shouldn’t have been.
+  kCorrectlyNotLogged,
+  // Logged when it should have been.
+  kCorrectlyLogged,
+  // Not logged when it should have been.
+  kIncorrectlyNotLogged,
+  // Logged when it shouldn’t have been.
+  kIncorrectlyLogged,
+  // Logged more than once.
+  kIncorrectlyLoggedMultipleTimes,
+  // An unexpected value was logged.
+  kWrongValueLogged,
+};
+
 // TODO(b/300861997): Add "LogMetric" functions so metrics can be logged through
 // this class. Add ability to track the state of each relevant metric in the
 // flow and detect inconsistencies.
@@ -57,44 +72,41 @@ class CloudOpenMetrics {
   // For testing.
   base::WeakPtr<CloudOpenMetrics> GetWeakPtr();
 
- private:
-  enum class MetricState {
-    // Not logged and it shouldn’t have been.
-    kCorrectlyNotLogged,
-    // Logged when it should have been.
-    kCorrectlyLogged,
-    // Not logged when it should have been.
-    kIncorrectlyNotLogged,
-    // Logged when it shouldn’t have been.
-    kIncorrectlyLogged,
-    // Logged more than once.
-    kIncorrectlyLoggedMultipleTimes,
-    // An unexpected value was logged.
-    kWrongValueLogged,
-  };
-
-  // Represents a metric identified by `metric_name_` that logs value of type
+  // Represents a metric identified by `metric_name` that logs value of type
   // `MetricType`. Log the metric through this class. Keeps track of the value
   // logged and the `MetricState` of the metric.
   template <typename MetricType>
   class Metric {
+    static_assert(std::is_same_v<std::underlying_type_t<MetricType>, int>,
+                  "The underlying type of the MetricType must be an int");
+
    public:
-    explicit Metric(std::string metric_name);
+    explicit Metric(std::string metric_name_to_set);
     ~Metric() = default;
 
-    // Logs a `value` to the metric with `metric_name_` and saves that `value`.
-    // Update the state and log an error for the latter case:
+    // Logs a `new_value` to the metric with `metric_name` and saves it to
+    // `value`. Update the state:
     //   kCorrectlyNotLogged  -> kCorrectlyLogged
     //   !kCorrectlyNotLogged -> kIncorrectlyLoggedMultipleTimes
-    void Log(MetricType value);
+    // Return false if there was a metric inconsistency. That is, if the latter
+    // state change occurred.
+    bool Log(MetricType new_value);
 
-    MetricState state_ = MetricState::kCorrectlyNotLogged;
-    MetricType value_;
+    const std::string metric_name;
+    MetricState state = MetricState::kCorrectlyNotLogged;
+    MetricType value;
 
    private:
-    void LogMetric(MetricType value);
-    const std::string metric_name_;
+    void LogMetric(MetricType new_value);
   };
+
+ private:
+  // Print the debug information for each metric.
+  void PrintMetrics();
+
+  // TODO(b/300861997): Dump without crashing.
+  // Handle a metric inconsistency by printing metric information.
+  void HandleInconsistency();
 
   CloudProvider cloud_provider_;
   Metric<base::File::Error> copy_error_;
