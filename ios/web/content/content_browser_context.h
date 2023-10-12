@@ -69,17 +69,6 @@ class ContentBrowserContext : public content::BrowserContext {
  private:
   friend class BrowserContextHolder;
 
-  // Contains URLRequestContextGetter required for resource loading.
-  class ResourceContext : public content::ResourceContext {
-   public:
-    ResourceContext();
-
-    ResourceContext(const ResourceContext&) = delete;
-    ResourceContext& operator=(const ResourceContext&) = delete;
-
-    ~ResourceContext() override;
-  };
-
   bool ignore_certificate_errors() const { return false; }
 
   // Remove when refactored to depend on browser_start_->GetStatePath()
@@ -89,7 +78,7 @@ class ContentBrowserContext : public content::BrowserContext {
   // allowed on the current thread.
   void InitWhileIOAllowed();
   void FinishInitWhileIOAllowed();
-  std::unique_ptr<ResourceContext> resource_context_;
+  std::unique_ptr<content::ResourceContext> resource_context_;
   web::BrowserState* browser_state_ = nullptr;
 };
 
