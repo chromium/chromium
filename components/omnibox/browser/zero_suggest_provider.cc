@@ -181,12 +181,16 @@ bool AllowRemoteNoURL(const AutocompleteProviderClient* client) {
 AutocompleteInput GetZeroSuggestInput(
     const AutocompleteInput& input,
     const AutocompleteProviderClient* client) {
+  // Given that this is supposed to be a zero-prefix input, clear the input text
+  // and copy over `current_page_classification` which will be used to determine
+  // if the ZPS response is eligible for caching.
   AutocompleteInput sanitized_input(u"", input.current_page_classification(),
                                     client->GetSchemeClassifier());
+  // Copy over `current_url` which will be used to key into the ZPS cache.
   sanitized_input.set_current_url(input.current_url());
-  sanitized_input.set_current_title(input.current_title());
+  // Set `prevent_inline_autocomplete` since we don't care about populating the
+  // `inline_autocompletion` field on the resulting matches.
   sanitized_input.set_prevent_inline_autocomplete(true);
-  sanitized_input.set_allow_exact_keyword_match(false);
   return sanitized_input;
 }
 
