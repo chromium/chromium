@@ -377,7 +377,9 @@ bool DCLayerTree::Initialize(
 
 VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
     const gfx::Size& input_size,
-    const gfx::Size& output_size) {
+    const gfx::Size& output_size,
+    bool& video_processor_recreated) {
+  video_processor_recreated = false;
   if (!video_processor_wrapper_.video_device) {
     // This can fail if the D3D device is "Microsoft Basic Display Adapter".
     if (FAILED(d3d11_device_.As(&video_processor_wrapper_.video_device))) {
@@ -460,6 +462,8 @@ VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
   video_processor_wrapper_.video_context
       ->VideoProcessorSetStreamAutoProcessingMode(
           video_processor_wrapper_.video_processor.Get(), 0, FALSE);
+
+  video_processor_recreated = true;
   return &video_processor_wrapper_;
 }
 
