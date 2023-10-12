@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/embedder/input_delegate/tab_session_source.h"
+#include <math.h>
 #include <memory>
 
 #include "base/functional/callback_forward.h"
@@ -180,6 +181,19 @@ class TabSessionSourceTest : public testing::Test {
   std::unique_ptr<TabSessionSource> tab_source_;
 };
 
+TEST_F(TabSessionSourceTest, Bucketize) {
+  EXPECT_NEAR(TabSessionSource::BucketizeExp(0, /*max_buckets*/50), 0, 0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeLinear(0, /*max_buckets*/10), 0, 0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeExp(1, /*max_buckets*/50), 1, 0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeLinear(1, /*max_buckets*/10), 1, 0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeExp(5, /*max_buckets*/50), 4, 0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeLinear(5, /*max_buckets*/10), 5, 0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeExp(10, /*max_buckets*/50), 8, 0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeLinear(10, /*max_buckets*/10), 10, 0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeExp(pow(2, 60), /*max_buckets*/50), pow(2, 50), 0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeLinear(16, /*max_buckets*/10), 10, 0.01);
+}
+
 TEST_F(TabSessionSourceTest, ProcessLocal) {
   const sync_sessions::SyncedSession* local_session = nullptr;
   ASSERT_TRUE(session_sync_service_.GetOpenTabsUIDelegate()->GetLocalSession(
@@ -215,11 +229,13 @@ TEST_F(TabSessionSourceTest, ProcessLocal) {
 
   Tensor result = GetResult(local_session->GetSessionTag(), id);
   EXPECT_NEAR(result[TabSessionSource::kInputTimeSinceModifiedSec].float_val,
-              kTime2.InSecondsF(), 0.001);
+              TabSessionSource::BucketizeExp(kTime2.InSecondsF(), 50), 0.001);
   EXPECT_NEAR(result[TabSessionSource::kInputTimeSinceLastNavSec].float_val,
-              kNavTime2.InSecondsF(), 0.001);
+              TabSessionSource::BucketizeExp(kNavTime2.InSecondsF(), 50),
+              0.001);
   EXPECT_NEAR(result[TabSessionSource::kInputTimeSinceFirstNavSec].float_val,
-              kNavTime1.InSecondsF(), 0.001);
+              TabSessionSource::BucketizeExp(kNavTime1.InSecondsF(), 50),
+              0.001);
   EXPECT_NEAR(result[TabSessionSource::kInputLastTransitionType].float_val,
               static_cast<int>(ui::PAGE_TRANSITION_AUTO_SUBFRAME), 0.001);
   EXPECT_NEAR(result[TabSessionSource::kInputPasswordFieldCount].float_val, 0,
@@ -263,11 +279,13 @@ TEST_F(TabSessionSourceTest, ProcessForeign) {
 
   Tensor result = GetResult(picked_session->GetSessionTag(), id);
   EXPECT_NEAR(result[TabSessionSource::kInputTimeSinceModifiedSec].float_val,
-              kTime3.InSecondsF(), 0.001);
+              TabSessionSource::BucketizeExp(kTime3.InSecondsF(), 50), 0.001);
   EXPECT_NEAR(result[TabSessionSource::kInputTimeSinceLastNavSec].float_val,
-              kNavTime1.InSecondsF(), 0.001);
+              TabSessionSource::BucketizeExp(kNavTime1.InSecondsF(), 50),
+              0.001);
   EXPECT_NEAR(result[TabSessionSource::kInputTimeSinceFirstNavSec].float_val,
-              kNavTime1.InSecondsF(), 0.001);
+              TabSessionSource::BucketizeExp(kNavTime1.InSecondsF(), 50),
+              0.001);
   EXPECT_NEAR(result[TabSessionSource::kInputLastTransitionType].float_val,
               static_cast<int>(ui::PAGE_TRANSITION_TYPED), 0.001);
   EXPECT_NEAR(result[TabSessionSource::kInputPasswordFieldCount].float_val, 1,

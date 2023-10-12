@@ -146,7 +146,8 @@ void LocalTabSource::AddLocalTabInfo(
     const FeatureProcessorState& feature_processor_state,
     Tensor& inputs) {
   inputs[TabSessionSource::kInputLocalTabTimeSinceModified] =
-      ProcessedValue::FromFloat(GetLocalTimeSinceModified(tab).InSeconds());
+      ProcessedValue::FromFloat(
+          BucketizeExp(GetLocalTimeSinceModified(tab).InSeconds(), /*max_buckets*/50));
 }
 
 }  // namespace segmentation_platform::processing

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/embedder/input_delegate/tab_session_source.h"
+#include <math.h>
 
 #include "base/time/time.h"
 #include "components/segmentation_platform/embedder/tab_fetcher.h"
@@ -15,6 +16,27 @@
 #include "ui/base/page_transition_types.h"
 
 namespace segmentation_platform::processing {
+
+float TabSessionSource::BucketizeExp(int64_t value, int max_buckets) {
+  if (value <= 0) {
+    return 0;
+  }
+  int log_val = floor(log2(value));
+  if (log_val >= max_buckets) {
+    log_val = max_buckets;
+  }
+  return pow(2, log_val);
+}
+
+float TabSessionSource::BucketizeLinear(int64_t value, int max_buckets) {
+  if (value <= 0) {
+    return 0;
+  }
+  if (value >= max_buckets) {
+    return max_buckets;
+  }
+  return value;
+}
 
 TabSessionSource::TabSessionSource(
     sync_sessions::SessionSyncService* session_sync_service,
@@ -89,15 +111,15 @@ void TabSessionSource::AddTabInfo(const sessions::SessionTab* session_tab,
     }
   }
 
-  inputs[kInputTimeSinceModifiedSec] =
-      ProcessedValue::FromFloat(time_since_modified.InSeconds());
-  inputs[kInputTimeSinceLastNavSec] =
-      ProcessedValue::FromFloat(time_since_last_nav.InSeconds());
-  inputs[kInputTimeSinceFirstNavSec] =
-      ProcessedValue::FromFloat(time_since_first_nav.InSeconds());
+  inputs[kInputTimeSinceModifiedSec] = ProcessedValue::FromFloat(
+      BucketizeExp(time_since_modified.InSeconds(), /*max_buckets*/50));
+  inputs[kInputTimeSinceLastNavSec] = ProcessedValue::FromFloat(
+      BucketizeExp(time_since_last_nav.InSeconds(), /*max_buckets*/50));
+  inputs[kInputTimeSinceFirstNavSec] = ProcessedValue::FromFloat(
+      BucketizeExp(time_since_first_nav.InSeconds(), /*max_buckets*/50));
   inputs[kInputLastTransitionType] = ProcessedValue::FromFloat(last_transition);
   inputs[kInputPasswordFieldCount] =
-      ProcessedValue::FromFloat(password_used_count);
+      ProcessedValue::FromFloat(BucketizeExp(password_used_count, /*max_buckets*/10));
 }
 
 void TabSessionSource::AddTabRanks(const std::string& session_tag,
@@ -127,8 +149,9 @@ void TabSessionSource::AddTabRanks(const std::string& session_tag,
   }
 
   inputs[kInputTabRankInSession] =
-      ProcessedValue::FromFloat(tab_rank_in_session);
-  inputs[kInputSessionRank] = ProcessedValue::FromFloat(session_rank_overall);
+      ProcessedValue::FromFloat(BucketizeLinear(tab_rank_in_session, /*max_buckets*/10));
+  inputs[kInputSessionRank] =
+      ProcessedValue::FromFloat(BucketizeLinear(session_rank_overall, /*max_buckets*/10));
 }
 
 void TabSessionSource::AddLocalTabInfo(
