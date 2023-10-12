@@ -32,6 +32,9 @@ class ActionViewListItem : public ActionEditView {
 
   // ActionEditView:
   void ClickCallback() override;
+
+  // views::View:
+  void OnMouseEntered(const ui::MouseEvent& event) override;
 };
 
 }  // namespace arc::input_overlay

@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
@@ -38,7 +39,6 @@ namespace {
 
 constexpr int kMainContainerWidth = 296;
 
-constexpr int kInsideBorderInsets = 16;
 constexpr int kHeaderBottomMargin = 16;
 // This is associated to the size of `ash::IconButton::Type::kMedium`.
 constexpr int kIconButtonSize = 32;
@@ -110,7 +110,7 @@ void EditingList::OnGestureEvent(ui::GestureEvent* event) {
 void EditingList::Init() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevatedOpaque, /*radius=*/24));
-  SetBorder(views::CreateEmptyBorder(kInsideBorderInsets));
+  SetBorder(views::CreateEmptyBorder(kEditingListInsideBorderInsets));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
                        views::BoxLayout::Orientation::kVertical))
       ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
@@ -258,6 +258,7 @@ void EditingList::OnDragUpdate(const ui::LocatedEvent& event) {
   auto* widget = GetWidget();
   DCHECK(widget);
 
+  controller_->RemoveDeleteEditShortcutWidget();
   auto widget_bounds = widget->GetNativeWindow()->GetBoundsInScreen();
   widget_bounds.Offset(
       /*horizontal=*/(event.location() - start_drag_event_pos_).x(),
@@ -331,7 +332,7 @@ gfx::Point EditingList::GetWidgetMagneticPositionLocal() {
 
 void EditingList::ClipScrollViewHeight(bool is_outside) {
   int max_height = controller_->touch_injector()->content_bounds().height() -
-                   2 * kInsideBorderInsets - kHeaderBottomMargin -
+                   2 * kEditingListInsideBorderInsets - kHeaderBottomMargin -
                    kIconButtonSize;
   if (!is_outside) {
     max_height -= kEditingListOffsetInsideMainWindow;

@@ -418,6 +418,8 @@ source_set("ash") {
     "arc/input_overlay/ui/button_label_list.h",
     "arc/input_overlay/ui/button_options_menu.cc",
     "arc/input_overlay/ui/button_options_menu.h",
+    "arc/input_overlay/ui/delete_edit_shortcut.cc",
+    "arc/input_overlay/ui/delete_edit_shortcut.h",
     "arc/input_overlay/ui/edit_finish_view.cc",
     "arc/input_overlay/ui/edit_finish_view.h",
     "arc/input_overlay/ui/edit_label.cc",

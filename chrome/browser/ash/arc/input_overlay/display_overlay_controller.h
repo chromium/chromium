@@ -29,6 +29,7 @@ namespace arc::input_overlay {
 
 class Action;
 class ActionEditMenu;
+class ActionViewListItem;
 class ButtonOptionsMenu;
 class ButtonLabelList;
 class EditFinishView;
@@ -116,6 +117,9 @@ class DisplayOverlayController : public ui::EventHandler,
 
   void AddNudgeWidget(views::View* anchor_view, const std::u16string& text);
   void RemoveNudgeWidget(views::Widget* widget);
+
+  void AddDeleteEditShortcutWidget(ActionViewListItem* anchor_view);
+  void RemoveDeleteEditShortcutWidget();
 
   // Show education nudge for editing tip. It only shows up for the first new
   // action after closing `ButtonOptionsMenu`.
@@ -287,6 +291,7 @@ class DisplayOverlayController : public ui::EventHandler,
   std::unique_ptr<views::Widget> editing_list_widget_;
   std::unique_ptr<views::Widget> button_options_widget_;
   std::unique_ptr<views::Widget> button_label_list_widget_;
+  std::unique_ptr<views::Widget> delete_edit_shortcut_widget_;
 
   // Each widget can associate with one education nudge widget.
   base::flat_map<views::Widget*, std::unique_ptr<views::Widget>> nudge_widgets_;

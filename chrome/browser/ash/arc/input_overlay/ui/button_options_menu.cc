@@ -260,7 +260,9 @@ void ButtonOptionsMenu::OnButtonLabelAssignmentPressed() {
 }
 
 void ButtonOptionsMenu::OnActionRemoved(const Action& action) {
-  DCHECK_EQ(action_, &action);
+  if (action_ != &action) {
+    return;
+  }
   controller_->RemoveButtonOptionsMenuWidget();
 }
 

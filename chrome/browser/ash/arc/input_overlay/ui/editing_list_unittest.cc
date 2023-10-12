@@ -13,7 +13,9 @@
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/delete_edit_shortcut.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
 #include "ui/aura/window.h"
@@ -71,6 +73,21 @@ class EditingListTest : public OverlayViewTestBase {
     event_generator->MoveMouseTo(view_bounds.x() + view_bounds.width() / 4,
                                  view_bounds.y() + view_bounds.height() / 2);
     event_generator->ClickLeftButton();
+  }
+
+  void HoverAtActionViewListItem(int index) {
+    if (!editing_list_ || editing_list_->is_zero_state_ || index < 0) {
+      return;
+    }
+    views::View* scroll_content = editing_list_->scroll_content_;
+    DCHECK(scroll_content);
+    if (index >= static_cast<int>(scroll_content->children().size())) {
+      return;
+    }
+
+    auto* event_generator = GetEventGenerator();
+    auto view_bounds = scroll_content->children()[index]->GetBoundsInScreen();
+    event_generator->MoveMouseTo(view_bounds.CenterPoint());
   }
 
   void MouseDragEditingListBy(int x, int y) {
@@ -135,6 +152,10 @@ class EditingListTest : public OverlayViewTestBase {
     return !!controller_->button_options_widget_;
   }
 
+  bool DeleteEditShortcutExists() {
+    return !!controller_->delete_edit_shortcut_widget_;
+  }
+
   bool IsButtonOptionsMenuVisible() {
     auto* menu_widget = controller_->button_options_widget_.get();
     return menu_widget && menu_widget->IsVisible();
@@ -147,12 +168,33 @@ class EditingListTest : public OverlayViewTestBase {
     }
   }
 
+  void PressEditButton() {
+    DCHECK(controller_->delete_edit_shortcut_widget_);
+    static_cast<DeleteEditShortcut*>(
+        controller_->delete_edit_shortcut_widget_->GetContentsView())
+        ->OnEditButtonPressed();
+  }
+
+  void PressDeleteButton() {
+    DCHECK(controller_->delete_edit_shortcut_widget_);
+    static_cast<DeleteEditShortcut*>(
+        controller_->delete_edit_shortcut_widget_->GetContentsView())
+        ->OnDeleteButtonPressed();
+  }
+
   Action* GetButtonOptionsAction() {
     auto* menu = controller_->GetButtonOptionsMenu();
     if (!menu) {
       return nullptr;
     }
     return menu->action();
+  }
+
+  Action* GetDeleteEditShortcutAction() {
+    return static_cast<DeleteEditShortcut*>(
+               controller_->delete_edit_shortcut_widget_->GetContentsView())
+        ->anchor_view()
+        ->action();
   }
 
   views::Widget* GetEducationNudge(views::Widget* widget) {
@@ -217,6 +259,28 @@ TEST_F(EditingListTest, TestPressAtActionViewListItem) {
   EXPECT_TRUE(ButtonOptionsMenuExists());
   auto* action_2 = GetButtonOptionsAction();
   EXPECT_NE(action_1, action_2);
+}
+
+TEST_F(EditingListTest, TestHoverAtActionViewListItem) {
+  CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
+               {ActionType::TAP, ActionType::TAP, ActionType::MOVE},
+               /*expect_ids=*/{0, 1, 2});
+  HoverAtActionViewListItem(/*index=*/0);
+  EXPECT_TRUE(DeleteEditShortcutExists());
+  auto* action = GetDeleteEditShortcutAction();
+
+  PressEditButton();
+  EXPECT_TRUE(ButtonOptionsMenuExists());
+  EXPECT_FALSE(DeleteEditShortcutExists());
+  EXPECT_EQ(action, GetButtonOptionsAction());
+  PressDoneButtonOnButtonOptionsMenu();
+
+  HoverAtActionViewListItem(/*index=*/0);
+  EXPECT_TRUE(DeleteEditShortcutExists());
+  PressDeleteButton();
+  EXPECT_FALSE(DeleteEditShortcutExists());
+  EXPECT_EQ(2u, GetActionListItemsSize());
+  EXPECT_EQ(2u, GetActionViewSize());
 }
 
 TEST_F(EditingListTest, TestReposition) {

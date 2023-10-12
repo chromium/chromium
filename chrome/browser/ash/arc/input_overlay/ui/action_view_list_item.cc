@@ -35,4 +35,8 @@ void ActionViewListItem::ShowEduNudgeForEditingTip() {
   labels_view_->ShowEduNudgeForEditingTip();
 }
 
+void ActionViewListItem::OnMouseEntered(const ui::MouseEvent& event) {
+  controller_->AddDeleteEditShortcutWidget(this);
+}
+
 }  // namespace arc::input_overlay

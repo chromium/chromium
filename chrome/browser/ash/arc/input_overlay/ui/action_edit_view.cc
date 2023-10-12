@@ -32,13 +32,16 @@ ActionEditView::ActionEditView(DisplayOverlayController* controller,
   // TODO(b/279117180): Replace with proper accessible name.
   SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_GAME_CONTROLS_ALPHA));
-  SetUseDefaultFillLayout(true);
-  auto* container =
-      AddChildView(std::make_unique<ash::RoundedContainer>(container_type));
-  container->SetBorderInsets(gfx::Insets::VH(14, 16));
-  container->SetBackground(
-      views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemOnBase));
-  container->SetLayoutManager(std::make_unique<views::TableLayout>())
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(14, 16)));
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemOnBase,
+      /*top_radius=*/container_type ==
+              ash::RoundedContainer::Behavior::kBottomRounded
+          ? 0
+          : 16,
+      /*bottom_radius=*/16,
+      /*for_border_thickness=*/0));
+  SetLayoutManager(std::make_unique<views::TableLayout>())
       ->AddColumn(/*h_align=*/views::LayoutAlignment::kStart,
                   /*v_align=*/views::LayoutAlignment::kStart,
                   /*horizontal_resize=*/1.0f,
@@ -53,8 +56,8 @@ ActionEditView::ActionEditView(DisplayOverlayController* controller,
 
   auto title_string = GetActionNameAtIndex(controller_->action_name_list(),
                                            action_->name_label_index());
-  name_tag_ = container->AddChildView(NameTag::CreateNameTag(title_string));
-  labels_view_ = container->AddChildView(EditLabels::CreateEditLabels(
+  name_tag_ = AddChildView(NameTag::CreateNameTag(title_string));
+  labels_view_ = AddChildView(EditLabels::CreateEditLabels(
       controller_, action_, name_tag_, /*should_update_title=*/true));
 }
 

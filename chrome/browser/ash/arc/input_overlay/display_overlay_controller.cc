@@ -16,8 +16,10 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/button_label_list.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/delete_edit_shortcut.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_finish_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/educational_view.h"
@@ -52,6 +54,7 @@ constexpr char kButtonOptionsMenu[] = "GameControlsButtonOptionsMenu";
 constexpr char kEditingList[] = "GameControlsEditingList";
 constexpr char kInputMapping[] = "GameControlsInputMapping";
 constexpr char kEduationNudge[] = "GameControlsEducationNudge";
+constexpr char kDeleteEditShortcut[] = "DeleteEditShortcut";
 
 std::unique_ptr<views::Widget> CreateTransientWidget(
     aura::Window* parent_window,
@@ -806,6 +809,35 @@ void DisplayOverlayController::RemoveNudgeWidget(views::Widget* widget) {
   }
 }
 
+void DisplayOverlayController::AddDeleteEditShortcutWidget(
+    ActionViewListItem* anchor_view) {
+  if (delete_edit_shortcut_widget_) {
+    if (auto* shortcut = views::AsViewClass<DeleteEditShortcut>(
+            delete_edit_shortcut_widget_->GetContentsView());
+        shortcut->anchor_view() != anchor_view) {
+      shortcut->UpdateAnchorView(anchor_view);
+    }
+    return;
+  }
+
+  delete_edit_shortcut_widget_ = CreateTransientWidget(
+      touch_injector_->window(), /*widget_name=*/kDeleteEditShortcut,
+      /*accept_events=*/true, /*is_floating=*/true);
+  delete_edit_shortcut_widget_->SetContentsView(
+      std::make_unique<DeleteEditShortcut>(this, anchor_view));
+
+  auto* window = delete_edit_shortcut_widget_->GetNativeWindow();
+  window->parent()->StackChildAtTop(window);
+  delete_edit_shortcut_widget_->Show();
+}
+
+void DisplayOverlayController::RemoveDeleteEditShortcutWidget() {
+  if (delete_edit_shortcut_widget_) {
+    delete_edit_shortcut_widget_->Close();
+    delete_edit_shortcut_widget_.reset();
+  }
+}
+
 void DisplayOverlayController::MayShowEduNudgeForEditingTip() {
   if (GetActiveActionsSize() != 1u) {
     return;
@@ -1092,6 +1124,7 @@ void DisplayOverlayController::UpdateForBoundsChanged() {
     // Remove the floating window attached the ActionView.
     RemoveButtonLabelListWidget();
     RemoveButtonOptionsMenuWidget();
+    RemoveDeleteEditShortcutWidget();
   } else {
     // Overlay widget is null for test.
     if (!GetOverlayWidget()) {
