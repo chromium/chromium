@@ -9,7 +9,6 @@ username_element VARCHAR,
 username_value VARCHAR,
 password_element VARCHAR,
 password_value BLOB,
-keychain_identifier BLOB,
 submit_element VARCHAR,
 signon_realm VARCHAR NOT NULL,
 date_created INTEGER NOT NULL,
@@ -32,15 +31,15 @@ sender_email VARCHAR,
 sender_name VARCHAR,
 date_received INTEGER,
 sharing_notification_displayed INTEGER NOT NULL DEFAULT 0,
+keychain_identifier BLOB,
 UNIQUE (origin_url, username_element, username_value, password_element, signon_realm));
-INSERT INTO "logins" (origin_url,action_url,username_element,username_value,password_element,password_value,keychain_identifier,submit_element,signon_realm,date_created,blacklisted_by_user,scheme,password_type,times_used,form_data,display_name,icon_url,federation_url,skip_zero_click,generation_upload_status,possible_username_pairs,date_last_used,moving_blocked_for,date_password_modified, sender_email, sender_name, date_received, sharing_notification_displayed) VALUES(
+INSERT INTO "logins" (origin_url,action_url,username_element,username_value,password_element,password_value,submit_element,signon_realm,date_created,blacklisted_by_user,scheme,password_type,times_used,form_data,display_name,icon_url,federation_url,skip_zero_click,generation_upload_status,possible_username_pairs,date_last_used,moving_blocked_for,date_password_modified,sender_email, sender_name,date_received,sharing_notification_displayed,keychain_identifier) VALUES(
 'https://accounts.google.com/ServiceLogin', /* origin_url */
 'https://accounts.google.com/ServiceLoginAuth', /* action_url */
 'Email', /* username_element */
 'theerikchen', /* username_value */
 'Passwd', /* password_element */
 X'33646263653933652d', /* password_value */
-X'32353732613764632d353034362d343239622d623864342d333639366638376463396332', /* keychain_identifier */
 '', /* submit_element */
 'https://accounts.google.com/', /* signon_realm */
 13047429345000000, /* date_created */
@@ -60,8 +59,9 @@ X'', /* moving_blocked_for */
 0 ,/* date_password_modified */
 'sender@gmail.com', /* sender_email */
 'Sender Name', /* sender_name */
-0 , /* date_receieved */
-1  /* sharing_notification_displayed */
+0, /* date_receieved */
+1,  /* sharing_notification_displayed */
+X'32353732613764632d353034362d343239622d623864342d333639366638376463396332' /* keychain_identifier */
 );
 CREATE INDEX logins_signon ON logins (signon_realm);
 CREATE TABLE stats (
@@ -117,7 +117,7 @@ CREATE TABLE password_notes (
 CREATE INDEX foreign_key_index_notes ON password_notes (parent_id);
 INSERT INTO "password_notes"
   (parent_id, key, value, date_created, confidential) VALUES(
-0, /* parent_id */
+1, /* parent_id */
 '', /* key */
 X'33646263783933652d333761392d346339662d616136612d343538313263343834626333', /* value */
 13047423600000000, /* date_created */
