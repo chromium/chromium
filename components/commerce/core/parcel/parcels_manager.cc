@@ -37,15 +37,20 @@ std::vector<ParcelIdentifier> ConvertParcelIdentifier(
 bool IsParcelDone(const parcel_tracking_db::ParcelTrackingContent& tracking) {
   ParcelStatus::ParcelState parcel_state =
       tracking.parcel_status().parcel_state();
+#pragma push_macro("ERROR")
+#undef ERROR
   switch (parcel_state) {
-    case ParcelStatus::PICKED_UP:
     case ParcelStatus::FINISHED:
+    case ParcelStatus::ERROR:
     case ParcelStatus::CANCELLED:
+    case ParcelStatus::ORDER_TOO_OLD:
     case ParcelStatus::RETURN_COMPLETED:
+    case ParcelStatus::UNDELIVERABLE:
       return true;
     default:
       return false;
   }
+#pragma pop_macro("ERROR")
 }
 
 std::vector<ParcelIdentifier> GetParcelIdentifiersToRefresh(

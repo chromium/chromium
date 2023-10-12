@@ -403,9 +403,9 @@ TEST_F(ParcelsManagerTest,
 TEST_F(ParcelsManagerTest, TestGetAllParcelStatuses_LocalStorageHasDoneStatus) {
   EXPECT_CALL(*mock_storage_, Init(_)).Times(1);
   mock_storage_->MockGetAllParcelTrackingContents(kTestTrackingId,
-                                                  ParcelStatus::PICKED_UP);
+                                                  ParcelStatus::FINISHED);
   mock_server_proxy_->MockParcelStatusResponses(true, kTestTrackingId,
-                                                ParcelStatus::PICKED_UP);
+                                                ParcelStatus::FINISHED);
   mock_storage_->MockInitCallback(true);
 
   // Advance clock by 1 day.
@@ -422,7 +422,7 @@ TEST_F(ParcelsManagerTest, TestGetAllParcelStatuses_LocalStorageHasDoneStatus) {
         auto status = (*parcel_status)[0];
         ASSERT_EQ(kTestTrackingId, status.tracking_id);
         ASSERT_EQ(commerce::ParcelIdentifier::UPS, status.carrier);
-        ASSERT_EQ(ParcelStatus::PICKED_UP, status.state);
+        ASSERT_EQ(ParcelStatus::FINISHED, status.state);
         run_loop->Quit();
       },
       &run_loop));
