@@ -64,7 +64,13 @@ TEST_F(CannedIndexedDBHelperTest, Delete) {
   EXPECT_EQ(1u, helper->GetCount());
 }
 
-TEST_F(CannedIndexedDBHelperTest, IgnoreExtensionsAndDevTools) {
+// Flaky on Android: https://crbug.com/1492124
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_IgnoreExtensionsAndDevTools DISABLED_IgnoreExtensionsAndDevTools
+#else
+#define MAYBE_IgnoreExtensionsAndDevTools IgnoreExtensionsAndDevTools
+#endif
+TEST_F(CannedIndexedDBHelperTest, MAYBE_IgnoreExtensionsAndDevTools) {
   const blink::StorageKey storage_key1 =
       blink::StorageKey::CreateFromStringForTesting(
           "chrome-extension://abcdefghijklmnopqrstuvwxyz/");
