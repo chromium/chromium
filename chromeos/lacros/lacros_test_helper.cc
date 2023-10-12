@@ -30,7 +30,7 @@ base::Version GetAshVersion() {
 
 ScopedDisableCrosapiForTesting::ScopedDisableCrosapiForTesting()
     : disable_crosapi_resetter_(
-          &BrowserInitParams::disable_crosapi_for_testing_,
+          &BrowserInitParams::is_crosapi_disabled_for_testing_,
           true) {
   // Ensure that no instance exist, to prevent interference.
   CHECK(!LacrosService::Get());

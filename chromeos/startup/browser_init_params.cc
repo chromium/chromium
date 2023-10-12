@@ -33,14 +33,14 @@ crosapi::mojom::BrowserInitParamsPtr ReadStartupBrowserInitParams() {
 }  // namespace
 
 BrowserInitParams::BrowserInitParams()
-    : init_params_(disable_crosapi_for_testing_
+    : init_params_(is_crosapi_disabled_for_testing_
                        ? crosapi::mojom::BrowserInitParams::New()
                        : ReadStartupBrowserInitParams()) {
   if (!init_params_) {
     LOG(WARNING) << "BrowserInitParams is not set. "
                  << "This message should not appear except for testing. "
                  << "For testing, consider setting "
-                 << "BrowserInitParams::disable_crosapi_for_testing_ "
+                 << "BrowserInitParams::is_crosapi_disabled_for_testing_ "
                  << "to true if crosapi is not required.";
     init_params_ = crosapi::mojom::BrowserInitParams::New();
   }
@@ -76,6 +76,6 @@ BrowserInitParams* BrowserInitParams::GetInstance() {
 }
 
 // static
-bool BrowserInitParams::disable_crosapi_for_testing_ = false;
+bool BrowserInitParams::is_crosapi_disabled_for_testing_ = false;
 
 }  // namespace chromeos
