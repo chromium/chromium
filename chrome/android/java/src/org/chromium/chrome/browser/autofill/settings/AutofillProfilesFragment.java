@@ -164,7 +164,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         getPreferenceScreen().addPreference(autofillSwitch);
 
         for (AutofillProfile profile : PersonalDataManager.getInstance().getProfilesForSettings()) {
-            assert profile.getIsLocal();
             // Add a preference for the profile.
             Preference pref = new AutofillProfileEditorPreference(getStyledContext());
             pref.setTitle(profile.getFullName());

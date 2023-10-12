@@ -55,11 +55,10 @@ abstract class AutofillCreditCardEditor
         noSelection.setLabel(getActivity().getString(R.string.select));
         profilesAdapter.add(noSelection);
 
-        List<? extends AutofillProfile> profiles =
-                PersonalDataManager.getInstance().getProfilesForSettings();
+        List<AutofillProfile> profiles = PersonalDataManager.getInstance().getProfilesForSettings();
         for (int i = 0; i < profiles.size(); i++) {
             AutofillProfile profile = profiles.get(i);
-            if (profile.getIsLocal() && !TextUtils.isEmpty(profile.getStreetAddress())) {
+            if (!TextUtils.isEmpty(profile.getStreetAddress())) {
                 profilesAdapter.add(profile);
             }
         }

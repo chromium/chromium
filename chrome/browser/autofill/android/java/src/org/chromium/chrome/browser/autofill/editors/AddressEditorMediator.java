@@ -414,8 +414,6 @@ class AddressEditorMediator {
             // this temp AutofillProfile should not be saved to disk.
             profile.setGUID(UUID.randomUUID().toString());
         }
-
-        profile.setIsLocal(true);
     }
 
     private boolean willBeSavedInAccount() {

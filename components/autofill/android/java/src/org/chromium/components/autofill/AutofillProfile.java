@@ -23,8 +23,6 @@ import java.util.Map;
 @JNINamespace("autofill")
 public class AutofillProfile {
     private String mGUID;
-    // TODO(crbug.com/1481519): Remove this variable as it became obsolete.
-    private boolean mIsLocal;
     private @Source int mSource;
     private Map<Integer, ValueWithStatus> mFields;
     private String mLabel;
@@ -57,7 +55,6 @@ public class AutofillProfile {
      */
     public static final class Builder {
         private String mGUID = "";
-        private boolean mIsLocal = true;
         private @Source int mSource = Source.LOCAL_OR_SYNCABLE;
         private ValueWithStatus mHonorificPrefix = ValueWithStatus.EMPTY;
         private ValueWithStatus mFullName = ValueWithStatus.EMPTY;
@@ -76,11 +73,6 @@ public class AutofillProfile {
 
         public Builder setGUID(String guid) {
             mGUID = guid;
-            return this;
-        }
-
-        public Builder setIsLocal(boolean isLocal) {
-            mIsLocal = isLocal;
             return this;
         }
 
@@ -223,9 +215,21 @@ public class AutofillProfile {
         }
 
         public AutofillProfile build() {
-            return new AutofillProfile(mGUID, mIsLocal, mSource, mHonorificPrefix, mFullName,
-                    mCompanyName, mStreetAddress, mRegion, mLocality, mDependentLocality,
-                    mPostalCode, mSortingCode, mCountryCode, mPhoneNumber, mEmailAddress,
+            return new AutofillProfile(
+                    mGUID,
+                    mSource,
+                    mHonorificPrefix,
+                    mFullName,
+                    mCompanyName,
+                    mStreetAddress,
+                    mRegion,
+                    mLocality,
+                    mDependentLocality,
+                    mPostalCode,
+                    mSortingCode,
+                    mCountryCode,
+                    mPhoneNumber,
+                    mEmailAddress,
                     mLanguageCode);
         }
     }
@@ -235,21 +239,30 @@ public class AutofillProfile {
     }
 
     @CalledByNative
-    private AutofillProfile(String guid, boolean isLocal, @Source int source, String languageCode) {
+    private AutofillProfile(String guid, @Source int source, String languageCode) {
         mGUID = guid;
-        mIsLocal = isLocal;
         mSource = source;
         mLanguageCode = languageCode;
         mFields = new HashMap<>();
     }
 
-    private AutofillProfile(String guid, boolean isLocal, @Source int source,
-            ValueWithStatus honorificPrefix, ValueWithStatus fullName, ValueWithStatus companyName,
-            ValueWithStatus streetAddress, ValueWithStatus region, ValueWithStatus locality,
-            ValueWithStatus dependentLocality, ValueWithStatus postalCode,
-            ValueWithStatus sortingCode, ValueWithStatus countryCode, ValueWithStatus phoneNumber,
-            ValueWithStatus emailAddress, String languageCode) {
-        this(guid, isLocal, source, languageCode);
+    private AutofillProfile(
+            String guid,
+            @Source int source,
+            ValueWithStatus honorificPrefix,
+            ValueWithStatus fullName,
+            ValueWithStatus companyName,
+            ValueWithStatus streetAddress,
+            ValueWithStatus region,
+            ValueWithStatus locality,
+            ValueWithStatus dependentLocality,
+            ValueWithStatus postalCode,
+            ValueWithStatus sortingCode,
+            ValueWithStatus countryCode,
+            ValueWithStatus phoneNumber,
+            ValueWithStatus emailAddress,
+            String languageCode) {
+        this(guid, source, languageCode);
         mFields.put(ServerFieldType.NAME_HONORIFIC_PREFIX, honorificPrefix);
         mFields.put(ServerFieldType.NAME_FULL, fullName);
         mFields.put(ServerFieldType.COMPANY_NAME, companyName);
@@ -267,7 +280,6 @@ public class AutofillProfile {
     /* Builds an AutofillProfile that is an exact copy of the one passed as parameter. */
     public AutofillProfile(AutofillProfile profile) {
         mGUID = profile.getGUID();
-        mIsLocal = profile.getIsLocal();
         mSource = profile.getSource();
 
         mFields = new HashMap<>(profile.mFields);
@@ -423,10 +435,6 @@ public class AutofillProfile {
         return mLanguageCode;
     }
 
-    public boolean getIsLocal() {
-        return mIsLocal;
-    }
-
     public void setGUID(String guid) {
         mGUID = guid;
     }
@@ -500,10 +508,6 @@ public class AutofillProfile {
 
     public void setLanguageCode(String languageCode) {
         mLanguageCode = languageCode;
-    }
-
-    public void setIsLocal(boolean isLocal) {
-        mIsLocal = isLocal;
     }
 
     /** Used by ArrayAdapter in credit card settings. */

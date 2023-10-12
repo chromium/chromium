@@ -331,7 +331,6 @@ public class ContactEditor extends EditorBase<AutofillContact> {
             profile.setGUID(UUID.randomUUID().toString());
         }
 
-        profile.setIsLocal(true);
         mContact.completeContact(profile.getGUID(), name, phone, email);
         mDoneCallback.onResult(mContact);
 

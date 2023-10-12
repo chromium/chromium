@@ -282,10 +282,8 @@ public class AutofillTestHelper {
         runOnUiThreadBlocking(() -> PersonalDataManager.getInstance().clearImageDataForTesting());
         // Clear remaining local profiles and cards.
         for (AutofillProfile profile : getProfilesForSettings()) {
-            if (profile.getIsLocal()) {
-                runOnUiThreadBlocking(
-                        () -> PersonalDataManager.getInstance().deleteProfile(profile.getGUID()));
-            }
+            runOnUiThreadBlocking(
+                    () -> PersonalDataManager.getInstance().deleteProfile(profile.getGUID()));
         }
         for (CreditCard card : getCreditCardsForSettings()) {
             if (card.getIsLocal()) {
