@@ -615,7 +615,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sStartSurfaceDisabledFeedImprovement =
             new CachedFlag(START_SURFACE_DISABLED_FEED_IMPROVEMENT, false);
     public static final CachedFlag sStartSurfaceOnTablet =
-            new CachedFlag(START_SURFACE_ON_TABLET, false);
+            new CachedFlag(START_SURFACE_ON_TABLET, true);
     public static final CachedFlag sStartSurfaceRefactor =
             new CachedFlag(START_SURFACE_REFACTOR, false);
     public static final CachedFlag sStartSurfaceReturnTime =

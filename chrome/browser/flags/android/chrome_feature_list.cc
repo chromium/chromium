@@ -1012,7 +1012,7 @@ BASE_FEATURE(kShowNtpAtStartupAndroid,
 
 BASE_FEATURE(kShowScrollableMVTOnNTPAndroid,
              "ShowScrollableMVTOnNTPAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShowScrollableMVTOnNtpPhoneAndroid,
              "ShowScrollableMVTOnNtpPhoneAndroid",
@@ -1125,7 +1125,7 @@ BASE_FEATURE(kShouldIgnoreIntentSkipInternalCheck,
 
 BASE_FEATURE(kStartSurfaceOnTablet,
              "StartSurfaceOnTablet",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStartSurfaceSpareTab,
              "StartSurfaceSpareTab",
