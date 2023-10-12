@@ -946,10 +946,12 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         mModelSelectorButton.setIncognito(mIsIncognito);
         if (mTabModelSelector != null) {
             boolean isVisible = mTabModelSelector.getModel(true).getCount() != 0;
+
+            if (isVisible == mModelSelectorButton.isVisible()) return;
+
             mModelSelectorButton.setVisible(isVisible);
 
             float endMargin = isVisible ? getModelSelectorButtonWidthWithPadding() : 0.0f;
-
             mNormalHelper.setEndMargin(endMargin, isVisible);
             mIncognitoHelper.setEndMargin(endMargin, true);
         }
