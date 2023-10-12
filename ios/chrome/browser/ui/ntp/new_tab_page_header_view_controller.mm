@@ -697,6 +697,11 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 
 - (UIPointerStyle*)pointerInteraction:(UIPointerInteraction*)interaction
                        styleForRegion:(UIPointerRegion*)region {
+  // If the view is no longer in a window due to a race condition, no
+  // pointer style is needed.
+  if (!interaction.view.window) {
+    return nil;
+  }
   // Without this, the hover effect looks slightly oversized.
   CGRect rect = CGRectInset(interaction.view.bounds, 1, 1);
   UIBezierPath* path =
