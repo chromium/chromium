@@ -32,7 +32,7 @@ class MODULES_EXPORT WebIdentityRequester final
                       const absl::optional<KURL>& selected_idp_config_url,
                       const WTF::String& token,
                       const mojom::blink::TokenErrorPtr error,
-                      bool is_account_auto_selected);
+                      bool is_identity_credential_auto_selected);
 
   // Invoked at most once per token request.
   void RequestToken();

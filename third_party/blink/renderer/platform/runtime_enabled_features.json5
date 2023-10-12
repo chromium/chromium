@@ -1623,13 +1623,6 @@
       base_feature: "none",
     },
     {
-      name: "FedCmAccountAutoSelectedFlag",
-      depends_on: ["FedCm"],
-      public: true,
-      status: "test",
-      base_feature: "none",
-    },
-    {
       name: "FedCmAuthz",
       depends_on: ["FedCm"],
       public: true,
@@ -1645,6 +1638,13 @@
     },
     {
       name: "FedCmHostedDomain",
+      depends_on: ["FedCm"],
+      public: true,
+      status: "test",
+      base_feature: "none",
+    },
+    {
+      name: "FedCmIdentityCredentialAutoSelectedFlag",
       depends_on: ["FedCm"],
       public: true,
       status: "test",

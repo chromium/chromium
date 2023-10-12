@@ -23,7 +23,7 @@ void WebIdentityRequester::OnRequestToken(
     const absl::optional<KURL>& selected_idp_config_url,
     const WTF::String& token,
     mojom::blink::TokenErrorPtr error,
-    bool is_account_auto_selected) {
+    bool is_identity_credential_auto_selected) {
   for (const auto& provider_resolver_pair : provider_to_resolver_) {
     KURL provider = provider_resolver_pair.key;
     ScriptPromiseResolver* resolver = provider_resolver_pair.value;
@@ -63,8 +63,8 @@ void WebIdentityRequester::OnRequestToken(
               "Error retrieving a token.", error->code, error->url));
           continue;
         }
-        IdentityCredential* credential =
-            IdentityCredential::Create(token, is_account_auto_selected);
+        IdentityCredential* credential = IdentityCredential::Create(
+            token, is_identity_credential_auto_selected);
         resolver->Resolve(credential);
         continue;
       }
@@ -213,7 +213,7 @@ void WebIdentityRequester::AbortRequest(ScriptState* script_state) {
   if (!is_requesting_token_) {
     OnRequestToken(mojom::blink::RequestTokenStatus::kErrorCanceled,
                    absl::nullopt, "", nullptr,
-                   /*is_account_auto_selected=*/false);
+                   /*is_identity_credential_auto_selected=*/false);
     return;
   }
 

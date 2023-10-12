@@ -347,10 +347,10 @@ BASE_FEATURE(kEnableServiceWorkersForChromeScheme,
 // We enable it here by default to support use in origin trials.
 BASE_FEATURE(kFedCm, "FedCm", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables usage of the FedCM AccountAutoSelectedFlag feature. ChromeStatus
-// entry: https://chromestatus.com/feature/5384360374566912
-BASE_FEATURE(kFedCmAccountAutoSelectedFlag,
-             "FedCmAccountAutoSelectedFlag",
+// Enables usage of the FedCM IdentityCredentialAutoSelectedFlag feature.
+// ChromeStatus entry: https://chromestatus.com/feature/5384360374566912
+BASE_FEATURE(kFedCmIdentityCredentialAutoSelectedFlag,
+             "FedCmIdentityCredentialAutoSelectedFlag",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM Authz API.

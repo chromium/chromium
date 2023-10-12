@@ -41,8 +41,8 @@ bool IsFedCmWithoutWellKnownEnforcementEnabled();
 // Whether the Web Identity MDocs API is enabled.
 bool IsWebIdentityMDocsEnabled();
 
-// Whether the AccountAutoSelected feature is enabled.
-bool IsFedCmAccountAutoSelectedFlagEnabled();
+// Whether the IdentityCredentialAutoSelected feature is enabled.
+bool IsFedCmIdentityCredentialAutoSelectedFlagEnabled();
 
 // Whether the HostedDomain feature is enabled.
 bool IsFedCmHostedDomainEnabled();

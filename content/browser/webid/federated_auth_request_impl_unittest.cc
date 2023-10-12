@@ -2973,7 +2973,7 @@ TEST_F(FederatedAuthRequestImplTest, DisclosureTextShownForFirstTimeUser) {
   checker->SetExpectedTokenPostData(
       "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
       "&account_id=" + std::string(kAccountId) + "&disclosure_text_shown=true" +
-      "&is_account_auto_selected=false");
+      "&is_identity_credential_auto_selected=false");
   SetNetworkRequestManager(std::move(checker));
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
@@ -2996,7 +2996,8 @@ TEST_F(FederatedAuthRequestImplTest, DisclosureTextNotShownForReturningUser) {
   checker->SetExpectedTokenPostData(
       "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
       "&account_id=" + std::string(kAccountId) +
-      "&disclosure_text_shown=false" + "&is_account_auto_selected=false");
+      "&disclosure_text_shown=false" +
+      "&is_identity_credential_auto_selected=false");
   SetNetworkRequestManager(std::move(checker));
 
   MockConfiguration config = kConfigurationValid;
@@ -3013,20 +3014,23 @@ TEST_F(FederatedAuthRequestImplTest, TokenEndpointPostDataEscaping) {
 
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
       std::make_unique<IdpNetworkRequestManagerParamChecker>();
-  checker->SetExpectedTokenPostData(
-      "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
-      "&account_id=account+id&disclosure_text_shown=true&is_account_auto_"
-      "selected=false");
+  checker->SetExpectedTokenPostData("client_id=" + std::string(kClientId) +
+                                    "&nonce=" + std::string(kNonce) +
+                                    "&account_id=account+id&disclosure_text_"
+                                    "shown=true&is_identity_credential_auto_"
+                                    "selected=false");
   SetNetworkRequestManager(std::move(checker));
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
 }
 
-// Test that the is_account_auto_selected field is not included in the request
-// if the feature is disabled.
-TEST_F(FederatedAuthRequestImplTest, AccountAutoSelectedFlagDisabled) {
+// Test that the is_identity_credential_auto_selected field is not included in
+// the request if the feature is disabled.
+TEST_F(FederatedAuthRequestImplTest,
+       IdentityCredentialAutoSelectedFlagDisabled) {
   base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCmAccountAutoSelectedFlag);
+  list.InitAndDisableFeature(
+      features::kFedCmIdentityCredentialAutoSelectedFlag);
 
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
       std::make_unique<IdpNetworkRequestManagerParamChecker>();
@@ -3039,30 +3043,32 @@ TEST_F(FederatedAuthRequestImplTest, AccountAutoSelectedFlagDisabled) {
               kConfigurationValid);
 }
 
-// Test that the is_account_auto_selected value in the token post data for
-// sign-up case.
-TEST_F(FederatedAuthRequestImplTest, AccountAutoSelectedFlagForNewUser) {
+// Test that the is_identity_credential_auto_selected value in the token post
+// data for sign-up case.
+TEST_F(FederatedAuthRequestImplTest,
+       IdentityCredentialAutoSelectedFlagForNewUser) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAccountAutoSelectedFlag);
+  list.InitAndEnableFeature(features::kFedCmIdentityCredentialAutoSelectedFlag);
 
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
       std::make_unique<IdpNetworkRequestManagerParamChecker>();
   checker->SetExpectedTokenPostData(
       "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
       "&account_id=" + std::string(kAccountId) + "&disclosure_text_shown=true" +
-      "&is_account_auto_selected=false");
+      "&is_identity_credential_auto_selected=false");
   SetNetworkRequestManager(std::move(checker));
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
 }
 
-// Test that the is_account_auto_selected value in the token post data for
-// returning user with `mediation:required`.
-TEST_F(FederatedAuthRequestImplTest,
-       AccountAutoSelectedFlagForReturningUserWithMediationRequired) {
+// Test that the is_identity_credential_auto_selected value in the token post
+// data for returning user with `mediation:required`.
+TEST_F(
+    FederatedAuthRequestImplTest,
+    IdentityCredentialAutoSelectedFlagForReturningUserWithMediationRequired) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAccountAutoSelectedFlag);
+  list.InitAndEnableFeature(features::kFedCmIdentityCredentialAutoSelectedFlag);
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -3076,7 +3082,8 @@ TEST_F(FederatedAuthRequestImplTest,
   checker->SetExpectedTokenPostData(
       "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
       "&account_id=" + std::string(kAccountId) +
-      "&disclosure_text_shown=false" + "&is_account_auto_selected=false");
+      "&disclosure_text_shown=false" +
+      "&is_identity_credential_auto_selected=false");
   SetNetworkRequestManager(std::move(checker));
 
   MockConfiguration config = kConfigurationValid;
@@ -3084,12 +3091,13 @@ TEST_F(FederatedAuthRequestImplTest,
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, config);
 }
 
-// Test that the is_account_auto_selected value in the token post data for
-// returning user with `mediation:optional`.
-TEST_F(FederatedAuthRequestImplTest,
-       AccountAutoSelectedFlagForReturningUserWithMediationOptional) {
+// Test that the is_identity_credential_auto_selected value in the token post
+// data for returning user with `mediation:optional`.
+TEST_F(
+    FederatedAuthRequestImplTest,
+    IdentityCredentialAutoSelectedFlagForReturningUserWithMediationOptional) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAccountAutoSelectedFlag);
+  list.InitAndEnableFeature(features::kFedCmIdentityCredentialAutoSelectedFlag);
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -3109,7 +3117,8 @@ TEST_F(FederatedAuthRequestImplTest,
   checker->SetExpectedTokenPostData(
       "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
       "&account_id=" + std::string(kAccountId) +
-      "&disclosure_text_shown=false" + "&is_account_auto_selected=true");
+      "&disclosure_text_shown=false" +
+      "&is_identity_credential_auto_selected=true");
   SetNetworkRequestManager(std::move(checker));
 
   MockConfiguration config = kConfigurationValid;
@@ -3117,11 +3126,12 @@ TEST_F(FederatedAuthRequestImplTest,
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, config);
 }
 
-// Test that the is_account_auto_selected value in the token post data for the
-// quiet period use case.
-TEST_F(FederatedAuthRequestImplTest, AccountAutoSelectedFlagIfInQuietPeriod) {
+// Test that the is_identity_credential_auto_selected value in the token post
+// data for the quiet period use case.
+TEST_F(FederatedAuthRequestImplTest,
+       IdentityCredentialAutoSelectedFlagIfInQuietPeriod) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAccountAutoSelectedFlag);
+  list.InitAndEnableFeature(features::kFedCmIdentityCredentialAutoSelectedFlag);
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -3146,7 +3156,8 @@ TEST_F(FederatedAuthRequestImplTest, AccountAutoSelectedFlagIfInQuietPeriod) {
   checker->SetExpectedTokenPostData(
       "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
       "&account_id=" + std::string(kAccountId) +
-      "&disclosure_text_shown=false" + "&is_account_auto_selected=false");
+      "&disclosure_text_shown=false" +
+      "&is_identity_credential_auto_selected=false");
   SetNetworkRequestManager(std::move(checker));
 
   RequestExpectations expectations = kExpectationSuccess;

@@ -8,5 +8,5 @@ def main(request, response):
 
   response.headers.set(b"Content-Type", b"application/json")
 
-  is_account_auto_selected = request.POST.get(b"is_account_auto_selected")
-  return "{\"token\": \"is_account_auto_selected=" + is_account_auto_selected.decode("utf-8") + "\"}"
+  is_identity_credential_auto_selected = request.POST.get(b"is_identity_credential_auto_selected")
+  return "{\"token\": \"is_identity_credential_auto_selected=" + is_identity_credential_auto_selected.decode("utf-8") + "\"}"

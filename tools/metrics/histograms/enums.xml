@@ -63871,6 +63871,8 @@ from previous Chrome versions.
   <int value="-625858826" label="EnableDuplicateDownloadDialog:disabled"/>
   <int value="-625531491" label="CrOSSuspendToDisk:disabled"/>
   <int value="-625520587" label="RequestDesktopSiteGlobal:enabled"/>
+  <int value="-624652131"
+      label="FedCmIdentityCredentialAutoSelectedFlag:disabled"/>
   <int value="-624221121" label="CommandLineOnNonRooted:enabled"/>
   <int value="-623611759" label="TabSelectionEditorV2:enabled"/>
   <int value="-623364791" label="ClickToCallReceiver:disabled"/>
@@ -64098,6 +64100,8 @@ from previous Chrome versions.
   <int value="-514581113" label="OobeSimon:disabled"/>
   <int value="-514076866" label="MovablePartialScreenshot:disabled"/>
   <int value="-513967943" label="CryptAuthV2Enrollment:disabled"/>
+  <int value="-513459348"
+      label="FedCmIdentityCredentialAutoSelectedFlag:enabled"/>
   <int value="-513305102" label="LanguagesPreference:enabled"/>
   <int value="-513066193" label="SyncUSSPasswords:enabled"/>
   <int value="-512971943" label="disable-one-copy"/>

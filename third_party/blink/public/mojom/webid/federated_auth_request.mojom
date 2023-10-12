@@ -186,7 +186,7 @@ interface FederatedAuthRequest {
       url.mojom.Url? selected_identity_provider_config_url,
       string? token,
       TokenError? error,
-      bool is_account_auto_selected);
+      bool is_identity_credential_auto_selected);
 
   // Requests user info to be generated, given an IDP config.
   // Returns an IdentityUserInfo for each of the user's accounts.

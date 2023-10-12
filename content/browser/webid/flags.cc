@@ -56,8 +56,9 @@ bool IsWebIdentityMDocsEnabled() {
   return base::FeatureList::IsEnabled(features::kWebIdentityMDocs);
 }
 
-bool IsFedCmAccountAutoSelectedFlagEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmAccountAutoSelectedFlag);
+bool IsFedCmIdentityCredentialAutoSelectedFlagEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kFedCmIdentityCredentialAutoSelectedFlag);
 }
 
 bool IsFedCmHostedDomainEnabled() {

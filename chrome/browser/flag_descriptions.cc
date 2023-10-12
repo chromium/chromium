@@ -1604,11 +1604,6 @@ const char kFractionalScrollOffsetsDescription[] =
     "Enables fractional scroll offsets inside Blink, exposing non-integer "
     "offsets to web APIs.";
 
-const char kFedCmAccountAutoSelectedFlagName[] = "FedCmAccountAutoSelectedFlag";
-const char kFedCmAccountAutoSelectedFlagDescription[] =
-    "Allows the browser to share whether an account was auto-selected with "
-    "developers post user permission to continue with the IdP.";
-
 const char kFedCmAuthzName[] = "FedCmAuthz";
 const char kFedCmAuthzDescription[] =
     "Enables RPs to request authorization for custom IdP scopes.";
@@ -1621,6 +1616,13 @@ const char kFedCmHostedDomainName[] = "FedCmHostedDomain";
 const char kFedCmHostedDomainDescription[] =
     "Enables RPs to request only FedCM invocations to only show accounts "
     "matching a given hosted domain.";
+
+const char kFedCmIdentityCredentialAutoSelectedFlagName[] =
+    "FedCmIdentityCredentialAutoSelectedFlag";
+const char kFedCmIdentityCredentialAutoSelectedFlagDescription[] =
+    "Allows the browser to share whether an identity credential was "
+    "auto-selected with developers post user permission to continue with the "
+    "IdP.";
 
 const char kFedCmIdPRegistrationName[] = "FedCM with IdP Registration support";
 const char kFedCmIdPRegistrationDescription[] =
