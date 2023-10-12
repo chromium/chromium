@@ -85,7 +85,7 @@ EditorMenuControllerImpl::EditorMenuControllerImpl() = default;
 
 EditorMenuControllerImpl::~EditorMenuControllerImpl() = default;
 
-void EditorMenuControllerImpl::OnContextMenuShown() {}
+void EditorMenuControllerImpl::OnContextMenuShown(Profile* profile) {}
 
 void EditorMenuControllerImpl::OnTextAvailable(
     const gfx::Rect& anchor_bounds,

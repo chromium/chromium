@@ -47,7 +47,8 @@ TEST_F(QuickAnswersUiControllerTest, TearDownWhileQuickAnswersViewShowing) {
   // Set up a companion menu before creating the QuickAnswersView.
   CreateAndShowBasicMenu();
 
-  ui_controller()->CreateQuickAnswersView(kDefaultAnchorBoundsInScreen,
+  ui_controller()->CreateQuickAnswersView(GetProfile(),
+                                          kDefaultAnchorBoundsInScreen,
                                           "default_title", "default_query",
                                           /*is_internal=*/false);
   EXPECT_TRUE(ui_controller()->IsShowingQuickAnswersView());

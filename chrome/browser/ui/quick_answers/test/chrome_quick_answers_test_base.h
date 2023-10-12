@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "chrome/test/base/chrome_ash_test_base.h"
+#include "chrome/test/base/testing_profile.h"
 
 class QuickAnswersController;
-class TestingProfile;
 
 namespace ui {
 class SimpleMenuModel;
@@ -40,6 +40,7 @@ class ChromeQuickAnswersTestBase : public ChromeAshTestBase {
  protected:
   void CreateAndShowBasicMenu();
   void ResetMenuParent();
+  Profile* GetProfile() { return profile_.get(); }
 
  private:
   // Menu.

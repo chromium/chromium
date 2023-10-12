@@ -16,6 +16,7 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
+class Profile;
 class QuickAnswersView;
 class QuickAnswersControllerImpl;
 
@@ -36,7 +37,8 @@ class QuickAnswersUiController {
   QuickAnswersUiController& operator=(const QuickAnswersUiController&) = delete;
 
   // Constructs/resets the Quick Answers card view.
-  void CreateQuickAnswersView(const gfx::Rect& anchor_bounds,
+  void CreateQuickAnswersView(Profile* profile,
+                              const gfx::Rect& anchor_bounds,
                               const std::string& title,
                               const std::string& query,
                               bool is_internal);
@@ -58,7 +60,7 @@ class QuickAnswersUiController {
       const gfx::Rect& bounds,
       const quick_answers::QuickAnswer& quick_answer);
 
-  void SetActiveQuery(const std::string& query);
+  void SetActiveQuery(Profile* profile, const std::string& query);
 
   // Show retry option in the quick answers view.
   void ShowRetry();
@@ -123,6 +125,7 @@ class QuickAnswersUiController {
   views::UniqueWidgetPtr user_consent_widget_;
   views::UniqueWidgetPtr rich_answers_widget_;
 
+  raw_ptr<Profile> profile_ = nullptr;
   std::string query_;
 
   base::WeakPtrFactory<QuickAnswersUiController> weak_factory_{this};

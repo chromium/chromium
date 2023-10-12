@@ -22,8 +22,9 @@ constexpr int kMaxSurroundingTextLength = 300;
 }  // namespace
 
 QuickAnswersMenuObserver::QuickAnswersMenuObserver(
-    RenderViewContextMenuProxy* proxy)
-    : proxy_(proxy) {}
+    RenderViewContextMenuProxy* proxy,
+    Profile* profile)
+    : proxy_(proxy), profile_(profile) {}
 
 QuickAnswersMenuObserver::~QuickAnswersMenuObserver() = default;
 
@@ -43,7 +44,7 @@ void QuickAnswersMenuObserver::OnContextMenuShown(
   content::RenderFrameHost* focused_frame =
       proxy_->GetWebContents()->GetFocusedFrame();
   if (focused_frame) {
-    read_write_card_controller_->OnContextMenuShown();
+    read_write_card_controller_->OnContextMenuShown(profile_);
     focused_frame->RequestTextSurroundingSelection(
         base::BindOnce(
             &QuickAnswersMenuObserver::OnTextSurroundingSelectionAvailable,

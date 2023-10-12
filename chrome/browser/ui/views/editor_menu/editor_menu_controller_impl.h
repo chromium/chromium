@@ -16,6 +16,8 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
+class Profile;
+
 namespace chromeos::editor_menu {
 
 // Implementation of ReadWriteCardController. It manages the editor menu related
@@ -29,7 +31,7 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
   ~EditorMenuControllerImpl() override;
 
   // ReadWriteCardController:
-  void OnContextMenuShown() override;
+  void OnContextMenuShown(Profile* profile) override;
   void OnTextAvailable(const gfx::Rect& anchor_bounds,
                        const std::string& selected_text,
                        const std::string& surrounding_text) override;

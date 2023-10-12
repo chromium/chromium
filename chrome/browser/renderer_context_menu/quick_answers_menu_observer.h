@@ -13,6 +13,7 @@
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "ui/gfx/geometry/rect.h"
 
+class Profile;
 class RenderViewContextMenuProxy;
 
 namespace chromeos {
@@ -25,7 +26,7 @@ class QuickAnswersMenuObserver : public RenderViewContextMenuObserver {
   QuickAnswersMenuObserver(const QuickAnswersMenuObserver&) = delete;
   QuickAnswersMenuObserver& operator=(const QuickAnswersMenuObserver&) = delete;
 
-  explicit QuickAnswersMenuObserver(RenderViewContextMenuProxy* proxy);
+  QuickAnswersMenuObserver(RenderViewContextMenuProxy* proxy, Profile* profile);
   ~QuickAnswersMenuObserver() override;
 
   // RenderViewContextMenuObserver implementation.
@@ -45,6 +46,9 @@ class QuickAnswersMenuObserver : public RenderViewContextMenuObserver {
 
   // The interface to add a context-menu item and update it.
   raw_ptr<RenderViewContextMenuProxy, DanglingUntriaged> proxy_;
+
+  // Profile that is associated with the source WebContents.
+  const raw_ptr<Profile> profile_;
 
   gfx::Rect bounds_in_screen_;
 

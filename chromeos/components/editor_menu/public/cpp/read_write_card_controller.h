@@ -7,6 +7,8 @@
 
 #include "base/component_export.h"
 
+class Profile;
+
 namespace gfx {
 class Rect;
 }  // namespace gfx
@@ -22,7 +24,9 @@ class COMPONENT_EXPORT(EDITOR_MENU_PUBLIC_CPP) ReadWriteCardController {
 
   // Called when the context menu is shown but the surrounding text still
   // pending.
-  virtual void OnContextMenuShown() = 0;
+  // `profile` is the profile that is associated with the browser in which the
+  // context menu is shown.
+  virtual void OnContextMenuShown(Profile* profile) = 0;
 
   // Called when the surrounding text is available.
   // `anchor_bounds` is the bounds of the anchor view, which is the context menu

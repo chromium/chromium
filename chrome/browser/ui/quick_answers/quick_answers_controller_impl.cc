@@ -98,9 +98,10 @@ QuickAnswersControllerImpl::~QuickAnswersControllerImpl() {
   quick_answers_state_.reset();
 }
 
-void QuickAnswersControllerImpl::OnContextMenuShown() {
+void QuickAnswersControllerImpl::OnContextMenuShown(Profile* profile) {
   menu_shown_time_ = base::TimeTicks::Now();
   visibility_ = QuickAnswersVisibility::kPending;
+  profile_ = profile;
 }
 
 void QuickAnswersControllerImpl::OnTextAvailable(
@@ -162,6 +163,8 @@ void QuickAnswersControllerImpl::OnDismiss(bool is_other_command_executed) {
       is_other_command_executed ? QuickAnswersExitPoint::kContextMenuClick
                                 : QuickAnswersExitPoint::kContextMenuDismiss;
   DismissQuickAnswers(exit_point);
+
+  profile_ = nullptr;
 }
 
 void QuickAnswersControllerImpl::SetClient(
@@ -234,7 +237,7 @@ void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
   } else {
     visibility_ = QuickAnswersVisibility::kQuickAnswersVisible;
     quick_answers_ui_controller_->CreateQuickAnswersView(
-        anchor_bounds_, title_, query_,
+        profile_, anchor_bounds_, title_, query_,
         request.context.device_properties.is_internal);
 
     if (IsProcessedRequest(request)) {
@@ -286,7 +289,7 @@ void QuickAnswersControllerImpl::OnQuickAnswerReceived(
         anchor_bounds_, quick_answer_with_no_result);
     // Fallback query to title if no result is available.
     query_ = title_;
-    quick_answers_ui_controller_->SetActiveQuery(query_);
+    quick_answers_ui_controller_->SetActiveQuery(profile_, query_);
   }
 }
 

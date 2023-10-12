@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/components/editor_menu/public/cpp/read_write_card_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
@@ -15,6 +16,7 @@
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/gfx/geometry/rect.h"
 
+class Profile;
 class QuickAnswersState;
 class QuickAnswersUiController;
 
@@ -31,7 +33,7 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
   ~QuickAnswersControllerImpl() override;
 
   // chromeos::ReadWriteCardController:
-  void OnContextMenuShown() override;
+  void OnContextMenuShown(Profile* profile) override;
   void OnTextAvailable(const gfx::Rect& anchor_bounds,
                        const std::string& selected_text,
                        const std::string& surrounding_text) override;
@@ -89,6 +91,9 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
                        const std::u16string& intent_text);
 
   quick_answers::QuickAnswersRequest BuildRequest();
+
+  // Profile that initiated the current query.
+  raw_ptr<Profile> profile_ = nullptr;
 
   // Bounds of the anchor view.
   gfx::Rect anchor_bounds_;

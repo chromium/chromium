@@ -1760,7 +1760,7 @@ void RenderViewContextMenu::AppendQuickAnswersItems() {
 #if BUILDFLAG(IS_CHROMEOS)
   if (!quick_answers_menu_observer_) {
     quick_answers_menu_observer_ =
-        std::make_unique<QuickAnswersMenuObserver>(this);
+        std::make_unique<QuickAnswersMenuObserver>(this, GetProfile());
   }
 
   observers_.AddObserver(quick_answers_menu_observer_.get());

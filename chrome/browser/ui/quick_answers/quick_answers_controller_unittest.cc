@@ -60,7 +60,7 @@ class QuickAnswersControllerTest : public ChromeQuickAnswersTestBase {
     // To show the quick answers view, its visibility must be set to 'pending'
     // first.
     if (set_visibility)
-      controller()->OnContextMenuShown();
+      controller()->OnContextMenuShown(GetProfile());
 
     // Set up a companion menu before creating the QuickAnswersView.
     CreateAndShowBasicMenu();
