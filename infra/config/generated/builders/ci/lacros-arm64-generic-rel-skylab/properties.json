@@ -47,6 +47,12 @@
           "builder": "lacros-arm64-generic-rel-skylab",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "lacros-arm64-generic-rel-skylab",
+          "group": "tryserver.chromium.chromiumos"
+        }
       ]
     }
   },

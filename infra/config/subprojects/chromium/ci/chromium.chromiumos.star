@@ -504,6 +504,7 @@ ci.builder(
 
 ci.builder(
     name = "lacros-arm-generic-rel-skylab",
+    branch_selector = branches.selector.CROS_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -538,6 +539,7 @@ ci.builder(
 
 ci.builder(
     name = "lacros-arm64-generic-rel-skylab",
+    branch_selector = branches.selector.CROS_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
