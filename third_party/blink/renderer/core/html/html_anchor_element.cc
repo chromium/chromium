@@ -82,11 +82,6 @@ namespace {
 // unresponsive or crashing.
 const int kMaxDownloadAttrLength = 1000000;
 
-// If feature flag kLinkPreview enabled and mouse keeps hovering anchor element,
-// preview will be started.
-// TODO(https://b.corp.google.com/issues/296992745): Make it configurable.
-const base::TimeDelta kLinkPreviewHoverDwellThreshold = base::Milliseconds(300);
-
 // Note: Here it covers download originated from clicking on <a download> link
 // that results in direct download. Features in this method can also be logged
 // from browser for download due to navigations to non-web-renderable content.
@@ -129,10 +124,7 @@ HTMLAnchorElement::HTMLAnchorElement(const QualifiedName& tag_name,
     : HTMLElement(tag_name, document),
       link_relations_(0),
       cached_visited_link_hash_(0),
-      rel_list_(MakeGarbageCollected<RelList>(this)),
-      hover_timer_(document.GetTaskRunner(TaskType::kIdleTask),
-                   this,
-                   &HTMLAnchorElement::InitiatePreview) {}
+      rel_list_(MakeGarbageCollected<RelList>(this)) {}
 
 HTMLAnchorElement::~HTMLAnchorElement() = default;
 
@@ -466,6 +458,14 @@ void HTMLAnchorElement::NavigateToHyperlink(ResourceRequest request,
     return;
   }
 
+  if (navigation_policy == kNavigationPolicyLinkPreview) {
+    // Ensured by third_party/blink/renderer/core/loader/navigation_policy.cc.
+    CHECK(base::FeatureList::IsEnabled(features::kLinkPreview));
+
+    DocumentSpeculationRules::From(GetDocument()).InitiatePreview(Url());
+    return;
+  }
+
   request.SetRequestContext(mojom::blink::RequestContextType::HYPERLINK);
   FrameLoadRequest frame_request(window, request);
   frame_request.SetNavigationPolicy(navigation_policy);
@@ -529,28 +529,8 @@ void HTMLAnchorElement::NavigateToHyperlink(ResourceRequest request,
   }
 }
 
-void HTMLAnchorElement::InitiatePreview(TimerBase*) {
-  DocumentSpeculationRules::From(GetDocument()).InitiatePreview(Url());
-}
-
 void HTMLAnchorElement::SetHovered(bool hovered) {
   HTMLElement::SetHovered(hovered);
-
-  if (!base::FeatureList::IsEnabled(features::kLinkPreview)) {
-    return;
-  }
-
-  if (!hovered) {
-    hover_timer_.Stop();
-  } else {
-    // Note that this trigger is a tentative version to develop Link
-    // Preview.
-    // TODO(https://b.corp.google.com/issues/296992745): Discuss about
-    // it and fix it.
-    if (Url().IsValid()) {
-      hover_timer_.StartOneShot(kLinkPreviewHoverDwellThreshold, FROM_HERE);
-    }
-  }
 }
 
 void HTMLAnchorElement::HandleClick(Event& event) {
@@ -596,10 +576,12 @@ void HTMLAnchorElement::HandleClick(Event& event) {
   LocalFrame* frame = window->GetFrame();
   request.SetHasUserGesture(LocalFrame::HasTransientUserActivation(frame));
 
+  NavigationPolicy navigation_policy = NavigationPolicyFromEvent(&event);
+
   // Respect the download attribute only if we can read the content, and the
   // event is not an alt-click or similar.
   if (FastHasAttribute(html_names::kDownloadAttr) &&
-      NavigationPolicyFromEvent(&event) != kNavigationPolicyDownload &&
+      navigation_policy != kNavigationPolicyDownload &&
       window->GetSecurityOrigin()->CanReadContent(completed_url)) {
     if (ShouldInterveneDownloadByFramePolicy(frame))
       return;
@@ -651,22 +633,20 @@ void HTMLAnchorElement::HandleClick(Event& event) {
     return;
   }
 
-  NavigationPolicy navigation_policy = NavigationPolicyFromEvent(&event);
   base::OnceClosure navigate_closure = WTF::BindOnce(
       &HTMLAnchorElement::NavigateToHyperlink, WrapWeakPersistent(this),
       std::move(request), navigation_policy, event.isTrusted(),
       event.PlatformTimeStamp(), std::move(completed_url));
 
-  if (navigation_policy == kNavigationPolicyDownload) {
-    // If Alt is held down it will force a download, however, wait to see if
-    // this is an alt-double-click which should instead select the text of the
-    // link.
-    // See https://crbug.com/1428816
+  if (navigation_policy == kNavigationPolicyDownload ||
+      navigation_policy == kNavigationPolicyLinkPreview) {
+    // We distinguish single/double click with some modifiers.
+    // See the comment of `EventHandler.delayed_navigation_task_handle_`.
     auto task_handle = PostDelayedCancellableTask(
         *base::SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
         std::move(navigate_closure),
         base::Milliseconds(ui::kDoubleClickTimeMs));
-    frame->GetEventHandler().SetDownloadModifierTaskHandle(
+    frame->GetEventHandler().SetDelayedNavigationTaskHandle(
         std::move(task_handle));
   } else {
     std::move(navigate_closure).Run();
@@ -754,7 +734,6 @@ void HTMLAnchorElement::RemovedFrom(ContainerNode& insertion_point) {
 
 void HTMLAnchorElement::Trace(Visitor* visitor) const {
   visitor->Trace(rel_list_);
-  visitor->Trace(hover_timer_);
   HTMLElement::Trace(visitor);
 }
 

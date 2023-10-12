@@ -100,6 +100,11 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
     String accept_charset_;
   };
 
+  // Create FormSubmission
+  //
+  // This returns nullptr if form submission is not allowed for the given
+  // arguments. For example, if navigation policy for the event is
+  // `kNavigationPolicyLinkPreview`.
   static FormSubmission* Create(HTMLFormElement*,
                                 const Attributes&,
                                 const Event*,

@@ -322,7 +322,11 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
 
   FrameLoadRequest frame_request(form->GetDocument().domWindow(),
                                  *resource_request);
-  frame_request.SetNavigationPolicy(NavigationPolicyFromEvent(event));
+  NavigationPolicy navigation_policy = NavigationPolicyFromEvent(event);
+  if (navigation_policy == kNavigationPolicyLinkPreview) {
+    return nullptr;
+  }
+  frame_request.SetNavigationPolicy(navigation_policy);
   frame_request.SetClientRedirectReason(reason);
   if (submit_button) {
     frame_request.SetSourceElement(submit_button);

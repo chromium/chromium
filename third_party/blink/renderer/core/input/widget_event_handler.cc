@@ -174,7 +174,7 @@ bool IsDoubleAltClick(const blink::WebMouseEvent& mouse_event) {
 void WidgetEventHandler::HandleMouseDown(LocalFrame& local_root,
                                          const WebMouseEvent& event) {
   if (IsDoubleAltClick(event)) {
-    local_root.GetEventHandler().GetDownloadModifierTaskHandle().Cancel();
+    local_root.GetEventHandler().GetDelayedNavigationTaskHandle().Cancel();
   }
 
   WebMouseEvent transformed_event =

@@ -397,6 +397,8 @@ ui::mojom::blink::WindowOpenDisposition NavigationPolicyToDisposition(
       return ui::mojom::blink::WindowOpenDisposition::NEW_POPUP;
     case kNavigationPolicyPictureInPicture:
       return ui::mojom::blink::WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
+    case kNavigationPolicyLinkPreview:
+      NOTREACHED_NORETURN();
   }
   NOTREACHED() << "Unexpected NavigationPolicy";
   return ui::mojom::blink::WindowOpenDisposition::IGNORE_ACTION;

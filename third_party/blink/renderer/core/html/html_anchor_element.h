@@ -100,8 +100,6 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
 
   void SendPings(const KURL& destination_url) const;
 
-  void InitiatePreview(TimerBase*);
-
   // Element overrides:
   void SetHovered(bool hovered) override;
 
@@ -137,9 +135,6 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
   unsigned link_relations_ : 31;
   mutable LinkHash cached_visited_link_hash_;
   Member<RelList> rel_list_;
-  // TODO(https://b.corp.google.com/issues/296992745): Use
-  // AnchorElementInteractionTracker instead.
-  HeapTaskRunnerTimer<HTMLAnchorElement> hover_timer_;
 };
 
 inline LinkHash HTMLAnchorElement::VisitedLinkHash() const {
