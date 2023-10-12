@@ -130,10 +130,12 @@ bool ShouldSwapBrowsingInstancesForDynamicIsolation(
   // process if we left it in the current BrowsingInstance.  If so, there's no
   // need to swap BrowsingInstances.
   auto& current_isolation_context = current_instance->GetIsolationContext();
-  auto current_site_info = SiteInfo::Create(current_isolation_context,
-                                            destination_effective_url_info);
-  if (current_site_info.RequiresDedicatedProcess(current_isolation_context))
+  auto site_info_in_current_context = SiteInfo::Create(
+      current_isolation_context, destination_effective_url_info);
+  if (site_info_in_current_context.RequiresDedicatedProcess(
+          current_isolation_context)) {
     return false;
+  }
 
   // Finally, check whether `destination_effective_url_info` would require a
   // dedicated process if we were to swap to a fresh BrowsingInstance.  To check
@@ -141,9 +143,10 @@ bool ShouldSwapBrowsingInstancesForDynamicIsolation(
   // current_instance->GetIsolationContext().
   IsolationContext future_isolation_context(
       current_instance->GetBrowserContext());
-  auto future_site_info = SiteInfo::Create(future_isolation_context,
-                                           destination_effective_url_info);
-  return future_site_info.RequiresDedicatedProcess(future_isolation_context);
+  auto site_info_in_future_context = SiteInfo::Create(
+      future_isolation_context, destination_effective_url_info);
+  return site_info_in_future_context.RequiresDedicatedProcess(
+      future_isolation_context);
 }
 
 // Helper function to determine whether |dest_url_info| should be loaded in the
