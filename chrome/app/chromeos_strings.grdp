@@ -208,6 +208,18 @@
   <message name="IDS_CELLULAR_SETUP_ESIM_PROFILE_DETECT_MESSAGE" desc="Message displayed during loading page in eSIM setup flow when looking for eSIM profiles.">
     Looking for available profiles...
   </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_PROFILE_LOADING_TITLE" desc="Title message displayed during loading page in eSIM setup flow when looking for eSIM profiles.">
+    Looking for available eSIM profiles
+  </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_PROFILE_LOADING_MESSAGE" desc="Message displayed during loading page in eSIM setup flow when looking for eSIM profiles.">
+   This may cause your mobile network to disconnect for a few minutes.
+  </message>
+  <message name="IDS_CELLULAR_SETUP_PROFILE_DISCOVERY_PAGE_TITLE" desc="Title message informing user that they can choose a profile from the list below to download.">
+    Choose an eSIM profile to download
+  </message>
+  <message name="IDS_CELLULAR_SETUP_CONFIRMATION_CODE_PAGE_TITLE" desc="Title message informing user that they can enter confirmation code in the text box below.">
+    Enter confirmation code
+  </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PROFILE_DETECT_DURING_ACTIVE_CELLULAR_CONNECTION_MESSAGE" desc="Message displayed during loading page in eSIM setup flow when looking for eSIM profiles informing the user that cellular setup may disconnect their current cellular network connection.">
     Looking for available profiles. This may cause your mobile network to disconnect for a few minutes.
   </message>
