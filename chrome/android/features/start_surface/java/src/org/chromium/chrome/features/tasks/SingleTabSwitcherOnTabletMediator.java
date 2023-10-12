@@ -35,6 +35,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.ThumbnailProvider;
+import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
+import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -46,6 +50,10 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
     private final TabListFaviconProvider mTabListFaviconProvider;
     private final int mMarginDefaut;
     private final int mMarginSmallPortrait;
+    private final int mMarginNarrowWindowOnTablet;
+
+    // It is only non-null for NTP on tablets.
+    private @Nullable final UiConfig mUiConfig;
     private Resources mResources;
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private Tab mMostRecentTab;
@@ -56,12 +64,19 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
     private boolean mIsSurfacePolishEnabled;
     private ThumbnailProvider mThumbnailProvider;
     private Size mThumbnailSize;
+    private @Nullable DisplayStyleObserver mDisplayStyleObserver;
 
-    SingleTabSwitcherOnTabletMediator(Context context, PropertyModel propertyModel,
+    SingleTabSwitcherOnTabletMediator(
+            Context context,
+            PropertyModel propertyModel,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            TabModelSelector tabModelSelector, TabListFaviconProvider tabListFaviconProvider,
-            Tab mostRecentTab, boolean isScrollableMvtEnabled,
-            Runnable singleTabCardClickedCallback, @Nullable TabContentManager tabContentManager) {
+            TabModelSelector tabModelSelector,
+            TabListFaviconProvider tabListFaviconProvider,
+            Tab mostRecentTab,
+            boolean isScrollableMvtEnabled,
+            Runnable singleTabCardClickedCallback,
+            @Nullable TabContentManager tabContentManager,
+            @Nullable UiConfig uiConfig) {
         mContext = context;
         mPropertyModel = propertyModel;
         mResources = mContext.getResources();
@@ -70,7 +85,10 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
         mIsScrollableMvtEnabled = isScrollableMvtEnabled;
         mSingleTabCardClickedCallback = singleTabCardClickedCallback;
         mIsSurfacePolishEnabled = tabContentManager != null;
+        mUiConfig = uiConfig;
 
+        mMarginNarrowWindowOnTablet =
+                mResources.getDimensionPixelSize(R.dimen.search_box_lateral_margin_polish);
         if (!mIsSurfacePolishEnabled) {
             mActivityLifecycleDispatcher = activityLifecycleDispatcher;
             mMarginDefaut = mResources.getDimensionPixelSize(
@@ -102,21 +120,40 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
                 mSingleTabCardClickedCallback = null;
             }
         });
+
+        if (mUiConfig != null) {
+            assert mIsSurfacePolishEnabled;
+            mDisplayStyleObserver = this::onDisplayStyleChanged;
+            mUiConfig.addObserver(mDisplayStyleObserver);
+        }
+    }
+
+    private void onDisplayStyleChanged(DisplayStyle newDisplayStyle) {
+        if (mPropertyModel == null) return;
+
+        updateMargins(mResources.getConfiguration().orientation, newDisplayStyle);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         // The margin doesn't change when 2 row MV tiles are shown.
         if (mIsScrollableMvtEnabled) {
-            updateMargins(newConfig.orientation);
+            updateMargins(
+                    newConfig.orientation,
+                    mUiConfig != null ? mUiConfig.getCurrentDisplayStyle() : null);
         }
     }
 
-    void updateMargins(int orientation) {
+    void updateMargins(int orientation, DisplayStyle newDisplayStyle) {
         int lateralMargin =
                 mIsScrollableMvtEnabled && orientation == Configuration.ORIENTATION_PORTRAIT
                 ? mMarginSmallPortrait
                 : mMarginDefaut;
+        if (newDisplayStyle != null
+                && mIsSurfacePolishEnabled
+                && newDisplayStyle.horizontal < HorizontalDisplayStyle.WIDE) {
+            lateralMargin = mMarginNarrowWindowOnTablet;
+        }
         mPropertyModel.set(LATERAL_MARGIN, lateralMargin);
     }
 
@@ -142,7 +179,9 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
 
         mPropertyModel.set(IS_VISIBLE, true);
         if (mResources != null) {
-            updateMargins(mResources.getConfiguration().orientation);
+            updateMargins(
+                    mResources.getConfiguration().orientation,
+                    mUiConfig != null ? mUiConfig.getCurrentDisplayStyle() : null);
         }
     }
 
@@ -189,6 +228,10 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
             if (mMostRecentTab != null) {
                 cleanUp();
             }
+        }
+        if (mUiConfig != null) {
+            mUiConfig.removeObserver(mDisplayStyleObserver);
+            mDisplayStyleObserver = null;
         }
     }
 

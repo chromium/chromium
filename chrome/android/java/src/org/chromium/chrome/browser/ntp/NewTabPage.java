@@ -1158,8 +1158,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 true, isScrollableMvtEnabled(mContext), mostRecentTab, this::onSingleTabCardClicked,
                 ()
                         -> mSnapshotSingleTabCardChanged = true,
-                mTabContentManagerSupplier.get() /* tabContentManager */
-        );
+                mTabContentManagerSupplier.get() /* tabContentManager */,
+                mIsTablet ? mFeedSurfaceProvider.getUiConfig() : null);
         mSingleTabSwitcherCoordinator.initWithNative();
         mSingleTabSwitcherCoordinator.showModule();
     }

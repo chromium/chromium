@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.tasks.tab_management.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -56,7 +57,7 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
             boolean isScrollableMvtEnabled, Tab mostRecentTab,
             @Nullable Runnable singleTabCardClickedCallback,
             @Nullable Runnable snapshotParentViewRunnable,
-            @Nullable TabContentManager tabContentManager) {
+            @Nullable TabContentManager tabContentManager, @Nullable UiConfig uiConfig) {
         mTabModelSelector = tabModelSelector;
         mIsTablet = isTablet;
         mLastActiveTab = mostRecentTab;
@@ -83,7 +84,8 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
             mMediatorOnTablet = new SingleTabSwitcherOnTabletMediator(activity, propertyModel,
                     activityLifecycleDispatcher, tabModelSelector, mTabListFaviconProvider,
                     mostRecentTab, isScrollableMvtEnabled, singleTabCardClickedCallback,
-                    isSurfacePolishEnabled ? tabContentManager : null);
+                    isSurfacePolishEnabled ? tabContentManager : null,
+                    isSurfacePolishEnabled ? uiConfig : null);
             mMediator = null;
         }
         if (ChromeFeatureList.sInstantStart.isEnabled()) {
@@ -133,7 +135,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
             }
 
             @Override
-            @VisibleForTesting
             public int getListModeForTesting() {
                 assert false : "should not reach here";
                 return 0;
