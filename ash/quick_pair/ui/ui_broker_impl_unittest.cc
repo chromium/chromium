@@ -21,7 +21,6 @@ namespace {
 
 constexpr char kTestDeviceAddress[] = "11:12:13:14:15:16";
 constexpr char kValidModelId[] = "718c17";
-const std::string kUserEmail = "test@test.test";
 
 class FakeFastPairPresenter : public ash::quick_pair::FastPairPresenter {
  public:

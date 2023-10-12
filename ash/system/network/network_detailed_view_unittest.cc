@@ -34,13 +34,6 @@ class View;
 }  // namespace views
 
 namespace ash {
-namespace {
-
-const std::string kNetworkdId = "/network/id";
-
-using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
-
-}  // namespace
 
 class NetworkDetailedViewTest : public AshTestBase {
  public:
