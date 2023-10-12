@@ -64,6 +64,9 @@ void FullscreenModel::ForceEnterFullscreen() {
 }
 
 void FullscreenModel::ResetForNavigation() {
+  if (IsForceFullscreenMode()) {
+    return;
+  }
   progress_ = 1.0;
   scrolling_ = false;
   base_offset_ = NAN;
@@ -290,6 +293,14 @@ void FullscreenModel::SetFreezeToolbarHeight(bool freeze_toolbar_height) {
 
 bool FullscreenModel::GetFreezeToolbarHeight() const {
   return freeze_toolbar_height_;
+}
+
+void FullscreenModel::SetForceFullscreenMode(bool force_fullscreen_mode) {
+  is_force_fullscreen_mode_ = force_fullscreen_mode;
+}
+
+bool FullscreenModel::IsForceFullscreenMode() const {
+  return is_force_fullscreen_mode_;
 }
 
 FullscreenModel::ScrollAction FullscreenModel::ActionForScrollFromOffset(

@@ -181,6 +181,11 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   void SetFreezeToolbarHeight(bool freeze_toolbar_height);
   bool GetFreezeToolbarHeight() const;
 
+  // Setter for whether force fullscreen mode is active. The mode is used when
+  // the bottom toolbar is collapsed above the keyboard.
+  void SetForceFullscreenMode(bool force_fullscreen_mode);
+  bool IsForceFullscreenMode() const;
+
  private:
   // Returns how a scroll to the current `y_content_offset_` from `from_offset`
   // should be handled.
@@ -244,6 +249,10 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   CGFloat top_inset_ = 0.0;
   // How many currently-running features require the toolbar be visible.
   size_t disabled_counter_ = 0;
+  // Whether fullscreen is force enabled. Active when the bottom toolbar is
+  // collapsed above the keyboard. When active, prevents fullscreen exit.
+  // Fullscreen will be reset when exiting this mode.
+  bool is_force_fullscreen_mode_ = false;
   // Whether fullscreen is disabled for short content.
   bool disabled_for_short_content_ = false;
   // Whether the main content is being scrolled.

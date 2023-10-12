@@ -63,6 +63,9 @@ void FullscreenMediator::EnterFullscreen() {
 }
 
 void FullscreenMediator::ExitFullscreen() {
+  if (model_->IsForceFullscreenMode()) {
+    return;
+  }
   // Instruct the model to ignore the remainder of the current scroll when
   // starting this animator.  This prevents the toolbar from immediately being
   // hidden if AnimateModelReset() is called while a scroll view is
