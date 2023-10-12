@@ -111,7 +111,7 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
  protected:
   DeviceTrustNavigationThrottleTest() {
     scoped_feature_list_.InitWithFeatures(
-        {kDeviceTrustConnectorEnabled, kUserDTCInlineFlowEnabled,
+        {kDeviceTrustConnectorEnabled,
          enterprise_signals::features::kDeviceSignalsConsentDialog},
         {});
     web_contents_ =

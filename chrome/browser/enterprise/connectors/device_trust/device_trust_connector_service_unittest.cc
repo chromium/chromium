@@ -84,26 +84,13 @@ class DeviceTrustConnectorServiceTest : public testing::Test {
     return std::make_unique<DeviceTrustConnectorService>(&prefs_);
   }
 
-  void InitializeFeatureFlags(bool user_dtc_feature_enabled) {
-    if (feature_enabled_ && user_dtc_feature_enabled) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{kDeviceTrustConnectorEnabled,
-                                kUserDTCInlineFlowEnabled},
-          /*disabled_features=*/{});
-    } else if (feature_enabled_) {
-      feature_list_.InitWithFeatures(
-          /*`enabled_features=*/{kDeviceTrustConnectorEnabled},
-          /*disabled_features=*/{kUserDTCInlineFlowEnabled});
-    } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{}, /*disabled_features=*/{
-              kDeviceTrustConnectorEnabled, kUserDTCInlineFlowEnabled});
-    }
+  void InitializeFeatureFlag() {
+    feature_list_.InitWithFeatureState(kDeviceTrustConnectorEnabled,
+                                       feature_enabled_);
   }
 
-  void InitializePrefs(const std::string& pref,
-                       bool user_dtc_feature_enabled = false) {
-    InitializeFeatureFlags(user_dtc_feature_enabled);
+  void InitializePrefs(const std::string& pref) {
+    InitializeFeatureFlag();
     if (has_policy_value_) {
       SetPolicy(&prefs_, pref, GetOrigins());
     }
@@ -170,17 +157,9 @@ class DeviceTrustConnectorServiceTest : public testing::Test {
 };
 
 // Tests that the DTC policy levels set is enabled at the correct levels for the
-// ContextAwareAccessSignalsAllowlist policy.
-TEST_F(DeviceTrustConnectorServiceTest, OriginalPolicy_Matches_Update) {
-  InitializePrefs(kContextAwareAccessSignalsAllowlistPref);
-  TestMatchesUpdateFlow(kContextAwareAccessSignalsAllowlistPref, levels_);
-}
-
-// Tests that the DTC policy levels set is enabled at the correct levels for the
 // UserContextAwareAccessSignalsAllowlist policy.
 TEST_F(DeviceTrustConnectorServiceTest, UserPolicy_Matches_Update) {
-  InitializePrefs(kUserContextAwareAccessSignalsAllowlistPref,
-                  /*user_dtc_feature_enabled= */ true);
+  InitializePrefs(kUserContextAwareAccessSignalsAllowlistPref);
   TestMatchesUpdateFlow(kUserContextAwareAccessSignalsAllowlistPref,
                         std::set<DTCPolicyLevel>({DTCPolicyLevel::kUser}));
 }
@@ -188,8 +167,7 @@ TEST_F(DeviceTrustConnectorServiceTest, UserPolicy_Matches_Update) {
 // Tests that the DTC policy levels set is enabled at the correct levels for the
 // BrowserContextAwareAccessSignalsAllowlist policy.
 TEST_F(DeviceTrustConnectorServiceTest, BrowserPolicy_Matches_Update) {
-  InitializePrefs(kBrowserContextAwareAccessSignalsAllowlistPref,
-                  /*user_dtc_feature_enabled= */ true);
+  InitializePrefs(kBrowserContextAwareAccessSignalsAllowlistPref);
   TestMatchesUpdateFlow(kBrowserContextAwareAccessSignalsAllowlistPref,
                         std::set<DTCPolicyLevel>({DTCPolicyLevel::kBrowser}));
 }
@@ -200,8 +178,7 @@ TEST_F(DeviceTrustConnectorServiceTest, BrowserPolicy_Matches_Update) {
 // with the same policy values.
 TEST_F(DeviceTrustConnectorServiceTest,
        UserAndBrowserPolicy_SameURLsMatches_Update) {
-  InitializePrefs(kBrowserContextAwareAccessSignalsAllowlistPref,
-                  /*user_dtc_feature_enabled= */ true);
+  InitializePrefs(kBrowserContextAwareAccessSignalsAllowlistPref);
   SetPolicy(&prefs_, kUserContextAwareAccessSignalsAllowlistPref, GetOrigins());
 
   auto service = CreateService();
@@ -236,8 +213,7 @@ TEST_F(DeviceTrustConnectorServiceTest,
   auto browser_policy_level =
       std::set<DTCPolicyLevel>({DTCPolicyLevel::kBrowser});
 
-  InitializePrefs(kBrowserContextAwareAccessSignalsAllowlistPref,
-                  /*user_dtc_feature_enabled= */ true);
+  InitializePrefs(kBrowserContextAwareAccessSignalsAllowlistPref);
   SetPolicy(&prefs_, kUserContextAwareAccessSignalsAllowlistPref,
             GetDifferentOrigins());
 
@@ -266,19 +242,9 @@ TEST_F(DeviceTrustConnectorServiceTest,
 }
 
 // Tests that the policy observer behaves as intended for the
-// ContextAwareAccessSignalsAllowlist policy.
-TEST_F(DeviceTrustConnectorServiceTest,
-       OriginalPolicy_PolicyObserver_Notified) {
-  InitializePrefs(kContextAwareAccessSignalsAllowlistPref);
-  TestPolicyObserverFlow(kContextAwareAccessSignalsAllowlistPref,
-                         /*enabled_levels= */ levels_);
-}
-
-// Tests that the policy observer behaves as intended for the
 // UserContextAwareAccessSignalsAllowlist policy.
 TEST_F(DeviceTrustConnectorServiceTest, UserPolicy_PolicyObserver_Notified) {
-  InitializePrefs(kUserContextAwareAccessSignalsAllowlistPref,
-                  /*user_dtc_feature_enabled= */ true);
+  InitializePrefs(kUserContextAwareAccessSignalsAllowlistPref);
   TestPolicyObserverFlow(
       kUserContextAwareAccessSignalsAllowlistPref,
       /*levels= */ std::set<DTCPolicyLevel>({DTCPolicyLevel::kUser}),
@@ -289,8 +255,7 @@ TEST_F(DeviceTrustConnectorServiceTest, UserPolicy_PolicyObserver_Notified) {
 // Tests that the policy observer behaves as intended for the
 // BrowserAwareAccessSignalsAllowlist policy.
 TEST_F(DeviceTrustConnectorServiceTest, BrowserPolicy_PolicyObserver_Notified) {
-  InitializePrefs(kBrowserContextAwareAccessSignalsAllowlistPref,
-                  /*user_dtc_feature_enabled= */ true);
+  InitializePrefs(kBrowserContextAwareAccessSignalsAllowlistPref);
   TestPolicyObserverFlow(
       kBrowserContextAwareAccessSignalsAllowlistPref,
       /*levels= */ std::set<DTCPolicyLevel>({DTCPolicyLevel::kBrowser}),
@@ -328,20 +293,10 @@ class DeviceTrustConnectorServiceFlagTest
 
 // Parameterized test covering a matrix of enabled/disabled states depending on
 // both the feature flag and the policy values for the
-// ContextAwareAccessSignalsAllowlist policy.
-TEST_P(DeviceTrustConnectorServiceFlagTest,
-       OriginalPolicy_IsConnectorEnabled_Update) {
-  InitializePrefs(kContextAwareAccessSignalsAllowlistPref);
-  TestConnectorEnabledFlow(kContextAwareAccessSignalsAllowlistPref);
-}
-
-// Parameterized test covering a matrix of enabled/disabled states depending on
-// both the feature flag and the policy values for the
 // UserContextAwareAccessSignalsAllowlist policy.
 TEST_P(DeviceTrustConnectorServiceFlagTest,
        UserPolicy_IsConnectorEnabled_Update) {
-  InitializePrefs(kUserContextAwareAccessSignalsAllowlistPref,
-                  /*user_dtc_feature_enabled= */ true);
+  InitializePrefs(kUserContextAwareAccessSignalsAllowlistPref);
   TestConnectorEnabledFlow(kUserContextAwareAccessSignalsAllowlistPref);
 }
 
@@ -350,8 +305,7 @@ TEST_P(DeviceTrustConnectorServiceFlagTest,
 // BrowserContextAwareAccessSignalsAllowlist policy.
 TEST_P(DeviceTrustConnectorServiceFlagTest,
        BrowserPolicy_IsConnectorEnabled_Update) {
-  InitializePrefs(kBrowserContextAwareAccessSignalsAllowlistPref,
-                  /*user_dtc_feature_enabled= */ true);
+  InitializePrefs(kBrowserContextAwareAccessSignalsAllowlistPref);
   TestConnectorEnabledFlow(kBrowserContextAwareAccessSignalsAllowlistPref);
 }
 

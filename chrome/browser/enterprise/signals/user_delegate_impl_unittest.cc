@@ -165,70 +165,39 @@ TEST_F(UserDelegateImplTest, GetPolicyScopesNeedingSignals_Empty) {
             std::set<policy::PolicyScope>());
 }
 
-class UserDelegateImplFlagsTest : public UserDelegateImplTest,
-                                  public testing::WithParamInterface<bool> {
- protected:
-  UserDelegateImplFlagsTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        enterprise_connectors::kUserDTCInlineFlowEnabled,
-        is_new_flag_enabled());
-  }
-
-  bool is_new_flag_enabled() const { return GetParam(); }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Tests what GetPolicyScopesNeedingSignals returns when the policy is enabled
 // at the user level.
-TEST_P(UserDelegateImplFlagsTest, GetPolicyScopesNeedingSignals_User) {
+TEST_F(UserDelegateImplTest, GetPolicyScopesNeedingSignals_User) {
   CreateDelegate();
   fake_dt_connector_service_->UpdateInlinePolicy(GetUrls(),
                                                  DTCPolicyLevel::kUser);
 
-  const auto& policy_scopes = user_delegate_->GetPolicyScopesNeedingSignals();
-
-  std::set<policy::PolicyScope> expected_scopes = {policy::POLICY_SCOPE_USER};
-  if (!is_new_flag_enabled()) {
-    expected_scopes.insert(policy::POLICY_SCOPE_MACHINE);
-  }
-  EXPECT_EQ(policy_scopes, expected_scopes);
+  EXPECT_EQ(user_delegate_->GetPolicyScopesNeedingSignals(),
+            std::set<policy::PolicyScope>({policy::POLICY_SCOPE_USER}));
 }
 
 // Tests what GetPolicyScopesNeedingSignals returns when the policy is enabled
 // at the browser level.
-TEST_P(UserDelegateImplFlagsTest, GetPolicyScopesNeedingSignals_Browser) {
+TEST_F(UserDelegateImplTest, GetPolicyScopesNeedingSignals_Browser) {
   CreateDelegate();
   fake_dt_connector_service_->UpdateInlinePolicy(GetUrls(),
                                                  DTCPolicyLevel::kBrowser);
-
-  const auto& policy_scopes = user_delegate_->GetPolicyScopesNeedingSignals();
-
-  std::set<policy::PolicyScope> expected_scopes = {
-      policy::POLICY_SCOPE_MACHINE};
-  if (!is_new_flag_enabled()) {
-    expected_scopes.insert(policy::POLICY_SCOPE_USER);
-  }
-  EXPECT_EQ(policy_scopes, expected_scopes);
+  EXPECT_EQ(user_delegate_->GetPolicyScopesNeedingSignals(),
+            std::set<policy::PolicyScope>({policy::POLICY_SCOPE_MACHINE}));
 }
 
 // Tests what GetPolicyScopesNeedingSignals returns when the policy is enabled
 // at the both the user and browser levels.
-TEST_P(UserDelegateImplFlagsTest,
-       GetPolicyScopesNeedingSignals_UserAndBrowser) {
+TEST_F(UserDelegateImplTest, GetPolicyScopesNeedingSignals_UserAndBrowser) {
   CreateDelegate();
   fake_dt_connector_service_->UpdateInlinePolicy(GetUrls(),
                                                  DTCPolicyLevel::kBrowser);
   fake_dt_connector_service_->UpdateInlinePolicy(GetUrls(),
                                                  DTCPolicyLevel::kUser);
 
-  const auto& policy_scopes = user_delegate_->GetPolicyScopesNeedingSignals();
-
-  std::set<policy::PolicyScope> expected_scopes = {policy::POLICY_SCOPE_MACHINE,
-                                                   policy::POLICY_SCOPE_USER};
-  EXPECT_EQ(policy_scopes, expected_scopes);
+  EXPECT_EQ(user_delegate_->GetPolicyScopesNeedingSignals(),
+            std::set<policy::PolicyScope>(
+                {policy::POLICY_SCOPE_MACHINE, policy::POLICY_SCOPE_USER}));
 }
-
-INSTANTIATE_TEST_SUITE_P(, UserDelegateImplFlagsTest, testing::Bool());
 
 }  // namespace enterprise_signals

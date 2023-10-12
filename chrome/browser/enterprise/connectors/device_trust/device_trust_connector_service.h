@@ -87,10 +87,6 @@ class DeviceTrustConnectorService : public KeyedService {
   // updated.
   void OnPolicyUpdated(const DTCPolicyLevel& level, const std::string& pref);
 
-  // Called when the DTC policies values change in Prefs for the
-  // ContextAwareAccessSignalsAllowlist policy.
-  void OnOriginalPolicyUpdated();
-
   // Functions used to propagate an update to all observers.
   void OnInlinePolicyEnabled(DTCPolicyLevel level);
   void OnInlinePolicyDisabled(DTCPolicyLevel level);

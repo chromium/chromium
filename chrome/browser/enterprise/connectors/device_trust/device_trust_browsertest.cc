@@ -239,10 +239,8 @@ class DeviceTrustDelayedManagementBrowserTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {
-          kUserDTCInlineFlowEnabled
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-              ,
-              ash::features::kUnmanagedDeviceDeviceTrustConnectorEnabled
+          ash::features::kUnmanagedDeviceDeviceTrustConnectorEnabled
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
         },
         /*disabled_features=*/{});
