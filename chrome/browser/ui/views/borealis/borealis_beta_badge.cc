@@ -33,9 +33,8 @@ gfx::Outsets kInternalPadding = gfx::Outsets::VH(4, 10);
 int kCornerRadius = 10;
 
 // Colors used by the badge.
-ui::ColorId kTextColor = cros_tokens::LegacySemanticColorIds::kColorSelection;
-ui::ColorId kBackgroundColor =
-    cros_tokens::LegacySemanticColorIds::kHighlightColor;
+ui::ColorId kTextColor = cros_tokens::kCrosSysOnPrimaryContainer;
+ui::ColorId kBackgroundColor = cros_tokens::kCrosSysHighlightShape;
 
 gfx::FontList GetFont() {
   // TODO(b/284389804): Use TypographyToken::kCrosButton1
