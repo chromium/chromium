@@ -118,7 +118,7 @@ export class Scheduler {
    * @private
    */
   sortPendingTasks_() {
-    this.pendingTasks_.sort(function(a, b) {
+    this.pendingTasks_.sort((a, b) => {
       return a.getPriority() - b.getPriority();
     });
   }

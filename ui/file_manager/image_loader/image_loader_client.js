@@ -140,7 +140,7 @@ export class ImageLoaderClient {
     this.lastTaskId_++;
     request.taskId = this.lastTaskId_;
 
-    ImageLoaderClient.sendMessage_(request, function(result_data) {
+    ImageLoaderClient.sendMessage_(request, (result_data) => {
       if (chrome.runtime.lastError) {
         console.warn(chrome.runtime.lastError.message);
         callback(new LoadImageResponse(
@@ -158,7 +158,7 @@ export class ImageLoaderClient {
         }
       }
       callback(result);
-    }.bind(this));
+    });
     return request.taskId;
   }
 
@@ -169,7 +169,7 @@ export class ImageLoaderClient {
    */
   cancel(taskId) {
     ImageLoaderClient.sendMessage_(
-        LoadImageRequest.createCancel(taskId), function(result) {});
+        LoadImageRequest.createCancel(taskId), (result) => {});
   }
 
   // Helper functions.
@@ -185,7 +185,7 @@ export class ImageLoaderClient {
    * @return {?number} Remote task id or null if loaded from cache.
    */
   static loadToImage(request, image, onSuccess, onError) {
-    const callback = function(result) {
+    const callback = (result) => {
       if (!result || result.status == LoadImageResponseStatus.ERROR) {
         onError();
         return;

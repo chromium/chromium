@@ -25,14 +25,14 @@ export class ImageCache {
     // DB_VERSION to force database recreating.
     const openRequest = window.indexedDB.open(DB_NAME, DB_VERSION);
 
-    openRequest.onsuccess = function(e) {
+    openRequest.onsuccess = (e) => {
       this.db_ = e.target.result;
       callback();
-    }.bind(this);
+    };
 
     openRequest.onerror = callback;
 
-    openRequest.onupgradeneeded = function(e) {
+    openRequest.onupgradeneeded = (e) => {
       console.info('Cache database creating or upgrading.');
       const db = e.target.result;
       if (db.objectStoreNames.contains('metadata')) {
@@ -81,7 +81,7 @@ export class ImageCache {
     const settingsStore = transaction.objectStore('settings');
     const sizeRequest = settingsStore.get('size');
 
-    sizeRequest.onsuccess = function(e) {
+    sizeRequest.onsuccess = (e) => {
       if (e.target.result) {
         onSuccess(e.target.result.value);
       } else {
@@ -89,7 +89,7 @@ export class ImageCache {
       }
     };
 
-    sizeRequest.onerror = function() {
+    sizeRequest.onerror = () => {
       console.warn('Failed to fetch size from the database.');
       onFailure();
     };
@@ -116,7 +116,7 @@ export class ImageCache {
       return;
     }
 
-    const onCacheSize = function(cacheSize) {
+    const onCacheSize = (cacheSize) => {
       if (size < MEMORY_LIMIT - cacheSize) {
         // Enough space, no need to evict.
         this.setCacheSize_(cacheSize + size, transaction);
@@ -131,8 +131,8 @@ export class ImageCache {
       const metadataStore = transaction.objectStore('metadata');
       const dataStore = transaction.objectStore('data');
 
-      const onEntriesFetched = function() {
-        metadataEntries.sort(function(a, b) {
+      const onEntriesFetched = () => {
+        metadataEntries.sort((a, b) => {
           return b.lastLoadTimestamp - a.lastLoadTimestamp;
         });
 
@@ -146,9 +146,9 @@ export class ImageCache {
         }
 
         this.setCacheSize_(cacheSize - totalEvicted + size, transaction);
-      }.bind(this);
+      };
 
-      metadataStore.openCursor().onsuccess = function(e) {
+      metadataStore.openCursor().onsuccess = (e) => {
         const cursor = e.target.result;
         if (cursor) {
           metadataEntries.push(cursor.value);
@@ -157,7 +157,7 @@ export class ImageCache {
           onEntriesFetched();
         }
       };
-    }.bind(this);
+    };
 
     this.fetchCacheSize_(onCacheSize, onFailure, transaction);
   }
@@ -179,7 +179,7 @@ export class ImageCache {
       return;
     }
 
-    const onNotFoundInCache = function() {
+    const onNotFoundInCache = () => {
       const metadataEntry = {
         key: key,
         timestamp: timestamp,
@@ -197,17 +197,17 @@ export class ImageCache {
       const metadataStore = transaction.objectStore('metadata');
       const dataStore = transaction.objectStore('data');
 
-      const onCacheEvicted = function() {
+      const onCacheEvicted = () => {
         metadataStore.put(metadataEntry);  // Add asynchronously.
         dataStore.put(dataEntry);          // Add asynchronously.
       };
 
       // Make sure there is enough space in the cache.
-      this.evictCache_(data.length, onCacheEvicted, function() {}, transaction);
-    }.bind(this);
+      this.evictCache_(data.length, onCacheEvicted, () => {}, transaction);
+    };
 
     // Check if the image is already in cache. If not, then save it to cache.
-    this.loadImage(key, timestamp, function() {}, onNotFoundInCache);
+    this.loadImage(key, timestamp, () => {}, onNotFoundInCache);
   }
 
   /**
@@ -239,7 +239,7 @@ export class ImageCache {
     let dataEntry = null;
     let dataReceived = false;
 
-    const onPartialSuccess = function() {
+    const onPartialSuccess = () => {
       // Check if all sub-requests have finished.
       if (!metadataReceived || !dataReceived) {
         return;
@@ -258,7 +258,7 @@ export class ImageCache {
         onFailure();
       } else if (metadataEntry.timestamp != timestamp) {
         // The image is not up to date, so remove it.
-        this.removeImage(key, function() {}, function() {}, transaction);
+        this.removeImage(key, () => {}, () => {}, transaction);
         onFailure();
       } else {
         // The image is available. Update the last load time and return the
@@ -269,9 +269,9 @@ export class ImageCache {
             metadataEntry.width, metadataEntry.height, metadataEntry.ifd,
             dataEntry.data);
       }
-    }.bind(this);
+    };
 
-    metadataRequest.onsuccess = function(e) {
+    metadataRequest.onsuccess = (e) => {
       if (e.target.result) {
         metadataEntry = e.target.result;
       }
@@ -279,7 +279,7 @@ export class ImageCache {
       onPartialSuccess();
     };
 
-    dataRequest.onsuccess = function(e) {
+    dataRequest.onsuccess = (e) => {
       if (e.target.result) {
         dataEntry = e.target.result;
       }
@@ -287,13 +287,13 @@ export class ImageCache {
       onPartialSuccess();
     };
 
-    metadataRequest.onerror = function() {
+    metadataRequest.onerror = () => {
       console.warn('Failed to fetch metadata from the database.');
       metadataReceived = true;
       onPartialSuccess();
     };
 
-    dataRequest.onerror = function() {
+    dataRequest.onerror = () => {
       console.warn('Failed to fetch image data from the database.');
       dataReceived = true;
       onPartialSuccess();
@@ -325,7 +325,7 @@ export class ImageCache {
     let metadataEntry = null;
     let metadataReceived = false;
 
-    const onPartialSuccess = function() {
+    const onPartialSuccess = () => {
       if (!cacheSizeReceived || !metadataReceived) {
         return;
       }
@@ -346,13 +346,13 @@ export class ImageCache {
       this.setCacheSize_(cacheSize - metadataEntry.size, transaction);
       metadataStore.delete(key);  // Delete asynchronously.
       dataStore.delete(key);      // Delete asynchronously.
-    }.bind(this);
+    };
 
-    const onCacheSizeFailure = function() {
+    const onCacheSizeFailure = () => {
       cacheSizeReceived = true;
     };
 
-    const onCacheSizeSuccess = function(result) {
+    const onCacheSizeSuccess = (result) => {
       cacheSize = result;
       cacheSizeReceived = true;
       onPartialSuccess();
@@ -364,7 +364,7 @@ export class ImageCache {
     // Receive image's metadata.
     const metadataRequest = metadataStore.get(key);
 
-    metadataRequest.onsuccess = function(e) {
+    metadataRequest.onsuccess = (e) => {
       if (e.target.result) {
         metadataEntry = e.target.result;
       }
@@ -372,7 +372,7 @@ export class ImageCache {
       onPartialSuccess();
     };
 
-    metadataRequest.onerror = function() {
+    metadataRequest.onerror = () => {
       console.warn('Failed to remove an image.');
       metadataReceived = true;
       onPartialSuccess();

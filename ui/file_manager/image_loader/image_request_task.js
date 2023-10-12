@@ -158,11 +158,11 @@ export class ImageRequestTask {
    */
   loadFromCacheAndProcess(onSuccess, onFailure) {
     this.loadFromCache_(
-        function(width, height, ifd, data) {  // Found in cache.
+        (width, height, ifd, data) => {  // Found in cache.
           this.ifd_ = ifd;
           this.sendImageData_(width, height, data);
           onSuccess();
-        }.bind(this),
+        },
         onFailure);  // Not found in cache.
   }
 
@@ -270,14 +270,14 @@ export class ImageRequestTask {
   downloadThumbnail_(onSuccess, onFailure) {
     // Load methods below set |this.image_.src|. Call revokeObjectURL(src) to
     // release resources if the image src was created with createObjectURL().
-    this.image_.onload = function() {
+    this.image_.onload = () => {
       URL.revokeObjectURL(this.image_.src);
       onSuccess();
-    }.bind(this);
-    this.image_.onerror = function() {
+    };
+    this.image_.onerror = () => {
       URL.revokeObjectURL(this.image_.src);
       onFailure();
-    }.bind(this);
+    };
 
     // Load dataURL sources directly.
     const dataUrlMimeType =
@@ -333,10 +333,10 @@ export class ImageRequestTask {
     // Load video source thumbnail.
     if (fileType.type === 'video') {
       this.createVideoThumbnailUrl_(this.request_.url)
-          .then(function(url) {
+          .then((url) => {
             this.image_.src = url;
-          }.bind(this))
-          .catch(function(error) {
+          })
+          .catch((error) => {
             console.warn('Video thumbnail error: ', error);
             onFailure();
           });
@@ -426,7 +426,7 @@ export class ImageRequestTask {
 
     // Do not call any callbacks when aborting.
     const onMaybeSuccess =
-        /** @type {function(string, Blob)} */ (function(contentType, response) {
+        /** @type {function(string, Blob)} */ ((contentType, response) => {
           // When content type is not available, try to estimate it from url.
           if (!contentType) {
             contentType =
@@ -437,14 +437,14 @@ export class ImageRequestTask {
           if (!this.aborted_) {
             onSuccess(contentType, response);
           }
-        }.bind(this));
+        });
 
     const onMaybeFailure =
-        /** @type {function(number=)} */ (function(opt_code) {
+        /** @type {function(number=)} */ ((opt_code) => {
           if (!this.aborted_) {
             onFailure();
           }
-        }.bind(this));
+        });
 
     // The query parameter is workaround for crbug.com/379678, which forces the
     // browser to obtain the latest contents of the image.
@@ -478,7 +478,7 @@ export class ImageRequestTask {
     const xhr = new XMLHttpRequest();
     xhr.responseType = 'blob';
 
-    xhr.onreadystatechange = function() {
+    xhr.onreadystatechange = () => {
       if (xhr.readyState != 4) {
         return;
       }
@@ -490,7 +490,7 @@ export class ImageRequestTask {
       const contentType =
           xhr.getResponseHeader('Content-Type') || response.type;
       onSuccess(contentType, response);
-    }.bind(this);
+    };
 
     // Perform a xhr request.
     try {
@@ -620,8 +620,8 @@ export class ImageRequestTask {
    * @private
    */
   cleanup_() {
-    this.image_.onerror = function() {};
-    this.image_.onload = function() {};
+    this.image_.onerror = () => {};
+    this.image_.onload = () => {};
 
     // Transparent 1x1 pixel gif, to force garbage collecting.
     this.image_.src =
