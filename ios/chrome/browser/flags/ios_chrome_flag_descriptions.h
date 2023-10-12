@@ -583,11 +583,6 @@ extern const char kMixedContentAutoupgradeDescription[];
 extern const char kModernTabStripName[];
 extern const char kModernTabStripDescription[];
 
-// Title and description of the flag to enable multiline gradient support in
-// FadeTruncatingLabel.
-extern const char kMultilineFadeTruncatingLabelName[];
-extern const char kMultilineFadeTruncatingLabelDescription[];
-
 // Title and description of the flag to enable the native Find in Page API
 // for iOS 16 and later.
 extern const char kNativeFindInPageName[];
@@ -651,11 +646,6 @@ extern const char kOmniboxMaxURLMatchesDescription[];
 // matches in the omnibox popup.
 extern const char kOmniboxMaxZPSMatchesName[];
 extern const char kOmniboxMaxZPSMatchesDescription[];
-
-// Title and description for the flag to inscrease the maximum number of lines
-// for search suggestions.
-extern const char kOmniboxMultilineSearchSuggestName[];
-extern const char kOmniboxMultilineSearchSuggestDescription[];
 
 // Title and description for the flag to swap Omnibox Textfield implementation
 // to a new experimental one.

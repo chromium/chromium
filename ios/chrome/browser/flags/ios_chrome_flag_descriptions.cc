@@ -673,12 +673,6 @@ const char kModernTabStripName[] = "Modern TabStrip";
 const char kModernTabStripDescription[] =
     "When enabled, the newly implemented tabstrip can be tested.";
 
-const char kMultilineFadeTruncatingLabelName[] =
-    "Multiline Fade Truncating Label";
-const char kMultilineFadeTruncatingLabelDescription[] =
-    "Enable gradient support on FadeTruncatingLabel with multiple lines, the "
-    "gradient only will be applied to the last line instead of all lines.";
-
 const char kNativeFindInPageName[] = "Native Find in Page";
 const char kNativeFindInPageDescription[] =
     "When enabled, the JavaScript implementation of the Find in Page feature "
@@ -772,11 +766,6 @@ const char kOmniboxLocalHistoryZeroSuggestBeyondNTPName[] =
 const char kOmniboxLocalHistoryZeroSuggestBeyondNTPDescription[] =
     "Enables local history zero-prefix suggestions in every context in which "
     "the remote zero-prefix suggestions are enabled.";
-
-const char kOmniboxMultilineSearchSuggestName[] =
-    "Omnibox Multiline Search Suggestion";
-const char kOmniboxMultilineSearchSuggestDescription[] =
-    "Change the maximum number of line displayed for a search suggestion";
 
 const char kOmniboxOnDeviceTailSuggestionsName[] =
     "Omnibox on device tail suggestions";

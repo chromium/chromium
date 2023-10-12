@@ -5662,11 +5662,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "multiline-fade-truncating-label",
-    "owners": [ "christianxu", "stkhapugin", "bling-flags@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "mutation-events",
     "owners": [ "masonf" ],
     "expiry_milestone": 127
@@ -6184,11 +6179,6 @@
     "name": "omnibox-most-visited-tiles-horizontal-render-group",
     "owners": [ "ender", "chrome-mobile-search@google.com"],
     "expiry_milestone": 130
-  },
-  {
-    "name": "omnibox-multiline-search-suggest",
-    "owners": [ "christianxu", "stkhapugin", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 120
   },
   {
       "name": "omnibox-new-textfield-implementation",

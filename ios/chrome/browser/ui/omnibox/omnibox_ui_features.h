@@ -17,9 +17,6 @@ BASE_DECLARE_FEATURE(kEnablePopoutOmniboxIpad);
 // Feature flag to enable paste button on the omnibox keyboard accessories.
 BASE_DECLARE_FEATURE(kOmniboxKeyboardPasteButton);
 
-// Feature flag to enable multiple lines for search suggestions in omnibox.
-BASE_DECLARE_FEATURE(kOmniboxMultilineSearchSuggest);
-
 // Feature flag to enable tail suggestions in the omnibox.
 BASE_DECLARE_FEATURE(kOmniboxTailSuggest);
 

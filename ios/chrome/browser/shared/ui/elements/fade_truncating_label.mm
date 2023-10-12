@@ -90,8 +90,6 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
 
 // Gradient used to create fade effect. Changes based on view.frame size.
 @property(nonatomic, strong) UIImage* gradient;
-// /// Returns `YES` if multiline flag is enabled.
-@property(nonatomic, assign) BOOL isMultilineEnabled;
 
 @end
 
@@ -107,8 +105,6 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
   if (self) {
     self.lineBreakMode = NSLineBreakByClipping;
     self.lineSpacing = 0;
-    _isMultilineEnabled =
-        base::FeatureList::IsEnabled(kMultilineFadeTruncatingLabel);
     [self setup];
   }
   return self;
@@ -122,8 +118,6 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
 - (void)layoutSubviews {
   [super layoutSubviews];
 
-  self.isMultilineEnabled =
-      base::FeatureList::IsEnabled(kMultilineFadeTruncatingLabel);
   // Cache the fade gradient when the bounds change.
   if (!CGRectIsEmpty(self.bounds) &&
       (!self.gradient ||
@@ -156,99 +150,9 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
 
 #pragma mark - Text Drawing
 
-/// Draws `attributedText` in `requestedRect` and apply gradient mask if the
-/// text is wider than rect.
+/// Draws `attributedText` with a maximum of `numberOfLines` lines in
+/// `requestedRect`.
 - (void)drawTextInRect:(CGRect)requestedRect {
-  if (self.isMultilineEnabled) {
-    [self drawMultilineInRect:requestedRect];
-  } else {
-    NSAttributedString* configuredString =
-        [self attributedString:self.attributedText
-             withLineBreakMode:self.lineBreakMode];
-
-    // Draw fade gradient mask if `attributedText` is wider than rect.
-    const BOOL shouldApplyGradient =
-        [self.attributedText size].width > requestedRect.size.width;
-    [self drawAttributedString:configuredString
-                        inRect:requestedRect
-                 applyGradient:shouldApplyGradient
-               alignmentOffset:0.0];
-  }
-}
-
-/// Computes the bounding rect necessary to draw text in `bounds` limited to
-/// `numberOfLines`.
-- (CGRect)textRectForBounds:(CGRect)bounds
-     limitedToNumberOfLines:(NSInteger)numberOfLines {
-  if (!self.isMultilineEnabled) {
-    return [super textRectForBounds:bounds
-             limitedToNumberOfLines:numberOfLines];
-  }
-  NSInteger maxNumberOfLines = numberOfLines ? numberOfLines : INT_MAX;
-  // Force NSLineBreakByWordWrapping to be able to draw multiple lines.
-  NSAttributedString* wrappingString =
-      [self attributedString:self.attributedText
-           withLineBreakMode:NSLineBreakByWordWrapping];
-  // Compute the number of lines needed to draw the string with limited width.
-  const CGSize wrappingStringSize =
-      [wrappingString boundingRectWithSize:CGSizeMake(bounds.size.width, 0)
-                                   options:NSStringDrawingUsesLineFragmentOrigin
-                                   context:nil]
-          .size;
-
-  const CGSize singleLineStringSize = wrappingString.size;
-  const NSInteger wrappingStringNumberOfLines =
-      round(wrappingStringSize.height / singleLineStringSize.height);
-  const NSInteger numberOfLinesToDraw =
-      MIN(maxNumberOfLines, wrappingStringNumberOfLines);
-  const CGFloat totalLineSpacing =
-      MAX((numberOfLinesToDraw - 1), 0) * self.lineSpacing;
-
-  const CGFloat boundingWidth =
-      MIN(ceil(singleLineStringSize.width), bounds.size.width);
-  CGFloat boundingHeight = ceil(
-      singleLineStringSize.height * numberOfLinesToDraw + totalLineSpacing);
-  boundingHeight = MIN(boundingHeight, bounds.size.height);
-  const CGRect boundingRect = CGRectMake(bounds.origin.x, bounds.origin.y,
-                                         boundingWidth, boundingHeight);
-  return boundingRect;
-}
-
-#pragma mark Text Drawing Private
-
-/// Draws `attributedString` in `requestedRect`.
-/// `applyGradient`: Whether gradient should be applied when drawing the text.
-/// `alignmentOffset`: offset added to draw the text on the left of
-/// `requestedRect`. Note: with NSLineBreakByClipping the text is always clipped
-/// to the right even when the text is aligned to the right, with the offset the
-/// text starts to draw on the left of `requestedRect`, this allow the text to
-/// end inside of `requestedRect` clipping it on the left.
-- (void)drawAttributedString:(NSAttributedString*)attributedString
-                      inRect:(CGRect)requestedRect
-               applyGradient:(BOOL)applyGradient
-             alignmentOffset:(CGFloat)alignmentOffset {
-  CGContextRef context = UIGraphicsGetCurrentContext();
-  CGContextSaveGState(context);
-
-  if (applyGradient) {
-    CGContextClipToMask(context, requestedRect, [self.gradient CGImage]);
-  }
-
-  CGRect drawingRect = requestedRect;
-  if (alignmentOffset != 0) {
-    drawingRect = CGRectMake(
-        requestedRect.origin.x - alignmentOffset, requestedRect.origin.y,
-        requestedRect.size.width + alignmentOffset, requestedRect.size.height);
-  }
-  [attributedString drawInRect:drawingRect];
-
-  CGContextRestoreGState(context);
-}
-
-/// Draws a maximum of `numberOfLines` lines in `requestedRect`.
-- (void)drawMultilineInRect:(CGRect)requestedRect {
-  DCHECK(self.isMultilineEnabled);
-
   const CGFloat lineHeight = self.font.lineHeight;
   if (!lineHeight || !self.attributedText) {
     return;
@@ -327,6 +231,71 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
                       inRect:lastLineRect
                applyGradient:applyGradient
              alignmentOffset:rtlOffset];
+}
+
+/// Computes the bounding rect necessary to draw text in `bounds` limited to
+/// `numberOfLines`.
+- (CGRect)textRectForBounds:(CGRect)bounds
+     limitedToNumberOfLines:(NSInteger)numberOfLines {
+  NSInteger maxNumberOfLines = numberOfLines ? numberOfLines : INT_MAX;
+  // Force NSLineBreakByWordWrapping to be able to draw multiple lines.
+  NSAttributedString* wrappingString =
+      [self attributedString:self.attributedText
+           withLineBreakMode:NSLineBreakByWordWrapping];
+  // Compute the number of lines needed to draw the string with limited width.
+  const CGSize wrappingStringSize =
+      [wrappingString boundingRectWithSize:CGSizeMake(bounds.size.width, 0)
+                                   options:NSStringDrawingUsesLineFragmentOrigin
+                                   context:nil]
+          .size;
+
+  const CGSize singleLineStringSize = wrappingString.size;
+  const NSInteger wrappingStringNumberOfLines =
+      round(wrappingStringSize.height / singleLineStringSize.height);
+  const NSInteger numberOfLinesToDraw =
+      MIN(maxNumberOfLines, wrappingStringNumberOfLines);
+  const CGFloat totalLineSpacing =
+      MAX((numberOfLinesToDraw - 1), 0) * self.lineSpacing;
+
+  const CGFloat boundingWidth =
+      MIN(ceil(singleLineStringSize.width), bounds.size.width);
+  CGFloat boundingHeight = ceil(
+      singleLineStringSize.height * numberOfLinesToDraw + totalLineSpacing);
+  boundingHeight = MIN(boundingHeight, bounds.size.height);
+  const CGRect boundingRect = CGRectMake(bounds.origin.x, bounds.origin.y,
+                                         boundingWidth, boundingHeight);
+  return boundingRect;
+}
+
+#pragma mark Text Drawing Private
+
+/// Draws `attributedString` in `requestedRect`.
+/// `applyGradient`: Whether gradient should be applied when drawing the text.
+/// `alignmentOffset`: offset added to draw the text on the left of
+/// `requestedRect`. Note: with NSLineBreakByClipping the text is always clipped
+/// to the right even when the text is aligned to the right, with the offset the
+/// text starts to draw on the left of `requestedRect`, this allow the text to
+/// end inside of `requestedRect` clipping it on the left.
+- (void)drawAttributedString:(NSAttributedString*)attributedString
+                      inRect:(CGRect)requestedRect
+               applyGradient:(BOOL)applyGradient
+             alignmentOffset:(CGFloat)alignmentOffset {
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  CGContextSaveGState(context);
+
+  if (applyGradient) {
+    CGContextClipToMask(context, requestedRect, [self.gradient CGImage]);
+  }
+
+  CGRect drawingRect = requestedRect;
+  if (alignmentOffset != 0) {
+    drawingRect = CGRectMake(
+        requestedRect.origin.x - alignmentOffset, requestedRect.origin.y,
+        requestedRect.size.width + alignmentOffset, requestedRect.size.height);
+  }
+  [attributedString drawInRect:drawingRect];
+
+  CGContextRestoreGState(context);
 }
 
 #pragma mark - Private methods

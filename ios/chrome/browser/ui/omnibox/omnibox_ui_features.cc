@@ -20,10 +20,6 @@ BASE_FEATURE(kOmniboxKeyboardPasteButton,
              "OmniboxKeyboardPasteButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOmniboxMultilineSearchSuggest,
-             "OmniboxMultilineSearchSuggest",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Tail suggest is triggered server side.
 BASE_FEATURE(kOmniboxTailSuggest,
              "OmniboxTailSuggest",

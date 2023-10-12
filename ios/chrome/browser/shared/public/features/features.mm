@@ -189,10 +189,6 @@ bool IsNewTabGridTransitionsEnabled() {
   return base::FeatureList::IsEnabled(kTabGridNewTransitions);
 }
 
-BASE_FEATURE(kMultilineFadeTruncatingLabel,
-             "MultilineFadeTruncatingLabel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kNonModalDefaultBrowserPromoImpressionLimit,
              "NonModalDefaultBrowserPromoImpressionLimit",
              base::FEATURE_ENABLED_BY_DEFAULT);

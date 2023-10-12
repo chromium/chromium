@@ -49,18 +49,12 @@ const CGFloat kTextIconSpace = 14.0f;
 /// omnibox image. If Variation 2 becomes default, probably we don't need the
 /// fancy layout guide setup and can get away with simple margins.
 const CGFloat kTrailingButtonPointSize = 17.0f;
-/// Maximum number of lines displayed for search suggestion when
-/// `kOmniboxMultilineSearchSuggest` is enabled.
+/// Maximum number of lines displayed for search suggestion.
 const NSInteger kSearchSuggestNumberOfLines = 2;
 
 /// Name of the histogram recording the number of lines in search suggestions.
 const char kOmniboxSearchSuggestionNumberOfLines[] =
     "IOS.Omnibox.SearchSuggestionNumberOfLines";
-
-/// Returns `YES` if `kOmniboxMultilineSearchSuggest` is enabled.
-BOOL IsMultilineSearchSuggestionEnabled() {
-  return base::FeatureList::IsEnabled(kOmniboxMultilineSearchSuggest);
-}
 
 }  // namespace
 
@@ -388,15 +382,13 @@ BOOL IsMultilineSearchSuggestionEnabled() {
   if (suggestion.isWrapping) {
     [self logNumberOfLinesSearchSuggestions:self.textTruncatingLabel
                                                 .attributedText];
-    if (base::FeatureList::IsEnabled(kOmniboxMultilineSearchSuggest)) {
-      self.textTruncatingLabel.numberOfLines = kSearchSuggestNumberOfLines;
-      base::i18n::TextDirection textDirection = base::i18n::GetStringDirection(
-          base::SysNSStringToUTF16(self.textTruncatingLabel.text));
-      if (textDirection == base::i18n::RIGHT_TO_LEFT) {
-        self.textTruncatingLabel.semanticContentAttribute =
-            UISemanticContentAttributeForceRightToLeft;
-        self.textTruncatingLabel.truncateMode = FadeTruncatingHead;
-      }
+    self.textTruncatingLabel.numberOfLines = kSearchSuggestNumberOfLines;
+    base::i18n::TextDirection textDirection = base::i18n::GetStringDirection(
+        base::SysNSStringToUTF16(self.textTruncatingLabel.text));
+    if (textDirection == base::i18n::RIGHT_TO_LEFT) {
+      self.textTruncatingLabel.semanticContentAttribute =
+          UISemanticContentAttributeForceRightToLeft;
+      self.textTruncatingLabel.truncateMode = FadeTruncatingHead;
     }
   } else {
     // Default values for FadeTruncatingLabel.
@@ -424,8 +416,7 @@ BOOL IsMultilineSearchSuggestionEnabled() {
   if (suggestion.isAppendable || suggestion.isTabMatch) {
     [self setupTrailingButton];
   }
-  [self updateTextConstraints:IsMultilineSearchSuggestionEnabled() &&
-                              suggestion.isWrapping];
+  [self updateTextConstraints:suggestion.isWrapping];
 
   self.leadingIconView.highlighted = self.highlighted;
   self.trailingButton.tintColor =
