@@ -46,7 +46,6 @@ import {beforeNextRender, microTask, PolymerElement} from 'chrome://resources/po
 import {castExists} from '../assert_extras.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {PrefsState} from '../common/types.js';
-import {MainPageMixin} from '../main_page_mixin.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {AboutPageBrowserProxyImpl} from '../os_about_page/about_page_browser_proxy.js';
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from '../os_apps_page/android_apps_browser_proxy.js';
@@ -55,6 +54,7 @@ import {OsPageAvailability} from '../os_page_availability.js';
 import {isAboutRoute, isAdvancedRoute, isBasicRoute, Route, Router} from '../router.js';
 
 import {getTemplate} from './main_page_container.html.js';
+import {MainPageMixin} from './main_page_mixin.js';
 
 const MainPageContainerElementBase =
     MainPageMixin(WebUiListenerMixin(PolymerElement));

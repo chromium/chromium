@@ -364,7 +364,7 @@ build_webui("build") {
     "kerberos_page/kerberos_accounts_browser_proxy.ts",
     "lazy_load.ts",
     "lock_state_mixin.ts",
-    "main_page_mixin.ts",
+    "main_page_container/main_page_mixin.ts",
     "metrics_recorder.ts",
     "metrics_utils.ts",
     "multidevice_page/multidevice_browser_proxy.ts",

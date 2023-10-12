@@ -2,18 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * Responds to route changes by "activating" the respective top-level page,
+ * effectively making that page visible to the user and potentially hiding other
+ * pages.
+ */
+
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {beforeNextRender, dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {castExists} from './assert_extras.js';
-import {isRevampWayfindingEnabled} from './common/load_time_booleans.js';
-import {Constructor} from './common/types.js';
-import {ensureLazyLoaded} from './ensure_lazy_loaded.js';
-import {PageDisplayerElement} from './main_page_container/page_displayer.js';
-import {Section} from './mojom-webui/routes.mojom-webui.js';
-import {SettingsIdleLoadElement} from './os_settings_page/settings_idle_load.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from './route_observer_mixin.js';
-import {isAboutRoute, isAdvancedRoute, Route, Router, routes} from './router.js';
+import {castExists} from '../assert_extras.js';
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {Constructor} from '../common/types.js';
+import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
+import {PageDisplayerElement} from './page_displayer.js';
+import {Section} from '../mojom-webui/routes.mojom-webui.js';
+import {SettingsIdleLoadElement} from '../os_settings_page/settings_idle_load.js';
+import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {isAboutRoute, isAdvancedRoute, Route, Router, routes} from '../router.js';
 
 /**
  * A categorization of every possible Settings URL, necessary for implementing
@@ -85,10 +92,6 @@ export interface MainPageMixinInterface extends RouteObserverMixinInterface {
   loadAdvancedPage(): Promise<Element>;
 }
 
-/**
- * Responds to route changes by "activating" the respective top-level page,
- * effectively showing that page and potentially hiding other pages.
- */
 export const MainPageMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
     Constructor<MainPageMixinInterface> => {
