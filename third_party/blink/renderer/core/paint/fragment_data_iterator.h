@@ -52,7 +52,7 @@ class FragmentDataIterator
  public:
   explicit FragmentDataIterator(const LayoutObject& object)
       : FragmentDataIteratorBase(&object.FirstFragment()) {}
-  explicit FragmentDataIterator(nullptr_t)
+  explicit FragmentDataIterator(std::nullptr_t)
       : FragmentDataIteratorBase(nullptr) {}
 };
 
@@ -63,7 +63,7 @@ class MutableFragmentDataIterator
   explicit MutableFragmentDataIterator(const LayoutObject& object)
       : FragmentDataIteratorBase(
             &object.GetMutableForPainting().FirstFragment()) {}
-  explicit MutableFragmentDataIterator(nullptr_t)
+  explicit MutableFragmentDataIterator(std::nullptr_t)
       : FragmentDataIteratorBase(nullptr) {}
 };
 
