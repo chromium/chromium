@@ -163,7 +163,7 @@ PrintBackendServiceManager::RegisterPrintDocumentClientReusingClientRemote(
 void PrintBackendServiceManager::UnregisterClient(ClientId id) {
   // Determine which client type has this ID, and remove it once found.
   absl::optional<ClientType> client_type;
-  RemoteId remote_id = GetRemoteIdForPrinterName(kEmptyPrinterName);
+  absl::optional<RemoteId> remote_id;
   if (query_clients_.erase(id) != 0) {
     client_type = ClientType::kQuery;
   } else if (query_with_ui_clients_.erase(id) != 0) {
@@ -189,11 +189,14 @@ void PrintBackendServiceManager::UnregisterClient(ClientId id) {
           << ClientTypeToString(client_type.value())
           << ") from print backend service.";
 
+  if (!remote_id.has_value()) {
+    remote_id = GetRemoteIdForPrinterName(kEmptyPrinterName);
+  }
   absl::optional<base::TimeDelta> new_timeout =
       DetermineIdleTimeoutUpdateOnUnregisteredClient(client_type.value(),
-                                                     remote_id);
+                                                     remote_id.value());
   if (new_timeout.has_value())
-    UpdateServiceIdleTimeoutByRemoteId(remote_id, new_timeout.value());
+    UpdateServiceIdleTimeoutByRemoteId(remote_id.value(), new_timeout.value());
 
 #if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(features::kReadPrinterCapabilitiesWithXps) &&
