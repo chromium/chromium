@@ -8,14 +8,17 @@
 #import <UIKit/UIKit.h>
 
 @class TabSwitcherItem;
+
+#ifdef __cplusplus
 namespace web {
 class WebStateID;
 }  // namespace web
+#endif
 
 // Block invoked when an image fetching operation completes. The `image`
 // is nil if the operation failed.
-using TabSwitcherImageFetchingCompletionBlock = void (^)(TabSwitcherItem* item,
-                                                         UIImage* image);
+typedef void (^TabSwitcherImageFetchingCompletionBlock)(TabSwitcherItem* item,
+                                                        UIImage* image);
 
 // Model object representing an item in the tab switchers.
 //
@@ -25,12 +28,16 @@ using TabSwitcherImageFetchingCompletionBlock = void (^)(TabSwitcherItem* item,
 // It is OK not to call this class' implementations.
 @interface TabSwitcherItem : NSObject
 
+#ifdef __cplusplus
 // Create an item with `identifier`, which cannot be nil.
 - (instancetype)initWithIdentifier:(web::WebStateID)identifier
     NS_DESIGNATED_INITIALIZER;
+#endif
 - (instancetype)init NS_UNAVAILABLE;
 
+#ifdef __cplusplus
 @property(nonatomic, readonly) web::WebStateID identifier;
+#endif
 @property(nonatomic, copy) NSString* title;
 @property(nonatomic, assign) BOOL hidesTitle;
 @property(nonatomic, assign) BOOL showsActivity;

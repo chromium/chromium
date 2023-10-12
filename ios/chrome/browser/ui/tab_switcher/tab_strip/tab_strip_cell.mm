@@ -79,7 +79,6 @@ const CGFloat kFontSize = 14.0;
 - (void)prepareForReuse {
   [super prepareForReuse];
   self.titleLabel.text = nil;
-  self.itemIdentifier = web::WebStateID();
   self.selected = NO;
   self.faviconView = nil;
 }

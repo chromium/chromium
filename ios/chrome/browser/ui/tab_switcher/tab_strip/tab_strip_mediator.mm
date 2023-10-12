@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -33,17 +33,6 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
         addObject:[[WebStateTabSwitcherItem alloc] initWithWebState:web_state]];
   }
   return items;
-}
-
-// Returns the ID of the active tab in `web_state_list`.
-web::WebStateID GetActiveTabId(WebStateList* web_state_list) {
-  if (!web_state_list)
-    return web::WebStateID();
-
-  web::WebState* web_state = web_state_list->GetActiveWebState();
-  if (!web_state)
-    return web::WebStateID();
-  return web_state->GetUniqueIdentifier();
 }
 
 }  // namespace
@@ -126,7 +115,7 @@ web::WebStateID GetActiveTabId(WebStateList* web_state_list) {
       // Do nothing when a WebState is moved.
       break;
     case WebStateListChange::Type::kReplace:
-      // Do nothing when a WebState is replaced.
+      // TODO(crbug.com/1490555): handle the replacement issue.
       break;
   }
 
@@ -134,12 +123,13 @@ web::WebStateID GetActiveTabId(WebStateList* web_state_list) {
     // If the selected index changes as a result of the last webstate being
     // detached, the active index will be -1.
     if (webStateList->active_index() == WebStateList::kInvalidIndex) {
-      [self.consumer selectItemWithID:web::WebStateID()];
+      [self.consumer selectItem:nil];
       return;
     }
 
-    [self.consumer
-        selectItemWithID:status.new_active_web_state->GetUniqueIdentifier()];
+    TabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
+        initWithWebState:status.new_active_web_state];
+    [self.consumer selectItem:item];
   }
 }
 
@@ -156,7 +146,7 @@ web::WebStateID GetActiveTabId(WebStateList* web_state_list) {
   [self populateConsumerItems];
 }
 
-#pragma mark - TabStripConsumerDelegate
+#pragma mark - TabStripMutator
 
 - (void)addNewItem {
   if (!self.webStateList)
@@ -192,21 +182,35 @@ web::WebStateID GetActiveTabId(WebStateList* web_state_list) {
       base::checked_cast<int>(self.webStateList->count()), std::move(webState),
       (WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE),
       WebStateOpener());
-  [self.consumer selectItemWithID:GetActiveTabId(self.webStateList)];
+  TabSwitcherItem* item;
+  if (self.webStateList->GetActiveWebState()) {
+    item = [[WebStateTabSwitcherItem alloc]
+        initWithWebState:self.webStateList->GetActiveWebState()];
+  }
+  [self.consumer selectItem:item];
 }
 
-- (void)selectTab:(int)index {
-  if (!self.webStateList)
+- (void)activateItem:(TabSwitcherItem*)item {
+  if (!self.webStateList) {
     return;
+  }
+  int index =
+      GetWebStateIndex(self.webStateList, WebStateSearchCriteria{
+                                              .identifier = item.identifier,
+                                          });
 
   _webStateList->ActivateWebStateAt(index);
 }
 
-- (void)closeItemWithID:(web::WebStateID)itemID {
+- (void)closeItem:(TabSwitcherItem*)item {
+  if (!self.webStateList) {
+    return;
+  }
+
   int index = GetWebStateIndex(
       self.webStateList,
       WebStateSearchCriteria{
-          .identifier = itemID,
+          .identifier = item.identifier,
           .pinned_state = WebStateSearchCriteria::PinnedState::kNonPinned,
       });
   if (index >= 0)
@@ -227,17 +231,18 @@ web::WebStateID GetActiveTabId(WebStateList* web_state_list) {
   _allWebStateObservationForwarder.reset();
 }
 
-// Calls `-populateItems:selectedItemID:` on the consumer.
+// Updates the consumer with the list of all items and the selected one.
 - (void)populateConsumerItems {
-  if (!self.webStateList)
+  if (!self.webStateList || self.webStateList->count() == 0) {
     return;
-  if (self.webStateList->count() > 0) {
-    [self.consumer populateItems:CreateItems(self.webStateList)
-                  selectedItemID:GetActiveTabId(self.webStateList)];
-    self.consumer.isOffTheRecord = self.webStateList->GetWebStateAt(0)
-                                       ->GetBrowserState()
-                                       ->IsOffTheRecord();
   }
+  TabSwitcherItem* item;
+  if (self.webStateList->GetActiveWebState()) {
+    item = [[WebStateTabSwitcherItem alloc]
+        initWithWebState:self.webStateList->GetActiveWebState()];
+  }
+  [self.consumer populateWithItems:CreateItems(self.webStateList)
+                      selectedItem:item];
 }
 
 #pragma mark - CRWWebStateObserver
@@ -245,7 +250,7 @@ web::WebStateID GetActiveTabId(WebStateList* web_state_list) {
 - (void)webStateDidChangeTitle:(web::WebState*)webState {
   TabSwitcherItem* item =
       [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-  [self.consumer replaceItemID:webState->GetUniqueIdentifier() withItem:item];
+  [self.consumer reloadItem:item];
 }
 
 @end

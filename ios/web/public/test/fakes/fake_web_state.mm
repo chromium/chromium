@@ -288,6 +288,9 @@ void FakeWebState::SetContentsMimeType(const std::string& mime_type) {
 
 void FakeWebState::SetTitle(const std::u16string& title) {
   title_ = title;
+  for (auto& observer : observers_) {
+    observer.TitleWasSet(this);
+  }
 }
 
 const std::u16string& FakeWebState::GetTitle() const {
