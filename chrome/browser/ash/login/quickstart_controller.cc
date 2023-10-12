@@ -194,6 +194,8 @@ void QuickStartController::OnStatusChanged(
       }
       return;
     case Step::NONE:
+      // Indicates we've stopped advertising. No action required.
+      return;
     case Step::CONNECTED:
       controller_state_ = ControllerState::CONNECTED;
       return;
