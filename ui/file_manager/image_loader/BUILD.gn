@@ -18,6 +18,7 @@ js_type_check("closure_compile_jsmodules") {
                         rebase_path("//ui/file_manager/", root_build_dir),
                     "browser_resolver_prefix_replacements=\"chrome://file-manager/=./file_manager/\"",
                     "hide_warnings_for=gen/ui/file_manager/tsc/",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                   ]
   deps = [
     ":background",
@@ -158,6 +159,7 @@ js_test_type_check("js_test_type_check") {
                     "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
                     "browser_resolver_prefix_replacements=\"chrome://file-manager/=./file_manager/\"",
                     "hide_warnings_for=gen/ui/file_manager/tsc/",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                   ]
   extra_deps = [ "//ui/file_manager:js_from_ts" ]
 }

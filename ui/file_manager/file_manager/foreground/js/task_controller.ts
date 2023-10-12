@@ -544,7 +544,7 @@ export class TaskController {
    * Return the tasks for the FileEntry |entry|.
    * @param entry
    */
-  async getEntryFileTasks(entry: FileEntry): Promise<FileTasks> {
+  async getEntryFileTasks(entry: Entry): Promise<FileTasks> {
     return FileTasks.create(
         this.volumeManager_, this.metadataModel_, this.directoryModel_,
         this.ui_, this.fileTransferController_!, [entry], this.taskHistory_,

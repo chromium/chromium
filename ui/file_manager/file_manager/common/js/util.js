@@ -436,9 +436,9 @@ util.isTrashEntry = entry => {
 
 /**
  * Compares two entries.
- * @param {Entry|FilesAppEntry} entry1 The entry to be compared. Can
+ * @param {Entry|FilesAppEntry|undefined} entry1 The entry to be compared. Can
  * be a fake.
- * @param {Entry|FilesAppEntry} entry2 The entry to be compared. Can
+ * @param {Entry|FilesAppEntry|undefined} entry2 The entry to be compared. Can
  * be a fake.
  * @return {boolean} True if the both entry represents a same file or
  *     directory. Returns true if both entries are null.
@@ -921,7 +921,7 @@ util.getRootTypeLabel = locationInfo => {
 /**
  * Returns the localized/i18n name of the entry.
  *
- * @param {EntryLocation} locationInfo
+ * @param {?EntryLocation} locationInfo
  * @param {!Entry|!FilesAppEntry} entry The entry to be retrieve the name of.
  * @return {string} The localized name.
  */

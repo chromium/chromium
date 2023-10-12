@@ -155,7 +155,8 @@ export function recordDirectoryListLoadWithTolerance(
  * @param validValues Array of valid values or a boundary number
  *     (one-past-the-end) value.
  */
-export function recordEnum(name: string, value: any, validValues: any[]) {
+export function recordEnum(
+    name: string, value: any, validValues: readonly any[]) {
   console.assert(validValues !== undefined);
 
   let index = validValues.indexOf(value);

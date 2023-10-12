@@ -180,6 +180,7 @@ ts_library("build_ts") {
   composite = true
 
   path_mappings = [
+    "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/*|preprocessed/image_loader/*",
     "tslib|" + rebase_path(
             "//third_party/material_web_components/components-chromium/node_modules/tslib/tslib.d.ts",
             target_gen_dir),

@@ -108,7 +108,6 @@ static_js_files = [
   "file_manager/foreground/js/list_thumbnail_loader.js",
   "file_manager/foreground/js/main.js",
   "file_manager/foreground/js/main_window_component.js",
-  "file_manager/foreground/js/metadata_box_controller.js",
   "file_manager/foreground/js/metadata_update_controller.js",
   "file_manager/foreground/js/metrics_start.js",
   "file_manager/foreground/js/mock_actions_model.js",
@@ -122,9 +121,6 @@ static_js_files = [
   "file_manager/foreground/js/navigation_uma.js",
   "file_manager/foreground/js/path_component.js",
   "file_manager/foreground/js/providers_model.js",
-  "file_manager/foreground/js/quick_view_controller.js",
-  "file_manager/foreground/js/quick_view_model.js",
-  "file_manager/foreground/js/quick_view_uma.js",
   "file_manager/foreground/js/scan_controller.js",
   "file_manager/foreground/js/search_controller.js",
   "file_manager/foreground/js/selection_menu_controller.js",
@@ -315,6 +311,10 @@ ts_files = [
   "file_manager/foreground/js/banner_controller.ts",
   "file_manager/foreground/js/file_tasks.ts",
   "file_manager/foreground/js/last_modified_controller.ts",
+  "file_manager/foreground/js/metadata_box_controller.ts",
+  "file_manager/foreground/js/quick_view_controller.ts",
+  "file_manager/foreground/js/quick_view_model.ts",
+  "file_manager/foreground/js/quick_view_uma.ts",
   "file_manager/foreground/js/task_controller.ts",
   "file_manager/foreground/js/uma_enums.gen.ts",
 
@@ -329,6 +329,10 @@ ts_files = [
 # Closure is failing to recognize the generated JS from the TS.
 # JS targets should rely on externs to type check the Polymer elements from TS.
 ts_polymer = [
+  "file_manager/foreground/elements/files_quick_view.ts",
+  "file_manager/foreground/elements/files_metadata_box.ts",
+  "file_manager/foreground/elements/files_safe_media.ts",
+  "file_manager/foreground/elements/files_metadata_entry.ts",
   "file_manager/foreground/elements/files_toast.ts",
   "file_manager/foreground/elements/files_tooltip.ts",
 ]
@@ -438,6 +442,10 @@ foreach(_t, ts_templates) {
 
 # Generated in foregorund/elements folder.
 ts_generated_templates += [
+  "file_manager/foreground/elements/files_metadata_box.html.ts",
+  "file_manager/foreground/elements/files_metadata_entry.html.ts",
+  "file_manager/foreground/elements/files_quick_view.html.ts",
+  "file_manager/foreground/elements/files_safe_media.html.ts",
   "file_manager/foreground/elements/files_toast.html.ts",
   "file_manager/foreground/elements/files_tooltip.html.ts",
 ]
@@ -449,6 +457,7 @@ generate_definitions_js_files = [
   "file_manager/externs/volume_info.js",
   "file_manager/externs/volume_info_list.js",
   "file_manager/externs/search_item.js",
+  "file_manager/externs/quick_view.js",
 ]
 
 # d.ts. files that are manually created and checked-in in the repo.
@@ -470,10 +479,6 @@ generated_js_files = [
 
   # Elements:
   "file_manager/foreground/elements/files_format_dialog.js",
-  "file_manager/foreground/elements/files_metadata_box.js",
-  "file_manager/foreground/elements/files_metadata_entry.js",
-  "file_manager/foreground/elements/files_quick_view.js",
-  "file_manager/foreground/elements/files_safe_media.js",
   "file_manager/foreground/elements/files_spinner.js",
   "file_manager/foreground/elements/icons.js",
   "file_manager/foreground/elements/xf_button.js",

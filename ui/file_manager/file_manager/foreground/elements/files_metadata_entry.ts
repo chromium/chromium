@@ -2,44 +2,61 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
+import {getTemplate} from './files_metadata_entry.html.js';
 
-  is: 'files-metadata-entry',
+export interface FilesMetadataEntry {
+  $: {
+    valueContainer: HTMLDivElement,
+  };
+  isPath: boolean;
+  loading: boolean;
+  value: string;
+  key: string;
+}
 
-  properties: {
-    key: {
-      type: String,
-      reflectToAttribute: true,
-    },
+export class  FilesMetadataEntry extends PolymerElement {
+  static get is() {
+    return 'files-metadata-entry';
+  }
 
-    // If |value| is empty, the entire entry will be hidden.
-    value: {
-      type: String,
-      reflectToAttribute: true,
-      observer: 'valueChanged_',
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    loading: {
-      type: Boolean,
-      reflectToAttribute: true,
-      value: false,
-    },
+  static get properties() {
+    return {
+      key: {
+        type: String,
+        reflectToAttribute: true,
+      },
 
-    isPath: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      // If |value| is empty, the entire entry will be hidden.
+      value: {
+        type: String,
+        reflectToAttribute: true,
+        observer: 'valueChanged',
+      },
+
+      loading: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
+
+      isPath: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
   /**
    * When value is changed, it is displayed in the #valueContainer element.
    * How the value is represented depends on [[isPath]] value.
-   * @param {string} newValue
    */
-  valueChanged_: function(newValue) {
+  valueChanged(newValue: string) {
     const container = this.$.valueContainer;
     if (!newValue) {
       container.textContent = '';
@@ -61,13 +78,19 @@ Polymer({
       for (let i = 0; i < components.length; i++) {
         const span = document.createElement('span');
         span.textContent =
-            i < components.length - 1 ? (components[i] + '/') : components[i];
+            i < components.length - 1 ? (components[i] + '/') : components[i]!;
         container.appendChild(span);
       }
     } else {
       container.textContent = newValue;
     }
-  },
-});
+  }
+}
 
-//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_metadata_entry.js
+declare global {
+  interface HTMLElementTagNameMap {
+    'files-metadata-entry': FilesMetadataEntry;
+  }
+}
+
+customElements.define(FilesMetadataEntry.is, FilesMetadataEntry);

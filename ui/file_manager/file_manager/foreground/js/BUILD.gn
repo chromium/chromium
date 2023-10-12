@@ -54,7 +54,6 @@ group("js_modules") {
     ":list_thumbnail_loader",
     ":main",
     ":main_window_component",
-    ":metadata_box_controller",
     ":metadata_update_controller",
     ":mock_actions_model",
     ":mock_directory_model",
@@ -66,9 +65,6 @@ group("js_modules") {
     ":navigation_uma",
     ":path_component",
     ":providers_model",
-    ":quick_view_controller",
-    ":quick_view_model",
-    ":quick_view_uma",
     ":scan_controller",
     ":search_controller",
     ":selection_menu_controller",
@@ -124,7 +120,6 @@ js_type_check("closure_compile_jsmodules") {
     ":list_thumbnail_loader",
     ":main",
     ":main_window_component",
-    ":metadata_box_controller",
     ":metadata_update_controller",
     ":mock_directory_model",
     ":mock_folder_shortcut_data_model",
@@ -135,9 +130,6 @@ js_type_check("closure_compile_jsmodules") {
     ":navigation_uma",
     ":path_component",
     ":providers_model",
-    ":quick_view_controller",
-    ":quick_view_model",
-    ":quick_view_uma",
     ":scan_controller",
     ":search_controller",
     ":selection_menu_controller",
@@ -496,15 +488,11 @@ js_library("file_manager") {
     ":launch_param",
     ":list_thumbnail_loader",
     ":main_window_component",
-    ":metadata_box_controller",
     ":metadata_update_controller",
     ":naming_controller",
     ":navigation_list_model",
     ":navigation_uma",
     ":providers_model",
-    ":quick_view_controller",
-    ":quick_view_model",
-    ":quick_view_uma",
     ":scan_controller",
     ":search_controller",
     ":selection_menu_controller",
@@ -765,22 +753,6 @@ js_library("main_window_component") {
   ]
 }
 
-js_library("metadata_box_controller") {
-  deps = [
-    ":path_component",
-    ":quick_view_model",
-    "metadata:metadata_item",
-    "metadata:metadata_model",
-    "ui:file_metadata_formatter",
-    "//ash/webui/common/resources:assert",
-    "//ui/file_manager/file_manager/common/js:file_type",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/foreground/elements:files_metadata_box",
-    "//ui/file_manager/file_manager/foreground/elements:files_quick_view",
-  ]
-}
-
 js_library("metadata_update_controller") {
   deps = [
     ":directory_model",
@@ -877,52 +849,6 @@ js_unittest("providers_model_unittest") {
     "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:mock_entry",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-  ]
-}
-
-js_library("quick_view_controller") {
-  deps = [
-    ":constants",
-    ":file_manager_commands",
-    ":file_selection",
-    ":metadata_box_controller",
-    ":quick_view_model",
-    ":quick_view_uma",
-    ":thumbnail_loader",
-    "metadata:metadata_item",
-    "metadata:metadata_model",
-    "ui:file_list_selection_model",
-    "ui:files_confirm_dialog",
-    "ui:list_container",
-    "ui:multi_menu_button",
-    "//ash/webui/common/resources:assert",
-    "//ui/file_manager/file_manager/common/js:dialog_type",
-    "//ui/file_manager/file_manager/common/js:file_type",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:command_handler_deps",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/foreground/elements:files_quick_view",
-    "//ui/file_manager/image_loader:image_loader_client",
-    "//ui/file_manager/image_loader:load_image_request",
-  ]
-  externs_list = [ "//ui/file_manager/file_manager/externs/quick_view.js" ]
-}
-
-js_library("quick_view_model") {
-  deps = [
-    "//ash/webui/common/resources:cr_deprecated",
-    "//ash/webui/common/resources:event_target",
-  ]
-}
-
-js_library("quick_view_uma") {
-  deps = [
-    "//ash/webui/common/resources:assert",
-    "//ui/file_manager/file_manager/common/js:dialog_type",
-    "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
   ]

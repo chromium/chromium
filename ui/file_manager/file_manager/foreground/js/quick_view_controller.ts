@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * This file is checked via TS, so we suppress Closure checks.
+ * @suppress {checkTypes|moduleLoad|lintChecks}
+ */
+
 import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
 import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {DialogType, isModal} from '../../common/js/dialog_type.js';
 import {parseActionId} from '../../common/js/file_tasks.js';
@@ -14,6 +20,7 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';
+import type {FilesTooltip} from '../elements/files_tooltip.js';
 
 import {CommandHandler} from './file_manager_commands.js';
 import {FileSelectionHandler} from './file_selection.js';
@@ -22,139 +29,98 @@ import {MetadataItem} from './metadata/metadata_item.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {MetadataBoxController} from './metadata_box_controller.js';
 import {QuickViewModel} from './quick_view_model.js';
-import {QuickViewUma} from './quick_view_uma.js';
+import {QuickViewUma, WayToOpen} from './quick_view_uma.js';
 import {TaskController} from './task_controller.js';
 import {ThumbnailLoader} from './thumbnail_loader.js';
+import {Command} from './ui/command.js';
 import {FileListSelectionModel} from './ui/file_list_selection_model.js';
 import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
 import {ListContainer} from './ui/list_container.js';
 import {MultiMenuButton} from './ui/multi_menu_button.js';
 
+type CommandEvent = Event&{
+  command: Command,
+};
+
 /**
  * Controller for QuickView.
  */
 export class QuickViewController {
+  private quickView_: FilesQuickView|null = null;
+
   /**
-   * This should be initialized with |init_| method.
-   *
-   * @param {!CommandHandlerDeps} fileManager
-   * @param {!MetadataModel} metadataModel
-   * @param {!FileSelectionHandler} selectionHandler
-   * @param {!ListContainer} listContainer
-   * @param {!MultiMenuButton} selectionMenuButton
-   * @param {!QuickViewModel} quickViewModel
-   * @param {!TaskController} taskController
-   * @param {!FileListSelectionModel} fileListSelectionModel
-   * @param {!QuickViewUma} quickViewUma
-   * @param {!MetadataBoxController} metadataBoxController
-   * @param {DialogType} dialogType
-   * @param {!VolumeManager} volumeManager
-   * @param {!HTMLElement} dialogDom
+   * Delete confirm dialog.
    */
+  private deleteConfirmDialog_: FilesConfirmDialog|null = null;
+
+  /**
+   * Current selection of selectionHandler.
+   */
+  private entries_: Array<Entry|FileEntry> = [];
+
+  /**
+   * The tasks for the current entry shown in quick view.
+   */
+  private tasks_: FileTasks|null = null;
+
+  /**
+   * The current selection index of this.entries_.
+   */
+  private currentSelection_ = 0;
+
+  /**
+   * Stores whether we are in check-select mode or not.
+   */
+  private checkSelectMode_ = false;
+
   constructor(
-      fileManager, metadataModel, selectionHandler, listContainer,
-      selectionMenuButton, quickViewModel, taskController,
-      fileListSelectionModel, quickViewUma, metadataBoxController, dialogType,
-      volumeManager, dialogDom) {
-    /** @private {!CommandHandlerDeps} */
-    this.fileManager_ = fileManager;
-
-    /** @private {?FilesQuickView} */
-    this.quickView_ = null;
-
-    /** @private @const {!FileSelectionHandler} */
-    this.selectionHandler_ = selectionHandler;
-
-    /** @private @const {!ListContainer} */
-    this.listContainer_ = listContainer;
-
-    /** @private @const{!QuickViewModel} */
-    this.quickViewModel_ = quickViewModel;
-
-    /** @private @const {!QuickViewUma} */
-    this.quickViewUma_ = quickViewUma;
-
-    /** @private @const {!MetadataModel} */
-    this.metadataModel_ = metadataModel;
-
-    /** @private @const {!TaskController} */
-    this.taskController_ = taskController;
-
-    /** @private @const {!FileListSelectionModel} */
-    this.fileListSelectionModel_ = fileListSelectionModel;
-
-    /** @private @const {!MetadataBoxController} */
-    this.metadataBoxController_ = metadataBoxController;
-
-    /** @private @const {DialogType} */
-    this.dialogType_ = dialogType;
-
-    /** @private @const {!VolumeManager} */
-    this.volumeManager_ = volumeManager;
-
-    /**
-     * Delete confirm dialog.
-     * @private {?FilesConfirmDialog}
-     */
-    this.deleteConfirmDialog_ = null;
-
-    /**
-     * Current selection of selectionHandler.
-     * @private {!Array<!FileEntry>}
-     */
-    this.entries_ = [];
-
-    /**
-     * The tasks for the current entry shown in quick view.
-     * @private {?FileTasks}
-     */
-    this.tasks_ = null;
-
-    /**
-     * The current selection index of this.entries_.
-     * @private {number}
-     */
-    this.currentSelection_ = 0;
-
-    /**
-     * Stores whether we are in check-select mode or not.
-     * @private {boolean}
-     */
-    this.checkSelectMode_ = false;
-
+      private fileManager_: CommandHandlerDeps,
+      private metadataModel_: MetadataModel,
+      private selectionHandler_: FileSelectionHandler,
+      private listContainer_: ListContainer,
+      selectionMenuButton: MultiMenuButton,
+      private quickViewModel_: QuickViewModel,
+      private taskController_: TaskController,
+      private fileListSelectionModel_: FileListSelectionModel,
+      private quickViewUma_: QuickViewUma,
+      private metadataBoxController_: MetadataBoxController,
+      private dialogType_: DialogType, private volumeManager_: VolumeManager,
+      dialogDom: HTMLElement) {
     this.selectionHandler_.addEventListener(
         FileSelectionHandler.EventType.CHANGE,
-        this.onFileSelectionChanged_.bind(this));
+        this.onFileSelectionChanged_.bind(this) as EventListener);
     this.listContainer_.element.addEventListener(
         'keydown', this.onKeyDownToOpen_.bind(this));
-    dialogDom.addEventListener('command', event => {
-      // Selection menu command can be triggered with focus outside of file list
-      // or button e.g.: from the directory tree.
-      if (event.command.id === 'get-info') {
-        event.stopPropagation();
-        this.display_(QuickViewUma.WayToOpen.SELECTION_MENU);
-      }
-    });
-    this.listContainer_.element.addEventListener('command', event => {
-      if (event.command.id === 'get-info') {
-        event.stopPropagation();
-        this.display_(QuickViewUma.WayToOpen.CONTEXT_MENU);
-      }
-    });
-    selectionMenuButton.addEventListener('command', event => {
-      if (event.command.id === 'get-info') {
-        event.stopPropagation();
-        this.display_(QuickViewUma.WayToOpen.SELECTION_MENU);
-      }
-    });
+    dialogDom.addEventListener(
+        'command', ((event: CommandEvent) => {
+                     // Selection menu command can be triggered with focus
+                     // outside of file list or button e.g.: from the directory
+                     // tree.
+                     if (event.command.id === 'get-info') {
+                       event.stopPropagation();
+                       this.display_(WayToOpen.SELECTION_MENU);
+                     }
+                   }) as EventListener);
+    this.listContainer_.element.addEventListener(
+        'command', ((event: CommandEvent) => {
+                     if (event.command.id === 'get-info') {
+                       event.stopPropagation();
+                       this.display_(WayToOpen.CONTEXT_MENU);
+                     }
+                   }) as EventListener);
+    selectionMenuButton.addEventListener(
+        'command', ((event: CommandEvent) => {
+                     if (event.command.id === 'get-info') {
+                       event.stopPropagation();
+                       this.display_(WayToOpen.SELECTION_MENU);
+                     }
+                   }) as EventListener);
   }
 
   /**
    * Initialize the controller with quick view which will be lazily loaded.
-   * @param {!FilesQuickView} quickView
-   * @private
    */
-  init_(quickView) {
+  private init_(quickView: FilesQuickView) {
     this.quickView_ = quickView;
     this.quickView_.isModal = isModal(this.dialogType_);
 
@@ -168,7 +134,7 @@ export class QuickViewController {
     // Prevent selected file from being copied when quick view is open and
     // instead allow any selected "General info" text to be copied.
     document.body.addEventListener('copy', event => {
-      if (this.quickView_.isOpened()) {
+      if (this.quickView_!.isOpened()) {
         // Stop 'copy' event propagation to FileTransferController and allow
         // default copy event behaviour.
         event.stopPropagation();
@@ -179,71 +145,58 @@ export class QuickViewController {
       this.listContainer_.focus();
     });
 
-    this.quickView_.onOpenInNewButtonTap =
-        this.onOpenInNewButtonTap_.bind(this);
+    this.quickView_.onOpenInNewButtonClick =
+        this.onOpenInNewButtonClick_.bind(this);
 
-    this.quickView_.onDeleteButtonTap = this.onDeleteButtonTap_.bind(this);
+    this.quickView_.onDeleteButtonClick = this.onDeleteButtonClick_.bind(this);
 
     const toolTipElements =
-        this.quickView_.$$('#toolbar').querySelectorAll('[has-tooltip]');
-    this.quickView_.$$('files-tooltip').addTargets(toolTipElements);
+        this.quickView_.shadowRoot!.querySelector<HTMLDivElement>('#toolbar')!
+            .querySelectorAll('[has-tooltip]');
+    this.quickView_.shadowRoot!.querySelector<FilesTooltip>('files-tooltip')!
+        .addTargets(toolTipElements);
   }
 
   /**
    * Create quick view element.
-   * @return {!FilesQuickView}
-   * @private
    */
-  createQuickView_() {
-    return /** @type {!FilesQuickView} */ (
-        document.querySelector('#quick-view'));
+  private createQuickView_() {
+    return document.querySelector<FilesQuickView>('#quick-view')!;
   }
 
   /**
    * Handles open-in-new button tap.
-   *
-   * @param {!Event} event A button click event.
-   * @private
    */
-  onOpenInNewButtonTap_(event) {
+  private onOpenInNewButtonClick_() {
     this.tasks_ && this.tasks_.executeDefault();
-    this.quickView_.close();
+    this.quickView_!.close();
   }
 
   /**
    * Handles delete button tap.
-   *
-   * @param {!Event} event A button click event.
-   * @private
    */
-  onDeleteButtonTap_(event) {
+  private onDeleteButtonClick_() {
     this.deleteSelectedEntry_();
   }
 
   /**
    * Handles key event on listContainer if it's relevant to quick view.
-   *
-   * @param {!Event} event A keyboard event.
-   * @private
    */
-  onKeyDownToOpen_(event) {
+  private onKeyDownToOpen_(event: KeyboardEvent) {
     if (event.key === ' ') {
       event.preventDefault();
       event.stopImmediatePropagation();
       if (this.entries_.length > 0) {
-        this.display_(QuickViewUma.WayToOpen.SPACE_KEY);
+        this.display_(WayToOpen.SPACE_KEY);
       }
     }
   }
 
   /**
    * Handles key event on quick view.
-   *
-   * @param {!Event} event A keyboard event.
-   * @private
    */
-  onQuickViewKeyDown_(event) {
-    if (this.quickView_.isOpened()) {
+  private onQuickViewKeyDown_(event: KeyboardEvent) {
+    if (this.quickView_ && this.quickView_.isOpened()) {
       switch (event.key) {
         case ' ':
         case 'Escape':
@@ -279,11 +232,8 @@ export class QuickViewController {
    * Changes the currently selected entry when in single-select mode.  Sets
    * the models |selectedIndex| to indirectly trigger onFileSelectionChanged_
    * and populate |this.entries_|.
-   *
-   * @param {boolean} down True if user pressed down arrow, false if up.
-   * @private
    */
-  changeSingleSelectModeSelection_(down = false) {
+  private changeSingleSelectModeSelection_(down = false) {
     let index;
 
     if (down) {
@@ -304,11 +254,8 @@ export class QuickViewController {
   /**
    * Changes the currently selected entry when in multi-select mode (file
    * list calls this "check-select" mode).
-   *
-   * @param {boolean} down True if user pressed down arrow, false if up.
-   * @private
    */
-  changeCheckSelectModeSelection_(down = false) {
+  private changeCheckSelectModeSelection_(down = false) {
     if (down) {
       this.currentSelection_ = this.currentSelection_ + 1;
       if (this.currentSelection_ >=
@@ -323,21 +270,19 @@ export class QuickViewController {
       }
     }
 
-    this.onFileSelectionChanged_(null);
+    this.onFileSelectionChanged_();
   }
 
   /**
    * Delete the currently selected entry in quick view.
-   *
-   * @private
    */
-  deleteSelectedEntry_() {
+  private deleteSelectedEntry_() {
     const entry = this.entries_[this.currentSelection_];
 
     // Create a delete confirm dialog if needed.
     if (!this.deleteConfirmDialog_) {
       const dialogElement = document.createElement('dialog');
-      this.quickView_.shadowRoot.appendChild(dialogElement);
+      this.quickView_!.shadowRoot!.appendChild(dialogElement);
       dialogElement.id = 'delete-confirm-dialog';
 
       this.deleteConfirmDialog_ = new FilesConfirmDialog(dialogElement);
@@ -367,44 +312,37 @@ export class QuickViewController {
 
   /**
    * Returns true if the entry can be deleted.
-   * @param {Entry} entry
-   * @return {!Promise<boolean>}
-   * @private
    */
-  canDeleteEntry_(entry) {
+  private async canDeleteEntry_(entry: Entry) {
     const deleteCommand = CommandHandler.getCommand('delete');
-    return Promise.resolve(
-        deleteCommand.canDeleteEntries([entry], this.fileManager_));
+    return deleteCommand.canDeleteEntries([entry], this.fileManager_);
   }
 
   /**
    * Display quick view.
-   *
-   * @param {QuickViewUma.WayToOpen} wayToOpen The open quick view trigger.
-   * @private
    */
-  async display_(wayToOpen) {
+  private async display_(wayToOpen: WayToOpen) {
     // On opening Quick View, always reset the current selection index.
     this.currentSelection_ = 0;
 
     this.checkSelectMode_ = this.fileListSelectionModel_.getCheckSelectMode();
 
     await this.updateQuickView_();
-    if (!this.quickView_.isOpened()) {
-      this.quickView_.open();
-      this.quickViewUma_.onOpened(this.entries_[0], wayToOpen);
+    if (!this.quickView_!.isOpened()) {
+      this.quickView_!.open();
+      if (this.entries_[0]) {
+        this.quickViewUma_.onOpened(this.entries_[0], wayToOpen);
+      }
     }
   }
 
   /**
    * Update quick view on file selection change.
-   *
-   * @param {?Event} event an Event whose target is FileSelectionHandler.
-   * @private
    */
-  onFileSelectionChanged_(event) {
+  private onFileSelectionChanged_(event?: Event&
+                                  {target: FileSelectionHandler}) {
     if (event) {
-      this.entries_ = event.target.selection.entries;
+      this.entries_ = event.target?.selection.entries;
 
       if (!this.entries_ || !this.entries_.length) {
         if (this.quickView_ && this.quickView_.isOpened()) {
@@ -429,11 +367,10 @@ export class QuickViewController {
       }
     }
 
-    if (this.quickView_ && this.quickView_.isOpened()) {
-      assert(this.entries_.length > 0);
-      const entry = this.entries_[this.currentSelection_];
-
-      if (!util.isSameEntry(entry, this.quickViewModel_.getSelectedEntry())) {
+    if (this.quickView_ && this.quickView_.isOpened() &&
+        this.entries_[this.currentSelection_]) {
+      const entry = this.entries_[this.currentSelection_]!;
+      if (!util.isSameEntry(entry, this.quickViewModel_.getSelectedEntry()!)) {
         this.updateQuickView_();
       }
     }
@@ -441,11 +378,8 @@ export class QuickViewController {
 
   /**
    * Update quick view using current entries.
-   *
-   * @return {!Promise} Promise fulfilled after quick view is updated.
-   * @private
    */
-  async updateQuickView_() {
+  private async updateQuickView_(): Promise<void> {
     if (!this.quickView_) {
       try {
         const quickView = this.createQuickView_();
@@ -457,8 +391,8 @@ export class QuickViewController {
       }
     }
 
-    assert(this.entries_.length > 0);
-    const entry = this.entries_[this.currentSelection_];
+    assert(this.entries_.length >= this.currentSelection_);
+    const entry = this.entries_[this.currentSelection_]!;
     this.quickViewModel_.setSelectedEntry(entry);
     this.tasks_ = null;
 
@@ -474,11 +408,11 @@ export class QuickViewController {
         this.canDeleteEntry_(entry),
       ]);
 
-      const items = /**@type{Array<MetadataItem>}*/ (values[0]);
-      const tasks = /**@type{!FileTasks}*/ (values[1]);
+      const items = values[0];
+      const tasks = values[1];
       const canDelete = values[2];
       return this.onMetadataLoaded_(entry, items, tasks, canDelete);
-    } catch (error) {
+    } catch (error: any) {
       if (error) {
         console.warn(error.stack || error);
       }
@@ -490,15 +424,10 @@ export class QuickViewController {
    *
    * Note: fast-typing users can change the active selection while the |entry|
    * metadata and tasks were being async fetched. Bail out in that case.
-   *
-   * @param {!FileEntry} entry
-   * @param {Array<MetadataItem>} items
-   * @param {!FileTasks} fileTasks
-   * @param {boolean} canDelete
-   * @return {!Promise}
-   * @private
    */
-  async onMetadataLoaded_(entry, items, fileTasks, canDelete) {
+  private async onMetadataLoaded_(
+      entry: Entry, items: MetadataItem[], fileTasks: FileTasks,
+      canDelete: boolean) {
     const tasks = fileTasks.getAnnotatedTasks();
 
     const params =
@@ -512,7 +441,7 @@ export class QuickViewController {
       dataType: '',
     };
 
-    this.quickView_.setProperties({
+    this.quickView_!.setProperties({
       type: params.type || '',
       subtype: params.subtype || '',
       filePath: params.filePath || '',
@@ -530,27 +459,20 @@ export class QuickViewController {
     }
   }
 
-  /**
-   * @param {!FileEntry} entry
-   * @param {Array<MetadataItem>} items
-   * @param {!Array<!chrome.fileManagerPrivate.FileTask>} tasks
-   * @param {boolean} canDelete
-   * @return {!Promise<!QuickViewParams>}
-   *
-   * @private
-   */
-  async getQuickViewParameters_(entry, items, tasks, canDelete) {
-    const typeInfo = FileType.getType(entry, items[0].contentMimeType);
+  private async getQuickViewParameters_(
+      entry: FileEntry|Entry, items: MetadataItem[],
+      tasks: chrome.fileManagerPrivate.FileTask[],
+      canDelete: boolean): Promise<Partial<QuickViewParams>> {
+    const firstItem = items[0];
+    const typeInfo = FileType.getType(entry, firstItem?.contentMimeType);
     const type = typeInfo.type;
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
     const label = util.getEntryLabel(locationInfo, entry);
     const entryIsOnDrive = locationInfo && locationInfo.isDriveBased;
-    const thumbnailUrl = items.length ? items[0].thumbnailUrl : undefined;
-    const modificationTime =
-        items.length ? items[0].modificationTime : undefined;
+    const thumbnailUrl = firstItem ? firstItem.thumbnailUrl : undefined;
+    const modificationTime = firstItem ? firstItem.modificationTime : undefined;
 
-    /** @type {!QuickViewParams} */
-    const params = {
+    const params: Partial<QuickViewParams> = {
       type: type,
       subtype: typeInfo.subtype,
       filePath: label,
@@ -559,9 +481,8 @@ export class QuickViewController {
     };
 
     const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
-    let localFile = volumeInfo &&
-        QuickViewController.LOCAL_VOLUME_TYPES_.indexOf(
-            assert(volumeInfo.volumeType)) >= 0;
+    let localFile =
+        volumeInfo && LOCAL_VOLUME_TYPES_.indexOf(volumeInfo.volumeType) >= 0;
 
     // Treat certain types on Drive as if they were local (try auto-play etc).
     if (entryIsOnDrive && (type === 'audio' || type === 'video') &&
@@ -607,7 +528,8 @@ export class QuickViewController {
     if (type === 'raw') {
       // RAW files: fetch their ImageLoader thumbnail.
       try {
-        const result = await this.loadRawFileThumbnailFromImageLoader_(entry);
+        const result =
+            await this.loadRawFileThumbnailFromImageLoader_(entry as FileEntry);
         if (result.status === LoadImageResponseStatus.SUCCESS) {
           params.type = 'image';
           params.sourceContent = {
@@ -629,14 +551,18 @@ export class QuickViewController {
     }
 
     try {
-      const file = await new Promise((resolve, reject) => {
-        entry.file(resolve, reject);
-      });
+      const file =
+          await new Promise((resolve: (file: File) => void, reject) => {
+            if ('file' in entry) {
+              entry.file(resolve, reject);
+              return;
+            }
+            reject(new Error('entry not a file type'));
+          });
 
       switch (type) {
         case 'image':
-          if (QuickViewController.UNSUPPORTED_IMAGE_SUBTYPES_.indexOf(
-                  typeInfo.subtype) === -1) {
+          if (UNSUPPORTED_IMAGE_SUBTYPES_.indexOf(typeInfo.subtype) === -1) {
             params.sourceContent = {
               data: file,
               dataType: 'blob',
@@ -665,7 +591,7 @@ export class QuickViewController {
           const itemsContentThumnbnail =
               await this.metadataModel_.get([entry], ['contentThumbnailUrl']);
           const item = itemsContentThumnbnail[0];
-          if (item.contentThumbnailUrl) {
+          if (item?.contentThumbnailUrl) {
             params.audioArtwork = {
               data: item.contentThumbnailUrl,
               dataType: 'url',
@@ -719,13 +645,9 @@ export class QuickViewController {
 
   /**
    * Loads a thumbnail from Drive.
-   *
-   * @param {string} url Thumbnail url
-   * @param {Date|undefined} modificationTime File's modification time.
-   * @return {!Promise<!LoadImageResponse>}
-   * @private
    */
-  async loadThumbnailFromDrive_(url, modificationTime) {
+  private async loadThumbnailFromDrive_(url: string, modificationTime?: Date):
+      Promise<LoadImageResponse> {
     const client = ImageLoaderClient.getInstance();
     const request = LoadImageRequest.createForUrl(url);
     request.cache = true;
@@ -739,12 +661,9 @@ export class QuickViewController {
    * to get its |lastModified| time. ImageLoaderClient uses that to work out if
    * its cached data for |entry| is up-to-date or otherwise call ImageLoader to
    * refresh the cached |entry| data with the most recent data.
-   *
-   * @param {!Entry} entry The RAW file entry.
-   * @return {!Promise<!LoadImageResponse>}
-   * @private
    */
-  loadRawFileThumbnailFromImageLoader_(entry) {
+  private async loadRawFileThumbnailFromImageLoader_(entry: FileEntry):
+      Promise<LoadImageResponse> {
     return new Promise((resolve, reject) => {
       entry.file(function requestFileThumbnail(file) {
         const request = LoadImageRequest.createForUrl(entry.toURL());
@@ -770,10 +689,8 @@ export class QuickViewController {
  * Due to access control of WebView, non-local files can not be previewed
  * with Quick View unless thumbnails are provided (which is the case with
  * Drive).
- *
- * @private @const {!Array<!VolumeManagerCommon.VolumeType>}
  */
-QuickViewController.LOCAL_VOLUME_TYPES_ = [
+const LOCAL_VOLUME_TYPES_ = [
   VolumeManagerCommon.VolumeType.ARCHIVE,
   VolumeManagerCommon.VolumeType.DOWNLOADS,
   VolumeManagerCommon.VolumeType.REMOVABLE,
@@ -788,8 +705,7 @@ QuickViewController.LOCAL_VOLUME_TYPES_ = [
 /**
  * List of unsupported image subtypes excluded from being displayed in
  * QuickView. An "unsupported type" message is shown instead.
- * @private @const {!Array<string>}
  */
-QuickViewController.UNSUPPORTED_IMAGE_SUBTYPES_ = [
+const UNSUPPORTED_IMAGE_SUBTYPES_ = [
   'TIFF',  // crbug.com/624109
 ];

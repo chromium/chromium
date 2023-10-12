@@ -2,8 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {toSandboxedURL} from '../../common/js/url_constants.js';
+
+import {getTemplate} from './files_safe_media.html.js';
+
+export interface FilesSafeMedia {
+  $: {content: HTMLDivElement};
+  type: string;
+  src: FilePreviewContent;
+  fire: (eventName: string) => void;
+}
+
+type ContentsIframeNode = HTMLIFrameElement&{isVideoMedia_: boolean};
 
 /**
  * Polymer element to render media securely in a chrome-untrusted:// <iframe>
@@ -12,40 +24,39 @@ import {toSandboxedURL} from '../../common/js/url_constants.js';
  * When tapped, 'files-safe-media-tap-inside', 'files-safe-media-tap-outside'
  * events are fired depending on the position of the tap.
  */
-export const FilesSafeMedia = Polymer({
-  _template: html`{__html_template__}`,
+export class FilesSafeMedia extends PolymerElement {
+  static get is() {
+    return 'files-safe-media';
+  }
 
-  is: 'files-safe-media',
+  static get template() {
+    return getTemplate();
+  }
 
-  properties: {
-    /**
-     * Source content accessible from the sandboxed environment.
-     * @type {!FilePreviewContent}
-     */
-    src: {
-      type: Object,
-      observer: 'onSrcChange_',
-      reflectToAttribute: true,
-    },
+  static get properties() {
+    return {
+      /**
+       * Source content accessible from the sandboxed environment.
+       */
+      src: {
+        type: Object,
+        observer: 'onSrcChange_',
+        reflectToAttribute: true,
+      },
 
-    /**
-     * <files-safe-media> media type: e.g. audio, image, video, html.
-     * @const {string}
-     */
-    type: {
-      type: String,
-      readonly: true,
-    },
-  },
+      /**
+       * <files-safe-media> media type: e.g. audio, image, video, html.
+       */
+      type: {
+        type: String,
+        readonly: true,
+      },
+    };
+  }
 
-  listeners: {
-    'src-changed': 'onSrcChange_',
-  },
+  private contentsNode_: ContentsIframeNode|null = null;
 
-  /**
-   * @return {string}
-   */
-  sourceFile_: function() {
+  private sourceFile_() {
     switch (this.type) {
       case 'image':
         return toSandboxedURL('untrusted_resources/files_img_content.html')
@@ -63,9 +74,9 @@ export const FilesSafeMedia = Polymer({
         console.warn('Unsupported type: ' + this.type);
         return '';
     }
-  },
+  }
 
-  onSrcChange_: function() {
+  private onSrcChange_() {
     const hasContent = this.src.dataType !== '';
 
     if (!hasContent) {
@@ -90,10 +101,10 @@ export const FilesSafeMedia = Polymer({
       return;
     }
 
-    const data = /** @type {!UntrustedPreviewData} */ ({
+    const data: UntrustedPreviewData = {
       type: this.type,
-      sourceContent: /** @type {!FilePreviewContent} */ (this.src),
-    });
+      sourceContent: this.src,
+    };
 
     if (this.contentsNode_.contentWindow) {
       this.contentsNode_.isVideoMedia_ = (this.type === 'video');
@@ -101,11 +112,10 @@ export const FilesSafeMedia = Polymer({
       this.contentsNode_.contentWindow.postMessage(
           data, toSandboxedURL().origin);
     }
-  },
+  }
 
-  createUntrustedContents_: function() {
-    const node =
-        /** @type {!HTMLIFrameElement} */ (document.createElement('iframe'));
+  private createUntrustedContents_() {
+    const node = document.createElement('iframe') as ContentsIframeNode;
     this.contentsNode_ = node;
     // Allow autoplay for audio files.
     if (this.type === 'audio') {
@@ -114,18 +124,19 @@ export const FilesSafeMedia = Polymer({
     this.$.content.appendChild(node);
     node.addEventListener('load', () => this.onSrcChange_());
     node.src = this.sourceFile_();
-  },
+  }
 
-  created: function() {
+  created() {
     /**
-     * @private {?HTMLIFrameElement} Holds the untrusted iframe when a source
-     *     to preview is set. Set to null otherwise.
+     * Holds the untrusted iframe when a source to preview is set. Set to null
+     * otherwise.
      */
     this.contentsNode_ = null;
-  },
+  }
 
-  ready: function() {
-    this.addEventListener('focus', (event) => {
+  override ready() {
+    super.ready();
+    this.addEventListener('focus', () => {
       if (this.type === 'audio' || this.type === 'video') {
         // Avoid setting the focus on the files-safe-media itself, rather sends
         // it down to its untrusted iframe element.
@@ -141,9 +152,11 @@ export const FilesSafeMedia = Polymer({
         return;
       }
       if (event.data === 'tap-inside') {
-        this.fire('files-safe-media-tap-inside');
+        this.dispatchEvent(new CustomEvent(
+            'files-safe-media-tap-inside', {bubbles: true, composed: true}));
       } else if (event.data === 'tap-outside') {
-        this.fire('files-safe-media-tap-outside');
+        this.dispatchEvent(new CustomEvent(
+            'files-safe-media-tap-outside', {bubbles: true, composed: true}));
       } else if (event.data === 'webview-loaded') {
         if (this.contentsNode_) {
           this.contentsNode_.setAttribute('loaded', '');
@@ -153,10 +166,17 @@ export const FilesSafeMedia = Polymer({
           this.contentsNode_.removeAttribute('loaded');
         }
       } else if (event.data === 'content-decode-failed') {
-        this.fire('files-safe-media-load-error');
+        this.dispatchEvent(new CustomEvent(
+            'files-safe-media-load-error', {bubbles: true, composed: true}));
       }
     });
-  },
-});
+  }
+}
 
-//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_safe_media.js
+declare global {
+  interface HTMLElementTagNameMap {
+    'files-safe-media': FilesSafeMedia;
+  }
+}
+
+customElements.define(FilesSafeMedia.is, FilesSafeMedia);

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
-
 import {DialogType} from '../../common/js/dialog_type.js';
 import {FileType} from '../../common/js/file_type.js';
 import {recordEnum} from '../../common/js/metrics.js';
@@ -16,32 +14,13 @@ import {UMA_INDEX_KNOWN_EXTENSIONS} from './uma_enums.gen.js';
  * UMA exporter for Quick View.
  */
 export class QuickViewUma {
-  /**
-   * @param {!VolumeManager} volumeManager
-   * @param {!DialogType} dialogType
-   */
-  constructor(volumeManager, dialogType) {
-    /**
-     * @type {!VolumeManager}
-     * @private
-     */
-    this.volumeManager_ = volumeManager;
-    /**
-     * @type {DialogType}
-     * @private
-     */
-    this.dialogType_ = dialogType;
-  }
+  constructor(
+      private volumeManager_: VolumeManager, private dialogType_: DialogType) {}
 
   /**
-   * Exports file type metric with the given |name|.
-   *
-   * @param {!FileEntry} entry
-   * @param {string} name The histogram name.
-   *
-   * @private
+   * Exports file type metric with the given histogram `name`.
    */
-  exportFileType_(entry, name) {
+  private exportFileType_(entry: Entry, name: string) {
     let extension = FileType.getExtension(entry).toLowerCase();
     if (entry.isDirectory) {
       extension = 'directory';
@@ -55,28 +34,23 @@ export class QuickViewUma {
 
   /**
    * Exports UMA based on the entry shown in Quick View.
-   *
-   * @param {!FileEntry} entry
    */
-  onEntryChanged(entry) {
+  onEntryChanged(entry: FileEntry|Entry) {
     this.exportFileType_(entry, 'QuickView.FileType');
   }
 
   /**
    * Exports UMA based on the entry selected when Quick View is opened.
-   *
-   * @param {!FileEntry} entry
-   * @param {QuickViewUma.WayToOpen} wayToOpen
    */
-  onOpened(entry, wayToOpen) {
+  onOpened(entry: FileEntry|Entry, wayToOpen: WayToOpen) {
     this.exportFileType_(entry, 'QuickView.FileTypeOnLaunch');
-    recordEnum('QuickView.WayToOpen', wayToOpen, QuickViewUma.WayToOpenValues_);
+    recordEnum('QuickView.WayToOpen', wayToOpen, WAY_TO_OPEN_ENUM_TO_INDEX);
 
     const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
     const volumeType = volumeInfo && volumeInfo.volumeType;
     if (volumeType) {
-      if (QuickViewUma.VolumeType.includes(volumeType)) {
-        recordEnum('QuickView.VolumeType', volumeType, QuickViewUma.VolumeType);
+      if (QUICK_VIEW_VOLUME_TYPES.includes(volumeType)) {
+        recordEnum('QuickView.VolumeType', volumeType, QUICK_VIEW_VOLUME_TYPES);
       } else {
         console.warn('Unknown volume type: ' + volumeType);
       }
@@ -98,35 +72,27 @@ export class QuickViewUma {
 
 /**
  * In which way quick view was opened.
- * @enum {string}
- * @const
  */
-QuickViewUma.WayToOpen = {
-  CONTEXT_MENU: 'contextMenu',
-  SPACE_KEY: 'spaceKey',
-  SELECTION_MENU: 'selectionMenu',
-};
+export const enum WayToOpen {
+  CONTEXT_MENU = 'contextMenu',
+  SPACE_KEY = 'spaceKey',
+  SELECTION_MENU = 'selectionMenu',
+}
 
 /**
  * The order should be consistent with the definition in histograms.xml.
- *
- * @const {!Array<QuickViewUma.WayToOpen>}
- * @private
  */
-QuickViewUma.WayToOpenValues_ = [
-  QuickViewUma.WayToOpen.CONTEXT_MENU,
-  QuickViewUma.WayToOpen.SPACE_KEY,
-  QuickViewUma.WayToOpen.SELECTION_MENU,
+const WAY_TO_OPEN_ENUM_TO_INDEX = [
+  WayToOpen.CONTEXT_MENU,
+  WayToOpen.SPACE_KEY,
+  WayToOpen.SELECTION_MENU,
 ];
 
 /**
  * Keep the order of this in sync with FileManagerVolumeType in
  * tools/metrics/histograms/enums.xml.
- *
- * @type {!Array<VolumeManagerCommon.VolumeType>}
- * @const
  */
-QuickViewUma.VolumeType = [
+const QUICK_VIEW_VOLUME_TYPES = [
   VolumeManagerCommon.VolumeType.DRIVE,
   VolumeManagerCommon.VolumeType.DOWNLOADS,
   VolumeManagerCommon.VolumeType.REMOVABLE,
