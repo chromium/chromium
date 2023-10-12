@@ -334,6 +334,8 @@ void AddSuggestionsLoadTimeData(content::WebUIDataSource* html_source,
                                 bool is_emoji_suggestion_allowed) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"suggestionsTitle", IDS_SETTINGS_SUGGESTIONS_TITLE},
+      {"orcaTitle", IDS_OS_SETTINGS_SUGGESTIONS_ORCA_TITLE},
+      {"orcaDescription", IDS_OS_SETTINGS_SUGGESTIONS_ORCA_DESCRIPTION},
       {"emojiSuggestionTitle", IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_TITLE},
       {"emojiSuggestionDescription",
        IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_DESCRIPTION}};

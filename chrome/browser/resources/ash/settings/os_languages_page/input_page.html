@@ -313,11 +313,12 @@
     <h2>$i18n{suggestionsTitle}</h2>
     <div class="subsection">
       <template is="dom-if" if="[[allowOrca_]]">
-        <!-- TODO(b/294956432): Replace with the correct label and sub-label -->
+        <!-- TODO(b/304894074): add the learn-more-url. -->
         <settings-toggle-button id="orcaToggle"
             pref="{{prefs.assistive_input.orca_enabled}}"
-            label="Copy Suggestions"
-            aria-label="Copy Suggestions"
+            label="$i18n{orcaTitle}"
+            sub-label="$i18n{orcaDescription}"
+            aria-label="$i18n{orcaTitle}"
             deep-link-focus-id$="[[Setting.kShowOrca]]">
         </settings-toggle-button>
       </template>
