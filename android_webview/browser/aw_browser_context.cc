@@ -18,7 +18,6 @@
 #include "android_webview/browser/aw_form_database_service.h"
 #include "android_webview/browser/aw_permission_manager.h"
 #include "android_webview/browser/aw_quota_manager_bridge.h"
-#include "android_webview/browser/aw_resource_context.h"
 #include "android_webview/browser/aw_web_ui_controller_factory.h"
 #include "android_webview/browser/cookie_manager.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
@@ -71,6 +70,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_request_utils.h"
+#include "content/public/browser/resource_context.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -415,7 +415,7 @@ bool AwBrowserContext::IsOffTheRecord() {
 
 content::ResourceContext* AwBrowserContext::GetResourceContext() {
   if (!resource_context_) {
-    resource_context_ = std::make_unique<AwResourceContext>();
+    resource_context_ = std::make_unique<content::ResourceContext>();
   }
   return resource_context_.get();
 }

@@ -21,7 +21,6 @@
 #include "android_webview/browser/aw_devtools_manager_delegate.h"
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/browser/aw_http_auth_handler.h"
-#include "android_webview/browser/aw_resource_context.h"
 #include "android_webview/browser/aw_settings.h"
 #include "android_webview/browser/aw_speech_recognition_manager_delegate.h"
 #include "android_webview/browser/aw_web_contents_view_delegate.h"
@@ -486,8 +485,7 @@ bool AwContentBrowserClient::CanCreateWindow(
 
 base::FilePath AwContentBrowserClient::GetDefaultDownloadDirectory() {
   // Android WebView does not currently use the Chromium downloads system.
-  // Download requests are cancelled immediately when recognized; see
-  // AwResourceDispatcherHost::CreateResourceHandlerForDownload. However the
+  // Download requests are cancelled immediately when recognized. However the
   // download system still tries to start up and calls this before recognizing
   // the request has been cancelled.
   return base::FilePath();

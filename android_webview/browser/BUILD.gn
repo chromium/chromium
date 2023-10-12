@@ -99,8 +99,6 @@ source_set("browser") {
     "aw_render_process.h",
     "aw_render_process_gone_delegate.h",
     "aw_renderer_priority.h",
-    "aw_resource_context.cc",
-    "aw_resource_context.h",
     "aw_settings.cc",
     "aw_settings.h",
     "aw_speech_recognition_manager_delegate.cc",
