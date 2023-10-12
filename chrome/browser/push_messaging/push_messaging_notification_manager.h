@@ -15,11 +15,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/push_messaging/budget_database.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
-#include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
-#endif
-
 class GURL;
 class Profile;
 
@@ -64,9 +59,6 @@ class PushMessagingNotificationManager {
   FRIEND_TEST_ALL_PREFIXES(PushMessagingNotificationManagerTest, IsTabVisible);
   FRIEND_TEST_ALL_PREFIXES(PushMessagingNotificationManagerTest,
                            IsTabVisibleViewSource);
-  FRIEND_TEST_ALL_PREFIXES(
-      PushMessagingNotificationManagerTest,
-      SkipEnforceUserVisibleOnlyRequirementsForAndroidMessages);
 
   void DidCountVisibleNotifications(
       const GURL& origin,
@@ -92,28 +84,10 @@ class PushMessagingNotificationManager {
       bool success,
       const std::string& notification_id);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool ShouldSkipUserVisibleOnlyRequirements(const GURL& origin);
-
-  void SetTestMultiDeviceSetupClient(
-      ash::multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client);
-
-  void SetTestAndroidSmsAppManager(
-      ash::android_sms::AndroidSmsAppManager* android_sms_app_manager);
-#endif
-
   // Weak. This manager is owned by a keyed service on this profile.
   raw_ptr<Profile> profile_;
 
   BudgetDatabase budget_database_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  raw_ptr<ash::multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
-      test_multidevice_setup_client_ = nullptr;
-
-  raw_ptr<ash::android_sms::AndroidSmsAppManager, ExperimentalAsh>
-      test_android_sms_app_manager_ = nullptr;
-#endif
 
   base::WeakPtrFactory<PushMessagingNotificationManager> weak_factory_{this};
 };

@@ -51,12 +51,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
-#include "chrome/browser/ash/android_sms/android_sms_urls.h"
-#include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
-#endif
-
 using content::BrowserThread;
 using content::NotificationDatabaseData;
 using content::PlatformNotificationContext;
@@ -110,14 +104,6 @@ void PushMessagingNotificationManager::EnforceUserVisibleOnlyRequirements(
     int64_t service_worker_registration_id,
     EnforceRequirementsCallback message_handled_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ShouldSkipUserVisibleOnlyRequirements(origin)) {
-    std::move(message_handled_callback)
-        .Run(/* did_show_generic_notification= */ false);
-    return;
-  }
-#endif
 
   // TODO(johnme): Relax this heuristic slightly.
   scoped_refptr<PlatformNotificationContext> notification_context =
@@ -268,62 +254,3 @@ void PushMessagingNotificationManager::DidWriteNotificationData(
   std::move(message_handled_callback)
       .Run(/* did_show_generic_notification= */ true);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-bool PushMessagingNotificationManager::ShouldSkipUserVisibleOnlyRequirements(
-    const GURL& origin) {
-  // This is a short-term exception to user visible only enforcement added
-  // to support for "Messages for Web" integration on ChromeOS.
-
-  ash::multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client;
-  if (test_multidevice_setup_client_) {
-    multidevice_setup_client = test_multidevice_setup_client_;
-  } else {
-    multidevice_setup_client =
-        ash::multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
-            profile_);
-  }
-
-  if (!multidevice_setup_client)
-    return false;
-
-  // Check if messages feature is enabled
-  if (multidevice_setup_client->GetFeatureState(
-          ash::multidevice_setup::mojom::Feature::kMessages) !=
-      ash::multidevice_setup::mojom::FeatureState::kEnabledByUser) {
-    return false;
-  }
-
-  ash::android_sms::AndroidSmsAppManager* android_sms_app_manager;
-  if (test_android_sms_app_manager_) {
-    android_sms_app_manager = test_android_sms_app_manager_;
-  } else {
-    auto* android_sms_service =
-        ash::android_sms::AndroidSmsServiceFactory::GetForBrowserContext(
-            profile_);
-    if (!android_sms_service)
-      return false;
-    android_sms_app_manager = android_sms_service->android_sms_app_manager();
-  }
-
-  // Check if origin matches current messages url
-  absl::optional<GURL> app_url = android_sms_app_manager->GetCurrentAppUrl();
-  if (!app_url)
-    app_url = ash::android_sms::GetAndroidMessagesURL();
-
-  if (!origin.EqualsIgnoringRef(app_url->DeprecatedGetOriginAsURL()))
-    return false;
-
-  return true;
-}
-
-void PushMessagingNotificationManager::SetTestMultiDeviceSetupClient(
-    ash::multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client) {
-  test_multidevice_setup_client_ = multidevice_setup_client;
-}
-
-void PushMessagingNotificationManager::SetTestAndroidSmsAppManager(
-    ash::android_sms::AndroidSmsAppManager* android_sms_app_manager) {
-  test_android_sms_app_manager_ = android_sms_app_manager;
-}
-#endif
