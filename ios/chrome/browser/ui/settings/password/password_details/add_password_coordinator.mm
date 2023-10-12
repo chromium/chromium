@@ -80,6 +80,7 @@
 - (void)start {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   self.viewController = [[AddPasswordViewController alloc] init];
+  self.viewController.presentationController.delegate = self;
 
   self.mediator = [[AddPasswordMediator alloc]
           initWithDelegate:self
@@ -117,6 +118,13 @@
   self.viewController = nil;
 
   [self stopReauthCoordinator];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self.delegate passwordDetailsTableViewControllerDidFinish:self];
 }
 
 #pragma mark - AddPasswordMediatorDelegate
