@@ -52,11 +52,11 @@ password_manager::PasswordForm PasswordFormFromCredential(
   NSString* keychainIdentifier =
       SysUTF8ToNSString(passwordForm.keychain_identifier);
 
-  NSString* serviceIdentifier = SysUTF8ToNSString(passwordForm.url.spec());
   NSString* serviceName = SysUTF8ToNSString(site_name);
   NSString* note =
       SysUTF16ToNSString(passwordForm.GetNoteWithEmptyUniqueDisplayName());
 
+  NSString* serviceIdentifier = @"";
   if (password_manager::IsValidAndroidFacetURI(passwordForm.signon_realm)) {
     NSString* webRealm = SysUTF8ToNSString(passwordForm.affiliated_web_realm);
     url::Origin origin =
@@ -82,6 +82,8 @@ password_manager::PasswordForm PasswordFormFromCredential(
       // Fallback to serviceIdentifier.
       serviceName = serviceIdentifier;
     }
+  } else {
+    serviceIdentifier = SysUTF8ToNSString(passwordForm.url.spec());
   }
 
   DCHECK(serviceIdentifier.length);
