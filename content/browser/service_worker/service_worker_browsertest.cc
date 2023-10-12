@@ -5308,29 +5308,8 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
   }
 
   scoped_refptr<ServiceWorkerVersion> SetupAndRegisterServiceWorker() {
-    RegisterRequestMonitorForRequestCount();
-    RegisterRequestHandlerForSlowResponsePage();
     StartServerAndNavigateToSetup();
-
-    const GURL create_service_worker_url(embedded_test_server()->GetURL(
-        "/service_worker/create_service_worker.html"));
-
-    // Register a service worker.
-    WorkerRunningStatusObserver observer1(public_context());
-    EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
-    EXPECT_EQ("DONE",
-              EvalJs(GetPrimaryMainFrame(),
-                     "register('/service_worker/race_network_request.js')"));
-    observer1.WaitUntilRunning();
-    scoped_refptr<ServiceWorkerVersion> version =
-        wrapper()->GetLiveVersion(observer1.version_id());
-    EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
-
-    // Stop the current running service worker.
-    StopServiceWorker(version.get());
-    EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
-
-    return version;
+    return RegisterRaceNetowrkRequestServiceWorker(embedded_test_server());
   }
 
   EvalJsResult GetInnerText() {
@@ -5346,9 +5325,17 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
     return it->second.size();
   }
 
+ protected:
+  void SetUpOnMainThread() override {
+    ServiceWorkerBrowserTest::SetUpOnMainThread();
+    RegisterRequestMonitorForRequestCount(embedded_test_server());
+    RegisterRequestHandlerForSlowResponsePage(embedded_test_server());
+  }
+
  private:
-  void RegisterRequestHandlerForSlowResponsePage() {
-    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+  void RegisterRequestHandlerForSlowResponsePage(
+      net::EmbeddedTestServer* test_server) {
+    test_server->RegisterRequestHandler(base::BindRepeating(
         [](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
           if (!base::Contains(request.GetURL().path(),
@@ -5411,14 +5398,39 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
           return http_response;
         }));
   }
-  void RegisterRequestMonitorForRequestCount() {
-    embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
+  void RegisterRequestMonitorForRequestCount(
+      net::EmbeddedTestServer* test_server) {
+    test_server->RegisterRequestMonitor(base::BindRepeating(
         &ServiceWorkerRaceNetworkRequestBrowserTest::MonitorRequestHandler,
         base::Unretained(this)));
   }
   void MonitorRequestHandler(const net::test_server::HttpRequest& request) {
     request_log_[request.relative_url].push_back(request);
   }
+
+  scoped_refptr<ServiceWorkerVersion> RegisterRaceNetowrkRequestServiceWorker(
+      net::EmbeddedTestServer* test_server) {
+    const GURL create_service_worker_url(
+        test_server->GetURL("/service_worker/create_service_worker.html"));
+
+    // Register a service worker.
+    WorkerRunningStatusObserver observer1(public_context());
+    EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
+    EXPECT_EQ("DONE",
+              EvalJs(GetPrimaryMainFrame(),
+                     "register('/service_worker/race_network_request.js')"));
+    observer1.WaitUntilRunning();
+    scoped_refptr<ServiceWorkerVersion> version =
+        wrapper()->GetLiveVersion(observer1.version_id());
+    EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
+
+    // Stop the current running service worker.
+    StopServiceWorker(version.get());
+    EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
+
+    return version;
+  }
+
   std::map<std::string, std::vector<net::test_server::HttpRequest>>
       request_log_;
   base::test::ScopedFeatureList feature_list_;
