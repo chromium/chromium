@@ -167,15 +167,7 @@ class SessionRestoreTest : public InProcessBrowserTest {
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{// Disable What's New for non-branded builds
-                               // where the welcome page will be
-                               // disabled. Otherwise the bots may run with a
-                               // configuration (What's New
-                               // enabled + Welcome disabled) that does not
-                               // actually occur in production,
-                               // and causes tests to flake.
-                               features::kChromeWhatsNewUI,
-                               // TODO(crbug.com/1394910): Use HTTPS URLs in
+        /*disabled_features=*/{// TODO(crbug.com/1394910): Use HTTPS URLs in
                                // tests to avoid having to
                                // disable this feature.
                                features::kHttpsUpgrades});

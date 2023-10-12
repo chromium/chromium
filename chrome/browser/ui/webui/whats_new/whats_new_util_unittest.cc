@@ -9,7 +9,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -51,18 +50,18 @@ class WhatsNewUtilTests : public testing::Test {
     switch (mode) {
       case EnableMode::kEnabled:
         scoped_feature_list_.InitWithFeatures(
-            {features::kChromeWhatsNewUI, features::kChromeRefresh2023,
+            {whats_new::kForceEnabled, features::kChromeRefresh2023,
              features::kChromeWebuiRefresh2023},
             {});
         break;
       case EnableMode::kViewsRefreshOnly:
         scoped_feature_list_.InitWithFeatures(
-            {features::kChromeWhatsNewUI, features::kChromeRefresh2023},
+            {whats_new::kForceEnabled, features::kChromeRefresh2023},
             {features::kChromeWebuiRefresh2023});
         break;
       case EnableMode::kNotEnabled:
         scoped_feature_list_.InitWithFeatures(
-            {features::kChromeWhatsNewUI},
+            {whats_new::kForceEnabled},
             {features::kChromeRefresh2023, features::kChromeWebuiRefresh2023});
     }
   }

@@ -21,7 +21,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/test_launcher_utils.h"
@@ -334,9 +333,9 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
     }
 
     // TODO(crbug.com/1243903): WhatsNewUI might be causing timeouts.
+    command_line->AppendSwitch(switches::kNoFirstRun);
+
     std::vector<base::test::FeatureRefAndParams> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features = {
-        features::kChromeWhatsNewUI};
 
     for (auto feature : enable_additional_features) {
       enabled_features.emplace_back(feature);
@@ -375,8 +374,7 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
     }
 #endif  // BUILDFLAG(IS_WIN)
 
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                       disabled_features);
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

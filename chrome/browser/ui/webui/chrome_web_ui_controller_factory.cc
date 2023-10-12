@@ -182,6 +182,7 @@
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
 #include "chrome/browser/ui/webui/webui_gallery/webui_gallery_ui.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -790,7 +791,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
 #endif
   if (url.host_piece() == chrome::kChromeUIWhatsNewHost &&
-      base::FeatureList::IsEnabled(features::kChromeWhatsNewUI)) {
+      whats_new::IsEnabled()) {
     return &NewWebUI<WhatsNewUI>;
   }
   if (url.host_piece() == chrome::kChromeUIOmniboxPopupHost &&

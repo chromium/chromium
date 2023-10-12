@@ -810,11 +810,6 @@ const char kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[] =
     "Clear the preserved window.name property when it's a top-level cross-site "
     "navigation that swaps BrowsingContextGroup.";
 
-const char kChromeWhatsNewUIName[] =
-    "Show Chrome What's New page at chrome://whats-new";
-const char kChromeWhatsNewUIDescription[] =
-    "Enables Chrome What's New page at chrome://whats-new.";
-
 const char kCreateShortcutIgnoresManifestName[] =
     "Create Shortcut ignores manifest";
 const char kCreateShortcutIgnoresManifestDescription[] =

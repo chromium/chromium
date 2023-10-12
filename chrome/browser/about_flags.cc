@@ -9198,10 +9198,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kTabSearchSearchThresholdVariations,
                                     "TabSearchFuzzySearch")},
 
-    {"chrome-whats-new-ui", flag_descriptions::kChromeWhatsNewUIName,
-     flag_descriptions::kChromeWhatsNewUIDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kChromeWhatsNewUI)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-phone-hub-call-notification",
      flag_descriptions::kPhoneHubCallNotificationName,

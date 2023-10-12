@@ -53,6 +53,21 @@ bool is_refresh_version =
 
 bool g_is_remote_content_disabled = false;
 
+// For testing purposes, so that WebUI tests run on non-branded
+// CQ bots.
+BASE_FEATURE(kForceEnabled,
+             "WhatsNewForceEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsEnabled() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(ANDROID) && \
+    !BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  return true;
+#else
+  return base::FeatureList::IsEnabled(whats_new::kForceEnabled);
+#endif
+}
+
 void DisableRemoteContentForTests() {
   g_is_remote_content_disabled = true;
 }
@@ -115,7 +130,7 @@ bool ShouldShowForState(PrefService* local_state,
       base::CommandLine::ForCurrentProcess();
   if ((command_line->HasSwitch(switches::kNoFirstRun) &&
        !command_line->HasSwitch(switches::kForceWhatsNew)) ||
-      !base::FeatureList::IsEnabled(features::kChromeWhatsNewUI)) {
+      !IsEnabled()) {
     LogStartupType(StartupType::kFeatureDisabled);
     return false;
   }

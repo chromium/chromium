@@ -63,6 +63,7 @@
 #include "chrome/browser/ui/toolbar/recent_tabs_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -638,7 +639,7 @@ class HelpMenuModel : public ui::SimpleMenuModel {
       SetCommandIcon(this, IDC_ABOUT, vector_icons::kInfoRefreshIcon);
     }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    if (base::FeatureList::IsEnabled(features::kChromeWhatsNewUI)) {
+    if (whats_new::IsEnabled()) {
       AddItemWithStringId(IDC_CHROME_WHATS_NEW, IDS_CHROME_WHATS_NEW);
       if (features::IsChromeRefresh2023()) {
         SetCommandIcon(this, IDC_CHROME_WHATS_NEW, kReleaseAlertIcon);
