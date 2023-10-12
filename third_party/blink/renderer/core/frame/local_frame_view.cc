@@ -3282,6 +3282,19 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
     return;
   }
 
+  auto LayoutForPrinting = [&layout_view]() {
+    Document& document = layout_view->GetDocument();
+    document.MarkViewportUnitsDirty();
+    layout_view->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
+        layout_invalidation_reason::kPrintingChanged);
+    document.UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
+  };
+
+  // Need to update computed style before we can set the initial containing
+  // block size. A zoom factor may have been set, and it shouldn't be applied
+  // when printing, e.g. when resolving @page margins.
+  frame_->GetDocument()->UpdateStyleAndLayoutTree();
+
   // Set up the initial containing block size for pagination. This is defined as
   // the page area size of the *first* page. [1] The size of the first page may
   // not be fully known yet, e.g. if the first page is named [2] and given a
@@ -3298,9 +3311,7 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
   layout_view->SetInitialContainingBlockSizeForPagination(
       initial_containing_block_size);
 
-  layout_view->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
-      layout_invalidation_reason::kPrintingChanged);
-  frame_->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
+  LayoutForPrinting();
 
   const auto& first_page = To<NGPhysicalBoxFragment>(
       *layout_view->GetPhysicalFragment(0)->Children()[0]);
@@ -3316,16 +3327,7 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
       // again.
       layout_view->SetInitialContainingBlockSizeForPagination(new_size);
 
-      // Make sure that everything that should respond to an initial containing
-      // block change actually responds (elements using viewport units, for
-      // instance).
-      frame_->GetDocument()->LayoutViewportWasResized();
-
-      layout_view
-          ->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
-              layout_invalidation_reason::kPrintingChanged);
-      frame_->GetDocument()->UpdateStyleAndLayout(
-          DocumentUpdateReason::kPrinting);
+      LayoutForPrinting();
     }
   }
 
@@ -3363,11 +3365,7 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
     PhysicalSize new_size =
         layout_view->PageAreaSize(/* page_index */ 0u, first_page_name);
     layout_view->SetInitialContainingBlockSizeForPagination(new_size);
-    frame_->GetDocument()->LayoutViewportWasResized();
-    layout_view->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
-        layout_invalidation_reason::kPrintingChanged);
-    frame_->GetDocument()->UpdateStyleAndLayout(
-        DocumentUpdateReason::kPrinting);
+    LayoutForPrinting();
   }
 
   if (TextAutosizer* text_autosizer = frame_->GetDocument()->GetTextAutosizer())
