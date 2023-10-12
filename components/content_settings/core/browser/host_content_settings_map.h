@@ -415,6 +415,8 @@ class HostContentSettingsMap : public content_settings::Observer,
 
   // Collect UMA data of exceptions.
   void RecordExceptionMetrics();
+  // Collect UMA data for 3PC exceptions.
+  void RecordThirdPartyCookieMetrics(const ContentSettingsForOneType& settings);
 
   // Adds content settings for |content_type| provided by |provider|, into
   // |settings|. If |incognito| is true, adds only the content settings which

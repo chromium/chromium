@@ -986,11 +986,13 @@ chromium-metrics-reviews@google.com.
   <suffix name="Ask" label="Ask"/>
   <suffix name="Block" label="Block"/>
   <suffix name="DetectImportantContent" label="Detect important content"/>
+  <suffix name="DomainWildcardAllowThirdParty" label="Third-party cookies allowed for a site group using a domain wildcard"/>
   <suffix name="MaxRequester"
       label="Maximum number of exceptions per requester"/>
   <suffix name="MaxTopLevel"
       label="Maximum number of exceptions per top-level"/>
   <suffix name="SessionOnly" label="Session only"/>
+  <suffix name="TemporaryAllowThirdParty" label="Third-party cookies temporarily allowed on a domain"/>
   <affected-histogram name="ContentSettings.Exceptions.cookies">
     <obsolete>
       Removed in M109. See ContentSettings.RegularProfile.Exceptions.cookies

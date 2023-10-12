@@ -2290,3 +2290,37 @@ TEST_F(HostContentSettingsMapTest, RenewContentSetting) {
                                      ContentSetting::CONTENT_SETTING_ALLOW),
             absl::make_optional(base::Hours(1)));
 }
+
+TEST_F(HostContentSettingsMapTest, Increments3pcSettingsMetrics) {
+  TestingProfile profile;
+  ContentSettingsPattern wildcard_pattern =
+      ContentSettingsPattern::FromString("[*.]foo.com");
+  ContentSettingsPattern literal_pattern =
+      ContentSettingsPattern::FromString("bar.com");
+  ContentSettingsPattern literal_pattern2 =
+      ContentSettingsPattern::FromString("baz.com");
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
+
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_lifetime(base::Seconds(100));
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(), literal_pattern,
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW, constraints);
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(), literal_pattern2,
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(), wildcard_pattern,
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
+
+  base::HistogramTester t;
+  auto map2 = base::MakeRefCounted<HostContentSettingsMap>(
+      profile.GetPrefs(), false, true, true, true);
+  map2->ShutdownOnUIThread();
+
+  std::string base_histogram =
+      "ContentSettings.RegularProfile.Exceptions.cookies";
+  t.ExpectUniqueSample(base_histogram + ".AllowThirdParty", 3, 1);
+  t.ExpectUniqueSample(base_histogram + ".TemporaryAllowThirdParty", 1, 1);
+  t.ExpectUniqueSample(base_histogram + ".DomainWildcardAllowThirdParty", 1, 1);
+}

@@ -675,7 +675,6 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
     const std::string type_name = info->name();
 
     size_t num_exceptions = 0;
-    size_t num_third_party_cookie_allow_exceptions = 0;
     base::flat_map<ContentSetting, size_t> num_exceptions_with_setting;
     const content_settings::ContentSettingsInfo* content_info =
         content_setting_registry->Get(content_type);
@@ -694,12 +693,6 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
         if (content_info)
           ++num_exceptions_with_setting[setting_entry.GetContentSetting()];
         ++num_exceptions;
-        if (content_type == ContentSettingsType::COOKIES &&
-            setting_entry.primary_pattern.MatchesAllHosts() &&
-            !setting_entry.secondary_pattern.MatchesAllHosts() &&
-            setting_entry.GetContentSetting() == CONTENT_SETTING_ALLOW) {
-          num_third_party_cookie_allow_exceptions++;
-        }
       }
     }
 
@@ -747,11 +740,42 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
                                    max_toplevel);
     }
     if (content_type == ContentSettingsType::COOKIES) {
-      base::UmaHistogramCustomCounts(
-          "ContentSettings.RegularProfile.Exceptions.cookies.AllowThirdParty",
-          num_third_party_cookie_allow_exceptions, 1, 1000, 30);
+      RecordThirdPartyCookieMetrics(settings);
     }
   }
+}
+
+void HostContentSettingsMap::RecordThirdPartyCookieMetrics(
+    const ContentSettingsForOneType& settings) {
+  size_t num_3pc_allow_exceptions = 0;
+  size_t num_3pc_allow_exceptions_temporary = 0;
+  size_t num_3pc_allow_exceptions_domain_wildcard = 0;
+
+  for (const ContentSettingPatternSource& setting_entry : settings) {
+    if (setting_entry.source == "preference" &&
+        setting_entry.primary_pattern.MatchesAllHosts() &&
+        !setting_entry.secondary_pattern.MatchesAllHosts() &&
+        setting_entry.GetContentSetting() == CONTENT_SETTING_ALLOW) {
+      num_3pc_allow_exceptions++;
+      if (!setting_entry.metadata.expiration().is_null()) {
+        num_3pc_allow_exceptions_temporary++;
+      }
+      if (setting_entry.secondary_pattern.HasDomainWildcard()) {
+        num_3pc_allow_exceptions_domain_wildcard++;
+      }
+    }
+  }
+  base::UmaHistogramCustomCounts(
+      "ContentSettings.RegularProfile.Exceptions.cookies.AllowThirdParty",
+      num_3pc_allow_exceptions, 1, 1000, 30);
+  base::UmaHistogramCustomCounts(
+      "ContentSettings.RegularProfile.Exceptions.cookies."
+      "TemporaryAllowThirdParty",
+      num_3pc_allow_exceptions_temporary, 1, 100, 20);
+  base::UmaHistogramCustomCounts(
+      "ContentSettings.RegularProfile.Exceptions.cookies."
+      "DomainWildcardAllowThirdParty",
+      num_3pc_allow_exceptions_domain_wildcard, 1, 100, 10);
 }
 
 void HostContentSettingsMap::AddObserver(content_settings::Observer* observer) {
