@@ -7,6 +7,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "content/browser/web_contents/web_contents_view_drag_security_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/common/drop_data.h"
@@ -107,6 +108,10 @@ CONTENT_EXPORT
 // Called to indicate that, if the owning WebContents has initiated a drag, that
 // drag has ended.
 - (void)endDrag;
+
+- (content::WebContentsViewDragSecurityInfo)dragSecurityInfo;
+- (void)setDragSecurityInfo:
+    (content::WebContentsViewDragSecurityInfo)dragSecurityInfo;
 
 @end
 

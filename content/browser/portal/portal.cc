@@ -645,7 +645,6 @@ void Portal::ActivateImpl(blink::TransferableMessage data,
         outer_contents_main_frame_view);
     touch_events =
         outer_contents_main_frame_view->ExtractAndCancelActiveTouches();
-    outer_contents->GetView()->CancelDragDropForPortalActivation();
     FlushTouchEventQueues(outer_contents_main_frame_view->host());
   }
 
@@ -677,6 +676,8 @@ void Portal::ActivateImpl(blink::TransferableMessage data,
     // to the new RenderWidgetHostView.
     portal_contents_main_frame_view->host()->TakeSyntheticGestureController(
         outer_contents_main_frame_view->host());
+    successor_contents_raw->GetView()->TransferDragSecurityInfo(
+        outer_contents->GetView());
     outer_contents_main_frame_view->Destroy();
   }
 

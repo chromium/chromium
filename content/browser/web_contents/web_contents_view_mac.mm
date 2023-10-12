@@ -245,9 +245,9 @@ DropData* WebContentsViewMac::GetDropData() const {
   return [drag_dest_ currentDropData];
 }
 
-// TODO(crbug.com/1482848): Investigate if this needs to be implemented.
-void WebContentsViewMac::CancelDragDropForPortalActivation() {
-  NOTIMPLEMENTED();
+void WebContentsViewMac::TransferDragSecurityInfo(WebContentsView* view) {
+  WebContentsViewMac* view_mac = static_cast<WebContentsViewMac*>(view);
+  [drag_dest_ setDragSecurityInfo:[view_mac->drag_dest_ dragSecurityInfo]];
 }
 
 void WebContentsViewMac::UpdateDragOperation(ui::mojom::DragOperation operation,

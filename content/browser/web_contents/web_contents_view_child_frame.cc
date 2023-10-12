@@ -153,7 +153,7 @@ DropData* WebContentsViewChildFrame::GetDropData() const {
   return nullptr;
 }
 
-void WebContentsViewChildFrame::CancelDragDropForPortalActivation() {
+void WebContentsViewChildFrame::TransferDragSecurityInfo(WebContentsView*) {
   NOTREACHED();
 }
 

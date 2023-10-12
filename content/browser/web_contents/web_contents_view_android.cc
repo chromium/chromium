@@ -221,8 +221,8 @@ DropData* WebContentsViewAndroid::GetDropData() const {
   return NULL;
 }
 
-// TODO(crbug.com/1482848): Investigate if this needs to be implemented.
-void WebContentsViewAndroid::CancelDragDropForPortalActivation() {
+// TODO(crbug.com/1488620): Implement this.
+void WebContentsViewAndroid::TransferDragSecurityInfo(WebContentsView*) {
   NOTIMPLEMENTED();
 }
 

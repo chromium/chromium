@@ -67,11 +67,11 @@ class WebContentsView {
   // Returns the current drop data, if any.
   virtual DropData* GetDropData() const = 0;
 
-  // Cancels an in-progress drag drop if it originated inside the WebContents,
-  // and a portal inside the WebContents is activated. This is to prevent
-  // cross-origin content from being transferred across a portal activation
-  // through drag-and-drop, see crbug.com/1482848.
-  virtual void CancelDragDropForPortalActivation() = 0;
+  // Used to transfer WebContentsViewDragSecurityInfo across portal activation
+  // (where we destroy and create a new WebContentsView for a tab).
+  // TODO(crbug.com/1254770): We don't need this after we migrate portals to
+  // MPArch.
+  virtual void TransferDragSecurityInfo(WebContentsView* view) = 0;
 
   // Get the bounds of the View, relative to the parent.
   virtual gfx::Rect GetViewBounds() const = 0;
