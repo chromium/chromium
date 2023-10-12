@@ -11,7 +11,7 @@ enum StorageBucketDurability {
 
 dictionary StorageBucketOptions {
   boolean? persisted = null;
-  StorageBucketDurability? durability = null;
+  [RuntimeEnabled=StorageBucketsDurability] StorageBucketDurability? durability = null;
   [EnforceRange] unsigned long long? quota = null;
   DOMHighResTimeStamp? expires = null;
 };

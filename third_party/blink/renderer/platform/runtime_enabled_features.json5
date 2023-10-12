@@ -3654,6 +3654,12 @@
       origin_trial_feature_name: "StorageBuckets",
     },
     {
+      // Gates the `durability()` method on a storage bucket and the property in
+      // the options struct.
+      name: "StorageBucketsDurability",
+      status: "experimental",
+    },
+    {
       // Gates the `locks()` method on a storage bucket.
       name: "StorageBucketsLocks",
       status: "experimental",
