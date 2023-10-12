@@ -12,11 +12,11 @@ source_set("rule_parser") {
     "rule_parser.cc",
     "rule_parser.h",
   ]
-  public_deps = [ "//components/url_pattern_index" ]
-  deps = [
+  public_deps = [
     "//base",
-    "//third_party/protobuf:protobuf_lite",
+    "//components/url_pattern_index",
   ]
+  deps = [ "//third_party/protobuf:protobuf_lite" ]
 }
 
 source_set("unit_tests") {
