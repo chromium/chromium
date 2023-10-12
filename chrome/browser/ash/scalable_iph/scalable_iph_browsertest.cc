@@ -740,7 +740,16 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, OnSuspendDoneWithLockScreen) {
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
 }
 
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, AppListShown) {
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class ScalableIphBrowserTestNoTestingConfig : public ScalableIphBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ScalableIphBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNoTestingConfig, AppListShown) {
   EXPECT_CALL(*mock_tracker(),
               NotifyEvent(scalable_iph::kEventNameAppListShown));
 
