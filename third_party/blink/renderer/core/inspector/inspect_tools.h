@@ -268,6 +268,25 @@ class PausedInDebuggerTool : public InspectTool {
   String message_;
 };
 
+// -----------------------------------------------------------------------------
+
+class WindowControlsOverlayTool : public InspectTool {
+ public:
+  WindowControlsOverlayTool(
+      InspectorOverlayAgent* overlay,
+      OverlayFrontend* frontend,
+      std::unique_ptr<protocol::DictionaryValue> wco_config);
+  WindowControlsOverlayTool(const WindowControlsOverlayTool&) = delete;
+  WindowControlsOverlayTool& operator=(const WindowControlsOverlayTool&) =
+      delete;
+
+ private:
+  void Draw(float scale) override;
+  String GetOverlayName() override;
+
+  std::unique_ptr<protocol::DictionaryValue> wco_config_;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECT_TOOLS_H_

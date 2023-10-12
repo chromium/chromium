@@ -1,0 +1,52 @@
+Verifies that Overlay.setShowWindowControlsOverlay works.
+Response to setShowWindowControlsOverlay:
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+Window Controls Overlay Mixed Configuration
+[
+  {
+    "name": "setOverlay",
+    "data": "windowControlsOverlay"
+  },
+  {
+    "name": "reset",
+    "data": {
+      "deviceScaleFactor": 1,
+      "emulationScaleFactor": 1,
+      "pageScaleFactor": 1,
+      "viewportSize": {
+        "width": 800,
+        "height": 600
+      },
+      "viewportSizeForMediaQueries": {
+        "width": 800,
+        "height": 600
+      },
+      "pageZoomFactor": 1,
+      "scrollX": 0,
+      "scrollY": 0
+    }
+  },
+  {
+    "name": "drawWindowControlsOverlay",
+    "data": {
+      "showCSS": true,
+      "selectedPlatform": "Linux",
+      "themeColor": "#FFA123"
+    }
+  }
+]
+Response to setShowWindowControlsOverlay:
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+Window Controls Overlay Empty Configuration
+[]
+

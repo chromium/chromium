@@ -89,6 +89,7 @@ class OverlayNames {
   static const char* OVERLAY_VIEWPORT_SIZE;
   static const char* OVERLAY_SCREENSHOT;
   static const char* OVERLAY_PAUSED;
+  static const char* OVERLAY_WINDOW_CONTROLS_OVERLAY;
 };
 
 class CORE_EXPORT InspectTool : public GarbageCollected<InspectTool> {
@@ -237,6 +238,9 @@ class CORE_EXPORT InspectorOverlayAgent final
       std::unique_ptr<protocol::DictionaryValue>* highlights) override;
   protocol::Response setShowHinge(
       protocol::Maybe<protocol::Overlay::HingeConfig> hinge_config) override;
+  protocol::Response setShowWindowControlsOverlay(
+      protocol::Maybe<protocol::Overlay::WindowControlsOverlayConfig>
+          wco_config) override;
   protocol::Response setShowGridOverlays(
       std::unique_ptr<
           protocol::Array<protocol::Overlay::GridNodeHighlightConfig>>

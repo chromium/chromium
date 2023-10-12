@@ -875,4 +875,21 @@ void PausedInDebuggerTool::Dispatch(const ScriptValue& message,
                                     kInvalidOverlayCommand);
 }
 
+// WcoTool --------------------------------------------------------
+
+WindowControlsOverlayTool::WindowControlsOverlayTool(
+    InspectorOverlayAgent* overlay,
+    OverlayFrontend* frontend,
+    std::unique_ptr<protocol::DictionaryValue> wco_config)
+    : InspectTool(overlay, frontend), wco_config_(std::move(wco_config)) {}
+
+String WindowControlsOverlayTool::GetOverlayName() {
+  return OverlayNames::OVERLAY_WINDOW_CONTROLS_OVERLAY;
+}
+
+void WindowControlsOverlayTool::Draw(float scale) {
+  overlay_->EvaluateInOverlay("drawWindowControlsOverlay",
+                              wco_config_->clone());
+}
+
 }  // namespace blink
