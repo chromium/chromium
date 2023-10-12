@@ -593,6 +593,10 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   const std::string frameId = SysNSStringToUTF8(frameID);
   web::WebFrame* frame =
       feature->GetWebFramesManager(_webState)->GetFrameWithId(frameId);
+  if (!frame) {
+    completion();
+    return;
+  }
 
   switch (suggestion.popupItemId) {
     case autofill::PopupItemId::kAllSavedPasswordsEntry: {
