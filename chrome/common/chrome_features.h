@@ -247,6 +247,10 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kEnableNetworkServiceResourceBlockListInOtrSessions);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(
+    kEnableNetworkServiceResourceBlockListIfThirdPartyCookiesBlocked);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kExtendedSettingsDescriptions);
 
 #if !BUILDFLAG(IS_ANDROID)

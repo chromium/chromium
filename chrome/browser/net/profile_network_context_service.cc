@@ -1017,6 +1017,10 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   }
 
   network_context_params->afp_block_list_experiment_enabled =
+      (base::FeatureList::IsEnabled(
+           features::
+               kEnableNetworkServiceResourceBlockListIfThirdPartyCookiesBlocked) &&
+       cookie_settings_->ShouldBlockThirdPartyCookies()) ||
       (!profile_->IsOffTheRecord() &&
        base::FeatureList::IsEnabled(
            features::kEnableNetworkServiceResourceBlockList)) ||
