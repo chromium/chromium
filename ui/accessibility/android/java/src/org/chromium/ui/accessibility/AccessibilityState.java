@@ -260,10 +260,15 @@ public class AccessibilityState {
      */
     public static boolean isTouchExplorationEnabled() {
         if (!sInitialized) {
-            fetchAccessibilityManager();
-            return sAccessibilityManager.isTouchExplorationEnabled();
+            return isTouchExplorationEnabledHeavy();
         }
         return sState.isTouchExplorationEnabled;
+    }
+
+    @Deprecated
+    public static boolean isTouchExplorationEnabledHeavy() {
+        fetchAccessibilityManager();
+        return sAccessibilityManager.isTouchExplorationEnabled();
     }
 
     public static boolean isPerformGesturesEnabled() {
@@ -272,24 +277,33 @@ public class AccessibilityState {
                 return sPreInitCachedValuePerformGesturesEnabled;
             }
 
-            fetchAccessibilityManager();
-            if (sAccessibilityManager.isEnabled()) {
-                for (AccessibilityServiceInfo service :
-                        sAccessibilityManager.getEnabledAccessibilityServiceList(
-                                AccessibilityServiceInfo.FEEDBACK_ALL_MASK)) {
-                    if ((service.getCapabilities()
-                                & AccessibilityServiceInfo.CAPABILITY_CAN_PERFORM_GESTURES)
-                            != 0) {
-                        sPreInitCachedValuePerformGesturesEnabled = true;
-                        return true;
-                    }
-                }
-            }
-            sPreInitCachedValuePerformGesturesEnabled = false;
-            return false;
+            sPreInitCachedValuePerformGesturesEnabled = isPerformGesturesEnabledHeavy();
+            return sPreInitCachedValuePerformGesturesEnabled;
         }
 
         return sState.isPerformGesturesEnabled;
+    }
+
+    @Deprecated
+    public static boolean isPerformGesturesEnabledHeavy() {
+        // TODO(mschillaci): Remove when recreate issue is resolved. See crbug.com/1491862.
+        fetchAccessibilityManager();
+        if (sAccessibilityManager.isEnabled()) {
+            for (AccessibilityServiceInfo service :
+                sAccessibilityManager.getEnabledAccessibilityServiceList(
+                    AccessibilityServiceInfo.FEEDBACK_ALL_MASK)) {
+                if (0 != (service.getCapabilities() & CAPABILITY_CAN_PERFORM_GESTURES)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Deprecated
+    public static boolean isAccessibilityEnabledHeavy() {
+        return AccessibilityState.isTouchExplorationEnabledHeavy()
+                || AccessibilityState.isPerformGesturesEnabledHeavy();
     }
 
     /**
