@@ -12617,7 +12617,7 @@
             ],
             "experiments": [
                 {
-                    "name": "ExperimentalConfidenceCutoff_20230929",
+                    "name": "ExperimentalConfidenceCutoff_20231011",
                     "params": {
                         "preconnect_dui_confidence_cutoff": "0.3",
                         "prerender_dui_confidence_cutoff": "0.5"
@@ -12627,7 +12627,7 @@
                     ]
                 },
                 {
-                    "name": "Control_20230929",
+                    "name": "Control_20231011",
                     "disable_features": [
                         "AutocompleteActionPredictorConfidenceCutoff"
                     ]
