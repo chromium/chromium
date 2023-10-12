@@ -5370,24 +5370,6 @@ ${instance_object_template}->SetCallAsFunctionHandler(ItemOperationCallback);
 ${instance_object_template}->MarkAsUndetectable();
 """))
 
-    if class_like.identifier == "Iterator":
-        body.append(
-            T("""\
-// Iterator-specific settings
-// https://webidl.spec.whatwg.org/#es-iterator-prototype-object
-{
-  v8::Local<v8::FunctionTemplate>
-      intrinsic_iterator_prototype_interface_template =
-      v8::FunctionTemplate::New(${isolate}, nullptr, v8::Local<v8::Value>(),
-                                v8::Local<v8::Signature>(), 0,
-                                v8::ConstructorBehavior::kThrow);
-  intrinsic_iterator_prototype_interface_template->SetIntrinsicDataProperty(
-      V8AtomicString(${isolate}, "prototype"), v8::kIteratorPrototype);
-  ${interface_function_template}->Inherit(
-      intrinsic_iterator_prototype_interface_template);
-}
-"""))
-
     if class_like.identifier == "Location":
         body.append(
             T("""\
