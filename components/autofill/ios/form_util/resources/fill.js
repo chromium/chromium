@@ -7,6 +7,7 @@ import '//components/autofill/ios/form_util/resources/fill_element_inference.js'
 import '//components/autofill/ios/form_util/resources/fill_util.js';
 
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
+import {findChildText} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 
 // This file provides methods used to fill forms in JavaScript.
 
@@ -206,7 +207,7 @@ function matchLabelsAndFields_(
     if (!('label' in fieldData)) {
       fieldData['label'] = '';
     }
-    let labelText = __gCrWeb.fill.findChildText(label);
+    let labelText = findChildText(label);
     if (labelText.length === 0 && !label.htmlFor) {
       labelText = __gCrWeb.fill.inferLabelFromNext(fieldElement);
     }

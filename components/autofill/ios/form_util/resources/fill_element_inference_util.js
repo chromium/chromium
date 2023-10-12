@@ -192,7 +192,7 @@ function findChildTextInner(node, depth, divsToSkip) {
  * @param {Array<Node>} divsToSkip List of <div> tags to ignore if encountered.
  * @return {string} The child text.
  */
-__gCrWeb.fill.findChildTextWithIgnoreList = function(node, divsToSkip) {
+function findChildTextWithIgnoreList(node, divsToSkip) {
   if (node.nodeType === Node.TEXT_NODE) {
     return __gCrWeb.fill.nodeValue(node);
   }
@@ -202,7 +202,7 @@ __gCrWeb.fill.findChildTextWithIgnoreList = function(node, divsToSkip) {
   let nodeText = findChildTextInner(child, kChildSearchDepth, divsToSkip);
   nodeText = nodeText.trim();
   return nodeText;
-};
+}
 
 /**
  * Returns the aggregated values of the descendants of |element| that are
@@ -217,9 +217,9 @@ __gCrWeb.fill.findChildTextWithIgnoreList = function(node, divsToSkip) {
  * @param {Node} node A node of which the child text will be return.
  * @return {string} The child text.
  */
-__gCrWeb.fill.findChildText = function(node) {
-  return __gCrWeb.fill.findChildTextWithIgnoreList(node, []);
-};
+function findChildText(node) {
+  return findChildTextWithIgnoreList(node, []);
+}
 
 /**
  * Returns true if |node| is an element and it is a container type that
@@ -369,3 +369,5 @@ __gCrWeb.fill.isAutofillableInputElement = function(element) {
 __gCrWeb.fill.IsLabelValid = function(label) {
   return label.search(/[^ *:()\u2013-]/) >= 0;
 };
+
+export {findChildTextWithIgnoreList, findChildText};

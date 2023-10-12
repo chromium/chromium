@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
+import {findChildText} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 
 /**
  * Maps elements using their unique ID
@@ -567,7 +568,7 @@ function coalesceTextByIdList(element, attribute) {
         return e !== null;
       })
       .map(function(n) {
-        return __gCrWeb.fill.findChildText(n);
+        return findChildText(n);
       })
       .filter(function(s) {
         return s.length > 0;
