@@ -90,17 +90,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.AndroidPreNative.ChromeActivityCounter"
-    enum="ChromeActivityCounter" expires_after="2024-04-24">
+<histogram name="UMA.AndroidPreNative.ChromeActivityCounter2"
+    enum="ChromeActivityCounter" expires_after="2024-10-04">
   <owner>gabrielgs@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    Counts of how many times onPreCreate() and onResume() were called (from the
+    Counts of how many times onPostCreate() and onResume() were called (from the
     ChromeActivity class) when a foreground session begins in the native C++
     code. The counters are reset when this histogram is emitted. This histogram
     is a diagnostic tool for understanding Clank short sessions, by capturing
     some information about the cases where Java code starts up, but native C++
     code is never reached.
+
+    This replaces UMA.AndroidPreNative.ChromeActivityCounter, which would
+    increment the counters to P1R0 on first-run-experience, but would not
+    advance to native code. This version circumvents the issue by waiting to be
+    sure that onCreate was not aborted (see AsyncInitializationActivity).
   </summary>
 </histogram>
 

@@ -904,9 +904,9 @@ public final class ChromePreferenceKeys {
     public static final String UI_THEME_SETTING = "ui_theme_setting";
 
     // Diagnostic counters for short sessions; see histogram
-    // UMA.PreNative.ChromeActivityCounter.
-    public static final String UMA_ON_PRECREATE_COUNTER = "Chrome.UMA.OnPreCreateCounter";
-    public static final String UMA_ON_RESUME_COUNTER = "Chrome.UMA.OnResumeCounter";
+    // UMA.PreNative.ChromeActivityCounter2.
+    public static final String UMA_ON_POSTCREATE_COUNTER = "Chrome.UMA.OnPostCreateCounter2";
+    public static final String UMA_ON_RESUME_COUNTER = "Chrome.UMA.OnResumeCounter2";
 
     public static final String VERIFIED_DIGITAL_ASSET_LINKS = "verified_digital_asset_links";
 
@@ -1105,15 +1105,14 @@ public final class ChromePreferenceKeys {
                 SWAA_STATUS,
                 TABBED_ACTIVITY_LAST_VISIBLE_TIME_MS,
                 TWA_DISCLOSURE_SEEN_PACKAGES,
-                UMA_ON_PRECREATE_COUNTER,
+                UMA_ON_POSTCREATE_COUNTER,
                 UMA_ON_RESUME_COUNTER,
                 USB_NOTIFICATION_IDS,
                 USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY,
                 WEB_FEED_INTRO_LAST_SHOWN_TIME_MS,
                 WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX.pattern(),
                 WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_COUNT_PREFIX.pattern(),
-                WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT
-        );
+                WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT);
         // clang-format on
     }
 

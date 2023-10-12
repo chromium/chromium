@@ -420,7 +420,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @Override
     protected void onPreCreate() {
-        incrementCounter(ChromePreferenceKeys.UMA_ON_PRECREATE_COUNTER);
         CachedFlagsSafeMode.getInstance().onStartOrResumeCheckpoint();
         if (earlyInitializeStartupMetrics()) {
             mActivityTabStartupMetricsTracker =
@@ -438,6 +437,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     protected void onAbortCreate() {
         super.onAbortCreate();
         CachedFlagsSafeMode.getInstance().onPauseCheckpoint();
+    }
+
+    @Override
+    protected void onPostCreate() {
+        incrementCounter(ChromePreferenceKeys.UMA_ON_POSTCREATE_COUNTER);
+        super.onPostCreate();
     }
 
     @Override

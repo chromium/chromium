@@ -303,6 +303,8 @@ public abstract class AsyncInitializationActivity
         boolean willCreate = onCreateInternal(savedInstanceState);
         if (!willCreate) {
             onAbortCreate();
+        } else {
+            onPostCreate();
         }
         TraceEvent.end("AsyncInitializationActivity.onCreate()");
     }
@@ -318,6 +320,14 @@ public abstract class AsyncInitializationActivity
      * #onCreateInternal}.
      */
     protected void onAbortCreate() {}
+
+    /**
+     * Override to perform operations after the framework successfully calls {@link
+     * #onCreateInternal}. This method is used in the ChromeActivity derived class to increment the
+     * "Chrome.UMA.OnPostCreateCounter2" counter for the histogram
+     * UMA.AndroidPreNative.ChromeActivityCounter2.
+     */
+    protected void onPostCreate() {}
 
     /**
      * Called from onCreate() to give derived classes a chance to dispatch the intent using
