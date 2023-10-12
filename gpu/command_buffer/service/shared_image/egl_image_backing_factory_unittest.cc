@@ -407,20 +407,13 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, OneWriterOneReader) {
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
 // Test to check interaction between Dawn and skia GL representations.
 TEST_F(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
-  // Create a Dawm OpenGLES device.
+  // Find a Dawn GLES adapter
   dawn::native::Instance instance;
-  instance.DiscoverDefaultPhysicalDevices();
-
-  std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
-
-  // Using wgpu::BackendType::OpenGLES.
-  auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::OpenGLES,
-                                       [](dawn::native::Adapter adapter) {
-                                         wgpu::AdapterProperties properties;
-                                         adapter.GetProperties(&properties);
-                                         return properties.backendType;
-                                       });
-  ASSERT_NE(adapter_it, adapters.end());
+  wgpu::RequestAdapterOptions adapter_options;
+  adapter_options.backendType = wgpu::BackendType::OpenGLES;
+  std::vector<dawn::native::Adapter> adapters =
+      instance.EnumerateAdapters(&adapter_options);
+  ASSERT_GT(adapters.size(), 0u);
 
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
@@ -430,7 +423,7 @@ TEST_F(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
   device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
-      wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
+      wgpu::Device::Acquire(adapters[0].CreateDevice(&device_descriptor));
   DawnProcTable procs = dawn::native::GetProcs();
   dawnProcSetProcs(&procs);
 

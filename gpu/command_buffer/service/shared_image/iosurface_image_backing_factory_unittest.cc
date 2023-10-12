@@ -180,7 +180,6 @@ class IOSurfaceImageBackingFactoryDawnTest
 
   wgpu::Device CreateDevice() {
     dawn::native::Instance instance;
-    instance.DiscoverDefaultPhysicalDevices();
 
     wgpu::RequestAdapterOptions adapter_options;
     std::vector<const char*> adapter_enabled_toggles;

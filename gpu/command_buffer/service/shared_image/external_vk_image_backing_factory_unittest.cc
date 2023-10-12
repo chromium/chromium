@@ -71,17 +71,12 @@ class ExternalVkImageBackingFactoryDawnTest
 
     dawnProcSetProcs(&dawn::native::GetProcs());
 
-    // Create a Dawn Vulkan device
-    dawn_instance_.DiscoverDefaultPhysicalDevices();
-
-    std::vector<dawn::native::Adapter> adapters = dawn_instance_.GetAdapters();
-    auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::Vulkan,
-                                         [](dawn::native::Adapter adapter) {
-                                           wgpu::AdapterProperties properties;
-                                           adapter.GetProperties(&properties);
-                                           return properties.backendType;
-                                         });
-    ASSERT_NE(adapter_it, adapters.end());
+    // Find a Dawn Vulkan adapter
+    wgpu::RequestAdapterOptions adapter_options;
+    adapter_options.backendType = wgpu::BackendType::Vulkan;
+    std::vector<dawn::native::Adapter> adapters =
+        dawn_instance_.EnumerateAdapters(&adapter_options);
+    ASSERT_GT(adapters.size(), 0u);
 
     // We need to request internal usage to be able to do operations with
     // internal methods that would need specific usages.
@@ -92,7 +87,7 @@ class ExternalVkImageBackingFactoryDawnTest
     device_descriptor.requiredFeatures = &dawn_internal_usage;
 
     dawn_device_ =
-        wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
+        wgpu::Device::Acquire(adapters[0].CreateDevice(&device_descriptor));
     DCHECK(dawn_device_) << "Failed to create Dawn device";
   }
 
