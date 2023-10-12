@@ -54,6 +54,7 @@ using ::chromeos::settings::mojom::kAboutChromeOsSectionPath;
 using ::chromeos::settings::mojom::kStorageSubpagePath;
 using AnswerCardInfo = ::ash::SystemInfoAnswerCardData;
 
+constexpr double kMinimumRelevance = 0.0;
 constexpr double kRelevanceThreshold = 0.79;
 
 double ConvertKBtoBytes(uint32_t amount) {
@@ -143,19 +144,14 @@ void SystemInfoCardProvider::StopQuery() {
 double SystemInfoCardProvider::CalculateRelevance(const std::u16string& query,
                                                   const std::u16string& title) {
   const TokenizedString tokenized_title(title, TokenizedString::Mode::kWords);
-  const TokenizedString tokenized_query(query,
-                                        TokenizedString::Mode::kCamelCase);
+  const TokenizedString tokenized_query(query, TokenizedString::Mode::kWords);
 
   if (tokenized_query.text().empty() || tokenized_title.text().empty()) {
-    static constexpr double kDefaultRelevance = 0.0;
-    return kDefaultRelevance;
+    return kMinimumRelevance;
   }
 
-  FuzzyTokenizedStringMatch match;
-  return match.Relevance(tokenized_query, tokenized_title,
-                         /*use_weighted_ratio=*/false,
-                         /*strip_diacritics=*/true,
-                         /*use_acronym_matcher=*/true);
+  return FuzzyTokenizedStringMatch::TokenSortRatio(
+      tokenized_query, tokenized_title, /*partial=*/false);
 }
 
 void SystemInfoCardProvider::BindCrosHealthdProbeServiceIfNecessary() {
