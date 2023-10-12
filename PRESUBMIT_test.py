@@ -5242,6 +5242,149 @@ class CheckDanglingUntriagedTest(unittest.TestCase):
                         mock_output_api)
     self.assertEqual(len(msgs), 0)
 
+class CheckInlineConstexprDefinitionsInHeadersTest(unittest.TestCase):
+  def testNoInlineConstexprInHeaderFile(self):
+    """Tests that non-inlined constexpr variables in headers fail the test."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/constants.h', ['constexpr int kVersion = 5;'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+
+  def testNoInlineConstexprInHeaderFileInitializedFromFunction(self):
+    """Tests that non-inlined constexpr header variables that are initialized from a function fail."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/constants.h', ['constexpr int kVersion = GetVersion();'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+
+  def testNoInlineConstexprInHeaderFileInitializedWithExpression(self):
+    """Tests that non-inlined constexpr header variables initialized with an expression fail."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/constants.h', ['constexpr int kVersion = (4 + 5)*3;'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+
+  def testNoInlineConstexprInHeaderFileBraceInitialized(self):
+    """Tests that non-inlined constexpr header variables that are brace-initialized fail."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/constants.h', ['constexpr int kVersion{5};'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+
+  def testNoInlineConstexprInHeaderWithAttribute(self):
+    """Tests that non-inlined constexpr header variables that have compiler attributes fail."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/constants.h', ['constexpr [[maybe_unused]] int kVersion{5};'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+
+  def testInlineConstexprInHeaderWithAttribute(self):
+    """Tests that inlined constexpr header variables that have compiler attributes pass."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/constants.h', ['inline constexpr [[maybe_unused]] int kVersion{5};']),
+      MockAffectedFile('src/constants.h', ['constexpr inline [[maybe_unused]] int kVersion{5};']),
+      MockAffectedFile('src/constants.h', ['inline constexpr [[maybe_unused]] inline int kVersion{5};'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(0, len(warnings))
+
+  def testNoInlineConstexprInHeaderFileMultipleLines(self):
+    """Tests that non-inlined constexpr header variable definitions spanning multiple lines fail."""
+    input_api = MockInputApi()
+    lines = ['constexpr char kLongName =',
+             '    "This is a very long name of something.";'
+             ]
+    input_api.files = [MockAffectedFile('src/constants.h', lines)]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+
+  def testNoInlineConstexprInCCFile(self):
+    """Tests that non-inlined constexpr variables in .cc files pass the test."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/implementation.cc', ['constexpr int kVersion = 5;'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(0, len(warnings))
+
+  def testInlineConstexprInHeaderFile(self):
+    """Tests that inlined constexpr variables in header files pass the test."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/constants.h', ['constexpr inline int kX = 5;']),
+      MockAffectedFile('src/version.h', ['inline constexpr float kY = 5.0f;'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(0, len(warnings))
+
+  def testConstexprStandaloneFunctionInHeaderFile(self):
+    """Tests that non-inlined constexpr functions in headers pass the test."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/helpers.h', ['constexpr int GetVersion();'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(0, len(warnings))
+
+  def testConstexprWithAbseilAttributeInHeader(self):
+    """Tests that non-inlined constexpr variables with Abseil-type prefixes in headers fail."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/helpers.h', ['ABSL_FOOFOO constexpr int i = 5;'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+
+  def testInlineConstexprWithAbseilAttributeInHeader(self):
+    """Tests that inlined constexpr variables with Abseil-type prefixes in headers pass."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/helpers.h', ['constexpr ABSL_FOO inline int i = 5;'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(0, len(warnings))
+
+  def testConstexprWithClangAttributeInHeader(self):
+    """Tests that non-inlined constexpr variables with attributes with colons in headers fail."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/helpers.h', ['[[clang::someattribute]] constexpr int i = 5;'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+
+  def testInlineConstexprWithClangAttributeInHeader(self):
+    """Tests that inlined constexpr variables with attributes with colons in headers pass."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/helpers.h', ['constexpr [[clang::someattribute]] inline int i = 5;'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(0, len(warnings))
+
+  def testNoExplicitInlineConstexprInsideClassInHeaderFile(self):
+    """Tests that non-inlined constexpr class members pass the test."""
+    input_api = MockInputApi()
+    lines = ['class SomeClass {',
+             ' public:',
+             '  static constexpr kVersion = 5;',
+             '};']
+    input_api.files = [
+      MockAffectedFile('src/class.h', lines)
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(0, len(warnings))
 
 if __name__ == '__main__':
   unittest.main()

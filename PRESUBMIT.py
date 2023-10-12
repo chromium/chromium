@@ -7214,3 +7214,35 @@ def CheckDanglingUntriaged(input_api, output_api):
         "pointers>",
     )
     return [output_api.PresubmitPromptWarning(message)]
+
+def CheckInlineConstexprDefinitionsInHeaders(input_api, output_api):
+    """Checks that non-static constexpr definitions in headers are inline."""
+    # In a properly formatted file, constexpr definitions inside classes or
+    # structs will have additional whitespace at the beginning of the line.
+    # The pattern looks for variables initialized as constexpr kVar = ...; or
+    # constexpr kVar{...};
+    # The pattern does not match expressions that have braces in kVar to avoid
+    # matching constexpr functions.
+    pattern = input_api.re.compile(r'^constexpr (?!inline )[^\(\)]*[={]')
+    attribute_pattern = input_api.re.compile(r'(\[\[[a-zA-Z_:]+\]\]|[A-Z]+[A-Z_]+) ')
+    problems = []
+    for f in input_api.AffectedFiles():
+        if not _IsCPlusPlusHeaderFile(input_api, f.LocalPath()):
+            continue
+
+        for line_number, line in f.ChangedContents():
+            line = attribute_pattern.sub('', line)
+            if pattern.search(line):
+                problems.append(
+                    f"{f.LocalPath()}: {line_number}\n    {line}")
+
+    if problems:
+        return [
+            output_api.PresubmitPromptWarning(
+                'Consider inlining constexpr variable definitions in headers '
+                'outside of classes to avoid unnecessary copies of the '
+                'constant. See https://abseil.io/tips/168 for more details.',
+                problems)
+        ]
+    else:
+        return []
