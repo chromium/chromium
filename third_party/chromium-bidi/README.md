@@ -153,6 +153,10 @@ We use [cddlconv](https://github.com/google/cddlconv) to generate our WebDriverB
 
 Refer to the documentation at [.pre-commit-config.yaml](.pre-commit-config.yaml).
 
+```sh
+pre-commit install --hook-type pre-push
+```
+
 ### Starting the Server
 
 This will run the server on port `8080`:
