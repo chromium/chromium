@@ -73,6 +73,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/elide_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
@@ -181,6 +182,18 @@ bool ShouldPreserveLastDefaultMatch(bool sync_pass_done,
     return input.text().length() >= 4;
   else
     return true;
+}
+
+std::u16string GetDomain(const AutocompleteMatch& match) {
+  DCHECK(match.type == AutocompleteMatchType::HISTORY_URL ||
+         match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
+  GURL url = match.type == AutocompleteMatchType::HISTORY_URL
+                 ? match.destination_url
+                 : GURL(match.website_uri);
+  std::u16string url_host;
+  std::u16string url_domain;
+  url_formatter::SplitHost(url, &url_host, &url_domain, nullptr);
+  return url_domain;
 }
 
 }  // namespace
