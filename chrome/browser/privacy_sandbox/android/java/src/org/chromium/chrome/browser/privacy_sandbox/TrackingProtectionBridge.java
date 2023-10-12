@@ -12,8 +12,20 @@ public class TrackingProtectionBridge {
         return TrackingProtectionBridgeJni.get().shouldShowOnboardingNotice();
     }
 
+    public static void noticeActionTaken(@NoticeAction int action) {
+        TrackingProtectionBridgeJni.get().noticeActionTaken(action);
+    }
+
+    public static void noticeShown() {
+        TrackingProtectionBridgeJni.get().noticeShown();
+    }
+
     @NativeMethods
     public interface Natives {
         boolean shouldShowOnboardingNotice();
+
+        void noticeShown();
+
+        void noticeActionTaken(int action);
     }
 }

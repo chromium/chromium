@@ -5,16 +5,22 @@
 package org.chromium.chrome.browser.privacy_sandbox;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -124,6 +130,97 @@ public final class TrackingProtectionNoticeTest {
 
         sActivityTestRule.loadUrlInNewTab(UrlConstants.MY_ACTIVITY_HOME_URL);
         onView(withId(R.id.message_banner)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testNoticeDismissedWhenPrimaryButtonClicked() {
+        mFakeTrackingProtectionBridge.setShouldShowOnboardingNotice(true);
+        setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
+
+        sActivityTestRule.startMainActivityWithURL(UrlConstants.GOOGLE_URL);
+        onView(withId(R.id.message_banner)).check(matches(isDisplayed()));
+        onView(withId(R.id.message_primary_button)).perform(click());
+        assertNoticeShownActionIsRecorded();
+        assertLastAction(NoticeAction.GOT_IT);
+
+        onView(withId(R.id.message_banner)).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    public void testNoticeDismissedWhenSettingsClicked() {
+        mFakeTrackingProtectionBridge.setShouldShowOnboardingNotice(true);
+        setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
+
+        // Show the notice.
+        sActivityTestRule.startMainActivityWithURL(UrlConstants.GOOGLE_URL);
+        onView(withId(R.id.message_banner)).check(matches(isDisplayed()));
+
+        // Click on settings.
+        onView(withId(R.id.message_secondary_button)).perform(click());
+        onView(withText("Settings")).perform(click());
+        assertNoticeShownActionIsRecorded();
+        assertLastAction(NoticeAction.SETTINGS);
+
+        // Verify TP Settings page is shown and notice is dismissed.
+        onView(withText("Tracking Protections")).check(doesNotExist());
+        Espresso.pressBack();
+        onView(withId(R.id.message_banner)).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    public void testNoticeDismissedWhenLearnMoreClicked() {
+        mFakeTrackingProtectionBridge.setShouldShowOnboardingNotice(true);
+        setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
+
+        // Show the notice.
+        sActivityTestRule.startMainActivityWithURL(UrlConstants.GOOGLE_URL);
+        onView(withId(R.id.message_banner)).check(matches(isDisplayed()));
+
+        // Click on learn more.
+        onView(withId(R.id.message_secondary_button)).perform(click());
+        onView(withText("Learn more")).perform(click());
+        assertNoticeShownActionIsRecorded();
+        assertLastAction(NoticeAction.LEARN_MORE);
+
+        // Verify the notice is dismissed.
+        onView(withId(R.id.message_banner)).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    public void testNoticeDismissedByUser() {
+        mFakeTrackingProtectionBridge.setShouldShowOnboardingNotice(true);
+        setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
+
+        // Show the notice.
+        sActivityTestRule.startMainActivityWithURL(UrlConstants.GOOGLE_URL);
+        onView(withId(R.id.message_banner)).check(matches(isDisplayed()));
+
+        // Dismiss it.
+        onView(withId(R.id.message_banner)).perform(swipeUp());
+
+        // Verify the notice is dismissed.
+        assertNoticeShownActionIsRecorded();
+        assertLastAction(NoticeAction.CLOSED);
+        onView(withId(R.id.message_banner)).check(doesNotExist());
+
+        // Verify notice won't be shown again.
+        sActivityTestRule.loadUrl(UrlConstants.MY_ACTIVITY_HOME_URL);
+        onView(withId(R.id.message_banner)).check(doesNotExist());
+    }
+
+    private void assertLastAction(int action) {
+        assertEquals(
+                "Last notice action",
+                action,
+                (int) mFakeTrackingProtectionBridge.getLastNoticeAction());
+    }
+
+    private void assertNoticeShownActionIsRecorded() {
+        assertTrue(mFakeTrackingProtectionBridge.wasNoticeShown());
     }
 
     private void setConnectionSecurityLevel(int connectionSecurityLevel) {

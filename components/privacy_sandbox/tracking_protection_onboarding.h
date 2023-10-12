@@ -29,6 +29,7 @@ class TrackingProtectionOnboarding : public KeyedService {
     kMaxValue = kOffboarded,
   };
 
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
   enum class NoticeAction {
     // Other action taken - notice dismissed due to other actions.
     kOther = 0,
