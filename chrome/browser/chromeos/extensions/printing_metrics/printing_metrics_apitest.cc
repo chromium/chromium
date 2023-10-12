@@ -4,6 +4,7 @@
 
 #include "base/functional/bind.h"
 
+#include "base/run_loop.h"
 #include "chrome/browser/chromeos/extensions/printing_metrics/printing_metrics_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/policy_test_utils.h"
@@ -95,8 +96,8 @@ class PrintingMetricsApiTest : public ExtensionApiTest {
   }
 
   void CreateAndCancelPrintJob(const std::string& job_title) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     base::RunLoop run_loop;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::TestPrintJobHistoryServiceObserver observer(
         ash::PrintJobHistoryServiceFactory::GetForBrowserContext(
             browser()->profile()),
@@ -114,13 +115,11 @@ class PrintingMetricsApiTest : public ExtensionApiTest {
                 browser()->profile()));
     print_job_manager->CreatePrintJob(print_job.get());
     print_job_manager->CancelPrintJob(print_job.get());
-    run_loop.Run();
 #else
-    base::test::TestFuture<void> future;
     GetTestController()->CreateAndCancelPrintJob(job_title,
-                                                 future.GetCallback());
-    ASSERT_TRUE(future.Wait());
+                                                 run_loop.QuitClosure());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    run_loop.Run();
   }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
