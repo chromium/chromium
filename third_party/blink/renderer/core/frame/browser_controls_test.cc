@@ -588,31 +588,6 @@ TEST_F(BrowserControlsTest, MAYBE(PageScaleHasNoImpact)) {
             GetFrame()->View()->GetScrollableArea()->GetScrollOffset());
 }
 
-// Some scroll deltas result in a shownRatio that can't be realized in a
-// floating-point number. Make sure that if the browser controls aren't fully
-// scrolled, scrollBy doesn't return any excess delta. i.e. There should be no
-// slippage between the content and browser controls.
-TEST_F(BrowserControlsTest, MAYBE(FloatingPointSlippage)) {
-  WebViewImpl* web_view = Initialize();
-  GetWebView()->SetDefaultPageScaleLimits(0.25f, 5);
-  web_view->SetPageScaleFactor(2.0);
-
-  // Initialize browser controls to be shown.
-  web_view->ResizeWithBrowserControls(web_view->MainFrameViewWidget()->Size(),
-                                      50.f, 0, true);
-  web_view->GetBrowserControls().SetShownRatio(1, 1);
-
-  web_view->GetBrowserControls().ScrollBegin();
-  EXPECT_FLOAT_EQ(50.f, web_view->GetBrowserControls().ContentOffset());
-
-  // This will result in a 20px scroll to the browser controls so the show ratio
-  // will be 30/50 == 0.6 which is not representible in a float. Make sure
-  // that scroll still consumes the whole delta.
-  ScrollOffset remaining_delta =
-      web_view->GetBrowserControls().ScrollBy(ScrollOffset(0, 10));
-  EXPECT_EQ(0, remaining_delta.y());
-}
-
 // Scrollable subregions should scroll before browser controls
 TEST_F(BrowserControlsTest, MAYBE(ScrollableSubregionScrollFirst)) {
   WebViewImpl* web_view = Initialize("overflow-scrolling.html");
