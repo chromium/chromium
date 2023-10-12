@@ -137,10 +137,12 @@ class TestSystemProfileProvider : public metrics::MetricsProvider {
 
 class TestStructuredMetricsRecorder : public StructuredMetricsRecorder {
  public:
-  explicit TestStructuredMetricsRecorder(
-      metrics::MetricsProvider* system_profile_provider)
+  TestStructuredMetricsRecorder(
+      metrics::MetricsProvider* system_profile_provider,
+      const base::FilePath& local_state_events_path)
       : StructuredMetricsRecorder(/*write_delay=*/base::Seconds(0),
-                                  system_profile_provider) {}
+                                  system_profile_provider,
+                                  local_state_events_path) {}
 
   using StructuredMetricsRecorder::StructuredMetricsRecorder;
 };
@@ -172,6 +174,12 @@ class StructuredMetricsRecorderTest : public testing::Test {
 
   base::FilePath DeviceKeyFilePath() { return device_key_path_; }
 
+  base::FilePath LocalStateFilePath() {
+    return temp_dir_.GetPath()
+        .Append("structured_metrics")
+        .Append("local_state_events");
+  }
+
   void TearDown() override { StructuredMetricsClient::Get()->UnsetDelegate(); }
 
   void Wait() { task_environment_.RunUntilIdle(); }
@@ -180,11 +188,6 @@ class StructuredMetricsRecorderTest : public testing::Test {
     const int today = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
 
     KeyDataProto proto;
-    KeyProto& key_one = (*proto.mutable_keys())[kProjectOneHash];
-    key_one.set_key("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-    key_one.set_last_rotation(today);
-    key_one.set_rotation_period(90);
-
     KeyProto& key_two = (*proto.mutable_keys())[kProjectTwoHash];
     key_two.set_key("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
     key_two.set_last_rotation(today);
@@ -205,6 +208,11 @@ class StructuredMetricsRecorderTest : public testing::Test {
     const int today = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
 
     KeyDataProto proto;
+    KeyProto& key_one = (*proto.mutable_keys())[kProjectOneHash];
+    key_one.set_key("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    key_one.set_last_rotation(today);
+    key_one.set_rotation_period(90);
+
     KeyProto& key = (*proto.mutable_keys())[kProjectFourHash];
     key.set_key("dddddddddddddddddddddddddddddddd");
     key.set_last_rotation(today);
@@ -243,7 +251,7 @@ class StructuredMetricsRecorderTest : public testing::Test {
     system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
     // Create the provider, normally done by the ChromeMetricsServiceClient.
     recorder_ = std::make_unique<TestStructuredMetricsRecorder>(
-        system_profile_provider_.get());
+        system_profile_provider_.get(), LocalStateFilePath());
     recorder_->InitializeKeyDataProvider(std::make_unique<TestKeyDataProvider>(
         device_key_path_, profile_key_path_));
     // Enable recording, normally done after the metrics service has checked
@@ -261,12 +269,13 @@ class StructuredMetricsRecorderTest : public testing::Test {
     system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
     // Create the provider, normally done by the ChromeMetricsServiceClient.
     recorder_ = std::make_unique<TestStructuredMetricsRecorder>(
-        system_profile_provider_.get());
+        system_profile_provider_.get(), LocalStateFilePath());
     recorder_->InitializeKeyDataProvider(
         std::make_unique<TestKeyDataProvider>(device_key_path_));
     // Enable recording, normally done after the metrics service has checked
     // consent allows recording.
     recorder_->EnableRecording();
+    Wait();
   }
 
   // Sets up StructuredMetricsRecorder.
@@ -275,14 +284,15 @@ class StructuredMetricsRecorderTest : public testing::Test {
     system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
     // Create the provider, normally done by the ChromeMetricsServiceClient.
     recorder_ = std::make_unique<TestStructuredMetricsRecorder>(
-        system_profile_provider_.get());
+        system_profile_provider_.get(), LocalStateFilePath());
     recorder_->InitializeKeyDataProvider(
         std::make_unique<TestKeyDataProvider>(device_key_path_));
+    Wait();
   }
 
   bool is_initialized() {
-    return recorder_->init_state_ ==
-           StructuredMetricsRecorder::InitState::kInitialized;
+    return recorder_->IsReadyToRecordLocalStateEvents() &&
+           recorder_->IsReadyToRecordProfileEvents();
   }
 
   bool is_recording_enabled() { return recorder_->recording_enabled_; }
@@ -297,6 +307,7 @@ class StructuredMetricsRecorderTest : public testing::Test {
 
   void OnProfileAdded(const base::FilePath& path) {
     recorder_->OnProfileAdded(path);
+    Wait();
   }
 
   void WriteNow() {
@@ -315,6 +326,27 @@ class StructuredMetricsRecorderTest : public testing::Test {
     ChromeUserMetricsExtension uma_proto;
     recorder_->ProvideEventMetrics(uma_proto);
     Wait();
+    return uma_proto.structured_data();
+  }
+
+  StructuredDataProto GetLocalStateMetrics() {
+    ChromeUserMetricsExtension uma_proto;
+    uma_proto.mutable_structured_data()->mutable_events()->CopyFrom(
+        recorder_->LocalStateEvents()->non_uma_events());
+    uma_proto.mutable_structured_data()->mutable_events()->MergeFrom(
+        recorder_->LocalStateEvents()->uma_events());
+    return uma_proto.structured_data();
+  }
+
+  StructuredDataProto GetProfileMetrics() {
+    ChromeUserMetricsExtension uma_proto;
+
+    if (recorder_->can_provide_profile_metrics()) {
+      uma_proto.mutable_structured_data()->mutable_events()->CopyFrom(
+          recorder_->ProfileEvents()->non_uma_events());
+      uma_proto.mutable_structured_data()->mutable_events()->MergeFrom(
+          recorder_->ProfileEvents()->uma_events());
+    }
     return uma_proto.structured_data();
   }
 
@@ -400,7 +432,7 @@ TEST_F(StructuredMetricsRecorderTest, ReportingStateChangesHandledCorrectly) {
   events::v2::test_project_one::TestEventOne().Record();
   EXPECT_EQ(GetEventMetrics().events_size(), 1);
 
-  const KeyDataProto enabled_proto = ReadKeys(ProfileKeyFilePath());
+  const KeyDataProto enabled_proto = ReadKeys(DeviceKeyFilePath());
   EXPECT_EQ(enabled_proto.keys_size(), 1);
 
   // Record an event, disable reporting, then record another event. Both of
@@ -411,7 +443,7 @@ TEST_F(StructuredMetricsRecorderTest, ReportingStateChangesHandledCorrectly) {
   EXPECT_EQ(GetEventMetrics().events_size(), 0);
 
   // Read the keys again, it should be empty.
-  const KeyDataProto disabled_proto = ReadKeys(ProfileKeyFilePath());
+  const KeyDataProto disabled_proto = ReadKeys(DeviceKeyFilePath());
   EXPECT_EQ(disabled_proto.keys_size(), 0);
 
   // Enable reporting again, and record an event.
@@ -419,7 +451,7 @@ TEST_F(StructuredMetricsRecorderTest, ReportingStateChangesHandledCorrectly) {
   OnRecordingEnabled();
   events::v2::test_project_one::TestEventOne().Record();
   EXPECT_EQ(GetEventMetrics().events_size(), 1);
-  const KeyDataProto reenabled_proto = ReadKeys(ProfileKeyFilePath());
+  const KeyDataProto reenabled_proto = ReadKeys(DeviceKeyFilePath());
   EXPECT_EQ(reenabled_proto.keys_size(), 1);
 
   ExpectNoErrors();
@@ -433,7 +465,7 @@ TEST_F(StructuredMetricsRecorderTest, RecordingDisabledDuringInitialization) {
 
   OnProfileAdded(TempDirPath());
   OnRecordingDisabled();
-  EXPECT_FALSE(is_initialized());
+  EXPECT_TRUE(is_initialized());
   EXPECT_FALSE(is_recording_enabled());
 
   Wait();
@@ -525,6 +557,7 @@ TEST_F(StructuredMetricsRecorderTest, UmaEventsReportedCorrectly) {
 }
 
 TEST_F(StructuredMetricsRecorderTest, EventMetricsReportedCorrectly) {
+  WriteTestingDeviceKeys();
   WriteTestingProfileKeys();
   Init();
 
@@ -583,6 +616,7 @@ TEST_F(StructuredMetricsRecorderTest, EventMetricsReportedCorrectly) {
 }
 
 TEST_F(StructuredMetricsRecorderTest, EventMetricsProvideSystemProfile) {
+  WriteTestingDeviceKeys();
   WriteTestingProfileKeys();
   Init();
   InitializeSystemProfile();
@@ -762,6 +796,7 @@ TEST_F(StructuredMetricsRecorderTest, Int64MetricsNotTruncated) {
 }
 
 TEST_F(StructuredMetricsRecorderTest, EventsWithinProjectReportedWithSameID) {
+  WriteTestingDeviceKeys();
   WriteTestingProfileKeys();
   Init();
 
@@ -904,7 +939,7 @@ TEST_F(StructuredMetricsRecorderTest, EventsNotRecordedBeforeRecordingEnabled) {
   events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
   recorder_ = std::make_unique<TestStructuredMetricsRecorder>(
-      system_profile_provider_.get());
+      system_profile_provider_.get(), LocalStateFilePath());
   events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   OnRecordingEnabled();
   Wait();
@@ -915,21 +950,28 @@ TEST_F(StructuredMetricsRecorderTest, EventsNotRecordedBeforeRecordingEnabled) {
   ExpectNoErrors();
 }
 
-// Test that events reported after recording is enabled but before the keys are
-// loaded are hashed and stored after keys are loaded.
-TEST_F(StructuredMetricsRecorderTest, EventsRecordedBeforeKeysInitialized) {
+// Test that profile events reported after recording is enabled but before the
+// profile keys are loaded are dropped.
+TEST_F(StructuredMetricsRecorderTest,
+       ProfileEventsRecordedBeforeKeysLoadedDropped) {
   InitWithoutLogin();
-  // Emulate metric before login.
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
 
-  OnProfileAdded(TempDirPath());
+  // Emulate profile metric before login.
+  events::v2::test_project_two::TestEventThree()
+      .SetTestMetricFour("test")
+      .Record();
 
-  // Called before user key is loaded.
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  Wait();
-
+  // Should be empty.
   EXPECT_EQ(GetUMAEventMetrics().events_size(), 0);
-  EXPECT_EQ(GetEventMetrics().events_size(), 2);
+  EXPECT_EQ(GetEventMetrics().events_size(), 0);
+
+  // Load profile and ensure profile event is recorded.
+  OnProfileAdded(TempDirPath());
+  events::v2::test_project_two::TestEventTwo()
+      .SetTestMetricThree("test")
+      .Record();
+  Wait();
+  EXPECT_EQ(GetEventMetrics().events_size(), 1);
 
   ExpectNoErrors();
 }
@@ -1112,6 +1154,61 @@ TEST_F(StructuredMetricsRecorderTest, AppliesProcessorCorrectly) {
   const auto data = GetEventMetrics();
 
   EXPECT_TRUE(data.is_device_enrolled());
+}
+
+TEST_F(StructuredMetricsRecorderTest, PartitionsDeviceProfileEventsCorrectly) {
+  InitWithoutLogin();
+
+  // Record device event before login.
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+
+  // Login and record profile event.
+  OnProfileAdded(TempDirPath());
+  events::v2::test_project_two::TestEventThree()
+      .SetTestMetricFour("test")
+      .Record();
+
+  const auto local_state_events = GetLocalStateMetrics();
+  ASSERT_EQ(local_state_events.events_size(), 1);
+  ASSERT_EQ(local_state_events.events(0).project_name_hash(), kProjectOneHash);
+
+  const auto profile_events = GetProfileMetrics();
+  ASSERT_EQ(profile_events.events_size(), 1);
+  ASSERT_EQ(profile_events.events(0).project_name_hash(), kProjectTwoHash);
+}
+
+TEST_F(StructuredMetricsRecorderTest,
+       IgnoresProfileEventWhenProfileKeysNotLoaded) {
+  InitWithoutLogin();
+
+  // Device event.
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+
+  // Profile event.
+  events::v2::test_project_two::TestEventThree()
+      .SetTestMetricFour("test")
+      .Record();
+
+  const auto local_state_events = GetLocalStateMetrics();
+  ASSERT_EQ(local_state_events.events_size(), 1);
+  ASSERT_EQ(local_state_events.events(0).project_name_hash(), kProjectOneHash);
+
+  // Empty profile metrics.
+  const auto empty_profile_events = GetProfileMetrics();
+  ASSERT_EQ(empty_profile_events.events_size(), 0);
+
+  // Simulate adding profile.
+  OnProfileAdded(TempDirPath());
+
+  // Record again.
+  events::v2::test_project_two::TestEventThree()
+      .SetTestMetricFour("test")
+      .Record();
+
+  // Should be present now that profile has been added.
+  const auto profile_events = GetProfileMetrics();
+  ASSERT_EQ(profile_events.events_size(), 1);
+  ASSERT_EQ(profile_events.events(0).project_name_hash(), kProjectTwoHash);
 }
 
 }  // namespace metrics::structured

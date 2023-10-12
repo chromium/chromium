@@ -32,8 +32,8 @@ namespace {
 using events::v2::test_project_one::TestEventOne;
 using events::v2::test_project_six::TestEventSeven;
 
-// The name hash of "TestProjectOne".
-constexpr uint64_t kProjectOneHash = UINT64_C(16881314472396226433);
+// The name hash of "TestDeviceProjectOne".
+constexpr uint64_t kProjectOneHash = UINT64_C(15858567497151426664);
 // The name hash of "TestProjectThree".
 constexpr uint64_t kProjectThreeHash = UINT64_C(10860358748803291132);
 
@@ -93,7 +93,8 @@ class StructuredMetricsServiceTest : public testing::Test {
   void Init() {
     auto recorder = std::unique_ptr<StructuredMetricsRecorder>(
         new StructuredMetricsRecorder(base::Seconds(0),
-                                      system_profile_provider_.get()));
+                                      system_profile_provider_.get(),
+                                      DeviceEventsFilePath()));
     recorder->InitializeKeyDataProvider(std::make_unique<TestKeyDataProvider>(
         DeviceKeyFilePath(), ProfileKeyFilePath()));
     recorder->OnProfileAdded(temp_dir_.GetPath());
@@ -116,6 +117,12 @@ class StructuredMetricsServiceTest : public testing::Test {
     return temp_dir_.GetPath()
         .Append("structured_metrics")
         .Append("device_keys");
+  }
+
+  base::FilePath DeviceEventsFilePath() {
+    return temp_dir_.GetPath()
+        .Append("structured_metrics")
+        .Append("device_events");
   }
 
   void WriteTestingProfileKeys() {

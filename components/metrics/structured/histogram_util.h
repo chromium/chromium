@@ -41,7 +41,8 @@ enum class EventRecordingState {
   kProviderMissing = 3,
   kProjectDisallowed = 4,
   kLogSizeExceeded = 5,
-  kMaxValue = kLogSizeExceeded,
+  kProfileEventBeforeKeysLoaded = 6,
+  kMaxValue = kProfileEventBeforeKeysLoaded,
 };
 
 // Describes the action taken by KeyData::ValidateAndGetKey on a particular user
