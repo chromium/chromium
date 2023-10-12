@@ -194,8 +194,7 @@ class DedicatedWebTransportHttp3ClientSession
                                     supported_versions,
                                     connection,
                                     server_id,
-                                    crypto_config,
-                                    /*push_promise_index=*/nullptr),
+                                    crypto_config),
         client_(client) {}
 
   bool OnSettingsFrame(const quic::SettingsFrame& frame) override {

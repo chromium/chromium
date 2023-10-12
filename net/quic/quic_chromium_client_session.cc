@@ -893,7 +893,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     NetLog* net_log)
     : quic::QuicSpdyClientSessionBase(connection,
                                       /*visitor=*/nullptr,
-                                      /*push_promise_index=*/nullptr,
                                       config,
                                       connection->supported_versions()),
       session_key_(session_key),

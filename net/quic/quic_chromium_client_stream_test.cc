@@ -140,7 +140,6 @@ MockQuicClientSessionBase::MockQuicClientSessionBase(
     quic::QuicConnection* connection)
     : quic::QuicSpdyClientSessionBase(connection,
                                       /*visitor=*/nullptr,
-                                      /*push_promise_index=*/nullptr,
                                       quic::test::DefaultQuicConfig(),
                                       connection->supported_versions()) {
   crypto_stream_ = std::make_unique<quic::test::MockQuicCryptoStream>(this);
