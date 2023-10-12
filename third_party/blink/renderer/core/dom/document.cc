@@ -5033,6 +5033,11 @@ void Document::LayoutViewportWasResized() {
     if (GetFrame()->IsMainFrame() && !Printing())
       probe::DidResizeMainFrame(GetFrame());
   }
+
+  MarkViewportUnitsDirty();
+}
+
+void Document::MarkViewportUnitsDirty() {
   if (!HasViewportUnits())
     return;
   GetStyleResolver().SetResizedForViewportUnits();
