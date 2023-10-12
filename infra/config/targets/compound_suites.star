@@ -392,12 +392,14 @@ targets.legacy_compound_suite(
         "chromium_gtests_for_linux_and_mac_only",
         "mac_specific_chromium_gtests",
         "non_android_and_cast_and_chromeos_chromium_gtests",
-        "non_android_chromium_gtests",
+        "non_android_chromium_gtests_no_nacl",
     ],
 )
 
 # When changing something here, change
 # chromium_mac_gtests_no_nacl_once in the same way.
+# TODO(b/303417958): This no_nacl suite is identical to the normal suite, since
+# NaCl has been disabled on Mac. Replace this by the normal suite.
 targets.legacy_compound_suite(
     name = "chromium_mac_gtests_no_nacl",
     basic_suites = [
@@ -494,7 +496,7 @@ targets.legacy_compound_suite(
         "cr23_pixel_browser_tests_gtests",
         "fieldtrial_browser_tests",
         "non_android_and_cast_and_chromeos_chromium_gtests",
-        "non_android_chromium_gtests",
+        "non_android_chromium_gtests_no_nacl",
         "non_android_chromium_gtests_skia_gold",
         "pixel_browser_tests_gtests",
         "vr_platform_specific_chromium_gtests",
@@ -519,7 +521,7 @@ targets.legacy_compound_suite(
         "cr23_win_gtests",
         "fieldtrial_browser_tests",
         "non_android_and_cast_and_chromeos_chromium_gtests",
-        "non_android_chromium_gtests",
+        "non_android_chromium_gtests_no_nacl",
         "non_android_chromium_gtests_skia_gold",
         "pixel_browser_tests_gtests",
         "vr_platform_specific_chromium_gtests",
@@ -546,7 +548,7 @@ targets.legacy_compound_suite(
         "chromium_gtests_for_devices_with_graphical_output",
         "chromium_gtests_for_win_and_linux_only",
         "non_android_and_cast_and_chromeos_chromium_gtests",
-        "non_android_chromium_gtests",
+        "non_android_chromium_gtests_no_nacl",
         "vr_platform_specific_chromium_gtests",
         "win_specific_chromium_gtests",
     ],

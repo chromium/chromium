@@ -23,11 +23,9 @@ _cpu_is_supported =
 declare_args() {
   # Enables Native Client support.
   #
-  # Intentionally and permanently disable nacl on arm64 mac.
-  enable_nacl =
-      checkout_nacl && _cpu_is_supported && target_os != "ios" && !is_android &&
-      !is_fuchsia && !is_castos && !(is_win && host_os != "win") &&
-      !(is_mac && (host_os != "mac" || target_cpu != "x64"))
+  # Intentionally and permanently disable nacl on Windows and Mac.
+  enable_nacl = checkout_nacl && _cpu_is_supported && target_os != "ios" &&
+                !is_android && !is_fuchsia && !is_castos && !is_win && !is_mac
 }
 
 assert(!(is_win && host_os != "win") || !enable_nacl,

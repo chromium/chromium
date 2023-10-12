@@ -117,9 +117,9 @@ vars = {
   # output.
   'checkout_js_coverage_modules': True,
 
-  # Check out and download nacl by default, unless on an arm mac.
+  # Check out and download nacl by default, unless on Windows or Mac.
   # This can be disabled e.g. with custom_vars.
-  'checkout_nacl': 'not (host_os == "mac" and host_cpu == "arm64")',
+  'checkout_nacl': 'not (host_os == "win" or host_os == "mac")',
 
   # By default, do not check out src-internal. This can be overridden e.g. with
   # custom_vars.
