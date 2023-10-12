@@ -2131,7 +2131,7 @@ BASE_FEATURE(kPipDoubleTapToResize,
 // Enables or disables pinch to resize feature for Picture in Picture.
 BASE_FEATURE(kPipPinchToResize,
              "PipPinchToResize",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the tilt feature for Picture in Picture.
 BASE_FEATURE(kPipTilt, "PipTilt", base::FEATURE_DISABLED_BY_DEFAULT);
