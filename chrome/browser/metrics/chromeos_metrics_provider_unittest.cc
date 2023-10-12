@@ -15,6 +15,7 @@ TEST(ChromeOSHistogramMetricsProvider, NoCommandLine) {
   ChromeOSHistogramMetricsProvider provider;
   EXPECT_FALSE(provider.ProvideHistograms());
   histogram_tester.ExpectTotalCount("Platform.Segmentation.FeatureLevel", 0);
+  histogram_tester.ExpectTotalCount("Platform.Segmentation.ScopeLevel", 0);
 }
 
 TEST(ChromeOSHistogramMetricsProvider, CommandLine_OnlyOne) {
@@ -27,6 +28,7 @@ TEST(ChromeOSHistogramMetricsProvider, CommandLine_OnlyOne) {
   ChromeOSHistogramMetricsProvider provider;
   EXPECT_FALSE(provider.ProvideHistograms());
   histogram_tester.ExpectTotalCount("Platform.Segmentation.FeatureLevel", 0);
+  histogram_tester.ExpectTotalCount("Platform.Segmentation.ScopeLevel", 0);
 }
 
 TEST(ChromeOSHistogramMetricsProvider, CommandLine_NotInts) {
@@ -36,10 +38,12 @@ TEST(ChromeOSHistogramMetricsProvider, CommandLine_NotInts) {
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
   command_line->AppendSwitchASCII("feature-management-level", "s");
   command_line->AppendSwitchASCII("feature-management-max-level", "t");
+  command_line->AppendSwitchASCII("feature-management-scope", "u");
 
   ChromeOSHistogramMetricsProvider provider;
   EXPECT_FALSE(provider.ProvideHistograms());
   histogram_tester.ExpectTotalCount("Platform.Segmentation.FeatureLevel", 0);
+  histogram_tester.ExpectTotalCount("Platform.Segmentation.ScopeLevel", 0);
 }
 
 TEST(ChromeOSHistogramMetricsProvider, CommandLine_OnlyOneInt) {
@@ -49,10 +53,12 @@ TEST(ChromeOSHistogramMetricsProvider, CommandLine_OnlyOneInt) {
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
   command_line->AppendSwitchASCII("feature-management-level", "1");
   command_line->AppendSwitchASCII("feature-management-max-level", "t");
+  command_line->AppendSwitchASCII("feature-management-scope", "0");
 
   ChromeOSHistogramMetricsProvider provider;
   EXPECT_FALSE(provider.ProvideHistograms());
   histogram_tester.ExpectTotalCount("Platform.Segmentation.FeatureLevel", 0);
+  histogram_tester.ExpectTotalCount("Platform.Segmentation.ScopeLevel", 0);
 }
 
 TEST(ChromeOSHistogramMetricsProvider, CommandLine_Invalid_Level) {
@@ -62,10 +68,12 @@ TEST(ChromeOSHistogramMetricsProvider, CommandLine_Invalid_Level) {
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
   command_line->AppendSwitchASCII("feature-management-level", "-1");
   command_line->AppendSwitchASCII("feature-management-max-level", "1");
+  command_line->AppendSwitchASCII("feature-management-scope", "0");
 
   ChromeOSHistogramMetricsProvider provider;
   EXPECT_FALSE(provider.ProvideHistograms());
   histogram_tester.ExpectTotalCount("Platform.Segmentation.FeatureLevel", 0);
+  histogram_tester.ExpectTotalCount("Platform.Segmentation.ScopeLevel", 0);
 }
 
 TEST(ChromeOSHistogramMetricsProvider, CommandLine_Negative_MaxLevel) {
@@ -75,10 +83,12 @@ TEST(ChromeOSHistogramMetricsProvider, CommandLine_Negative_MaxLevel) {
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
   command_line->AppendSwitchASCII("feature-management-level", "1");
   command_line->AppendSwitchASCII("feature-management-max-level", "-1");
+  command_line->AppendSwitchASCII("feature-management-scope", "0");
 
   ChromeOSHistogramMetricsProvider provider;
   EXPECT_FALSE(provider.ProvideHistograms());
   histogram_tester.ExpectTotalCount("Platform.Segmentation.FeatureLevel", 0);
+  histogram_tester.ExpectTotalCount("Platform.Segmentation.ScopeLevel", 0);
 }
 
 TEST(ChromeOSHistogramMetricsProvider, CommandLine_Small_MaxLevel) {
@@ -88,37 +98,74 @@ TEST(ChromeOSHistogramMetricsProvider, CommandLine_Small_MaxLevel) {
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
   command_line->AppendSwitchASCII("feature-management-level", "1");
   command_line->AppendSwitchASCII("feature-management-max-level", "0");
+  command_line->AppendSwitchASCII("feature-management-scope", "0");
 
   ChromeOSHistogramMetricsProvider provider;
   EXPECT_FALSE(provider.ProvideHistograms());
   histogram_tester.ExpectTotalCount("Platform.Segmentation.FeatureLevel", 0);
+  histogram_tester.ExpectTotalCount("Platform.Segmentation.ScopeLevel", 0);
 }
 
-TEST(ChromeOSHistogramMetricsProvider, CommandLine_Success) {
-  base::HistogramTester histogram_tester;
-
-  base::test::ScopedCommandLine scoped_command_line;
-  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
-  command_line->AppendSwitchASCII("feature-management-level", "1");
-  command_line->AppendSwitchASCII("feature-management-max-level", "1");
-
-  ChromeOSHistogramMetricsProvider provider;
-  EXPECT_TRUE(provider.ProvideHistograms());
-  histogram_tester.ExpectUniqueSample("Platform.Segmentation.FeatureLevel", 1,
-                                      1);
-}
-
-TEST(ChromeOSHistogramMetricsProvider, CommandLine_Success_DifferentValues) {
+TEST(ChromeOSHistogramMetricsProvider, CommandLine_Success_NonCBX) {
   base::HistogramTester histogram_tester;
 
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
   command_line->AppendSwitchASCII("feature-management-level", "0");
   command_line->AppendSwitchASCII("feature-management-max-level", "1");
+  command_line->AppendSwitchASCII("feature-management-scope", "0");
 
   ChromeOSHistogramMetricsProvider provider;
   EXPECT_TRUE(provider.ProvideHistograms());
   histogram_tester.ExpectUniqueSample("Platform.Segmentation.FeatureLevel", 0,
                                       1);
+  histogram_tester.ExpectUniqueSample("Platform.Segmentation.ScopeLevel", 0, 1);
+}
+
+TEST(ChromeOSHistogramMetricsProvider, CommandLine_Success_HB) {
+  base::HistogramTester histogram_tester;
+
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->AppendSwitchASCII("feature-management-level", "1");
+  command_line->AppendSwitchASCII("feature-management-max-level", "1");
+  command_line->AppendSwitchASCII("feature-management-scope", "1");
+
+  ChromeOSHistogramMetricsProvider provider;
+  EXPECT_TRUE(provider.ProvideHistograms());
+  histogram_tester.ExpectUniqueSample("Platform.Segmentation.FeatureLevel", 1,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Platform.Segmentation.ScopeLevel", 2, 1);
+}
+
+TEST(ChromeOSHistogramMetricsProvider, CommandLine_Success_SB) {
+  base::HistogramTester histogram_tester;
+
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->AppendSwitchASCII("feature-management-level", "1");
+  command_line->AppendSwitchASCII("feature-management-max-level", "1");
+  command_line->AppendSwitchASCII("feature-management-scope", "0");
+
+  ChromeOSHistogramMetricsProvider provider;
+  EXPECT_TRUE(provider.ProvideHistograms());
+  histogram_tester.ExpectUniqueSample("Platform.Segmentation.FeatureLevel", 1,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Platform.Segmentation.ScopeLevel", 1, 1);
+}
+
+TEST(ChromeOSHistogramMetricsProvider, CommandLine_NonCBX_Hardbranded) {
+  base::HistogramTester histogram_tester;
+
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->AppendSwitchASCII("feature-management-level", "0");
+  command_line->AppendSwitchASCII("feature-management-max-level", "1");
+  command_line->AppendSwitchASCII("feature-management-scope", "1");
+
+  ChromeOSHistogramMetricsProvider provider;
+  EXPECT_FALSE(provider.ProvideHistograms());
+  histogram_tester.ExpectTotalCount("Platform.Segmentation.FeatureLevel", 0);
+  histogram_tester.ExpectTotalCount("Platform.Segmentation.ScopeLevel", 0);
 }
 }  // namespace
