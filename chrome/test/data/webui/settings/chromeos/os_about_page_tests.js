@@ -59,9 +59,11 @@ suite('AboutPageTest', function() {
    * @param {!UpdateStatus} status
    * @param {{
    *   progress: number|undefined,
-   *   message: string|undefined
-   *   rollback: bool|undefined
-   *   powerwash: bool|undefined
+   *   message: string|undefined,
+   *   rollback: bool|undefined,
+   *   powerwash: bool|undefined,
+   *   version: string|undefined,
+   *   size: string|undefined,
    * }} opt_options
    */
   function fireStatusChanged(status, opt_options) {
@@ -69,9 +71,11 @@ suite('AboutPageTest', function() {
     webUIListenerCallback('update-status-changed', {
       progress: options.progress === undefined ? 1 : options.progress,
       message: options.message,
-      status: status,
+      status,
       rollback: options.rollback,
       powerwash: options.powerwash,
+      version: options.version,
+      size: options.size,
     });
   }
 
@@ -267,6 +271,23 @@ suite('AboutPageTest', function() {
         page.i18n('aboutUpdateToRollbackVersionDisallowed').toString();
     assertEquals(expectedMessage, statusMessageEl.textContent);
   });
+
+  test(
+      'Warning dialog is shown when attempting to update over metered network',
+      async () => {
+        await initNewPage();
+
+        fireStatusChanged(
+            UpdateStatus.NEED_PERMISSION_TO_UPDATE,
+            {version: '9001.0.0', size: '9999'});
+        flush();
+
+        const warningDialog =
+            page.shadowRoot.querySelector('settings-update-warning-dialog');
+        assertTrue(!!warningDialog);
+        assertTrue(
+            warningDialog.$.dialog.open, 'Warning dialog should be open');
+      });
 
   test('NoInternet', function() {
     assertTrue(page.$.updateStatusMessage.hidden);
