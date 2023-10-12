@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_VIEW_TRANSITION_STATE_MOJOM_TRAITS_H_
 
 #include "base/check_op.h"
+#include "base/containers/flat_map.h"
 #include "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -51,21 +52,10 @@ struct BLINK_COMMON_EXPORT
     return r.captured_rect_in_layout_space;
   }
 
-  static uint8_t container_writing_mode(const blink::ViewTransitionElement& r) {
-    return r.container_writing_mode;
-  }
-
-  static uint8_t mix_blend_mode(const blink::ViewTransitionElement& r) {
-    return r.mix_blend_mode;
-  }
-
-  static uint8_t text_orientation(const blink::ViewTransitionElement& r) {
-    return r.text_orientation;
-  }
-
-  static const std::string& color_scheme(
-      const blink::ViewTransitionElement& r) {
-    return r.color_scheme;
+  static const base::flat_map<blink::mojom::ViewTransitionPropertyId,
+                              std::string>&
+  captured_css_properties(const blink::ViewTransitionElement& r) {
+    return r.captured_css_properties;
   }
 
   static bool Read(blink::mojom::ViewTransitionElementDataView r,

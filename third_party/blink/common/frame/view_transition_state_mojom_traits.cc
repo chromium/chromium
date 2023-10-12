@@ -22,14 +22,11 @@ bool StructTraits<blink::mojom::ViewTransitionElementDataView,
       !data.ReadSnapshotId(&out->snapshot_id) ||
       !data.ReadCapturedRectInLayoutSpace(
           &out->captured_rect_in_layout_space) ||
-      !data.ReadColorScheme(&out->color_scheme)) {
+      !data.ReadCapturedCssProperties(&out->captured_css_properties)) {
     return false;
   }
 
   out->paint_order = data.paint_order();
-  out->container_writing_mode = data.container_writing_mode();
-  out->mix_blend_mode = data.mix_blend_mode();
-  out->text_orientation = data.text_orientation();
   return true;
 }
 

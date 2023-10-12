@@ -9,6 +9,13 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/transform.mojom";
 import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
 
+enum ViewTransitionPropertyId {
+  kColorScheme,
+  kMixBlendMode,
+  kTextOrientation,
+  kWritingMode
+};
+
 // This represents the necessary information for a shared element to
 // participate in a view transition. See comment above ViewTransitionState for
 // more information.
@@ -29,11 +36,9 @@ struct ViewTransitionElement {
   int32 paint_order;
 
   // Select CSS property values needed for the visual representation of this
-  // shared element.
-  uint8 container_writing_mode;
-  uint8 mix_blend_mode;
-  uint8 text_orientation;
-  string color_scheme;
+  // shared element. The map is from (a subset of) CSSPropertyIDs to the css
+  // computed value (as string).
+  map<ViewTransitionPropertyId, string> captured_css_properties;
 };
 
 // This represents a document state necessary to initiate a view transition for

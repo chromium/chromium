@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_VIEW_TRANSITION_STATE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_VIEW_TRANSITION_STATE_H_
 
+#include "base/containers/flat_map.h"
 #include "base/unguessable_token.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -40,10 +41,8 @@ struct BLINK_COMMON_EXPORT ViewTransitionElement {
   viz::ViewTransitionElementResourceId snapshot_id;
   int32_t paint_order = 0;
   absl::optional<gfx::RectF> captured_rect_in_layout_space;
-  uint8_t container_writing_mode = 0;
-  uint8_t mix_blend_mode = 0;
-  uint8_t text_orientation = 0;
-  std::string color_scheme;
+  base::flat_map<blink::mojom::ViewTransitionPropertyId, std::string>
+      captured_css_properties;
 };
 
 struct BLINK_COMMON_EXPORT ViewTransitionState {

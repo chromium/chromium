@@ -1798,6 +1798,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/core/view_transition/',
+        ],
+        'allowed': [
+            'base::flat_map',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/core/',
         ],
         'allowed': ['ui::k200Percent'],

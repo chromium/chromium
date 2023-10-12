@@ -5,8 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_VIEW_TRANSITION_STYLE_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_VIEW_TRANSITION_STYLE_TRACKER_H_
 
+#include "base/containers/flat_map.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/blink/public/common/frame/view_transition_state.h"
+#include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -259,18 +261,7 @@ class ViewTransitionStyleTracker
     // For the following properties, they are initially set to the outgoing
     // element's value, and then switch to the incoming element's value, if one
     // exists.
-
-    // The writing mode to use for the container.
-    WritingMode container_writing_mode = WritingMode::kHorizontalTb;
-
-    // The mix blend mode to use for the container.
-    BlendMode mix_blend_mode = BlendMode::kNormal;
-
-    // The color scheme keywords to use.
-    String color_scheme;
-
-    // Text orientation to use for the container.
-    ETextOrientation text_orientation = ETextOrientation::kMixed;
+    base::flat_map<CSSPropertyID, String> captured_css_properties;
   };
 
   // In physical pixels. Returns the snapshot root rect, relative to the
@@ -311,10 +302,6 @@ class ViewTransitionStyleTracker
       LayoutObject& layout_object,
       ContainerProperties&,
       PhysicalRect& visual_overflow_rect_in_layout_space,
-      WritingMode&,
-      BlendMode&,
-      ETextOrientation&,
-      String& color_scheme,
       absl::optional<gfx::RectF>& captured_rect_in_layout_space) const;
 
   Member<Document> document_;
