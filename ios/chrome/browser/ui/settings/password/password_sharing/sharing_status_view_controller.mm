@@ -48,6 +48,10 @@ const CGFloat kSharingCancelledDuration = 0.5;
 const CGFloat kImagesSlidingOutDistance = 78;
 const CGFloat kImagesSlidingInDistance = 51;
 
+// Tags marking parts of string that should have a bold font.
+NSString* const kBeginBoldTag = @"BEGIN_BOLD[ \t]*";
+NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
+
 }  // namespace
 
 @interface SharingStatusViewController ()
@@ -402,10 +406,23 @@ const CGFloat kImagesSlidingInDistance = 51;
 
 // Adds link attribute to the specified `range` of the `view`.
 - (void)addLinkAttributeToTextView:(UITextView*)view range:(NSRange)range {
-  NSMutableAttributedString* newView = [[NSMutableAttributedString alloc]
+  NSMutableAttributedString* linkText = [[NSMutableAttributedString alloc]
       initWithAttributedString:view.attributedText];
-  [newView addAttribute:NSLinkAttributeName value:@"" range:range];
-  view.attributedText = newView;
+  [linkText addAttribute:NSLinkAttributeName value:@"" range:range];
+  view.attributedText = linkText;
+}
+
+// Adds bold attribute to the specified `range` of the `view`.
+- (void)addBoldAttributeToTextView:(UITextView*)view range:(NSRange)range {
+  NSMutableAttributedString* boldText = [[NSMutableAttributedString alloc]
+      initWithAttributedString:view.attributedText];
+  UIFontDescriptor* boldDescriptor = [[UIFontDescriptor
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleBody]
+      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+  [boldText addAttribute:NSFontAttributeName
+                   value:[UIFont fontWithDescriptor:boldDescriptor size:0.0]
+                   range:range];
+  view.attributedText = boldText;
 }
 
 // Helper to create the subtitle.
@@ -413,10 +430,17 @@ const CGFloat kImagesSlidingInDistance = 51;
   UITextView* subtitle = [self createTextView];
   subtitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   subtitle.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  // TODO(crbug.com/1463882): Make parts of the string bold.
-  StringWithTags stringWithTags = ParseStringWithLinks(self.subtitleString);
-  subtitle.text = stringWithTags.string;
-  [self addLinkAttributeToTextView:subtitle range:stringWithTags.ranges[0]];
+
+  StringWithTags stringWithBolds =
+      ParseStringWithTags(self.subtitleString, kBeginBoldTag, kEndBoldTag);
+  StringWithTags stringWithLinks = ParseStringWithLinks(stringWithBolds.string);
+  subtitle.text = stringWithLinks.string;
+
+  for (const NSRange& range : stringWithBolds.ranges) {
+    [self addBoldAttributeToTextView:subtitle range:range];
+  }
+  [self addLinkAttributeToTextView:subtitle range:stringWithLinks.ranges[0]];
+
   return subtitle;
 }
 
