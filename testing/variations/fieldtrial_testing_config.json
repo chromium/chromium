@@ -8168,16 +8168,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithHttpsFirstModeForEngagedSites_20231003",
                     "enable_features": [
-                        "HttpsUpgrades"
-                    ]
-                },
-                {
-                    "name": "EnabledWithHttpsFirstModeForEngagedSites",
-                    "enable_features": [
-                        "HttpsFirstModeV2ForEngagedSites",
-                        "HttpsUpgrades"
+                        "HttpsFirstModeV2ForEngagedSites"
                     ]
                 }
             ]
