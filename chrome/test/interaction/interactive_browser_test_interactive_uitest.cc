@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 
 #include <memory>
@@ -420,6 +421,33 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
           })),
       InstrumentNonTabWebView(kWebContentsId, kTabSearchWebViewName),
       WithElement(kTabSearchWebViewName, base::DoNothing()));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
+                       SendAcceleratorToWebContents) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kOverflowMenuOpenEvent);
+  const DeepQuery kOverflowMenuButton = {"downloads-manager",
+                                         "downloads-toolbar", "#moreActions"};
+  const DeepQuery kOverflowMenuDialog = {"downloads-manager",
+                                         "downloads-toolbar",
+                                         "#moreActionsMenu", "#dialog[open]"};
+  const ui::Accelerator kClickWebButtonAccelerator(ui::KeyboardCode::VKEY_SPACE,
+                                                   ui::EF_NONE);
+  StateChange overflow_menu_open;
+  overflow_menu_open.type = StateChange::Type::kExists;
+  overflow_menu_open.where = kOverflowMenuDialog;
+  overflow_menu_open.event = kOverflowMenuOpenEvent;
+  RunTestSequence(
+      InstrumentTab(kWebContentsId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GURL(chrome::kChromeUIDownloadsURL)),
+      FocusWebContents(kWebContentsId),
+      ExecuteJsAt(kWebContentsId, kOverflowMenuButton, "el => el.focus()"),
+      SendAccelerator(kWebContentsId, kClickWebButtonAccelerator),
+      WaitForStateChange(kWebContentsId, overflow_menu_open));
 }
 
 namespace {

@@ -106,8 +106,24 @@ class InteractionTestUtilSimulatorBrowser
     if (auto* const tracked_contents =
             element->AsA<TrackedElementWebContents>()) {
       if (auto* const view = tracked_contents->owner()->GetWebView()) {
-        view->GetFocusManager()->ProcessAccelerator(accelerator);
-        return ui::test::ActionResult::kSucceeded;
+        // There are two possibilities:
+        //  1. This is a legitimate accelerator, which must be handled by the
+        //     focus manager.
+        //  2. This is a control key that will be processed by Blink (e.g.
+        //     pressing enter or space to "click" an HTML button), and therefore
+        //     must be injected as a keypress.
+        bool result = view->GetFocusManager()->ProcessAccelerator(accelerator);
+        if (!result) {
+          result = ui_controls::SendKeyPress(
+              tracked_contents->owner()
+                  ->web_contents()
+                  ->GetTopLevelNativeWindow(),
+              accelerator.key_code(), accelerator.IsCtrlDown(),
+              accelerator.IsShiftDown(), accelerator.IsAltDown(),
+              accelerator.IsCmdDown());
+        }
+        return result ? ui::test::ActionResult::kSucceeded
+                      : ui::test::ActionResult::kFailed;
       } else {
         LOG(ERROR) << "No associated view to send accelerators to.";
         return ui::test::ActionResult::kFailed;
