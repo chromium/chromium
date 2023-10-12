@@ -227,16 +227,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Cold.TimeToFirstVisibleContent2" units="ms"
-    expires_after="2024-02-04">
+    expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
   <owner>yfriedman@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <summary>
     The time from Chrome tabbed activity creation to the moment the Chrome first
     appears ready.
 
     This metrics has the same semantics as
     Startup.Android.Cold.TimeToFirstVisibleContent, without the known bug.
+
+    This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
   </summary>
 </histogram>
 
