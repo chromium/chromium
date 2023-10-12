@@ -27,7 +27,7 @@ class GeneratedPasswordSavedMessageDelegate {
 
   GeneratedPasswordSavedMessageDelegate();
   GeneratedPasswordSavedMessageDelegate(
-      base::PassKey<class GeneratedPasswordSavedMessageDelegateTest>,
+      base::PassKey<class GeneratedPasswordSavedMessageDelegateTestBase>,
       CreateAddUsernameDialogBridge add_username_dialog_factory);
   ~GeneratedPasswordSavedMessageDelegate();
   GeneratedPasswordSavedMessageDelegate(
@@ -40,7 +40,7 @@ class GeneratedPasswordSavedMessageDelegate {
       std::unique_ptr<password_manager::PasswordFormManagerForUI> saved_form);
 
  private:
-  friend class GeneratedPasswordSavedMessageDelegateTest;
+  friend class GeneratedPasswordSavedMessageDelegateTestBase;
 
   void ShowPasswordSavedMessage(content::WebContents* web_contents);
   void ShowAddUsernameDialog(content::WebContents* web_contents);

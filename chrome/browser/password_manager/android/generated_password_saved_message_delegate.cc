@@ -22,7 +22,7 @@ GeneratedPasswordSavedMessageDelegate::GeneratedPasswordSavedMessageDelegate()
           []() { return std::make_unique<AddUsernameDialogBridge>(); })) {}
 
 GeneratedPasswordSavedMessageDelegate::GeneratedPasswordSavedMessageDelegate(
-    base::PassKey<class GeneratedPasswordSavedMessageDelegateTest>,
+    base::PassKey<class GeneratedPasswordSavedMessageDelegateTestBase>,
     CreateAddUsernameDialogBridge add_username_dialog_factory)
     : add_username_dialog_factory_(std::move(add_username_dialog_factory)) {}
 
@@ -47,8 +47,8 @@ void GeneratedPasswordSavedMessageDelegate::HandleDismissCallback(
 
 void GeneratedPasswordSavedMessageDelegate::HandleUsernameAddedCallback(
     const std::u16string& username) {
-  // TODO (https://crbug.com/1421753): Implement saving the edited username to
-  // the password manager.
+  saved_form_->OnUpdateUsernameFromPrompt(username);
+  saved_form_->Save();
 }
 
 void GeneratedPasswordSavedMessageDelegate::ShowPrompt(

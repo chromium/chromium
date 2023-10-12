@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <memory>
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
@@ -36,7 +37,9 @@ constexpr char16_t kPassword[] = u"password_42";
 
 using testing::_;
 using testing::AtMost;
+using testing::ByMove;
 using testing::InvokeWithoutArgs;
+using testing::Return;
 using testing::Sequence;
 
 class MockJniDelegate : public AddUsernameDialogBridge::JniDelegate {
@@ -57,11 +60,10 @@ class MockJniDelegate : public AddUsernameDialogBridge::JniDelegate {
 
 }  // namespace
 
-class GeneratedPasswordSavedMessageDelegateTest
-    : public base::test::WithFeatureOverride,
-      public ChromeRenderViewHostTestHarness {
+class GeneratedPasswordSavedMessageDelegateTestBase
+    : public ChromeRenderViewHostTestHarness {
  public:
-  GeneratedPasswordSavedMessageDelegateTest();
+  GeneratedPasswordSavedMessageDelegateTestBase();
 
  protected:
   void SetUp() override;
@@ -72,58 +74,44 @@ class GeneratedPasswordSavedMessageDelegateTest
 
   void SetUsernameAndPassword(std::u16string username, std::u16string password);
   void DismissMessage();
+  std::unique_ptr<AddUsernameDialogBridge> CreateAddUsernameBridge(
+      std::unique_ptr<MockJniDelegate> mock_jni);
   messages::MessageWrapper* GetMessageWrapper() {
     return delegate_->message_.get();
   }
 
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
   std::unique_ptr<GeneratedPasswordSavedMessageDelegate> delegate_;
-  raw_ptr<MockJniDelegate> username_bridge_jni_raw_ptr_;
+  base::MockCallback<
+      GeneratedPasswordSavedMessageDelegate::CreateAddUsernameDialogBridge>
+      mock_create_add_username_bridge_factory_;
 
  private:
   password_manager::PasswordForm form_;
   GURL password_form_url_;
-  base::MockCallback<
-      GeneratedPasswordSavedMessageDelegate::CreateAddUsernameDialogBridge>
-      mock_create_add_username_bridge_factory_;
-  std::unique_ptr<MockJniDelegate> username_bridge_jni_;
 };
 
-GeneratedPasswordSavedMessageDelegateTest::
-    GeneratedPasswordSavedMessageDelegateTest()
-    : base::test::WithFeatureOverride(
-          password_manager::features::kPasswordGenerationBottomSheet),
-      username_bridge_jni_(std::make_unique<MockJniDelegate>()) {
-  EXPECT_CALL(mock_create_add_username_bridge_factory_, Run)
-      .Times(AtMost(1))
-      .WillOnce([this]() {
-        return std::make_unique<AddUsernameDialogBridge>(
-            base::PassKey<class GeneratedPasswordSavedMessageDelegateTest>(),
-            std::move(username_bridge_jni_));
-      });
-  // username_bridge_jni_ will be moved into the delegate class after calling
-  // `ShowPrompt`, so we are saving the pointer here to verify the calls on it
-  // later.
-  username_bridge_jni_raw_ptr_ = username_bridge_jni_.get();
+GeneratedPasswordSavedMessageDelegateTestBase::
+    GeneratedPasswordSavedMessageDelegateTestBase() {
   delegate_ = std::make_unique<GeneratedPasswordSavedMessageDelegate>(
-      base::PassKey<class GeneratedPasswordSavedMessageDelegateTest>(),
+      base::PassKey<class GeneratedPasswordSavedMessageDelegateTestBase>(),
       mock_create_add_username_bridge_factory_.Get());
 }
 
-void GeneratedPasswordSavedMessageDelegateTest::SetUp() {
+void GeneratedPasswordSavedMessageDelegateTestBase::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
   NavigateAndCommit(GURL(kDefaultUrl));
   messages::MessageDispatcherBridge::SetInstanceForTesting(
       &message_dispatcher_bridge_);
 }
 
-void GeneratedPasswordSavedMessageDelegateTest::TearDown() {
+void GeneratedPasswordSavedMessageDelegateTestBase::TearDown() {
   messages::MessageDispatcherBridge::SetInstanceForTesting(nullptr);
   ChromeRenderViewHostTestHarness::TearDown();
 }
 
 std::unique_ptr<MockPasswordFormManagerForUI>
-GeneratedPasswordSavedMessageDelegateTest::CreateFormManager(
+GeneratedPasswordSavedMessageDelegateTestBase::CreateFormManager(
     const GURL& password_form_url) {
   password_form_url_ = password_form_url;
   auto form_manager =
@@ -135,14 +123,14 @@ GeneratedPasswordSavedMessageDelegateTest::CreateFormManager(
   return form_manager;
 }
 
-void GeneratedPasswordSavedMessageDelegateTest::SetUsernameAndPassword(
+void GeneratedPasswordSavedMessageDelegateTestBase::SetUsernameAndPassword(
     std::u16string username,
     std::u16string password) {
   form_.username_value = std::move(username);
   form_.password_value = std::move(password);
 }
 
-void GeneratedPasswordSavedMessageDelegateTest::DismissMessage() {
+void GeneratedPasswordSavedMessageDelegateTestBase::DismissMessage() {
   EXPECT_CALL(message_dispatcher_bridge_, DismissMessage)
       .WillOnce([](messages::MessageWrapper* message,
                    messages::DismissReason dismiss_reason) {
@@ -152,6 +140,53 @@ void GeneratedPasswordSavedMessageDelegateTest::DismissMessage() {
   delegate_->DismissPromptInternal();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
+
+std::unique_ptr<AddUsernameDialogBridge>
+GeneratedPasswordSavedMessageDelegateTestBase::CreateAddUsernameBridge(
+    std::unique_ptr<MockJniDelegate> mock_jni) {
+  return std::make_unique<AddUsernameDialogBridge>(
+      base::PassKey<class GeneratedPasswordSavedMessageDelegateTestBase>(),
+      std::move(mock_jni));
+}
+
+TEST_F(GeneratedPasswordSavedMessageDelegateTestBase,
+       TestUsernameAddedCallback) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kPasswordGenerationBottomSheet);
+  auto username_bridge =
+      CreateAddUsernameBridge(std::make_unique<MockJniDelegate>());
+  auto* username_bridge_raw_ptr = username_bridge.get();
+  EXPECT_CALL(mock_create_add_username_bridge_factory_, Run)
+      .Times(AtMost(1))
+      .WillOnce(Return(ByMove(std::move(username_bridge))));
+
+  SetUsernameAndPassword(u"", kPassword);
+  auto form_manager = CreateFormManager(GURL(kDefaultUrl));
+  auto* form_manager_raw_ptr = form_manager.get();
+
+  delegate_->ShowPrompt(web_contents(), std::move(form_manager));
+
+  const std::u16string username = u"test username";
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto j_string = base::android::ConvertUTF16ToJavaString(env, username);
+
+  {
+    testing::InSequence s;
+    EXPECT_CALL(*form_manager_raw_ptr, OnUpdateUsernameFromPrompt(username));
+    EXPECT_CALL(*form_manager_raw_ptr, Save);
+  }
+  username_bridge_raw_ptr->OnDialogAccepted(
+      env, base::android::JavaParamRef<jstring>(env, j_string.obj()));
+}
+
+class GeneratedPasswordSavedMessageDelegateTest
+    : public base::test::WithFeatureOverride,
+      public GeneratedPasswordSavedMessageDelegateTestBase {
+ public:
+  GeneratedPasswordSavedMessageDelegateTest()
+      : base::test::WithFeatureOverride(
+            password_manager::features::kPasswordGenerationBottomSheet) {}
+};
 
 // Tests that message properties (title, description, icon, button text) are
 // set correctly.
@@ -178,12 +213,20 @@ TEST_P(GeneratedPasswordSavedMessageDelegateTest, MessagePropertyValues) {
 
 TEST_P(GeneratedPasswordSavedMessageDelegateTest,
        AddUsernameDialogIsDisplayedWhenEmptyUsername) {
+  auto username_bridge_jni = std::make_unique<MockJniDelegate>();
+  auto* username_bridge_jni_raw_ptr = username_bridge_jni.get();
+  auto username_bridge =
+      CreateAddUsernameBridge(std::move(username_bridge_jni));
+  EXPECT_CALL(mock_create_add_username_bridge_factory_, Run)
+      .Times(AtMost(1))
+      .WillOnce(Return(ByMove(std::move(username_bridge))));
+
   SetUsernameAndPassword(u"", kPassword);
   auto form_manager = CreateFormManager(GURL(kDefaultUrl));
 
   if (base::FeatureList::IsEnabled(
           password_manager::features::kPasswordGenerationBottomSheet)) {
-    EXPECT_CALL(*username_bridge_jni_raw_ptr_, ShowAddUsernameDialog);
+    EXPECT_CALL(*username_bridge_jni_raw_ptr, ShowAddUsernameDialog);
   } else {
     EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
   }
@@ -193,13 +236,21 @@ TEST_P(GeneratedPasswordSavedMessageDelegateTest,
 
 TEST_P(GeneratedPasswordSavedMessageDelegateTest,
        DialogIsDismissedOnDelegateDestruction) {
+  auto username_bridge_jni = std::make_unique<MockJniDelegate>();
+  auto* username_bridge_jni_raw_ptr = username_bridge_jni.get();
+  auto username_bridge =
+      CreateAddUsernameBridge(std::move(username_bridge_jni));
+  EXPECT_CALL(mock_create_add_username_bridge_factory_, Run)
+      .Times(AtMost(1))
+      .WillOnce(Return(ByMove(std::move(username_bridge))));
+
   SetUsernameAndPassword(u"", kPassword);
   auto form_manager = CreateFormManager(GURL(kDefaultUrl));
   delegate_->ShowPrompt(web_contents(), std::move(form_manager));
 
   if (base::FeatureList::IsEnabled(
           password_manager::features::kPasswordGenerationBottomSheet)) {
-    EXPECT_CALL(*username_bridge_jni_raw_ptr_, Dismiss);
+    EXPECT_CALL(*username_bridge_jni_raw_ptr, Dismiss);
   } else {
     EXPECT_CALL(message_dispatcher_bridge_, DismissMessage);
   }

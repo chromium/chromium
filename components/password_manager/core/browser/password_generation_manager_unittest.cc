@@ -148,8 +148,7 @@ class PasswordGenerationManagerTest : public testing::Test {
 PasswordGenerationManagerTest::PasswordGenerationManagerTest()
     : mock_store_(new testing::StrictMock<MockPasswordStoreInterface>()),
       form_saver_(mock_store_.get()),
-      generation_manager_(&client_) {
-}
+      generation_manager_(&client_) {}
 
 PasswordGenerationManagerTest::~PasswordGenerationManagerTest() {
   mock_store_->ShutdownOnUIThread();
@@ -631,6 +630,35 @@ TEST_F(PasswordGenerationManagerTest,
       1);
   histogram_tester.ExpectUniqueSample(
       "PasswordGeneration.EditsInGeneratedPassword.AttributesMask", 1, 1);
+}
+
+// Check that committing a password for the second time results in updating it.
+// This may happen when the user submits the form with empty username and the
+// crediential with no username gets committed and then the dialog with the
+// proposition to add username is displayed. If the user adds a username the
+// credential will be committed for the second time.
+TEST_F(PasswordGenerationManagerTest, CommitGeneratedPassword_Replace) {
+  PasswordForm generated = CreateGenerated();
+  generated.date_created = base::Time::Now();
+  generated.date_password_modified = base::Time::Now();
+  generated.date_last_used = base::Time::Now();
+
+  EXPECT_CALL(store(), AddLogin);
+  manager().PresaveGeneratedPassword(generated, {}, &form_saver());
+
+  EXPECT_CALL(store(), UpdateLoginWithPrimaryKey(
+                           generated, FormHasUniqueKey(generated), _));
+  manager().CommitGeneratedPassword(generated, {}, u"", &form_saver());
+
+  ForwardByMinute();
+  PasswordForm generated_updated = generated;
+  generated_updated.username_value = u"NewUsername";
+  generated_updated.date_created = base::Time::Now();
+  generated_updated.date_password_modified = base::Time::Now();
+  generated_updated.date_last_used = base::Time::Now();
+  EXPECT_CALL(store(), UpdateLoginWithPrimaryKey(
+                           generated_updated, FormHasUniqueKey(generated), _));
+  manager().CommitGeneratedPassword(generated_updated, {}, u"", &form_saver());
 }
 
 }  // namespace
