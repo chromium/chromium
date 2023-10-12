@@ -5,13 +5,19 @@
 package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
+import android.provider.Browser;
 
 import androidx.annotation.NonNull;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.Callback;
+import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
+import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -41,6 +47,8 @@ public class TrackingProtectionNoticeController {
     private ActivityTabTabObserver mActivityTabTabObserver;
     private MessageDispatcher mMessageDispatcher;
     private SettingsLauncher mSettingsLauncher;
+    private static final String TRACKING_PROTECTION_HELP_CENTER =
+            "https://support.google.com/chrome/?p=tracking_protection";
 
     // Setting an indefinite message auto dismiss duration is not possible,
     // hence we provide a value high enough to maintain the message visible.
@@ -90,20 +98,25 @@ public class TrackingProtectionNoticeController {
     private void showNotice() {
         if (mMessageDispatcher == null) return;
 
-        // TODO(b/295927778): Use final strings.
         Resources resources = mContext.getResources();
         mMessage =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(
                                 MessageBannerProperties.MESSAGE_IDENTIFIER,
                                 MessageIdentifier.TRACKING_PROTECTION_NOTICE)
-                        .with(MessageBannerProperties.TITLE, "Loremi sumd lors Tametco")
+                        .with(
+                                MessageBannerProperties.TITLE,
+                                resources.getString(
+                                        R.string.tracking_protection_onboarding_notice_title))
                         .with(
                                 MessageBannerProperties.DESCRIPTION,
-                                "Lor'mi sum ol rsi ametc ns"
-                                        + " cteturadip Scingeli Seddoeiusm, tempo incidi untut abor"
-                                        + " etdol remag-aaliq autenim dm nimve iam ui nos rudexe.")
-                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Lor mi")
+                                resources.getString(
+                                        R.string.tracking_protection_onboarding_notice_body))
+                        .with(
+                                MessageBannerProperties.PRIMARY_BUTTON_TEXT,
+                                resources.getString(
+                                        R.string
+                                                .tracking_protection_onboarding_notice_ack_button_label))
                         .with(
                                 MessageBannerProperties.SECONDARY_MENU_BUTTON_DELEGATE,
                                 new SecondaryMenuButtonDelegate())
@@ -184,9 +197,19 @@ public class TrackingProtectionNoticeController {
 
         @Override
         public ListMenu getListMenu() {
-            // TODO(b/295927778): Use final strings.
-            ListItem settingsItem = getMenuItem(SETTINGS_ITEM_ID, "Settings");
-            ListItem learnMoreItem = getMenuItem(LEARN_MORE_ITEM_ID, "Learn more");
+            Resources res = mContext.getResources();
+            ListItem settingsItem =
+                    getMenuItem(
+                            SETTINGS_ITEM_ID,
+                            res.getString(
+                                    R.string
+                                            .tracking_protection_onboarding_notice_settings_button_label));
+            ListItem learnMoreItem =
+                    getMenuItem(
+                            LEARN_MORE_ITEM_ID,
+                            res.getString(
+                                    R.string
+                                            .tracking_protection_onboarding_notice_learn_more_button_label));
 
             MVCListAdapter.ModelList menuItems = new MVCListAdapter.ModelList();
             menuItems.add(settingsItem);
@@ -217,7 +240,7 @@ public class TrackingProtectionNoticeController {
                     TrackingProtectionBridge.noticeActionTaken(
                             org.chromium.chrome.browser.privacy_sandbox.NoticeAction.SETTINGS);
                 } else if (clickedItemID == LEARN_MORE_ITEM_ID) {
-                    // TODO(b/295927778):  Open learn More link
+                    openUrlInCct(TRACKING_PROTECTION_HELP_CENTER);
                     TrackingProtectionBridge.noticeActionTaken(
                             org.chromium.chrome.browser.privacy_sandbox.NoticeAction.LEARN_MORE);
                 }
@@ -225,6 +248,19 @@ public class TrackingProtectionNoticeController {
                 mMessageDispatcher.dismissMessage(mMessage, DismissReason.SECONDARY_ACTION);
             };
         }
+    }
+
+    private void openUrlInCct(String url) {
+        CustomTabsIntent customTabIntent =
+                new CustomTabsIntent.Builder().setShowTitle(true).build();
+        customTabIntent.intent.setData(Uri.parse(url));
+        Intent intent =
+                LaunchIntentDispatcher.createCustomTabActivityIntent(
+                        mContext, customTabIntent.intent);
+        intent.setPackage(mContext.getPackageName());
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, mContext.getPackageName());
+        IntentUtils.addTrustedIntentExtras(intent);
+        IntentUtils.safeStartActivity(mContext, intent);
     }
 
     public void destroy() {
