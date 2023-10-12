@@ -39,6 +39,13 @@
     padding: 0 20px;
   }
 
+  #loading {
+    display: flex;
+    border: solid 1px var(--color-compose-dialog-result-background);
+    border-radius: 8px;
+    padding: 16px;
+  }
+
   #resultContainer {
     border-radius: 8px;
     padding: 16px;
@@ -113,8 +120,17 @@
   <compose-textarea id="textarea"
       on-value-changed="onTextareaValueChanged_"
       readonly="[[submitted_]]"
-      allow-exiting-readonly-mode="[[submitted_]]">
+      allow-exiting-readonly-mode="[[!loading_]]">
   </compose-textarea>
+
+  <div id="loading" hidden="[[!loading_]]">
+    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="43">
+      <rect x="0" y="0" width="100%" height="11" rx="4" fill="#D9D9D9"></rect>
+      <rect x="0" y="16" width="100%" height="10.8333" rx="4" fill="#D9D9D9">
+      </rect>
+      <rect x="0" y="32" width="75%" height="11" rx="4" fill="#D9D9D9"></rect>
+    </svg>
+  </div>
 
   <div id="resultContainer" hidden="[[!result_]]">
     [[result_]]
@@ -124,12 +140,12 @@
       <select class="md-select"><option>Menu 2</option></select>
 
       <div class="icon-buttons-row">
-        <cr-icon-button id="undo" iron-icon="cr:arrow-back"
+        <cr-icon-button id="undoButton" iron-icon="cr:arrow-back"
             disabled="[[!undoEnabled_]]"
             on-click="onUndoClick_">
         </cr-icon-button>
-        <cr-icon-button id="refresh" iron-icon="cr:sync"
-            on-click="onRefreshClick_">
+        <cr-icon-button id="refreshButton" iron-icon="cr:sync"
+            on-click="onSubmit_">
         </cr-icon-button>
       </div>
     </div>
