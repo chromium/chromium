@@ -558,6 +558,7 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
     public void testLocalCardEditWithReauth_noReauthWhenFeatureDisabled() throws Exception {
         mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
@@ -584,6 +585,50 @@ public class AutofillPaymentMethodsFragmentTest {
         verify(mReauthenticatorMock, never()).reauthenticate(notNull());
         // Verify that the local card edit dialog was shown.
         Assert.assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
+    public void testLocalCardEditWithReauth_reauthOnClickedOnAutoWhenFeatureDisabled()
+            throws Exception {
+        mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
+        // Simulate Reauth pref is enabled.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService()
+                            .setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
+                });
+        // Simulate the user can authenticate with biometric or screen lock.
+        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
+        var editCardReauthHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                AutofillPaymentMethodsFragment.MANDATORY_REAUTH_EDIT_CARD_HISTOGRAM,
+                                MandatoryReauthAuthenticationFlowEvent.FLOW_STARTED,
+                                MandatoryReauthAuthenticationFlowEvent.FLOW_SUCCEEDED)
+                        .build();
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference cardPreference = getFirstPaymentMethodPreference(activity);
+        String title = cardPreference.getTitle().toString();
+        assertThat(title).contains("Visa");
+        assertThat(title).contains("1111");
+
+        // Simulate the biometric authentication will success.
+        setUpBiometricAuthenticationResult(/* success= */ true);
+        // Simulate click on the local card widget. Now Chrome is waiting for OS authentication.
+        TestThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
+        // Now mReauthenticatorMock simulate success auth, which will open local card dialog
+        // afterwards. Wait for the new dialog to be rendered.
+        rule.waitForFragmentToBeShown();
+
+        verify(mReauthenticatorMock).reauthenticate(notNull());
+        // Verify that the local card edit dialog was shown.
+        Assert.assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
+        editCardReauthHistogram.assertExpected();
     }
 
     @Test
