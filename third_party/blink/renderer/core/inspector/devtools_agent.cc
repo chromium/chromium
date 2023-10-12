@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -76,7 +77,7 @@ class DevToolsAgent::IOAgent : public mojom::blink::DevToolsAgent {
  public:
   IOAgent(scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
           scoped_refptr<InspectorTaskRunner> inspector_task_runner,
-          CrossThreadWeakPersistent<::blink::DevToolsAgent> agent,
+          CrossThreadWeakHandle<::blink::DevToolsAgent> agent,
           mojo::PendingReceiver<mojom::blink::DevToolsAgent> receiver)
       : io_task_runner_(io_task_runner),
         inspector_task_runner_(inspector_task_runner),
@@ -120,8 +121,9 @@ class DevToolsAgent::IOAgent : public mojom::blink::DevToolsAgent {
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
     DCHECK(receiver_.is_bound());
     inspector_task_runner_->AppendTask(CrossThreadBindOnce(
-        &::blink::DevToolsAgent::AttachDevToolsSessionImpl, agent_,
-        std::move(host), std::move(main_session), std::move(io_session),
+        &::blink::DevToolsAgent::AttachDevToolsSessionImpl,
+        MakeUnwrappingCrossThreadWeakHandle(agent_), std::move(host),
+        std::move(main_session), std::move(io_session),
         std::move(reattach_session_state), client_expects_binary_responses,
         client_is_trusted, session_id, session_waits_for_debugger));
   }
@@ -142,8 +144,9 @@ class DevToolsAgent::IOAgent : public mojom::blink::DevToolsAgent {
     auto split_callback = base::SplitOnceCallback(std::move(callback));
     bool did_append_task =
         inspector_task_runner_->AppendTask(CrossThreadBindOnce(
-            &blink::DevToolsAgent::ReportChildTargetsPostCallbackToIO, agent_,
-            report, wait_for_debugger,
+            &blink::DevToolsAgent::ReportChildTargetsPostCallbackToIO,
+            MakeUnwrappingCrossThreadWeakHandle(agent_), report,
+            wait_for_debugger,
             CrossThreadBindOnce(std::move(split_callback.first))));
 
     if (!did_append_task) {
@@ -171,7 +174,7 @@ class DevToolsAgent::IOAgent : public mojom::blink::DevToolsAgent {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<InspectorTaskRunner> inspector_task_runner_;
-  CrossThreadWeakPersistent<::blink::DevToolsAgent> agent_;
+  CrossThreadWeakHandle<::blink::DevToolsAgent> agent_;
   mojo::Receiver<mojom::blink::DevToolsAgent> receiver_{this};
 };
 
@@ -215,9 +218,8 @@ void DevToolsAgent::BindReceiverForWorker(
   host_remote_.set_disconnect_handler(WTF::BindOnce(
       &DevToolsAgent::CleanupConnection, WrapWeakPersistent(this)));
 
-  io_agent_ =
-      new IOAgent(io_task_runner_, inspector_task_runner_,
-                  WrapCrossThreadWeakPersistent(this), std::move(receiver));
+  io_agent_ = new IOAgent(io_task_runner_, inspector_task_runner_,
+                          MakeCrossThreadWeakHandle(this), std::move(receiver));
 }
 
 void DevToolsAgent::BindReceiver(
