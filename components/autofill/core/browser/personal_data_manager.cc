@@ -2589,47 +2589,46 @@ void PersonalDataManager::HandleNextProfileChange(const std::string& guid) {
   if (!ProfileChangesAreOngoing(guid))
     return;
 
-  const auto& change = ongoing_profile_changes_[guid].front();
+  const AutofillProfileDeepChange& change =
+      ongoing_profile_changes_[guid].front();
   if (change.is_ongoing_on_background())
     return;
 
-  const auto& change_type = change.type();
-  const auto* existing_profile = GetProfileByGUID(guid);
-  const bool profile_exists = (existing_profile != nullptr);
-  const auto& profile = ongoing_profile_changes_[guid].front().profile();
-
+  const AutofillProfile* existing_profile = GetProfileByGUID(guid);
+  const AutofillProfile& profile = change.profile();
   DCHECK(guid == profile.guid());
+  scoped_refptr<AutofillWebDataService> webdata_service =
+      database_helper_->GetLocalDatabase();
 
-  if (change_type == AutofillProfileChange::REMOVE) {
-    if (!profile_exists) {
-      OnProfileChangeDone(guid);
-      return;
-    }
-    database_helper_->GetLocalDatabase()->RemoveAutofillProfile(
-        guid, existing_profile->source());
-    change.set_is_ongoing_on_background();
-    return;
+  switch (change.type()) {
+    case AutofillProfileChange::REMOVE:
+      if (!existing_profile) {
+        OnProfileChangeDone(guid);
+        return;
+      }
+      webdata_service->RemoveAutofillProfile(guid, existing_profile->source());
+      break;
+    case AutofillProfileChange::ADD:
+      if (existing_profile ||
+          FindByContents(GetProfileStorage(profile.source()), profile)) {
+        OnProfileChangeDone(guid);
+        return;
+      }
+      webdata_service->AddAutofillProfile(profile);
+      break;
+    case AutofillProfileChange::UPDATE:
+      if (!existing_profile ||
+          (!change.enforced() &&
+           existing_profile->EqualsForUpdatePurposes(profile))) {
+        OnProfileChangeDone(guid);
+        return;
+      }
+      webdata_service->UpdateAutofillProfile(profile);
+      break;
+    case AutofillProfileChange::EXPIRE:
+      NOTREACHED_NORETURN();
   }
-
-  if (change_type == AutofillProfileChange::ADD) {
-    const std::vector<std::unique_ptr<AutofillProfile>>& profiles =
-        GetProfileStorage(profile.source());
-    if (profile_exists || FindByContents(profiles, profile)) {
-      OnProfileChangeDone(guid);
-      return;
-    }
-    database_helper_->GetLocalDatabase()->AddAutofillProfile(profile);
-    change.set_is_ongoing_on_background();
-    return;
-  }
-
-  if (profile_exists && (change.enforced() ||
-                         !existing_profile->EqualsForUpdatePurposes(profile))) {
-    database_helper_->GetLocalDatabase()->UpdateAutofillProfile(profile);
-    change.set_is_ongoing_on_background();
-  } else {
-    OnProfileChangeDone(guid);
-  }
+  change.set_is_ongoing_on_background();
 }
 
 bool PersonalDataManager::ProfileChangesAreOngoing(const std::string& guid) {
