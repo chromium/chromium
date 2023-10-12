@@ -30,8 +30,16 @@ struct Operand {
   string? name;
 };
 
-// Contains the attributes of clamp operator.
-struct ClampAttributes {
+// Clamp the input tensor element-wise within a range specified by the minimum
+// and maximum values.
+struct Clamp {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+
   // The minimum value of the range.
   float min_value;
   // The maximum value of the range.
@@ -60,11 +68,22 @@ struct Padding2d {
   Size2d ending;
 };
 
-// Contains the attributes of conv2d operator.
+// Represents a 2-D convolution given the input and filter tensors.
+//
 // Only `oihw` (output_channels, input_channels/groups, height, width) filter
 // layout is supported, other variants are being discussed in the working group
 // https://github.com/webmachinelearning/webnn/issues/324.
-struct Conv2dAttributes {
+struct Conv2d {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of filter operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 filter_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+
   // The padding of input tensor which is the explicit pad or calculated pad
   // with `MLAutoPad` type, input sizes, filter size, strides and dilations in
   // blink side.
@@ -81,8 +100,8 @@ struct Conv2dAttributes {
   // The additional 1-D tensor with the shape of output channels whose values
   // are added to the convolution result.
   uint64? bias_operand_id;
-  //The optional activation function that immediately follows the convolution.
-  Operator? activation;
+  // The optional activation function that immediately follows the convolution.
+  Operation? activation;
 };
 
 // Represents an average or max pooling operation across all the elements with
@@ -135,6 +154,28 @@ struct GemmAttributes {
   bool b_transpose = false;
 };
 
+// Corresponds to `MLOperand relu(MLOperand x)` that compute the rectified
+// linear function of the input tensor.
+struct Relu {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+};
+
+// Corresponds to `MLOperand softmax(MLOperand x)` that compute the softmax
+// values of the 2-D input tensor along axis 1.
+struct Softmax {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+};
+
 // Represents the transpose operation that permutes the dimensions of the
 // input tensor following the given permutation.
 struct Transpose {
@@ -148,8 +189,6 @@ struct Transpose {
 
 // Holds one of operator attributes.
 union OperatorAttributes {
-  ClampAttributes clamp;
-  Conv2dAttributes conv2d;
   GemmAttributes gemm;
 };
 
@@ -158,8 +197,6 @@ union OperatorAttributes {
 struct Operator {
   enum Kind {
     // Keep the order as the same as build methods of `MLGraphBuilder`.
-    kClamp,
-    kConv2d,
     kAdd,
     kSub,
     kMul,
@@ -168,9 +205,7 @@ struct Operator {
     kMin,
     kPow,
     kGemm,
-    kRelu,
     kReshape,
-    kSoftmax,
   };
 
   // The kind of this `Operator`.
@@ -187,7 +222,11 @@ struct Operator {
 
 // Holds one of operator.
 union Operation {
+  Clamp clamp;
+  Conv2d conv2d;
   Pool2d pool2d;
+  Relu relu;
+  Softmax softmax;
   Transpose transpose;
 
   // TODO(crbug.com/1273291): The `generic_operator` will be removed.

@@ -153,12 +153,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorClamp) {
       "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
   uint64_t output_operand_id = builder.BuildOutput(
       "output", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
-  mojom::ClampAttributesPtr clamp_attributes = mojom::ClampAttributes::New();
-  clamp_attributes->max_value = 3;
-  clamp_attributes->min_value = 0;
-  builder.BuildOperator(
-      mojom::Operator::Kind::kClamp, {input_operand_id}, {output_operand_id},
-      mojom::OperatorAttributes::NewClamp(std::move(clamp_attributes)));
+  builder.BuildClamp(input_operand_id, output_operand_id, 0, 3);
 
   base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
   std::vector<float> input_data = {-1, -2,  -3,  -4,  -5, -6, -7, -8,
@@ -182,9 +177,9 @@ struct OperandInfo {
   std::vector<T> values;
 };
 
-struct ActivationOperator {
-  mojom::Operator::Kind kind;
-  mojom::OperatorAttributesPtr attributes;
+struct ClampAttributes {
+  float min_value;
+  float max_value;
 };
 
 template <typename T>
@@ -199,7 +194,8 @@ struct Conv2dTester {
     mojom::InputOperandLayout input_layout =
         mojom::InputOperandLayout::kChannelsFirst;
     absl::optional<OperandInfo<T>> bias;
-    absl::optional<ActivationOperator> activation;
+    absl::optional<mojom::Operation::Tag> activation;
+    absl::optional<ClampAttributes> clamp_attributes;
   };
   Conv2dAttributes attributes;
   OperandInfo<T> output;
@@ -214,37 +210,16 @@ struct Conv2dTester {
                               base::as_bytes(base::make_span(filter.values)));
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    mojom::Conv2dAttributesPtr mojo_attributes = mojom::Conv2dAttributes::New();
-    mojo_attributes->padding = mojom::Padding2d::New(
-        mojom::Size2d::New(attributes.padding[0],
-                           attributes.padding[2]) /*beginning padding*/,
-        mojom::Size2d::New(attributes.padding[1],
-                           attributes.padding[3]) /*ending padding*/);
-    mojo_attributes->strides =
-        mojom::Size2d::New(attributes.strides[0], attributes.strides[1]);
-    mojo_attributes->dilations =
-        mojom::Size2d::New(attributes.dilations[0], attributes.dilations[1]);
-    mojo_attributes->groups = attributes.groups;
-    mojo_attributes->input_layout = attributes.input_layout;
 
+    absl::optional<uint64_t> bias_operand_id;
     if (attributes.bias.has_value()) {
-      mojo_attributes->bias_operand_id = builder.BuildConstant(
+      bias_operand_id = builder.BuildConstant(
           attributes.bias->dimensions, attributes.bias->type,
           base::as_bytes(base::make_span(attributes.bias->values)));
     }
 
-    if (attributes.activation.has_value()) {
-      mojo_attributes->activation = mojom::Operator::New();
-      mojo_attributes->activation->kind =
-          std::move(attributes.activation.value().kind);
-      mojo_attributes->activation->attributes =
-          std::move(attributes.activation.value().attributes);
-    }
-
-    builder.BuildOperator(
-        mojom::Operator::Kind::kConv2d, {input_operand_id, filter_operand_id},
-        {output_operand_id},
-        mojom::OperatorAttributes::NewConv2d(std::move(mojo_attributes)));
+    builder.BuildConv2d(input_operand_id, filter_operand_id, output_operand_id,
+                        std::move(attributes), bias_operand_id);
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
 
@@ -340,9 +315,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
                                .type = mojom::Operand::DataType::kFloat32,
                                .dimensions = {1},
                                .values = {-100}},
-                       .activation =
-                           ActivationOperator{mojom::Operator::Kind::kRelu,
-                                              nullptr}},
+                       .activation = mojom::Operation::Tag::kRelu},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 5, 5, 1},
                    .values = {0,  0, 0, 0,  0,  0,  0,  0, 0,  0,  0,  0, 8,
@@ -709,7 +682,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorMaxPool2d) {
 
 template <typename T>
 struct UnaryOperatorTester {
-  mojom::Operator::Kind kind;
+  mojom::Operation::Tag tag;
   OperandInfo<T> input;
   OperandInfo<T> output;
   void Test() {
@@ -719,7 +692,16 @@ struct UnaryOperatorTester {
         builder.BuildInput("input", input.dimensions, input.type);
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    builder.BuildOperator(kind, {input_operand_id}, {output_operand_id});
+    switch (tag) {
+      case mojom::Operation::Tag::kRelu:
+        builder.BuildRelu(input_operand_id, output_operand_id);
+        break;
+      case mojom::Operation::Tag::kSoftmax:
+        builder.BuildSoftmax(input_operand_id, output_operand_id);
+        break;
+      default:
+        NOTREACHED();
+    }
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
     named_inputs.insert({"input", VectorToBigBuffer(input.values)});
@@ -741,7 +723,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSoftmax) {
   SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_3_0));
   {
     UnaryOperatorTester<float>{
-        .kind = mojom::Operator::Kind::kSoftmax,
+        .tag = mojom::Operation::Tag::kSoftmax,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {3, 4},
                   .values = {0.4301911, 0.54719144, -1.1637765, 0.18390046,
@@ -761,7 +743,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSoftmax) {
 TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorRelu) {
   {
     UnaryOperatorTester<float>{
-        .kind = mojom::Operator::Kind::kRelu,
+        .tag = mojom::Operation::Tag::kRelu,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 2, 3, 4},
                   .values = {-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12,
@@ -776,7 +758,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorRelu) {
   // Test with 8-byte-length input/output.
   {
     UnaryOperatorTester<float>{
-        .kind = mojom::Operator::Kind::kRelu,
+        .tag = mojom::Operation::Tag::kRelu,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 2, 1, 1},
                   .values = {-1, 2}},
@@ -800,12 +782,10 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeGraphWithTwoRelu) {
       "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
   uint64_t relu1_output_id = builder.BuildIntermediateOperand(
       {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
-  builder.BuildOperator(mojom::Operator::Kind::kRelu, {input_operand_id},
-                        {relu1_output_id});
+  builder.BuildRelu(input_operand_id, relu1_output_id);
   uint64_t output_operand_id = builder.BuildOutput(
       "output", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
-  builder.BuildOperator(mojom::Operator::Kind::kRelu, {relu1_output_id},
-                        {output_operand_id});
+  builder.BuildRelu(relu1_output_id, output_operand_id);
 
   base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
   std::vector<float> input_data = {-1, -2,  -3,  -4,  -5, -6, -7, -8,
@@ -862,8 +842,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeGraphWithReshapeAsLastNode) {
       "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
   uint64_t relu_output_id = builder.BuildIntermediateOperand(
       {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
-  builder.BuildOperator(mojom::Operator::Kind::kRelu, {input_operand_id},
-                        {relu_output_id});
+  builder.BuildRelu(input_operand_id, relu_output_id);
   uint64_t output_operand_id = builder.BuildOutput(
       "output", {1, 1, 6, 4}, mojom::Operand::DataType::kFloat32);
   builder.BuildOperator(mojom::Operator::Kind::kReshape, {relu_output_id},
@@ -902,8 +881,7 @@ TEST_F(WebNNGraphDMLImplTest,
                         {reshape_output_id});
   uint64_t output_operand_id = builder.BuildOutput(
       "output", {1, 1, 6, 4}, mojom::Operand::DataType::kFloat32);
-  builder.BuildOperator(mojom::Operator::Kind::kRelu, {reshape_output_id},
-                        {output_operand_id});
+  builder.BuildRelu(reshape_output_id, output_operand_id);
 
   base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
   std::vector<float> input_data = {1,  2,  3,  4,  5,  6,  7,  8,
@@ -970,8 +948,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeGraphWithTwoOutputs) {
                         {output1_operand_id});
   uint64_t output2_operand_id = builder.BuildOutput(
       "output2", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
-  builder.BuildOperator(mojom::Operator::Kind::kRelu, {input_operand_id},
-                        {output2_operand_id});
+  builder.BuildRelu(input_operand_id, output2_operand_id);
 
   base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
   std::vector<float> input_data = {-1, -2,  -3,  -4,  -5, -6, -7, -8,
@@ -1378,9 +1355,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildMaxPooingAsThirdOperator) {
   // Relu.
   uint64_t intermediate_2_operand_id = builder.BuildIntermediateOperand(
       {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
-  builder.BuildOperator(mojom::Operator::Kind::kRelu,
-                        {intermediate_1_operand_id},
-                        {intermediate_2_operand_id});
+  builder.BuildRelu(intermediate_1_operand_id, intermediate_2_operand_id);
 
   // Max pooling.
   uint64_t output_operand_id = builder.BuildOutput(
@@ -1444,8 +1419,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildMaxPooingAsSecondOperator) {
   // Relu.
   uint64_t output_operand_id = builder.BuildOutput(
       "output", {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
-  builder.BuildOperator(mojom::Operator::Kind::kRelu,
-                        {intermediate_2_operand_id}, {output_operand_id});
+  builder.BuildRelu(intermediate_2_operand_id, output_operand_id);
 
   base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
   std::vector<float> input_data = {1, 1, 1, 1};
@@ -1498,8 +1472,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildMaxPooingAsFirstOperator) {
   // Relu.
   uint64_t output_operand_id = builder.BuildOutput(
       "output", {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
-  builder.BuildOperator(mojom::Operator::Kind::kRelu,
-                        {intermediate_2_operand_id}, {output_operand_id});
+  builder.BuildRelu(intermediate_2_operand_id, output_operand_id);
 
   base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
   std::vector<float> input_data = {1, 1, 1, 1};

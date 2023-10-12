@@ -45,12 +45,86 @@ class GraphInfoBuilder final {
       const std::vector<uint64_t>& outputs,
       mojom::OperatorAttributesPtr operator_attributes = nullptr);
 
-  // The generic type `T` is the pool2d attributes from different unit test.
-  template <typename T>
+  void BuildClamp(uint64_t input_operand_id,
+                  uint64_t output_operand_id,
+                  float min_value,
+                  float max_value);
+
+  // A `Conv2dAttributes` type should have the following members:
+  // struct Conv2dAttributes {
+  //   std::vector<uint32_t> padding;
+  //   std::vector<uint32_t> strides;
+  //   std::vector<uint32_t> dilations;
+  //   uint32_t groups;
+  //   mojom::InputOperandLayout input_layout;
+  //   absl::optional<uint64_t> bias_operand_id,
+  //   absl::optional<mojom::Operation::Tag> activation;
+  //   absl::optional<ClampAttributes> clamp_attributes;
+  // };
+  template <typename Conv2dAttributes>
+  void BuildConv2d(uint64_t input_operand_id,
+                   uint64_t filter_operand_id,
+                   uint64_t output_operand_id,
+                   const Conv2dAttributes& attributes,
+                   absl::optional<uint64_t> bias_operand_id) {
+    mojom::Conv2dPtr conv2d = mojom::Conv2d::New();
+    conv2d->input_operand_id = input_operand_id;
+    conv2d->filter_operand_id = filter_operand_id;
+    conv2d->output_operand_id = output_operand_id;
+
+    // Configure the attributes of conv2d.
+    CHECK_EQ(attributes.padding.size(), 4u);
+    conv2d->padding = mojom::Padding2d::New(
+        /* beginning padding*/ mojom::Size2d::New(attributes.padding[0],
+                                                  attributes.padding[2]),
+        /* ending padding*/ mojom::Size2d::New(attributes.padding[1],
+                                               attributes.padding[3]));
+    CHECK_EQ(attributes.strides.size(), 2u);
+    conv2d->strides =
+        mojom::Size2d::New(attributes.strides[0], attributes.strides[1]);
+    CHECK_EQ(attributes.dilations.size(), 2u);
+    conv2d->dilations =
+        mojom::Size2d::New(attributes.dilations[0], attributes.dilations[1]);
+    conv2d->groups = attributes.groups;
+    conv2d->input_layout = attributes.input_layout;
+    conv2d->bias_operand_id = bias_operand_id;
+
+    if (attributes.activation.has_value()) {
+      switch (attributes.activation.value()) {
+        case mojom::Operation::Tag::kRelu:
+          conv2d->activation = mojom::Operation::NewRelu(mojom::Relu::New());
+          break;
+        case mojom::Operation::Tag::kClamp: {
+          auto clamp_attributes = attributes.clamp_attributes;
+          CHECK_EQ(clamp_attributes.has_value(), true);
+          auto clamp = mojom::Clamp::New();
+          clamp->min_value = clamp_attributes->min_value;
+          clamp->max_value = clamp_attributes->max_value;
+          conv2d->activation = mojom::Operation::NewClamp(std::move(clamp));
+          break;
+        }
+        default:
+          NOTREACHED();
+      }
+    }
+
+    graph_info_->operations.push_back(
+        mojom::Operation::NewConv2d(std::move(conv2d)));
+  }
+
+  // A `Pool2dAttributes` type should have the following members:
+  // struct Pool2dAttributes {
+  //   std::vector<uint32_t> window_dimensions;
+  //   std::vector<uint32_t> padding;
+  //   std::vector<uint32_t> strides;
+  //   std::vector<uint32_t> dilations;
+  //   mojom::InputOperandLayout layout;
+  // };
+  template <typename Pool2dAttributes>
   void BuildPool2d(mojom::Pool2d::Kind kind,
                    uint64_t input_operand_id,
                    uint64_t output_operand_id,
-                   const T& attributes) {
+                   const Pool2dAttributes& attributes) {
     mojom::Pool2dPtr pool2d = mojom::Pool2d::New();
     pool2d->kind = kind;
     pool2d->input_operand_id = input_operand_id;
@@ -60,13 +134,16 @@ class GraphInfoBuilder final {
     CHECK_EQ(window_dimensions.size(), 2u);
     pool2d->window_dimensions =
         mojom::Size2d::New(window_dimensions[0], window_dimensions[1]);
+    CHECK_EQ(attributes.padding.size(), 4u);
     pool2d->padding = mojom::Padding2d::New(
-        mojom::Size2d::New(attributes.padding[0],
-                           attributes.padding[2]) /* beginning padding*/,
-        mojom::Size2d::New(attributes.padding[1],
-                           attributes.padding[3]) /* ending padding*/);
+        /* beginning padding*/ mojom::Size2d::New(attributes.padding[0],
+                                                  attributes.padding[2]),
+        /* ending padding*/ mojom::Size2d::New(attributes.padding[1],
+                                               attributes.padding[3]));
+    CHECK_EQ(attributes.strides.size(), 2u);
     pool2d->strides =
         mojom::Size2d::New(attributes.strides[0], attributes.strides[1]);
+    CHECK_EQ(attributes.dilations.size(), 2u);
     pool2d->dilations =
         mojom::Size2d::New(attributes.dilations[0], attributes.dilations[1]);
     pool2d->layout = attributes.layout;
@@ -74,6 +151,10 @@ class GraphInfoBuilder final {
     graph_info_->operations.push_back(
         mojom::Operation::NewPool2d(std::move(pool2d)));
   }
+
+  void BuildRelu(uint64_t input_operand_id, uint64_t output_operand_id);
+
+  void BuildSoftmax(uint64_t input_operand_id, uint64_t output_operand_id);
 
   void BuildTranspose(uint64_t input_operand_id,
                       uint64_t output_operand_id,

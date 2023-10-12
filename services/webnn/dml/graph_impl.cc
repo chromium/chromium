@@ -65,12 +65,10 @@ DML_TENSOR_DATA_TYPE GetTensorDataType(Operand::DataType type) {
   }
 }
 
+// TODO(crbug.com/1273291): Removes this function when all operators are
+// implemented in the `union Operation`.
 std::string OpKindToString(Operator::Kind kind) {
   switch (kind) {
-    case Operator::Kind::kClamp:
-      return "clamp";
-    case Operator::Kind::kConv2d:
-      return "conv2d";
     case Operator::Kind::kAdd:
       return "add";
     case Operator::Kind::kSub:
@@ -87,21 +85,25 @@ std::string OpKindToString(Operator::Kind kind) {
       return "pow";
     case Operator::Kind::kGemm:
       return "gemm";
-    case Operator::Kind::kRelu:
-      return "relu";
     case Operator::Kind::kReshape:
       return "reshape";
-    case Operator::Kind::kSoftmax:
-      return "softmax";
   }
 }
 
 std::string OpTagToString(Operation::Tag tag) {
   switch (tag) {
+    case Operation::Tag::kClamp:
+      return "clamp";
+    case Operation::Tag::kConv2d:
+      return "conv2d";
     case Operation::Tag::kPool2d:
       return "pool2d";
+    case Operation::Tag::kRelu:
+      return "relu";
     case Operation::Tag::kTranspose:
       return "transpose";
+    case Operation::Tag::kSoftmax:
+      return "softmax";
     case Operation::Tag::kGenericOperator:
       NOTREACHED_NORETURN();
   }
@@ -263,27 +265,25 @@ void CreateNodeOutput(const OperatorPtr& operation,
 
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForClamp(
     const IdToOperandMap& id_to_operand_map,
-    const OperatorPtr& operation,
+    const mojom::ClampPtr& clamp,
     GraphBuilder& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const auto& input_node_output_info =
-      GetInputNodeOutputInfo(operation, id_to_node_output_map);
+      GetNodeOutputInfo(id_to_node_output_map, clamp->input_operand_id);
   auto input_tensor_desc =
       graph_builder.GetNodeOutput(input_node_output_info).tensor_desc;
 
-  auto output_tensor_desc = GetOutputTensorDesc(operation, id_to_operand_map);
-
-  CHECK(operation->attributes);
-  auto& clamp_attributes = operation->attributes->get_clamp();
-  CHECK(clamp_attributes);
+  uint64_t output_id = clamp->output_operand_id;
+  auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
 
   DML_ELEMENT_WISE_CLIP_OPERATOR_DESC clamp_operator_desc{
       .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
       .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
       // No scale or bias applies to the input.
       .ScaleBias = nullptr,
-      .Min = clamp_attributes->min_value,
-      .Max = clamp_attributes->max_value};
+      .Min = clamp->min_value,
+      .Max = clamp->max_value};
   NodeInfo clamp_node_info = graph_builder.CreateOperatorNode(
       DML_OPERATOR_ELEMENT_WISE_CLIP, &clamp_operator_desc,
       {input_node_output_info});
@@ -292,38 +292,38 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForClamp(
         mojom::Error::Code::kUnknownError, "Failed to create clamp operator."));
   }
 
-  CreateNodeOutput(operation, graph_builder, clamp_node_info,
-                   output_tensor_desc, id_to_node_output_map);
+  auto node_output = graph_builder.CreateNodeOutput(
+      clamp_node_info, std::move(output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
 
   return base::ok();
 }
 
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
     const IdToOperandMap& id_to_operand_map,
-    const OperatorPtr& operation,
+    const mojom::Conv2dPtr& conv2d,
     GraphBuilder& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const auto& input_node_output_info =
-      GetInputNodeOutputInfo(operation, id_to_node_output_map, 0);
+      GetNodeOutputInfo(id_to_node_output_map, conv2d->input_operand_id);
   auto input_tensor_desc =
       graph_builder.GetNodeOutput(input_node_output_info).tensor_desc;
   CHECK_EQ(input_tensor_desc.GetDimensions().size(), 4u);
 
   const auto& filter_node_output_info =
-      GetInputNodeOutputInfo(operation, id_to_node_output_map, 1);
+      GetNodeOutputInfo(id_to_node_output_map, conv2d->filter_operand_id);
   auto filter_tensor_desc =
       graph_builder.GetNodeOutput(filter_node_output_info).tensor_desc;
 
-  auto output_tensor_desc = GetOutputTensorDesc(operation, id_to_operand_map);
-
-  CHECK(operation->attributes);
-  auto& conv2d_attributes = operation->attributes->get_conv2d();
-  CHECK(conv2d_attributes);
+  uint64_t output_id = conv2d->output_operand_id;
+  auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
 
   std::vector<NodeOutputInfo> input_node_output_infos = {
       input_node_output_info, filter_node_output_info};
   absl::optional<TensorDesc> reshaped_bias_tensor_desc;
-  auto& bias_operand_id = conv2d_attributes->bias_operand_id;
+  auto& bias_operand_id = conv2d->bias_operand_id;
   if (bias_operand_id) {
     const auto bias_node_output_iterator =
         id_to_node_output_map.find(bias_operand_id.value());
@@ -349,7 +349,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
     input_node_output_infos.push_back(reshaped_bias_node_output_info);
   }
 
-  switch (conv2d_attributes->input_layout) {
+  switch (conv2d->input_layout) {
     case mojom::InputOperandLayout::kChannelsFirst: {
       break;
     }
@@ -365,16 +365,14 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
     }
   }
 
-  std::array<uint32_t, 2> strides = {conv2d_attributes->strides->height,
-                                     conv2d_attributes->strides->width};
-  std::array<uint32_t, 2> dilations = {conv2d_attributes->dilations->height,
-                                       conv2d_attributes->dilations->width};
-  std::array<uint32_t, 2> start_padding = {
-      conv2d_attributes->padding->beginning->height,
-      conv2d_attributes->padding->beginning->width};
-  std::array<uint32_t, 2> end_padding = {
-      conv2d_attributes->padding->ending->height,
-      conv2d_attributes->padding->ending->width};
+  std::array<uint32_t, 2> strides = {conv2d->strides->height,
+                                     conv2d->strides->width};
+  std::array<uint32_t, 2> dilations = {conv2d->dilations->height,
+                                       conv2d->dilations->width};
+  std::array<uint32_t, 2> start_padding = {conv2d->padding->beginning->height,
+                                           conv2d->padding->beginning->width};
+  std::array<uint32_t, 2> end_padding = {conv2d->padding->ending->height,
+                                         conv2d->padding->ending->width};
   // The outputPadding parameter is used in the ConTranspose2d operator, and is
   // only used to disambiguate output shape when needed.
   std::array<uint32_t, 2> default_out_padding = {0, 0};
@@ -388,9 +386,9 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
   // simplify the creation of fused activation operators.
   absl::optional<DML_ACTIVATION_RELU_OPERATOR_DESC> dml_relu_desc;
   absl::optional<DML_OPERATOR_DESC> dml_activation_desc;
-  if (conv2d_attributes->activation) {
-    switch (conv2d_attributes->activation->kind) {
-      case Operator::Kind::kRelu: {
+  if (conv2d->activation) {
+    switch (conv2d->activation->which()) {
+      case mojom::Operation::Tag::kRelu: {
         dml_relu_desc = DML_ACTIVATION_RELU_OPERATOR_DESC{
             .InputTensor = nullptr, .OutputTensor = nullptr};
         dml_activation_desc =
@@ -424,7 +422,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
       .StartPadding = start_padding.data(),
       .EndPadding = end_padding.data(),
       .OutputPadding = default_out_padding.data(),
-      .GroupCount = conv2d_attributes->groups,
+      .GroupCount = conv2d->groups,
       .FusedActivation = (dml_activation_desc.has_value())
                              ? &dml_activation_desc.value()
                              : nullptr};
@@ -437,14 +435,15 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
                           "Failed to create conv2d operator."));
   }
 
-  if (conv2d_attributes->input_layout ==
-      mojom::InputOperandLayout::kChannelsLast) {
+  if (conv2d->input_layout == mojom::InputOperandLayout::kChannelsLast) {
     // Transpose the output tensor from nchw to nhwc layout.
     output_tensor_desc.Transpose(kNchwToNhwcPermutation);
   }
 
-  CreateNodeOutput(operation, graph_builder, conv2d_node, output_tensor_desc,
-                   id_to_node_output_map);
+  auto node_output = graph_builder.CreateNodeOutput(
+      conv2d_node, std::move(output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
 
   return base::ok();
 }
@@ -682,19 +681,19 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
     output_tensor_desc.Transpose(kNchwToNhwcPermutation);
   }
 
-  CHECK(id_to_node_output_map.find(output_id) == id_to_node_output_map.end());
-  id_to_node_output_map[output_id] = graph_builder.CreateNodeOutput(
+  auto node_output = graph_builder.CreateNodeOutput(
       pool2d_node_info, std::move(output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
 
   return base::ok();
 }
 
-template <typename DML_OPERATOR_DESC>
+template <typename DML_OPERATOR_DESC, DML_OPERATOR_TYPE operator_type>
 NodeInfo CreateUnaryOperator(const TensorDesc& input_tensor,
                              const TensorDesc& output_tensor,
                              const NodeOutputInfo& node_output_info,
-                             GraphBuilder& graph_builder,
-                             DML_OPERATOR_TYPE operator_type) {
+                             GraphBuilder& graph_builder) {
   DML_OPERATOR_DESC unary_operator_desc{
       .InputTensor = &input_tensor.GetDMLTensorDesc(),
       .OutputTensor = &output_tensor.GetDMLTensorDesc()};
@@ -702,45 +701,35 @@ NodeInfo CreateUnaryOperator(const TensorDesc& input_tensor,
                                           {node_output_info});
 }
 
+template <typename OperatorDesc,
+          DML_OPERATOR_TYPE operator_type,
+          typename Operation>
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForUnary(
     const IdToOperandMap& id_to_operand_map,
-    const OperatorPtr& operation,
+    const Operation& operation,
     GraphBuilder& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const auto& input_node_output_info =
-      GetInputNodeOutputInfo(operation, id_to_node_output_map);
+      GetNodeOutputInfo(id_to_node_output_map, operation->input_operand_id);
   auto input_tensor_desc =
       graph_builder.GetNodeOutput(input_node_output_info).tensor_desc;
 
+  uint64_t output_id = operation->output_operand_id;
   const auto output_tensor_desc =
-      GetOutputTensorDesc(operation, id_to_operand_map);
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
 
-  NodeInfo unary_node;
-  switch (operation->kind) {
-    case mojom::Operator::Kind::kRelu: {
-      unary_node = CreateUnaryOperator<DML_ACTIVATION_RELU_OPERATOR_DESC>(
-          input_tensor_desc, output_tensor_desc, input_node_output_info,
-          graph_builder, DML_OPERATOR_ACTIVATION_RELU);
-      break;
-    }
-    case mojom::Operator::Kind::kSoftmax: {
-      unary_node = CreateUnaryOperator<DML_ACTIVATION_SOFTMAX_OPERATOR_DESC>(
-          input_tensor_desc, output_tensor_desc, input_node_output_info,
-          graph_builder, DML_OPERATOR_ACTIVATION_SOFTMAX);
-      break;
-    }
-    default:
-      DLOG(ERROR) << "This operator type is not supported";
-      NOTREACHED_NORETURN();
-  }
+  NodeInfo unary_node = CreateUnaryOperator<OperatorDesc, operator_type>(
+      input_tensor_desc, output_tensor_desc, input_node_output_info,
+      graph_builder);
   if (unary_node.type == NodeInfo::Type::kInvalid) {
     return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kUnknownError,
-        "Failed to create " + OpKindToString(operation->kind) + " operator."));
+        mojom::Error::Code::kUnknownError, "Failed to create unary operator."));
   }
 
-  CreateNodeOutput(operation, graph_builder, unary_node, output_tensor_desc,
-                   id_to_node_output_map);
+  auto node_output = graph_builder.CreateNodeOutput(
+      unary_node, std::move(output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
 
   return base::ok();
 }
@@ -862,16 +851,6 @@ base::expected<void, mojom::ErrorPtr> CreateGenericOperator(
   // message.
   base::expected<void, mojom::ErrorPtr> create_operator_result;
   switch (operation->kind) {
-    case Operator::Kind::kClamp: {
-      create_operator_result = CreateOperatorNodeForClamp(
-          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
-      break;
-    }
-    case Operator::Kind::kConv2d: {
-      create_operator_result = CreateOperatorNodeForConv2d(
-          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
-      break;
-    }
     case Operator::Kind::kAdd:
     case Operator::Kind::kDiv:
     case Operator::Kind::kMax:
@@ -880,12 +859,6 @@ base::expected<void, mojom::ErrorPtr> CreateGenericOperator(
     case Operator::Kind::kPow:
     case Operator::Kind::kSub: {
       create_operator_result = CreateOperatorNodeForBinary(
-          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
-      break;
-    }
-    case Operator::Kind::kRelu:
-    case Operator::Kind::kSoftmax: {
-      create_operator_result = CreateOperatorNodeForUnary(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
       break;
     }
@@ -1354,10 +1327,38 @@ void GraphImpl::CreateAndBuild(
     // message.
     base::expected<void, mojom::ErrorPtr> create_operator_result;
     switch (operation->which()) {
+      case Operation::Tag::kClamp: {
+        create_operator_result = CreateOperatorNodeForClamp(
+            id_to_operand_map, operation->get_clamp(), graph_builder,
+            id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kConv2d: {
+        create_operator_result = CreateOperatorNodeForConv2d(
+            id_to_operand_map, operation->get_conv2d(), graph_builder,
+            id_to_node_output_map);
+        break;
+      }
       case Operation::Tag::kPool2d: {
         create_operator_result = CreateOperatorNodeForPool2d(
             id_to_operand_map, operation->get_pool2d(), graph_builder,
             id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kRelu: {
+        create_operator_result =
+            CreateOperatorNodeForUnary<DML_ACTIVATION_RELU_OPERATOR_DESC,
+                                       DML_OPERATOR_ACTIVATION_RELU>(
+                id_to_operand_map, operation->get_relu(), graph_builder,
+                id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kSoftmax: {
+        create_operator_result =
+            CreateOperatorNodeForUnary<DML_ACTIVATION_SOFTMAX_OPERATOR_DESC,
+                                       DML_OPERATOR_ACTIVATION_SOFTMAX>(
+                id_to_operand_map, operation->get_softmax(), graph_builder,
+                id_to_node_output_map);
         break;
       }
       case Operation::Tag::kGenericOperator: {
@@ -1410,9 +1411,10 @@ void GraphImpl::CreateAndBuild(
                                       DML_TENSOR_FLAG_NONE,
                                       output_tensor_desc.GetDimensions());
       NodeInfo identity_node =
-          CreateUnaryOperator<DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC>(
+          CreateUnaryOperator<DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC,
+                              DML_OPERATOR_ELEMENT_WISE_IDENTITY>(
               output_tensor_desc, identity_tensor_desc, node_output_info,
-              graph_builder, DML_OPERATOR_ELEMENT_WISE_IDENTITY);
+              graph_builder);
 
       node_output_info = graph_builder.CreateNodeOutput(
           identity_node, std::move(identity_tensor_desc));

@@ -61,8 +61,7 @@ TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
       "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
   uint64_t output_operand_id = builder.BuildOutput(
       "output", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
-  builder.BuildOperator(mojom::Operator::Kind::kRelu, {input_operand_id},
-                        {output_operand_id});
+  builder.BuildRelu(input_operand_id, output_operand_id);
 
   // The dml::GraphImpl should be built successfully.
   base::RunLoop run_loop_create_graph;

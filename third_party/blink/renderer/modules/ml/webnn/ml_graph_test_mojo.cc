@@ -285,12 +285,10 @@ struct ClampTester {
     // Verify the graph information of mojo are as expected.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_generic_operator(), true);
-    auto& generic_operator = operation->get_generic_operator();
-    EXPECT_EQ(generic_operator->kind, blink_mojom::Operator::Kind::kClamp);
-    auto& clamp_attributes = generic_operator->attributes->get_clamp();
-    EXPECT_EQ(clamp_attributes->min_value, expected_attributes.min_value);
-    EXPECT_EQ(clamp_attributes->max_value, expected_attributes.max_value);
+    EXPECT_EQ(operation->is_clamp(), true);
+    auto& clamp = operation->get_clamp();
+    EXPECT_EQ(clamp->min_value, expected_attributes.min_value);
+    EXPECT_EQ(clamp->max_value, expected_attributes.max_value);
     EXPECT_EQ(graph_info->output_operands.size(), 1u);
     auto output_operand_id = graph_info->output_operands[0];
     auto output_operand_iter =
@@ -463,34 +461,25 @@ struct Conv2dTester {
     // Verify the graph information of mojo are as expected.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_generic_operator(), true);
-    auto& generic_operator = operation->get_generic_operator();
-    EXPECT_EQ(generic_operator->kind, blink_mojom::Operator::Kind::kConv2d);
-    auto& conv2d_attributes = generic_operator->attributes->get_conv2d();
+    EXPECT_EQ(operation->is_conv2d(), true);
+    auto& conv2d = operation->get_conv2d();
     // Validate explicit padding.
     auto& expected_padding = expected_attributes.padding;
-    EXPECT_EQ(conv2d_attributes->padding->beginning->height,
-              expected_padding[0]);
-    EXPECT_EQ(conv2d_attributes->padding->ending->height, expected_padding[1]);
-    EXPECT_EQ(conv2d_attributes->padding->beginning->width,
-              expected_padding[2]);
-    EXPECT_EQ(conv2d_attributes->padding->ending->width, expected_padding[3]);
+    EXPECT_EQ(conv2d->padding->beginning->height, expected_padding[0]);
+    EXPECT_EQ(conv2d->padding->ending->height, expected_padding[1]);
+    EXPECT_EQ(conv2d->padding->beginning->width, expected_padding[2]);
+    EXPECT_EQ(conv2d->padding->ending->width, expected_padding[3]);
     // Validate strides
-    EXPECT_EQ(conv2d_attributes->strides->height,
-              expected_attributes.strides[0]);
-    EXPECT_EQ(conv2d_attributes->strides->width,
-              expected_attributes.strides[1]);
+    EXPECT_EQ(conv2d->strides->height, expected_attributes.strides[0]);
+    EXPECT_EQ(conv2d->strides->width, expected_attributes.strides[1]);
     // Validate dilations.
-    EXPECT_EQ(conv2d_attributes->dilations->height,
-              expected_attributes.dilations[0]);
-    EXPECT_EQ(conv2d_attributes->dilations->width,
-              expected_attributes.dilations[1]);
-    EXPECT_EQ(conv2d_attributes->groups, expected_attributes.groups);
-    EXPECT_EQ(conv2d_attributes->input_layout,
-              expected_attributes.input_layout);
+    EXPECT_EQ(conv2d->dilations->height, expected_attributes.dilations[0]);
+    EXPECT_EQ(conv2d->dilations->width, expected_attributes.dilations[1]);
+    EXPECT_EQ(conv2d->groups, expected_attributes.groups);
+    EXPECT_EQ(conv2d->input_layout, expected_attributes.input_layout);
     if (options.bias) {
-      auto bias_operand_iter = graph_info->id_to_operand_map.find(
-          conv2d_attributes->bias_operand_id.value());
+      auto bias_operand_iter =
+          graph_info->id_to_operand_map.find(conv2d->bias_operand_id.value());
       ASSERT_TRUE(bias_operand_iter != graph_info->id_to_operand_map.end());
       EXPECT_EQ(bias_operand_iter->value->data_type,
                 expected_attributes.bias->type);
@@ -500,20 +489,17 @@ struct Conv2dTester {
     if (options.activation) {
       switch (options.activation->kind) {
         case MLOperator::OperatorKind::kClamp: {
-          EXPECT_EQ(conv2d_attributes->activation->kind,
-                    blink_mojom::Operator::Kind::kClamp);
-          auto& clamp_attributes =
-              conv2d_attributes->activation->attributes->get_clamp();
-          CHECK(clamp_attributes);
+          EXPECT_EQ(conv2d->activation->is_clamp(), true);
+          auto& clamp = conv2d->activation->get_clamp();
+          CHECK(clamp);
           auto& clamp_options = options.activation->clamp_options;
           CHECK(clamp_options);
-          EXPECT_EQ(clamp_attributes->min_value, clamp_options->min_value);
-          EXPECT_EQ(clamp_attributes->max_value, clamp_options->max_value);
+          EXPECT_EQ(clamp->min_value, clamp_options->min_value);
+          EXPECT_EQ(clamp->max_value, clamp_options->max_value);
           break;
         }
         case MLOperator::OperatorKind::kRelu:
-          EXPECT_EQ(conv2d_attributes->activation->kind,
-                    blink_mojom::Operator::Kind::kRelu);
+          EXPECT_EQ(conv2d->activation->is_relu(), true);
           break;
         default:
           NOTREACHED_NORETURN();
@@ -1265,13 +1251,10 @@ struct ReluTester {
     // Verify the `mojo::Operator`.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_generic_operator(), true);
-    auto& generic_operator = operation->get_generic_operator();
-    EXPECT_EQ(generic_operator->kind, blink_mojom::Operator::Kind::kRelu);
-    ASSERT_EQ(generic_operator->input_operands.size(), 1u);
-    EXPECT_EQ(generic_operator->input_operands[0], input_operand_id);
-    ASSERT_EQ(generic_operator->output_operands.size(), 1u);
-    EXPECT_EQ(generic_operator->output_operands[0], output_operand_id);
+    EXPECT_EQ(operation->is_relu(), true);
+    auto& relu = operation->get_relu();
+    EXPECT_EQ(relu->input_operand_id, input_operand_id);
+    EXPECT_EQ(relu->output_operand_id, output_operand_id);
   }
 };
 
@@ -1423,9 +1406,7 @@ struct SoftmaxTester {
     // Verify the graph information of mojo are as expected.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_generic_operator(), true);
-    auto& generic_operator = operation->get_generic_operator();
-    EXPECT_EQ(generic_operator->kind, blink_mojom::Operator::Kind::kSoftmax);
+    EXPECT_EQ(operation->is_softmax(), true);
     EXPECT_EQ(graph_info->output_operands.size(), 1u);
     auto output_operand_id = graph_info->output_operands[0];
     auto output_operand_iter =

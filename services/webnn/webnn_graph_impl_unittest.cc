@@ -189,12 +189,8 @@ struct ClampTester {
         builder.BuildInput("input", input.dimensions, input.type);
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    mojom::ClampAttributesPtr mojo_attributes = mojom::ClampAttributes::New();
-    mojo_attributes->min_value = attributes.min_value;
-    mojo_attributes->max_value = attributes.max_value;
-    builder.BuildOperator(
-        mojom::Operator::Kind::kClamp, {input_operand_id}, {output_operand_id},
-        mojom::OperatorAttributes::NewClamp(std::move(mojo_attributes)));
+    builder.BuildClamp(input_operand_id, output_operand_id,
+                       attributes.min_value, attributes.max_value);
     EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
   }
 };
@@ -302,7 +298,8 @@ struct Conv2dTester {
     mojom::InputOperandLayout input_layout =
         mojom::InputOperandLayout::kChannelsFirst;
     absl::optional<OperandInfo> bias;
-    absl::optional<ClampTester::ClampAttributes> activation;
+    absl::optional<mojom::Operation::Tag> activation;
+    absl::optional<ClampTester::ClampAttributes> clamp_attributes;
   };
   Conv2dAttributes attributes;
   OperandInfo output;
@@ -315,39 +312,17 @@ struct Conv2dTester {
         builder.BuildInput("input", input.dimensions, input.type);
     uint64_t filter_operand_id =
         builder.BuildInput("filter", filter.dimensions, filter.type);
+
+    absl::optional<uint64_t> bias_operand_id;
+    if (attributes.bias) {
+      bias_operand_id = builder.BuildInput("bias", attributes.bias->dimensions,
+                                           attributes.bias->type);
+    }
+
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    mojom::Conv2dAttributesPtr mojo_attributes = mojom::Conv2dAttributes::New();
-    mojo_attributes->padding = mojom::Padding2d::New(
-        mojom::Size2d::New(attributes.padding[0],
-                           attributes.padding[2]) /* beginning padding*/,
-        mojom::Size2d::New(attributes.padding[1],
-                           attributes.padding[3]) /* ending padding*/);
-    mojo_attributes->strides =
-        mojom::Size2d::New(attributes.strides[0], attributes.strides[1]);
-    mojo_attributes->dilations =
-        mojom::Size2d::New(attributes.dilations[0], attributes.dilations[1]);
-    mojo_attributes->groups = attributes.groups;
-    mojo_attributes->input_layout = attributes.input_layout;
-    if (attributes.bias) {
-      mojo_attributes->bias_operand_id = builder.BuildInput(
-          "bias", attributes.bias->dimensions, attributes.bias->type);
-    }
-    if (attributes.activation) {
-      auto activation = mojom::Operator::New();
-      activation->kind = mojom::Operator::Kind::kClamp;
-      mojom::ClampAttributesPtr clamp_attributes =
-          mojom::ClampAttributes::New();
-      clamp_attributes->min_value = attributes.activation->min_value;
-      clamp_attributes->max_value = attributes.activation->max_value;
-      activation->attributes =
-          mojom::OperatorAttributes::NewClamp(std::move(clamp_attributes));
-      mojo_attributes->activation = std::move(activation);
-    }
-    builder.BuildOperator(
-        mojom::Operator::Kind::kConv2d, {input_operand_id, filter_operand_id},
-        {output_operand_id},
-        mojom::OperatorAttributes::NewConv2d(std::move(mojo_attributes)));
+    builder.BuildConv2d(input_operand_id, filter_operand_id, output_operand_id,
+                        std::move(attributes), bias_operand_id);
     EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
   }
 };
@@ -419,7 +394,8 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
                            .dimensions = {1, 1, 5, 5}},
                  .filter = {.type = mojom::Operand::DataType::kFloat32,
                             .dimensions = {1, 1, 3, 3}},
-                 .attributes = {.activation =
+                 .attributes = {.activation = mojom::Operation::Tag::kClamp,
+                                .clamp_attributes =
                                     ClampTester::ClampAttributes{
                                         .min_value = 1.0, .max_value = 6.0}},
                  .output = {.type = mojom::Operand::DataType::kFloat32,
@@ -499,7 +475,8 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
                            .dimensions = {1, 1, 5, 5}},
                  .filter = {.type = mojom::Operand::DataType::kFloat32,
                             .dimensions = {1, 1, 3, 3}},
-                 .attributes = {.activation =
+                 .attributes = {.activation = mojom::Operation::Tag::kClamp,
+                                .clamp_attributes =
                                     ClampTester::ClampAttributes{
                                         .min_value = 6.0, .max_value = 1.0}},
                  .output = {.type = mojom::Operand::DataType::kFloat32,
@@ -957,8 +934,7 @@ struct ReluTester {
         builder.BuildInput("input", input.dimensions, input.type);
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    builder.BuildOperator(mojom::Operator::Kind::kRelu, {input_operand_id},
-                          {output_operand_id});
+    builder.BuildRelu(input_operand_id, output_operand_id);
     EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
   }
 };
@@ -1081,8 +1057,7 @@ struct SoftmaxTester {
         builder.BuildInput("input", input.dimensions, input.type);
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    builder.BuildOperator(mojom::Operator::Kind::kSoftmax, {input_operand_id},
-                          {output_operand_id});
+    builder.BuildSoftmax(input_operand_id, output_operand_id);
     EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
   }
 };
