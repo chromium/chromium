@@ -1876,11 +1876,22 @@ class FencedFrameTaskBrowserTest : public TaskManagerBrowserTest {
       std::make_unique<content::test::FencedFrameTestHelper>();
 };
 
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class FencedFrameTaskBrowserTestNoTestingConfig
+    : public FencedFrameTaskBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    FencedFrameTaskBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+
 }  // namespace
 
 // Testing that the task manager properly displays fenced frame tasks with
 // re-opening task manager, and with fenced frame navigations.
-IN_PROC_BROWSER_TEST_F(FencedFrameTaskBrowserTest, ProperlyShowsTasks) {
+IN_PROC_BROWSER_TEST_F(FencedFrameTaskBrowserTestNoTestingConfig,
+                       ProperlyShowsTasks) {
   ShowTaskManager();
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAboutBlankTab()));
 
