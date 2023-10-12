@@ -6,7 +6,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
   sources = [ "search.mojom" ]
-  webui_module_path = "/"
 
   public_deps = [
     "//mojo/public/mojom/base",

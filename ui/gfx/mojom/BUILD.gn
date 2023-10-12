@@ -367,7 +367,6 @@ mojom("native_handle_types") {
   }
   public_deps = [ "//mojo/public/mojom/base" ]
   generate_java = true
-  webui_module_path = "chrome://resources/mojo/ui/gfx/mojom"
 
   shared_cpp_typemap = {
     types = [
@@ -427,7 +426,6 @@ component("native_handle_types_mojom_traits") {
 
 mojom("hdr_metadata") {
   generate_java = true
-  webui_module_path = "chrome://resources/mojo/ui/gfx/mojom"
 
   sources = [ "hdr_metadata.mojom" ]
 
