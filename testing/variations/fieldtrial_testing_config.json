@@ -3252,8 +3252,8 @@
             ],
             "experiments": [
                 {
-                    "name": "ArcOnDemand",
-                    "enable_features": [
+                    "name": "Disabled_20231010",
+                    "disable_features": [
                         "ArcOnDemand"
                     ]
                 }
