@@ -40,7 +40,7 @@ class HostContentSettingsMap;
 class TestingPrefStore;
 
 namespace content {
-class MockResourceContext;
+class ResourceContext;
 class SSLHostStateDelegate;
 class ZoomLevelDelegate;
 }  // namespace content
@@ -489,7 +489,7 @@ class TestingProfile : public Profile {
       BrowserContextDependencyManager::GetInstance()};
 
   // Live on the IO thread:
-  std::unique_ptr<content::MockResourceContext,
+  std::unique_ptr<content::ResourceContext,
                   content::BrowserThread::DeleteOnIOThread>
       resource_context_;
 

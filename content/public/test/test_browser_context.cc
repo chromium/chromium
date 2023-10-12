@@ -12,7 +12,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/platform_notification_service.h"
-#include "content/public/test/mock_resource_context.h"
+#include "content/public/browser/resource_context.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/mock_background_sync_controller.h"
 #include "content/test/mock_reduce_accept_language_controller_delegate.h"
@@ -105,7 +105,7 @@ DownloadManagerDelegate* TestBrowserContext::GetDownloadManagerDelegate() {
 
 ResourceContext* TestBrowserContext::GetResourceContext() {
   if (!resource_context_)
-    resource_context_ = std::make_unique<MockResourceContext>();
+    resource_context_ = std::make_unique<content::ResourceContext>();
   return resource_context_.get();
 }
 

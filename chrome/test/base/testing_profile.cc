@@ -92,9 +92,9 @@
 #include "content/public/browser/cookie_store_factory.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/resource_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/zoom_level_delegate.h"
-#include "content/public/test/mock_resource_context.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
@@ -793,9 +793,9 @@ content::ResourceContext* TestingProfile::GetResourceContext() {
   // non compliant tests: SpellingMenuObserverTest.SuggestionsForceTopSeparator
   if (!resource_context_) {
     resource_context_ =
-        std::unique_ptr<content::MockResourceContext,
+        std::unique_ptr<content::ResourceContext,
                         content::BrowserThread::DeleteOnIOThread>(
-            new content::MockResourceContext);
+            new content::ResourceContext);
   }
   return resource_context_.get();
 }

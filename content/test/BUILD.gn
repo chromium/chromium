@@ -245,8 +245,6 @@ static_library("test_support") {
     "../public/test/mock_render_process_host.h",
     "../public/test/mock_render_thread.cc",
     "../public/test/mock_render_thread.h",
-    "../public/test/mock_resource_context.cc",
-    "../public/test/mock_resource_context.h",
     "../public/test/mock_web_contents_observer.cc",
     "../public/test/mock_web_contents_observer.h",
     "../public/test/navigation_handle_observer.cc",
