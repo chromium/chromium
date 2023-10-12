@@ -395,6 +395,7 @@ if (is_linux || is_chromeos) {
       "//sandbox/linux:sandbox_services",
       "//sandbox/policy:policy",
     ]
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
 }
 

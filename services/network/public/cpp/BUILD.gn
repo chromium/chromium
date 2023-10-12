@@ -24,6 +24,7 @@ component("crash_keys") {
     "crash_keys.h",
   ]
   deps = [ "//base" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_CRASH_KEYS_IMPL" ]
 }
 
@@ -212,6 +213,7 @@ component("ip_address_mojom_support") {
     "//net",
     "//services/network/public/mojom:mojom_ip_address_shared",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_IP_ADDRESS_IMPL" ]
 }
 
@@ -227,6 +229,7 @@ component("host_resolver_mojom_support") {
     "//net",
     "//services/network/public/mojom:mojom_host_resolver_shared",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_HOST_RESOLVER_IMPL" ]
 }
 
@@ -242,6 +245,7 @@ component("cookies_mojom_support") {
     "//net",
     "//services/network/public/mojom:cookies_mojom_shared",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_COOKIES_IMPL" ]
 }
 
@@ -260,6 +264,7 @@ component("network_param_mojom_support") {
     "//url/ipc:url_ipc",
     "//url/mojom:url_mojom_origin",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_NETWORK_PARAM_IMPL" ]
 }
 
@@ -277,6 +282,7 @@ component("proxy_config_mojom_support") {
     "//net",
     "//services/network/public/mojom:mojom_proxy_config_shared",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_PROXY_CONFIG_IMPL" ]
 }
 
@@ -291,6 +297,7 @@ component("structured_headers_mojom_support") {
     "//net",
     "//services/network/public/mojom:mojom_structured_headers_shared",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_STRUCTURED_HEADERS_IMPL" ]
 }
 
@@ -310,6 +317,8 @@ component("cross_origin_embedder_policy") {
     "//services/network/public/mojom:url_loader_base_shared",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   defines = [ "IS_NETWORK_CPP_CROSS_ORIGIN_IMPL" ]
 }
 
@@ -322,6 +331,7 @@ component("attribution") {
     "trigger_verification.h",
   ]
   deps = [ "//base" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_ATTRIBUTION_IMPL" ]
 }
 
@@ -339,6 +349,7 @@ component("attribution_traits") {
     "//base",
     "//services/network/public/mojom:mojom_attribution_shared",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_ATTRIBUTION_MOJOM_TRAITS_IMPL" ]
 }
 
@@ -354,6 +365,7 @@ component("schemeful_site_mojom_support") {
     "//services/network/public/mojom:mojom_schemeful_site_shared",
     "//url/mojom:url_mojom_origin",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_SCHEMEFUL_IMPL" ]
 }
 
@@ -370,6 +382,7 @@ component("first_party_sets_mojom_support") {
     "//net",
     "//services/network/public/mojom:mojom_first_party_sets_shared",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_FIRST_PARTY_SETS_MOJOM_TRAITS_IMPL" ]
 }
 
