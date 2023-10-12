@@ -185,15 +185,14 @@ void DeskButtonWidget::MaybeFocusOut(bool reverse) {
 
 bool DeskButtonWidget::ShouldBeVisible() const {
   const ShelfLayoutManager* layout_manager = shelf_->shelf_layout_manager();
-  const OverviewController* overview_controller =
-      Shell::Get()->overview_controller();
+  Shell* shell = Shell::Get();
+  const OverviewController* overview_controller = shell->overview_controller();
   PrefService* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+      shell->session_controller()->GetLastActiveUserPrefService();
 
   return layout_manager->is_active_session_state() &&
          !overview_controller->InOverviewSession() &&
-         shelf_->hotseat_widget()->state() == HotseatState::kShownClamshell &&
-         GetDeskButtonVisibility(prefs);
+         !shell->IsInTabletMode() && GetDeskButtonVisibility(prefs);
 }
 
 void DeskButtonWidget::SetExpanded(bool expanded) {
@@ -253,8 +252,9 @@ void DeskButtonWidget::UpdateLayout(bool animate) {
     return;
   }
 
-  if (!animate || visibility != target_visibility) {
-    if (target_visibility) {
+  if (!animate || visibility != target_visibility || initial_bounds.IsEmpty() ||
+      target_bounds_.IsEmpty()) {
+    if (target_visibility && !target_bounds_.IsEmpty()) {
       SetBounds(target_bounds_);
       ShowInactive();
     } else {
