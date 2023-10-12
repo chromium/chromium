@@ -146,9 +146,8 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
       this};
 };
 
-// TODO(crbug.com/1489243): Resolve uninteresting mock function calls.
 IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
-                       DISABLED_SidePanelShownOnPress) {
+                       SidePanelShownOnPress) {
   EXPECT_CALL(*mock_shopping_service_, GetProductInfoForUrl);
   EXPECT_CALL(*mock_shopping_service_, GetPriceInsightsInfoForUrl);
 
@@ -174,9 +173,8 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
       "Commerce.PriceInsights.OmniboxIconClickedAfterLabelShown", 2);
 }
 
-// TODO(crbug.com/1489243): Resolve uninteresting mock function calls.
 IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
-                       DISABLED_IconIsNotHighlightedAfterClicking) {
+                       IconIsNotHighlightedAfterClicking) {
   EXPECT_CALL(*mock_shopping_service_, GetProductInfoForUrl);
   EXPECT_CALL(*mock_shopping_service_, GetPriceInsightsInfoForUrl);
 
