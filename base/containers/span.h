@@ -436,11 +436,11 @@ class GSL_POINTER span : public internal::ExtentStorage<Extent> {
 
   // [span.iter], span iterator support
   constexpr iterator begin() const noexcept {
-    return iterator(data_, data_ + size());
+    return iterator(data(), data() + size());
   }
 
   constexpr iterator end() const noexcept {
-    return iterator(data_, data_ + size(), data_ + size());
+    return iterator(data(), data() + size(), data() + size());
   }
 
   constexpr reverse_iterator rbegin() const noexcept {
