@@ -875,7 +875,7 @@ def install_chromeos_fonts(options):
 def install_locales():
   print("Installing locales.", file=sys.stderr)
   CHROMIUM_LOCALES = [
-      "da_DK.UTF-8", "fr_FR.UTF-8", "he_IL.UTF-8", "zh_TW.UTF-8"
+      "da_DK.UTF-8", "en_US.utf8", "fr_FR.UTF-8", "he_IL.UTF-8", "zh_TW.UTF-8"
   ]
   LOCALE_GEN = "/etc/locale.gen"
   if os.path.exists(LOCALE_GEN):
