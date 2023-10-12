@@ -61,6 +61,7 @@ class SafeWebBundleParserConnection {
   bool is_disconnected() const { return state_ != State::kConnected; }
   // Tries to reestablish IPC connection.
   void Reconnect(ReconnectCompleteCallback reconnect_callback);
+  void Close(base::OnceClosure close_callback);
 
   // The public fields below violate encapsulation. The problem is that
   // there is no good way (so far) how to treat them. Returning
@@ -79,6 +80,7 @@ class SafeWebBundleParserConnection {
  private:
   SafeWebBundleParserConnection(const base::File* web_bundle_file,
                                 absl::optional<GURL> base_url);
+  void OnClosed(base::OnceClosure close_callback);
   enum class State {
     kConnected,
     kDisconnected,

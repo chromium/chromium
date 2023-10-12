@@ -24,6 +24,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
@@ -184,6 +185,20 @@ void SafeWebBundleParserConnection::Reconnect(
       base::BindOnce(std::move(reconnect_callback), std::move(status)));
 }
 
+void SafeWebBundleParserConnection::Close(base::OnceClosure close_callback) {
+  if (parser_) {
+    parser_->Close(base::BindOnce(&SafeWebBundleParserConnection::OnClosed,
+                                  base::Unretained(this),
+                                  std::move(close_callback)));
+  } else {
+    std::move(close_callback).Run();
+  }
+}
+
+void SafeWebBundleParserConnection::OnClosed(base::OnceClosure close_callback) {
+  std::move(close_callback).Run();
+}
+
 }  // namespace internal
 
 SignedWebBundleReader::SignedWebBundleReader(
@@ -214,8 +229,10 @@ std::unique_ptr<SignedWebBundleReader> SignedWebBundleReader::Create(
 
 void SignedWebBundleReader::Close(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(state_, State::kInitialized);
-  state_ = State::kClosed;
+  CHECK(state_ == State::kInitialized || state_ == State::kError);
+  if (state_ != State::kError) {
+    state_ = State::kClosed;
+  }
   CloseFile(
       std::move(*file_),
       base::BindOnce(&SignedWebBundleReader::OnFileClosed,
@@ -224,15 +241,17 @@ void SignedWebBundleReader::Close(base::OnceClosure callback) {
 
 void SignedWebBundleReader::OnFileClosed(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(state_, State::kClosed);
-  connection_->parser_->Close(
-      base::BindOnce(&SignedWebBundleReader::OnParserClosed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  CHECK(state_ == State::kClosed || state_ == State::kError)
+      << base::to_underlying(state_);
+  connection_->Close(base::BindOnce(&SignedWebBundleReader::OnParserClosed,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    std::move(callback)));
 }
 
 void SignedWebBundleReader::OnParserClosed(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(state_, State::kClosed);
+  CHECK(state_ == State::kClosed || state_ == State::kError)
+      << base::to_underlying(state_);
   close_callback_ = std::move(callback);
   ReplyClosedIfNecessary();
 }
@@ -429,12 +448,8 @@ void SignedWebBundleReader::OnMetadataParsed(
 void SignedWebBundleReader::FulfillWithError(ReadErrorCallback callback,
                                              UnusableSwbnFileError error) {
   state_ = State::kError;
-
-  // This is an irrecoverable error state, thus we can safely delete
-  // `connection_` here to free up resources.
-  connection_.reset();
-
-  std::move(callback).Run(base::unexpected(std::move(error)));
+  Close(
+      base::BindOnce(std::move(callback), base::unexpected(std::move(error))));
 }
 
 const absl::optional<GURL>& SignedWebBundleReader::GetPrimaryURL() const {
@@ -590,6 +605,9 @@ void SignedWebBundleReader::OnResponseBodyRead(mojo::DataPipeProducer* producer,
 
 void SignedWebBundleReader::ReplyClosedIfNecessary() {
   if (active_response_body_producers_.empty() && !close_callback_.is_null()) {
+    // This is an irrecoverable state, thus we can safely delete
+    // `connection_` here to free up resources.
+    connection_.reset();
     std::move(close_callback_).Run();
   }
 }

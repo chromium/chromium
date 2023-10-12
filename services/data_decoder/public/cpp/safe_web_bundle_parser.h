@@ -88,7 +88,7 @@ class SafeWebBundleParser {
   void OnResponseParsed(size_t callback_id,
                         web_package::mojom::BundleResponsePtr response,
                         web_package::mojom::BundleResponseParseErrorPtr error);
-  void OnParserClosed(base::OnceClosure callback) const;
+  void OnParserClosed();
 
   absl::optional<GURL> base_url_;
   DataDecoder data_decoder_;
@@ -101,6 +101,7 @@ class SafeWebBundleParser {
                  web_package::mojom::WebBundleParser::ParseResponseCallback>
       response_callbacks_;
   base::OnceClosure disconnect_callback_;
+  base::OnceClosure close_callback_;
   size_t response_callback_next_id_ = 0;
   bool disconnected_ = true;
 };
