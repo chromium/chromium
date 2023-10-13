@@ -383,7 +383,8 @@ PipelineStatus DemuxerManager::CreateDemuxer(
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
   if (hls_fallback_ == HlsFallbackImplementation::kBuiltinHlsPlayer ||
-      loaded_url_.path_piece().ends_with(".m3u8")) {
+      (base::FeatureList::IsEnabled(kBuiltInHlsPlayer) &&
+       loaded_url_.path_piece().ends_with(".m3u8"))) {
     SetDemuxer(CreateHlsDemuxer());
     return std::move(on_demuxer_created)
         .Run(demuxer_.get(), suspended_mode, /*is_streaming=*/false,
