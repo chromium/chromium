@@ -171,15 +171,19 @@ final class ProfileOAuth2TokenServiceDelegate {
     @CalledByNative
     void seedAndReloadAccountsWithPrimaryAccount(@Nullable String primaryAccountId) {
         ThreadUtils.assertOnUiThread();
-        mAccountTrackerService.seedAccountsIfNeeded(() -> {
-            final List<CoreAccountInfo> coreAccountInfos =
-                    AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
-                            AccountManagerFacadeProvider.getInstance().getCoreAccountInfos());
-            ProfileOAuth2TokenServiceDelegateJni.get()
-                    .reloadAllAccountsWithPrimaryAccountAfterSeeding(
-                            mNativeProfileOAuth2TokenServiceDelegate, primaryAccountId,
-                            AccountUtils.toAccountEmails(coreAccountInfos).toArray(new String[0]));
-        });
+        mAccountTrackerService.legacySeedAccountsIfNeeded(
+                () -> {
+                    final List<CoreAccountInfo> coreAccountInfos =
+                            AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
+                                    AccountManagerFacadeProvider.getInstance()
+                                            .getCoreAccountInfos());
+                    ProfileOAuth2TokenServiceDelegateJni.get()
+                            .reloadAllAccountsWithPrimaryAccountAfterSeeding(
+                                    mNativeProfileOAuth2TokenServiceDelegate,
+                                    primaryAccountId,
+                                    AccountUtils.toAccountEmails(coreAccountInfos)
+                                            .toArray(new String[0]));
+                });
     }
 
     @NativeMethods

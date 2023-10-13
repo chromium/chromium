@@ -34,10 +34,11 @@ final class AccountInfoServiceImpl
     @Override
     public Promise<AccountInfo> getAccountInfoByEmail(String email) {
         final Promise<AccountInfo> accountInfoPromise = new Promise<>();
-        mAccountTrackerService.seedAccountsIfNeeded(() -> {
-            accountInfoPromise.fulfill(
-                    mIdentityManager.findExtendedAccountInfoByEmailAddress(email));
-        });
+        mAccountTrackerService.legacySeedAccountsIfNeeded(
+                () -> {
+                    accountInfoPromise.fulfill(
+                            mIdentityManager.findExtendedAccountInfoByEmailAddress(email));
+                });
         return accountInfoPromise;
     }
 
@@ -76,11 +77,10 @@ final class AccountInfoServiceImpl
         }
     }
 
-    /**
-     * Implements {@link AccountTrackerService.Observer}.
-     */
+    /** Implements {@link AccountTrackerService.Observer}. */
     @Override
-    public void onAccountsSeeded(List<CoreAccountInfo> accountInfos, boolean accountsChanged) {
+    public void legacyOnAccountsSeeded(
+            List<CoreAccountInfo> accountInfos, boolean accountsChanged) {
         mIdentityManager.refreshAccountInfoIfStale(accountInfos);
     }
 }

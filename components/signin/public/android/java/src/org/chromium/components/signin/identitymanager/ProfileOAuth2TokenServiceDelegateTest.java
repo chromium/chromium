@@ -173,13 +173,14 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     @SmallTest
     public void testSeedAndReloadAccountsWhenAccountsAreSeeded() {
         mAccountManagerFacade.addAccount(ACCOUNT);
-        doAnswer(invocation -> {
-            Runnable runnable = invocation.getArgument(0);
-            runnable.run();
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            Runnable runnable = invocation.getArgument(0);
+                            runnable.run();
+                            return null;
+                        })
                 .when(mAccountTrackerServiceMock)
-                .seedAccountsIfNeeded(any(Runnable.class));
+                .legacySeedAccountsIfNeeded(any(Runnable.class));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> { mDelegate.seedAndReloadAccountsWithPrimaryAccount(null); });
         verify(mNativeMock)

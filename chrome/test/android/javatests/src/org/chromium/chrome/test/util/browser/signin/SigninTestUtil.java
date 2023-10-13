@@ -132,11 +132,12 @@ public final class SigninTestUtil {
     static void seedAccounts() {
         ThreadUtils.assertOnBackgroundThread();
         CallbackHelper ch = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            IdentityServicesProvider.get()
-                    .getAccountTrackerService(Profile.getLastUsedRegularProfile())
-                    .seedAccountsIfNeeded(ch::notifyCalled);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    IdentityServicesProvider.get()
+                            .getAccountTrackerService(Profile.getLastUsedRegularProfile())
+                            .legacySeedAccountsIfNeeded(ch::notifyCalled);
+                });
         try {
             ch.waitForFirst(
                     "Timed out while waiting for system accounts to seed.", 20, TimeUnit.SECONDS);

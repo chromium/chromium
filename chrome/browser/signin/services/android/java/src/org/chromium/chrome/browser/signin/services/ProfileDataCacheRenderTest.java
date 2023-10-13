@@ -123,7 +123,7 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
         mocker.mock(IdentityManagerJni.TEST_HOOKS, mIdentityManagerNativeMock);
         doAnswer(AdditionalAnswers.answerVoid(Runnable::run))
                 .when(mAccountTrackerServiceMock)
-                .seedAccountsIfNeeded(any(Runnable.class));
+                .legacySeedAccountsIfNeeded(any(Runnable.class));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mIdentityManager =
@@ -233,7 +233,7 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
     }
 
     /**
-     * Creates a simple dummy bitmap to use as the avatar picture. The avatar is intentionally
+     * Creates a simple placeholder bitmap to use as the avatar picture. The avatar is intentionally
      * asymmetric to test scaling.
      */
     private Bitmap createAvatar() {

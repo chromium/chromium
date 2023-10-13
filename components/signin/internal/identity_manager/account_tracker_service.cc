@@ -905,7 +905,7 @@ AccountTrackerService::GetJavaObject() {
   return base::android::ScopedJavaLocalRef<jobject>(java_ref_);
 }
 
-void AccountTrackerService::SeedAccountsInfo(
+void AccountTrackerService::LegacySeedAccountsInfo(
     JNIEnv* env,
     const base::android::JavaParamRef<jobjectArray>& core_account_infos) {
   std::vector<CoreAccountInfo> curr_core_account_infos;

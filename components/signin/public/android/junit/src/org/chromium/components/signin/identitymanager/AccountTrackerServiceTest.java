@@ -123,15 +123,15 @@ public class AccountTrackerServiceTest {
     public void testInvalidatingAccountSeedingStatusReseedsAccounts() {
         mService.invalidateAccountsSeedingStatus();
 
-        verify(mNativeMock).seedAccountsInfo(anyLong(), any());
+        verify(mNativeMock).legacySeedAccountsInfo(anyLong(), any());
     }
 
     @Test
     public void testSeedAccountsIfNeededBeforeAccountsAreSeeded() {
-        mService.seedAccountsIfNeeded(mRunnableMock);
+        mService.legacySeedAccountsIfNeeded(mRunnableMock);
 
         verify(mNativeMock)
-                .seedAccountsInfo(
+                .legacySeedAccountsInfo(
                         eq(ACCOUNT_TRACKER_SERVICE_NATIVE), mCoreAccountInfosArrayCaptor.capture());
         Assert.assertArrayEquals(
                 new CoreAccountInfo[] {mCoreAccountInfo}, mCoreAccountInfosArrayCaptor.getValue());
@@ -143,14 +143,14 @@ public class AccountTrackerServiceTest {
         Promise<List<CoreAccountInfo>> coreAccountInfoPromise = new Promise();
         doReturn(coreAccountInfoPromise).when(mFakeAccountManagerFacade).getCoreAccountInfos();
 
-        mService.seedAccountsIfNeeded(() -> {});
-        // Call again while seeding is in progress.
-        mService.seedAccountsIfNeeded(mRunnableMock);
-        verify(mNativeMock, never()).seedAccountsInfo(anyLong(), any());
+        mService.legacySeedAccountsIfNeeded(() -> {});
+        // Call again while legacySeeding is in progress.
+        mService.legacySeedAccountsIfNeeded(mRunnableMock);
+        verify(mNativeMock, never()).legacySeedAccountsInfo(anyLong(), any());
         coreAccountInfoPromise.fulfill(List.of(mCoreAccountInfo));
 
         verify(mNativeMock)
-                .seedAccountsInfo(
+                .legacySeedAccountsInfo(
                         eq(ACCOUNT_TRACKER_SERVICE_NATIVE), mCoreAccountInfosArrayCaptor.capture());
         Assert.assertArrayEquals(
                 new CoreAccountInfo[] {mCoreAccountInfo}, mCoreAccountInfosArrayCaptor.getValue());
@@ -159,13 +159,13 @@ public class AccountTrackerServiceTest {
 
     @Test
     public void testSeedAccountsIfNeededAfterAccountsAreSeeded() {
-        mService.seedAccountsIfNeeded(() -> {});
+        mService.legacySeedAccountsIfNeeded(() -> {});
 
-        mService.seedAccountsIfNeeded(mRunnableMock);
+        mService.legacySeedAccountsIfNeeded(mRunnableMock);
 
-        // Accounts should be seeded only once
+        // Accounts should be legacySeeded only once
         verify(mNativeMock)
-                .seedAccountsInfo(
+                .legacySeedAccountsInfo(
                         eq(ACCOUNT_TRACKER_SERVICE_NATIVE), mCoreAccountInfosArrayCaptor.capture());
         Assert.assertArrayEquals(
                 new CoreAccountInfo[] {mCoreAccountInfo}, mCoreAccountInfosArrayCaptor.getValue());
@@ -174,16 +174,18 @@ public class AccountTrackerServiceTest {
 
     @Test
     public void testAddingNewAccountTriggersSeedingAccounts() {
-        mService.seedAccountsIfNeeded(() -> {});
+        mService.legacySeedAccountsIfNeeded(() -> {});
         mService.addObserver(mObserverMock);
         final Account newAccount = AccountUtils.createAccountFromName("test2@gmail.com");
-        verify(mNativeMock).seedAccountsInfo(eq(ACCOUNT_TRACKER_SERVICE_NATIVE), any());
+        verify(mNativeMock).legacySeedAccountsInfo(eq(ACCOUNT_TRACKER_SERVICE_NATIVE), any());
 
         mFakeAccountManagerFacade.addAccount(newAccount);
 
-        verify(mNativeMock, times(2)).seedAccountsInfo(eq(ACCOUNT_TRACKER_SERVICE_NATIVE), any());
+        verify(mNativeMock, times(2))
+                .legacySeedAccountsInfo(eq(ACCOUNT_TRACKER_SERVICE_NATIVE), any());
         // Verify the observer is invoked with correct arguments
-        verify(mObserverMock).onAccountsSeeded(mCoreAccountInfosListCaptor.capture(), eq(true));
+        verify(mObserverMock)
+                .legacyOnAccountsSeeded(mCoreAccountInfosListCaptor.capture(), eq(true));
         final CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(
                 ACCOUNT_EMAIL, mFakeAccountManagerFacade.getAccountGaiaId(ACCOUNT_EMAIL));
         final CoreAccountInfo newCoreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(
@@ -195,11 +197,12 @@ public class AccountTrackerServiceTest {
     @Test
     public void testSeedAccountsWithObserverAttached() {
         mService.addObserver(mObserverMock);
-        verify(mObserverMock, never()).onAccountsSeeded(any(), anyBoolean());
+        verify(mObserverMock, never()).legacyOnAccountsSeeded(any(), anyBoolean());
 
-        mService.seedAccountsIfNeeded(() -> {});
+        mService.legacySeedAccountsIfNeeded(() -> {});
 
-        verify(mObserverMock).onAccountsSeeded(mCoreAccountInfosListCaptor.capture(), eq(false));
+        verify(mObserverMock)
+                .legacyOnAccountsSeeded(mCoreAccountInfosListCaptor.capture(), eq(false));
         final CoreAccountInfo account = CoreAccountInfo.createFromEmailAndGaiaId(
                 ACCOUNT_EMAIL, mFakeAccountManagerFacade.getAccountGaiaId(ACCOUNT_EMAIL));
         Assert.assertArrayEquals(new CoreAccountInfo[] {account},
@@ -211,8 +214,8 @@ public class AccountTrackerServiceTest {
         mService.addObserver(mObserverMock);
         mService.removeObserver(mObserverMock);
 
-        mService.seedAccountsIfNeeded(() -> {});
+        mService.legacySeedAccountsIfNeeded(() -> {});
 
-        verify(mObserverMock, never()).onAccountsSeeded(any(), anyBoolean());
+        verify(mObserverMock, never()).legacyOnAccountsSeeded(any(), anyBoolean());
     }
 }

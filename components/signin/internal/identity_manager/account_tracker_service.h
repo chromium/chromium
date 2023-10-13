@@ -133,7 +133,7 @@ class AccountTrackerService {
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   // Seeds the accounts with |core_account_infos|.
-  void SeedAccountsInfo(
+  void LegacySeedAccountsInfo(
       JNIEnv* env,
       const base::android::JavaParamRef<jobjectArray>& core_account_infos);
 #endif

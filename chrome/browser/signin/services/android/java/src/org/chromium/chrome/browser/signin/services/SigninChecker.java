@@ -55,21 +55,27 @@ public class SigninChecker implements AccountTrackerService.Observer {
     }
 
     private void validateAccountSettings() {
-        mAccountManagerFacade.getCoreAccountInfos().then(coreAccountInfos -> {
-            mAccountTrackerService.seedAccountsIfNeeded(() -> {
-                mSigninManager.runAfterOperationInProgress(() -> {
-                    validatePrimaryAccountExists(coreAccountInfos, /*accountsChanged=*/false);
-                    checkChildAccount(coreAccountInfos);
-                });
-            });
-        });
+        mAccountManagerFacade
+                .getCoreAccountInfos()
+                .then(
+                        coreAccountInfos -> {
+                            mAccountTrackerService.legacySeedAccountsIfNeeded(
+                                    () -> {
+                                        mSigninManager.runAfterOperationInProgress(
+                                                () -> {
+                                                    validatePrimaryAccountExists(
+                                                            coreAccountInfos,
+                                                            /* accountsChanged= */ false);
+                                                    checkChildAccount(coreAccountInfos);
+                                                });
+                                    });
+                        });
     }
 
-    /**
-     * This method is invoked every time the accounts on device are seeded.
-     */
+    /** This method is invoked every time the accounts on device are seeded. */
     @Override
-    public void onAccountsSeeded(List<CoreAccountInfo> coreAccountInfos, boolean accountsChanged) {
+    public void legacyOnAccountsSeeded(
+            List<CoreAccountInfo> coreAccountInfos, boolean accountsChanged) {
         mSigninManager.runAfterOperationInProgress(() -> {
             validatePrimaryAccountExists(coreAccountInfos, accountsChanged);
             checkChildAccount(coreAccountInfos);

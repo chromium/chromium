@@ -131,13 +131,14 @@ public class SigninManagerImplTest {
         when(mNativeMock.isSigninAllowedByPolicy(NATIVE_SIGNIN_MANAGER)).thenReturn(true);
         // Pretend Google Play services are available as it is required for the sign-in
         when(mExternalAuthUtils.isGooglePlayServicesMissing(any())).thenReturn(false);
-        doAnswer(invocation -> {
-            Runnable runnable = invocation.getArgument(0);
-            runnable.run();
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            Runnable runnable = invocation.getArgument(0);
+                            runnable.run();
+                            return null;
+                        })
                 .when(mAccountTrackerService)
-                .seedAccountsIfNeeded(any(Runnable.class));
+                .legacySeedAccountsIfNeeded(any(Runnable.class));
         // Suppose that the accounts are already seeded
         when(mIdentityManagerNativeMock.findExtendedAccountInfoByEmailAddress(
                      NATIVE_IDENTITY_MANAGER, ACCOUNT_INFO.getEmail()))
