@@ -3024,10 +3024,8 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
   }
 
   if (is_old_auto && !is_new_auto) {
-    if (!RecalcSelfOrAncestorHasDirAuto()) {
-      ClearSelfOrAncestorHasDirAutoAttribute();
-      UpdateDescendantHasDirAutoAttribute(false /* has_dir_auto */);
-    }
+    ClearSelfOrAncestorHasDirAutoAttribute();
+    UpdateDescendantHasDirAutoAttribute(false /* has_dir_auto */);
   } else if (!is_old_auto && is_new_auto) {
     SetSelfOrAncestorHasDirAutoAttribute();
     UpdateDescendantHasDirAutoAttribute(true /* has_dir_auto */);
