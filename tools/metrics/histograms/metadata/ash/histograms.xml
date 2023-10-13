@@ -6351,6 +6351,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.Snap.CloseTwoWindowsDuration" units="seconds"
+    expires_after="2024-01-14">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>michelefan@chromium.org</owner>
+  <summary>
+    The elapsed time between a first snapped window getting closed and a second
+    snapped window getting closed. Starts recording when a snapped window is
+    closed. Ends recording when a snapped window on the opposite side is closed,
+    or if a snapped window on the opposite side is unsnapped, records the
+    maximum value of 50 hours (18000 seconds).
+  </summary>
+</histogram>
+
 <histogram name="Ash.Snap.MinimizeTwoWindowsDuration" units="seconds"
     expires_after="2024-01-14">
   <owner>sophiewen@chromium.org</owner>

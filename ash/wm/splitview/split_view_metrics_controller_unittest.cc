@@ -18,116 +18,130 @@ class SplitViewMetricsControllerTest : public AshTestBase {
   SplitViewMetricsControllerTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  void SetUp() override {
+    AshTestBase::SetUp();
+    window1_ = CreateAppWindow();
+    window2_ = CreateAppWindow();
+    window3_ = CreateAppWindow();
+    window4_ = CreateAppWindow();
+  }
+
+  void TearDown() override {
+    window1_.reset();
+    window2_.reset();
+    window3_.reset();
+    window4_.reset();
+    AshTestBase::TearDown();
+  }
+
   void AdvanceClock(base::TimeDelta delta) {
     task_environment()->AdvanceClock(delta);
     task_environment()->RunUntilIdle();
   }
+
+ protected:
+  std::unique_ptr<aura::Window> window1_;
+  std::unique_ptr<aura::Window> window2_;
+  std::unique_ptr<aura::Window> window3_;
+  std::unique_ptr<aura::Window> window4_;
+
+  base::HistogramTester histogram_tester_;
 };
 
 // Tests that the metrics for recording the duration between one window getting
 // snapped and another window getting snapped on the other side work correctly.
 TEST_F(SplitViewMetricsControllerTest, RecordSnapTwoWindowsDuration) {
-  base::HistogramTester histogram_tester;
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
-  std::unique_ptr<aura::Window> window1(CreateAppWindow());
-  std::unique_ptr<aura::Window> window2(CreateAppWindow());
-  WindowState* window_state1 = WindowState::Get(window1.get());
-  WindowState* window_state2 = WindowState::Get(window2.get());
 
-  // Snap `window1` to the left, wait 1 minute, then snap `window1` to the
+  // Snap `window1_` to the left, wait 1 minute, then snap `window1_` to the
   // right. Test it doesn't record since it's the same window.
   const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  WindowState* window_state1 = WindowState::Get(window1_.get());
   window_state1->OnWMEvent(&snap_left);
   const WindowSnapWMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
   window_state1->OnWMEvent(&snap_right);
   AdvanceClock(base::Minutes(1));
-  histogram_tester.ExpectTotalCount(kSnapTwoWindowsDurationHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kSnapTwoWindowsDurationHistogramName, 0);
 
-  // Snap `window1` to the left, wait 30 seconds, then snap `window2` to the
+  // Snap `window1_` to the left, wait 30 seconds, then snap `window2_` to the
   // right. Test that it records in the 0 minute bucket.
   window_state1->OnWMEvent(&snap_left);
   AdvanceClock(base::Seconds(30));
+  WindowState* window_state2 = WindowState::Get(window2_.get());
   window_state2->OnWMEvent(&snap_right);
-  histogram_tester.ExpectTimeBucketCount(kSnapTwoWindowsDurationHistogramName,
-                                         base::Seconds(30), 1);
+  histogram_tester_.ExpectTimeBucketCount(kSnapTwoWindowsDurationHistogramName,
+                                          base::Seconds(30), 1);
 
-  // Snap `window2` to the left, wait 3 minutes, then snap `window1` to the
+  // Snap `window2_` to the left, wait 3 minutes, then snap `window1_` to the
   // right. Test that it records in the 3 minute bucket.
   window_state2->OnWMEvent(&snap_left);
   AdvanceClock(base::Minutes(3));
   window_state1->OnWMEvent(&snap_right);
-  histogram_tester.ExpectTimeBucketCount(kSnapTwoWindowsDurationHistogramName,
-                                         base::Minutes(3), 1);
+  histogram_tester_.ExpectTimeBucketCount(kSnapTwoWindowsDurationHistogramName,
+                                          base::Minutes(3), 1);
 
-  // Snap `window1` to the left, wait 3 minutes, open a new `window3` and close
-  // it to simulate real user sessions with multiple windows, then snap
-  // `window2` to the right. Test that it increments the 3 minute bucket.
+  // Snap `window1_` to the left, wait 3 minutes, open a new `window3_` and
+  // close it to simulate real user sessions with multiple windows, then snap
+  // `window2_` to the right. Test that it increments the 3 minute bucket.
   window_state1->OnWMEvent(&snap_left);
   AdvanceClock(base::Minutes(3));
-  std::unique_ptr<aura::Window> window3(CreateAppWindow());
-  window3.reset();
+  window3_.reset();
   window_state2->OnWMEvent(&snap_right);
-  histogram_tester.ExpectTimeBucketCount(kSnapTwoWindowsDurationHistogramName,
-                                         base::Minutes(3), 2);
+  histogram_tester_.ExpectTimeBucketCount(kSnapTwoWindowsDurationHistogramName,
+                                          base::Minutes(3), 2);
 
-  // Snap `window1` to the right, wait 3 minutes, then minimize it. Test that it
-  // records in the max bucket, since no other window was snapped.
+  // Snap `window1_` to the right, wait 3 minutes, then minimize it. Test that
+  // it records in the max bucket, since no other window was snapped.
   window_state1->OnWMEvent(&snap_right);
   AdvanceClock(base::Minutes(3));
   window_state1->Minimize();
-  histogram_tester.ExpectTimeBucketCount(kSnapTwoWindowsDurationHistogramName,
-                                         kSequentialSnapActionMaxTime, 1);
+  histogram_tester_.ExpectTimeBucketCount(kSnapTwoWindowsDurationHistogramName,
+                                          kSequentialSnapActionMaxTime, 1);
 
-  // Snap a new `window4` to the left, wait 3 minutes, then close it. Test that
+  // Snap a new `window4_` to the left, wait 3 minutes, then close it. Test that
   // it records in the max bucket, since no other window was snapped.
-  std::unique_ptr<aura::Window> window4(CreateAppWindow());
-  WindowState* window_state4 = WindowState::Get(window4.get());
-  window_state4->OnWMEvent(&snap_left);
+  WindowState::Get(window4_.get())->OnWMEvent(&snap_left);
   AdvanceClock(base::Minutes(3));
-  window4.reset();
-  histogram_tester.ExpectTimeBucketCount(kSnapTwoWindowsDurationHistogramName,
-                                         kSequentialSnapActionMaxTime, 2);
+  window4_.reset();
+  histogram_tester_.ExpectTimeBucketCount(kSnapTwoWindowsDurationHistogramName,
+                                          kSequentialSnapActionMaxTime, 2);
 
-  // Snap `window1` to the left, wait 3 minutes, move it to a new desk, move
-  // `window2` to the same desk. Test it doesn't record anything.
+  // Snap `window1_` to the left, wait 3 minutes, move it to a new desk, move
+  // `window2_` to the same desk. Test it doesn't record anything.
   window_state1->OnWMEvent(&snap_left);
   AdvanceClock(base::Minutes(3));
   desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
   desks_controller->desks()[0]->MoveWindowToDesk(
-      window1.get(), desks_controller->desks()[1].get(),
-      window1->GetRootWindow(), /*unminimize=*/true);
+      window1_.get(), desks_controller->desks()[1].get(),
+      window1_->GetRootWindow(), /*unminimize=*/true);
   desks_controller->desks()[0]->MoveWindowToDesk(
-      window2.get(), desks_controller->desks()[1].get(),
-      window2->GetRootWindow(), /*unminimize=*/true);
-  histogram_tester.ExpectTotalCount(kSnapTwoWindowsDurationHistogramName, 5);
+      window2_.get(), desks_controller->desks()[1].get(),
+      window2_->GetRootWindow(), /*unminimize=*/true);
+  histogram_tester_.ExpectTotalCount(kSnapTwoWindowsDurationHistogramName, 5);
 }
 
 // Tests the metrics for the elapsed time between the first snapped window
 // getting minimized and the second snapped window getting minimized.
 TEST_F(SplitViewMetricsControllerTest, RecordMinimizeTwoWindowsDuration) {
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<aura::Window> window1(CreateAppWindow());
-  std::unique_ptr<aura::Window> window2(CreateAppWindow());
-  WindowState* window_state1 = WindowState::Get(window1.get());
-  WindowState* window_state2 = WindowState::Get(window2.get());
-
-  // Snap `window1` and `window2`.
+  // Snap `window1_` and `window2_`.
   const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  WindowState* window_state1 = WindowState::Get(window1_.get());
   window_state1->OnWMEvent(&snap_left);
   const WindowSnapWMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
+  WindowState* window_state2 = WindowState::Get(window2_.get());
   window_state2->OnWMEvent(&snap_right);
-  histogram_tester.ExpectTotalCount(kSnapTwoWindowsDurationHistogramName, 1);
+  histogram_tester_.ExpectTotalCount(kSnapTwoWindowsDurationHistogramName, 1);
 
-  // Minimize `window1`, wait 3 minutes, then minimize `window2`.
+  // Minimize `window1_`, wait 3 minutes, then minimize `window2_`.
   window_state1->Minimize();
   AdvanceClock(base::Minutes(3));
   window_state2->Minimize();
-  histogram_tester.ExpectTimeBucketCount(
+  histogram_tester_.ExpectTimeBucketCount(
       kMinimizeTwoWindowsDurationHistogramName, base::Minutes(3), 1);
 
-  // Minimize `window1`, wait 1 minute, then maximize `window1`. Test it records
-  // in the maximum bucket.
+  // Minimize `window1_`, wait 1 minute, then maximize `window1_`. Test it
+  // records in the maximum bucket.
   window_state1->Restore();
   window_state2->Restore();
   EXPECT_TRUE(window_state1->IsSnapped());
@@ -135,11 +149,11 @@ TEST_F(SplitViewMetricsControllerTest, RecordMinimizeTwoWindowsDuration) {
   window_state1->Minimize();
   AdvanceClock(base::Minutes(3));
   window_state1->Maximize();
-  histogram_tester.ExpectTimeBucketCount(
+  histogram_tester_.ExpectTimeBucketCount(
       kMinimizeTwoWindowsDurationHistogramName, kSequentialSnapActionMaxTime,
       1);
 
-  // Minimize `window1`, wait 2 minutes, restore it to snapped state, then
+  // Minimize `window1_`, wait 2 minutes, restore it to snapped state, then
   // minimize it again. Test we don't record anything.
   window_state1->OnWMEvent(&snap_left);
   window_state1->Minimize();
@@ -147,10 +161,10 @@ TEST_F(SplitViewMetricsControllerTest, RecordMinimizeTwoWindowsDuration) {
   window_state1->Restore();
   EXPECT_TRUE(window_state1->IsSnapped());
   window_state1->Minimize();
-  histogram_tester.ExpectTotalCount(kMinimizeTwoWindowsDurationHistogramName,
-                                    3);
+  histogram_tester_.ExpectTotalCount(kMinimizeTwoWindowsDurationHistogramName,
+                                     3);
 
-  // Minimize `window2`, wait 1 minute, then close `window2`. Test it records
+  // Minimize `window2_`, wait 1 minute, then close `window2_`. Test it records
   // in the maximum bucket.
   window_state1->OnWMEvent(&snap_left);
   window_state2->OnWMEvent(&snap_right);
@@ -158,12 +172,47 @@ TEST_F(SplitViewMetricsControllerTest, RecordMinimizeTwoWindowsDuration) {
   EXPECT_TRUE(window_state2->IsSnapped());
   window_state2->Minimize();
   AdvanceClock(base::Minutes(3));
-  window2.reset();
-  histogram_tester.ExpectTimeBucketCount(
+  window2_.reset();
+  histogram_tester_.ExpectTimeBucketCount(
       kMinimizeTwoWindowsDurationHistogramName, kSequentialSnapActionMaxTime,
       2);
-  histogram_tester.ExpectTotalCount(kMinimizeTwoWindowsDurationHistogramName,
-                                    4);
+  histogram_tester_.ExpectTotalCount(kMinimizeTwoWindowsDurationHistogramName,
+                                     4);
+}
+
+// Tests that the metrics for recording the duration between closing a snapped
+// window and closing another snapped window on the opposite side work
+// correctly.
+TEST_F(SplitViewMetricsControllerTest, CloseSnapTwoWindowsDuration) {
+  // Snap `window1_` and `window2_`.
+  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  WindowState* window_state1 = WindowState::Get(window1_.get());
+  window_state1->OnWMEvent(&snap_left);
+  WindowState* window_state2 = WindowState::Get(window2_.get());
+  const WindowSnapWMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
+  window_state2->OnWMEvent(&snap_right);
+
+  // Close `window1_`, wait 3 minutes, then close `window2_`. Test it records in
+  // the 3 minute bucket.
+  window1_.reset();
+  AdvanceClock(base::Minutes(3));
+  window2_.reset();
+  histogram_tester_.ExpectTimeBucketCount(kCloseTwoWindowsDurationHistogramName,
+                                          base::Minutes(3), 1);
+
+  // Snap `window3_` and `window4_`.
+  WindowState* window_state3 = WindowState::Get(window3_.get());
+  WindowState* window_state4 = WindowState::Get(window4_.get());
+  window_state3->OnWMEvent(&snap_left);
+  window_state4->OnWMEvent(&snap_right);
+
+  // Close `window3_`, wait 5 minutes, then maximize `window4_`. Test it records
+  // in the max bucket.
+  window3_.reset();
+  AdvanceClock(base::Minutes(5));
+  window_state4->Maximize();
+  histogram_tester_.ExpectTimeBucketCount(kCloseTwoWindowsDurationHistogramName,
+                                          kSequentialSnapActionMaxTime, 1);
 }
 
 }  // namespace ash
