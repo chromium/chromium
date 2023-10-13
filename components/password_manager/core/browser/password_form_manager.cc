@@ -864,6 +864,10 @@ bool PasswordFormManager::ProvisionallySave(
       ParseFormAndMakeLogging(submitted_form, FormDataParser::Mode::kSaving);
   RecordMetricOnReadonly(parser_.readonly_status(), !!parsed_submitted_form,
                          FormDataParser::Mode::kSaving);
+  if (parsed_submitted_form) {
+    metrics_recorder_->CalculateParsingDifferenceOnSavingAndFilling(
+        *parsed_submitted_form.get());
+  }
 
   bool have_password_to_save =
       parsed_submitted_form &&
@@ -1001,6 +1005,8 @@ void PasswordFormManager::FillNow() {
                          FormDataParser::Mode::kFilling);
   if (!observed_password_form)
     return;
+  metrics_recorder_->CacheParsingResultInFillingMode(
+      *observed_password_form.get());
 
   if (observed_password_form->is_new_password_reliable && !IsBlocklisted()) {
     driver_->FormEligibleForGenerationFound({

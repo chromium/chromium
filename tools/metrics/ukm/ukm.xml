@@ -18661,6 +18661,14 @@ be describing additional metrics about the same event.
       password_manager::PasswordFormMetricsRecorder::ParsingComparisonResult.
     </summary>
   </metric>
+  <metric name="ParsingDiffFillingAndSaving"
+      enum="PasswordFormParsingDifference">
+    <summary>
+      Records comparison of username and password fields picked during parsing
+      when the form is filled and when the form is saved. Recorded only if the
+      form is submitted successfully, on corresponding form manager destruction.
+    </summary>
+  </metric>
   <metric name="ParsingOnSavingDifference">
     <obsolete>
       Deprecated 09/2019.

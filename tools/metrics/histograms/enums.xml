@@ -83412,6 +83412,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Username match"/>
 </enum>
 
+<enum name="PasswordFormParsingDifference">
+  <int value="0" label="No difference"/>
+  <int value="1" label="Username parsed differently"/>
+  <int value="2" label="Password parsed differently"/>
+  <int value="3" label="Both username and password parsed differently"/>
+</enum>
+
 <enum name="PasswordFormQueryVolume">
   <int value="0" label="New password query"/>
   <int value="1" label="Current query"/>

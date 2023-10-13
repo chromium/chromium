@@ -375,6 +375,12 @@ PasswordFormMetricsRecorder::~PasswordFormMetricsRecorder() {
         "PasswordManager.JavaScriptOnlyValueInSubmittedForm", *js_only_input_);
   }
 
+  if (submit_result_ == SubmitResult::kPassed &&
+      parsing_diff_on_filling_and_saving_.has_value()) {
+    ukm_entry_builder_.SetParsingDiffFillingAndSaving(
+        static_cast<int64_t>(parsing_diff_on_filling_and_saving_.value()));
+  }
+
   ukm_entry_builder_.Record(ukm::UkmRecorder::Get());
 }
 
@@ -628,6 +634,36 @@ void PasswordFormMetricsRecorder::CalculateJsOnlyInput(
                        ? JsOnlyInput::kAutofillOrUserInput
                        : (had_focus ? JsOnlyInput::kOnlyJsInputWithFocus
                                     : JsOnlyInput::kOnlyJsInputNoFocus);
+}
+
+void PasswordFormMetricsRecorder::CacheParsingResultInFillingMode(
+    const PasswordForm& form) {
+  username_rendered_id_ = form.username_element_renderer_id;
+  password_rendered_id_ = form.password_element_renderer_id;
+  new_password_rendered_id_ = form.new_password_element_renderer_id;
+  confirmation_password_rendered_id_ =
+      form.confirmation_password_element_renderer_id;
+}
+
+void PasswordFormMetricsRecorder::CalculateParsingDifferenceOnSavingAndFilling(
+    const PasswordForm& form) {
+  bool same_username =
+      username_rendered_id_ == form.username_element_renderer_id;
+  bool same_passwords =
+      (password_rendered_id_ == form.password_element_renderer_id) &&
+      (new_password_rendered_id_ == form.new_password_element_renderer_id) &&
+      (confirmation_password_rendered_id_ ==
+       form.confirmation_password_element_renderer_id);
+
+  if (same_username) {
+    parsing_diff_on_filling_and_saving_ =
+        same_passwords ? ParsingDifference::kNone
+                       : ParsingDifference::kPasswordDiff;
+  } else {
+    parsing_diff_on_filling_and_saving_ =
+        same_passwords ? ParsingDifference::kUsernameDiff
+                       : ParsingDifference::kUsernameAndPasswordDiff;
+  }
 }
 
 void PasswordFormMetricsRecorder::RecordPasswordBubbleShown(

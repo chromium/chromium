@@ -314,6 +314,23 @@ class PasswordFormMetricsRecorder
     kMaxValue = kAutofillOrUserInput,
   };
 
+  // Used in UKM for difference on form parsing during filling and saving.
+  // Do not reorder and keep in sync with PasswordFormParsingDifference
+  // in enums.xml.
+  enum class ParsingDifference {
+    // The same username and password elements are identified.
+    kNone = 0,
+    // Different fields are picked as usernames, but password parsing is
+    // consistent.
+    kUsernameDiff = 1,
+    // Different fields are picked as passwords, but username parsing is
+    // consistent.
+    kPasswordDiff = 2,
+    // Both username and password parsing is inconsistent.
+    kUsernameAndPasswordDiff = 3,
+    kMaxValue = kUsernameAndPasswordDiff,
+  };
+
   // Called if the user could generate a password for this form.
   void MarkGenerationAvailable();
 
@@ -403,6 +420,14 @@ class PasswordFormMetricsRecorder
   // Calculates whether all field values in |submitted_form| came from
   // JavaScript. The result is stored in |js_only_input_|.
   void CalculateJsOnlyInput(const autofill::FormData& submitted_form);
+
+  // Caches how the form was parsed for filling. Needed to measure the
+  // difference in form parsing on filling and saving.
+  void CacheParsingResultInFillingMode(const PasswordForm& form);
+
+  // Calculates whether the password form was parsed in the same way
+  // during parsing and saving.
+  void CalculateParsingDifferenceOnSavingAndFilling(const PasswordForm& form);
 
   void set_possible_username_used(bool value) {
     possible_username_used_ = value;
@@ -517,6 +542,15 @@ class PasswordFormMetricsRecorder
   absl::optional<JsOnlyInput> js_only_input_;
 
   bool is_mixed_content_form_ = false;
+
+  // Renderer ids of key password form elements, saved on form filling.
+  // Needed to measure the difference in form parsing on filling and saving.
+  autofill::FieldRendererId username_rendered_id_;
+  autofill::FieldRendererId password_rendered_id_;
+  autofill::FieldRendererId new_password_rendered_id_;
+  autofill::FieldRendererId confirmation_password_rendered_id_;
+
+  std::optional<ParsingDifference> parsing_diff_on_filling_and_saving_;
 };
 
 }  // namespace password_manager

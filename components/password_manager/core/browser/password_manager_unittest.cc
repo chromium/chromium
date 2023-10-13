@@ -5202,6 +5202,26 @@ TEST_F(PasswordManagerTest, FieldInfoManagerHasDataPredictionsPropagatedLater) {
   EXPECT_EQ(info.type, kFieldType);
 }
 
+// Check that a UKM for the difference on form parsing during filling and
+// saving is recorded.
+TEST_F(PasswordManagerTest, ParsingDifferenceFillingAndSavingUKM) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  FormData observed_form = MakeSimpleFormData();
+  manager()->OnPasswordFormsParsed(&driver_, {observed_form});
+  manager()->OnPasswordFormsRendered(&driver_, {observed_form});
+  task_environment_.RunUntilIdle();
+
+  // Simulate successfully submitting the form.
+  manager()->OnPasswordFormSubmitted(&driver_, observed_form);
+  manager()->OnPasswordFormsRendered(&driver_, {});
+
+  CheckMetricHasValue(
+      test_ukm_recorder, ukm::builders::PasswordForm::kEntryName,
+      ukm::builders::PasswordForm::kParsingDiffFillingAndSavingName,
+      PasswordFormMetricsRecorder::ParsingDifference::kNone);
+}
+
 enum class PredictionSource {
   ID_ATTRIBUTE = 0,
   NAME_ATTRIBUTE = 1,
