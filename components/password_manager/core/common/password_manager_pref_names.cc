@@ -143,5 +143,8 @@ const char kPasswordManagerPromoCardsList[] =
     "password_manager.password_promo_cards_list";
 #endif
 
+const char kPasswordSharingEnabled[] =
+    "password_manager.password_sharing_enabled";
+
 }  // namespace prefs
 }  // namespace password_manager
