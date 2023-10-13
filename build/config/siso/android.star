@@ -55,8 +55,7 @@ def __step_config(ctx, step_config):
                 # Slow actions that exceed deadline on the default worker pool.
                 "./obj/chrome/android/chrome_test_java.turbine.jar": {"platform_ref": "large"},
             },
-            # TODO(b/284252142): Run turbine actions locally by default because it slows down developer builds.
-            "remote": config.get(ctx, "builder"),
+            "remote": remote_run,
             "platform_ref": "large",
             "canonicalize_dir": True,
             "timeout": "2m",
@@ -120,8 +119,7 @@ def __step_config(ctx, step_config):
             # Fo remote actions, let's ignore them, assuming remote cache hits compensate.
             "ignore_extra_input_pattern": ".*\\.dex",
             "ignore_extra_output_pattern": ".*\\.dex",
-            # TODO(b/284252142): Run dex actions locally by default because it slows down developer builds.
-            "remote": config.get(ctx, "builder"),
+            "remote": remote_run,
             "platform_ref": "large",
             "canonicalize_dir": True,
             "timeout": "2m",

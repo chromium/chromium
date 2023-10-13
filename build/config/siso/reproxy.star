@@ -8,6 +8,7 @@ load("@builtin//encoding.star", "json")
 load("@builtin//lib/gn.star", "gn")
 load("@builtin//struct.star", "module")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
+load("./config.star", "config")
 load("./platform.star", "platform")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
 
@@ -195,6 +196,14 @@ def __step_config(ctx, step_config):
         },
     ]
 
+    # Disable racing on builders since bots don't have many CPU cores.
+    # TODO: b/297807325 - Siso wants to handle local execution.
+    # However, Reclient's alerts require racing and local fallback to be
+    # done on Reproxy side.
+    exec_strategy = "racing"
+    if config.get(ctx, "builder"):
+        exec_strategy = "remote_local_fallback"
+
     for rule in step_config["rules"]:
         # Replace nacl-clang/clang++ rules without command_prefix, because they will incorrectly match rewrapper.
         # Replace the original step rule with one that only rewrites rewrapper and convert its rewrapper config to reproxy config.
@@ -257,10 +266,7 @@ def __step_config(ctx, step_config):
                 "siso_rule": rule["name"],
             },
             "canonicalize_working_dir": rule.get("canonicalize_dir", False),
-            # TODO: b/297807325 - Siso wants to handle local execution. However,
-            # Reclient's CompileErrorRatioAlert requires local fallback to be
-            # done on Reproxy side.
-            "exec_strategy": "remote_local_fallback",
+            "exec_strategy": exec_strategy,
             "exec_timeout": rule.get("timeout", "10m"),
             "reclient_timeout": rule.get("timeout", "10m"),
             "download_outputs": True,

@@ -5,6 +5,7 @@
 """Siso configuration for parsing rewrapper cfg file."""
 
 load("@builtin//struct.star", "module")
+load("./config.star", "config")
 
 def __parse(ctx, cfg_file):
     if not cfg_file:
@@ -24,9 +25,8 @@ def __parse(ctx, cfg_file):
         if line.startswith("exec_strategy="):
             exec_strategy = line.removeprefix("exec_strategy=")
 
-            # TODO: b/299611869 - Racing performance has not yet been validated with Siso,
-            # Once performance has been validated either remove this comment or enable racing
-            if exec_strategy == "racing":
+            # Disable racing on builders since bots don't have many CPU cores.
+            if exec_strategy == "racing" and config.get(ctx, "builder"):
                 exec_strategy = "remote_local_fallback"
             reproxy_config["exec_strategy"] = exec_strategy
 
