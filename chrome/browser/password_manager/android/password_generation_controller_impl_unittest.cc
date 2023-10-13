@@ -249,7 +249,8 @@ TEST_F(PasswordGenerationControllerTest, RelaysAutomaticGenerationAvailable) {
                   ShouldShowAction(true),
                   autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
   controller()->OnAutomaticGenerationAvailable(
-      active_driver(), GetTestGenerationUIData1(), gfx::RectF(100, 20));
+      active_driver(), GetTestGenerationUIData1(),
+      /*has_saved_credentials=*/false, gfx::RectF(100, 20));
 }
 
 // Tests that if AutomaticGenerationAvailable is called for different
@@ -264,9 +265,11 @@ TEST_F(PasswordGenerationControllerTest,
                   autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC))
       .Times(2);
   controller()->OnAutomaticGenerationAvailable(
-      active_driver(), GetTestGenerationUIData1(), gfx::RectF(100, 20));
+      active_driver(), GetTestGenerationUIData1(),
+      /*has_saved_credentials=*/false, gfx::RectF(100, 20));
   PasswordGenerationUIData new_ui_data = GetTestGenerationUIData2();
   controller()->OnAutomaticGenerationAvailable(active_driver(), new_ui_data,
+                                               /*has_saved_credentials=*/false,
                                                gfx::RectF(100, 20));
 
   autofill::FormSignature form_signature =
@@ -297,7 +300,8 @@ TEST_F(PasswordGenerationControllerTest,
                   ShouldShowAction(true),
                   autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
   controller()->OnAutomaticGenerationAvailable(
-      active_driver(), GetTestGenerationUIData1(), gfx::RectF(100, 20));
+      active_driver(), GetTestGenerationUIData1(),
+      /*has_saved_credentials=*/false, gfx::RectF(100, 20));
 
   EXPECT_CALL(mock_manual_filling_controller_,
               OnAccessoryActionAvailabilityChanged(
@@ -376,7 +380,8 @@ TEST_F(PasswordGenerationControllerTest,
       .Times(AtMost(2));
 
   controller()->OnAutomaticGenerationAvailable(
-      non_active_driver(), GetTestGenerationUIData2(), gfx::RectF(100, 20));
+      non_active_driver(), GetTestGenerationUIData2(),
+      /*has_saved_credentials=*/false, gfx::RectF(100, 20));
 }
 
 TEST_F(PasswordGenerationControllerTest,
@@ -505,7 +510,8 @@ TEST_F(PasswordGenerationControllerTest,
       .Times(0);
   EXPECT_CALL(*ttf_password_generation_bridge_ptr, Show);
   controller()->OnAutomaticGenerationAvailable(
-      active_driver(), GetTestGenerationUIData1(), gfx::RectF(100, 20));
+      active_driver(), GetTestGenerationUIData1(),
+      /*has_saved_credentials=*/false, gfx::RectF(100, 20));
   // Removes the keyboard suppression callback from the render widget host. It
   // needs to be done before the `PasswordGenerationController` destructor is
   // called.
@@ -518,7 +524,8 @@ TEST_F(PasswordGenerationControllerTest,
   feature_list.InitAndEnableFeature(
       password_manager::features::kPasswordGenerationBottomSheet);
   controller()->OnAutomaticGenerationAvailable(
-      active_driver(), GetTestGenerationUIData1(), gfx::RectF(100, 20));
+      active_driver(), GetTestGenerationUIData1(),
+      /*has_saved_credentials=*/false, gfx::RectF(100, 20));
 
   // Keyboard accessory shouldn't be called.
   EXPECT_CALL(mock_manual_filling_controller_,
@@ -527,7 +534,8 @@ TEST_F(PasswordGenerationControllerTest,
       .Times(0);
   EXPECT_CALL(create_ttf_generation_controller_, Run).Times(0);
   controller()->OnAutomaticGenerationAvailable(
-      active_driver(), GetTestGenerationUIData1(), gfx::RectF(100, 20));
+      active_driver(), GetTestGenerationUIData1(),
+      /*has_saved_credentials=*/false, gfx::RectF(100, 20));
   // Removes the keyboard suppression callback from the render widget host. It
   // needs to be done before the `PasswordGenerationController` destructor is
   // called.
@@ -556,7 +564,25 @@ TEST_F(PasswordGenerationControllerTest,
                   ShouldShowAction(true),
                   autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
   controller()->OnAutomaticGenerationAvailable(
-      active_driver(), GetTestGenerationUIData1(), gfx::RectF(100, 20));
+      active_driver(), GetTestGenerationUIData1(),
+      /*has_saved_credentials=*/false, gfx::RectF(100, 20));
+}
+
+TEST_F(PasswordGenerationControllerTest,
+       DoesNotShowGenerationBottomSheetIfSavedPasswordsAvailable) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kPasswordGenerationBottomSheet);
+
+  // Password generation bottom sheet must not show up. Keyboard accessory
+  // should show up instead.
+  EXPECT_CALL(create_ttf_generation_controller_, Run).Times(0);
+  EXPECT_CALL(mock_manual_filling_controller_,
+              OnAccessoryActionAvailabilityChanged(
+                  ShouldShowAction(true),
+                  autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
+  controller()->OnAutomaticGenerationAvailable(
+      active_driver(), GetTestGenerationUIData1(),
+      /*has_saved_credentials=*/true, gfx::RectF(100, 20));
 }
 
 TEST_F(PasswordGenerationControllerTest,
@@ -581,7 +607,8 @@ TEST_F(PasswordGenerationControllerTest,
                   _, autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC))
       .Times(0);
   controller()->OnAutomaticGenerationAvailable(
-      active_driver(), GetTestGenerationUIData1(), gfx::RectF(100, 20));
+      active_driver(), GetTestGenerationUIData1(),
+      /*has_saved_credentials=*/false, gfx::RectF(100, 20));
 
   ttf_password_generation_bridge_ptr->OnDismissed(nullptr);
 
@@ -590,7 +617,8 @@ TEST_F(PasswordGenerationControllerTest,
               OnAccessoryActionAvailabilityChanged(
                   _, autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
   controller()->OnAutomaticGenerationAvailable(
-      active_driver(), GetTestGenerationUIData1(), gfx::RectF(100, 20));
+      active_driver(), GetTestGenerationUIData1(),
+      /*has_saved_credentials=*/false, gfx::RectF(100, 20));
   // Removes the keyboard suppression callback from the render widget host. It
   // needs to be done before the `PasswordGenerationController` destructor is
   // called.

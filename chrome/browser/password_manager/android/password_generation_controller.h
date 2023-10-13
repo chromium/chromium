@@ -71,6 +71,7 @@ class PasswordGenerationController {
       base::WeakPtr<password_manager::ContentPasswordManagerDriver>
           target_frame_driver,
       const autofill::password_generation::PasswordGenerationUIData& ui_data,
+      bool has_saved_credentials,
       gfx::RectF element_bounds_in_screen_space) = 0;
 
   // This is called after the user requested manual generation and the

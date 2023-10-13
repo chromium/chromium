@@ -60,6 +60,7 @@ class PasswordGenerationControllerImpl
       base::WeakPtr<password_manager::ContentPasswordManagerDriver>
           target_frame_driver,
       const autofill::password_generation::PasswordGenerationUIData& ui_data,
+      bool has_saved_credentials,
       gfx::RectF element_bounds_in_screen_space) override;
   void ShowManualGenerationDialog(
       const password_manager::ContentPasswordManagerDriver* target_frame_driver,
@@ -141,7 +142,7 @@ class PasswordGenerationControllerImpl
   // for metrics.
   void ShowDialog(autofill::password_generation::PasswordGenerationType type);
 
-  bool TryToShowGenerationTouchToFill();
+  bool TryToShowGenerationTouchToFill(bool has_saved_credentials);
 
   void OnTouchToFillForGenerationDismissed();
 

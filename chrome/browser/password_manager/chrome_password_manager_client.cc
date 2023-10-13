@@ -1064,8 +1064,13 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
       password_generation_driver_receivers_.GetCurrentTargetFrame(),
       ui_data.bounds);
 
+  auto has_saved_credentials =
+      !credential_cache_.GetCredentialStore(rfh->GetLastCommittedOrigin())
+           .GetCredentials()
+           .empty();
   generation_controller->OnAutomaticGenerationAvailable(
-      base::AsWeakPtr(driver), ui_data, element_bounds_in_screen_space);
+      base::AsWeakPtr(driver), ui_data, has_saved_credentials,
+      element_bounds_in_screen_space);
   // Trigger password suggestions. This is a fallback case if the field was
   // wrongly classified as new password field.
   driver->GetPasswordAutofillManager()->MaybeShowPasswordSuggestions(

@@ -62,6 +62,7 @@ void PasswordGenerationControllerImpl::OnAutomaticGenerationAvailable(
     base::WeakPtr<password_manager::ContentPasswordManagerDriver>
         target_frame_driver,
     const autofill::password_generation::PasswordGenerationUIData& ui_data,
+    bool has_saved_credentials,
     gfx::RectF element_bounds_in_screen_space) {
   // We can't be sure that the active frame driver would be set in the
   // FocusedInputChanged by now, because there is a race condition. The roots
@@ -81,7 +82,7 @@ void PasswordGenerationControllerImpl::OnAutomaticGenerationAvailable(
   if (touch_to_fill_generation_state_ == TouchToFillState::kIsShowing) {
     return;
   }
-  if (TryToShowGenerationTouchToFill()) {
+  if (TryToShowGenerationTouchToFill(has_saved_credentials)) {
     return;
   }
 
@@ -265,10 +266,12 @@ void PasswordGenerationControllerImpl::ShowDialog(PasswordGenerationType type) {
   dialog_view_->Show(password, active_frame_driver_, type);
 }
 
-bool PasswordGenerationControllerImpl::TryToShowGenerationTouchToFill() {
+bool PasswordGenerationControllerImpl::TryToShowGenerationTouchToFill(
+    bool has_saved_credentials) {
   CHECK(touch_to_fill_generation_state_ != TouchToFillState::kIsShowing);
 
-  if (!base::FeatureList::IsEnabled(
+  if (has_saved_credentials ||
+      !base::FeatureList::IsEnabled(
           password_manager::features::kPasswordGenerationBottomSheet) ||
       touch_to_fill_generation_state_ == TouchToFillState::kWasShown) {
     return false;
