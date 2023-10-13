@@ -76,8 +76,13 @@ void PinnedToolbarActionsContainer::PinnedActionToolbarButton::ButtonPressed() {
 
 void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
     ActionItemChanged() {
-  SetTooltipText(action_item_->GetTooltipText());
-  SetAccessibleName(action_item_->GetAccessibleName());
+  auto tooltip_text = action_item_->GetTooltipText().empty()
+                          ? action_item_->GetText()
+                          : action_item_->GetTooltipText();
+  SetTooltipText(tooltip_text);
+  if (!action_item_->GetAccessibleName().empty()) {
+    SetAccessibleName(action_item_->GetAccessibleName());
+  }
   SetImageModel(views::Button::STATE_NORMAL, action_item_->GetImage());
   SetEnabled(action_item_->GetEnabled());
 }
