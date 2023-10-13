@@ -280,6 +280,10 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export type CaptureScreenshotParameters = {
     context: BrowsingContext.BrowsingContext;
+    /**
+     * @defaultValue `"viewport"`
+     */
+    origin?: 'viewport' | 'document';
     format?: BrowsingContext.ImageFormat;
     clip?: BrowsingContext.ClipRectangle;
   };
@@ -313,7 +317,7 @@ export namespace BrowsingContext {
 }
 export namespace BrowsingContext {
   export type BoxClipRectangle = {
-    type: 'viewport';
+    type: 'box';
     x: number;
     y: number;
     width: number;
@@ -515,7 +519,10 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export type SetViewportParameters = {
     context: BrowsingContext.BrowsingContext;
-    viewport: BrowsingContext.Viewport | null;
+    viewport?: BrowsingContext.Viewport | null;
+    /**
+     * Must be greater than `0`.
+     */
     devicePixelRatio?: number | null;
   };
 }

@@ -373,6 +373,7 @@ export namespace BrowsingContext {
   export const CaptureScreenshotParametersSchema = z.lazy(() =>
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
+      origin: z.enum(['viewport', 'document']).default('viewport').optional(),
       format: BrowsingContext.ImageFormatSchema.optional(),
       clip: BrowsingContext.ClipRectangleSchema.optional(),
     })
@@ -414,7 +415,7 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export const BoxClipRectangleSchema = z.lazy(() =>
     z.object({
-      type: z.literal('viewport'),
+      type: z.literal('box'),
       x: z.number(),
       y: z.number(),
       width: z.number(),
@@ -615,7 +616,7 @@ export namespace BrowsingContext {
   export const SetViewportParametersSchema = z.lazy(() =>
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
-      viewport: z.union([BrowsingContext.ViewportSchema, z.null()]),
+      viewport: z.union([BrowsingContext.ViewportSchema, z.null()]).optional(),
       devicePixelRatio: z.union([z.number().gt(0), z.null()]).optional(),
     })
   );
