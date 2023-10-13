@@ -394,9 +394,6 @@ extern const char kBorealisBigGlDescription[];
 extern const char kBorealisDGPUName[];
 extern const char kBorealisDGPUDescription[];
 
-extern const char kBorealisDiskManagementName[];
-extern const char kBorealisDiskManagementDescription[];
-
 extern const char kBorealisForceBetaClientName[];
 extern const char kBorealisForceBetaClientDescription[];
 

@@ -918,11 +918,6 @@
     "expiry_milestone": 132
   },
   {
-    "name": "borealis-disk-management",
-    "owners": [ "danielng@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
-    "expiry_milestone": 132
-  },
-  {
     "name": "borealis-enabled",
     "owners": [ "hollingum@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
     "expiry_milestone": 132

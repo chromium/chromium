@@ -682,10 +682,6 @@ const char kBorealisBigGlDescription[] = "Enable Big GL when running Borealis.";
 const char kBorealisDGPUName[] = "Borealis dGPU";
 const char kBorealisDGPUDescription[] = "Enable dGPU when running Borealis.";
 
-const char kBorealisDiskManagementName[] = "Borealis Disk management";
-const char kBorealisDiskManagementDescription[] =
-    "Enable experimental disk management settings.";
-
 const char kBorealisForceBetaClientName[] = "Borealis Force Beta Client";
 const char kBorealisForceBetaClientDescription[] =
     "Force the client to run its beta version.";

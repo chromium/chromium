@@ -2996,8 +2996,6 @@ constexpr char kGlanceablesV2InternalName[] = "glanceables-v2";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kBorealisBigGlInternalName[] = "borealis-big-gl";
 constexpr char kBorealisDGPUInternalName[] = "borealis-dgpu";
-constexpr char kBorealisDiskManagementInternalName[] =
-    "borealis-disk-management";
 constexpr char kBorealisForceBetaClientInternalName[] =
     "borealis-force-beta-client";
 constexpr char kBorealisForceDoubleScaleInternalName[] =
@@ -9230,10 +9228,6 @@ const FeatureEntry kFeatureEntries[] = {
     {kBorealisDGPUInternalName, flag_descriptions::kBorealisDGPUName,
      flag_descriptions::kBorealisDGPUDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kBorealisDGPU)},
-    {kBorealisDiskManagementInternalName,
-     flag_descriptions::kBorealisDiskManagementName,
-     flag_descriptions::kBorealisDiskManagementDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kBorealisDiskManagement)},
     {kBorealisForceBetaClientInternalName,
      flag_descriptions::kBorealisForceBetaClientName,
      flag_descriptions::kBorealisForceBetaClientDescription, kOsCrOS,
@@ -11210,10 +11204,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 
   if (!strcmp(kBorealisDGPUInternalName, entry.internal_name)) {
-    return !base::FeatureList::IsEnabled(features::kBorealis);
-  }
-
-  if (!strcmp(kBorealisDiskManagementInternalName, entry.internal_name)) {
     return !base::FeatureList::IsEnabled(features::kBorealis);
   }
 

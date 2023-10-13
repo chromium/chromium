@@ -321,11 +321,6 @@ BASE_FEATURE(kBorealisBigGl, "BorealisBigGl", base::FEATURE_ENABLED_BY_DEFAULT);
 // Enable dGPU when using Borealis.
 BASE_FEATURE(kBorealisDGPU, "BorealisDGPU", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable experimental disk management changes for Borealis.
-BASE_FEATURE(kBorealisDiskManagement,
-             "BorealisDiskManagement",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable borealis on this device. This won't necessarily allow it, since you
 // might fail subsequent checks.
 BASE_FEATURE(kBorealisPermitted,
