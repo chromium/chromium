@@ -70,6 +70,10 @@ public class MediaPlayerBridge {
         return mPlayer;
     }
 
+    protected MediaPlayer getLocalPlayerWithoutCreation() {
+        return mPlayer;
+    }
+
     @CalledByNative
     protected void setSurface(Surface surface) {
         getLocalPlayer().setSurface(surface);
@@ -121,7 +125,10 @@ public class MediaPlayerBridge {
     @CalledByNative
     protected void release() {
         cancelLoadDataUriTask();
-        getLocalPlayer().release();
+        MediaPlayer localPlayer = getLocalPlayerWithoutCreation();
+        if (localPlayer != null) {
+            localPlayer.release();
+        }
     }
 
     @CalledByNative
