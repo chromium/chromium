@@ -10,12 +10,13 @@
 // Protocol used to communicate with the Feed Top Section View.
 @protocol FeedTopSectionConsumer
 
-// Indicates if the consumer should hide or show the signin-promo.
-@property(nonatomic, assign) BOOL shouldShowSigninPromo;
-
 // Allows the consumer to use the `configurator` to configure its view.
 - (void)updateSigninPromoWithConfigurator:
     (SigninPromoViewConfigurator*)configurator;
+
+// Methods used to show or hide the Signin Promo.
+- (void)showSigninPromo;
+- (void)hideSigninPromo;
 
 @end
 
