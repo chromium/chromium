@@ -35943,7 +35943,7 @@
             "device_os": "PQ3A.190801.002",
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
-            "device_type": "sailfish",
+            "device_type": "crosshatch",
             "os": "Android"
           },
           "output_links": [
@@ -35988,7 +35988,7 @@
             "device_os": "PQ3A.190801.002",
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
-            "device_type": "sailfish",
+            "device_type": "crosshatch",
             "os": "Android"
           },
           "output_links": [
@@ -36544,7 +36544,7 @@
             "device_os": "PQ3A.190801.002",
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
-            "device_type": "sailfish",
+            "device_type": "crosshatch",
             "os": "Android"
           },
           "output_links": [
