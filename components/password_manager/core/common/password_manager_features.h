@@ -52,10 +52,6 @@ BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerSyncUsingAndroidBackendOnly);
 BASE_DECLARE_FEATURE(kPasswordsInCredMan);
 #endif
-BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
-BASE_DECLARE_FEATURE(kUsernameFirstFlowHonorAutocomplete);
-BASE_DECLARE_FEATURE(kUsernameFirstFlowStoreSeveralValues);
-BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValues);
 
 // All features parameters are in alphabetical order.
 

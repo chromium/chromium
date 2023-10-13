@@ -44,6 +44,11 @@ BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 
 BASE_DECLARE_FEATURE(kUseExtensionListForPSLMatching);
 
+BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
+BASE_DECLARE_FEATURE(kUsernameFirstFlowHonorAutocomplete);
+BASE_DECLARE_FEATURE(kUsernameFirstFlowStoreSeveralValues);
+BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValues);
+
 }  // namespace password_manager::features
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FEATURES_PASSWORD_FEATURES_H_

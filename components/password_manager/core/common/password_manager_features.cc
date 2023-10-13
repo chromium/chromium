@@ -158,33 +158,6 @@ BASE_FEATURE(kPasswordsInCredMan,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Enables support of sending additional votes on username first flow. The votes
-// are sent on single password forms and contain information about preceding
-// single username forms.
-// TODO(crbug.com/959776): Clean up if the main crowdsourcing is good enough and
-// we don't need additional signals.
-BASE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing,
-             "UsernameFirstFlowFallbackCrowdsourcing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables suggesting username in the save/update prompt in the case of
-// autocomplete="username".
-BASE_FEATURE(kUsernameFirstFlowHonorAutocomplete,
-             "UsernameFirstFlowHonorAutocomplete",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables storing more possible username values in the LRU cache. Part of the
-// `kUsernameFirstFlowWithIntermediateValues` feature.
-BASE_FEATURE(kUsernameFirstFlowStoreSeveralValues,
-             "UsernameFirstFlowStoreSeveralValues",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables tolerating intermediate fields like OTP or CAPTCHA
-// between username and password fields in Username First Flow.
-BASE_FEATURE(kUsernameFirstFlowWithIntermediateValues,
-             "UsernameFirstFlowWithIntermediateValues",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 
 // The version of the password migration warning prefs. When the version

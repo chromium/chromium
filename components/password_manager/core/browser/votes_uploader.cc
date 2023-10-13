@@ -25,10 +25,10 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using autofill::AutofillDownloadManager;
