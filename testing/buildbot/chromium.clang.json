@@ -2068,7 +2068,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "15a240d",
+          "15a507",
           "--xctest"
         ],
         "merge": {
@@ -2093,7 +2093,7 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15a240d",
+              "name": "xcode_ios_15a507",
               "path": "Xcode.app"
             },
             {
@@ -2136,7 +2136,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "15a240d",
+          "15a507",
           "--xctest"
         ],
         "merge": {
@@ -2163,7 +2163,7 @@
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_15a240d",
+              "name": "xcode_ios_15a507",
               "path": "Xcode.app"
             }
           ],

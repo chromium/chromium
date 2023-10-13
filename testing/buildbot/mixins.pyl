@@ -1244,12 +1244,12 @@
   'xcode_15_main': {
     'args': [
       '--xcode-build-version',
-      '15a240d',
+      '15a507',
     ],
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_15a240d',
+          'name': 'xcode_ios_15a507',
           'path': 'Xcode.app',
         },
       ],
