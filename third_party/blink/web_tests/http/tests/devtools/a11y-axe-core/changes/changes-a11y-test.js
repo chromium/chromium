@@ -4,6 +4,8 @@
 
 import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
+
+import * as Diff from "devtools/third_party/diff/diff.js";
 import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
