@@ -42,7 +42,6 @@
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -57,6 +56,7 @@
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "components/enterprise/data_controls/component.h"
+#include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/constants.h"
@@ -976,7 +976,8 @@ void DlpFilesControllerAsh::OnDlpWarnDialogReply(
   DCHECK(warned_files.size() == warned_rules_metadata.size());
   for (size_t i = 0; i < warned_files.size(); ++i) {
     if (should_proceed) {
-      DlpHistogramEnumeration(dlp::kFileActionWarnProceededUMA, files_action);
+      data_controls::DlpHistogramEnumeration(
+          data_controls::dlp::kFileActionWarnProceededUMA, files_action);
       MaybeReportEvent(warned_files[i].inode, warned_files[i].crtime,
                        warned_files[i].path, warned_src_patterns[i], dst,
                        dst_pattern, warned_rules_metadata[i], absl::nullopt);

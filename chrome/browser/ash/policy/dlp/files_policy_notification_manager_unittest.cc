@@ -24,13 +24,13 @@
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
+#include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -275,14 +275,15 @@ TEST_F(FilesPolicyNotificationManagerTest, NotificationIdsAreUnique) {
   EXPECT_TRUE(display_service_tester.GetNotification(notification_id_2));
   EXPECT_TRUE(display_service_tester.GetNotification(notification_id_3));
 
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionBlockedUMA)),
+              base::BucketsAre(base::Bucket(dlp::FileAction::kUpload, 2),
+                               base::Bucket(dlp::FileAction::kOpen, 1)));
   EXPECT_THAT(
-      histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
-                                     std::string(dlp::kFileActionBlockedUMA)),
-      base::BucketsAre(base::Bucket(dlp::FileAction::kUpload, 2),
-                       base::Bucket(dlp::FileAction::kOpen, 1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
-                                             dlp::kFilesBlockedCountUMA),
-              testing::ElementsAre(base::Bucket(2, 1), base::Bucket(3, 2)));
+      histogram_tester.GetAllSamples(data_controls::GetDlpHistogramPrefix() +
+                                     data_controls::dlp::kFilesBlockedCountUMA),
+      testing::ElementsAre(base::Bucket(2, 1), base::Bucket(3, 2)));
 }
 
 class FPNMIOTaskTest : public FilesPolicyNotificationManagerTest {
@@ -354,12 +355,13 @@ TEST_F(FPNMIOTaskTest, ShowBlockedNotifications_ShowsWhenHasBlockedFiles) {
   auto notification = display_service_tester.GetNotification(notification_id);
   ASSERT_TRUE(notification.has_value());
 
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                      std::string(dlp::kFileActionBlockedUMA)),
-      base::BucketsAre(base::Bucket(dlp::FileAction::kCopy, 1)));
-  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                              dlp::kFilesBlockedCountUMA),
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionBlockedUMA)),
+              base::BucketsAre(base::Bucket(dlp::FileAction::kCopy, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  data_controls::dlp::kFilesBlockedCountUMA),
               testing::ElementsAre(base::Bucket(2, 1)));
 }
 
@@ -399,12 +401,13 @@ TEST_F(FPNMIOTaskTest, OnErrorItemDismissedClearsInfoForTrackedTask) {
   fpnm_->OnErrorItemDismissed(task_id);
   EXPECT_FALSE(fpnm_->HasIOTask(task_id));
 
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                      std::string(dlp::kFileActionBlockedUMA)),
-      base::BucketsAre(base::Bucket(dlp::FileAction::kCopy, 1)));
-  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                              dlp::kFilesBlockedCountUMA),
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionBlockedUMA)),
+              base::BucketsAre(base::Bucket(dlp::FileAction::kCopy, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  data_controls::dlp::kFilesBlockedCountUMA),
               testing::ElementsAre(base::Bucket(2, 1)));
 }
 
@@ -894,12 +897,13 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsBlockTest,
             expected_dialog_info_map);
 
   if (GetBlockReason() == FilesPolicyDialog::BlockReason::kDlp) {
-    EXPECT_THAT(
-        histogram_tester_.GetAllSamples(
-            GetDlpHistogramPrefix() + std::string(dlp::kFileActionBlockedUMA)),
-        base::BucketsAre(base::Bucket(dlp::FileAction::kCopy, 1)));
-    EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                                dlp::kFilesBlockedCountUMA),
+    EXPECT_THAT(histogram_tester_.GetAllSamples(
+                    data_controls::GetDlpHistogramPrefix() +
+                    std::string(data_controls::dlp::kFileActionBlockedUMA)),
+                base::BucketsAre(base::Bucket(dlp::FileAction::kCopy, 1)));
+    EXPECT_THAT(histogram_tester_.GetAllSamples(
+                    data_controls::GetDlpHistogramPrefix() +
+                    data_controls::dlp::kFilesBlockedCountUMA),
                 testing::ElementsAre(base::Bucket(1, 1)));
   }
 }
@@ -937,12 +941,13 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsBlockTest,
             expected_dialog_info_map);
 
   if (GetBlockReason() == FilesPolicyDialog::BlockReason::kDlp) {
-    EXPECT_THAT(
-        histogram_tester_.GetAllSamples(
-            GetDlpHistogramPrefix() + std::string(dlp::kFileActionBlockedUMA)),
-        base::BucketsAre(base::Bucket(dlp::FileAction::kCopy, 1)));
-    EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                                dlp::kFilesBlockedCountUMA),
+    EXPECT_THAT(histogram_tester_.GetAllSamples(
+                    data_controls::GetDlpHistogramPrefix() +
+                    std::string(data_controls::dlp::kFileActionBlockedUMA)),
+                base::BucketsAre(base::Bucket(dlp::FileAction::kCopy, 1)));
+    EXPECT_THAT(histogram_tester_.GetAllSamples(
+                    data_controls::GetDlpHistogramPrefix() +
+                    data_controls::dlp::kFilesBlockedCountUMA),
                 testing::ElementsAre(base::Bucket(1, 1)));
   }
 }
@@ -1138,11 +1143,13 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Single) {
   if (policy == file_manager::io_task::PolicyErrorType::kDlp) {
     EXPECT_THAT(
         histogram_tester_.GetAllSamples(
-            GetDlpHistogramPrefix() + std::string(dlp::kFileActionBlockedUMA)),
+            data_controls::GetDlpHistogramPrefix() +
+            std::string(data_controls::dlp::kFileActionBlockedUMA)),
         base::BucketsAre(base::Bucket(
             is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove, 1)));
-    EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                                dlp::kFilesBlockedCountUMA),
+    EXPECT_THAT(histogram_tester_.GetAllSamples(
+                    data_controls::GetDlpHistogramPrefix() +
+                    data_controls::dlp::kFilesBlockedCountUMA),
                 testing::ElementsAre(base::Bucket(1, 1)));
   }
 }
@@ -1201,11 +1208,13 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Multi) {
   if (policy == file_manager::io_task::PolicyErrorType::kDlp) {
     EXPECT_THAT(
         histogram_tester_.GetAllSamples(
-            GetDlpHistogramPrefix() + std::string(dlp::kFileActionBlockedUMA)),
+            data_controls::GetDlpHistogramPrefix() +
+            std::string(data_controls::dlp::kFileActionBlockedUMA)),
         base::BucketsAre(base::Bucket(
             is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove, 1)));
-    EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                                dlp::kFilesBlockedCountUMA),
+    EXPECT_THAT(histogram_tester_.GetAllSamples(
+                    data_controls::GetDlpHistogramPrefix() +
+                    data_controls::dlp::kFilesBlockedCountUMA),
                 testing::ElementsAre(base::Bucket(2, 1)));
   }
 }
@@ -1327,12 +1336,13 @@ TEST_P(FPNMShowBlockTest, ShowDlpBlockNotification_Single) {
   EXPECT_EQ(notification->buttons()[1].title,
             l10n_util::GetStringUTF16(IDS_LEARN_MORE));
 
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                      std::string(dlp::kFileActionBlockedUMA)),
-      base::BucketsAre(base::Bucket(action, 1)));
-  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                              dlp::kFilesBlockedCountUMA),
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionBlockedUMA)),
+              base::BucketsAre(base::Bucket(action, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  data_controls::dlp::kFilesBlockedCountUMA),
               testing::ElementsAre(base::Bucket(1, 1)));
 }
 
@@ -1359,12 +1369,13 @@ TEST_P(FPNMShowBlockTest, ShowDlpBlockNotification_Multi) {
   EXPECT_EQ(notification->buttons()[1].title,
             l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_REVIEW_BUTTON));
 
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                      std::string(dlp::kFileActionBlockedUMA)),
-      base::BucketsAre(base::Bucket(action, 1)));
-  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                              dlp::kFilesBlockedCountUMA),
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionBlockedUMA)),
+              base::BucketsAre(base::Bucket(action, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  data_controls::dlp::kFilesBlockedCountUMA),
               testing::ElementsAre(base::Bucket(3, 1)));
 }
 

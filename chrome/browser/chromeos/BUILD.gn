@@ -145,8 +145,6 @@ source_set("chromeos") {
     "policy/dlp/dlp_files_controller.h",
     "policy/dlp/dlp_files_utils.cc",
     "policy/dlp/dlp_files_utils.h",
-    "policy/dlp/dlp_histogram_helper.cc",
-    "policy/dlp/dlp_histogram_helper.h",
     "policy/dlp/dlp_notification_helper.cc",
     "policy/dlp/dlp_notification_helper.h",
     "policy/dlp/dlp_policy_constants.h",

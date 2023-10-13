@@ -24,7 +24,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dialogs/mock_dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -46,6 +45,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/enterprise/data_controls/dlp_policy_event.pb.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/test/shell_surface_builder.h"
@@ -214,14 +214,17 @@ class DlpContentManagerAshBrowserTest : public InProcessBrowserTest {
     ASSERT_GE(blocked_count, 0);
     ASSERT_GE(warned_count, 0);
     histogram_tester_.ExpectBucketCount(
-        GetDlpHistogramPrefix() + blocked_suffix, true, blocked_count);
+        data_controls::GetDlpHistogramPrefix() + blocked_suffix, true,
+        blocked_count);
     histogram_tester_.ExpectBucketCount(
-        GetDlpHistogramPrefix() + blocked_suffix, false,
+        data_controls::GetDlpHistogramPrefix() + blocked_suffix, false,
         total_count - blocked_count);
-    histogram_tester_.ExpectBucketCount(GetDlpHistogramPrefix() + warned_suffix,
-                                        true, warned_count);
-    histogram_tester_.ExpectBucketCount(GetDlpHistogramPrefix() + warned_suffix,
-                                        false, total_count - warned_count);
+    histogram_tester_.ExpectBucketCount(
+        data_controls::GetDlpHistogramPrefix() + warned_suffix, true,
+        warned_count);
+    histogram_tester_.ExpectBucketCount(
+        data_controls::GetDlpHistogramPrefix() + warned_suffix, false,
+        total_count - warned_count);
   }
 
  protected:
@@ -319,10 +322,11 @@ IN_PROC_BROWSER_TEST_P(ScreenshotTest, CheckRestriction) {
   CheckScreenshotRestriction(window, /*expected_allowed=*/true);
   CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
   CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
-  VerifyHistogramCounts(param.blocked_counts[0], param.warned_counts[0],
-                        /*total_count=*/4,
-                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
+  VerifyHistogramCounts(
+      param.blocked_counts[0], param.warned_counts[0],
+      /*total_count=*/4,
+      /*blocked_suffix=*/data_controls::dlp::kScreenshotBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot, param.level,
               param.report_event_counts[0]);
 
@@ -333,10 +337,11 @@ IN_PROC_BROWSER_TEST_P(ScreenshotTest, CheckRestriction) {
   CheckScreenshotRestriction(partial_in,
                              /*expected_allowed=*/param.expect_allowed);
   CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
-  VerifyHistogramCounts(param.blocked_counts[1], param.warned_counts[1],
-                        /*total_count=*/8,
-                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
+  VerifyHistogramCounts(
+      param.blocked_counts[1], param.warned_counts[1],
+      /*total_count=*/8,
+      /*blocked_suffix=*/data_controls::dlp::kScreenshotBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot, param.level,
               param.report_event_counts[1]);
 
@@ -346,10 +351,11 @@ IN_PROC_BROWSER_TEST_P(ScreenshotTest, CheckRestriction) {
   CheckScreenshotRestriction(window, /*expected_allowed=*/param.expect_allowed);
   CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
   CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
-  VerifyHistogramCounts(param.blocked_counts[2], param.warned_counts[2],
-                        /*total_count=*/12,
-                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
+  VerifyHistogramCounts(
+      param.blocked_counts[2], param.warned_counts[2],
+      /*total_count=*/12,
+      /*blocked_suffix=*/data_controls::dlp::kScreenshotBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot, param.level,
               param.report_event_counts[2]);
 
@@ -361,10 +367,11 @@ IN_PROC_BROWSER_TEST_P(ScreenshotTest, CheckRestriction) {
   CheckScreenshotRestriction(partial_in,
                              /*expected_allowed=*/param.expect_allowed);
   CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
-  VerifyHistogramCounts(param.blocked_counts[3], param.warned_counts[3],
-                        /*total_count=*/16,
-                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
+  VerifyHistogramCounts(
+      param.blocked_counts[3], param.warned_counts[3],
+      /*total_count=*/16,
+      /*blocked_suffix=*/data_controls::dlp::kScreenshotBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot, param.level,
               param.report_event_counts[3]);
 
@@ -372,10 +379,11 @@ IN_PROC_BROWSER_TEST_P(ScreenshotTest, CheckRestriction) {
   CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/true);
   CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
   CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
-  VerifyHistogramCounts(param.blocked_counts[3], param.warned_counts[3],
-                        /*total_count=*/19,
-                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
+  VerifyHistogramCounts(
+      param.blocked_counts[3], param.warned_counts[3],
+      /*total_count=*/19,
+      /*blocked_suffix=*/data_controls::dlp::kScreenshotBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot, param.level,
               param.report_event_counts[3]);
 }
@@ -395,9 +403,13 @@ IN_PROC_BROWSER_TEST_F(ScreenshotTest, WarningProceededReportedAfterCapture) {
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kWarn, 1);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotWarnProceededUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenshotWarnProceededUMA,
+      true, 1);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotWarnProceededUMA, false, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenshotWarnProceededUMA,
+      false, 0);
   static_cast<DlpContentManagerAsh*>(helper_->GetContentManager())
       ->OnImageCapture(fullscreen);
   ASSERT_EQ(events_.size(), 2u);
@@ -437,10 +449,11 @@ IN_PROC_BROWSER_TEST_F(ScreenshotTest, CheckRestriction_Blocked_Lacros) {
   CheckScreenshotRestriction(window_area, /*expected_allowed=*/true);
   CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
   CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
-  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/0,
-                        /*total_count=*/4,
-                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
+  VerifyHistogramCounts(
+      /*blocked_count=*/0, /*warned_count=*/0,
+      /*total_count=*/4,
+      /*blocked_suffix=*/data_controls::dlp::kScreenshotBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kBlock, 0u);
 
@@ -451,10 +464,11 @@ IN_PROC_BROWSER_TEST_F(ScreenshotTest, CheckRestriction_Blocked_Lacros) {
   CheckScreenshotRestriction(window_area, false);
   CheckScreenshotRestriction(partial_in, false);
   CheckScreenshotRestriction(partial_out, true);
-  VerifyHistogramCounts(/*blocked_count=*/3, /*warned_count=*/0,
-                        /*total_count=*/8,
-                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
+  VerifyHistogramCounts(
+      /*blocked_count=*/3, /*warned_count=*/0,
+      /*total_count=*/8,
+      /*blocked_suffix=*/data_controls::dlp::kScreenshotBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kBlock, 3u);
 
@@ -464,10 +478,11 @@ IN_PROC_BROWSER_TEST_F(ScreenshotTest, CheckRestriction_Blocked_Lacros) {
   CheckScreenshotRestriction(window_area, /*expected_allowed=*/false);
   CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
   CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
-  VerifyHistogramCounts(/*blocked_count=*/4, /*warned_count=*/0,
-                        /*total_count=*/12,
-                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
+  VerifyHistogramCounts(
+      /*blocked_count=*/4, /*warned_count=*/0,
+      /*total_count=*/12,
+      /*blocked_suffix=*/data_controls::dlp::kScreenshotBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kBlock, 4u);
 
@@ -477,10 +492,11 @@ IN_PROC_BROWSER_TEST_F(ScreenshotTest, CheckRestriction_Blocked_Lacros) {
   CheckScreenshotRestriction(window_area, false);
   CheckScreenshotRestriction(partial_in, false);
   CheckScreenshotRestriction(partial_out, true);
-  VerifyHistogramCounts(/*blocked_count=*/7, /*warned_count=*/0,
-                        /*total_count=*/16,
-                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
+  VerifyHistogramCounts(
+      /*blocked_count=*/7, /*warned_count=*/0,
+      /*total_count=*/16,
+      /*blocked_suffix=*/data_controls::dlp::kScreenshotBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kBlock, 7u);
 
@@ -488,10 +504,11 @@ IN_PROC_BROWSER_TEST_F(ScreenshotTest, CheckRestriction_Blocked_Lacros) {
   CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/true);
   CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
   CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
-  VerifyHistogramCounts(/*blocked_count=*/7, /*warned_count=*/0,
-                        /*total_count=*/19,
-                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
+  VerifyHistogramCounts(
+      /*blocked_count=*/7, /*warned_count=*/0,
+      /*total_count=*/19,
+      /*blocked_suffix=*/data_controls::dlp::kScreenshotBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kBlock, 7u);
 }
@@ -540,7 +557,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   capture_mode_delegate->StopObservingRestrictedContent(base::DoNothing());
   browser2->window()->Close();
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kVideoCaptureInterruptedUMA,
+      true, 1);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kBlock, 1u);
 }
@@ -588,7 +607,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, VideoCaptureReported) {
 
   browser2->window()->Close();
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, true, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kVideoCaptureInterruptedUMA,
+      true, 0);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kReport, 1u);
 }
@@ -637,7 +658,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   capture_mode_delegate->StopObservingRestrictedContent(base::DoNothing());
   browser2->window()->Close();
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kVideoCaptureInterruptedUMA,
+      true, 1);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kBlock, 1u);
 }
@@ -692,7 +715,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
 
   browser2->window()->Close();
   histogram_tester_.ExpectTotalCount(
-      GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kVideoCaptureInterruptedUMA,
+      0);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kBlock, 0u);
 }
@@ -747,7 +772,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   capture_mode_delegate->StopObservingRestrictedContent(
       on_dlp_checked_at_video_end_cb.Get());
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kScreenshotWarnedUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenshotWarnedUMA,
+      true, 1);
   // Check that the warning is now shown.
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
   // Hit Enter to "Save anyway".
@@ -755,12 +782,16 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       browser(), ui::VKEY_RETURN, /*control=*/false,
       /*shift=*/false, /*alt=*/false, /*command=*/false));
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotWarnProceededUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenshotWarnProceededUMA,
+      true, 1);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
 
   browser2->window()->Close();
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, true, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kVideoCaptureInterruptedUMA,
+      true, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
@@ -813,7 +844,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   capture_mode_delegate->StopObservingRestrictedContent(
       on_dlp_checked_at_video_end_cb.Get());
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kScreenshotWarnedUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenshotWarnedUMA,
+      true, 1);
   // Check that the warning is now shown.
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
   // Hit Enter to "Cancel".
@@ -821,12 +854,16 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       browser(), ui::VKEY_ESCAPE, /*control=*/false,
       /*shift=*/false, /*alt=*/false, /*command=*/false));
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotWarnProceededUMA, false, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenshotWarnProceededUMA,
+      false, 1);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
 
   browser2->window()->Close();
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, true, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kVideoCaptureInterruptedUMA,
+      true, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
@@ -1095,9 +1132,13 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   EXPECT_FALSE(display_service_tester.GetNotification(
       kScreenShareResumedNotificationId));
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenSharePausedOrResumedUMA,
+      true, 0);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenSharePausedOrResumedUMA,
+      false, 0);
 
   helper_->ChangeConfidentiality(web_contents, kScreenShareRestricted);
 
@@ -1108,9 +1149,13 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   EXPECT_FALSE(display_service_tester.GetNotification(
       kScreenShareResumedNotificationId));
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenSharePausedOrResumedUMA,
+      true, 1);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenSharePausedOrResumedUMA,
+      false, 0);
 
   helper_->ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
   WaitForScreenShareResume();
@@ -1120,9 +1165,13 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   EXPECT_TRUE(display_service_tester.GetNotification(
       kScreenShareResumedNotificationId));
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenSharePausedOrResumedUMA,
+      true, 1);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenSharePausedOrResumedUMA,
+      false, 1);
 
   StopScreenShare(media_id);
 
@@ -1131,9 +1180,13 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   EXPECT_FALSE(display_service_tester.GetNotification(
       kScreenShareResumedNotificationId));
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenSharePausedOrResumedUMA,
+      true, 1);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenSharePausedOrResumedUMA,
+      false, 1);
   CheckEvents(DlpRulesManager::Restriction::kScreenShare,
               DlpRulesManager::Level::kBlock, 1u);
 }
@@ -1170,9 +1223,13 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   EXPECT_FALSE(display_service_tester.GetNotification(
       kScreenShareResumedNotificationId));
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenSharePausedOrResumedUMA,
+      true, 1);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenSharePausedOrResumedUMA,
+      false, 0);
 
   // Open new tab and navigate to a url.
   chrome::NewTab(browser());
@@ -1200,9 +1257,13 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   EXPECT_TRUE(display_service_tester.GetNotification(
       kScreenShareResumedNotificationId));
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenSharePausedOrResumedUMA,
+      true, 1);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenSharePausedOrResumedUMA,
+      false, 1);
   CheckEvents(DlpRulesManager::Restriction::kScreenShare,
               DlpRulesManager::Level::kBlock, 1u);
 }
@@ -1276,10 +1337,10 @@ IN_PROC_BROWSER_TEST_P(CheckAndStartScreenShareTest, FullScreenShare) {
           .has_value(),
       param.blocked_count > 0);
 
-  VerifyHistogramCounts(param.blocked_count, param.warned_count,
-                        param.total_count,
-                        /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
+  VerifyHistogramCounts(
+      param.blocked_count, param.warned_count, param.total_count,
+      /*blocked_suffix=*/data_controls::dlp::kScreenShareBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenShareWarnedUMA);
 
   ASSERT_EQ(events_.size(), param.report_event_count);
   EXPECT_THAT(events_[0],
@@ -1293,9 +1354,13 @@ IN_PROC_BROWSER_TEST_P(CheckAndStartScreenShareTest, FullScreenShare) {
                     kSrcPattern, DlpRulesManager::Restriction::kScreenShare,
                     kRuleName, kRuleId)));
     histogram_tester_.ExpectBucketCount(
-        GetDlpHistogramPrefix() + dlp::kScreenShareWarnProceededUMA, true, 1);
+        data_controls::GetDlpHistogramPrefix() +
+            data_controls::dlp::kScreenShareWarnProceededUMA,
+        true, 1);
     histogram_tester_.ExpectBucketCount(
-        GetDlpHistogramPrefix() + dlp::kScreenShareWarnProceededUMA, false, 0);
+        data_controls::GetDlpHistogramPrefix() +
+            data_controls::dlp::kScreenShareWarnProceededUMA,
+        false, 0);
   }
 
   helper_->ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
@@ -1319,10 +1384,10 @@ IN_PROC_BROWSER_TEST_P(CheckAndStartScreenShareTest, TabShare) {
           .has_value(),
       param.blocked_count > 0);
 
-  VerifyHistogramCounts(param.blocked_count, param.warned_count,
-                        param.total_count,
-                        /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
+  VerifyHistogramCounts(
+      param.blocked_count, param.warned_count, param.total_count,
+      /*blocked_suffix=*/data_controls::dlp::kScreenShareBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenShareWarnedUMA);
 
   ASSERT_EQ(events_.size(), param.report_event_count);
   EXPECT_THAT(events_[0],
@@ -1336,9 +1401,13 @@ IN_PROC_BROWSER_TEST_P(CheckAndStartScreenShareTest, TabShare) {
                     kSrcPattern, DlpRulesManager::Restriction::kScreenShare,
                     kRuleName, kRuleId)));
     histogram_tester_.ExpectBucketCount(
-        GetDlpHistogramPrefix() + dlp::kScreenShareWarnProceededUMA, true, 1);
+        data_controls::GetDlpHistogramPrefix() +
+            data_controls::dlp::kScreenShareWarnProceededUMA,
+        true, 1);
     histogram_tester_.ExpectBucketCount(
-        GetDlpHistogramPrefix() + dlp::kScreenShareWarnProceededUMA, false, 0);
+        data_controls::GetDlpHistogramPrefix() +
+            data_controls::dlp::kScreenShareWarnProceededUMA,
+        false, 0);
   }
 
   helper_->ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
@@ -1356,11 +1425,12 @@ IN_PROC_BROWSER_TEST_P(CheckRunningScreenShareTest, FullScreenShare) {
                             /*expect_warning=*/false);
   // Nothing is emitted yet since there's no restrictions on web_contents.
   ASSERT_EQ(events_.size(), 0u);
-  VerifyHistogramCounts(/*blocked_count=*/0,
-                        /*warned_count=*/0,
-                        /*total_count=*/1,
-                        /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
+  VerifyHistogramCounts(
+      /*blocked_count=*/0,
+      /*warned_count=*/0,
+      /*total_count=*/1,
+      /*blocked_suffix=*/data_controls::dlp::kScreenShareBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenShareWarnedUMA);
 
   testing::InSequence s;
   EXPECT_CALL(state_change_cb_,
@@ -1372,10 +1442,10 @@ IN_PROC_BROWSER_TEST_P(CheckRunningScreenShareTest, FullScreenShare) {
   EXPECT_CALL(stop_cb_, Run).Times(param.stopped_count);
 
   helper_->ChangeConfidentiality(web_contents, param.restriction_set);
-  VerifyHistogramCounts(param.blocked_count, param.warned_count,
-                        param.total_count,
-                        /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
+  VerifyHistogramCounts(
+      param.blocked_count, param.warned_count, param.total_count,
+      /*blocked_suffix=*/data_controls::dlp::kScreenShareBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenShareWarnedUMA);
 
   if (param.warned_count > 0)
     DismissDialog(param.expect_allowed);
@@ -1392,19 +1462,23 @@ IN_PROC_BROWSER_TEST_P(CheckRunningScreenShareTest, FullScreenShare) {
                     kSrcPattern, DlpRulesManager::Restriction::kScreenShare,
                     kRuleName, kRuleId)));
     histogram_tester_.ExpectBucketCount(
-        GetDlpHistogramPrefix() + dlp::kScreenShareWarnProceededUMA, true, 1);
+        data_controls::GetDlpHistogramPrefix() +
+            data_controls::dlp::kScreenShareWarnProceededUMA,
+        true, 1);
     histogram_tester_.ExpectBucketCount(
-        GetDlpHistogramPrefix() + dlp::kScreenShareWarnProceededUMA, false, 0);
+        data_controls::GetDlpHistogramPrefix() +
+            data_controls::dlp::kScreenShareWarnProceededUMA,
+        false, 0);
   }
 
   // Confirm calls to CheckRunningScreenShares() is ignored if there are no
   // changes in confidentiality: there shouldn't be any new UMA or report
   // events.
   helper_->CheckRunningScreenShares();
-  VerifyHistogramCounts(param.blocked_count, param.warned_count,
-                        param.total_count,
-                        /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
+  VerifyHistogramCounts(
+      param.blocked_count, param.warned_count, param.total_count,
+      /*blocked_suffix=*/data_controls::dlp::kScreenShareBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenShareWarnedUMA);
 
   helper_->ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
   WaitForScreenShareResume();
@@ -1422,11 +1496,12 @@ IN_PROC_BROWSER_TEST_P(CheckRunningScreenShareTest, TabShare) {
                      /*expect_warning=*/false);
   // Nothing is emitted yet since there's no restrictions on web_contents.
   ASSERT_EQ(events_.size(), 0u);
-  VerifyHistogramCounts(/*blocked_count=*/0,
-                        /*warned_count=*/0,
-                        /*total_count=*/1,
-                        /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
+  VerifyHistogramCounts(
+      /*blocked_count=*/0,
+      /*warned_count=*/0,
+      /*total_count=*/1,
+      /*blocked_suffix=*/data_controls::dlp::kScreenShareBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenShareWarnedUMA);
 
   testing::InSequence s;
   EXPECT_CALL(state_change_cb_,
@@ -1438,10 +1513,10 @@ IN_PROC_BROWSER_TEST_P(CheckRunningScreenShareTest, TabShare) {
   EXPECT_CALL(source_cb_, Run).Times(param.resumed_count);
 
   helper_->ChangeConfidentiality(web_contents, param.restriction_set);
-  VerifyHistogramCounts(param.blocked_count, param.warned_count,
-                        param.total_count,
-                        /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
+  VerifyHistogramCounts(
+      param.blocked_count, param.warned_count, param.total_count,
+      /*blocked_suffix=*/data_controls::dlp::kScreenShareBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenShareWarnedUMA);
 
   if (param.warned_count > 0)
     DismissDialog(param.expect_allowed);
@@ -1458,19 +1533,23 @@ IN_PROC_BROWSER_TEST_P(CheckRunningScreenShareTest, TabShare) {
                     kSrcPattern, DlpRulesManager::Restriction::kScreenShare,
                     kRuleName, kRuleId)));
     histogram_tester_.ExpectBucketCount(
-        GetDlpHistogramPrefix() + dlp::kScreenShareWarnProceededUMA, true, 1);
+        data_controls::GetDlpHistogramPrefix() +
+            data_controls::dlp::kScreenShareWarnProceededUMA,
+        true, 1);
     histogram_tester_.ExpectBucketCount(
-        GetDlpHistogramPrefix() + dlp::kScreenShareWarnProceededUMA, false, 0);
+        data_controls::GetDlpHistogramPrefix() +
+            data_controls::dlp::kScreenShareWarnProceededUMA,
+        false, 0);
   }
 
   // Confirm calls to CheckRunningScreenShares() is ignored if there are no
   // changes in confidentiality: there shouldn't be any new UMA or report
   // events.
   helper_->CheckRunningScreenShares();
-  VerifyHistogramCounts(param.blocked_count, param.warned_count,
-                        param.total_count,
-                        /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
+  VerifyHistogramCounts(
+      param.blocked_count, param.warned_count, param.total_count,
+      /*blocked_suffix=*/data_controls::dlp::kScreenShareBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenShareWarnedUMA);
 
   helper_->ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
   WaitForScreenShareResume();
@@ -1489,11 +1568,12 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
                             /*expect_warning=*/false);
   // Nothing is emitted yet since there's no restrictions on web_contents.
   ASSERT_EQ(events_.size(), 0u);
-  VerifyHistogramCounts(/*blocked_count=*/0,
-                        /*warned_count=*/0,
-                        /*total_count=*/1,
-                        /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
+  VerifyHistogramCounts(
+      /*blocked_count=*/0,
+      /*warned_count=*/0,
+      /*total_count=*/1,
+      /*blocked_suffix=*/data_controls::dlp::kScreenShareBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenShareWarnedUMA);
 
   testing::InSequence s;
   EXPECT_CALL(state_change_cb_,
@@ -1505,11 +1585,12 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   EXPECT_CALL(stop_cb_, Run).Times(0);
 
   helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
-  VerifyHistogramCounts(/*blocked_count=*/0,
-                        /*warned_count=*/1,
-                        /*total_count=*/2,
-                        /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
+  VerifyHistogramCounts(
+      /*blocked_count=*/0,
+      /*warned_count=*/1,
+      /*total_count=*/2,
+      /*blocked_suffix=*/data_controls::dlp::kScreenShareBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenShareWarnedUMA);
   DismissDialog(/*allow=*/true);
 
   EXPECT_CALL(state_change_cb_,
@@ -1522,23 +1603,29 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   EXPECT_TRUE(
       display_service_tester.GetNotification(kScreenSharePausedNotificationId)
           .has_value());
-  VerifyHistogramCounts(/*blocked_count=*/1,
-                        /*warned_count=*/1,
-                        /*total_count=*/3,
-                        /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
+  VerifyHistogramCounts(
+      /*blocked_count=*/1,
+      /*warned_count=*/1,
+      /*total_count=*/3,
+      /*blocked_suffix=*/data_controls::dlp::kScreenShareBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenShareWarnedUMA);
 
   helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
-  VerifyHistogramCounts(/*blocked_count=*/1,
-                        /*warned_count=*/2,
-                        /*total_count=*/4,
-                        /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
+  VerifyHistogramCounts(
+      /*blocked_count=*/1,
+      /*warned_count=*/2,
+      /*total_count=*/4,
+      /*blocked_suffix=*/data_controls::dlp::kScreenShareBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenShareWarnedUMA);
 
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenShareWarnProceededUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenShareWarnProceededUMA,
+      true, 1);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenShareWarnProceededUMA, false, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenShareWarnProceededUMA,
+      false, 0);
 
   helper_->ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
 }
@@ -1650,7 +1737,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   // Cleanup and check reporting.
   browser2->window()->Close();
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenSharePausedOrResumedUMA,
+      true, 1);
   CheckEvents(DlpRulesManager::Restriction::kScreenShare,
               DlpRulesManager::Level::kBlock, 1u);
 }
@@ -1669,16 +1758,20 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
       web_contents, /*expect_allowed=*/true, /*expect_warning=*/true);
   ASSERT_EQ(helper_->ActiveWarningDialogsCount(), 0);
   EXPECT_EQ(events_.size(), 2u);
-  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/2,
-                        /*total_count=*/2,
-                        /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
+  VerifyHistogramCounts(
+      /*blocked_count=*/0, /*warned_count=*/2,
+      /*total_count=*/2,
+      /*blocked_suffix=*/data_controls::dlp::kScreenShareBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenShareWarnedUMA);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenShareWarnProceededUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenShareWarnProceededUMA,
+      true, 1);
 
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenShareWarnSilentProceededUMA, true,
-      1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenShareWarnSilentProceededUMA,
+      true, 1);
 
   // Since contents allowed by the user are cached, further checks do not
   // trigger a new warning. We have to switch the level as calls to
@@ -1687,19 +1780,21 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
   EXPECT_EQ(events_.size(), 2u);
-  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/3,
-                        /*total_count=*/4,
-                        /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
+  VerifyHistogramCounts(
+      /*blocked_count=*/0, /*warned_count=*/3,
+      /*total_count=*/4,
+      /*blocked_suffix=*/data_controls::dlp::kScreenShareBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenShareWarnedUMA);
 
   StopScreenShare(media_id);
   // Caching should persist over multiple screen shares.
   MaybeStartFullScreenShare(web_contents, /*expect_allowed=*/true,
                             /*expect_warning=*/false);
-  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/5,
-                        /*total_count=*/6,
-                        /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
+  VerifyHistogramCounts(
+      /*blocked_count=*/0, /*warned_count=*/5,
+      /*total_count=*/6,
+      /*blocked_suffix=*/data_controls::dlp::kScreenShareBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenShareWarnedUMA);
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
@@ -1758,10 +1853,11 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
               DlpRulesManager::Level::kReport, 1u);
   EXPECT_FALSE(display_service_tester.GetNotification(
       kScreenShareBlockedNotificationId));
-  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/0,
-                        /*total_count=*/2,
-                        /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
-                        /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
+  VerifyHistogramCounts(
+      /*blocked_count=*/0, /*warned_count=*/0,
+      /*total_count=*/2,
+      /*blocked_suffix=*/data_controls::dlp::kScreenShareBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenShareWarnedUMA);
 
   // Open new tab and navigate to a url.
   // Then move back to the screen-shared tab.
@@ -1889,9 +1985,13 @@ IN_PROC_BROWSER_TEST_P(ScreenShareNavigateWebContentsTest, Reporting) {
   EXPECT_FALSE(
       display_service_tester.GetNotification(kScreenSharePausedNotificationId));
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenShareBlockedUMA, true, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenShareBlockedUMA,
+      true, 0);
   EXPECT_GT(histogram_tester_.GetBucketCount(
-                GetDlpHistogramPrefix() + dlp::kScreenShareBlockedUMA, false),
+                data_controls::GetDlpHistogramPrefix() +
+                    data_controls::dlp::kScreenShareBlockedUMA,
+                false),
             0);
 
   // Navigate to restricted content. Should emit a corresponding event.
@@ -1912,7 +2012,7 @@ IN_PROC_BROWSER_TEST_P(ScreenShareNavigateWebContentsTest, Reporting) {
         kScreenSharePausedNotificationId));
   }
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + param.histogram_suffix, true, 1);
+      data_controls::GetDlpHistogramPrefix() + param.histogram_suffix, true, 1);
 
   // Remember current number of reporting events: further navigation should not
   // emit any new events.
@@ -1929,7 +2029,7 @@ IN_PROC_BROWSER_TEST_P(ScreenShareNavigateWebContentsTest, Reporting) {
   EXPECT_TRUE(display_service_tester.GetNotification(
       kScreenShareResumedNotificationId));
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + param.histogram_suffix, true, 1);
+      data_controls::GetDlpHistogramPrefix() + param.histogram_suffix, true, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2075,11 +2175,11 @@ INSTANTIATE_TEST_SUITE_P(
         {ScreenshareNavigateTestParams(
              /*test_name=*/"Restricted",
              /*level=*/DlpRulesManager::Level::kBlock,
-             /*histogram_suffix=*/dlp::kScreenShareBlockedUMA),
+             /*histogram_suffix=*/data_controls::dlp::kScreenShareBlockedUMA),
          ScreenshareNavigateTestParams(
              /*test_name=*/"Warned",
              /*level=*/DlpRulesManager::Level::kWarn,
-             /*histogram_suffix=*/dlp::kScreenShareWarnedUMA)}),
+             /*histogram_suffix=*/data_controls::dlp::kScreenShareWarnedUMA)}),
     [](const testing::TestParamInfo<ScreenshareNavigateTestParams>& info) {
       return info.param.test_name;
     });

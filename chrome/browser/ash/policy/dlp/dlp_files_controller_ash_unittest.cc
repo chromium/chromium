@@ -43,7 +43,6 @@
 #include "chrome/browser/ash/policy/dlp/test/files_policy_notification_manager_test_utils.h"
 #include "chrome/browser/ash/policy/dlp/test/mock_files_policy_notification_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
 #include "chrome/common/chrome_features.h"
@@ -51,6 +50,7 @@
 #include "chromeos/ui/base/file_icon_util.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/enterprise/data_controls/component.h"
+#include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/enterprise/data_controls/dlp_policy_event.pb.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/reporting/util/test_util.h"
@@ -1768,8 +1768,8 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
-          GetDlpHistogramPrefix() +
-          std::string(dlp::kFileActionWarnProceededUMA)),
+          data_controls::GetDlpHistogramPrefix() +
+          std::string(data_controls::dlp::kFileActionWarnProceededUMA)),
       base::BucketsAre(base::Bucket(dlp::FileAction::kDownload, choice_result),
                        base::Bucket(dlp::FileAction::kTransfer, 0)));
 

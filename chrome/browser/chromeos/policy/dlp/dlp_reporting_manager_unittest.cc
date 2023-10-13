@@ -10,10 +10,10 @@
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_reporting_manager_test_helper.h"
 #include "components/account_id/account_id.h"
+#include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/enterprise/data_controls/dlp_policy_event.pb.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/util/status.h"
@@ -201,16 +201,20 @@ TEST_F(DlpReportingManagerTest, MetricsReported) {
   EXPECT_EQ(manager_.events_reported(), 3u);
   EXPECT_EQ(events_.size(), 3u);
   histogram_tester.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kReportedEventStatus,
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kReportedEventStatus,
       reporting::error::Code::OK, 3);
   histogram_tester.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kReportedBlockLevelRestriction,
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kReportedBlockLevelRestriction,
       DlpRulesManager::Restriction::kPrinting, 1);
   histogram_tester.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kReportedReportLevelRestriction,
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kReportedReportLevelRestriction,
       DlpRulesManager::Restriction::kScreenshot, 1);
   histogram_tester.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kReportedWarnLevelRestriction,
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kReportedWarnLevelRestriction,
       DlpRulesManager::Restriction::kUnknownRestriction, 1);
 }
 
@@ -375,7 +379,8 @@ TEST_F(DlpReportingManagerTest, OnEventEnqueuedError) {
   EXPECT_EQ(manager_.events_reported(), 1u);
   EXPECT_EQ(events_.size(), 0u);
   histogram_tester.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kReportedEventStatus,
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kReportedEventStatus,
       reporting::error::UNKNOWN, 1);
 }
 

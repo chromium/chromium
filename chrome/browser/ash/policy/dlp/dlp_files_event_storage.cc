@@ -9,8 +9,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "components/enterprise/data_controls/dlp_histogram_helper.h"
 
 namespace policy {
 
@@ -60,8 +60,9 @@ bool DlpFilesEventStorage::StoreEventAndCheckIfItShouldBeReported(
   const auto time_diff = now - dst_it->second.timestamp;
 
   // Record the time difference between two identical file events.
-  base::UmaHistogramTimes(
-      GetDlpHistogramPrefix() + dlp::kSameFileEventTimeDiffUMA, time_diff);
+  base::UmaHistogramTimes(data_controls::GetDlpHistogramPrefix() +
+                              data_controls::dlp::kSameFileEventTimeDiffUMA,
+                          time_diff);
 
   // Report only if enough time has passed.
   return time_diff > cooldown_delta_;
@@ -89,8 +90,8 @@ void DlpFilesEventStorage::AddDestinationToFile(
   const auto [it, _] = file_it->second.emplace(dst, timestamp);
   StartEvictionTimer(file_id, dst, it->second);
   entries_num_++;
-  DlpCountHistogram(dlp::kActiveFileEventsCount, entries_num_,
-                    entries_num_limit_);
+  data_controls::DlpCountHistogram(data_controls::dlp::kActiveFileEventsCount,
+                                   entries_num_, entries_num_limit_);
 }
 
 void DlpFilesEventStorage::InsertNewFileAndDestinationPair(
@@ -102,8 +103,8 @@ void DlpFilesEventStorage::InsertNewFileAndDestinationPair(
   const auto [dst_it, __] = file_it->second.emplace(dst, timestamp);
   StartEvictionTimer(file_id, dst, dst_it->second);
   entries_num_++;
-  DlpCountHistogram(dlp::kActiveFileEventsCount, entries_num_,
-                    entries_num_limit_);
+  data_controls::DlpCountHistogram(data_controls::dlp::kActiveFileEventsCount,
+                                   entries_num_, entries_num_limit_);
 }
 
 void DlpFilesEventStorage::UpdateFileAndDestinationPair(
@@ -112,8 +113,8 @@ void DlpFilesEventStorage::UpdateFileAndDestinationPair(
   dst_it->second.timestamp = timestamp;
   DCHECK(dst_it->second.eviction_timer.IsRunning());
   dst_it->second.eviction_timer.Reset();
-  DlpCountHistogram(dlp::kActiveFileEventsCount, entries_num_,
-                    entries_num_limit_);
+  data_controls::DlpCountHistogram(data_controls::dlp::kActiveFileEventsCount,
+                                   entries_num_, entries_num_limit_);
 }
 
 void DlpFilesEventStorage::StartEvictionTimer(FileId file_id,

@@ -11123,6 +11123,10 @@ if (!is_android && !is_chromeos_device) {
     if (safe_browsing_mode == 1) {
       sources += [ "../browser/safe_browsing/safe_browsing_navigation_observer_interactive_test.cc" ]
     }
+
+    if (enterprise_data_controls) {
+      deps += [ "//components/enterprise/data_controls" ]
+    }
   }
 }
 

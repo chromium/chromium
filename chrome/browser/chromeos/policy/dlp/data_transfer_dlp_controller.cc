@@ -13,10 +13,10 @@
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
@@ -207,7 +207,8 @@ void MaybeReportWarningProceededEventAndPaste(
 // static
 void DataTransferDlpController::Init(const DlpRulesManager& dlp_rules_manager) {
   if (!HasInstance()) {
-    DlpBooleanHistogram(dlp::kDataTransferControllerStartedUMA, true);
+    data_controls::DlpBooleanHistogram(
+        data_controls::dlp::kDataTransferControllerStartedUMA, true);
     new DataTransferDlpController(dlp_rules_manager);
   }
 }
@@ -275,7 +276,8 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
     default:
       break;
   }
-  DlpBooleanHistogram(dlp::kClipboardReadBlockedUMA, !is_read_allowed);
+  data_controls::DlpBooleanHistogram(
+      data_controls::dlp::kClipboardReadBlockedUMA, !is_read_allowed);
   return is_read_allowed;
 }
 
@@ -498,7 +500,8 @@ bool DataTransferDlpController::ShouldSkipReporting(
   if (is_same_src && is_same_dst && is_same_mode) {
     base::TimeDelta time_diff = curr_time - last_reported_.time;
     base::UmaHistogramTimes(
-        GetDlpHistogramPrefix() + dlp::kDataTransferReportingTimeDiffUMA,
+        data_controls::GetDlpHistogramPrefix() +
+            data_controls::dlp::kDataTransferReportingTimeDiffUMA,
         time_diff);
 
     return time_diff < GetSkipReportingTimeout();
@@ -627,7 +630,8 @@ void DataTransferDlpController::ContinueDropIfAllowed(
 
   const bool is_drop_allowed = (level == DlpRulesManager::Level::kAllow) ||
                                (level == DlpRulesManager::Level::kReport);
-  DlpBooleanHistogram(dlp::kDragDropBlockedUMA, !is_drop_allowed);
+  data_controls::DlpBooleanHistogram(data_controls::dlp::kDragDropBlockedUMA,
+                                     !is_drop_allowed);
 }
 
 DataTransferDlpController::LastReportedEndpoints::LastReportedEndpoints() =

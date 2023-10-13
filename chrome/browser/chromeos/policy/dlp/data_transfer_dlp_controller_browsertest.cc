@@ -15,7 +15,6 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -28,6 +27,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/enterprise/data_controls/dlp_policy_event.pb.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
@@ -825,10 +825,10 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DataTransferDlpBlinkBrowserTest, Reporting) {
   // 0. The histogram sum may not have any samples when the time difference is
   // very small (almost 0), because UmaHistogramTimes requires the time
   // difference to be >= 1.
-  EXPECT_GE(
-      histogram_tester.GetTotalSum(GetDlpHistogramPrefix() +
-                                   dlp::kDataTransferReportingTimeDiffUMA),
-      0);
+  EXPECT_GE(histogram_tester.GetTotalSum(
+                data_controls::GetDlpHistogramPrefix() +
+                data_controls::dlp::kDataTransferReportingTimeDiffUMA),
+            0);
 }
 
 }  // namespace policy

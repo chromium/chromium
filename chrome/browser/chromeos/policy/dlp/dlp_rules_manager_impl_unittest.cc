@@ -17,7 +17,6 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_rules_manager_test_utils.h"
@@ -26,6 +25,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
+#include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
@@ -199,7 +199,9 @@ TEST_F(DlpRulesManagerImplTest, EmptyPref) {
       DlpRulesManager::RuleMetadata(/*name=*/"", /*obfuscated_id=*/""));
 
   histogram_tester_->ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kDlpPolicyPresentUMA, false, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kDlpPolicyPresentUMA,
+      false, 1);
 }
 
 TEST_F(DlpRulesManagerImplTest, UnknownRestriction) {
@@ -282,7 +284,9 @@ TEST_F(DlpRulesManagerImplTest, BlockPriority) {
       DlpRulesManager::RuleMetadata(kRuleName1, kRuleId1));
 
   histogram_tester_->ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kDlpPolicyPresentUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kDlpPolicyPresentUMA,
+      true, 1);
   histogram_tester_->ExpectBucketCount("Enterprise.Dlp.RestrictionConfigured",
                                        DlpRulesManager::Restriction::kClipboard,
                                        2);

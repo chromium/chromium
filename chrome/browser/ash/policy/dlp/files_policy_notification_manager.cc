@@ -29,7 +29,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,6 +36,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_features.h"
+#include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -286,8 +286,10 @@ void FilesPolicyNotificationManager::ShowDlpBlockedFiles(
     absl::optional<file_manager::io_task::IOTaskId> task_id,
     std::vector<base::FilePath> blocked_files,
     dlp::FileAction action) {
-  DlpHistogramEnumeration(dlp::kFileActionBlockedUMA, action);
-  DlpCountHistogram10000(dlp::kFilesBlockedCountUMA, blocked_files.size());
+  data_controls::DlpHistogramEnumeration(
+      data_controls::dlp::kFileActionBlockedUMA, action);
+  data_controls::DlpCountHistogram10000(
+      data_controls::dlp::kFilesBlockedCountUMA, blocked_files.size());
 
   // If `task_id` has value, the corresponding IOTask should be updated
   // accordingly.
@@ -330,8 +332,10 @@ void FilesPolicyNotificationManager::ShowDlpWarning(
     std::vector<base::FilePath> warning_files,
     const DlpFileDestination& destination,
     dlp::FileAction action) {
-  DlpHistogramEnumeration(dlp::kFileActionWarnedUMA, action);
-  DlpCountHistogram10000(dlp::kFilesWarnedCountUMA, warning_files.size());
+  data_controls::DlpHistogramEnumeration(
+      data_controls::dlp::kFileActionWarnedUMA, action);
+  data_controls::DlpCountHistogram10000(
+      data_controls::dlp::kFilesWarnedCountUMA, warning_files.size());
 
   // If `task_id` has value, the corresponding IOTask should be paused.
   if (task_id.has_value()) {
@@ -951,7 +955,8 @@ void FilesPolicyNotificationManager::OnBrowserAdded(Browser* browser) {
   }
 
   // Files app successfully opened.
-  DlpBooleanHistogram(dlp::kFilesAppOpenTimedOutUMA, /*value=*/false);
+  data_controls::DlpBooleanHistogram(
+      data_controls::dlp::kFilesAppOpenTimedOutUMA, /*value=*/false);
   ShowPendingDialog(browser->window()->GetNativeWindow());
 }
 
@@ -1302,7 +1307,8 @@ void FilesPolicyNotificationManager::OnIOTaskAppLaunchTimedOut(
   }
   DCHECK(pending_dialogs_.front()->task_id == task_id);
   // Stop waiting for the Files App and fallback to system modal.
-  DlpBooleanHistogram(dlp::kFilesAppOpenTimedOutUMA, /*value=*/true);
+  data_controls::DlpBooleanHistogram(
+      data_controls::dlp::kFilesAppOpenTimedOutUMA, /*value=*/true);
   ShowPendingDialog(/*modal_parent=*/nullptr);
 }
 
@@ -1315,7 +1321,8 @@ void FilesPolicyNotificationManager::OnNonIOTaskAppLaunchTimedOut(
   }
   DCHECK(pending_dialogs_.front()->notification_id == notification_id);
   // Stop waiting for the Files App and fallback to system modal.
-  DlpBooleanHistogram(dlp::kFilesAppOpenTimedOutUMA, /*value=*/true);
+  data_controls::DlpBooleanHistogram(
+      data_controls::dlp::kFilesAppOpenTimedOutUMA, /*value=*/true);
   ShowPendingDialog(/*modal_parent=*/nullptr);
 }
 
@@ -1345,8 +1352,9 @@ void FilesPolicyNotificationManager::OnIOTaskWarningTimedOut(
   // Close the warning dialog if there's any.
   io_tasks_.at(task_id).CloseWidget();
 
-  DlpHistogramEnumeration(dlp::kFileActionWarnTimedOutUMA,
-                          io_tasks_.at(task_id).action());
+  data_controls::DlpHistogramEnumeration(
+      data_controls::dlp::kFileActionWarnTimedOutUMA,
+      io_tasks_.at(task_id).action());
 
   // Abort the IOtask. No need to run the warning callback here as it will be
   // called in OnIOTaskStatus when there's an update sent that the task
@@ -1370,8 +1378,9 @@ void FilesPolicyNotificationManager::OnNonIOTaskWarningTimedOut(
   // Close the warning dialog if there's any.
   non_io_tasks_.at(notification_id).CloseWidget();
 
-  DlpHistogramEnumeration(dlp::kFileActionWarnTimedOutUMA,
-                          non_io_tasks_.at(notification_id).action());
+  data_controls::DlpHistogramEnumeration(
+      data_controls::dlp::kFileActionWarnTimedOutUMA,
+      non_io_tasks_.at(notification_id).action());
 
   // Run the warning callback with false.
   std::move(

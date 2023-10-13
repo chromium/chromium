@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
+#include "components/enterprise/data_controls/dlp_histogram_helper.h"
 
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 
-namespace policy {
+namespace data_controls {
 
 std::string GetDlpHistogramPrefix() {
   return "Enterprise.Dlp.";
@@ -24,7 +23,7 @@ void DlpCountHistogram(const std::string& suffix, int sample, int max) {
                                 max + 1);
 }
 
-void DlpRestrictionConfiguredHistogram(DlpRulesManager::Restriction value) {
+void DlpRestrictionConfiguredHistogram(Rule::Restriction value) {
   base::UmaHistogramEnumeration(
       GetDlpHistogramPrefix() + "RestrictionConfigured", value);
 }
@@ -33,4 +32,4 @@ void DlpCountHistogram10000(const std::string& suffix, int sample) {
   base::UmaHistogramCounts10000(GetDlpHistogramPrefix() + suffix, sample);
 }
 
-}  // namespace policy
+}  // namespace data_controls

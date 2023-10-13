@@ -10,10 +10,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/enterprise/data_controls/dlp_policy_event.pb.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
@@ -332,15 +332,17 @@ void DlpReportingManager::OnEventEnqueued(reporting::Status status) {
             << status;
   }
   events_reported_++;
-  base::UmaHistogramEnumeration(
-      GetDlpHistogramPrefix() + dlp::kReportedEventStatus, status.code(),
-      reporting::error::Code::MAX_VALUE);
+  base::UmaHistogramEnumeration(data_controls::GetDlpHistogramPrefix() +
+                                    data_controls::dlp::kReportedEventStatus,
+                                status.code(),
+                                reporting::error::Code::MAX_VALUE);
 }
 
 void DlpReportingManager::ReportEvent(DlpPolicyEvent event) {
   // TODO(1187506, marcgrimme) Refactor to handle gracefully with user
   // interaction when queue is not ready.
-  DlpBooleanHistogram(dlp::kErrorsReportQueueNotReady, !report_queue_.get());
+  data_controls::DlpBooleanHistogram(
+      data_controls::dlp::kErrorsReportQueueNotReady, !report_queue_.get());
   if (!report_queue_.get()) {
     DLOG(WARNING) << "Report queue could not be initialized. DLP reporting "
                      "functionality will be disabled.";
@@ -352,22 +354,26 @@ void DlpReportingManager::ReportEvent(DlpPolicyEvent event) {
   switch (event.mode()) {
     case DlpPolicyEvent_Mode_BLOCK:
       base::UmaHistogramEnumeration(
-          GetDlpHistogramPrefix() + dlp::kReportedBlockLevelRestriction,
+          data_controls::GetDlpHistogramPrefix() +
+              data_controls::dlp::kReportedBlockLevelRestriction,
           DlpEventRestriction2DlpRulesManagerRestriction(event.restriction()));
       break;
     case DlpPolicyEvent_Mode_REPORT:
       base::UmaHistogramEnumeration(
-          GetDlpHistogramPrefix() + dlp::kReportedReportLevelRestriction,
+          data_controls::GetDlpHistogramPrefix() +
+              data_controls::dlp::kReportedReportLevelRestriction,
           DlpEventRestriction2DlpRulesManagerRestriction(event.restriction()));
       break;
     case DlpPolicyEvent_Mode_WARN:
       base::UmaHistogramEnumeration(
-          GetDlpHistogramPrefix() + dlp::kReportedWarnLevelRestriction,
+          data_controls::GetDlpHistogramPrefix() +
+              data_controls::dlp::kReportedWarnLevelRestriction,
           DlpEventRestriction2DlpRulesManagerRestriction(event.restriction()));
       break;
     case DlpPolicyEvent_Mode_WARN_PROCEED:
       base::UmaHistogramEnumeration(
-          GetDlpHistogramPrefix() + dlp::kReportedWarnProceedLevelRestriction,
+          data_controls::GetDlpHistogramPrefix() +
+              data_controls::dlp::kReportedWarnProceedLevelRestriction,
           DlpEventRestriction2DlpRulesManagerRestriction(event.restriction()));
       break;
     case DlpPolicyEvent_Mode_UNDEFINED_MODE:

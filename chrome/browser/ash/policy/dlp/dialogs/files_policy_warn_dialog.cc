@@ -15,9 +15,9 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "components/enterprise/data_controls/component.h"
+#include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -109,7 +109,8 @@ FilesPolicyWarnDialog::FilesPolicyWarnDialog(
   // `warning_message`, `learn_more_url` and
   // `bypass_requires_justification` values stored in `settings`.
 
-  DlpHistogramEnumeration(dlp::kFileActionWarnReviewedUMA, action);
+  data_controls::DlpHistogramEnumeration(
+      data_controls::dlp::kFileActionWarnReviewedUMA, action);
 }
 
 FilesPolicyWarnDialog::~FilesPolicyWarnDialog() = default;

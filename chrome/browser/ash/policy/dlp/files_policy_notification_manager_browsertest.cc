@@ -35,7 +35,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -52,6 +51,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -248,9 +248,13 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileNoButtonIgnored) {
   EXPECT_TRUE(bridge_->GetDisplayedNotification("dlp_files_1").has_value());
 
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      false, 0);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      true, 0);
   VerifyFilesWarningUMAs(histogram_tester_,
                          /*action_warned_buckets=*/{base::Bucket(action, 1)},
                          /*warning_count_buckets=*/{base::Bucket(1, 1)},
@@ -279,9 +283,13 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileCloseCancels) {
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
 
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      false, 0);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      true, 0);
   VerifyFilesWarningUMAs(histogram_tester_,
                          /*action_warned_buckets=*/{base::Bucket(action, 1)},
                          /*warning_count_buckets=*/{base::Bucket(1, 1)},
@@ -318,9 +326,13 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileOKContinues) {
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
 
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      false, 0);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      true, 0);
   VerifyFilesWarningUMAs(histogram_tester_,
                          /*action_warned_buckets=*/{base::Bucket(action, 1)},
                          /*warning_count_buckets=*/{base::Bucket(1, 1)},
@@ -393,9 +405,13 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, MultiFileOKShowsDialog) {
   ASSERT_EQ(ash::file_manager::FileManagerUI::GetNumInstances(), 2);
 
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 2);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      false, 2);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      true, 0);
 
   // Skip the warning timeout. The callback will only be invoked when the
   // warnings time out.
@@ -483,9 +499,13 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest,
   task_runner->FastForwardBy(kWarningTimeout);
 
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      false, 0);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      true, 1);
   VerifyFilesWarningUMAs(histogram_tester_,
                          /*action_warned_buckets=*/{base::Bucket(action, 1)},
                          /*warning_count_buckets=*/{base::Bucket(2, 1)},
@@ -522,9 +542,13 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, CancelShowsNoDialog) {
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
 
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      false, 0);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      true, 0);
   VerifyFilesWarningUMAs(histogram_tester_,
                          /*action_warned_buckets=*/{base::Bucket(action, 1)},
                          /*warning_count_buckets=*/{base::Bucket(2, 1)},
@@ -574,15 +598,20 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileOKShowsDialog) {
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
 
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      false, 1);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                      std::string(dlp::kFileActionBlockedUMA)),
-      base::BucketsAre(base::Bucket(action, 1)));
-  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                              dlp::kFilesBlockedCountUMA),
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      true, 0);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionBlockedUMA)),
+              base::BucketsAre(base::Bucket(action, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  data_controls::dlp::kFilesBlockedCountUMA),
               testing::ElementsAre(base::Bucket(2, 1)));
 }
 
@@ -600,15 +629,20 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileNoButtonIgnored) {
   EXPECT_TRUE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
 
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      false, 0);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                      std::string(dlp::kFileActionBlockedUMA)),
-      base::BucketsAre(base::Bucket(action, 1)));
-  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                              dlp::kFilesBlockedCountUMA),
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      true, 0);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionBlockedUMA)),
+              base::BucketsAre(base::Bucket(action, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  data_controls::dlp::kFilesBlockedCountUMA),
               testing::ElementsAre(base::Bucket(2, 1)));
 }
 
@@ -629,15 +663,20 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileCloseCancels) {
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
 
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      false, 0);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                      std::string(dlp::kFileActionBlockedUMA)),
-      base::BucketsAre(base::Bucket(action, 1)));
-  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                              dlp::kFilesBlockedCountUMA),
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      true, 0);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionBlockedUMA)),
+              base::BucketsAre(base::Bucket(action, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  data_controls::dlp::kFilesBlockedCountUMA),
               testing::ElementsAre(base::Bucket(2, 1)));
 }
 
@@ -694,19 +733,24 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileOKShowsDialog_Timeout) {
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
 
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      false, 0);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 1);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                      std::string(dlp::kFileActionBlockedUMA)),
-      base::BucketsAre(base::Bucket(action, 1)));
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      true, 1);
   EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  GetDlpHistogramPrefix() +
-                  std::string(dlp::kFileActionBlockReviewedUMA)),
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionBlockedUMA)),
               base::BucketsAre(base::Bucket(action, 1)));
-  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                              dlp::kFilesBlockedCountUMA),
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionBlockReviewedUMA)),
+              base::BucketsAre(base::Bucket(action, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  data_controls::dlp::kFilesBlockedCountUMA),
               testing::ElementsAre(base::Bucket(2, 1)));
 }
 
@@ -734,15 +778,20 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, CancelDismisses) {
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
 
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      false, 0);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                      std::string(dlp::kFileActionBlockedUMA)),
-      base::BucketsAre(base::Bucket(action, 1)));
-  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                              dlp::kFilesBlockedCountUMA),
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      true, 0);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionBlockedUMA)),
+              base::BucketsAre(base::Bucket(action, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  data_controls::dlp::kFilesBlockedCountUMA),
               testing::ElementsAre(base::Bucket(2, 1)));
 }
 
@@ -1020,9 +1069,13 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   bridge_->Click(kNotificationId1, absl::nullopt);
 
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      false, 0);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      true, 0);
   VerifyFilesWarningUMAs(histogram_tester_,
                          /*action_warned_buckets=*/{base::Bucket(action, 1)},
                          /*warning_count_buckets=*/{base::Bucket(2, 1)},
@@ -1128,9 +1181,13 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId2).has_value());
 
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      false, 1);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      true, 0);
   VerifyFilesWarningUMAs(histogram_tester_,
                          /*action_warned_buckets=*/{base::Bucket(action, 2)},
                          /*warning_count_buckets=*/{base::Bucket(2, 2)},
@@ -1178,9 +1235,13 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, MultiFileDismissCancels_Warning) {
   EXPECT_FALSE(fpnm_->HasIOTask(kTaskId1));
 
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      false, 0);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      true, 0);
   VerifyFilesWarningUMAs(histogram_tester_,
                          /*action_warned_buckets=*/{base::Bucket(action, 1)},
                          /*warning_count_buckets=*/{base::Bucket(2, 1)},
@@ -1230,9 +1291,13 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, SingleFileOkProceeds_Warning) {
   ASSERT_FALSE(fpnm_->HasIOTask(kTaskId1));
 
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      false, 0);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      true, 0);
   VerifyFilesWarningUMAs(histogram_tester_,
                          /*action_warned_buckets=*/{base::Bucket(action, 1)},
                          /*warning_count_buckets=*/{base::Bucket(1, 1)},
@@ -1324,15 +1389,20 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   EXPECT_FALSE(fpnm_->HasIOTask(kTaskId2));
 
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      false, 1);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                      std::string(dlp::kFileActionBlockedUMA)),
-      base::BucketsAre(base::Bucket(action, 2)));
-  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                              dlp::kFilesBlockedCountUMA),
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kFilesAppOpenTimedOutUMA,
+      true, 0);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionBlockedUMA)),
+              base::BucketsAre(base::Bucket(action, 2)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  data_controls::dlp::kFilesBlockedCountUMA),
               testing::ElementsAre(base::Bucket(2, 2)));
 }
 
@@ -1379,12 +1449,13 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, MultiFileDismissRemovesIOInfo_Error) {
   // The notification should be closed.
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
 
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                      std::string(dlp::kFileActionBlockedUMA)),
-      base::BucketsAre(base::Bucket(action, 1)));
-  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                              dlp::kFilesBlockedCountUMA),
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionBlockedUMA)),
+              base::BucketsAre(base::Bucket(action, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  data_controls::dlp::kFilesBlockedCountUMA),
               testing::ElementsAre(base::Bucket(2, 1)));
 }
 
@@ -1437,12 +1508,13 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   // The notification should be closed.
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
 
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                      std::string(dlp::kFileActionBlockedUMA)),
-      base::BucketsAre(base::Bucket(action, 1)));
-  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                              dlp::kFilesBlockedCountUMA),
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionBlockedUMA)),
+              base::BucketsAre(base::Bucket(action, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  data_controls::dlp::kFilesBlockedCountUMA),
               testing::ElementsAre(base::Bucket(1, 1)));
 }
 
@@ -1499,12 +1571,13 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, SingleFileOkProceeds_Mix) {
   ASSERT_TRUE(notification.has_value());
   EXPECT_EQ(notification->title(), title2);
 
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                      std::string(dlp::kFileActionBlockedUMA)),
-      base::BucketsAre(base::Bucket(action, 1)));
-  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
-                                              dlp::kFilesBlockedCountUMA),
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionBlockedUMA)),
+              base::BucketsAre(base::Bucket(action, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  data_controls::dlp::kFilesBlockedCountUMA),
               testing::ElementsAre(base::Bucket(1, 1)));
   VerifyFilesWarningUMAs(histogram_tester_,
                          /*action_warned_buckets=*/{base::Bucket(action, 1)},

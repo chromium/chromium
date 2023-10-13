@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_HISTOGRAM_HELPER_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_HISTOGRAM_HELPER_H_
+#ifndef COMPONENTS_ENTERPRISE_DATA_CONTROLS_DLP_HISTOGRAM_HELPER_H_
+#define COMPONENTS_ENTERPRISE_DATA_CONTROLS_DLP_HISTOGRAM_HELPER_H_
 
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "components/enterprise/data_controls/rule.h"
 
-namespace policy {
+namespace data_controls {
 
 namespace dlp {
 
@@ -74,7 +74,7 @@ void DlpBooleanHistogram(const std::string& suffix, bool value);
 
 void DlpCountHistogram(const std::string& suffix, int sample, int max);
 
-void DlpRestrictionConfiguredHistogram(DlpRulesManager::Restriction value);
+void DlpRestrictionConfiguredHistogram(Rule::Restriction value);
 
 template <typename T>
 void DlpHistogramEnumeration(const std::string& suffix, T sample) {
@@ -83,6 +83,6 @@ void DlpHistogramEnumeration(const std::string& suffix, T sample) {
 
 void DlpCountHistogram10000(const std::string& suffix, int sample);
 
-}  // namespace policy
+}  // namespace data_controls
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_HISTOGRAM_HELPER_H_
+#endif  // COMPONENTS_ENTERPRISE_DATA_CONTROLS_DLP_HISTOGRAM_HELPER_H_

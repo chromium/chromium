@@ -20,7 +20,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -28,6 +27,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/data_controls/component.h"
+#include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/label.h"
@@ -119,8 +119,8 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, NoParent) {
   EXPECT_TRUE(widget->IsClosed());
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  GetDlpHistogramPrefix() +
-                  std::string(dlp::kFileActionWarnReviewedUMA)),
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionWarnReviewedUMA)),
               base::BucketsAre(base::Bucket(action, 1)));
 }
 
@@ -156,8 +156,8 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, WithParent) {
   EXPECT_TRUE(widget->IsClosed());
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  GetDlpHistogramPrefix() +
-                  std::string(dlp::kFileActionWarnReviewedUMA)),
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionWarnReviewedUMA)),
               base::BucketsAre(base::Bucket(action, 1)));
 }
 
@@ -254,8 +254,8 @@ IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, NoParent) {
   EXPECT_TRUE(widget->IsClosed());
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  GetDlpHistogramPrefix() +
-                  std::string(dlp::kFileActionBlockReviewedUMA)),
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionBlockReviewedUMA)),
               base::BucketsAre(base::Bucket(action, 1)));
 }
 
@@ -286,8 +286,8 @@ IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, WithParent) {
   EXPECT_TRUE(widget->IsClosed());
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  GetDlpHistogramPrefix() +
-                  std::string(dlp::kFileActionBlockReviewedUMA)),
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionBlockReviewedUMA)),
               base::BucketsAre(base::Bucket(action, 1)));
 }
 

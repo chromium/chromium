@@ -14,7 +14,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
+#include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -90,7 +90,8 @@ FilesPolicyErrorDialog::FilesPolicyErrorDialog(
   AddGeneralInformation();
   MaybeAddConfidentialRows();
 
-  DlpHistogramEnumeration(dlp::kFileActionBlockReviewedUMA, action);
+  data_controls::DlpHistogramEnumeration(
+      data_controls::dlp::kFileActionBlockReviewedUMA, action);
 }
 
 FilesPolicyErrorDialog::~FilesPolicyErrorDialog() = default;

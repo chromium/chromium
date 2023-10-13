@@ -14,7 +14,6 @@
 #include "base/test/mock_callback.h"
 #include "base/types/optional_util.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_reporting_manager_test_helper.h"
@@ -23,6 +22,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/enterprise/data_controls/dlp_policy_event.pb.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "content/public/test/browser_task_environment.h"
@@ -172,9 +172,13 @@ TEST_F(DataTransferDlpControllerTest, NullSrc) {
   dlp_controller_.DropIfAllowed(&drag_data, nullptr, callback.Get());
 
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, false, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kClipboardReadBlockedUMA,
+      false, 1);
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kDragDropBlockedUMA, false, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kDragDropBlockedUMA,
+      false, 1);
 }
 
 TEST_F(DataTransferDlpControllerTest, ClipboardHistoryDst) {
@@ -183,7 +187,9 @@ TEST_F(DataTransferDlpControllerTest, ClipboardHistoryDst) {
   EXPECT_EQ(true, dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst,
                                                          absl::nullopt));
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, false, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kClipboardReadBlockedUMA,
+      false, 1);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -193,7 +199,9 @@ TEST_F(DataTransferDlpControllerTest, LacrosDst) {
   EXPECT_EQ(true, dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst,
                                                          absl::nullopt));
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, false, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kClipboardReadBlockedUMA,
+      false, 1);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -355,7 +363,9 @@ TEST_F(DataTransferDlpControllerTest, DropFile_Blocked) {
   dlp_controller_.DropIfAllowed(&drag_data, &data_dst, drop_callback.Get());
 
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kDragDropBlockedUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kDragDropBlockedUMA,
+      true, 1);
 }
 
 TEST_F(DataTransferDlpControllerTest, DropFile_Allowed) {
@@ -387,7 +397,9 @@ TEST_F(DataTransferDlpControllerTest, DropFile_Allowed) {
   dlp_controller_.DropIfAllowed(&drag_data, &data_dst, drop_callback.Get());
 
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kDragDropBlockedUMA, false, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kDragDropBlockedUMA,
+      false, 1);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -443,9 +455,13 @@ TEST_P(DlpControllerTest, Allow) {
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, false, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kClipboardReadBlockedUMA,
+      false, 1);
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kDragDropBlockedUMA, false, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kDragDropBlockedUMA,
+      false, 1);
 }
 
 TEST_P(DlpControllerTest, Block_IsClipboardReadAllowed) {
@@ -470,7 +486,9 @@ TEST_P(DlpControllerTest, Block_IsClipboardReadAllowed) {
   }
 
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kClipboardReadBlockedUMA,
+      true, 1);
 }
 
 TEST_P(DlpControllerTest, Block_DropIfAllowed) {
@@ -488,7 +506,9 @@ TEST_P(DlpControllerTest, Block_DropIfAllowed) {
                               "", "", DlpRulesManager::Level::kBlock)));
 
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kDragDropBlockedUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kDragDropBlockedUMA,
+      true, 1);
 }
 
 TEST_P(DlpControllerTest, Report_IsClipboardReadAllowed) {
@@ -562,11 +582,13 @@ TEST_P(DlpControllerTest, Warn_IsClipboardReadAllowed) {
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, false,
-      show_warning ? 1 : 2);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kClipboardReadBlockedUMA,
+      false, show_warning ? 1 : 2);
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, true,
-      show_warning ? 1 : 0);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kClipboardReadBlockedUMA,
+      true, show_warning ? 1 : 0);
 }
 
 TEST_P(DlpControllerTest, Warn_ShouldCancelOnWarn) {
@@ -592,7 +614,9 @@ TEST_P(DlpControllerTest, Warn_DropIfAllowed) {
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kDragDropBlockedUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kDragDropBlockedUMA,
+      true, 1);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -647,9 +671,13 @@ TEST_P(DlpControllerVMsTest, Allow) {
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, false, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kClipboardReadBlockedUMA,
+      false, 1);
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kDragDropBlockedUMA, false, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kDragDropBlockedUMA,
+      false, 1);
 }
 
 TEST_P(DlpControllerVMsTest, Block_IsClipboardReadAllowed) {
@@ -674,7 +702,9 @@ TEST_P(DlpControllerVMsTest, Block_IsClipboardReadAllowed) {
   }
 
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kClipboardReadBlockedUMA,
+      true, 1);
 }
 
 TEST_P(DlpControllerVMsTest, Block_DropIfAllowed) {
@@ -693,7 +723,9 @@ TEST_P(DlpControllerVMsTest, Block_DropIfAllowed) {
                               DlpRulesManager::Level::kBlock)));
 
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kDragDropBlockedUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kDragDropBlockedUMA,
+      true, 1);
 }
 
 TEST_P(DlpControllerVMsTest, Report_IsClipboardReadAllowed) {
@@ -755,7 +787,9 @@ TEST_P(DlpControllerVMsTest, Warn_IsClipboardReadAllowed) {
   }
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, false, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kClipboardReadBlockedUMA,
+      false, 1);
 }
 
 TEST_P(DlpControllerVMsTest, Warn_DropIfAllowed) {
@@ -768,7 +802,9 @@ TEST_P(DlpControllerVMsTest, Warn_DropIfAllowed) {
 
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
   histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kDragDropBlockedUMA, true, 1);
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kDragDropBlockedUMA,
+      true, 1);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

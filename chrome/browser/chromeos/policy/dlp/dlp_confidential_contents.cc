@@ -12,9 +12,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -180,8 +180,9 @@ void DlpConfidentialContentsCache::Cache(
   if (entries_.size() > cache_size_limit_) {
     entries_.pop_back();
   }
-  DlpCountHistogram(dlp::kConfidentialContentsCount, entries_.size(),
-                    cache_size_limit_);
+  data_controls::DlpCountHistogram(
+      data_controls::dlp::kConfidentialContentsCount, entries_.size(),
+      cache_size_limit_);
 }
 
 bool DlpConfidentialContentsCache::Contains(

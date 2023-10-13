@@ -23,6 +23,8 @@ source_set("data_controls") {
     "condition.h",
     "data_controls_policy_handler.cc",
     "data_controls_policy_handler.h",
+    "dlp_histogram_helper.cc",
+    "dlp_histogram_helper.h",
     "prefs.cc",
     "prefs.h",
     "rule.cc",
