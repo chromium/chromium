@@ -87,17 +87,6 @@ void PopupCellView::SetAccessibilityDelegate(
   a11y_delegate_ = std::move(a11y_delegate);
 }
 
-void PopupCellView::SetOnEnteredCallback(base::RepeatingClosure callback) {
-  on_entered_callback_ = std::move(callback);
-}
-
-void PopupCellView::SetOnExitedCallback(base::RepeatingClosure callback) {
-  on_exited_callback_ = std::move(callback);
-}
-
-void PopupCellView::SetOnAcceptedCallback(OnAcceptedCallback callback) {
-  on_accepted_callback_ = std::move(callback);
-}
 
 void PopupCellView::SetOnSelectedCallback(base::RepeatingClosure callback) {
   on_selected_callback_ = std::move(callback);
@@ -156,9 +145,6 @@ void PopupCellView::RefreshStyle() {
 BEGIN_METADATA(PopupCellView, views::View)
 ADD_PROPERTY_METADATA(bool, Selected)
 ADD_PROPERTY_METADATA(std::u16string, TooltipText)
-ADD_PROPERTY_METADATA(PopupCellView::OnAcceptedCallback, OnAcceptedCallback)
-ADD_PROPERTY_METADATA(base::RepeatingClosure, OnSelectedCallback)
-ADD_PROPERTY_METADATA(base::RepeatingClosure, OnUnselectedCallback)
 END_METADATA
 
 }  // namespace autofill

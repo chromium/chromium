@@ -562,8 +562,6 @@ void AddCallbacksToContentView(
       &AutofillPopupController::SelectSuggestion, controller, line_number));
   content_view.SetOnUnselectedCallback(base::BindRepeating(
       &AutofillPopupController::SelectSuggestion, controller, absl::nullopt));
-  content_view.SetOnAcceptedCallback(base::BindRepeating(
-      &AutofillPopupController::AcceptSuggestion, controller, line_number));
 }
 
 void AddSuggestionStrategyContentCellChildren(

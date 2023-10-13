@@ -76,24 +76,6 @@ class PopupCellView : public views::View {
   void SetAccessibilityDelegate(
       std::unique_ptr<AccessibilityDelegate> a11y_delegate);
 
-  // Gets and sets the callback that is run when the cell is entered (via mouse
-  // or gesture event).
-  const base::RepeatingClosure& GetOnEnteredCallback() const {
-    return on_entered_callback_;
-  }
-  void SetOnEnteredCallback(base::RepeatingClosure callback);
-  // Gets and sets the callback that is run when the cell is exited.
-  const base::RepeatingClosure& GetOnExitedCallback() const {
-    return on_exited_callback_;
-  }
-  void SetOnExitedCallback(base::RepeatingClosure callback);
-  // Gets and sets the callback that is run when the cell is accepted (left
-  // mouse click, tap, enter key).
-  using OnAcceptedCallback = base::RepeatingCallback<void(base::TimeTicks)>;
-  const PopupCellView::OnAcceptedCallback& GetOnAcceptedCallback() const {
-    return on_accepted_callback_;
-  }
-  void SetOnAcceptedCallback(OnAcceptedCallback callback);
   // Gets and sets the callbacks for when the cell is (un)selected.
   const base::RepeatingClosure& GetOnSelectedCallback() const {
     return on_selected_callback_;
@@ -141,10 +123,6 @@ class PopupCellView : public views::View {
   // The accessibility delegate.
   std::unique_ptr<AccessibilityDelegate> a11y_delegate_;
 
-  base::RepeatingClosure on_entered_callback_;
-  base::RepeatingClosure on_exited_callback_;
-  OnAcceptedCallback on_accepted_callback_;
-
   // The labels whose style is updated when the cell's selection status changes.
   std::vector<raw_ptr<views::Label>> tracked_labels_;
 
@@ -154,7 +132,6 @@ BEGIN_VIEW_BUILDER(/* no export*/, PopupCellView, views::View)
 VIEW_BUILDER_PROPERTY(std::u16string, TooltipText)
 VIEW_BUILDER_PROPERTY(std::unique_ptr<PopupCellView::AccessibilityDelegate>,
                       AccessibilityDelegate)
-VIEW_BUILDER_PROPERTY(PopupCellView::OnAcceptedCallback, OnAcceptedCallback)
 VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnSelectedCallback)
 VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnUnselectedCallback)
 END_VIEW_BUILDER
