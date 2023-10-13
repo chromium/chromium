@@ -183,10 +183,9 @@ class ASH_EXPORT OverviewItemBase {
   // Returns the transformed bound of this.
   virtual gfx::RectF GetTransformedBounds() const = 0;
 
-  // Calculates and returns an optimal scale ratio. With MD this is only
-  // taking into account `size.height()` as the width can vary. Without MD this
-  // returns the scale that allows the item to fully fit within `size`.
-  virtual float GetItemScale(const gfx::Size& size) = 0;
+  // Calculates and returns an optimal scale ratio. Only the given `height` is
+  // taken into account as the width can vary.
+  virtual float GetItemScale(int height) = 0;
 
   // Increases the bounds of the dragged item.
   virtual void ScaleUpSelectedItem(OverviewAnimationType animation_type) = 0;

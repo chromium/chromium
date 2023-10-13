@@ -524,10 +524,9 @@ gfx::RectF OverviewItem::GetTransformedBounds() const {
   return transform_window_.GetTransformedBounds();
 }
 
-float OverviewItem::GetItemScale(const gfx::Size& size) {
-  gfx::SizeF inset_size(size.width(), size.height());
+float OverviewItem::GetItemScale(int height) {
   return ScopedOverviewTransformWindow::GetItemScale(
-      GetTargetBoundsInScreen().size(), inset_size,
+      GetTargetBoundsInScreen().height(), height,
       transform_window_.GetTopInset(), kHeaderHeightDp);
 }
 

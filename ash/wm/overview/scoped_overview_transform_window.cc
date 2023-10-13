@@ -278,12 +278,12 @@ ScopedOverviewTransformWindow::~ScopedOverviewTransformWindow() {
 }
 
 // static
-float ScopedOverviewTransformWindow::GetItemScale(const gfx::SizeF& source,
-                                                  const gfx::SizeF& target,
+float ScopedOverviewTransformWindow::GetItemScale(int source_height,
+                                                  int target_height,
                                                   int top_view_inset,
                                                   int title_height) {
-  return std::min(2.0f, (target.height() - title_height) /
-                            (source.height() - top_view_inset));
+  return std::min(2.0f, static_cast<float>(target_height - title_height) /
+                            (source_height - top_view_inset));
 }
 
 // static
@@ -468,8 +468,8 @@ gfx::RectF ScopedOverviewTransformWindow::ShrinkRectToFitPreservingAspectRatio(
     int title_height) const {
   DCHECK(!rect.IsEmpty());
   DCHECK_LE(top_view_inset, rect.height());
-  const float scale =
-      GetItemScale(rect.size(), bounds.size(), top_view_inset, title_height);
+  const float scale = GetItemScale(rect.height(), bounds.height(),
+                                   top_view_inset, title_height);
   const float horizontal_offset = 0.5 * (bounds.width() - scale * rect.width());
   const float width = bounds.width() - 2.f * horizontal_offset;
   const float vertical_offset = title_height - scale * top_view_inset;
@@ -510,7 +510,7 @@ gfx::RectF ScopedOverviewTransformWindow::ShrinkRectToFitPreservingAspectRatio(
           // to find out the height of the inset when the whole window,
           // including the inset, is scaled down to `new_bounds`.
           const float new_scale =
-              GetItemScale(rect.size(), new_bounds.size(), 0, 0);
+              GetItemScale(rect.height(), new_bounds.height(), 0, 0);
           const float scaled_top_view_inset = top_view_inset * new_scale;
           // Offset `new_bounds` to be at a point in the overview item frame
           // where it will be centered when we clip the `top_view_inset`.

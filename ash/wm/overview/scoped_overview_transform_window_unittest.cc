@@ -20,12 +20,12 @@ namespace ash {
 
 namespace {
 
-float GetItemScale(const gfx::RectF& source,
-                   const gfx::RectF& target,
+float GetItemScale(int source_height,
+                   int target_height,
                    int top_view_inset,
                    int title_height) {
   return ScopedOverviewTransformWindow::GetItemScale(
-      source.size(), target.size(), top_view_inset, title_height);
+      source_height, target_height, top_view_inset, title_height);
 }
 
 }  // namespace
@@ -47,33 +47,33 @@ TEST_F(ScopedOverviewTransformWindowTest, TransformedRectMaintainsAspect) {
   gfx::RectF bounds(100.f, 100.f, 50.f, 50.f);
   gfx::RectF transformed_rect =
       transform_window.ShrinkRectToFitPreservingAspectRatio(rect, bounds, 0, 0);
-  float scale = GetItemScale(rect, bounds, 0, 0);
+  float scale = GetItemScale(rect.height(), bounds.height(), 0, 0);
   EXPECT_NEAR(scale * rect.width(), transformed_rect.width(), 1);
   EXPECT_NEAR(scale * rect.height(), transformed_rect.height(), 1);
 
   rect = gfx::RectF(50.f, 50.f, 400.f, 200.f);
-  scale = GetItemScale(rect, bounds, 0, 0);
+  scale = GetItemScale(rect.height(), bounds.height(), 0, 0);
   transformed_rect =
       transform_window.ShrinkRectToFitPreservingAspectRatio(rect, bounds, 0, 0);
   EXPECT_NEAR(scale * rect.width(), transformed_rect.width(), 1);
   EXPECT_NEAR(scale * rect.height(), transformed_rect.height(), 1);
 
   rect = gfx::RectF(50.f, 50.f, 25.f, 25.f);
-  scale = GetItemScale(rect, bounds, 0, 0);
+  scale = GetItemScale(rect.height(), bounds.height(), 0, 0);
   transformed_rect =
       transform_window.ShrinkRectToFitPreservingAspectRatio(rect, bounds, 0, 0);
   EXPECT_NEAR(scale * rect.width(), transformed_rect.width(), 1);
   EXPECT_NEAR(scale * rect.height(), transformed_rect.height(), 1);
 
   rect = gfx::RectF(50.f, 50.f, 25.f, 50.f);
-  scale = GetItemScale(rect, bounds, 0, 0);
+  scale = GetItemScale(rect.height(), bounds.height(), 0, 0);
   transformed_rect =
       transform_window.ShrinkRectToFitPreservingAspectRatio(rect, bounds, 0, 0);
   EXPECT_NEAR(scale * rect.width(), transformed_rect.width(), 1);
   EXPECT_NEAR(scale * rect.height(), transformed_rect.height(), 1);
 
   rect = gfx::RectF(50.f, 50.f, 50.f, 25.f);
-  scale = GetItemScale(rect, bounds, 0, 0);
+  scale = GetItemScale(rect.height(), bounds.height(), 0, 0);
   transformed_rect =
       transform_window.ShrinkRectToFitPreservingAspectRatio(rect, bounds, 0, 0);
   EXPECT_NEAR(scale * rect.width(), transformed_rect.width(), 1);
@@ -109,7 +109,8 @@ TEST_F(ScopedOverviewTransformWindowTest, TransformedRectIsCenteredWithInset) {
   gfx::RectF bounds(100.f, 100.f, 50.f, 50.f);
   const int inset = 20;
   const int header_height = 10;
-  const float scale = GetItemScale(rect, bounds, inset, header_height);
+  const float scale =
+      GetItemScale(rect.height(), bounds.height(), inset, header_height);
   gfx::RectF transformed_rect =
       transform_window.ShrinkRectToFitPreservingAspectRatio(rect, bounds, inset,
                                                             header_height);

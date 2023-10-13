@@ -50,7 +50,7 @@ class OverviewGroupItem : public OverviewItemBase,
   gfx::RectF GetTargetBoundsInScreen() const override;
   gfx::RectF GetWindowTargetBoundsWithInsets() const override;
   gfx::RectF GetTransformedBounds() const override;
-  float GetItemScale(const gfx::Size& size) override;
+  float GetItemScale(int height) override;
   void ScaleUpSelectedItem(OverviewAnimationType animation_type) override;
   void EnsureVisible() override;
   OverviewFocusableView* GetFocusableView() const override;

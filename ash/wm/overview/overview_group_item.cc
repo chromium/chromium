@@ -12,6 +12,7 @@
 #include "ash/wm/overview/overview_item_base.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/window_util.h"
+#include "base/check_op.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -153,14 +154,15 @@ gfx::RectF OverviewGroupItem::GetTransformedBounds() const {
   // actual implementation of this function.
   CHECK_GE(overview_items_.size(), 1u);
   CHECK_LE(overview_items_.size(), 2u);
-  return overview_items_.at(0)->GetTransformedBounds();
+  return overview_items_[0]->GetTransformedBounds();
 }
 
-float OverviewGroupItem::GetItemScale(const gfx::Size& size) {
+float OverviewGroupItem::GetItemScale(int height) {
   // TODO(michelefan): This is a temporary placeholder for the item scale
-  // calculation, which needs to be updated when we start working on the actual
-  // implementation of this function.
-  return overview_items_.at(0)->GetItemScale(size);
+  // calculation, which should be updated when we implement the overview for
+  // vertical split screen.
+  CHECK(!overview_items_.empty());
+  return overview_items_[0]->GetItemScale(height);
 }
 
 void OverviewGroupItem::ScaleUpSelectedItem(

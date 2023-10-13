@@ -53,9 +53,9 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   using ClippingData = std::pair<ClippingType, gfx::SizeF>;
 
   // Calculates and returns an optimal scale ratio. This is only taking into
-  // account |size.height()| as the width can vary.
-  static float GetItemScale(const gfx::SizeF& source,
-                            const gfx::SizeF& target,
+  // account height as the width can vary.
+  static float GetItemScale(int source_height,
+                            int target_height,
                             int top_view_inset,
                             int title_height);
 

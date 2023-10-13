@@ -1731,9 +1731,8 @@ void OverviewGrid::EndScroll() {
 int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(
     OverviewItemBase* item,
     int height) {
-  const gfx::Size item_size(0, height);
   gfx::SizeF target_size = item->GetTargetBoundsInScreen().size();
-  float scale = item->GetItemScale(item_size);
+  float scale = item->GetItemScale(height);
   OverviewGridWindowFillMode grid_fill_mode = item->GetWindowDimensionsType();
 
   // The drop target, unlike the other windows has its bounds set directly, so
@@ -1773,9 +1772,8 @@ int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(
         target_size.SetToMin(gfx::SizeF(work_area_size));
       }
 
-      const gfx::SizeF inset_size(0, height);
       scale = ScopedOverviewTransformWindow::GetItemScale(
-          target_size, inset_size, GetTopViewInset(dragged_windows),
+          target_size.height(), height, GetTopViewInset(dragged_windows),
           kHeaderHeightDp);
     }
   }
