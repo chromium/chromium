@@ -38,9 +38,6 @@
                                        self.browser->GetBrowserState())
                           consumer:_viewController];
   _viewController.delegate = _mediator;
-  _viewController.dispatcher = static_cast<
-      id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>>(
-      self.browser->GetCommandDispatcher());
 
   [self.baseNavigationController pushViewController:_viewController
                                            animated:YES];

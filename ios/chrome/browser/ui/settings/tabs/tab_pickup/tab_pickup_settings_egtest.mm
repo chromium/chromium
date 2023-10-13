@@ -73,29 +73,6 @@ id<GREYMatcher> TabPickupSettingsSwitchItem(bool is_toggled_on, bool enabled) {
                                                is_toggled_on, enabled);
 }
 
-// GREYMatcher for the tab pickup privacy footer in the tab pickup settings
-// screen corresponding to the given `message_id`.
-id<GREYMatcher> TabPickupPrivacyFooter(int message_id) {
-  NSString* message = l10n_util::GetNSString(message_id);
-  return grey_allOf(
-      grey_accessibilityID(kTabPickupSettingsPrivacyFooterId),
-      grey_descendant(grey_text(ParseStringWithLinks(message).string)), nil);
-}
-
-// GREYMatcher for the tab pickup privacy Sync footer link.
-id<GREYMatcher> TabPickupPrivacyFooterSyncLink() {
-  return grey_allOf(grey_accessibilityLabel(@"Sync"),
-                    grey_kindOfClassName(@"UIAccessibilityLinkSubelement"),
-                    nil);
-}
-
-// GREYMatcher for the tab pickup privacy Google Servicies footer link.
-id<GREYMatcher> TabPickupPrivacyFooterGoogleServicesLink() {
-  return grey_allOf(grey_accessibilityLabel(@"Google Services"),
-                    grey_kindOfClassName(@"UIAccessibilityLinkSubelement"),
-                    nil);
-}
-
 }  // namespace
 
 @interface TabPickupSettingsTestCase : ChromeTestCase
@@ -136,10 +113,6 @@ id<GREYMatcher> TabPickupPrivacyFooterGoogleServicesLink() {
       selectElementWithMatcher:TabPickupSettingsSwitchItem(
                                    /*is_toggled_on=*/true, /*enabled=*/true)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 TabPickupPrivacyFooter(
-                     IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER)]
-      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Ensures that the tab pickup settings are correctly working when not synced.
@@ -154,38 +127,6 @@ id<GREYMatcher> TabPickupPrivacyFooterGoogleServicesLink() {
   [[EarlGrey
       selectElementWithMatcher:TabPickupSettingsSwitchItem(
                                    /*is_toggled_on=*/false, /*enabled=*/false)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:TabPickupPrivacyFooter(
-                                   IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Ensures that tab pickup settings links are correctly working.
-- (void)testTabPickupSettingsLinks {
-  SignInAndSync();
-
-  OpenTabsSettings();
-  OpenTabPickupFromTabsSettings();
-
-  // Check the "Sync" link.
-  [[EarlGrey selectElementWithMatcher:TabPickupPrivacyFooterSyncLink()]
-      performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kManageSyncTableViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton(
-                                          0)] performAction:grey_tap()];
-
-  // Check the "Google Services" link.
-  [[EarlGrey
-      selectElementWithMatcher:TabPickupPrivacyFooterGoogleServicesLink()]
-      performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kGoogleServicesSettingsViewIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
