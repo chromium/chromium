@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/loader/resource_load_observer_for_frame.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "base/types/optional_util.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/mojom/cors.mojom-forward.h"
@@ -184,50 +183,6 @@ void ResourceLoadObserverForFrame::DidChangePriority(
                                    identifier, priority);
 }
 
-namespace {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// Must remain in sync with LinkPrefetchMimeType in
-// tools/metrics/histograms/enums.xml.
-enum class LinkPrefetchMimeType {
-  kUnknown = 0,
-  kHtml = 1,
-  kScript = 2,
-  kStyle = 3,
-  kFont = 4,
-  kImage = 5,
-  kMedia = 6,
-  kMaxValue = kMedia,
-};
-
-void LogLinkPrefetchMimeTypeHistogram(const AtomicString& mime) {
-  // Loosely based on https://mimesniff.spec.whatwg.org/#mime-type-groups.
-  // This could be done properly if needed, but this is just to gather
-  // approximate data.
-  LinkPrefetchMimeType type = LinkPrefetchMimeType::kUnknown;
-  if (mime == "text/html" || mime == "application/xhtml+xml") {
-    type = LinkPrefetchMimeType::kHtml;
-  } else if (mime == "application/javascript" || mime == "text/javascript") {
-    type = LinkPrefetchMimeType::kScript;
-  } else if (mime == "text/css") {
-    type = LinkPrefetchMimeType::kStyle;
-  } else if (mime.StartsWith("font/") || mime.StartsWith("application/font-") ||
-             mime == "application/vnd.ms-fontobject" ||
-             mime == "application/vnd.ms-opentype") {
-    type = LinkPrefetchMimeType::kFont;
-  } else if (mime.StartsWith("image/")) {
-    type = LinkPrefetchMimeType::kImage;
-  } else if (mime.StartsWith("audio/") || mime.StartsWith("video/") ||
-             mime == "application/ogg") {
-    type = LinkPrefetchMimeType::kMedia;
-  }
-  UMA_HISTOGRAM_ENUMERATION("Blink.Prefetch.LinkPrefetchMimeType", type);
-}
-
-}  // namespace
-
 void ResourceLoadObserverForFrame::DidReceiveResponse(
     uint64_t identifier,
     const ResourceRequest& request,
@@ -297,9 +252,6 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
       request.Url().ProtocolIsInHTTPFamily() && response.IsAttachment()) {
     CountUsage(WebFeature::kContentDispositionInSvgUse);
   }
-
-  if (resource->GetType() == ResourceType::kLinkPrefetch)
-    LogLinkPrefetchMimeTypeHistogram(response.MimeType());
 
   PreloadHelper::LoadLinksFromHeader(
       response.HttpHeaderField(http_names::kLink), response.CurrentRequestUrl(),
