@@ -15,8 +15,6 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {castExists} from '../assert_extras.js';
-
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo} from './about_page_browser_proxy.js';
 import {getTemplate} from './update_warning_dialog.html.js';
 
@@ -42,7 +40,12 @@ class SettingsUpdateWarningDialogElement extends
     return {
       updateInfo: {
         type: Object,
-        observer: 'updateInfoChanged_',
+        observer: 'onUpdateInfoChanged_',
+      },
+
+      warningMessage_: {
+        type: String,
+        value: '',
       },
     };
   }
@@ -50,6 +53,7 @@ class SettingsUpdateWarningDialogElement extends
   updateInfo?: AboutPageUpdateInfo;
 
   private browserProxy_: AboutPageBrowserProxy;
+  private warningMessage_: string;
 
   constructor() {
     super();
@@ -57,13 +61,7 @@ class SettingsUpdateWarningDialogElement extends
     this.browserProxy_ = AboutPageBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
-    super.connectedCallback();
-
-    this.$.dialog.showModal();
-  }
-
-  private onCancelClick_() {
+  private onCancelClick_(): void {
     this.$.dialog.close();
   }
 
@@ -77,15 +75,13 @@ class SettingsUpdateWarningDialogElement extends
     this.$.dialog.close();
   }
 
-  private updateInfoChanged_() {
+  private onUpdateInfoChanged_(): void {
     if (!this.updateInfo || this.updateInfo.size === undefined) {
       console.warn('ERROR: Update size is undefined');
       return;
     }
 
-    const warningMessage =
-        castExists(this.shadowRoot!.getElementById('update-warning-message'));
-    warningMessage.innerHTML = this.i18n(
+    this.warningMessage_ = this.i18n(
         'aboutUpdateWarningMessage',
         // Convert bytes to megabytes
         Math.floor(Number(this.updateInfo.size) / (1024 * 1024)));
