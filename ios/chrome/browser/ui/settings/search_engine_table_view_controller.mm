@@ -599,11 +599,18 @@ const char kUmaSelectDefaultSearchEngine[] =
       TableViewItem* item = [self.tableViewModel itemAtIndexPath:path];
       // Only custom search engine can be deleted.
       DCHECK(item.type == ItemTypeCustomEngine);
-      // The custom search engine in the first section should be the last one.
-      DCHECK(path.row == static_cast<int>(_firstList.size()) - 1);
-
-      engine = _firstList.back();
-      _firstList.pop_back();
+      if (_shouldShowUpdatedSettings) {
+        // The custom search engine in the first section should be the first
+        // one.
+        DCHECK(path.row == static_cast<int>(0));
+        engine = _firstList.front();
+        _firstList.erase(_firstList.begin());
+      } else {
+        // The custom search engine in the first section should be the last one.
+        DCHECK(path.row == static_cast<int>(_firstList.size()) - 1);
+        engine = _firstList.back();
+        _firstList.pop_back();
+      }
     } else {
       DCHECK(path.row < static_cast<int>(_secondList.size()));
 
