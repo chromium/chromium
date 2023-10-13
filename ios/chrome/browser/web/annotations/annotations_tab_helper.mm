@@ -227,7 +227,7 @@ void AnnotationsTabHelper::ProcessParcelTrackingNumbers(
 
 void AnnotationsTabHelper::MaybeShowParcelTrackingUI(
     NSArray<CustomTextCheckingResult*>* parcels) {
-  [parcel_tracking_handler_ showParcelTrackingUIWithParcels:parcels];
+  [parcel_tracking_handler_ showTrackingForParcels:parcels];
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(AnnotationsTabHelper)

@@ -2360,15 +2360,24 @@ enum class ToolbarKind {
 
 #pragma mark - ParcelTrackingOptInCommands
 
-- (void)showParcelTrackingUIWithParcels:
+- (void)showTrackingForParcels:(NSArray<CustomTextCheckingResult*>*)parcels {
+  commerce::ShoppingService* shoppingService =
+      commerce::ShoppingServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  // Filter out parcels that are already being tracked and post
+  // `showParcelTrackingUIWithNewParcels` command for the new parcel list.
+  FilterParcelsAndShowParcelTrackingUI(
+      shoppingService, parcels,
+      HandlerForProtocol(self.dispatcher, ParcelTrackingOptInCommands));
+}
+
+- (void)showTrackingForFilteredParcels:
     (NSArray<CustomTextCheckingResult*>*)parcels {
-  // TODO(crbug.com/1473449): Once Shopping Service API is ready, return
-  // early if the parcels are already being tracked.
-  commerce::ShoppingService* shopping_service =
+  commerce::ShoppingService* shoppingService =
       commerce::ShoppingServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
   if (IsUserEligibleParcelTrackingOptInPrompt(
-          self.browser->GetBrowserState()->GetPrefs(), shopping_service)) {
+          self.browser->GetBrowserState()->GetPrefs(), shoppingService)) {
     [self showParcelTrackingOptInPromptWithParcels:parcels];
   } else {
     [self maybeShowParcelTrackingInfobarWithParcels:parcels];

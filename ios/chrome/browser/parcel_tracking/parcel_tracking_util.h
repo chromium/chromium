@@ -49,4 +49,11 @@ void TrackParcels(
     id<ParcelTrackingOptInCommands> parcel_tracking_commands_handler,
     bool display_infobar);
 
+// Displays the parcel tracking opt-in UI for the new parcels from parcel list
+// `parcels`. "New parcels" are parcels that are not already being tracked.
+void FilterParcelsAndShowParcelTrackingUI(
+    commerce::ShoppingService* shopping_service,
+    NSArray<CustomTextCheckingResult*>* parcels,
+    id<ParcelTrackingOptInCommands> parcel_tracking_commands_handler);
+
 #endif  // IOS_CHROME_BROWSER_PARCEL_TRACKING_PARCEL_TRACKING_UTIL_H_
