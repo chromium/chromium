@@ -69,7 +69,6 @@
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ref.h"
 #include "components/invalidation/impl/fake_invalidation_handler.h"
-#include "components/invalidation/impl/topic_invalidation_map_test_util.h"
 #include "components/invalidation/public/ack_handle.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_service.h"
@@ -134,7 +133,7 @@ TYPED_TEST_P(InvalidationServiceTest, Basic) {
 
   this->delegate_.TriggerOnIncomingInvalidation(invalidation_map);
   EXPECT_EQ(1, handler.GetInvalidationCount());
-  EXPECT_THAT(expected_invalidations, Eq(handler.GetLastInvalidationMap()));
+  EXPECT_EQ(expected_invalidations, handler.GetLastInvalidationMap());
 
   topics.erase(this->topic1);
   topics.insert(this->topic3);
@@ -147,7 +146,7 @@ TYPED_TEST_P(InvalidationServiceTest, Basic) {
   // Removed Topics should not be notified, newly-added ones should.
   this->delegate_.TriggerOnIncomingInvalidation(invalidation_map);
   EXPECT_EQ(2, handler.GetInvalidationCount());
-  EXPECT_THAT(expected_invalidations, Eq(handler.GetLastInvalidationMap()));
+  EXPECT_EQ(expected_invalidations, handler.GetLastInvalidationMap());
 
   this->delegate_.TriggerOnInvalidatorStateChange(TRANSIENT_INVALIDATION_ERROR);
   EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler.GetInvalidatorState());
@@ -223,13 +222,13 @@ TYPED_TEST_P(InvalidationServiceTest, MultipleHandlers) {
     expected_invalidations.Insert(Invalidation::Init(this->topic2, 2, "2"));
 
     EXPECT_EQ(1, handler1.GetInvalidationCount());
-    EXPECT_THAT(expected_invalidations, Eq(handler1.GetLastInvalidationMap()));
+    EXPECT_EQ(expected_invalidations, handler1.GetLastInvalidationMap());
 
     expected_invalidations = TopicInvalidationMap();
     expected_invalidations.Insert(Invalidation::Init(this->topic3, 3, "3"));
 
     EXPECT_EQ(1, handler2.GetInvalidationCount());
-    EXPECT_THAT(expected_invalidations, Eq(handler2.GetLastInvalidationMap()));
+    EXPECT_EQ(expected_invalidations, handler2.GetLastInvalidationMap());
 
     EXPECT_EQ(0, handler3.GetInvalidationCount());
     EXPECT_EQ(0, handler4.GetInvalidationCount());

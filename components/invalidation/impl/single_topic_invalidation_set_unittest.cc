@@ -4,9 +4,6 @@
 
 #include "components/invalidation/public/single_topic_invalidation_set.h"
 
-#include <memory>
-
-#include "components/invalidation/impl/invalidation_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace invalidation {
@@ -14,9 +11,6 @@ namespace invalidation {
 namespace {
 
 class SingleTopicInvalidationSetTest : public testing::Test {
- public:
-  SingleTopicInvalidationSetTest() = default;
-
  protected:
   const Topic kTopic = "one";
 };
@@ -39,16 +33,16 @@ TEST_F(SingleTopicInvalidationSetTest, InsertionAndOrdering) {
 
   auto it1 = l1.begin();
   auto it2 = l2.begin();
-  EXPECT_THAT(inv1, Eq(*it1));
-  EXPECT_THAT(inv1, Eq(*it2));
+  EXPECT_EQ(inv1, *it1);
+  EXPECT_EQ(inv1, *it2);
   it1++;
   it2++;
-  EXPECT_THAT(inv2, Eq(*it1));
-  EXPECT_THAT(inv2, Eq(*it2));
+  EXPECT_EQ(inv2, *it1);
+  EXPECT_EQ(inv2, *it2);
   it1++;
   it2++;
-  EXPECT_TRUE(it1 == l1.end());
-  EXPECT_TRUE(it2 == l2.end());
+  EXPECT_EQ(it1, l1.end());
+  EXPECT_EQ(it2, l2.end());
 }
 
 }  // namespace

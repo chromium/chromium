@@ -5,23 +5,11 @@
 #include "components/invalidation/public/invalidation.h"
 
 #include "base/functional/bind.h"
-#include "base/json/json_string_value_serializer.h"
-#include "base/location.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/values.h"
 #include "components/invalidation/public/ack_handler.h"
 #include "components/invalidation/public/invalidation_util.h"
 
 namespace invalidation {
-
-namespace {
-
-const char kTopic[] = "topic";
-const char kVersionKey[] = "version";
-const char kPayloadKey[] = "payload";
-
-}  // namespace
 
 // static
 Invalidation Invalidation::Init(const Topic& topic,
@@ -59,12 +47,8 @@ void Invalidation::SetAckHandler(
   ack_handler_task_runner_ = handler_task_runner;
 }
 
-bool Invalidation::SupportsAcknowledgement() const {
-  return !!ack_handler_task_runner_;
-}
-
 void Invalidation::Acknowledge() const {
-  if (SupportsAcknowledgement()) {
+  if (ack_handler_task_runner_) {
     ack_handler_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&AckHandler::Acknowledge, ack_handler_,
                                   topic(), ack_handle_));
@@ -74,22 +58,6 @@ void Invalidation::Acknowledge() const {
 bool Invalidation::operator==(const Invalidation& other) const {
   return topic_ == other.topic_ &&
          version_ == other.version_ && payload_ == other.payload_;
-}
-
-base::Value::Dict Invalidation::ToValue() const {
-  base::Value::Dict value;
-  value.Set(kTopic, topic_);
-  value.Set(kVersionKey, base::NumberToString(version_));
-  value.Set(kPayloadKey, payload_);
-  return value;
-}
-
-std::string Invalidation::ToString() const {
-  std::string output;
-  JSONStringValueSerializer serializer(&output);
-  serializer.set_pretty_print(true);
-  serializer.Serialize(ToValue());
-  return output;
 }
 
 Invalidation::Invalidation(const Topic& topic,
