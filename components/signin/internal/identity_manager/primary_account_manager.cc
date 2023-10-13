@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/debug/stack_trace.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -464,7 +465,12 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
                                       /*commit_on_destroy*/ false);
   switch (remove_option) {
     case RemoveAccountsOption::kRemoveAllAccounts:
-      VLOG(0) << "Revoking all refresh tokens on server. Reason: sign out";
+      // TODO(crbug.com/1491558): Remove the stack trace from the log once the
+      // flakiness is resolved.
+      VLOG(0)
+          << "Revoking all refresh tokens on server. Reason: sign out; source="
+          << static_cast<int>(signout_source_metric) << "; stack trace:\n"
+          << base::debug::StackTrace().ToString();
       SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false,
                                 scoped_pref_commit);
       token_service_->RevokeAllCredentials(
