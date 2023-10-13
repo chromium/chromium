@@ -6439,20 +6439,9 @@ NavigationRequest::CheckCSPEmbeddedEnforcement() {
   const network::mojom::AllowCSPFromHeaderValue* allow_csp_from =
       response() ? response()->parsed_headers->allow_csp_from.get() : nullptr;
 
-  const url::Origin& request_origin =
-      GetParentFrame()->GetLastCommittedOrigin();
-
   if (network::AllowsBlanketEnforcementOfRequiredCSP(
-          request_origin, GetURL(), allow_csp_from, required_csp_)) {
-    if (request_origin.IsSameOriginWith(GetURL()) && response() &&
-        !network::AllowCspFromAllowOrigin(request_origin, allow_csp_from) &&
-        !network::Subsumes(
-            *required_csp_,
-            response()->parsed_headers->content_security_policy)) {
-      GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-          GetParentFrame(),
-          blink::mojom::WebFeature::kCSPEESameOriginBlanketEnforcement);
-    }
+          GetParentFrame()->GetLastCommittedOrigin(), GetURL(), allow_csp_from,
+          required_csp_)) {
     // Enforce the required CSPs on the frame by passing them down to blink.
     policy_container_builder_->AddContentSecurityPolicy(required_csp_->Clone());
     return CSPEmbeddedEnforcementResult::ALLOW_RESPONSE;

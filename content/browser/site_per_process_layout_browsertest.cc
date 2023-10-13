@@ -1670,7 +1670,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
        embedded_test_server()->GetURL("c.com", "/title2.html"), true},
       // Remote to local.
       {"default-src b.com",
-       embedded_test_server()->GetURL("a.com", "/title1.html"), false},
+       embedded_test_server()->GetURL("a.com", "/title1.html"), true},
       // Local to remote.
       {"img-src c.com", embedded_test_server()->GetURL("b.com", "/title2.html"),
        true},

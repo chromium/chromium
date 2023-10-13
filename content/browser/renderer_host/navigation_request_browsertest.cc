@@ -3980,7 +3980,7 @@ IN_PROC_BROWSER_TEST_F(CSPEmbeddedEnforcementBrowserTest,
           "www.example.org",
           nullptr,
           nullptr,
-          true,
+          false,
       },
       {
           "Required csp - Cross origin",

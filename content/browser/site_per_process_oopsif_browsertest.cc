@@ -445,19 +445,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
 IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
                        CspIsolatedSandbox) {
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  // The child needs to have the same origin as the parent.
-  GURL child_url(main_url);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // Create csp-sandboxed child frame, same-origin.
   {
-    std::string js_str = base::StringPrintf(
-        "var frame = document.createElement('iframe'); "
-        "frame.csp = 'sandbox'; "
-        "frame.src = '%s'; "
-        "document.body.appendChild(frame);",
-        child_url.spec().c_str());
-    EXPECT_TRUE(ExecJs(shell(), js_str));
+    EXPECT_TRUE(ExecJs(shell(),
+                       "var frame = document.createElement('iframe'); "
+                       "frame.csp = 'sandbox'; "
+                       "frame.srcdoc = '<b>Hello!</b>'; "
+                       "document.body.appendChild(frame);"));
     ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
   }
 

@@ -1602,11 +1602,6 @@ bool AllowsBlanketEnforcementOfRequiredCSP(
     return true;
   }
 
-  if (request_origin.IsSameOriginWith(response_url)) {
-    required_csp->self_origin = ComputeSelfOrigin(response_url);
-    return true;
-  }
-
   if (AllowCspFromAllowOrigin(request_origin, allow_csp_from)) {
     required_csp->self_origin = ComputeSelfOrigin(response_url);
     return true;
