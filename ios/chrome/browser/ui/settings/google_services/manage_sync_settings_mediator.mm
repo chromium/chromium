@@ -932,7 +932,21 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   DCHECK_NE(itemType, 0);
   DCHECK_NE(textStringID, 0);
   DCHECK(accessibilityIdentifier);
-  if (![self isManagedSyncSettingsDataType:dataType]) {
+
+  BOOL isToggleEnabled = ![self isManagedSyncSettingsDataType:dataType];
+  if (self.syncAccountState == SyncSettingsAccountState::kSignedIn &&
+      dataType == syncer::UserSelectableType::kHistory) {
+    // kHistory toggle represents both kHistory and kTabs in this case.
+    // kHistory and kTabs should usually have the same value, but in some
+    // cases they may not, e.g. if one of them is disabled by policy. In that
+    // case, show the toggle as on if at least one of them is enabled. The
+    // toggle should reflect the value of the non-disabled type.
+    isToggleEnabled =
+        ![self isManagedSyncSettingsDataType:syncer::UserSelectableType::
+                                                 kHistory] ||
+        ![self isManagedSyncSettingsDataType:syncer::UserSelectableType::kTabs];
+  }
+  if (isToggleEnabled) {
     SyncSwitchItem* switchItem = [[SyncSwitchItem alloc] initWithType:itemType];
     switchItem.text = GetNSString(textStringID);
     switchItem.dataType = static_cast<NSInteger>(dataType);
