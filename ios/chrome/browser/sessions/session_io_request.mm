@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/sessions/session_io_request.h"
 
 #import "base/check.h"
-#import "base/files/file_util.h"
 #import "base/threading/scoped_blocking_call.h"
 #import "ios/chrome/browser/sessions/session_internal_util.h"
 #import "third_party/protobuf/src/google/protobuf/message_lite.h"
@@ -58,7 +57,7 @@ void CopyPathIORequest::Execute() const {
   // Ignore the result as there is nothing that can be done by this point
   // if the write fails.
   base::ScopedBlockingCall _(FROM_HERE, base::BlockingType::MAY_BLOCK);
-  std::ignore = base::CopyDirectory(from_path_, dest_path_, true);
+  std::ignore = ios::sessions::CopyDirectory(from_path_, dest_path_);
 }
 
 DeletePathIORequest::~DeletePathIORequest() = default;
@@ -72,7 +71,7 @@ void DeletePathIORequest::Execute() const {
   // Ignore the result as there is nothing that can be done by this point
   // if the deletion fails.
   base::ScopedBlockingCall _(FROM_HERE, base::BlockingType::MAY_BLOCK);
-  std::ignore = base::DeletePathRecursively(path_);
+  std::ignore = ios::sessions::DeleteRecursively(path_);
 }
 
 void ExecuteIORequests(IORequestList requests) {
