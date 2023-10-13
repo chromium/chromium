@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -237,6 +238,12 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
         ui::DispositionFromEventFlags(event_flags));
     return;
   }
+  if (command_id == IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL) {
+    chrome::ExecuteCommandWithDisposition(
+        browser_, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
+        ui::DispositionFromEventFlags(event_flags));
+    return;
+  }
 
   DCHECK_NE(IDC_RECENT_TABS_NO_DEVICE_TABS, command_id);
 
@@ -333,13 +340,20 @@ void RecentTabsSubMenuModel::Build() {
     SetCommandIcon(this, IDC_SHOW_HISTORY,
                    vector_icons::kHistoryChromeRefreshIcon);
   }
-  InsertSeparatorAt(1, ui::NORMAL_SEPARATOR);
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    InsertItemWithStringIdAt(1, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
+                             IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL);
+    SetCommandIcon(this, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
+                   vector_icons::kHistoryChromeRefreshIcon);
+  }
+  AddSeparator(ui::NORMAL_SEPARATOR);
+  history_separator_index_ = GetItemCount() - 1;
   BuildLocalEntries();
   BuildTabsFromOtherDevices();
 }
 
 void RecentTabsSubMenuModel::BuildLocalEntries() {
-  last_local_model_index_ = kHistorySeparatorIndex;
+  last_local_model_index_ = history_separator_index_;
 
   // All local items use InsertItem*At() to append or insert a menu item.
   // We're appending if building the entries for the first time i.e. invoked
@@ -813,7 +827,7 @@ RecentTabsSubMenuModel::GetTabVectorForCommandId(int command_id) {
 
 void RecentTabsSubMenuModel::ClearLocalEntries() {
   // Remove local items (recently closed tabs and windows) from menumodel.
-  while (last_local_model_index_ > kHistorySeparatorIndex) {
+  while (last_local_model_index_ > history_separator_index_) {
     RemoveItemAt(last_local_model_index_--);
   }
   recently_closed_title_index_.reset();

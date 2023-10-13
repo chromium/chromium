@@ -227,3 +227,22 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
   EXPECT_EQ(SidePanelEntryKey(SidePanelEntryId::kReadAnything),
             coordinator->GetCurrentSidePanelEntryForTesting()->key());
 }
+
+// Verify that we can open the history cluster side panel from the app menu.
+IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
+                       OpenHistoryClusterSidePanel) {
+  auto* registry = SidePanelCoordinator::GetGlobalSidePanelRegistry(browser());
+  registry->Deregister(
+      SidePanelEntry::Key(SidePanelEntry::Id::kHistoryClusters));
+  registry->Register(std::make_unique<SidePanelEntry>(
+      SidePanelEntry::Id::kHistoryClusters, u"testing1", ui::ImageModel(),
+      base::BindRepeating([]() { return std::make_unique<views::View>(); })));
+
+  SidePanelCoordinator* const coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+
+  chrome::ExecuteCommand(browser(), IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL);
+
+  EXPECT_EQ(SidePanelEntryKey(SidePanelEntryId::kHistoryClusters),
+            coordinator->GetCurrentSidePanelEntryForTesting()->key());
+}

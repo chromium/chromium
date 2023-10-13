@@ -93,7 +93,7 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
 
   // Index of the separator that follows the history menu item. Used as a
   // reference position for inserting local entries.
-  static constexpr size_t kHistorySeparatorIndex = 1;
+  size_t history_separator_index_ = 0;
 
   // Build the menu items by populating the menumodel.
   void Build();
@@ -272,7 +272,7 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
 
   // Index of the last local entry (recently closed tab or window or group) in
   // the menumodel.
-  size_t last_local_model_index_ = kHistorySeparatorIndex;
+  size_t last_local_model_index_ = 0;
 
   base::CancelableTaskTracker local_tab_cancelable_task_tracker_;
 
