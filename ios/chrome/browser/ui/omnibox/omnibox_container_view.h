@@ -41,9 +41,6 @@
 - (void)setLeadingImage:(UIImage*)image
     withAccessibilityIdentifier:(NSString*)accessibilityIdentifier;
 
-// Sets the alpha level of the leading image view.
-- (void)setLeadingImageAlpha:(CGFloat)alpha;
-
 // Sets the scale of the leading image view.
 - (void)setLeadingImageScale:(CGFloat)scaleValue;
 

@@ -96,7 +96,7 @@
     [self.locationBarAnimatee resetTransforms];
     [self.locationBarAnimatee setSteadyViewFaded:NO];
     [self.locationBarAnimatee setEditViewFaded:NO];
-    [self.editViewAnimatee setLeadingIconFaded:NO];
+    [self.editViewAnimatee setLeadingIconScale:1];
     [self.editViewAnimatee setClearButtonFaded:NO];
   };
 
@@ -110,61 +110,56 @@
     // Make edit view transparent, but not hidden.
     [self.locationBarAnimatee setEditViewHidden:NO];
     [self.locationBarAnimatee setEditViewFaded:YES];
-    [self.editViewAnimatee setLeadingIconFaded:YES];
+    [self.editViewAnimatee setLeadingIconScale:0];
     [self.editViewAnimatee setClearButtonFaded:YES];
 
-    CGFloat duration = kMaterialDuration1;
-
     self.inProgressAnimationCount += 1;
-    [UIView animateWithDuration:duration
+    [UIView animateKeyframesWithDuration:kMaterialDuration1
         delay:0
         options:UIViewAnimationCurveEaseInOut
         animations:^{
           [self.locationBarAnimatee
                   resetEditViewOffsetAndOffsetSteadyViewToMatch];
+
+          // Fading the views happens with a different timing for a better
+          // visual effect. The steady view looks like an ordinary label, and it
+          // fades before the animation is complete. The edit view will be in
+          // pre-edit state, so it looks like selected text. Since the selection
+          // is blue, it looks overwhelming if faded in at the same time as the
+          // steady view. So it fades in faster and later into the animation to
+          // look better.
+          [UIView addKeyframeWithRelativeStartTime:0.1
+                                  relativeDuration:0.8
+                                        animations:^{
+                                          [self.locationBarAnimatee
+                                              setSteadyViewFaded:YES];
+                                        }];
+
+          [UIView addKeyframeWithRelativeStartTime:0.4
+                                  relativeDuration:0.6
+                                        animations:^{
+                                          [self.locationBarAnimatee
+                                              setEditViewFaded:NO];
+                                        }];
+
+          // Scale the leading icon in with a slight bounce / spring.
+          [UIView addKeyframeWithRelativeStartTime:0.2
+                                  relativeDuration:0.55
+                                        animations:^{
+                                          [self.editViewAnimatee
+                                              setLeadingIconScale:1.3];
+                                        }];
+          [UIView addKeyframeWithRelativeStartTime:0.75
+                                  relativeDuration:0.25
+                                        animations:^{
+                                          [self.editViewAnimatee
+                                              setLeadingIconScale:1];
+                                          [self.editViewAnimatee
+                                              setClearButtonFaded:NO];
+                                        }];
         }
-        completion:^(BOOL complete) {
+        completion:^(BOOL finished) {
           cleanup();
-          [self animationFinished];
-        }];
-
-    // Fading the views happens with a different timing for a better visual
-    // effect. The steady view looks like an ordinary label, and it fades before
-    // the animation is complete. The edit view will be in pre-edit state, so it
-    // looks like selected text. Since the selection is blue, it looks
-    // overwhelming if faded in at the same time as the steady view. So it fades
-    // in faster and later into the animation to look better.
-    self.inProgressAnimationCount += 1;
-    [UIView animateWithDuration:duration * 0.8
-        delay:duration * 0.1
-        options:UIViewAnimationCurveEaseInOut
-        animations:^{
-          [self.locationBarAnimatee setSteadyViewFaded:YES];
-        }
-        completion:^(BOOL complete) {
-          [self animationFinished];
-        }];
-
-    self.inProgressAnimationCount += 1;
-    [UIView animateWithDuration:duration * 0.6
-        delay:duration * 0.4
-        options:UIViewAnimationCurveEaseInOut
-        animations:^{
-          [self.locationBarAnimatee setEditViewFaded:NO];
-        }
-        completion:^(BOOL finished) {
-          [self animationFinished];
-        }];
-
-    self.inProgressAnimationCount += 1;
-    [UIView animateWithDuration:duration * 0.2
-        delay:duration * 0.8
-        options:UIViewAnimationCurveLinear
-        animations:^{
-          [self.editViewAnimatee setLeadingIconFaded:NO];
-          [self.editViewAnimatee setClearButtonFaded:NO];
-        }
-        completion:^(BOOL finished) {
           [self animationFinished];
         }];
   } else {
@@ -180,7 +175,7 @@
     [self.locationBarAnimatee showSteadyViewBadgeView];
     [self.locationBarAnimatee resetTransforms];
     [self.locationBarAnimatee setSteadyViewFaded:NO];
-    [self.editViewAnimatee setLeadingIconFaded:NO];
+    [self.editViewAnimatee setLeadingIconScale:1];
     [self.editViewAnimatee setClearButtonFaded:NO];
   };
 
@@ -190,7 +185,7 @@
     // Make steady view transparent, but not hidden.
     [self.locationBarAnimatee setSteadyViewHidden:NO];
     [self.locationBarAnimatee setSteadyViewFaded:YES];
-    [self.editViewAnimatee setLeadingIconFaded:NO];
+    [self.editViewAnimatee setLeadingIconScale:1];
     [self.editViewAnimatee setClearButtonFaded:NO];
     CGFloat duration = kMaterialDuration1;
 
@@ -212,7 +207,7 @@
     self.inProgressAnimationCount += 1;
     [UIView animateWithDuration:0.2 * duration
         animations:^{
-          [self.editViewAnimatee setLeadingIconFaded:YES];
+          [self.editViewAnimatee setLeadingIconScale:0];
           [self.editViewAnimatee setClearButtonFaded:YES];
         }
         completion:^(BOOL finished) {

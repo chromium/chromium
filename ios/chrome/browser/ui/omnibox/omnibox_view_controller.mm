@@ -445,20 +445,8 @@ const CGFloat kClearButtonImageSize = 17.0f;
 
 #pragma mark - EditViewAnimatee
 
-- (void)setLeadingIconFaded:(BOOL)faded {
-  CATransition* transition = [CATransition animation];
-  transition.duration = 0.3;
-  transition.timingFunction = [CAMediaTimingFunction
-      functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-  transition.type = kCATransitionFade;
-  [self.view.layer addAnimation:transition forKey:nil];
-  if (faded) {
-    [self.view setLeadingImageAlpha:0];
-    [self.view setLeadingImageScale:0];
-  } else {
-    [self.view setLeadingImageAlpha:1];
-    [self.view setLeadingImageScale:1];
-  }
+- (void)setLeadingIconScale:(CGFloat)scale {
+  [self.view setLeadingImageScale:scale];
 }
 
 - (void)setClearButtonFaded:(BOOL)faded {
