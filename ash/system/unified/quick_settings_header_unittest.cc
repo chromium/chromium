@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
@@ -21,7 +20,6 @@
 #include "ash/test_shell_delegate.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/user_manager/user_type.h"
 #include "components/version_info/channel.h"
 #include "ui/events/test/event_generator.h"
@@ -39,9 +37,7 @@ EnterpriseDomainModel* GetEnterpriseDomainModel() {
 
 class QuickSettingsHeaderTest : public NoSessionAshTestBase {
  public:
-  QuickSettingsHeaderTest() {
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
-  }
+  QuickSettingsHeaderTest() = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -95,7 +91,6 @@ class QuickSettingsHeaderTest : public NoSessionAshTestBase {
     return views::AsViewClass<SupervisedUserView>(view)->label();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   raw_ptr<TestShellDelegate, DanglingUntriaged | ExperimentalAsh>
       test_shell_delegate_ = nullptr;
   scoped_refptr<UnifiedSystemTrayModel> model_;

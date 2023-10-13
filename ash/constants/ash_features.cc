@@ -3509,8 +3509,7 @@ bool IsHotspotEnabled() {
 }
 
 bool IsInstantHotspotRebrandEnabled() {
-  return base::FeatureList::IsEnabled(kInstantHotspotRebrand) &&
-         base::FeatureList::IsEnabled(kQsRevamp);
+  return base::FeatureList::IsEnabled(kInstantHotspotRebrand);
 }
 
 bool IsScreenSaverDurationEnabled() {
@@ -3996,6 +3995,8 @@ bool IsProjectorUpdateIndexableTextEnabled() {
   return base::FeatureList::IsEnabled(kProjectorUpdateIndexableText);
 }
 
+// TODO(b/305075031): Remove `kQsRevamp` and this method after all the clean up
+// is done.
 bool IsQsRevampEnabled() {
   return base::FeatureList::IsEnabled(kQsRevamp);
 }

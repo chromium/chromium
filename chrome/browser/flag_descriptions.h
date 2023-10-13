@@ -3907,9 +3907,6 @@ extern const char kProjectorAppDebugDescription[];
 extern const char kProjectorServerSideSpeechRecognitionName[];
 extern const char kProjectorServerSideSpeechRecognitionDescription[];
 
-extern const char kQsRevampName[];
-extern const char kQsRevampDescription[];
-
 extern const char kReleaseNotesNotificationAllChannelsName[];
 extern const char kReleaseNotesNotificationAllChannelsDescription[];
 

@@ -6806,10 +6806,6 @@ const char kProjectorServerSideSpeechRecognitionName[] =
 const char kProjectorServerSideSpeechRecognitionDescription[] =
     "Adds server side speech recognition capability to Projector.";
 
-const char kQsRevampName[] = "Quick Settings Revamp";
-const char kQsRevampDescription[] =
-    "Enable QS UI revamp with separated message center.";
-
 const char kReleaseNotesNotificationAllChannelsName[] =
     "Release Notes Notification All Channels";
 const char kReleaseNotesNotificationAllChannelsDescription[] =

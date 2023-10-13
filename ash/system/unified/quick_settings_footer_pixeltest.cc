@@ -19,9 +19,8 @@ namespace ash {
 class QuickSettingsFooterPixelTest : public AshTestBase {
  public:
   QuickSettingsFooterPixelTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, chromeos::features::kJelly},
-        {features::kAdaptiveCharging});
+    feature_list_.InitWithFeatures({chromeos::features::kJelly},
+                                   {features::kAdaptiveCharging});
   }
 
   // AshTestBase:

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -41,8 +40,6 @@ constexpr gfx::Size kWideButtonSize(408, 32);
 
 QuickSettingsHeader::QuickSettingsHeader(
     UnifiedSystemTrayController* controller) {
-  DCHECK(features::IsQsRevampEnabled());
-
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kHeaderPadding,
       kButtonSpacing));

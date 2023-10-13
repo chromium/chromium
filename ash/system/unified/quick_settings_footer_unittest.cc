@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/quick_settings_footer.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
@@ -17,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/user_manager/user_type.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
@@ -35,7 +33,6 @@ class QuickSettingsFooterTest : public NoSessionAshTestBase {
   ~QuickSettingsFooterTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({features::kQsRevamp}, {});
     NoSessionAshTestBase::SetUp();
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
@@ -79,8 +76,6 @@ class QuickSettingsFooterTest : public NoSessionAshTestBase {
 
   // Owned by `widget_`.
   raw_ptr<QuickSettingsFooter, DanglingUntriaged | ExperimentalAsh> footer_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that all buttons are with the correct view id, catalog name and UMA
