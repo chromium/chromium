@@ -87,6 +87,11 @@ BASE_FEATURE(kSearchEngineChoiceFre,
              "SearchEngineChoiceFre",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the new search engine choice setting UI.
+BASE_FEATURE(kSearchEngineChoiceSettingsUi,
+             "SearchEngineChoiceSettingsUi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUnoDesktop, "UnoDesktop", base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace switches
