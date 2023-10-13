@@ -316,41 +316,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="SBClientDownload.SafeDownloadOpenedLatencyByContentType.{DownloadContent}"
-    units="ms" expires_after="2024-03-31">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the latency between when a safe {DownloadContent} download is
-    completed and when the user opens the download either from the download
-    shelf or from the downloads page. Note that if the user opens the same
-    download for several times, this metric is recorded each time. Also, this
-    metrics excludes downloads that were auto opened.
-  </summary>
-  <token key="DownloadContent">
-    <variant name="APK" summary="apk"/>
-    <variant name="ARCHIVE" summary="archive"/>
-    <variant name="AUDIO" summary="audio"/>
-    <variant name="CRX" summary="crx"/>
-    <variant name="DMG" summary="dmg"/>
-    <variant name="DOCUMENT" summary="document"/>
-    <variant name="EBOOK" summary="ebook"/>
-    <variant name="EXECUTABLE" summary="executable"/>
-    <variant name="FONT" summary="font"/>
-    <variant name="IMAGE" summary="image"/>
-    <variant name="MAX" summary="max"/>
-    <variant name="OCTET_STREAM" summary="octet stream"/>
-    <variant name="PDF" summary="pdf"/>
-    <variant name="PRESENTATION" summary="presentation"/>
-    <variant name="SPREADSHEET" summary="spreadsheet"/>
-    <variant name="TEXT" summary="text"/>
-    <variant name="UNRECOGNIZED" summary="unrecognized"/>
-    <variant name="VIDEO" summary="video"/>
-    <variant name="WEB" summary="web"/>
-  </token>
-</histogram>
-
 <histogram name="SBClientDownload.SavePackageFileCount" units="files"
     expires_after="2023-03-19">
   <owner>domfc@chromium.org</owner>
@@ -405,18 +370,6 @@ chromium-metrics-reviews@google.com.
     each time a download happens and the danger level is ALLOW_ON_USER_GESTURE.
     To get the percentage of a specific attribute, divide the number of record
     of that attribute by the number of record of TOTAL_TYPE_CHECKED.
-  </summary>
-</histogram>
-
-<histogram
-    name="SBClientDownload.UserGestureFileType.LastBypassDownloadInterval"
-    units="ms" expires_after="2023-12-14">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the interval between the current download and the last download
-    bypass. Logged each time a download happens, the danger level is
-    ALLOW_ON_USER_GESTURE and the last download bypass exists.
   </summary>
 </histogram>
 

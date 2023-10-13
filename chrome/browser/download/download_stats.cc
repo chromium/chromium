@@ -77,11 +77,6 @@ void RecordDownloadShelfDragInfo(DownloadDragInfo drag_info) {
                                 DownloadDragInfo::COUNT);
 }
 
-void RecordDownloadBubbleDragInfo(DownloadDragInfo drag_info) {
-  base::UmaHistogramEnumeration("Download.Bubble.DragInfo", drag_info,
-                                DownloadDragInfo::COUNT);
-}
-
 void RecordDownloadStartPerProfileType(Profile* profile) {
   base::UmaHistogramEnumeration(
       "Download.Start.PerProfileType",

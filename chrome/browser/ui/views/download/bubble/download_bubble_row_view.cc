@@ -572,7 +572,6 @@ bool DownloadBubbleRowView::OnMouseDragged(const ui::MouseEvent& event) {
                      widget ? widget->GetNativeView() : nullptr);
     // DragDownloadItem returns when the drag is over.
     download_dragging_pin_.reset();
-    RecordDownloadBubbleDragInfo(DownloadDragInfo::DRAG_STARTED);
   }
   return true;
 }
@@ -781,7 +780,6 @@ void DownloadBubbleRowView::RecordMetricsOnUpdate() {
   }
   if (!has_download_completion_been_logged_ &&
       info_->model()->GetState() == download::DownloadItem::COMPLETE) {
-    RecordDownloadBubbleDragInfo(DownloadDragInfo::DOWNLOAD_COMPLETE);
     has_download_completion_been_logged_ = true;
   }
 }
