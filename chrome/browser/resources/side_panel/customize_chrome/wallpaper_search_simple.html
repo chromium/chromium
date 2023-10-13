@@ -3,14 +3,6 @@
     box-sizing: border-box;
     padding: 0 16px;
   }
-
-  [selected] {
-    background: green;
-  }
-
-  [highlighted] {
-    background: yellow;
-  }
 </style>
 <cr-input
     id="queryInput"
@@ -19,18 +11,3 @@
     value="{{query_}}">
 </cr-input>
 <cr-button id="submitButton" on-click="onSearchClick_">Search</cr-button>
-
-<customize-chrome-combobox label="My label">
-  <div role="group">
-    Group 1
-    <div role="option">Option 1</div>
-    <div role="option">Option 2</div>
-    <div role="option">Option 3</div>
-  </div>
-  <div role="group">
-    Group 2
-    <div role="option">Option 4</div>
-    <div role="option">Option 5</div>
-    <div role="option">Option 6</div>
-  </div>
-</customize-chrome-combobox>

@@ -63,6 +63,15 @@
       outline: var(--cr-focus-outline-hcm);
     }
   }
+
+  /** Temporary CSS to style demo. */
+  [selected] {
+    background: green;
+  }
+
+  [highlighted] {
+    background: yellow;
+  }
 </style>
 <div class="sp-card">
   <sp-heading id="heading" on-back-button-click="onBackClick_"
@@ -140,3 +149,19 @@
     <cr-grid>
   </div>
 </div>
+
+<!-- demo -->
+<customize-chrome-combobox label="My label">
+  <div role="group">
+    Group 1
+    <div role="option">Option 1</div>
+    <div role="option">Option 2</div>
+    <div role="option">Option 3</div>
+  </div>
+  <div role="group">
+    Group 2
+    <div role="option">Option 4</div>
+    <div role="option">Option 5</div>
+    <div role="option">Option 6</div>
+  </div>
+</customize-chrome-combobox>
