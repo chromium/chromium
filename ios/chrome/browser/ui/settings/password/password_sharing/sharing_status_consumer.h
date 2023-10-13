@@ -12,6 +12,10 @@
 // Sets circular profile image of the password sender (current user).
 - (void)setSenderImage:(UIImage*)senderImage;
 
+// Sets circular image of the recipient (or merged images of multiple
+// recipients).
+- (void)setRecipientImage:(UIImage*)recipientImage;
+
 // Sets subtitle string to be displayed in the success status view.
 - (void)setSubtitleString:(NSString*)subtitleString;
 

@@ -49,6 +49,7 @@ NSArray<RecipientInfoForIOSDisplay*>* CreateRecipients(int amount) {
 @interface FakeSharingStatusConsumer : NSObject <SharingStatusConsumer>
 
 @property(nonatomic, strong) UIImage* senderImage;
+@property(nonatomic, strong) UIImage* recipientImage;
 @property(nonatomic, strong) NSString* subtitleString;
 
 @end
@@ -57,6 +58,10 @@ NSArray<RecipientInfoForIOSDisplay*>* CreateRecipients(int amount) {
 
 - (void)setSenderImage:(UIImage*)senderImage {
   _senderImage = senderImage;
+}
+
+- (void)setRecipientImage:(UIImage*)recipientImage {
+  _recipientImage = recipientImage;
 }
 
 - (void)setSubtitleString:(NSString*)subtitleString {
@@ -133,6 +138,19 @@ TEST_F(SharingStatusMediatorTest, NotifiesSignedOutConsumerWithDefaultAvatar) {
   EXPECT_NSEQ(UIImagePNGRepresentation(DefaultSymbolTemplateWithPointSize(
                   kPersonCropCircleSymbol, kProfileImageSize)),
               UIImagePNGRepresentation(consumer.senderImage));
+}
+
+TEST_F(SharingStatusMediatorTest, NotifiesConsumerWithRecipientImage) {
+  auto* consumer = [[FakeSharingStatusConsumer alloc] init];
+  auto* mediator = [[SharingStatusMediator alloc]
+        initWithAuthService:GetAuthenticationService()
+      accountManagerService:GetAccountManagerService()
+                 recipients:CreateRecipients(1)];
+  mediator.consumer = consumer;
+
+  EXPECT_NSEQ(UIImagePNGRepresentation(DefaultSymbolTemplateWithPointSize(
+                  kPersonCropCircleSymbol, 40.0)),
+              UIImagePNGRepresentation(consumer.recipientImage));
 }
 
 TEST_F(SharingStatusMediatorTest,

@@ -60,8 +60,9 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 @property(nonatomic, strong) UIImageView* senderImageView;
 @property(nonatomic, strong) UIImage* senderImage;
 
-// Profile image of the recipients.
-@property(nonatomic, strong) UIImageView* recipientImage;
+// Profile image of the recipient (or merged avatar of multiple recipients).
+@property(nonatomic, strong) UIImageView* recipientImageView;
+@property(nonatomic, strong) UIImage* recipientImage;
 
 // Shield icon with a lock.
 @property(nonatomic, strong) UIImageView* shieldLockImage;
@@ -119,12 +120,12 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
   [animationView addSubview:senderImageView];
 
   // Add recipient profile image.
-  UIImageView* recipientImage = [self createRecipientImage];
-  [animationView insertSubview:recipientImage belowSubview:senderImageView];
+  UIImageView* recipientImageView = [self createRecipientImageView];
+  [animationView insertSubview:recipientImageView belowSubview:senderImageView];
 
   // Add progress bar view.
   UIView* progressBarView = [self createProgressBarView];
-  [animationView insertSubview:progressBarView belowSubview:recipientImage];
+  [animationView insertSubview:progressBarView belowSubview:recipientImageView];
 
   // Add shield lock image.
   UIImageView* shieldLockImage = [self createShieldLockImage];
@@ -161,9 +162,9 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
         constraintEqualToAnchor:animationView.centerXAnchor],
 
     // Recipient image constraints.
-    [recipientImage.centerYAnchor
+    [recipientImageView.centerYAnchor
         constraintEqualToAnchor:senderImageView.centerYAnchor],
-    [recipientImage.centerXAnchor
+    [recipientImageView.centerXAnchor
         constraintEqualToAnchor:senderImageView.centerXAnchor],
 
     // Progress bar constraints.
@@ -209,6 +210,10 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
   _senderImage = senderImage;
 }
 
+- (void)setRecipientImage:(UIImage*)recipientImage {
+  _recipientImage = recipientImage;
+}
+
 - (void)setSubtitleString:(NSString*)subtitleString {
   _subtitleString = subtitleString;
 }
@@ -226,14 +231,13 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 }
 
 // Helper for creating recipient image view.
-- (UIImageView*)createRecipientImage {
-  // TODO(crbug.com/1463882): Add actual recipient icon.
-  UIImageView* recipientImage = [[UIImageView alloc]
-      initWithImage:DefaultSymbolTemplateWithPointSize(kPersonCropCircleSymbol,
-                                                       kProfileImageSize)];
-  recipientImage.translatesAutoresizingMaskIntoConstraints = NO;
-  self.recipientImage = recipientImage;
-  return recipientImage;
+- (UIImageView*)createRecipientImageView {
+  UIImageView* recipientImageView = [[UIImageView alloc]
+      initWithImage:CircularImageFromImage(self.recipientImage,
+                                           kProfileImageSize)];
+  recipientImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.recipientImageView = recipientImageView;
+  return recipientImageView;
 }
 
 // Helper for creating progress bar view.
@@ -308,7 +312,7 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 // Creates sharing status animations that are started one by one.
 - (void)createAnimations {
   UIImageView* senderImageView = self.senderImageView;
-  UIImageView* recipientImage = self.recipientImage;
+  UIImageView* recipientImageView = self.recipientImageView;
   UIImageView* shieldLockImage = self.shieldLockImage;
   UIView* progressBarView = self.progressBarView;
 
@@ -320,9 +324,9 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
               senderImageView.center = CGPointMake(
                   senderImageView.center.x - kImagesSlidingOutDistance,
                   senderImageView.center.y);
-              recipientImage.center = CGPointMake(
-                  recipientImage.center.x + kImagesSlidingOutDistance,
-                  recipientImage.center.y);
+              recipientImageView.center = CGPointMake(
+                  recipientImageView.center.x + kImagesSlidingOutDistance,
+                  recipientImageView.center.y);
             }];
 
   __weak __typeof(self) weakSelf = self;
@@ -363,9 +367,9 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
               senderImageView.center = CGPointMake(
                   senderImageView.center.x + kImagesSlidingInDistance,
                   senderImageView.center.y);
-              recipientImage.center = CGPointMake(
-                  recipientImage.center.x - kImagesSlidingInDistance,
-                  recipientImage.center.y);
+              recipientImageView.center = CGPointMake(
+                  recipientImageView.center.x - kImagesSlidingInDistance,
+                  recipientImageView.center.y);
             }];
   __weak __typeof(self.delegate) weakDelegate = self.delegate;
   [self.imagesSlidingInAnimation
@@ -382,8 +386,8 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
               progressBarView.hidden = YES;
               senderImageView.center = CGPointMake(progressBarView.center.x,
                                                    senderImageView.center.y);
-              recipientImage.center = CGPointMake(progressBarView.center.x,
-                                                  recipientImage.center.y);
+              recipientImageView.center = CGPointMake(
+                  progressBarView.center.x, recipientImageView.center.y);
             }];
   [self.sharingCancelledAnimation
       addCompletion:^(UIViewAnimatingPosition finalPosition) {

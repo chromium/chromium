@@ -7,6 +7,8 @@
 #import "base/check.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
@@ -177,7 +179,8 @@ const CGFloat kAccessorySymbolSize = 22;
       [[SettingsImageDetailTextItem alloc] initWithType:ItemTypeRecipient];
   item.text = recipient.fullName;
   item.detailText = recipient.email;
-  item.image = recipient.profileImage;
+  item.image = CircularImageFromImage(recipient.profileImage,
+                                      kAccountProfilePhotoDimension);
   return item;
 }
 

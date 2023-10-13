@@ -52,6 +52,7 @@ const CGFloat kProfileImageSize = 60.0;
 
   _consumer = consumer;
   [_consumer setSenderImage:[self fetchSenderImage]];
+  [_consumer setRecipientImage:[self createRecipientImage]];
   [_consumer setSubtitleString:[self subtitleString]];
 }
 
@@ -70,6 +71,77 @@ const CGFloat kProfileImageSize = 60.0;
 
   return DefaultSymbolTemplateWithPointSize(kPersonCropCircleSymbol,
                                             kProfileImageSize);
+}
+
+// Returns `image` cropped to a half rectangle that has the same height as
+// original, but the half of original width from the middle of the image.
+- (UIImage*)cropToMiddle:(UIImage*)image {
+  CGRect cropRect = CGRectMake(image.size.width / 4, 0, image.size.width / 2,
+                               image.size.height);
+  CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], cropRect);
+  UIImage* newImage = [UIImage imageWithCGImage:imageRef];
+  CGImageRelease(imageRef);
+  return newImage;
+}
+
+// Creates a circular image merged from images of all `_recipients` selected to
+// receive shared passwords. Merging is based on the amount of `_recipients`:
+// * For 1 the only image is fully displayed.
+// * For 2 images are split between the left and the right half of the circle.
+// * For 3 one image is on the left half, other two are split horizontally on
+//   the right half.
+// * For 4 each image takes a quarter of the circle.
+// * For 5 and more handling is as in the previous point, but the bottom-right
+//   quarter displays how many more recipients are apart from the 3 displayed.
+- (UIImage*)createRecipientImage {
+  if (_recipients.count == 1) {
+    return _recipients[0].profileImage;
+  }
+
+  UIGraphicsImageRendererFormat* format =
+      [UIGraphicsImageRendererFormat preferredFormat];
+  format.opaque = NO;
+  CGRect rect = CGRectMake(0, 0, kProfileImageSize, kProfileImageSize);
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:rect.size format:format];
+
+  // The images should be spaced from the middle of the circle towards their
+  // quarter / half.
+  CGFloat kSpacing = 1.0;
+  CGFloat kHalfSize = kProfileImageSize / 2;
+
+  // Define 4 quarter rectangles.
+  CGRect leftUpperRect =
+      CGRectMake(-kSpacing, kHalfSize + kSpacing, kHalfSize, kHalfSize);
+  CGRect rightUpperRect = CGRectMake(kHalfSize + kSpacing, kHalfSize + kSpacing,
+                                     kHalfSize, kHalfSize);
+  CGRect rightLowerRect =
+      CGRectMake(kHalfSize + kSpacing, -kSpacing, kHalfSize, kHalfSize);
+  CGRect leftLowerRect = CGRectMake(-kSpacing, -kSpacing, kHalfSize, kHalfSize);
+
+  // Define 2 half rectangles.
+  CGRect leftRect = CGRectMake(-kSpacing, 0, kHalfSize, kProfileImageSize);
+  CGRect rightRect =
+      CGRectMake(kHalfSize + kSpacing, 0, kHalfSize, kProfileImageSize);
+
+  return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+    // Create the left side of the image.
+    if (_recipients.count <= 3) {
+      [[self cropToMiddle:_recipients[0].profileImage] drawInRect:leftRect];
+    } else {
+      [_recipients[0].profileImage drawInRect:leftUpperRect];
+      [_recipients[3].profileImage drawInRect:leftLowerRect];
+    }
+
+    // Create the right side of the image.
+    // TODO(crbug.com/1463882): Handle the case of more than 4 recipients.
+    if (_recipients.count == 2) {
+      [[self cropToMiddle:_recipients[1].profileImage] drawInRect:rightRect];
+    } else {
+      [_recipients[1].profileImage drawInRect:rightUpperRect];
+      [_recipients[2].profileImage drawInRect:rightLowerRect];
+    }
+  }];
 }
 
 - (NSString*)subtitleString {

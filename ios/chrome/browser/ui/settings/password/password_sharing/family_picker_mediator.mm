@@ -7,8 +7,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/image_fetcher/core/image_fetcher_impl.h"
 #import "components/image_fetcher/ios/ios_image_decoder_impl.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/recipient_info.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -75,9 +73,7 @@ const char kImageFetcherUmaClient[] = "PasswordSharing";
                          const image_fetcher::RequestMetadata& metadata) {
           if (!image.IsEmpty()) {
             [weakSelf updateRecipient:recipient
-                         profileImage:CircularImageFromImage(
-                                          [image.ToUIImage() copy],
-                                          kAccountProfilePhotoDimension)];
+                         profileImage:[image.ToUIImage() copy]];
           }
         }),
         params);
