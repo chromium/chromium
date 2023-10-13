@@ -376,6 +376,13 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
         for (const discount of moduleElement.discounts) {
           assertEquals('', discount);
         }
+        const contentElement =
+            moduleElement.shadowRoot!
+                .querySelector('ntp-history-clusters-visit-tile')!.shadowRoot!
+                .querySelector('#content')! as HTMLElement;
+        assertEquals(
+            contentElement.getAttribute('aria-label'),
+            'Test Title 1, foo.com, 1 min ago');
       }
       assertEquals(0, metrics.count(`NewTabPage.HistoryClusters.HasDiscount`));
     });
@@ -436,8 +443,19 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
       assertEquals(
           'https://www.annotated.com/1',
           visitTiles[0]!.visit.normalizedUrl.url);
+      let contentElement =
+          visitTiles[0]!.shadowRoot!.querySelector('#content')! as HTMLElement;
+      assertEquals(
+          contentElement.getAttribute('aria-label'),
+          'Test Title 1, annotated.com, 1 min ago, 15% off');
+
       assertEquals(
           'https://www.foo.com/2', visitTiles[1]!.visit.normalizedUrl.url);
+      contentElement =
+          visitTiles[1]!.shadowRoot!.querySelector('#content')! as HTMLElement;
+      assertEquals(
+          contentElement.getAttribute('aria-label'),
+          'Test Title 2, foo.com, 1 min ago');
 
       // Assert Module Two.
       const expectedDiscountsModuleTwo = ['', '', '$10 off'];
@@ -455,9 +473,20 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
       }
       assertEquals(
           'https://www.foo.com/3', visitTiles[0]!.visit.normalizedUrl.url);
+      contentElement =
+          visitTiles[0]!.shadowRoot!.querySelector('#content')! as HTMLElement;
+      assertEquals(
+          contentElement.getAttribute('aria-label'),
+          'Test Title 1, foo.com, 1 min ago');
+
       assertEquals(
           'https://www.annotated.com/2',
           visitTiles[1]!.visit.normalizedUrl.url);
+      contentElement =
+          visitTiles[1]!.shadowRoot!.querySelector('#content')! as HTMLElement;
+      assertEquals(
+          contentElement.getAttribute('aria-label'),
+          'Test Title 2, annotated.com, 1 min ago, $10 off');
 
       // Assert info dialog.
       for (const moduleElement of moduleElements) {
