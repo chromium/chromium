@@ -56,11 +56,9 @@
 #include <tchar.h>
 #include <windows.h>
 #include <winioctl.h>
-#include "base/features.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
 #endif
@@ -3014,7 +3012,7 @@ TEST_F(FileUtilTest, GetSecureSystemTemp) {
   FilePath secure_system_temp;
   ASSERT_EQ(GetSecureSystemTemp(&secure_system_temp), !!::IsUserAnAdmin());
   if (!::IsUserAnAdmin()) {
-    return;
+    GTEST_SKIP() << "This test must be run by an admin user";
   }
 
   FilePath dir_windows;
@@ -3031,17 +3029,26 @@ TEST_F(FileUtilTest, CreateNewTempDirectoryTest) {
   FilePath temp_dir;
   ASSERT_TRUE(CreateNewTempDirectory(FilePath::StringType(), &temp_dir));
   EXPECT_TRUE(PathExists(temp_dir));
+  EXPECT_TRUE(DeleteFile(temp_dir));
+}
 
 #if BUILDFLAG(IS_WIN)
+TEST_F(FileUtilTest, TempDirectoryParentTest) {
+  if (!::IsUserAnAdmin()) {
+    GTEST_SKIP() << "This test must be run by an admin user";
+  }
+  FilePath temp_dir;
+  ASSERT_TRUE(CreateNewTempDirectory(FilePath::StringType(), &temp_dir));
+  EXPECT_TRUE(PathExists(temp_dir));
+
   FilePath expected_parent_dir;
   if (!GetSecureSystemTemp(&expected_parent_dir)) {
     EXPECT_TRUE(PathService::Get(DIR_TEMP, &expected_parent_dir));
   }
   EXPECT_TRUE(expected_parent_dir.IsParent(temp_dir));
-#endif  // BUILDFLAG(IS_WIN)
-
   EXPECT_TRUE(DeleteFile(temp_dir));
 }
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(FileUtilTest, CreateNewTemporaryDirInDirTest) {
   FilePath new_dir;
