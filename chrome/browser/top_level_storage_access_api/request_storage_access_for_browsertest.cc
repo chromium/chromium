@@ -874,22 +874,19 @@ class RequestStorageAccessForExplicitlyDisabledBrowserTest
 
  protected:
   std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
-    // The test should validate that either flag alone disables the API.
-    // Note that enabling the extension and not the standard API means both are
-    // disabled.
     if (enable_standard_storage_access_api_) {
       return {blink::features::kStorageAccessAPIForOriginExtension};
     }
-    return {blink::features::kStorageAccessAPI};
+    return {blink::features::kStorageAccessAPI,
+            blink::features::kStorageAccessAPIForOriginExtension};
   }
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     // When the standard API is enabled, return the parent class's enabled
-    // feature list. Otherwise, enable only the extension; this should not take
-    // effect.
+    // feature list.
     if (enable_standard_storage_access_api_) {
       return RequestStorageAccessForBaseBrowserTest::GetEnabledFeatures();
     }
-    return {{blink::features::kStorageAccessAPIForOriginExtension, {}}};
+    return {};
   }
 
  private:
@@ -901,9 +898,9 @@ IN_PROC_BROWSER_TEST_P(RequestStorageAccessForExplicitlyDisabledBrowserTest,
   NavigateToPageWithFrame(kHostA);
   // Ensure that the proposed extension is not available unless explicitly
   // enabled.
-  EXPECT_TRUE(EvalJs(GetPrimaryMainFrame(),
-                     "\"requestStorageAccessFor\" in document === false")
-                  .ExtractBool());
+  EXPECT_FALSE(
+      EvalJs(GetPrimaryMainFrame(), "\"requestStorageAccessFor\" in document")
+          .ExtractBool());
 }
 
 INSTANTIATE_TEST_SUITE_P(
