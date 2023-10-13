@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {LayersTestRunner} from 'layers_test_runner';
 
 import * as Layers from 'devtools/panels/layers/layers.js';
+import * as LayerViewer from 'devtools/panels/layer_viewer/layer_viewer.js';
 
 (async function() {
   TestRunner.addResult(`Tests hit testing in Layers3DView\n`);
@@ -102,8 +103,8 @@ import * as Layers from 'devtools/panels/layers/layers.js';
 
   function dumpOutlinedStateForLayers() {
     TestRunner.addResult('State of layers:');
-    dumpStateForOutlineType(LayerViewer.Layers3DView.OutlineType.Hovered);
-    dumpStateForOutlineType(LayerViewer.Layers3DView.OutlineType.Selected);
+    dumpStateForOutlineType(LayerViewer.Layers3DView.Layers3DView.OutlineType.Hovered);
+    dumpStateForOutlineType(LayerViewer.Layers3DView.Layers3DView.OutlineType.Selected);
   }
 
 })();
