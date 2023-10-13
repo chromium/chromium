@@ -144,6 +144,8 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   bool HasPortForTesting(ScriptContext* script_context, const PortId& port_id);
 
  private:
+  friend class OneTimeMessageHandlerTest;
+
   // Helpers for the public methods to perform the action in a single
   // ScriptContext.
   void ValidateMessagePortInContext(const PortId& port_id,

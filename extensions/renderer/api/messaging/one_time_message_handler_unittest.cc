@@ -52,8 +52,6 @@ class OneTimeMessageHandlerTest : public NativeExtensionBindingsSystemUnittest {
 
   void SetUp() override {
     NativeExtensionBindingsSystemUnittest::SetUp();
-    message_handler_ =
-        std::make_unique<OneTimeMessageHandler>(bindings_system());
 
     extension_ = ExtensionBuilder("foo").Build();
     RegisterExtension(extension_);
@@ -69,7 +67,6 @@ class OneTimeMessageHandlerTest : public NativeExtensionBindingsSystemUnittest {
   void TearDown() override {
     script_context_ = nullptr;
     extension_ = nullptr;
-    message_handler_.reset();
     NativeExtensionBindingsSystemUnittest::TearDown();
   }
   bool UseStrictIPCMessageSender() override { return true; }
@@ -79,13 +76,13 @@ class OneTimeMessageHandlerTest : public NativeExtensionBindingsSystemUnittest {
     return GetStringPropertyFromObject(context->Global(), context, property);
   }
 
-  OneTimeMessageHandler* message_handler() { return message_handler_.get(); }
+  OneTimeMessageHandler* message_handler() {
+    return &bindings_system()->messaging_service()->one_time_message_handler_;
+  }
   ScriptContext* script_context() { return script_context_; }
   const Extension* extension() { return extension_.get(); }
 
  private:
-  std::unique_ptr<OneTimeMessageHandler> message_handler_;
-
   raw_ptr<ScriptContext, ExperimentalRenderer> script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
 };

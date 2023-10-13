@@ -77,8 +77,6 @@ class NativeRendererMessagingServiceTest
   // NativeExtensionBindingsSystemUnittest:
   void SetUp() override {
     NativeExtensionBindingsSystemUnittest::SetUp();
-    messaging_service_ =
-        std::make_unique<NativeRendererMessagingService>(bindings_system());
 
     extension_ = ExtensionBuilder("foo").Build();
     RegisterExtension(extension_);
@@ -94,20 +92,17 @@ class NativeRendererMessagingServiceTest
   void TearDown() override {
     script_context_ = nullptr;
     extension_ = nullptr;
-    messaging_service_.reset();
     NativeExtensionBindingsSystemUnittest::TearDown();
   }
   bool UseStrictIPCMessageSender() override { return true; }
 
   NativeRendererMessagingService* messaging_service() {
-    return messaging_service_.get();
+    return bindings_system()->messaging_service();
   }
   ScriptContext* script_context() { return script_context_; }
   const Extension* extension() { return extension_.get(); }
 
  private:
-  std::unique_ptr<NativeRendererMessagingService> messaging_service_;
-
   raw_ptr<ScriptContext, ExperimentalRenderer> script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
 };
