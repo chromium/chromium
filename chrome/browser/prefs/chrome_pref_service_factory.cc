@@ -72,6 +72,10 @@
 #include "sql/error_delegate_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/files/file_util.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/pref_names.h"
 #endif
@@ -270,6 +274,35 @@ std::unique_ptr<ProfilePrefStoreManager> CreateProfilePrefStoreManager(
                                                    legacy_device_id);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// The initial implementation of the standalone browser store
+// saved the preferences associated with a user under /home/chronos, which made
+// the prefs available for all users which subsequently log in on the device.
+// Currently the preferences are stored under the user profile directory. This
+// method cleans up the standalone browser preferences file under /home/chronos.
+// Note that the standalone browser preferences can't be migrated from the
+// /home/chronos directory to the profile directory because it's not possible to
+// know which profile has configured the settings. Once the user signs into the
+// user session and starts the Lacros browser, the standalone browser settings
+// will be restored in Ash and saved to the correct location.
+// TODO(b/304685319): Remove this cleanup method.
+void CleanupObsoleteStandaloneBrowserPrefsFile() {
+  base::FilePath user_data_dir;
+  CHECK(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
+
+  base::FilePath obsolete_standalone_browser_file = user_data_dir.Append(
+      FILE_PATH_LITERAL("standalone_browser_preferences.json"));
+
+  if (!base::PathExists(obsolete_standalone_browser_file)) {
+    return;
+  }
+
+  LOG(WARNING) << "Removing obsolete " << obsolete_standalone_browser_file
+               << " file: "
+               << base::DeleteFile(obsolete_standalone_browser_file);
+}
+#endif
+
 void PrepareFactory(
     sync_preferences::PrefServiceSyncableFactory* factory,
     const base::FilePath& pref_filename,
@@ -384,14 +417,13 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
   // contains data about prefs set by extensions in lacros where the feature
   // lives in ash (for example, screen magnifier). The values are persisted in
   // ash so they can be loaded on startup or when lacros is not running.
-  base::FilePath user_data_dir;
-  const bool success =
-      base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-  DCHECK(success);
   standalone_browser_prefs = base::MakeRefCounted<JsonPrefStore>(
-      user_data_dir.Append(
+      profile_path.Append(
           FILE_PATH_LITERAL("standalone_browser_preferences.json")),
       std::unique_ptr<PrefFilter>(), io_task_runner);
+
+  io_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&CleanupObsoleteStandaloneBrowserPrefsFile));
 #endif
 
   PrepareFactory(&factory, profile_path, policy_service,
