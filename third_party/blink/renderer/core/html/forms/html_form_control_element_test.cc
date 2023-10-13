@@ -159,4 +159,82 @@ TEST_F(HTMLFormControlElementTest, UniqueRendererFormControlId) {
   EXPECT_EQ(first_id + 2, form_control3->UniqueRendererFormControlId());
 }
 
+class HTMLFormControlElementFormControlTypeTest
+    : public HTMLFormControlElementTest,
+      public testing::WithParamInterface<
+          std::tuple<const char*, const char*, FormControlType>> {
+ protected:
+  const char* tag_name() const { return std::get<0>(GetParam()); }
+  const char* attributes() const { return std::get<1>(GetParam()); }
+  FormControlType expected_type() const { return std::get<2>(GetParam()); }
+};
+
+TEST_P(HTMLFormControlElementFormControlTypeTest, FormControlType) {
+  std::string html =
+      base::StringPrintf("<%s %s id=x>", tag_name(), attributes());
+  if (tag_name() != std::string_view("input")) {
+    html += base::StringPrintf("</%s>", tag_name());
+  }
+  SCOPED_TRACE(testing::Message() << html);
+  GetDocument().documentElement()->setInnerHTML(html.c_str());
+  auto* form_control = To<HTMLFormControlElement>(
+      GetDocument().getElementById(AtomicString("x")));
+  EXPECT_EQ(form_control->FormControlType(), expected_type())
+      << form_control->type().Ascii();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    HTMLFormControlElementTest,
+    HTMLFormControlElementFormControlTypeTest,
+    testing::Values(
+        std::make_tuple("button", "", FormControlType::kButtonSubmit),
+        std::make_tuple("button",
+                        "type=button",
+                        FormControlType::kButtonButton),
+        std::make_tuple("button",
+                        "type=submit",
+                        FormControlType::kButtonSubmit),
+        std::make_tuple("button", "type=reset", FormControlType::kButtonReset),
+        std::make_tuple("button",
+                        "type=selectlist",
+                        FormControlType::kButtonSelectList),
+        std::make_tuple("fieldset", "", FormControlType::kFieldset),
+        std::make_tuple("input", "", FormControlType::kInputText),
+        std::make_tuple("input", "type=button", FormControlType::kInputButton),
+        std::make_tuple("input",
+                        "type=checkbox",
+                        FormControlType::kInputCheckbox),
+        std::make_tuple("input", "type=color", FormControlType::kInputColor),
+        std::make_tuple("input", "type=date", FormControlType::kInputDate),
+        // While there is a blink::input_type_names::kDatetime, <input
+        // type=datetime> is just a text field.
+        std::make_tuple("input", "type=datetime", FormControlType::kInputText),
+        std::make_tuple("input",
+                        "type=datetime-local",
+                        FormControlType::kInputDatetimeLocal),
+        std::make_tuple("input", "type=email", FormControlType::kInputEmail),
+        std::make_tuple("input", "type=file", FormControlType::kInputFile),
+        std::make_tuple("input", "type=hidden", FormControlType::kInputHidden),
+        std::make_tuple("input", "type=image", FormControlType::kInputImage),
+        std::make_tuple("input", "type=month", FormControlType::kInputMonth),
+        std::make_tuple("input", "type=number", FormControlType::kInputNumber),
+        std::make_tuple("input",
+                        "type=password",
+                        FormControlType::kInputPassword),
+        std::make_tuple("input", "type=radio", FormControlType::kInputRadio),
+        std::make_tuple("input", "type=range", FormControlType::kInputRange),
+        std::make_tuple("input", "type=reset", FormControlType::kInputReset),
+        std::make_tuple("input", "type=search", FormControlType::kInputSearch),
+        std::make_tuple("input", "type=submit", FormControlType::kInputSubmit),
+        std::make_tuple("input", "type=tel", FormControlType::kInputTelephone),
+        std::make_tuple("input", "type=text", FormControlType::kInputText),
+        std::make_tuple("input", "type=time", FormControlType::kInputTime),
+        std::make_tuple("input", "type=url", FormControlType::kInputUrl),
+        std::make_tuple("input", "type=week", FormControlType::kInputWeek),
+        std::make_tuple("output", "", FormControlType::kOutput),
+        std::make_tuple("select", "", FormControlType::kSelectOne),
+        std::make_tuple("select", "multiple", FormControlType::kSelectMultiple),
+        std::make_tuple("selectlist", "", FormControlType::kSelectList),
+        std::make_tuple("textarea", "", FormControlType::kTextArea)));
+
 }  // namespace blink

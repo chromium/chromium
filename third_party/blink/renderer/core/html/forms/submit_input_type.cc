@@ -49,10 +49,6 @@ SubmitInputType::SubmitInputType(HTMLInputElement& element)
   UseCounter::Count(element.GetDocument(), WebFeature::kInputTypeSubmit);
 }
 
-const AtomicString& SubmitInputType::FormControlType() const {
-  return input_type_names::kSubmit;
-}
-
 void SubmitInputType::AppendToFormData(FormData& form_data) const {
   if (GetElement().IsActivatedSubmit()) {
     form_data.AppendFromElement(GetElement().GetName(),

@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FORM_CONTROL_ELEMENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FORM_CONTROL_ELEMENT_H_
 
+#include "third_party/blink/public/common/forms/form_control_type.h"
 #include "third_party/blink/public/common/metrics/form_element_pii_type.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -59,42 +60,8 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
   bool IsReadOnly() const;
   WebString FormControlName() const;
 
-  enum class Type {
-    kButtonButton,
-    kButtonSubmit,
-    kButtonReset,
-    kButtonSelectList,
-    kFieldset,
-    kInputButton,
-    kInputCheckbox,
-    kInputColor,
-    kInputDate,
-    kInputDatetimeLocal,
-    kInputEmail,
-    kInputFile,
-    kInputHidden,
-    kInputImage,
-    kInputMonth,
-    kInputNumber,
-    kInputPassword,
-    kInputRadio,
-    kInputRange,
-    kInputReset,
-    kInputSearch,
-    kInputSubmit,
-    kInputTelephone,
-    kInputText,
-    kInputTime,
-    kInputUrl,
-    kInputWeek,
-    kOutput,
-    kSelectOne,
-    kSelectMultiple,
-    kSelectList,
-    kTextArea,
-  };
-  Type FormControlType() const;
-  Type FormControlTypeForAutofill() const;
+  enum FormControlType FormControlType() const;
+  enum FormControlType FormControlTypeForAutofill() const;
 
   enum WebAutofillState GetAutofillState() const;
   bool IsAutofilled() const;

@@ -64,7 +64,6 @@ class ColorInputType final : public InputType,
   ValueMode GetValueMode() const override;
   void ValueAttributeChanged() override;
   void CountUsage() override;
-  const AtomicString& FormControlType() const override;
   bool SupportsRequired() const override;
   String SanitizeValue(const String&) const override;
   void CreateShadowSubtree() override;

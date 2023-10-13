@@ -98,10 +98,6 @@ void RangeInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeRange);
 }
 
-const AtomicString& RangeInputType::FormControlType() const {
-  return input_type_names::kRange;
-}
-
 double RangeInputType::ValueAsDouble() const {
   return ParseToDoubleForNumberType(GetElement().Value());
 }

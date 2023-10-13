@@ -25,6 +25,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_FORM_CONTROL_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_FORM_CONTROL_ELEMENT_H_
 
+#include "third_party/blink/public/common/forms/form_control_type.h"
 #include "third_party/blink/public/common/metrics/form_element_pii_type.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
@@ -68,9 +69,10 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
 
   bool IsRequired() const;
 
-  const AtomicString& type() const { return FormControlType(); }
+  const AtomicString& type() const { return FormControlTypeAsString(); }
 
-  virtual const AtomicString& FormControlType() const = 0;
+  virtual enum FormControlType FormControlType() const = 0;
+  virtual const AtomicString& FormControlTypeAsString() const = 0;
 
   virtual bool CanTriggerImplicitSubmission() const { return false; }
 

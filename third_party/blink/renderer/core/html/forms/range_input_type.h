@@ -52,7 +52,6 @@ class RangeInputType final : public InputType, public InputTypeView {
   InputTypeView* CreateView() override;
   ValueMode GetValueMode() const override;
   void CountUsage() override;
-  const AtomicString& FormControlType() const override;
   double ValueAsDouble() const override;
   void SetValueAsDouble(double,
                         TextFieldEventBehavior,

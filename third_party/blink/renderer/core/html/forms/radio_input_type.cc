@@ -53,10 +53,6 @@ void RadioInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeRadio);
 }
 
-const AtomicString& RadioInputType::FormControlType() const {
-  return input_type_names::kRadio;
-}
-
 ControlPart RadioInputType::AutoAppearance() const {
   return kRadioPart;
 }

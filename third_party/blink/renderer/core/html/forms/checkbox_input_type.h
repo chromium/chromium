@@ -43,7 +43,6 @@ class CheckboxInputType final : public BaseCheckableInputType {
 
  private:
   void CountUsage() override;
-  const AtomicString& FormControlType() const override;
   ControlPart AutoAppearance() const override;
   String ValueMissingText() const override;
   void HandleKeyupEvent(KeyboardEvent&) override;

@@ -42,7 +42,6 @@ class TelephoneInputType final : public BaseTextInputType {
 
  private:
   void CountUsage() override;
-  const AtomicString& FormControlType() const override;
 };
 
 template <>

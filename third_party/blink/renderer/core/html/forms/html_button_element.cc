@@ -62,30 +62,32 @@ LayoutObject* HTMLButtonElement::CreateLayoutObject(
   return MakeGarbageCollected<LayoutButton>(this);
 }
 
-const AtomicString& HTMLButtonElement::FormControlType() const {
+FormControlType HTMLButtonElement::FormControlType() const {
+  return static_cast<enum FormControlType>(base::to_underlying(type_));
+}
+
+const AtomicString& HTMLButtonElement::FormControlTypeAsString() const {
   switch (type_) {
-    case kSubmit: {
-      DEFINE_STATIC_LOCAL(const AtomicString, submit, ("submit"));
-      return submit;
-    }
-    case kButton: {
+    case Type::kButton: {
       DEFINE_STATIC_LOCAL(const AtomicString, button, ("button"));
       return button;
     }
-    case kReset: {
+    case Type::kSubmit: {
+      DEFINE_STATIC_LOCAL(const AtomicString, submit, ("submit"));
+      return submit;
+    }
+    case Type::kReset: {
       DEFINE_STATIC_LOCAL(const AtomicString, reset, ("reset"));
       return reset;
     }
-    case kSelectlist: {
+    case Type::kSelectlist: {
       if (RuntimeEnabledFeatures::HTMLSelectListElementEnabled()) {
         DEFINE_STATIC_LOCAL(const AtomicString, selectlist, ("selectlist"));
         return selectlist;
       }
     }
   }
-
-  NOTREACHED();
-  return g_empty_atom;
+  NOTREACHED_NORETURN();
 }
 
 bool HTMLButtonElement::IsPresentationAttribute(

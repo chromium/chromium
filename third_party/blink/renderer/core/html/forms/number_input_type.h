@@ -45,7 +45,6 @@ class NumberInputType final : public TextFieldInputType {
 
  private:
   void CountUsage() override;
-  const AtomicString& FormControlType() const override;
   void SetValue(const String&,
                 bool value_changed,
                 TextFieldEventBehavior,

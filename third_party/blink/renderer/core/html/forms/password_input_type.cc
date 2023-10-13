@@ -55,10 +55,6 @@ void PasswordInputType::CountUsage() {
     CountUsageIfVisible(WebFeature::kInputTypePasswordMaxLength);
 }
 
-const AtomicString& PasswordInputType::FormControlType() const {
-  return input_type_names::kPassword;
-}
-
 bool PasswordInputType::ShouldSaveAndRestoreFormControlState() const {
   return false;
 }

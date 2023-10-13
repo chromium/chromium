@@ -184,10 +184,6 @@ void EmailInputType::CountUsage() {
   }
 }
 
-const AtomicString& EmailInputType::FormControlType() const {
-  return input_type_names::kEmail;
-}
-
 // The return value is an invalid email address string if the specified string
 // contains an invalid email address. Otherwise, an empty string is returned.
 // If an empty string is returned, it means empty address is specified.

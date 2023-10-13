@@ -52,10 +52,6 @@ void MonthInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeMonth);
 }
 
-const AtomicString& MonthInputType::FormControlType() const {
-  return input_type_names::kMonth;
-}
-
 double MonthInputType::ValueAsDate() const {
   DateComponents date;
   if (!ParseToDateComponents(GetElement().Value(), &date))

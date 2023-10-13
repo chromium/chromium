@@ -43,7 +43,6 @@ class URLInputType final : public BaseTextInputType {
 
  private:
   void CountUsage() override;
-  const AtomicString& FormControlType() const override;
   bool TypeMismatch() const override;
   String TypeMismatchText() const override;
   String SanitizeValue(const String&) const override;

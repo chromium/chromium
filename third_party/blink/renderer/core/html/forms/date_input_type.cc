@@ -53,10 +53,6 @@ void DateInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeDate);
 }
 
-const AtomicString& DateInputType::FormControlType() const {
-  return input_type_names::kDate;
-}
-
 StepRange DateInputType::CreateStepRange(
     AnyStepHandling any_step_handling) const {
   DEFINE_STATIC_LOCAL(

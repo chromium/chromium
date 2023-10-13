@@ -51,10 +51,6 @@ void ImageInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeImage);
 }
 
-const AtomicString& ImageInputType::FormControlType() const {
-  return input_type_names::kImage;
-}
-
 bool ImageInputType::IsFormDataAppendable() const {
   return true;
 }

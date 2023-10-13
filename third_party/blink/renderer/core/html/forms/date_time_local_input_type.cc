@@ -51,10 +51,6 @@ void DateTimeLocalInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeDateTimeLocal);
 }
 
-const AtomicString& DateTimeLocalInputType::FormControlType() const {
-  return input_type_names::kDatetimeLocal;
-}
-
 double DateTimeLocalInputType::ValueAsDate() const {
   // valueAsDate doesn't work for the datetime-local type according to the
   // standard.

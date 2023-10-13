@@ -40,8 +40,4 @@ void TelephoneInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeTel);
 }
 
-const AtomicString& TelephoneInputType::FormControlType() const {
-  return input_type_names::kTel;
-}
-
 }  // namespace blink

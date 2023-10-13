@@ -110,7 +110,11 @@ void HTMLTextAreaElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   root.AppendChild(CreateInnerEditorElement());
 }
 
-const AtomicString& HTMLTextAreaElement::FormControlType() const {
+FormControlType HTMLTextAreaElement::FormControlType() const {
+  return FormControlType::kTextArea;
+}
+
+const AtomicString& HTMLTextAreaElement::FormControlTypeAsString() const {
   DEFINE_STATIC_LOCAL(const AtomicString, textarea, ("textarea"));
   return textarea;
 }

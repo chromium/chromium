@@ -42,7 +42,6 @@ class WeekInputType final : public BaseTemporalInputType {
 
  private:
   void CountUsage() override;
-  const AtomicString& FormControlType() const override;
   StepRange CreateStepRange(AnyStepHandling) const override;
   bool ParseToDateComponentsInternal(const String&,
                                      DateComponents*) const override;

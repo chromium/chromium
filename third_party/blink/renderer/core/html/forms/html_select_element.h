@@ -200,7 +200,8 @@ class CORE_EXPORT HTMLSelectElement final
   bool IsRichlyEditableForAccessibility() const override { return false; }
 
  private:
-  const AtomicString& FormControlType() const override;
+  enum FormControlType FormControlType() const override;
+  const AtomicString& FormControlTypeAsString() const override;
 
   bool MayTriggerVirtualKeyboard() const override;
 

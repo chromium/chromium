@@ -1419,7 +1419,11 @@ bool HTMLSelectListElement::OptionPartEventListener::HandleKeyboardEvent(
   return false;
 }
 
-const AtomicString& HTMLSelectListElement::FormControlType() const {
+FormControlType HTMLSelectListElement::FormControlType() const {
+  return FormControlType::kSelectList;
+}
+
+const AtomicString& HTMLSelectListElement::FormControlTypeAsString() const {
   DEFINE_STATIC_LOCAL(const AtomicString, selectlist, ("selectlist"));
   return selectlist;
 }

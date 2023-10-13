@@ -54,41 +54,6 @@ class InputTypeView;
 // other than HTMLInputElement.
 class CORE_EXPORT InputType : public GarbageCollected<InputType> {
  public:
-  enum class Type : uint8_t {
-    kButton,
-    kColor,
-    kFile,
-    kHidden,
-    kImage,
-    kNumber,
-    kRange,
-    kReset,
-    kSubmit,
-
-    // BaseCheckable
-    kRadio,
-    kCheckbox,
-
-    // BaseTemporal
-    kDate,
-    kFirstBaseTemporalType = kDate,
-    kDateTimeLocal,
-    kMonth,
-    kTime,
-    kWeek,
-    kLastBaseTemporalType = kWeek,
-
-    // BaseText
-    kEmail,
-    kFirstBaseTextType = kEmail,
-    kPassword,
-    kSearch,
-    kTelephone,
-    kURL,
-    kText,
-    kLastBaseTextType = kText
-  };
-
   static InputType* Create(HTMLInputElement&, const AtomicString&);
   static const AtomicString& NormalizeTypeName(const AtomicString&);
   InputType(const InputType&) = delete;
@@ -97,7 +62,11 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual void Trace(Visitor*) const;
 
   virtual InputTypeView* CreateView() = 0;
-  virtual const AtomicString& FormControlType() const = 0;
+
+  const AtomicString& FormControlTypeAsString() const;
+  enum FormControlType FormControlType() const {
+    return static_cast<enum FormControlType>(base::to_underlying(type_));
+  }
 
   // Type query functions
 
@@ -135,8 +104,9 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   bool IsTimeInputType() const { return type_ == Type::kTime; }
   bool IsWeekInputType() const { return type_ == Type::kWeek; }
   bool IsBaseTemporalInputType() const {
-    return type_ >= Type::kFirstBaseTemporalType &&
-           type_ <= Type::kLastBaseTemporalType;
+    return type_ == Type::kDate || type_ == Type::kDateTimeLocal ||
+           type_ == Type::kMonth || type_ == Type::kTime ||
+           type_ == Type::kWeek;
   }
   bool IsEmailInputType() const { return type_ == Type::kEmail; }
   bool IsPasswordInputType() const { return type_ == Type::kPassword; }
@@ -145,8 +115,9 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   bool IsTextInputType() const { return type_ == Type::kText; }
   bool IsURLInputType() const { return type_ == Type::kURL; }
   bool IsBaseTextInputType() const {
-    return type_ >= Type::kFirstBaseTextType &&
-           type_ <= Type::kLastBaseTextType;
+    return type_ == Type::kEmail || type_ == Type::kPassword ||
+           type_ == Type::kSearch || type_ == Type::kTelephone ||
+           type_ == Type::kURL || type_ == Type::kText;
   }
   bool IsTextFieldInputType() const {
     return IsBaseTextInputType() || IsNumberInputType();
@@ -315,6 +286,41 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual ColorChooserClient* GetColorChooserClient();
 
  protected:
+  // The type attribute of HTMLInputElement is an enumerated attribute:
+  // https://html.spec.whatwg.org/multipage/input.html#attr-input-type
+  // These values are a subset of the `FormControlType` enum. They have the same
+  // binary representation so that FormControlType() reduces to a type cast.
+  enum class Type : std::underlying_type_t<enum FormControlType> {
+    kButton = base::to_underlying(FormControlType::kInputButton),
+    kColor = base::to_underlying(FormControlType::kInputColor),
+    kFile = base::to_underlying(FormControlType::kInputFile),
+    kHidden = base::to_underlying(FormControlType::kInputHidden),
+    kImage = base::to_underlying(FormControlType::kInputImage),
+    kNumber = base::to_underlying(FormControlType::kInputNumber),
+    kRange = base::to_underlying(FormControlType::kInputRange),
+    kReset = base::to_underlying(FormControlType::kInputReset),
+    kSubmit = base::to_underlying(FormControlType::kInputSubmit),
+
+    // BaseCheckable
+    kRadio = base::to_underlying(FormControlType::kInputRadio),
+    kCheckbox = base::to_underlying(FormControlType::kInputCheckbox),
+
+    // BaseTemporal
+    kDate = base::to_underlying(FormControlType::kInputDate),
+    kDateTimeLocal = base::to_underlying(FormControlType::kInputDatetimeLocal),
+    kMonth = base::to_underlying(FormControlType::kInputMonth),
+    kTime = base::to_underlying(FormControlType::kInputTime),
+    kWeek = base::to_underlying(FormControlType::kInputWeek),
+
+    // BaseText
+    kEmail = base::to_underlying(FormControlType::kInputEmail),
+    kPassword = base::to_underlying(FormControlType::kInputPassword),
+    kSearch = base::to_underlying(FormControlType::kInputSearch),
+    kTelephone = base::to_underlying(FormControlType::kInputTelephone),
+    kURL = base::to_underlying(FormControlType::kInputUrl),
+    kText = base::to_underlying(FormControlType::kInputText),
+  };
+
   InputType(Type type, HTMLInputElement& element)
       : type_(type), element_(element) {}
   HTMLInputElement& GetElement() const { return *element_; }

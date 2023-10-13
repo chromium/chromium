@@ -141,6 +141,55 @@ void InputType::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
 }
 
+const AtomicString& InputType::FormControlTypeAsString() const {
+  switch (type_) {
+    case Type::kButton:
+      return input_type_names::kButton;
+    case Type::kCheckbox:
+      return input_type_names::kCheckbox;
+    case Type::kColor:
+      return input_type_names::kColor;
+    case Type::kDate:
+      return input_type_names::kDate;
+    case Type::kDateTimeLocal:
+      return input_type_names::kDatetimeLocal;
+    case Type::kEmail:
+      return input_type_names::kEmail;
+    case Type::kFile:
+      return input_type_names::kFile;
+    case Type::kHidden:
+      return input_type_names::kHidden;
+    case Type::kImage:
+      return input_type_names::kImage;
+    case Type::kMonth:
+      return input_type_names::kMonth;
+    case Type::kNumber:
+      return input_type_names::kNumber;
+    case Type::kPassword:
+      return input_type_names::kPassword;
+    case Type::kRadio:
+      return input_type_names::kRadio;
+    case Type::kRange:
+      return input_type_names::kRange;
+    case Type::kReset:
+      return input_type_names::kReset;
+    case Type::kSearch:
+      return input_type_names::kSearch;
+    case Type::kSubmit:
+      return input_type_names::kSubmit;
+    case Type::kTelephone:
+      return input_type_names::kTel;
+    case Type::kText:
+      return input_type_names::kText;
+    case Type::kTime:
+      return input_type_names::kTime;
+    case Type::kURL:
+      return input_type_names::kUrl;
+    case Type::kWeek:
+      return input_type_names::kWeek;
+  }
+}
+
 bool InputType::IsTextField() const {
   return false;
 }
@@ -505,10 +554,10 @@ String InputType::ValueNotEqualText(const Decimal& value) const {
 String InputType::RangeOverflowText(const Decimal&) const {
   static auto* input_type = base::debug::AllocateCrashKeyString(
       "input-type", base::debug::CrashKeySize::Size32);
-  base::debug::SetCrashKeyString(input_type,
-                                 FormControlType().GetString().Utf8().c_str());
+  base::debug::SetCrashKeyString(
+      input_type, FormControlTypeAsString().GetString().Utf8().c_str());
   NOTREACHED() << "This should not get called. Check if input type '"
-               << FormControlType()
+               << FormControlTypeAsString()
                << "' should have a RangeOverflowText implementation."
                << "See crbug.com/1423280";
   return String();
@@ -517,10 +566,10 @@ String InputType::RangeOverflowText(const Decimal&) const {
 String InputType::RangeUnderflowText(const Decimal&) const {
   static auto* input_type = base::debug::AllocateCrashKeyString(
       "input-type", base::debug::CrashKeySize::Size32);
-  base::debug::SetCrashKeyString(input_type,
-                                 FormControlType().GetString().Utf8().c_str());
+  base::debug::SetCrashKeyString(
+      input_type, FormControlTypeAsString().GetString().Utf8().c_str());
   NOTREACHED() << "This should not get called. Check if input type '"
-               << FormControlType()
+               << FormControlTypeAsString()
                << "' should have a RangeUnderflowText implementation."
                << "See crbug.com/1423280";
   return String();
@@ -535,10 +584,10 @@ String InputType::ReversedRangeOutOfRangeText(const Decimal&,
 String InputType::RangeInvalidText(const Decimal&, const Decimal&) const {
   static auto* input_type = base::debug::AllocateCrashKeyString(
       "input-type", base::debug::CrashKeySize::Size32);
-  base::debug::SetCrashKeyString(input_type,
-                                 FormControlType().GetString().Utf8().c_str());
+  base::debug::SetCrashKeyString(
+      input_type, FormControlTypeAsString().GetString().Utf8().c_str());
   NOTREACHED() << "This should not get called. Check if input type '"
-               << FormControlType()
+               << FormControlTypeAsString()
                << "' should have a RangeInvalidText implementation."
                << "See crbug.com/1474270";
   return String();

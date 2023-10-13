@@ -42,7 +42,6 @@ class MonthInputType final : public BaseTemporalInputType {
 
  private:
   void CountUsage() override;
-  const AtomicString& FormControlType() const override;
   double ValueAsDate() const override;
   String SerializeWithDate(const absl::optional<base::Time>&) const override;
   Decimal ParseToNumber(const String&, const Decimal&) const override;

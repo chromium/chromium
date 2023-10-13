@@ -46,10 +46,6 @@ void CheckboxInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeCheckbox);
 }
 
-const AtomicString& CheckboxInputType::FormControlType() const {
-  return input_type_names::kCheckbox;
-}
-
 ControlPart CheckboxInputType::AutoAppearance() const {
   return kCheckboxPart;
 }

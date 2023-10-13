@@ -143,7 +143,11 @@ bool HTMLFieldSetElement::SupportsFocus() const {
   return HTMLElement::SupportsFocus() && !IsDisabledFormControl();
 }
 
-const AtomicString& HTMLFieldSetElement::FormControlType() const {
+FormControlType HTMLFieldSetElement::FormControlType() const {
+  return FormControlType::kFieldset;
+}
+
+const AtomicString& HTMLFieldSetElement::FormControlTypeAsString() const {
   DEFINE_STATIC_LOCAL(const AtomicString, fieldset, ("fieldset"));
   return fieldset;
 }

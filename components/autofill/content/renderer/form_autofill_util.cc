@@ -86,7 +86,7 @@ using blink::mojom::GenericIssueErrorType;
 // https://chromium-review.googlesource.com/c/chromium/src/+/4543002.
 namespace autofill::form_util {
 
-using Type = WebFormControlElement::Type;
+using Type = blink::FormControlType;
 using ::autofill::mojom::ButtonTitleType;
 
 struct ShadowFieldData {
@@ -1979,35 +1979,35 @@ bool IsAutofillableElement(const WebFormControlElement& element) {
           base::FeatureList::IsEnabled(features::kAutofillEnableSelectList));
 }
 
-FormControlType ToAutofillFormControlType(WebFormControlElement::Type type) {
+FormControlType ToAutofillFormControlType(blink::FormControlType type) {
   switch (type) {
-    case WebFormControlElement::Type::kInputCheckbox:
+    case blink::FormControlType::kInputCheckbox:
       return FormControlType::kInputCheckbox;
-    case WebFormControlElement::Type::kInputEmail:
+    case blink::FormControlType::kInputEmail:
       return FormControlType::kInputEmail;
-    case WebFormControlElement::Type::kInputMonth:
+    case blink::FormControlType::kInputMonth:
       return FormControlType::kInputMonth;
-    case WebFormControlElement::Type::kInputNumber:
+    case blink::FormControlType::kInputNumber:
       return FormControlType::kInputNumber;
-    case WebFormControlElement::Type::kInputPassword:
+    case blink::FormControlType::kInputPassword:
       return FormControlType::kInputPassword;
-    case WebFormControlElement::Type::kInputRadio:
+    case blink::FormControlType::kInputRadio:
       return FormControlType::kInputRadio;
-    case WebFormControlElement::Type::kInputSearch:
+    case blink::FormControlType::kInputSearch:
       return FormControlType::kInputSearch;
-    case WebFormControlElement::Type::kInputTelephone:
+    case blink::FormControlType::kInputTelephone:
       return FormControlType::kInputTelephone;
-    case WebFormControlElement::Type::kInputText:
+    case blink::FormControlType::kInputText:
       return FormControlType::kInputText;
-    case WebFormControlElement::Type::kInputUrl:
+    case blink::FormControlType::kInputUrl:
       return FormControlType::kInputUrl;
-    case WebFormControlElement::Type::kSelectOne:
+    case blink::FormControlType::kSelectOne:
       return FormControlType::kSelectOne;
-    case WebFormControlElement::Type::kSelectMultiple:
+    case blink::FormControlType::kSelectMultiple:
       return FormControlType::kSelectMultiple;
-    case WebFormControlElement::Type::kSelectList:
+    case blink::FormControlType::kSelectList:
       return FormControlType::kSelectList;
-    case WebFormControlElement::Type::kTextArea:
+    case blink::FormControlType::kTextArea:
       return FormControlType::kTextArea;
     default:
       NOTREACHED_NORETURN();

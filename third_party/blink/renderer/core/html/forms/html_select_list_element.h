@@ -169,7 +169,8 @@ class CORE_EXPORT HTMLSelectListElement final
   bool IsLabelable() const override;
 
   // HTMLFormControlElementWithState overrides:
-  const AtomicString& FormControlType() const override;
+  enum FormControlType FormControlType() const override;
+  const AtomicString& FormControlTypeAsString() const override;
   void DefaultEventHandler(Event&) override;
   bool MayTriggerVirtualKeyboard() const override;
   bool AlwaysCreateUserAgentShadowRoot() const override { return false; }

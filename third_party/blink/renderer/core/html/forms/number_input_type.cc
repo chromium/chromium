@@ -96,10 +96,6 @@ void NumberInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeNumber);
 }
 
-const AtomicString& NumberInputType::FormControlType() const {
-  return input_type_names::kNumber;
-}
-
 void NumberInputType::SetValue(const String& sanitized_value,
                                bool value_changed,
                                TextFieldEventBehavior event_behavior,

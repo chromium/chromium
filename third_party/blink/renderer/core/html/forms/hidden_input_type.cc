@@ -56,10 +56,6 @@ InputTypeView* HiddenInputType::CreateView() {
   return this;
 }
 
-const AtomicString& HiddenInputType::FormControlType() const {
-  return input_type_names::kHidden;
-}
-
 bool HiddenInputType::ShouldSaveAndRestoreFormControlState() const {
   return false;
 }

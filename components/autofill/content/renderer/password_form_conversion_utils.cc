@@ -87,9 +87,8 @@ bool IsGaiaReauthenticationForm(const blink::WebFormElement& form) {
     // We're only interested in the presence
     // of <input type="hidden" /> elements.
     const WebInputElement input = element.DynamicTo<WebInputElement>();
-    if (input.IsNull() ||
-        input.FormControlTypeForAutofill() !=
-            blink::WebFormControlElement::Type::kInputHidden) {
+    if (input.IsNull() || input.FormControlTypeForAutofill() !=
+                              blink::FormControlType::kInputHidden) {
       continue;
     }
 

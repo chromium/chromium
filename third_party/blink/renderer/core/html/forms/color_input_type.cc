@@ -101,10 +101,6 @@ void ColorInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeColor);
 }
 
-const AtomicString& ColorInputType::FormControlType() const {
-  return input_type_names::kColor;
-}
-
 bool ColorInputType::SupportsRequired() const {
   return false;
 }

@@ -405,7 +405,8 @@ class CORE_EXPORT HTMLInputElement
 
   bool CanTriggerImplicitSubmission() const final { return IsTextField(); }
 
-  const AtomicString& FormControlType() const final;
+  enum FormControlType FormControlType() const final;
+  const AtomicString& FormControlTypeAsString() const override;
 
   bool ShouldSaveAndRestoreFormControlState() const final;
   FormControlState SaveFormControlState() const final;

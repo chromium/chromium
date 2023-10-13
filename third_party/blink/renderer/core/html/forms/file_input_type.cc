@@ -118,10 +118,6 @@ Vector<String> FileInputType::FilesFromFormControlState(
                                                  &File::PathFromControlState);
 }
 
-const AtomicString& FileInputType::FormControlType() const {
-  return input_type_names::kFile;
-}
-
 FormControlState FileInputType::SaveFormControlState() const {
   if (file_list_->IsEmpty() ||
       GetElement().GetDocument().GetFormController().DropReferencedFilePaths())

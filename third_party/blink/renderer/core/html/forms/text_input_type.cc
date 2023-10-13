@@ -48,10 +48,6 @@ void TextInputType::CountUsage() {
     CountUsageIfVisible(WebFeature::kInputTypeWeekFallback);
 }
 
-const AtomicString& TextInputType::FormControlType() const {
-  return input_type_names::kText;
-}
-
 bool TextInputType::SupportsInputModeAttribute() const {
   return true;
 }
