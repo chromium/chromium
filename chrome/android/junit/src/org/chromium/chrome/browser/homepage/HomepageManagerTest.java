@@ -128,6 +128,20 @@ public class HomepageManagerTest {
                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, null);
         Assert.assertEquals(blueUrl, HomepageManager.getDefaultHomepageGurl());
 
+        // getDefaultHomepageGurl() should have forced the usage of the new pref key.
+        String deprecatedKeyValue =
+                ChromeSharedPreferences.getInstance()
+                        .readString(
+                                ChromePreferenceKeys
+                                        .DEPRECATED_HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI,
+                                "");
+        String expectedKeyValue =
+                ChromeSharedPreferences.getInstance()
+                        .readString(
+                                ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
+        Assert.assertEquals(blueUrl, GURL.deserialize(expectedKeyValue));
+        Assert.assertEquals("", deprecatedKeyValue);
+
         final GURL redUrl = JUnitTestGURLs.RED_1;
         final String serializedRedGurl = redUrl.serialize();
         ChromeSharedPreferences.getInstance().writeString(
@@ -163,6 +177,16 @@ public class HomepageManagerTest {
         ChromeSharedPreferences.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL, null);
         Assert.assertEquals(blueUrl, homepageManager.getPrefHomepageCustomGurl());
+
+        // getPrefHomepageCustomGurl() should have forced the usage of the new pref key.
+        String deprecatedKeyValue =
+                ChromeSharedPreferences.getInstance()
+                        .readString(ChromePreferenceKeys.DEPRECATED_HOMEPAGE_CUSTOM_URI, "");
+        String expectedKeyValue =
+                ChromeSharedPreferences.getInstance()
+                        .readString(ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL, "");
+        Assert.assertEquals(blueUrl, GURL.deserialize(expectedKeyValue));
+        Assert.assertEquals("", deprecatedKeyValue);
 
         final GURL redUrl = JUnitTestGURLs.RED_1;
         ChromeSharedPreferences.getInstance().writeString(

@@ -189,6 +189,14 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
         if (!homepagePartnerDefaultUri.equals("")) {
             GURL homepagePartnerDefaultGurl = new GURL(homepagePartnerDefaultUri);
             if (homepagePartnerDefaultGurl.isValid()) {
+                ChromeSharedPreferences.getInstance()
+                        .writeString(
+                                ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL,
+                                homepagePartnerDefaultGurl.serialize());
+                ChromeSharedPreferences.getInstance()
+                        .removeKey(
+                                ChromePreferenceKeys
+                                        .DEPRECATED_HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI);
                 return homepagePartnerDefaultGurl;
             }
         }
@@ -258,6 +266,10 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
         if (!homepageCustomUri.equals("")) {
             GURL homepageCustomGurl = new GURL(homepageCustomUri);
             if (homepageCustomGurl.isValid()) {
+                mSharedPreferencesManager.writeString(
+                        ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL, homepageCustomGurl.serialize());
+                mSharedPreferencesManager.removeKey(
+                        ChromePreferenceKeys.DEPRECATED_HOMEPAGE_CUSTOM_URI);
                 return homepageCustomGurl;
             }
         }
