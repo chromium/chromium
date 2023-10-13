@@ -328,6 +328,15 @@ if (is_android || is_chromeos) {
   assert(!incremental_install || is_java_debug,
          "incremental_install=true && is_java_debug=false is not supported.")
 
+  # We overwrite system_webview_apk_target if it is an alias
+  # TODO(smaier): Remove downstream_64bit_aliased_targets once safe to do so.
+  if (android_64bit_target_cpu && defined(downstream_64bit_aliased_targets)) {
+    system_webview_apk_target =
+        string_replace(system_webview_apk_target,
+                       "system_webview_google_apk",
+                       "system_webview_google_32_64_apk")
+  }
+
   # Host stuff -----------------------------------------------------------------
 
   # Defines the name the Android build gives to the current host CPU
