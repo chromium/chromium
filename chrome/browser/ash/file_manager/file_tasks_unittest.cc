@@ -23,6 +23,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
@@ -31,6 +32,8 @@
 #include "chrome/browser/ash/file_manager/app_service_file_tasks.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/virtual_file_tasks.h"
+#include "chrome/browser/ash/file_manager/virtual_tasks/fake_virtual_task.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service_factory.h"
 #include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
@@ -256,6 +259,8 @@ class FileManagerFileTaskPolicyDefaultHandlersTest
     CreateAppsAndTasks();
   }
 
+  void TearDown() override { GetTestVirtualTasks().clear(); }
+
  protected:
   void UpdateDefaultHandlersPrefs(
       const std::vector<std::pair<std::string, std::string>>& handlers = {}) {
@@ -270,7 +275,7 @@ class FileManagerFileTaskPolicyDefaultHandlersTest
   ResultingTasks* resulting_tasks() { return resulting_tasks_.get(); }
   std::vector<extensions::EntryInfo>& entries() { return entries_; }
 
-  void CheckCorrectPolicyAssignment(const std::string& default_app_id) {
+  void CheckCorrectPolicyAssignment(base::StringPiece default_app_id) {
     ASSERT_EQ(resulting_tasks()->policy_default_handler_status,
               PolicyDefaultHandlerStatus::kDefaultHandlerAssignedByPolicy);
     ASSERT_EQ(base::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
@@ -278,6 +283,19 @@ class FileManagerFileTaskPolicyDefaultHandlersTest
     ASSERT_EQ(base::ranges::find_if(resulting_tasks()->tasks, &IsDefaultTask)
                   ->task_descriptor.app_id,
               default_app_id);
+  }
+
+  void CheckCorrectPolicyAssignmentForVirtualTask(
+      base::StringPiece virtual_task_id) {
+    ASSERT_EQ(resulting_tasks()->policy_default_handler_status,
+              PolicyDefaultHandlerStatus::kDefaultHandlerAssignedByPolicy);
+    ASSERT_EQ(base::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
+              1);
+    const auto& task =
+        base::ranges::find_if(resulting_tasks()->tasks, &IsDefaultTask)
+            ->task_descriptor;
+    ASSERT_TRUE(IsVirtualTask(task));
+    ASSERT_THAT(task.action_id, testing::EndsWith(virtual_task_id));
   }
 
   void CheckConflictingPolicyAssignment() {
@@ -301,6 +319,10 @@ class FileManagerFileTaskPolicyDefaultHandlersTest
 
   static constexpr char kWebAppUrl[] = "https://web.app";
   static constexpr char kArcAppPackageName[] = "com.package.name";
+
+  // Should be a valid identifier in kVirtualTasksMapping from
+  // chrome/browser/apps/app_service/policy_util.cc.
+  static constexpr char kVirtualTaskActionId[] = "install-isolated-web-app";
 
   static constexpr AppIdPolicyIdPair kAppIdPolicyIdMapping[] = {
       {kWebAppId, kWebAppUrl},
@@ -391,6 +413,63 @@ TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest, LegacyArcAppFormat) {
   ASSERT_TRUE(ChooseAndSetDefaultTaskFromPolicyPrefs(profile(), entries(),
                                                      resulting_tasks()));
   CheckCorrectPolicyAssignment("com.legacy.package/intentName");
+}
+
+// Check that virtual tasks are handled by the policy.
+TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest, VirtualTask) {
+  auto virtual_task =
+      std::make_unique<FakeVirtualTask>(ToSwaActionId(kVirtualTaskActionId));
+  GetTestVirtualTasks().push_back(virtual_task.get());
+
+  constexpr char kFileName[] = "foo.txt";
+
+  FindVirtualTasks(
+      profile(),
+      {{base::FilePath::FromUTF8Unsafe(kFileName), "text/plain",
+        /*is_directory=*/false}},
+      /*file_urls=*/
+      {GURL(base::StrCat(
+          {"filesystem:chrome://file-manager/external/", kFileName}))},
+      /*dlp_source_urls=*/{}, &resulting_tasks()->tasks);
+
+  UpdateDefaultHandlersPrefs(
+      {{".txt",
+        base::StrCat({apps_util::kVirtualTaskPrefix, kVirtualTaskActionId})}});
+  entries().emplace_back(base::FilePath::FromUTF8Unsafe(kFileName),
+                         "text/plain", false);
+  ASSERT_TRUE(ChooseAndSetDefaultTaskFromPolicyPrefs(profile(), entries(),
+                                                     resulting_tasks()));
+  CheckCorrectPolicyAssignmentForVirtualTask(kVirtualTaskActionId);
+}
+
+// Check that incorrectly assigned virtual tasks are ignored.
+TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest,
+       VirtualTaskIncorrectAssignment) {
+  auto virtual_task =
+      std::make_unique<FakeVirtualTask>(ToSwaActionId(kVirtualTaskActionId));
+  GetTestVirtualTasks().push_back(virtual_task.get());
+
+  constexpr char kFileName[] = "foo.txt";
+
+  FindVirtualTasks(
+      profile(),
+      {{base::FilePath::FromUTF8Unsafe(kFileName), "text/plain",
+        /*is_directory=*/false}},
+      /*file_urls=*/
+      {GURL(base::StrCat(
+          {"filesystem:chrome://file-manager/external/", kFileName}))},
+      /*dlp_source_urls=*/{}, &resulting_tasks()->tasks);
+
+  constexpr char kNonExistentVirtualTaskActionId[] = "incorrect-virtual-id";
+
+  UpdateDefaultHandlersPrefs(
+      {{".txt", base::StrCat({apps_util::kVirtualTaskPrefix,
+                              kNonExistentVirtualTaskActionId})}});
+  entries().emplace_back(base::FilePath::FromUTF8Unsafe(kFileName),
+                         "text/plain", false);
+  ASSERT_FALSE(ChooseAndSetDefaultTaskFromPolicyPrefs(profile(), entries(),
+                                                      resulting_tasks()));
+  CheckNoPolicyAssignment();
 }
 
 class FileManagerFileTaskPolicyDefaultHandlersTestPerAppType

@@ -10,72 +10,40 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
+#include "chrome/browser/ash/file_manager/virtual_tasks/fake_virtual_task.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace file_manager::file_tasks {
 
-class TestVirtualTask : public VirtualTask {
- public:
-  TestVirtualTask(base::RepeatingClosure execute,
-                  bool execute_result,
-                  bool enabled,
-                  bool matches,
-                  std::string id)
-      : execute_(std::move(execute)),
-        execute_result_(execute_result),
-        enabled_(enabled),
-        matches_(matches),
-        id_(id) {}
-
-  bool Execute(Profile* profile,
-               const TaskDescriptor& task,
-               const std::vector<FileSystemURL>& file_urls,
-               gfx::NativeWindow modal_parent) const override {
-    execute_.Run();
-    return execute_result_;
-  }
-
-  bool IsEnabled(Profile* profile) const override { return enabled_; }
-
-  bool Matches(const std::vector<extensions::EntryInfo>& entries,
-               const std::vector<GURL>& file_urls,
-               const std::vector<std::string>& dlp_source_urls) const override {
-    return matches_;
-  }
-
-  std::string id() const override { return id_; }
-
-  GURL icon_url() const override { return GURL("https://icon_url?"); }
-
-  std::string title() const override { return id() + " title"; }
-
- private:
-  base::RepeatingClosure execute_;
-  bool execute_result_;
-  bool enabled_;
-  bool matches_;
-  std::string id_;
-};
+base::RepeatingCallback<bool()> Return(bool value) {
+  return base::BindLambdaForTesting([value] { return value; });
+}
 
 class VirtualFileTasksTest : public testing::Test {
  protected:
   VirtualFileTasksTest() {
-    task1 = std::make_unique<TestVirtualTask>(
-        base::BindLambdaForTesting([this]() { task1_executed_++; }),
-        /*execute_result=*/true,
-        /*enabled=*/true, /*matches=*/true, "https://app/id1");
-    task2 = std::make_unique<TestVirtualTask>(
-        base::BindLambdaForTesting([this]() { task2_executed_++; }),
-        /*execute_result=*/true,
-        /*enabled=*/false, /*matches=*/true, "https://app/id2");
-    task3 = std::make_unique<TestVirtualTask>(
-        base::BindLambdaForTesting([this]() { task3_executed_++; }),
-        /*execute_result=*/false,
-        /*enabled=*/true, /*matches=*/true, "https://app/id3");
-    task4 = std::make_unique<TestVirtualTask>(
-        base::DoNothing(), /*execute_result=*/true,
-        /*enabled=*/true, /*matches=*/false, "https://app/id4");
+    task1 =
+        std::make_unique<FakeVirtualTask>(ToSwaActionId("id1"),
+                                          /*enabled=*/true, /*matches=*/true,
+                                          base::BindLambdaForTesting([this]() {
+                                            task1_executed_++;
+                                          }).Then(Return(true)));
+    task2 =
+        std::make_unique<FakeVirtualTask>(ToSwaActionId("id2"),
+                                          /*enabled=*/false, /*matches=*/true,
+                                          base::BindLambdaForTesting([this]() {
+                                            task2_executed_++;
+                                          }).Then(Return(true))),
+    task3 =
+        std::make_unique<FakeVirtualTask>(ToSwaActionId("id3"),
+                                          /*enabled=*/true, /*matches=*/true,
+                                          base::BindLambdaForTesting([this]() {
+                                            task3_executed_++;
+                                          }).Then(Return(false)));
+    task4 = std::make_unique<FakeVirtualTask>(ToSwaActionId("id4"),
+                                              /*enabled=*/true,
+                                              /*matches=*/false, Return(true));
   }
 
   void SetUp() override {
@@ -88,10 +56,10 @@ class VirtualFileTasksTest : public testing::Test {
 
   void TearDown() override { GetTestVirtualTasks().clear(); }
 
-  std::unique_ptr<TestVirtualTask> task1;
-  std::unique_ptr<TestVirtualTask> task2;
-  std::unique_ptr<TestVirtualTask> task3;
-  std::unique_ptr<TestVirtualTask> task4;
+  std::unique_ptr<FakeVirtualTask> task1;
+  std::unique_ptr<FakeVirtualTask> task2;
+  std::unique_ptr<FakeVirtualTask> task3;
+  std::unique_ptr<FakeVirtualTask> task4;
   int task1_executed_ = 0;
   int task2_executed_ = 0;
   int task3_executed_ = 0;

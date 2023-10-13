@@ -33,6 +33,10 @@ class Profile;
 
 namespace apps_util {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kVirtualTaskPrefix[] = "VirtualTask/";
+#endif
+
 // Checks whether |policy_id| specifies a Chrome App.
 bool IsChromeAppPolicyId(base::StringPiece policy_id);
 
@@ -51,6 +55,15 @@ bool IsSystemWebAppPolicyId(base::StringPiece policy_id);
 
 // Checks whether |policy_id| specifies a Preinstalled Web App.
 bool IsPreinstalledWebAppPolicyId(base::StringPiece policy_id);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool IsFileManagerVirtualTaskPolicyId(base::StringPiece policy_id);
+
+// Maps `policy_id` which represents a virtual task to an actual `id` of
+// this virtual task.
+absl::optional<base::StringPiece> GetVirtualTaskIdFromPolicyId(
+    base::StringPiece policy_id);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Transforms the provided |raw_policy_id| if necessary.
 // For Web Apps, converts it to GURL and returns the spec().

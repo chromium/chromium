@@ -127,7 +127,6 @@ class PrefRegistrySyncable;
 
 namespace file_manager::file_tasks {
 
-constexpr char kActionIdInstallIsolatedWebApp[] = "install-isolated-web-app";
 constexpr char kActionIdView[] = "view";
 constexpr char kActionIdSend[] = "send";
 constexpr char kActionIdSendMultiple[] = "send_multiple";

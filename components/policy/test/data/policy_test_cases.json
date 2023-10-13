@@ -22599,6 +22599,10 @@
           }, {
             "policy_id": "unknown_id_should_be_filtered",
             "file_extensions": ["filtered"]
+          },
+          {
+            "policy_id": "VirtualTask/microsoft-office",
+            "file_extensions": ["pptx"]
           }]
         },
         "prefs": {
@@ -22609,7 +22613,8 @@
               ".pdf": "pnomlkjighijklmnopabcdefghijklff",
               ".arc": "com.android.google.pm",
               ".arcpp": "com.android.google.pm",
-              ".proj": "projector"
+              ".proj": "projector",
+              ".pptx": "VirtualTask/microsoft-office"
             }
           }
         }

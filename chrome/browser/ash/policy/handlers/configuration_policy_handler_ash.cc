@@ -477,7 +477,8 @@ void DefaultHandlersForFileExtensionsPolicyHandler::ApplyPolicySettings(
 
 bool DefaultHandlersForFileExtensionsPolicyHandler::IsValidPolicyId(
     base::StringPiece policy_id) const {
-  return IsSupportedAppTypePolicyId(policy_id);
+  return IsSupportedAppTypePolicyId(policy_id) ||
+         apps_util::IsFileManagerVirtualTaskPolicyId(policy_id);
 }
 
 ScreenMagnifierPolicyHandler::ScreenMagnifierPolicyHandler()

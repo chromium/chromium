@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,11 +20,20 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/containers/map_util.h"
+#include "base/types/optional_util.h"
+#include "chrome/browser/ash/file_manager/office_file_tasks.h"
+#include "chrome/browser/ash/file_manager/virtual_tasks/id_constants.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace apps_util {
 
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+
+namespace fm_tasks = file_manager::file_tasks;
 
 // This mapping excludes SWAs not included in official builds (like SAMPLE).
 // These app Id constants need to be kept in sync with java/com/
@@ -57,14 +67,19 @@ constexpr auto kSystemWebAppsMapping =
 
 constexpr ash::SystemWebAppType GetMaxSystemWebAppType() {
   return base::ranges::max(kSystemWebAppsMapping, base::ranges::less{},
-                           [](const auto& systemWebAppMappingPair) {
-                             return systemWebAppMappingPair.second;
-                           })
+                           &decltype(kSystemWebAppsMapping)::value_type::second)
       .second;
 }
 
 static_assert(GetMaxSystemWebAppType() == ash::SystemWebAppType::kMaxValue,
               "Not all SWA types are listed in |system_web_apps_mapping|.");
+
+// These virtual task identifiers are supposed to be a subset of tasks listed in
+// chrome/browser/ash/file_manager/virtual_file_tasks.cc
+constexpr auto kVirtualFileTasksMapping =
+    base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
+        {{"install-isolated-web-app", fm_tasks::kActionIdInstallIsolatedWebApp},
+         {"microsoft-office", fm_tasks::kActionIdOpenInOffice}});
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -93,8 +108,7 @@ bool IsChromeAppPolicyId(base::StringPiece policy_id) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsArcAppPolicyId(base::StringPiece policy_id) {
-  return policy_id.find('.') != base::StringPiece::npos &&
-         !IsWebAppPolicyId(policy_id);
+  return base::Contains(policy_id, '.') && !IsWebAppPolicyId(policy_id);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -114,6 +128,23 @@ bool IsPreinstalledWebAppPolicyId(base::StringPiece policy_id) {
   }
   return base::Contains(kPreinstalledWebAppsMapping, policy_id);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool IsFileManagerVirtualTaskPolicyId(base::StringPiece policy_id) {
+  return GetVirtualTaskIdFromPolicyId(policy_id).has_value();
+}
+
+absl::optional<base::StringPiece> GetVirtualTaskIdFromPolicyId(
+    base::StringPiece policy_id) {
+  if (!base::StartsWith(policy_id, kVirtualTaskPrefix)) {
+    return absl::nullopt;
+  }
+  static constexpr size_t kOffset =
+      std::char_traits<char>::length(kVirtualTaskPrefix);
+  return base::OptionalFromPtr(
+      base::FindOrNull(kVirtualFileTasksMapping, policy_id.substr(kOffset)));
+}
+#endif
 
 std::string TransformRawPolicyId(const std::string& raw_policy_id) {
   if (const GURL raw_policy_id_gurl{raw_policy_id};

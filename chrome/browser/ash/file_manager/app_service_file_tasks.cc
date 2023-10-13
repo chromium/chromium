@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/virtual_file_tasks.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -442,18 +443,28 @@ bool ChooseAndSetDefaultTaskFromPolicyPrefs(
   DCHECK_EQ(default_handlers_for_entries.size(), 1U);
   const auto& policy_id = *default_handlers_for_entries.begin();
 
-  std::vector<std::string> app_ids =
-      apps_util::GetAppIdsFromPolicyId(profile, policy_id);
-
   std::vector<FullTaskDescriptor*> filtered_tasks;
-  for (auto& task : resulting_tasks->tasks) {
-    const auto& td = task.task_descriptor;
-    if (base::Contains(app_ids, td.app_id) ||
-        (td.task_type == TASK_TYPE_ARC_APP &&
-         !ash::features::ShouldArcFileTasksUseAppService() &&
-         MatchPolicyIdAgainstLegacyArcAppFormat(td, policy_id))) {
-      filtered_tasks.push_back(&task);
-      continue;
+  // `app_id` matching is not necessary if the policy points to a virtual task.
+  if (absl::optional<base::StringPiece> virtual_task_id =
+          apps_util::GetVirtualTaskIdFromPolicyId(policy_id)) {
+    std::string full_virtual_task_id = ToSwaActionId(*virtual_task_id);
+    for (auto& task : resulting_tasks->tasks) {
+      if (IsVirtualTask(task.task_descriptor) &&
+          task.task_descriptor.action_id == full_virtual_task_id) {
+        filtered_tasks.push_back(&task);
+      }
+    }
+  } else {
+    std::vector<std::string> app_ids =
+        apps_util::GetAppIdsFromPolicyId(profile, policy_id);
+    for (auto& task : resulting_tasks->tasks) {
+      const auto& td = task.task_descriptor;
+      if (base::Contains(app_ids, td.app_id) ||
+          (td.task_type == TASK_TYPE_ARC_APP &&
+           !ash::features::ShouldArcFileTasksUseAppService() &&
+           MatchPolicyIdAgainstLegacyArcAppFormat(td, policy_id))) {
+        filtered_tasks.push_back(&task);
+      }
     }
   }
 
