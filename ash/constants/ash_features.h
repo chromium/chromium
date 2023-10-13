@@ -315,6 +315,8 @@ BASE_DECLARE_FEATURE(kFastPairSavedDevicesStrictOptIn);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFastPairDevicesBluetoothSettings);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kFasterSplitScreenSetup);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFeatureManagement16Desks);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFeatureManagementUpdateNotification);
@@ -946,6 +948,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSavedDevicesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSavedDevicesStrictOptInEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsFastPairDevicesBluetoothSettingsEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFasterSplitScreenSetupEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFederatedServiceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFederatedServiceScheduleTasksEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFederatedStringsServiceEnabled();
