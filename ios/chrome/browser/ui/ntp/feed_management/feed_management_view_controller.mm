@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_view_controller.h"
 
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_follow_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_navigation_delegate.h"
@@ -79,7 +80,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   interestsItem.text =
       l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_INTERESTS_TEXT);
   interestsItem.detailText =
-      l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_INTERESTS_DETAIL);
+      IsFollowUIUpdateEnabled()
+          ? l10n_util::GetNSString(
+                IDS_IOS_FEED_MANAGEMENT_INTERESTS_DETAIL_UI_UPDATE)
+          : l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_INTERESTS_DETAIL);
   interestsItem.accessorySymbol =
       TableViewDetailTextCellAccessorySymbolExternalLink;
   interestsItem.allowMultilineDetailText = YES;

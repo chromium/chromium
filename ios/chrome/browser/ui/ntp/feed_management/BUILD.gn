@@ -32,6 +32,7 @@ source_set("feed_management_ui") {
   deps = [
     ":navigation_delegate",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ui/base",
