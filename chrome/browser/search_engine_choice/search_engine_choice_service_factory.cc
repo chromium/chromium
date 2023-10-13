@@ -9,6 +9,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/search_engines/search_engine_choice_utils.h"
@@ -34,6 +35,8 @@ SearchEngineChoiceServiceFactory::SearchEngineChoiceServiceFactory()
           "SearchEngineChoiceServiceFactory",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
+              .WithAshInternals(ProfileSelection::kNone)
+              .WithGuest(ProfileSelection::kNone)
               .Build()) {
   DependsOn(TemplateURLServiceFactory::GetInstance());
 }
