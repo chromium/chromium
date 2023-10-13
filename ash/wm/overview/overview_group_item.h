@@ -48,7 +48,7 @@ class OverviewGroupItem : public OverviewItemBase,
   gfx::Transform ComputeTargetTransform(
       const gfx::RectF& target_bounds) override;
   gfx::RectF GetTargetBoundsInScreen() const override;
-  gfx::RectF GetWindowTargetBoundsWithInsets() const override;
+  gfx::RectF GetTargetBoundsWithInsets() const override;
   gfx::RectF GetTransformedBounds() const override;
   float GetItemScale(int height) override;
   void ScaleUpSelectedItem(OverviewAnimationType animation_type) override;

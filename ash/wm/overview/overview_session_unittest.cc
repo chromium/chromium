@@ -2766,7 +2766,7 @@ TEST_P(OverviewSessionTest, ShadowBounds) {
   auto item_ratio = [](OverviewItemBase* item) {
     gfx::RectF boundsf = chromeos::features::IsJellyrollEnabled()
                              ? item->target_bounds()
-                             : item->GetWindowTargetBoundsWithInsets();
+                             : item->GetTargetBoundsWithInsets();
     return boundsf.width() / boundsf.height();
   };
 
@@ -7132,7 +7132,7 @@ TEST_F(SplitViewOverviewSessionTest, Clipping) {
     EXPECT_TRUE(aspect_ratio_near(window2->layer()->clip_rect(),
                                   split_view_bounds_right));
     EXPECT_TRUE(aspect_ratio_near(
-        gfx::ToEnclosedRect(item2->GetWindowTargetBoundsWithInsets()),
+        gfx::ToEnclosedRect(item2->GetTargetBoundsWithInsets()),
         split_view_bounds_right));
     EXPECT_TRUE(
         aspect_ratio_near(window2->GetBoundsInScreen(), maximized_bounds));
@@ -7152,7 +7152,7 @@ TEST_F(SplitViewOverviewSessionTest, Clipping) {
         preview_layer->transform().MapRect(preview_layer->clip_rect());
     EXPECT_TRUE(aspect_ratio_near(clip_rects3, split_view_bounds_right));
     EXPECT_TRUE(aspect_ratio_near(
-        gfx::ToEnclosedRect(item3->GetWindowTargetBoundsWithInsets()),
+        gfx::ToEnclosedRect(item3->GetTargetBoundsWithInsets()),
         split_view_bounds_right));
     EXPECT_TRUE(
         aspect_ratio_near(window3->GetBoundsInScreen(), maximized_bounds));
@@ -7164,7 +7164,7 @@ TEST_F(SplitViewOverviewSessionTest, Clipping) {
     EXPECT_TRUE(aspect_ratio_near(window4->layer()->clip_rect(),
                                   split_view_bounds_right));
     EXPECT_TRUE(aspect_ratio_near(
-        gfx::ToEnclosedRect(item4->GetWindowTargetBoundsWithInsets()),
+        gfx::ToEnclosedRect(item4->GetTargetBoundsWithInsets()),
         split_view_bounds_right));
     EXPECT_TRUE(
         aspect_ratio_near(window4->GetBoundsInScreen(), maximized_bounds));
@@ -7178,7 +7178,7 @@ TEST_F(SplitViewOverviewSessionTest, Clipping) {
     EXPECT_TRUE(aspect_ratio_near(window2->layer()->clip_rect(),
                                   split_view_bounds_right));
     EXPECT_TRUE(aspect_ratio_near(
-        gfx::ToEnclosedRect(item2->GetWindowTargetBoundsWithInsets()),
+        gfx::ToEnclosedRect(item2->GetTargetBoundsWithInsets()),
         split_view_bounds_right));
     EXPECT_TRUE(
         aspect_ratio_near(window2->GetBoundsInScreen(), maximized_bounds));
@@ -7186,7 +7186,7 @@ TEST_F(SplitViewOverviewSessionTest, Clipping) {
     EXPECT_TRUE(window3->layer()->clip_rect().IsEmpty());
     EXPECT_TRUE(aspect_ratio_near(clip_rects3, split_view_bounds_right));
     EXPECT_TRUE(aspect_ratio_near(
-        gfx::ToEnclosedRect(item3->GetWindowTargetBoundsWithInsets()),
+        gfx::ToEnclosedRect(item3->GetTargetBoundsWithInsets()),
         split_view_bounds_right));
     EXPECT_TRUE(
         aspect_ratio_near(window3->GetBoundsInScreen(), maximized_bounds));
@@ -7196,7 +7196,7 @@ TEST_F(SplitViewOverviewSessionTest, Clipping) {
     EXPECT_TRUE(aspect_ratio_near(window4->layer()->clip_rect(),
                                   split_view_bounds_right));
     EXPECT_TRUE(aspect_ratio_near(
-        gfx::ToEnclosedRect(item4->GetWindowTargetBoundsWithInsets()),
+        gfx::ToEnclosedRect(item4->GetTargetBoundsWithInsets()),
         split_view_bounds_right));
     EXPECT_TRUE(
         aspect_ratio_near(window4->GetBoundsInScreen(), maximized_bounds));

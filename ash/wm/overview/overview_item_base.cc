@@ -70,7 +70,7 @@ void OverviewItemBase::RefreshShadowVisuals(bool shadow_visible) {
 
   const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
   const gfx::RectF shadow_bounds_in_screen =
-      is_jellyroll_enabled ? target_bounds_ : GetWindowTargetBoundsWithInsets();
+      is_jellyroll_enabled ? target_bounds_ : GetTargetBoundsWithInsets();
   auto* shadow_layer = shadow_->GetLayer();
   if (!shadow_visible || shadow_bounds_in_screen.IsEmpty()) {
     shadow_layer->SetVisible(false);

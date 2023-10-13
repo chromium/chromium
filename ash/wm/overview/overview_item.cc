@@ -312,8 +312,8 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
         if (RoundedLabelWidget* widget = item->cannot_snap_widget_.get()) {
           SetWidgetBoundsAndMaybeAnimateTransform(
               widget,
-              widget->GetBoundsCenteredIn(ToStableSizeRoundedRect(
-                  item->GetWindowTargetBoundsWithInsets())),
+              widget->GetBoundsCenteredIn(
+                  ToStableSizeRoundedRect(item->GetTargetBoundsWithInsets())),
               animation_type, nullptr);
         }
       },
@@ -359,7 +359,7 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
   ui::Layer* preview_layer = preview_view->layer();
   if (unclipped_size_) {
     gfx::SizeF target_size(*unclipped_size_);
-    gfx::SizeF preview_size = GetWindowTargetBoundsWithInsets().size();
+    gfx::SizeF preview_size = GetTargetBoundsWithInsets().size();
     target_size.Enlarge(0, -kHeaderHeightDp);
 
     const float x_scale = target_size.width() / preview_size.width();
@@ -514,7 +514,7 @@ gfx::RectF OverviewItem::GetTargetBoundsInScreen() const {
   return ash::GetTargetBoundsInScreen(transform_window_.window());
 }
 
-gfx::RectF OverviewItem::GetWindowTargetBoundsWithInsets() const {
+gfx::RectF OverviewItem::GetTargetBoundsWithInsets() const {
   gfx::RectF window_target_bounds = target_bounds_;
   window_target_bounds.Inset(gfx::InsetsF::TLBR(kHeaderHeightDp, 0, 0, 0));
   return window_target_bounds;
@@ -883,8 +883,7 @@ void OverviewItem::UpdateCannotSnapWarningVisibility(bool animate) {
   } else {
     cannot_snap_widget_->GetLayer()->SetOpacity(visible ? 1.f : 0.f);
   }
-  const gfx::Rect bounds =
-      ToStableSizeRoundedRect(GetWindowTargetBoundsWithInsets());
+  const gfx::Rect bounds = ToStableSizeRoundedRect(GetTargetBoundsWithInsets());
   cannot_snap_widget_->SetBoundsCenteredIn(bounds, /*animate=*/false);
 }
 
@@ -1267,10 +1266,9 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
 
   // Do not set transform for drop target, set bounds instead.
   if (overview_grid_->IsDropTargetItem(this)) {
-    const gfx::Rect drop_target_bounds =
-        ToStableSizeRoundedRect(chromeos::features::IsJellyrollEnabled()
-                                    ? target_bounds_
-                                    : GetWindowTargetBoundsWithInsets());
+    const gfx::Rect drop_target_bounds = ToStableSizeRoundedRect(
+        chromeos::features::IsJellyrollEnabled() ? target_bounds_
+                                                 : GetTargetBoundsWithInsets());
     SetWidgetBoundsAndMaybeAnimateTransform(
         overview_grid_->drop_target_widget(), drop_target_bounds,
         animation_type, /*observer=*/nullptr);
@@ -1285,10 +1283,11 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
   using ClippingType = ScopedOverviewTransformWindow::ClippingType;
   ScopedOverviewTransformWindow::ClippingData clipping_data{
       ClippingType::kCustom, gfx::SizeF()};
-  if (unclipped_size_)
-    clipping_data.second = GetWindowTargetBoundsWithInsets().size();
-  else if (is_first_update)
+  if (unclipped_size_) {
+    clipping_data.second = GetTargetBoundsWithInsets().size();
+  } else if (is_first_update) {
     clipping_data.first = ClippingType::kEnter;
+  }
 
   if (is_first_update &&
       animation_type == OVERVIEW_ANIMATION_SPAWN_ITEM_IN_OVERVIEW) {

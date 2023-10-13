@@ -143,7 +143,7 @@ gfx::RectF OverviewGroupItem::GetTargetBoundsInScreen() const {
   return target_bounds;
 }
 
-gfx::RectF OverviewGroupItem::GetWindowTargetBoundsWithInsets() const {
+gfx::RectF OverviewGroupItem::GetTargetBoundsWithInsets() const {
   gfx::RectF target_bounds_with_insets = target_bounds_;
   target_bounds_with_insets.Inset(gfx::InsetsF::TLBR(kHeaderHeightDp, 0, 0, 0));
   return target_bounds_with_insets;

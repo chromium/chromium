@@ -92,7 +92,7 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   void ScaleUpSelectedItem(OverviewAnimationType animation_type) override;
   void EnsureVisible() override;
   gfx::RectF GetTargetBoundsInScreen() const override;
-  gfx::RectF GetWindowTargetBoundsWithInsets() const override;
+  gfx::RectF GetTargetBoundsWithInsets() const override;
   gfx::RectF GetTransformedBounds() const override;
   OverviewFocusableView* GetFocusableView() const override;
   views::View* GetBackDropView() const override;
