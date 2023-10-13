@@ -95,6 +95,8 @@ public class DeviceLockCoordinator {
      * Releases the resources used by the coordinator.
      */
     public void destroy() {
-        mPropertyModelChangeProcessor.destroy();
+        if (mPropertyModelChangeProcessor != null) {
+            mPropertyModelChangeProcessor.destroy();
+        }
     }
 }
