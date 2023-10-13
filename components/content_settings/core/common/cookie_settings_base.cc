@@ -290,9 +290,6 @@ CookieSettingsBase::GetCookieSettingInternal(
       GetContentSetting(url, first_party_url,
                         ContentSettingsType::TPCD_SUPPORT) ==
           CONTENT_SETTING_ALLOW) {
-    // TODO (crbug.com/1466156): Revisit this after a decision has been made
-    // on how an explicit 3PC setting will be differentiated from an
-    // experimental one.
     block_third = false;
     FireStorageAccessHistogram(
         net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD);
