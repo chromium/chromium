@@ -169,8 +169,8 @@ chromium-metrics-reviews@google.com.
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
-    The time from Chrome tabbed activity creation to the moment the Chrome first
-    appears ready.
+    The time from the first Chrome tabbed activity creation to the moment Chrome
+    first appears ready to the user.
 
     This metric captures when the omnibox is painted and either a navigation has
     committed or a Paint Preview is shown. The intent is to reflect Clank's
@@ -214,6 +214,8 @@ chromium-metrics-reviews@google.com.
 
     - For WebApps, PWAs or WebApks.
 
+    - For NTP.
+
     Bugs:
 
     - This metric does not get recorded when the first navigation commit happens
@@ -235,8 +237,8 @@ chromium-metrics-reviews@google.com.
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
-    The time from Chrome tabbed activity creation to the moment the Chrome first
-    appears ready.
+    The time from the first Chrome tabbed activity creation to the moment Chrome
+    first appears ready to the user.
 
     This metrics has the same semantics as
     Startup.Android.Cold.TimeToFirstVisibleContent, without the known bug.
