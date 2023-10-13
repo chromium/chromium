@@ -2749,10 +2749,11 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_MaxAmountAllowed) {
   test_apn1.username = kCellularTestApnUsername1;
   test_apn1.password = kCellularTestApnPassword1;
   test_apn1.attach = kCellularTestApnAttach1;
-  test_apn1.mojo_apn_types = {mojom::ApnType::kDefault,
-                              mojom::ApnType::kAttach};
+  test_apn1.mojo_apn_types = {mojom::ApnType::kDefault, mojom::ApnType::kAttach,
+                              mojom::ApnType::kTether};
   test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault,
-                             ::onc::cellular_apn::kApnTypeAttach};
+                             ::onc::cellular_apn::kApnTypeAttach,
+                             ::onc::cellular_apn::kApnTypeTether};
 
   // Verify that the API creates as many APNs as allowed
   for (size_t i = 0; i < mojom::kMaxNumCustomApns; ++i) {

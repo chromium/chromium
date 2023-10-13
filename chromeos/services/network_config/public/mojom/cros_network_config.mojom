@@ -389,6 +389,7 @@ enum ApnIpType {
 enum ApnType {
   kDefault,
   kAttach,
+  kTether,
 };
 
 struct ApnProperties {

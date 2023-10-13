@@ -187,6 +187,7 @@ const char kIpTypeIpv4Ipv6[] = "IPv4orIPv6";
 const char kApnTypes[] = "ApnTypes";
 const char kApnTypeDefault[] = "Default";
 const char kApnTypeAttach[] = "Attach";
+const char kApnTypeTether[] = "Tether";
 }  // namespace cellular_apn
 
 namespace cellular_found_network {

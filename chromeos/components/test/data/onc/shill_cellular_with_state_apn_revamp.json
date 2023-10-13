@@ -58,7 +58,7 @@
     "Cellular.APNList": [
       {
         "apn": "test-apn0",
-        "apn_types": "DEFAULT",
+        "apn_types": "DUN",
         "ip_type": "ipv4",
         "username": "test-username0",
         "password": "test-password0"

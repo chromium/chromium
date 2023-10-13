@@ -31,7 +31,7 @@
     {
       "apn": "test-apn-4",
       "apn_source": "ui",
-      "apn_types": "DEFAULT,IA",
+      "apn_types": "DEFAULT,IA,DUN",
       "authentication": "chap",
       "ip_type": "ipv4v6",
       "username": "test-username",

@@ -1097,6 +1097,9 @@ std::vector<std::string> MojoApnTypesToOnc(
       case mojom::ApnType::kAttach:
         apn_types_result.push_back(::onc::cellular_apn::kApnTypeAttach);
         continue;
+      case mojom::ApnType::kTether:
+        apn_types_result.push_back(::onc::cellular_apn::kApnTypeTether);
+        continue;
     }
   }
 

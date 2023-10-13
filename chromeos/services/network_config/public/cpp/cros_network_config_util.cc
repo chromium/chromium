@@ -339,8 +339,12 @@ base::Value::Dict CustomApnListToOnc(const std::string& network_guid,
 
 std::vector<mojom::ApnType> OncApnTypesToMojo(
     const std::vector<std::string>& apn_types) {
-  DCHECK(!apn_types.empty());
   std::vector<mojom::ApnType> apn_types_result;
+  if (apn_types.empty()) {
+    NET_LOG(ERROR) << "APN types is empty";
+    return apn_types_result;
+  }
+
   apn_types_result.reserve(apn_types.size());
   for (const std::string& apn_type : apn_types) {
     if (apn_type == ::onc::cellular_apn::kApnTypeDefault) {
@@ -349,6 +353,10 @@ std::vector<mojom::ApnType> OncApnTypesToMojo(
     }
     if (apn_type == ::onc::cellular_apn::kApnTypeAttach) {
       apn_types_result.push_back(mojom::ApnType::kAttach);
+      continue;
+    }
+    if (apn_type == ::onc::cellular_apn::kApnTypeTether) {
+      apn_types_result.push_back(mojom::ApnType::kTether);
       continue;
     }
 

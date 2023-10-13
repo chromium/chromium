@@ -624,6 +624,7 @@ void ShillToONCTranslator::TranslateApnProperties() {
   // i.e. "DEFAULT,IA,DEFAULT" -> ["Default", "Attach"].
   bool contains_default = false;
   bool contains_attach = false;
+  bool contains_tether = false;
   for (const auto& apn_type :
        base::SplitStringPiece(shill_apn_types,
                               /*separators=*/",", base::TRIM_WHITESPACE,
@@ -632,6 +633,8 @@ void ShillToONCTranslator::TranslateApnProperties() {
       contains_default = true;
     } else if (apn_type == shill::kApnTypeIA) {
       contains_attach = true;
+    } else if (apn_type == shill::kApnTypeDun) {
+      contains_tether = true;
     } else {
       NET_LOG(ERROR) << "APN has an invalid APN type:" << apn_type;
     }
@@ -643,7 +646,12 @@ void ShillToONCTranslator::TranslateApnProperties() {
   if (contains_attach) {
     apn_types.Append(::onc::cellular_apn::kApnTypeAttach);
   }
-  DCHECK(!apn_types.empty()) << "APN must have at least one APN type";
+  if (contains_tether) {
+    apn_types.Append(::onc::cellular_apn::kApnTypeTether);
+  }
+  if (apn_types.empty()) {
+    NET_LOG(ERROR) << "APN must have at least one APN type";
+  }
   onc_object_.Set(::onc::cellular_apn::kApnTypes, std::move(apn_types));
 }
 
