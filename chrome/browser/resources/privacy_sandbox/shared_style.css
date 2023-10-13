@@ -38,6 +38,7 @@
   margin-top: 48px;
   padding-bottom: 10px;
   text-align: center;
+  text-wrap: pretty;
 }
 
 .header h1 {
