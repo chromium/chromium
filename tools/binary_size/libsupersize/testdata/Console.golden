@@ -6,7 +6,7 @@ Symbol: FlagsString, IsArsc, IsBss, IsDelta, IsDex, IsGeneratedByToolchain, IsGr
 
 SymbolGroup (extends Symbol): CountUniqueSymbols, Filter, GroupedBy, GroupedByAliases, GroupedByComponent, GroupedByContainer, GroupedByContainerAndSectionName, GroupedByFullName, GroupedByName, GroupedByPath, GroupedBySectionName, Inverted, IterUniqueSymbols, Sorted, SortedByAddress, SortedByCount, SortedByName, WhereAddressInRange, WhereComponentMatches, WhereFullNameMatches, WhereGeneratedByToolchain, WhereHasAnyAttribution, WhereHasComponent, WhereHasFlag, WhereHasPath, WhereInContainer, WhereInSection, WhereIsDex, WhereIsGroup, WhereIsNative, WhereIsOnDemand, WhereIsPak, WhereIsPlaceholder, WhereIsTemplate, WhereMatches, WhereNameMatches, WhereObjectPathMatches, WherePathMatches, WherePssBiggerThan, WhereSizeBiggerThan, WhereSourceIsGenerated, WhereSourcePathMatches, WhereTemplateNameMatches, index, is_default_sorted
 
-DeltaSizeInfo: ContainerForName, MergeDeltaSizeInfo, added_sources, after, before, build_config, containers, is_sparse, native_symbols, pak_symbols, raw_symbols, removed_sources, section_sizes, symbols
+DeltaSizeInfo: ContainerForName, MergeDeltaSizeInfo, added_sources, after, before, containers, is_sparse, native_symbols, pak_symbols, raw_symbols, removed_sources, section_sizes, symbols
 DeltaSymbol (extends Symbol): after_symbol, before_symbol, diff_status
 DeltaSymbolGroup (extends SymbolGroup): CountsByDiffStatus, GetEntireAddOrRemoveSources, WhereDiffStatusIs, diff_status
 

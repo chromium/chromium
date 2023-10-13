@@ -195,21 +195,18 @@ class BaseContainer:
   """Base class for BaseContainer and DeltaContainer.
 
   Fields:
-    name: Container name. Must be unique among (non-Diff) Containers.
     short_name: Short container name for compact display. This, also needs to be
         unique among containers in the same SizeInfo, and can be ''.
     classified_sections: Cache for ClassifySections().
   """
   __slots__ = (
-      'name',
       'short_name',
       '_classified_sections',
   )
 
-  def __init__(self, name):
+  def __init__(self):
     # name == '' hints that only one container exists, and there's no need to
     # distinguish them. This can affect console output.
-    self.name = name
     self.short_name = None  # Assigned by AssignShortNames().
     self._classified_sections = None
 
@@ -231,6 +228,10 @@ class BaseContainer:
       c.short_name = str(i) if c.name else ''
 
   @property
+  def name(self):
+    pass
+
+  @property
   def section_sizes(self):
     pass
 
@@ -240,16 +241,19 @@ class Container(BaseContainer):
 
   Fields:
     metadata: A dict.
+    name: Container name. Must be unique among (non-Diff) Containers.
     section_sizes: A dict of section_name -> size.
   """
   __slots__ = (
       'metadata',
+      'name',
       'section_sizes',
       'metrics_by_file',
   )
 
   def __init__(self, name, metadata, section_sizes, metrics_by_file):
-    super().__init__(name)
+    super().__init__()
+    self.name = name
     self.metadata = metadata or {}
     self.section_sizes = section_sizes  # E.g. {SECTION_TEXT: 0}
     self.metrics_by_file = metrics_by_file
@@ -278,10 +282,14 @@ class DeltaContainer(BaseContainer):
       'after',
   )
 
-  def __init__(self, name, before, after):
-    super().__init__(name)
+  def __init__(self, before, after):
+    super().__init__()
     self.before = before
     self.after = after
+
+  @property
+  def name(self):
+    return self.after.name if self.before.IsEmpty() else self.before.name
 
   @property
   def section_sizes(self):
@@ -307,7 +315,6 @@ class BaseSizeInfo:
   """Base class for SizeInfo and DeltaSizeInfo.
 
   Fields:
-    build_config: A dict of build configurations.
     containers: A list of Containers.
     raw_symbols: A SymbolGroup containing all top-level symbols (no groups).
     symbols: A SymbolGroup of all symbols, where symbols have been
@@ -317,7 +324,6 @@ class BaseSizeInfo:
     pak_symbols: Subset of |symbols| that are from pak files.
   """
   __slots__ = (
-      'build_config',
       'containers',
       'raw_symbols',
       '_symbols',
@@ -325,10 +331,9 @@ class BaseSizeInfo:
       '_pak_symbols',
   )
 
-  def __init__(self, build_config, containers, raw_symbols, symbols=None):
+  def __init__(self, containers, raw_symbols, symbols=None):
     if isinstance(raw_symbols, list):
       raw_symbols = SymbolGroup(raw_symbols)
-    self.build_config = build_config
     self.containers = containers
     self.raw_symbols = raw_symbols
     self._symbols = symbols
@@ -379,8 +384,10 @@ class SizeInfo(BaseSizeInfo):
   Fields:
     size_path: Path to .size file this was loaded from (or None).
     is_sparse: Whether the list of symbols is sparse.
+    build_config: A dict of build configurations.
   """
   __slots__ = (
+      'build_config',
       'size_path',
       'is_sparse',
   )
@@ -392,7 +399,8 @@ class SizeInfo(BaseSizeInfo):
                symbols=None,
                size_path=None,
                is_sparse=False):
-    super().__init__(build_config, containers, raw_symbols, symbols=symbols)
+    super().__init__(containers, raw_symbols, symbols=symbols)
+    self.build_config = build_config
     self.size_path = size_path
     self.is_sparse = is_sparse
 
@@ -433,7 +441,7 @@ class DeltaSizeInfo(BaseSizeInfo):
                raw_symbols,
                removed_sources=None,
                added_sources=None):
-    super().__init__(None, containers, raw_symbols)
+    super().__init__(containers, raw_symbols)
     self.before = before
     self.after = after
     self.removed_sources = removed_sources or []
