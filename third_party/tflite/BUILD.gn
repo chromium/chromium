@@ -49,7 +49,6 @@ config("tflite_flags") {
     "-Wno-loop-analysis",
     "-Wno-shadow",
     "-Wno-deprecated-anon-enum-enum-conversion",
-    "-Wno-unused-function",
 
     # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if possible.
     "-Wno-sign-compare",
@@ -374,7 +373,7 @@ source_set("tflite_kernel_internals") {
     ":tflite_flags",
   ]
 
-  public_configs = [ "//third_party/eigen3:eigen_public_includes" ]
+  public_configs = [ "//third_party/eigen3:eigen_includes" ]
   visibility = [ ":*" ]
 }
 
