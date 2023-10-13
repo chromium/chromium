@@ -274,6 +274,7 @@ void FlossDBusManager::InitializeFake() {
 }
 
 void FlossDBusManager::SetAllClientsPresentForTesting() {
+  mgmt_client_present_ = true;
   adapter_interface_present_ = true;
   adapter_logging_interface_present_ = true;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -348,8 +349,10 @@ void FlossDBusManager::OnObjectManagerSupported(dbus::Response* response) {
 
   // Initialize the manager client (which doesn't depend on any specific
   // adapter being present)
-  client_bundle_->manager_client()->Init(GetSystemBus(), kManagerInterface,
-                                         kInvalidAdapter, base::DoNothing());
+  client_bundle_->manager_client()->Init(
+      GetSystemBus(), kManagerInterface, kInvalidAdapter,
+      base::BindOnce(&FlossDBusManager::OnManagerClientInitComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   // Register object manager for Manager.
   object_manager_ =
@@ -363,11 +366,6 @@ void FlossDBusManager::OnObjectManagerSupported(dbus::Response* response) {
   object_manager_->RegisterInterface(kBluetoothTelephonyInterface, this);
   object_manager_->RegisterInterface(kGattInterface, this);
   object_manager_->RegisterInterface(kSocketManagerInterface, this);
-
-  object_manager_support_known_ = true;
-  if (object_manager_support_known_callback_) {
-    std::move(object_manager_support_known_callback_).Run();
-  }
 }
 
 void FlossDBusManager::OnObjectManagerNotSupported(
@@ -376,6 +374,16 @@ void FlossDBusManager::OnObjectManagerNotSupported(
   object_manager_supported_ = false;
 
   // Don't initialize any clients since they need ObjectManager.
+
+  object_manager_support_known_ = true;
+  if (object_manager_support_known_callback_) {
+    std::move(object_manager_support_known_callback_).Run();
+  }
+}
+
+void FlossDBusManager::OnManagerClientInitComplete() {
+  mgmt_client_present_ = client_bundle_->manager_client()->IsInitialized();
+  DVLOG(1) << "Floss manager client initialized: " << mgmt_client_present_;
 
   object_manager_support_known_ = true;
   if (object_manager_support_known_callback_) {
