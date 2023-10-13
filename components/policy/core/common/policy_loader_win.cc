@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/policy/core/common/policy_loader_win.h"
-#include "base/feature_list.h"
-#include "components/policy/core/common/async_policy_loader.h"
 
 // Must be included before lm.h
 #include <windows.h>
@@ -23,6 +21,7 @@
 
 #include "base/check.h"
 #include "base/enterprise_util.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -44,6 +43,7 @@
 #include "base/win/shlwapi.h"  // For PathIsUNC()
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "components/policy/core/common/async_policy_loader.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_loader_common.h"
 #include "components/policy/core/common/policy_map.h"
@@ -67,19 +67,6 @@ const char kKeyThirdParty[] = "3rdparty";
 BASE_FEATURE(kCriticalPolicySection,
              "CriticalPolicySection",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// The list of possible errors that can occur while collecting information about
-// the current enterprise environment.
-// This enum is used to define the buckets for an enumerated UMA histogram.
-// Hence,
-//   (a) existing enumerated constants should never be deleted or reordered, and
-//   (b) new constants should only be appended at the end of the enumeration.
-enum DomainCheckErrors {
-  // The check error below is no longer possible.
-  DEPRECATED_DOMAIN_CHECK_ERROR_GET_JOIN_INFO = 0,
-  DOMAIN_CHECK_ERROR_DS_BIND = 1,
-  DOMAIN_CHECK_ERROR_SIZE,  // Not a DomainCheckError.  Must be last.
-};
 
 // Parses |gpo_dict| according to |schema| and writes the resulting policy
 // settings to |policy| for the given |scope| and |level|.
@@ -296,11 +283,11 @@ PolicyBundle PolicyLoaderWin::Load() {
   PolicyBundle bundle;
   PolicyMap* chrome_policy =
       &bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
-  for (size_t i = 0; i < std::size(kScopes); ++i) {
-    PolicyScope scope = kScopes[i].scope;
+  for (const auto& entry : kScopes) {
+    PolicyScope scope = entry.scope;
     RegistryDict gpo_dict;
 
-    gpo_dict.ReadRegistry(kScopes[i].hive, chrome_policy_key_);
+    gpo_dict.ReadRegistry(entry.hive, chrome_policy_key_);
 
     // Remove special-cased entries from the GPO dictionary.
     std::unique_ptr<RegistryDict> recommended_dict(
@@ -377,9 +364,9 @@ void PolicyLoaderWin::Load3rdPartyPolicy(const RegistryDict* gpo_dict,
       {POLICY_LEVEL_RECOMMENDED, kKeyRecommended},
   };
 
-  for (size_t i = 0; i < std::size(k3rdPartyDomains); i++) {
-    const char* name = k3rdPartyDomains[i].name;
-    const PolicyDomain domain = k3rdPartyDomains[i].domain;
+  for (const auto& entry : k3rdPartyDomains) {
+    const char* name = entry.name;
+    const PolicyDomain domain = entry.domain;
     const RegistryDict* domain_dict = gpo_dict->GetKey(name);
     if (!domain_dict)
       continue;
@@ -397,14 +384,13 @@ void PolicyLoaderWin::Load3rdPartyPolicy(const RegistryDict* gpo_dict,
       Schema schema = *schema_from_map;
 
       // Parse policy.
-      for (size_t j = 0; j < std::size(kLevels); j++) {
-        const RegistryDict* policy_dict =
-            component->second->GetKey(kLevels[j].path);
+      for (const auto& level : kLevels) {
+        const RegistryDict* policy_dict = component->second->GetKey(level.path);
         if (!policy_dict)
           continue;
 
         PolicyMap policy;
-        ParsePolicy(policy_dict, kLevels[j].level, scope, schema, &policy);
+        ParsePolicy(policy_dict, level.level, scope, schema, &policy);
         bundle->Get(policy_namespace).MergeFrom(policy);
       }
     }
