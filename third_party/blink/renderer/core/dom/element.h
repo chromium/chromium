@@ -1343,6 +1343,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   TextDirection ParentDirectionality() const;
   void AdjustDirectionalityIfNeededAfterChildrenChanged(
       const ChildrenChange& change);
+  bool RecalcSelfOrAncestorHasDirAuto();
   template <typename Traversal>
   absl::optional<TextDirection> ResolveAutoDirectionality(
       bool& is_deferred,
@@ -1496,7 +1497,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   }
 
   void RecomputeDirectionFromParent();
-  bool RecalcSelfOrAncestorHasDirAuto();
 
   ShadowRoot& CreateAndAttachShadowRoot(ShadowRootType);
 
