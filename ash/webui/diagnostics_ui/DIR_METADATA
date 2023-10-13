@@ -1,3 +1,4 @@
-monorail {
-  component: "OS>Systems>Diagnostics"
+# ChromeOS > Software > System Services > Serviceability > Diagnostics
+buganizer {
+  component_id: 1131925
 }
