@@ -3595,9 +3595,6 @@ TEST_F(PasswordAutofillAgentTest, RememberChosenUsernamePassword) {
 // Tests that we can correctly suggest to autofill two forms without username
 // fields.
 TEST_F(PasswordAutofillAgentTest, ShowSuggestionForNonUsernameFieldForms) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      blink::features::kAutofillUseDomNodeIdForRendererId);
   LoadHTML(kTwoNoUsernameFormsHTML);
   fill_data_.preferred_login.username_value.clear();
   UpdateUrlForHTML(kTwoNoUsernameFormsHTML);
