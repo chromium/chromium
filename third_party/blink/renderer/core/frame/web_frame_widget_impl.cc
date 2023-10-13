@@ -134,6 +134,7 @@
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator_dispatcher_impl.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_mutator_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
@@ -3233,7 +3234,7 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
                         WebFrameWidgetImpl* widget)
       : promise_callbacks_(std::move(callbacks)),
         task_runner_(std::move(task_runner)),
-        widget_(widget) {}
+        widget_(MakeCrossThreadWeakHandle(widget)) {}
 
   ReportTimeSwapPromise(const ReportTimeSwapPromise&) = delete;
   ReportTimeSwapPromise& operator=(const ReportTimeSwapPromise&) = delete;
@@ -3253,7 +3254,8 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
     DCHECK_GT(frame_token_, 0u);
     PostCrossThreadTask(
         *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(&RunCallbackAfterSwap, widget_,
+        CrossThreadBindOnce(&RunCallbackAfterSwap,
+                            MakeUnwrappingCrossThreadWeakHandle(widget_),
                             base::TimeTicks::Now(),
                             std::move(promise_callbacks_), frame_token_));
   }
@@ -3374,7 +3376,7 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
   WebFrameWidgetImpl::PromiseCallbacks promise_callbacks_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  CrossThreadWeakPersistent<WebFrameWidgetImpl> widget_;
+  CrossThreadWeakHandle<WebFrameWidgetImpl> widget_;
   uint32_t frame_token_ = 0;
 };
 
