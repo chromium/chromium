@@ -3139,7 +3139,7 @@
     },
     {
       name: "RemoveDataUrlInSvgUse",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "RemoveMobileViewportDoubleTap",
