@@ -7,31 +7,21 @@
 
 #include <vector>
 
-#include "base/process/process_handle.h"  // For ProcessId
+#include "base/containers/flat_map.h"
+#include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "components/performance_manager/public/graph/system_node.h"
 
-namespace performance_manager {
-
-namespace policies {
+namespace performance_manager::policies {
 
 // Assigning oom score adj to renderer processes. Process with lowest oom score
 // adj is the last to be killed by Linux oom killer. The more important process
 // would be assigned lower oom score adj. See the following web page for more
 // explanation on Linux oom score adj(adjust).
 // [1]: https://man7.org/linux/man-pages/man1/choom.1.html
-//
-// This class is also responsible to send the background process list to the
-// resource manager daemon (resourced). The background process list is used to
-// estimate the memory usage of the background processes. Based on the
-// background Chrome memory usage, resourced determines when to release memory
-// from Chrome or VMs or container. When there are a lot of background processes
-// in Ash Chrome, resourced would avoid killing perceptible apps in VMs or
-// container.
 class OomScorePolicyChromeOS : public GraphOwned,
                                public PageNode::ObserverDefaultImpl {
  public:
@@ -53,20 +43,11 @@ class OomScorePolicyChromeOS : public GraphOwned,
 
  protected:
   // These members are protected for testing.
-  void HandlePageNodeEvents(bool oom_scores_assignment,
-                            bool background_pids_report);
+  void HandlePageNodeEvents();
 
   // Returns the cached oom score adj. If the pid is not cached, returns -1 (a
   // value not in the valid oom score adj range for renderer processes).
   int GetCachedOomScore(base::ProcessId pid);
-
-  // Reports the background process list to the resource manager daemon
-  // (resourced). Based on the background process list, resourced determines
-  // when to release memory from Chrome or VMs or containers.
-  // It's virtual for testing.
-  virtual void ReportBackgroundProcesses(std::vector<base::ProcessId> pids);
-
-  raw_ptr<Graph> graph_ = nullptr;
 
  private:
   // Cache OOM scores in memory.
@@ -85,7 +66,8 @@ class OomScorePolicyChromeOS : public GraphOwned,
       const std::vector<PageNodeSortProxy>& candidates);
 
   base::TimeTicks last_oom_scores_assignment_ = base::TimeTicks::Now();
-  base::TimeTicks last_background_pids_report_ = base::TimeTicks::Now();
+
+  raw_ptr<Graph> graph_ = nullptr;
 
   // Map maintaining the process handle - oom_score mapping.
   ProcessScoreMap oom_score_map_;
@@ -95,7 +77,6 @@ class OomScorePolicyChromeOS : public GraphOwned,
   base::WeakPtrFactory<OomScorePolicyChromeOS> weak_factory_{this};
 };
 
-}  // namespace policies
-}  // namespace performance_manager
+}  // namespace performance_manager::policies
 
 #endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_OOM_SCORE_POLICY_CHROMEOS_H_

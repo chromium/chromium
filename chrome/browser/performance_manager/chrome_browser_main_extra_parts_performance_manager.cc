@@ -59,6 +59,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/performance_manager/policies/oom_score_policy_chromeos.h"
+#include "chrome/browser/performance_manager/policies/report_page_processes_policy.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -137,6 +138,9 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   graph->PassToGraph(std::make_unique<
                      performance_manager::policies::OomScorePolicyChromeOS>());
+  graph->PassToGraph(
+      std::make_unique<
+          performance_manager::policies::ReportPageProcessesPolicy>());
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(
           performance_manager::features::
@@ -144,6 +148,9 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
     graph->PassToGraph(
         std::make_unique<
             performance_manager::policies::OomScorePolicyChromeOS>());
+    graph->PassToGraph(
+        std::make_unique<
+            performance_manager::policies::ReportPageProcessesPolicy>());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
