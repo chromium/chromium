@@ -284,6 +284,9 @@
 -WebRtcAudioDebugRecordingsBrowserTest.CallWithAudioDebugRecordings
 -WebRtcMediaRecorderTest.TwoChannelAudioRecording
 
+# TODO(crbug.com/1492573): reports the wrong width/height.
+-RenderWidgetHostFoldableCSSTest.ViewportSegmentsWorksInUAFullscreenCSS
+
 # These tests are flaky.
 -All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
 -All/DumpAccessibilityTreeTest.AccessibilitySelectListOpen/blink1
