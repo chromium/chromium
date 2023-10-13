@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 
 import com.google.protobuf.ByteString;
 
+import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -64,6 +65,8 @@ import java.util.function.BooleanSupplier;
  * </ul>
  */
 public class PageInsightsMediator extends EmptyTabObserver implements BottomSheetObserver {
+    private static final String TAG = "PIMediator";
+
     static final int DEFAULT_TRIGGER_DELAY_MS = (int) DateUtils.MINUTE_IN_MILLIS;
     private static final float MINIMUM_CONFIDENCE = 0.5f;
     static final String PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END =
@@ -307,9 +310,11 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                 || !BrowserControlsUtils.areBrowserControlsOffScreen(mControlsStateProvider)
                 || mSheetContent == mSheetController.getCurrentSheetContent()
                 || !mAutoTriggerReady) {
+            Log.v(TAG, "Not triggering auto-peek.");
             return;
         }
-
+        resetAutoTriggerTimer();
+        Log.v(TAG, "Loading data for auto-peek");
         mPageInsightsDataLoader.loadInsightsData(
                 mTabObservable.get().getUrl(),
                 metadata -> {
@@ -317,8 +322,10 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                     boolean hasEnoughConfidence =
                             metadata.getAutoPeekConditions().getConfidence() > MINIMUM_CONFIDENCE;
                     if (hasEnoughConfidence) {
+                        Log.v(TAG, "Auto-peeking");
                         openInAutoPeekState(metadata);
-                        resetAutoTriggerTimer();
+                    } else {
+                        Log.v(TAG, "Would auto-peek but confidence too low");
                     }
                 });
     }
