@@ -61,9 +61,16 @@ void PolicyFetcher::FetchPolicies(
 void PolicyFetcher::RegisterDevice(
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
     base::OnceCallback<void(bool, DMClient::RequestResult)> callback) {
+  VLOG(1) << __func__;
   scoped_refptr<DMStorage> dm_storage = GetDefaultDMStorage();
-  VLOG(1) << __func__
-          << " with enrollment token: " << dm_storage->GetEnrollmentToken();
+  if (!dm_storage) {
+    main_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), false,
+                       DMClient::RequestResult::kNoDefaultDMStorage));
+    return;
+  }
+  VLOG(1) << "Enrollment token: " << dm_storage->GetEnrollmentToken();
   DMClient::RegisterDevice(
       DMClient::CreateDefaultConfigurator(server_url_,
                                           policy_service_proxy_configuration_),

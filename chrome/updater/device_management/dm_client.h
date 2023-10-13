@@ -81,6 +81,9 @@ class DMClient {
 
     // No POST data.
     kNoPayload,
+
+    // Failed to get the default DM storage.
+    kNoDefaultDMStorage,
   };
 
   using RegisterCallback = base::OnceCallback<void(RequestResult)>;

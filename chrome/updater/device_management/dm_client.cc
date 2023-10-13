@@ -438,6 +438,7 @@ std::ostream& operator<<(std::ostream& os,
     SWITCH_ENTRY(DMClient::RequestResult::kSerializationError);
     SWITCH_ENTRY(DMClient::RequestResult::kUnexpectedResponse);
     SWITCH_ENTRY(DMClient::RequestResult::kNoPayload);
+    SWITCH_ENTRY(DMClient::RequestResult::kNoDefaultDMStorage);
   }
 #undef SWITCH_ENTRY
 }
