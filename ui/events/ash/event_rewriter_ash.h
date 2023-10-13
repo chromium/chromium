@@ -200,24 +200,6 @@ class EventRewriterAsh : public EventRewriter {
     GetExtendedFkeySetting(int device_id, ui::KeyboardCode key_code) = 0;
   };
 
-  // Enum used to record the usage of the modifier keys on all devices. Do not
-  // edit the ordering of the values.
-  enum class ModifierKeyUsageMetric {
-    kMetaLeft,
-    kMetaRight,
-    kControlLeft,
-    kControlRight,
-    kAltLeft,
-    kAltRight,
-    kShiftLeft,
-    kShiftRight,
-    kCapsLock,
-    kBackspace,
-    kEscape,
-    kAssistant,
-    kMaxValue = kAssistant
-  };
-
   // Does not take ownership of the |sticky_keys_controller|, which may also be
   // nullptr (for testing without ash), in which case sticky key operations
   // don't happen.
@@ -317,11 +299,6 @@ class EventRewriterAsh : public EventRewriter {
                                int flags,
                                int* matched_mask,
                                bool* matched_alt_deprecation) const;
-
-  // Records when modifier keys are pressed to metrics for tracking usage of
-  // various metrics before and after remapping.
-  void RecordModifierKeyPressedBeforeRemapping(int device_id, DomCode dom_code);
-  void RecordModifierKeyPressedAfterRemapping(int device_id, DomCode dom_code);
 
   // Rewrite a particular kind of event.
   EventRewriteStatus RewriteKeyEvent(const KeyEvent& key_event,

@@ -42,6 +42,7 @@
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/event_rewriter_ash.h"
+#include "ui/events/ash/event_rewriter_metrics.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
@@ -5551,10 +5552,9 @@ TEST_F(ExtensionRewriterInputTest, RewriteNumpadExtensionCommand) {
 
 class ModifierPressedMetricsTest
     : public EventRewriterTest,
-      public testing::WithParamInterface<
-          std::tuple<KeyTestCase::Event,
-                     ui::EventRewriterAsh::ModifierKeyUsageMetric,
-                     std::vector<std::string>>> {
+      public testing::WithParamInterface<std::tuple<KeyTestCase::Event,
+                                                    ui::ModifierKeyUsageMetric,
+                                                    std::vector<std::string>>> {
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndDisableFeature(
@@ -5565,73 +5565,72 @@ class ModifierPressedMetricsTest
 
  protected:
   KeyTestCase::Event event_;
-  ui::EventRewriterAsh::ModifierKeyUsageMetric modifier_key_usage_mapping_;
+  ui::ModifierKeyUsageMetric modifier_key_usage_mapping_;
   std::vector<std::string> key_pref_names_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     ModifierPressedMetricsTest,
-    testing::ValuesIn(
-        std::vector<std::tuple<KeyTestCase::Event,
-                               ui::EventRewriterAsh::ModifierKeyUsageMetric,
-                               std::vector<std::string>>>{
-            {{ui::VKEY_LWIN, ui::DomCode::META_LEFT, ui::EF_COMMAND_DOWN,
-              ui::DomKey::META},
-             ui::EventRewriterAsh::ModifierKeyUsageMetric::kMetaLeft,
-             {::prefs::kLanguageRemapSearchKeyTo,
-              ::prefs::kLanguageRemapExternalCommandKeyTo,
-              ::prefs::kLanguageRemapExternalMetaKeyTo}},
-            {{ui::VKEY_RWIN, ui::DomCode::META_RIGHT, ui::EF_COMMAND_DOWN,
-              ui::DomKey::META},
-             ui::EventRewriterAsh::ModifierKeyUsageMetric::kMetaRight,
-             {::prefs::kLanguageRemapSearchKeyTo,
-              ::prefs::kLanguageRemapExternalCommandKeyTo,
-              ::prefs::kLanguageRemapExternalMetaKeyTo}},
-            {{ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_CONTROL_DOWN,
-              ui::DomKey::CONTROL},
-             ui::EventRewriterAsh::ModifierKeyUsageMetric::kControlLeft,
-             {::prefs::kLanguageRemapControlKeyTo}},
-            {{ui::VKEY_CONTROL, ui::DomCode::CONTROL_RIGHT, ui::EF_CONTROL_DOWN,
-              ui::DomKey::CONTROL},
-             ui::EventRewriterAsh::ModifierKeyUsageMetric::kControlRight,
-             {::prefs::kLanguageRemapControlKeyTo}},
-            {{ui::VKEY_MENU, ui::DomCode::ALT_LEFT, ui::EF_ALT_DOWN,
-              ui::DomKey::ALT},
-             ui::EventRewriterAsh::ModifierKeyUsageMetric::kAltLeft,
-             {::prefs::kLanguageRemapAltKeyTo}},
-            {{ui::VKEY_MENU, ui::DomCode::ALT_RIGHT, ui::EF_ALT_DOWN,
-              ui::DomKey::ALT},
-             ui::EventRewriterAsh::ModifierKeyUsageMetric::kAltRight,
-             {::prefs::kLanguageRemapAltKeyTo}},
-            {{ui::VKEY_SHIFT, ui::DomCode::SHIFT_LEFT, ui::EF_SHIFT_DOWN,
-              ui::DomKey::SHIFT},
-             ui::EventRewriterAsh::ModifierKeyUsageMetric::kShiftLeft,
-             // Shift keys cannot be remapped and therefore do not have a real
-             // "pref" path.
-             {"fakePrefPath"}},
-            {{ui::VKEY_SHIFT, ui::DomCode::SHIFT_RIGHT, ui::EF_SHIFT_DOWN,
-              ui::DomKey::SHIFT},
-             ui::EventRewriterAsh::ModifierKeyUsageMetric::kShiftRight,
-             // Shift keys cannot be remapped and therefore do not have a real
-             // "pref" path.
-             {"fakePrefPath"}},
-            {{ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
-              ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN, ui::DomKey::CAPS_LOCK},
-             ui::EventRewriterAsh::ModifierKeyUsageMetric::kCapsLock,
-             {::prefs::kLanguageRemapCapsLockKeyTo}},
-            {{ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_NONE,
-              ui::DomKey::BACKSPACE},
-             ui::EventRewriterAsh::ModifierKeyUsageMetric::kBackspace,
-             {::prefs::kLanguageRemapBackspaceKeyTo}},
-            {{ui::VKEY_ESCAPE, ui::DomCode::ESCAPE, ui::EF_NONE,
-              ui::DomKey::ESCAPE},
-             ui::EventRewriterAsh::ModifierKeyUsageMetric::kEscape,
-             {::prefs::kLanguageRemapEscapeKeyTo}},
-            {{ui::VKEY_ASSISTANT, ui::DomCode::LAUNCH_ASSISTANT, ui::EF_NONE,
-              ui::DomKey::LAUNCH_ASSISTANT},
-             ui::EventRewriterAsh::ModifierKeyUsageMetric::kAssistant,
-             {::prefs::kLanguageRemapAssistantKeyTo}}}));
+    testing::ValuesIn(std::vector<std::tuple<KeyTestCase::Event,
+                                             ui::ModifierKeyUsageMetric,
+                                             std::vector<std::string>>>{
+        {{ui::VKEY_LWIN, ui::DomCode::META_LEFT, ui::EF_COMMAND_DOWN,
+          ui::DomKey::META},
+         ui::ModifierKeyUsageMetric::kMetaLeft,
+         {::prefs::kLanguageRemapSearchKeyTo,
+          ::prefs::kLanguageRemapExternalCommandKeyTo,
+          ::prefs::kLanguageRemapExternalMetaKeyTo}},
+        {{ui::VKEY_RWIN, ui::DomCode::META_RIGHT, ui::EF_COMMAND_DOWN,
+          ui::DomKey::META},
+         ui::ModifierKeyUsageMetric::kMetaRight,
+         {::prefs::kLanguageRemapSearchKeyTo,
+          ::prefs::kLanguageRemapExternalCommandKeyTo,
+          ::prefs::kLanguageRemapExternalMetaKeyTo}},
+        {{ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_CONTROL_DOWN,
+          ui::DomKey::CONTROL},
+         ui::ModifierKeyUsageMetric::kControlLeft,
+         {::prefs::kLanguageRemapControlKeyTo}},
+        {{ui::VKEY_CONTROL, ui::DomCode::CONTROL_RIGHT, ui::EF_CONTROL_DOWN,
+          ui::DomKey::CONTROL},
+         ui::ModifierKeyUsageMetric::kControlRight,
+         {::prefs::kLanguageRemapControlKeyTo}},
+        {{ui::VKEY_MENU, ui::DomCode::ALT_LEFT, ui::EF_ALT_DOWN,
+          ui::DomKey::ALT},
+         ui::ModifierKeyUsageMetric::kAltLeft,
+         {::prefs::kLanguageRemapAltKeyTo}},
+        {{ui::VKEY_MENU, ui::DomCode::ALT_RIGHT, ui::EF_ALT_DOWN,
+          ui::DomKey::ALT},
+         ui::ModifierKeyUsageMetric::kAltRight,
+         {::prefs::kLanguageRemapAltKeyTo}},
+        {{ui::VKEY_SHIFT, ui::DomCode::SHIFT_LEFT, ui::EF_SHIFT_DOWN,
+          ui::DomKey::SHIFT},
+         ui::ModifierKeyUsageMetric::kShiftLeft,
+         // Shift keys cannot be remapped and therefore do not have a real
+         // "pref" path.
+         {"fakePrefPath"}},
+        {{ui::VKEY_SHIFT, ui::DomCode::SHIFT_RIGHT, ui::EF_SHIFT_DOWN,
+          ui::DomKey::SHIFT},
+         ui::ModifierKeyUsageMetric::kShiftRight,
+         // Shift keys cannot be remapped and therefore do not have a real
+         // "pref" path.
+         {"fakePrefPath"}},
+        {{ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
+          ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN, ui::DomKey::CAPS_LOCK},
+         ui::ModifierKeyUsageMetric::kCapsLock,
+         {::prefs::kLanguageRemapCapsLockKeyTo}},
+        {{ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_NONE,
+          ui::DomKey::BACKSPACE},
+         ui::ModifierKeyUsageMetric::kBackspace,
+         {::prefs::kLanguageRemapBackspaceKeyTo}},
+        {{ui::VKEY_ESCAPE, ui::DomCode::ESCAPE, ui::EF_NONE,
+          ui::DomKey::ESCAPE},
+         ui::ModifierKeyUsageMetric::kEscape,
+         {::prefs::kLanguageRemapEscapeKeyTo}},
+        {{ui::VKEY_ASSISTANT, ui::DomCode::LAUNCH_ASSISTANT, ui::EF_NONE,
+          ui::DomKey::LAUNCH_ASSISTANT},
+         ui::ModifierKeyUsageMetric::kAssistant,
+         {::prefs::kLanguageRemapAssistantKeyTo}}}));
 
 TEST_P(ModifierPressedMetricsTest, KeyPressedTest) {
   base::HistogramTester histogram_tester;
@@ -5692,7 +5691,7 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToBackspaceTest) {
       modifier_key_usage_mapping_, 1);
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.Internal",
-      ui::EventRewriterAsh::ModifierKeyUsageMetric::kBackspace, 1);
+      ui::ModifierKeyUsageMetric::kBackspace, 1);
 
   TestExternalChromeKeyboard({{ui::ET_KEY_PRESSED, event_, backspace_event}});
   histogram_tester.ExpectUniqueSample(
@@ -5700,7 +5699,7 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToBackspaceTest) {
       modifier_key_usage_mapping_, 1);
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.CrOSExternal",
-      ui::EventRewriterAsh::ModifierKeyUsageMetric::kBackspace, 1);
+      ui::ModifierKeyUsageMetric::kBackspace, 1);
 
   TestExternalAppleKeyboard({{ui::ET_KEY_PRESSED, event_, backspace_event}});
   histogram_tester.ExpectUniqueSample(
@@ -5708,7 +5707,7 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToBackspaceTest) {
       modifier_key_usage_mapping_, 1);
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.AppleExternal",
-      ui::EventRewriterAsh::ModifierKeyUsageMetric::kBackspace, 1);
+      ui::ModifierKeyUsageMetric::kBackspace, 1);
 
   TestExternalGenericKeyboard({{ui::ET_KEY_PRESSED, event_, backspace_event}});
   histogram_tester.ExpectUniqueSample(
@@ -5716,7 +5715,7 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToBackspaceTest) {
       modifier_key_usage_mapping_, 1);
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.External",
-      ui::EventRewriterAsh::ModifierKeyUsageMetric::kBackspace, 1);
+      ui::ModifierKeyUsageMetric::kBackspace, 1);
 }
 
 TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToControlTest) {
@@ -5730,10 +5729,9 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToControlTest) {
 
   const bool right = ui::KeycodeConverter::DomCodeToLocation(event_.code) ==
                      ui::DomKeyLocation::RIGHT;
-  const ui::EventRewriterAsh::ModifierKeyUsageMetric
-      remapped_modifier_key_usage_mapping =
-          right ? ui::EventRewriterAsh::ModifierKeyUsageMetric::kControlRight
-                : ui::EventRewriterAsh::ModifierKeyUsageMetric::kControlLeft;
+  const ui::ModifierKeyUsageMetric remapped_modifier_key_usage_mapping =
+      right ? ui::ModifierKeyUsageMetric::kControlRight
+            : ui::ModifierKeyUsageMetric::kControlLeft;
 
   const KeyTestCase::Event control_event{
       ui::VKEY_CONTROL,
