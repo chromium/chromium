@@ -809,6 +809,11 @@
       status: "stable",
     },
     {
+      // https://chromestatus.com/feature/5125388091260928
+      name: "CSSBackgroundClipUnprefix",
+      status: "stable",
+    },
+    {
       name: "CSSBaselineSource",
       status: "stable",
     },

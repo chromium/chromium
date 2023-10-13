@@ -349,6 +349,7 @@ void AddBackgroundValue(CSSValue*& list, CSSValue*);
 CSSValue* ConsumeBackgroundAttachment(CSSParserTokenRange&);
 CSSValue* ConsumeBackgroundBlendMode(CSSParserTokenRange&);
 CSSValue* ConsumeBackgroundBox(CSSParserTokenRange&);
+CSSValue* ConsumeBackgroundBoxOrText(CSSParserTokenRange&);
 CSSValue* ConsumeBackgroundComposite(CSSParserTokenRange&);
 bool ConsumeBackgroundPosition(CSSParserTokenRange&,
                                const CSSParserContext&,

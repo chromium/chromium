@@ -1721,7 +1721,7 @@
     {
       name: "background-clip",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      keywords: ["border-box", "padding-box", "content-box"],
+      keywords: ["border-box", "padding-box", "content-box", "text"],
       typedom_types: ["Keyword"],
       separator: " ",
       style_builder_template: "background_layer",
@@ -8150,8 +8150,6 @@
       name: "-webkit-backface-visibility",
       alias_for: "backface-visibility",
     },
-    // -webkit-background-clip accepts "content", "padding", and "border" values
-    // See crbug.com/604023
     {
       name: "-webkit-background-clip",
       alias_for: "background-clip",

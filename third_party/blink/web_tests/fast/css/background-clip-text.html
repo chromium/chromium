@@ -25,8 +25,8 @@ shouldBe('test("background-clip: content-box", "background-clip")', '"content-bo
 shouldBe('test("background-clip: padding-box", "background-clip")', '"padding-box"');
 shouldBe('test("background-clip: border-box", "background-clip")', '"border-box"');
 
-shouldBeEqualToString('test("background-clip: text", "background-clip")', '');
-shouldBeEqualToString('test("background-clip: text", "-webkit-background-clip")', '');
+shouldBeEqualToString('test("background-clip: text", "background-clip")', 'text');
+shouldBeEqualToString('test("background-clip: text", "-webkit-background-clip")', 'text');
 
 shouldBeEqualToString('test("-webkit-background-clip: text", "background-clip")', 'text');
 shouldBe('test("-webkit-background-clip: text", "-webkit-background-clip")', '"text"');

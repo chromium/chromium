@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -664,10 +665,15 @@ TEST_F(UseCounterImplTest, BackgroundClip) {
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
 
+  // We dropped the support for keywords without suffix.
   document.documentElement()->setInnerHTML(
       "<style>html{-webkit-background-clip: border;}</style>");
   UpdateAllLifecyclePhases(document);
-  EXPECT_TRUE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
+  if (RuntimeEnabledFeatures::CSSBackgroundClipUnprefixEnabled()) {
+    EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
+  } else {
+    EXPECT_TRUE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
+  }
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
 
@@ -676,7 +682,11 @@ TEST_F(UseCounterImplTest, BackgroundClip) {
       "<style>html{-webkit-background-clip: content;}</style>");
   UpdateAllLifecyclePhases(document);
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
-  EXPECT_TRUE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
+  if (RuntimeEnabledFeatures::CSSBackgroundClipUnprefixEnabled()) {
+    EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
+  } else {
+    EXPECT_TRUE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
+  }
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
 
   document.ClearUseCounterForTesting(WebFeature::kCSSBackgroundClipContent);
@@ -685,7 +695,11 @@ TEST_F(UseCounterImplTest, BackgroundClip) {
   UpdateAllLifecyclePhases(document);
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
-  EXPECT_TRUE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
+  if (RuntimeEnabledFeatures::CSSBackgroundClipUnprefixEnabled()) {
+    EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
+  } else {
+    EXPECT_TRUE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
+  }
 }
 
 TEST_F(UseCounterImplTest, H1UserAgentFontSizeInSectionApplied) {

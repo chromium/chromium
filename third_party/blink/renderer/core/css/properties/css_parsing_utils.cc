@@ -4112,6 +4112,11 @@ CSSValue* ConsumeBackgroundBox(CSSParserTokenRange& range) {
                       CSSValueID::kContentBox>(range);
 }
 
+CSSValue* ConsumeBackgroundBoxOrText(CSSParserTokenRange& range) {
+  return ConsumeIdent<CSSValueID::kBorderBox, CSSValueID::kPaddingBox,
+                      CSSValueID::kContentBox, CSSValueID::kText>(range);
+}
+
 CSSValue* ConsumeBackgroundComposite(CSSParserTokenRange& range) {
   return ConsumeIdentRange(range, CSSValueID::kClear, CSSValueID::kPlusLighter);
 }
@@ -4258,7 +4263,11 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
                                      const CSSParserContext& context) {
   switch (resolved_property) {
     case CSSPropertyID::kBackgroundClip:
-      return ConsumeBackgroundBox(range);
+      if (RuntimeEnabledFeatures::CSSBackgroundClipUnprefixEnabled()) {
+        return ConsumeBackgroundBoxOrText(range);
+      } else {
+        return ConsumeBackgroundBox(range);
+      }
     case CSSPropertyID::kBackgroundAttachment:
       return ConsumeBackgroundAttachment(range);
     case CSSPropertyID::kBackgroundOrigin:
