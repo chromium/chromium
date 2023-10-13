@@ -1,0 +1,37 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package test.fuzzing.page_load_fuzzing;
+
+// A fuzzer case for page_load_in_process_fuzzer.cc.
+message FuzzCase {
+  // Whether to load the page over the network. If not, a data: URI will be
+  // used.
+  optional NetworkLoad network_load = 1;
+  // Content-Type header.
+  string content_type = 2;
+  // Body of the response.
+  string body = 3;
+}
+
+// Additional information if we're loading the resource over the network.
+message NetworkLoad {
+  // Whether to use https.
+  bool https = 1;
+  // The path to request on the http(s) server
+  string path = 2;
+  // The HTTP status which will be presented in the response.
+  uint32 http_status = 3;
+  // Custom headers in the HTTP response.
+  repeated CustomHeader custom_headers = 4;
+  // The textual reason string to go along with the HTTP status code.
+  optional string reason = 5;
+}
+
+// A custom header in an HTTP request.
+message CustomHeader {
+  string key = 1;
+  string value = 2;
+}
