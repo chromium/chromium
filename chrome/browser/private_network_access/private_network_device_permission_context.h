@@ -47,6 +47,9 @@ class PrivateNetworkDevicePermissionContext
   bool HasDevicePermission(const url::Origin& origin,
                            const blink::mojom::PrivateNetworkDevice& device);
 
+  // Tracks the set of devices to which an origin has temporary access to.
+  std::map<url::Origin, std::set<net::IPAddress>> ephemeral_devices_;
+
   base::WeakPtr<PrivateNetworkDevicePermissionContext> AsWeakPtr();
 
   static base::Value::Dict DeviceInfoToValue(
