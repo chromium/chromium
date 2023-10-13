@@ -2721,8 +2721,10 @@ inline constexpr char kDeviceEnrollmentAutoStart[] = "enrollment.auto_start";
 inline constexpr char kDeviceEnrollmentCanExit[] = "enrollment.can_exit";
 
 // DM token fetched from the DM server during enrollment. Stored for Active
-// Directory devices only.
-inline constexpr char kDeviceDMToken[] = "device_dm_token";
+// Directory devices only. The versions are used to distinguish different token
+// formats.
+inline constexpr char kDeviceDMTokenV1[] = "device_dm_token";
+inline constexpr char kDeviceDMTokenV2[] = "device_dm_token_v2";
 
 // Key name of a dictionary in local state to store cached multiprofle user
 // behavior policy value.
