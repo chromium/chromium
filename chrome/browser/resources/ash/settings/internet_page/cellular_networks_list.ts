@@ -575,43 +575,62 @@ export class CellularNetworksListElement extends
         return this.i18n('cellularNetworRefreshingProfileListProfile');
       case InhibitReason.kResettingEuiccMemory:
         return this.i18n('cellularNetworkResettingESim');
+      case InhibitReason.kRequestingAvailableProfiles:
+        return this.i18n('cellularNetworkRequestingAvailableProfiles');
     }
 
     return '';
   }
 
-  /**
-   * Return true if there are currently no eSIM networks configured. This
-   * message should not be shown when adding new eSIM profiles.
-   */
-  private shouldShowEsimNoNetworksMessage_(
-      inhibitReason: InhibitReason,
-      eSimNetworks: NetworkList.NetworkListItemType[],
-      eSimPendingProfiles: NetworkList.CustomItemState[]): boolean {
-    if (inhibitReason === InhibitReason.kRefreshingProfileList) {
-      return false;
-    }
-
-    return !this.shouldShowNetworkSublist_(eSimNetworks, eSimPendingProfiles);
-  }
-
-  private shouldShowAddEsimNetworksMessage_(inhibitReason: InhibitReason):
-      boolean {
-    if (inhibitReason === InhibitReason.kInstallingProfile ||
-        (this.globalPolicy &&
-         this.globalPolicy.allowOnlyPolicyCellularNetworks)) {
+  private isInhibitedOrAffectedByPolicy_(): boolean {
+    if (this.cellularDeviceState &&
+        this.cellularDeviceState.inhibitReason !== undefined &&
+        this.cellularDeviceState.inhibitReason !==
+            InhibitReason.kNotInhibited) {
       return true;
     }
-
-    return false;
+    return !!this.globalPolicy &&
+        this.globalPolicy.allowOnlyPolicyCellularNetworks;
   }
 
-  private getEsimNoNetworksMessage_(inhibitReason: InhibitReason): string {
-    if (inhibitReason === InhibitReason.kInstallingProfile) {
-      return this.i18n('cellularNetworkInstallingProfile');
+  /**
+   * Return true IFF there are no eSIM profiles installed and we are not
+   * installing a profile, refreshing the profile list, or requesting available
+   * profiles.
+   */
+  private shouldShowNoEsimNetworksMessage_(): boolean {
+    if (this.cellularDeviceState &&
+        this.cellularDeviceState.inhibitReason !== undefined) {
+      const inhibitReason = this.cellularDeviceState.inhibitReason;
+      if (inhibitReason === InhibitReason.kInstallingProfile ||
+          inhibitReason === InhibitReason.kRefreshingProfileList ||
+          inhibitReason === InhibitReason.kRequestingAvailableProfiles) {
+        return false;
+      }
     }
+    return !this.shouldShowNetworkSublist_(
+        this.eSimNetworks_, this.eSimPendingProfileItems_);
+  }
 
-    return this.i18n('eSimNetworkNotSetup');
+  /**
+   * Return true IFF there are no eSIM profiles installed, and the cellular
+   * device is inhibited for any reason NOT related to changes to the eSIM
+   * profile list or policy restricts the user from adding an eSIM profile.
+   */
+  private shouldShowNoEsimNetworksMessageWithoutLink_(): boolean {
+    return this.shouldShowNoEsimNetworksMessage_() &&
+        this.isInhibitedOrAffectedByPolicy_();
+  }
+
+  /**
+   * Return true IFF there are no eSIM profiles installed, and the cellular
+   * device is NOT inhibited for any reason related to changes to the eSIM
+   * profile list and policy does NOT restrict the user from adding an eSIM
+   * profile.
+   */
+  private shouldShowAddEsimMessageWithLink(): boolean {
+    return this.shouldShowNoEsimNetworksMessage_() &&
+        !this.isInhibitedOrAffectedByPolicy_();
   }
 }
 

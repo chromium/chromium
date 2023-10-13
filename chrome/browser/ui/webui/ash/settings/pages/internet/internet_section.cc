@@ -980,6 +980,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_REFRESHING_PROFILE_LIST},
       {"cellularNetworkResettingESim",
        IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_RESETTING_ESIM},
+      {"cellularNetworkRequestingAvailableProfiles",
+       IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_REQUESTING_AVAILABLE_PROFILES},
       {"hotspotPageTitle", IDS_SETTINGS_INTERNET_HOTSPOT},
       {"hotspotToggleA11yLabel",
        IDS_SETTINGS_INTERNET_HOTSPOT_TOGGLE_A11Y_LABEL},

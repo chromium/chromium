@@ -123,28 +123,29 @@
       </network-list>
     </div>
   </template>
-  <template is="dom-if" if="[[shouldShowEsimNoNetworksMessage_(
-      cellularDeviceState.inhibitReason, eSimNetworks_,
-      eSimPendingProfileItems_)]]" restamp>
-    <div class="cellular-network-content cellular-not-setup flex">
-      <div id="noEsimNetworksMessage"
-          hidden="[[!shouldShowAddEsimNetworksMessage_(
-              cellularDeviceState.inhibitReason,
-              globalPolicy.allowOnlyPolicyCellularNetworks)]]">
-        [[getEsimNoNetworksMessage_(cellularDeviceState.inhibitReason,
-            globalPolicy.allowOnlyPolicyCellularNetworks)]]
-      </div>
-      <localized-link
-          id="noEsimNetworksMessageWithLink"
-          link-disabled = "[[isDeviceInhibited_]]"
-          on-link-clicked="onAddEsimLinkClicked_"
-          localized-string="$i18n{eSimNetworkNotSetupWithDownloadLink}"
-          hidden="[[shouldShowAddEsimNetworksMessage_(
-              cellularDeviceState.inhibitReason,
-              globalPolicy.allowOnlyPolicyCellularNetworks)]]">
-      </localized-link>
+  <div class="cellular-network-content cellular-not-setup flex">
+    <div id="noEsimNetworksMessage"
+        hidden="[[!shouldShowNoEsimNetworksMessageWithoutLink_(
+            cellularDeviceState,
+            cellularDeviceState.inhibitReason,
+            eSimNetworks_,
+            eSimPendingProfileItems_,
+            globalPolicy.allowOnlyPolicyCellularNetworks)]]">
+      $i18n{eSimNetworkNotSetup}
     </div>
-  </template>
+    <localized-link
+        id="noEsimNetworksMessageWithLink"
+        link-disabled="[[isDeviceInhibited_]]"
+        on-link-clicked="onAddEsimLinkClicked_"
+        localized-string="$i18n{eSimNetworkNotSetupWithDownloadLink}"
+        hidden="[[!shouldShowAddEsimMessageWithLink(
+            cellularDeviceState,
+            cellularDeviceState.inhibitReason,
+            eSimNetworks_,
+            eSimPendingProfileItems_,
+            globalPolicy.allowOnlyPolicyCellularNetworks)]]">
+    </localized-link>
+  </div>
 </template>
 <template is="dom-if"
     if="[[shouldShowPsimSection_(pSimNetworks_, cellularDeviceState,
