@@ -806,6 +806,12 @@ chromium-metrics-reviews@google.com.
     fetch event handler and the fetch event was successfully dispatched to the
     service worker.
 
+    Please note that this histogram has accidentally changed the bucket
+    definition from 117.0.5874.0. Previously, UMA_HISTOGRAM_MEDIUM_TIMES() was
+    used, and it was replaced with base::UmaHistogramMediumTimes().
+    UMA_HISTOGRAM_MEDIUM_TIMES() starts the bucket from 10ms whereas
+    base::UmaHistogramMediumTimes() starts the bucket from 1ms.
+
     {EmbeddedWorkerInitialStatus}{NavigationType}
   </summary>
   <token key="EmbeddedWorkerInitialStatus"
