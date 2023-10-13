@@ -21,8 +21,8 @@ android_library("jni_sample_java") {
   ]
 
   deps = [
-    "//base:jni_java",
     "//build/android:build_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 

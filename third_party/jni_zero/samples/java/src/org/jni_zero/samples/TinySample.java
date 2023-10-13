@@ -4,7 +4,7 @@
 
 package org.jni_zero.samples;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
 
 class TinySample {
     @NativeMethods()
