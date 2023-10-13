@@ -47,6 +47,10 @@ class AlphaVideoEncoderWrapperTest
     profile_ = GetParam();
     codec_ = VideoCodecProfileToVideoCodec(profile_);
     encoder_ = CreateEncoder();
+    if (!encoder_) {
+      GTEST_SKIP()
+          << "Couldn't create encoder for this configuration - skipping test";
+    }
   }
 
   void TearDown() override {
@@ -63,9 +67,12 @@ class AlphaVideoEncoderWrapperTest
         codec_, profile_, VideoDecoderConfig::AlphaMode::kHasAlpha,
         VideoColorSpace::JPEG(), VideoTransformation(), size, gfx::Rect(size),
         size, extra_data, EncryptionScheme::kUnencrypted);
+#if BUILDFLAG(ENABLE_LIBVPX)
     decoder_ = std::make_unique<VpxVideoDecoder>();
     decoder_->Initialize(config, false, nullptr, base::DoNothing(),
                          std::move(output_cb), base::DoNothing());
+#endif
+    ASSERT_NE(decoder_, nullptr);
     RunUntilIdle();
   }
 
@@ -102,10 +109,14 @@ class AlphaVideoEncoderWrapperTest
   }
 
   std::unique_ptr<VideoEncoder> CreateEncoder() {
+#if BUILDFLAG(ENABLE_LIBVPX)
     auto yuv_encoder = std::make_unique<VpxVideoEncoder>();
     auto alpha_encoder = std::make_unique<VpxVideoEncoder>();
     return std::make_unique<AlphaVideoEncoderWrapper>(std::move(yuv_encoder),
                                                       std::move(alpha_encoder));
+#else
+    return nullptr;
+#endif  // ENABLE_LIBVPX
   }
 
   VideoEncoder::EncoderStatusCB ValidatingStatusCB(
