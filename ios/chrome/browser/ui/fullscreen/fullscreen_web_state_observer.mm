@@ -84,8 +84,9 @@ void FullscreenWebStateObserver::DidFinishNavigation(
 
   // Only reset the model for document-changing navigations or same-document
   // navigations that update the visible URL.
-  if (!navigation_context->IsSameDocument() || url_changed)
+  if (!navigation_context->IsSameDocument() || url_changed) {
     model_->ResetForNavigation();
+  }
 }
 
 void FullscreenWebStateObserver::DidStartLoading(web::WebState* web_state) {

@@ -158,11 +158,35 @@ void FullscreenControllerImpl::ExitFullscreen() {
   mediator_.ExitFullscreen();
 }
 
-void FullscreenControllerImpl::ForceEnterFullscreen() {
+void FullscreenControllerImpl::ExitFullscreenWithoutAnimation() {
+  mediator_.ExitFullscreenWithoutAnimation();
+}
+
+bool FullscreenControllerImpl::IsForceFullscreenMode() const {
+  return model_.IsForceFullscreenMode();
+}
+
+void FullscreenControllerImpl::EnterForceFullscreenMode() {
+  CHECK(IsBottomOmniboxSteadyStateEnabled());
+  if (IsForceFullscreenMode()) {
+    return;
+  }
+  model_.SetForceFullscreenMode(true);
+  // Disable fullscreen because:
+  // - It interfers with the animation when moving the secondary toolbar above
+  // the keyboard.
+  // - Fullscreen should not resize the toolbar it's above the keyboard.
+  IncrementDisabledCounter();
   mediator_.ForceEnterFullscreen();
 }
 
-void FullscreenControllerImpl::ExitFullscreenWithoutAnimation() {
+void FullscreenControllerImpl::ExitForceFullscreenMode() {
+  CHECK(IsBottomOmniboxSteadyStateEnabled());
+  if (!IsForceFullscreenMode()) {
+    return;
+  }
+  DecrementDisabledCounter();
+  model_.SetForceFullscreenMode(false);
   mediator_.ExitFullscreenWithoutAnimation();
 }
 

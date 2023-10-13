@@ -29,10 +29,7 @@
 
 @end
 
-@implementation SecondaryToolbarViewController {
-  /// The disabler created when the keyboard is visible.
-  std::unique_ptr<ScopedFullscreenDisabler> _keyboardDisabler;
-}
+@implementation SecondaryToolbarViewController
 
 @dynamic view;
 
@@ -59,7 +56,6 @@
 
 - (void)disconnect {
   _fullscreenController = nullptr;
-  _keyboardDisabler = nullptr;
 }
 
 #pragma mark - AdaptiveToolbarViewController
@@ -119,14 +115,8 @@
 
 /// Collapses secondary toolbar when it's moved above the keyboard.
 - (void)collapseForKeyboard {
-  // Disable fullscreen because:
-  // - It interfers with the animation when moving the secondary toolbar above
-  // the keyboard.
-  // - Fullscreen should not resize the toolbar it's above the keyboard.
   if (_fullscreenController) {
-    _keyboardDisabler =
-        std::make_unique<ScopedFullscreenDisabler>(_fullscreenController);
-    _fullscreenController->ForceEnterFullscreen();
+    _fullscreenController->EnterForceFullscreenMode();
   }
   self.view.locationBarTopConstraint.constant = 0;
   self.view.bottomSeparator.alpha = 1.0;
@@ -136,8 +126,7 @@
 /// Resets secondary toolbar when it's detached from the keyboard.
 - (void)removeFromKeyboard {
   if (_fullscreenController) {
-    _fullscreenController->ExitFullscreenWithoutAnimation();
-    _keyboardDisabler = nullptr;
+    _fullscreenController->ExitForceFullscreenMode();
   }
   self.view.bottomSeparator.alpha = 0.0;
   [self.toolbarHeightDelegate secondaryToolbarRemovedFromKeyboard];

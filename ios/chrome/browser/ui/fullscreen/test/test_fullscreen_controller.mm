@@ -82,14 +82,28 @@ void TestFullscreenController::ExitFullscreen() {
     model_->ResetForNavigation();
 }
 
-void TestFullscreenController::ForceEnterFullscreen() {
+void TestFullscreenController::ExitFullscreenWithoutAnimation() {
   if (model_) {
+    model_->ResetForNavigation();
+  }
+}
+
+bool TestFullscreenController::IsForceFullscreenMode() const {
+  return model_ ? model_->IsForceFullscreenMode() : false;
+}
+
+void TestFullscreenController::EnterForceFullscreenMode() {
+  if (model_ && !model_->IsForceFullscreenMode()) {
+    model_->SetForceFullscreenMode(true);
+    model_->IncrementDisabledCounter();
     model_->ForceEnterFullscreen();
   }
 }
 
-void TestFullscreenController::ExitFullscreenWithoutAnimation() {
-  if (model_) {
+void TestFullscreenController::ExitForceFullscreenMode() {
+  if (model_ && model_->IsForceFullscreenMode()) {
+    model_->DecrementDisabledCounter();
+    model_->SetForceFullscreenMode(false);
     model_->ResetForNavigation();
   }
 }

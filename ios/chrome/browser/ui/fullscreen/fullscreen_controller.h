@@ -79,12 +79,17 @@ class FullscreenController : public base::SupportsUserData::Data {
   // 1.0.
   virtual void ExitFullscreen() = 0;
 
-  // Force enters fullscreen mode, without animation, resetting the progress to
-  // 0.0. Calling this forces the progress to 0.0 even when fullscreen is
-  // disabled.
-  virtual void ForceEnterFullscreen() = 0;
   // Exits fullscreen without animation, resetting the progress to 1.0.
   virtual void ExitFullscreenWithoutAnimation() = 0;
+
+  // Force fullscreen mode is used when the bottom omnibox is collapsed above
+  // the keyboard. When the mode is active:
+  // - Fullscreen progress is forced to 0 and should stay at 0.
+  // - Updating browser insets through fullscreen are disabled. (crbug/1490601)
+  // When exiting the mode, fullscreen is reset.
+  virtual bool IsForceFullscreenMode() const = 0;
+  virtual void EnterForceFullscreenMode() = 0;
+  virtual void ExitForceFullscreenMode() = 0;
 
   virtual void FreezeToolbarHeight(bool freeze_toolbar_height) = 0;
 
