@@ -4241,10 +4241,9 @@ NavigationControllerImpl::LoadPostCommitErrorPage(
       SystemEntropyUtils::ComputeSystemEntropyForFrameTreeNode(
           node, blink::mojom::SystemEntropy::kNormal);
 
-  // Error pages have a fully permissive FramePolicy.
   // TODO(arthursonzogni): Consider providing the minimal capabilities to the
   // error pages.
-  commit_params->frame_policy = blink::FramePolicy();
+  commit_params->frame_policy = node->pending_frame_policy();
 
   std::unique_ptr<NavigationRequest> navigation_request =
       NavigationRequest::CreateBrowserInitiated(
