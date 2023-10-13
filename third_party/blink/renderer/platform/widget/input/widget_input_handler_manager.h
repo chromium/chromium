@@ -296,6 +296,10 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       frame_widget_input_handler_;
   scoped_refptr<scheduler::WidgetScheduler> widget_scheduler_;
 
+  // This caches `widget_->is_embedded()` value for access from outside the main
+  // thread (where `widget_` is not usable).
+  const bool widget_is_embedded_;
+
   // InputHandlerProxy is only interacted with on the compositor
   // thread.
   std::unique_ptr<InputHandlerProxy> input_handler_proxy_;
