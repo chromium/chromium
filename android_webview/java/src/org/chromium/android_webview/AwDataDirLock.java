@@ -84,7 +84,7 @@ abstract class AwDataDirLock {
                 }
                 if (sExclusiveFileLock != null) {
                     // We got the lock; write out info for debugging.
-                    writeCurrentProcessInfo(sLockFile);
+                    ProcessInfo.current().writeToFile(sLockFile);
                     return;
                 }
 
@@ -99,7 +99,8 @@ abstract class AwDataDirLock {
             // We failed to get the lock even after retrying.
             // Many existing apps rely on this even though it's known to be unsafe.
             // Make it fatal when on P for apps that target P or higher
-            String error = getLockFailureReason(sLockFile);
+            ProcessInfo holder = ProcessInfo.readFromFile(sLockFile);
+            String error = getLockFailureReason(holder);
             boolean dieOnFailure = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
                     && appContext.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.P;
             if (dieOnFailure) {
@@ -110,33 +111,62 @@ abstract class AwDataDirLock {
         }
     }
 
-    private static void writeCurrentProcessInfo(final RandomAccessFile file) {
-        try {
-            // Truncate the file first to get rid of old data.
-            file.setLength(0);
-            file.writeInt(Process.myPid());
-            file.writeUTF(ContextUtils.getProcessName());
-        } catch (IOException e) {
-            // Don't crash just because something failed here, as it's only for debugging.
-            Log.w(TAG, "Failed to write info to lock file", e);
+    private static class ProcessInfo {
+        public final int pid;
+        public final String processName;
+
+        private ProcessInfo(int pid, String processName) {
+            this.pid = pid;
+            this.processName = processName;
+        }
+
+        @Override
+        public String toString() {
+            return processName + " (pid " + pid + ")";
+        }
+
+        static ProcessInfo current() {
+            return new ProcessInfo(Process.myPid(), ContextUtils.getProcessName());
+        }
+
+        static ProcessInfo readFromFile(RandomAccessFile file) {
+            try {
+                int pid = file.readInt();
+                String processName = file.readUTF();
+                return new ProcessInfo(pid, processName);
+            } catch (IOException e) {
+                // We'll get IOException if we failed to read the pid and process name; e.g. if the
+                // lockfile is from an old version of WebView or an IO error occurred somewhere.
+                return null;
+            }
+        }
+
+        void writeToFile(RandomAccessFile file) {
+            try {
+                // Truncate the file first to get rid of old data.
+                file.setLength(0);
+                file.writeInt(pid);
+                file.writeUTF(processName);
+            } catch (IOException e) {
+                // Don't crash just because something failed here, as it's only for debugging.
+                Log.w(TAG, "Failed to write info to lock file", e);
+            }
         }
     }
 
-    private static String getLockFailureReason(final RandomAccessFile file) {
+    private static String getLockFailureReason(ProcessInfo holder) {
         final StringBuilder error = new StringBuilder("Using WebView from more than one process at "
                 + "once with the same data directory is not supported. https://crbug.com/558377 "
                 + ": Current process ");
-        error.append(ContextUtils.getProcessName());
-        error.append(" (pid ").append(Process.myPid()).append("), lock owner ");
-        try {
-            int pid = file.readInt();
-            String processName = file.readUTF();
-            error.append(processName).append(" (pid ").append(pid).append(")");
+        error.append(ProcessInfo.current().toString());
+        error.append(", lock owner ");
+        if (holder != null) {
+            error.append(holder.toString());
 
             // Check the status of the pid holding the lock by sending it a null signal.
             // This doesn't actually send a signal, just runs the kernel access checks.
             try {
-                Os.kill(pid, 0);
+                Os.kill(holder.pid, 0);
 
                 // No exception means the process exists and has the same uid as us, so is
                 // probably an instance of the same app. Leave the message alone.
@@ -155,9 +185,7 @@ abstract class AwDataDirLock {
                     error.append(" status unknown!");
                 }
             }
-        } catch (IOException e) {
-            // We'll get IOException if we failed to read the pid and process name; e.g. if the
-            // lockfile is from an old version of WebView or an IO error occurred somewhere.
+        } else {
             error.append(" unknown");
         }
         return error.toString();
