@@ -158,7 +158,13 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration,
   helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOn);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, SwitchIncognitoProfile) {
+// Flaky on Lacros ASan. https://crbug.com/1492643.
+#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_SwitchIncognitoProfile DISABLED_SwitchIncognitoProfile
+#else
+#define MAYBE_SwitchIncognitoProfile SwitchIncognitoProfile
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, MAYBE_SwitchIncognitoProfile) {
   helper_.SwitchIncognitoProfile();
   helper_.NavigateBrowser(Site::kStandalone);
   helper_.CheckCreateShortcutNotShown();
