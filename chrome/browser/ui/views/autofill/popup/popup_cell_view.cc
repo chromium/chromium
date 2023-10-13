@@ -32,7 +32,6 @@ namespace autofill {
 
 PopupCellView::PopupCellView() {
   SetNotifyEnterExitOnChild(true);
-  SetFocusBehavior(FocusBehavior::ALWAYS);
   RefreshStyle();
 }
 
@@ -118,14 +117,6 @@ void PopupCellView::SetOnUnselectedCallback(base::RepeatingClosure callback) {
 
 void PopupCellView::TrackLabel(views::Label* label) {
   tracked_labels_.push_back(label);
-}
-
-bool PopupCellView::HandleAccessibleAction(
-    const ui::AXActionData& action_data) {
-  if (action_data.action == ax::mojom::Action::kFocus && on_entered_callback_) {
-    on_entered_callback_.Run();
-  }
-  return View::HandleAccessibleAction(action_data);
 }
 
 void PopupCellView::GetAccessibleNodeData(ui::AXNodeData* node_data) {

@@ -186,6 +186,8 @@ PopupRowView::PopupRowView(
   };
 
   content_view_ = AddChildView(strategy_->CreateContent());
+  content_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
+  content_view_->AddObserver(this);
   content_event_handler_ =
       set_exit_enter_callbacks(CellType::kContent, *content_view_);
   layout->SetFlexForView(content_view_.get(), 1);
@@ -193,6 +195,8 @@ PopupRowView::PopupRowView(
   if (std::unique_ptr<PopupCellView> control_view =
           strategy_->CreateControl()) {
     control_view_ = AddChildView(std::move(control_view));
+    control_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
+    control_view_->AddObserver(this);
     control_event_handler_ =
         set_exit_enter_callbacks(CellType::kControl, *control_view_);
     layout->SetFlexForView(control_view_.get(), 0);
@@ -250,6 +254,19 @@ void PopupRowView::OnGestureEvent(ui::GestureEvent* event) {
 void PopupRowView::OnPaint(gfx::Canvas* canvas) {
   views::View::OnPaint(canvas);
   mouse_observed_outside_item_bounds_ |= !IsMouseHovered();
+}
+
+void PopupRowView::OnViewFocused(views::View* view) {
+  if (view == content_view_ || view == control_view_) {
+    CellType type =
+        view == content_view_ ? CellType::kContent : CellType::kControl;
+    // Focus may come not only from the keyboard (e.g. from devices used for
+    // a11y), but for selection purposes these non-mouse sources are similar
+    // enough to treat them equally as a keyboard.
+    selection_delegate_->SetSelectedCell(
+        PopupViewViews::CellIndex{strategy_->GetLineNumber(), type},
+        PopupCellSelectionSource::kKeyboard);
+  }
 }
 
 void PopupRowView::SetSelectedCell(absl::optional<CellType> cell) {

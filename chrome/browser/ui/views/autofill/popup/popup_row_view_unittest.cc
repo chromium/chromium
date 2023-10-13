@@ -327,4 +327,14 @@ TEST_F(PopupRowViewTest, NoCrashOnMouseAcceptingWithInvalidatedController) {
   generator().ClickLeftButton();
 }
 
+TEST_F(PopupRowViewTest, SelectSuggestionOnFocusedContent) {
+  ShowView(0, /*has_control=*/false);
+
+  EXPECT_CALL(
+      selection_delegate(),
+      SetSelectedCell(absl::make_optional<CellIndex>(0u, CellType::kContent),
+                      PopupCellSelectionSource::kKeyboard));
+
+  row_view().GetContentView().RequestFocus();
+}
 }  // namespace autofill

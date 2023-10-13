@@ -19,6 +19,7 @@
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 namespace content {
 struct NativeWebKeyboardEvent;
@@ -34,7 +35,7 @@ class PopupViewViews;
 // `PopupRowView` represents a single selectable popup row. Different styles
 // of the row can be achieved by injecting the respective `PopupRowStrategy`
 // objects in the constructor.
-class PopupRowView : public views::View {
+class PopupRowView : public views::View, public views::ViewObserver {
  public:
   // Enum class describing the different cells that a `PopupRowView` can
   // contain.
@@ -90,6 +91,9 @@ class PopupRowView : public views::View {
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnPaint(gfx::Canvas* canvas) override;
+
+  // views::ViewObserver:
+  void OnViewFocused(views::View* focused_now) override;
 
   // Gets and sets the selected cell within this row.
   absl::optional<CellType> GetSelectedCell() const { return selected_cell_; }

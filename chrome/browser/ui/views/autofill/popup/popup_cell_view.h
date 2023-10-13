@@ -120,7 +120,6 @@ class PopupCellView : public views::View {
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
 
  protected:
   // The selection state.
