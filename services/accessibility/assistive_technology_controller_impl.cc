@@ -22,7 +22,7 @@ AssistiveTechnologyControllerImpl::~AssistiveTechnologyControllerImpl() =
     default;
 
 void AssistiveTechnologyControllerImpl::Bind(
-    mojo::PendingAssociatedReceiver<mojom::AssistiveTechnologyController>
+    mojo::PendingReceiver<mojom::AssistiveTechnologyController>
         at_controller_receiver) {
   DCHECK(!at_controller_receiver_.is_bound());
   at_controller_receiver_.Bind(std::move(at_controller_receiver));

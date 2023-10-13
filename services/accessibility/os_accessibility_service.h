@@ -33,7 +33,7 @@ class OSAccessibilityService : public mojom::AccessibilityService {
       mojo::PendingRemote<mojom::AccessibilityServiceClient>
           accessibility_client_remote) override;
   void BindAssistiveTechnologyController(
-      mojo::PendingAssociatedReceiver<mojom::AssistiveTechnologyController>
+      mojo::PendingReceiver<mojom::AssistiveTechnologyController>
           at_controller_receiver,
       const std::vector<mojom::AssistiveTechnologyType>& enabled_features)
       override;
