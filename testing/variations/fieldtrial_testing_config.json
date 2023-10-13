@@ -15805,18 +15805,18 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_UnPinned_Clobber_20230912",
+                    "name": "CSC_ImageSearchEnabled_NewTab_20231011",
                     "params": {
-                        "companion-image-upload-url": "https://lens.google.com/v3/upload",
-                        "open-links-in-current-tab": "true"
+                        "open-companion-for-image-search": "true",
+                        "open-companion-for-web-search": "false",
+                        "open-links-in-current-tab": "false"
                     },
                     "enable_features": [
-                        "SidePanelCompanion"
+                        "SidePanelCompanion",
+                        "VisualSearchSuggestions"
                     ],
                     "disable_features": [
-                        "SidePanelCompanionDefaultPinned",
-                        "SideSearch",
-                        "VisualSearchSuggestions"
+                        "CompanionEnableNewBadgesInContextMenu"
                     ]
                 }
             ]
