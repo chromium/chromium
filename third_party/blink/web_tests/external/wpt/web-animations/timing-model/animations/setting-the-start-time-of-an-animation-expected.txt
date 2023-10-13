@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
-FAIL Validate different value types that can be used to set start time assert_throws_js: function "() => {
-    animation.startTime = CSSNumericValue.parse("30%");
-  }" threw object "NotSupportedError: Failed to set the 'startTime' property on 'Animation': Invalid startTime. CSSNumericValue must be either a number or a time value for time based animations." ("NotSupportedError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+FAIL Validate different value types that can be used to set start time assert_throws_js: function "() => {\n    animation.startTime = CSSNumericValue.parse("30%");\n  }" threw object "NotSupportedError: Failed to set the 'startTime' property on 'Animation': Invalid startTime. CSSNumericValue must be either a number or a time value for time based animations." ("NotSupportedError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
 PASS Setting the start time of an animation without an active timeline
 PASS Setting an unresolved start time an animation without an active timeline does not clear the current time
 PASS Setting the start time clears the hold time

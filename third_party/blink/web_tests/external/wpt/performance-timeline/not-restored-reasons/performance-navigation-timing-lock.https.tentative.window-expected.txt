@@ -1,8 +1,4 @@
 This is a testharness.js-based test.
-FAIL Ensure that if WebLock is held upon entering bfcache, it cannot enter bfcache and gets reported. assert_true: Expected: lock
-Got: internal-error,lock
-Missing: 
-Extra: internal-error
- expected true got false
+FAIL Ensure that if WebLock is held upon entering bfcache, it cannot enter bfcache and gets reported. assert_true: Expected: lock\nGot: internal-error,lock\nMissing: \nExtra: internal-error\n expected true got false
 Harness: the test ran to completion.
 

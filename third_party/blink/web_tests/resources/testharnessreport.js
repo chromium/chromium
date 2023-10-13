@@ -348,6 +348,7 @@
         text = text.replace(/\0/g, '\\0');
         // Escape some special characters to improve readability of the output.
         text = text.replace(/\r/g, '\\r');
+        text = text.replace(/\n/g, '\\n');
 
         // Replace machine-dependent path with "...".
         if (localPathRegExp) {

@@ -1,8 +1,4 @@
 This is a testharness.js-based test.
-FAIL Ensure that navigation failure blocks bfcache and gets recorded. assert_true: Expected: error-document
-Got: HTTP status not OK,internal-error
-Missing: error-document
-Extra: HTTP status not OK,internal-error
- expected true got false
+FAIL Ensure that navigation failure blocks bfcache and gets recorded. assert_true: Expected: error-document\nGot: HTTP status not OK,internal-error\nMissing: error-document\nExtra: HTTP status not OK,internal-error\n expected true got false
 Harness: the test ran to completion.
 

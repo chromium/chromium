@@ -479,21 +479,11 @@ PASS AudioProcessingEvent interface: existence and properties of interface proto
 PASS AudioProcessingEvent interface: attribute playbackTime
 PASS AudioProcessingEvent interface: attribute inputBuffer
 PASS AudioProcessingEvent interface: attribute outputBuffer
-PASS AudioProcessingEvent must be primary interface of new AudioProcessingEvent('', {
-        playbackTime: 0, inputBuffer: buffer, outputBuffer: buffer
-      })
-PASS Stringification of new AudioProcessingEvent('', {
-        playbackTime: 0, inputBuffer: buffer, outputBuffer: buffer
-      })
-PASS AudioProcessingEvent interface: new AudioProcessingEvent('', {
-        playbackTime: 0, inputBuffer: buffer, outputBuffer: buffer
-      }) must inherit property "playbackTime" with the proper type
-PASS AudioProcessingEvent interface: new AudioProcessingEvent('', {
-        playbackTime: 0, inputBuffer: buffer, outputBuffer: buffer
-      }) must inherit property "inputBuffer" with the proper type
-PASS AudioProcessingEvent interface: new AudioProcessingEvent('', {
-        playbackTime: 0, inputBuffer: buffer, outputBuffer: buffer
-      }) must inherit property "outputBuffer" with the proper type
+PASS AudioProcessingEvent must be primary interface of new AudioProcessingEvent('', {\n        playbackTime: 0, inputBuffer: buffer, outputBuffer: buffer\n      })
+PASS Stringification of new AudioProcessingEvent('', {\n        playbackTime: 0, inputBuffer: buffer, outputBuffer: buffer\n      })
+PASS AudioProcessingEvent interface: new AudioProcessingEvent('', {\n        playbackTime: 0, inputBuffer: buffer, outputBuffer: buffer\n      }) must inherit property "playbackTime" with the proper type
+PASS AudioProcessingEvent interface: new AudioProcessingEvent('', {\n        playbackTime: 0, inputBuffer: buffer, outputBuffer: buffer\n      }) must inherit property "inputBuffer" with the proper type
+PASS AudioProcessingEvent interface: new AudioProcessingEvent('', {\n        playbackTime: 0, inputBuffer: buffer, outputBuffer: buffer\n      }) must inherit property "outputBuffer" with the proper type
 PASS BiquadFilterNode interface: existence and properties of interface object
 PASS BiquadFilterNode interface object length
 PASS BiquadFilterNode interface object name

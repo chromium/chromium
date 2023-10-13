@@ -146,17 +146,11 @@ PASS animate() with pseudoElement an Animation object targeting the correct pseu
 PASS animate() with pseudoElement without content creates an Animation object targeting the correct pseudo-element
 PASS animate() with pseudoElement an Animation object targeting the correct pseudo-element for ::marker
 PASS animate() with pseudoElement an Animation object targeting the correct pseudo-element for ::first-line
-FAIL animate() with a non-null invalid pseudoElement '' throws a SyntaxError assert_throws_dom: function "() => {
-      div.animate(null, {pseudoElement: pseudo});
-    }" did not throw
+FAIL animate() with a non-null invalid pseudoElement '' throws a SyntaxError assert_throws_dom: function "() => {\n      div.animate(null, {pseudoElement: pseudo});\n    }" did not throw
 PASS animate() with a non-null invalid pseudoElement 'before' throws a SyntaxError
 PASS animate() with a non-null invalid pseudoElement ':abc' throws a SyntaxError
-FAIL animate() with a non-null invalid pseudoElement '::abc' throws a SyntaxError assert_throws_dom: function "() => {
-      div.animate(null, {pseudoElement: pseudo});
-    }" did not throw
-FAIL animate() with a non-null invalid pseudoElement '::placeholder' throws a SyntaxError assert_throws_dom: function "() => {
-      div.animate(null, {pseudoElement: pseudo});
-    }" did not throw
+FAIL animate() with a non-null invalid pseudoElement '::abc' throws a SyntaxError assert_throws_dom: function "() => {\n      div.animate(null, {pseudoElement: pseudo});\n    }" did not throw
+FAIL animate() with a non-null invalid pseudoElement '::placeholder' throws a SyntaxError assert_throws_dom: function "() => {\n      div.animate(null, {pseudoElement: pseudo});\n    }" did not throw
 PASS Finished fill animation doesn't replace animation on a different pseudoElement
 Harness: the test ran to completion.
 

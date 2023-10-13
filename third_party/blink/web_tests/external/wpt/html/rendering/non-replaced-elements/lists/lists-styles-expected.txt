@@ -14,34 +14,20 @@ PASS <li> - counter-set
 PASS <li> - counter-reset
 PASS <li> - counter-increment
 FAIL <li> - text-align assert_equals: expected "start" but got "left"
-PASS <dir>
-   <li> - display
-PASS <dir>
-   <li> - margin-top
-PASS <dir>
-   <li> - margin-right
-PASS <dir>
-   <li> - margin-bottom
-PASS <dir>
-   <li> - margin-left
-PASS <dir>
-   <li> - padding-top
-PASS <dir>
-   <li> - padding-right
-PASS <dir>
-   <li> - padding-bottom
-PASS <dir>
-   <li> - padding-left
-PASS <dir>
-   <li> - list-style-type
-PASS <dir>
-   <li> - counter-set
-PASS <dir>
-   <li> - counter-reset
-PASS <dir>
-   <li> - counter-increment
-PASS <dir>
-   <li> - text-align
+PASS <dir>\n   <li> - display
+PASS <dir>\n   <li> - margin-top
+PASS <dir>\n   <li> - margin-right
+PASS <dir>\n   <li> - margin-bottom
+PASS <dir>\n   <li> - margin-left
+PASS <dir>\n   <li> - padding-top
+PASS <dir>\n   <li> - padding-right
+PASS <dir>\n   <li> - padding-bottom
+PASS <dir>\n   <li> - padding-left
+PASS <dir>\n   <li> - list-style-type
+PASS <dir>\n   <li> - counter-set
+PASS <dir>\n   <li> - counter-reset
+PASS <dir>\n   <li> - counter-increment
+PASS <dir>\n   <li> - text-align
 PASS <li> (in <dir>) - display
 PASS <li> (in <dir>) - margin-top
 PASS <li> (in <dir>) - margin-right
@@ -84,34 +70,20 @@ PASS <dd> - counter-set
 PASS <dd> - counter-reset
 PASS <dd> - counter-increment
 PASS <dd> - text-align
-PASS <dl>
-   <dt> - display
-PASS <dl>
-   <dt> - margin-top
-PASS <dl>
-   <dt> - margin-right
-PASS <dl>
-   <dt> - margin-bottom
-PASS <dl>
-   <dt> - margin-left
-PASS <dl>
-   <dt> - padding-top
-PASS <dl>
-   <dt> - padding-right
-PASS <dl>
-   <dt> - padding-bottom
-PASS <dl>
-   <dt> - padding-left
-PASS <dl>
-   <dt> - list-style-type
-PASS <dl>
-   <dt> - counter-set
-PASS <dl>
-   <dt> - counter-reset
-PASS <dl>
-   <dt> - counter-increment
-PASS <dl>
-   <dt> - text-align
+PASS <dl>\n   <dt> - display
+PASS <dl>\n   <dt> - margin-top
+PASS <dl>\n   <dt> - margin-right
+PASS <dl>\n   <dt> - margin-bottom
+PASS <dl>\n   <dt> - margin-left
+PASS <dl>\n   <dt> - padding-top
+PASS <dl>\n   <dt> - padding-right
+PASS <dl>\n   <dt> - padding-bottom
+PASS <dl>\n   <dt> - padding-left
+PASS <dl>\n   <dt> - list-style-type
+PASS <dl>\n   <dt> - counter-set
+PASS <dl>\n   <dt> - counter-reset
+PASS <dl>\n   <dt> - counter-increment
+PASS <dl>\n   <dt> - text-align
 PASS <dt> (in <dl>) - display
 PASS <dt> (in <dl>) - margin-top
 PASS <dt> (in <dl>) - margin-right
@@ -140,34 +112,20 @@ PASS <dd> (in <dl>) - counter-set
 PASS <dd> (in <dl>) - counter-reset
 PASS <dd> (in <dl>) - counter-increment
 PASS <dd> (in <dl>) - text-align
-PASS <menu>
-   <li> - display
-PASS <menu>
-   <li> - margin-top
-PASS <menu>
-   <li> - margin-right
-PASS <menu>
-   <li> - margin-bottom
-PASS <menu>
-   <li> - margin-left
-PASS <menu>
-   <li> - padding-top
-PASS <menu>
-   <li> - padding-right
-PASS <menu>
-   <li> - padding-bottom
-PASS <menu>
-   <li> - padding-left
-PASS <menu>
-   <li> - list-style-type
-PASS <menu>
-   <li> - counter-set
-FAIL <menu>
-   <li> - counter-reset assert_equals: expected "list-item 0" but got "none"
-PASS <menu>
-   <li> - counter-increment
-PASS <menu>
-   <li> - text-align
+PASS <menu>\n   <li> - display
+PASS <menu>\n   <li> - margin-top
+PASS <menu>\n   <li> - margin-right
+PASS <menu>\n   <li> - margin-bottom
+PASS <menu>\n   <li> - margin-left
+PASS <menu>\n   <li> - padding-top
+PASS <menu>\n   <li> - padding-right
+PASS <menu>\n   <li> - padding-bottom
+PASS <menu>\n   <li> - padding-left
+PASS <menu>\n   <li> - list-style-type
+PASS <menu>\n   <li> - counter-set
+FAIL <menu>\n   <li> - counter-reset assert_equals: expected "list-item 0" but got "none"
+PASS <menu>\n   <li> - counter-increment
+PASS <menu>\n   <li> - text-align
 PASS <li> (in <menu>) - display
 PASS <li> (in <menu>) - margin-top
 PASS <li> (in <menu>) - margin-right
@@ -182,34 +140,20 @@ PASS <li> (in <menu>) - counter-set
 PASS <li> (in <menu>) - counter-reset
 PASS <li> (in <menu>) - counter-increment
 FAIL <li> (in <menu>) - text-align assert_equals: expected "start" but got "left"
-PASS <ol>
-   <li> - display
-PASS <ol>
-   <li> - margin-top
-PASS <ol>
-   <li> - margin-right
-PASS <ol>
-   <li> - margin-bottom
-PASS <ol>
-   <li> - margin-left
-PASS <ol>
-   <li> - padding-top
-PASS <ol>
-   <li> - padding-right
-PASS <ol>
-   <li> - padding-bottom
-PASS <ol>
-   <li> - padding-left
-PASS <ol>
-   <li> - list-style-type
-PASS <ol>
-   <li> - counter-set
-FAIL <ol>
-   <li> - counter-reset assert_equals: expected "list-item 0" but got "none"
-PASS <ol>
-   <li> - counter-increment
-PASS <ol>
-   <li> - text-align
+PASS <ol>\n   <li> - display
+PASS <ol>\n   <li> - margin-top
+PASS <ol>\n   <li> - margin-right
+PASS <ol>\n   <li> - margin-bottom
+PASS <ol>\n   <li> - margin-left
+PASS <ol>\n   <li> - padding-top
+PASS <ol>\n   <li> - padding-right
+PASS <ol>\n   <li> - padding-bottom
+PASS <ol>\n   <li> - padding-left
+PASS <ol>\n   <li> - list-style-type
+PASS <ol>\n   <li> - counter-set
+FAIL <ol>\n   <li> - counter-reset assert_equals: expected "list-item 0" but got "none"
+PASS <ol>\n   <li> - counter-increment
+PASS <ol>\n   <li> - text-align
 PASS <li> (in <ol>) - display
 PASS <li> (in <ol>) - margin-top
 PASS <li> (in <ol>) - margin-right
@@ -224,34 +168,20 @@ PASS <li> (in <ol>) - counter-set
 PASS <li> (in <ol>) - counter-reset
 PASS <li> (in <ol>) - counter-increment
 FAIL <li> (in <ol>) - text-align assert_equals: expected "start" but got "left"
-PASS <ul>
-   <li> - display
-PASS <ul>
-   <li> - margin-top
-PASS <ul>
-   <li> - margin-right
-PASS <ul>
-   <li> - margin-bottom
-PASS <ul>
-   <li> - margin-left
-PASS <ul>
-   <li> - padding-top
-PASS <ul>
-   <li> - padding-right
-PASS <ul>
-   <li> - padding-bottom
-PASS <ul>
-   <li> - padding-left
-PASS <ul>
-   <li> - list-style-type
-PASS <ul>
-   <li> - counter-set
-FAIL <ul>
-   <li> - counter-reset assert_equals: expected "list-item 0" but got "none"
-PASS <ul>
-   <li> - counter-increment
-PASS <ul>
-   <li> - text-align
+PASS <ul>\n   <li> - display
+PASS <ul>\n   <li> - margin-top
+PASS <ul>\n   <li> - margin-right
+PASS <ul>\n   <li> - margin-bottom
+PASS <ul>\n   <li> - margin-left
+PASS <ul>\n   <li> - padding-top
+PASS <ul>\n   <li> - padding-right
+PASS <ul>\n   <li> - padding-bottom
+PASS <ul>\n   <li> - padding-left
+PASS <ul>\n   <li> - list-style-type
+PASS <ul>\n   <li> - counter-set
+FAIL <ul>\n   <li> - counter-reset assert_equals: expected "list-item 0" but got "none"
+PASS <ul>\n   <li> - counter-increment
+PASS <ul>\n   <li> - text-align
 PASS <li> (in <ul>) - display
 PASS <li> (in <ul>) - margin-top
 PASS <li> (in <ul>) - margin-right
@@ -1470,34 +1400,20 @@ PASS <li type="SQUARE"> - counter-set
 PASS <li type="SQUARE"> - counter-reset
 PASS <li type="SQUARE"> - counter-increment
 FAIL <li type="SQUARE"> - text-align assert_equals: expected "start" but got "left"
-PASS <ol>
-    <li value="10"> - display
-PASS <ol>
-    <li value="10"> - margin-top
-PASS <ol>
-    <li value="10"> - margin-right
-PASS <ol>
-    <li value="10"> - margin-bottom
-PASS <ol>
-    <li value="10"> - margin-left
-PASS <ol>
-    <li value="10"> - padding-top
-PASS <ol>
-    <li value="10"> - padding-right
-PASS <ol>
-    <li value="10"> - padding-bottom
-PASS <ol>
-    <li value="10"> - padding-left
-PASS <ol>
-    <li value="10"> - list-style-type
-PASS <ol>
-    <li value="10"> - counter-set
-FAIL <ol>
-    <li value="10"> - counter-reset assert_equals: expected "list-item 0" but got "none"
-PASS <ol>
-    <li value="10"> - counter-increment
-PASS <ol>
-    <li value="10"> - text-align
+PASS <ol>\n    <li value="10"> - display
+PASS <ol>\n    <li value="10"> - margin-top
+PASS <ol>\n    <li value="10"> - margin-right
+PASS <ol>\n    <li value="10"> - margin-bottom
+PASS <ol>\n    <li value="10"> - margin-left
+PASS <ol>\n    <li value="10"> - padding-top
+PASS <ol>\n    <li value="10"> - padding-right
+PASS <ol>\n    <li value="10"> - padding-bottom
+PASS <ol>\n    <li value="10"> - padding-left
+PASS <ol>\n    <li value="10"> - list-style-type
+PASS <ol>\n    <li value="10"> - counter-set
+FAIL <ol>\n    <li value="10"> - counter-reset assert_equals: expected "list-item 0" but got "none"
+PASS <ol>\n    <li value="10"> - counter-increment
+PASS <ol>\n    <li value="10"> - text-align
 PASS <li value="10"> (in <ol>) - display
 PASS <li value="10"> (in <ol>) - margin-top
 PASS <li value="10"> (in <ol>) - margin-right

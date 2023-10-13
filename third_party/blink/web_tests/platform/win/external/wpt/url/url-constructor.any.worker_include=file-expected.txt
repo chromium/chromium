@@ -74,8 +74,7 @@ FAIL Parsing: <C|> against <file://host/D:/dir1/dir2/file> assert_equals: href e
 FAIL Parsing: <C|#> against <file://host/dir/file> assert_equals: href expected "file://host/C:#" but got "file:///C:#"
 FAIL Parsing: <C|?> against <file://host/dir/file> assert_equals: href expected "file://host/C:?" but got "file:///C:?"
 FAIL Parsing: <C|/> against <file://host/dir/file> assert_equals: href expected "file://host/C:/" but got "file:///C:/"
-FAIL Parsing: <C|
-/> against <file://host/dir/file> assert_equals: href expected "file://host/C:/" but got "file:///C:/"
+FAIL Parsing: <C|\n/> against <file://host/dir/file> assert_equals: href expected "file://host/C:/" but got "file:///C:/"
 FAIL Parsing: <C|\> against <file://host/dir/file> assert_equals: href expected "file://host/C:/" but got "file:///C:/"
 PASS Parsing: <C> against <file://host/dir/file>
 FAIL Parsing: <C|a> against <file://host/dir/file> assert_equals: href expected "file://host/dir/C|a" but got "file:///C:/a"
@@ -125,9 +124,7 @@ PASS Parsing: <file://a%C2%ADb/p> without base
 FAIL Parsing: <file://loC𝐀𝐋𝐇𝐨𝐬𝐭/usr/bin> without base assert_equals: href expected "file:///usr/bin" but got "file://localhost/usr/bin"
 PASS Parsing: <file://­/p> without base
 PASS Parsing: <file://%C2%AD/p> without base
-FAIL Parsing: <file://xn--/p> without base assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
+FAIL Parsing: <file://xn--/p> without base assert_throws_js: function "function() {\n          new URL(expected.input, base);\n        }" did not throw
 PASS Parsing: <> without base
 Harness: the test ran to completion.
 

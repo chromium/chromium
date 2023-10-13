@@ -453,15 +453,9 @@ PASS RTCDataChannelEvent interface: existence and properties of interface protot
 PASS RTCDataChannelEvent interface: existence and properties of interface prototype object's "constructor" property
 PASS RTCDataChannelEvent interface: existence and properties of interface prototype object's @@unscopables property
 PASS RTCDataChannelEvent interface: attribute channel
-PASS RTCDataChannelEvent must be primary interface of new RTCDataChannelEvent('channel', {
-          channel: new RTCPeerConnection().createDataChannel('')
-        })
-PASS Stringification of new RTCDataChannelEvent('channel', {
-          channel: new RTCPeerConnection().createDataChannel('')
-        })
-PASS RTCDataChannelEvent interface: new RTCDataChannelEvent('channel', {
-          channel: new RTCPeerConnection().createDataChannel('')
-        }) must inherit property "channel" with the proper type
+PASS RTCDataChannelEvent must be primary interface of new RTCDataChannelEvent('channel', {\n          channel: new RTCPeerConnection().createDataChannel('')\n        })
+PASS Stringification of new RTCDataChannelEvent('channel', {\n          channel: new RTCPeerConnection().createDataChannel('')\n        })
+PASS RTCDataChannelEvent interface: new RTCDataChannelEvent('channel', {\n          channel: new RTCPeerConnection().createDataChannel('')\n        }) must inherit property "channel" with the proper type
 PASS RTCDTMFSender interface: existence and properties of interface object
 PASS RTCDTMFSender interface object length
 PASS RTCDTMFSender interface object name

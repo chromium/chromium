@@ -321,8 +321,7 @@ PASS In <textarea>, execCommand("insertunorderedlist", false, null), a[b]c): inp
 PASS In <textarea>, execCommand("insertparagraph", false, null), a[b]c): The command should be supported
 PASS In <textarea>, execCommand("insertparagraph", false, null), a[b]c): The command should be enabled
 PASS In <textarea>, execCommand("insertparagraph", false, null), a[b]c): execCommand() should return true
-PASS In <textarea>, execCommand("insertparagraph", false, null), a[b]c): <textarea>.value should be "a
-[]c"
+PASS In <textarea>, execCommand("insertparagraph", false, null), a[b]c): <textarea>.value should be "a\n[]c"
 PASS In <textarea>, execCommand("insertparagraph", false, null), a[b]c): beforeinput.inputType should be undefined
 PASS In <textarea>, execCommand("insertparagraph", false, null), a[b]c): beforeinput.target should be undefined
 PASS In <textarea>, execCommand("insertparagraph", false, null), a[b]c): input.inputType should be insertParagraph
@@ -330,8 +329,7 @@ PASS In <textarea>, execCommand("insertparagraph", false, null), a[b]c): input.t
 PASS In <textarea>, execCommand("insertlinebreak", false, null), a[b]c): The command should be supported
 PASS In <textarea>, execCommand("insertlinebreak", false, null), a[b]c): The command should be enabled
 PASS In <textarea>, execCommand("insertlinebreak", false, null), a[b]c): execCommand() should return true
-PASS In <textarea>, execCommand("insertlinebreak", false, null), a[b]c): <textarea>.value should be "a
-[]c"
+PASS In <textarea>, execCommand("insertlinebreak", false, null), a[b]c): <textarea>.value should be "a\n[]c"
 PASS In <textarea>, execCommand("insertlinebreak", false, null), a[b]c): beforeinput.inputType should be undefined
 PASS In <textarea>, execCommand("insertlinebreak", false, null), a[b]c): beforeinput.target should be undefined
 PASS In <textarea>, execCommand("insertlinebreak", false, null), a[b]c): input.inputType should be insertLineBreak
@@ -711,8 +709,7 @@ PASS In <textarea> in contenteditable, execCommand("insertunorderedlist", false,
 PASS In <textarea> in contenteditable, execCommand("insertparagraph", false, null), a[b]c): The command should be supported
 PASS In <textarea> in contenteditable, execCommand("insertparagraph", false, null), a[b]c): The command should be enabled
 PASS In <textarea> in contenteditable, execCommand("insertparagraph", false, null), a[b]c): execCommand() should return true
-PASS In <textarea> in contenteditable, execCommand("insertparagraph", false, null), a[b]c): <textarea>.value should be "a
-[]c"
+PASS In <textarea> in contenteditable, execCommand("insertparagraph", false, null), a[b]c): <textarea>.value should be "a\n[]c"
 PASS In <textarea> in contenteditable, execCommand("insertparagraph", false, null), a[b]c): beforeinput.inputType should be undefined
 PASS In <textarea> in contenteditable, execCommand("insertparagraph", false, null), a[b]c): beforeinput.target should be undefined
 PASS In <textarea> in contenteditable, execCommand("insertparagraph", false, null), a[b]c): input.inputType should be insertParagraph
@@ -720,8 +717,7 @@ PASS In <textarea> in contenteditable, execCommand("insertparagraph", false, nul
 PASS In <textarea> in contenteditable, execCommand("insertlinebreak", false, null), a[b]c): The command should be supported
 PASS In <textarea> in contenteditable, execCommand("insertlinebreak", false, null), a[b]c): The command should be enabled
 PASS In <textarea> in contenteditable, execCommand("insertlinebreak", false, null), a[b]c): execCommand() should return true
-PASS In <textarea> in contenteditable, execCommand("insertlinebreak", false, null), a[b]c): <textarea>.value should be "a
-[]c"
+PASS In <textarea> in contenteditable, execCommand("insertlinebreak", false, null), a[b]c): <textarea>.value should be "a\n[]c"
 PASS In <textarea> in contenteditable, execCommand("insertlinebreak", false, null), a[b]c): beforeinput.inputType should be undefined
 PASS In <textarea> in contenteditable, execCommand("insertlinebreak", false, null), a[b]c): beforeinput.target should be undefined
 PASS In <textarea> in contenteditable, execCommand("insertlinebreak", false, null), a[b]c): input.inputType should be insertLineBreak

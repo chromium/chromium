@@ -817,9 +817,7 @@ PASS OffscreenCanvasRenderingContext2D interface: operation rect(unrestricted do
 PASS OffscreenCanvasRenderingContext2D interface: operation roundRect(unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional (unrestricted double or DOMPointInit or sequence<(unrestricted double or DOMPointInit)>))
 PASS OffscreenCanvasRenderingContext2D interface: operation arc(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS OffscreenCanvasRenderingContext2D interface: operation ellipse(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
-FAIL CustomElementRegistry interface: existence and properties of interface object assert_throws_js: interface object didn't throw TypeError when called as a constructor function "function() {
-                new interface_object();
-            }" did not throw
+FAIL CustomElementRegistry interface: existence and properties of interface object assert_throws_js: interface object didn't throw TypeError when called as a constructor function "function() {\n                new interface_object();\n            }" did not throw
 PASS CustomElementRegistry interface object length
 PASS CustomElementRegistry interface object name
 PASS CustomElementRegistry interface: existence and properties of interface prototype object

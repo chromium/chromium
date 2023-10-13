@@ -55,31 +55,9 @@ PASS new RTCPeerConnection(config) - with invalid stun url should throw SyntaxEr
 PASS setConfiguration(config) - with invalid stun url should throw SyntaxError
 PASS new RTCPeerConnection(config) - with empty urls should throw SyntaxError
 PASS setConfiguration(config) - with empty urls should throw SyntaxError
-FAIL new RTCPeerConnection(config) - with url field should throw TypeError assert_throws_js: function "() =>
-      makePc({ iceServers: [{
-        url: 'stun:stun1.example.net'
-      }] })" did not throw
-FAIL setConfiguration(config) - with url field should throw TypeError assert_throws_js: function "() =>
-      makePc({ iceServers: [{
-        url: 'stun:stun1.example.net'
-      }] })" did not throw
-FAIL new RTCPeerConnection(config) - with turns server, and object credential should throw InvalidAccessError assert_throws_dom: function "() =>
-      makePc({ iceServers: [{
-        urls: 'turns:turn.example.org',
-        username: 'user',
-        credential: {
-          macKey: '',
-          accessToken: ''
-        }
-      }] })" did not throw
-FAIL setConfiguration(config) - with turns server, and object credential should throw InvalidAccessError assert_throws_dom: function "() =>
-      makePc({ iceServers: [{
-        urls: 'turns:turn.example.org',
-        username: 'user',
-        credential: {
-          macKey: '',
-          accessToken: ''
-        }
-      }] })" did not throw
+FAIL new RTCPeerConnection(config) - with url field should throw TypeError assert_throws_js: function "() =>\n      makePc({ iceServers: [{\n        url: 'stun:stun1.example.net'\n      }] })" did not throw
+FAIL setConfiguration(config) - with url field should throw TypeError assert_throws_js: function "() =>\n      makePc({ iceServers: [{\n        url: 'stun:stun1.example.net'\n      }] })" did not throw
+FAIL new RTCPeerConnection(config) - with turns server, and object credential should throw InvalidAccessError assert_throws_dom: function "() =>\n      makePc({ iceServers: [{\n        urls: 'turns:turn.example.org',\n        username: 'user',\n        credential: {\n          macKey: '',\n          accessToken: ''\n        }\n      }] })" did not throw
+FAIL setConfiguration(config) - with turns server, and object credential should throw InvalidAccessError assert_throws_dom: function "() =>\n      makePc({ iceServers: [{\n        urls: 'turns:turn.example.org',\n        username: 'user',\n        credential: {\n          macKey: '',\n          accessToken: ''\n        }\n      }] })" did not throw
 Harness: the test ran to completion.
 

@@ -9,12 +9,7 @@ PASS .flexbox 7
 PASS .flexbox 8
 PASS .flexbox 9
 PASS .flexbox 10
-FAIL .flexbox 11 assert_equals: 
-<div class="flexbox">
-      <div class="spacer"></div>
-      <input type="text" class="test3" data-expected-height="140">
-    </div>
-height expected 140 but got 100
+FAIL .flexbox 11 assert_equals: \n<div class="flexbox">\n      <div class="spacer"></div>\n      <input type="text" class="test3" data-expected-height="140">\n    </div>\nheight expected 140 but got 100
 PASS .flexbox 12
 PASS .flexbox 13
 PASS .flexbox 14

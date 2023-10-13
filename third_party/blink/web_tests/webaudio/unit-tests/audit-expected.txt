@@ -26,18 +26,10 @@ PASS < [numerical typed arrays] All assertions passed. (total 3 assertions)
 PASS > [basic] Simple unit tests for basic assertions.
 PASS   OfflineAudioContext does exist.
 PASS   Setting foo1 to 0 did not throw an exception.
-PASS   function() {
-              let foo2 = bar;
-            } threw ReferenceError: "bar is not defined".
-PASS   function() {
-              let foo3 = bar;
-            } threw ReferenceError: "bar is not defined".
-PASS   function() {
-              let foo4 = bar;
-            } threw ReferenceError: "bar is not defined".
-PASS   function() {
-              let foo5 = bar;
-            } threw ReferenceError: "bar is not defined".
+PASS   function() {\n              let foo2 = bar;\n            } threw ReferenceError: "bar is not defined".
+PASS   function() {\n              let foo3 = bar;\n            } threw ReferenceError: "bar is not defined".
+PASS   function() {\n              let foo4 = bar;\n            } threw ReferenceError: "bar is not defined".
+PASS   function() {\n              let foo5 = bar;\n            } threw ReferenceError: "bar is not defined".
 PASS   Calling should() with no argument threw Error: "Task.should:: requires at least 1 argument.".
 PASS   3 < 5 is true.
 PASS   false is false.

@@ -1,16 +1,14 @@
 This is a testharness.js-based test.
 Found 364 tests; 356 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
-PASS Origin parsing: <http://example	.
-org> against <http://example.org/foo/bar>
+PASS Origin parsing: <http://example	.\norg> against <http://example.org/foo/bar>
 PASS Origin parsing: <http://user:pass@foo:21/bar;par?b#c> against <http://example.org/foo/bar>
 PASS Origin parsing: <https://test:@test> without base
 PASS Origin parsing: <https://:@test> without base
 PASS Origin parsing: <non-special://test:@test/x> without base
 PASS Origin parsing: <non-special://:@test/x> without base
 PASS Origin parsing: <http:foo.com> against <http://example.org/foo/bar>
-PASS Origin parsing: <	   :foo.com   
-> against <http://example.org/foo/bar>
+PASS Origin parsing: <	   :foo.com   \n> against <http://example.org/foo/bar>
 PASS Origin parsing: < foo.com  > against <http://example.org/foo/bar>
 PASS Origin parsing: <a:	 foo.com> against <http://example.org/foo/bar>
 PASS Origin parsing: <http://f:21/ b ? d # e > against <http://example.org/foo/bar>
@@ -18,8 +16,7 @@ PASS Origin parsing: <http://f:/c> against <http://example.org/foo/bar>
 PASS Origin parsing: <http://f:0/c> against <http://example.org/foo/bar>
 PASS Origin parsing: <http://f:00000000000000/c> against <http://example.org/foo/bar>
 PASS Origin parsing: <http://f:00000000000000000000080/c> against <http://example.org/foo/bar>
-PASS Origin parsing: <http://f:
-/c> against <http://example.org/foo/bar>
+PASS Origin parsing: <http://f:\n/c> against <http://example.org/foo/bar>
 PASS Origin parsing: <> against <http://example.org/foo/bar>
 PASS Origin parsing: <  	> against <http://example.org/foo/bar>
 PASS Origin parsing: <:foo.com/> against <http://example.org/foo/bar>
@@ -273,13 +270,7 @@ PASS Origin parsing: <https://%e2%98%83> without base
 PASS Origin parsing: <http://127.0.0.1:10100/relative_import.html> without base
 PASS Origin parsing: <http://facebook.com/?foo=%7B%22abc%22> without base
 PASS Origin parsing: <https://localhost:3000/jqueryui@1.2.3> without base
-PASS Origin parsing: <h	t
-t\rp://h	o
-s\rt:9	0
-0\r0/p	a
-t\rh?q	u
-e\rry#f	r
-a\rg> without base
+PASS Origin parsing: <h	t\nt\rp://h	o\ns\rt:9	0\n0\r0/p	a\nt\rh?q	u\ne\rry#f	r\na\rg> without base
 PASS Origin parsing: <?a=b&c=d> against <http://example.org/foo/bar>
 PASS Origin parsing: <??a=b&c=d> against <http://example.org/foo/bar>
 PASS Origin parsing: <http:> against <http://example.org/foo/bar>

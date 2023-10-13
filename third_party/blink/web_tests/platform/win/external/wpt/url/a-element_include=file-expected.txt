@@ -74,8 +74,7 @@ FAIL Parsing: <C|> against <file://host/D:/dir1/dir2/file> assert_equals: href e
 FAIL Parsing: <C|#> against <file://host/dir/file> assert_equals: href expected "file://host/C:#" but got "file:///C:#"
 FAIL Parsing: <C|?> against <file://host/dir/file> assert_equals: href expected "file://host/C:?" but got "file:///C:?"
 FAIL Parsing: <C|/> against <file://host/dir/file> assert_equals: href expected "file://host/C:/" but got "file:///C:/"
-FAIL Parsing: <C|
-/> against <file://host/dir/file> assert_equals: href expected "file://host/C:/" but got "file:///C:/"
+FAIL Parsing: <C|\n/> against <file://host/dir/file> assert_equals: href expected "file://host/C:/" but got "file:///C:/"
 FAIL Parsing: <C|\> against <file://host/dir/file> assert_equals: href expected "file://host/C:/" but got "file:///C:/"
 PASS Parsing: <C> against <file://host/dir/file>
 FAIL Parsing: <C|a> against <file://host/dir/file> assert_equals: href expected "file://host/dir/C|a" but got "file:///C:/a"
