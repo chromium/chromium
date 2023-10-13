@@ -161,6 +161,10 @@ id<GREYMatcher> notPracticallyVisible() {
   // TODO(crbug.com/1403077): Scrolling issues when promo is enabled.
   config.features_disabled.push_back(kEnableDiscoverFeedTopSyncPromo);
   config.features_disabled.push_back(kIOSSetUpList);
+
+  if ([self isRunningTest:@selector(testLargeFakeboxFocus)]) {
+    config.features_enabled.push_back(kIOSLargeFakebox);
+  }
   return config;
 }
 
@@ -1296,6 +1300,20 @@ id<GREYMatcher> notPracticallyVisible() {
   // Background and foreground the app, then check that the focused omnibox
   // still contains the text.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxContainingText(
+                            base::SysNSStringToUTF8(omniboxText))];
+}
+
+// Test that the Large Fakebox can be focused and text can be entered.
+- (void)testLargeFakeboxFocus {
+  // Focus the omnibox and type some text into it.
+  [self focusFakebox];
+  NSString* omniboxText = @"Some text";
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_replaceText(omniboxText)];
+
+  // Check that the omnibox contains the inputted text.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxContainingText(
                             base::SysNSStringToUTF8(omniboxText))];

@@ -68,6 +68,9 @@ const CGFloat kLargeFakeboxHorizontalMargin = 8.0;
 // and Voice Search buttons.
 const CGFloat kEndButtonSeparation = 19.0;
 
+// The height of the divider between the mic and lens icons.
+const CGFloat kIconDividerHeight = 13.0;
+
 // The leading space / padding in the unscrolled fakebox.
 CGFloat HintLabelFakeboxLeadingSpace() {
   return IsIOSLargeFakeboxEnabled() ? kLargeFakeboxHintLabelFakeboxLeadingSpace
@@ -385,6 +388,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // If the Lens button was created, layout the header with the Lens button on
   // the end.
   if (self.lensButton) {
+    if (IsIOSLargeFakeboxEnabled()) {
+      [self addVoiceAndLenseDivider];
+    }
     [NSLayoutConstraint activateConstraints:@[
       // Lens button constraints.
       [self.lensButton.leadingAnchor
@@ -693,6 +699,25 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   [_fakeLocationBar
       setStartColor:BlendColors(FakeboxTopColor(), pinnedColor, progress)
            endColor:BlendColors(FakeboxBottomColor(), pinnedColor, progress)];
+}
+
+// Adds a short vertical line between the mic and lens icons in the fakebox.
+- (void)addVoiceAndLenseDivider {
+  UIView* divider = [[UIView alloc] init];
+  divider.backgroundColor = [UIColor colorNamed:kGrey600Color];
+  divider.translatesAutoresizingMaskIntoConstraints = NO;
+  CGFloat dividerWidth = 1.0 / [[UIScreen mainScreen] scale];
+  [self.lensButton.superview addSubview:divider];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [divider.leadingAnchor
+        constraintEqualToAnchor:self.voiceSearchButton.trailingAnchor
+                       constant:kEndButtonSeparation / 2],
+    [divider.centerYAnchor
+        constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
+    [divider.heightAnchor constraintEqualToConstant:kIconDividerHeight],
+    [divider.widthAnchor constraintEqualToConstant:dividerWidth],
+  ]];
 }
 
 @end
