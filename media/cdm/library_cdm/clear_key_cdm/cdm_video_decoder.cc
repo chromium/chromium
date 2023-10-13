@@ -307,7 +307,6 @@ std::unique_ptr<CdmVideoDecoder> CreateVideoDecoder(
     const cdm::VideoDecoderConfig_3& config) {
   SetupGlobalEnvironmentIfNeeded();
 
-  static base::NoDestructor<media::NullMediaLog> null_media_log;
   std::unique_ptr<VideoDecoder> video_decoder;
 
 #if BUILDFLAG(ENABLE_LIBVPX)
@@ -316,11 +315,15 @@ std::unique_ptr<CdmVideoDecoder> CreateVideoDecoder(
 #endif
 
 #if BUILDFLAG(ENABLE_DAV1D_DECODER)
-  if (config.codec == cdm::kCodecAv1)
-    video_decoder = std::make_unique<Dav1dVideoDecoder>(null_media_log.get());
+  if (config.codec == cdm::kCodecAv1) {
+    video_decoder =
+        std::make_unique<Dav1dVideoDecoder>(std::make_unique<NullMediaLog>());
+  }
 #endif
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+  static base::NoDestructor<media::NullMediaLog> null_media_log;
+
   if (!video_decoder)
     video_decoder = std::make_unique<FFmpegVideoDecoder>(null_media_log.get());
 #endif

@@ -40,7 +40,7 @@ std::unique_ptr<VideoDecoder> CreateDecoder(
   if (codec == VideoCodec::kAV1) {
 #if BUILDFLAG(ENABLE_DAV1D_DECODER)
     *media_log = std::make_unique<NullMediaLog>();
-    decoder = std::make_unique<Dav1dVideoDecoder>(media_log->get());
+    decoder = std::make_unique<Dav1dVideoDecoder>((*media_log)->Clone());
 #endif
   }
 
