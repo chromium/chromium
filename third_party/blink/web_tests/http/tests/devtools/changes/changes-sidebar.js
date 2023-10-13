@@ -8,19 +8,19 @@ import * as Common from 'devtools/core/common/common.js';
 import * as Bindings from 'devtools/models/bindings/bindings.js';
 import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as WorkspaceDiff from 'devtools/models/workspace_diff/workspace_diff.js';
 
 (async function() {
   TestRunner.addResult(`Tests that the changes sidebar contains the changed uisourcecodes.\n`);
-  await TestRunner.loadLegacyModule('workspace_diff');
   await TestRunner.loadLegacyModule('changes');
 
   var fulfill = function() {};
   var workspace = new Workspace.Workspace();
   var project =
       new Bindings.ContentProviderBasedProject.ContentProviderBasedProject(workspace, 'mockProject', Workspace.projectTypes.Network, '', false);
-  var workspaceDiff = new WorkspaceDiff.WorkspaceDiff(workspace);
+  var workspaceDiff = new WorkspaceDiff.WorkspaceDiff.WorkspaceDiffImpl(workspace);
   TestRunner.addSniffer(
-      WorkspaceDiff.WorkspaceDiff.prototype, 'uiSourceCodeProcessedForTest', modifiedStatusChanged, true);
+      WorkspaceDiff.WorkspaceDiff.WorkspaceDiffImpl.prototype, 'uiSourceCodeProcessedForTest', modifiedStatusChanged, true);
 
   var uiSourceCodeList = new Changes.ChangesSidebar(workspaceDiff);
 
