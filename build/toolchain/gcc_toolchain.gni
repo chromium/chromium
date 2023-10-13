@@ -201,9 +201,8 @@ template("single_gcc_toolchain") {
     # wrapper will have picked up gomacc via cmd-line arg. So need to prepend
     # gomacc in that case.
     goma_path = "$goma_dir/gomacc"
-    if (toolchain_uses_remoteexec &&
-        (!defined(invoker_toolchain_args.needs_gomacc_path_arg) ||
-         !invoker_toolchain_args.needs_gomacc_path_arg)) {
+    if (toolchain_uses_remoteexec && (!defined(invoker.needs_gomacc_path_arg) ||
+                                      !invoker.needs_gomacc_path_arg)) {
       if (defined(toolchain_args.rbe_cc_cfg_file)) {
         toolchain_rbe_cc_cfg_file = toolchain_args.rbe_cc_cfg_file
       } else {
@@ -213,14 +212,18 @@ template("single_gcc_toolchain") {
       # C/C++ (clang) rewrapper prefix to use when use_remoteexec is true.
       compiler_prefix = "${rbe_bin_dir}/rewrapper -cfg=${toolchain_rbe_cc_cfg_file} -exec_root=${rbe_exec_root} "
     } else if (toolchain_uses_goma &&
-               (!defined(invoker_toolchain_args.needs_gomacc_path_arg) ||
-                !invoker_toolchain_args.needs_gomacc_path_arg)) {
+               (!defined(invoker.needs_gomacc_path_arg) ||
+                !invoker.needs_gomacc_path_arg)) {
       compiler_prefix = "${goma_path} "
       if (use_goma_rust) {
         rust_compiler_prefix = compiler_prefix
       }
     } else {
       compiler_prefix = "${toolchain_cc_wrapper} "
+
+      # Prevent warning about unused variable since it is not read in the code
+      # paths when goma is not needed.
+      not_needed(invoker, [ "needs_gomacc_path_arg" ])
     }
 
     if (toolchain_uses_remoteexec_links) {
