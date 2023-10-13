@@ -83,7 +83,8 @@ class VIEWS_EXPORT ImageButton : public Button {
       PressedCallback callback,
       const gfx::VectorIcon& icon,
       const std::u16string& accessible_name,
-      MaterialIconStyle icon_style = MaterialIconStyle::kLarge);
+      MaterialIconStyle icon_style = MaterialIconStyle::kLarge,
+      absl::optional<gfx::Insets> insets = absl::nullopt);
 
  protected:
   // Overridden from Button:

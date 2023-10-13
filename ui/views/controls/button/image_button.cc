@@ -159,7 +159,8 @@ std::unique_ptr<ImageButton> ImageButton::CreateIconButton(
     PressedCallback callback,
     const gfx::VectorIcon& icon,
     const std::u16string& accessible_name,
-    MaterialIconStyle icon_style) {
+    MaterialIconStyle icon_style,
+    absl::optional<gfx::Insets> insets) {
   const int kSmallIconSize = 16;
   const int kLargeIconSize = 20;
   int icon_size = (icon_style == MaterialIconStyle::kLarge) ? kLargeIconSize
@@ -180,7 +181,9 @@ std::unique_ptr<ImageButton> ImageButton::CreateIconButton(
       ui::ImageModel::FromVectorIcon(icon, ui::kColorIconDisabled, icon_size));
 
   const gfx::Insets target_insets =
-      LayoutProvider::Get()->GetInsetsMetric(InsetsMetric::INSETS_ICON_BUTTON);
+      insets.has_value() ? insets.value()
+                         : LayoutProvider::Get()->GetInsetsMetric(
+                               InsetsMetric::INSETS_ICON_BUTTON);
   icon_button->SetBorder(views::CreateEmptyBorder(target_insets));
 
   const int kSmallIconButtonSize = 24;
