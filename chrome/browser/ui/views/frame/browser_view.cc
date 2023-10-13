@@ -878,8 +878,16 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
   SetProperty(views::kElementIdentifierKey, kBrowserViewElementId);
 
-  // Create user education resources unless headless mode is in effect.
-  if (!headless::IsHeadlessMode()) {
+  // In order to do feature promos, the browser must have a UI and not be an
+  // "off-the-record" or in a demo or guest mode.
+  bool is_profile_type_without_iph = GetIncognito() || GetGuestSession() ||
+                                     profiles::IsManagedGuestSession() ||
+                                     profiles::IsDemoSession() ||
+                                     profiles::IsChromeAppKioskSession();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  is_profile_type_without_iph |= profiles::IsWebKioskSession();
+#endif
+  if (!headless::IsHeadlessMode() && !is_profile_type_without_iph) {
     if (UserEducationService* const user_education_service =
             UserEducationServiceFactory::GetForBrowserContext(GetProfile())) {
       RegisterChromeHelpBubbleFactories(
