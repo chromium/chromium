@@ -686,6 +686,12 @@ void NearbyConnectionsManagerImpl::OnDisconnected(
     connect_timeout_timers_.erase(endpoint_id);
   }
 
+  // Destroying the NearbyConnectionImpl object may start a chain of callbacks
+  // that can delete this NearbyConnectionsManagerImpl object. This may result
+  // in a crash (see b/303675257). Update the |connections_| map, but wait to
+  // destroy the connection object until after this NearbyConnectionsManagerImpl
+  // object is no longer in use.
+  auto connection = std::move(connections_[endpoint_id]);
   connections_.erase(endpoint_id);
 
   if (base::Contains(requested_bwu_endpoint_ids_, endpoint_id)) {
@@ -697,6 +703,8 @@ void NearbyConnectionsManagerImpl::OnDisconnected(
   on_bandwidth_changed_endpoint_ids_.erase(endpoint_id);
   current_upgraded_mediums_.erase(endpoint_id);
 
+  // The NearbyConnectionImpl object may now be safely destroyed.
+  connection.reset();
   // TODO(crbug/1111458): Support TransferManager.
 }
 
