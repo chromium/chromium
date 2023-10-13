@@ -606,11 +606,6 @@ public class PersonalDataManager {
                 mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
     }
 
-    public String getBillingAddressLabelForPaymentRequest(AutofillProfile profile) {
-        return PersonalDataManagerJni.get().getBillingAddressLabelForPaymentRequest(
-                mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
-    }
-
     /**
      * Records the use of the profile associated with the specified {@code guid}. Effectively
      * increments the use count of the profile and sets its use date to the current time. Also logs
@@ -922,8 +917,6 @@ public class PersonalDataManager {
         String getShippingAddressLabelWithoutCountryForPaymentRequest(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller,
                 AutofillProfile profile);
-        String getBillingAddressLabelForPaymentRequest(long nativePersonalDataManagerAndroid,
-                PersonalDataManager caller, AutofillProfile profile);
         String[] getCreditCardGUIDsForSettings(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller);
         String[] getCreditCardGUIDsToSuggest(

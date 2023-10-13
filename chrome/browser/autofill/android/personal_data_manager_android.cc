@@ -312,30 +312,6 @@ base::android::ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::
       env, jprofile, false /* include_country_in_label */);
 }
 
-base::android::ScopedJavaLocalRef<jstring>
-PersonalDataManagerAndroid::GetBillingAddressLabelForPaymentRequest(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj,
-    const base::android::JavaParamRef<jobject>& jprofile) {
-  // The company name and country are not included in the billing address label.
-  static constexpr ServerFieldType kLabelFields[] = {
-      NAME_FULL,          ADDRESS_HOME_LINE1,
-      ADDRESS_HOME_LINE2, ADDRESS_HOME_DEPENDENT_LOCALITY,
-      ADDRESS_HOME_CITY,  ADDRESS_HOME_STATE,
-      ADDRESS_HOME_ZIP,   ADDRESS_HOME_SORTING_CODE,
-  };
-
-  // TODO(crbug.com/1484006): Check if existing profile needs to be passed.
-  AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
-      jprofile, /*existing_profile=*/nullptr,
-      g_browser_process->GetApplicationLocale());
-
-  return ConvertUTF16ToJavaString(
-      env, profile.ConstructInferredLabel(
-               kLabelFields, std::size(kLabelFields), std::size(kLabelFields),
-               g_browser_process->GetApplicationLocale()));
-}
-
 base::android::ScopedJavaLocalRef<jobjectArray>
 PersonalDataManagerAndroid::GetCreditCardGUIDsForSettings(
     JNIEnv* env,

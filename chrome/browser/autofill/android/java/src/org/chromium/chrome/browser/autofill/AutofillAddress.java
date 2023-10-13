@@ -147,23 +147,6 @@ public class AutofillAddress extends EditableOption {
         updateSublabel(mProfile.getLabel());
     }
 
-    /*
-     * Gets the billing address label for the profile associated with this address and sets it as
-     * sublabel for this EditableOption.
-     */
-    public void setBillingAddressLabel() {
-        assert mProfile != null;
-
-        if (mBillingLabel == null) {
-            mBillingLabel =
-                    PersonalDataManager.getInstance().getBillingAddressLabelForPaymentRequest(
-                            mProfile);
-        }
-
-        mProfile.setLabel(mBillingLabel);
-        updateSublabel(mProfile.getLabel());
-    }
-
     /**
      * Checks whether this address is complete and updates edit message, edit title and complete
      * status.

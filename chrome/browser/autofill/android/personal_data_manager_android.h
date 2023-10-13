@@ -134,15 +134,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jobject>& jprofile);
 
-  // Returns the billing label of the given profile for PaymentRequest. This
-  // label does not contain the company name, the phone number, the country or
-  // the email address. All other fields are included in the label.
-  base::android::ScopedJavaLocalRef<jstring>
-  GetBillingAddressLabelForPaymentRequest(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
-      const base::android::JavaParamRef<jobject>& jprofile);
-
   // These functions act on local credit cards.
   // --------------------
 
