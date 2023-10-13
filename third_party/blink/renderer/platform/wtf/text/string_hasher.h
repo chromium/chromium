@@ -191,7 +191,8 @@ class StringHasher {
   void AddCharactersAssumingAligned_internal(const unsigned char* data, unsigned length) {
     DCHECK(!has_pending_character_);
 
-    static_assert(std::is_pod<T>::value, "we only support hashing POD types");
+    static_assert(std::is_trivial_v<T> && std::is_standard_layout_v<T>,
+                  "we only support hashing POD types");
     bool remainder = length & 1;
     length >>= 1;
 
@@ -216,7 +217,8 @@ class StringHasher {
 
   template <typename T, UChar Converter(T)>
   void AddCharacters_internal(const unsigned char* data, unsigned length) {
-    static_assert(std::is_pod<T>::value, "we only support hashing POD types");
+    static_assert(std::is_trivial_v<T> && std::is_standard_layout_v<T>,
+                  "we only support hashing POD types");
 
     if (has_pending_character_ && length) {
       has_pending_character_ = false;
