@@ -6266,9 +6266,10 @@ chromium-metrics-reviews@google.com.
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
-    Record which accelerator is added by the user for {ActionName}. A shortcut
-    is encoded as an int where the high 16 bits represent all the modifiers
-    used, and the 0-15 bits represent which key is used.
+    Record which accelerator is added by the user for {ActionName}. This metric
+    also includes accelerators added from editing an accelerator. A shortcut is
+    encoded as an int where the high 16 bits represent all the modifiers used,
+    and the 0-15 bits represent which key is used.
   </summary>
   <token key="ActionName" variants="AcceleratorActionName"/>
 </histogram>

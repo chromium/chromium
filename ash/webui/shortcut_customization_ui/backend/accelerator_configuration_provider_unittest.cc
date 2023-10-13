@@ -2348,6 +2348,12 @@ TEST_F(AcceleratorConfigurationProviderTest,
   const ui::Accelerator new_accelerator(ui::VKEY_K,
                                         ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
 
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.AddAccelerator.ToggleMirrorMode",
+      GetEncodedShortcut(new_accelerator.modifiers(),
+                         new_accelerator.key_code()),
+      0);
+
   // Upon first input: expect a conflict error that is overridable.
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
@@ -2374,6 +2380,12 @@ TEST_F(AcceleratorConfigurationProviderTest,
                               AcceleratorAction::kToggleMirrorMode,
                               old_accelerator, new_accelerator, &result);
   EXPECT_EQ(mojom::AcceleratorConfigResult::kSuccess, result->result);
+
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.AddAccelerator.ToggleMirrorMode",
+      GetEncodedShortcut(new_accelerator.modifiers(),
+                         new_accelerator.key_code()),
+      1);
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, ReplaceWithNonSearchAccelerator) {
@@ -2597,6 +2609,11 @@ TEST_F(AcceleratorConfigurationProviderTest, ReplaceDefaultAccelerator) {
   const ui::Accelerator old_accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN);
   const ui::Accelerator new_accelerator(ui::VKEY_M,
                                         ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.AddAccelerator.ToggleMirrorMode",
+      GetEncodedShortcut(new_accelerator.modifiers(),
+                         new_accelerator.key_code()),
+      0);
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .ReplaceAccelerator(mojom::AcceleratorSource::kAsh,
@@ -2609,6 +2626,11 @@ TEST_F(AcceleratorConfigurationProviderTest, ReplaceDefaultAccelerator) {
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.CustomizationAction",
       ash::shortcut_ui::ShortcutCustomizationAction::kReplaceAccelerator, 1);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.AddAccelerator.ToggleMirrorMode",
+      GetEncodedShortcut(new_accelerator.modifiers(),
+                         new_accelerator.key_code()),
+      1);
 
   const AcceleratorData updated_test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,

@@ -1098,6 +1098,8 @@ void AcceleratorConfigurationProvider::ReplaceAccelerator(
   base::UmaHistogramEnumeration(
       kShortcutCustomizationHistogramName,
       ShortcutCustomizationAction::kReplaceAccelerator);
+  RecordEncodedAcceleratorHistogram(kAddAcceleratorHistogramName, action_id,
+                                    new_accelerator);
   std::move(callback).Run(std::move(result_data));
 }
 
