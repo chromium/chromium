@@ -71,7 +71,7 @@ android_library("public_java") {
 
 android_library("public_ui_java") {
   deps = [
-    "//base:jni_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//url:gurl_java",
   ]
   sources = [
@@ -130,7 +130,6 @@ android_library("test_java") {
     "internal:internal_ui_factory_java",
     "internal:java_resources",
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_java",
     "//chrome/android:chrome_test_java",
@@ -159,6 +158,7 @@ android_library("test_java") {
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",

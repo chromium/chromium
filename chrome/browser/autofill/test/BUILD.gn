@@ -41,8 +41,8 @@ android_library("test_support_java") {
 
   deps = [
     ":jni_headers",
-    "//base:jni_java",
     "//content/public/android:content_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//url:gurl_java",
   ]
 

@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.usb;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.content_public.browser.WebContents;
 
 /**

@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.LifetimeAssert;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 

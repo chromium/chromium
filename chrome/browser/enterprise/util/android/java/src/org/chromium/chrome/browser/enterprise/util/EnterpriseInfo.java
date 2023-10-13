@@ -6,12 +6,13 @@ package org.chromium.chrome.browser.enterprise.util;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 
 /** Provide the enterprise information for the current device and profile. */
 public abstract class EnterpriseInfo {

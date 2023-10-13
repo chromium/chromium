@@ -104,7 +104,6 @@ android_library("java") {
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/device_reauth/android:java",
     "//chrome/browser/flags:java",
@@ -131,6 +130,7 @@ android_library("java") {
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
@@ -230,7 +230,6 @@ robolectric_binary("password_manager_junit_tests") {
     "//base:base_java_test_support",
     "//base:base_java_test_support_uncommon",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/loading_modal/android:java",
@@ -256,6 +255,7 @@ robolectric_binary("password_manager_junit_tests") {
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//ui/android:ui_no_recycler_view_java",
   ]
@@ -370,7 +370,6 @@ android_library("test_support_java") {
     ":backend_interface_java",
     ":settings_interface_java",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/password_manager/android:settings_interface_java",
     "//components/password_manager/core/browser:password_manager_java_enums",
@@ -379,6 +378,7 @@ android_library("test_support_java") {
     "//content/public/android:content_main_dex_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 

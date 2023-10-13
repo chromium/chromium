@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
 

@@ -8,8 +8,9 @@ import android.content.Context;
 import android.text.style.ClickableSpan;
 import android.view.View;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadOpenSource;
 import org.chromium.chrome.browser.download.DownloadUtils;

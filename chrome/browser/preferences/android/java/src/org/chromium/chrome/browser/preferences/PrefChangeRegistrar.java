@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.preferences;
 
 import android.util.ArrayMap;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
 
 import java.util.Map;
 

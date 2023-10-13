@@ -21,7 +21,6 @@ android_library("java") {
   deps = [
     ":java_resources",
     ":jni_headers",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/feedback/android:java",
@@ -38,6 +37,7 @@ android_library("java") {
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
   srcjar_deps = [
     ":jni_headers",

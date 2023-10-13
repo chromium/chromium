@@ -6,9 +6,10 @@ package org.chromium.chrome.browser.tab;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
 import org.chromium.base.UserData;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;

@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.ui.android.webid.data;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 

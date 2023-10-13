@@ -7,8 +7,9 @@ package org.chromium.chrome.browser.password_edit_dialog;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.ui.base.WindowAndroid;
 
 /**

@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.download.home.rename;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.FileUtils;
-import org.chromium.base.annotations.NativeMethods;
 
 /**
  * A class containing some utility static methods for rename.

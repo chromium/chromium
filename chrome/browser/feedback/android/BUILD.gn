@@ -50,7 +50,6 @@ android_library("java") {
     ":feedback_collector_java",
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
@@ -60,6 +59,7 @@ android_library("java") {
     "//net/android:net_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
   public_deps = [

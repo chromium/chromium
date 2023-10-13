@@ -72,7 +72,6 @@ if (is_android) {
     deps = [
       ":jni_headers",
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//chrome/browser/preferences:java",
       "//chrome/browser/profiles/android:java",
@@ -80,6 +79,7 @@ if (is_android) {
       "//components/browser_ui/share/android:java",
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//url:gurl_java",
     ]
   }

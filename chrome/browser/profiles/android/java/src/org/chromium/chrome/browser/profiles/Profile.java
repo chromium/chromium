@@ -7,10 +7,11 @@ package org.chromium.chrome.browser.profiles;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.content_public.browser.BrowserContextHandle;

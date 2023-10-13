@@ -15,9 +15,10 @@ import com.google.common.primitives.UnsignedLongs;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.PriceUtils;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotifier.ActionData;

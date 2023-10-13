@@ -29,7 +29,6 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/feedback/android:java",
     "//chrome/browser/feedback/android:java_resources",
@@ -41,6 +40,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
   resources_package = "org.chromium.chrome.browser.password_entry_edit"

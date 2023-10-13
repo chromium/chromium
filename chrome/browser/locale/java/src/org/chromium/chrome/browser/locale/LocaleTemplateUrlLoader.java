@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.locale;
-import org.chromium.base.annotations.NativeMethods;
+
+import org.jni_zero.NativeMethods;
 
 /**
  * A loader class for changes of template url in a given special locale. This is a JNI bridge and

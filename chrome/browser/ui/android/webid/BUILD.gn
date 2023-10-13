@@ -7,10 +7,10 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("public_java") {
   deps = [
-    "//base:jni_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
   ]

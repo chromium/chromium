@@ -7,8 +7,9 @@ package org.chromium.chrome.browser.sharing;
 import android.content.Context;
 import android.telephony.TelephonyManager;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
 
 /**
  * JNI bridge for SharingService.

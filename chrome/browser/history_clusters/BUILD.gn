@@ -52,7 +52,6 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
@@ -73,6 +72,7 @@ android_library("java") {
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/accessibility:ax_base_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_recycler_view_java",

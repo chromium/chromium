@@ -7,8 +7,9 @@ package org.chromium.chrome.browser.password_manager;
 import android.app.Activity;
 import android.content.Context;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.password_manager.settings.ExportFlow;
 import org.chromium.chrome.browser.password_manager.settings.PasswordListObserver;

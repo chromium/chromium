@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.navigation_predictor;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
 
 /**
  * Exposes methods to report tabs moving to foreground/background.

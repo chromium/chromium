@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.password_manager;
 
 import android.graphics.drawable.Drawable;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
 /**
  * Credential type which is used to represent credential which will be shown in account chooser

@@ -7,7 +7,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.AppHooks;

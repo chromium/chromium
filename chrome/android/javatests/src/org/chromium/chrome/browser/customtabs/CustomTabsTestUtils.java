@@ -21,10 +21,10 @@ import androidx.browser.customtabs.CustomTabsSession;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.hamcrest.Matchers;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 import org.junit.Assert;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;

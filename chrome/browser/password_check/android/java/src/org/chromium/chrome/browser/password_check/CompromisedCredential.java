@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.password_check;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.url.GURL;
 
 import java.util.Objects;

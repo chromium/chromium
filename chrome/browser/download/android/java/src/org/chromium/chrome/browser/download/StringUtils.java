@@ -9,9 +9,10 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.TimeUtils;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.offline_items_collection.FailState;

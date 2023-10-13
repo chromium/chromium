@@ -20,7 +20,6 @@ android_library("java") {
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/webauthn/android:java_resources",
     "//components/webauthn/android:java",
@@ -32,6 +31,7 @@ android_library("java") {
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_full_java",
     "//url:gurl_java",
   ]

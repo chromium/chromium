@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 
 /**
 * JNI call glue for AutofillExternalDelagate C++ and Java objects.

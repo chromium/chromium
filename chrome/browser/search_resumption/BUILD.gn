@@ -23,7 +23,6 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
@@ -42,6 +41,7 @@ android_library("java") {
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/metrics_proto:metrics_proto_java",
     "//ui/android:ui_java_resources",
     "//ui/android:ui_no_recycler_view_java",

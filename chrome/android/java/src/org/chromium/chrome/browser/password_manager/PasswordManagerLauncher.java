@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.password_manager;
 
 import android.content.Context;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ui.fast_checkout.data;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
 /**
  * A profile, similar to the one used by the PersonalDataManager.

@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.lens;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.components.policy.PolicyCache;
 
 /**

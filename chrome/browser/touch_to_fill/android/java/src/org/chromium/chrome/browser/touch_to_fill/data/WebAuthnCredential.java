@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.touch_to_fill.data;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
 /**
  * This class holds the data used to represent a selectable Web Authentication credential in the

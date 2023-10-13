@@ -85,7 +85,6 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/prefetch/android:java",
@@ -111,6 +110,7 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/espresso:espresso_intents_java",
     "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
   ]

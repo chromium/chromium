@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.net.nqe;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.net.EffectiveConnectionType;
 

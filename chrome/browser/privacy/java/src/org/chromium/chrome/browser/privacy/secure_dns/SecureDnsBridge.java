@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.privacy.secure_dns;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.net.SecureDnsManagementMode;
 import org.chromium.net.SecureDnsMode;

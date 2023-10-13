@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.subresource_filter;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
 
 /**
  * Class which aids in publishing test rulesets for SubresourceFilter instrumentation tests.

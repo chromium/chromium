@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.thumbnail.generator;
 
 import android.graphics.Bitmap;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
 /**
  * Contains local media metadata and thumbnails.

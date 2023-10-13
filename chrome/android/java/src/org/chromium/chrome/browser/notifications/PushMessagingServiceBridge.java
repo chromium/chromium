@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.notifications;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
 
 /**
  * Provides the ability for the PushMessagingServiceImpl to revoke Notifications permission.

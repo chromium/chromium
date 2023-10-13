@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.commerce;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.commerce.core.ShoppingService;
 

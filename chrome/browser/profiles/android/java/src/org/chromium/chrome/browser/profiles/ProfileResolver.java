@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.profiles;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.embedder_support.browser_context.PartitionResolver;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
 import org.chromium.content_public.browser.BrowserContextHandle;

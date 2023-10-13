@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.password_manager;
 
 import android.accounts.Account;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackendReceiverBridgeImpl.JobId;

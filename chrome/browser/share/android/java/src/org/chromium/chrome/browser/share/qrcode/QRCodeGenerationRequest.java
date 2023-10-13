@@ -8,8 +8,8 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
 
 /**
  * A Java API for calling the native QR Code Generator service.

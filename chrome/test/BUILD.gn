@@ -83,7 +83,6 @@ if (is_android) {
   android_library("test_support_java") {
     testonly = true
     deps = [
-      "//base:jni_java",
       "//chrome/android:chrome_all_java",
       "//chrome/browser/feedback/android:java",
       "//chrome/browser/profiles/android:java",
@@ -96,6 +95,7 @@ if (is_android) {
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/blink/public/mojom:android_mojo_bindings_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
     srcjar_deps = [ ":test_support_jni_headers" ]
     sources = [
@@ -11171,7 +11171,6 @@ if (is_android) {
   android_library("sync_integration_test_support_java") {
     testonly = true
     deps = [
-      "//base:jni_java",
       "//chrome/android:chrome_all_java",
       "//chrome/browser/profiles/android:java",
       "//chrome/test/android:chrome_java_integration_test_support",
@@ -11179,6 +11178,7 @@ if (is_android) {
       "//components/signin/public/android:java",
       "//components/sync/android:sync_java",
       "//content/public/test/android:content_java_test_support",
+      "//third_party/jni_zero:jni_zero_java",
       "//third_party/junit",
     ]
     sources = [ "../android/javatests/src/org/chromium/chrome/browser/sync/SyncTestSigninUtils.java" ]

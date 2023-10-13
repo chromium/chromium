@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.prefetch.settings;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
 /**
  * Reads and writes preferences related to preloading.

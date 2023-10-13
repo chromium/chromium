@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.download;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.content_creation.notes;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.content_creation.notes.NoteService;
 

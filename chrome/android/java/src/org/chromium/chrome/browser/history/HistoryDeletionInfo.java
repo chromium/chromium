@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.history;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
 
 /**
  * Android wrapper of the native history::DeletionInfo class. Any class that uses this needs to

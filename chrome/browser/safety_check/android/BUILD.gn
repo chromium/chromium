@@ -38,7 +38,6 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/password_check:public_java",
@@ -63,6 +62,7 @@ android_library("java") {
     "//third_party/androidx:androidx_lifecycle_lifecycle_common_java8_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_full_java",
   ]
 
@@ -120,7 +120,6 @@ robolectric_library("junit") {
     "//components/user_prefs/android:java",
 
     # Robolectric needs the full PasswordCheckFactory implementation.
-    "//base:jni_java",
     "//chrome/browser/password_check/android/internal:internal_factory_java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android:settings_interface_java",
@@ -136,6 +135,7 @@ robolectric_library("junit") {
     "//content/public/android:content_full_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_test_core_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",

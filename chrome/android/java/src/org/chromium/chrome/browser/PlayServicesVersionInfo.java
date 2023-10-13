@@ -6,8 +6,9 @@ package org.chromium.chrome.browser;
 
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.PackageUtils;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
 import java.util.Locale;

@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.segmentation_platform;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
 

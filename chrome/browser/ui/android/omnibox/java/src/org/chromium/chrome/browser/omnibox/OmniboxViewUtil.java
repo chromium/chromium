@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.omnibox;
-import org.chromium.base.annotations.NativeMethods;
+
+import org.jni_zero.NativeMethods;
 
 /**
  * Utilities for the Omnibox view component.

@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.share;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.Arrays;

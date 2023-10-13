@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.optimization_guide;
 
+import org.jni_zero.CalledByNative;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;

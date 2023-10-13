@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.share;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**

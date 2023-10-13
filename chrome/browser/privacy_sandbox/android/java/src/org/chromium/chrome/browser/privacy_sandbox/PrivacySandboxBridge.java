@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 
 import java.util.Arrays;
 import java.util.Collections;

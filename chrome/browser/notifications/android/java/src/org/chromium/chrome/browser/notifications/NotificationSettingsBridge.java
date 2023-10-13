@@ -10,7 +10,8 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.components.url_formatter.SchemeDisplay;

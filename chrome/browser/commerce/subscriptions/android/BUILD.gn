@@ -13,7 +13,6 @@ android_library("subscriptions_java") {
 
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/commerce/android:java",
@@ -32,6 +31,7 @@ android_library("subscriptions_java") {
     "//content/public/android:content_full_java",
     "//net/android:net_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//url:gurl_java",
   ]
 }

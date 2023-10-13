@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.page_load_metrics;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.content_public.browser.WebContents;
 
 /**

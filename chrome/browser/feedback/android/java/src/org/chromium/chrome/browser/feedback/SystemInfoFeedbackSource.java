@@ -9,10 +9,11 @@ import android.os.Environment;
 import android.os.StatFs;
 import android.util.Pair;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.LocaleUtils;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 
 import java.io.File;

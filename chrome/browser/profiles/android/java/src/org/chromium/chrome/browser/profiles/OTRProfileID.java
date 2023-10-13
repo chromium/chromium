@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.profiles;
 
 import android.text.TextUtils;
+
 import androidx.annotation.Nullable;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
 
 /**
  * Wrapper that allows passing a OTRProfileID reference around in the Java layer.

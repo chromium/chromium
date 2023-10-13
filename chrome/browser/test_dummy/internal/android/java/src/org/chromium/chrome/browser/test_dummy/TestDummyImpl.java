@@ -10,8 +10,9 @@ import android.content.Intent;
 import androidx.annotation.IntDef;
 import androidx.appcompat.app.AlertDialog;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Log;
-import org.chromium.base.annotations.NativeMethods;
 
 import java.io.IOException;
 import java.io.InputStream;

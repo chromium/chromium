@@ -8,7 +8,8 @@ import android.content.Context;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.content_public.browser.WebContents;
 
 import java.lang.annotation.Retention;

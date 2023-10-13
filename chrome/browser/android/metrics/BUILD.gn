@@ -20,7 +20,6 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//chrome/browser/preferences:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/ui/android/default_browser_promo:java",
@@ -28,6 +27,7 @@ if (is_android) {
       "//components/ukm/android:java",
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 
@@ -56,7 +56,7 @@ if (is_android) {
     testonly = true
     srcjar_deps = [ ":test_jni_headers" ]
     sources = _test_jni_sources
-    deps = [ "//base:jni_java" ]
+    deps = [ "//third_party/jni_zero:jni_zero_java" ]
   }
 
   android_library("ukm_javatests") {

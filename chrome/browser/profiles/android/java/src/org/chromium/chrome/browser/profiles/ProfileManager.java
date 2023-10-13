@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.profiles;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ObserverList;
-import org.chromium.base.annotations.CalledByNative;
 
 /**
  * Java interface to the C++ ProfileManager.

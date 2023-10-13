@@ -7,8 +7,9 @@ package org.chromium.chrome.browser.password_check;
 import android.app.Activity;
 import android.content.Context;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.url.GURL;
 

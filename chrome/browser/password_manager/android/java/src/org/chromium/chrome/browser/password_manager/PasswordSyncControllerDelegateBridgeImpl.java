@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.password_manager;
 
 import com.google.android.gms.common.api.ApiException;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
 
 /**
  * Java-counterpart of the native PasswordSyncControllerDelegateBridgeImpl. It's part of

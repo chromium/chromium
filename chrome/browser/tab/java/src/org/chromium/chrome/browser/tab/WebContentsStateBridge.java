@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.tab;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.Origin;
 

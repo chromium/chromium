@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.share.link_to_text;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 

@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.profiles;
 
 import android.os.SystemClock;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.TraceEvent;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;

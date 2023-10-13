@@ -12,13 +12,13 @@ generate_jni("jni") {
 android_library("public_java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//chrome/browser/back_press/android:java",
     "//components/autofill/android:autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_full_java",
     "//url:gurl_java",
   ]

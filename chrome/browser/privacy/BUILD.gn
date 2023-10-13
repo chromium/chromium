@@ -25,7 +25,6 @@ if (is_android) {
       ":java_resources",
       ":jni_headers",
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/flags:java",
@@ -41,6 +40,7 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_fragment_fragment_java",
       "//third_party/androidx:androidx_preference_preference_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
     srcjar_deps = [
       ":jni_headers",

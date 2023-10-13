@@ -11,8 +11,9 @@ import android.bluetooth.le.AdvertiseSettings;
 import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.os.ParcelUuid;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.Log;
-import org.chromium.base.annotations.CalledByNative;
 
 import java.io.Closeable;
 import java.util.UUID;

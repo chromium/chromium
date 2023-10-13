@@ -15,7 +15,6 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/android:base_module_java",
     "//chrome/browser/notifications:java",
@@ -26,6 +25,7 @@ android_library("java") {
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//url:gurl_java",
   ]
 
@@ -53,11 +53,11 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/notifications/android:java",
     "//components/browser_ui/notifications/android:test_support_java",
     "//components/url_formatter/android:url_formatter_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//url:gurl_java",

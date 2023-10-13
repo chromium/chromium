@@ -15,7 +15,6 @@ android_library("java") {
   ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/browser_ui/util/android:java",
     "//components/content_settings/android:content_settings_enums_java",
@@ -25,6 +24,7 @@ android_library("java") {
     "//third_party/android_deps:dagger_java",
     "//third_party/android_deps:javax_inject_javax_inject_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 

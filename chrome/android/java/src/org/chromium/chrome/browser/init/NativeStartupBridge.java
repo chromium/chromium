@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.init;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.content_public.browser.BrowserStartupController;

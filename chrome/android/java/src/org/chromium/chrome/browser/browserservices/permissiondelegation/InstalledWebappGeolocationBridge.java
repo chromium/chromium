@@ -10,8 +10,9 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import androidx.browser.trusted.TrustedWebActivityCallback;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.ChromeApplicationImpl;

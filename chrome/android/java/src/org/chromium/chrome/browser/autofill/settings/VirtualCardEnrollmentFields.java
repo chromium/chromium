@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.url.GURL;
 

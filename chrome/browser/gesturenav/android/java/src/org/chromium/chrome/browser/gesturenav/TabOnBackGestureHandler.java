@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.chrome.browser.gesturenav;
+
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.UserData;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
+
 /**
  * A handler to trigger seamless navigation / predictive back animation when a back gesture is
  * performed on a navigable tab page.

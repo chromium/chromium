@@ -20,9 +20,9 @@ android_library("internal_java") {
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/favicon/android:java",
+    "//third_party/jni_zero:jni_zero_java",
 
     # TODO(crbug/951695): Cyclic dependency. Depend on public only when ready.
     "//chrome/android:chrome_java",

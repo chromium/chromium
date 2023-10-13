@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.banners;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.UnownedUserDataKey;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feature_engagement.FeatureConstants;

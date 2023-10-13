@@ -21,7 +21,6 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//chrome/browser/browsing_data/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
@@ -40,6 +39,7 @@ android_library("java") {
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_annotation_annotation_jvm_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 
@@ -125,7 +125,6 @@ android_library("javatests") {
     ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_java",
     "//chrome/browser/browsing_data/android:java",
@@ -149,6 +148,7 @@ android_library("javatests") {
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",

@@ -7,8 +7,9 @@ package org.chromium.chrome.browser.notifications;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.NotificationManagerCompat;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
 
 /**

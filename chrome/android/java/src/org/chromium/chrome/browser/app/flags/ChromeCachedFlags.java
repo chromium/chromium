@@ -9,9 +9,10 @@ import android.text.TextUtils;
 import androidx.annotation.AnyThread;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.FieldTrialList;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.WarmupManager;

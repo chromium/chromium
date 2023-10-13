@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.resources;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
 /**
  * Wrapper class for ResourceId so it can be called over JNI. Since ResourceId is a generated class

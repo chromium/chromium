@@ -11,9 +11,9 @@ android_library("java") {
   sources = [ "java/src/org/chromium/chrome/modules/stack_unwinder/StackUnwinderModuleContentsImpl.java" ]
 
   deps = [
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/android/modules/stack_unwinder/public:java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 

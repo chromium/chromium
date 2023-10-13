@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.vr;
 
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.JNINamespace;
 
 /**
  * Stub implementation of the VR Shell.

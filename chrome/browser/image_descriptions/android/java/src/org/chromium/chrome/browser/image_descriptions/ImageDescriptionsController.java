@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.image_descriptions;
 
 import android.content.Context;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;

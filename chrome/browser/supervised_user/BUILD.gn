@@ -83,7 +83,6 @@ if (is_android) {
       ":parent_auth_delegate_java",
       ":supervised_user_metrics_java",
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/signin/services/android:java",
@@ -94,6 +93,7 @@ if (is_android) {
       "//components/url_formatter/android:url_formatter_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_appcompat_appcompat_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_java",
       "//ui/android:ui_no_recycler_view_java",
       "//url:gurl_java",
@@ -131,12 +131,12 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserSettingsBridge.java" ]
     deps = [
       ":test_support_jni_headers",
-      "//base:jni_java",
       "//build/android:build_java",
       "//chrome/android:chrome_java",
       "//chrome/browser/profiles/android:java",
       "//components/browser_ui/bottomsheet/android/test:java",
       "//content/public/test/android:content_java_test_support",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 
@@ -156,7 +156,6 @@ if (is_android) {
       ":test_support_java",
       "//base:base_java",
       "//base:base_java_test_support",
-      "//base:jni_java",
       "//chrome/android:chrome_java",
       "//chrome/browser/flags:java",
       "//chrome/browser/profiles/android:java",
@@ -180,6 +179,7 @@ if (is_android) {
       "//third_party/android_deps:espresso_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//third_party/junit:junit",
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_java_test_support",

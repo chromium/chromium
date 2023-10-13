@@ -71,7 +71,6 @@ if (is_android) {
       ":jni_headers",
       ":proto_java",
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//chrome/browser/util:java",
       "//components/browser_ui/util/android:java",
@@ -80,6 +79,7 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_collection_collection_java",
       "//third_party/androidx:androidx_core_core_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
 
     srcjar_deps = [ ":jni_headers" ]
@@ -178,8 +178,8 @@ if (is_android) {
     deps = [
       ":test_support_jni_headers",
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 

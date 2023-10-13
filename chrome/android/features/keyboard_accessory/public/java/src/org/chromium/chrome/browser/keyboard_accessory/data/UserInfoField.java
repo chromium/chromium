@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.data;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.Callback;
-import org.chromium.base.annotations.CalledByNative;
 
 /**
  * Represents an item (either selectable or not) presented on the UI, such as the username

@@ -16,7 +16,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/battery/BatterySaverOSSetting.java",
   ]
   deps = [
-    "//base:jni_java",
     "//chrome/browser/ui/android/night_mode:java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }

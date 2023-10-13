@@ -24,7 +24,6 @@ android_library("java") {
   deps = [
     ":controller_java",
     "//base:base_java",
-    "//base:jni_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/first_run/android:java",
     "//chrome/browser/flags:java",
@@ -34,6 +33,7 @@ android_library("java") {
     "//chrome/browser/ui/android/hats:message_ui_delegate_java",
     "//components/messages/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }
@@ -52,7 +52,6 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/first_run/android:java",
     "//chrome/browser/flags:java",
@@ -66,6 +65,7 @@ robolectric_library("junit") {
     "//components/messages/android:manager_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",

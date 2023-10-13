@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.endpoint_fetcher;
 
 import androidx.annotation.MainThread;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.net.NetworkTrafficAnnotationTag;
 

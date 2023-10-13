@@ -10,8 +10,8 @@ android_library("java") {
   sources = [ "java/src/org/chromium/chrome/browser/gesturenav/TabOnBackGestureHandler.java" ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//chrome/browser/tab:java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 

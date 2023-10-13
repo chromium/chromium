@@ -7,11 +7,12 @@ package org.chromium.chrome.browser.webapps;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;

@@ -59,7 +59,6 @@ android_library("java") {
     ":helper_java",
     ":uma_java",
     "//base:base_java",
-    "//base:jni_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
@@ -68,6 +67,7 @@ android_library("java") {
     "//components/version_info/android:version_constants_java",
     "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//url:gurl_java",
   ]
 }

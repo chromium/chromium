@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.notifications;
 
 import android.graphics.Bitmap;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
 /**
  * Helper class for passing notification action information over the JNI.

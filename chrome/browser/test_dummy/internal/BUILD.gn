@@ -25,7 +25,7 @@ android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [ "android/java/src/org/chromium/chrome/browser/test_dummy/TestDummyImpl.java" ]
 
-  deps += [ "//base:jni_java" ]
+  deps += [ "//third_party/jni_zero:jni_zero_java" ]
   resources_package = "org.chromium.chrome.browser.test_dummy"
 }
 

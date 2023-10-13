@@ -17,8 +17,9 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.chrome.R;
 import org.chromium.ui.base.WindowAndroid;
 

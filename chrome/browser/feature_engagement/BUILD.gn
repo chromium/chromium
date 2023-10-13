@@ -12,11 +12,11 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//chrome/browser/profiles/android:java",
     "//components/feature_engagement/public:public_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 

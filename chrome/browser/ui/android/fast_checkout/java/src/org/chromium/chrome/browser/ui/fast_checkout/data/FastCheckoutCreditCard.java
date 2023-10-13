@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.ui.fast_checkout.data;
 import android.content.Context;
 import android.util.ArrayMap;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.fast_checkout.R;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;

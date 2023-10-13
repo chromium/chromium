@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.url.GURL;
 
 /**

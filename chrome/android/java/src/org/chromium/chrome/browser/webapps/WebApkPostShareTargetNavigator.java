@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.webapps;
 
 import androidx.browser.trusted.sharing.ShareData;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
 import org.chromium.content_public.browser.WebContents;
 

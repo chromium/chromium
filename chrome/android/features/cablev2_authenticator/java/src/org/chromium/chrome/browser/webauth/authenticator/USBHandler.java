@@ -13,9 +13,10 @@ import android.system.Os;
 import android.system.OsConstants;
 import android.system.StructPollfd;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Log;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SingleThreadTaskRunner;
 import org.chromium.base.task.TaskTraits;

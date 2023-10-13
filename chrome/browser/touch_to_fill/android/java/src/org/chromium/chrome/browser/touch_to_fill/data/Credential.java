@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.touch_to_fill.data;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.chrome.browser.password_manager.GetLoginMatchType;
 
 /**

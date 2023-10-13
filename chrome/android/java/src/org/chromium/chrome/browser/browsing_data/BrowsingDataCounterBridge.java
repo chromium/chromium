@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.browsing_data;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
 
 /**
  * Communicates between BrowsingDataCounter (C++ backend) and ClearBrowsingDataFragment (Java UI).

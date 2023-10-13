@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.renderer_host;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
 
 /**
  * Provides a way to attach chrome-specific navigation ui data from java.

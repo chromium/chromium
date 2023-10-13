@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.consent_auditor;
 
 import androidx.annotation.StringRes;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.signin.base.CoreAccountId;
 

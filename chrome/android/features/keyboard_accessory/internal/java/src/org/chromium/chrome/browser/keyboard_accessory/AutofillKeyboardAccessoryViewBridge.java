@@ -8,10 +8,11 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.components.autofill.AutofillDelegate;
@@ -20,6 +21,7 @@ import org.chromium.components.autofill.PopupItemId;
 import org.chromium.ui.DropdownItem;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
+
 /**
  * JNI call glue for AutofillExternalDelagate C++ and Java objects.
  * This provides an alternative UI for Autofill suggestions, and replaces AutofillPopupBridge when

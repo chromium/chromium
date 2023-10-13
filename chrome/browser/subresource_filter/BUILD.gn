@@ -17,7 +17,7 @@ if (is_android) {
 
     srcjar_deps = [ ":jni_headers" ]
     sources = [ "../../android/javatests/src/org/chromium/chrome/browser/subresource_filter/TestRulesetPublisher.java" ]
-    deps = [ "//base:jni_java" ]
+    deps = [ "//third_party/jni_zero:jni_zero_java" ]
   }
 
   android_library("subresource_filter_javatests") {

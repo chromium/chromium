@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.components.sync_device_info.FormFactor;
 
 /**

@@ -8,7 +8,6 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android:java_resources",
     "//chrome/browser/password_manager/android:password_manager_resource_provider_java",
@@ -33,6 +32,7 @@ android_library("java") {
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
   ]
 
@@ -65,7 +65,6 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
@@ -85,6 +84,7 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/espresso:espresso_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",

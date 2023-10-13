@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.background_sync;
 
 import android.content.Context;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;

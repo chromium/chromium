@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.logo;
 
 import android.graphics.Bitmap;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**

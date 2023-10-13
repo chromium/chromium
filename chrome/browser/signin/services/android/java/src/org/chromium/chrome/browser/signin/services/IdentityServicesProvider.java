@@ -7,9 +7,10 @@ package org.chromium.chrome.browser.signin.services;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.IdentityManager;

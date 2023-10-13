@@ -12,7 +12,8 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.ui.widget.Toast;
 
 /**

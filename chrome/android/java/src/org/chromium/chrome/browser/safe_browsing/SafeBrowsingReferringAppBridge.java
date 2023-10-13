@@ -11,8 +11,9 @@ import android.provider.Browser;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.IntentUtils;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.IntentHandler.ExternalAppId;
 import org.chromium.ui.base.WindowAndroid;

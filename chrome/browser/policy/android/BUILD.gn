@@ -14,9 +14,9 @@ android_library("util_java") {
   sources = [ "java/src/org/chromium/chrome/browser/policy/CloudManagementSharedPreferences.java" ]
 
   deps = [
-    "//base:jni_java",
     "//chrome/browser/preferences:java",
     "//components/policy/android:policy_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 
@@ -29,11 +29,11 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
     "//components/policy/android:policy_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 
   public_deps = [

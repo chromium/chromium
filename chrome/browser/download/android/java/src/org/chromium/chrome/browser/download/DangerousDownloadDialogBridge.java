@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.download;
 
 import android.app.Activity;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.chrome.browser.download.dialogs.DangerousDownloadDialog;
 import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
 import org.chromium.ui.base.WindowAndroid;

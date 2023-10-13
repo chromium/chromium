@@ -11,11 +11,12 @@ import android.net.NetworkInfo;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.flags.ChromeSwitches;

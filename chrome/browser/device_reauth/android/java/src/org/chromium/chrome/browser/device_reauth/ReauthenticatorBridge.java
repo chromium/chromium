@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.device_reauth;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Class handling the communication with the C++ part of the reauthentication based on device lock.

@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.modules.dev_ui;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.chrome.features.dev_ui.DevUiModule;
 
 /** Helpers for DevUI DFM installation. */

@@ -7,9 +7,9 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   deps = [
-    "//base:jni_java",
     "//chrome/android/features/dev_ui/public:java",
     "//components/module_installer/android:module_installer_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 
   srcjar_deps = [ ":jni_headers" ]

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
 
 /** Bridge, providing access to the native-side Tracking Protection configuration. */
 public class TrackingProtectionBridge {

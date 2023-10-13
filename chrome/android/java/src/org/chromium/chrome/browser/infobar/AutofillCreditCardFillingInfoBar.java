@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.infobar;
 
 import android.graphics.Bitmap;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.chrome.R;
 import org.chromium.components.autofill.payments.CardDetail;
 import org.chromium.components.infobars.ConfirmInfoBar;

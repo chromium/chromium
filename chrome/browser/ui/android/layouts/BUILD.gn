@@ -25,10 +25,10 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/browser_ui/widget/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
   ]
 }

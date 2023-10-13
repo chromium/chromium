@@ -16,7 +16,6 @@ android_library("java") {
     ":jni_headers",
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android/modules/cablev2_authenticator/public:java",
@@ -32,6 +31,7 @@ android_library("java") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 

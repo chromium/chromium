@@ -8,9 +8,9 @@ import android.content.Context;
 
 import com.google.android.gms.gcm.TaskParams;
 
+import org.jni_zero.NativeMethods;
 import org.junit.Assert;
 
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;

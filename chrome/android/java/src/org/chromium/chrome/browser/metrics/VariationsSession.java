@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.metrics;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
-import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Sets up communication with the VariationsService. This is primarily used for

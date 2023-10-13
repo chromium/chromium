@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.background_task_scheduler;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.Log;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTask;
 import org.chromium.chrome.browser.background_sync.PeriodicBackgroundSyncChromeWakeUpTask;
 import org.chromium.chrome.browser.download.service.DownloadBackgroundTask;
