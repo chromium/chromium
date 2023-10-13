@@ -4,7 +4,9 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/file_manager/base/gn/js_test_type_check.gni")
+import("//ui/file_manager/file_names.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
 import("//ui/webui/webui_features.gni")
 
@@ -21,7 +23,6 @@ js_type_check("closure_compile_jsmodules") {
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                   ]
   deps = [
-    ":background",
     ":cache",
     ":image_loader_client",
     ":image_loader_util",
@@ -32,9 +33,6 @@ js_type_check("closure_compile_jsmodules") {
     ":scheduler",
     "//ui/file_manager:js_from_ts",
   ]
-}
-
-js_library("background") {
 }
 
 js_library("cache") {
@@ -185,17 +183,66 @@ group("js_modules") {
   ]
 }
 
-tsc_folder = rebase_path("$target_gen_dir/../tsc/image_loader", root_build_dir)
-files_app_path = rebase_path("$root_gen_dir/ui/file_manager/tsc/file_manager",
-                             root_build_dir)
-image_loader_path =
-    rebase_path("$root_gen_dir/ui/file_manager/tsc/image_loader",
-                root_build_dir)
+preprocess_folder = "$target_gen_dir/preprocessed"
+tsc_folder = "$target_gen_dir/tsc"
+files_app_path = rebase_path("$tsc_folder/file_manager", root_build_dir)
+image_loader_path = rebase_path("$tsc_folder/image_loader", root_build_dir)
+
+files_app_tsc_folder = "$target_gen_dir/../tsc/file_manager"
+
+copy("from_files_app") {
+  sources = [
+    "$files_app_tsc_folder/common/js/file_types_base.js",
+    "$files_app_tsc_folder/common/js/file_types_data.js",
+    "$files_app_tsc_folder/common/js/lru_cache.js",
+  ]
+
+  outputs = [ "$preprocess_folder/file_manager/common/js/{{source_file_part}}" ]
+  if (enable_webui_inline_sourcemaps) {
+    deps = [ "//ui/file_manager:merge_source_maps" ]
+  } else {
+    deps = [ "//ui/file_manager:build_ts" ]
+  }
+}
+
+copy("copy_src") {
+  sources = [
+    "background.ts",
+    "cache.js",
+    "image_loader.js",
+    "image_loader_client.js",
+    "image_loader_util.js",
+    "image_orientation.js",
+    "image_request_task.js",
+    "load_image_request.js",
+    "piex_loader.js",
+    "scheduler.js",
+  ]
+  outputs = [ "$preprocess_folder/image_loader/{{source_file_part}}" ]
+}
+
+ts_library("build_ts") {
+  root_dir = preprocess_folder
+  out_dir = tsc_folder
+  tsconfig_base = "tsconfig_base.json"
+  composite = true
+
+  extra_deps = [
+    ":copy_src",
+    ":from_files_app",
+  ]
+
+  in_files = image_loader_static_js_files + image_loader_ts + [
+               "file_manager/common/js/file_types_data.js",
+               "file_manager/common/js/file_types_base.js",
+               "file_manager/common/js/lru_cache.js",
+             ]
+}
 
 optimize_webui("build") {
   host = "image_loader"
 
-  input = tsc_folder
+  input = image_loader_path
   js_module_in_files = [ "background.js" ]
 
   external_paths = [
@@ -204,7 +251,7 @@ optimize_webui("build") {
   ]
 
   deps = [
-    ":background",
+    ":build_ts",
     "//ui/file_manager:preprocess_generated",
     "//ui/file_manager:preprocess_static",
     "//ui/file_manager:preprocess_static_image_loader",

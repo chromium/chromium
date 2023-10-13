@@ -127,10 +127,7 @@ preprocess_if_expr("preprocess_static_image_loader") {
 
   in_files = image_loader_static_js_files
 
-  deps = [
-    "//ui/file_manager/image_loader:background",
-    "//ui/file_manager/image_loader:js_modules",
-  ]
+  deps = [ "//ui/file_manager/image_loader:js_modules" ]
 }
 
 if (enable_webui_inline_sourcemaps) {
