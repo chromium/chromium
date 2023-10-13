@@ -60,11 +60,11 @@ example_value:
 features:
   dynamic_refresh: false
   per_profile: true
-future_on:
-- chrome.*
-- chrome_os
-- android
-- fuchsia
+supported_on:
+- chrome.*:120-
+- chrome_os:120-
+- android:120-
+- fuchsia:120-
 owners:
 - sandormajor@google.com
 - chrome-first-party-sets@chromium.org

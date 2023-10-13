@@ -1,13 +1,16 @@
 caption: Enable First-Party Sets.
 default: true
+deprecated: true
 desc: |-
+  This policy is deprecated, please use the <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME">RelatedWebsiteSetsEnabled</ph> policy instead.
+
   This policy is provided as a way to opt-out of the First-Party Sets feature.
 
-                    When this policy is unset or set to Enabled, the First-Party Sets feature is enabled.
+  When this policy is unset or set to Enabled, the First-Party Sets feature is enabled.
 
-                    When this policy is set to Disabled, the First-Party Sets feature is disabled.
+  When this policy is set to Disabled, the First-Party Sets feature is disabled.
 
-                    It controls whether Chrome supports First-Party Sets related integrations.
+  It controls whether Chrome supports First-Party Sets related integrations.
 example_value: false
 features:
   dynamic_refresh: true

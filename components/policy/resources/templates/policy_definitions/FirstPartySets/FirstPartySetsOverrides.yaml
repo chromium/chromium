@@ -1,6 +1,9 @@
 caption: Override First-Party Sets.
 default: {}
+deprecated: true
 desc: |-
+  This policy is deprecated, please use the <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME">RelatedWebsiteSetsOverrides</ph> policy instead.
+
   This policy provides a way to override the list of sets the browser uses for First-Party Sets features.
 
   Each set in the browser's list of First-Party Sets must meet the requirements of a First-Party Set.

@@ -12,11 +12,11 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome.*
-- chrome_os
-- android
-- fuchsia
+supported_on:
+- chrome.*:120-
+- chrome_os:120-
+- android:120-
+- fuchsia:120-
 items:
 - caption: Enable Related Website Sets
   value: true
