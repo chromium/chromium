@@ -2680,6 +2680,12 @@ const char kPasswordGenerationExperimentDescription[] =
     "Enables different experiments that modify content and behavior of the "
     "existing generated password suggestion dropdown.";
 
+const char kPasswordParsingOnSaveUsesPredictionsName[] =
+    "Use server predictions for password form parsing on saving";
+const char kPasswordParsingOnSaveUsesPredictionsDescription[] =
+    "Take server prediction into account when parsing password forms "
+    "during saving.";
+
 const char kPdfOcrName[] = "Performs OCR on inaccessible PDFs";
 const char kPdfOcrDescription[] =
     "Enables a feature whereby inaccessible (i.e. untagged) PDFs are made "

@@ -44,6 +44,7 @@ BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 
 BASE_DECLARE_FEATURE(kUseExtensionListForPSLMatching);
 
+BASE_DECLARE_FEATURE(kUseServerPredictionsOnSaveParsing);
 BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
 BASE_DECLARE_FEATURE(kUsernameFirstFlowHonorAutocomplete);
 BASE_DECLARE_FEATURE(kUsernameFirstFlowStoreSeveralValues);

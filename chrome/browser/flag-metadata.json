@@ -6590,6 +6590,11 @@
     "expiry_milestone": 123
   },
   {
+    "name": "password-parsing-on-save-uses-predictions",
+    "owners": ["kazinova@google.com", "vasilii"],
+    "expiry_milestone": 125
+  },
+  {
     "name": "password-sharing",
     "owners": ["mamir@chromium.org", "chrome-password-manager-team@google.com"],
     "expiry_milestone": 125

@@ -11037,6 +11037,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          permissions::features::kShowRelatedWebsiteSetsPermissionGrants)},
 
+    {"password-parsing-on-save-uses-predictions",
+     flag_descriptions::kPasswordParsingOnSaveUsesPredictionsName,
+     flag_descriptions::kPasswordParsingOnSaveUsesPredictionsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kUseServerPredictionsOnSaveParsing)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

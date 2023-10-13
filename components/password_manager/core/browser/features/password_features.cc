@@ -113,6 +113,13 @@ BASE_FEATURE(kUseExtensionListForPSLMatching,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// Enables using server prediction when parsing password forms for saving.
+// If disabled, password server predictions are only used when parsing forms
+// for filling.
+BASE_FEATURE(kUseServerPredictionsOnSaveParsing,
+             "UseServerPredictionsOnSaveParsing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables support of sending additional votes on username first flow. The votes
 // are sent on single password forms and contain information about preceding
 // single username forms.

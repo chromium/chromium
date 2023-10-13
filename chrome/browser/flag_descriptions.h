@@ -1547,6 +1547,9 @@ extern const char kParallelDownloadingDescription[];
 extern const char kPasswordGenerationExperimentName[];
 extern const char kPasswordGenerationExperimentDescription[];
 
+extern const char kPasswordParsingOnSaveUsesPredictionsName[];
+extern const char kPasswordParsingOnSaveUsesPredictionsDescription[];
+
 extern const char kBacklightOcrName[];
 extern const char kBacklightOcrDescription[];
 
