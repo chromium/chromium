@@ -567,10 +567,13 @@ void AutofillField::AppendLogEventIfNotRepeated(
 
   // Disable it for now until we find a selection criterion to select forms to
   // be recorded into UKM. Always enable for clients with
-  // `features::kAutofillFeedback` enabled.
+  // `features::kAutofillFeedback` and
+  // `features::kAutofillGranularFillingAvailable` enabled.
   if (!base::FeatureList::IsEnabled(
           features::kAutofillLogUKMEventsWithSampleRate) &&
-      !base::FeatureList::IsEnabled(features::kAutofillFeedback)) {
+      !base::FeatureList::IsEnabled(features::kAutofillFeedback) &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillGranularFillingAvailable)) {
     return;
   }
 

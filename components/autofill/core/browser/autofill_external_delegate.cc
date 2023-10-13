@@ -8,7 +8,6 @@
 
 #include <utility>
 
-#include "autofill_trigger_details.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
@@ -32,6 +31,7 @@
 #include "components/autofill/core/browser/metrics/address_rewriter_in_profile_subset_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
+#include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -395,8 +395,19 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
         last_field_types_to_fill_for_address_form_section_
             [autofill_trigger_field->section] = {
                 autofill_trigger_field->Type().GetStorableType()};
+        const bool had_value_before_filling =
+            !autofill_trigger_field->value.empty();
         manager_->driver().RendererShouldFillFieldWithValue(
             query_field_.global_id(), suggestion.main_text.value);
+        autofill_trigger_field->is_autofilled = true;
+        autofill_trigger_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
+            .fill_event_id = GetNextFillEventId(),
+            .had_value_before_filling =
+                ToOptionalBoolean(had_value_before_filling),
+            .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
+            .was_autofilled = ToOptionalBoolean(true),
+            .had_value_after_filling = ToOptionalBoolean(true),
+            .filling_method = AutofillFillingMethod::kFieldByFieldFilling});
       }
       break;
     case PopupItemId::kIbanEntry:
