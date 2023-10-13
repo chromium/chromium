@@ -6807,3 +6807,4 @@ crbug.com/1492219 [ Linux ] fast/forms/color-scheme/datetimelocal-picker/datetim
 crbug.com/1492219 [ Linux ] fast/forms/datetimelocal/datetimelocal-picker-step2.html [ Failure Pass ]
 crbug.com/1492219 [ Linux ] virtual/controls-refresh-hc/fast/forms/color-scheme/calendar-picker/date-picker-appearance-highlight.html [ Failure Pass ]
 crbug.com/1492219 [ Linux ] virtual/dark-color-scheme/datetimelocal-picker/datetimelocal-month-year-selector.html [ Failure Pass ]
+crbug.com/1492371 [ Mac12 ] virtual/shared-storage-fenced-frame-mparch/http/tests/inspector-protocol/shared-storage/event-breakpoints.js [ Pass Timeout ]
