@@ -952,7 +952,10 @@ function getImageFormatParameters(
       } as const;
     }
     case 'image/webp': {
-      return {format: 'webp'} as const;
+      return {
+        format: 'webp',
+        ...(quality === undefined ? {} : {quality: Math.round(quality * 100)}),
+      } as const;
     }
   }
   throw new UnsupportedOperationException(
