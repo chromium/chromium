@@ -18,9 +18,11 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_session.h"
+#import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
 #import "ios/chrome/browser/synced_sessions/model/synced_sessions.h"
 #import "ios/chrome/browser/tabs/tab_pickup/features.h"
 #import "ios/chrome/browser/tabs/tab_pickup/tab_pickup_infobar_delegate.h"
+#import "ios/chrome/browser/tabs/tab_sync_util.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
@@ -143,21 +145,12 @@ void TabPickupBrowserAgent::ForeignSessionsChanged() {
   auto const synced_sessions =
       std::make_unique<synced_sessions::SyncedSessions>(session_sync_service_);
 
-  for (size_t i = 0; i < synced_sessions->GetSessionCount(); ++i) {
-    const synced_sessions::DistantSession* session =
-        synced_sessions->GetSession(i);
-    // Check if the synced tab meets tab pickup time
-    // thresholds.
-    const base::TimeDelta modified_time =
-        base::Time::Now() - session->modified_time;
-    if (modified_time > TabPickupMaxTimeThreshold()) {
-      return;
-    }
-    if (modified_time > TabPickupMinTimeThreshold()) {
-      session_ = session;
-      SetupInfoBarDelegate();
-      return;
-    }
+  LastActiveDistantTab last_active_tab =
+      GetLastActiveDistantTab(synced_sessions.get(), TabPickupTimeThreshold());
+  if (last_active_tab.tab) {
+    session_ = last_active_tab.session;
+    tab_ = last_active_tab.tab;
+    SetupInfoBarDelegate();
   }
 }
 
@@ -165,7 +158,8 @@ void TabPickupBrowserAgent::SetupInfoBarDelegate() {
   CHECK(IsTabPickupEnabled());
   CHECK(!IsTabPickupDisabledByUser());
 
-  delegate_ = std::make_unique<TabPickupInfobarDelegate>(browser_, session_);
+  delegate_ =
+      std::make_unique<TabPickupInfobarDelegate>(browser_, session_, tab_);
   if (!UpdateNewDistantTab(delegate_->GetTabURL())) {
     return;
   }

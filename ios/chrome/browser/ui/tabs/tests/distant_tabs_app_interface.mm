@@ -65,6 +65,7 @@ synced_sessions::DistantSession& CreateDistantSession(
         CreateDistantTabWithTitleAndURL(
             base::SysNSStringToUTF8(fakeDistantTab.title),
             GURL(base::SysNSStringToUTF8(fakeDistantTab.URL)), distantSession);
+    distantTab->last_active_time = modifiedTime;
     distantSession.tabs.push_back(std::move(distantTab));
   }
 

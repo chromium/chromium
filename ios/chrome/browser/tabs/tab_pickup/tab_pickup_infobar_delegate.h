@@ -19,13 +19,15 @@ class GURL;
 
 namespace synced_sessions {
 struct DistantSession;
+struct DistantTab;
 }
 
 // An interface derived from ConfirmInfoBarDelegate for the Tab Pickup InfoBar.
 class TabPickupInfobarDelegate : public ConfirmInfoBarDelegate {
  public:
   TabPickupInfobarDelegate(Browser* browser,
-                           const synced_sessions::DistantSession* session);
+                           const synced_sessions::DistantSession* session,
+                           const synced_sessions::DistantTab* tab);
 
   ~TabPickupInfobarDelegate() override;
 

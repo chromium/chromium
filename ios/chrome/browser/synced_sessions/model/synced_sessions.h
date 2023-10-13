@@ -16,6 +16,7 @@ class SessionSyncService;
 namespace synced_sessions {
 
 struct DistantSession;
+class FakeSyncedSessions;
 
 // Class containing distant sessions.
 class SyncedSessions {
@@ -40,6 +41,8 @@ class SyncedSessions {
   void EraseSessionWithTag(const std::string& tag);
 
  private:
+  friend class FakeSyncedSessions;
+
   std::vector<std::unique_ptr<const DistantSession>> sessions_;
 };
 

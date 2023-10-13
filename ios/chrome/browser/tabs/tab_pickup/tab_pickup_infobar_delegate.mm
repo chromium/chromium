@@ -29,15 +29,14 @@
 
 TabPickupInfobarDelegate::TabPickupInfobarDelegate(
     Browser* browser,
-    const synced_sessions::DistantSession* session)
+    const synced_sessions::DistantSession* session,
+    const synced_sessions::DistantTab* tab)
     : browser_(browser) {
   CHECK(IsTabPickupEnabled());
   CHECK(!IsTabPickupDisabledByUser());
 
   favicon_loader_ = IOSChromeFaviconLoaderFactory::GetForBrowserState(
       browser_->GetBrowserState());
-
-  const synced_sessions::DistantTab* tab = session->tabs.front().get();
 
   session_name_ = session->name;
   synced_time_ = session->modified_time;

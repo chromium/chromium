@@ -25,6 +25,7 @@ class SessionSyncService;
 
 namespace synced_sessions {
 struct DistantSession;
+struct DistantTab;
 }
 
 namespace web {
@@ -105,6 +106,8 @@ class TabPickupBrowserAgent : public BrowserObserver,
   std::unique_ptr<TabPickupInfobarDelegate> delegate_;
   // The distant session used to display the infobar.
   raw_ptr<const synced_sessions::DistantSession> session_;
+  // The distant tab used to display the infobar.
+  raw_ptr<const synced_sessions::DistantTab> tab_;
   // KeyedService responsible session sync.
   raw_ptr<sync_sessions::SessionSyncService> session_sync_service_ = nullptr;
   // CallbackListSubscription for the SessionSyncService method.

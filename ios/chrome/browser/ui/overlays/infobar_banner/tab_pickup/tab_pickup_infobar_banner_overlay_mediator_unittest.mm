@@ -71,7 +71,8 @@ class TabPickupBannerOverlayMediatorTest : public PlatformTest {
 
     synced_sessions::DistantSession& session = CreateDistantSession();
     std::unique_ptr<TabPickupInfobarDelegate> delegate =
-        std::make_unique<TabPickupInfobarDelegate>(browser_.get(), &session);
+        std::make_unique<TabPickupInfobarDelegate>(browser_.get(), &session,
+                                                   session.tabs.front().get());
     delegate_ = delegate.get();
     infobar_ = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypeTailoredSecurityService, std::move(delegate));

@@ -30,6 +30,15 @@ source_set("model") {
   public_deps = [ "//components/sync_sessions" ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_synced_sessions.h",
+    "fake_synced_sessions.mm",
+  ]
+  deps = [ ":model" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "synced_sessions_util_unittest.mm" ]

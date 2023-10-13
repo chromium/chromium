@@ -24,6 +24,8 @@ void AddTabToDistantSession(const sessions::SessionTab& session_tab,
     synced_sessions::DistantTab& distant_tab = *distant_session->tabs.back();
     distant_tab.session_tag = session_tag;
     distant_tab.tab_id = session_tab.tab_id;
+    distant_tab.modified_time = session_tab.timestamp;
+    distant_tab.last_active_time = session_tab.last_active_time;
     int index = session_tab.current_navigation_index;
     if (index < 0) {
       index = 0;

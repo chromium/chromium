@@ -8,6 +8,7 @@
 #import <string>
 #import <vector>
 
+#import "base/time/time.h"
 #import "components/sessions/core/session_id.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 #import "url/gurl.h"
@@ -29,6 +30,10 @@ struct DistantTab {
   std::u16string title;
   // The url shown in this DistantTab.
   GURL virtual_url;
+  // Timestamp for when this tab was last activated.
+  base::Time last_active_time;
+  // Timestamp for when this tab was modified.
+  base::Time modified_time;
   // Returns a hash the fields `virtual_url` and `title`.
   // By design, two tabs in the same distant session can have the same
   // `hashOfUserVisibleProperties`.
