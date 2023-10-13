@@ -165,11 +165,15 @@ base::Value::Dict DualLayerUserPrefStore::GetValues() const {
   base::Value::Dict values = local_pref_store_->GetValues();
 
   for (const std::string& pref_name : GetPrefNamesInAccountStore()) {
-    const base::Value* value = nullptr;
-    // GetValue() will merge the value if needed.
-    GetValue(pref_name, &value);
-    CHECK(value);
-    values.SetByDottedPath(pref_name, value->Clone());
+    // Filter out prefs which should not be queried from the account store, for
+    // example, prefs requiring history opt-in if history sync is off.
+    if (ShouldGetValueFromAccountStore(pref_name)) {
+      const base::Value* value = nullptr;
+      // GetValue() will merge the value if needed.
+      GetValue(pref_name, &value);
+      CHECK(value);
+      values.SetByDottedPath(pref_name, value->Clone());
+    }
   }
   return values;
 }
@@ -498,14 +502,16 @@ void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
                 .GetSyncablePrefMetadata(pref_name);
         metadata.has_value() && metadata->model_type() == model_type) {
       const base::Value* value = nullptr;
-      CHECK(GetValue(pref_name, &value));
-
       // Should only notify observers if the effective value changes.
       // Note: A notification is still sent if a pref goes from an
       // explicitly-set value to an equal default value.
-      bool should_notify = true;
+      // Note: If the pref requires history opt-in, but history sync is
+      // disabled, GetValue() will not return the account value, and in case
+      // no value for the pref exists in the local store, no notification should
+      // be sent out.
+      bool should_notify = GetValue(pref_name, &value);
       if (const base::Value* local_value = nullptr;
-          local_pref_store_->GetValue(pref_name, &local_value)) {
+          value && local_pref_store_->GetValue(pref_name, &local_value)) {
         should_notify = (*local_value != *value);
       }
       {

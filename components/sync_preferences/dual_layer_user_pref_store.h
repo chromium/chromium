@@ -177,6 +177,11 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
                                                    uint32_t flags) const;
 
   // Get all prefs currently present in the account store.
+  // Note that this will also return prefs which can not be queried from the
+  // account store. For example, this method will return prefs requiring history
+  // opt-in even if history sync is disabled. A GetValue() call for such a pref
+  // will not query the account store. Thus it is the role of the callers to
+  // check the history opt-in.
   std::vector<std::string> GetPrefNamesInAccountStore() const;
 
   // Returns whether the user has history sync turned on.
