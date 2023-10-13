@@ -67,7 +67,7 @@ AttributeStrings GetAttributeStrings(ViewDebugWrapper* view, bool verbose) {
   } else {
     AddPtrAttributeString(attributes, "address", view->GetAddress());
     AddAttributeString(attributes, "bounds", view->GetBounds());
-    AddAttributeString(attributes, "enabled", view->GetNeedsLayout());
+    AddAttributeString(attributes, "enabled", view->GetEnabled());
     AddAttributeString(attributes, "id", view->GetID());
     AddAttributeString(attributes, "needs-layout", view->GetNeedsLayout());
     AddAttributeString(attributes, "visible", view->GetVisible());
