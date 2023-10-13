@@ -65,12 +65,7 @@ You can use these configuration files to run the same emulator images locally.
      $ newgrp kvm
    ```
 
-   You need to log out and log back in so the new groups take effect. Or you
-   can use the following on a per-shell basis without logging out:
-
-   ```
-     $ su - $USER
-   ```
+   You need to log out and log back in so the new groups take effect. 
 
 #### Running via the test runner
 
