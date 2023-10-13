@@ -42,6 +42,10 @@ enum class FullscreenRequestType {
   // the status bar should stay visible.
   kForXrArWithCamera = 8,
 
+  // For fullscreen requests which originate from window.open().
+  // See: https://chromestatus.com/feature/6002307972464640
+  kForWindowOpen = 16,
+
   // Convenience value for "no flags".
   kUnprefixed = kNull,
 };

@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_fullscreen_options.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
@@ -1407,7 +1408,9 @@ void LocalFrameMojoHandler::RequestFullscreenDocumentElement() {
     // windows (e.g. fullscreen popups). Update this if additional callers are
     // added. See: https://chromestatus.com/feature/6002307972464640
     ScopedAllowFullscreen allow_fullscreen(ScopedAllowFullscreen::kWindowOpen);
-    Fullscreen::RequestFullscreen(*document_element);
+    Fullscreen::RequestFullscreen(*document_element,
+                                  FullscreenOptions::Create(),
+                                  FullscreenRequestType::kForWindowOpen);
   }
 }
 
