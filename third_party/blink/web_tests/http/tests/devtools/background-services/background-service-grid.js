@@ -42,7 +42,6 @@ function setOriginCheckbox(value) {
 
 (async function() {
   TestRunner.addResult(`Tests that the grid shows information as expected.\n`);
-  await TestRunner.loadLegacyModule('resources');
   await TestRunner.showPanel('resources');
 
   const backgroundServiceModel = TestRunner.mainTarget.model(Application.BackgroundServiceModel.BackgroundServiceModel);

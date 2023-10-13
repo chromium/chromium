@@ -45,7 +45,6 @@ async function toggleRecord(model) {
 
 (async function() {
   TestRunner.addResult(`Tests the bottom panel shows information as expected.\n`);
-  await TestRunner.loadLegacyModule('resources');
   await TestRunner.showPanel('resources');
 
   const backgroundServiceModel = TestRunner.mainTarget.model(Application.BackgroundServiceModel.BackgroundServiceModel);

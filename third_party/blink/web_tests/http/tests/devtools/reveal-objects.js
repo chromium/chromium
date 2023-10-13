@@ -14,7 +14,6 @@ import * as Application from 'devtools/panels/application/application.js';
 
 (async function() {
   TestRunner.addResult(`Tests object revelation in the UI.\n`);
-  await TestRunner.loadLegacyModule('resources');
   await TestRunner.showPanel('elements');
   await TestRunner.showPanel('sources');
   await TestRunner.showPanel('resources');
