@@ -97,7 +97,8 @@ class PopupComposeSuggestionStrategy : public PopupRowBaseStrategy {
  public:
   PopupComposeSuggestionStrategy(
       base::WeakPtr<AutofillPopupController> controller,
-      int line_number);
+      int line_number,
+      bool show_new_badge);
   ~PopupComposeSuggestionStrategy() override;
 
   // PopupRowStrategy:
@@ -105,6 +106,8 @@ class PopupComposeSuggestionStrategy : public PopupRowBaseStrategy {
   std::unique_ptr<PopupCellView> CreateControl() override;
 
  private:
+  // Indicates whether to show the "NEW" IPH badge.
+  const bool show_new_badge_;
 };
 
 // A `PopupRowStrategy` that creates the content for password suggestion rows.

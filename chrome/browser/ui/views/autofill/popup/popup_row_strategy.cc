@@ -308,8 +308,10 @@ void PopupSuggestionStrategy::AddContentLabelsAndCallbacks(
 
 PopupComposeSuggestionStrategy::PopupComposeSuggestionStrategy(
     base::WeakPtr<AutofillPopupController> controller,
-    int line_number)
-    : PopupRowBaseStrategy(std::move(controller), line_number) {}
+    int line_number,
+    bool show_new_badge)
+    : PopupRowBaseStrategy(std::move(controller), line_number),
+      show_new_badge_(show_new_badge) {}
 
 PopupComposeSuggestionStrategy::~PopupComposeSuggestionStrategy() = default;
 
@@ -330,9 +332,7 @@ std::unique_ptr<PopupCellView> PopupComposeSuggestionStrategy::CreateContent() {
   auto main_text_label = std::make_unique<user_education::NewBadgeLabel>(
       kSuggestion.main_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_BODY_3_MEDIUM);
-  // TODO(crbug.com/1487965): Use IPH system to determine whether the NEW badge
-  // should be shown.
-  main_text_label->SetDisplayNewBadge(true);
+  main_text_label->SetDisplayNewBadge(show_new_badge_);
   popup_cell_utils::AddSuggestionContentToView(
       kSuggestion, std::move(main_text_label),
       /*minor_text_label=*/nullptr,

@@ -152,7 +152,7 @@ class PopupRowStrategyTest : public ChromeViewsTestBase {
             controller().GetWeakPtr(), line_number);
       case StrategyType::kComposeSuggestion:
         return std::make_unique<PopupComposeSuggestionStrategy>(
-            controller().GetWeakPtr(), line_number);
+            controller().GetWeakPtr(), line_number, /*show_new_badge=*/false);
       case StrategyType::kPasswordSuggestion:
         return std::make_unique<PopupPasswordSuggestionStrategy>(
             controller().GetWeakPtr(), line_number);

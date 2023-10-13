@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -14,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
@@ -22,6 +24,8 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/compose/core/browser/compose_features.h"
+#include "components/feature_engagement/public/feature_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event_handler.h"
@@ -87,6 +91,30 @@ void EnterExitHandler::OnEvent(ui::Event* event) {
 
 }  // namespace
 
+PopupRowView::ScopedNewBadgeTrackerWithAcceptAction::
+    ScopedNewBadgeTrackerWithAcceptAction(
+        std::unique_ptr<ScopedNewBadgeTracker> tracker,
+        const char* action_name)
+    : tracker_(std::move(tracker)), action_name_(action_name) {
+  CHECK(tracker_);
+}
+
+PopupRowView::ScopedNewBadgeTrackerWithAcceptAction::
+    ~ScopedNewBadgeTrackerWithAcceptAction() = default;
+
+PopupRowView::ScopedNewBadgeTrackerWithAcceptAction::
+    ScopedNewBadgeTrackerWithAcceptAction(
+        ScopedNewBadgeTrackerWithAcceptAction&&) = default;
+
+PopupRowView::ScopedNewBadgeTrackerWithAcceptAction&
+PopupRowView::ScopedNewBadgeTrackerWithAcceptAction::operator=(
+    ScopedNewBadgeTrackerWithAcceptAction&&) = default;
+
+void PopupRowView::ScopedNewBadgeTrackerWithAcceptAction::
+    OnSuggestionAccepted() {
+  tracker_->ActionPerformed(action_name_);
+}
+
 // static
 std::unique_ptr<PopupRowView> PopupRowView::Create(PopupViewViews& popup_view,
                                                    int line_number) {
@@ -95,6 +123,7 @@ std::unique_ptr<PopupRowView> PopupRowView::Create(PopupViewViews& popup_view,
 
   PopupItemId popup_item_id =
       controller->GetSuggestionAt(line_number).popup_item_id;
+  std::optional<ScopedNewBadgeTrackerWithAcceptAction> new_badge_tracker;
   std::unique_ptr<PopupRowStrategy> strategy;
   switch (popup_item_id) {
     // These `popup_item_id` should never be displayed in a `PopupRowView`.
@@ -109,10 +138,17 @@ std::unique_ptr<PopupRowView> PopupRowView::Create(PopupViewViews& popup_view,
       strategy = std::make_unique<PopupPasswordSuggestionStrategy>(controller,
                                                                    line_number);
       break;
-    case PopupItemId::kCompose:
-      strategy = std::make_unique<PopupComposeSuggestionStrategy>(controller,
-                                                                  line_number);
-      break;
+    case PopupItemId::kCompose: {
+      auto tracker = std::make_unique<ScopedNewBadgeTracker>(
+          controller->GetWebContents()->GetBrowserContext());
+      strategy = std::make_unique<PopupComposeSuggestionStrategy>(
+          controller, line_number,
+          tracker->TryShowNewBadge(
+              feature_engagement::kIPHComposeNewBadgeFeature,
+              &compose::features::kEnableCompose));
+      new_badge_tracker.emplace(std::move(tracker),
+                                /*action_name=*/"compose_activated");
+    } break;
     default:
       if (IsFooterPopupItemId(popup_item_id)) {
         strategy =
@@ -126,17 +162,19 @@ std::unique_ptr<PopupRowView> PopupRowView::Create(PopupViewViews& popup_view,
 
   return std::make_unique<PopupRowView>(
       /*a11y_selection_delegate=*/popup_view, /*selection_delegate=*/popup_view,
-      controller, std::move(strategy));
+      controller, std::move(strategy), std::move(new_badge_tracker));
 }
 
 PopupRowView::PopupRowView(
     AccessibilitySelectionDelegate& a11y_selection_delegate,
     SelectionDelegate& selection_delegate,
     base::WeakPtr<AutofillPopupController> controller,
-    std::unique_ptr<PopupRowStrategy> strategy)
+    std::unique_ptr<PopupRowStrategy> strategy,
+    std::optional<ScopedNewBadgeTrackerWithAcceptAction> new_badge_tracker)
     : a11y_selection_delegate_(a11y_selection_delegate),
       selection_delegate_(selection_delegate),
       controller_(controller),
+      new_badge_tracker_(std::move(new_badge_tracker)),
       strategy_(std::move(strategy)),
       should_ignore_mouse_observed_outside_item_bounds_check_(
           controller &&
@@ -351,6 +389,9 @@ void PopupRowView::RunOnAcceptedForEvent(const ui::Event& event) {
           ? ui::EventLatencyTimeFromNative(event.native_event(),
                                            base::TimeTicks::Now())
           : base::TimeTicks::Now();
+  if (new_badge_tracker_) {
+    new_badge_tracker_->OnSuggestionAccepted();
+  }
   controller_->AcceptSuggestion(strategy_->GetLineNumber(), time);
 }
 

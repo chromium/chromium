@@ -6,12 +6,14 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_ROW_VIEW_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -24,6 +26,8 @@
 namespace content {
 struct NativeWebKeyboardEvent;
 }  // namespace content
+
+class ScopedNewBadgeTracker;
 
 namespace autofill {
 
@@ -71,11 +75,37 @@ class PopupRowView : public views::View, public views::ViewObserver {
                                  PopupCellSelectionSource source) = 0;
   };
 
+  // The tracker for a "new" badge that a row might have.
+  class ScopedNewBadgeTrackerWithAcceptAction {
+   public:
+    ScopedNewBadgeTrackerWithAcceptAction(
+        std::unique_ptr<ScopedNewBadgeTracker> tracker,
+        const char* action_name);
+    ~ScopedNewBadgeTrackerWithAcceptAction();
+
+    ScopedNewBadgeTrackerWithAcceptAction(
+        ScopedNewBadgeTrackerWithAcceptAction&&);
+    ScopedNewBadgeTrackerWithAcceptAction& operator=(
+        ScopedNewBadgeTrackerWithAcceptAction&&);
+
+    // Notifies the tracker that the accept action was performed, i.e. the
+    // feature was opened.
+    void OnSuggestionAccepted();
+
+   private:
+    // The actual badge tracker.
+    std::unique_ptr<ScopedNewBadgeTracker> tracker_;
+    // The name of the action that is triggered on accepting the suggestion.
+    const char* action_name_;
+  };
+
   METADATA_HEADER(PopupRowView);
   PopupRowView(AccessibilitySelectionDelegate& a11y_selection_delegate,
                SelectionDelegate& selection_delegate,
                base::WeakPtr<AutofillPopupController> controller,
-               std::unique_ptr<PopupRowStrategy> strategy);
+               std::unique_ptr<PopupRowStrategy> strategy,
+               std::optional<ScopedNewBadgeTrackerWithAcceptAction>
+                   new_badge_tracker = std::nullopt);
   PopupRowView(const PopupRowView&) = delete;
   PopupRowView& operator=(const PopupRowView&) = delete;
   ~PopupRowView() override;
@@ -135,6 +165,9 @@ class PopupRowView : public views::View, public views::ViewObserver {
   const raw_ref<SelectionDelegate> selection_delegate_;
   // The controller for the parent view.
   const base::WeakPtr<AutofillPopupController> controller_;
+  // A tracker for "new" badges inside a cell. If set, it logs a performed
+  // action on accepting the suggestion.
+  std::optional<ScopedNewBadgeTrackerWithAcceptAction> new_badge_tracker_;
   // The strategy from which the actual view content of this row is created.
   const std::unique_ptr<PopupRowStrategy> strategy_;
 
