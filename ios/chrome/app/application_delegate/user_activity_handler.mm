@@ -94,10 +94,47 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
 }  // namespace
 
 @interface UserActivityHandler ()
+
+// Returns an app startup parameter for opening a new tab with a post action.
++ (AppStartupParameters*)startupParametersForOpeningNewTabWithAction:
+    (TabOpeningPostOpeningAction)action;
+
 // Handles the 3D touch application static items. Does nothing if in first run.
 + (BOOL)handleShortcutItem:(UIApplicationShortcutItem*)shortcutItem
      connectionInformation:(id<ConnectionInformation>)connectionInformation
                  initStage:(InitStage)initStage;
+
+// Open the requested URLs if the app is active. If the app is not active,
+// updates the startupParameters if needed.
++ (void)continueUserActivityURLs:(const std::vector<GURL>&)webpageURLs
+             applicationIsActive:(BOOL)applicationIsActive
+                       tabOpener:(id<TabOpening>)tabOpener
+           connectionInformation:
+               (id<ConnectionInformation>)connectionInformation
+              startupInformation:(id<StartupInformation>)startupInformation
+                       Incognito:(BOOL)Incognito
+                       initStage:(InitStage)initStage;
+
+// Checks if a new tab must be opened immediately. If the app is not active,
+// updates the startupParameters if needed. Returns wether it could continue
+// userActivity.
++ (BOOL)continueUserActivityURL:(NSURL*)webpageURL
+            applicationIsActive:(BOOL)applicationIsActive
+                      tabOpener:(id<TabOpening>)tabOpener
+          connectionInformation:(id<ConnectionInformation>)connectionInformation
+             startupInformation:(id<StartupInformation>)startupInformation
+                   browserState:(ChromeBrowserState*)browserState
+                      initStage:(InitStage)initStage
+                openExistingTab:(BOOL)openExistingTab;
+
+// Opens multiple tabs.
++ (void)openMultipleTabsWithConnectionInformation:
+            (id<ConnectionInformation>)connectionInformation
+                                        tabOpener:(id<TabOpening>)tabOpener;
+
+// Returns the GURL coming from the search query.
++ (GURL)generateResultGURLFromSearchQuery:(NSString*)searchQuery
+                             browserState:(ChromeBrowserState*)browserState;
 @end
 
 @implementation UserActivityHandler
@@ -257,13 +294,14 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
         applicationMode:ApplicationModeForTabOpening::NORMAL];
 
     [connectionInformation setStartupParameters:startupParams];
-    return [self continueUserActivityURLs:URLs
-                      applicationIsActive:applicationIsActive
-                                tabOpener:tabOpener
-                    connectionInformation:connectionInformation
-                       startupInformation:startupInformation
-                                Incognito:NO
-                                initStage:initStage];
+    [self continueUserActivityURLs:URLs
+               applicationIsActive:applicationIsActive
+                         tabOpener:tabOpener
+             connectionInformation:connectionInformation
+                startupInformation:startupInformation
+                         Incognito:NO
+                         initStage:initStage];
+    return YES;
 
   } else if ([userActivity.activityType
                  isEqualToString:kSiriShortcutOpenInIncognito]) {
@@ -288,13 +326,14 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
         applicationMode:ApplicationModeForTabOpening::INCOGNITO];
 
     [connectionInformation setStartupParameters:startupParams];
-    return [self continueUserActivityURLs:URLs
-                      applicationIsActive:applicationIsActive
-                                tabOpener:tabOpener
-                    connectionInformation:connectionInformation
-                       startupInformation:startupInformation
-                                Incognito:YES
-                                initStage:initStage];
+    [self continueUserActivityURLs:URLs
+               applicationIsActive:applicationIsActive
+                         tabOpener:tabOpener
+             connectionInformation:connectionInformation
+                startupInformation:startupInformation
+                         Incognito:YES
+                         initStage:initStage];
+    return YES;
 
   } else if ([userActivity.activityType isEqualToString:kSiriOpenLatestTab]) {
     base::UmaHistogramEnumeration("IOS.Spotlight.LaunchedIntentType",
@@ -476,129 +515,6 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
                        openExistingTab:NO];
 }
 
-+ (BOOL)continueUserActivityURL:(NSURL*)webpageURL
-            applicationIsActive:(BOOL)applicationIsActive
-                      tabOpener:(id<TabOpening>)tabOpener
-          connectionInformation:(id<ConnectionInformation>)connectionInformation
-             startupInformation:(id<StartupInformation>)startupInformation
-                   browserState:(ChromeBrowserState*)browserState
-                      initStage:(InitStage)initStage
-                openExistingTab:(BOOL)openExistingTab {
-  if (!webpageURL)
-    return NO;
-
-  GURL webpageGURL(net::GURLWithNSURL(webpageURL));
-  if (!webpageGURL.is_valid())
-    return NO;
-
-  if (applicationIsActive && initStage > InitStageFirstRun) {
-    // The app is already active so the applicationDidBecomeActive: method will
-    // never be called. Open the requested URL immediately.
-    ApplicationModeForTabOpening targetMode =
-        [[connectionInformation startupParameters] applicationMode];
-    UrlLoadParams params = UrlLoadParams::InNewTab(webpageGURL);
-
-    if (connectionInformation.startupParameters.textQuery) {
-      NSString* query = connectionInformation.startupParameters.textQuery;
-
-      GURL result = [self generateResultGURLFromSearchQuery:query
-                                               browserState:browserState];
-      params.web_params.url = result;
-    }
-
-    if ([[connectionInformation startupParameters] applicationMode] !=
-            ApplicationModeForTabOpening::INCOGNITO &&
-        [tabOpener URLIsOpenedInRegularMode:webpageGURL]) {
-      // Record metric.
-    }
-    [tabOpener dismissModalsAndMaybeOpenSelectedTabInMode:targetMode
-                                        withUrlLoadParams:params
-                                           dismissOmnibox:YES
-                                               completion:^{
-                                                 [connectionInformation
-                                                     setStartupParameters:nil];
-                                               }];
-    return YES;
-  }
-
-  // Don't record the first action as a user action, since it will not be
-  // initiated by the user.
-  [startupInformation resetFirstUserActionRecorder];
-
-  if (![connectionInformation startupParameters]) {
-    AppStartupParameters* startupParams = [[AppStartupParameters alloc]
-        initWithExternalURL:webpageGURL
-                completeURL:webpageGURL
-            applicationMode:ApplicationModeForTabOpening::NORMAL];
-    startupParams.openExistingTab = openExistingTab;
-    [connectionInformation setStartupParameters:startupParams];
-  }
-  return YES;
-}
-
-+ (void)openMultipleTabsWithConnectionInformation:
-            (id<ConnectionInformation>)connectionInformation
-                                        tabOpener:(id<TabOpening>)tabOpener {
-  BOOL incognitoMode =
-      connectionInformation.startupParameters.applicationMode ==
-      ApplicationModeForTabOpening::INCOGNITO;
-  BOOL dismissOmnibox = [[connectionInformation startupParameters]
-                            postOpeningAction] != FOCUS_OMNIBOX;
-
-  // Using a weak reference to `connectionInformation` to solve a memory leak
-  // issue. `tabOpener` and `connectionInformation` are the same object in
-  // some cases (SceneController). This retains the object while the block
-  // exists. Then this block is passed around and in some cases it ends up
-  // stored in BrowserViewController. This results in a memory leak that looks
-  // like this: SceneController -> BrowserViewWrangler -> BrowserCoordinator
-  // -> BrowserViewController -> SceneController
-  __weak id<ConnectionInformation> weakConnectionInfo = connectionInformation;
-
-  [tabOpener
-      dismissModalsAndOpenMultipleTabsWithURLs:weakConnectionInfo
-                                                   .startupParameters.URLs
-                               inIncognitoMode:incognitoMode
-                                dismissOmnibox:dismissOmnibox
-                                    completion:^{
-                                      weakConnectionInfo.startupParameters =
-                                          nil;
-                                    }];
-}
-
-+ (BOOL)continueUserActivityURLs:(const std::vector<GURL>&)webpageURLs
-             applicationIsActive:(BOOL)applicationIsActive
-                       tabOpener:(id<TabOpening>)tabOpener
-           connectionInformation:
-               (id<ConnectionInformation>)connectionInformation
-              startupInformation:(id<StartupInformation>)startupInformation
-                       Incognito:(BOOL)Incognito
-                       initStage:(InitStage)initStage
-
-{
-  if (applicationIsActive && initStage > InitStageFirstRun) {
-    // The app is already active so the applicationDidBecomeActive: method will
-    // never be called. Open the requested URLs immediately.
-    [self openMultipleTabsWithConnectionInformation:connectionInformation
-                                          tabOpener:tabOpener];
-    return YES;
-  }
-
-  // Don't record the first action as a user action, since it will not be
-  // initiated by the user.
-  [startupInformation resetFirstUserActionRecorder];
-
-  if (![connectionInformation startupParameters]) {
-    AppStartupParameters* startupParams = [[AppStartupParameters alloc]
-           initWithURLs:webpageURLs
-        applicationMode:ApplicationModeForTabOpening::UNDETERMINED];
-    if (Incognito) {
-      startupParams.applicationMode = ApplicationModeForTabOpening::INCOGNITO;
-    }
-    [connectionInformation setStartupParameters:startupParams];
-  }
-  return YES;
-}
-
 + (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
                    completionHandler:(void (^)(BOOL succeeded))completionHandler
                            tabOpener:(id<TabOpening>)tabOpener
@@ -624,26 +540,6 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
   if (completionHandler) {
     completionHandler(handledShortcutItem);
   }
-}
-
-+ (GURL)generateResultGURLFromSearchQuery:(NSString*)searchQuery
-                             browserState:(ChromeBrowserState*)browserState {
-  TemplateURLService* templateURLService =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
-
-  const TemplateURL* defaultURL =
-      templateURLService->GetDefaultSearchProvider();
-  DCHECK(defaultURL);
-  DCHECK(!defaultURL->url().empty());
-  DCHECK(
-      defaultURL->url_ref().IsValid(templateURLService->search_terms_data()));
-  std::u16string queryString = base::SysNSStringToUTF16(searchQuery);
-  TemplateURLRef::SearchTermsArgs search_args(queryString);
-
-  GURL result(defaultURL->url_ref().ReplaceSearchTerms(
-      search_args, templateURLService->search_terms_data()));
-
-  return result;
 }
 
 + (void)handleStartupParametersWithTabOpener:(id<TabOpening>)tabOpener
@@ -770,7 +666,6 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
 
 #pragma mark - Internal methods.
 
-// Returns an app startup parameter for opening a new tab with a post action.
 + (AppStartupParameters*)startupParametersForOpeningNewTabWithAction:
     (TabOpeningPostOpeningAction)action {
   AppStartupParameters* startupParams = [[AppStartupParameters alloc]
@@ -854,6 +749,148 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
       &key, base::SysNSStringToUTF8(shortcutItem.type));
   base::debug::DumpWithoutCrashing();
   return NO;
+}
+
++ (void)continueUserActivityURLs:(const std::vector<GURL>&)webpageURLs
+             applicationIsActive:(BOOL)applicationIsActive
+                       tabOpener:(id<TabOpening>)tabOpener
+           connectionInformation:
+               (id<ConnectionInformation>)connectionInformation
+              startupInformation:(id<StartupInformation>)startupInformation
+                       Incognito:(BOOL)Incognito
+                       initStage:(InitStage)initStage {
+  if (applicationIsActive && initStage > InitStageFirstRun) {
+    // The app is already active so the applicationDidBecomeActive: method will
+    // never be called. Open the requested URLs immediately.
+    [self openMultipleTabsWithConnectionInformation:connectionInformation
+                                          tabOpener:tabOpener];
+    return;
+  }
+
+  // Don't record the first action as a user action, since it will not be
+  // initiated by the user.
+  [startupInformation resetFirstUserActionRecorder];
+
+  if (![connectionInformation startupParameters]) {
+    AppStartupParameters* startupParams = [[AppStartupParameters alloc]
+           initWithURLs:webpageURLs
+        applicationMode:ApplicationModeForTabOpening::UNDETERMINED];
+    if (Incognito) {
+      startupParams.applicationMode = ApplicationModeForTabOpening::INCOGNITO;
+    }
+    [connectionInformation setStartupParameters:startupParams];
+  }
+}
+
++ (BOOL)continueUserActivityURL:(NSURL*)webpageURL
+            applicationIsActive:(BOOL)applicationIsActive
+                      tabOpener:(id<TabOpening>)tabOpener
+          connectionInformation:(id<ConnectionInformation>)connectionInformation
+             startupInformation:(id<StartupInformation>)startupInformation
+                   browserState:(ChromeBrowserState*)browserState
+                      initStage:(InitStage)initStage
+                openExistingTab:(BOOL)openExistingTab {
+  if (!webpageURL) {
+    return NO;
+  }
+
+  GURL webpageGURL(net::GURLWithNSURL(webpageURL));
+  if (!webpageGURL.is_valid()) {
+    return NO;
+  }
+
+  if (applicationIsActive && initStage > InitStageFirstRun) {
+    // The app is already active so the applicationDidBecomeActive: method will
+    // never be called. Open the requested URL immediately.
+    ApplicationModeForTabOpening targetMode =
+        [[connectionInformation startupParameters] applicationMode];
+    UrlLoadParams params = UrlLoadParams::InNewTab(webpageGURL);
+
+    if (connectionInformation.startupParameters.textQuery) {
+      NSString* query = connectionInformation.startupParameters.textQuery;
+
+      GURL result = [self generateResultGURLFromSearchQuery:query
+                                               browserState:browserState];
+      params.web_params.url = result;
+    }
+
+    if ([[connectionInformation startupParameters] applicationMode] !=
+            ApplicationModeForTabOpening::INCOGNITO &&
+        [tabOpener URLIsOpenedInRegularMode:webpageGURL]) {
+      // Record metric.
+    }
+    [tabOpener dismissModalsAndMaybeOpenSelectedTabInMode:targetMode
+                                        withUrlLoadParams:params
+                                           dismissOmnibox:YES
+                                               completion:^{
+                                                 [connectionInformation
+                                                     setStartupParameters:nil];
+                                               }];
+    return YES;
+  }
+
+  // Don't record the first action as a user action, since it will not be
+  // initiated by the user.
+  [startupInformation resetFirstUserActionRecorder];
+
+  if (![connectionInformation startupParameters]) {
+    AppStartupParameters* startupParams = [[AppStartupParameters alloc]
+        initWithExternalURL:webpageGURL
+                completeURL:webpageGURL
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
+    startupParams.openExistingTab = openExistingTab;
+    [connectionInformation setStartupParameters:startupParams];
+  }
+  return YES;
+}
+
++ (void)openMultipleTabsWithConnectionInformation:
+            (id<ConnectionInformation>)connectionInformation
+                                        tabOpener:(id<TabOpening>)tabOpener {
+  BOOL incognitoMode =
+      connectionInformation.startupParameters.applicationMode ==
+      ApplicationModeForTabOpening::INCOGNITO;
+  BOOL dismissOmnibox = [[connectionInformation startupParameters]
+                            postOpeningAction] != FOCUS_OMNIBOX;
+
+  // Using a weak reference to `connectionInformation` to solve a memory leak
+  // issue. `tabOpener` and `connectionInformation` are the same object in
+  // some cases (SceneController). This retains the object while the block
+  // exists. Then this block is passed around and in some cases it ends up
+  // stored in BrowserViewController. This results in a memory leak that looks
+  // like this: SceneController -> BrowserViewWrangler -> BrowserCoordinator
+  // -> BrowserViewController -> SceneController
+  __weak id<ConnectionInformation> weakConnectionInfo = connectionInformation;
+
+  [tabOpener
+      dismissModalsAndOpenMultipleTabsWithURLs:weakConnectionInfo
+                                                   .startupParameters.URLs
+                               inIncognitoMode:incognitoMode
+                                dismissOmnibox:dismissOmnibox
+                                    completion:^{
+                                      weakConnectionInfo.startupParameters =
+                                          nil;
+                                    }];
+}
+
++ (GURL)generateResultGURLFromSearchQuery:(NSString*)searchQuery
+                             browserState:(ChromeBrowserState*)browserState {
+  TemplateURLService* templateURLService =
+      ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
+
+  const TemplateURL* defaultURL =
+      templateURLService->GetDefaultSearchProvider();
+  DCHECK(defaultURL);
+  DCHECK(!defaultURL->url().empty());
+  DCHECK(
+      defaultURL->url_ref().IsValid(templateURLService->search_terms_data()));
+  std::u16string queryString = base::SysNSStringToUTF16(searchQuery);
+  TemplateURLRef::SearchTermsArgs search_args(queryString);
+
+  GURL result(defaultURL->url_ref().ReplaceSearchTerms(
+      search_args, templateURLService->search_terms_data()));
+
+  return result;
 }
 
 @end
