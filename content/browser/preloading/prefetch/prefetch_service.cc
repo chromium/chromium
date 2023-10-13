@@ -577,7 +577,13 @@ void PrefetchService::OnGotServiceWorkerResult(
     base::Time check_has_service_worker_start_time,
     OnEligibilityResultCallback result_callback,
     ServiceWorkerCapability service_worker_capability) const {
-  if (prefetch_container && prefetch_container->HasPreloadingAttempt()) {
+  if (!prefetch_container) {
+    std::move(result_callback)
+        .Run(std::move(prefetch_container), false, absl::nullopt);
+    return;
+  }
+  CHECK(prefetch_container);
+  if (prefetch_container->HasPreloadingAttempt()) {
     const auto duration =
         base::Time::Now() - check_has_service_worker_start_time;
     auto* preloading_attempt = static_cast<PreloadingAttemptImpl*>(
@@ -591,7 +597,7 @@ void PrefetchService::OnGotServiceWorkerResult(
       break;
     case ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER:
       std::move(result_callback)
-          .Run(prefetch_container, false,
+          .Run(std::move(prefetch_container), false,
                PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker);
       return;
   }
@@ -605,7 +611,7 @@ void PrefetchService::OnGotServiceWorkerResult(
       !prefetch_container
            ->IsIsolatedNetworkContextRequiredForCurrentPrefetch()) {
     std::move(result_callback)
-        .Run(prefetch_container, false,
+        .Run(std::move(prefetch_container), false,
              PrefetchStatus::
                  kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy);
     return;
@@ -614,7 +620,8 @@ void PrefetchService::OnGotServiceWorkerResult(
   // isolated network context.
   if (!prefetch_container
            ->IsIsolatedNetworkContextRequiredForCurrentPrefetch()) {
-    std::move(result_callback).Run(prefetch_container, true, absl::nullopt);
+    std::move(result_callback)
+        .Run(std::move(prefetch_container), true, absl::nullopt);
     return;
   }
   StoragePartition* default_storage_partition =
@@ -625,7 +632,8 @@ void PrefetchService::OnGotServiceWorkerResult(
   default_storage_partition->GetCookieManagerForBrowserProcess()->GetCookieList(
       url, options, net::CookiePartitionKeyCollection::Todo(),
       base::BindOnce(&PrefetchService::OnGotCookiesForEligibilityCheck,
-                     weak_method_factory_.GetWeakPtr(), url, prefetch_container,
+                     weak_method_factory_.GetWeakPtr(), url,
+                     std::move(prefetch_container),
                      std::move(result_callback)));
 }
 
