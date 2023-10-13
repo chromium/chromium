@@ -4,12 +4,47 @@
 
 #include "base/containers/vector_buffer.h"
 
+#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/copy_only_int.h"
 #include "base/test/move_only_int.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
+
+namespace {
+
+class TRIVIAL_ABI TrivialAbiWithCountingOperations {
+ public:
+  TrivialAbiWithCountingOperations(int* destruction_counter, int* move_counter)
+      : destruction_counter_(destruction_counter),
+        move_counter_(move_counter) {}
+
+  ~TrivialAbiWithCountingOperations() { ++*destruction_counter_; }
+
+  // Copy construction and assignment should not be used.
+  TrivialAbiWithCountingOperations(const TrivialAbiWithCountingOperations&) =
+      delete;
+  TrivialAbiWithCountingOperations& operator=(
+      const TrivialAbiWithCountingOperations&) = delete;
+
+  // Count how many times the move constructor is used.
+  TrivialAbiWithCountingOperations(TrivialAbiWithCountingOperations&& rhs)
+      : destruction_counter_(rhs.destruction_counter_),
+        move_counter_(rhs.move_counter_) {
+    ++*move_counter_;
+  }
+
+  // Move assignment should not be used.
+  TrivialAbiWithCountingOperations& operator=(
+      TrivialAbiWithCountingOperations&&) = delete;
+
+ private:
+  raw_ptr<int> destruction_counter_;
+  raw_ptr<int> move_counter_;
+};
+
+}  // namespace
 
 TEST(VectorBuffer, DeletePOD) {
   constexpr int size = 10;
@@ -85,5 +120,32 @@ TEST(VectorBuffer, CopyToMove) {
   }
 }
 
-}  // namespace internal
-}  // namespace base
+TEST(VectorBuffer, TrivialAbiMove) {
+  // Currently trivial relocation doesn't work on Windows for some reason, so
+  // the test needs to handle both cases.
+  constexpr bool kHaveTrivialRelocation =
+      IS_TRIVIALLY_RELOCATABLE(TrivialAbiWithCountingOperations);
+  constexpr int size = 10;
+  VectorBuffer<TrivialAbiWithCountingOperations> dest(size);
+
+  int destruction_count = 0;
+  int move_count = 0;
+  VectorBuffer<TrivialAbiWithCountingOperations> original(size);
+  for (int i = 0; i < size; i++) {
+    new (original.begin() + i)
+        TrivialAbiWithCountingOperations(&destruction_count, &move_count);
+  }
+
+  original.MoveRange(original.begin(), original.end(), dest.begin());
+
+  // We expect the move to have been performed via memcpy, without calling move
+  // constructors or destructors.
+  EXPECT_EQ(destruction_count, kHaveTrivialRelocation ? 0 : size);
+  EXPECT_EQ(move_count, kHaveTrivialRelocation ? 0 : size);
+
+  dest.DestructRange(dest.begin(), dest.end());
+  EXPECT_EQ(destruction_count, kHaveTrivialRelocation ? size : size * 2);
+  EXPECT_EQ(move_count, kHaveTrivialRelocation ? 0 : size);
+}
+
+}  // namespace base::internal

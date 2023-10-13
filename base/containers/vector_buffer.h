@@ -13,12 +13,12 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/checked_math.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 // Internal implementation detail of base/containers.
 //
@@ -123,11 +123,19 @@ class VectorBuffer {
   // and the address of the first element to copy to. There must be sufficient
   // room in the destination for all items in the range [begin, end).
 
-  // Trivially copyable types can use memcpy. trivially copyable implies
+  // Trivially copyable types can use memcpy. Trivially copyable implies
   // that there is a trivial destructor as we don't have to call it.
-  template <
-      typename T2 = T,
-      typename std::enable_if<std::is_trivially_copyable_v<T2>, int>::type = 0>
+
+  // Trivially relocatable types can also use memcpy. Trivially relocatable
+  // imples that memcpy is equivalent to move + destroy.
+
+  template <typename T2>
+  static inline constexpr bool is_trivially_copyable_or_relocatable =
+      std::is_trivially_copyable_v<T2> || IS_TRIVIALLY_RELOCATABLE(T2);
+
+  template <typename T2 = T,
+            typename std::enable_if<is_trivially_copyable_or_relocatable<T2>,
+                                    int>::type = 0>
   static void MoveRange(T* from_begin, T* from_end, T* to) {
     CHECK(!RangesOverlap(from_begin, from_end, to));
 
@@ -138,10 +146,11 @@ class VectorBuffer {
 
   // Not trivially copyable, but movable: call the move constructor and
   // destruct the original.
-  template <typename T2 = T,
-            typename std::enable_if<std::is_move_constructible<T2>::value &&
-                                        !std::is_trivially_copyable_v<T2>,
-                                    int>::type = 0>
+  template <
+      typename T2 = T,
+      typename std::enable_if<std::is_move_constructible<T2>::value &&
+                                  !is_trivially_copyable_or_relocatable<T2>,
+                              int>::type = 0>
   static void MoveRange(T* from_begin, T* from_end, T* to) {
     CHECK(!RangesOverlap(from_begin, from_end, to));
     while (from_begin != from_end) {
@@ -154,10 +163,11 @@ class VectorBuffer {
 
   // Not movable, not trivially copyable: call the copy constructor and
   // destruct the original.
-  template <typename T2 = T,
-            typename std::enable_if<!std::is_move_constructible<T2>::value &&
-                                        !std::is_trivially_copyable_v<T2>,
-                                    int>::type = 0>
+  template <
+      typename T2 = T,
+      typename std::enable_if<!std::is_move_constructible<T2>::value &&
+                                  !is_trivially_copyable_or_relocatable<T2>,
+                              int>::type = 0>
   static void MoveRange(T* from_begin, T* from_end, T* to) {
     CHECK(!RangesOverlap(from_begin, from_end, to));
     while (from_begin != from_end) {
@@ -187,7 +197,6 @@ class VectorBuffer {
   size_t capacity_ = 0;
 };
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal
 
 #endif  // BASE_CONTAINERS_VECTOR_BUFFER_H_

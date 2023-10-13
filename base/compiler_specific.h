@@ -374,6 +374,20 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 #define TRIVIAL_ABI
 #endif
 
+// Detect whether a type is trivially relocatable, ie. a move-and-destroy
+// sequence can replaced with memmove(). This can be used to optimise the
+// implementation of containers. This is automatically true for types that were
+// defined with TRIVIAL_ABI such as scoped_refptr.
+//
+// See also:
+//   https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p1144r8.html
+//   https://clang.llvm.org/docs/LanguageExtensions.html#:~:text=__is_trivially_relocatable
+#if defined(__clang__) && HAS_BUILTIN(__is_trivially_relocatable)
+#define IS_TRIVIALLY_RELOCATABLE(t) __is_trivially_relocatable(t)
+#else
+#define IS_TRIVIALLY_RELOCATABLE(t) false
+#endif
+
 // Marks a member function as reinitializing a moved-from variable.
 // See also
 // https://clang.llvm.org/extra/clang-tidy/checks/bugprone-use-after-move.html#reinitialization
