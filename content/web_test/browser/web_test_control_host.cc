@@ -280,7 +280,7 @@ void ApplyWebTestDefaultPreferences(blink::web_pref::WebPreferences* prefs) {
       blink::mojom::EditingBehavior::kEditingWindowsBehavior;
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   prefs->cursive_font_family_map[blink::web_pref::kCommonScript] =
       u"Apple Chancery";
   prefs->fantasy_font_family_map[blink::web_pref::kCommonScript] = u"Papyrus";

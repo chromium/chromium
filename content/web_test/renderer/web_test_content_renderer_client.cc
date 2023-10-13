@@ -36,7 +36,7 @@
 #include "ui/gfx/icc_profile.h"
 #include "v8/include/v8.h"
 
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)
 #include "skia/ext/test_fonts.h"
 #endif
 
@@ -98,7 +98,7 @@ void WebTestContentRendererClient::RenderThreadStarted() {
 
   render_thread_observer_ = std::make_unique<WebTestRenderThreadObserver>();
 
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)
   // On these platforms, fonts are set up in the renderer process. Other
   // platforms set up fonts as part of WebTestBrowserMainRunner in the
   // browser process, via WebTestBrowserPlatformInitialize().

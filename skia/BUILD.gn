@@ -922,7 +922,7 @@ source_set("test_fonts") {
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
   }
-  if (is_mac) {
+  if (is_apple) {
     public = [ "ext/test_fonts.h" ]
     sources = [ "ext/test_fonts_mac.mm" ]
     deps += [ "//base" ]
