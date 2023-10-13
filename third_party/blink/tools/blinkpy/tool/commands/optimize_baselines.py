@@ -3,14 +3,19 @@
 # found in the LICENSE file.
 
 import functools
+import itertools
 import logging
 import optparse
+from typing import Collection, List, Optional, Set, Tuple
 
 from blinkpy.common.checkout.baseline_optimizer import BaselineOptimizer
+from blinkpy.common.net.web_test_results import BaselineSuffix
 from blinkpy.tool.commands.command import resolve_test_patterns
 from blinkpy.tool.commands.rebaseline import AbstractParallelRebaselineCommand
 
 _log = logging.getLogger(__name__)
+
+OptimizationTask = Tuple[str, str, BaselineSuffix]
 
 
 class OptimizeBaselines(AbstractParallelRebaselineCommand):
@@ -58,8 +63,8 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
             _log.error("No port names match '%s'", options.platform)
             return 1
 
-        port = tool.port_factory.get(options=options)
-        test_set = self._get_test_set(port, options, args)
+        self._host_port = tool.port_factory.get(options=options)
+        test_set = self._get_test_set(options, args)
         if not test_set:
             _log.error('No tests to optimize. Ensure all listed tests exist.')
             return 1
@@ -67,10 +72,8 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
         worker_factory = functools.partial(Worker,
                                            port_names=port_names,
                                            options=options)
-        baseline_suffix_list = options.suffixes.split(',')
+        tasks = self._make_tasks(test_set, options.suffixes.split(','))
         with self._message_pool(worker_factory) as pool:
-            tasks = [(self.name, test_name, suffix) for test_name in test_set
-                     for suffix in baseline_suffix_list]
             pool.run(tasks)
         if options.check:
             if self._successful:
@@ -81,15 +84,40 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
                              'to fix these issues.')
                 return 2
 
-    def _get_test_set(self, port, options, args):
+    def _make_tasks(
+            self, test_set: Set[str],
+            suffixes: Collection[BaselineSuffix]) -> List[OptimizationTask]:
+        tasks = []
+        for test_name, suffix in itertools.product(sorted(test_set), suffixes):
+            wpt_type = self._get_wpt_type(test_name)
+            if (not wpt_type or
+                    # Only legacy reftests can dump text output, not WPT
+                    # reftests.
+                    wpt_type in {'testharness', 'wdspec'} and suffix == 'txt'
+                    # Some manual tests are run as pixel tests (crbug.com/1114920),
+                    # so `png` is allowed in that case.
+                    or wpt_type == 'manual' and suffix == 'png'):
+                tasks.append((self.name, test_name, suffix))
+        return tasks
+
+    def _get_wpt_type(self, test_name: str) -> Optional[str]:
+        for wpt_dir, url_base in self._host_port.WPT_DIRS.items():
+            if test_name.startswith(wpt_dir):
+                manifest = self._host_port.wpt_manifest(wpt_dir)
+                return manifest.get_test_type(
+                    manifest.file_path_for_test_url(
+                        test_name[len(f'{wpt_dir}/'):]))
+        return None  # Not a WPT.
+
+    def _get_test_set(self, options, args):
         if options.all_tests:
-            test_set = set(port.tests())
+            test_set = set(self._host_port.tests())
         else:
-            test_set = resolve_test_patterns(port, args)
+            test_set = resolve_test_patterns(self._host_port, args)
         virtual_tests_to_exclude = {
             test
             for test in test_set
-            if port.lookup_virtual_test_base(test) in test_set
+            if self._host_port.lookup_virtual_test_base(test) in test_set
         }
         test_set -= virtual_tests_to_exclude
         return test_set
@@ -115,7 +143,8 @@ class Worker:
             self._port_names,
             check=self._options.check)
 
-    def handle(self, name: str, source: str, test_name: str, suffix: str):
+    def handle(self, name: str, source: str, test_name: str,
+               suffix: BaselineSuffix):
         successful = self._optimizer.optimize(test_name, suffix)
         if self._options.check and not self._options.verbose and successful:
             # Without `--verbose`, do not show optimization logs when a test

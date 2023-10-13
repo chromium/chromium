@@ -2,9 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import json
 import optparse
 import textwrap
 
+from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.tool.commands.optimize_baselines import OptimizeBaselines
 from blinkpy.tool.commands.rebaseline_unittest import BaseTestCase
@@ -103,6 +105,52 @@ class TestOptimizeBaselines(BaseTestCase, LoggingTestCase):
                          'platform/test-mac-mac10.10/skipped-expected.txt'))
         self.assertTrue(self._exists(test_port, 'optimized-expected.txt'))
         self.assertTrue(self._exists(test_port, 'skipped-expected.txt'))
+
+    def test_execute_filter_suffixes_for_valid_wpt_types(self):
+        """Skip optimization for invalid test type-suffix combinations."""
+        finder = PathFinder(self.tool.filesystem)
+        self.tool.filesystem.write_text_file(
+            finder.path_from_wpt_tests('MANIFEST.json'),
+            json.dumps({
+                'version': 8,
+                'url_base': '/',
+                'items': {
+                    'manual': {
+                        'test-manual.html': ['abcdef', [None, {}]],
+                    },
+                    'testharness': {
+                        'testharness.html': ['abcdef', [None, {}]],
+                    },
+                    'reftest': {
+                        'reftest.html': ['abcdef', [None, [], {}]],
+                    },
+                    'print-reftest': {
+                        'print-reftest.html': ['abcdef', [None, [], {}]],
+                    },
+                    'crashtest': {
+                        'test-crash.html': ['abcdef', [None, {}]],
+                    },
+                },
+            }))
+        self.tool.filesystem.write_text_file(
+            finder.path_from_web_tests('wpt_internal', 'MANIFEST.json'),
+            json.dumps({}))
+
+        exit_code = self.command.execute(
+            optparse.Values({
+                'suffixes': 'txt,wav,png',
+                'all_tests': False,
+                'platform': 'test-mac-mac10.10',
+                'check': True,
+                'test_name_file': None,
+                'manifest_update': False,
+                'verbose': False,
+            }), ['external/wpt'], self.tool)
+        self.assertLog([
+            'INFO: Checking external/wpt/test-manual.html (png)\n',
+            'INFO: Checking external/wpt/testharness.html (txt)\n',
+            'INFO: All baselines are optimal.\n',
+        ])
 
     def test_check_optimal(self):
         test_port = self.tool.port_factory.get('test')

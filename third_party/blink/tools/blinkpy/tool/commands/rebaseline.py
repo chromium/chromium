@@ -42,6 +42,7 @@ from typing import (
     Optional,
     Set,
     Tuple,
+    get_args,
 )
 from urllib.parse import urlparse
 
@@ -51,7 +52,11 @@ from blinkpy.common.host import Host
 from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.results_fetcher import Build
-from blinkpy.common.net.web_test_results import Artifact, WebTestResult
+from blinkpy.common.net.web_test_results import (
+    Artifact,
+    BaselineSuffix,
+    WebTestResult,
+)
 from blinkpy.tool.commands.command import (
     Command,
     check_dir_option,
@@ -60,14 +65,9 @@ from blinkpy.tool.commands.command import (
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models.test_expectations import SystemConfigurationEditor, TestExpectations
 from blinkpy.web_tests.models.typ_types import RESULT_TAGS, ResultType
-from blinkpy.web_tests.port import base, factory
+from blinkpy.web_tests.port import factory
 
 _log = logging.getLogger(__name__)
-
-# For CLI compatibility, we would like a list of baseline extensions without
-# the leading dot.
-# TODO(robertma): Investigate changing the CLI.
-BASELINE_SUFFIX_LIST = tuple(ext[1:] for ext in base.Port.BASELINE_EXTENSIONS)
 
 
 class AbstractRebaseliningCommand(Command):
@@ -101,7 +101,7 @@ class AbstractRebaseliningCommand(Command):
         help='Local results directory to use.')
     suffixes_option = optparse.make_option(
         '--suffixes',
-        default=','.join(BASELINE_SUFFIX_LIST),
+        default=','.join(get_args(BaselineSuffix)),
         action='store',
         help='Comma-separated-list of file types to rebaseline.')
     builder_option = optparse.make_option(
@@ -122,8 +122,7 @@ class AbstractRebaseliningCommand(Command):
               'one test per line.'))
 
     def __init__(self, options=None):
-        super(AbstractRebaseliningCommand, self).__init__(options=options)
-        self._baseline_suffix_list = BASELINE_SUFFIX_LIST
+        super().__init__(options=options)
         self.expectation_line_changes = ChangeSet()
         self._tool = None
         self._results_dir = None
@@ -598,7 +597,8 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
     def unstaged_baselines(self):
         """Returns absolute paths for unstaged (including untracked) baselines."""
         baseline_re = re.compile(r'.*[\\/]' + WEB_TESTS_LAST_COMPONENT +
-                                 r'[\\/].*-expected\.(txt|png|wav)$')
+                                 r'[\\/].*-expected\.(' +
+                                 '|'.join(get_args(BaselineSuffix)) + ')$')
         unstaged_changes = self._tool.git().unstaged_changes()
         return sorted(self._tool.git().absolute_path(path)
                       for path in unstaged_changes
