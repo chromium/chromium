@@ -489,6 +489,8 @@ interface MyIfaceIterable {
  *      ExtAttributes()
  *        ExtAttribute(Clamp)
  *    Arguments()
+ *    ExtAttributes()
+ *      ExtAttribute(Exposed) = "Window"
  *  AsyncIterable()
  *    Type()
  *      PrimitiveType(double)
@@ -507,7 +509,7 @@ interface MyIfaceIterable {
 interface MyIfaceAsyncIterable {
   async iterable<long>;
   async iterable<double, DOMString>;
-  async iterable<[Clamp] long>();
+  [Exposed=Window] async iterable<[Clamp] long>();
   async iterable<double, DOMString>(optional long arg1, optional DOMString arg2);
 };
 
