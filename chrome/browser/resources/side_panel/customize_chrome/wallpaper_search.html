@@ -77,6 +77,43 @@
         placeholder="Query"
         value="{{query_}}">
     </cr-input>
+    <cr-button id="descriptorBtnA" hidden$="[[!descriptors_]]"
+        on-click="onDescriptorMenuClickA_">
+      Descriptor A
+    </cr-button>
+    <cr-action-menu id="descriptorMenuA">
+      <template is="dom-repeat" items="[[descriptors_.descriptorA]]">
+        <span>[[item.category]]</span>
+        <template is="dom-repeat" items="[[item.labels]]">
+          <button class="dropdown-item">
+            <span>[[item]]</span>
+          </button>
+        </template>
+      </template>
+    </cr-action-menu>
+    <cr-button id="descriptorBtnB" hidden$="[[!descriptors_]]"
+        on-click="onDescriptorMenuClickB_">
+      Descriptor B
+    </cr-button>
+    <cr-action-menu id="descriptorMenuB">
+      <template is="dom-repeat" items="[[descriptors_.descriptorB]]">
+        <button class="dropdown-item">
+          <img src="[[item.imagePath]]"></img>
+          <span>[[item.label]]</span>
+        </button>
+      </template>
+    </cr-action-menu>
+    <cr-button id="descriptorBtnC" hidden$="[[!descriptors_]]"
+        on-click="onDescriptorMenuClickC_">
+      Descriptor C
+    </cr-button>
+    <cr-action-menu id="descriptorMenuC">
+      <template is="dom-repeat" items="[[descriptors_.descriptorC]]">
+        <button class="dropdown-item">
+          <span>[[item]]</span>
+        </button>
+      </template>
+    </cr-action-menu>
     <div id="btnContainer">
       <cr-button
           id="submitButton"

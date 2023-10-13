@@ -27,6 +27,7 @@ suite('AppTest', () => {
                 mock, new CustomizeChromePageCallbackRouter()));
     handler.setResultFor('getBackgroundImages', new Promise(() => {}));
     handler.setResultFor('getBackgroundCollections', new Promise(() => {}));
+    handler.setResultFor('getDescriptors', new Promise(() => {}));
     callbackRouter = CustomizeChromeApiProxy.getInstance()
                          .callbackRouter.$.bindNewPipeAndPassRemote();
     customizeChromeApp = document.createElement('customize-chrome-app');
