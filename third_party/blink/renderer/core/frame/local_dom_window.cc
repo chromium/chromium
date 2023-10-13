@@ -1934,8 +1934,10 @@ CustomElementRegistry* LocalDOMWindow::customElements(
 }
 
 CustomElementRegistry* LocalDOMWindow::customElements() const {
-  if (!custom_elements_ && document_)
+  if (!custom_elements_ && document_) {
     custom_elements_ = MakeGarbageCollected<CustomElementRegistry>(this);
+    custom_elements_->AssociatedWith(*document_);
+  }
   return custom_elements_;
 }
 

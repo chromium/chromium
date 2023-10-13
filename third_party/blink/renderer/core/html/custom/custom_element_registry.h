@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
@@ -22,6 +23,7 @@ namespace blink {
 
 class CustomElementDefinitionBuilder;
 class CustomElementDescriptor;
+class Document;
 class Element;
 class ElementDefinitionOptions;
 class ExceptionState;
@@ -72,6 +74,8 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
 
   bool IsGlobalRegistry() const;
 
+  void AssociatedWith(Document& document);
+
   void Trace(Visitor*) const override;
 
  private:
@@ -99,11 +103,20 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
   using UpgradeCandidateSet = HeapHashSet<WeakMember<Element>>;
   using UpgradeCandidateMap =
       HeapHashMap<AtomicString, Member<UpgradeCandidateSet>>;
+
+  // Candidate elements that can be upgraded with this registry later.
+  // To make implementation simpler, we maintain a superset here, and remove
+  // non-candidates before upgrading.
   Member<UpgradeCandidateMap> upgrade_candidates_;
 
   using WhenDefinedPromiseMap =
       HeapHashMap<AtomicString, Member<ScriptPromiseResolver>>;
   WhenDefinedPromiseMap when_defined_promise_map_;
+
+  // Weak ordered set of all documents where this registry is used, in the order
+  // of association between this registry and any tree scope in the document.
+  using AssociatedDocumentSet = HeapLinkedHashSet<WeakMember<Document>>;
+  Member<AssociatedDocumentSet> associated_documents_;
 
   FRIEND_TEST_ALL_PREFIXES(
       CustomElementTest,

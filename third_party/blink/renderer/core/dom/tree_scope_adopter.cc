@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 
 namespace blink {
 
@@ -106,6 +107,10 @@ void TreeScopeAdopter::MoveShadowTreeToNewDocument(
   }
 
   shadow_root.SetDocument(new_document);
+
+  if (shadow_root.registry()) {
+    shadow_root.registry()->AssociatedWith(new_document);
+  }
 
   MoveTreeToNewDocument(shadow_root, old_document, new_document);
 }

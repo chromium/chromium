@@ -25,13 +25,14 @@ class CORE_EXPORT CustomElementUpgradeSorter {
   CustomElementUpgradeSorter();
 
   // Record an element of interest. The DOM tree must not be
-  // modified between calls to add and the call to sorted.
+  // modified between calls to `Add` and the call(s) to `Sorted`.
   void Add(Element*);
 
-  // Adds shadow-including descendents of parent to result in
-  // shadow-including tree order. This operation is destroys the
-  // state of this sorter; after calling sorted, you must not call
-  // add or sorted again with this object.
+  // Adds shadow-including descendents of `parent` to result in
+  // shadow-including tree order. This operation removes all shadow-including
+  // descendants of `parent` from this sorter; After calling `Sorted`, this
+  // sorted must not be called with `Add` or `Sorted` with any shadow-including
+  // descendant of `parent`.
   void Sorted(HeapVector<Member<Element>>* result, Node* parent);
 
  private:

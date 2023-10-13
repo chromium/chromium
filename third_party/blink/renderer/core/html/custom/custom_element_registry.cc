@@ -84,7 +84,8 @@ CustomElementRegistry* CustomElementRegistry::Create(
 CustomElementRegistry::CustomElementRegistry(const LocalDOMWindow* owner)
     : element_definition_is_running_(false),
       owner_(owner),
-      upgrade_candidates_(MakeGarbageCollected<UpgradeCandidateMap>()) {}
+      upgrade_candidates_(MakeGarbageCollected<UpgradeCandidateMap>()),
+      associated_documents_(MakeGarbageCollected<AssociatedDocumentSet>()) {}
 
 void CustomElementRegistry::Trace(Visitor* visitor) const {
   visitor->Trace(constructor_map_);
@@ -92,6 +93,7 @@ void CustomElementRegistry::Trace(Visitor* visitor) const {
   visitor->Trace(owner_);
   visitor->Trace(upgrade_candidates_);
   visitor->Trace(when_defined_promise_map_);
+  visitor->Trace(associated_documents_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -356,16 +358,23 @@ void CustomElementRegistry::CollectCandidates(
   for (Element* element : *it.Get()->value) {
     if (!element || !desc.Matches(*element))
       continue;
+    if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+      if (CustomElement::Registry(*element) != this) {
+        // The element has been moved away from the original tree scope and no
+        // longer uses this registry.
+        continue;
+      }
+    }
     sorter.Add(element);
   }
 
   upgrade_candidates_->erase(it);
 
-  Document* document = owner_->document();
-  if (!document)
-    return;
-
-  sorter.Sorted(elements, document);
+  for (Document* document : *associated_documents_) {
+    if (document && document->GetFrame()) {
+      sorter.Sorted(elements, document);
+    }
+  }
 }
 
 // https://html.spec.whatwg.org/C/#dom-customelementregistry-upgrade
@@ -384,6 +393,10 @@ void CustomElementRegistry::upgrade(Node* root) {
 
 bool CustomElementRegistry::IsGlobalRegistry() const {
   return this == owner_->customElements();
+}
+
+void CustomElementRegistry::AssociatedWith(Document& document) {
+  associated_documents_->insert(&document);
 }
 
 }  // namespace blink

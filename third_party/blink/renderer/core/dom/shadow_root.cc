@@ -254,6 +254,9 @@ void ShadowRoot::SetRegistry(CustomElementRegistry* registry) {
   DCHECK(!registry ||
          RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
   registry_ = registry;
+  if (registry) {
+    registry->AssociatedWith(GetDocument());
+  }
 }
 
 void ShadowRoot::Trace(Visitor* visitor) const {
