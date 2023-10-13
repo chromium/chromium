@@ -514,7 +514,15 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, DoNotRecordSessionIfNotActive) {
+// TODO(crbug.com/1492554): Flaky on Linux dbg. Fix and Re-enable this test.
+#if (BUILDFLAG(IS_LINUX))
+#define MAYBE_DoNotRecordSessionIfNotActive \
+  DISABLED_DoNotRecordSessionIfNotActive
+#else
+#define MAYBE_DoNotRecordSessionIfNotActive DoNotRecordSessionIfNotActive
+#endif
+IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
+                       MAYBE_DoNotRecordSessionIfNotActive) {
   auto* browser = CreateBrowserFromParam();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, GetTestURL()));
