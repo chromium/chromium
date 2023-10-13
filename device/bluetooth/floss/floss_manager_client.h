@@ -19,7 +19,6 @@
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/floss/exported_callback_manager.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
-#include "device/bluetooth/floss/floss_version.h"
 
 namespace dbus {
 class PropertySet;
@@ -124,7 +123,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
                                  ResponseCallback<Void> callback);
 
   // Gets Floss API version.
-  virtual base::Version GetFlossApiVersion() const;
+  virtual uint32_t GetFlossApiVersion() const;
 
   // Invoke D-Bus API to enable or disable LL privacy.
   virtual void SetLLPrivacy(ResponseCallback<bool> callback, const bool enable);
@@ -138,9 +137,6 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
             const std::string& service_name,
             const int adapter_index,
             base::OnceClosure on_ready) override;
-
-  // Whether the manager client has been initialized successfully.
-  bool IsInitialized() const { return init_; }
 
  protected:
   friend class FlossManagerClientTest;
@@ -163,9 +159,6 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
 
   // Make actual D-Bus call to retrieve Floss API version from daemon.
   void DoGetFlossApiVersion();
-
-  // Checks if it is safe to use the API exported by the Floss daemon.
-  bool IsCompatibleFlossApi();
 
   // Handle response to |GetDefaultAdapter| DBus method call.
   void HandleGetDefaultAdapter(DBusResult<int32_t> response);
@@ -241,10 +234,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   base::ObserverList<Observer> observers_;
 
   // Floss API version.
-  base::Version version_;
-
-  // Whether the manager client has been initialized successfully.
-  bool init_ = false;
+  uint32_t version_ = 0;
 
  private:
   // Handle response to SetAdapterEnabled
