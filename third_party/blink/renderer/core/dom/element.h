@@ -1237,7 +1237,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void UpdateAncestorWithDirAuto(UpdateAncestorTraversal traversal);
 
  protected:
-  bool HasElementData() const { return element_data_; }
+  bool HasElementData() const { return static_cast<bool>(element_data_); }
   const ElementData* GetElementData() const { return element_data_.Get(); }
   UniqueElementData& EnsureUniqueElementData();
 

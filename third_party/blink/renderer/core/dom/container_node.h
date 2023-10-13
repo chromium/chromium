@@ -104,8 +104,8 @@ class CORE_EXPORT ContainerNode : public Node {
 
   Node* firstChild() const { return first_child_; }
   Node* lastChild() const { return last_child_; }
-  bool hasChildren() const { return first_child_; }
-  bool HasChildren() const { return first_child_; }
+  bool hasChildren() const { return static_cast<bool>(first_child_); }
+  bool HasChildren() const { return static_cast<bool>(first_child_); }
 
   bool HasOneChild() const {
     return first_child_ && !first_child_->HasNextSibling();
