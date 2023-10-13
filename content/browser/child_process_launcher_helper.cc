@@ -22,6 +22,7 @@
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
+#include "mojo/core/configuration.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -96,6 +97,10 @@ ChildProcessLauncherHelper::ChildProcessLauncherHelper(
       can_use_warm_up_connection_(can_use_warm_up_connection)
 #endif
 {
+  if (!mojo::core::GetConfiguration().is_broker_process &&
+      !command_line_->HasSwitch(switches::kDisableMojoBroker)) {
+    command_line_->AppendSwitch(switches::kDisableMojoBroker);
+  }
   // command_line_ is always accessed from the launcher thread, so detach it
   // from the client thread here.
   command_line_->DetachFromCurrentSequence();
@@ -195,6 +200,10 @@ void ChildProcessLauncherHelper::PostLaunchOnLauncherThread(
     invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS);
   }
 #endif
+
+  if (!mojo::core::GetConfiguration().is_broker_process) {
+    invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_SHARE_BROKER);
+  }
 
   if (process.process.IsValid()) {
 #if !BUILDFLAG(IS_FUCHSIA)

@@ -240,6 +240,10 @@ mojo::IncomingInvitation InitializeMojoIPCChannel() {
   endpoint = mojo::PlatformChannelEndpoint(mojo::PlatformHandle(base::ScopedFD(
       base::GlobalDescriptors::GetInstance()->Get(kMojoIPCChannel))));
 #endif
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableMojoBroker)) {
+    flags |= MOJO_ACCEPT_INVITATION_FLAG_INHERIT_BROKER;
+  }
 
   return mojo::IncomingInvitation::Accept(std::move(endpoint), flags);
 }
