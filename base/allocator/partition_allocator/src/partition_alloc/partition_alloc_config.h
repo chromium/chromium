@@ -198,10 +198,14 @@ static_assert(sizeof(void*) == 8);
 //   allocator.
 // - Component builds triggered a clang bug: crbug.com/1243375
 //
+// On GNU/Linux and ChromeOS:
+// - `thread_local` allocates, reentering the allocator.
+//
 // Regardless, the "normal" TLS access is fast on x86_64 (see partition_tls.h),
 // so don't bother with thread_local anywhere.
-#define PA_CONFIG_THREAD_LOCAL_TLS() \
-  (!(BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)) && !BUILDFLAG(IS_APPLE))
+#define PA_CONFIG_THREAD_LOCAL_TLS()                                           \
+  (!(BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)) && !BUILDFLAG(IS_APPLE) && \
+   !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS))
 
 // When PartitionAlloc is malloc(), detect malloc() becoming re-entrant by
 // calling malloc() again.
