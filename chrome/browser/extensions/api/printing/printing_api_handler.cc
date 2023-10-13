@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -59,7 +60,11 @@ constexpr char kNoActivePrintJobWithIdError[] =
 
 crosapi::mojom::LocalPrinter* GetLocalPrinterInterface() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  CHECK(crosapi::CrosapiManager::IsInitialized());
+  if (!crosapi::CrosapiManager::IsInitialized()) {
+    // Only happens in tests.
+    CHECK_IS_TEST();
+    return nullptr;
+  }
   return crosapi::CrosapiManager::Get()->crosapi_ash()->local_printer_ash();
 #else
   auto* service = chromeos::LacrosService::Get();
@@ -381,6 +386,11 @@ KeyedService*
 BrowserContextKeyedAPIFactory<PrintingAPIHandler>::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!GetLocalPrinterInterface()) {
+    CHECK_IS_TEST();
+    return nullptr;
+  }
 
   Profile* profile = Profile::FromBrowserContext(context);
   // We do not want an instance of PrintingAPIHandler on the lock screen.

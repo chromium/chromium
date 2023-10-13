@@ -396,17 +396,21 @@ class PrintingAPIHandlerUnittest : public testing::Test {
   }
 
   void TearDown() override {
+    cups_wrapper_ = nullptr;
+    print_job_controller_ = nullptr;
     printing_api_handler_.reset();
+    event_router_ = nullptr;
     testing_profile_ = nullptr;
     profile_manager_->DeleteTestingProfile(chrome::kInitialProfile);
+    profile_manager_.reset();
   }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<TestingProfile> testing_profile_;
+  raw_ptr<TestingProfile> testing_profile_ = nullptr;
   raw_ptr<TestEventRouter> event_router_ = nullptr;
-  raw_ptr<FakePrintJobController> print_job_controller_;
-  raw_ptr<chromeos::TestCupsWrapper> cups_wrapper_;
+  raw_ptr<FakePrintJobController> print_job_controller_ = nullptr;
+  raw_ptr<chromeos::TestCupsWrapper> cups_wrapper_ = nullptr;
   std::unique_ptr<PrintingAPIHandler> printing_api_handler_;
   scoped_refptr<const Extension> extension_;
 
