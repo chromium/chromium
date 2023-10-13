@@ -545,7 +545,13 @@ public final class AwBrowserProcess {
         boolean useDefaultUploadQos = AwFeatureMap.isEnabled(
                 AwFeatures.WEBVIEW_UMA_UPLOAD_QUALITY_OF_SERVICE_SET_TO_DEFAULT);
 
-        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE)) {
+        boolean metricServiceEnabledOnlySdkRuntime =
+                ContextUtils.isSdkSandboxProcess()
+                        && AwFeatureMap.isEnabled(
+                                AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE_ONLY_SDK_RUNTIME);
+
+        if (metricServiceEnabledOnlySdkRuntime
+                || AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE)) {
             boolean isAsync = AwFeatureMap.isEnabled(
                     AndroidMetricsFeatures.ANDROID_METRICS_ASYNC_METRIC_LOGGING);
             AwMetricsLogUploader uploader = new AwMetricsLogUploader(isAsync, useDefaultUploadQos);

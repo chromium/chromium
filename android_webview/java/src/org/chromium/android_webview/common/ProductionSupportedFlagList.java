@@ -267,6 +267,10 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE,
                     "Upload UMA metrics logs through MetricsUploadService not via GMS-core"
                             + " directly."),
+            Flag.baseFeature(
+                     AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE_ONLY_SDK_RUNTIME,
+                    "Upload UMA metrics logs through MetricsUploadService not via GMS-core"
+                            + " directly when running within the SDK Runtime."),
             Flag.baseFeature(AndroidMetricsFeatures.ANDROID_METRICS_ASYNC_METRIC_LOGGING,
                     "Initiate metric uploading on a background thread."),
             Flag.baseFeature(BlinkFeatures.SET_TIMEOUT_WITHOUT_CLAMP,

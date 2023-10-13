@@ -142,6 +142,12 @@ BASE_FEATURE(kWebViewUseMetricsUploadService,
              "WebViewUseMetricsUploadService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Use WebView's nonembedded MetricsUploadService to upload UMA metrics instead
+// of sending it directly to GMS-core when running within the SDK Runtime.
+BASE_FEATURE(kWebViewUseMetricsUploadServiceOnlySdkRuntime,
+             "WebViewUseMetricsUploadServiceOnlySdkRuntime",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Propagate Android's network notification signals to networking stack
 BASE_FEATURE(kWebViewPropagateNetworkSignals,
              "webViewPropagateNetworkSignals",
