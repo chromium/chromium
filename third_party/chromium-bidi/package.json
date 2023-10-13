@@ -6,6 +6,7 @@
     "bidi-types": "wireit",
     "build": "wireit",
     "clean": "rimraf lib .eslintcache .wireit",
+    "local-http-server": "python3 tools/run_local_http_server.py",
     "e2e-headful": "wireit",
     "e2e-headless": "wireit",
     "e2e": "npm run e2e-headless --",

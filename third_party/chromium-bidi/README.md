@@ -157,7 +157,7 @@ Refer to the documentation at [.pre-commit-config.yaml](.pre-commit-config.yaml)
 pre-commit install --hook-type pre-push
 ```
 
-### Starting the Server
+### Starting WebDriver BiDi Server
 
 This will run the server on port `8080`:
 
@@ -270,7 +270,25 @@ Use the `PORT` environment variable to connect to another port:
 PORT=8081 npm run e2e
 ```
 
-#### Examples
+### Local http server
+
+E2E tests use local http
+server [`pytest-httpserver`](https://pytest-httpserver.readthedocs.io/), which is run
+automatically with the tests. However,
+sometimes it is useful to run the http server outside the test
+case, for example for manual debugging. This can be done by running:
+
+```sh
+python3 tools/run_local_http_server.py
+```
+
+or use npm:
+
+```sh
+npm run local-http-server
+```
+
+### Examples
 
 Refer to [examples/README.md](examples/README.md).
 

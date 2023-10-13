@@ -13,18 +13,18 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from pytest_httpserver import httpserver
+from pytest_httpserver import HTTPServer
 
 
 class LocalHttpServer:
     """A wrapper of `pytest_httpserver.httpserver` to simplify the usage. Sets
     up common use cases and provides url for them."""
-    __http_server: httpserver = None
+    __http_server: HTTPServer
     __path_200 = "/200"
     __path_permanent_redirect = "/301"
     default_200_page_content: str = 'default 200 page'
 
-    def __init__(self, http_server: httpserver) -> None:
+    def __init__(self, http_server: HTTPServer) -> None:
         super().__init__()
         self.__http_server = http_server
 
