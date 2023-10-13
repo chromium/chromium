@@ -386,7 +386,6 @@ copy("for_image_loader") {
   sources = [
     "$target_gen_dir/tsc/file_manager/common/js/file_types_base.js",
     "$target_gen_dir/tsc/file_manager/common/js/lru_cache.js",
-    "file_manager/common/js/test_error_reporting.js",
   ]
   outputs = [ "$target_gen_dir/file_manager/common/js/{{source_file_part}}" ]
   if (enable_webui_inline_sourcemaps) {
@@ -441,7 +440,6 @@ generate_grd("build_grd") {
       "file_manager/common/js/file_types_base.js",
       "file_manager/common/js/file_types_data.js",
       "file_manager/common/js/lru_cache.js",
-      "file_manager/common/js/test_error_reporting.js",
     ]
 
     resource_path_rewrites += [

@@ -95,7 +95,6 @@ js_unittest("image_loader_client_unittest") {
     ":image_loader_client",
     ":load_image_request",
     "//chrome/test/data/webui/chromeos:chai_assert",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
 

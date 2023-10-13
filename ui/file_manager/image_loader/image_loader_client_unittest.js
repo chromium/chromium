@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {reportPromise} from 'chrome://file-manager/common/js/test_error_reporting.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {ImageLoaderClient} from './image_loader_client.js';
@@ -54,46 +53,34 @@ function loadAndCheckCacheUsed(client, url, cache) {
   });
 }
 
-export function testCache(callback) {
+export async function testCache(done) {
   const client = new ImageLoaderClient();
-  reportPromise(
-      loadAndCheckCacheUsed(client, 'http://example.com/image.jpg', true)
-          .then(function(cacheUsed) {
-            assertFalse(cacheUsed);
-            return loadAndCheckCacheUsed(
-                client, 'http://example.com/image.jpg', true);
-          })
-          .then(function(cacheUsed) {
-            assertTrue(cacheUsed);
-          }),
-      callback);
+
+  const cacheUsed =
+      await loadAndCheckCacheUsed(client, 'http://example.com/image.jpg', true);
+  assertFalse(!!cacheUsed);
+  const cacheUsed2 =
+      await loadAndCheckCacheUsed(client, 'http://example.com/image.jpg', true);
+  assertTrue(!!cacheUsed2);
+  done();
 }
 
-export function testNoCache(callback) {
+export async function testNoCache(done) {
   const client = new ImageLoaderClient();
-  reportPromise(
-      loadAndCheckCacheUsed(client, 'http://example.com/image.jpg', false)
-          .then(function(cacheUsed) {
-            assertFalse(cacheUsed);
-            return loadAndCheckCacheUsed(
-                client, 'http://example.com/image.jpg', false);
-          })
-          .then(function(cacheUsed) {
-            assertFalse(cacheUsed);
-          }),
-      callback);
+  const cacheUsed = await loadAndCheckCacheUsed(
+      client, 'http://example.com/image.jpg', false);
+  assertFalse(!!cacheUsed);
+  const cacheUsed2 = await loadAndCheckCacheUsed(
+      client, 'http://example.com/image.jpg', false);
+  assertFalse(!!cacheUsed2);
+  done();
 }
 
-export function testDataURLCache(callback) {
+export async function testDataURLCache(done) {
   const client = new ImageLoaderClient();
-  reportPromise(
-      loadAndCheckCacheUsed(client, 'data:URI', true)
-          .then(function(cacheUsed) {
-            assertFalse(cacheUsed);
-            return loadAndCheckCacheUsed(client, 'data:URI', true);
-          })
-          .then(function(cacheUsed) {
-            assertFalse(cacheUsed);
-          }),
-      callback);
+  const cacheUsed = await loadAndCheckCacheUsed(client, 'data:URI', true);
+  assertFalse(!!cacheUsed);
+  const cacheUsed2 = await loadAndCheckCacheUsed(client, 'data:URI', true);
+  assertFalse(!!cacheUsed2);
+  done();
 }
