@@ -32,22 +32,34 @@ void DownloadBubbleRowListViewInfo::OnDownloadDestroyed(
   RemoveRow(id);
 }
 
+const DownloadBubbleRowViewInfo* DownloadBubbleRowListViewInfo::GetRowInfo(
+    const offline_items_collection::ContentId& id) const {
+  auto it = row_list_iter_map_.find(id);
+  if (it == row_list_iter_map_.end()) {
+    return nullptr;
+  }
+  return &(*it->second);
+}
+
 void DownloadBubbleRowListViewInfo::AddRow(
     DownloadUIModel::DownloadUIModelPtr model) {
   offline_items_collection::ContentId id = model->GetContentId();
-  rows_.emplace(id, std::move(model)).first->second.AddObserver(this);
+  rows_.emplace_back(std::move(model)).AddObserver(this);
+  auto it = std::prev(rows_.end());
+  row_list_iter_map_.emplace(id, it);
   NotifyObservers(&DownloadBubbleRowListViewInfoObserver::OnRowAdded, id);
 }
 
 void DownloadBubbleRowListViewInfo::RemoveRow(
     const offline_items_collection::ContentId& id) {
-  auto it = rows_.find(id);
-  if (it == rows_.end()) {
+  auto it = row_list_iter_map_.find(id);
+  if (it == row_list_iter_map_.end()) {
     return;
   }
 
   NotifyObservers(&DownloadBubbleRowListViewInfoObserver::OnRowWillBeRemoved,
                   id);
-  rows_.erase(it);
+  rows_.erase(it->second);
+  row_list_iter_map_.erase(it);
   NotifyObservers(&DownloadBubbleRowListViewInfoObserver::OnAnyRowRemoved);
 }

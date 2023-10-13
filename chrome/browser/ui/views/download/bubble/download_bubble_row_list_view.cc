@@ -29,7 +29,7 @@ DownloadBubbleRowListView::DownloadBubbleRowListView(
   SetNotifyEnterExitOnChild(true);
   info_->AddObserver(this);
 
-  for (auto& [id, row_info] : info_->rows()) {
+  for (const DownloadBubbleRowViewInfo& row_info : info_->rows()) {
     AddRow(row_info);
   }
 }
@@ -79,8 +79,11 @@ size_t DownloadBubbleRowListView::NumRows() const {
 
 void DownloadBubbleRowListView::OnRowAdded(
     const offline_items_collection::ContentId& id) {
-  AddRow(info_->rows().at(id));
+  const DownloadBubbleRowViewInfo* row_info = info_->GetRowInfo(id);
+  CHECK(row_info);
+  AddRow(*row_info);
 }
+
 void DownloadBubbleRowListView::OnRowWillBeRemoved(
     const offline_items_collection::ContentId& id) {
   RemoveRow(GetRow(id));

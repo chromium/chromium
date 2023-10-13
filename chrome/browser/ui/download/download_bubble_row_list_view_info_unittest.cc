@@ -22,6 +22,17 @@ using offline_items_collection::ContentId;
 using ::testing::NiceMock;
 using ::testing::ReturnRefOfCopy;
 
+int CountRowsWithId(const std::list<DownloadBubbleRowViewInfo>& rows,
+                    const ContentId& id) {
+  int count = 0;
+  for (const auto& row : rows) {
+    if (row.model()->GetContentId() == id) {
+      ++count;
+    }
+  }
+  return count;
+}
+
 class DownloadBubbleRowListViewInfoTest
     : public testing::Test,
       public DownloadBubbleRowListViewInfoObserver {
@@ -91,12 +102,39 @@ TEST_F(DownloadBubbleRowListViewInfoTest, AddRow) {
   std::vector<DownloadUIModel::DownloadUIModelPtr> models;
   models.push_back(DownloadItemModel::Wrap(GetItem("item1")));
   DownloadBubbleRowListViewInfo info(std::move(models));
-  EXPECT_EQ(info.rows().count(id1), 1u);
+  EXPECT_EQ(CountRowsWithId(info.rows(), id1), 1);
   EXPECT_EQ(info.rows().size(), 1u);
 
   info.AddRow(DownloadItemModel::Wrap(GetItem("item2")));
-  EXPECT_EQ(info.rows().count(id2), 1u);
+  EXPECT_EQ(CountRowsWithId(info.rows(), id2), 1);
   EXPECT_EQ(info.rows().size(), 2u);
+}
+
+TEST_F(DownloadBubbleRowListViewInfoTest, AddRowsInOrder) {
+  std::vector<std::string> ids = {"item1", "item2", "item3", "item4"};
+  std::vector<ContentId> content_ids;
+  std::vector<DownloadUIModel::DownloadUIModelPtr> models;
+
+  for (const auto& id : ids) {
+    CreateItem(id);
+    content_ids.push_back(GetContentId(id));
+    models.push_back(DownloadItemModel::Wrap(GetItem(id)));
+  }
+
+  DownloadBubbleRowListViewInfo info(std::move(models));
+
+  // Verify that all rows are present.
+  EXPECT_EQ(info.rows().size(), ids.size());
+  for (const auto& id : content_ids) {
+    EXPECT_EQ(CountRowsWithId(info.rows(), id), 1);
+  }
+
+  // Verify order.
+  int i = 0;
+  for (auto it = info.rows().begin(); it != info.rows().end(); ++it) {
+    EXPECT_EQ(it->model()->GetContentId(), content_ids[i]);
+    ++i;
+  }
 }
 
 TEST_F(DownloadBubbleRowListViewInfoTest, NotifyObserverAddRow) {
@@ -134,7 +172,7 @@ TEST_F(DownloadBubbleRowListViewInfoTest, NotifyObserverRowWillBeRemoved) {
   bool notified = false;
   SetRowWillBeRemovedCallback(
       base::BindLambdaForTesting([&](const ContentId& id) {
-        EXPECT_EQ(info.rows().count(id), 1u);
+        EXPECT_EQ(CountRowsWithId(info.rows(), id), 1);
         notified = true;
       }));
 
@@ -157,7 +195,7 @@ TEST_F(DownloadBubbleRowListViewInfoTest, NotifyObserverAnyRowRemoved) {
 
   bool notified = false;
   SetAnyRowRemovedCallback(base::BindLambdaForTesting([&]() {
-    EXPECT_EQ(info.rows().count(id), 0u);
+    EXPECT_EQ(CountRowsWithId(info.rows(), id), 0);
     notified = true;
   }));
 
