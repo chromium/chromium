@@ -156,9 +156,7 @@ class ExtensionMessagePort : public MessagePort {
   // alive.
   bool IsServiceWorkerActivity(Activity::Type activity_type);
 
-  base::WeakPtr<ChannelDelegate> weak_channel_delegate_;
 
-  const PortId port_id_;
   ExtensionId extension_id_;
   raw_ptr<content::BrowserContext> browser_context_ = nullptr;
 

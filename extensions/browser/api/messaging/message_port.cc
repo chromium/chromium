@@ -6,7 +6,10 @@
 
 namespace extensions {
 
-MessagePort::MessagePort() = default;
+MessagePort::MessagePort(base::WeakPtr<ChannelDelegate> channel_delegate,
+                         const PortId& port_id)
+    : weak_channel_delegate_(channel_delegate), port_id_(port_id) {}
+
 MessagePort::~MessagePort() = default;
 
 void MessagePort::RemoveCommonFrames(const MessagePort& port) {}

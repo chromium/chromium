@@ -37,9 +37,7 @@ class NativeMessagePort : public MessagePort {
   void CloseChannel(const std::string& error_message);
 
   base::ThreadChecker thread_checker_;
-  base::WeakPtr<ChannelDelegate> weak_channel_delegate_;
   scoped_refptr<base::SingleThreadTaskRunner> host_task_runner_;
-  const PortId port_id_;
   std::unique_ptr<Core> core_;
 
   base::WeakPtrFactory<NativeMessagePort> weak_factory_{this};

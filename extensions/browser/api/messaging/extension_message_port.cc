@@ -145,8 +145,7 @@ ExtensionMessagePort::ExtensionMessagePort(
     const std::string& extension_id,
     content::RenderFrameHost* render_frame_host,
     bool include_child_frames)
-    : weak_channel_delegate_(channel_delegate),
-      port_id_(port_id),
+    : MessagePort(std::move(channel_delegate), port_id),
       extension_id_(extension_id),
       browser_context_(render_frame_host->GetProcess()->GetBrowserContext()),
       frame_tracker_(new FrameTracker(this)) {
@@ -232,8 +231,7 @@ ExtensionMessagePort::ExtensionMessagePort(
     const ExtensionId& extension_id,
     content::BrowserContext* browser_context,
     PassKey)
-    : weak_channel_delegate_(channel_delegate),
-      port_id_(port_id),
+    : MessagePort(std::move(channel_delegate), port_id),
       extension_id_(extension_id),
       browser_context_(browser_context) {}
 
